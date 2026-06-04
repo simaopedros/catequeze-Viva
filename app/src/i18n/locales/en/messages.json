@@ -1,0 +1,21 @@
+{
+  "title": "Messages",
+  "compose": "New message",
+  "campaigns": "Campaigns",
+  "templates": "Templates",
+  "segment": "Segment",
+  "channel": "Channel",
+  "email": "Email",
+  "push": "Push",
+  "sms": "SMS",
+  "whatsapp": "WhatsApp",
+  "send": "Send",
+  "schedule": "Schedule",
+  "history": "History",
+  "all_parish": "All parish",
+  "by_stage": "By stage",
+  "by_class": "By class",
+  "catechists": "Catechists",
+  "guardians": "Guardians",
+  "pending_contacts": "Specific pending items"
+}

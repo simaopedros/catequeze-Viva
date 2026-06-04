@@ -1,0 +1,472 @@
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router';
+import { useQuery, globalSearch, getUnreadNotificationCount } from 'wasp/client/operations';
+import { listNotifications, markNotificationRead, markAllNotificationsRead } from 'wasp/client/operations';
+import { Search, Bell, Menu, Church, ChevronDown, X, Loader2, Users, GraduationCap, Home, ScrollText, BookMarked, FileText, Building2, Library, FolderOpen, Check, MessageSquareText, CalendarDays, Shield } from 'lucide-react';
+import { useAuth } from 'wasp/client/auth';
+import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
+import DarkModeSwitcher from '../client/components/DarkModeSwitcher';
+import { Badge } from '../client/components/ui/badge';
+import { UserDropdown } from '../user/UserDropdown';
+import { useUserContext } from '../client/hooks/useUserContext';
+import { ROLE_LABELS } from '../shared/constants';
+import { Button } from '../client/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../client/components/ui/dropdown-menu';
+import { useActiveParish } from '../client/hooks/useActiveParish';
+import { useActiveMembership } from '../client/hooks/useActiveMembership';
+import { cn } from '../client/utils';
+
+const MODULE_ICONS: Record<string, React.ComponentType<any>> = {
+  Catequizandos: Users,
+  Turmas: GraduationCap,
+  Biblioteca: Library,
+  Bíblia: BookMarked,
+  Catecismo: ScrollText,
+  Diretório: FolderOpen,
+  Famílias: Home,
+  Sacramentos: Church,
+  Documentos: FileText,
+  Paróquias: Church,
+  Comunidades: Building2,
+};
+
+const NOTIF_ICONS: Record<string, React.ComponentType<any>> = {
+  MESSAGE: MessageSquareText,
+  CAMPAIGN: Bell,
+  ATTENDANCE: CalendarDays,
+  DOCUMENT: FileText,
+  SACRAMENT: Shield,
+  SYSTEM: Bell,
+};
+
+interface TopBarProps {
+  onMenuToggle?: () => void;
+}
+
+function formatNotifTime(dateStr: string): string {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMinutes = Math.floor((now.getTime() - date.getTime()) / 60000);
+  if (diffMinutes < 1) return 'Agora';
+  if (diffMinutes < 60) return `${diffMinutes}min`;
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) return `${diffHours}h`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 7) return `${diffDays}d`;
+  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+}
+
+export function TopBar({ onMenuToggle }: TopBarProps) {
+  const { t } = useTranslation('common');
+  const { data: user } = useAuth();
+  const { activeParishName, switchParish, availableParishes: parishes } = useActiveParish();
+  const { userRole, parishName } = useUserContext();
+  const { activeMembership, availableMemberships, switchMembership, requiresPaidPlan } = useActiveMembership();
+  const navigate = useNavigate();
+
+  const yearLabel = new Date().getFullYear().toString();
+
+  // Search state
+  const [query, setQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [focused, setFocused] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [searchExpanded, setSearchExpanded] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Notifications
+  const { data: unreadData } = useQuery(getUnreadNotificationCount, undefined, { refetchInterval: 15000 });
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [notifs, setNotifs] = useState<any[]>([]);
+  const [notifsLoading, setNotifsLoading] = useState(false);
+
+  const loadNotifications = useCallback(async () => {
+    setNotifsLoading(true);
+    try {
+      const result = await listNotifications({ take: 10 });
+      setNotifs(result.notifications || []);
+    } catch {
+      setNotifs([]);
+    } finally {
+      setNotifsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (notifOpen) loadNotifications();
+  }, [notifOpen, loadNotifications]);
+
+  const handleNotifClick = async (notif: any) => {
+    if (!notif.readAt) {
+      try { await markNotificationRead({ notificationId: notif.id }); } catch {}
+    }
+    if (notif.link) navigate(notif.link);
+    setNotifOpen(false);
+  };
+
+  const handleMarkAllRead = async () => {
+    try {
+      await markAllNotificationsRead();
+      setNotifs(prev => prev.map(n => ({ ...n, readAt: new Date().toISOString() })));
+    } catch {}
+  };
+
+  const unreadCount = unreadData?.count || 0;
+
+  // Debounce query (300ms)
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQuery(query), 300);
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  const { data: results = [], isLoading } = useQuery(
+    globalSearch,
+    { query: debouncedQuery },
+    { enabled: debouncedQuery.length >= 2 }
+  );
+
+  // Group results by module
+  const grouped = results.reduce<Record<string, any[]>>((acc, r: any) => {
+    if (!acc[r.module]) acc[r.module] = [];
+    acc[r.module].push(r);
+    return acc;
+  }, {});
+
+  const moduleNames = Object.keys(grouped);
+  const flatResults = moduleNames.flatMap((m) => grouped[m]);
+
+  // Close on click outside
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setFocused(false);
+        setSelectedIndex(0);
+        if (searchExpanded) setSearchExpanded(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [searchExpanded]);
+
+  // Ctrl+K keyboard shortcut
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchExpanded(true);
+        setTimeout(() => inputRef.current?.focus(), 50);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
+  const handleSelect = useCallback((route: string) => {
+    setFocused(false);
+    setQuery('');
+    setSelectedIndex(0);
+    navigate(route);
+  }, [navigate]);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!focused || flatResults.length === 0) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedIndex((i) => Math.min(i + 1, flatResults.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex((i) => Math.max(i - 1, 0));
+    } else if (e.key === 'Enter' && flatResults[selectedIndex]) {
+      e.preventDefault();
+      handleSelect(flatResults[selectedIndex].route);
+    }
+  };
+
+  const showDropdown = focused && debouncedQuery.length >= 2;
+
+  // Auto-focus input when search expands on mobile
+  useEffect(() => {
+    if (searchExpanded) {
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
+  }, [searchExpanded]);
+
+  return (
+    <header className="flex h-14 items-center gap-3 border-b bg-card px-4">
+      {/* Mobile menu toggle — hidden when search expanded */}
+      {!searchExpanded && (
+        <Button variant="ghost" size="icon" className="lg:hidden shrink-0" onClick={onMenuToggle}>
+          <Menu className="h-5 w-5" />
+        </Button>
+      )}
+
+      {/* Search — icon-only on mobile, expands on tap */}
+      <div ref={containerRef} className={`relative flex-1 ${!searchExpanded ? 'sm:max-w-lg' : ''}`}>
+        {/* Mobile collapsed: icon button centered in available space */}
+        {!searchExpanded && (
+          <div className="flex justify-center sm:justify-start">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="sm:hidden h-9 w-9 rounded-xl hover:bg-accent/50 shrink-0"
+              onClick={() => { setSearchExpanded(true); setTimeout(() => inputRef.current?.focus(), 100); }}
+            >
+              <Search className="h-5 w-5" />
+            </Button>
+          </div>
+        )}
+
+        {/* Expanded: full input (always on desktop, conditionally on mobile) */}
+        <div className={`flex items-center gap-2 rounded-xl border border-input bg-background px-3 h-9 transition-colors focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20 ${searchExpanded ? 'flex' : 'hidden sm:flex'}`}>
+          <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={(e) => { setQuery(e.target.value); setSelectedIndex(0); }}
+            onFocus={() => setFocused(true)}
+            onBlur={() => { setFocused(false); if (!query) setSearchExpanded(false); }}
+            onKeyDown={(e) => { if (e.key === 'Escape') { setSearchExpanded(false); setQuery(''); } handleKeyDown(e); }}
+            placeholder="Buscar catequizandos, turmas, conteúdos, Bíblia..."
+            className="flex-1 bg-transparent border-none outline-none text-sm placeholder:text-muted-foreground/60"
+          />
+          {isLoading && debouncedQuery.length >= 2 && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground shrink-0" />}
+          {!isLoading && query && (
+            <button onClick={() => { setQuery(''); setSelectedIndex(0); inputRef.current?.focus(); }} className="text-muted-foreground hover:text-foreground shrink-0">
+              <X className="h-4 w-4" />
+            </button>
+          )}
+          {/* Close button on mobile when expanded */}
+          {searchExpanded && (
+            <button onClick={() => { setSearchExpanded(false); setQuery(''); }} className="sm:hidden text-muted-foreground hover:text-foreground shrink-0 ml-1">
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+
+        {/* Results dropdown */}
+        {showDropdown && (
+          <div className="absolute top-full mt-1 left-0 right-0 z-50 rounded-xl border bg-card shadow-lg overflow-hidden">
+            {flatResults.length === 0 ? (
+              <div className="px-4 py-6 text-center">
+                <Search className="mx-auto h-5 w-5 text-muted-foreground/40 mb-1" />
+                <p className="text-sm text-muted-foreground">Nenhum resultado</p>
+              </div>
+            ) : (
+              <div className="max-h-48 sm:max-h-72 overflow-y-auto">
+                {moduleNames.map((module) => {
+                  const Icon = MODULE_ICONS[module] || Search;
+                  return (
+                    <div key={module}>
+                      <div className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70 bg-muted/30 border-y">
+                        <Icon className="h-3 w-3" />
+                        {module}
+                      </div>
+                      {grouped[module].map((item: any) => {
+                        const globalIdx = flatResults.indexOf(item);
+                        const isSelected = globalIdx === selectedIndex;
+                        return (
+                          <button
+                            key={`${item.type}-${item.id}`}
+                            onMouseDown={(e) => { e.preventDefault(); handleSelect(item.route); }}
+                            onMouseEnter={() => setSelectedIndex(globalIdx)}
+                            className={`w-full text-left px-3 py-2 flex items-start gap-2.5 transition-colors ${
+                              isSelected ? 'bg-accent' : 'hover:bg-muted/30'
+                            }`}
+                          >
+                            <Icon className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-medium truncate">{item.label}</p>
+                              <p className="text-xs text-muted-foreground truncate">{item.description}</p>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            {/* Footer */}
+            <div className="flex items-center gap-3 px-3 py-1.5 border-t text-[10px] text-muted-foreground/50">
+              <span><kbd className="rounded border px-1 py-0.5 text-[9px] font-mono">↑↓</kbd> navegar</span>
+              <span><kbd className="rounded border px-1 py-0.5 text-[9px] font-mono">↵</kbd> abrir</span>
+              <span className="ml-auto">Ctrl+K para focar</span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Right section — hidden when search expanded on mobile */}
+      {!searchExpanded && (
+      <div className="flex items-center gap-2 shrink-0">
+        {/* Parish/Year selector — dropdown */}
+        {activeParishName && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="hidden md:flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-foreground border border-input rounded-xl px-3 py-1.5 h-9">
+                <Church className="h-4 w-4 text-primary" />
+                <span className="truncate max-w-[160px] font-medium">{activeParishName}</span>
+                <span className="text-xs">•</span>
+                <span className="font-semibold text-primary">{yearLabel}</span>
+                <ChevronDown className="h-3.5 w-3.5 opacity-60 ml-0.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-64 p-2">
+              <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground border-b mb-1">Paróquias</div>
+              {parishes.map((p: any) => (
+                <button
+                  key={p.id}
+                  onClick={() => switchParish(p.id)}
+                  className="w-full flex items-center gap-2 text-sm px-2 py-1.5 rounded-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
+                >
+                  <Church className="h-4 w-4 text-muted-foreground" />
+                  <span className="flex-1 truncate text-left">{p.name}</span>
+                  {p.name === activeParishName && <Check className="h-4 w-4 text-primary shrink-0" />}
+                </button>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
+        {/* Membership/Role selector — visible when user has multiple memberships */}
+        {availableMemberships.length > 1 && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="hidden md:flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-foreground border border-input rounded-xl px-3 py-1.5 h-9">
+                <Shield className="h-4 w-4 text-primary" />
+                <span className="truncate max-w-[120px] font-medium text-xs">
+                  {ROLE_LABELS[userRole] || userRole}
+                </span>
+                <ChevronDown className="h-3.5 w-3.5 opacity-60 ml-0.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-72 p-2">
+              <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground border-b mb-1">
+                Perfis ({availableMemberships.length})
+              </div>
+              {availableMemberships.map((m: any) => {
+                const isActive = m.id === activeMembership?.id;
+                const needsPaidPlan = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'].includes(m.role);
+                return (
+                  <button
+                    key={m.id}
+                    onClick={() => {
+                      switchMembership(m.id);
+                      // Also switch parish to match the membership
+                      if (m.parishId) switchParish(m.parishId);
+                    }}
+                    className="w-full flex items-center gap-2 text-sm px-2 py-1.5 rounded-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
+                  >
+                    <Shield className="h-4 w-4 text-muted-foreground" />
+                    <div className="flex-1 text-left min-w-0">
+                      <span className="text-sm font-medium truncate block">
+                        {ROLE_LABELS[m.role] || m.role}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground truncate block">
+                        {m.parishName || 'Sem paróquia'}
+                      </span>
+                    </div>
+                    {needsPaidPlan && <span className="text-[9px] text-amber-500 font-medium shrink-0" title="Requer plano pago">💰</span>}
+                    {isActive && <Check className="h-4 w-4 text-primary shrink-0" />}
+                  </button>
+                );
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
+        {/* Notifications with real data */}
+        <DropdownMenu open={notifOpen} onOpenChange={setNotifOpen}>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-xl hover:bg-accent/50">
+              <Bell className="h-5 w-5" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 h-[18px] min-w-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold px-1 animate-in zoom-in-50 shadow-sm">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-80 p-0">
+            <div className="flex items-center justify-between px-3 py-2 border-b">
+              <span className="text-xs font-semibold text-muted-foreground">Notificações</span>
+              {unreadCount > 0 && (
+                <button onClick={handleMarkAllRead} className="text-[10px] text-primary hover:underline">
+                  Marcar todas como lidas
+                </button>
+              )}
+            </div>
+            {notifsLoading ? (
+              <div className="px-3 py-6 text-center text-sm text-muted-foreground">Carregando...</div>
+            ) : notifs.length === 0 ? (
+              <div className="px-3 py-6 text-center text-sm text-muted-foreground">
+                <Bell className="mx-auto h-6 w-6 mb-2 opacity-40" />
+                Nenhuma notificação
+              </div>
+            ) : (
+              <div className="max-h-80 overflow-y-auto divide-y">
+                {notifs.map((n: any) => {
+                  const NIcon = NOTIF_ICONS[n.type] || Bell;
+                  return (
+                    <button
+                      key={n.id}
+                      onClick={() => handleNotifClick(n)}
+                      className={cn(
+                        'w-full flex items-start gap-2.5 px-3 py-2.5 text-left transition-colors hover:bg-muted/50',
+                        !n.readAt && 'bg-primary/5'
+                      )}
+                    >
+                      <div className={cn(
+                        'h-7 w-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5',
+                        !n.readAt ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
+                      )}>
+                        <NIcon className="h-3.5 w-3.5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className={cn('text-xs truncate', !n.readAt && 'font-semibold')}>{n.title}</p>
+                        {n.body && <p className="text-[10px] text-muted-foreground truncate">{n.body}</p>}
+                        <p className="text-[9px] text-muted-foreground/60 mt-0.5">{formatNotifTime(n.createdAt)}</p>
+                      </div>
+                      {!n.readAt && (
+                        <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0 mt-1.5" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <span className="hidden sm:inline"><LanguageSwitcher /></span>
+        <span className="hidden sm:inline"><DarkModeSwitcher /></span>
+        {userRole && (() => {
+          const variantMap: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+            SUPER_ADMIN: 'destructive', DIOCESE_ADMIN: 'destructive',
+            PARISH_COORDINATOR: 'default', COMMUNITY_COORDINATOR: 'default',
+            LEAD_CATECHIST: 'secondary', ASSISTANT_CATECHIST: 'secondary',
+            CONTENT_REVIEWER: 'outline', PASTORAL_VIEWER: 'outline',
+            GUARDIAN: 'outline', CATECHUMEN: 'outline',
+          };
+          const v = variantMap[userRole] || 'secondary';
+          return (
+            <Badge variant={v} className="hidden md:inline-flex items-center gap-1 text-xs font-medium">
+              <Shield className="h-3 w-3" />
+              {ROLE_LABELS[userRole] || userRole}
+            </Badge>
+          );
+        })()}
+        {user && <UserDropdown user={user} />}
+      </div>
+      )}
+    </header>
+  );
+}

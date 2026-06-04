@@ -1,0 +1,20 @@
+{
+  "title": "Attendance",
+  "mark_present": "Mark present",
+  "mark_absent": "Mark absent",
+  "mark_late": "Mark late",
+  "mark_justified": "Justify absence",
+  "saved_locally": "Attendance saved on this device. It will sync when internet is available.",
+  "sync_pending": "Sync pending",
+  "sync_conflict": "Sync conflict",
+  "start_meeting": "Start meeting",
+  "end_meeting": "End meeting",
+  "private_note": "Private note",
+  "present": "Present",
+  "absent": "Absent",
+  "late": "Late",
+  "justified": "Justified",
+  "not_started": "Not started",
+  "in_progress": "In progress",
+  "synced": "Synced"
+}

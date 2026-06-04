@@ -1,0 +1,13 @@
+{
+  "title": "Reports",
+  "attendance_report": "Attendance by class/stage/period",
+  "dropout_risk": "Catechumens at risk of dropping out",
+  "pending_docs": "Pending documents",
+  "sacramental_progress": "Sacramental progress",
+  "catechist_workload": "Catechist workload",
+  "top_content": "Most used content",
+  "messages_sent": "Messages sent",
+  "pending_consents": "Pending consents",
+  "export_csv": "Export CSV",
+  "export_pdf": "Export PDF"
+}

@@ -1,0 +1,15 @@
+{
+  "title": "Sacramentos",
+  "journey": "Jornada sacramental",
+  "milestones": "Marcos",
+  "first_communion": "Primeira Eucaristia",
+  "confirmation": "Crisma",
+  "baptism": "Batismo",
+  "reconciliation": "Reconciliação",
+  "marriage": "Matrimônio",
+  "config": "Configuração sacramental",
+  "required": "Obrigatório",
+  "optional": "Opcional",
+  "evidence_required": "Evidência exigida",
+  "waiting_approval": "Aguardando aprovação"
+}

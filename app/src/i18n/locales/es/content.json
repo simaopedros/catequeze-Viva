@@ -1,0 +1,23 @@
+{
+  "title": "Biblioteca de Contenido",
+  "create": "Crear contenido",
+  "theme": "Tema",
+  "pastoral_objective": "Objetivo pastoral",
+  "biblical_ref": "Referencia bíblica",
+  "catechism_ref": "Referencia al Catecismo",
+  "opening_prayer": "Oración inicial",
+  "dynamic": "Dinámica",
+  "main_content": "Contenido principal",
+  "activity": "Actividad",
+  "family_task": "Tarea para la familia",
+  "materials": "Materiales adjuntos",
+  "estimated_time": "Tiempo estimado",
+  "tags": "Etiquetas",
+  "status_draft": "Borrador",
+  "status_review": "En revisión",
+  "status_approved": "Aprobado",
+  "status_published": "Publicado",
+  "submit_review": "Enviar a revisión",
+  "approve": "Aprobar",
+  "publish": "Publicar"
+}

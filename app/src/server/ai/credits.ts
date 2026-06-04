@@ -1,0 +1,228 @@
+/**
+ * AI credit management — check, deduct, reset.
+ */
+import { HttpError } from 'wasp/server';
+import type { User, UserAiCredits } from '@prisma/client';
+import { AI_CREDITS, planHasAiAccess, getMonthlyAllowance } from '../../shared/aiCredits';
+
+// ─── Credit check + deduction ──────────────────────────────────────────────
+
+interface CreditContext {
+  entities: {
+    UserAiCredits: any;
+    User: any;
+  };
+  user?: { id: string } | null;
+}
+
+/**
+ * Ensure the user has AI access and enough credits, then deduct.
+ * Throws HttpError(402) if out of credits or on wrong plan.
+ */
+export async function assertAndDeductCredits(
+  context: CreditContext,
+  cost: number,
+): Promise<{ creditsLeft: number }> {
+  if (!context.user) throw new HttpError(401, 'Autenticação necessária');
+
+  // Load user with subscription plan
+  const user = await context.entities.User.findUnique({
+    where: { id: context.user.id },
+    select: { subscriptionPlan: true, credits: true },
+  });
+  if (!user) throw new HttpError(401);
+
+  const plan = user.subscriptionPlan;
+  const isFreePlan = !plan || plan === 'catechist_free' || plan === 'CATECHIST_FREE';
+
+  // Get or create credits record
+  let credits = await context.entities.UserAiCredits.findUnique({
+    where: { userId: context.user.id },
+  });
+
+  // For free plan with no prior usage, create a record with trial credits
+  if (!credits && isFreePlan) {
+    credits = await context.entities.UserAiCredits.create({
+      data: {
+        userId: context.user.id,
+        creditsLeft: AI_CREDITS.FREE_TRIAL_CREDITS,
+        lastReset: new Date(),
+      },
+    });
+  }
+
+  if (!credits && !isFreePlan) {
+    // Paid plan — auto-create on first use with monthly allowance
+    const allowance = getMonthlyAllowance(plan);
+    credits = await context.entities.UserAiCredits.create({
+      data: {
+        userId: context.user.id,
+        creditsLeft: allowance,
+        lastReset: new Date(),
+      },
+    });
+  }
+
+  if (!credits) {
+    // Should only happen if free plan + no credits record was somehow not created
+    throw new HttpError(
+      402,
+      'Plano sem acesso à IA. Faça upgrade para Catequista IA ou Paróquia em /app/billing.',
+    );
+  }
+
+  // Check if monthly reset is due (only for paid AI plans)
+  const now = new Date();
+  const lastReset = new Date(credits.lastReset);
+  if (!isFreePlan && shouldReset(lastReset, now)) {
+    const allowance = getMonthlyAllowance(plan);
+    credits = await context.entities.UserAiCredits.update({
+      where: { userId: context.user.id },
+      data: {
+        creditsLeft: allowance,
+        lastReset: now,
+      },
+    });
+  }
+
+  // For free plan users, check trial credits
+  if (isFreePlan) {
+    if (credits.creditsLeft <= 0) {
+      throw new HttpError(
+        402,
+        'Créditos de teste esgotados. Faça upgrade para Catequista IA para continuar usando a IA.',
+      );
+    }
+  } else {
+    // Paid plan — must have AI access
+    if (!planHasAiAccess(plan)) {
+      throw new HttpError(
+        402,
+        'Plano sem acesso à IA. Faça upgrade para Catequista IA ou Paróquia em /app/billing.',
+      );
+    }
+
+    if (credits.creditsLeft < cost) {
+      throw new HttpError(
+        402,
+        `Créditos insuficientes (${credits.creditsLeft} restantes, ${cost} necessários). Seus créditos renovam no próximo mês.`,
+      );
+    }
+  }
+
+  // Deduct credits
+  const updated = await context.entities.UserAiCredits.update({
+    where: { userId: context.user.id },
+    data: { creditsLeft: { decrement: cost } },
+  });
+
+  return { creditsLeft: updated.creditsLeft };
+}
+
+// ─── Reset logic ───────────────────────────────────────────────────────────
+
+function shouldReset(lastReset: Date, now: Date): boolean {
+  // Reset if last reset was in a previous calendar month
+  return (
+    lastReset.getFullYear() < now.getFullYear() ||
+    (lastReset.getFullYear() === now.getFullYear() &&
+      lastReset.getMonth() < now.getMonth())
+  );
+}
+
+/**
+ * Monthly batch reset for all AI-plan users.
+ * Called by the PgBoss scheduled job.
+ */
+export async function resetAllAiCredits(entities: any): Promise<number> {
+  const now = new Date();
+
+  // Find all users whose plan grants AI access and whose credits need reset
+  const creditsToReset = await entities.UserAiCredits.findMany({
+    where: {
+      user: {
+        subscriptionPlan: { in: AI_CREDITS.AI_PLANS },
+      },
+    },
+    include: {
+      user: { select: { subscriptionPlan: true } },
+    },
+  });
+
+  let resetCount = 0;
+  for (const record of creditsToReset) {
+    const lastReset = new Date(record.lastReset);
+    if (shouldReset(lastReset, now)) {
+      const plan = record.user?.subscriptionPlan;
+      const allowance = getMonthlyAllowance(plan);
+      await entities.UserAiCredits.update({
+        where: { id: record.id },
+        data: {
+          creditsLeft: allowance,
+          lastReset: now,
+        },
+      });
+      resetCount++;
+    }
+  }
+
+  return resetCount;
+}
+
+/**
+ * Get current credit status for a user.
+ */
+export async function getCreditsStatus(
+  context: CreditContext,
+): Promise<{ creditsLeft: number; plan: string | null; hasAiAccess: boolean; monthlyAllowance: number }> {
+  if (!context.user) {
+    return { creditsLeft: 0, plan: null, hasAiAccess: false, monthlyAllowance: 0 };
+  }
+
+  const user = await context.entities.User.findUnique({
+    where: { id: context.user.id },
+    select: { subscriptionPlan: true },
+  });
+
+  const plan = user?.subscriptionPlan ?? null;
+  const planHasAccess = planHasAiAccess(plan);
+  const monthlyAllowance = getMonthlyAllowance(plan);
+  const isFreePlan = !plan || plan === 'catechist_free' || plan === 'CATECHIST_FREE';
+
+  const credits = await context.entities.UserAiCredits.findUnique({
+    where: { userId: context.user.id },
+  });
+
+  // Free plan users: check if they still have trial credits
+  if (isFreePlan) {
+    if (!credits) {
+      // Never used AI — 3 trial credits available
+      return {
+        creditsLeft: AI_CREDITS.FREE_TRIAL_CREDITS,
+        plan,
+        hasAiAccess: true,
+        monthlyAllowance: AI_CREDITS.FREE_TRIAL_CREDITS,
+      };
+    }
+    // Has credits record — show actual remaining trial credits
+    return {
+      creditsLeft: credits.creditsLeft,
+      plan,
+      hasAiAccess: credits.creditsLeft > 0,
+      monthlyAllowance: AI_CREDITS.FREE_TRIAL_CREDITS,
+    };
+  }
+
+  // Paid plan without AI access (Pro, Diocese): no credits, no access
+  if (!planHasAccess) {
+    return { creditsLeft: 0, plan, hasAiAccess: false, monthlyAllowance: 0 };
+  }
+
+  // Paid AI plan (Catechist AI, Parish): show actual state
+  return {
+    creditsLeft: credits?.creditsLeft ?? monthlyAllowance,
+    plan,
+    hasAiAccess: true,
+    monthlyAllowance,
+  };
+}

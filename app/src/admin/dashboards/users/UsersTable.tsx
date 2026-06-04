@@ -1,0 +1,117 @@
+import { useEffect, useState } from 'react';
+import { useAuth } from 'wasp/client/auth';
+import { getPaginatedUsers, updateIsUserAdminById, useQuery } from 'wasp/client/operations';
+import { type User } from 'wasp/entities';
+import { Button } from '../../../client/components/ui/button';
+import { Input } from '../../../client/components/ui/input';
+import { Label } from '../../../client/components/ui/label';
+import { Switch } from '../../../client/components/ui/switch';
+import useDebounce from '../../../client/hooks/useDebounce';
+import LoadingSpinner from '../../layout/LoadingSpinner';
+
+function AdminSwitch({ id, isAdmin }: Pick<User, 'id' | 'isAdmin'>) {
+  const { data: currentUser } = useAuth();
+  const isCurrentUser = currentUser?.id === id;
+  return (
+    <Switch
+      checked={isAdmin}
+      onCheckedChange={(value) => updateIsUserAdminById({ id, isAdmin: value })}
+      disabled={isCurrentUser}
+    />
+  );
+}
+
+const UsersTable = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [emailFilter, setEmailFilter] = useState<string | undefined>(undefined);
+  const [isAdminFilter, setIsAdminFilter] = useState<boolean | undefined>(undefined);
+  const debouncedEmailFilter = useDebounce(emailFilter, 300);
+  const skipPages = currentPage - 1;
+
+  const { data, isLoading } = useQuery(getPaginatedUsers, {
+    skipPages,
+    filter: {
+      ...(debouncedEmailFilter && { emailContains: debouncedEmailFilter }),
+      ...(isAdminFilter !== undefined && { isAdmin: isAdminFilter }),
+    },
+  });
+
+  useEffect(() => { setCurrentPage(1); }, [debouncedEmailFilter, isAdminFilter]);
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="border-border bg-card rounded-sm border shadow-sm">
+        <div className="bg-muted/40 flex w-full items-center gap-4 p-4">
+          <Label htmlFor="email-filter" className="text-muted-foreground text-sm">Email:</Label>
+          <Input
+            type="text"
+            id="email-filter"
+            placeholder="buscar@exemplo.com"
+            className="w-64"
+            onChange={(e) => setEmailFilter(e.currentTarget.value || undefined)}
+          />
+          <Label className="text-muted-foreground text-sm ml-4">Admin:</Label>
+          <select
+            className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+            onChange={(e) => {
+              const v = e.target.value;
+              setIsAdminFilter(v === 'both' ? undefined : v === 'true');
+            }}
+            defaultValue="both"
+          >
+            <option value="both">Todos</option>
+            <option value="true">Sim</option>
+            <option value="false">Não</option>
+          </select>
+          {data?.totalPages && (
+            <div className="ml-auto flex items-center gap-2 text-sm text-muted-foreground">
+              <span>Página</span>
+              <Input
+                type="number"
+                min={1}
+                value={currentPage}
+                max={data.totalPages}
+                onChange={(e) => {
+                  const v = parseInt(e.currentTarget.value);
+                  if (data.totalPages && v <= data.totalPages && v > 0) setCurrentPage(v);
+                }}
+                className="w-16 h-8"
+              />
+              <span>/ {data.totalPages}</span>
+            </div>
+          )}
+        </div>
+
+        <div className="py-3 grid grid-cols-7 border-t-2 px-4 md:px-6 bg-muted/20">
+          <div className="col-span-2 font-medium text-sm">Email</div>
+          <div className="col-span-2 font-medium text-sm">Nome</div>
+          <div className="col-span-1 font-medium text-sm">Admin</div>
+          <div className="col-span-1 font-medium text-sm">Criado em</div>
+          <div className="col-span-1 font-medium text-sm text-right">Ações</div>
+        </div>
+
+        {isLoading && <LoadingSpinner />}
+        {data?.users?.length === 0 && (
+          <div className="p-8 text-center text-sm text-muted-foreground">Nenhum utilizador encontrado.</div>
+        )}
+        {data?.users?.map((user: any) => (
+          <div key={user.id} className="py-3 grid grid-cols-7 gap-4 px-4 md:px-6 border-t">
+            <div className="col-span-2 flex items-center text-sm truncate">{user.email || '—'}</div>
+            <div className="col-span-2 flex items-center text-sm text-muted-foreground truncate">
+              {user.firstName ? `${user.firstName} ${user.lastName || ''}` : '—'}
+            </div>
+            <div className="col-span-1 flex items-center"><AdminSwitch {...user} /></div>
+            <div className="col-span-1 flex items-center text-xs text-muted-foreground">
+              {user.createdAt ? new Date(user.createdAt).toLocaleDateString('pt-BR') : '—'}
+            </div>
+            <div className="col-span-1 flex items-center justify-end">
+              <Button variant="ghost" size="sm" className="text-xs" disabled>Detalhes</Button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default UsersTable;

@@ -1,0 +1,1234 @@
+app OpenSaaS {
+  wasp: {
+    version: "^0.22.0"
+  },
+
+  title: "Catequese Viva",
+
+  head: [
+    "<link rel='icon' href='/favicon.ico' />",
+
+    "<meta name='description' content='Catequese Viva — Plataforma completa de gestão para catequese católica: turmas, presença, conteúdos, sacramentos e comunicação pastoral.' />",
+    "<meta name='author' content='Catequese Viva' />",
+    "<meta name='keywords' content='catequese, católica, paróquia, pastoral, crisma, primeira eucaristia, igreja, gestão paroquial' />",
+
+    "<meta property='og:type' content='website' />",
+    "<meta property='og:title' content='Catequese Viva — Plataforma Pastoral de Iniciação Cristã' />",
+    "<meta property='og:site_name' content='Catequese Viva' />",
+    // TODO: Atualizar com domínio real quando disponível
+    "<meta property='og:url' content='/' />",
+    "<meta property='og:description' content='Conectando dioceses, paróquias, catequistas e famílias em uma jornada de fé integrada.' />",
+    // TODO: Gerar og-image e atualizar URL
+    // "<meta property='og:image' content='https://seu-dominio.com/og-image.webp' />",
+    // "<meta name='twitter:image' content='https://seu-dominio.com/og-image.webp' />",
+    "<meta name='twitter:image:width' content='800' />",
+    "<meta name='twitter:image:height' content='400' />",
+    "<meta name='twitter:card' content='summary_large_image' />",
+    // TODO: Configurar Plausible analytics quando tiver domínio (https://docs.opensaas.sh/guides/analytics/)
+    // "<script async data-domain='seu-dominio.com' src='https://plausible.io/js/script.js'></script>",  // for production
+    // "<script async data-domain='seu-dominio.com' src='https://plausible.io/js/script.local.js'></script>",  // for development
+  ],
+
+  // 🔐 Auth out of the box! https://wasp.sh/docs/auth/overview
+  auth: {
+    userEntity: User,
+    methods: {
+      // NOTE: If you decide to not use email auth, make sure to also delete the related routes and pages below.
+      //   (RequestPasswordReset(Route|Page), PasswordReset(Route|Page), EmailVerification(Route|Page))
+      email: {
+        fromField: {
+          name: "Catequese Viva",
+          email: "onboarding@resend.dev"
+        },
+        emailVerification: {
+          clientRoute: EmailVerificationRoute,
+          getEmailContentFn: import { getVerificationEmailContent } from "@src/auth/email-and-pass/emails",
+        },
+        passwordReset: {
+          clientRoute: PasswordResetRoute,
+          getEmailContentFn: import { getPasswordResetEmailContent } from "@src/auth/email-and-pass/emails",
+        },
+        userSignupFields: import { getEmailUserFields } from "@src/auth/userSignupFields",
+      },
+      // Uncomment to enable Google Auth (check https://wasp.sh/docs/auth/social-auth/google for setup instructions):
+      // google: { // Guide for setting up Auth via Google
+      //   userSignupFields: import { getGoogleUserFields } from "@src/auth/userSignupFields",
+      //   configFn: import { getGoogleAuthConfig } from "@src/auth/userSignupFields",
+      // },
+      // Uncomment to enable GitHub Auth (check https://wasp.sh/docs/auth/social-auth/github for setup instructions):
+      // gitHub: {
+      //   userSignupFields: import { getGitHubUserFields } from "@src/auth/userSignupFields",
+      //   configFn: import { getGitHubAuthConfig } from "@src/auth/userSignupFields",
+      // },
+      // Uncomment to enable Discord Auth (check https://wasp.sh/docs/auth/social-auth/discord for setup instructions):
+      // discord: {
+      //   userSignupFields: import { getDiscordUserFields } from "@src/auth/userSignupFields",
+      //   configFn: import { getDiscordAuthConfig } from "@src/auth/userSignupFields"
+      // }
+    },
+    onAuthFailedRedirectTo: "/login",
+    onAuthSucceededRedirectTo: "/app",
+  },
+
+  db: {
+    // Run `wasp db seed` to seed the database with the seed functions below:
+    seeds: [
+      // Populates the database with a bunch of fake users to work with during development.
+      import { seedMockUsers } from "@src/server/scripts/dbSeeds",
+      import { seedBibleAndCatechism } from "@src/server/scripts/bibleCatechismSeed",
+    ]
+  },
+
+  client: {
+    rootComponent: import App from "@src/client/App",
+  },
+
+  server: {
+    envValidationSchema: import { serverEnvValidationSchema } from "@src/env",
+    setupFn: import { serverSetup } from "@src/server/setup",
+  },
+
+  emailSender: {
+    // NOTE: "Dummy" provider is just for local development purposes.
+    //   Make sure to check the server logs for the email confirmation url (it will not be sent to an address)!
+    //   Once you are ready for production, switch to e.g. "SendGrid" or "Mailgun" providers. Check out https://docs.opensaas.sh/guides/email-sending/ .
+    provider: SMTP,
+    defaultFrom: {
+      name: "Catequese Viva",
+      // When using a real provider, e.g. SendGrid, you must use the same email address that you configured your account to send out emails with!
+      email: "onboarding@resend.dev"
+    },
+  },
+}
+
+route LandingPageRoute { path: "/", to: LandingPage }
+page LandingPage {
+  component: import LandingPage from "@src/landing-page/LandingPage"
+}
+
+//#region Auth Pages
+route LoginRoute { path: "/login", to: LoginPage }
+page LoginPage {
+  component: import Login from "@src/auth/LoginPage"
+}
+
+route SignupRoute { path: "/signup", to: SignupPage }
+page SignupPage {
+  component: import { Signup } from "@src/auth/SignupPage"
+}
+
+route RequestPasswordResetRoute { path: "/request-password-reset", to: RequestPasswordResetPage }
+page RequestPasswordResetPage {
+  component: import { RequestPasswordResetPage } from "@src/auth/email-and-pass/RequestPasswordResetPage",
+}
+
+route PasswordResetRoute { path: "/password-reset", to: PasswordResetPage }
+page PasswordResetPage {
+  component: import { PasswordResetPage } from "@src/auth/email-and-pass/PasswordResetPage",
+}
+
+route EmailVerificationRoute { path: "/email-verification", to: EmailVerificationPage }
+page EmailVerificationPage {
+  component: import { EmailVerificationPage } from "@src/auth/email-and-pass/EmailVerificationPage",
+}
+//#endregion
+
+//#region User
+//#region Demo AI App
+//#region Payment
+query getCustomerPortalUrl {
+  fn: import { getCustomerPortalUrl } from  "@src/payment/operations",
+  entities: [User]
+}
+
+action generateCheckoutSession {
+  fn: import { generateCheckoutSession } from "@src/payment/operations",
+  entities: [User]
+}
+
+action cancelSubscription {
+  fn: import { cancelSubscription } from "@src/payment/operations",
+  entities: [User, TenantBilling]
+}
+
+api paymentsWebhook {
+  fn: import { paymentsWebhook } from "@src/payment/webhook",
+  entities: [User, TenantBilling],
+  middlewareConfigFn: import { paymentsMiddlewareConfigFn } from "@src/payment/webhook",
+  httpRoute: (POST, "/payments-webhook")
+}
+//#endregion
+
+//#region File Upload
+//#region Analytics
+query getDailyStats {
+  fn: import { getDailyStats } from "@src/analytics/operations",
+  entities: [User, DailyStats]
+}
+
+job dailyStatsJob {
+  executor: PgBoss,
+  perform: {
+    fn: import { calculateDailyStats } from "@src/analytics/stats"
+  },
+  schedule: {
+    cron: "0 * * * *" // every hour. useful in production
+    // cron: "* * * * *" // every minute. useful for debugging
+  },
+  entities: [User, DailyStats, Logs, PageViewSource]
+}
+
+job aiCreditsResetJob {
+  executor: PgBoss,
+  perform: {
+    fn: import { resetAiCreditsJob } from "@src/server/scripts/aiCreditsResetJob"
+  },
+  schedule: {
+    cron: "0 3 * * *" // daily at 3am
+  },
+  entities: [UserAiCredits, User]
+}
+
+job subscriptionExpirationJob {
+  executor: PgBoss,
+  perform: {
+    fn: import { expireSubscriptionsJob } from "@src/server/scripts/subscriptionExpirationJob"
+  },
+  schedule: {
+    cron: "0 4 * * *" // daily at 4am
+  },
+  entities: [User, TenantBilling]
+}
+//#endregion
+
+//#region Admin Dashboard
+route AdminRoute { path: "/admin", to: AnalyticsDashboardPage }
+page AnalyticsDashboardPage {
+  authRequired: true,
+  component: import AnalyticsDashboardPage from "@src/admin/dashboards/analytics/AnalyticsDashboardPage"
+}
+
+route AdminUsersRoute { path: "/admin/users", to: AdminUsersPage }
+page AdminUsersPage {
+  authRequired: true,
+  component: import AdminUsers from "@src/admin/dashboards/users/UsersDashboardPage"
+}
+
+route AdminParishesRoute { path: "/admin/parishes", to: AdminParishesPage }
+page AdminParishesPage {
+  authRequired: true,
+  component: import AdminParishes from "@src/admin/dashboards/parishes/ParishesPage"
+}
+
+//#region Catequese Viva App Routes
+route AppDashboardRoute { path: "/app", to: AppDashboardPage }
+page AppDashboardPage {
+  authRequired: true,
+  component: import DashboardPage from "@src/catequese/pages/DashboardPage"
+}
+route AppNewClassRoute { path: "/app/classes/new", to: AppNewClassPage }
+page AppNewClassPage {
+  authRequired: true,
+  component: import CreateClassPage from "@src/catequese/pages/CreateClassPage"
+}
+
+
+//#region Catequese Viva - Class Detail
+route AppClassDetailRoute { path: "/app/classes/:id", to: AppClassDetailPage }
+page AppClassDetailPage {
+  authRequired: true,
+  component: import ClassDetailPage from "@src/catequese/pages/ClassDetailPage"
+}
+//#endregion
+
+route AppClassesRoute { path: "/app/classes", to: AppClassesPage }
+page AppClassesPage {
+  authRequired: true,
+  component: import ClassesPage from "@src/catequese/pages/ClassesPage"
+}
+route AppNewCatechumenRoute { path: "/app/catechumens/new", to: AppNewCatechumenPage }
+page AppNewCatechumenPage {
+  authRequired: true,
+  component: import CreateCatechumenPage from "@src/catequese/pages/CreateCatechumenPage"
+}
+
+route AppCatechumensRoute { path: "/app/catechumens", to: AppCatechumensPage }
+page AppCatechumensPage {
+  authRequired: true,
+  component: import CatechumensPage from "@src/catequese/pages/CatechumensPage"
+}
+route AppNewHouseholdRoute { path: "/app/families/new", to: AppNewHouseholdPage }
+page AppNewHouseholdPage {
+  authRequired: true,
+  component: import CreateHouseholdPage from "@src/catequese/pages/CreateHouseholdPage"
+}
+
+route AppFamiliesRoute { path: "/app/families", to: AppFamiliesPage }
+page AppFamiliesPage {
+  authRequired: true,
+  component: import FamiliesPage from "@src/catequese/pages/FamiliesPage"
+}
+
+
+
+
+route AppNewContentRoute { path: "/app/content-library/new", to: AppNewContentPage }
+page AppNewContentPage {
+  authRequired: true,
+  component: import CreateContentPage from "@src/catequese/pages/CreateContentPage"
+}
+
+route AppContentDetailRoute { path: "/app/content-library/:id", to: AppContentDetailPage }
+page AppContentDetailPage {
+  authRequired: true,
+  component: import ContentDetailPage from "@src/catequese/pages/ContentDetailPage"
+}
+
+
+route AppContentLibraryRoute { path: "/app/content-library", to: AppContentLibraryPage }
+page AppContentLibraryPage {
+  authRequired: true,
+  component: import ContentLibraryPage from "@src/catequese/pages/ContentLibraryPage"
+}
+
+route AppAIPlannerRoute { path: "/app/ai-planner", to: AppAIPlannerPage }
+page AppAIPlannerPage {
+  authRequired: true,
+  component: import AIPlannerPage from "@src/catequese/pages/AIPlannerPage"
+}
+
+route AppActivitiesRoute { path: "/app/activities", to: AppActivitiesPage }
+page AppActivitiesPage {
+  authRequired: true,
+  component: import ActivitiesPage from "@src/catequese/pages/ActivitiesPage"
+}
+
+route AppCalendarRoute { path: "/app/calendar", to: AppCalendarPage }
+page AppCalendarPage {
+  authRequired: true,
+  component: import CalendarPage from "@src/catequese/pages/CalendarPage"
+}
+
+route AppSacramentalJourneysRoute { path: "/app/sacramental-journeys", to: AppSacramentalJourneysPage }
+page AppSacramentalJourneysPage {
+  authRequired: true,
+  component: import SacramentsPage from "@src/catequese/pages/SacramentsPage"
+}
+
+route AppMessagesRoute { path: "/app/messages", to: AppMessagesPage }
+page AppMessagesPage {
+  authRequired: true,
+  component: import MessagesPage from "@src/catequese/pages/MessagesPage"
+}
+
+route AppReportsRoute { path: "/app/reports", to: AppReportsPage }
+page AppReportsPage {
+  authRequired: true,
+  component: import ReportsPage from "@src/catequese/pages/ReportsPage"
+}
+
+route AppSettingsRoute { path: "/app/settings", to: AppSettingsPage }
+page AppSettingsPage {
+  authRequired: true,
+  component: import SettingsPage from "@src/catequese/pages/SettingsPage"
+}
+
+route AppBillingRoute { path: "/app/billing", to: AppBillingPage }
+page AppBillingPage {
+  authRequired: true,
+  component: import BillingPage from "@src/catequese/pages/BillingPage"
+}
+
+route AppOnboardingRoute { path: "/app/onboarding", to: AppOnboardingPage }
+page AppOnboardingPage {
+  authRequired: true,
+  component: import OnboardingPage from "@src/catequese/pages/OnboardingPage"
+}
+//#endregion
+
+
+//#region Catequese Viva - User Context & Parishes
+query getCurrentUserContext {
+  fn: import { getCurrentUserContext } from "@src/server/operations/userContext",
+  entities: [User, Membership, Parish, Community]
+}
+
+query listParishes {
+  fn: import { listParishes } from "@src/server/operations/parishOperations",
+  entities: [Parish, Membership]
+}
+
+query searchParishesForOnboarding {
+  fn: import { searchParishesForOnboarding } from "@src/server/operations/parishOperations",
+  entities: [Parish, Diocese]
+}
+
+action createParish {
+  fn: import { createParish } from "@src/server/operations/parishOperations",
+  entities: [Parish, Membership, TenantBilling]
+}
+
+action completeCoordinatorOnboarding {
+  fn: import { completeCoordinatorOnboarding } from "@src/server/operations/onboardingOperations",
+  entities: [Parish, Membership, TenantBilling, CatecheticalYear, CatechesisClass]
+}
+
+action updateParish {
+  fn: import { updateParish } from "@src/server/operations/parishOperations",
+  entities: [Parish, Membership]
+}
+
+action executeParishMigration {
+  fn: import { executeParishMigration } from "@src/server/operations/migrationOperations",
+  entities: [Parish, Membership, CatechesisClass, Household, CatechumenProfile, ContentItem, SacramentalJourneyTemplate, MessageCampaign, LiturgicalEvent, Conversation, MessageTemplate, CatecheticalYear, Community, AuditLog]
+}
+
+
+query getParishById {
+  fn: import { getParishById } from "@src/server/operations/parishOperations",
+  entities: [Parish, Membership, Diocese, TenantBilling]
+}
+
+action getOrCreateParishByOsmId {
+  fn: import { getOrCreateParishByOsmId } from "@src/server/operations/parishOperations",
+  entities: [Parish]
+}
+// ── Diocese Management ───────────────────────────────────────────────────
+
+query searchDiocesesForOnboarding {
+  fn: import { searchDiocesesForOnboarding } from "@src/server/operations/dioceseOperations",
+  entities: [Diocese]
+}
+
+query listDioceses {
+  fn: import { listDioceses } from "@src/server/operations/dioceseOperations",
+  entities: [Diocese, Membership, Parish]
+}
+
+action createDiocese {
+  fn: import { createDiocese } from "@src/server/operations/dioceseOperations",
+  entities: [Diocese, AuditLog]
+}
+
+action updateDiocese {
+  fn: import { updateDiocese } from "@src/server/operations/dioceseOperations",
+  entities: [Diocese, AuditLog]
+}
+
+// ── Membership Management ───────────────────────────────────────────────
+
+query listParishMembers {
+  fn: import { listParishMembers } from "@src/server/operations/memberOperations",
+  entities: [Membership, User, Community]
+}
+
+action inviteUserToParish {
+  fn: import { inviteUserToParish } from "@src/server/operations/memberOperations",
+  entities: [Membership, User, Parish, Community, AuditLog]
+}
+
+action acceptInvitation {
+  fn: import { acceptInvitation } from "@src/server/operations/memberOperations",
+  entities: [Membership, AuditLog]
+}
+
+action removeMembership {
+  fn: import { removeMembership } from "@src/server/operations/memberOperations",
+  entities: [Membership, AuditLog]
+}
+
+action updateMembershipRole {
+  fn: import { updateMembershipRole } from "@src/server/operations/memberOperations",
+  entities: [Membership]
+}
+
+action joinParish {
+  fn: import { joinParish } from "@src/server/operations/joinParish",
+  entities: [Membership, Parish]
+}
+//#endregion
+
+
+//#region Catequese Viva - Classes
+query listClasses {
+  fn: import { listClasses } from "@src/server/operations/classOperations",
+  entities: [CatechesisClass, Membership, Parish, ClassCatechist]
+}
+
+query getClassDetails {
+  fn: import { getClassDetails } from "@src/server/operations/classOperations",
+  entities: [CatechesisClass, Membership, ClassCatechist, GuardianProfile, ClassEnrollment, CatechumenProfile]
+}
+
+query listParishCatechists {
+  fn: import { listParishCatechists } from "@src/server/operations/classOperations",
+  entities: [Membership]
+}
+
+action createClass {
+  fn: import { createClass } from "@src/server/operations/classOperations",
+  entities: [CatechesisClass, Membership, ClassCatechist, TenantBilling]
+}
+
+action updateClass {
+  fn: import { updateClass } from "@src/server/operations/classOperations",
+  entities: [CatechesisClass, Membership, ClassCatechist]
+}
+
+action assignLeadCatechist {
+  fn: import { assignLeadCatechist } from "@src/server/operations/classOperations",
+  entities: [ClassCatechist, CatechesisClass]
+}
+
+action addAssistantCatechist {
+  fn: import { addAssistantCatechist } from "@src/server/operations/classOperations",
+  entities: [ClassCatechist]
+}
+
+action removeCatechistFromClass {
+  fn: import { removeCatechistFromClass } from "@src/server/operations/classOperations",
+  entities: [ClassCatechist, Membership, CatechesisClass]
+}
+
+action enrollCatechumen {
+  fn: import { enrollCatechumen } from "@src/server/operations/classOperations",
+  entities: [ClassEnrollment, CatechesisClass, Membership, ClassCatechist, TenantBilling]
+}
+
+action archiveClass {
+  fn: import { archiveClass } from "@src/server/operations/classOperations",
+  entities: [CatechesisClass, Membership, Meeting]
+}
+
+action cancelEnrollment {
+  fn: import { cancelEnrollment } from "@src/server/operations/classOperations",
+  entities: [ClassEnrollment, Membership]
+}
+//#endregion
+
+//#region Catequese Viva - Catechumens
+query listCatechumens {
+  fn: import { listCatechumens } from "@src/server/operations/catechumenOperations",
+  entities: [CatechumenProfile, Membership, ClassEnrollment, CatechesisClass, ClassCatechist, Household, GuardianProfile]
+}
+
+query getCatechumenProfile {
+  fn: import { getCatechumenProfile } from "@src/server/operations/catechumenOperations",
+  entities: [CatechumenProfile, Membership, GuardianProfile, ClassEnrollment, CatechesisClass, Household, Document]
+}
+
+action createCatechumen {
+  fn: import { createCatechumen } from "@src/server/operations/catechumenOperations",
+  entities: [CatechumenProfile, Membership]
+}
+
+action updateCatechumen {
+  fn: import { updateCatechumen } from "@src/server/operations/catechumenOperations",
+  entities: [CatechumenProfile, Membership]
+}
+//#endregion
+
+//#region Catequese Viva - Families
+query listHouseholds {
+  fn: import { listHouseholds } from "@src/server/operations/familyOperations",
+  entities: [Household, Membership, GuardianProfile]
+}
+
+action createHousehold {
+  fn: import { createHousehold } from "@src/server/operations/familyOperations",
+  entities: [Household, Membership]
+}
+
+action addGuardianToHousehold {
+  fn: import { addGuardianToHousehold } from "@src/server/operations/familyOperations",
+  entities: [GuardianProfile, Household, Membership]
+}
+
+action removeGuardianFromHousehold {
+  fn: import { removeGuardianFromHousehold } from "@src/server/operations/familyOperations",
+  entities: [GuardianProfile, Household, Membership]
+}
+
+action updateGuardianProfile {
+  fn: import { updateGuardianProfile } from "@src/server/operations/familyOperations",
+  entities: [GuardianProfile, Household, Membership]
+}
+
+action updateHousehold {
+  fn: import { updateHousehold } from "@src/server/operations/familyOperations",
+  entities: [Household, Membership]
+}
+//#endregion
+
+
+//#region Catequese Viva - Meetings & Attendance
+route AppAttendanceRoute { path: "/app/classes/:id/attendance", to: AppAttendancePage }
+page AppAttendancePage {
+  authRequired: true,
+  component: import AttendancePage from "@src/catequese/pages/AttendancePage"
+}
+
+query listMeetings {
+  fn: import { listMeetings } from "@src/server/operations/meetingOperations",
+  entities: [Meeting, CatechesisClass, Membership]
+}
+
+action createMeeting {
+  fn: import { createMeeting } from "@src/server/operations/meetingOperations",
+  entities: [Meeting, Membership, CatechesisClass]
+}
+
+action updateMeeting {
+  fn: import { updateMeeting } from "@src/server/operations/meetingOperations",
+  entities: [Meeting, CatechesisClass, Membership, ContentItem]
+}
+
+query getMeetingAttendance {
+  fn: import { getMeetingAttendance } from "@src/server/operations/meetingOperations",
+  entities: [AttendanceRecord, CatechumenProfile, Meeting, CatechesisClass, Membership]
+}
+
+action saveAttendance {
+  fn: import { saveAttendance } from "@src/server/operations/meetingOperations",
+  entities: [AttendanceRecord, Membership, Meeting, CatechesisClass]
+}
+
+action justifyAbsence {
+  fn: import { justifyAbsence } from "@src/server/operations/meetingOperations",
+  entities: [AttendanceRecord, Membership, GuardianProfile, CatechumenProfile]
+}
+//#endregion
+
+
+//#region Catequese Viva - Create Forms
+//#endregion
+
+//#region Catequese Viva - Dashboard Operations
+query getDashboardStats {
+  fn: import { getDashboardStats } from "@src/server/operations/dashboardOperations",
+  entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, AttendanceRecord, Meeting, ContentItem, CatechumenProfile, ClassCatechist]
+}
+//#endregion
+
+
+//#region Catequese Viva - Create Catechumen & Household
+
+//#endregion
+
+
+//#region Catequese Viva - Content Library
+query listContentItems {
+  fn: import { listContentItems } from "@src/server/operations/contentOperations",
+  entities: [ContentItem, Membership]
+}
+
+query getContentItem {
+  fn: import { getContentItem } from "@src/server/operations/contentOperations",
+  entities: [ContentItem, ContentBibleReference, ContentCatechismReference, ContentDirectoryReference, BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, Membership]
+}
+
+action createContentItem {
+  fn: import { createContentItem } from "@src/server/operations/contentOperations",
+  entities: [ContentItem, Membership]
+}
+
+action updateContentStatus {
+  fn: import { updateContentStatus } from "@src/server/operations/contentOperations",
+  entities: [ContentItem, Membership]
+}
+action updateContentItem {
+  fn: import { updateContentItem } from "@src/server/operations/contentOperations",
+  entities: [ContentItem]
+}
+action addBibleRef {
+  fn: import { addBibleRef } from "@src/server/operations/contentOperations",
+  entities: [ContentBibleReference, ContentItem, BibleVerse]
+}
+
+action removeBibleRef {
+  fn: import { removeBibleRef } from "@src/server/operations/contentOperations",
+  entities: [ContentBibleReference]
+}
+
+action addCatechismRef {
+  fn: import { addCatechismRef } from "@src/server/operations/contentOperations",
+  entities: [ContentCatechismReference, ContentItem, CatechismEntry]
+}
+
+
+// ── Directory for Catechesis ────────────────────────────────────────────────
+
+query searchDirectory {
+  fn: import { searchDirectory } from "@src/server/operations/directoryOperations",
+  entities: [DirectoryEntry]
+}
+
+query listDirectoryByPart {
+  fn: import { listDirectoryByPart } from "@src/server/operations/directoryOperations",
+  entities: [DirectoryEntry]
+}
+
+query getDirectoryEntry {
+  fn: import { getDirectoryEntry } from "@src/server/operations/directoryOperations",
+  entities: [DirectoryEntry]
+}
+
+action addDirectoryRef {
+  fn: import { addDirectoryRef } from "@src/server/operations/directoryOperations",
+  entities: [ContentDirectoryReference, ContentItem, DirectoryEntry]
+}
+
+action removeDirectoryRef {
+  fn: import { removeDirectoryRef } from "@src/server/operations/directoryOperations",
+  entities: [ContentDirectoryReference]
+}
+
+action removeCatechismRef {
+  fn: import { removeCatechismRef } from "@src/server/operations/contentOperations",
+  entities: [ContentCatechismReference]
+}
+
+//#endregion
+
+
+//#region Catequese Viva - Sacraments
+query listSacramentalJourneys {
+  fn: import { listSacramentalJourneys } from "@src/server/operations/sacramentOperations",
+  entities: [SacramentalJourney, Membership, ClassCatechist, ClassEnrollment, CatechumenProfile, GuardianProfile, CatechesisClass]
+}
+
+action createSacramentalJourney {
+  fn: import { createSacramentalJourney } from "@src/server/operations/sacramentOperations",
+  entities: [SacramentalJourney, SacramentalMilestoneTemplate, SacramentalMilestone, Membership, CatechumenProfile, ClassEnrollment, CatechesisClass, Household]
+}
+
+action updateMilestoneStatus {
+  fn: import { updateMilestoneStatus } from "@src/server/operations/sacramentOperations",
+  entities: [SacramentalMilestone, Membership]
+}
+
+query listJourneyTemplates {
+  fn: import { listJourneyTemplates } from "@src/server/operations/sacramentOperations",
+  entities: [SacramentalJourneyTemplate, Membership]
+}
+//#endregion
+
+
+//#region Catequese Viva - Reports
+query getReportsOverview {
+  fn: import { getReportsOverview } from "@src/server/operations/reportOperations",
+  entities: [CatechesisClass, Meeting, AttendanceRecord, Membership]
+}
+//#endregion
+
+
+//#region Catequese Viva - Calendar
+query listLiturgicalEvents {
+  fn: import { listLiturgicalEvents } from "@src/server/operations/calendarOperations",
+  entities: [LiturgicalEvent, Membership]
+}
+
+action createLiturgicalEvent {
+  fn: import { createLiturgicalEvent } from "@src/server/operations/calendarOperations",
+  entities: [LiturgicalEvent, Membership]
+}
+
+action deleteLiturgicalEvent {
+  fn: import { deleteLiturgicalEvent } from "@src/server/operations/calendarOperations",
+  entities: [LiturgicalEvent, Membership]
+}
+//#endregion
+
+
+//#region Catequese Viva - Documents
+route AppDocumentsRoute { path: "/app/documents", to: AppDocumentsPage }
+page AppDocumentsPage {
+  authRequired: true,
+  component: import DocumentsPage from "@src/catequese/pages/DocumentsPage"
+}
+
+query listDocuments {
+  fn: import { listDocuments } from "@src/server/operations/documentOperations",
+  entities: [Document, Membership, CatechesisClass, ClassEnrollment]
+}
+
+action uploadDocument {
+  fn: import { uploadDocument } from "@src/server/operations/documentOperations",
+  entities: [Document, Membership, CatechesisClass, ClassEnrollment]
+}
+
+action verifyDocument {
+  fn: import { verifyDocument } from "@src/server/operations/documentOperations",
+  entities: [Document, Membership]
+}
+
+action deleteDocument {
+  fn: import { deleteDocument } from "@src/server/operations/documentOperations",
+  entities: [Document, AuditLog]
+}
+
+api serveDocument {
+  fn: import { serveDocument } from "@src/server/api/documents",
+  middlewareConfigFn: import { serveDocumentMiddleware } from "@src/server/api/documents",
+  httpRoute: (GET, "/api/documents/:id"),
+  entities: [Document, CatechumenProfile, Membership]
+}
+
+api publicUploadDocument {
+  fn: import { publicUploadDocument } from "@src/server/api/publicUpload",
+  middlewareConfigFn: import { publicUploadMiddleware } from "@src/server/api/publicUpload",
+  httpRoute: (POST, "/api/upload-document"),
+  entities: [Document, CatechumenProfile]
+}
+
+action generateCatechumenUploadToken {
+  fn: import { generateCatechumenUploadToken } from "@src/server/operations/uploadTokenOperations",
+  entities: [CatechumenProfile, Membership]
+}
+
+query getCatechumenByUploadToken {
+  fn: import { getCatechumenByUploadToken } from "@src/server/operations/uploadTokenOperations",
+  entities: [CatechumenProfile, Document]
+}
+
+action uploadDocumentWithToken {
+  fn: import { uploadDocumentWithToken } from "@src/server/operations/uploadTokenOperations",
+  entities: [Document, CatechumenProfile]
+}
+//#endregion
+
+
+//#region Catequese Viva - CSV Import
+route AppImportCatechumensRoute { path: "/app/catechumens/import", to: AppImportCatechumensPage }
+page AppImportCatechumensPage {
+  authRequired: true,
+  component: import ImportCatechumensPage from "@src/catequese/pages/ImportCatechumensPage"
+}
+
+action importCatechumensCSV {
+  fn: import { importCatechumensCSV } from "@src/server/operations/importOperations",
+  entities: [CatechumenProfile]
+}
+//#endregion
+
+
+route AppParishDetailRoute { path: "/app/parishes/:id", to: AppParishDetailPage }
+page AppParishDetailPage { authRequired: true, component: import ParishDetailPage from "@src/catequese/pages/ParishDetailPage" }
+
+//#region Catequese Viva - Missing Routes
+route AppParishesRoute { path: "/app/parishes", to: AppParishesPage }
+page AppParishesPage { authRequired: true, component: import ParishesPage from "@src/catequese/pages/ParishesPage" }
+
+route AppParishMembersRoute { path: "/app/parishes/:id/members", to: AppParishMembersPage }
+page AppParishMembersPage { authRequired: true, component: import ParishMembersPage from "@src/catequese/pages/ParishMembersPage" }
+
+route AppCommunitiesRoute { path: "/app/communities", to: AppCommunitiesPage }
+page AppCommunitiesPage { authRequired: true, component: import CommunitiesPage from "@src/catequese/pages/CommunitiesPage" }
+route AppCommunityDetailRoute { path: "/app/communities/:id", to: AppCommunityDetailPage }
+page AppCommunityDetailPage { authRequired: true, component: import CommunityDetailPage from "@src/catequese/pages/CommunityDetailPage" }
+route AppBibleRoute { path: "/app/bible", to: AppBiblePage }
+page AppBiblePage { authRequired: true, component: import BiblePage from "@src/catequese/pages/BiblePage" }
+
+route AppDirectoryRoute { path: "/app/directory", to: AppDirectoryPage }
+page AppDirectoryPage { authRequired: true, component: import DirectoryPage from "@src/catequese/pages/DirectoryPage" }
+
+route AppCatechismRoute { path: "/app/catechism", to: AppCatechismPage }
+page AppCatechismPage { authRequired: true, component: import CatechismPage from "@src/catequese/pages/CatechismPage" }
+
+
+route AppCatecheticalYearsRoute { path: "/app/catechetical-years", to: AppCatecheticalYearsPage }
+page AppCatecheticalYearsPage { authRequired: true, component: import CatecheticalYearsPage from "@src/catequese/pages/CatecheticalYearsPage" }
+
+route AppCatechumenDetailRoute { path: "/app/catechumens/:id", to: AppCatechumenDetailPage }
+page AppCatechumenDetailPage { authRequired: true, component: import CatechumenDetailPage from "@src/catequese/pages/CatechumenDetailPage" }
+
+route AppFamilyDetailRoute { path: "/app/families/:id", to: AppFamilyDetailPage }
+page AppFamilyDetailPage { authRequired: true, component: import FamilyDetailPage from "@src/catequese/pages/FamilyDetailPage" }
+//#endregion
+
+
+//#region Catequese Viva - Activities & Guardian
+query listActivitiesByContent {
+  fn: import { listActivitiesByContent } from "@src/server/operations/activityOperations",
+  entities: [Activity]
+}
+
+action createActivity {
+  fn: import { createActivity } from "@src/server/operations/activityOperations",
+  entities: [Activity]
+}
+
+action updateActivity {
+  fn: import { updateActivity } from "@src/server/operations/activityOperations",
+  entities: [Activity]
+}
+
+action deleteActivity {
+  fn: import { deleteActivity } from "@src/server/operations/activityOperations",
+  entities: [Activity, ActivitySubmission]
+}
+
+action submitActivity {
+  fn: import { submitActivity } from "@src/server/operations/activityOperations",
+  entities: [ActivitySubmission]
+}
+
+query getGuardianDashboard {
+  fn: import { getGuardianDashboard } from "@src/server/operations/guardianOperations",
+  entities: [GuardianProfile, CatechumenProfile, AttendanceRecord, Meeting, Document]
+}
+//#endregion
+
+
+//#region Landing Pages
+route AboutPublicRoute { path: "/about", to: AboutPublicPage }
+page AboutPublicPage { component: import AboutPage from "@src/catequese/pages/AboutPage" }
+
+route PrivacyPublicRoute { path: "/privacy", to: PrivacyPublicPage }
+page PrivacyPublicPage { component: import PrivacyPage from "@src/catequese/pages/PrivacyPage" }
+
+route TermsPublicRoute { path: "/terms", to: TermsPublicPage }
+page TermsPublicPage { component: import TermsPage from "@src/catequese/pages/TermsPage" }
+//#endregion
+
+
+//#region Catequese Viva - Consents
+route AppConsentRoute { path: "/app/consents", to: AppConsentPage }
+page AppConsentPage { authRequired: true, component: import ConsentPage from "@src/catequese/pages/ConsentPage" }
+
+query listConsents {
+  fn: import { listConsents } from "@src/server/operations/consentOperations",
+  entities: [ConsentRecord]
+}
+
+action saveConsent {
+  fn: import { saveConsent } from "@src/server/operations/consentOperations",
+  entities: [ConsentRecord]
+}
+//#endregion
+
+
+//#region Correções e novas rotas
+route ContactPublicRoute { path: "/contact", to: ContactPublicPage }
+page ContactPublicPage { component: import ContactPage from "@src/catequese/pages/ContactPage" }
+
+route AppMeetingsRoute { path: "/app/classes/:id/meetings", to: AppMeetingsPage }
+page AppMeetingsPage { authRequired: true, component: import MeetingsPage from "@src/catequese/pages/MeetingsPage" }
+
+query listCommunities {
+  fn: import { listCommunities } from "@src/server/operations/communityOperations",
+  entities: [Community, Membership, Parish]
+}
+
+action createCommunity {
+  fn: import { createCommunity } from "@src/server/operations/communityOperations",
+  entities: [Community, Membership, Parish]
+}
+
+action updateCommunity {
+  fn: import { updateCommunity } from "@src/server/operations/communityOperations",
+  entities: [Community, Membership]
+}
+//#endregion
+
+route PricingPageRoute { path: "/pricing", to: PricingPage }
+page PricingPage {
+  component: import PricingPage from "@src/catequese/pages/PricingPage"
+}
+
+
+//#region Resend Email Sender
+action sendMessageEmail {
+  fn: import { sendMessageEmail } from "@src/server/operations/sendMessageOperation",
+  entities: [User]
+}
+//#endregion
+
+
+//#region Communication Hub - Conversations
+query listConversations {
+  fn: import { listConversations } from "@src/server/operations/conversationOperations",
+  entities: [Conversation, ConversationParticipant, Message, User]
+}
+
+query getConversation {
+  fn: import { getConversation } from "@src/server/operations/conversationOperations",
+  entities: [Conversation, ConversationParticipant, Message, MessageReaction, User]
+}
+
+action createConversation {
+  fn: import { createConversation } from "@src/server/operations/conversationOperations",
+  entities: [Conversation, ConversationParticipant, Message, Membership, User]
+}
+
+action sendMessage {
+  fn: import { sendMessage } from "@src/server/operations/conversationOperations",
+  entities: [Conversation, ConversationParticipant, Message, Notification, User]
+}
+
+action markConversationRead {
+  fn: import { markConversationRead } from "@src/server/operations/conversationOperations",
+  entities: [ConversationParticipant, Notification]
+}
+
+action addConversationParticipant {
+  fn: import { addConversationParticipant } from "@src/server/operations/conversationOperations",
+  entities: [ConversationParticipant, Message, User]
+}
+
+action removeConversationParticipant {
+  fn: import { removeConversationParticipant } from "@src/server/operations/conversationOperations",
+  entities: [ConversationParticipant]
+}
+
+action muteConversation {
+  fn: import { muteConversation } from "@src/server/operations/conversationOperations",
+  entities: [ConversationParticipant]
+}
+
+action getOrCreateClassChat {
+  fn: import { getOrCreateClassChat } from "@src/server/operations/conversationOperations",
+  entities: [Conversation, CatechesisClass, Membership, ClassEnrollment, Message]
+}
+
+query getContactsForConversation {
+  fn: import { getContactsForConversation } from "@src/server/operations/conversationOperations",
+  entities: [User, Membership]
+}
+//#endregion
+
+
+//#region Communication Hub - Notifications
+query listNotifications {
+  fn: import { listNotifications } from "@src/server/operations/notificationOperations",
+  entities: [Notification]
+}
+
+query getUnreadNotificationCount {
+  fn: import { getUnreadNotificationCount } from "@src/server/operations/notificationOperations",
+  entities: [Notification]
+}
+
+action markNotificationRead {
+  fn: import { markNotificationRead } from "@src/server/operations/notificationOperations",
+  entities: [Notification]
+}
+
+action markAllNotificationsRead {
+  fn: import { markAllNotificationsRead } from "@src/server/operations/notificationOperations",
+  entities: [Notification]
+}
+//#endregion
+
+
+//#region Communication Hub - Templates
+query listMessageTemplates {
+  fn: import { listMessageTemplates } from "@src/server/operations/templateOperations",
+  entities: [MessageTemplate, Membership]
+}
+
+action createMessageTemplate {
+  fn: import { createMessageTemplate } from "@src/server/operations/templateOperations",
+  entities: [MessageTemplate, Membership]
+}
+
+action updateMessageTemplate {
+  fn: import { updateMessageTemplate } from "@src/server/operations/templateOperations",
+  entities: [MessageTemplate, Membership]
+}
+
+action deleteMessageTemplate {
+  fn: import { deleteMessageTemplate } from "@src/server/operations/templateOperations",
+  entities: [MessageTemplate]
+}
+//#endregion
+
+
+//#region Missing blueprint operations
+query listCatecheticalYears {
+  fn: import { listCatecheticalYears } from "@src/server/operations/missingOperations",
+  entities: [CatecheticalYear, Membership]
+}
+
+query listMessageCampaigns {
+  fn: import { listMessageCampaigns } from "@src/server/operations/missingOperations",
+  entities: [MessageCampaign, Membership]
+}
+
+action createMessageCampaign {
+  fn: import { createMessageCampaign } from "@src/server/operations/missingOperations",
+  entities: [MessageCampaign, Membership]
+}
+
+query exportReport {
+  fn: import { exportReport } from "@src/server/operations/missingOperations",
+  entities: [CatechesisClass, Membership]
+}
+
+query getSacramentalJourney {
+  fn: import { getSacramentalJourney } from "@src/server/operations/missingOperations",
+  entities: [SacramentalJourney, Membership, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist]
+}
+
+
+// ── Bible & Catechism ─────────────────────────────────────────────────────
+
+query listBibleBooks {
+  fn: import { listBibleBooks } from "@src/server/operations/bibleOperations",
+  entities: [BibleBook]
+}
+
+query getBibleBook {
+  fn: import { getBibleBook } from "@src/server/operations/bibleOperations",
+  entities: [BibleBook, BibleChapter]
+}
+
+query getBibleChapter {
+  fn: import { getBibleChapter } from "@src/server/operations/bibleOperations",
+  entities: [BibleChapter, BibleBook, BibleVerse]
+}
+
+query searchBible {
+  fn: import { searchBible } from "@src/server/operations/bibleOperations",
+  entities: [BibleVerse, BibleChapter, BibleBook]
+}
+
+query searchCatechism {
+  fn: import { searchCatechism } from "@src/server/operations/bibleOperations",
+  entities: [CatechismEntry]
+}
+
+// ── AI Operations ─────────────────────────────────────────────────────────
+
+action generateMeetingWithAi {
+  fn: import { generateMeetingWithAi } from "@src/server/operations/aiOperations",
+  entities: [ContentItem, UserAiCredits, User]
+}
+
+action generateAnnualPlanning {
+  fn: import { generateAnnualPlanning } from "@src/server/operations/aiOperations",
+  entities: [Meeting, CatechesisClass, UserAiCredits, User]
+}
+
+action chatWithAi {
+  fn: import { chatWithAi } from "@src/server/operations/aiOperations",
+  entities: [Message, Conversation, UserAiCredits, User]
+}
+
+action generateActivityForMeeting {
+  fn: import { generateActivityForMeeting } from "@src/server/operations/aiOperations",
+  entities: [Activity, ContentItem, UserAiCredits, User]
+}
+
+action generateWhatsAppMessage {
+  fn: import { generateWhatsAppMessage } from "@src/server/operations/aiOperations",
+  entities: [ContentItem, UserAiCredits, User]
+}
+
+action enhanceContentWithAi {
+  fn: import { enhanceContentWithAi } from "@src/server/operations/aiOperations",
+  entities: [UserAiCredits, User]
+}
+
+query getAiCreditsStatus {
+  fn: import { getAiCreditsStatus } from "@src/server/operations/aiOperations",
+  entities: [UserAiCredits, User]
+}
+
+query globalSearch {
+  fn: import { globalSearch } from "@src/server/operations/searchOperations",
+  entities: [CatechumenProfile, CatechesisClass, ContentItem, BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, Household, SacramentalJourney, Document, Parish, Community, Membership]
+}
+
+query listCatechismByCategory {
+  fn: import { listCatechismByCategory } from "@src/server/operations/bibleOperations",
+  entities: [CatechismEntry]
+}
+
+query getCatechismEntry {
+  fn: import { getCatechismEntry } from "@src/server/operations/bibleOperations",
+  entities: [CatechismEntry]
+}
+
+action updateLocalePreference {
+  fn: import { updateLocalePreference } from "@src/server/operations/missingOperations",
+  entities: [User]
+}
+
+// ── User Profile Operations ──────────────────────────────────────────────
+
+action updateUserProfile {
+  fn: import { updateUserProfile } from "@src/server/operations/userOperations",
+  entities: [User, AuditLog]
+}
+
+action requestDataExport {
+  fn: import { requestDataExport } from "@src/server/operations/userOperations",
+  entities: [User, Membership, GuardianProfile, AuditLog]
+}
+
+action changePassword {
+  fn: import { changePassword } from "@src/server/operations/userOperations",
+  entities: [User]
+}
+
+query searchUsers {
+  fn: import { searchUsers } from "@src/server/operations/userOperations",
+  entities: [User]
+}
+
+action createCatecheticalYear {
+  fn: import { createCatecheticalYear } from "@src/server/operations/missingOperations",
+  entities: [CatecheticalYear, Membership]
+}
+//#endregion
+
+
+query getPaginatedUsers {
+  fn: import { getPaginatedUsers } from "@src/user/operations",
+  entities: [User]
+}
+
+action updateIsUserAdminById {
+  fn: import { updateIsUserAdminById } from "@src/user/operations",
+  entities: [User]
+}
+
+route AccountRoute { path: "/account", to: AccountPage }
+page AccountPage {
+  authRequired: true,
+  component: import Account from "@src/user/AccountPage"
+}
+
+
+route AppEditCatechumenRoute { path: "/app/catechumens/:id/edit", to: AppEditCatechumenPage }
+page AppEditCatechumenPage { authRequired: true, component: import EditCatechumenPage from "@src/catequese/pages/EditCatechumenPage" }
+
+
+route AppEditContentRoute { path: "/app/content-library/:id/edit", to: AppEditContentPage }
+page AppEditContentPage { authRequired: true, component: import EditContentPage from "@src/catequese/pages/EditContentPage" }
+
+route AppPrintContentRoute { path: "/app/content-library/:id/print", to: AppPrintContentPage }
+page AppPrintContentPage { authRequired: true, component: import ContentPrintPage from "@src/catequese/pages/ContentPrintPage" }
+
+route NotFoundRoute { path: "*", to: NotFoundPage }
+page NotFoundPage {
+  component: import { NotFoundPage } from "@src/client/components/NotFoundPage"
+}
+//#endregion
+
+//#region Contact Form Messages
+// TODO:
+// add functionality to allow users to send messages to admin
+// and make them accessible via the admin dashboard
+route AdminDiocesesRoute { path: "/admin/dioceses", to: AdminDiocesesPage }
+page AdminDiocesesPage { authRequired: true, component: import AdminDiocesesPage from "@src/catequese/pages/AdminDiocesesPage" }
+//#endregion
+
+//#region Public Upload Docs
+route PublicUploadDocsRoute { path: "/upload-docs/:token", to: PublicUploadDocsPage }
+page PublicUploadDocsPage {
+  authRequired: false,
+  component: import PublicUploadDocsPage from "@src/catequese/pages/PublicUploadDocsPage"
+}
+//#endregion

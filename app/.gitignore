@@ -1,0 +1,6 @@
+node_modules/
+.wasp/
+.env
+.env.server
+.env.local
+.env.*.local

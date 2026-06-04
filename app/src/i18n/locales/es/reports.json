@@ -1,0 +1,13 @@
+{
+  "title": "Informes",
+  "attendance_report": "Asistencia por grupo/etapa/período",
+  "dropout_risk": "Catequizandos con riesgo de abandono",
+  "pending_docs": "Documentos pendientes",
+  "sacramental_progress": "Progreso sacramental",
+  "catechist_workload": "Carga de catequistas",
+  "top_content": "Contenidos más usados",
+  "messages_sent": "Mensajes enviados",
+  "pending_consents": "Consentimientos pendientes",
+  "export_csv": "Exportar CSV",
+  "export_pdf": "Exportar PDF"
+}

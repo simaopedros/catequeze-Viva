@@ -1,0 +1,20 @@
+{
+  "title": "Painel da Catequese",
+  "subtitle": "Acompanhe turmas, presença e pendências pastorais.",
+  "active_catechumens": "Catequizandos ativos",
+  "active_classes": "Turmas ativas",
+  "avg_attendance": "Presença média",
+  "pending_sacraments": "Pendências sacramentais",
+  "pending_documents": "Documentos pendentes",
+  "attendance_by_stage": "Presença por etapa",
+  "class_overview": "Visão geral das turmas",
+  "pastoral_alerts": "Alertas pastorais",
+  "weekly_schedule": "Agenda da semana",
+  "no_classes_yet": "Nenhuma turma criada ainda",
+  "no_classes_description": "Crie a primeira turma para começar a organizar catequizandos, catequistas e encontros.",
+  "create_class": "Criar turma",
+  "missing_3_consecutive": "3 faltas consecutivas",
+  "document_expired": "Documento vencido",
+  "family_no_contact": "Família sem contato",
+  "meeting_no_content": "Encontro sem conteúdo"
+}

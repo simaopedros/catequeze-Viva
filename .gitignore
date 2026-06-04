@@ -1,0 +1,39 @@
+# macOS-specific files.
+.DS_Store
+
+# Ignore all dotenv files by default to prevent accidentally committing any secrets.
+# To include specific dotenv files, use the `!` operator or adjust these rules.
+.env
+.env.*
+
+# Don't ignore example dotenv files.
+!.env.example
+!.env.*.example
+
+# General ignores
+node_modules/
+dist/
+build/
+*.log
+
+# Wasp ignores
+.wasp/
+app/.env
+app/.env.server
+app/.env.local
+app/.env.*.local
+app/test-results/
+app/contas_teste.txt
+
+# Astro / Blog ignores
+blog/.astro/
+blog/dist/
+
+# E2E test ignores
+e2e-tests/reports/
+e2e-tests/test-results/
+e2e-tests/.cache/
+e2e-tests/prisma/
+
+# SQL backup files
+*.sql

@@ -1,0 +1,20 @@
+{
+  "title": "Catechesis Dashboard",
+  "subtitle": "Track classes, attendance, and pastoral pending items.",
+  "active_catechumens": "Active catechumens",
+  "active_classes": "Active classes",
+  "avg_attendance": "Average attendance",
+  "pending_sacraments": "Pending sacraments",
+  "pending_documents": "Pending documents",
+  "attendance_by_stage": "Attendance by stage",
+  "class_overview": "Class overview",
+  "pastoral_alerts": "Pastoral alerts",
+  "weekly_schedule": "Weekly schedule",
+  "no_classes_yet": "No classes created yet",
+  "no_classes_description": "Create the first class to start organizing catechumens, catechists, and meetings.",
+  "create_class": "Create class",
+  "missing_3_consecutive": "3 consecutive absences",
+  "document_expired": "Document expired",
+  "family_no_contact": "Family without contact",
+  "meeting_no_content": "Meeting without content"
+}

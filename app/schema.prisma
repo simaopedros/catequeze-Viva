@@ -1,0 +1,1258 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  SUPER_ADMIN
+  DIOCESE_ADMIN
+  PARISH_COORDINATOR
+  COMMUNITY_COORDINATOR
+  LEAD_CATECHIST
+  ASSISTANT_CATECHIST
+  GUARDIAN
+  CATECHUMEN
+  CONTENT_REVIEWER
+  PASTORAL_VIEWER
+}
+
+enum MembershipStatus {
+  ACTIVE
+  INACTIVE
+  INVITED
+  SUSPENDED
+}
+
+enum ClassStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  CONCLUDED
+  ARCHIVED
+}
+
+enum CatechistAssignmentRole {
+  LEAD
+  ASSISTANT
+}
+
+enum EnrollmentStatus {
+  ENROLLED
+  TRANSFERRED
+  DROPPED
+  COMPLETED
+}
+
+enum MeetingStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  JUSTIFIED
+}
+
+enum ContentStatus {
+  DRAFT
+  IN_REVIEW
+  APPROVED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ActivityType {
+  QUIZ
+  OPEN_QUESTION
+  PARTICIPATION_CHECKLIST
+  GUIDED_REFLECTION
+  GROUP_DYNAMIC
+  FAMILY_ACTIVITY
+  BIBLE_READING
+  MATCHING
+  TASK_WITH_ATTACHMENT
+  RITE_CELEBRATION
+}
+
+enum MilestoneStatus {
+  PENDING
+  IN_PROGRESS
+  WAITING_APPROVAL
+  APPROVED
+  REJECTED
+  COMPLETED
+}
+
+enum MessageStatus {
+  DRAFT
+  SCHEDULED
+  SENDING
+  SENT
+  FAILED
+}
+
+enum ConversationType {
+  DIRECT
+  GROUP
+  CLASS_CHAT
+  ANNOUNCEMENT
+}
+
+enum ParticipantRole {
+  OWNER
+  ADMIN
+  MEMBER
+  READONLY
+}
+
+enum MessageContentType {
+  TEXT
+  HTML
+  IMAGE
+  FILE
+  SYSTEM
+}
+
+enum NotificationType {
+  MESSAGE
+  CAMPAIGN
+  ATTENDANCE
+  DOCUMENT
+  SACRAMENT
+  SYSTEM
+}
+
+enum ConsentType {
+  IMAGE_USAGE
+  COMMUNICATION
+  DOCUMENTS
+  SENSITIVE_DATA
+}
+
+enum DocumentType {
+  BAPTISM_CERTIFICATE
+  BIRTH_CERTIFICATE
+  CONSENT_FORM
+  MARRIAGE_CERTIFICATE
+  PASTORAL_LETTER
+  OTHER
+}
+
+enum VisibilityScope {
+  PARISH
+  DIOCESE
+  COMMUNITY
+  CLASS
+  GLOBAL
+}
+
+enum BillingPlan {
+  CATECHIST_FREE
+  CATECHIST_PRO
+  CATECHIST_AI
+  PARISH
+  DIOCESE
+}
+
+enum BillingStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  TRIAL
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  EXPORT
+  APPROVE
+  REJECT
+  PUBLISH
+}
+
+// ─── Existing Models (from OpenSaaS) ──────────────────────────────────────────
+
+model GptResponse {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  content String
+}
+
+model Task {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  description String
+  time        String  @default("1")
+  isDone      Boolean @default(false)
+}
+
+model File {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  name  String
+  type  String
+  s3Key String
+}
+
+// ─── Existing Models (Extended) ───────────────────────────────────────────────
+
+model User {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  email    String? @unique
+  username String? @unique
+  isAdmin  Boolean @default(false)
+
+  // Profile
+  firstName String?
+  lastName  String?
+  phone     String?
+  avatarUrl String?
+  locale    String  @default("pt-BR")
+  timezone  String  @default("America/Sao_Paulo")
+
+  // Payment (from OpenSaaS)
+  paymentProcessorUserId        String?   @unique
+  lemonSqueezyCustomerPortalUrl String?
+  subscriptionStatus            String?
+  subscriptionPlan              String?
+  datePaid                      DateTime?
+  credits                       Int       @default(3)
+  wooviCorrelationId            String?   @unique
+
+  // Catequese Viva relations
+  memberships         Membership[]
+  ownedParishes       Parish[]           @relation("ParishOwner")
+  createdContent      ContentItem[]      @relation("ContentCreator")
+  reviewedContent     ContentItem[]      @relation("ContentReviewer")
+  auditLogs           AuditLog[]
+  guardianProfile     GuardianProfile?
+  catechistOfClasses  ClassCatechist[]
+  recordedAttendances AttendanceRecord[]
+  createdCampaigns    MessageCampaign[]
+  receivedMessages    MessageRecipient[]
+  uploadedDocuments   Document[]
+
+  // Communication Hub relations
+  createdConversations    Conversation[]              @relation("ConversationCreator")
+  conversationMemberships ConversationParticipant[]
+  sentMessages            Message[]                   @relation("MessageSender")
+  messageReactions        MessageReaction[]
+  messageReadReceipts     MessageReadReceipt[]
+  notifications           Notification[]
+  createdTemplates        MessageTemplate[]           @relation("TemplateCreator")
+
+  // OpenSaaS legacy relations
+  gptResponses        GptResponse[]
+  contactFormMessages ContactFormMessage[]
+  tasks               Task[]
+  files               File[]
+  CatechumenProfile   CatechumenProfile[]
+  aiCredits           UserAiCredits?
+}
+
+// ─── Multi-tenant ─────────────────────────────────────────────────────────────
+
+model Diocese {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name     String
+  state    String?
+  country  String @default("BR")
+  wikidataId String? @unique
+  locale   String @default("pt-BR")
+  timezone String @default("America/Sao_Paulo")
+
+  parishes Parish[]
+}
+
+model Parish {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name     String
+  address  String?
+  city     String?
+  state    String?
+  country  String  @default("BR")
+  latitude  Float?
+  longitude Float?
+  osmId    String? @unique
+  wikidataId String?
+  locale   String  @default("pt-BR")
+  timezone String  @default("America/Sao_Paulo")
+  active   Boolean @default(true)
+
+  dioceseId String?
+  diocese   Diocese? @relation(fields: [dioceseId], references: [id])
+
+  ownerId String?
+  owner   User?   @relation("ParishOwner", fields: [ownerId], references: [id])
+
+  communities          Community[]
+  memberships          Membership[]
+  catecheticalYears    CatecheticalYear[]
+  classes              CatechesisClass[]
+  contentItems         ContentItem[]
+  messageCampaigns     MessageCampaign[]
+  sacramentalTemplates SacramentalJourneyTemplate[]
+  liturgicalEvents     LiturgicalEvent[]
+  billing              TenantBilling?
+  Household            Household[]
+  conversations        Conversation[]
+  messageTemplates     MessageTemplate[]
+}
+
+enum CommunityType {
+  CHAPEL
+  RURAL_COMMUNITY
+  URBAN_COMMUNITY
+  MISSION
+}
+
+model Community {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name             String
+  type             CommunityType?
+  description      String?
+  location         String?
+  street           String?
+  number           String?
+  neighborhood     String?
+  zipCode          String?
+  complement       String?
+  city             String?
+  state            String?
+  phone            String?
+  email            String?
+  coordinatorName  String?
+  coordinatorPhone String?
+  active           Boolean        @default(true)
+
+  parishId String
+  parish   Parish @relation(fields: [parishId], references: [id])
+
+  memberships    Membership[]
+  conversations  Conversation[]
+  classes        CatechesisClass[]
+  households     Household[]
+
+  @@index([parishId])
+}
+
+model Membership {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  parishId String
+  parish   Parish @relation(fields: [parishId], references: [id])
+
+  communityId String?
+  community   Community? @relation(fields: [communityId], references: [id])
+
+  role   UserRole         @default(PARISH_COORDINATOR)
+  status MembershipStatus @default(ACTIVE)
+
+  @@index([userId, parishId])
+  @@index([parishId])
+}
+
+// ─── Catechetical Year ────────────────────────────────────────────────────────
+
+model CatecheticalYear {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name      String
+  startDate DateTime
+  endDate   DateTime
+  active    Boolean  @default(true)
+
+  parishId String
+  parish   Parish @relation(fields: [parishId], references: [id])
+
+  classes CatechesisClass[]
+  stages  Stage[]
+}
+
+model Stage {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  description String?
+  order       Int     @default(0)
+
+  yearId String
+  year   CatecheticalYear @relation(fields: [yearId], references: [id])
+
+  classes    CatechesisClass[]
+  sacraments Sacrament[]
+}
+
+model Sacrament {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+
+  stageId String?
+  stage   Stage?  @relation(fields: [stageId], references: [id])
+
+  templates SacramentalJourneyTemplate[]
+  classes   CatechesisClass[]
+}
+
+// ─── Classes ──────────────────────────────────────────────────────────────────
+
+model CatechesisClass {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  status      ClassStatus @default(DRAFT)
+  maxCapacity Int         @default(30)
+
+  // Schedule
+  dayOfWeek String?
+  startTime String?
+  endTime   String?
+  location  String?
+
+  parishId String
+  parish   Parish @relation(fields: [parishId], references: [id])
+
+  yearId String?
+  year   CatecheticalYear? @relation(fields: [yearId], references: [id])
+
+  stageId String?
+  stage   Stage?  @relation(fields: [stageId], references: [id])
+
+  sacramentId String?
+  sacrament   Sacrament? @relation(fields: [sacramentId], references: [id])
+
+  communityId String?
+  community   Community? @relation(fields: [communityId], references: [id])
+
+  catechists       ClassCatechist[]
+  enrollments      ClassEnrollment[]
+  meetings         Meeting[]
+  campaigns        MessageCampaign[]
+  liturgicalEvents LiturgicalEvent[]
+  conversations    Conversation[]
+
+  @@index([parishId])
+  @@index([communityId])
+  @@index([stageId])
+}
+
+model ClassCatechist {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  classId String
+  class   CatechesisClass @relation(fields: [classId], references: [id])
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  role CatechistAssignmentRole @default(LEAD)
+
+  @@unique([classId, userId])
+  @@index([userId])
+  @@index([classId])
+}
+
+model ClassEnrollment {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  classId String
+  class   CatechesisClass @relation(fields: [classId], references: [id])
+
+  catechumenProfileId String?
+  catechumenProfile   CatechumenProfile? @relation(fields: [catechumenProfileId], references: [id])
+
+  status EnrollmentStatus @default(ENROLLED)
+
+  @@unique([classId, catechumenProfileId])
+  @@index([classId])
+  @@index([catechumenProfileId])
+}
+
+// ─── Catechumens & Families ───────────────────────────────────────────────────
+
+model Household {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name     String?
+  address  String?
+  phone    String?
+  parishId String?
+  parish   Parish? @relation(fields: [parishId], references: [id])
+
+  communityId String?
+  community   Community? @relation(fields: [communityId], references: [id])
+
+  guardians   GuardianProfile[]
+  catechumens CatechumenProfile[]
+  consents    ConsentRecord[]
+
+  @@index([parishId])
+  @@index([communityId])
+}
+
+model GuardianProfile {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id])
+
+  firstName    String?
+  lastName     String?
+  householdId  String?
+  household    Household? @relation(fields: [householdId], references: [id])
+
+  phone        String?
+  relationship String? // mother, father, guardian, etc.
+
+  @@index([householdId])
+  @@index([userId])
+}
+
+model CatechumenProfile {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  firstName String
+  lastName  String
+  birthDate DateTime?
+  photoUrl  String?
+  userId    String?
+  user      User?     @relation(fields: [userId], references: [id])
+
+  householdId String?
+  household   Household? @relation(fields: [householdId], references: [id])
+
+  parishId String?
+  parish   Parish?   @relation(fields: [parishId], references: [id])
+
+  enrollments         ClassEnrollment[]
+  attendanceRecords   AttendanceRecord[]
+  activitySubmissions ActivitySubmission[]
+  sacramentalJourneys SacramentalJourney[]
+  documents           Document[]
+
+  uploadToken        String?   @unique
+  uploadTokenExpires DateTime?
+
+  @@index([householdId])
+  @@index([userId])
+  @@index([parishId])
+}
+
+// ─── Meetings & Attendance ────────────────────────────────────────────────────
+
+model Meeting {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title  String?
+  theme  String?
+  date   DateTime
+  status MeetingStatus @default(NOT_STARTED)
+  notes  String?
+
+  classId String
+  class   CatechesisClass @relation(fields: [classId], references: [id])
+
+  contentId String?
+  content   ContentItem? @relation(fields: [contentId], references: [id])
+
+  attendance AttendanceRecord[]
+
+  @@index([classId])
+}
+
+model AttendanceRecord {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  meetingId String
+  meeting   Meeting @relation(fields: [meetingId], references: [id])
+
+  catechumenProfileId String
+  catechumenProfile   CatechumenProfile @relation(fields: [catechumenProfileId], references: [id])
+
+  status AttendanceStatus
+  note   String?
+
+  recordedById String?
+  recordedBy   User?   @relation(fields: [recordedById], references: [id])
+
+  @@unique([meetingId, catechumenProfileId])
+  @@index([meetingId])
+  @@index([catechumenProfileId])
+}
+
+// ─── Content ──────────────────────────────────────────────────────────────────
+
+model ContentItem {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title             String
+  theme             String?
+  pastoralObjective String?
+  biblicalRef       String?
+  catechismRef      String?
+  openingPrayer     String?
+  closingPrayer     String?
+  dynamic           String?
+  mainContent       String
+  activity          String?
+  familyTask        String?
+  estimatedTime     Int?
+  tags              String?
+  status            ContentStatus   @default(DRAFT)
+  visibilityScope   VisibilityScope @default(PARISH)
+
+  isAiGenerated Boolean  @default(false)
+  aiPrompt      String?  // Guarda o prompt ou os parâmetros que geraram o conteúdo
+
+  locale String @default("pt-BR")
+
+  parishId String?
+  parish   Parish? @relation(fields: [parishId], references: [id])
+
+  createdById String?
+  createdBy   User?   @relation("ContentCreator", fields: [createdById], references: [id])
+
+  reviewedById String?
+  reviewedBy   User?   @relation("ContentReviewer", fields: [reviewedById], references: [id])
+
+  versions                  ContentVersion[]
+  meetings                  Meeting[]
+  activities                Activity[]
+  bibleRefs                 ContentBibleReference[]
+  catechismRefs             ContentCatechismReference[]
+  ContentDirectoryReference ContentDirectoryReference[]
+}
+
+model ContentBibleReference {
+  id        String      @id @default(uuid())
+  contentId String
+  content   ContentItem @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  verseId   String
+  verse     BibleVerse  @relation(fields: [verseId], references: [id])
+  position  Int         @default(0)
+
+  @@unique([contentId, verseId])
+}
+
+model ContentCatechismReference {
+  id        String         @id @default(uuid())
+  contentId String
+  content   ContentItem    @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  entryId   String
+  entry     CatechismEntry @relation(fields: [entryId], references: [id])
+  position  Int            @default(0)
+
+  @@unique([contentId, entryId])
+}
+
+model ContentVersion {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  contentId String
+  content   ContentItem @relation(fields: [contentId], references: [id])
+
+  version     Int
+  body        String
+  changedById String?
+  changeNotes String?
+}
+
+model Activity {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title       String
+  description String?
+  type        ActivityType @default(QUIZ)
+  data        String? // JSON with activity-specific config
+  points      Int          @default(0)
+
+  contentId String?
+  content   ContentItem? @relation(fields: [contentId], references: [id])
+
+  submissions ActivitySubmission[]
+}
+
+model ActivitySubmission {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  activityId String
+  activity   Activity @relation(fields: [activityId], references: [id])
+
+  catechumenProfileId String
+  catechumenProfile   CatechumenProfile @relation(fields: [catechumenProfileId], references: [id])
+
+  answer      String?
+  score       Int?
+  completedAt DateTime?
+
+  @@unique([activityId, catechumenProfileId])
+}
+
+// ─── Sacramental Journey ──────────────────────────────────────────────────────
+
+model SacramentalJourneyTemplate {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  description String?
+
+  parishId String?
+  parish   Parish? @relation(fields: [parishId], references: [id])
+
+  sacramentId String?
+  sacrament   Sacrament? @relation(fields: [sacramentId], references: [id])
+
+  milestones SacramentalMilestoneTemplate[]
+  journeys   SacramentalJourney[]
+}
+
+model SacramentalMilestoneTemplate {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name                String
+  description         String?
+  required            Boolean @default(true)
+  evidenceRequired    Boolean @default(false)
+  order               Int     @default(0)
+  daysBeforeSacrament Int?
+
+  templateId String
+  template   SacramentalJourneyTemplate @relation(fields: [templateId], references: [id])
+
+  milestones SacramentalMilestone[]
+}
+
+model SacramentalJourney {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  catechumenProfileId String
+  catechumenProfile   CatechumenProfile @relation(fields: [catechumenProfileId], references: [id])
+
+  templateId String
+  template   SacramentalJourneyTemplate @relation(fields: [templateId], references: [id])
+
+  milestones SacramentalMilestone[]
+
+  @@unique([catechumenProfileId, templateId])
+}
+
+model SacramentalMilestone {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  journeyId String
+  journey   SacramentalJourney @relation(fields: [journeyId], references: [id])
+
+  templateMilestoneId String
+  templateMilestone   SacramentalMilestoneTemplate @relation(fields: [templateMilestoneId], references: [id])
+
+  status       MilestoneStatus @default(PENDING)
+  completedAt  DateTime?
+  evidenceUrl  String?
+  approvedById String?
+  notes        String?
+
+  @@unique([journeyId, templateMilestoneId])
+}
+
+// ─── Communication ────────────────────────────────────────────────────────────
+
+model MessageCampaign {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title       String
+  body        String
+  channel     String        @default("email") // email, push, sms, whatsapp
+  segment     String? // all_parish, by_stage, by_class, catechists, guardians
+  status      MessageStatus @default(DRAFT)
+  scheduledAt DateTime?
+
+  parishId String?
+  parish   Parish? @relation(fields: [parishId], references: [id])
+
+  classId String?
+  class   CatechesisClass? @relation(fields: [classId], references: [id])
+
+  createdById String?
+  createdBy   User?   @relation(fields: [createdById], references: [id])
+
+  recipients MessageRecipient[]
+}
+
+model MessageRecipient {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  campaignId String
+  campaign   MessageCampaign @relation(fields: [campaignId], references: [id])
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  email  String?
+  phone  String?
+  sentAt DateTime?
+  readAt DateTime?
+  error  String?
+}
+
+// ─── Conversations & Messages ─────────────────────────────────────────────────
+
+model Conversation {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title       String?
+  type        ConversationType @default(DIRECT)
+  scope       VisibilityScope  @default(PARISH)
+  avatarUrl   String?
+
+  parishId    String?
+  parish      Parish? @relation(fields: [parishId], references: [id])
+
+  classId     String?
+  class       CatechesisClass? @relation(fields: [classId], references: [id])
+
+  communityId String?
+  community   Community? @relation(fields: [communityId], references: [id])
+
+  createdById String?
+  createdBy   User?    @relation("ConversationCreator", fields: [createdById], references: [id])
+
+  participants ConversationParticipant[]
+  messages     Message[]
+}
+
+model ConversationParticipant {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  role       ParticipantRole @default(MEMBER)
+  mutedAt    DateTime?
+  lastReadAt DateTime?
+
+  @@unique([conversationId, userId])
+  @@index([userId])
+  @@index([conversationId])
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  senderId String
+  sender   User   @relation("MessageSender", fields: [senderId], references: [id])
+
+  content     String
+  contentType MessageContentType @default(TEXT)
+
+  parentId    String?
+  parent      Message?  @relation("MessageReplies", fields: [parentId], references: [id])
+  replies     Message[] @relation("MessageReplies")
+
+  editedAt    DateTime?
+  deletedAt   DateTime?
+
+  attachments  MessageAttachment[]
+  reactions    MessageReaction[]
+  readReceipts MessageReadReceipt[]
+
+  @@index([conversationId])
+  @@index([senderId])
+}
+
+model MessageAttachment {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  messageId String
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  name      String
+  s3Key     String
+  mimeType  String?
+  sizeBytes Int?
+}
+
+model MessageReaction {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  messageId String
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  emoji String
+
+  @@unique([messageId, userId, emoji])
+}
+
+model MessageReadReceipt {
+  id     String   @id @default(uuid())
+  readAt DateTime @default(now())
+
+  messageId String
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([messageId, userId])
+}
+
+// ─── Notifications ────────────────────────────────────────────────────────────
+
+model Notification {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  type       NotificationType
+  title      String
+  body       String?
+  link       String?
+  readAt     DateTime?
+
+  entityType String?
+  entityId   String?
+}
+
+// ─── Message Templates ────────────────────────────────────────────────────────
+
+model MessageTemplate {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name     String
+  subject  String
+  body     String
+  category String?
+
+  parishId    String?
+  parish      Parish? @relation(fields: [parishId], references: [id])
+
+  createdById String?
+  createdBy   User?   @relation("TemplateCreator", fields: [createdById], references: [id])
+
+  isGlobal Boolean @default(false)
+}
+
+// ─── Documents & Consents ─────────────────────────────────────────────────────
+
+model Document {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name     String
+  type     DocumentType @default(OTHER)
+  s3Key    String
+  mimeType String?
+
+  catechumenProfileId String?
+  catechumenProfile   CatechumenProfile? @relation(fields: [catechumenProfileId], references: [id])
+
+  uploadedById String?
+  uploadedBy   User?   @relation(fields: [uploadedById], references: [id])
+
+  verifiedAt   DateTime?
+  verifiedById String?
+
+  @@index([catechumenProfileId])
+  @@index([uploadedById])
+}
+
+model ConsentRecord {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  type      ConsentType
+  granted   Boolean     @default(false)
+  grantedAt DateTime?
+  expiresAt DateTime?
+
+  householdId String?
+  household   Household? @relation(fields: [householdId], references: [id])
+
+  documentUrl String? // URL of the signed consent form
+
+  @@unique([householdId, type])
+}
+
+// ─── Calendar ─────────────────────────────────────────────────────────────────
+
+model LiturgicalEvent {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name           String
+  description    String?
+  date           DateTime
+  endDate        DateTime?
+  recurring      Boolean   @default(false)
+  recurrenceRule String?
+  color          String?
+  type           String    @default("liturgical") // liturgical, parish, class, sacramental
+  locale         String    @default("pt-BR")
+
+  parishId String?
+  parish   Parish? @relation(fields: [parishId], references: [id])
+
+  classId String?
+  class   CatechesisClass? @relation(fields: [classId], references: [id])
+}
+
+// ─── Billing ──────────────────────────────────────────────────────────────────
+
+model TenantBilling {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  parishId String @unique
+  parish   Parish @relation(fields: [parishId], references: [id])
+
+  plan                BillingPlan   @default(CATECHIST_FREE)
+  status              BillingStatus @default(TRIAL)
+  trialEndsAt         DateTime?
+  currentPeriodEnd    DateTime?
+  maxClasses          Int?
+  maxCatechumens      Int?
+  wooviCorrelationId  String?       @unique
+}
+
+// ─── AI Credits ────────────────────────────────────────────────────────────────
+
+model UserAiCredits {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  creditsLeft Int      @default(3) // Créditos renováveis (plano define o teto)
+  lastReset   DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ─── Audit ────────────────────────────────────────────────────────────────────
+
+// ─── Bible & Catechism ─────────────────────────────────────────────────────────
+
+model BibleBook {
+  id           String         @id @default(uuid())
+  name         String
+  abbreviation String?
+  testament    String // 'OT' or 'NT'
+  position     Int
+  chapters     BibleChapter[]
+}
+
+model BibleChapter {
+  id     String       @id @default(uuid())
+  number Int
+  bookId String
+  book   BibleBook    @relation(fields: [bookId], references: [id])
+  verses BibleVerse[]
+
+  @@unique([bookId, number])
+}
+
+model BibleVerse {
+  id                    String                  @id @default(uuid())
+  number                Int
+  text                  String
+  chapterId             String
+  chapter               BibleChapter            @relation(fields: [chapterId], references: [id])
+  ContentBibleReference ContentBibleReference[]
+
+  @@unique([chapterId, number])
+}
+
+model CatechismEntry {
+  id                        String                      @id @default(uuid())
+  number                    Int                         @unique
+  category                  String // 'creed', 'sacraments', 'commandments', 'prayer', 'virtues', 'sin'
+  question                  String
+  answer                    String
+  ContentCatechismReference ContentCatechismReference[]
+}
+
+model DirectoryEntry {
+  id      String  @id @default(uuid())
+  number  Int     @unique
+  part    String?
+  chapter String?
+  title   String?
+  content String
+
+  contentRefs ContentDirectoryReference[]
+}
+
+model ContentDirectoryReference {
+  id        String         @id @default(uuid())
+  contentId String
+  content   ContentItem    @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  entryId   String
+  entry     DirectoryEntry @relation(fields: [entryId], references: [id])
+  position  Int            @default(0)
+
+  @@unique([contentId, entryId])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  action     AuditAction
+  entityType String
+  entityId   String
+  metadata   String? // JSON with additional context
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  parishId String?
+}
+
+model DailyStats {
+  id   Int      @id @default(autoincrement())
+  date DateTime @unique @default(now())
+
+  totalViews                Int    @default(0)
+  prevDayViewsChangePercent String @default("0")
+  userCount                 Int    @default(0)
+  paidUserCount             Int    @default(0)
+  userDelta                 Int    @default(0)
+  paidUserDelta             Int    @default(0)
+  totalRevenue              Float  @default(0)
+  totalProfit               Float  @default(0)
+
+  sources PageViewSource[]
+}
+
+model PageViewSource {
+  name String
+  date DateTime @default(now())
+
+  dailyStats   DailyStats? @relation(fields: [dailyStatsId], references: [id])
+  dailyStatsId Int?
+
+  visitors Int
+
+  @@id([date, name])
+}
+
+model Logs {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  message String
+  level   String
+}
+
+model ContactFormMessage {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  content   String
+  isRead    Boolean   @default(false)
+  repliedAt DateTime?
+}

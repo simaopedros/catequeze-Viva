@@ -1,0 +1,100 @@
+import { useParams, Link, useNavigate } from 'react-router';
+import { useState, useEffect, useRef } from 'react';
+import { Button } from '../../client/components/ui/button';
+import { ArrowLeft, Save, Camera } from 'lucide-react';
+import { AppShell } from '../AppShell';
+import { getCatechumenProfile, updateCatechumen } from 'wasp/client/operations';
+import { toast } from '../../client/hooks/use-toast';
+
+function compressImage(file: File): Promise<string> {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX = 200;
+        let w = img.width, h = img.height;
+        if (w > h && w > MAX) { h *= MAX / w; w = MAX; }
+        else if (h > MAX) { w *= MAX / h; h = MAX; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.5));
+      };
+      img.src = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+export default function EditCatechumenPage() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [birthDate, setBirthDate] = useState('');
+  const [photo, setPhoto] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const p = await getCatechumenProfile({ id: id! });
+      if (p) {
+        setFirstName(p.firstName || '');
+        setLastName(p.lastName || '');
+        setBirthDate(p.birthDate ? new Date(p.birthDate).toISOString().slice(0, 10) : '');
+        setPhoto(p.photoUrl || '');
+      }
+    })();
+  }, [id]);
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => { 
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const compressed = await compressImage(file);
+    setPhoto(compressed);
+  };
+
+  const handleSave = async () => {
+    if (!firstName || !lastName) return;
+    setSaving(true);
+    try {
+      await updateCatechumen({ id: id!, firstName, lastName, birthDate: birthDate || undefined, photoUrl: photo || undefined });
+      toast({ title: 'Catequizando atualizado com sucesso!' });
+      navigate(`/app/catechumens/${id}`);
+    } catch (e: any) { toast({ title: 'Erro', description: 'Erro: ' + (e.message || ''), variant: 'destructive' }); }
+    setSaving(false);
+  };
+
+  return (
+    <AppShell>
+      <div className="max-w-lg mx-auto space-y-6">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" asChild><Link to={`/app/catechumens/${id}`}><ArrowLeft className="h-5 w-5" /></Link></Button>
+          <h1 className="text-2xl font-bold">Editar Catequizando</h1>
+        </div>
+
+        <div className="flex flex-col items-center gap-3">
+          <div className="relative w-24 h-24 rounded-full overflow-hidden bg-muted border-2 border-dashed cursor-pointer" onClick={() => fileRef.current?.click()}>
+            {photo ? <img src={photo} alt="Foto" className="w-full h-full object-cover" /> : <div className="flex items-center justify-center h-full text-muted-foreground"><Camera className="h-8 w-8" /></div>}
+          </div>
+          <input ref={fileRef} type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+          <span className="text-xs text-muted-foreground">Clique para adicionar foto</span>
+        </div>
+
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div><label className="text-xs font-medium">Nome</label><input value={firstName} onChange={e => setFirstName(e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1" /></div>
+            <div><label className="text-xs font-medium">Sobrenome</label><input value={lastName} onChange={e => setLastName(e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1" /></div>
+          </div>
+          <div><label className="text-xs font-medium">Nascimento</label><input type="date" value={birthDate} onChange={e => setBirthDate(e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1" /></div>
+          <div className="flex gap-3">
+            <Button onClick={handleSave} disabled={saving}><Save className="mr-1 h-4 w-4" />{saving ? 'Salvando...' : 'Salvar'}</Button>
+            <Button variant="outline" asChild><Link to={`/app/catechumens/${id}`}>Cancelar</Link></Button>
+          </div>
+        </div>
+      </div>
+    </AppShell>
+  );
+}

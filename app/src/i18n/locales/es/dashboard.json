@@ -1,0 +1,20 @@
+{
+  "title": "Panel de Catequesis",
+  "subtitle": "Siga grupos, asistencia y pendientes pastorales.",
+  "active_catechumens": "Catequizandos activos",
+  "active_classes": "Grupos activos",
+  "avg_attendance": "Asistencia media",
+  "pending_sacraments": "Pendientes sacramentales",
+  "pending_documents": "Documentos pendientes",
+  "attendance_by_stage": "Asistencia por etapa",
+  "class_overview": "Vista general de grupos",
+  "pastoral_alerts": "Alertas pastorales",
+  "weekly_schedule": "Agenda de la semana",
+  "no_classes_yet": "Ningún grupo creado aún",
+  "no_classes_description": "Cree el primer grupo para organizar catequizandos, catequistas y encuentros.",
+  "create_class": "Crear grupo",
+  "missing_3_consecutive": "3 faltas consecutivas",
+  "document_expired": "Documento vencido",
+  "family_no_contact": "Familia sin contacto",
+  "meeting_no_content": "Encuentro sin contenido"
+}

@@ -1,0 +1,20 @@
+{
+  "title": "Asistencia",
+  "mark_present": "Marcar presente",
+  "mark_absent": "Marcar ausente",
+  "mark_late": "Marcar tarde",
+  "mark_justified": "Justificar ausencia",
+  "saved_locally": "Asistencia guardada en este dispositivo. Se sincronizará cuando haya internet.",
+  "sync_pending": "Sincronización pendiente",
+  "sync_conflict": "Conflicto de sincronización",
+  "start_meeting": "Iniciar encuentro",
+  "end_meeting": "Finalizar encuentro",
+  "private_note": "Observación privada",
+  "present": "Presente",
+  "absent": "Ausente",
+  "late": "Tarde",
+  "justified": "Justificado",
+  "not_started": "No iniciada",
+  "in_progress": "En curso",
+  "synced": "Sincronizada"
+}

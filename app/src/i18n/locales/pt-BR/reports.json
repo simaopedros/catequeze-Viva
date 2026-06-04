@@ -1,0 +1,13 @@
+{
+  "title": "Relatórios",
+  "attendance_report": "Presença por turma/etapa/período",
+  "dropout_risk": "Catequizandos com risco de evasão",
+  "pending_docs": "Documentos pendentes",
+  "sacramental_progress": "Progresso sacramental",
+  "catechist_workload": "Carga de catequistas",
+  "top_content": "Conteúdos mais usados",
+  "messages_sent": "Mensagens enviadas",
+  "pending_consents": "Consentimentos pendentes",
+  "export_csv": "Exportar CSV",
+  "export_pdf": "Exportar PDF"
+}

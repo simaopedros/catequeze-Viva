@@ -1,0 +1,15 @@
+{
+  "title": "Sacramentos",
+  "journey": "Jornada sacramental",
+  "milestones": "Hitos",
+  "first_communion": "Primera Comunión",
+  "confirmation": "Confirmación",
+  "baptism": "Bautismo",
+  "reconciliation": "Reconciliación",
+  "marriage": "Matrimonio",
+  "config": "Configuración sacramental",
+  "required": "Obligatorio",
+  "optional": "Opcional",
+  "evidence_required": "Evidencia requerida",
+  "waiting_approval": "Esperando aprobación"
+}

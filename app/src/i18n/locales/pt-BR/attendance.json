@@ -1,0 +1,20 @@
+{
+  "title": "Presença",
+  "mark_present": "Marcar presença",
+  "mark_absent": "Marcar ausência",
+  "mark_late": "Marcar atraso",
+  "mark_justified": "Justificar ausência",
+  "saved_locally": "Presença salva neste dispositivo. Será sincronizada quando houver internet.",
+  "sync_pending": "Sincronização pendente",
+  "sync_conflict": "Conflito de sincronização",
+  "start_meeting": "Iniciar encontro",
+  "end_meeting": "Encerrar encontro",
+  "private_note": "Observação privada",
+  "present": "Presente",
+  "absent": "Ausente",
+  "late": "Atrasado",
+  "justified": "Justificado",
+  "not_started": "Não iniciada",
+  "in_progress": "Em andamento",
+  "synced": "Sincronizada"
+}

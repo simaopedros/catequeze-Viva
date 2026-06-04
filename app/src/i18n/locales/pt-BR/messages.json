@@ -1,0 +1,21 @@
+{
+  "title": "Mensagens",
+  "compose": "Nova mensagem",
+  "campaigns": "Campanhas",
+  "templates": "Templates",
+  "segment": "Segmento",
+  "channel": "Canal",
+  "email": "E-mail",
+  "push": "Push",
+  "sms": "SMS",
+  "whatsapp": "WhatsApp",
+  "send": "Enviar",
+  "schedule": "Agendar",
+  "history": "Histórico",
+  "all_parish": "Toda a paróquia",
+  "by_stage": "Por etapa",
+  "by_class": "Por turma",
+  "catechists": "Catequistas",
+  "guardians": "Responsáveis",
+  "pending_contacts": "Pendências específicas"
+}
