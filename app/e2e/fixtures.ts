@@ -38,17 +38,18 @@ export const USERS: Record<string, TestUser> = {
 export async function loginAs(page: Page, userKey: keyof typeof USERS) {
   const user = USERS[userKey];
   
-  // Clear any existing session
+  // Clear cookies for fresh login
   await page.context().clearCookies();
   
-  await page.goto('/login');
+  await page.goto('/login', { waitUntil: 'networkidle' });
   
   // If already logged in (redirected to app), we're done
   if (page.url().includes('/app')) {
     return;
   }
   
-  await page.waitForSelector('input[type="email"], input[name="email"]', { timeout: 5000 });
+  // Wait for the login form to render
+  await page.waitForSelector('input', { timeout: 10000 });
   
   // Fill email
   const emailInput = page.locator('input[type="email"], input[name="email"]').first();
