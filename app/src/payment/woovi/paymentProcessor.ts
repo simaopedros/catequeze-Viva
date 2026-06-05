@@ -43,13 +43,13 @@ export const wooviPaymentProcessor: PaymentProcessor = {
       paymentPlan,
     });
 
-    // Store the correlationID for webhook matching
+    // Store the correlationID for webhook matching (plan is set on payment confirmation)
     await prismaUserDelegate.update({
       where: { id: userId },
       data: {
         wooviCorrelationId: correlationID,
-        subscriptionPlan: paymentPlan.id,
         subscriptionStatus: "pending",
+        // subscriptionPlan is set by the webhook upon payment confirmation
       },
     });
 

@@ -45,3 +45,33 @@ export function planName(plan: string | null): string {
   if (!plan) return 'Catequista Grátis';
   return PLAN_NAMES[plan.toLowerCase()] || plan;
 }
+
+/**
+ * Check if a billing record is currently active.
+ * Active means status is ACTIVE, or TRIAL with a future trialEndsAt.
+ */
+export interface BillingInfo {
+  plan: string;
+  status: string;
+  trialEndsAt?: string | null | Date;
+}
+
+export function isBillingActive(billing: BillingInfo | null | undefined): boolean {
+  if (!billing) return false;
+  if (billing.status === 'ACTIVE') return true;
+  if (billing.status === 'TRIAL' && billing.trialEndsAt) {
+    const trialEnd = typeof billing.trialEndsAt === 'string' ? new Date(billing.trialEndsAt) : billing.trialEndsAt;
+    return trialEnd >= new Date();
+  }
+  return false;
+}
+
+/**
+ * Get the effective plan from a billing record.
+ * Returns the plan if active, otherwise falls back to CATECHIST_FREE.
+ */
+export function getEffectiveBillingPlan(billing: BillingInfo | null | undefined): string {
+  if (!billing) return 'CATECHIST_FREE';
+  if (!isBillingActive(billing)) return 'CATECHIST_FREE';
+  return billing.plan.toUpperCase() || 'CATECHIST_FREE';
+}

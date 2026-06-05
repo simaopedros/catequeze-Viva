@@ -44,6 +44,25 @@ export const generateCheckoutSession: GenerateCheckoutSession<
   }
 
   const paymentPlan = paymentPlans[paymentPlanId];
+
+  // CatechistFree cannot be purchased
+  if (paymentPlanId === 'catechist_free') {
+    throw new HttpError(400, 'O plano Catequista Grátis não requer pagamento.');
+  }
+
+  // Block Parish/Diocese purchase for users who don't own a parish
+  if (['parish', 'diocese'].includes(paymentPlanId) && !context.user.isAdmin) {
+    const ownedParish = await context.entities.Parish.findFirst({
+      where: { ownerId: context.user.id },
+    });
+    if (!ownedParish) {
+      throw new HttpError(
+        403,
+        'Apenas coordenadores donos de paróquia podem assinar planos Paróquia ou Diocese.',
+      );
+    }
+  }
+
   let session;
   try {
     const result = await paymentProcessor.createCheckoutSession({
@@ -120,6 +139,7 @@ export const cancelSubscription: CancelSubscription<
     where: { id: context.user.id },
     data: {
       subscriptionStatus: SubscriptionStatus.Deleted,
+      subscriptionPlan: null,
       wooviCorrelationId: null,
     },
   });

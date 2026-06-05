@@ -3,12 +3,13 @@ import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { CheckCircle, TrendingUp, Clock, ArrowUpRight, History, AlertCircle, Loader2, XCircle } from 'lucide-react';
 import { AppShell } from '../AppShell';
-import { useQuery, getDashboardStats, getAiCreditsStatus, generateCheckoutSession, cancelSubscription } from 'wasp/client/operations';
+import { useQuery, getDashboardStats, getAiCreditsStatus, generateCheckoutSession, cancelSubscription, getParishById } from 'wasp/client/operations';
 import { useAuth } from 'wasp/client/auth';
 import { PaymentPlanId, SubscriptionStatus } from '../../payment/plans';
 import { getMonthlyAllowance } from '../../shared/aiCredits';
 import { ConfirmDialog } from '../../client/components/ConfirmDialog';
 import { toast } from '../../client/hooks/use-toast';
+import { useUserContext } from '../../client/hooks/useUserContext';
 
 // ─── Plan definitions ───────────────────────────────────────────────────────
 
@@ -97,10 +98,67 @@ export default function BillingPage() {
   const { data: stats, isLoading: loading } = useQuery(getDashboardStats);
   const { data: aiCredits } = useQuery(getAiCreditsStatus);
   const { data: user } = useAuth();
+  const { parishId } = useUserContext();
+  const { data: parish, isLoading: loadingParish } = useQuery(
+    getParishById,
+    { id: parishId },
+    { enabled: !!parishId }
+  );
+
   const [upgradingPlan, setUpgradingPlan] = useState<PaymentPlanId | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [cancelling, setCancelling] = useState(false);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
-  if (loading) {
+  // ── Determine effective plan ──────────────────────────────────────────────
+  const hasPersonalPlan = user?.subscriptionStatus === SubscriptionStatus.Active;
+  
+  let effectivePlanId = PaymentPlanId.CatechistFree;
+  let isActive = false;
+  let isParishManaged = false;
+
+  if (hasPersonalPlan && user?.subscriptionPlan) {
+    effectivePlanId = user.subscriptionPlan as PaymentPlanId;
+    isActive = true;
+  } else if (parish?.billing) {
+    const pBilling = parish.billing;
+    const planUpper = pBilling.plan?.toUpperCase();
+    const isBillingActive =
+      pBilling.status === 'ACTIVE' ||
+      (pBilling.status === 'TRIAL' && pBilling.trialEndsAt && new Date(pBilling.trialEndsAt) >= new Date());
+
+    if (isBillingActive) {
+      if (planUpper === 'PARISH') {
+        effectivePlanId = PaymentPlanId.Parish;
+        isActive = true;
+        isParishManaged = true;
+      } else if (planUpper === 'DIOCESE') {
+        effectivePlanId = PaymentPlanId.Diocese;
+        isActive = true;
+        isParishManaged = true;
+      }
+    }
+  }
+
+  const effectivePlan = getPlanDef(effectivePlanId);
+
+  // Determine if user has privileges to manage/cancel the effective plan
+  const isPlanManager =
+    user?.isAdmin ||
+    (!isParishManaged) ||
+    (effectivePlanId === PaymentPlanId.Parish && parish?.ownerId === user?.id) ||
+    (effectivePlanId === PaymentPlanId.Diocese && parish?.dioceseAdmins?.some((da: any) => da.user?.id === user?.id));
+
+  // Only show Parish/Diocese plans to users who own a parish or are admin
+  const canManageParish = user?.isAdmin || parish?.ownerId === user?.id;
+  const visiblePlans = ALL_PLANS.filter((plan) => {
+    if (!canManageParish && (plan.planId === PaymentPlanId.Parish || plan.planId === PaymentPlanId.Diocese)) {
+      return false;
+    }
+    return true;
+  });
+
+  if (loading || (parishId && loadingParish)) {
     return (
       <AppShell>
         <div className="space-y-6 animate-pulse">
@@ -115,21 +173,16 @@ export default function BillingPage() {
     );
   }
 
-  // Determine current plan from user subscription
-  const userPlanId = user?.subscriptionPlan as PaymentPlanId | undefined;
-  const isActive = user?.subscriptionStatus === SubscriptionStatus.Active;
-  const currentPlanId: PaymentPlanId = userPlanId && Object.values(PaymentPlanId).includes(userPlanId)
-    ? userPlanId
-    : PaymentPlanId.CatechistFree;
-  const currentPlan = getPlanDef(currentPlanId);
+  // ── Effective plan resolved above ─────────────────────────────────────────
+  // ── Usage stats ───────────────────────────────────────────────────────────
 
   const classesUsed = stats?.activeClasses ?? 0;
   const catechumensUsed = stats?.activeCatechumens ?? 0;
-  const maxClasses = currentPlan.maxClasses ?? Infinity;
-  const maxCatechumens = currentPlan.maxCatechumens ?? Infinity;
+  const maxClasses = effectivePlan.maxClasses ?? Infinity;
+  const maxCatechumens = effectivePlan.maxCatechumens ?? Infinity;
 
   const handleUpgrade = async (planId: PaymentPlanId) => {
-    if (planId === currentPlanId) return;
+    if (planId === effectivePlanId) return;
     setError(null);
     setUpgradingPlan(planId);
     try {
@@ -143,8 +196,7 @@ export default function BillingPage() {
     }
   };
 
-  const [cancelling, setCancelling] = useState(false);
-  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+
 
   const handleCancel = () => {
     setShowCancelConfirm(true);
@@ -171,9 +223,36 @@ export default function BillingPage() {
           <div>
             <h1 className="text-2xl font-bold">Assinatura</h1>
             <p className="text-muted-foreground text-sm flex items-center gap-2">
-              Plano atual: <Badge>{currentPlan.name}</Badge>
+              Plano atual: <Badge>{effectivePlan.name}</Badge>
               {isActive && <Badge variant="default" className="bg-green-100 text-green-700 text-xs">Ativo</Badge>}
             </p>
+            {isParishManaged && (
+              <div className="mt-2 rounded-lg border border-blue-200 bg-blue-50 p-4 space-y-2 text-sm text-blue-800">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 flex-shrink-0 text-blue-600" />
+                  <span className="font-semibold">Plano Gerenciado Corporativo</span>
+                </div>
+                <div className="pl-6 space-y-1 text-xs text-blue-700">
+                  {effectivePlanId === PaymentPlanId.Diocese && (
+                    <>
+                      <p>Diocese responsável: <strong>{parish?.diocese?.name || 'Não informada'}</strong></p>
+                      {parish?.dioceseAdmins && parish.dioceseAdmins.length > 0 && (
+                        <p>Administrador(es) diocesano(s): <strong>{parish.dioceseAdmins.map((da: any) => `${da.user.firstName} ${da.user.lastName} (${da.user.email})`).join(', ')}</strong></p>
+                      )}
+                    </>
+                  )}
+                  {effectivePlanId === PaymentPlanId.Parish && (
+                    <>
+                      <p>Paróquia responsável: <strong>{parish?.name || 'Não informada'}</strong></p>
+                      {parish?.owner && (
+                        <p>Coordenador responsável: <strong>{parish.owner.firstName} {parish.owner.lastName} ({parish.owner.email})</strong></p>
+                      )}
+                    </>
+                  )}
+                  <p className="mt-1.5 text-blue-600/80">Por favor, entre em contato com o responsável indicado para qualquer alteração ou dúvida sobre o plano.</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -229,16 +308,16 @@ export default function BillingPage() {
             </div>
             <div className="flex-1">
               <p className="font-semibold">
-                {isActive ? 'Assinatura ativa' : currentPlan.isFree ? 'Plano gratuito' : 'Aguardando pagamento'}
+                {isActive ? 'Assinatura ativa' : effectivePlan.isFree ? 'Plano gratuito' : 'Aguardando pagamento'}
               </p>
               <p className="text-sm text-muted-foreground">
                 {isActive
                   ? 'A sua subscrição está ativa. Aproveite todos os recursos.'
-                  : currentPlan.isFree
+                  : effectivePlan.isFree
                     ? 'Atualize para acessar recursos ilimitados.'
                     : 'Complete o pagamento PIX para ativar seu plano.'}
               </p>
-              {isActive && !currentPlan.isFree && (
+              {isActive && !effectivePlan.isFree && isPlanManager && (
                 <Button
                   variant="outline"
                   size="sm"
@@ -293,10 +372,12 @@ export default function BillingPage() {
         </div>
 
         {/* Plans comparison */}
-        <h2 className="text-lg font-semibold mt-8">Planos disponíveis</h2>
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-          {ALL_PLANS.map((plan) => {
-            const isCurrent = plan.planId === currentPlanId;
+        {!isParishManaged && (
+          <>
+            <h2 className="text-lg font-semibold mt-8">Planos disponíveis</h2>
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          {visiblePlans.map((plan) => {
+            const isCurrent = plan.planId === effectivePlanId;
             const isUpgrading = upgradingPlan === plan.planId;
 
             return (
@@ -351,6 +432,8 @@ export default function BillingPage() {
             );
           })}
         </div>
+          </>
+        )}
 
         {/* Payment history */}
         <div className="rounded-xl border bg-card p-4">

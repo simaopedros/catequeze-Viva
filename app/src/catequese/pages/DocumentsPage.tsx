@@ -1,190 +1,241 @@
 import { useState, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import { FileText, CheckCircle, Clock, Upload, User, Trash2, XCircle, Loader2, X } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
-import { FileText, CheckCircle, Clock, Upload, User, Trash2, Search, XCircle, Loader2 } from 'lucide-react';
 import { AppShell } from '../AppShell';
-import { useQuery, listDocuments, listCatechumens, uploadDocument, verifyDocument, deleteDocument } from 'wasp/client/operations';
-import { useActiveParish } from '../../client/hooks/useActiveParish';
-import { ConfirmDialog } from '../../client/components/ConfirmDialog';
+import { useQuery, listDocuments, listCatechumens, uploadDocument, verifyDocument, rejectDocument, deleteDocument } from 'wasp/client/operations';
+import { useUserContext } from '../../client/hooks/useUserContext';
 import { toast } from '../../client/hooks/use-toast';
 
-const TYPE_LABEL: Record<string,string>={BAPTISM_CERTIFICATE:'Cert. Batismo',BIRTH_CERTIFICATE:'Cert. Nascimento',CONSENT_FORM:'Autorização',MARRIAGE_CERTIFICATE:'Cert. Matrimônio',PASTORAL_LETTER:'Carta Pastoral',OTHER:'Outro'};
-const TYPE_COLORS: Record<string,string>={BAPTISM_CERTIFICATE:'text-blue-600 bg-blue-50',BIRTH_CERTIFICATE:'text-green-600 bg-green-50',CONSENT_FORM:'text-amber-600 bg-amber-50',MARRIAGE_CERTIFICATE:'text-purple-600 bg-purple-50',PASTORAL_LETTER:'text-indigo-600 bg-indigo-50',OTHER:'text-gray-600 bg-gray-50'};
+const DOC_TYPES: Record<string, string> = {
+  BAPTISM_CERTIFICATE: 'Cert. Batismo',
+  BIRTH_CERTIFICATE: 'Cert. Nascimento',
+  CONSENT_FORM: 'Autorização',
+  MARRIAGE_CERTIFICATE: 'Cert. Matrimônio',
+  PASTORAL_LETTER: 'Carta Pastoral',
+  OTHER: 'Outro',
+};
+
+const STATUS_CONFIG: Record<string, { icon: any; color: string; label: string }> = {
+  VERIFIED: { icon: CheckCircle, color: 'text-green-500', label: 'Verificado' },
+  PENDING: { icon: Clock, color: 'text-amber-500', label: 'Pendente' },
+  REJECTED: { icon: XCircle, color: 'text-red-500', label: 'Rejeitado' },
+};
+
+const COORDINATOR_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'];
 
 export default function DocumentsPage() {
-  const { t } = useTranslation('common');
-  const { activeParishId } = useActiveParish();
+  const { userRole } = useUserContext();
+  const isCoordinator = COORDINATOR_ROLES.includes(userRole);
+  const canUpload = isCoordinator || ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'GUARDIAN'].includes(userRole);
+
   const { data: docs = [], isLoading: loading } = useQuery(listDocuments);
   const { data: catechumens = [] } = useQuery(listCatechumens);
-  const [showForm,setShowForm]=useState(false);
-  const [docName,setDocName]=useState(''); const [docType,setDocType]=useState('OTHER');
-  const [docCatechumenId,setDocCatechumenId]=useState('');
-  const [search,setSearch]=useState('');
-  const [typeFilter,setTypeFilter]=useState('');
 
-  // Filter catechumens by active parish for the dropdown
-  const filteredCatechumens = useMemo(() => {
-    if (!activeParishId) return catechumens;
-    return catechumens.filter((c:any) =>
-      c.enrollments?.some((e:any) => e.class?.parishId === activeParishId)
-    );
-  }, [catechumens, activeParishId]);
+  const [uploadingFor, setUploadingFor] = useState<{ catechumenId: string; docType: string } | null>(null);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [fileBase64, setFileBase64] = useState('');
+  const [fileName, setFileName] = useState('');
 
-  // Build set of catechumen IDs in the active parish
-  const parishCatechumenIds = useMemo(() => {
-    if (!activeParishId) return null;
-    return new Set(filteredCatechumens.map((c:any) => c.id));
-  }, [filteredCatechumens, activeParishId]);
+  // Build a map: catechumenId → { docType → document }
+  const docMap = useMemo(() => {
+    const map: Record<string, Record<string, any>> = {};
+    for (const d of docs) {
+      if (!d.catechumenProfileId) continue;
+      if (!map[d.catechumenProfileId]) map[d.catechumenProfileId] = {};
+      map[d.catechumenProfileId][d.type] = d;
+    }
+    return map;
+  }, [docs]);
 
-  const filtered=useMemo(()=>{
-    let r=[...docs];
-    if (parishCatechumenIds) r = r.filter((d:any) => !d.catechumenProfileId || parishCatechumenIds.has(d.catechumenProfileId));
-    if(search)r=r.filter((d:any)=>d.name.toLowerCase().includes(search.toLowerCase())||d.catechumenProfile?.firstName?.toLowerCase().includes(search.toLowerCase()));
-    if(typeFilter)r=r.filter((d:any)=>d.type===typeFilter);
-    return r;
-  },[docs,search,typeFilter,parishCatechumenIds]);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setFileName(file.name);
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = (reader.result as string).split(',')[1];
+      setFileBase64(base64);
+    };
+    reader.readAsDataURL(file);
+  };
 
-  const verified=docs.filter((d:any)=>d.verifiedAt).length;
-  const pending=docs.length-verified;
-
-  const [deleting, setDeleting] = useState<string | null>(null);
-  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
-
-  const handleUpload=async()=>{
-    if(!docName)return;
+  const handleUpload = async () => {
+    if (!uploadingFor || !fileBase64) return;
     try {
-      await uploadDocument({name:docName,type:docType,catechumenProfileId:docCatechumenId||undefined});
-      setDocName('');setShowForm(false);
-      toast({ title: 'Documento enviado com sucesso.' });
+      await uploadDocument({
+        name: fileName || DOC_TYPES[uploadingFor.docType],
+        type: uploadingFor.docType,
+        catechumenProfileId: uploadingFor.catechumenId,
+        fileBase64,
+        mimeType: fileName.split('.').pop() || 'bin',
+      });
+      toast({ title: 'Documento enviado!' });
+      setUploadingFor(null);
+      setFileBase64('');
+      setFileName('');
     } catch (e: any) {
-      toast({ title: 'Erro ao enviar documento', description: e.message || 'Tente novamente.', variant: 'destructive' });
+      toast({ title: 'Erro', description: e.message, variant: 'destructive' });
     }
   };
 
-  const handleVerify=async(id:string)=>{
-    try {
-      await verifyDocument({id});
-      toast({ title: 'Documento verificado.' });
-    } catch (e: any) {
-      toast({ title: 'Erro ao verificar documento', description: e.message || 'Tente novamente.', variant: 'destructive' });
-    }
+  const handleVerify = async (id: string) => {
+    try { await verifyDocument({ id }); toast({ title: 'Documento verificado!' }); }
+    catch (e: any) { toast({ title: 'Erro', description: e.message, variant: 'destructive' }); }
   };
 
-  const handleDelete=async(id:string)=>{
-    setDeleteConfirmId(id);
+  const handleReject = async () => {
+    if (!rejectingId) return;
+    try { await rejectDocument({ id: rejectingId }); toast({ title: 'Documento rejeitado' }); setRejectingId(null); }
+    catch (e: any) { toast({ title: 'Erro', description: e.message, variant: 'destructive' }); }
   };
 
-  const confirmDelete = async () => {
-    if (!deleteConfirmId) return;
-    const id = deleteConfirmId;
-    setDeleteConfirmId(null);
-    setDeleting(id);
-    try {
-      await deleteDocument({ id });
-      toast({ title: 'Documento excluído.' });
-    } catch (e: any) {
-      toast({ title: 'Erro ao excluir documento', description: e.message || 'Tente novamente.', variant: 'destructive' });
-    } finally {
-      setDeleting(null);
-    }
+  const handleDelete = async (id: string) => {
+    try { await deleteDocument({ id }); toast({ title: 'Documento removido' }); }
+    catch (e: any) { toast({ title: 'Erro', description: e.message, variant: 'destructive' }); }
   };
 
-  if(loading)return<AppShell><div className="space-y-6 animate-pulse"><div className="h-8 w-40 bg-muted rounded"/><div className="grid gap-3">{[1,2,3,4].map(i=><div key={i} className="h-16 rounded-xl bg-muted"/>)}</div></div></AppShell>;
+  if (loading) return <AppShell><div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div></AppShell>;
 
-  const pendingDocs=filtered.filter((d:any)=>!d.verifiedAt);
-  const verifiedDocs=filtered.filter((d:any)=>d.verifiedAt);
-
-  return(
+  return (
     <AppShell>
       <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold">{t('documents.title')}</h1>
-            <p className="text-muted-foreground text-sm">{t('documents.summary', { verified, pending })}</p>
-          </div>
-          <Button onClick={()=>setShowForm(!showForm)}><Upload className="mr-2 h-4 w-4"/>{t('documents.new')}</Button>
+        <div>
+          <h1 className="text-2xl font-bold">Documentos</h1>
+          <p className="text-muted-foreground text-sm">Gerir documentos dos catequizandos</p>
         </div>
 
-        {showForm&&(
+        {/* Upload modal */}
+        {uploadingFor && (
           <div className="rounded-xl border bg-card p-4 space-y-3">
-            <h3 className="font-semibold">{t('documents.register')}</h3>
-            <div className="grid gap-3 md:grid-cols-3">
-              <input placeholder={t('documents.name')} value={docName} onChange={e=>setDocName(e.target.value)} className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"/>
-              <select value={docType} onChange={e=>setDocType(e.target.value)} className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">{Object.entries(TYPE_LABEL).map(([k,v])=><option key={k} value={k}>{v}</option>)}</select>
-              <select value={docCatechumenId} onChange={e=>setDocCatechumenId(e.target.value)} className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"><option value="">{t('documents.noCatechumen')}</option>{filteredCatechumens.map((c:any)=><option key={c.id} value={c.id}>{c.firstName} {c.lastName}</option>)}</select>
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-sm">
+                Enviar {DOC_TYPES[uploadingFor.docType]} — {
+                  catechumens.find((c: any) => c.id === uploadingFor.catechumenId)?.firstName
+                } {
+                  catechumens.find((c: any) => c.id === uploadingFor.catechumenId)?.lastName
+                }
+              </h3>
+              <button onClick={() => { setUploadingFor(null); setFileBase64(''); setFileName(''); }} className="p-1 hover:bg-muted rounded"><X className="h-4 w-4" /></button>
             </div>
-            <div className="flex gap-2"><Button size="sm" onClick={handleUpload} disabled={!docName}>{t('documents.registerBtn')}</Button><Button size="sm" variant="outline" onClick={()=>setShowForm(false)}>{t('cancel')}</Button></div>
+            <input type="file" onChange={handleFileChange} className="text-sm" />
+            {fileName && <p className="text-xs text-muted-foreground">Ficheiro: {fileName}</p>}
+            <div className="flex gap-2">
+              <Button size="sm" onClick={handleUpload} disabled={!fileBase64}>
+                <Upload className="mr-1 h-3 w-3" />Enviar
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => { setUploadingFor(null); setFileBase64(''); setFileName(''); }}>Cancelar</Button>
+            </div>
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1 max-w-xs"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"/><input placeholder={t('documents.searchPlaceholder')} value={search} onChange={e=>setSearch(e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm"/></div>
-          <div className="flex gap-1 flex-wrap">
-            <button onClick={()=>setTypeFilter('')} className={`rounded-full px-3 py-1.5 text-xs font-medium ${!typeFilter?'bg-primary text-primary-foreground':'bg-muted text-muted-foreground'}`}>{t('documents.all')}</button>
-            {Object.entries(TYPE_LABEL).slice(0,5).map(([k,v])=><button key={k} onClick={()=>setTypeFilter(k)} className={`rounded-full px-3 py-1.5 text-xs font-medium ${typeFilter===k?'bg-primary text-primary-foreground':'bg-muted text-muted-foreground'}`}>{v}</button>)}
-          </div>
+        {/* Catechumens with doc checklist */}
+        <div className="space-y-4">
+          {catechumens.map((c: any) => {
+            const catechumenDocs = docMap[c.id] || {};
+            const pending = Object.values(catechumenDocs).filter((d: any) => d.status === 'PENDING').length;
+            const verified = Object.values(catechumenDocs).filter((d: any) => d.status === 'VERIFIED').length;
+
+            return (
+              <div key={c.id} className="rounded-xl border bg-card p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold">
+                    {c.firstName?.[0]}{c.lastName?.[0]}
+                  </div>
+                  <div>
+                    <p className="font-medium text-sm">{c.firstName} {c.lastName}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {verified}/{Object.keys(DOC_TYPES).length} verificados
+                      {pending > 0 && <span className="text-amber-500"> · {pending} pendentes</span>}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                  {Object.entries(DOC_TYPES).map(([type, label]) => {
+                    const doc = catechumenDocs[type];
+                    const status = doc?.status || 'MISSING';
+                    const config = STATUS_CONFIG[status] || STATUS_CONFIG.PENDING;
+
+                    return (
+                      <div key={type} className={`flex items-center justify-between rounded-lg border p-2.5 ${status === 'MISSING' ? 'border-dashed bg-muted/20' : ''}`}>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <config.icon className={`h-4 w-4 flex-shrink-0 ${config.color}`} />
+                          <div className="min-w-0">
+                            <p className="text-xs font-medium truncate">{label}</p>
+                            {status !== 'MISSING' && (
+                              <p className="text-[10px] text-muted-foreground">{config.label}</p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          {status === 'MISSING' && canUpload && (
+                            <Button size="sm" variant="ghost" className="h-7 text-xs"
+                              onClick={() => setUploadingFor({ catechumenId: c.id, docType: type })}>
+                              <Upload className="h-3 w-3" />
+                            </Button>
+                          )}
+                          {status === 'PENDING' && isCoordinator && (
+                            <>
+                              <Button size="sm" variant="ghost" className="h-7 text-xs text-green-600"
+                                onClick={() => handleVerify(doc.id)}>
+                                <CheckCircle className="h-3 w-3" />
+                              </Button>
+                              <Button size="sm" variant="ghost" className="h-7 text-xs text-red-500"
+                                onClick={() => setRejectingId(doc.id)}>
+                                <XCircle className="h-3 w-3" />
+                              </Button>
+                            </>
+                          )}
+                          {status === 'REJECTED' && isCoordinator && (
+                            <Button size="sm" variant="ghost" className="h-7 text-xs text-green-600"
+                              onClick={() => handleVerify(doc.id)}>
+                              <CheckCircle className="h-3 w-3" />
+                            </Button>
+                          )}
+                          {(status === 'VERIFIED' || status === 'REJECTED') && canUpload && (
+                            <Button size="sm" variant="ghost" className="h-7 text-xs"
+                              onClick={() => setUploadingFor({ catechumenId: c.id, docType: type })}>
+                              <Upload className="h-3 w-3" />
+                            </Button>
+                          )}
+                          {doc && canUpload && (
+                            <Button size="sm" variant="ghost" className="h-7 text-xs text-muted-foreground hover:text-destructive"
+                              onClick={() => handleDelete(doc.id)}>
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
         </div>
 
-        {filtered.length===0?(
-          <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center"><div className="mb-4 rounded-full bg-primary/10 p-4"><FileText className="h-8 w-8 text-primary"/></div><h3 className="text-lg font-semibold">{t('documents.emptyTitle')}</h3><p className="text-sm text-muted-foreground mt-1">{t('documents.emptyDesc')}</p></div>
-        ):(
-          <div className="space-y-6">
-            {pendingDocs.length>0&&(
-              <div>
-                <h3 className="font-semibold text-sm uppercase text-muted-foreground mb-2 flex items-center gap-2"><XCircle className="h-4 w-4 text-amber-500"/>{t('documents.pending')} ({pendingDocs.length})</h3>
-                <div className="rounded-xl border bg-card divide-y">{pendingDocs.map((doc:any)=>(
-                  <div key={doc.id} className="flex items-center justify-between p-4">
-                    <div className="flex items-center gap-3">
-                      <div className={`rounded-lg p-2 ${TYPE_COLORS[doc.type]||'text-gray-600 bg-gray-50'}`}><FileText className="h-5 w-5"/></div>
-                      <div><a href={`/api/documents/${doc.id}`} target="_blank" rel="noreferrer" className="font-medium text-sm text-primary hover:underline">{doc.name}</a>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <Badge variant="outline" className="text-[10px]">{TYPE_LABEL[doc.type]}</Badge>
-                          {doc.catechumenProfile&&<span className="text-xs text-muted-foreground flex items-center gap-1"><User className="h-3 w-3"/>{doc.catechumenProfile.firstName}</span>}
-                          {doc.uploadedBy&&<span className="text-[10px] text-muted-foreground">{t('documents.uploadedBy')} {doc.uploadedBy.firstName}</span>}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex gap-2"><Button size="sm" variant="outline" onClick={()=>handleVerify(doc.id)}><CheckCircle className="mr-1 h-3 w-3"/>{t('documents.verify')}</Button></div>
-                  </div>
-                ))}</div>
+        {catechumens.length === 0 && (
+          <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center">
+            <FileText className="h-8 w-8 text-muted-foreground mb-3" />
+            <p className="text-sm text-muted-foreground">Nenhum catequizando encontrado.</p>
+          </div>
+        )}
+
+        {/* Reject confirmation */}
+        {rejectingId && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="bg-card rounded-xl p-6 shadow-xl max-w-sm w-full mx-4 space-y-3">
+              <h3 className="font-semibold">Rejeitar documento</h3>
+              <p className="text-sm text-muted-foreground">Confirmas que queres rejeitar este documento?</p>
+              <div className="flex gap-2 justify-end">
+                <Button size="sm" variant="outline" onClick={() => setRejectingId(null)}>Cancelar</Button>
+                <Button size="sm" variant="destructive" onClick={handleReject}>Rejeitar</Button>
               </div>
-            )}
-            {verifiedDocs.length>0&&(
-              <div>
-                <h3 className="font-semibold text-sm uppercase text-muted-foreground mb-2 flex items-center gap-2"><CheckCircle className="h-4 w-4 text-green-500"/>{t('documents.verified')} ({verifiedDocs.length})</h3>
-                <div className="rounded-xl border bg-card divide-y">{verifiedDocs.map((doc:any)=>(
-                  <div key={doc.id} className="flex items-center justify-between p-4 opacity-75">
-                    <div className="flex items-center gap-3">
-                      <div className={`rounded-lg p-2 ${TYPE_COLORS[doc.type]||'text-gray-600 bg-gray-50'}`}><FileText className="h-5 w-5"/></div>
-                      <div><a href={`/api/documents/${doc.id}`} target="_blank" rel="noreferrer" className="font-medium text-sm text-primary hover:underline">{doc.name}</a>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <Badge variant="outline" className="text-[10px]">{TYPE_LABEL[doc.type]}</Badge>
-                          {doc.catechumenProfile&&<span className="text-xs text-muted-foreground flex items-center gap-1"><User className="h-3 w-3"/>{doc.catechumenProfile.firstName}</span>}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Badge variant="default" className="gap-1 text-[10px]"><CheckCircle className="h-3 w-3"/>{t('documents.verifiedLabel')}</Badge>
-                      <span className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3"/>{new Date(doc.verifiedAt).toLocaleDateString()}</span>
-                      <button onClick={()=>handleDelete(doc.id)} disabled={deleting === doc.id} className="text-muted-foreground hover:text-destructive p-1 disabled:opacity-50">{deleting === doc.id ? <Loader2 className="h-4 w-4 animate-spin"/> : <Trash2 className="h-4 w-4"/>}</button>
-                    </div>
-                  </div>
-                ))}</div>
-              </div>
-            )}
+            </div>
           </div>
         )}
       </div>
-      <ConfirmDialog
-        open={!!deleteConfirmId}
-        onOpenChange={(open) => { if (!open) setDeleteConfirmId(null); }}
-        title="Excluir documento"
-        description="Tens a certeza que queres excluir este documento? Esta ação não pode ser desfeita."
-        confirmLabel="Excluir"
-        variant="destructive"
-        onConfirm={confirmDelete}
-      />
     </AppShell>
   );
 }

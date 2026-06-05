@@ -6,8 +6,6 @@ import { Badge } from '../../client/components/ui/badge';
 import { AppShell } from '../AppShell';
 import { useQuery, listParishes, createParish } from 'wasp/client/operations';
 import { useAuth } from 'wasp/client/auth';
-import { getPlanLimits } from '../../shared/planLimits';
-import { PlanLimitBanner } from '../components/PlanLimitBanner';
 import { handlePlanLimitError } from '../lib/planLimitToast';
 import CityStateSelect from '../../client/components/CityStateSelect';
 
@@ -35,10 +33,6 @@ export default function ParishesPage() {
   const [newState, setNewState] = useState('');
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
-
-  const plan = user?.subscriptionPlan || 'catechist_free';
-  const limits = getPlanLimits(plan);
-  const isParishLimitReached = limits.maxParishes !== null && parishes.length >= limits.maxParishes;
 
   const handleCreate = async () => {
     if (!newName.trim()) return;
@@ -85,13 +79,9 @@ export default function ParishesPage() {
             <h1 className="text-2xl font-bold">Paróquias</h1>
             <p className="text-muted-foreground text-sm">{parishes.length} paróquia{parishes.length !== 1 ? 's' : ''}</p>
           </div>
-          {isParishLimitReached ? (
-            <PlanLimitBanner type="parish_limit" currentCount={parishes.length} userPlan={plan} />
-          ) : (
-            <Button size="sm" onClick={() => setShowCreate(!showCreate)}>
-              <Plus className="mr-1 h-4 w-4" />Nova Paróquia
-            </Button>
-          )}
+          <Button size="sm" onClick={() => setShowCreate(!showCreate)}>
+            <Plus className="mr-1 h-4 w-4" />Nova Paróquia
+          </Button>
         </div>
 
         {error && (
@@ -118,11 +108,7 @@ export default function ParishesPage() {
             <div className="mb-4 rounded-full bg-primary/10 p-4"><Church className="h-10 w-10 text-primary" /></div>
             <h3 className="text-lg font-semibold">Nenhuma paróquia</h3>
             <p className="text-sm text-muted-foreground mt-1 max-w-sm">Crie sua primeira paróquia para começar a gerir turmas, catequizandos e comunidades.</p>
-            {isParishLimitReached ? (
-              <PlanLimitBanner type="parish_limit" currentCount={parishes.length} userPlan={plan} />
-            ) : (
-              <Button className="mt-4" onClick={() => setShowCreate(true)}><Plus className="mr-1 h-4 w-4" />Criar Primeira Paróquia</Button>
-            )}
+            <Button className="mt-4" onClick={() => setShowCreate(true)}><Plus className="mr-1 h-4 w-4" />Criar Primeira Paróquia</Button>
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2">

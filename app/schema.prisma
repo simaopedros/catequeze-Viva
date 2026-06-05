@@ -293,6 +293,7 @@ model Diocese {
   timezone String @default("America/Sao_Paulo")
 
   parishes Parish[]
+  billing  TenantBilling?
 }
 
 model Parish {
@@ -331,8 +332,8 @@ model Parish {
   Household            Household[]
   conversations        Conversation[]
   messageTemplates     MessageTemplate[]
+  catechumens          CatechumenProfile[]
 }
-
 enum CommunityType {
   CHAPEL
   RURAL_COMMUNITY
@@ -1042,6 +1043,7 @@ model Document {
   type     DocumentType @default(OTHER)
   s3Key    String
   mimeType String?
+  status   String       @default("PENDING") // PENDING, VERIFIED, REJECTED
 
   catechumenProfileId String?
   catechumenProfile   CatechumenProfile? @relation(fields: [catechumenProfileId], references: [id])
@@ -1051,6 +1053,8 @@ model Document {
 
   verifiedAt   DateTime?
   verifiedById String?
+  rejectedAt   DateTime?
+  rejectedReason String?
 
   @@index([catechumenProfileId])
   @@index([uploadedById])
@@ -1105,8 +1109,11 @@ model TenantBilling {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  parishId String @unique
-  parish   Parish @relation(fields: [parishId], references: [id])
+  parishId  String? @unique
+  parish    Parish? @relation(fields: [parishId], references: [id], onDelete: Cascade)
+
+  dioceseId String? @unique
+  diocese   Diocese? @relation(fields: [dioceseId], references: [id], onDelete: Cascade)
 
   plan                BillingPlan   @default(CATECHIST_FREE)
   status              BillingStatus @default(TRIAL)

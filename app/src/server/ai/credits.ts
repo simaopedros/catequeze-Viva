@@ -11,6 +11,9 @@ interface CreditContext {
   entities: {
     UserAiCredits: any;
     User: any;
+    Membership?: any;
+    Parish?: any;
+    TenantBilling?: any;
   };
   user?: { id: string } | null;
 }
@@ -19,6 +22,76 @@ interface CreditContext {
  * Ensure the user has AI access and enough credits, then deduct.
  * Throws HttpError(402) if out of credits or on wrong plan.
  */
+export function resolveUserAiAllowance(personalPlan: string | null, effectivePlan: string | null): number {
+  if (!effectivePlan) return 0;
+  
+  const normEffective = effectivePlan.toUpperCase();
+  if (normEffective === 'PARISH' || normEffective === 'DIOCESE') {
+    return 30; // 30 créditos para contas gerenciadas em planos ilimitados
+  }
+  
+  return getMonthlyAllowance(effectivePlan);
+}
+
+export async function resolveUserEffectivePlanAndStatus(
+  context: any,
+  userId: string,
+  personalPlan: string | null
+): Promise<{ effectivePlan: string | null; isFreePlan: boolean }> {
+  let effectivePlan = personalPlan;
+  let isFreePlan = !personalPlan || personalPlan === 'catechist_free' || personalPlan === 'CATECHIST_FREE';
+
+  if (context.entities.Membership && context.entities.TenantBilling) {
+    const activeMemberships = await context.entities.Membership.findMany({
+      where: { userId, status: 'ACTIVE' },
+      select: { parishId: true },
+    });
+    if (activeMemberships.length > 0) {
+      const parishIds = activeMemberships.map((m: any) => m.parishId);
+      const paidBilling = await context.entities.TenantBilling.findFirst({
+        where: {
+          parishId: { in: parishIds },
+          OR: [
+            { status: 'ACTIVE' },
+            { status: 'TRIAL', trialEndsAt: { gte: new Date() } },
+          ],
+          plan: { in: ['PARISH', 'DIOCESE', 'CATECHIST_PRO', 'CATECHIST_AI'] },
+        },
+        orderBy: { plan: 'asc' },
+      });
+      if (paidBilling) {
+        effectivePlan = paidBilling.plan;
+        isFreePlan = false;
+      } else if (context.entities.Parish) {
+        const parishes = await context.entities.Parish.findMany({
+          where: { id: { in: parishIds } },
+          select: { dioceseId: true },
+        });
+        const dioceseIds = parishes.map((p: any) => p.dioceseId).filter(Boolean);
+
+        if (dioceseIds.length > 0) {
+          const dioceseBilling = await context.entities.TenantBilling.findFirst({
+            where: {
+              dioceseId: { in: dioceseIds },
+              OR: [
+                { status: 'ACTIVE' },
+                { status: 'TRIAL', trialEndsAt: { gte: new Date() } },
+              ],
+              plan: 'DIOCESE',
+            },
+          });
+          if (dioceseBilling) {
+            effectivePlan = 'DIOCESE';
+            isFreePlan = false;
+          }
+        }
+      }
+    }
+  }
+
+  return { effectivePlan, isFreePlan };
+}
+
 export async function assertAndDeductCredits(
   context: CreditContext,
   cost: number,
@@ -33,7 +106,7 @@ export async function assertAndDeductCredits(
   if (!user) throw new HttpError(401);
 
   const plan = user.subscriptionPlan;
-  const isFreePlan = !plan || plan === 'catechist_free' || plan === 'CATECHIST_FREE';
+  const { effectivePlan, isFreePlan } = await resolveUserEffectivePlanAndStatus(context, context.user.id, plan);
 
   // Get or create credits record
   let credits = await context.entities.UserAiCredits.findUnique({
@@ -53,7 +126,7 @@ export async function assertAndDeductCredits(
 
   if (!credits && !isFreePlan) {
     // Paid plan — auto-create on first use with monthly allowance
-    const allowance = getMonthlyAllowance(plan);
+    const allowance = resolveUserAiAllowance(plan, effectivePlan);
     credits = await context.entities.UserAiCredits.create({
       data: {
         userId: context.user.id,
@@ -75,7 +148,7 @@ export async function assertAndDeductCredits(
   const now = new Date();
   const lastReset = new Date(credits.lastReset);
   if (!isFreePlan && shouldReset(lastReset, now)) {
-    const allowance = getMonthlyAllowance(plan);
+    const allowance = resolveUserAiAllowance(plan, effectivePlan);
     credits = await context.entities.UserAiCredits.update({
       where: { userId: context.user.id },
       data: {
@@ -95,7 +168,7 @@ export async function assertAndDeductCredits(
     }
   } else {
     // Paid plan — must have AI access
-    if (!planHasAiAccess(plan)) {
+    if (!planHasAiAccess(effectivePlan)) {
       throw new HttpError(
         402,
         'Plano sem acesso à IA. Faça upgrade para Catequista IA ou Paróquia em /app/billing.',
@@ -185,9 +258,10 @@ export async function getCreditsStatus(
   });
 
   const plan = user?.subscriptionPlan ?? null;
-  const planHasAccess = planHasAiAccess(plan);
-  const monthlyAllowance = getMonthlyAllowance(plan);
-  const isFreePlan = !plan || plan === 'catechist_free' || plan === 'CATECHIST_FREE';
+  const { effectivePlan, isFreePlan } = await resolveUserEffectivePlanAndStatus(context, context.user.id, plan);
+
+  const planHasAccess = planHasAiAccess(effectivePlan);
+  const monthlyAllowance = resolveUserAiAllowance(plan, effectivePlan);
 
   const credits = await context.entities.UserAiCredits.findUnique({
     where: { userId: context.user.id },
@@ -199,7 +273,7 @@ export async function getCreditsStatus(
       // Never used AI — 3 trial credits available
       return {
         creditsLeft: AI_CREDITS.FREE_TRIAL_CREDITS,
-        plan,
+        plan: effectivePlan,
         hasAiAccess: true,
         monthlyAllowance: AI_CREDITS.FREE_TRIAL_CREDITS,
       };
@@ -207,21 +281,29 @@ export async function getCreditsStatus(
     // Has credits record — show actual remaining trial credits
     return {
       creditsLeft: credits.creditsLeft,
-      plan,
+      plan: effectivePlan,
       hasAiAccess: credits.creditsLeft > 0,
       monthlyAllowance: AI_CREDITS.FREE_TRIAL_CREDITS,
     };
   }
 
-  // Paid plan without AI access (Pro, Diocese): no credits, no access
+  // Paid plan without AI access: no credits, no access
   if (!planHasAccess) {
-    return { creditsLeft: 0, plan, hasAiAccess: false, monthlyAllowance: 0 };
+    return { creditsLeft: 0, plan: effectivePlan, hasAiAccess: false, monthlyAllowance: 0 };
   }
 
-  // Paid AI plan (Catechist AI, Parish): show actual state
+  // Paid AI plan (Catechist AI, Parish, Diocese): show actual state
+  let creditsLeft = credits?.creditsLeft ?? monthlyAllowance;
+  if (credits) {
+    const lastReset = new Date(credits.lastReset);
+    if (shouldReset(lastReset, new Date())) {
+      creditsLeft = monthlyAllowance;
+    }
+  }
+
   return {
-    creditsLeft: credits?.creditsLeft ?? monthlyAllowance,
-    plan,
+    creditsLeft,
+    plan: effectivePlan,
     hasAiAccess: true,
     monthlyAllowance,
   };

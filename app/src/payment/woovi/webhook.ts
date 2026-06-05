@@ -33,9 +33,6 @@ interface WooviWebhookEvent {
 }
 
 export const wooviWebhook: PaymentsWebhook = async (request, response, context) => {
-  const prismaUserDelegate = context.entities.User;
-  const prismaTenantBillingDelegate = context.entities.TenantBilling;
-
   try {
     // Woovi sends a validation ping when registering a webhook.
     // In development, skip HMAC validation to allow registration without a public URL.
@@ -57,14 +54,14 @@ export const wooviWebhook: PaymentsWebhook = async (request, response, context) 
 
     switch (event) {
       case "OPENPIX:SUBSCRIPTION_AUTHORIZED":
-        await handleSubscriptionAuthorized(payload, prismaUserDelegate, prismaTenantBillingDelegate);
+        await handleSubscriptionAuthorized(payload, context);
         break;
       case "OPENPIX:SUBSCRIPTION_REJECTED":
       case "OPENPIX:SUBSCRIPTION_CANCELLED":
-        await handleSubscriptionCancelled(payload, prismaUserDelegate, prismaTenantBillingDelegate);
+        await handleSubscriptionCancelled(payload, context);
         break;
       case "OPENPIX:CHARGE_COMPLETED":
-        await handleChargeCompleted(payload, prismaUserDelegate, prismaTenantBillingDelegate);
+        await handleChargeCompleted(payload, context);
         break;
       case "OPENPIX:CHARGE_EXPIRED":
         // Charge expired without payment — no action needed
@@ -112,24 +109,28 @@ function validateWooviWebhook(request: express.Request): void {
 
 async function handleSubscriptionAuthorized(
   payload: WooviWebhookEvent,
-  prismaUserDelegate: PrismaClient["user"],
-  prismaTenantBillingDelegate: PrismaClient["tenantBilling"],
+  context: any,
 ): Promise<void> {
   const correlationID = payload.subscription?.correlationID;
   if (!correlationID) return;
 
   if (correlationID.startsWith("user-")) {
-    await prismaUserDelegate.updateMany({
+    // Extract planId from correlationID: user-{userId}-{planId}-{uuid}
+    const parts = correlationID.split('-');
+    const planId = parts.length >= 3 ? parts[2] : null;
+
+    await context.entities.User.updateMany({
       where: { wooviCorrelationId: correlationID },
       data: {
         subscriptionStatus: SubscriptionStatus.Active,
+        subscriptionPlan: planId,
         datePaid: new Date(),
       },
     });
     // If the plan is Parish or Diocese, cascade to TenantBilling
-    await cascadePlanToTenantBilling(correlationID, prismaUserDelegate, prismaTenantBillingDelegate);
+    await cascadePlanToTenantBilling(correlationID, context);
   } else if (correlationID.startsWith("parish-")) {
-    await prismaTenantBillingDelegate.updateMany({
+    await context.entities.TenantBilling.updateMany({
       where: { wooviCorrelationId: correlationID },
       data: {
         status: "ACTIVE",
@@ -141,32 +142,33 @@ async function handleSubscriptionAuthorized(
 
 async function handleSubscriptionCancelled(
   payload: WooviWebhookEvent,
-  prismaUserDelegate: PrismaClient["user"],
-  prismaTenantBillingDelegate: PrismaClient["tenantBilling"],
+  context: any,
 ): Promise<void> {
   const correlationID = payload.subscription?.correlationID;
   if (!correlationID) return;
 
   if (correlationID.startsWith("user-")) {
     // Find the user first to get their ID for cascade
-    const user = await prismaUserDelegate.findFirst({
+    const user = await context.entities.User.findFirst({
       where: { wooviCorrelationId: correlationID },
       select: { id: true },
     });
 
-    await prismaUserDelegate.updateMany({
+    await context.entities.User.updateMany({
       where: { wooviCorrelationId: correlationID },
       data: {
         subscriptionStatus: SubscriptionStatus.Deleted,
+        subscriptionPlan: null,
+        wooviCorrelationId: null,
       },
     });
 
-    // Downgrade all parishes owned by this user to CATECHIST_FREE
+    // Downgrade all parishes/dioceses owned or managed by this user
     if (user) {
-      await cascadeCancelToTenantBilling(user.id, prismaTenantBillingDelegate);
+      await cascadeCancelToTenantBilling(user.id, context);
     }
   } else if (correlationID.startsWith("parish-")) {
-    await prismaTenantBillingDelegate.updateMany({
+    await context.entities.TenantBilling.updateMany({
       where: { wooviCorrelationId: correlationID },
       data: {
         status: "CANCELED",
@@ -177,15 +179,14 @@ async function handleSubscriptionCancelled(
 
 async function handleChargeCompleted(
   payload: WooviWebhookEvent,
-  prismaUserDelegate: PrismaClient["user"],
-  prismaTenantBillingDelegate: PrismaClient["tenantBilling"],
+  context: any,
 ): Promise<void> {
   const correlationID = payload.charge?.correlationID;
   if (!correlationID) return;
 
   // One-time PIX charge was paid — treat as active for the period
   if (correlationID.startsWith("user-")) {
-    await prismaUserDelegate.updateMany({
+    await context.entities.User.updateMany({
       where: { wooviCorrelationId: correlationID },
       data: {
         subscriptionStatus: SubscriptionStatus.Active,
@@ -193,9 +194,9 @@ async function handleChargeCompleted(
       },
     });
     // Cascade parish/diocese plan activation to TenantBilling
-    await cascadePlanToTenantBilling(correlationID, prismaUserDelegate, prismaTenantBillingDelegate);
+    await cascadePlanToTenantBilling(correlationID, context);
   } else if (correlationID.startsWith("parish-")) {
-    await prismaTenantBillingDelegate.updateMany({
+    await context.entities.TenantBilling.updateMany({
       where: { wooviCorrelationId: correlationID },
       data: {
         status: "ACTIVE",
@@ -206,15 +207,14 @@ async function handleChargeCompleted(
 }
 
 /**
- * When a user activates any paid plan, update their parishes' TenantBilling
+ * When a user activates any paid plan, update their parishes' or diocese' TenantBilling
  * to reflect the new plan and reset limits.
  */
 async function cascadePlanToTenantBilling(
   correlationID: string,
-  prismaUserDelegate: PrismaClient["user"],
-  prismaTenantBillingDelegate: PrismaClient["tenantBilling"],
+  context: any,
 ): Promise<void> {
-  const user = await prismaUserDelegate.findFirst({
+  const user = await context.entities.User.findFirst({
     where: {
       wooviCorrelationId: correlationID,
       subscriptionPlan: {
@@ -234,19 +234,62 @@ async function cascadePlanToTenantBilling(
   // Map PaymentPlanId to BillingPlan enum (uppercase)
   const billingPlan = user.subscriptionPlan.toUpperCase() as "CATECHIST_FREE" | "CATECHIST_PRO" | "CATECHIST_AI" | "PARISH" | "DIOCESE";
 
-  // Update TenantBilling for all parishes owned by this user
-  await prismaTenantBillingDelegate.updateMany({
-    where: {
-      parish: { ownerId: user.id },
-    },
-    data: {
-      plan: billingPlan,
-      status: "ACTIVE",
-      maxClasses: null,
-      maxCatechumens: null,
-      currentPeriodEnd: getNextPeriodEnd(),
-    },
-  });
+  if (billingPlan === "DIOCESE") {
+    // Find the diocese of the user
+    const membership = await context.entities.Membership.findFirst({
+      where: { userId: user.id, role: "DIOCESE_ADMIN", status: "ACTIVE" },
+      include: { parish: true },
+    });
+    let dioceseId = membership?.parish?.dioceseId;
+
+    if (!dioceseId) {
+      const parish = await context.entities.Parish.findFirst({
+        where: { ownerId: user.id },
+        select: { dioceseId: true },
+      });
+      dioceseId = parish?.dioceseId;
+    }
+
+    if (dioceseId) {
+      // Find or create the diocese billing record
+      const existingBilling = await context.entities.TenantBilling.findUnique({
+        where: { dioceseId },
+      });
+      if (existingBilling) {
+        await context.entities.TenantBilling.update({
+          where: { id: existingBilling.id },
+          data: {
+            plan: "DIOCESE",
+            status: "ACTIVE",
+            currentPeriodEnd: getNextPeriodEnd(),
+          },
+        });
+      } else {
+        await context.entities.TenantBilling.create({
+          data: {
+            dioceseId,
+            plan: "DIOCESE",
+            status: "ACTIVE",
+            currentPeriodEnd: getNextPeriodEnd(),
+          },
+        });
+      }
+    }
+  } else {
+    // Update TenantBilling for all parishes owned by this user
+    await context.entities.TenantBilling.updateMany({
+      where: {
+        parish: { ownerId: user.id },
+      },
+      data: {
+        plan: billingPlan,
+        status: "ACTIVE",
+        maxClasses: null,
+        maxCatechumens: null,
+        currentPeriodEnd: getNextPeriodEnd(),
+      },
+    });
+  }
 }
 
 function getNextPeriodEnd(): Date {
@@ -256,14 +299,15 @@ function getNextPeriodEnd(): Date {
 }
 
 /**
- * Downgrade all parishes owned by a user to CATECHIST_FREE when their
+ * Downgrade all parishes/dioceses owned or managed by a user to CATECHIST_FREE when their
  * subscription is cancelled (via webhook or in-app action).
  */
 async function cascadeCancelToTenantBilling(
   userId: string,
-  prismaTenantBillingDelegate: PrismaClient["tenantBilling"],
+  context: any,
 ): Promise<void> {
-  await prismaTenantBillingDelegate.updateMany({
+  // 1. Downgrade parishes owned by user
+  await context.entities.TenantBilling.updateMany({
     where: {
       parish: { ownerId: userId },
     },
@@ -274,4 +318,31 @@ async function cascadeCancelToTenantBilling(
       maxCatechumens: null,
     },
   });
+
+  // 2. Downgrade diocese managed by user
+  const membership = await context.entities.Membership.findFirst({
+    where: { userId, role: "DIOCESE_ADMIN" },
+    include: { parish: true },
+  });
+  let dioceseId = membership?.parish?.dioceseId;
+
+  if (!dioceseId) {
+    const parish = await context.entities.Parish.findFirst({
+      where: { ownerId: userId },
+      select: { dioceseId: true },
+    });
+    dioceseId = parish?.dioceseId;
+  }
+
+  if (dioceseId) {
+    await context.entities.TenantBilling.updateMany({
+      where: { dioceseId },
+      data: {
+        plan: "CATECHIST_FREE",
+        status: "CANCELED",
+        maxClasses: null,
+        maxCatechumens: null,
+      },
+    });
+  }
 }

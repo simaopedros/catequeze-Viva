@@ -134,6 +134,44 @@ export const uploadDocument = async (
   validateOrThrow(uploadDocumentSchema, args);
   requireAuth(context.user);
 
+  // Only catechists+ or guardians (for their household catechumens) can upload
+  if (!context.user.isAdmin) {
+    const membership = await context.entities.Membership.findFirst({
+      where: { userId: context.user.id, status: 'ACTIVE' },
+      select: { role: true, parishId: true },
+    });
+    if (!membership) {
+      throw new HttpError(403, 'Sem permissão para enviar documentos.');
+    }
+
+    const catechistRoles = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST'];
+
+    if (catechistRoles.includes(membership.role)) {
+      // Allowed
+    } else if (membership.role === 'GUARDIAN') {
+      // Guardian: only for catechumens in their household
+      if (!args.catechumenProfileId) {
+        throw new HttpError(403, 'Responsáveis devem selecionar um catequizando da sua família.');
+      }
+      const guardian = await context.entities.GuardianProfile.findUnique({
+        where: { userId: context.user.id },
+        select: { householdId: true },
+      });
+      if (!guardian?.householdId) {
+        throw new HttpError(403, 'Perfil de responsável não encontrado.');
+      }
+      const catechumen = await context.entities.CatechumenProfile.findUnique({
+        where: { id: args.catechumenProfileId },
+        select: { householdId: true },
+      });
+      if (!catechumen || catechumen.householdId !== guardian.householdId) {
+        throw new HttpError(403, 'Só pode enviar documentos para catequizandos da sua família.');
+      }
+    } else {
+      throw new HttpError(403, 'Sem permissão para enviar documentos.');
+    }
+  }
+
   let parishId = args.parishId;
   if (!parishId) {
     const membership = await context.entities.Membership.findFirst({
@@ -214,7 +252,34 @@ export const verifyDocument = async (args: { id: string }, context: any) => {
 
   return context.entities.Document.update({
     where: { id: args.id },
-    data: { verifiedAt: new Date(), verifiedById: context.user.id },
+    data: { verifiedAt: new Date(), verifiedById: context.user.id, status: 'VERIFIED', rejectedAt: null, rejectedReason: null },
+  });
+};
+
+export const rejectDocument = async (args: { id: string; reason?: string }, context: any) => {
+  requireAuth(context.user);
+
+  const document = await context.entities.Document.findUnique({
+    where: { id: args.id },
+    select: { uploadedById: true },
+  });
+  if (!document) throw new HttpError(404, 'Documento não encontrado.');
+
+  if (!context.user.isAdmin) {
+    const membership = await context.entities.Membership.findFirst({
+      where: { userId: context.user.id, status: 'ACTIVE' },
+      select: { role: true },
+    });
+
+    const allowedRoles = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'];
+    if (!membership || !allowedRoles.includes(membership.role)) {
+      throw new HttpError(403, 'Apenas coordenadores podem rejeitar documentos.');
+    }
+  }
+
+  return context.entities.Document.update({
+    where: { id: args.id },
+    data: { status: 'REJECTED', rejectedAt: new Date(), rejectedReason: args.reason || null, verifiedAt: null, verifiedById: null },
   });
 };
 

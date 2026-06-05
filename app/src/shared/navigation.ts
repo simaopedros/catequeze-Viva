@@ -32,7 +32,7 @@ export const NAV_SECTIONS: NavSectionConfig[] = [
       { to: '/app/parishes', labelKey: 'parishes', iconKey: 'parishes', roles: STAFF_ROLES },
       { to: '/app/communities', labelKey: 'communities', iconKey: 'communities', roles: CATECHIST_ROLES },
       { to: '/app/classes', labelKey: 'classes', iconKey: 'classes', roles: VIEWER_ROLES },
-      { to: '/app/catechumens', labelKey: 'catechumens', iconKey: 'catechumens', roles: LEARNER_ROLES },
+      { to: '/app/catechumens', labelKey: 'catechumens', iconKey: 'catechumens', roles: [...VIEWER_ROLES, 'GUARDIAN'] },
       { to: '/app/families', labelKey: 'families', iconKey: 'families', roles: CATECHIST_ROLES },
     ],
   },
@@ -50,7 +50,7 @@ export const NAV_SECTIONS: NavSectionConfig[] = [
   {
     section: 'pastoral',
     items: [
-      { to: '/app/messages', labelKey: 'messages', iconKey: 'messages', roles: [...STAFF_ROLES, 'LEAD_CATECHIST', 'GUARDIAN'] },
+      { to: '/app/messages', labelKey: 'messages', iconKey: 'messages', roles: [...CATECHIST_ROLES, 'GUARDIAN', 'CATECHUMEN'] },
       { to: '/app/sacramental-journeys', labelKey: 'sacraments', iconKey: 'sacraments', roles: [...STAFF_ROLES, 'LEAD_CATECHIST', 'GUARDIAN', 'CATECHUMEN', 'PASTORAL_VIEWER'] },
       { to: '/app/documents', labelKey: 'documents', iconKey: 'documents', roles: [...CATECHIST_ROLES, 'GUARDIAN'] },
       { to: '/app/reports', labelKey: 'reports', iconKey: 'reports', roles: [...STAFF_ROLES, 'PASTORAL_VIEWER'] },

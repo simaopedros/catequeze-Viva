@@ -1,6 +1,6 @@
 import { HttpError } from 'wasp/server';
-import { writeAuditLog, getDioceseParishIds } from '../auth/helpers';
-import { assertCanCreateParish } from './billingEnforcement';
+import { writeAuditLog, getDioceseParishIds, requireDioceseAccess } from '../auth/helpers';
+import { assertCanCreateParish, resolveEffectiveBilling } from './billingEnforcement';
 
 /**
  * Public search for onboarding — ignores user's Membership.
@@ -136,11 +136,15 @@ export const updateParish = async (
 ): Promise<{ success: boolean }> => {
   if (!context.user) throw new HttpError(401);
 
-  const membership = await context.entities.Membership.findFirst({
-    where: { userId: context.user.id, parishId: args.id, status: 'ACTIVE' },
-  });
-
-  if (!membership && !context.user.isAdmin) throw new HttpError(403);
+  if (!context.user.isAdmin) {
+    const membership = await context.entities.Membership.findFirst({
+      where: { userId: context.user.id, parishId: args.id, status: 'ACTIVE' },
+    });
+    if (!membership) {
+      const isDioceseAdmin = await requireDioceseAccess(context, args.id);
+      if (!isDioceseAdmin) throw new HttpError(403);
+    }
+  }
 
   const { id, ...data } = args;
   await context.entities.Parish.update({ where: { id }, data });
@@ -156,6 +160,7 @@ export const getParishById = async (args: { id: string }, context: any) => {
     include: {
       diocese: { select: { id: true, name: true } },
       billing: true,
+      owner: { select: { id: true, firstName: true, lastName: true, email: true } },
       _count: { select: { communities: true, classes: true, memberships: true } },
     },
   });
@@ -166,8 +171,38 @@ export const getParishById = async (args: { id: string }, context: any) => {
     const membership = await context.entities.Membership.findFirst({
       where: { userId: context.user.id, parishId: args.id, status: 'ACTIVE' },
     });
-    if (!membership) throw new HttpError(403, 'Você não tem acesso a esta paróquia.');
+    if (!membership) {
+      const isDioceseAdmin = await requireDioceseAccess(context, args.id);
+      if (!isDioceseAdmin) throw new HttpError(403, 'Você não tem acesso a esta paróquia.');
+    }
   }
+
+  const resolvedBilling = await resolveEffectiveBilling(context, parish.id);
+  if (resolvedBilling) {
+    (parish as any).billing = {
+      ...parish.billing,
+      plan: resolvedBilling.plan,
+      status: resolvedBilling.status,
+      trialEndsAt: resolvedBilling.trialEndsAt,
+      maxClasses: resolvedBilling.maxClasses,
+      maxCatechumens: resolvedBilling.maxCatechumens,
+    };
+  }
+
+  let dioceseAdmins: any[] = [];
+  if (parish.dioceseId) {
+    dioceseAdmins = await context.entities.Membership.findMany({
+      where: {
+        role: 'DIOCESE_ADMIN',
+        status: 'ACTIVE',
+        parish: { dioceseId: parish.dioceseId },
+      },
+      select: {
+        user: { select: { id: true, firstName: true, lastName: true, email: true } },
+      },
+    });
+  }
+  (parish as any).dioceseAdmins = dioceseAdmins;
 
   return parish;
 };
@@ -175,8 +210,32 @@ export const getParishById = async (args: { id: string }, context: any) => {
 export const listParishes = async (_args: void, context: any) => {
   if (!context.user) throw new HttpError(401);
 
+  let parishes: any[] = [];
   if (context.user.isAdmin) {
-    return context.entities.Parish.findMany({
+    parishes = await context.entities.Parish.findMany({
+      orderBy: { name: 'asc' },
+      include: {
+        diocese: { select: { id: true, name: true } },
+        _count: { select: { communities: true, classes: true, memberships: true } },
+        billing: { select: { plan: true, status: true, trialEndsAt: true } },
+      },
+    });
+  } else {
+    const memberships = await context.entities.Membership.findMany({
+      where: { userId: context.user.id, status: 'ACTIVE' },
+      select: { parishId: true, role: true },
+    });
+
+    let parishIds = memberships.map((m: any) => m.parishId);
+
+    // DIOCESE_ADMIN: incluir todas as paróquias da diocese
+    if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
+      const dioceseParishIds = await getDioceseParishIds(context);
+      parishIds = [...new Set([...parishIds, ...dioceseParishIds])];
+    }
+
+    parishes = await context.entities.Parish.findMany({
+      where: { id: { in: parishIds } },
       orderBy: { name: 'asc' },
       include: {
         diocese: { select: { id: true, name: true } },
@@ -186,28 +245,22 @@ export const listParishes = async (_args: void, context: any) => {
     });
   }
 
-  const memberships = await context.entities.Membership.findMany({
-    where: { userId: context.user.id, status: 'ACTIVE' },
-    select: { parishId: true, role: true },
-  });
+  const parishesWithResolvedBilling = await Promise.all(
+    parishes.map(async (parish: any) => {
+      const resolvedBilling = await resolveEffectiveBilling(context, parish.id);
+      if (resolvedBilling) {
+        parish.billing = {
+          ...parish.billing,
+          plan: resolvedBilling.plan,
+          status: resolvedBilling.status,
+          trialEndsAt: resolvedBilling.trialEndsAt,
+        };
+      }
+      return parish;
+    })
+  );
 
-  let parishIds = memberships.map((m: any) => m.parishId);
-
-  // DIOCESE_ADMIN: incluir todas as paróquias da diocese
-  if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
-    const dioceseParishIds = await getDioceseParishIds(context);
-    parishIds = [...new Set([...parishIds, ...dioceseParishIds])];
-  }
-
-  return context.entities.Parish.findMany({
-    where: { id: { in: parishIds } },
-    orderBy: { name: 'asc' },
-    include: {
-      diocese: { select: { id: true, name: true } },
-      _count: { select: { communities: true, classes: true, memberships: true } },
-      billing: { select: { plan: true, status: true } },
-    },
-  });
+  return parishesWithResolvedBilling;
 };
 
 /**
@@ -282,6 +335,16 @@ export const getOrCreateParishByOsmId = async (
       ownerId: context.user.id,
       locale: context.user.locale || 'pt-BR',
       timezone: context.user.timezone || 'America/Sao_Paulo',
+    },
+  });
+
+  // Create billing record for the new parish
+  await context.entities.TenantBilling.create({
+    data: {
+      parishId: parish.id,
+      plan: 'CATECHIST_FREE',
+      status: 'TRIAL',
+      trialEndsAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days trial
     },
   });
 

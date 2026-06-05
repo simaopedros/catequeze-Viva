@@ -5,10 +5,13 @@ import { Cross, Plus, User, CheckCircle, Clock, Search, Undo2 } from 'lucide-rea
 import { AppShell } from '../AppShell';
 import { useQuery, listCatechumens, listSacramentalJourneys, createSacramentalJourney, listJourneyTemplates, updateMilestoneStatus } from 'wasp/client/operations';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
+import { useUserContext } from '../../client/hooks/useUserContext';
 import { toast } from '../../client/hooks/use-toast';
 
 export default function SacramentsPage() {
   const { activeParishId } = useActiveParish();
+  const { userRole } = useUserContext();
+  const canManage = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'].includes(userRole);
   const { data: catechumens = [] } = useQuery(listCatechumens);
   const { data: journeys = [], isLoading: loading } = useQuery(listSacramentalJourneys);
   const [showForm, setShowForm] = useState(false);
@@ -65,7 +68,7 @@ export default function SacramentsPage() {
             <h1 className="text-2xl font-bold">Acompanhamento Sacramental</h1><p className="text-muted-foreground text-sm">{filtered.length} jornadas ativas</p></div>
           <div className="flex gap-2">
             <div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"/><input placeholder="Buscar..." value={search} onChange={e=>setSearch(e.target.value)} className="flex h-9 w-40 rounded-md border border-input bg-background pl-9 pr-3 text-sm"/></div>        
-            <Button onClick={()=>setShowForm(!showForm)}><Plus className="mr-1 h-4 w-4"/>Nova jornada</Button>
+            {canManage && <Button onClick={()=>setShowForm(!showForm)}><Plus className="mr-1 h-4 w-4"/>Nova jornada</Button>}
           </div>
         </div>
 
@@ -106,9 +109,9 @@ export default function SacramentsPage() {
                         {m.status==='COMPLETED'||m.status==='APPROVED'?<CheckCircle className="h-4 w-4 text-green-500"/>:<Clock className="h-4 w-4 text-muted-foreground"/>}
                         <span className={`text-sm ${m.status==='COMPLETED'?'line-through text-muted-foreground':''}`}>{m.templateMilestone?.name}</span>        
                       </div>
-                      {m.status!=='COMPLETED'&&m.status!=='APPROVED'?(
+                      {canManage && m.status!=='COMPLETED'&&m.status!=='APPROVED'?(
                         <Button size="sm" variant="ghost" className="h-6 text-[10px] text-green-600" onClick={()=>handleUpdate(m.id,'COMPLETED')}>✓ Concluir</Button>
-                      ):(
+                      ): canManage && (
                         <Button size="sm" variant="ghost" className="h-6 text-[10px] text-muted-foreground hover:text-destructive" onClick={()=>handleUndo(m.id)}><Undo2 className="h-3 w-3 mr-1"/>Desfazer</Button>
                       )}
                     </div>

@@ -8,7 +8,7 @@ import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { AppShell } from '../AppShell';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
-import { getPlanLimits } from '../../shared/planLimits';
+import { getPlanLimits, getEffectiveBillingPlan, isBillingActive } from '../../shared/planLimits';
 import { PlanLimitBanner } from '../components/PlanLimitBanner';
 
 export default function ClassesPage() {
@@ -20,8 +20,9 @@ export default function ClassesPage() {
   const [view, setView] = useState<'grid' | 'list'>('grid');
 
   const activeParish = availableParishes.find((p: any) => p.id === activeParishId);
-  const plan = activeParish?.billing?.plan || 'catechist_free';
-  const limits = getPlanLimits(plan);
+  const effectivePlan = getEffectiveBillingPlan(activeParish?.billing);
+  const limits = getPlanLimits(effectivePlan);
+  const isParishManaged = !user?.subscriptionPlan && isBillingActive(activeParish?.billing);
   const isClassLimitReached = limits.maxClasses !== null && classes && classes.length >= limits.maxClasses;
 
   const filtered = useMemo(() => {
@@ -66,7 +67,7 @@ export default function ClassesPage() {
               {view === 'grid' ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
             </Button>
             {isClassLimitReached ? (
-              <PlanLimitBanner type="class_limit" currentCount={classes!.length} userPlan={plan} className="min-w-[280px]" />
+              <PlanLimitBanner type="class_limit" currentCount={classes!.length} userPlan={effectivePlan} isParishManaged={isParishManaged} className="min-w-[280px]" />
             ) : (
               <Button asChild>
                 <Link to="/app/classes/new"><Plus className="mr-2 h-4 w-4" />Nova turma</Link>
@@ -104,7 +105,7 @@ export default function ClassesPage() {
               <p><span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 text-primary text-xs font-bold mr-2">3</span>Matricule-os na turma</p>
             </div>
             {isClassLimitReached ? (
-              <PlanLimitBanner type="class_limit" currentCount={classes!.length} userPlan={plan} />
+              <PlanLimitBanner type="class_limit" currentCount={classes!.length} userPlan={effectivePlan} isParishManaged={isParishManaged} />
             ) : (
               <Button className="mt-6" asChild><Link to="/app/classes/new">Criar turma</Link></Button>
             )}

@@ -2,21 +2,22 @@
  * AI credit constants shared between client and server.
  *
  * Credit rules:
- *   Free:        3 credits total (one-time, not renewable)
- *   Catechist AI: 15 credits/month (renewable)
- *   Parish:       50 credits/month (renewable)
- *   Pro/Diocese:  0 (no AI access)
+ *   Free:           3 credits total (one-time, not renewable)
+ *   Catechist AI:   15 credits/month (renewable)
+ *   Parish/Diocese: 30 credits/month per managed user (renewable)
  */
 export const AI_CREDITS = {
   /** Plans that have AI access */
-  AI_PLANS: ['CATECHIST_AI', 'catechist_ai', 'PARISH', 'parish'] as string[],
+  AI_PLANS: ['CATECHIST_AI', 'catechist_ai', 'PARISH', 'parish', 'DIOCESE', 'diocese'] as string[],
 
   /** Monthly credit allowance per plan */
   MONTHLY_ALLOWANCE: {
     catechist_ai: 15,
     CATECHIST_AI: 15,
-    parish: 50,
-    PARISH: 50,
+    parish: 30,
+    PARISH: 30,
+    diocese: 30,
+    DIOCESE: 30,
   } as Record<string, number>,
 
   /** One-time free credits (not renewable) */

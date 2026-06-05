@@ -62,7 +62,7 @@ export default function CalendarPage() {
       setMeetings(allMeetings);
       setLoadingMeetings(false);
     })();
-  }, [filteredClasses]);
+  }, [classes, activeParishId]);
 
   const loading = loadingLiturgical || loadingClasses || loadingMeetings;
   const events = [...parishFilteredEvents, ...meetings];

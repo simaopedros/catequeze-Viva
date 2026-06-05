@@ -143,17 +143,17 @@ query getCustomerPortalUrl {
 
 action generateCheckoutSession {
   fn: import { generateCheckoutSession } from "@src/payment/operations",
-  entities: [User]
+  entities: [User, Parish]
 }
 
 action cancelSubscription {
   fn: import { cancelSubscription } from "@src/payment/operations",
-  entities: [User, TenantBilling]
+  entities: [User, TenantBilling, Diocese, Parish, Membership]
 }
 
 api paymentsWebhook {
   fn: import { paymentsWebhook } from "@src/payment/webhook",
-  entities: [User, TenantBilling],
+  entities: [User, TenantBilling, Diocese, Parish, Membership],
   middlewareConfigFn: import { paymentsMiddlewareConfigFn } from "@src/payment/webhook",
   httpRoute: (POST, "/payments-webhook")
 }
@@ -355,7 +355,7 @@ query getCurrentUserContext {
 
 query listParishes {
   fn: import { listParishes } from "@src/server/operations/parishOperations",
-  entities: [Parish, Membership]
+  entities: [Parish, Membership, TenantBilling, Diocese]
 }
 
 query searchParishesForOnboarding {
@@ -386,7 +386,7 @@ action executeParishMigration {
 
 query getParishById {
   fn: import { getParishById } from "@src/server/operations/parishOperations",
-  entities: [Parish, Membership, Diocese, TenantBilling]
+  entities: [Parish, Membership, Diocese, TenantBilling, User]
 }
 
 action getOrCreateParishByOsmId {
@@ -452,7 +452,7 @@ action joinParish {
 //#region Catequese Viva - Classes
 query listClasses {
   fn: import { listClasses } from "@src/server/operations/classOperations",
-  entities: [CatechesisClass, Membership, Parish, ClassCatechist]
+  entities: [CatechesisClass, Membership, Parish, ClassCatechist, GuardianProfile, CatechumenProfile, ClassEnrollment]
 }
 
 query getClassDetails {
@@ -467,7 +467,7 @@ query listParishCatechists {
 
 action createClass {
   fn: import { createClass } from "@src/server/operations/classOperations",
-  entities: [CatechesisClass, Membership, ClassCatechist, TenantBilling]
+  entities: [CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese]
 }
 
 action updateClass {
@@ -492,7 +492,7 @@ action removeCatechistFromClass {
 
 action enrollCatechumen {
   fn: import { enrollCatechumen } from "@src/server/operations/classOperations",
-  entities: [ClassEnrollment, CatechesisClass, Membership, ClassCatechist, TenantBilling]
+  entities: [ClassEnrollment, CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese]
 }
 
 action archiveClass {
@@ -759,6 +759,11 @@ action uploadDocument {
 
 action verifyDocument {
   fn: import { verifyDocument } from "@src/server/operations/documentOperations",
+  entities: [Document, Membership]
+}
+
+action rejectDocument {
+  fn: import { rejectDocument } from "@src/server/operations/documentOperations",
   entities: [Document, Membership]
 }
 
@@ -1102,37 +1107,37 @@ query searchCatechism {
 
 action generateMeetingWithAi {
   fn: import { generateMeetingWithAi } from "@src/server/operations/aiOperations",
-  entities: [ContentItem, UserAiCredits, User]
+  entities: [ContentItem, UserAiCredits, User, Membership, Parish, TenantBilling]
 }
 
 action generateAnnualPlanning {
   fn: import { generateAnnualPlanning } from "@src/server/operations/aiOperations",
-  entities: [Meeting, CatechesisClass, UserAiCredits, User]
+  entities: [Meeting, CatechesisClass, UserAiCredits, User, Membership, Parish, TenantBilling]
 }
 
 action chatWithAi {
   fn: import { chatWithAi } from "@src/server/operations/aiOperations",
-  entities: [Message, Conversation, UserAiCredits, User]
+  entities: [Message, Conversation, UserAiCredits, User, Membership, Parish, TenantBilling]
 }
 
 action generateActivityForMeeting {
   fn: import { generateActivityForMeeting } from "@src/server/operations/aiOperations",
-  entities: [Activity, ContentItem, UserAiCredits, User]
+  entities: [Activity, ContentItem, UserAiCredits, User, Membership, Parish, TenantBilling]
 }
 
 action generateWhatsAppMessage {
   fn: import { generateWhatsAppMessage } from "@src/server/operations/aiOperations",
-  entities: [ContentItem, UserAiCredits, User]
+  entities: [ContentItem, UserAiCredits, User, Membership, Parish, TenantBilling]
 }
 
 action enhanceContentWithAi {
   fn: import { enhanceContentWithAi } from "@src/server/operations/aiOperations",
-  entities: [UserAiCredits, User]
+  entities: [UserAiCredits, User, Membership, Parish, TenantBilling]
 }
 
 query getAiCreditsStatus {
   fn: import { getAiCreditsStatus } from "@src/server/operations/aiOperations",
-  entities: [UserAiCredits, User]
+  entities: [UserAiCredits, User, Membership, Parish, TenantBilling]
 }
 
 query globalSearch {

@@ -8,9 +8,10 @@ interface PlanLimitBannerProps {
   currentCount: number;
   userPlan?: string | null;
   className?: string;
+  isParishManaged?: boolean;
 }
 
-export function PlanLimitBanner({ type, currentCount, userPlan, className }: PlanLimitBannerProps) {
+export function PlanLimitBanner({ type, currentCount, userPlan, className, isParishManaged }: PlanLimitBannerProps) {
   const plan = userPlan || 'catechist_free';
   const limits: PlanLimits = getPlanLimits(plan);
   const maxAllowed = type === 'class_limit' ? limits.maxClasses
@@ -38,13 +39,19 @@ export function PlanLimitBanner({ type, currentCount, userPlan, className }: Pla
           </p>
         </div>
       </div>
-      <Button asChild size="sm" className="gap-1.5 bg-amber-600 hover:bg-amber-700 text-white w-fit">
-        <Link to="/app/billing">
-          <Sparkles className="h-3.5 w-3.5" />
-          Fazer Upgrade para {upgradePlan}
-          <ArrowRight className="h-3.5 w-3.5" />
-        </Link>
-      </Button>
+      {isParishManaged ? (
+        <p className="text-sm text-amber-700 dark:text-amber-300">
+          Contacta o <strong>coordenador da paróquia</strong> para expandir os limites do plano.
+        </p>
+      ) : (
+        <Button asChild size="sm" className="gap-1.5 bg-amber-600 hover:bg-amber-700 text-white w-fit">
+          <Link to="/app/billing">
+            <Sparkles className="h-3.5 w-3.5" />
+            Fazer Upgrade para {upgradePlan}
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </Button>
+      )}
     </div>
   );
 }

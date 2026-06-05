@@ -503,6 +503,62 @@ export const getContactsForConversation = async (_args: void, context: any) => {
     });
   }
 
+  const roles = await getUserRoles(context);
+  const isCatechumen = roles.includes('CATECHUMEN') && !roles.some(r => r !== 'CATECHUMEN');
+
+  // CATECHUMEN: only see catechists, guardians, and other catechumens from their classes/household
+  if (isCatechumen) {
+    const catechumenProfile = await context.entities.CatechumenProfile.findFirst({
+      where: { userId: context.user.id },
+      select: { id: true, householdId: true },
+    });
+    if (!catechumenProfile) return [];
+
+    // Get catechists from enrolled classes
+    const enrolledClassIds = await context.entities.ClassEnrollment.findMany({
+      where: { catechumenProfileId: catechumenProfile.id },
+      select: { classId: true },
+    });
+    const classIds = enrolledClassIds.map((e: any) => e.classId);
+
+    const catechistUsers = await context.entities.ClassCatechist.findMany({
+      where: { classId: { in: classIds } },
+      select: { user: { select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true } }, role: true },
+      distinct: ['userId'],
+    });
+
+    // Get guardians from household
+    let guardianUsers: any[] = [];
+    if (catechumenProfile.householdId) {
+      guardianUsers = await context.entities.GuardianProfile.findMany({
+        where: { householdId: catechumenProfile.householdId },
+        select: { user: { select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true } }, userId: true },
+      });
+    }
+
+    // Get other catechumens from same classes
+    const otherCatechumenIds = await context.entities.ClassEnrollment.findMany({
+      where: { classId: { in: classIds }, catechumenProfileId: { not: catechumenProfile.id } },
+      select: { catechumenProfile: { select: { userId: true } } },
+    });
+    const otherCatechumenUserIds = otherCatechumenIds
+      .map((e: any) => e.catechumenProfile?.userId)
+      .filter(Boolean) as string[];
+
+    const otherCatechumenUsers = otherCatechumenUserIds.length > 0
+      ? await context.entities.User.findMany({
+          where: { id: { in: otherCatechumenUserIds } },
+          select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true },
+        })
+      : [];
+
+    return [
+      ...catechistUsers.map((c: any) => ({ ...c.user, role: c.role })),
+      ...guardianUsers.map((g: any) => ({ ...g.user, role: 'GUARDIAN' })),
+      ...otherCatechumenUsers.map((u: any) => ({ ...u, role: 'CATECHUMEN' })),
+    ];
+  }
+
   const parishIds = await getUserParishIds(context);
   if (parishIds.length === 0) return [];
 

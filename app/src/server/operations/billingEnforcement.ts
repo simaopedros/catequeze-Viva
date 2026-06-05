@@ -47,6 +47,49 @@ export function isBillingActive(billing: TenantBillingStub | null): boolean {
   return false;
 }
 
+export async function resolveEffectiveBilling(
+  context: any,
+  parishId: string,
+): Promise<TenantBillingStub | null> {
+  // 1. Fetch parish to see if it belongs to a diocese
+  const parish = await context.entities.Parish.findUnique({
+    where: { id: parishId },
+    select: { dioceseId: true },
+  });
+
+  if (parish?.dioceseId) {
+    // 2. Fetch diocese billing
+    const dioceseBilling = await context.entities.TenantBilling.findUnique({
+      where: { dioceseId: parish.dioceseId },
+      select: { plan: true, status: true, trialEndsAt: true, maxClasses: true, maxCatechumens: true },
+    });
+
+    // Check if diocese has active DIOCESE plan
+    if (dioceseBilling && isBillingActive(dioceseBilling) && dioceseBilling.plan === 'DIOCESE') {
+      return {
+        plan: 'DIOCESE',
+        status: dioceseBilling.status,
+        trialEndsAt: dioceseBilling.trialEndsAt,
+        maxClasses: dioceseBilling.maxClasses,
+        maxCatechumens: dioceseBilling.maxCatechumens,
+      };
+    }
+  }
+
+  // 3. Fall back to direct parish billing
+  const parishBilling = await context.entities.TenantBilling.findUnique({
+    where: { parishId },
+    select: { plan: true, status: true, trialEndsAt: true, maxClasses: true, maxCatechumens: true },
+  });
+
+  // Check if direct parish billing is active (ACTIVE or non-expired TRIAL)
+  if (parishBilling && isBillingActive(parishBilling)) {
+    return parishBilling;
+  }
+
+  return parishBilling; // Fallback to parish record (free or expired)
+}
+
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
 function requiredPlan(currentPlan: string | null): string {
@@ -101,17 +144,14 @@ export async function assertCanCreateParish(context: any): Promise<void> {
 
 /**
  * Check if creating a new class would exceed the plan limit.
- * Reads TenantBilling, validates status/trial, and falls back to
- * PLAN_LIMITS when custom limits are null.
+ * Reads TenantBilling (with Diocese inheritance), validates status/trial,
+ * and falls back to PLAN_LIMITS when custom limits are null.
  */
 export async function assertCanCreateClass(
   context: any,
   parishId: string,
 ): Promise<void> {
-  const billing = await context.entities.TenantBilling.findUnique({
-    where: { parishId },
-    select: { plan: true, status: true, trialEndsAt: true, maxClasses: true },
-  });
+  const billing = await resolveEffectiveBilling(context, parishId);
 
   const effectivePlan = getEffectiveBillingPlan(billing);
   const planLimits = getPlanLimits(effectivePlan);
@@ -161,10 +201,7 @@ export async function assertCanEnrollCatechumen(
   context: any,
   parishId: string,
 ): Promise<void> {
-  const billing = await context.entities.TenantBilling.findUnique({
-    where: { parishId },
-    select: { plan: true, status: true, trialEndsAt: true, maxCatechumens: true },
-  });
+  const billing = await resolveEffectiveBilling(context, parishId);
 
   const effectivePlan = getEffectiveBillingPlan(billing);
   const planLimits = getPlanLimits(effectivePlan);

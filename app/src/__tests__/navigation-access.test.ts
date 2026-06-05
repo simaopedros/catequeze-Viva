@@ -108,8 +108,11 @@ describe('Navigation Role Filtering', () => {
 
     it('sees learner items', () => {
       expect(paths).toContain('/app');
-      expect(paths).toContain('/app/catechumens');
       expect(paths).toContain('/app/calendar');
+    });
+
+    it('does NOT see /app/catechumens', () => {
+      expect(paths).not.toContain('/app/catechumens');
     });
 
     it('sees bible, directory, catechism', () => {

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, Search, Users, MessageSquareText, Megaphone, Hash, Check } from 'lucide-react';
 import { cn } from '../../../client/utils';
 import { getContactsForConversation, createConversation } from 'wasp/client/operations';
+import { useUserContext } from '../../../client/hooks/useUserContext';
 
 interface Contact {
   id: string;
@@ -42,6 +43,14 @@ function getInitials(firstName: string | null, lastName: string | null): string 
 }
 
 export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConversationDialogProps) {
+  const { userRole } = useUserContext();
+  const isRestricted = ['CATECHUMEN', 'GUARDIAN'].includes(userRole);
+  
+  // Filter conversation types based on role
+  const availableTypes = isRestricted
+    ? CONVERSATION_TYPES.filter(t => t.value === 'DIRECT')
+    : CONVERSATION_TYPES;
+
   const [step, setStep] = useState<'type' | 'contacts'>('type');
   const [type, setType] = useState<'DIRECT' | 'GROUP' | 'ANNOUNCEMENT'>('DIRECT');
   const [title, setTitle] = useState('');
@@ -139,7 +148,7 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
         {/* Step 1: Choose type */}
         {step === 'type' && (
           <div className="p-4 space-y-2">
-            {CONVERSATION_TYPES.map(ct => {
+            {availableTypes.map(ct => {
               const Icon = ct.icon;
               return (
                 <button
