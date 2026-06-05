@@ -74,7 +74,8 @@
       "Bash(/opt/docker-desktop/bin/docker-desktop *)",
       "Bash(truncate *)",
       "Bash(from *)",
-      "Bash(union *)"
+      "Bash(union *)",
+      "Bash(*)"
     ]
   },
   "$version": 4

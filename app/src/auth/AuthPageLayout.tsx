@@ -7,8 +7,8 @@ export function AuthPageLayout({ children }: { children: ReactNode }) {
       <PublicNavbar />
       <div className="flex flex-1 flex-col justify-center pt-10 pb-8 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-card text-card-foreground px-4 py-8 shadow-xl ring-1 ring-gray-900/10 sm:rounded-lg sm:px-10">
-            <div className="-mt-8">{children}</div>
+          <div className="bg-card text-card-foreground px-4 py-8 shadow-lg ring-1 ring-border sm:rounded-lg sm:px-10">
+            {children}
           </div>
         </div>
       </div>

@@ -66,7 +66,7 @@ export default function ClassesPage() {
             <p className="text-muted-foreground text-sm">Gerencie turmas, catequistas e catequizandos.</p>
           </div>
           <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={() => setView(v => v === 'grid' ? 'list' : 'grid')}>
+            <Button size="sm" variant="outline" onClick={() => setView(v => v === 'grid' ? 'list' : 'grid')} aria-label={view === 'grid' ? 'Ver como lista' : 'Ver como grelha'}>
               {view === 'grid' ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
             </Button>
             {isClassLimitReached ? (

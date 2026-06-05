@@ -9,11 +9,14 @@ import {
   marketingNavigationItems,
 } from "./components/NavBar/constants";
 import CookieConsentBanner from "./components/cookie-consent/Banner";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import { useOnlineStatus } from "./hooks/useOnlineStatus";
 
 import "../i18n/config";
 
 export default function App() {
   const location = useLocation();
+  const isOnline = useOnlineStatus();
   const isMarketingPage = useMemo(() => {
     return (
       location.pathname === "/" || location.pathname.startsWith("/pricing")
@@ -63,23 +66,30 @@ export default function App() {
 
   return (
     <>
+      {!isOnline && (
+        <div className="fixed top-0 left-0 right-0 z-[100] bg-amber-500 text-white text-center py-1.5 text-sm font-medium">
+          Sem conexão à internet. Algumas funcionalidades podem estar indisponíveis.
+        </div>
+      )}
       <div className="bg-background text-foreground min-h-screen">
-        {isAppRoute ? (
-          <Outlet />
-        ) : isAdminDashboard ? (
-          <Outlet />
-        ) : (
-          <>
-            {shouldDisplayAppNavBar && (
-              <NavBar navigationItems={navigationItems} />
-            )}
-            <div className="mx-auto max-w-(--breakpoint-2xl)">
-              <Outlet />
-            </div>
-          </>
-        )}
+        <ErrorBoundary>
+          {isAppRoute ? (
+            <Outlet />
+          ) : isAdminDashboard ? (
+            <Outlet />
+          ) : (
+            <>
+              {shouldDisplayAppNavBar && (
+                <NavBar navigationItems={navigationItems} />
+              )}
+              <div className="mx-auto max-w-(--breakpoint-2xl)">
+                <Outlet />
+              </div>
+            </>
+          )}
+        </ErrorBoundary>
       </div>
-      <Toaster position="bottom-right" />
+      <Toaster position="top-right" />
       <CookieConsentBanner />
     </>
   );

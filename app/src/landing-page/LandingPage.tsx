@@ -302,7 +302,7 @@ export default function LandingPage() {
             <p className="text-lg text-muted-foreground">Comece gratuitamente. Evolua quando sua catequese crescer.</p>
           </div>
 
-          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {[
               {
                 name: 'Catequista Grátis',
@@ -316,64 +316,66 @@ export default function LandingPage() {
                 price: 'R$ 9',
                 period: '/mês',
                 desc: 'Para catequistas dedicados',
-                features: ['Turmas ilimitadas', 'Catequizandos ilimitados', 'Relatórios avançados', 'Biblioteca pastoral completa', 'Comunicação com famílias', 'Suporte prioritário'],
+                features: ['Turmas ilimitadas', 'Catequizandos ilimitados', 'Relatórios avançados', 'Comunicação com famílias', 'Suporte prioritário'],
               },
               {
                 name: 'Catequista IA',
                 price: 'R$ 29',
                 period: '/mês',
-                desc: 'Inteligência Artificial para encontros e atividades',
-                features: ['Tudo do plano Pro', 'Gerador de encontros por IA', 'Planejamento anual automático', 'Gerador de atividades e quizzes', 'Assistente teológico', 'Mensagens WhatsApp para pais'],
+                desc: 'IA para criar encontros, atividades e mensagens em segundos',
+                features: ['Tudo do plano Pro', 'Gerador de encontros por IA', 'Planejamento anual automático', 'Gerador de atividades', 'Assistente teológico', '15 créditos de IA/mês'],
                 highlight: true,
               },
               {
                 name: 'Paróquia',
                 price: 'R$ 49',
                 period: '/mês',
-                desc: 'Para a paróquia inteira',
-                features: ['Multi-catequista', 'Tudo ilimitado', 'Hub de comunicação', 'Documentos e certidões', 'Consentimentos LGPD', 'Relatórios por turma'],
+                desc: 'Ferramentas para a paróquia inteira',
+                features: ['Tudo ilimitado', 'Multi-catequista', 'Hub de comunicação', 'Documentos e certidões', 'Consentimentos LGPD', 'Relatórios por turma'],
               },
               {
                 name: 'Diocese',
                 price: 'R$ 149',
                 period: '/mês',
-                desc: 'Para gestão diocesana',
-                features: ['Multi-paróquia', 'Analytics consolidado', 'Biblioteca oficial diocesana', 'Gestão centralizada', 'Onboarding dedicado', 'Suporte prioritário'],
+                desc: 'Gestão centralizada para a diocese',
+                features: ['Multi-paróquia', 'Analytics consolidado', 'Biblioteca diocesana', 'Gestão centralizada', 'Onboarding dedicado', 'Suporte prioritário'],
               },
             ].map(plan => (
               <div
                 key={plan.name}
-                className={`rounded-2xl border-2 p-7 bg-card transition-all hover:-translate-y-1 hover:shadow-lg flex flex-col ${
-                  plan.highlight ? 'border-primary ring-2 ring-primary/20 scale-[1.02]' : 'border-border'
+                className={`rounded-2xl border-2 p-6 bg-card transition-all hover:-translate-y-1 hover:shadow-lg flex flex-col ${
+                  plan.highlight
+                    ? 'border-primary ring-2 ring-primary/20 scale-[1.02] sm:scale-105 shadow-lg shadow-primary/10'
+                    : 'border-border'
                 }`}
               >
                 {plan.highlight && (
-                  <div className="inline-flex items-center gap-1 rounded-full bg-primary/10 text-primary text-xs font-bold px-3 py-1 mb-4 self-start">
+                  <div className="inline-flex items-center gap-1 rounded-full bg-primary text-primary-foreground text-[11px] font-bold px-3 py-1 mb-3 self-start">
                     <Star className="h-3 w-3" /> Mais popular
                   </div>
                 )}
                 <h3 className="text-lg font-bold">{plan.name}</h3>
                 <p className="text-sm text-muted-foreground mt-1">{plan.desc}</p>
-                <p className="text-3xl font-bold mt-3">
-                  {plan.price}
+                <div className="mt-4 mb-1">
+                  <span className="text-4xl font-bold">{plan.price}</span>
                   {plan.period && <span className="text-base font-normal text-muted-foreground">{plan.period}</span>}
-                </p>
-                <ul className="mt-5 space-y-2 text-sm text-muted-foreground flex-1">
+                </div>
+                <ul className="mt-5 space-y-2.5 text-sm text-muted-foreground flex-1">
                   {plan.features.map(f => (
-                    <li key={f} className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" /> {f}
+                    <li key={f} className="flex items-start gap-2.5">
+                      <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" /> {f}
                     </li>
                   ))}
                 </ul>
                 <Link
                   to="/signup"
-                  className={`mt-6 block text-center rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors ${
+                  className={`mt-6 block text-center rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
                     plan.highlight
-                      ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                      ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25'
                       : 'bg-muted hover:bg-muted/80'
                   }`}
                 >
-                  Começar
+                  {plan.price === 'Grátis' ? 'Começar grátis' : 'Começar agora'}
                 </Link>
               </div>
             ))}

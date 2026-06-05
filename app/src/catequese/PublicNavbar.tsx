@@ -30,7 +30,7 @@ export function PublicNavbar() {
         </div>
 
         {/* Mobile menu button */}
-        <button className="md:hidden p-2" onClick={() => setOpen(!open)}>
+        <button className="md:hidden p-2" onClick={() => setOpen(!open)} aria-label={open ? 'Fechar menu' : 'Abrir menu'} aria-expanded={open}>
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>

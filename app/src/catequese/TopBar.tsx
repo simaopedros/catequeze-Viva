@@ -202,7 +202,7 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
     <header className="flex h-14 items-center gap-3 border-b bg-card px-4">
       {/* Mobile menu toggle — hidden when search expanded */}
       {!searchExpanded && (
-        <Button variant="ghost" size="icon" className="lg:hidden shrink-0" onClick={onMenuToggle}>
+        <Button variant="ghost" size="icon" className="lg:hidden shrink-0" onClick={onMenuToggle} aria-label="Abrir menu">
           <Menu className="h-5 w-5" />
         </Button>
       )}

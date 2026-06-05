@@ -247,21 +247,58 @@ export default function OnboardingPage() {
         </div>
 
         {/* Step indicator */}
-        {step !== 'welcome' && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            {['diocese', 'parish', 'role', 'details'].map((s, i) => {
-              const currentIdx = ['diocese', 'parish', 'role', 'details'].indexOf(step);
-              const isDone = i < currentIdx;
-              const isCurrent = s === step;
-              return (
-                <span key={s} className="flex items-center gap-1">
-                  {i > 0 && <span className="mx-1">→</span>}
-                  <span className={`${isCurrent ? 'font-medium text-foreground' : isDone ? '' : ''}`}>
-                    {s === 'diocese' ? 'Diocese' : s === 'parish' ? 'Paróquia' : s === 'role' ? 'Perfil' : 'Detalhes'}
+        {step !== 'welcome' && step !== 'completion' && (
+          <div className="space-y-4">
+            {/* Progress bar */}
+            <div className="flex items-center gap-1">
+              {[
+                { key: 'diocese', label: 'Diocese' },
+                { key: 'parish', label: 'Paróquia' },
+                { key: 'role', label: 'Perfil' },
+                { key: 'details', label: 'Detalhes' },
+              ].map((s, i) => {
+                const stepKeys = ['diocese', 'parish', 'role', 'details'];
+                const currentIdx = stepKeys.indexOf(step);
+                const isDone = i < currentIdx;
+                const isCurrent = i === currentIdx;
+                return (
+                  <div key={s.key} className="flex-1 flex items-center gap-1">
+                    {/* Connector line */}
+                    {i > 0 && (
+                      <div className={`h-0.5 flex-1 rounded ${isDone || isCurrent ? 'bg-primary' : 'bg-muted'}`} />
+                    )}
+                    {/* Step circle */}
+                    <div className={`
+                      flex items-center justify-center w-7 h-7 rounded-full border-2 text-xs font-bold shrink-0 transition-all
+                      ${isDone ? 'bg-primary border-primary text-primary-foreground' : ''}
+                      ${isCurrent ? 'border-primary text-primary bg-primary/10' : ''}
+                      ${!isDone && !isCurrent ? 'border-muted-foreground/30 text-muted-foreground' : ''}
+                    `}>
+                      {isDone ? '✓' : i + 1}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            {/* Step labels */}
+            <div className="flex items-center justify-between">
+              {[
+                { key: 'diocese', label: 'Diocese' },
+                { key: 'parish', label: 'Paróquia' },
+                { key: 'role', label: 'Perfil' },
+                { key: 'details', label: 'Detalhes' },
+              ].map((s, i) => {
+                const stepKeys = ['diocese', 'parish', 'role', 'details'];
+                const currentIdx = stepKeys.indexOf(step);
+                const isDone = i < currentIdx;
+                const isCurrent = i === currentIdx;
+                return (
+                  <span key={s.key} className={`text-xs ${isCurrent ? 'font-semibold text-foreground' : isDone ? 'text-primary' : 'text-muted-foreground'}`}>
+                    {s.label}
                   </span>
-                </span>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         )}
 

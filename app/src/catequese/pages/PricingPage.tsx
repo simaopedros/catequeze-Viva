@@ -77,31 +77,31 @@ export default function PricingPage() {
 
         {/* Plans */}
         <section className="max-w-6xl mx-auto px-4 pb-20">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {PLANS.map(plan => (
-              <div key={plan.name} className={`rounded-2xl border-2 p-8 bg-card transition-all hover:-translate-y-1 hover:shadow-lg relative ${plan.highlight ? 'border-primary ring-2 ring-primary/20' : 'border-border'}`}>
+              <div key={plan.name} className={`rounded-2xl border-2 p-6 bg-card transition-all hover:-translate-y-1 hover:shadow-lg relative flex flex-col ${plan.highlight ? 'border-primary ring-2 ring-primary/20 sm:scale-105 shadow-lg shadow-primary/10' : 'border-border'}`}>
                 {plan.highlight && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full bg-primary text-primary-foreground text-xs font-bold px-4 py-1">
+                  <div className="inline-flex items-center gap-1 rounded-full bg-primary text-primary-foreground text-[11px] font-bold px-3 py-1 mb-3 self-start">
                     <Star className="h-3 w-3" /> Mais popular
                   </div>
                 )}
-                <h3 className="text-xl font-bold">{plan.name}</h3>
+                <h3 className="text-lg font-bold">{plan.name}</h3>
                 <p className="text-sm text-muted-foreground mt-1">{plan.desc}</p>
-                <div className="mt-6">
+                <div className="mt-4 mb-1">
                   <span className="text-4xl font-bold">{plan.price}</span>
-                  <span className="text-muted-foreground">{plan.period}</span>
+                  {plan.period && <span className="text-base font-normal text-muted-foreground"> {plan.period}</span>}
                 </div>
-                <ul className="mt-6 space-y-3 text-sm">
+                <ul className="mt-5 space-y-2.5 text-sm flex-1">
                   {plan.features.map(f => (
-                    <li key={f} className="flex items-center gap-2.5">
-                      <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                    <li key={f} className="flex items-start gap-2.5">
+                      <Check className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
                       <span>{f}</span>
                     </li>
                   ))}
                 </ul>
                 <Link
                   to={upgradeUrl}
-                  className={`mt-8 block text-center rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${plan.highlight ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-muted hover:bg-muted/80'}`}
+                  className={`mt-6 block text-center rounded-xl px-4 py-3 text-sm font-semibold transition-all ${plan.highlight ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25' : 'bg-muted hover:bg-muted/80'}`}
                 >
                   {plan.cta}
                 </Link>

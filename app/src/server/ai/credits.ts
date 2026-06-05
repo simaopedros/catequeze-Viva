@@ -3,7 +3,31 @@
  */
 import { HttpError } from 'wasp/server';
 import type { User, UserAiCredits } from '@prisma/client';
-import { AI_CREDITS, planHasAiAccess, getMonthlyAllowance } from '../../shared/aiCredits';
+import { AI_CREDITS, planHasAiAccess, getMonthlyAllowance, getDailyLimit } from '../../shared/aiCredits';
+
+// ─── In-memory daily usage tracker (abuse prevention) ──────────────────────
+// Resets on server restart — acceptable for secondary protection.
+const dailyUsage = new Map<string, { count: number; date: string }>();
+
+function getDailyUsage(userId: string): number {
+  const today = new Date().toISOString().slice(0, 10);
+  const entry = dailyUsage.get(userId);
+  if (!entry || entry.date !== today) {
+    dailyUsage.set(userId, { count: 0, date: today });
+    return 0;
+  }
+  return entry.count;
+}
+
+function incrementDailyUsage(userId: string, amount: number): void {
+  const today = new Date().toISOString().slice(0, 10);
+  const entry = dailyUsage.get(userId);
+  if (!entry || entry.date !== today) {
+    dailyUsage.set(userId, { count: amount, date: today });
+  } else {
+    entry.count += amount;
+  }
+}
 
 // ─── Credit check + deduction ──────────────────────────────────────────────
 
@@ -183,11 +207,26 @@ export async function assertAndDeductCredits(
     }
   }
 
+  // Enforce daily usage cap (abuse prevention)
+  const dailyLimit = getDailyLimit(effectivePlan ?? user.subscriptionPlan);
+  if (dailyLimit > 0) {
+    const todayUsage = getDailyUsage(context.user.id);
+    if (todayUsage + cost > dailyLimit) {
+      throw new HttpError(
+        429,
+        `Limite diário de IA atingido (${dailyLimit} créditos/dia). Tente novamente amanhã.`,
+      );
+    }
+  }
+
   // Deduct credits
   const updated = await context.entities.UserAiCredits.update({
     where: { userId: context.user.id },
     data: { creditsLeft: { decrement: cost } },
   });
+
+  // Track daily usage
+  incrementDailyUsage(context.user.id, cost);
 
   return { creditsLeft: updated.creditsLeft };
 }

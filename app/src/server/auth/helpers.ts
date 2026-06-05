@@ -1,5 +1,6 @@
 import { HttpError } from 'wasp/server';
 import { UserRole } from '@prisma/client';
+import { logger } from '../logger';
 
 /**
  * Verifica se o usuário está autenticado.
@@ -119,7 +120,7 @@ export async function writeAuditLog(
       },
     });
   } catch (error) {
-    console.error('Falha ao escrever audit log:', error);
+    logger.error('Falha ao escrever audit log', { error: error instanceof Error ? error.message : String(error) });
   }
 }
 

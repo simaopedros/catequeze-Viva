@@ -15,12 +15,13 @@ app OpenSaaS {
     "<meta property='og:type' content='website' />",
     "<meta property='og:title' content='Catequese Viva — Plataforma Pastoral de Iniciação Cristã' />",
     "<meta property='og:site_name' content='Catequese Viva' />",
-    // TODO: Atualizar com domínio real quando disponível
-    "<meta property='og:url' content='/' />",
+    // ⚠️ PRODUÇÃO: Substitua pelo domínio real antes do deploy
+    "<meta property='og:url' content='https://catequeseviva.com' />",
     "<meta property='og:description' content='Conectando dioceses, paróquias, catequistas e famílias em uma jornada de fé integrada.' />",
-    // TODO: Gerar og-image e atualizar URL
-    // "<meta property='og:image' content='https://seu-dominio.com/og-image.webp' />",
-    // "<meta name='twitter:image' content='https://seu-dominio.com/og-image.webp' />",
+    // ⚠️ PRODUÇÃO: Gere uma imagem OG (1200×630px) e coloque em /public/og-image.webp,
+    // depois descomente as linhas abaixo e atualize com o domínio real:
+    // "<meta property='og:image' content='https://catequeseviva.com/og-image.webp' />",
+    // "<meta name='twitter:image' content='https://catequeseviva.com/og-image.webp' />",
     "<meta name='twitter:image:width' content='800' />",
     "<meta name='twitter:image:height' content='400' />",
     "<meta name='twitter:card' content='summary_large_image' />",
@@ -89,13 +90,15 @@ app OpenSaaS {
   },
 
   emailSender: {
-    // NOTE: "Dummy" provider is just for local development purposes.
-    //   Make sure to check the server logs for the email confirmation url (it will not be sent to an address)!
-    //   Once you are ready for production, switch to e.g. "SendGrid" or "Mailgun" providers. Check out https://docs.opensaas.sh/guides/email-sending/ .
+    // ⚠️ PRODUÇÃO: O provider SMTP usa as variáveis SMTP_HOST, SMTP_PORT,
+    //   SMTP_USERNAME e SMTP_PASSWORD definidas no .env.server.
+    //   O email abaixo DEVE ser um endereço verificado no seu provedor (Resend/SendGrid/Mailgun).
+    //   Em dev, use o domínio de teste do Resend. Em produção, use o seu domínio real.
+    //   Docs: https://docs.opensaas.sh/guides/email-sending/
     provider: SMTP,
     defaultFrom: {
       name: "Catequese Viva",
-      // When using a real provider, e.g. SendGrid, you must use the same email address that you configured your account to send out emails with!
+      // ⚠️ PRODUÇÃO: Troque pelo email verificado no seu provedor SMTP
       email: "onboarding@resend.dev"
     },
   },

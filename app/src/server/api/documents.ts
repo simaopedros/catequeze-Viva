@@ -2,6 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type { Request, Response } from 'express';
 import type { MiddlewareConfigFn } from 'wasp/server';
+import { documentAccessRateLimiter } from '../middleware/rateLimiter';
+import { logger } from '../logger';
 
 const UPLOADS_DIR = path.resolve(process.cwd(), 'uploads');
 
@@ -166,11 +168,13 @@ export async function serveDocument(req: Request, res: Response, context: any) {
     res.setHeader('Content-Disposition', `inline; filename="${doc.name}"`);
     res.sendFile(filePath);
   } catch (err) {
-    console.error('Erro ao servir documento:', err);
+    logger.error('Erro ao servir documento', { error: err instanceof Error ? err.message : String(err) });
     return res.status(500).json({ error: 'Erro interno.' });
   }
 }
 
 export const serveDocumentMiddleware: MiddlewareConfigFn = (middlewareConfig) => {
+  // Rate limiting: max 60 requests per minute per IP
+  middlewareConfig.set('rateLimiter', documentAccessRateLimiter as any);
   return middlewareConfig;
 };
