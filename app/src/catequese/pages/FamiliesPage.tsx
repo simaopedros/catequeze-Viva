@@ -5,9 +5,12 @@ import { Heart, Users, Plus, Search, Phone, MapPin, User, ChevronRight, Building
 import { Button } from '../../client/components/ui/button';
 import { AppShell } from '../AppShell';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
+import { useUserContext } from '../../client/hooks/useUserContext';
 
 export default function FamiliesPage() {
   const { activeParishId } = useActiveParish();
+  const { userRole } = useUserContext();
+  const canCreateFamily = userRole !== 'ASSISTANT_CATECHIST';
   const { data: households, isLoading } = useQuery(listHouseholds);
   const { data: communities = [] } = useQuery(listCommunities, activeParishId ? { parishId: activeParishId } : { parishId: undefined } as any);
   const [search, setSearch] = useState('');
@@ -57,7 +60,7 @@ export default function FamiliesPage() {
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
-            <Button asChild><Link to="/app/families/new"><Plus className="mr-1 h-4 w-4" />Nova</Link></Button>
+            {canCreateFamily && <Button asChild><Link to="/app/families/new"><Plus className="mr-1 h-4 w-4" />Nova</Link></Button>}
           </div>
         </div>
 
@@ -66,7 +69,7 @@ export default function FamiliesPage() {
             <div className="mb-4 rounded-full bg-primary/10 p-4"><Heart className="h-8 w-8 text-primary" /></div>
             <h3 className="text-lg font-semibold">{search ? 'Nenhuma encontrada' : 'Nenhuma família'}</h3>
             <p className="mt-1 text-sm text-muted-foreground">Cadastre famílias para vincular catequizandos e responsáveis.</p>
-            {!search && <Button className="mt-4" asChild><Link to="/app/families/new">Cadastrar família</Link></Button>}
+            {!search && canCreateFamily && <Button className="mt-4" asChild><Link to="/app/families/new">Cadastrar família</Link></Button>}
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

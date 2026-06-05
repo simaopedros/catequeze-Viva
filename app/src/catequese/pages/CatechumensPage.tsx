@@ -6,6 +6,7 @@ import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { AppShell } from '../AppShell';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
+import { useUserContext } from '../../client/hooks/useUserContext';
 
 const AVATAR_COLORS = [
     'bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 dark:border dark:border-blue-900/50',
@@ -28,6 +29,8 @@ function getAge(birthDate: string): number | null {
 export default function CatechumensPage() {
   const { data: catechumens, isLoading } = useQuery(listCatechumens);
   const { activeParishId } = useActiveParish();
+  const { userRole } = useUserContext();
+  const canManageCatechumens = userRole !== 'ASSISTANT_CATECHIST';
   const [search, setSearch] = useState('');
   const [classFilter, setClassFilter] = useState('');
   const [view, setView] = useState<'cards' | 'table'>('cards');
@@ -78,8 +81,12 @@ export default function CatechumensPage() {
             <Button size="sm" variant="outline" onClick={() => setView(v => v === 'cards' ? 'table' : 'cards')}>
               {view === 'cards' ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
             </Button>
-            <Button size="sm" variant="outline" asChild><Link to="/app/catechumens/import"><Upload className="mr-1 h-4 w-4" />Importar</Link></Button>
-            <Button size="sm" asChild><Link to="/app/catechumens/new"><Plus className="mr-1 h-4 w-4" />Novo</Link></Button>
+            {canManageCatechumens && (
+              <>
+                <Button size="sm" variant="outline" asChild><Link to="/app/catechumens/import"><Upload className="mr-1 h-4 w-4" />Importar</Link></Button>
+                <Button size="sm" asChild><Link to="/app/catechumens/new"><Plus className="mr-1 h-4 w-4" />Novo</Link></Button>
+              </>
+            )}
           </div>
         </div>
 
@@ -102,7 +109,7 @@ export default function CatechumensPage() {
             <div className="mb-4 rounded-full bg-primary/10 p-4"><GraduationCap className="h-8 w-8 text-primary" /></div>
             <h3 className="text-lg font-semibold">{search || classFilter ? 'Nenhum resultado' : 'Nenhum catequizando'}</h3>
             <p className="mt-1 text-sm text-muted-foreground max-w-md">{search || classFilter ? 'Tente ajustar os filtros.' : 'Cadastre catequizandos e vincule-os às turmas.'}</p>
-            {!search && !classFilter && <Button className="mt-4" asChild><Link to="/app/catechumens/new">Cadastrar catequizando</Link></Button>}
+            {!search && !classFilter && canManageCatechumens && <Button className="mt-4" asChild><Link to="/app/catechumens/new">Cadastrar catequizando</Link></Button>}
           </div>
         ) : view === 'table' ? (
           <div className="rounded-xl border bg-card overflow-x-auto">

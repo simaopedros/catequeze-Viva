@@ -1,5 +1,5 @@
 import { HttpError } from 'wasp/server';
-import { MembershipStatus } from '@prisma/client';
+import { MembershipStatus, CatechistAssignmentRole } from '@prisma/client';
 
 function isCoordinatorOrAbove(role: string): boolean {
   return ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'].includes(role);
@@ -58,9 +58,8 @@ export const listCatechumens = async (_args: void, context: any) => {
     });
   }
 
-  // Catechist: see catechumens in their classes + parish
-  if (roles.some((r: string) => isCatechist(r))) {
-    // Get catechumens via class assignments
+  // Lead catechist: see catechumens in their classes + parish
+  if (roles.includes('LEAD_CATECHIST')) {
     const myClasses = await context.entities.ClassCatechist.findMany({
       where: { userId: context.user.id },
       select: { classId: true },
@@ -80,6 +79,31 @@ export const listCatechumens = async (_args: void, context: any) => {
           { household: { parishId: { in: parishIds } } },
         ],
       },
+      orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }],
+      include: {
+        parish: { select: { id: true, name: true } },
+        household: { select: { id: true, name: true, parishId: true } },
+        enrollments: { include: { class: { select: { id: true, name: true, parishId: true } } } },
+      },
+    });
+  }
+
+  // Assistant catechist: only see catechumens enrolled in their assigned classes
+  if (roles.includes('ASSISTANT_CATECHIST')) {
+    const myClasses = await context.entities.ClassCatechist.findMany({
+      where: { userId: context.user.id, role: CatechistAssignmentRole.ASSISTANT },
+      select: { classId: true },
+    });
+    const classIds = myClasses.map((cc: any) => cc.classId);
+    if (classIds.length === 0) return [];
+    const enrollments = await context.entities.ClassEnrollment.findMany({
+      where: { classId: { in: classIds } },
+      select: { catechumenProfileId: true },
+    });
+    const enrolledIds = enrollments.map((e: any) => e.catechumenProfileId);
+
+    return context.entities.CatechumenProfile.findMany({
+      where: { id: { in: enrolledIds } },
       orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }],
       include: {
         parish: { select: { id: true, name: true } },

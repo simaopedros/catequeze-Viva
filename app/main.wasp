@@ -531,7 +531,7 @@ action updateCatechumen {
 //#region Catequese Viva - Families
 query listHouseholds {
   fn: import { listHouseholds } from "@src/server/operations/familyOperations",
-  entities: [Household, Membership, GuardianProfile]
+  entities: [Household, Membership, GuardianProfile, ClassCatechist, ClassEnrollment, CatechumenProfile]
 }
 
 action createHousehold {

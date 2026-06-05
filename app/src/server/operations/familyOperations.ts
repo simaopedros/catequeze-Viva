@@ -1,4 +1,5 @@
 import { HttpError } from 'wasp/server';
+import { CatechistAssignmentRole } from '@prisma/client';
 
 function isCoordinatorOrAbove(role: string): boolean {
   return ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'].includes(role);
@@ -41,6 +42,50 @@ export const listHouseholds = async (_args: { communityId?: string } | void, con
 
   const parishIds = await getParishIds(context);
   if (parishIds.length === 0) return [];
+
+  // Check user roles for filtering
+  const membershipRoles = await context.entities.Membership.findMany({
+    where: { userId: context.user.id, status: 'ACTIVE' },
+    select: { role: true },
+  });
+  const roles = membershipRoles.map((m: any) => m.role);
+
+  // Assistant catechist only (no coordinator, no lead): restrict to assisted classes
+  const isStrictAssistant = !roles.some((r: string) => isCoordinatorOrAbove(r)) &&
+    !roles.includes('LEAD_CATECHIST') &&
+    roles.includes('ASSISTANT_CATECHIST');
+
+  if (isStrictAssistant) {
+    // Only show households linked to catechumens enrolled in classes the user assists
+    const assistedClasses = await context.entities.ClassCatechist.findMany({
+      where: { userId: context.user.id, role: CatechistAssignmentRole.ASSISTANT },
+      select: { classId: true },
+    });
+    const classIds = assistedClasses.map((cc: any) => cc.classId);
+    if (classIds.length === 0) return [];
+
+    const enrollments = await context.entities.ClassEnrollment.findMany({
+      where: { classId: { in: classIds }, catechumenProfileId: { not: null } },
+      select: { catechumenProfileId: true },
+    });
+    const catechumenIds = [...new Set(enrollments.map((e: any) => e.catechumenProfileId))];
+    if (catechumenIds.length === 0) return [];
+
+    const profiles = await context.entities.CatechumenProfile.findMany({
+      where: { id: { in: catechumenIds }, householdId: { not: null } },
+      select: { householdId: true },
+    });
+    const householdIds = [...new Set(profiles.map((p: any) => p.householdId))];
+    if (householdIds.length === 0) return [];
+
+    const where: any = { id: { in: householdIds } };
+    if (args.communityId) where.communityId = args.communityId;
+    return context.entities.Household.findMany({
+      where,
+      orderBy: { name: 'asc' },
+      include: includeOpts,
+    });
+  }
 
   const where: any = { parishId: { in: parishIds } };
   if (args.communityId) where.communityId = args.communityId;

@@ -180,8 +180,8 @@ export const createClass = async (args: any, context: any) => {
   });
 
   if (!membership && !context.user.isAdmin) throw new HttpError(403);
-  if (membership && !isCoordinatorOrAbove(membership.role) && !isCatechist(membership.role)) {
-    throw new HttpError(403, 'Apenas coordenadores e catequistas podem criar turmas.');
+  if (membership && !isCoordinatorOrAbove(membership.role) && membership.role !== 'LEAD_CATECHIST') {
+    throw new HttpError(403, 'Apenas coordenadores e catequistas responsáveis podem criar turmas.');
   }
 
   // Enforce plan limits

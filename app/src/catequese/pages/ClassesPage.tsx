@@ -8,6 +8,7 @@ import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { AppShell } from '../AppShell';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
+import { useUserContext } from '../../client/hooks/useUserContext';
 import { getPlanLimits, getEffectiveBillingPlan, isBillingActive } from '../../shared/planLimits';
 import { PlanLimitBanner } from '../components/PlanLimitBanner';
 
@@ -15,6 +16,8 @@ export default function ClassesPage() {
   const { data: classes, isLoading } = useQuery(listClasses);
   const { data: user } = useAuth();
   const { activeParishId, availableParishes } = useActiveParish();
+  const { userRole } = useUserContext();
+  const canCreateClass = userRole !== 'ASSISTANT_CATECHIST';
   const [filter, setFilter] = useState('Todas');
   const [search, setSearch] = useState('');
   const [view, setView] = useState<'grid' | 'list'>('grid');
@@ -68,11 +71,11 @@ export default function ClassesPage() {
             </Button>
             {isClassLimitReached ? (
               <PlanLimitBanner type="class_limit" currentCount={classes!.length} userPlan={effectivePlan} isParishManaged={isParishManaged} className="min-w-[280px]" />
-            ) : (
+            ) : canCreateClass ? (
               <Button asChild>
                 <Link to="/app/classes/new"><Plus className="mr-2 h-4 w-4" />Nova turma</Link>
               </Button>
-            )}
+            ) : null}
           </div>
         </div>
 
@@ -106,9 +109,9 @@ export default function ClassesPage() {
             </div>
             {isClassLimitReached ? (
               <PlanLimitBanner type="class_limit" currentCount={classes!.length} userPlan={effectivePlan} isParishManaged={isParishManaged} />
-            ) : (
+            ) : canCreateClass ? (
               <Button className="mt-6" asChild><Link to="/app/classes/new">Criar turma</Link></Button>
-            )}
+            ) : null}
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">Nenhuma turma encontrada com esse filtro.</div>
