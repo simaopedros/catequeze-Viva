@@ -309,7 +309,7 @@ export default function LandingPage() {
                 price: 'Grátis',
                 period: '',
                 desc: 'Para um catequista individual',
-                features: ['1 turma', '20 catequizandos', 'Presenças digitais', 'Bíblia e Catecismo', 'Calendário litúrgico', 'Suporte comunitário'],
+                features: ['1 turma', '20 catequizandos', 'Presenças digitais', 'Bíblia e Catecismo', 'Calendário litúrgico', '3 créditos de IA (teste)', 'Suporte comunitário'],
               },
               {
                 name: 'Catequista Pro',
@@ -323,7 +323,7 @@ export default function LandingPage() {
                 price: 'R$ 29',
                 period: '/mês',
                 desc: 'IA para criar encontros, atividades e mensagens em segundos',
-                features: ['Tudo do plano Pro', 'Gerador de encontros por IA', 'Planejamento anual automático', 'Gerador de atividades', 'Assistente teológico', '15 créditos de IA/mês'],
+                features: ['Tudo do plano Pro', 'Gerador de encontros por IA', 'Planejamento anual automático', 'Gerador de atividades e quizzes', 'Assistente teológico', 'Mensagens WhatsApp para pais', '15 créditos de IA/mês'],
                 highlight: true,
               },
               {
@@ -331,14 +331,14 @@ export default function LandingPage() {
                 price: 'R$ 49',
                 period: '/mês',
                 desc: 'Ferramentas para a paróquia inteira',
-                features: ['Tudo ilimitado', 'Multi-catequista', 'Hub de comunicação', 'Documentos e certidões', 'Consentimentos LGPD', 'Relatórios por turma'],
+                features: ['Tudo do plano IA', 'Multi-catequista', 'Comunicação integrada', 'Documentos e certidões', 'Consentimentos LGPD', 'Painel do coordenador', '50 créditos de IA/mês'],
               },
               {
                 name: 'Diocese',
                 price: 'R$ 149',
                 period: '/mês',
                 desc: 'Gestão centralizada para a diocese',
-                features: ['Multi-paróquia', 'Analytics consolidado', 'Biblioteca diocesana', 'Gestão centralizada', 'Onboarding dedicado', 'Suporte prioritário'],
+                features: ['Tudo do plano Paróquia', 'Multi-paróquia', 'Analytics consolidado', 'Biblioteca diocesana', 'Gestão centralizada', 'Onboarding dedicado', 'Suporte prioritário', '30 créditos IA/mês por usuário'],
               },
             ].map(plan => (
               <div

@@ -202,14 +202,22 @@ async function seed() {
 
   // ═══ 5. Create Sacraments ═══
   const sacramentoCrismaId = 'test-sacramento-crisma';
+  const sacramentoEucaristiaId = 'test-sacramento-eucaristia';
   const sacramentoTemplateCrismaId = 'test-template-crisma';
-  await p.sacrament.create({
-    data: { id: sacramentoCrismaId, name: 'Crisma', stageId: stageId2 }
+  const sacramentoTemplateEucaristiaId = 'test-template-eucaristia';
+  await p.sacrament.createMany({
+    data: [
+      { id: sacramentoCrismaId, name: 'Crisma', stageId: stageId2 },
+      { id: sacramentoEucaristiaId, name: 'Primeira Eucaristia', stageId: stageId3 },
+    ]
   });
-  await p.sacramentalJourneyTemplate.create({
-    data: { id: sacramentoTemplateCrismaId, name: 'Jornada de Crisma', sacramentId: sacramentoCrismaId, parishId: PARISH_SAO_JOSE_ID }
+  await p.sacramentalJourneyTemplate.createMany({
+    data: [
+      { id: sacramentoTemplateCrismaId, name: 'Jornada de Crisma', sacramentId: sacramentoCrismaId, parishId: PARISH_SAO_JOSE_ID },
+      { id: sacramentoTemplateEucaristiaId, name: 'Primeira Eucaristia', sacramentId: sacramentoEucaristiaId, parishId: PARISH_SANTA_MARIA_ID },
+    ]
   });
-  console.log('✅ Sacramento + Template de Jornada Sacramental criados');
+  console.log('✅ Sacramentos + Templates de Jornada Sacramental criados');
 
   // ═══ 6. Create Classes ═══
   const classCrismaId = 'test-class-crisma-001';

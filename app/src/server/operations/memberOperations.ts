@@ -28,13 +28,18 @@ export const inviteUserToParish = async (
     }
   }
 
-  const invitedUser = await context.entities.User.findUnique({
+  let invitedUser = await context.entities.User.findUnique({
     where: { email: args.email },
     select: { id: true, email: true },
   });
 
+  // If user doesn't exist yet, create a placeholder account so the invitation can proceed.
+  // The invited person will complete their profile when they first sign in.
   if (!invitedUser) {
-    throw new HttpError(404, 'Usuário não encontrado com este email.');
+    invitedUser = await context.entities.User.create({
+      data: { email: args.email },
+      select: { id: true, email: true },
+    });
   }
 
   const existing = await context.entities.Membership.findFirst({

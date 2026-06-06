@@ -13,6 +13,7 @@ export const paymentProcessorPlanIds = {
   [PaymentPlanId.CatechistFree]: "catechist_free",
   [PaymentPlanId.CatechistPro]: env.WOOVI_CATECHIST_PRO_PLAN_ID,
   [PaymentPlanId.CatechistAi]: "catechist_ai",
+  [PaymentPlanId.CatechistAiAddon]: "catechist_ai_addon",
   [PaymentPlanId.Parish]: env.WOOVI_PARISH_PLAN_ID,
   [PaymentPlanId.Diocese]: env.WOOVI_DIOCESE_PLAN_ID,
 } as const satisfies Record<PaymentPlanId, string>;

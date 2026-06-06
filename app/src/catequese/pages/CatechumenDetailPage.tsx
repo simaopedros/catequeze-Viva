@@ -4,8 +4,9 @@ import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { ArrowLeft, Calendar, Heart, BookOpen, FileText, CheckCircle, XCircle, Clock, Edit3, Gift, MessageCircle, FilePlus, Upload, Download, Link2, Copy } from 'lucide-react';
 import { AppShell } from '../AppShell';
-import { useQuery, getCatechumenProfile, listMeetings, getMeetingAttendance, createConversation, uploadDocument, generateCatechumenUploadToken } from 'wasp/client/operations';
+import { useQuery, getCatechumenProfile, listMeetings, getMeetingAttendance, createConversation, uploadDocument, generateCatechumenUploadToken, getCatechumenAttendanceReport } from 'wasp/client/operations';
 import { toast } from '../../client/hooks/use-toast';
+import { calculatePoints } from '../../shared/gamification';
 
 const AVATAR_COLORS = [
     'bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 dark:border dark:border-blue-900/50',
@@ -20,6 +21,8 @@ export default function CatechumenDetailPage() {
   const navigate = useNavigate();
   const { data: profile, isLoading: loading } = useQuery(getCatechumenProfile, { id: id! });
   const [attendance, setAttendance] = useState<any[]>([]);
+  const [report, setReport] = useState<any>(null);
+  const [loadingReport, setLoadingReport] = useState(false);
   const [showDocUpload, setShowDocUpload] = useState(false);
   const [docType, setDocType] = useState('BAPTISM_CERTIFICATE');
   const [docFile, setDocFile] = useState<File | null>(null);
@@ -86,6 +89,17 @@ export default function CatechumenDetailPage() {
     }
   };
 
+  const handleGenerateReport = async () => {
+    setLoadingReport(true);
+    try {
+      const result = await getCatechumenAttendanceReport({ catechumenId: id! });
+      setReport(result);
+    } catch (e: any) {
+      toast({ title: 'Erro ao gerar relatório: ' + (e.message || 'Tente novamente.') });
+    }
+    setLoadingReport(false);
+  };
+
   const getUploadLink = () => tokenData?.token
     ? `${window.location.origin}/upload-docs/${tokenData.token}`
     : '';
@@ -147,6 +161,28 @@ export default function CatechumenDetailPage() {
           </div>
         )}
 
+        {/* Gamification */}
+        {attendance.length > 0 && (() => {
+          const present = attendance.filter((a:any) => a.status === 'PRESENT' || a.status === 'LATE').length;
+          const points = calculatePoints({ totalPresent: present, totalMeetings: attendance.length, quizzesCompleted: 0, quizzesPerfect: 0 });
+          return (
+            <div className="rounded-xl border bg-card p-4">
+              <h3 className="font-semibold text-sm flex items-center gap-2 mb-2"><Gift className="h-4 w-4 text-amber-500"/>Progresso</h3>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-2xl font-bold text-amber-500">{points}</span>
+                <span className="text-xs text-muted-foreground">pontos</span>
+              </div>
+              {attendancePct !== null && attendancePct >= 90 && (
+                <div className="flex items-center gap-2 text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/30 rounded-lg p-2">
+                  <span className="text-lg">🌟</span> Presença Perfeita — mais de 90% de frequência!
+                </div>
+              )}
+            </div>
+          );
+        })()}
+
+        {/* Attendance Report */}
+
         <div className="grid gap-4 md:grid-cols-2">
           <div className="rounded-xl border bg-card p-4">
             <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-1 mb-2"><Heart className="h-4 w-4"/>Família</h3>
@@ -176,6 +212,40 @@ export default function CatechumenDetailPage() {
                   <Badge variant={a.status==='PRESENT'?'default':a.status==='ABSENT'?'destructive':'secondary'} className="text-[10px]">{a.status==='PRESENT'?'✓ Presente':a.status==='ABSENT'?'✗ Faltou':a.status}</Badge>
                 </div>
               ))}
+            </div>
+            <div className="mt-3 pt-3 border-t">
+              {!report ? (
+                <Button size="sm" variant="outline" onClick={handleGenerateReport} disabled={loadingReport}>
+                  <FileText className="mr-1 h-3 w-3"/>{loadingReport ? 'Gerando...' : 'Gerar Relatório de Presenças'}
+                </Button>
+              ) : (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-sm font-semibold">Relatório de Presenças</h4>
+                    <Badge variant={report.riskLevel === 'ALTO' ? 'destructive' : report.riskLevel === 'MÉDIO' ? 'secondary' : 'default'} className="text-[10px]">
+                      Risco {report.riskLevel}
+                    </Badge>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                    <div className="bg-muted rounded-lg p-2">
+                      <p className="font-bold text-lg">{report.totalPresent}</p>
+                      <p className="text-muted-foreground">Presentes</p>
+                    </div>
+                    <div className="bg-muted rounded-lg p-2">
+                      <p className="font-bold text-lg">{report.totalAbsent}</p>
+                      <p className="text-muted-foreground">Faltas</p>
+                    </div>
+                    <div className="bg-muted rounded-lg p-2">
+                      <p className="font-bold text-lg">{report.totalJustified}</p>
+                      <p className="text-muted-foreground">Justificadas</p>
+                    </div>
+                  </div>
+                  {report.maxConsecutiveAbsences >= 3 && (
+                    <p className="text-xs text-destructive">⚠️ {report.maxConsecutiveAbsences} faltas consecutivas detectadas.</p>
+                  )}
+                  <Button size="sm" variant="ghost" onClick={() => setReport(null)} className="text-xs">Fechar relatório</Button>
+                </div>
+              )}
             </div>
           </div>
         )}

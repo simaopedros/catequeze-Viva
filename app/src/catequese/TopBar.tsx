@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { useQuery, globalSearch, getUnreadNotificationCount } from 'wasp/client/operations';
 import { listNotifications, markNotificationRead, markAllNotificationsRead } from 'wasp/client/operations';
-import { Search, Bell, Menu, Church, ChevronDown, X, Loader2, Users, GraduationCap, Home, ScrollText, BookMarked, FileText, Building2, Library, FolderOpen, Check, MessageSquareText, CalendarDays, Shield } from 'lucide-react';
+import { Search, Bell, Menu, Church, ChevronDown, X, Loader2, Users, User, GraduationCap, Home, ScrollText, BookMarked, FileText, Building2, Library, FolderOpen, Check, MessageSquareText, CalendarDays, Shield } from 'lucide-react';
 import { useAuth } from 'wasp/client/auth';
 import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
 import DarkModeSwitcher from '../client/components/DarkModeSwitcher';
@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from '../client/components/ui/dropdown-menu';
 import { useActiveParish } from '../client/hooks/useActiveParish';
+import { useActiveWorkspace } from '../client/hooks/useActiveWorkspace';
 import { useActiveMembership } from '../client/hooks/useActiveMembership';
 import { cn } from '../client/utils';
 
@@ -66,6 +67,7 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
   const { t } = useTranslation('common');
   const { data: user } = useAuth();
   const { activeParishName, switchParish, availableParishes: parishes } = useActiveParish();
+  const { workspace, workspaceName, workspaceType, workspacePlan, availableWorkspaces, switchWorkspace } = useActiveWorkspace();
   const { userRole, parishName } = useUserContext();
   const { activeMembership, availableMemberships, switchMembership, requiresPaidPlan } = useActiveMembership();
   const navigate = useNavigate();
@@ -236,6 +238,7 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
             onKeyDown={(e) => { if (e.key === 'Escape') { setSearchExpanded(false); setQuery(''); } handleKeyDown(e); }}
             placeholder="Buscar catequizandos, turmas, conteúdos, Bíblia..."
             className="flex-1 bg-transparent border-none outline-none text-sm placeholder:text-muted-foreground/60"
+            data-tour="ctrlk"
           />
           {isLoading && debouncedQuery.length >= 2 && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground shrink-0" />}
           {!isLoading && query && (
@@ -307,8 +310,84 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
       {/* Right section — hidden when search expanded on mobile */}
       {!searchExpanded && (
       <div className="flex items-center gap-2 shrink-0">
-        {/* Parish/Year selector — dropdown */}
-        {activeParishName && (
+        {/* Workspace Switcher */}
+        {availableWorkspaces.length > 0 && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="hidden md:flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-foreground border border-input rounded-xl px-3 py-1.5 h-9">
+                {workspaceType === 'PERSONAL' ? (
+                  <User className="h-4 w-4 text-blue-500" />
+                ) : workspaceType === 'DIOCESE' ? (
+                  <Building2 className="h-4 w-4 text-amber-500" />
+                ) : workspaceType === 'COMMUNITY' ? (
+                  <Building2 className="h-4 w-4 text-emerald-500" />
+                ) : (
+                  <Church className="h-4 w-4 text-primary" />
+                )}
+                <span className="truncate max-w-[120px] font-medium text-sm">{workspaceName}</span>
+                <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-72 p-2">
+              {/* Personal section */}
+              {availableWorkspaces.filter((w: any) => w.isPersonal).map((ws: any) => (
+                <button
+                  key={ws.id}
+                  onClick={() => switchWorkspace(ws.id)}
+                  className="w-full flex items-center gap-3 text-sm px-2 py-2 rounded-sm hover:bg-accent transition-colors cursor-pointer"
+                >
+                  <User className="h-4 w-4 text-blue-500 shrink-0" />
+                  <div className="flex-1 text-left min-w-0">
+                    <div className="font-medium text-sm">{ws.name}</div>
+                    <div className="text-[10px] text-muted-foreground">{ws.subtitle || 'Espaço pessoal'}</div>
+                  </div>
+                  {ws.id === workspace?.id && <div className="w-2 h-2 rounded-full bg-primary shrink-0" />}
+                </button>
+              ))}
+
+              {/* Institutional section */}
+              {availableWorkspaces.filter((w: any) => !w.isPersonal).length > 0 && (
+                <>
+                  <div className="px-2 pt-3 pb-1 text-[10px] font-bold uppercase text-muted-foreground tracking-wider">
+                    Espaços Institucionais
+                  </div>
+                  {availableWorkspaces.filter((w: any) => !w.isPersonal).map((ws: any) => (
+                    <button
+                      key={ws.id}
+                      onClick={() => switchWorkspace(ws.id)}
+                      className="w-full flex items-center gap-3 text-sm px-2 py-2 rounded-sm hover:bg-accent transition-colors cursor-pointer"
+                    >
+                      {ws.type === 'DIOCESE' ? (
+                        <Building2 className="h-4 w-4 text-amber-500 shrink-0" />
+                      ) : ws.type === 'COMMUNITY' ? (
+                        <Building2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                      ) : (
+                        <Church className="h-4 w-4 text-primary shrink-0" />
+                      )}
+                      <div className="flex-1 text-left min-w-0">
+                        <div className="font-medium text-sm truncate">{ws.name}</div>
+                        <div className="text-[10px] text-muted-foreground">{ws.role}</div>
+                      </div>
+                      {ws.id === workspace?.id && <div className="w-2 h-2 rounded-full bg-primary shrink-0" />}
+                    </button>
+                  ))}
+                </>
+              )}
+
+              <div className="border-t mt-2 pt-2">
+                <button
+                  onClick={() => { navigate('/app/select-workspace'); }}
+                  className="w-full text-xs text-muted-foreground hover:text-foreground px-2 py-1.5 rounded-sm hover:bg-accent transition-colors text-left"
+                >
+                  Ver todos os espaços
+                </button>
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
+        {/* Legacy parish selector — keep for backward compat during migration */}
+        {activeParishName && availableWorkspaces.length === 0 && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="hidden md:flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-foreground border border-input rounded-xl px-3 py-1.5 h-9">

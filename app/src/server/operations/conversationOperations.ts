@@ -38,17 +38,40 @@ async function assertParticipant(context: any, conversationId: string): Promise<
 
 // ── listConversations ───────────────────────────────────────────────────────
 
-export const listConversations = async (_args: void, context: any) => {
+export const listConversations = async (args: { workspaceId?: string } | void, context: any) => {
   requireAuth(context.user);
+  const workspaceId = (args && typeof args === 'object' && 'workspaceId' in args) ? (args as any).workspaceId : undefined;
+
+  // Determine if current workspace is personal (restrict conversation types)
+  let isPersonalWorkspace = false;
+  if (workspaceId) {
+    const workspace = await context.entities.Parish.findUnique({
+      where: { id: workspaceId },
+      select: { type: true, ownerId: true },
+    });
+    isPersonalWorkspace = workspace?.type === 'PERSONAL' || workspace?.ownerId === context.user.id;
+  } else {
+    // Fall back to user's subscription plan if no workspace context
+    const user = await context.entities.User.findUnique({
+      where: { id: context.user.id },
+      select: { subscriptionPlan: true },
+    });
+    const plan = user?.subscriptionPlan?.toLowerCase() || '';
+    isPersonalWorkspace = ['catechist_free', 'catechist_pro', 'catechist_ai'].includes(plan);
+  }
 
   const conversations = await context.entities.Conversation.findMany({
     where: {
       participants: { some: { userId: context.user.id } },
+      // Personal workspace: only DIRECT conversations
+      ...(isPersonalWorkspace ? { type: 'DIRECT' } : {}),
+      // Filter by workspace if specified
+      ...(workspaceId ? { parishId: workspaceId } : {}),
     },
     include: {
       participants: {
         include: {
-          user: { select: { id: true, firstName: true, lastName: true, avatarUrl: true, email: true } },
+          user: { select: { id: true, firstName: true, lastName: true, avatarUrl: true } },
         },
       },
       messages: {
@@ -115,7 +138,7 @@ export const getConversation = async (
     include: {
       participants: {
         include: {
-          user: { select: { id: true, firstName: true, lastName: true, avatarUrl: true, email: true } },
+          user: { select: { id: true, firstName: true, lastName: true, avatarUrl: true } },
         },
       },
       class: { select: { id: true, name: true } },
@@ -254,7 +277,7 @@ export const createConversation = async (
     include: {
       participants: {
         include: {
-          user: { select: { id: true, firstName: true, lastName: true, avatarUrl: true, email: true } },
+          user: { select: { id: true, firstName: true, lastName: true, avatarUrl: true } },
         },
       },
     },
@@ -497,7 +520,7 @@ export const getContactsForConversation = async (_args: void, context: any) => {
 
   if (context.user.isAdmin) {
     return context.entities.User.findMany({
-      select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true },
+      select: { id: true, firstName: true, lastName: true, avatarUrl: true },
       take: 200,
       orderBy: { firstName: 'asc' },
     });
@@ -523,7 +546,7 @@ export const getContactsForConversation = async (_args: void, context: any) => {
 
     const catechistUsers = await context.entities.ClassCatechist.findMany({
       where: { classId: { in: classIds } },
-      select: { user: { select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true } }, role: true },
+      select: { user: { select: { id: true, firstName: true, lastName: true, avatarUrl: true } }, role: true },
       distinct: ['userId'],
     });
 
@@ -532,7 +555,7 @@ export const getContactsForConversation = async (_args: void, context: any) => {
     if (catechumenProfile.householdId) {
       guardianUsers = await context.entities.GuardianProfile.findMany({
         where: { householdId: catechumenProfile.householdId },
-        select: { user: { select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true } }, userId: true },
+        select: { user: { select: { id: true, firstName: true, lastName: true, avatarUrl: true } }, userId: true },
       });
     }
 
@@ -548,7 +571,7 @@ export const getContactsForConversation = async (_args: void, context: any) => {
     const otherCatechumenUsers = otherCatechumenUserIds.length > 0
       ? await context.entities.User.findMany({
           where: { id: { in: otherCatechumenUserIds } },
-          select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true },
+          select: { id: true, firstName: true, lastName: true, avatarUrl: true },
         })
       : [];
 
@@ -570,7 +593,7 @@ export const getContactsForConversation = async (_args: void, context: any) => {
       userId: { not: context.user.id },
     },
     select: {
-      user: { select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true } },
+      user: { select: { id: true, firstName: true, lastName: true, avatarUrl: true } },
       role: true,
     },
     distinct: ['userId'],
@@ -653,7 +676,7 @@ export const getOrCreateClassChat = async (
   const allParticipantIds = [...new Set([...catechistUserIds, ...guardianUserIds])];
   const participantsData = allParticipantIds.map((userId) => ({
     userId,
-    role: 'MEMBER' as const,
+    role: userId === context.user.id ? ('OWNER' as const) : ('MEMBER' as const),
   }));
 
   if (participantsData.length === 0) {

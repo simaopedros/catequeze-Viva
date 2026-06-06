@@ -5,16 +5,21 @@ import { Button } from '../client/components/ui/button';
 import { Input } from '../client/components/ui/input';
 import { Label } from '../client/components/ui/label';
 import { Checkbox } from '../client/components/ui/checkbox';
-import { Cross, Loader2, Eye, EyeOff } from 'lucide-react';
+import { Cross, Loader2, Eye, EyeOff, ShieldCheck, ArrowLeft } from 'lucide-react';
+import { getTwoFactorStatus, verifyTwoFactorLogin } from 'wasp/client/operations';
+
+type Step = 'login' | 'twofactor';
 
 export default function CustomLoginForm() {
   const navigate = useNavigate();
+  const [step, setStep] = useState<Step>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [twoFactorToken, setTwoFactorToken] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +31,13 @@ export default function CustomLoginForm() {
     setError('');
     try {
       await login({ email, password });
-      navigate('/app');
+      // Check if 2FA is required
+      const status = await getTwoFactorStatus();
+      if (status.enabled) {
+        setStep('twofactor');
+      } else {
+        navigate('/app');
+      }
     } catch (err: any) {
       setError(err?.message || 'Email ou senha incorretos.');
     } finally {
@@ -34,6 +45,87 @@ export default function CustomLoginForm() {
     }
   };
 
+  const handleTwoFactorSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (twoFactorToken.length !== 6) {
+      setError('Digite o código de 6 dígitos.');
+      return;
+    }
+    setIsLoading(true);
+    setError('');
+    try {
+      await verifyTwoFactorLogin({ token: twoFactorToken });
+      navigate('/app');
+    } catch (err: any) {
+      setError(err?.message || 'Código inválido.');
+      setIsLoading(false);
+    }
+  };
+
+  const handleBackToLogin = () => {
+    setStep('login');
+    setTwoFactorToken('');
+    setError('');
+  };
+
+  // ─── 2FA Challenge Step ───
+  if (step === 'twofactor') {
+    return (
+      <div className="space-y-6">
+        <div className="text-center space-y-2">
+          <div className="inline-flex rounded-xl bg-primary/10 p-3">
+            <ShieldCheck className="h-6 w-6 text-primary" />
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight">Verificação em duas etapas</h1>
+          <p className="text-sm text-muted-foreground">Insira o código de 6 dígitos do seu aplicativo autenticador</p>
+        </div>
+
+        <form onSubmit={handleTwoFactorSubmit} className="space-y-4">
+          {error && (
+            <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+              {error}
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label htmlFor="totp">Código de verificação</Label>
+            <Input
+              id="totp"
+              type="text"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              value={twoFactorToken}
+              onChange={(e) => setTwoFactorToken(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              placeholder="000000"
+              maxLength={6}
+              className="font-mono text-center text-2xl tracking-[0.5em]"
+              disabled={isLoading}
+              autoFocus
+              required
+            />
+          </div>
+
+          <Button type="submit" className="w-full" disabled={isLoading || twoFactorToken.length !== 6}>
+            {isLoading ? (
+              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Verificando...</>
+            ) : (
+              'Verificar'
+            )}
+          </Button>
+
+          <button
+            type="button"
+            onClick={handleBackToLogin}
+            className="w-full text-center text-sm text-muted-foreground hover:text-foreground flex items-center justify-center gap-1"
+          >
+            <ArrowLeft className="h-3 w-3" /> Voltar ao login
+          </button>
+        </form>
+      </div>
+    );
+  }
+
+  // ─── Login Step ───
   return (
     <div className="space-y-6">
       <div className="text-center space-y-2">

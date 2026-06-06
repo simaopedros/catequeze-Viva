@@ -3,19 +3,21 @@ import { Link } from 'react-router';
 import { Button } from '../../client/components/ui/button';
 import { Textarea } from '../../client/components/ui/textarea';
 import {
-  MessageCircle,
+  Sparkles,
   X,
   Send,
-  Sparkles,
   Loader2,
   Bot,
   User,
+  ThumbsUp,
+  ThumbsDown,
 } from 'lucide-react';
-import { chatWithAi, getAiCreditsStatus } from 'wasp/client/operations';
+import { getAiCreditsStatus, submitAiFeedback } from 'wasp/client/operations';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
+  prompt?: string; // original prompt that generated this response
 }
 
 export function AIHelperWidget() {
@@ -51,18 +53,81 @@ export function AIHelperWidget() {
     setLoading(true);
 
     try {
-      const res = await chatWithAi({ message: userMsg });
-      setMessages(prev => [...prev, { role: 'assistant', content: res.reply }]);
+      const response = await fetch('/api/chat-stream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userMsg }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao conectar com a IA.');
+      }
+
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error('Streaming não suportado.');
+
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let fullReply = '';
+      let assistantMsgIndex = -1;
+
+      // Add placeholder for streaming
+      setMessages(prev => {
+        assistantMsgIndex = prev.length;
+        return [...prev, { role: 'assistant', content: '', prompt: userMsg }];
+      });
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          try {
+            const data = JSON.parse(line.slice(6));
+            if (data.error) {
+              throw new Error(data.error);
+            }
+            if (data.done) continue;
+            if (data.chunk) {
+              fullReply += data.chunk;
+              // Update the streaming message in place
+              setMessages(prev => {
+                const updated = [...prev];
+                if (assistantMsgIndex >= 0 && assistantMsgIndex < updated.length) {
+                  updated[assistantMsgIndex] = { role: 'assistant', content: fullReply };
+                }
+                return updated;
+              });
+            }
+          } catch (parseErr: any) {
+            if (parseErr.message && !parseErr.message.includes('JSON')) throw parseErr;
+          }
+        }
+      }
+
+      if (!fullReply) {
+        throw new Error('Resposta vazia da IA.');
+      }
     } catch (e: any) {
-      setMessages(prev => [
-        ...prev,
-        {
-          role: 'assistant',
-          content: e?.message?.includes('402')
-            ? 'Você precisa do plano Catequista IA ou Paróquia para usar o assistente teológico. Acesse /app/billing para fazer upgrade.'
-            : 'Desculpe, ocorreu um erro. Tente novamente mais tarde.',
-        },
-      ]);
+      const errorMsg = e?.message?.includes('402') || e?.message?.includes('Plano')
+        ? 'Você precisa do plano Catequista IA ou Paróquia para usar o assistente teológico. Acesse /app/billing para fazer upgrade.'
+        : 'Desculpe, ocorreu um erro. Tente novamente mais tarde.';
+
+      // Remove placeholder if present, add error message
+      setMessages(prev => {
+        // If the last message is an empty assistant placeholder, replace it
+        if (prev.length > 0 && prev[prev.length - 1].role === 'assistant' && prev[prev.length - 1].content === '') {
+          const updated = [...prev];
+          updated[updated.length - 1] = { role: 'assistant', content: errorMsg };
+          return updated;
+        }
+        return [...prev, { role: 'assistant', content: errorMsg }];
+      });
     } finally {
       setLoading(false);
     }
@@ -132,6 +197,24 @@ export function AIHelperWidget() {
                       m.content
                     )}
                   </div>
+                  {m.role === 'assistant' && m.content && !m.content.startsWith('Desculpe') && !m.content.startsWith('Você precisa') && (
+                    <div className="flex gap-1 mt-1.5 pt-1.5 border-t border-border/50">
+                      <button
+                        onClick={() => submitAiFeedback({ prompt: m.prompt || '', response: m.content, rating: 'thumbs_up' })}
+                        className="p-0.5 rounded hover:bg-green-100 text-muted-foreground hover:text-green-600 transition-colors"
+                        title="Resposta útil"
+                      >
+                        <ThumbsUp className="h-3 w-3" />
+                      </button>
+                      <button
+                        onClick={() => submitAiFeedback({ prompt: m.prompt || '', response: m.content, rating: 'thumbs_down' })}
+                        className="p-0.5 rounded hover:bg-red-100 text-muted-foreground hover:text-red-600 transition-colors"
+                        title="Resposta não foi útil"
+                      >
+                        <ThumbsDown className="h-3 w-3" />
+                      </button>
+                    </div>
+                  )}
                 </div>
                 {m.role === 'user' && (
                   <div className="w-6 h-6 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center flex-shrink-0 mt-1">

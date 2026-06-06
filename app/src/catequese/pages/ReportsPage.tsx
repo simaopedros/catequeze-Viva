@@ -1,10 +1,11 @@
 import { useState, useMemo } from 'react';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
-import { BarChart3, Users, Calendar, TrendingUp, Download, Trophy, AlertTriangle, FileText } from 'lucide-react';
+import { BarChart3, Users, Calendar, TrendingUp, Download, Trophy, AlertTriangle, FileText, PieChart, Activity } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { useQuery, getReportsOverview } from 'wasp/client/operations';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RPieChart, Pie, Cell, Legend, LineChart, Line } from 'recharts';
 
 export default function ReportsPage() {
   const { activeParishId } = useActiveParish();
@@ -37,6 +38,27 @@ export default function ReportsPage() {
     const blob=new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv'});
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='relatorio.csv';a.click();
   };
+
+  // Chart data for Recharts
+  const chartData = useMemo(() => classReports.map((r: any) => ({
+    name: r.name?.length > 15 ? r.name.substring(0, 15) + '...' : r.name,
+    Presença: r.attendanceRate,
+    Ausência: 100 - r.attendanceRate,
+    fullName: r.name,
+    presentCount: r.presentCount,
+    absentCount: r.absentCount,
+    enrolled: r.totalEnrolled,
+  })), [classReports]);
+
+  const pieData = useMemo(() => {
+    const total = classReports.reduce((s: number, r: any) => s + r.presentCount + r.absentCount, 0) || 1;
+    const present = classReports.reduce((s: number, r: any) => s + r.presentCount, 0);
+    const absent = classReports.reduce((s: number, r: any) => s + r.absentCount, 0);
+    return [
+      { name: 'Presentes', value: present, color: '#22c55e' },
+      { name: 'Ausentes', value: absent, color: '#ef4444' },
+    ];
+  }, [classReports]);
 
   // Calculate dropout risk (classes with < 50% attendance)
   const riskClasses = useMemo(()=>{
@@ -148,22 +170,47 @@ export default function ReportsPage() {
         )}
 
         {tab==='grafico'&&(
-          <div className="rounded-xl border bg-card p-6">
-            <h3 className="font-semibold text-sm mb-6">Presença por turma (%)</h3>
-            {!classReports.length?<p className="text-center text-muted-foreground py-8">Sem dados.</p>:
-              <div className="space-y-3">
-                {classReports.map((r:any)=>(
-                  <div key={r.id} className="flex items-center gap-3">
-                    <span className="text-xs w-24 truncate text-right">{r.name}</span>
-                    <div className="flex-1 bg-muted rounded-full h-6 relative overflow-hidden">
-                      <div className={`h-full rounded-full flex items-center justify-end pr-2 text-[10px] font-bold text-white transition-all ${r.attendanceRate>=70?'bg-green-500':r.attendanceRate>=40?'bg-amber-500':'bg-red-500'}`} style={{width:`${(r.attendanceRate/maxBar)*100}%`}}>
-                        {r.attendanceRate>15&&`${r.attendanceRate}%`}
-                      </div>
-                    </div>
-                    <span className="text-xs w-16 text-muted-foreground hidden sm:inline">{r.presentCount}P / {r.absentCount}A</span>
-                  </div>
-                ))}
-              </div>}
+          <div className="space-y-6">
+            {/* Bar Chart */}
+            <div className="rounded-xl border bg-card p-6">
+              <h3 className="font-semibold text-sm mb-4 flex items-center gap-2"><BarChart3 className="h-4 w-4"/>Presença por Turma (%)</h3>
+              {!classReports.length ? <p className="text-center text-muted-foreground py-8">Sem dados.</p> : (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={chartData} margin={{ top: 5, right: 30, left: 0, bottom: 60 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis dataKey="name" angle={-35} textAnchor="end" height={70} tick={{ fontSize: 11 }} />
+                    <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} />
+                    <Tooltip
+                      formatter={(value: any) => [`${value}%`, 'Presença']}
+                      labelFormatter={(label: any) => {
+                        const item = chartData.find((d: any) => d.name === label);
+                        return item?.fullName || label;
+                      }}
+                    />
+                    <Bar dataKey="Presença" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Ausência" fill="#f97316" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+
+            {/* Pie Chart */}
+            <div className="rounded-xl border bg-card p-6">
+              <h3 className="font-semibold text-sm mb-4 flex items-center gap-2"><PieChart className="h-4 w-4"/>Distribuição Geral de Presença</h3>
+              {pieData[0].value + pieData[1].value === 0 ? <p className="text-center text-muted-foreground py-8">Sem dados.</p> : (
+                <ResponsiveContainer width="100%" height={280}>
+                  <RPieChart>
+                    <Pie data={pieData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={5} dataKey="value" label={({ name, percent }: any) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                      {pieData.map((entry, i) => (
+                        <Cell key={i} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value: any) => [value, 'registros']} />
+                    <Legend />
+                  </RPieChart>
+                </ResponsiveContainer>
+              )}
+            </div>
           </div>
         )}
       </div>

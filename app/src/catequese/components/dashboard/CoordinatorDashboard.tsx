@@ -1,7 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { Button } from '../../../client/components/ui/button';
-import { Users, BookOpen, TrendingUp, Cross, AlertCircle, Gift, Calendar, Clock, ChevronRight } from 'lucide-react';
+import { useQuery, getClassComparison } from 'wasp/client/operations';
+import { useActiveParish } from '../../../client/hooks/useActiveParish';
+import { Users, BookOpen, TrendingUp, Cross, AlertCircle, Gift, Calendar, Clock, ChevronRight, ArrowUpDown } from 'lucide-react';
 
 interface CoordinatorDashboardProps {
   stats: any;
@@ -9,16 +11,33 @@ interface CoordinatorDashboardProps {
 
 export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
   const { t } = useTranslation('dashboard');
+  const { activeParishId } = useActiveParish();
+  const { data: comparison } = useQuery(getClassComparison, { parishId: activeParishId || '' }, { enabled: !!activeParishId });
 
   return (
     <div className="space-y-6">
       <div><h1 className="text-2xl font-bold">{t('title')}</h1><p className="text-muted-foreground">{t('subtitle')}</p></div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div data-tour="dashboard-stats" className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[{l:t('active_catechumens'),v:stats?.activeCatechumens??0,i:Users,c:'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-950/40'},{l:t('active_classes'),v:stats?.activeClasses??0,i:BookOpen,c:'text-green-600 bg-green-50 dark:text-green-400 dark:bg-green-950/40'},{l:t('avg_attendance'),v:`${stats?.avgAttendance??0}%`,i:TrendingUp,c:'text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/40'},{l:t('pending_sacraments'),v:stats?.pendingSacraments??0,i:Cross,c:'text-purple-600 bg-purple-50 dark:text-purple-400 dark:bg-purple-950/40'}].map(k=>(
           <div key={k.l} className="rounded-xl border bg-card p-5 shadow-sm hover:shadow-md transition-shadow"><div className="flex items-center gap-4"><div className={`rounded-xl p-2.5 ${k.c}`}><k.i className="h-5 w-5"/></div><div><p className="text-xs text-muted-foreground uppercase tracking-wider">{k.l}</p><p className="text-2xl font-bold mt-0.5">{k.v}</p></div></div></div>
         ))}
+      </div>
+
+      {/* Quick tip: Ctrl+K shortcut */}
+      <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 flex items-center gap-3">
+        <div className="rounded-lg bg-primary/10 p-2 flex-shrink-0">
+          <svg className="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" /><polyline points="10 17 15 12 10 7" /><line x1="15" y1="12" x2="3" y2="12" />
+          </svg>
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium">Dica rápida</p>
+          <p className="text-xs text-muted-foreground">
+            Pressione <kbd className="rounded border px-1 py-0.5 text-[10px] font-mono bg-muted">Ctrl</kbd> + <kbd className="rounded border px-1 py-0.5 text-[10px] font-mono bg-muted">K</kbd> para buscar em catequizandos, turmas, Bíblia, Catecismo e mais.
+          </p>
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -78,7 +97,80 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
         </div>
       )}
 
+      {/* Class Comparison Table */}
+      {comparison && comparison.length > 1 && (
+        <div className="rounded-xl border bg-card p-4">
+          <h3 className="font-semibold text-sm uppercase text-muted-foreground mb-4 flex items-center gap-1">
+            <ArrowUpDown className="h-4 w-4" /> Comparativo de Turmas
+          </h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-xs text-muted-foreground uppercase border-b">
+                  <th className="pb-2 pr-3">Turma</th>
+                  <th className="pb-2 pr-3">Etapa</th>
+                  <th className="pb-2 pr-3 text-center">Inscritos</th>
+                  <th className="pb-2 pr-3 text-center">Encontros</th>
+                  <th className="pb-2 pr-3 text-center">Presença</th>
+                  <th className="pb-2 text-center">Risco</th>
+                </tr>
+              </thead>
+              <tbody>
+                {comparison.map((c: any) => (
+                  <tr key={c.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
+                    <td className="py-2 pr-3 font-medium">
+                      <Link to={`/app/classes/${c.id}`} className="hover:text-primary">{c.name}</Link>
+                    </td>
+                    <td className="py-2 pr-3 text-xs text-muted-foreground">{c.stage}</td>
+                    <td className="py-2 pr-3 text-center">{c.enrolled}</td>
+                    <td className="py-2 pr-3 text-center">{c.totalMeetings}</td>
+                    <td className="py-2 pr-3 text-center">
+                      <span className={`font-bold ${c.attendanceRate >= 75 ? 'text-green-600' : c.attendanceRate >= 50 ? 'text-amber-600' : 'text-red-600'}`}>
+                        {c.attendanceRate}%
+                      </span>
+                    </td>
+                    <td className="py-2 text-center">
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                        c.riskLevel === 'BAIXO' ? 'bg-green-100 text-green-700' :
+                        c.riskLevel === 'MÉDIO' ? 'bg-amber-100 text-amber-700' :
+                        'bg-red-100 text-red-700'
+                      }`}>
+                        {c.riskLevel}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       <div className="flex gap-3"><Button asChild><Link to="/app/classes/new">{t('create_class')}</Link></Button><Button variant="outline" asChild><Link to="/app/catechumens/new">Cadastrar catequizando</Link></Button></div>
+
+      {/* Empty state when no classes exist */}
+      {(!stats?.activeClasses || stats.activeClasses === 0) && (
+        <div className="rounded-xl border-2 border-dashed border-muted-foreground/30 bg-muted/20 p-8 text-center">
+          <BookOpen className="h-10 w-10 mx-auto text-muted-foreground/40 mb-3" />
+          <h3 className="text-lg font-semibold mb-1">{t('no_classes_yet')}</h3>
+          <p className="text-sm text-muted-foreground mb-4 max-w-md mx-auto">{t('no_classes_description')}</p>
+          <Button asChild size="lg">
+            <Link to="/app/classes/new">{t('create_class')}</Link>
+          </Button>
+        </div>
+      )}
+
+      {/* Empty state when no catechumens */}
+      {(!stats?.activeCatechumens || stats.activeCatechumens === 0) && (stats?.activeClasses > 0) && (
+        <div className="rounded-xl border-2 border-dashed border-muted-foreground/30 bg-muted/20 p-6 text-center">
+          <Users className="h-8 w-8 mx-auto text-muted-foreground/40 mb-2" />
+          <h3 className="font-semibold mb-1">Nenhum catequizando cadastrado</h3>
+          <p className="text-sm text-muted-foreground mb-3">Cadastre catequizandos e matricule-os nas suas turmas.</p>
+          <Button asChild variant="outline">
+            <Link to="/app/catechumens/new">Cadastrar primeiro catequizando</Link>
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

@@ -18,7 +18,9 @@ interface PlanCard {
   name: string;
   price: string;
   priceCents?: number;
-  maxClasses: number | null; // null = unlimited
+  annualPrice?: string;
+  priceCentsAnnual?: number;
+  maxClasses: number | null;
   maxCatechumens: number | null;
   features: string[];
   color: string;
@@ -31,9 +33,9 @@ const ALL_PLANS: PlanCard[] = [
     planId: PaymentPlanId.CatechistFree,
     name: 'Catequista Grátis',
     price: 'Grátis',
-    maxClasses: 1,
-    maxCatechumens: 20,
-    features: ['1 turma', 'Até 20 catequizandos', 'Presença básica', 'Suporte comunitário'],
+    maxClasses: 2,
+    maxCatechumens: 30,
+    features: ['2 turmas', 'Até 30 catequizandos', 'Presença básica', 'Suporte comunitário'],
     color: 'bg-green-50 border-green-200',
     highlight: false,
     isFree: true,
@@ -43,9 +45,11 @@ const ALL_PLANS: PlanCard[] = [
     name: 'Catequista Pro',
     price: 'R$ 9/mês',
     priceCents: 900,
+    annualPrice: 'R$ 90/ano (R$ 7,50/mês)',
+    priceCentsAnnual: 9000,
     maxClasses: null,
     maxCatechumens: null,
-    features: ['Turmas ilimitadas', 'Catequizandos ilimitados', 'Relatórios avançados', 'Suporte prioritário'],
+    features: ['Turmas ilimitadas', 'Catequizandos ilimitados', 'Relatórios avançados', 'Suporte prioritário', '2 créditos IA/mês (amostra)'],
     color: 'bg-blue-50 border-blue-200',
     highlight: false,
     isFree: false,
@@ -55,11 +59,27 @@ const ALL_PLANS: PlanCard[] = [
     name: 'Catequista IA',
     price: 'R$ 29/mês',
     priceCents: 2900,
+    annualPrice: 'R$ 290/ano (R$ 24/mês)',
+    priceCentsAnnual: 29000,
     maxClasses: null,
     maxCatechumens: null,
-    features: ['Tudo do Pro', 'Gerador de encontros por IA', 'Planejamento anual automático', 'Gerador de atividades', 'Assistente teológico', '15 créditos/mês'],
+    features: ['Tudo do Pro', 'Gerador de encontros por IA', 'Planejamento anual automático', 'Gerador de atividades e quizzes', 'Assistente teológico', 'Mensagens WhatsApp', '15 créditos/mês'],
     color: 'bg-violet-50 border-violet-300',
     highlight: true,
+    isFree: false,
+  },
+  {
+    planId: PaymentPlanId.CatechistAiAddon,
+    name: 'Add-on IA',
+    price: 'R$ 15/mês',
+    priceCents: 1500,
+    annualPrice: 'R$ 150/ano (R$ 12,50/mês)',
+    priceCentsAnnual: 15000,
+    maxClasses: null,
+    maxCatechumens: null,
+    features: ['Adiciona 15 créditos IA/mês', 'Compatível com qualquer plano pago', 'Gerador de encontros', 'Assistente teológico'],
+    color: 'bg-indigo-50 border-indigo-200',
+    highlight: false,
     isFree: false,
   },
   {
@@ -67,9 +87,11 @@ const ALL_PLANS: PlanCard[] = [
     name: 'Paróquia',
     price: 'R$ 49/mês',
     priceCents: 4900,
+    annualPrice: 'R$ 490/ano (R$ 41/mês)',
+    priceCentsAnnual: 49000,
     maxClasses: null,
     maxCatechumens: null,
-    features: ['Multi-catequista', 'Turmas ilimitadas', 'Relatórios avançados', 'Documentos e certidões', 'Comunicação por email'],
+    features: ['Tudo do IA', 'Multi-catequista', 'Turmas ilimitadas', 'Comunicação integrada', 'Documentos e certidões', 'Consentimentos LGPD', 'Painel do coordenador', '50 créditos de IA/mês'],
     color: 'bg-purple-50 border-purple-200',
     highlight: false,
     isFree: false,
@@ -79,9 +101,11 @@ const ALL_PLANS: PlanCard[] = [
     name: 'Diocese',
     price: 'R$ 149/mês',
     priceCents: 14900,
+    annualPrice: 'R$ 1.490/ano (R$ 124/mês)',
+    priceCentsAnnual: 149000,
     maxClasses: null,
     maxCatechumens: null,
-    features: ['Multi-paróquia', 'Biblioteca oficial', 'Analytics consolidado', 'Suporte prioritário', 'API de integração'],
+    features: ['Tudo do Paróquia', 'Multi-paróquia', 'Biblioteca oficial', 'Analytics consolidado', 'Gestão centralizada', 'Suporte prioritário', '50 créditos IA/mês por usuário'],
     color: 'bg-amber-50 border-amber-200',
     highlight: false,
     isFree: false,
@@ -149,14 +173,8 @@ export default function BillingPage() {
     (effectivePlanId === PaymentPlanId.Parish && parish?.ownerId === user?.id) ||
     (effectivePlanId === PaymentPlanId.Diocese && parish?.dioceseAdmins?.some((da: any) => da.user?.id === user?.id));
 
-  // Only show Parish/Diocese plans to users who own a parish or are admin
-  const canManageParish = user?.isAdmin || parish?.ownerId === user?.id;
-  const visiblePlans = ALL_PLANS.filter((plan) => {
-    if (!canManageParish && (plan.planId === PaymentPlanId.Parish || plan.planId === PaymentPlanId.Diocese)) {
-      return false;
-    }
-    return true;
-  });
+  // Show all plans including Parish/Diocese — non-admins see them as "institutional" reference
+  const visiblePlans = ALL_PLANS;
 
   if (loading || (parishId && loadingParish)) {
     return (
@@ -391,7 +409,10 @@ export default function BillingPage() {
                   <h3 className="font-bold text-sm">{plan.name}</h3>
                   {isCurrent && <Badge>Atual</Badge>}
                 </div>
-                <p className="text-xl font-bold mb-3">{plan.price}</p>
+                <p className="text-xl font-bold mb-1">{plan.price}</p>
+                {plan.annualPrice && (
+                  <p className="text-xs text-green-600 font-medium mb-2">{plan.annualPrice}</p>
+                )}
                 <ul className="space-y-1.5 text-xs mb-4">
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-center gap-1.5 text-muted-foreground">
@@ -407,6 +428,10 @@ export default function BillingPage() {
                 ) : plan.isFree ? (
                   <Button variant="outline" className="w-full text-xs" disabled>
                     Plano base
+                  </Button>
+                ) : (plan.planId === PaymentPlanId.Parish || plan.planId === PaymentPlanId.Diocese) && !user?.isAdmin && parish?.ownerId !== user?.id ? (
+                  <Button variant="outline" className="w-full text-xs" disabled title="Requer administrador da paróquia">
+                    Plano institucional
                   </Button>
                 ) : (
                   <Button

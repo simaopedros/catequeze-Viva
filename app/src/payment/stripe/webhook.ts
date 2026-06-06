@@ -122,6 +122,7 @@ async function handleInvoicePaid(
     case PaymentPlanId.CatechistFree:
     case PaymentPlanId.CatechistPro:
     case PaymentPlanId.CatechistAi:
+    case PaymentPlanId.CatechistAiAddon:
     case PaymentPlanId.Parish:
     case PaymentPlanId.Diocese:
       await updateUserSubscription(

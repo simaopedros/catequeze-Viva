@@ -12,14 +12,16 @@ function isCatechist(role: string): boolean {
   return ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST'].includes(role);
 }
 
-export const listClasses = async (_args: { communityId?: string } | void, context: any) => {
+export const listClasses = async (_args: { communityId?: string; workspaceId?: string } | void, context: any) => {
   const args = _args || {};
   if (!context.user) throw new HttpError(401);
+
   if (context.user.isAdmin) {
-    const whereAdmin: any = { orderBy: { name: 'asc' } };
-    if (args.communityId) whereAdmin.where = { communityId: args.communityId };  // needs separate field for findMany
+    const whereAdmin: any = {};
+    if (args.communityId) whereAdmin.communityId = args.communityId;
+    if (args.workspaceId) whereAdmin.parishId = args.workspaceId;
     return context.entities.CatechesisClass.findMany({
-      where: args.communityId ? { communityId: args.communityId } : {},
+      where: whereAdmin,
       orderBy: { name: 'asc' },
       include: {
         parish: { select: { id: true, name: true } },
@@ -32,17 +34,38 @@ export const listClasses = async (_args: { communityId?: string } | void, contex
     });
   }
 
+  // Check if user has a personal workspace to include
+  let personalParishId: string | null = null;
+  if (args.workspaceId) {
+    // Filter by specific workspace
+    const personalCheck = await context.entities.Parish.findFirst({
+      where: { id: args.workspaceId, ownerId: context.user.id, type: 'PERSONAL' },
+      select: { id: true },
+    });
+    if (personalCheck) personalParishId = personalCheck.id;
+  }
+
   const memberships = await context.entities.Membership.findMany({
     where: { userId: context.user.id, status: MembershipStatus.ACTIVE },
     select: { parishId: true, role: true },
   });
-  if (memberships.length === 0) return [];
 
-  const roles = memberships.map((m: any) => m.role);
-  const parishIds = memberships.map((m: any) => m.parishId);
+  // Filter memberships by workspaceId if provided
+  const relevantMemberships = args.workspaceId
+    ? memberships.filter((m: { parishId: string; role: string }) => m.parishId === args.workspaceId)
+    : memberships;
+
+  if (relevantMemberships.length === 0 && !personalParishId) return [];
+
+  const roles = relevantMemberships.map((m: any) => m.role);
+  const parishIds = relevantMemberships.map((m: any) => m.parishId);
+  if (personalParishId) parishIds.push(personalParishId);
+
+  // Include classes owned via personal workspace
+  const whereParishIds = [...new Set(parishIds)];
 
   if (roles.some((r: string) => isCoordinatorOrAbove(r))) {
-    const whereCoords: any = { parishId: { in: parishIds } };
+    const whereCoords: any = { parishId: { in: whereParishIds } };
     if (args.communityId) whereCoords.communityId = args.communityId;
     return context.entities.CatechesisClass.findMany({
       where: whereCoords,
@@ -147,7 +170,7 @@ export const listClasses = async (_args: { communityId?: string } | void, contex
     return [];
   }
 
-  const whereFallback: any = { parishId: { in: parishIds } };
+  const whereFallback: any = { parishId: { in: whereParishIds } };
   if (args.communityId) whereFallback.communityId = args.communityId;
   return context.entities.CatechesisClass.findMany({
     where: whereFallback,
@@ -166,20 +189,59 @@ export const createClass = async (args: any, context: any) => {
   validateOrThrow(createClassSchema, args);
   if (!context.user) throw new HttpError(401);
 
-  const effectiveParishId = args.parishId || (
-    await context.entities.Membership.findFirst({
+  let effectiveParishId = args.parishId;
+
+  if (!effectiveParishId) {
+    // Try membership
+    const membership = await context.entities.Membership.findFirst({
       where: { userId: context.user.id, status: MembershipStatus.ACTIVE },
       orderBy: { createdAt: 'asc' },
-    })
-  )?.parishId;
+    });
+    if (membership?.parishId) {
+      effectiveParishId = membership.parishId;
+    }
+  }
 
-  if (!effectiveParishId) throw new HttpError(400, 'Você não está vinculado a nenhuma paróquia.');
+  if (!effectiveParishId) {
+    // Try personal workspace
+    const personal = await context.entities.Parish.findFirst({
+      where: { ownerId: context.user.id, type: 'PERSONAL' },
+      select: { id: true },
+    });
+    if (personal) {
+      effectiveParishId = personal.id;
+    }
+  }
+
+  // Auto-create personal workspace if none exists
+  if (!effectiveParishId) {
+    const user = await context.entities.User.findUnique({
+      where: { id: context.user.id },
+      select: { firstName: true, lastName: true },
+    });
+    const created = await context.entities.Parish.create({
+      data: {
+        name: `Catequese de ${user?.firstName || 'Catequista'}`,
+        type: 'PERSONAL',
+        city: '—',
+        state: '—',
+        ownerId: context.user.id,
+      },
+    });
+    effectiveParishId = created.id;
+  }
 
   const membership = await context.entities.Membership.findFirst({
     where: { userId: context.user.id, parishId: effectiveParishId, status: MembershipStatus.ACTIVE },
   });
 
-  if (!membership && !context.user.isAdmin) throw new HttpError(403);
+  if (!membership && !context.user.isAdmin) {
+    // Allow if user is the owner of the parish (personal workspace)
+    const isOwner = await context.entities.Parish.findFirst({
+      where: { id: effectiveParishId, ownerId: context.user.id },
+    });
+    if (!isOwner) throw new HttpError(403, 'Você não tem permissão para criar turmas nesta paróquia.');
+  }
   if (membership && !isCoordinatorOrAbove(membership.role) && membership.role !== 'LEAD_CATECHIST') {
     throw new HttpError(403, 'Apenas coordenadores e catequistas responsáveis podem criar turmas.');
   }
@@ -353,6 +415,14 @@ export const assignLeadCatechist = async (args: { classId: string; userId: strin
     if (!membership || !isCoordinatorOrAbove(membership.role)) {
       throw new HttpError(403, 'Apenas coordenadores podem designar catequistas responsáveis.');
     }
+  }
+
+  // Validate the target user belongs to the same parish
+  const targetMembership = await context.entities.Membership.findFirst({
+    where: { userId: args.userId, parishId: classData.parishId, status: MembershipStatus.ACTIVE },
+  });
+  if (!targetMembership) {
+    throw new HttpError(400, 'O usuário não possui vínculo ativo com a paróquia desta turma.');
   }
 
   await context.entities.ClassCatechist.deleteMany({ where: { classId: args.classId, role: CatechistAssignmentRole.LEAD } });

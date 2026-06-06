@@ -51,11 +51,11 @@ app OpenSaaS {
         },
         userSignupFields: import { getEmailUserFields } from "@src/auth/userSignupFields",
       },
-      // Uncomment to enable Google Auth (check https://wasp.sh/docs/auth/social-auth/google for setup instructions):
-      // google: { // Guide for setting up Auth via Google
-      //   userSignupFields: import { getGoogleUserFields } from "@src/auth/userSignupFields",
-      //   configFn: import { getGoogleAuthConfig } from "@src/auth/userSignupFields",
-      // },
+      // Google Auth — requires GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET env vars
+      google: {
+        userSignupFields: import { getGoogleUserFields } from "@src/auth/userSignupFields",
+        configFn: import { getGoogleAuthConfig } from "@src/auth/userSignupFields",
+      },
       // Uncomment to enable GitHub Auth (check https://wasp.sh/docs/auth/social-auth/github for setup instructions):
       // gitHub: {
       //   userSignupFields: import { getGitHubUserFields } from "@src/auth/userSignupFields",
@@ -192,6 +192,28 @@ job aiCreditsResetJob {
   entities: [UserAiCredits, User]
 }
 
+job aiCacheCleanupJob {
+  executor: PgBoss,
+  perform: {
+    fn: import { cleanupAiCacheJob } from "@src/server/scripts/aiCacheCleanupJob"
+  },
+  schedule: {
+    cron: "0 4 * * *" // daily at 4am
+  },
+  entities: [AiResponseCache]
+}
+
+job remindersJob {
+  executor: PgBoss,
+  perform: {
+    fn: import { sendRemindersJob } from "@src/server/scripts/remindersJob"
+  },
+  schedule: {
+    cron: "0 7 * * *" // daily at 7am
+  },
+  entities: [Meeting, Notification, Document, User, CatechesisClass]
+}
+
 job subscriptionExpirationJob {
   executor: PgBoss,
   perform: {
@@ -298,6 +320,18 @@ route AppAIPlannerRoute { path: "/app/ai-planner", to: AppAIPlannerPage }
 page AppAIPlannerPage {
   authRequired: true,
   component: import AIPlannerPage from "@src/catequese/pages/AIPlannerPage"
+}
+
+route AppMyAiGenerationsRoute { path: "/app/my-ai-generations", to: AppMyAiGenerationsPage }
+page AppMyAiGenerationsPage {
+  authRequired: true,
+  component: import MyAiGenerationsPage from "@src/catequese/pages/MyAiGenerationsPage"
+}
+
+route WorkspaceSelectorRoute { path: "/app/select-workspace", to: WorkspaceSelectorPage }
+page WorkspaceSelectorPage {
+  authRequired: true,
+  component: import WorkspaceSelectorPage from "@src/catequese/pages/WorkspaceSelectorPage"
 }
 
 route AppActivitiesRoute { path: "/app/activities", to: AppActivitiesPage }
@@ -447,7 +481,17 @@ action updateMembershipRole {
 
 action joinParish {
   fn: import { joinParish } from "@src/server/operations/joinParish",
-  entities: [Membership, Parish]
+  entities: [Membership, Parish, User]
+}
+
+action ensurePersonalWorkspace {
+  fn: import { ensurePersonalWorkspace } from "@src/server/operations/workspaceOperations",
+  entities: [Parish, User]
+}
+
+query listWorkspaces {
+  fn: import { listWorkspaces } from "@src/server/operations/workspaceOperations",
+  entities: [Parish, Membership, TenantBilling, User]
 }
 //#endregion
 
@@ -702,7 +746,7 @@ query listSacramentalJourneys {
 
 action createSacramentalJourney {
   fn: import { createSacramentalJourney } from "@src/server/operations/sacramentOperations",
-  entities: [SacramentalJourney, SacramentalMilestoneTemplate, SacramentalMilestone, Membership, CatechumenProfile, ClassEnrollment, CatechesisClass, Household]
+  entities: [SacramentalJourney, SacramentalMilestoneTemplate, SacramentalMilestone, Membership, CatechumenProfile, ClassEnrollment, CatechesisClass, Household, SacramentalJourneyTemplate]
 }
 
 action updateMilestoneStatus {
@@ -712,7 +756,7 @@ action updateMilestoneStatus {
 
 query listJourneyTemplates {
   fn: import { listJourneyTemplates } from "@src/server/operations/sacramentOperations",
-  entities: [SacramentalJourneyTemplate, Membership]
+  entities: [SacramentalJourneyTemplate, Membership, Parish]
 }
 //#endregion
 
@@ -787,6 +831,18 @@ api publicUploadDocument {
   middlewareConfigFn: import { publicUploadMiddleware } from "@src/server/api/publicUpload",
   httpRoute: (POST, "/api/upload-document"),
   entities: [Document, CatechumenProfile]
+}
+
+api chatStreamApi {
+  fn: import { chatStreamHandler } from "@src/server/operations/chatStream",
+  httpRoute: (POST, "/api/chat-stream"),
+  entities: [User, UserAiCredits, AiResponseCache]
+}
+
+api healthCheckApi {
+  fn: import { healthCheckHandler } from "@src/server/api/healthCheck",
+  httpRoute: (GET, "/health"),
+  entities: []
 }
 
 action generateCatechumenUploadToken {
@@ -1120,7 +1176,77 @@ action generateAnnualPlanning {
 
 action chatWithAi {
   fn: import { chatWithAi } from "@src/server/operations/aiOperations",
-  entities: [Message, Conversation, UserAiCredits, User, Membership, Parish, TenantBilling]
+  entities: [Message, Conversation, UserAiCredits, User, Membership, Parish, TenantBilling, AiResponseCache]
+}
+
+action submitAiFeedback {
+  fn: import { submitAiFeedback } from "@src/server/operations/aiFeedbackOperations",
+  entities: [AiFeedback]
+}
+
+action startTwoFactorSetup {
+  fn: import { startTwoFactorSetup } from "@src/server/operations/twoFactorOperations",
+  entities: [UserTwoFactor, User]
+}
+
+action verifyTwoFactorSetup {
+  fn: import { verifyTwoFactorSetup } from "@src/server/operations/twoFactorOperations",
+  entities: [UserTwoFactor]
+}
+
+action disableTwoFactor {
+  fn: import { disableTwoFactor } from "@src/server/operations/twoFactorOperations",
+  entities: [UserTwoFactor]
+}
+
+action verifyTwoFactorLogin {
+  fn: import { verifyTwoFactorLogin } from "@src/server/operations/twoFactorOperations",
+  entities: [UserTwoFactor]
+}
+
+query getTwoFactorStatus {
+  fn: import { getTwoFactorStatus } from "@src/server/operations/twoFactorOperations",
+  entities: [UserTwoFactor, User]
+}
+
+action markMessageAsRead {
+  fn: import { markMessageAsRead } from "@src/server/operations/readReceiptOperations",
+  entities: [MessageReadReceipt]
+}
+
+action sendClassAnnouncementByEmail {
+  fn: import { sendClassAnnouncementByEmail } from "@src/server/operations/announcementEmailOperations",
+  entities: [ClassEnrollment, CatechumenProfile, Household, GuardianProfile]
+}
+
+query getMessageReadReceipts {
+  fn: import { getMessageReadReceipts } from "@src/server/operations/readReceiptOperations",
+  entities: [MessageReadReceipt, User]
+}
+
+query getCatechumenAttendanceReport {
+  fn: import { getCatechumenAttendanceReport } from "@src/server/operations/catechumenReportOperations",
+  entities: [CatechumenProfile, ClassEnrollment, AttendanceRecord, Meeting]
+}
+
+query semanticSearchBible {
+  fn: import { semanticSearchBible } from "@src/server/operations/semanticSearchOperations",
+  entities: [BibleVerse, BibleChapter, BibleBook]
+}
+
+query getMonthlyPlan {
+  fn: import { getMonthlyPlan } from "@src/server/operations/monthlyPlanOperations",
+  entities: [Meeting, CatechesisClass, ContentItem, AttendanceRecord]
+}
+
+query listDioceseSharedContent {
+  fn: import { listDioceseSharedContent } from "@src/server/operations/dioceseContentOperations",
+  entities: [ContentItem, Membership, Parish]
+}
+
+query getClassComparison {
+  fn: import { getClassComparison } from "@src/server/operations/classComparisonOperations",
+  entities: [CatechesisClass, ClassEnrollment, Meeting, AttendanceRecord]
 }
 
 action generateActivityForMeeting {
@@ -1141,6 +1267,11 @@ action enhanceContentWithAi {
 query getAiCreditsStatus {
   fn: import { getAiCreditsStatus } from "@src/server/operations/aiOperations",
   entities: [UserAiCredits, User, Membership, Parish, TenantBilling]
+}
+
+query listMyAiGenerations {
+  fn: import { listMyAiGenerations } from "@src/server/operations/myAiGenerations",
+  entities: [ContentItem]
 }
 
 query globalSearch {

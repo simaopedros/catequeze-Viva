@@ -4,7 +4,7 @@ import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { ArrowLeft, UserPlus, Users, MapPin, Clock, ClipboardList, TrendingUp, XCircle, Calendar, MessageCircle, BookOpen, Building2, Pencil, Check, X, Trash2 } from 'lucide-react';
 import { AppShell } from '../AppShell';
-import { useQuery, getClassDetails, listCatechumens, enrollCatechumen, updateClass, getOrCreateClassChat, cancelEnrollment, addAssistantCatechist, removeCatechistFromClass, listParishCatechists } from 'wasp/client/operations';
+import { useQuery, getClassDetails, listCatechumens, enrollCatechumen, updateClass, getOrCreateClassChat, cancelEnrollment, addAssistantCatechist, removeCatechistFromClass, listParishCatechists, getMonthlyPlan } from 'wasp/client/operations';
 import { useAuth } from 'wasp/client/auth';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
@@ -13,6 +13,7 @@ import { PlanLimitBanner } from '../components/PlanLimitBanner';
 import { handlePlanLimitError } from '../lib/planLimitToast';
 import { ConfirmDialog } from '../../client/components/ConfirmDialog';
 import { toast } from '../../client/hooks/use-toast';
+import SendAnnouncementButton from '../components/SendAnnouncementButton';
 
 const STATUS_OPTS = [
   { status:'ACTIVE', label:'Ativar', variant:'default' as const },
@@ -56,7 +57,9 @@ export default function ClassDetailPage() {
   const { userRole, parishId } = useUserContext();
   const { availableParishes } = useActiveParish();
   const { data: parishCatechists = [] } = useQuery(listParishCatechists, { parishId: cls?.parish?.id || '' }, { enabled: !!cls?.parish?.id });
-  const [tab,setTab]=useState<'inscritos'|'encontros'|'catequistas'>('inscritos');
+  const [tab,setTab]=useState<'inscritos'|'encontros'|'catequistas'|'planejamento'>('inscritos');
+  const [monthlyPlan, setMonthlyPlan] = useState<any>(null);
+  const [loadingPlan, setLoadingPlan] = useState(false);
   const [chatting, setChatting] = useState(false);
   const [unenrollConfirm, setUnenrollConfirm] = useState<string | null>(null);
   const [statusConfirm, setStatusConfirm] = useState<string | null>(null);
@@ -158,6 +161,18 @@ export default function ClassDetailPage() {
     }
   };
 
+  const handleLoadMonthlyPlan = async () => {
+    if (monthlyPlan || loadingPlan) return;
+    setLoadingPlan(true);
+    try {
+      const plan = await getMonthlyPlan({ classId: id! });
+      setMonthlyPlan(plan);
+    } catch (e: any) {
+      toast({ title: 'Erro ao carregar planejamento', description: e.message, variant: 'destructive' });
+    }
+    setLoadingPlan(false);
+  };
+
   const handleAddCatechist = async () => {
     if (!addUserId) return;
     setAddingCatechist(true);
@@ -244,6 +259,7 @@ export default function ClassDetailPage() {
             </Button>
             <Button asChild variant="outline" size="sm"><Link to={`/app/classes/${id}/attendance`}><ClipboardList className="mr-1 h-3 w-3"/>Presença</Link></Button>
             <Button asChild variant="outline" size="sm"><Link to={`/app/classes/${id}/meetings`}><Calendar className="mr-1 h-3 w-3"/>Encontros</Link></Button>
+            {canManageClass && <SendAnnouncementButton classId={id!} className={cls.name} />}
           </div>
         </div>
 
@@ -313,8 +329,8 @@ export default function ClassDetailPage() {
 
         {/* Tabs */}
         <div className="flex gap-1 border-b pb-2">
-          {[{id:'inscritos',l:`Inscritos (${enrolledIds.length})`},{id:'encontros',l:`Encontros (${cls.meetings?.length||0})`},{id:'catequistas',l:`Catequistas (${cls.catechists?.length||0})`}].map(t=>(
-            <button key={t.id} onClick={()=>setTab(t.id as any)} className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${tab===t.id?'border-b-2 border-primary text-primary':'text-muted-foreground hover:text-foreground'}`}>{t.l}</button>
+          {[{id:'inscritos',l:`Inscritos (${enrolledIds.length})`},{id:'encontros',l:`Encontros (${cls.meetings?.length||0})`},{id:'catequistas',l:`Catequistas (${cls.catechists?.length||0})`},{id:'planejamento',l:'Planejamento'}].map(t=>(
+            <button key={t.id} onClick={()=>{setTab(t.id as any); if(t.id === 'planejamento' && !monthlyPlan) handleLoadMonthlyPlan();}} className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${tab===t.id?'border-b-2 border-primary text-primary':'text-muted-foreground hover:text-foreground'}`}>{t.l}</button>
           ))}
         </div>
 
@@ -454,6 +470,75 @@ export default function ClassDetailPage() {
                   );
                 })}
               </div>
+            )}
+          </div>
+        )}
+
+        {/* Tab: Planejamento */}
+        {tab === 'planejamento' && (
+          <div>
+            {loadingPlan ? (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground py-8 justify-center">
+                <Clock className="h-4 w-4 animate-spin"/>Carregando planejamento...
+              </div>
+            ) : monthlyPlan ? (
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="rounded-lg bg-primary/10 p-2 text-primary">
+                    <Calendar className="h-5 w-5"/>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-sm">
+                      {new Date(monthlyPlan.year, monthlyPlan.month).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
+                    </h3>
+                    <p className="text-xs text-muted-foreground">{monthlyPlan.totalMeetings} encontros este mês</p>
+                  </div>
+                </div>
+
+                {monthlyPlan.weeks.length === 0 ? (
+                  <p className="text-sm text-muted-foreground py-4">Nenhum encontro agendado para este mês.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {monthlyPlan.weeks.map((week: any, wi: number) => (
+                      <div key={wi} className="rounded-lg border bg-card p-3">
+                        <p className="text-xs font-medium text-muted-foreground mb-2">
+                          Semana de {new Date(week.weekStart).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })}
+                        </p>
+                        <div className="space-y-1">
+                          {week.meetings.map((m: any) => (
+                            <div key={m.id} className="flex items-center justify-between py-1 text-sm">
+                              <div className="flex items-center gap-2">
+                                <Badge variant="outline" className="text-[10px]">
+                                  {new Date(m.date).toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric' })}
+                                </Badge>
+                                <span className="font-medium">{m.title || 'Sem título'}</span>
+                              </div>
+                              <span className="text-xs text-muted-foreground">{m.attendanceCount} registros</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {monthlyPlan.availableContent?.length > 0 && (
+                  <div className="rounded-lg border bg-card p-3">
+                    <h4 className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1">
+                      <BookOpen className="h-3 w-3"/>Conteúdos disponíveis
+                    </h4>
+                    <div className="flex flex-wrap gap-1">
+                      {monthlyPlan.availableContent.slice(0, 8).map((c: any) => (
+                        <Link key={c.id} to={`/app/content-library/${c.id}`} className="text-xs bg-muted px-2 py-1 rounded-full hover:bg-primary/10 hover:text-primary transition-colors">
+                          {c.title}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground py-4">Não foi possível carregar o planejamento.</p>
             )}
           </div>
         )}

@@ -4,7 +4,7 @@ import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { Plus, BookOpen, Clock, Tag, Search, User, Puzzle, LayoutGrid, List, ArrowUpDown, Sparkles } from 'lucide-react';
 import { AppShell } from '../AppShell';
-import { useQuery, listContentItems } from 'wasp/client/operations';
+import { useQuery, listContentItems, listDioceseSharedContent } from 'wasp/client/operations';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
 
 const STATUS_MAP: Record<string, { variant: 'default'|'secondary'|'outline'|'destructive'; label: string }> = {
@@ -20,19 +20,24 @@ const STATUS_KEYS: Record<string, string> = { Todos: '', Rascunho: 'DRAFT', 'Em 
 
 export default function ContentLibraryPage() {
   const { data: items = [], isLoading: loading } = useQuery(listContentItems);
+  const { data: dioceseItems = [] } = useQuery(listDioceseSharedContent);
   const { activeParishId } = useActiveParish();
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('Todos');
   const [view, setView] = useState<'grid'|'list'>('grid');
   const [sort, setSort] = useState<'recent'|'az'>('recent');
+  const [showDiocese, setShowDiocese] = useState(false);
   const [onlyWithActivities, setOnlyWithActivities] = useState(
     searchParams.get('activities') === '1'
   );
 
   const filtered = useMemo(() => {
     let result = [...items];
-    if (activeParishId) result = result.filter((i: any) => i.parishId === activeParishId);
+    if (showDiocese) {
+      result = [...result, ...dioceseItems.map((d: any) => ({ ...d, isDioceseShared: true }))];
+    }
+    if (activeParishId) result = result.filter((i: any) => i.parishId === activeParishId || i.isDioceseShared);
     const status = STATUS_KEYS[filter];
     if (status) result = result.filter((i: any) => i.status === status);
     if (search) result = result.filter((i: any) => `${i.title} ${i.theme||''}`.toLowerCase().includes(search.toLowerCase()));
@@ -67,6 +72,7 @@ export default function ContentLibraryPage() {
             </Button>
             <Button size="sm" variant="outline" onClick={() => setSort(s => s==='recent'?'az':'recent')}><ArrowUpDown className="h-4 w-4" /></Button>
             <Button size="sm" variant="outline" onClick={() => setView(v => v==='grid'?'list':'grid')}>{view==='grid'?<List className="h-4 w-4"/>:<LayoutGrid className="h-4 w-4"/>}</Button>
+            <Button size="sm" variant={showDiocese ? 'default' : 'outline'} onClick={() => setShowDiocese(d => !d)}>📖 Diocese</Button>
             <Button asChild><Link to="/app/content-library/new"><Plus className="mr-1 h-4 w-4"/>Novo</Link></Button>
           </div>
         </div>
@@ -119,7 +125,10 @@ export default function ContentLibraryPage() {
               <Link key={item.id} to={`/app/content-library/${item.id}`} className="rounded-xl border bg-card p-5 shadow-sm hover:shadow-md transition-shadow group">
                 <div className="flex items-start justify-between mb-2">
                   <h3 className="font-semibold text-sm group-hover:text-primary flex-1 line-clamp-2">{item.title}</h3>
-                  <Badge variant={STATUS_MAP[item.status]?.variant||'secondary'} className="text-[10px] ml-2 flex-shrink-0">{STATUS_MAP[item.status]?.label}</Badge>
+                  <div className="flex items-center gap-1 ml-2 flex-shrink-0">
+                    {item.isDioceseShared && <Badge variant="outline" className="text-[10px]">📖 Diocese</Badge>}
+                    <Badge variant={STATUS_MAP[item.status]?.variant||'secondary'} className="text-[10px]">{STATUS_MAP[item.status]?.label}</Badge>
+                  </div>
                 </div>
                 {item.theme&&<p className="text-xs text-muted-foreground mb-2 line-clamp-1">{item.theme}</p>}
                 <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-3 border-t">

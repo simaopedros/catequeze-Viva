@@ -6,6 +6,18 @@ export const importCatechumensCSV = async (
 ) => {
   if (!context.user) throw new HttpError(401);
 
+  // Verify user has permission and resolve parishId
+  const membership = await context.entities.Membership.findFirst({
+    where: { userId: context.user.id, status: 'ACTIVE' },
+    select: { parishId: true, role: true },
+  });
+
+  if (!membership || !['PARISH_COORDINATOR', 'LEAD_CATECHIST', 'SUPER_ADMIN', 'DIOCESE_ADMIN', 'COMMUNITY_COORDINATOR'].includes(membership.role)) {
+    throw new HttpError(403, 'Sem permissão para realizar importações nesta paróquia.');
+  }
+
+  const parishId = membership.parishId;
+
   const lines = args.csvData.trim().split('\n');
   if (lines.length < 1) throw new HttpError(400, 'CSV vazio.');
 
@@ -37,6 +49,7 @@ export const importCatechumensCSV = async (
           firstName,
           lastName,
           birthDate: birthDate ? new Date(birthDate) : null,
+          parishId,
         },
       });
       results.created++;

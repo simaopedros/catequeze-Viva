@@ -8,6 +8,7 @@ import { AppShell } from '../AppShell';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { updateUserProfile, requestDataExport, changePassword, useQuery, listParishes, executeParishMigration } from 'wasp/client/operations';
 import PhoneMaskInput from '../../client/components/PhoneMaskInput';
+import TwoFactorSetup from '../components/TwoFactorSetup';
 
 export default function SettingsPage() {
   const { data: user } = useAuth();
@@ -145,6 +146,9 @@ export default function SettingsPage() {
           {passMsg && <p className={`text-xs flex items-center gap-1 ${passError?'text-destructive':'text-green-600'}`}>{passError?<AlertCircle className="h-3 w-3"/>:<CheckCircle className="h-3 w-3"/>}{passMsg}</p>}
           <Button size="sm" onClick={handleChangePassword} disabled={changingPass || !currentPass || !newPass}><Key className="mr-1 h-3 w-3"/>{changingPass?'Alterando...':'Alterar senha'}</Button>
         </div>
+
+        {/* Two-Factor Authentication */}
+        <TwoFactorSetup />
 
         {/* Data export */}
         <div className="rounded-xl border bg-card p-4">

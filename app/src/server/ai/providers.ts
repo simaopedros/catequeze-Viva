@@ -76,6 +76,51 @@ export async function aiCompletion(
   };
 }
 
+// ─── Streaming Completion ──────────────────────────────────────────────────
+
+export async function aiCompletionStream(
+  client: OpenAI,
+  model: string,
+  request: AiCompletionRequest,
+): Promise<AsyncIterable<string>> {
+  const isOpenRouter = (client as any).baseURL?.includes?.('openrouter.ai');
+
+  const stream = await client.chat.completions.create({
+    model,
+    messages: request.messages.map((m) => ({
+      role: m.role as 'system' | 'user' | 'assistant',
+      content: m.content,
+    })),
+    temperature: request.temperature ?? 0.7,
+    max_tokens: request.maxTokens ?? 4096,
+    stream: true,
+    ...(isOpenRouter
+      ? {
+          extra_headers: {
+            'HTTP-Referer': 'https://catequese.viva',
+            'X-Title': 'Catequese Viva',
+          },
+        }
+      : {}),
+  });
+
+  // Return an async generator that yields content chunks
+  return {
+    [Symbol.asyncIterator]() {
+      const iterator = stream[Symbol.asyncIterator]();
+      return {
+        async next() {
+          const result = await iterator.next();
+          if (result.done) return { done: true, value: undefined as any };
+          const chunk = result.value;
+          const content = chunk.choices?.[0]?.delta?.content;
+          return { done: false, value: content || '' };
+        },
+      };
+    },
+  };
+}
+
 // ─── Provider auto-detection ───────────────────────────────────────────────
 
 export interface AiEnv {

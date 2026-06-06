@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { AppShell } from '../AppShell';
+import { useAuth } from 'wasp/client/auth';
 import { WelcomeStep } from '../components/onboarding/WelcomeStep';
+import { PersonalSetup } from '../components/onboarding/PersonalSetup';
 import { CompletionStep } from '../components/onboarding/CompletionStep';
 import { DioceseStep, type DioceseSelection } from '../components/onboarding/DioceseStep';
 import { ParishStep, type ParishSelection } from '../components/onboarding/ParishStep';
@@ -19,9 +21,10 @@ import {
   createClass,
   createHousehold,
   addGuardianToHousehold,
+  ensurePersonalWorkspace,
 } from 'wasp/client/operations';
 
-type Step = 'welcome' | 'diocese' | 'parish' | 'role' | 'details' | 'completion';
+type Step = 'welcome' | 'personal_setup' | 'diocese' | 'parish' | 'role' | 'details' | 'completion';
 
 interface CompletionSummary {
   role: string;
@@ -30,7 +33,9 @@ interface CompletionSummary {
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
+  const { data: authUser } = useAuth();
   const [step, setStep] = useState<Step>('welcome');
+  const [accountType, setAccountType] = useState<'personal' | 'manager' | null>(null);
   const [diocese, setDiocese] = useState<DioceseSelection | null>(null);
   const [parish, setParish] = useState<ParishSelection | null>(null);
   const [role, setRole] = useState<RoleType | null>(null);
@@ -60,12 +65,53 @@ export default function OnboardingPage() {
     householdName?: string;
     phone?: string;
   }) => {
-    if (!parish || !role) return;
+    // Personal account flow doesn't need parish/role
+    if (accountType !== 'personal' && (!parish || !role)) return;
 
     setSaving(true);
     setError('');
 
     try {
+      // Only create personal workspace for personal accounts
+      if (accountType === 'personal') {
+        try {
+          await ensurePersonalWorkspace();
+        } catch (wsErr: any) {
+          console.warn('Personal workspace creation deferred:', wsErr.message);
+        }
+      }
+
+      // ── Personal Account Flow ──────────────────────────────────────
+      if (accountType === 'personal') {
+        // Create class if name provided
+        if (details?.className) {
+          const personalParish = await ensurePersonalWorkspace();
+          if (personalParish?.id) {
+            await createClass({
+              name: details.className.trim(),
+              parishId: personalParish.id,
+              dayOfWeek: details.dayOfWeek || '6',
+              startTime: details.startTime || '09:00',
+              endTime: details.endTime || '10:30',
+              location: details.location || personalParish.name,
+            });
+          }
+        }
+
+        setCompletionData({
+          role: 'catechist',
+          items: [
+            { label: 'Tipo', value: 'Conta Pessoal' },
+            { label: 'Plano', value: (authUser?.subscriptionPlan || 'catechist_free') === 'catechist_free' ? 'Catequista Grátis' : 'Catequista Pro/IA' },
+            { label: 'Turma', value: details?.className || 'Criar depois' },
+          ],
+        });
+        setStep('completion');
+        return;
+      }
+
+      // ── Manager Account Flow (existing) ────────────────────────────
+      if (!parish) throw new Error('Paróquia não selecionada.');
       let parishId = parish.id;
 
       // 1. If OSM parish → getOrCreate locally
@@ -94,6 +140,10 @@ export default function OnboardingPage() {
 
       if (!parishId) throw new Error('Nenhuma paróquia selecionada.');
 
+      // Save as active workspace for manager accounts
+      localStorage.setItem('catequese-viva-active-workspace', parishId);
+      window.dispatchEvent(new CustomEvent('workspace-changed', { detail: parishId }));
+
       // 3. Role-specific setup
       const roleMap: Record<RoleType, string> = {
         coordinator: 'PARISH_COORDINATOR',
@@ -103,10 +153,7 @@ export default function OnboardingPage() {
       };
 
       if (role === 'coordinator') {
-        // Onboarding completo do coordenador (cria parish + year + class)
-        // Se a parish já existe (não é nova), só criar membership + year + class
-        await joinParish({ parishId, role: 'PARISH_COORDINATOR' });
-
+        // Onboarding completo do coordenador (cria parish + year + class + membership)
         if (details?.yearName && details?.yearStart && details?.yearEnd) {
           const result = await completeCoordinatorOnboarding({
             parishName: parish.name,
@@ -131,6 +178,9 @@ export default function OnboardingPage() {
               });
             } catch (_) { /* non-critical */ }
           }
+        } else {
+          // No year details: just create membership
+          await joinParish({ parishId, role: 'PARISH_COORDINATOR' });
         }
 
         setCompletionData({
@@ -143,27 +193,71 @@ export default function OnboardingPage() {
           ],
         });
       } else if (role === 'catechist') {
-        await joinParish({ parishId, role: 'ASSISTANT_CATECHIST' });
+        // Check if user has an individual subscription plan
+        const plan = authUser?.subscriptionPlan?.toLowerCase() || '';
+        const isIndividualPlan = ['catechist_free', 'catechist_pro', 'catechist_ai'].includes(plan);
 
-        if (details?.className) {
-          await createClass({
-            name: details.className.trim(),
-            parishId,
-            dayOfWeek: details.dayOfWeek || '6',
-            startTime: details.startTime || '09:00',
-            endTime: details.endTime || '10:30',
-            location: details.location || parish.name,
+        if (isIndividualPlan) {
+          // Individual subscribers: create their own isolated parish
+          // They are NOT added as members of the existing parish
+          const personalParishName = parish.isNew
+            ? parish.name
+            : `Catequese de ${authUser?.firstName || authUser?.email || 'Catequista'}`;
+
+          const result = await createParish({
+            name: personalParishName,
+            city: parish.city || diocese?.name || '',
+            state: parish.state || '',
+            dioceseId: diocese?.id,
+          });
+          if (!result?.id) throw new Error('Erro ao criar espaço pessoal.');
+          parishId = result.id;
+
+          // Create class in personal parish
+          if (details?.className) {
+            await createClass({
+              name: details.className.trim(),
+              parishId,
+              dayOfWeek: details.dayOfWeek || '6',
+              startTime: details.startTime || '09:00',
+              endTime: details.endTime || '10:30',
+              location: details.location || personalParishName,
+            });
+          }
+
+          setCompletionData({
+            role: 'catechist',
+            items: [
+              { label: 'Diocese', value: diocese?.name || '—' },
+              { label: 'Espaço pessoal', value: personalParishName },
+              { label: 'Turma', value: details?.className || 'Criar depois' },
+              { label: 'Plano', value: plan === 'catechist_free' ? 'Grátis (2 turmas, 30 catequizandos)' : 'Ilimitado' },
+            ],
+          });
+        } else {
+          // Parish/diocese plan subscribers: join the existing parish as normal
+          await joinParish({ parishId, role: 'LEAD_CATECHIST' });
+
+          if (details?.className) {
+            await createClass({
+              name: details.className.trim(),
+              parishId,
+              dayOfWeek: details.dayOfWeek || '6',
+              startTime: details.startTime || '09:00',
+              endTime: details.endTime || '10:30',
+              location: details.location || parish.name,
+            });
+          }
+
+          setCompletionData({
+            role: 'catechist',
+            items: [
+              { label: 'Diocese', value: diocese?.name || '—' },
+              { label: 'Paróquia', value: parish.name },
+              { label: 'Turma', value: details?.className || 'Criar depois' },
+            ],
           });
         }
-
-        setCompletionData({
-          role: 'catechist',
-          items: [
-            { label: 'Diocese', value: diocese?.name || '—' },
-            { label: 'Paróquia', value: parish.name },
-            { label: 'Turma', value: details?.className || 'Criar depois' },
-          ],
-        });
       } else if (role === 'guardian') {
         await joinParish({ parishId, role: 'GUARDIAN' });
 
@@ -230,7 +324,7 @@ export default function OnboardingPage() {
     return (
       <AppShell>
         <div className="max-w-2xl mx-auto">
-          <CompletionStep summary={completionData} onFinish={() => navigate('/app')} />
+          <CompletionStep summary={completionData} onFinish={() => navigate(accountType === 'personal' ? '/app/select-workspace' : '/app')} />
         </div>
       </AppShell>
     );
@@ -308,7 +402,16 @@ export default function OnboardingPage() {
 
         {/* WELCOME */}
         {step === 'welcome' && (
-          <WelcomeStep onStart={() => setStep('diocese')} />
+          <WelcomeStep
+            onPersonal={() => { setAccountType('personal'); setStep('personal_setup'); }}
+            onManager={() => { setAccountType('manager'); setStep('diocese'); }}
+          />
+        )}
+        {step === 'personal_setup' && (
+          <PersonalSetup
+            onComplete={(details) => handleComplete(details)}
+            loading={saving}
+          />
         )}
 
         {/* DIOCESE */}

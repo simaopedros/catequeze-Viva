@@ -41,10 +41,11 @@ export default function SacramentsPage() {
     setSaving(true);
     try{
       const templates = await listJourneyTemplates();
-      let templateId = templates?.find((t:any)=>t.name===templateName)?.id;     
-      await createSacramentalJourney({catechumenProfileId:selectedCatechumenId,templateId:templateId||'default'});
+      const templateId = templates?.find((t:any)=>t.name===templateName)?.id;
+      if (!templateId) throw new Error('Modelo de jornada não encontrado.');
+      await createSacramentalJourney({catechumenProfileId:selectedCatechumenId,templateId});
       setShowForm(false);
-    }catch(e:any){toast({ title: 'Erro', description: 'Erro: ' + (e.message||'Tente novamente.'), variant: 'destructive' });}    
+    }catch(e:any){toast({ title: 'Erro', description: 'Erro: ' + (e.message||'Tente novamente.'), variant: 'destructive' });}
     finally{setSaving(false);}
   };
 

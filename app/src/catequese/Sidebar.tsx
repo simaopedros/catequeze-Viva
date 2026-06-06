@@ -12,6 +12,7 @@ import {
 import { useUserContext } from '../client/hooks/useUserContext';
 import { NAV_SECTIONS, filterByRole, type NavItemConfig } from '../shared/navigation';
 import { useQuery, listConversations } from 'wasp/client/operations';
+import { useActiveWorkspace } from '../client/hooks/useActiveWorkspace';
 
 // ---- Icon Map (iconKey → Lucide component) ----
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -23,6 +24,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   families: Heart,
   content_library: Library,
   ai_planner: Sparkles,
+  my_ai_generations: Puzzle,
   activities: Puzzle,
   calendar: Calendar,
   bible: BookMarked,
@@ -51,10 +53,18 @@ function NavItemLink({ item, collapsed, badge }: NavItemProps & { badge?: number
   const { t } = useTranslation('navigation');
   const Icon = ICON_MAP[item.iconKey];
 
+  // Map iconKey to data-tour attributes for the guided tour
+  const tourMap: Record<string, string> = {
+    classes: 'sidebar-classes',
+    ai_planner: 'sidebar-ai',
+    messages: 'sidebar-messages',
+  };
+
   return (
     <NavLink
       key={item.to}
       to={item.to}
+      data-tour={tourMap[item.iconKey] || undefined}
       className={({ isActive }) => cn(
         'flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors w-full relative',
         isActive ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
@@ -85,9 +95,10 @@ export function Sidebar() {
     () => new Set(ALL_SECTIONS)
   );
   const { userRole, isAdmin } = useUserContext();
+  const { isPersonal, workspaceId } = useActiveWorkspace();
 
   // Fetch unread count for messages
-  const { data: conversations } = useQuery(listConversations, undefined, {
+  const { data: conversations } = useQuery(listConversations, { workspaceId } as any, {
     enabled: !!userRole || isAdmin,
     refetchInterval: 15000,
   });
@@ -126,7 +137,14 @@ export function Sidebar() {
         style={{ scrollbarWidth: 'thin', scrollbarColor: 'hsl(var(--muted-foreground) / 0.15) transparent' }}
       >
         {mainSections.map((section) => {
-          const filtered = filterByRole(section.items, userRole, isAdmin);
+          let filtered = filterByRole(section.items, userRole, isAdmin);
+          
+          // Workspace-specific filtering: hide parish items in personal workspace
+          if (isPersonal) {
+            const parishOnlyItems = ['parishes', 'communities', 'reports', 'billing', 'admin', 'documents', 'catechetical_years', 'consents', 'sacraments'];
+            filtered = filtered.filter(item => !parishOnlyItems.includes(item.iconKey));
+          }
+          
           if (filtered.length === 0) return null;
           const isExpanded = expandedSections.has(section.section);
 
@@ -179,7 +197,9 @@ export function Sidebar() {
       </nav>
 
       <div className="border-t p-2 space-y-1">
-        {filterByRole(bottomSection?.items || [], userRole, isAdmin).map((item) => (
+        {filterByRole(bottomSection?.items || [], userRole, isAdmin)
+          .filter(item => !isPersonal || !['billing', 'admin', 'catechetical_years'].includes(item.iconKey))
+          .map((item) => (
           <NavItemLink
             key={item.to}
             item={item}

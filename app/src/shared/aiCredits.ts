@@ -3,31 +3,35 @@
  *
  * Credit rules:
  *   Free:           3 credits total (one-time, not renewable), max 3/day
+ *   Catechist Pro:  2 credits/month (renewable), max 2/day
  *   Catechist AI:   15 credits/month (renewable), max 10/day
- *   Parish/Diocese: 30 credits/month per managed user (renewable), max 20/day
+ *   Parish:         50 credits/month (renewable), max 20/day
+ *   Diocese:        50 credits/month per user (renewable), max 20/day
  */
 export const AI_CREDITS = {
   /** Plans that have AI access */
-  AI_PLANS: ['CATECHIST_AI', 'catechist_ai', 'PARISH', 'parish', 'DIOCESE', 'diocese'] as string[],
+  AI_PLANS: ['CATECHIST_PRO', 'catechist_pro', 'CATECHIST_AI', 'catechist_ai', 'PARISH', 'parish', 'DIOCESE', 'diocese'] as string[],
 
   /** Monthly credit allowance per plan */
   MONTHLY_ALLOWANCE: {
+    catechist_pro: 2,
+    CATECHIST_PRO: 2,
     catechist_ai: 15,
     CATECHIST_AI: 15,
-    parish: 30,
-    PARISH: 30,
-    diocese: 30,
-    DIOCESE: 30,
+    parish: 50,
+    PARISH: 50,
+    diocese: 50,
+    DIOCESE: 50,
   } as Record<string, number>,
 
   /** Daily usage caps per plan (abuse prevention) */
   DAILY_LIMIT: {
     catechist_free: 3,
     CATECHIST_FREE: 3,
+    catechist_pro: 2,
+    CATECHIST_PRO: 2,
     catechist_ai: 10,
     CATECHIST_AI: 10,
-    catechist_pro: 0, // no AI access
-    CATECHIST_PRO: 0,
     parish: 20,
     PARISH: 20,
     diocese: 20,

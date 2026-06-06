@@ -9,8 +9,8 @@ describe('Plan Limits Configuration', () => {
 
   it('CATECHIST_FREE has limits', () => {
     const limits = getPlanLimits('catechist_free');
-    expect(limits.maxClasses).toBe(1);
-    expect(limits.maxCatechumens).toBe(20);
+    expect(limits.maxClasses).toBe(2);
+    expect(limits.maxCatechumens).toBe(30);
     expect(limits.maxParishes).toBe(1);
   });
 
@@ -33,7 +33,7 @@ describe('Plan Limits Configuration', () => {
 
   it('unknown plan falls back to catechist_free', () => {
     const limits = getPlanLimits('nonexistent');
-    expect(limits.maxClasses).toBe(1);
+    expect(limits.maxClasses).toBe(2);
   });
 });
 

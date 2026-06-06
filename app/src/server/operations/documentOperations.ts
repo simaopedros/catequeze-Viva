@@ -224,7 +224,17 @@ export const verifyDocument = async (args: { id: string }, context: any) => {
 
   const document = await context.entities.Document.findUnique({
     where: { id: args.id },
-    select: { id: true, uploadedById: true },
+    select: {
+      id: true,
+      uploadedById: true,
+      catechumenProfile: {
+        select: {
+          parishId: true,
+          household: { select: { parishId: true } },
+          enrollments: { select: { class: { select: { parishId: true } } } },
+        },
+      },
+    },
   });
   if (!document) throw new HttpError(404, 'Documento não encontrado.');
 
@@ -239,12 +249,35 @@ export const verifyDocument = async (args: { id: string }, context: any) => {
       throw new HttpError(403, 'Apenas coordenadores podem verificar documentos.');
     }
 
-    // Verify the document's uploader belongs to the same parish
+    // Verify the document belongs to the coordinator's parish
     if (membership.parishId) {
-      const uploader = await context.entities.Membership.findFirst({
-        where: { userId: document.uploadedById, parishId: membership.parishId },
-      });
-      if (!uploader) {
+      let isSameParish = false;
+
+      // Check via uploader (if exists)
+      if (document.uploadedById) {
+        const uploaderMembership = await context.entities.Membership.findFirst({
+          where: { userId: document.uploadedById, parishId: membership.parishId },
+        });
+        if (uploaderMembership) isSameParish = true;
+      }
+
+      // Check via associated catechumen's parish (covers public-token uploads where uploadedById is null)
+      if (!isSameParish) {
+        const cat = document.catechumenProfile;
+        if (cat) {
+          const catParishIds = [
+            cat.parishId,
+            cat.household?.parishId,
+            ...cat.enrollments.map((e: any) => e.class?.parishId),
+          ].filter(Boolean);
+
+          if (catParishIds.includes(membership.parishId)) {
+            isSameParish = true;
+          }
+        }
+      }
+
+      if (!isSameParish) {
         throw new HttpError(403, 'Este documento não pertence à sua paróquia.');
       }
     }

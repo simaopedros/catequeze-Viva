@@ -29,6 +29,13 @@ enum MembershipStatus {
   SUSPENDED
 }
 
+enum ParishType {
+  PERSONAL    // Individual catechist workspace
+  PARISH      // Parish workspace (multi-catechist)
+  DIOCESE     // Diocese workspace (multi-parish)
+  COMMUNITY   // Community workspace
+}
+
 enum ClassStatus {
   DRAFT
   ACTIVE
@@ -242,7 +249,7 @@ model User {
   paymentProcessorUserId        String?   @unique
   lemonSqueezyCustomerPortalUrl String?
   subscriptionStatus            String?
-  subscriptionPlan              String?
+  subscriptionPlan              String?  @default("catechist_free")
   datePaid                      DateTime?
   credits                       Int       @default(3)
   wooviCorrelationId            String?   @unique
@@ -276,6 +283,9 @@ model User {
   files               File[]
   CatechumenProfile   CatechumenProfile[]
   aiCredits           UserAiCredits?
+  dailyAiUsage        DailyAiUsage[]
+  twoFactor           UserTwoFactor?
+  aiFeedback          AiFeedback[]
 }
 
 // ─── Multi-tenant ─────────────────────────────────────────────────────────────
@@ -313,6 +323,7 @@ model Parish {
   locale   String  @default("pt-BR")
   timezone String  @default("America/Sao_Paulo")
   active   Boolean @default(true)
+  type     ParishType @default(PARISH)
 
   dioceseId String?
   diocese   Diocese? @relation(fields: [dioceseId], references: [id])
@@ -1134,6 +1145,64 @@ model UserAiCredits {
   lastReset   DateTime @default(now())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+// ─── AI Response Cache ────────────────────────────────────────────────────────
+
+model AiResponseCache {
+  id            String   @id @default(uuid())
+  promptHash    String   @unique // SHA256 hash of the normalized prompt (lowercase, trimmed)
+  response      String   // The cached AI response
+  promptPreview String   // First 200 chars of the original prompt for debugging
+  hitCount      Int      @default(1) // How many times this cache entry was used
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  expiresAt     DateTime // TTL: responses expire after 30 days
+
+  @@index([promptHash])
+  @@index([expiresAt])
+}
+
+// ─── AI Feedback ──────────────────────────────────────────────────────────────
+
+model AiFeedback {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prompt      String   // The user's original question/prompt
+  response    String   // The AI's response
+  rating      String   // 'thumbs_up' or 'thumbs_down'
+  comment     String?  // Optional text feedback
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// ─── Daily AI Usage (persisted) ───────────────────────────────────────────────
+
+model DailyAiUsage {
+  id     String   @id @default(uuid())
+  userId String
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date   DateTime // Date only (time set to 00:00:00)
+  count  Int      @default(0)
+
+  @@unique([userId, date])
+  @@index([date])
+}
+
+// ─── Two-Factor Authentication (TOTP) ────────────────────────────────────────
+
+model UserTwoFactor {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  secret    String   // TOTP secret (encrypted at rest)
+  enabled   Boolean  @default(false)
+  verified  Boolean  @default(false) // Has the user completed setup with a test code?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // ─── Audit ────────────────────────────────────────────────────────────────────

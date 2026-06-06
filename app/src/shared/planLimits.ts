@@ -23,12 +23,12 @@ export const LIMIT_LABELS: Record<string, string> = {
 };
 
 export const PLAN_LIMITS: Record<string, PlanLimits> = {
-  catechist_free:  { maxClasses: 1,    maxCatechumens: 20,   maxParishes: 1 },
+  catechist_free:  { maxClasses: 2,    maxCatechumens: 30,   maxParishes: 1 },
   catechist_pro:   { maxClasses: null, maxCatechumens: null, maxParishes: null },
   catechist_ai:    { maxClasses: null, maxCatechumens: null, maxParishes: null },
   parish:          { maxClasses: null, maxCatechumens: null, maxParishes: null },
   diocese:         { maxClasses: null, maxCatechumens: null, maxParishes: null },
-  CATECHIST_FREE:  { maxClasses: 1,    maxCatechumens: 20,   maxParishes: 1 },
+  CATECHIST_FREE:  { maxClasses: 2,    maxCatechumens: 30,   maxParishes: 1 },
   CATECHIST_PRO:   { maxClasses: null, maxCatechumens: null, maxParishes: null },
   CATECHIST_AI:    { maxClasses: null, maxCatechumens: null, maxParishes: null },
   PARISH:          { maxClasses: null, maxCatechumens: null, maxParishes: null },

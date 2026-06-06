@@ -90,6 +90,12 @@ export const createSacramentalJourney = async (
 ) => {
   if (!context.user) throw new HttpError(401);
 
+  // Validate template exists
+  const template = await context.entities.SacramentalJourneyTemplate.findUnique({
+    where: { id: args.templateId },
+  });
+  if (!template) throw new HttpError(404, 'Modelo de jornada não encontrado.');
+
   // Verify the catechumen belongs to user's parish
   if (!context.user.isAdmin) {
     const membership = await context.entities.Membership.findFirst({

@@ -8,12 +8,14 @@ export interface MembershipInfo {
   status: string;
   communityId: string | null;
   communityName: string | null;
+  parishType: string | null;
 }
 
 interface UserContextResult {
   userId: string;
   isAdmin: boolean;
   needsOnboarding: boolean;
+  personalWorkspaceId: string | null;
   memberships: MembershipInfo[];
 }
 
@@ -21,14 +23,13 @@ interface UseUserContextReturn {
   userId: string;
   isAdmin: boolean;
   needsOnboarding: boolean;
+  personalWorkspaceId: string | null;
   memberships: MembershipInfo[];
-  // Convenience derived from highest-priority active membership
   userRole: string;
   parishId: string;
   parishName: string;
   communityId: string | null;
   communityName: string | null;
-  // Query state
   isLoading: boolean;
   error: Error | null;
 }
@@ -47,26 +48,9 @@ function pickBestMembership(memberships: MembershipInfo[]): MembershipInfo | und
     .sort((a, b) => ROLE_PRIORITY.indexOf(a.role) - ROLE_PRIORITY.indexOf(b.role))[0];
 }
 
-function getActiveMembershipId(): string | null {
-  try {
-    return localStorage.getItem('catequese-viva-active-membership');
-  } catch {
-    return null;
-  }
-}
-
-function resolveMembership(memberships: MembershipInfo[]): MembershipInfo | undefined {
-  if (memberships.length === 0) return undefined;
-
-  // If user has an explicit active membership, use it (if still valid)
-  const activeId = getActiveMembershipId();
-  if (activeId) {
-    const match = memberships.find(m => m.id === activeId);
-    if (match) return match;
-  }
-
-  // Fall back to highest-priority membership
-  return pickBestMembership(memberships);
+function getActiveWorkspaceId(): string | null {
+  try { return localStorage.getItem('catequese-viva-active-workspace'); }
+  catch { return null; }
 }
 
 export function useUserContext(): UseUserContextReturn {
@@ -76,21 +60,51 @@ export function useUserContext(): UseUserContextReturn {
     userId: '',
     isAdmin: false,
     needsOnboarding: false,
+    personalWorkspaceId: null,
     memberships: [],
   };
 
-  const membership = resolveMembership(ctx.memberships);
+  // Get active workspace ID
+  const activeWorkspaceId = getActiveWorkspaceId();
+
+  // Filter memberships to active workspace only
+  const workspaceMemberships = activeWorkspaceId
+    ? ctx.memberships.filter(m => m.parishId === activeWorkspaceId)
+    : ctx.memberships;
+
+  // Check if personal workspace is active
+  const isPersonalActive = ctx.personalWorkspaceId && activeWorkspaceId === ctx.personalWorkspaceId;
+
+  // Resolve membership: for personal workspace, create a virtual membership
+  let effectiveMembership: MembershipInfo | undefined;
+  if (isPersonalActive) {
+    effectiveMembership = {
+      id: 'virtual-personal',
+      parishId: ctx.personalWorkspaceId!,
+      parishName: 'Espaço Pessoal',
+      role: 'LEAD_CATECHIST',
+      status: 'ACTIVE',
+      communityId: null,
+      communityName: null,
+      parishType: 'PERSONAL',
+    };
+  } else {
+    const activeId = localStorage.getItem('catequese-viva-active-membership');
+    const match = activeId ? workspaceMemberships.find(m => m.id === activeId) : null;
+    effectiveMembership = match || pickBestMembership(workspaceMemberships);
+  }
 
   return {
     userId: ctx.userId,
     isAdmin: ctx.isAdmin,
     needsOnboarding: ctx.needsOnboarding,
-    memberships: ctx.memberships,
-    userRole: membership?.role ?? '',
-    parishId: membership?.parishId ?? '',
-    parishName: membership?.parishName ?? '',
-    communityId: membership?.communityId ?? null,
-    communityName: membership?.communityName ?? null,
+    personalWorkspaceId: ctx.personalWorkspaceId,
+    memberships: workspaceMemberships,
+    userRole: effectiveMembership?.role ?? (isPersonalActive ? 'LEAD_CATECHIST' : ''),
+    parishId: effectiveMembership?.parishId ?? (isPersonalActive ? ctx.personalWorkspaceId! : ''),
+    parishName: effectiveMembership?.parishName ?? '',
+    communityId: effectiveMembership?.communityId ?? null,
+    communityName: effectiveMembership?.communityName ?? null,
     isLoading,
     error: error as Error | null,
   };

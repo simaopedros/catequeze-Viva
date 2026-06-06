@@ -151,6 +151,33 @@ export async function assertCanCreateClass(
   context: any,
   parishId: string,
 ): Promise<void> {
+  // Check if this is a personal workspace — use user's subscription plan
+  const parish = await context.entities.Parish.findUnique({
+    where: { id: parishId },
+    select: { type: true, ownerId: true },
+  });
+
+  if (parish?.type === 'PERSONAL') {
+    // Personal workspace: limits come from user's subscription
+    const plan = context.user.subscriptionPlan || 'catechist_free';
+    const limits = getPlanLimits(plan);
+
+    if (limits.maxClasses === null) return; // unlimited
+
+    const activeCount = await context.entities.CatechesisClass.count({
+      where: { parishId, status: { not: 'ARCHIVED' } },
+    });
+
+    if (activeCount >= limits.maxClasses!) {
+      throw new HttpError(
+        403,
+        `Limite de turmas do plano ${planName(plan)} atingido (${activeCount}/${limits.maxClasses}). Faça upgrade.`,
+      );
+    }
+    return;
+  }
+
+  // Parish/diocese workspace: use TenantBilling
   const billing = await resolveEffectiveBilling(context, parishId);
 
   const effectivePlan = getEffectiveBillingPlan(billing);
@@ -201,6 +228,30 @@ export async function assertCanEnrollCatechumen(
   context: any,
   parishId: string,
 ): Promise<void> {
+  // Check if personal workspace
+  const parish = await context.entities.Parish.findUnique({
+    where: { id: parishId },
+    select: { type: true },
+  });
+
+  if (parish?.type === 'PERSONAL') {
+    const plan = context.user.subscriptionPlan || 'catechist_free';
+    const limits = getPlanLimits(plan);
+    if (limits.maxCatechumens === null) return;
+
+    const enrolledCount = await context.entities.ClassEnrollment.count({
+      where: { status: 'ENROLLED', class: { parishId } },
+    });
+
+    if (enrolledCount >= limits.maxCatechumens!) {
+      throw new HttpError(
+        403,
+        `Limite de catequizandos do plano ${planName(plan)} atingido (${enrolledCount}/${limits.maxCatechumens}).`,
+      );
+    }
+    return;
+  }
+
   const billing = await resolveEffectiveBilling(context, parishId);
 
   const effectivePlan = getEffectiveBillingPlan(billing);

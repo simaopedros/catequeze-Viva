@@ -4,30 +4,7 @@
 import { HttpError } from 'wasp/server';
 import type { User, UserAiCredits } from '@prisma/client';
 import { AI_CREDITS, planHasAiAccess, getMonthlyAllowance, getDailyLimit } from '../../shared/aiCredits';
-
-// ─── In-memory daily usage tracker (abuse prevention) ──────────────────────
-// Resets on server restart — acceptable for secondary protection.
-const dailyUsage = new Map<string, { count: number; date: string }>();
-
-function getDailyUsage(userId: string): number {
-  const today = new Date().toISOString().slice(0, 10);
-  const entry = dailyUsage.get(userId);
-  if (!entry || entry.date !== today) {
-    dailyUsage.set(userId, { count: 0, date: today });
-    return 0;
-  }
-  return entry.count;
-}
-
-function incrementDailyUsage(userId: string, amount: number): void {
-  const today = new Date().toISOString().slice(0, 10);
-  const entry = dailyUsage.get(userId);
-  if (!entry || entry.date !== today) {
-    dailyUsage.set(userId, { count: amount, date: today });
-  } else {
-    entry.count += amount;
-  }
-}
+import { getDailyUsage, incrementDailyUsage } from './dailyUsage';
 
 // ─── Credit check + deduction ──────────────────────────────────────────────
 
@@ -48,12 +25,18 @@ interface CreditContext {
  */
 export function resolveUserAiAllowance(personalPlan: string | null, effectivePlan: string | null): number {
   if (!effectivePlan) return 0;
-  
+
   const normEffective = effectivePlan.toUpperCase();
-  if (normEffective === 'PARISH' || normEffective === 'DIOCESE') {
-    return 30; // 30 créditos para contas gerenciadas em planos ilimitados
+  if (normEffective === 'PARISH') {
+    return 50; // 50 créditos para contas gerenciadas em plano Paróquia
   }
-  
+  if (normEffective === 'DIOCESE') {
+    return 50; // 50 créditos por usuário ligado à diocese
+  }
+  if (normEffective === 'CATECHIST_PRO') {
+    return 2; // 2 créditos/mês como amostra da IA
+  }
+
   return getMonthlyAllowance(effectivePlan);
 }
 
@@ -210,7 +193,7 @@ export async function assertAndDeductCredits(
   // Enforce daily usage cap (abuse prevention)
   const dailyLimit = getDailyLimit(effectivePlan ?? user.subscriptionPlan);
   if (dailyLimit > 0) {
-    const todayUsage = getDailyUsage(context.user.id);
+    const todayUsage = await getDailyUsage(context.entities, context.user.id);
     if (todayUsage + cost > dailyLimit) {
       throw new HttpError(
         429,
@@ -226,7 +209,7 @@ export async function assertAndDeductCredits(
   });
 
   // Track daily usage
-  incrementDailyUsage(context.user.id, cost);
+  await incrementDailyUsage(context.entities, context.user.id, cost);
 
   return { creditsLeft: updated.creditsLeft };
 }

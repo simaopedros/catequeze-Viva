@@ -66,14 +66,29 @@ export default function ContentPrintPage() {
 
         <div id="print-content" className="max-w-4xl mx-auto px-6 py-8 font-serif text-gray-900 bg-white">
           {/* Header */}
-          <div className="text-center mb-8 print-section">
+          <div className="text-center mb-8 print-section border-b-2 border-gray-300 pb-6">
+            <p className="text-xs text-gray-400 uppercase tracking-widest mb-4">Catequese Viva — Roteiro de Encontro</p>
             <h1 className="text-2xl font-bold mb-2">{item.title}</h1>
             {item.theme && <p className="text-lg italic text-gray-600 mb-3">{item.theme}</p>}
             <div className="flex justify-center gap-4 text-sm text-gray-500">
               {item.estimatedTime && <span><Clock className="inline h-4 w-4"/> {item.estimatedTime} min</span>}
-              {item.createdBy && <span>{item.createdBy.firstName} {item.createdBy.lastName}</span>}
+              {item.createdBy && <span>Preparado por: {item.createdBy.firstName} {item.createdBy.lastName}</span>}
             </div>
             <div className="mt-4 border-b-2 border-gray-300 w-32 mx-auto"/>
+          </div>
+
+          {/* Materials Checklist */}
+          <div className="mb-6 p-4 bg-amber-50 rounded-lg border border-amber-200 print-section">
+            <h2 className="text-sm font-bold uppercase text-amber-700 mb-2">📋 Preparação de Materiais</h2>
+            <div className="grid grid-cols-2 gap-1 text-sm">
+              <label className="flex items-center gap-2"><input type="checkbox" className="rounded" readOnly /> Bíblia (CNBB)</label>
+              <label className="flex items-center gap-2"><input type="checkbox" className="rounded" readOnly /> Catecismo (CIC)</label>
+              <label className="flex items-center gap-2"><input type="checkbox" className="rounded" readOnly /> Folhas de atividade</label>
+              <label className="flex items-center gap-2"><input type="checkbox" className="rounded" readOnly /> Canetas/lápis</label>
+              <label className="flex items-center gap-2"><input type="checkbox" className="rounded" readOnly /> Velas ou ícones</label>
+              <label className="flex items-center gap-2"><input type="checkbox" className="rounded" readOnly /> Música/áudio</label>
+              <li className="col-span-2"><input type="text" placeholder="Outros: ____________" className="border-0 border-b border-dashed border-gray-300 bg-transparent text-sm w-full outline-none" readOnly /></li>
+            </div>
           </div>
 
           {/* Pastoral Objective */}
@@ -302,6 +317,14 @@ export default function ContentPrintPage() {
               </div>
             </div>
           )}
+
+          {/* Notes section */}
+          <div className="mt-10 print-section">
+            <h2 className="text-sm font-bold uppercase text-gray-500 mb-3 border-b pb-2">📝 Anotações do Catequista</h2>
+            <div className="border border-dashed border-gray-300 rounded-lg p-1" style={{ minHeight: '120px' }}>
+              <div className="w-full" style={{ minHeight: '100px' }} />
+            </div>
+          </div>
 
           {/* Footer */}
           <div className="text-center text-xs text-gray-400 mt-12 pt-6 border-t print-section">

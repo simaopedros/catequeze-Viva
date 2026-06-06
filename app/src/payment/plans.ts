@@ -12,6 +12,7 @@ export enum PaymentPlanId {
   CatechistFree = "catechist_free",
   CatechistPro = "catechist_pro",
   CatechistAi = "catechist_ai",
+  CatechistAiAddon = "catechist_ai_addon",
   Parish = "parish",
   Diocese = "diocese",
 }
@@ -50,6 +51,10 @@ export const paymentPlans = {
     id: PaymentPlanId.CatechistAi,
     effect: { kind: "subscription" },
   },
+  [PaymentPlanId.CatechistAiAddon]: {
+    id: PaymentPlanId.CatechistAiAddon,
+    effect: { kind: "subscription" },
+  },
   [PaymentPlanId.Parish]: {
     id: PaymentPlanId.Parish,
     effect: { kind: "subscription" },
@@ -68,6 +73,7 @@ export function prettyPaymentPlanName(planId: PaymentPlanId): string {
     [PaymentPlanId.CatechistFree]: "Catequista Grátis",
     [PaymentPlanId.CatechistPro]: "Catequista Pro",
     [PaymentPlanId.CatechistAi]: "Catequista IA",
+    [PaymentPlanId.CatechistAiAddon]: "Add-on IA",
     [PaymentPlanId.Parish]: "Paróquia",
     [PaymentPlanId.Diocese]: "Diocese",
   };

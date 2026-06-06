@@ -10,7 +10,7 @@ const PLANS = [
     price: 'Grátis',
     period: 'para sempre',
     desc: 'Para um catequista que quer começar a organizar sua turma.',
-    features: ['1 turma', '20 catequizandos', 'Presença básica', 'Calendário litúrgico', '3 créditos de IA (teste)'],
+    features: ['2 turmas', '30 catequizandos', 'Presença básica', 'Calendário litúrgico', '3 créditos de IA (teste)'],
     cta: 'Começar grátis',
   },
   {
@@ -18,7 +18,7 @@ const PLANS = [
     price: 'R$ 9',
     period: '/mês',
     desc: 'Para catequistas dedicados com múltiplas turmas.',
-    features: ['Turmas ilimitadas', 'Catequizandos ilimitados', 'Relatórios avançados', 'Suporte prioritário'],
+    features: ['Turmas ilimitadas', 'Catequizandos ilimitados', 'Relatórios avançados', 'Suporte prioritário', '2 créditos de IA/mês (amostra)'],
     cta: 'Começar agora',
   },
   {
@@ -43,14 +43,15 @@ const PLANS = [
     price: 'R$ 149',
     period: '/mês',
     desc: 'Para gestão diocesana multi-paróquia.',
-    features: ['Tudo do plano Paróquia', 'Multi-paróquia', 'Biblioteca oficial diocesana', 'Analytics consolidado', 'Onboarding dedicado'],
+    features: ['Tudo do plano Paróquia', 'Multi-paróquia', 'Biblioteca oficial diocesana', 'Analytics consolidado', 'Onboarding dedicado', '50 créditos de IA/mês por usuário'],
     cta: 'Fale conosco',
   },
 ];
 
 const FAQ = [
-  { q: 'Posso experimentar antes de pagar?', a: 'Sim! O plano Catequista Grátis é gratuito para sempre, com 1 turma, até 20 catequizandos e 3 créditos de IA para testar o gerador de encontros.' },
-  { q: 'Como funcionam os créditos de IA?', a: 'Cada geração de encontro consome 1 crédito. O plano IA inclui 15 créditos/mês e o plano Paróquia 50 créditos/mês. Créditos não usados não acumulam — renovam a cada mês.' },
+  { q: 'Posso experimentar antes de pagar?', a: 'Sim! O plano Catequista Grátis é gratuito para sempre, com 2 turmas, até 30 catequizandos e 3 créditos de IA para testar o gerador de encontros.' },
+  { q: 'Como funcionam os créditos de IA?', a: 'Cada geração de encontro consome 1 crédito, planejamento anual 3 créditos, e atividade 1 crédito. O plano IA inclui 15 créditos/mês, Paróquia 50 créditos/mês e Diocese 50 créditos/mês por usuário. Créditos não usados não acumulam — renovam a cada mês. Há também limites diários: 3/dia (Grátis), 10/dia (IA), 20/dia (Paróquia/Diocese).' },
+  { q: 'O plano Catequista Pro inclui IA?', a: 'Sim, como amostra! O plano Pro inclui 2 créditos de IA por mês para você experimentar o gerador de encontros. Para uso ilimitado da IA (15 créditos/mês), veja o plano Catequista IA.' },
   { q: 'Como funciona o pagamento?', a: 'Pagamento via PIX com QR code. Sem fidelidade — cancele quando quiser.' },
   { q: 'Posso migrar entre planos?', a: 'Sim, a qualquer momento. Ao fazer upgrade, seus dados são preservados automaticamente.' },
   { q: 'Os dados ficam seguros?', a: 'Sim. Seguimos a LGPD, com criptografia em trânsito e em repouso. Dados de crianças recebem proteção especial.' },

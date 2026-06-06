@@ -4,6 +4,8 @@ import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { BottomNav } from './BottomNav';
 import { AIHelperWidget } from './components/AIHelperWidget';
+import { Breadcrumbs } from './components/Breadcrumbs';
+import { GuidedTour, useGuidedTour } from './components/GuidedTour';
 import { useUserContext } from '../client/hooks/useUserContext';
 
 interface AppShellProps { children: ReactNode; }
@@ -13,6 +15,7 @@ export function AppShell({ children }: AppShellProps) {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { needsOnboarding, isLoading } = useUserContext();
+  const { showTour, completeTour } = useGuidedTour();
 
   // Redirecionar para onboarding se necessário
   useEffect(() => {
@@ -46,10 +49,12 @@ export function AppShell({ children }: AppShellProps) {
 
       <div className="flex flex-1 flex-col overflow-hidden">
         <TopBar onMenuToggle={() => setMobileMenuOpen(prev => !prev)} />
+        <Breadcrumbs />
         <main className="flex-1 overflow-y-auto p-4 md:p-6 pb-16 lg:pb-6">{children}</main>
       </div>
       <BottomNav />
       <AIHelperWidget />
+      {showTour && <GuidedTour onComplete={completeTour} />}
     </div>
   );
 }

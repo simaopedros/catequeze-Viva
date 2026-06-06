@@ -8,6 +8,7 @@
 import { HttpError } from 'wasp/server';
 import { detectProvider, createAiClient, aiCompletion } from '../ai/providers';
 import { assertAndDeductCredits, getCreditsStatus } from '../ai/credits';
+import { getCachedResponse, setCachedResponse } from '../ai/cache';
 import { AI_CREDITS } from '../../shared/aiCredits';
 import {
   MEETING_GENERATOR_PROMPT,
@@ -266,17 +267,35 @@ export const chatWithAi = async (
     throw new HttpError(402, 'Plano sem acesso ao assistente de IA. Faça upgrade para Catequista IA ou Paróquia.');
   }
 
-  const { client, model } = await getAiClient();
+  // Check cache first (only for standalone questions, not conversation continuations)
+  let cached: string | null = null;
+  if (!args.conversationId) {
+    cached = await getCachedResponse(context.entities, args.message);
+  }
 
-  const response = await aiCompletion(client, model, {
-    messages: [
-      { role: 'system', content: CHAT_SYSTEM_PROMPT },
-      { role: 'user', content: args.message },
-    ],
-    temperature: 0.7,
-    maxTokens: 2048,
-    jsonMode: false,
-  });
+  let reply: string;
+  if (cached) {
+    reply = cached;
+  } else {
+    const { client, model } = await getAiClient();
+
+    const response = await aiCompletion(client, model, {
+      messages: [
+        { role: 'system', content: CHAT_SYSTEM_PROMPT },
+        { role: 'user', content: args.message },
+      ],
+      temperature: 0.7,
+      maxTokens: 2048,
+      jsonMode: false,
+    });
+
+    reply = response.content;
+
+    // Cache the response for future queries (standalone only)
+    if (!args.conversationId) {
+      setCachedResponse(context.entities, args.message, reply).catch(() => {});
+    }
+  }
 
   // If a conversation exists, save the message pair
   if (args.conversationId) {
@@ -292,14 +311,14 @@ export const chatWithAi = async (
       data: {
         conversationId: args.conversationId,
         senderId: context.user.id, // AI replies as system, but we store under user's conversation
-        content: `🤖 *Assistente IA:* ${response.content}`,
+        content: `🤖 *Assistente IA:* ${reply}`,
         contentType: 'TEXT',
       },
     });
   }
 
   return {
-    reply: response.content,
+    reply,
     conversationId: args.conversationId,
   };
 };
