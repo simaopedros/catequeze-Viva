@@ -1,13 +1,47 @@
 import { HttpError } from 'wasp/server';
+import { validateOrThrow, createSacramentalJourneySchema, updateMilestoneStatusSchema, createTemplateSchema, updateTemplateSchema, updateMilestoneTemplateSchema, deleteMilestoneTemplateSchema } from '../validation';
+import { requireAuth, getEffectiveParishRole, isCoordinatorOrAboveRole, isCatechistOrAboveRole } from '../auth/helpers';
+import { ensureSacramentalJourneyForCatechumen } from '../sacramentHelpers';
+
+/** Get all effective parish IDs and roles for the current user, including personal workspace */
+async function getEffectiveParishScope(context: any): Promise<{ parishIds: string[]; roles: string[] }> {
+  const memberships = await context.entities.Membership.findMany({
+    where: { userId: context.user.id, status: 'ACTIVE' },
+    select: { parishId: true, role: true },
+  });
+  const parishIds = memberships.map((m: any) => m.parishId);
+  const roles = memberships.map((m: any) => m.role);
+
+  const personalWorkspace = await context.entities.Parish.findFirst({
+    where: { ownerId: context.user.id, type: 'PERSONAL' },
+    select: { id: true },
+  });
+  if (personalWorkspace) {
+    if (!parishIds.includes(personalWorkspace.id)) parishIds.push(personalWorkspace.id);
+    if (!roles.includes('PERSONAL_OWNER')) roles.push('PERSONAL_OWNER');
+  }
+
+  return { parishIds, roles };
+}
+
+// ─── List Sacramental Journeys ────────────────────────────────────────────────
 
 export const listSacramentalJourneys = async (_args: void, context: any) => {
-  if (!context.user) throw new HttpError(401);
+  requireAuth(context.user);
 
   const baseInclude = {
-    catechumenProfile: { select: { id: true, firstName: true, lastName: true } },
-    template: { select: { id: true, name: true } },
+    catechumenProfile: {
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        parishId: true,
+        enrollments: { select: { class: { select: { id: true, parishId: true, name: true } } } },
+      },
+    },
+    template: { select: { id: true, name: true, sacramentId: true } },
     milestones: {
-      include: { templateMilestone: { select: { id: true, name: true, required: true, order: true } } },
+      include: { templateMilestone: { select: { id: true, name: true, required: true, order: true, evidenceRequired: true, daysBeforeSacrament: true } } },
       orderBy: { templateMilestone: { order: 'asc' } },
     },
   };
@@ -16,22 +50,17 @@ export const listSacramentalJourneys = async (_args: void, context: any) => {
     return context.entities.SacramentalJourney.findMany({ include: baseInclude });
   }
 
-  const memberships = await context.entities.Membership.findMany({
-    where: { userId: context.user.id, status: 'ACTIVE' },
-    select: { parishId: true, role: true },
-  });
-  if (memberships.length === 0) return [];
+  const { parishIds, roles } = await getEffectiveParishScope(context);
+  if (parishIds.length === 0) return [];
 
-  const parishIds = memberships.map((m: any) => m.parishId);
-  const roles = memberships.map((m: any) => m.role);
-
-  // Coordinator and above: see all journeys in their parishes
-  if (roles.some((r: string) => ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'].includes(r))) {
+  // Coordinator+PersonalOwner: see all journeys in their parishes (via enrollments or direct parish)
+  if (roles.some((r: string) => isCoordinatorOrAboveRole(r))) {
     return context.entities.SacramentalJourney.findMany({
       where: {
-        catechumenProfile: {
-          enrollments: { some: { class: { parishId: { in: parishIds } } } },
-        },
+        OR: [
+          { catechumenProfile: { enrollments: { some: { class: { parishId: { in: parishIds } } } } } },
+          { catechumenProfile: { parishId: { in: parishIds } } },
+        ],
       },
       include: baseInclude,
     });
@@ -44,6 +73,7 @@ export const listSacramentalJourneys = async (_args: void, context: any) => {
       select: { classId: true },
     });
     const classIds = myClasses.map((cc: any) => cc.classId);
+    if (classIds.length === 0) return [];
     const enrollments = await context.entities.ClassEnrollment.findMany({
       where: { classId: { in: classIds } },
       select: { catechumenProfileId: true },
@@ -55,6 +85,7 @@ export const listSacramentalJourneys = async (_args: void, context: any) => {
     });
   }
 
+  // Guardian: see journeys of their dependents
   if (roles.includes('GUARDIAN')) {
     const guardian = await context.entities.GuardianProfile.findUnique({ where: { userId: context.user.id } });
     if (!guardian?.householdId) return [];
@@ -69,6 +100,7 @@ export const listSacramentalJourneys = async (_args: void, context: any) => {
     });
   }
 
+  // Catechumen: see own journeys
   if (roles.includes('CATECHUMEN')) {
     const catechumen = await context.entities.CatechumenProfile.findFirst({
       where: { userId: context.user.id },
@@ -84,119 +116,536 @@ export const listSacramentalJourneys = async (_args: void, context: any) => {
   return [];
 };
 
+// ─── Get Sacramental Journey ──────────────────────────────────────────────────
+
+export const getSacramentalJourney = async (args: { id: string }, context: any) => {
+  requireAuth(context.user);
+
+  const journey = await context.entities.SacramentalJourney.findUnique({
+    where: { id: args.id },
+    include: {
+      catechumenProfile: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          householdId: true,
+          parishId: true,
+          enrollments: { select: { class: { select: { id: true, parishId: true, name: true } } } },
+        },
+      },
+      template: {
+        include: {
+          sacrament: { select: { id: true, name: true } },
+          parish: { select: { id: true, name: true, type: true } },
+        },
+      },
+      milestones: {
+        include: { templateMilestone: true },
+        orderBy: { templateMilestone: { order: 'asc' } },
+      },
+    },
+  });
+
+  if (!journey) throw new HttpError(404, 'Jornada sacramental não encontrada.');
+
+  if (context.user.isAdmin) return journey;
+
+  const { parishIds, roles } = await getEffectiveParishScope(context);
+
+  // Coordinator+PersonalOwner: access if catechumen is in their parish
+  if (roles.some((r: string) => isCoordinatorOrAboveRole(r))) {
+    const catechumenClasses = await context.entities.ClassEnrollment.findMany({
+      where: { catechumenProfileId: journey.catechumenProfile.id },
+      select: { class: { select: { parishId: true } } },
+    });
+    const catechumenParishIds = catechumenClasses.map((e: any) => e.class.parishId);
+    if (catechumenParishIds.some((pid: string) => parishIds.includes(pid))) return journey;
+    if (journey.catechumenProfile.parishId && parishIds.includes(journey.catechumenProfile.parishId)) return journey;
+  }
+
+  // Catechist: access if catechumen is in one of their classes
+  if (roles.includes('LEAD_CATECHIST') || roles.includes('ASSISTANT_CATECHIST')) {
+    const myClasses = await context.entities.ClassCatechist.findMany({
+      where: { userId: context.user.id },
+      select: { classId: true },
+    });
+    const classIds = myClasses.map((cc: any) => cc.classId);
+    const enrollment = await context.entities.ClassEnrollment.findFirst({
+      where: { catechumenProfileId: journey.catechumenProfile.id, classId: { in: classIds } },
+    });
+    if (enrollment) return journey;
+  }
+
+  // Guardian: access own dependents
+  if (roles.includes('GUARDIAN')) {
+    const guardian = await context.entities.GuardianProfile.findUnique({ where: { userId: context.user.id } });
+    if (guardian?.householdId && guardian.householdId === journey.catechumenProfile.householdId) return journey;
+  }
+
+  // Catechumen: own journey
+  if (roles.includes('CATECHUMEN')) {
+    const catechumen = await context.entities.CatechumenProfile.findFirst({ where: { userId: context.user.id } });
+    if (catechumen?.id === journey.catechumenProfile.id) return journey;
+  }
+
+  throw new HttpError(403, 'Acesso negado a esta jornada sacramental.');
+};
+
+// ─── Create Sacramental Journey ───────────────────────────────────────────────
+
 export const createSacramentalJourney = async (
   args: { catechumenProfileId: string; templateId: string },
   context: any
 ) => {
-  if (!context.user) throw new HttpError(401);
+  requireAuth(context.user);
+  validateOrThrow(createSacramentalJourneySchema, args);
 
-  // Validate template exists
+  // Validate template exists and load it with milestones
   const template = await context.entities.SacramentalJourneyTemplate.findUnique({
     where: { id: args.templateId },
   });
   if (!template) throw new HttpError(404, 'Modelo de jornada não encontrado.');
 
-  // Verify the catechumen belongs to user's parish
+  const catechumen = await context.entities.CatechumenProfile.findUnique({
+    where: { id: args.catechumenProfileId },
+    select: {
+      id: true,
+      parishId: true,
+      enrollments: { select: { class: { select: { id: true, parishId: true } } } },
+    },
+  });
+  if (!catechumen) throw new HttpError(404, 'Catequizando não encontrado.');
+
   if (!context.user.isAdmin) {
-    const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, status: 'ACTIVE' },
-      select: { role: true, parishId: true },
-    });
-    if (!membership || !['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'].includes(membership.role)) {
-      throw new HttpError(403, 'Apenas coordenadores podem criar jornadas sacramentais.');
+    const { parishIds, roles } = await getEffectiveParishScope(context);
+
+    const isCoordinator = roles.some((r: string) => isCoordinatorOrAboveRole(r));
+    const isCatechist = roles.includes('LEAD_CATECHIST') || roles.includes('ASSISTANT_CATECHIST');
+
+    if (!isCoordinator && !isCatechist) {
+      throw new HttpError(403, 'Apenas coordenadores e catequistas podem criar jornadas sacramentais.');
     }
 
-    // Verify catechumen is in the user's parish
-    const catechumen = await context.entities.CatechumenProfile.findUnique({
-      where: { id: args.catechumenProfileId },
-      select: {
-        enrollments: { select: { class: { select: { parishId: true } } } },
-        household: { select: { parishId: true } },
+    // Catechist: only for students in their own classes
+    if (isCatechist && !isCoordinator) {
+      const myClasses = await context.entities.ClassCatechist.findMany({
+        where: { userId: context.user.id },
+        select: { classId: true },
+      });
+      const myClassIds = myClasses.map((cc: any) => cc.classId);
+      const isMyStudent = catechumen.enrollments.some((e: any) => myClassIds.includes(e.class.id));
+      if (!isMyStudent) {
+        throw new HttpError(403, 'Este catequizando não está em nenhuma das suas turmas.');
+      }
+    }
+
+    // Coordinator: verify catechumen is in their parish scope
+    if (isCoordinator) {
+      const catechumenParishIds = catechumen.enrollments.map((e: any) => e.class.parishId);
+      if (catechumen.parishId) catechumenParishIds.push(catechumen.parishId);
+      const inScope = catechumenParishIds.some((pid: string) => parishIds.includes(pid));
+      if (!inScope) {
+        throw new HttpError(403, 'Este catequizando não pertence à sua paróquia.');
+      }
+    }
+  }
+
+  // Check for duplicate journey (unique constraint on catechumenProfileId + templateId)
+  const existing = await context.entities.SacramentalJourney.findUnique({
+    where: {
+      catechumenProfileId_templateId: {
+        catechumenProfileId: args.catechumenProfileId,
+        templateId: args.templateId,
       },
-    });
-    if (!catechumen) throw new HttpError(404, 'Catequizando não encontrado.');
-
-    const catechumenParishIds = [
-      ...catechumen.enrollments.map((e: any) => e.class.parishId),
-      catechumen.household?.parishId,
-    ].filter(Boolean);
-
-    if (!catechumenParishIds.includes(membership.parishId)) {
-      throw new HttpError(403, 'Este catequizando não pertence à sua paróquia.');
-    }
+    },
+  });
+  if (existing) {
+    throw new HttpError(409, 'Já existe uma jornada sacramental com este modelo para este catequizando.');
   }
 
   const journey = await context.entities.SacramentalJourney.create({
     data: { catechumenProfileId: args.catechumenProfileId, templateId: args.templateId },
   });
 
+  // Create all milestones in bulk
   const templateMilestones = await context.entities.SacramentalMilestoneTemplate.findMany({
     where: { templateId: args.templateId },
     orderBy: { order: 'asc' },
   });
 
-  for (const tm of templateMilestones) {
-    await context.entities.SacramentalMilestone.create({
-      data: { journeyId: journey.id, templateMilestoneId: tm.id, status: 'PENDING' },
+  if (templateMilestones.length > 0) {
+    await context.entities.SacramentalMilestone.createMany({
+      data: templateMilestones.map((tm: any) => ({
+        journeyId: journey.id,
+        templateMilestoneId: tm.id,
+        status: 'PENDING',
+      })),
     });
   }
 
-  return journey;
+  // Return the created journey with milestones
+  return context.entities.SacramentalJourney.findUnique({
+    where: { id: journey.id },
+    include: {
+      catechumenProfile: { select: { id: true, firstName: true, lastName: true } },
+      template: { select: { id: true, name: true } },
+      milestones: {
+        include: { templateMilestone: { select: { id: true, name: true, required: true, order: true } } },
+        orderBy: { templateMilestone: { order: 'asc' } },
+      },
+    },
+  });
 };
 
+// Re-exported from sacramentHelpers for use in Wasp actions
+export { ensureSacramentalJourneyForCatechumen };
+
+// ─── Update Milestone Status ──────────────────────────────────────────────────
+
 export const updateMilestoneStatus = async (
-  args: { milestoneId: string; status: string; notes?: string },
+  args: { milestoneId: string; status?: string; notes?: string; evidenceUrl?: string; completedAt?: string | null },
   context: any
 ) => {
-  if (!context.user) throw new HttpError(401);
+  requireAuth(context.user);
+  validateOrThrow(updateMilestoneStatusSchema, args);
+
+  // Load milestone with full context for authorization
+  const milestone = await context.entities.SacramentalMilestone.findUnique({
+    where: { id: args.milestoneId },
+    include: {
+      templateMilestone: true,
+      journey: {
+        include: {
+          catechumenProfile: {
+            select: {
+              id: true,
+              parishId: true,
+              enrollments: { select: { class: { select: { id: true, parishId: true } } } },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!milestone) throw new HttpError(404, 'Marco sacramental não encontrado.');
 
   if (!context.user.isAdmin) {
-    const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, status: 'ACTIVE' },
-      select: { role: true },
-    });
-    if (!membership || !['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'].includes(membership.role)) {
-      throw new HttpError(403, 'Apenas coordenadores podem atualizar marcos sacramentais.');
+    const { parishIds, roles } = await getEffectiveParishScope(context);
+
+    const isCoordinator = roles.some((r: string) => isCoordinatorOrAboveRole(r));
+    const isCatechist = roles.includes('LEAD_CATECHIST') || roles.includes('ASSISTANT_CATECHIST');
+
+    if (!isCoordinator && !isCatechist) {
+      throw new HttpError(403, 'Apenas coordenadores e catequistas podem atualizar marcos sacramentais.');
+    }
+
+    const catechumenClassParishIds = milestone.journey.catechumenProfile.enrollments.map(
+      (e: any) => e.class.parishId
+    );
+
+    if (isCoordinator) {
+      // Coordinator: can update if catechumen is in their parish
+      const inScope = catechumenClassParishIds.some((pid: string) => parishIds.includes(pid)) ||
+        (milestone.journey.catechumenProfile.parishId && parishIds.includes(milestone.journey.catechumenProfile.parishId));
+      if (!inScope) {
+        throw new HttpError(403, 'Este catequizando não pertence à sua paróquia.');
+      }
+    }
+
+    if (isCatechist && !isCoordinator) {
+      // Catechist: can only update milestones for students in their own classes
+      const myClasses = await context.entities.ClassCatechist.findMany({
+        where: { userId: context.user.id },
+        select: { classId: true },
+      });
+      const myClassIds = myClasses.map((cc: any) => cc.classId);
+      const enrollmentClassIds = milestone.journey.catechumenProfile.enrollments.map(
+        (e: any) => e.class.id
+      );
+      const isMyStudent = enrollmentClassIds.some((cid: string) => myClassIds.includes(cid));
+      if (!isMyStudent) {
+        throw new HttpError(403, 'Este catequizando não está em nenhuma das suas turmas.');
+      }
+    }
+
+    // Catechist can only set PENDING, IN_PROGRESS, or COMPLETED
+    // Only coordinators can set WAITING_APPROVAL, APPROVED, or REJECTED
+    if (isCatechist && !isCoordinator && args.status) {
+      const allowedForCatechist = ['PENDING', 'IN_PROGRESS', 'COMPLETED'];
+      if (!allowedForCatechist.includes(args.status)) {
+        throw new HttpError(403, 'Catequistas podem apenas marcar como pendente, em andamento ou concluído. A aprovação requer um coordenador.');
+      }
     }
   }
 
-  const data: any = { status: args.status };
-  if (args.status === 'COMPLETED') data.completedAt = new Date();
-  if (args.notes) data.notes = args.notes;
+  const data: any = {};
+  if (args.status !== undefined) {
+    data.status = args.status;
+    if (args.status === 'COMPLETED') data.completedAt = new Date();
+    if (args.status !== 'COMPLETED' && args.status !== 'APPROVED') data.completedAt = null;
+  }
+  if (args.notes !== undefined) data.notes = args.notes;
+  if (args.evidenceUrl !== undefined) data.evidenceUrl = args.evidenceUrl;
+  if (args.completedAt !== undefined) data.completedAt = args.completedAt ? new Date(args.completedAt) : null;
 
-  return context.entities.SacramentalMilestone.update({ where: { id: args.milestoneId }, data });
+  return context.entities.SacramentalMilestone.update({
+    where: { id: args.milestoneId },
+    data,
+  });
 };
 
+// ─── Update Journey ───────────────────────────────────────────────────────────
+
+export const updateJourney = async (
+  args: { id: string; targetDate?: string | null },
+  context: any
+) => {
+  requireAuth(context.user);
+
+  const journey = await context.entities.SacramentalJourney.findUnique({
+    where: { id: args.id },
+    select: { catechumenProfileId: true },
+  });
+  if (!journey) throw new HttpError(404, 'Jornada não encontrada.');
+
+  // Authorization: same scope as getSacramentalJourney
+  const { parishIds, roles } = await getEffectiveParishScope(context);
+  const canManage = roles.some((r: string) => isCoordinatorOrAboveRole(r)) ||
+    roles.includes('LEAD_CATECHIST') || roles.includes('ASSISTANT_CATECHIST');
+  if (!canManage && !context.user.isAdmin) {
+    throw new HttpError(403, 'Apenas coordenadores e catequistas podem configurar a jornada.');
+  }
+
+  const data: any = {};
+  if (args.targetDate !== undefined) data.targetDate = args.targetDate ? new Date(args.targetDate) : null;
+
+  return context.entities.SacramentalJourney.update({
+    where: { id: args.id },
+    data,
+  });
+};
+
+// ─── List Journey Templates ───────────────────────────────────────────────────
+
 export const listJourneyTemplates = async (_args: void, context: any) => {
-  if (!context.user) throw new HttpError(401);
+  requireAuth(context.user);
+
+  const include = {
+    milestones: { orderBy: { order: 'asc' } as const },
+    parish: { select: { id: true, name: true, type: true, dioceseId: true } },
+    sacrament: { select: { id: true, name: true } },
+  };
 
   if (context.user.isAdmin) {
-    return context.entities.SacramentalJourneyTemplate.findMany({
-      include: { milestones: { orderBy: { order: 'asc' } } },
+    return context.entities.SacramentalJourneyTemplate.findMany({ include });
+  }
+
+  const { parishIds } = await getEffectiveParishScope(context);
+  if (parishIds.length === 0) return [];
+  const parishes = await context.entities.Parish.findMany({
+    where: { id: { in: parishIds } },
+    select: { id: true, dioceseId: true, type: true },
+  });
+
+  const dioceseIds = [...new Set(parishes.map((p: any) => p.dioceseId).filter(Boolean))];
+  const hasOnlyPersonal = parishes.length > 0 && parishes.every((p: any) => p.type === 'PERSONAL');
+
+  const templates = await context.entities.SacramentalJourneyTemplate.findMany({
+    where: hasOnlyPersonal
+      ? { OR: [{ parishId: { in: parishIds } }, { parishId: null }] }
+      : {
+          OR: [
+            { parishId: { in: parishIds } },
+            { parish: { dioceseId: { in: dioceseIds } } },
+            { parishId: null },
+          ],
+        },
+    include,
+  });
+
+  // Priority sort: personal/parish-specific > diocesan > global
+  templates.sort((a: any, b: any) => {
+    const score = (t: any) => {
+      if (t.parishId && parishIds.includes(t.parishId)) return 0;
+      if (t.parish?.dioceseId && dioceseIds.includes(t.parish.dioceseId)) return 1;
+      return 2; // global (parishId = null)
+    };
+    return score(a) - score(b);
+  });
+
+  return templates;
+};
+
+// ─── Template CRUD ────────────────────────────────────────────────────────────
+
+/** Create a new template with optional milestones */
+export const createTemplate = async (
+  args: { name: string; description?: string; sacramentId?: string; parishId?: string; milestones?: any[] },
+  context: any
+) => {
+  requireAuth(context.user);
+  validateOrThrow(createTemplateSchema, args);
+
+  let parishId = args.parishId;
+  if (!parishId) {
+    const membership = await context.entities.Membership.findFirst({
+      where: { userId: context.user.id, status: 'ACTIVE' },
+      select: { parishId: true, role: true },
+    });
+    if (membership && isCoordinatorOrAboveRole(membership.role)) {
+      parishId = membership.parishId;
+    } else if (!context.user.isAdmin) {
+      // Check personal workspace
+      const personal = await context.entities.Parish.findFirst({
+        where: { ownerId: context.user.id, type: 'PERSONAL' },
+        select: { id: true },
+      });
+      if (personal) parishId = personal.id;
+    }
+    if (!parishId && !context.user.isAdmin) {
+      throw new HttpError(400, 'Não foi possível determinar o workspace para criar o modelo.');
+    }
+  }
+
+  const template = await context.entities.SacramentalJourneyTemplate.create({
+    data: {
+      name: args.name,
+      description: args.description,
+      sacramentId: args.sacramentId,
+      parishId: parishId || null,
+    },
+  });
+
+  // Create milestones if provided
+  const milestones = args.milestones || [];
+  if (milestones.length > 0) {
+    await context.entities.SacramentalMilestoneTemplate.createMany({
+      data: milestones.map((m: any, idx: number) => ({
+        templateId: template.id,
+        name: m.name,
+        description: m.description,
+        required: m.required !== undefined ? m.required : true,
+        evidenceRequired: m.evidenceRequired || false,
+        order: m.order !== undefined ? m.order : idx,
+        daysBeforeSacrament: m.daysBeforeSacrament || null,
+      })),
     });
   }
 
-  const memberships = await context.entities.Membership.findMany({
-    where: { userId: context.user.id, status: 'ACTIVE' },
+  return context.entities.SacramentalJourneyTemplate.findUnique({
+    where: { id: template.id },
+    include: {
+      milestones: { orderBy: { order: 'asc' } },
+      parish: { select: { id: true, name: true, type: true } },
+      sacrament: { select: { id: true, name: true } },
+    },
+  });
+};
+
+/** Update template metadata */
+export const updateTemplate = async (
+  args: { id: string; name?: string; description?: string; sacramentId?: string },
+  context: any
+) => {
+  requireAuth(context.user);
+  validateOrThrow(updateTemplateSchema, args);
+
+  const template = await context.entities.SacramentalJourneyTemplate.findUnique({
+    where: { id: args.id },
     select: { parishId: true },
   });
-  if (memberships.length === 0) return [];
+  if (!template) throw new HttpError(404, 'Modelo não encontrado.');
 
-  const parishIds = memberships.map((m: any) => m.parishId);
-  const parishes = await context.entities.Parish.findMany({
-    where: { id: { in: parishIds } },
-    select: { dioceseId: true },
+  if (!context.user.isAdmin) {
+    if (!template.parishId) throw new HttpError(403, 'Apenas administradores podem editar modelos globais.');
+    const role = await getEffectiveParishRole(context, template.parishId);
+    if (!role || !isCoordinatorOrAboveRole(role)) {
+      throw new HttpError(403, 'Você não tem permissão para editar este modelo.');
+    }
+  }
+
+  const data: any = {};
+  if (args.name !== undefined) data.name = args.name;
+  if (args.description !== undefined) data.description = args.description;
+  if (args.sacramentId !== undefined) data.sacramentId = args.sacramentId;
+
+  return context.entities.SacramentalJourneyTemplate.update({
+    where: { id: args.id },
+    data,
   });
-  const dioceseIds = [...new Set(parishes.map((p: any) => p.dioceseId).filter(Boolean))];
+};
 
-  return context.entities.SacramentalJourneyTemplate.findMany({
-    where: {
-      OR: [
-        { parishId: { in: parishIds } },
-        { parish: { dioceseId: { in: dioceseIds } } },
-        { parishId: null },
-      ],
+/** Update a single milestone template */
+export const updateMilestoneTemplate = async (
+  args: { id: string; name?: string; description?: string; required?: boolean; evidenceRequired?: boolean; order?: number; daysBeforeSacrament?: number | null },
+  context: any
+) => {
+  requireAuth(context.user);
+  validateOrThrow(updateMilestoneTemplateSchema, args);
+
+  const milestone = await context.entities.SacramentalMilestoneTemplate.findUnique({
+    where: { id: args.id },
+    select: { template: { select: { parishId: true } } },
+  });
+  if (!milestone) throw new HttpError(404, 'Marco não encontrado.');
+
+  if (!context.user.isAdmin) {
+    if (!milestone.template.parishId) throw new HttpError(403, 'Apenas administradores podem editar marcos de modelos globais.');
+    const role = await getEffectiveParishRole(context, milestone.template.parishId);
+    if (!role || !isCoordinatorOrAboveRole(role)) {
+      throw new HttpError(403, 'Você não tem permissão para editar este marco.');
+    }
+  }
+
+  const data: any = {};
+  if (args.name !== undefined) data.name = args.name;
+  if (args.description !== undefined) data.description = args.description;
+  if (args.required !== undefined) data.required = args.required;
+  if (args.evidenceRequired !== undefined) data.evidenceRequired = args.evidenceRequired;
+  if (args.order !== undefined) data.order = args.order;
+  if (args.daysBeforeSacrament !== undefined) data.daysBeforeSacrament = args.daysBeforeSacrament;
+
+  return context.entities.SacramentalMilestoneTemplate.update({
+    where: { id: args.id },
+    data,
+  });
+};
+
+/** Delete a milestone template (only if no active journeys reference it) */
+export const deleteMilestoneTemplate = async (
+  args: { id: string },
+  context: any
+) => {
+  requireAuth(context.user);
+  validateOrThrow(deleteMilestoneTemplateSchema, args);
+
+  const milestone = await context.entities.SacramentalMilestoneTemplate.findUnique({
+    where: { id: args.id },
+    select: {
+      template: { select: { parishId: true } },
+      _count: { select: { milestones: true } },
     },
-    include: { milestones: { orderBy: { order: 'asc' } } },
   });
+  if (!milestone) throw new HttpError(404, 'Marco não encontrado.');
+
+  if (!context.user.isAdmin) {
+    if (!milestone.template.parishId) throw new HttpError(403, 'Apenas administradores podem remover marcos de modelos globais.');
+    const role = await getEffectiveParishRole(context, milestone.template.parishId);
+    if (!role || !isCoordinatorOrAboveRole(role)) {
+      throw new HttpError(403, 'Você não tem permissão para remover este marco.');
+    }
+  }
+
+  // Check if milestone is used in any active journeys
+  const usageCount = await context.entities.SacramentalMilestone.count({
+    where: { templateMilestoneId: args.id },
+  });
+  if (usageCount > 0) {
+    throw new HttpError(409, `Este marco está em uso por ${usageCount} jornada(s) ativa(s) e não pode ser removido.`);
+  }
+
+  await context.entities.SacramentalMilestoneTemplate.delete({ where: { id: args.id } });
+  return { success: true };
 };

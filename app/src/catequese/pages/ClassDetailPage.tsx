@@ -2,7 +2,7 @@ import { useParams, Link, useNavigate } from 'react-router';
 import { useState, useEffect } from 'react';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
-import { ArrowLeft, UserPlus, Users, MapPin, Clock, ClipboardList, TrendingUp, XCircle, Calendar, MessageCircle, BookOpen, Building2, Pencil, Check, X, Trash2 } from 'lucide-react';
+import { ArrowLeft, UserPlus, Users, MapPin, Clock, ClipboardList, TrendingUp, XCircle, Calendar, MessageCircle, BookOpen, Building2, Pencil, Check, X, Trash2, Cross } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { useQuery, getClassDetails, listCatechumens, enrollCatechumen, updateClass, getOrCreateClassChat, cancelEnrollment, addAssistantCatechist, removeCatechistFromClass, listParishCatechists, getMonthlyPlan } from 'wasp/client/operations';
 import { useAuth } from 'wasp/client/auth';
@@ -14,6 +14,8 @@ import { handlePlanLimitError } from '../lib/planLimitToast';
 import { ConfirmDialog } from '../../client/components/ConfirmDialog';
 import { toast } from '../../client/hooks/use-toast';
 import SendAnnouncementButton from '../components/SendAnnouncementButton';
+import { DetailTabs } from '../../client/components/DetailTabs';
+import { EmptyState } from '../../client/components/EmptyState';
 
 const STATUS_OPTS = [
   { status:'ACTIVE', label:'Ativar', variant:'default' as const },
@@ -51,7 +53,7 @@ const DAY_OPTIONS = [
 export default function ClassDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { data: cls, isLoading: loading } = useQuery(getClassDetails, { id: id! });
+  const { data: cls, isLoading: loading, error: classError } = useQuery(getClassDetails, { id: id! });
   const { data: allCatechumens = [] } = useQuery(listCatechumens);
   const { data: user } = useAuth();
   const { userRole, parishId } = useUserContext();
@@ -203,7 +205,7 @@ export default function ClassDetailPage() {
   };
 
   // Check if current user can manage catechists
-  const isCoordinator = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'].includes(userRole);
+  const isCoordinator = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(userRole);
   const isLeadCatechist = !!(cls?.catechists || []).find((cc: any) => cc.userId === user?.id && cc.role === 'LEAD');
   const isClassCatechist = !!(cls?.catechists || []).find((cc: any) => cc.userId === user?.id);
   const canManageClass = isCoordinator || isLeadCatechist;
@@ -215,7 +217,10 @@ export default function ClassDetailPage() {
   const availableCatechists = parishCatechists.filter((m: any) => !classCatechistUserIds.has(m.userId));
 
   if(loading)return <AppShell><div className="space-y-6 animate-pulse"><div className="h-8 w-48 bg-muted rounded"/><div className="grid gap-4 md:grid-cols-4">{[1,2,3,4].map(i=><div key={i} className="h-20 rounded-xl bg-muted"/>)}</div></div></AppShell>;
-  if(!cls)return <AppShell><div className="p-6 text-destructive">Turma não encontrada.</div></AppShell>;
+  if(!cls) {
+    const errMsg = classError ? (classError as any)?.message || String(classError) : 'Turma não encontrada.';
+    return <AppShell><div className="p-6 text-destructive">{errMsg}</div></AppShell>;
+  }
 
   const enrolled=cls.enrollments||[];
   const enrolledIds=enrolled.map((e:any)=>e.catechumenProfile?.id);
@@ -327,26 +332,62 @@ export default function ClassDetailPage() {
           )
         )}
 
-        {/* Tabs */}
-        <div className="flex gap-1 border-b pb-2">
-          {[{id:'inscritos',l:`Inscritos (${enrolledIds.length})`},{id:'encontros',l:`Encontros (${cls.meetings?.length||0})`},{id:'catequistas',l:`Catequistas (${cls.catechists?.length||0})`},{id:'planejamento',l:'Planejamento'}].map(t=>(
-            <button key={t.id} onClick={()=>{setTab(t.id as any); if(t.id === 'planejamento' && !monthlyPlan) handleLoadMonthlyPlan();}} className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${tab===t.id?'border-b-2 border-primary text-primary':'text-muted-foreground hover:text-foreground'}`}>{t.l}</button>
-          ))}
-        </div>
+        <DetailTabs
+          tabs={[
+            { id: 'inscritos', label: `Inscritos (${enrolledIds.length})` },
+            { id: 'encontros', label: `Encontros (${cls.meetings?.length || 0})` },
+            { id: 'catequistas', label: `Catequistas (${cls.catechists?.length || 0})` },
+            { id: 'planejamento', label: 'Planejamento' },
+          ]}
+          value={tab}
+          onChange={(id) => {
+            setTab(id as typeof tab);
+            if (id === 'planejamento' && !monthlyPlan) handleLoadMonthlyPlan();
+          }}
+        />
 
         {/* Tab: Inscritos */}
         {tab==='inscritos'&&(
           <div>
-            {enrolled.length===0?<p className="text-sm text-muted-foreground py-4">Nenhum catequizando inscrito.</p>:
-              <div className="grid gap-2">{enrolled.map((e:any)=>(
+            {enrolled.length===0?<EmptyState compact icon={Users} title="Nenhum catequizando inscrito" description="Matricule catequizandos disponíveis abaixo." />:
+              <div className="grid gap-2">{enrolled.map((e:any)=>{
+                const journeys = e.catechumenProfile?.sacramentalJourneys || [];
+                const relevantJourney = cls.sacrament?.id
+                  ? journeys.find((j: any) => j.template?.sacramentId === cls.sacrament?.id) || journeys[0]
+                  : journeys[0];
+                const total = relevantJourney?.milestones?.length || 0;
+                const done = relevantJourney?.milestones?.filter((m: any) => m.status === 'COMPLETED' || m.status === 'APPROVED').length || 0;
+                const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+                const journeyBadge = relevantJourney ? (
+                  <Badge variant={pct === 100 ? 'default' : 'outline'} className="text-[10px] gap-1">
+                    <Cross className="h-3 w-3" />
+                    {done}/{total}
+                  </Badge>
+                ) : cls.sacrament ? (
+                  <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                    <Cross className="h-3 w-3 opacity-50" />
+                    Sem jornada
+                  </span>
+                ) : null;
+
+                return(
                 <div key={e.id} className="flex items-center justify-between rounded-lg border p-3">
-                  <Link to={`/app/catechumens/${e.catechumenProfile?.id}`} className="flex items-center gap-3 hover:text-primary">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold">{e.catechumenProfile?.firstName?.[0]}{e.catechumenProfile?.lastName?.[0]}</div>
-                    <span className="text-sm font-medium">{e.catechumenProfile?.firstName} {e.catechumenProfile?.lastName}</span>
-                  </Link>
-                  {canEnroll && <button onClick={()=>handleUnenroll(e.id)} className="text-muted-foreground hover:text-destructive p-1"><XCircle className="h-4 w-4"/></button>}
+                  <div className="flex items-center gap-3 min-w-0">
+                    <Link to={`/app/catechumens/${e.catechumenProfile?.id}`} className="flex items-center gap-3 hover:text-primary min-w-0">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold flex-shrink-0">{e.catechumenProfile?.firstName?.[0]}{e.catechumenProfile?.lastName?.[0]}</div>
+                      <span className="text-sm font-medium truncate">{e.catechumenProfile?.firstName} {e.catechumenProfile?.lastName}</span>
+                    </Link>
+                    {relevantJourney ? (
+                      <Link to={`/app/sacramental-journeys/${relevantJourney.id}`} className="flex-shrink-0">
+                        {journeyBadge}
+                      </Link>
+                    ) : (
+                      journeyBadge && <span className="flex-shrink-0">{journeyBadge}</span>
+                    )}
+                  </div>
+                  {canEnroll && <button onClick={()=>handleUnenroll(e.id)} className="text-muted-foreground hover:text-destructive p-1 flex-shrink-0"><XCircle className="h-4 w-4"/></button>}
                 </div>
-              ))}</div>}
+              )})}</div>}
             {isCatechumenLimitReached ? (
               <div className="mt-6">
                 <PlanLimitBanner type="catechumen_limit" currentCount={enrolled.length} userPlan={effectivePlan} isParishManaged={isParishManaged} />
@@ -368,7 +409,7 @@ export default function ClassDetailPage() {
         {/* Tab: Encontros */}
         {tab==='encontros'&&(
           <div>
-            {!cls.meetings?.length?<p className="text-sm text-muted-foreground py-4">Nenhum encontro registrado.</p>:
+            {!cls.meetings?.length?<EmptyState compact icon={Calendar} title="Nenhum encontro registrado" description="Agende encontros na página de encontros da turma." />:
               <div className="grid gap-2">{cls.meetings.map((m:any)=>(
                 <div key={m.id} className="flex items-center justify-between rounded-lg border p-3">
                   <div>
@@ -435,7 +476,7 @@ export default function ClassDetailPage() {
             )}
 
             {!cls.catechists?.length ? (
-              <p className="text-sm text-muted-foreground py-4">Nenhum catequista vinculado.</p>
+              <EmptyState compact icon={Users} title="Nenhum catequista vinculado" description="Adicione catequistas assistentes à turma." />
             ) : (
               <div className="grid gap-2">
                 {cls.catechists.map((cc: any) => {

@@ -20,12 +20,12 @@ export function CompletionStep({ summary, onFinish }: CompletionStepProps) {
 
   return (
     <div className="flex flex-col items-center text-center space-y-6 py-8 animate-in fade-in zoom-in-95 duration-500">
-      <div className="rounded-full bg-green-100 p-4 animate-in zoom-in duration-300">
-        <Check className="h-10 w-10 text-green-600" />
+      <div className="rounded-full bg-success/10 p-4 animate-in zoom-in duration-300">
+        <Check className="h-10 w-10 text-success" />
       </div>
 
       <div className="space-y-2 max-w-md">
-        <h2 className="text-2xl font-bold tracking-tight">Tudo pronto! ✅</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Tudo pronto!</h2>
         <p className="text-muted-foreground">
           O teu espaço está configurado. Aqui está um resumo do que foi criado:
         </p>

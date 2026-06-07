@@ -22,17 +22,15 @@ export const joinParish = async (args: { parishId: string; role?: string }, cont
   if (!context.user) throw new HttpError(401);
   if (!args.parishId) throw new HttpError(400, 'parishId é obrigatório.');
 
-  // Validate role — reject privileged roles for self-join
   const requestedRole = args.role || 'PASTORAL_VIEWER';
 
-  // Check if parish exists
   const parish = await context.entities.Parish.findUnique({
     where: { id: args.parishId },
-    select: { id: true, name: true, ownerId: true },
+    select: { id: true, name: true, ownerId: true, type: true },
   });
   if (!parish) throw new HttpError(404, 'Paróquia não encontrada.');
 
-  // Validate role — reject privileged roles for self-join (unless user owns the parish)
+  // Only the parish owner or an existing admin can self-assign privileged roles
   if (PRIVILEGED_ROLES.includes(requestedRole)) {
     if (parish.ownerId !== context.user.id) {
       throw new HttpError(403, 'Este papel requer convite de um administrador da paróquia.');
@@ -42,25 +40,45 @@ export const joinParish = async (args: { parishId: string; role?: string }, cont
     throw new HttpError(400, `Papel inválido: ${requestedRole}`);
   }
 
-  // Check if already a member
+  // Institutional parishes require an invitation — no open self-join
+  if (parish.type !== 'PERSONAL') {
+    const existing = await context.entities.Membership.findFirst({
+      where: { userId: context.user.id, parishId: args.parishId },
+    });
+    if (existing) {
+      // Only allow accepting an existing INVITED membership
+      if (existing.status === 'INVITED') {
+        return context.entities.Membership.update({
+          where: { id: existing.id },
+          data: { status: 'ACTIVE' },
+        });
+      }
+      // Never allow self-service role changes — prevents privilege escalation
+      return existing;
+    }
+
+    // No existing invitation — reject self-join to institutional parishes
+    throw new HttpError(403, 'Você precisa de um convite para entrar nesta paróquia. Solicite a um administrador.');
+  }
+
+  // Personal workspace — only the owner can join
+  if (parish.ownerId !== context.user.id) {
+    throw new HttpError(403, 'Você não pode entrar no espaço pessoal de outro usuário.');
+  }
+
   const existing = await context.entities.Membership.findFirst({
     where: { userId: context.user.id, parishId: args.parishId },
   });
   if (existing) {
-    const updates: any = {};
-    if (existing.status !== 'ACTIVE') updates.status = 'ACTIVE';
-    if (existing.role !== requestedRole) updates.role = requestedRole;
-
-    if (Object.keys(updates).length > 0) {
+    if (existing.status === 'INVITED') {
       return context.entities.Membership.update({
         where: { id: existing.id },
-        data: updates,
+        data: { status: 'ACTIVE' },
       });
     }
     return existing;
   }
 
-  // Create new membership with ACTIVE status
   return context.entities.Membership.create({
     data: {
       userId: context.user.id,

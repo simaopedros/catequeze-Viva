@@ -1,10 +1,14 @@
 import { useState } from 'react';
+import { type AuthUser } from 'wasp/auth';
 import { Button } from '../../client/components/ui/button';
+import { Input } from '../../client/components/ui/input';
 import { Plus, Church, Edit, Save, X } from 'lucide-react';
-import { AppShell } from '../AppShell';
+import DefaultLayout from '../../admin/layout/DefaultLayout';
+import { PageHeader } from '../../client/components/PageHeader';
+import { EmptyState } from '../../client/components/EmptyState';
 import { useQuery, listDioceses, createDiocese, updateDiocese } from 'wasp/client/operations';
 
-export default function AdminDiocesesPage() {
+export default function AdminDiocesesPage({ user }: { user: AuthUser }) {
   const { data: dioceses = [], isLoading: loading } = useQuery(listDioceses);
   const [error, setError] = useState('');
   const [showForm, setShowForm] = useState(false);
@@ -37,21 +41,26 @@ export default function AdminDiocesesPage() {
   };
 
   if (loading) {
-    return <AppShell><div className="flex justify-center py-20"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div></AppShell>;
+    return (
+      <DefaultLayout user={user}>
+        <div className="flex justify-center py-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        </div>
+      </DefaultLayout>
+    );
   }
 
   return (
-    <AppShell>
+    <DefaultLayout user={user}>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Dioceses</h1>
-            <p className="text-muted-foreground text-sm">Gestão de dioceses (Super Admin)</p>
-          </div>
+        <PageHeader
+          title="Dioceses"
+          subtitle="Gestão de dioceses (Super Admin)"
+        >
           <Button size="sm" onClick={() => setShowForm(!showForm)}>
             <Plus className="mr-1 h-4 w-4" />Nova diocese
           </Button>
-        </div>
+        </PageHeader>
 
         {error && (
           <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
@@ -60,8 +69,8 @@ export default function AdminDiocesesPage() {
         {showForm && (
           <div className="rounded-xl border bg-card p-4 space-y-3">
             <div className="flex gap-3">
-              <input value={name} onChange={e => setName(e.target.value)}       
-                className="flex-1 h-9 rounded-md border border-input bg-background px-3 text-sm"
+              <Input value={name} onChange={e => setName(e.target.value)}
+                className="flex-1 h-9"
                 placeholder="Nome da diocese" />
               <select value={country} onChange={e => setCountry(e.target.value)}
                 className="h-9 rounded-md border border-input bg-background px-3 text-sm">
@@ -71,7 +80,7 @@ export default function AdminDiocesesPage() {
                 <option value="MZ">Moçambique</option>
               </select>
               <Button size="sm" onClick={handleCreate} disabled={saving || !name}>
-                <Save className="mr-1 h-3 w-3" />{saving ? '...' : 'Criar'}     
+                <Save className="mr-1 h-3 w-3" />{saving ? '...' : 'Criar'}
               </Button>
               <Button size="sm" variant="outline" onClick={() => setShowForm(false)}>Cancelar</Button>
             </div>
@@ -80,18 +89,19 @@ export default function AdminDiocesesPage() {
 
         <div className="rounded-xl border bg-card overflow-hidden">
           {dioceses.length === 0 ? (
-            <div className="p-12 text-center text-muted-foreground">
-              <Church className="mx-auto h-8 w-8 mb-3 text-primary/50" />       
-              <p>Nenhuma diocese cadastrada.</p>
-            </div>
+            <EmptyState
+              icon={Church}
+              title="Nenhuma diocese cadastrada"
+              description="Cadastre a primeira diocese para começar."
+            />
           ) : (
             <table className="w-full text-sm">
               <thead className="bg-muted/50 border-b">
                 <tr>
-                  <th className="text-left px-4 py-3 font-medium">Nome</th>     
-                  <th className="text-left px-4 py-3 font-medium">País</th>     
+                  <th className="text-left px-4 py-3 font-medium">Nome</th>
+                  <th className="text-left px-4 py-3 font-medium">País</th>
                   <th className="text-left px-4 py-3 font-medium">Paróquias</th>
-                  <th className="text-right px-4 py-3 font-medium">Ações</th>   
+                  <th className="text-right px-4 py-3 font-medium">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -99,8 +109,8 @@ export default function AdminDiocesesPage() {
                   <tr key={d.id} className="border-b last:border-0 hover:bg-muted/30">
                     <td className="px-4 py-3">
                       {editingId === d.id ? (
-                        <input value={editName} onChange={e => setEditName(e.target.value)}
-                          className="h-8 rounded border border-input bg-background px-2 text-sm w-full" />
+                        <Input value={editName} onChange={e => setEditName(e.target.value)}
+                          className="h-8 text-sm w-full" />
                       ) : d.name}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">{d.country}</td>
@@ -108,7 +118,7 @@ export default function AdminDiocesesPage() {
                     <td className="px-4 py-3 text-right">
                       {editingId === d.id ? (
                         <div className="flex justify-end gap-1">
-                          <button onClick={() => handleUpdate(d.id)} className="p-1 text-green-600 hover:bg-green-50 rounded">
+                          <button onClick={() => handleUpdate(d.id)} className="p-1 text-success hover:bg-success/10 rounded">
                             <Save className="h-4 w-4" />
                           </button>
                           <button onClick={() => setEditingId(null)} className="p-1 text-muted-foreground hover:bg-muted rounded">
@@ -129,6 +139,6 @@ export default function AdminDiocesesPage() {
           )}
         </div>
       </div>
-    </AppShell>
+    </DefaultLayout>
   );
 }

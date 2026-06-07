@@ -20,6 +20,7 @@ enum UserRole {
   CATECHUMEN
   CONTENT_REVIEWER
   PASTORAL_VIEWER
+  PERSONAL_OWNER
 }
 
 enum MembershipStatus {
@@ -818,6 +819,8 @@ model SacramentalJourney {
   templateId String
   template   SacramentalJourneyTemplate @relation(fields: [templateId], references: [id])
 
+  targetDate DateTime?
+
   milestones SacramentalMilestone[]
 
   @@unique([catechumenProfileId, templateId])
@@ -1201,6 +1204,7 @@ model UserTwoFactor {
   secret    String   // TOTP secret (encrypted at rest)
   enabled   Boolean  @default(false)
   verified  Boolean  @default(false) // Has the user completed setup with a test code?
+  sessionVerifiedAt DateTime? // Set after successful TOTP at login; cleared on new login challenge
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

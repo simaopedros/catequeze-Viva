@@ -1,11 +1,9 @@
 import * as fs from 'fs';
-import * as path from 'path';
 import type { Request, Response } from 'express';
 import type { MiddlewareConfigFn } from 'wasp/server';
 import { documentAccessRateLimiter } from '../middleware/rateLimiter';
 import { logger } from '../logger';
-
-const UPLOADS_DIR = path.resolve(process.cwd(), 'uploads');
+import { resolveUploadFilePath } from '../uploads/helpers';
 
 /**
  * Serves a document file from the local uploads directory.
@@ -61,7 +59,7 @@ export async function serveDocument(req: Request, res: Response, context: any) {
         const parishIds = memberships.map((m: any) => m.parishId);
 
         // Coordinator and above: same parish
-        if (roles.some((r: string) => ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'].includes(r))) {
+        if (roles.some((r: string) => ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(r))) {
           if (doc.catechumenProfileId) {
             const catechumen = await entities.CatechumenProfile.findUnique({
               where: { id: doc.catechumenProfileId },
@@ -157,7 +155,10 @@ export async function serveDocument(req: Request, res: Response, context: any) {
       return res.status(403).json({ error: 'Acesso negado.' });
     }
 
-    const filePath = path.join(UPLOADS_DIR, doc.s3Key);
+    const filePath = resolveUploadFilePath(doc.s3Key);
+    if (!filePath) {
+      return res.status(400).json({ error: 'Referência de arquivo inválida.' });
+    }
 
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ error: 'Arquivo físico não encontrado.' });

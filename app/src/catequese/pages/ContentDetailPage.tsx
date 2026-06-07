@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router';
 import { useState } from 'react';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
-import { ArrowLeft, Clock, Tag, Target, Send, CheckCircle, Archive, Eye, Plus, Puzzle, Edit3, Calendar, FileText, Trash2, Sparkles, Loader2, Printer } from 'lucide-react';
+import { ArrowLeft, Clock, Tag, Target, Send, CheckCircle, Archive, Eye, Plus, Puzzle, Edit3, Calendar, FileText, Trash2, Sparkles, Loader2, Printer, BookOpen, BookMarked } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { useQuery, getContentItem, listActivitiesByContent, updateContentStatus, createActivity, updateActivity, deleteActivity } from 'wasp/client/operations';
 import { generateActivityForMeeting } from 'wasp/client/operations';
@@ -144,21 +144,21 @@ export default function ContentDetailPage(){
             {item.closingPrayer&&<div className="rounded-xl border bg-card p-4"><h3 className="text-xs font-medium text-muted-foreground uppercase mb-1">Oração Final</h3><p className="text-sm italic">{item.closingPrayer}</p></div>}
 
             {/* Biblical reference text */}
-            {item.biblicalRef&&<div className="rounded-xl border bg-blue-50/30 border-blue-100 p-4"><h3 className="text-xs font-medium text-blue-700 uppercase mb-1">📖 Referência Bíblica</h3><p className="text-sm whitespace-pre-line">{item.biblicalRef}</p></div>}
+            {item.biblicalRef&&<div className="rounded-xl border bg-primary/5 border-primary/20 p-4"><h3 className="text-xs font-medium text-primary uppercase mb-1 flex items-center gap-1"><BookOpen className="h-3.5 w-3.5" />Referência Bíblica</h3><p className="text-sm whitespace-pre-line">{item.biblicalRef}</p></div>}
 
             {(item.bibleRefs?.length > 0 || item.catechismRefs?.length > 0) && (
               <div className="space-y-3">
                 <h3 className="text-xs font-medium text-muted-foreground uppercase">Referências</h3>
                 <div className="grid gap-3 md:grid-cols-2">
                   {item.bibleRefs?.map((ref: any) => (
-                    <div key={ref.id} className="rounded-lg border bg-blue-50/30 p-3 text-sm">
-                      <p className="font-medium text-blue-700 text-xs mb-1">{ref.verse?.chapter?.book?.name||''} {ref.verse?.chapter?.number}:{ref.verse?.number}</p>
+                    <div key={ref.id} className="rounded-lg border bg-primary/5 p-3 text-sm">
+                      <p className="font-medium text-primary text-xs mb-1">{ref.verse?.chapter?.book?.name||''} {ref.verse?.chapter?.number}:{ref.verse?.number}</p>
                       <p className="text-muted-foreground text-xs leading-relaxed line-clamp-3">{ref.verse?.text}</p>
                     </div>
                   ))}
                   {item.catechismRefs?.map((ref: any) => (
-                    <div key={ref.id} className="rounded-lg border bg-amber-50/30 p-3 text-sm">
-                      <p className="font-medium text-amber-700 text-xs mb-1">Catecismo §{ref.entry?.number}</p>
+                    <div key={ref.id} className="rounded-lg border bg-secondary/5 p-3 text-sm">
+                      <p className="font-medium text-secondary text-xs mb-1 flex items-center gap-1"><BookMarked className="h-3 w-3" />Catecismo §{ref.entry?.number}</p>
                       <p className="font-medium text-xs mb-1">{ref.entry?.question}</p>
                       <p className="text-muted-foreground text-xs leading-relaxed line-clamp-3">{ref.entry?.answer}</p>
                     </div>
@@ -240,7 +240,7 @@ export default function ContentDetailPage(){
                         <div className="flex items-center gap-2">
                           <p className="text-sm font-medium">{a.title}</p>
                           <Badge variant="outline" className="text-[10px]">
-                            {ACTIVITY_TYPES.find(t => t.value === a.type)?.icon} {ACTIVITY_TYPES.find(t => t.value === a.type)?.label || a.type}
+                            {ACTIVITY_TYPES.find(t => t.value === a.type)?.label || a.type}
                           </Badge>
                         </div>
                         {a.description && <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{a.description}</p>}

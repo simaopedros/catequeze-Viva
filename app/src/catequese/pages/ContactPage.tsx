@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle } from 'lucide-react';
 import { Textarea } from '../../client/components/ui/textarea';
+import { Input } from '../../client/components/ui/input';
+import { Label } from '../../client/components/ui/label';
+import { Button } from '../../client/components/ui/button';
 import { PublicNavbar } from '../PublicNavbar';
 import { PublicFooter } from '../PublicFooter';
 import { sendMessageEmail } from 'wasp/client/operations';
+import { cn } from '../../client/utils';
 
 export default function ContactPage() {
   const [name, setName] = useState('');
@@ -22,13 +26,13 @@ export default function ContactPage() {
     try {
       await sendMessageEmail({
         to: 'contato@catequeseviva.com.br',
-        subject: `[Contato] ${subject || 'Mensagem do site'} — ${name}`,        
+        subject: `[Contato] ${subject || 'Mensagem do site'} — ${name}`,
         body: `Nome: ${name}\nEmail: ${email}\n\n${message}`,
       });
-      setFeedback({ type: 'success', text: 'Mensagem enviada com sucesso!' });  
+      setFeedback({ type: 'success', text: 'Mensagem enviada com sucesso!' });
       setName(''); setEmail(''); setSubject(''); setMessage('');
-    } catch (err: any) {
-      setFeedback({ type: 'error', text: 'Erro ao enviar. Tente novamente.' }); 
+    } catch {
+      setFeedback({ type: 'error', text: 'Erro ao enviar. Tente novamente.' });
     }
     setSending(false);
   };
@@ -44,58 +48,54 @@ export default function ContactPage() {
 
         <div className="grid gap-8 md:grid-cols-5">
           <div className="md:col-span-2 space-y-4">
-            <div className="flex items-center gap-3 text-muted-foreground">     
+            <div className="flex items-center gap-3 text-muted-foreground">
               <Mail className="h-5 w-5 text-primary" />
               <span>contato@catequeseviva.com.br</span>
             </div>
-            <div className="flex items-center gap-3 text-muted-foreground">     
+            <div className="flex items-center gap-3 text-muted-foreground">
               <Phone className="h-5 w-5 text-primary" />
               <span>+55 (11) 0000-0000</span>
             </div>
-            <div className="flex items-center gap-3 text-muted-foreground">     
+            <div className="flex items-center gap-3 text-muted-foreground">
               <MapPin className="h-5 w-5 text-primary" />
               <span>São Paulo, Brasil</span>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="md:col-span-3 space-y-4">    
+          <form onSubmit={handleSubmit} className="md:col-span-3 space-y-4">
             <div className="grid gap-3 sm:grid-cols-2">
-              <div>
-                <label className="text-sm font-medium">Nome *</label>
-                <input value={name} onChange={e => setName(e.target.value)} required
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" />
+              <div className="space-y-2">
+                <Label htmlFor="contact-name">Nome *</Label>
+                <Input id="contact-name" value={name} onChange={e => setName(e.target.value)} required />
               </div>
-              <div>
-                <label className="text-sm font-medium">Email *</label>
-                <input type="email" value={email} onChange={e => setEmail(e.target.value)} required
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" />
+              <div className="space-y-2">
+                <Label htmlFor="contact-email">Email *</Label>
+                <Input id="contact-email" type="email" value={email} onChange={e => setEmail(e.target.value)} required />
               </div>
             </div>
-            <div>
-              <label className="text-sm font-medium">Assunto</label>
-              <input value={subject} onChange={e => setSubject(e.target.value)} 
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" />
+            <div className="space-y-2">
+              <Label htmlFor="contact-subject">Assunto</Label>
+              <Input id="contact-subject" value={subject} onChange={e => setSubject(e.target.value)} />
             </div>
-            <div>
-              <label className="text-sm font-medium">Mensagem *</label>
-              <Textarea value={message} onChange={e => setMessage(e.target.value)} required rows={5}
-                className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1 resize-y" />
+            <div className="space-y-2">
+              <Label htmlFor="contact-message">Mensagem *</Label>
+              <Textarea id="contact-message" value={message} onChange={e => setMessage(e.target.value)} required rows={5} className="resize-y" />
             </div>
 
             {feedback && (
-              <div className={`flex items-center gap-2 text-sm p-3 rounded-lg ${
-                feedback.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-destructive/10 text-destructive'
-              }`}>
+              <div className={cn(
+                'flex items-center gap-2 text-sm p-3 rounded-lg',
+                feedback.type === 'success' ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive',
+              )}>
                 {feedback.type === 'success' ? <CheckCircle className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
                 {feedback.text}
               </div>
             )}
 
-            <button type="submit" disabled={sending || !name || !email || !message}
-              className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 disabled:opacity-50">
+            <Button type="submit" disabled={sending || !name || !email || !message} className="gap-2">
               <Send className="h-4 w-4" />
               {sending ? 'Enviando...' : 'Enviar mensagem'}
-            </button>
+            </Button>
           </form>
         </div>
       </main>

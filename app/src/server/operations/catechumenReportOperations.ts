@@ -1,8 +1,14 @@
 /**
  * Individual catechumen attendance report — percentage, missed classes, risk assessment.
  */
+import { HttpError } from 'wasp/server';
+import { assertCanAccessCatechumenProfile } from '../auth/helpers';
+import { assertTwoFactorSessionVerified } from './twoFactorOperations';
+
 export const getCatechumenAttendanceReport = async (args: { catechumenId: string }, context: any) => {
-  if (!context.user) return null;
+  if (!context.user) throw new HttpError(401);
+  await assertTwoFactorSessionVerified(context);
+  await assertCanAccessCatechumenProfile(context, args.catechumenId);
 
   const catechumenWithAttendance = await context.entities.CatechumenProfile.findUnique({
     where: { id: args.catechumenId },
@@ -46,10 +52,8 @@ export const getCatechumenAttendanceReport = async (args: { catechumenId: string
   const total = totalPresent + totalAbsent + totalLate + totalJustified;
   const attendanceRate = total > 0 ? Math.round(((totalPresent + totalLate) / total) * 100) : 0;
 
-  // Sort by date descending
   allAttendance.sort((a, b) => new Date(b.meetingDate).getTime() - new Date(a.meetingDate).getTime());
 
-  // Consecutive absences check
   let consecutiveAbsences = 0;
   let maxConsecutive = 0;
   for (const record of allAttendance) {
@@ -71,6 +75,6 @@ export const getCatechumenAttendanceReport = async (args: { catechumenId: string
     attendanceRate,
     maxConsecutiveAbsences: maxConsecutive,
     riskLevel: attendanceRate < 50 ? 'ALTO' : attendanceRate < 75 ? 'MÉDIO' : 'BAIXO',
-    records: allAttendance.slice(0, 50), // last 50 records
+    records: allAttendance.slice(0, 50),
   };
 };

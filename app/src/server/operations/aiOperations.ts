@@ -117,6 +117,16 @@ export const generateMeetingWithAi = async (
     whatsappMsg = waParsed.message || '';
   } catch { /* non-critical */ }
 
+  // Resolve parishId from user's membership if not provided
+  let effectiveParishId = args.parishId || null;
+  if (!effectiveParishId && !context.user.isAdmin) {
+    const membership = await context.entities.Membership.findFirst({
+      where: { userId: context.user.id, status: 'ACTIVE' },
+      select: { parishId: true },
+    });
+    effectiveParishId = membership?.parishId || null;
+  }
+
   // Save as ContentItem with status DRAFT
   const contentItem = await context.entities.ContentItem.create({
     data: {
@@ -137,7 +147,7 @@ export const generateMeetingWithAi = async (
       isAiGenerated: true,
       aiPrompt: JSON.stringify({ userPrompt: userMessage, whatsappMessage: whatsappMsg }),
       createdById: context.user.id,
-      parishId: args.parishId || null,
+      parishId: effectiveParishId,
     },
   });
 

@@ -31,13 +31,16 @@ interface UseUserContextReturn {
   communityId: string | null;
   communityName: string | null;
   isLoading: boolean;
+  isFetching: boolean;
   error: Error | null;
 }
 
 const ROLE_PRIORITY = [
   'SUPER_ADMIN', 'DIOCESE_ADMIN',
   'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR',
+  'PERSONAL_OWNER',
   'LEAD_CATECHIST', 'ASSISTANT_CATECHIST',
+  'CONTENT_REVIEWER', 'PASTORAL_VIEWER',
   'GUARDIAN', 'CATECHUMEN',
 ];
 
@@ -54,7 +57,7 @@ function getActiveWorkspaceId(): string | null {
 }
 
 export function useUserContext(): UseUserContextReturn {
-  const { data, isLoading, error } = useQuery(getCurrentUserContext);
+  const { data, isLoading, isFetching, error } = useQuery(getCurrentUserContext);
 
   const ctx: UserContextResult = data ?? {
     userId: '',
@@ -81,8 +84,8 @@ export function useUserContext(): UseUserContextReturn {
     effectiveMembership = {
       id: 'virtual-personal',
       parishId: ctx.personalWorkspaceId!,
-      parishName: 'Espaço Pessoal',
-      role: 'LEAD_CATECHIST',
+      parishName: 'Espaco Pessoal',
+      role: 'PERSONAL_OWNER',
       status: 'ACTIVE',
       communityId: null,
       communityName: null,
@@ -100,12 +103,13 @@ export function useUserContext(): UseUserContextReturn {
     needsOnboarding: ctx.needsOnboarding,
     personalWorkspaceId: ctx.personalWorkspaceId,
     memberships: workspaceMemberships,
-    userRole: effectiveMembership?.role ?? (isPersonalActive ? 'LEAD_CATECHIST' : ''),
+    userRole: effectiveMembership?.role ?? (isPersonalActive ? 'PERSONAL_OWNER' : ''),
     parishId: effectiveMembership?.parishId ?? (isPersonalActive ? ctx.personalWorkspaceId! : ''),
     parishName: effectiveMembership?.parishName ?? '',
     communityId: effectiveMembership?.communityId ?? null,
     communityName: effectiveMembership?.communityName ?? null,
     isLoading,
+    isFetching,
     error: error as Error | null,
   };
 }

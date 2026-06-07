@@ -78,23 +78,23 @@ export default function WorkspaceSelectorPage() {
           {personal ? (
             <button
               onClick={() => handleEnter(personal.id)}
-              className="w-full rounded-2xl border-2 border-blue-200 bg-blue-50/50 hover:border-blue-400 hover:bg-blue-50 transition-all p-5 text-left group"
+              className="w-full rounded-2xl border-2 border-primary/30 bg-primary/5 hover:border-primary/50 hover:bg-primary/10 transition-all p-5 text-left group"
           >
             <div className="flex items-start gap-4">
-              <div className="rounded-xl bg-blue-100 p-3 group-hover:bg-blue-200 transition-colors">
-                <User className="h-6 w-6 text-blue-600" />
+              <div className="rounded-xl bg-primary/10 p-3 group-hover:bg-primary/20 transition-colors">
+                <User className="h-6 w-6 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
                 <h2 className="font-bold text-lg">{personal.name}</h2>
                 <p className="text-sm text-muted-foreground">{personal.subtitle}</p>
                 <div className="flex items-center gap-2 mt-2">
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium">
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
                     {PLAN_NAMES[personal.plan] || personal.plan}
                   </span>
                   <span className="text-xs text-muted-foreground">· Espaço individual</span>
                 </div>
               </div>
-              <ArrowRight className="h-5 w-5 text-blue-400 group-hover:translate-x-1 transition-transform mt-2" />
+              <ArrowRight className="h-5 w-5 text-primary/60 group-hover:translate-x-1 transition-transform mt-2" />
             </div>
           </button>
           ) : (
@@ -114,10 +114,10 @@ export default function WorkspaceSelectorPage() {
             {pendingInvitations.map((ws: Workspace) => (
               <div
                 key={ws.id}
-                className="rounded-2xl border-2 border-amber-200 bg-amber-50/50 p-5 flex items-center gap-4"
+                className="rounded-2xl border-2 border-warning/30 bg-warning/5 p-5 flex items-center gap-4"
               >
-                <div className="rounded-xl bg-amber-100 p-3">
-                  <Church className="h-6 w-6 text-amber-600" />
+                <div className="rounded-xl bg-warning/10 p-3">
+                  <Church className="h-6 w-6 text-warning" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h2 className="font-bold text-lg">{ws.name}</h2>
@@ -151,21 +151,21 @@ export default function WorkspaceSelectorPage() {
               >
                 <div className="flex items-start gap-4">
                   <div className={`rounded-xl p-3 group-hover:bg-opacity-80 transition-colors ${
-                    ws.type === 'DIOCESE' ? 'bg-amber-100' : ws.type === 'COMMUNITY' ? 'bg-emerald-100' : 'bg-purple-100'
+                    ws.type === 'DIOCESE' ? 'bg-secondary/10' : ws.type === 'COMMUNITY' ? 'bg-success/10' : 'bg-accent/10'
                   }`}>
                     {ws.type === 'DIOCESE' ? (
-                      <Building2 className="h-6 w-6 text-amber-600" />
+                      <Building2 className="h-6 w-6 text-secondary" />
                     ) : ws.type === 'COMMUNITY' ? (
-                      <Building2 className="h-6 w-6 text-emerald-600" />
+                      <Building2 className="h-6 w-6 text-success" />
                     ) : (
-                      <Church className="h-6 w-6 text-purple-600" />
+                      <Church className="h-6 w-6 text-accent" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h2 className="font-bold text-lg">{ws.name}</h2>
                     <div className="flex items-center gap-2 mt-1">
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                        ws.type === 'DIOCESE' ? 'bg-amber-100 text-amber-700' : ws.type === 'COMMUNITY' ? 'bg-emerald-100 text-emerald-700' : 'bg-purple-100 text-purple-700'
+                        ws.type === 'DIOCESE' ? 'bg-secondary/10 text-secondary' : ws.type === 'COMMUNITY' ? 'bg-success/10 text-success' : 'bg-accent/10 text-accent'
                       }`}>
                         {PLAN_NAMES[ws.plan] || ws.plan}
                       </span>
@@ -176,6 +176,29 @@ export default function WorkspaceSelectorPage() {
                 </div>
               </button>
             ))}
+          </div>
+        )}
+
+        {/* Empty state: no workspaces at all */}
+        {!personal && pendingInvitations.length === 0 && parishWorkspaces.length === 0 && (
+          <div className="rounded-2xl border-2 border-dashed border-warning/50 bg-warning/5 p-6 text-center space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Nenhum workspace encontrado. Complete o onboarding ou crie uma paroquia.
+            </p>
+            <div className="flex gap-2 justify-center">
+              <button
+                onClick={() => navigate('/app/onboarding')}
+                className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground h-9 px-4 text-sm font-medium"
+              >
+                Ir para Onboarding
+              </button>
+              <button
+                onClick={() => navigate('/app/parishes?new=true')}
+                className="inline-flex items-center justify-center rounded-md border border-input bg-background h-9 px-4 text-sm font-medium"
+              >
+                Criar Paroquia
+              </button>
+            </div>
           </div>
         )}
 

@@ -36,7 +36,53 @@ export const completeCoordinatorOnboarding = async (
   });
 
   if (existing) {
-    return { parishId: existing.id, yearId: '', existingParishId: existing.id };
+    // Found existing parish — create/ensure membership instead of leaving user without access
+    const existingMembership = await context.entities.Membership.findFirst({
+      where: { userId: context.user.id, parishId: existing.id },
+    });
+    if (!existingMembership) {
+      await context.entities.Membership.create({
+        data: {
+          userId: context.user.id,
+          parishId: existing.id,
+          role: 'PARISH_COORDINATOR',
+          status: 'ACTIVE',
+        },
+      });
+    } else if (existingMembership.status !== 'ACTIVE') {
+      await context.entities.Membership.update({
+        where: { id: existingMembership.id },
+        data: { status: 'ACTIVE' },
+      });
+    }
+    // Create catechetical year for the existing parish (same as happy path)
+    const year = await context.entities.CatecheticalYear.create({
+      data: {
+        name: args.yearName,
+        startDate: new Date(args.yearStart),
+        endDate: new Date(args.yearEnd),
+        parishId: existing.id,
+      },
+    });
+
+    // Optional class
+    let classId: string | undefined;
+    if (!args.skipClass && args.className?.trim()) {
+      const cls = await context.entities.CatechesisClass.create({
+        data: {
+          name: args.className.trim(),
+          parishId: existing.id,
+          status: 'ACTIVE',
+          dayOfWeek: '6',
+          startTime: '09:00',
+          endTime: '10:30',
+          location: args.parishName,
+        },
+      });
+      classId = cls.id;
+    }
+
+    return { parishId: existing.id, yearId: year.id, classId, existingParishId: existing.id };
   }
 
   // 1. Create parish

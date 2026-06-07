@@ -330,3 +330,9 @@
 .apexcharts-xaxistooltip-bottom:before {
   @apply dark:border-b-muted!;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .parallax-layer {
+    transform: none !important;
+  }
+}

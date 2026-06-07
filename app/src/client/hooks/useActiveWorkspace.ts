@@ -11,8 +11,9 @@ interface Workspace {
   type: 'PERSONAL' | 'PARISH' | 'DIOCESE' | 'COMMUNITY';
   role: string;
   plan: string;
+  billingStatus?: string | null;
   isPersonal: boolean;
-  billing?: any; // Parish billing info (for legacy compatibility)
+  billing?: { plan: string; status: string | null };
 }
 
 interface UseActiveWorkspaceReturn {

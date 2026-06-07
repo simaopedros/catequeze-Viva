@@ -139,10 +139,18 @@ export function Sidebar() {
         {mainSections.map((section) => {
           let filtered = filterByRole(section.items, userRole, isAdmin);
           
-          // Workspace-specific filtering: hide parish items in personal workspace
+          // Workspace-specific filtering: hide institutional-only items in personal workspace
           if (isPersonal) {
-            const parishOnlyItems = ['parishes', 'communities', 'reports', 'billing', 'admin', 'documents', 'catechetical_years', 'consents', 'sacraments'];
-            filtered = filtered.filter(item => !parishOnlyItems.includes(item.iconKey));
+            // Items only available in institutional parishes
+            const institutionalOnlyItems = [
+              'parishes',        // Multi-parish management
+              'communities',     // Community subdivisions
+              'reports',         // Parish-wide reports
+              'admin',           // Platform admin
+              'catechetical_years', // Institutional years
+              'consents',        // LGPD institutional
+            ];
+            filtered = filtered.filter(item => !institutionalOnlyItems.includes(item.iconKey));
           }
           
           if (filtered.length === 0) return null;
@@ -198,7 +206,7 @@ export function Sidebar() {
 
       <div className="border-t p-2 space-y-1">
         {filterByRole(bottomSection?.items || [], userRole, isAdmin)
-          .filter(item => !isPersonal || !['billing', 'admin', 'catechetical_years'].includes(item.iconKey))
+          .filter(item => !isPersonal || !['admin', 'catechetical_years'].includes(item.iconKey))
           .map((item) => (
           <NavItemLink
             key={item.to}

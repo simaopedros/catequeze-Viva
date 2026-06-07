@@ -136,7 +136,7 @@ export default function PublicUploadDocsPage() {
           <h2 className="font-semibold text-sm">Enviar novo documento</h2>
 
           {sent && (
-            <div className="rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 p-3 text-sm text-green-700 dark:text-green-300 flex items-center gap-2">
+            <div className="rounded-lg bg-success/10 border border-success/30 p-3 text-sm text-success flex items-center gap-2">
               <CheckCircle className="h-4 w-4" />
               Documento enviado com sucesso! Pode enviar outro se necessário.
             </div>

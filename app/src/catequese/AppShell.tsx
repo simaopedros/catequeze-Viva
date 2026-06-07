@@ -6,6 +6,7 @@ import { BottomNav } from './BottomNav';
 import { AIHelperWidget } from './components/AIHelperWidget';
 import { Breadcrumbs } from './components/Breadcrumbs';
 import { GuidedTour, useGuidedTour } from './components/GuidedTour';
+import { TwoFactorGate } from './components/TwoFactorGate';
 import { useUserContext } from '../client/hooks/useUserContext';
 
 interface AppShellProps { children: ReactNode; }
@@ -14,15 +15,15 @@ export function AppShell({ children }: AppShellProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { needsOnboarding, isLoading } = useUserContext();
+  const { needsOnboarding, isLoading, isFetching } = useUserContext();
   const { showTour, completeTour } = useGuidedTour();
 
-  // Redirecionar para onboarding se necessário
+  // Redirecionar para onboarding se necessário (aguarda dados frescos para evitar loop)
   useEffect(() => {
-    if (!isLoading && needsOnboarding && !location.pathname.includes('/onboarding')) {
+    if (!isLoading && !isFetching && needsOnboarding && !location.pathname.includes('/onboarding') && !location.pathname.includes('/select-workspace')) {
       navigate('/app/onboarding');
     }
-  }, [isLoading, needsOnboarding, location.pathname, navigate]);
+  }, [isLoading, isFetching, needsOnboarding, location.pathname, navigate]);
 
   // Fechar menu mobile ao navegar
   useEffect(() => {
@@ -30,6 +31,7 @@ export function AppShell({ children }: AppShellProps) {
   }, [location.pathname]);
 
   return (
+    <TwoFactorGate>
     <div className="flex h-screen overflow-hidden bg-background">
       {/* Desktop sidebar */}
       <div className="hidden lg:block"><Sidebar /></div>
@@ -56,5 +58,6 @@ export function AppShell({ children }: AppShellProps) {
       <AIHelperWidget />
       {showTour && <GuidedTour onComplete={completeTour} />}
     </div>
+    </TwoFactorGate>
   );
 }

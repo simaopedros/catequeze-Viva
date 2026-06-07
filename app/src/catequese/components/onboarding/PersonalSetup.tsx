@@ -20,8 +20,8 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
 
   return (
     <div className="flex flex-col items-center text-center space-y-5 py-4 animate-in fade-in duration-500">
-      <div className="rounded-full bg-blue-100 p-4">
-        <User className="h-10 w-10 text-blue-600" />
+      <div className="rounded-full bg-primary/10 p-4">
+        <User className="h-10 w-10 text-primary" />
       </div>
 
       <div className="space-y-1 max-w-md">
@@ -32,11 +32,11 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
       </div>
 
       <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">
-        <div className="rounded-xl bg-blue-50/50 border border-blue-100 p-4 text-left space-y-2">
-          <p className="text-sm font-medium text-blue-800 flex items-center gap-2">
+        <div className="rounded-xl bg-primary/5 border border-primary/20 p-4 text-left space-y-2">
+          <p className="text-sm font-medium text-primary flex items-center gap-2">
             <Sparkles className="h-4 w-4" /> O que está incluído:
           </p>
-          <ul className="text-xs text-blue-700 space-y-1">
+          <ul className="text-xs text-muted-foreground space-y-1">
             <li>• Espaço pessoal isolado</li>
             <li>• {user?.subscriptionPlan === 'catechist_free' ? '2 turmas e 30 catequizandos' : 'Turmas ilimitadas'}</li>
             <li>• Gerador de encontros com IA</li>

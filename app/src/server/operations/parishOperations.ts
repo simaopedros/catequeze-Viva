@@ -86,6 +86,25 @@ export const createParish = async (
   // Check for duplicate by name + city + state
   const existing = await findParishDuplicate(args, context);
   if (existing) {
+    // Duplicate found — ensure user has access via membership before returning
+    const existingMembership = await context.entities.Membership.findFirst({
+      where: { userId: context.user.id, parishId: existing.id },
+    });
+    if (!existingMembership) {
+      await context.entities.Membership.create({
+        data: {
+          userId: context.user.id,
+          parishId: existing.id,
+          role: args.role || 'PARISH_COORDINATOR',
+          status: 'ACTIVE',
+        },
+      });
+    } else if (existingMembership.status !== 'ACTIVE') {
+      await context.entities.Membership.update({
+        where: { id: existingMembership.id },
+        data: { status: 'ACTIVE' },
+      });
+    }
     return { id: existing.id, existingParishId: existing.id };
   }
 
@@ -141,8 +160,15 @@ export const updateParish = async (
       where: { userId: context.user.id, parishId: args.id, status: 'ACTIVE' },
     });
     if (!membership) {
-      const isDioceseAdmin = await requireDioceseAccess(context, args.id);
-      if (!isDioceseAdmin) throw new HttpError(403);
+      // Allow personal workspace owner (no Membership record)
+      const isPersonalOwner = await context.entities.Parish.findFirst({
+        where: { id: args.id, ownerId: context.user.id, type: 'PERSONAL' },
+        select: { id: true },
+      });
+      if (!isPersonalOwner) {
+        const isDioceseAdmin = await requireDioceseAccess(context, args.id);
+        if (!isDioceseAdmin) throw new HttpError(403);
+      }
     }
   }
 
@@ -168,12 +194,17 @@ export const getParishById = async (args: { id: string }, context: any) => {
   if (!parish) throw new HttpError(404, 'Paróquia não encontrada.');
 
   if (!context.user.isAdmin) {
-    const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, parishId: args.id, status: 'ACTIVE' },
-    });
-    if (!membership) {
-      const isDioceseAdmin = await requireDioceseAccess(context, args.id);
-      if (!isDioceseAdmin) throw new HttpError(403, 'Você não tem acesso a esta paróquia.');
+    // Allow personal workspace owner
+    if (parish.type === 'PERSONAL' && parish.ownerId === context.user.id) {
+      // Personal owner has full access
+    } else {
+      const membership = await context.entities.Membership.findFirst({
+        where: { userId: context.user.id, parishId: args.id, status: 'ACTIVE' },
+      });
+      if (!membership) {
+        const isDioceseAdmin = await requireDioceseAccess(context, args.id);
+        if (!isDioceseAdmin) throw new HttpError(403, 'Você não tem acesso a esta paróquia.');
+      }
     }
   }
 
@@ -227,6 +258,15 @@ export const listParishes = async (_args: void, context: any) => {
     });
 
     let parishIds = memberships.map((m: any) => m.parishId);
+
+    // Include personal workspace
+    const personalWorkspace = await context.entities.Parish.findFirst({
+      where: { ownerId: context.user.id, type: 'PERSONAL' },
+      select: { id: true },
+    });
+    if (personalWorkspace && !parishIds.includes(personalWorkspace.id)) {
+      parishIds.push(personalWorkspace.id);
+    }
 
     // DIOCESE_ADMIN: incluir todas as paróquias da diocese
     if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
@@ -287,7 +327,28 @@ export const getOrCreateParishByOsmId = async (
       where: { osmId: args.osmId },
       select: { id: true, name: true, city: true, state: true, osmId: true },
     });
-    if (byOsm) return byOsm;
+    if (byOsm) {
+      // Ensure membership exists
+      const existingMembership = await context.entities.Membership.findFirst({
+        where: { userId: context.user.id, parishId: byOsm.id },
+      });
+      if (!existingMembership) {
+        await context.entities.Membership.create({
+          data: {
+            userId: context.user.id,
+            parishId: byOsm.id,
+            role: 'PARISH_COORDINATOR',
+            status: 'ACTIVE',
+          },
+        });
+      } else if (existingMembership.status !== 'ACTIVE') {
+        await context.entities.Membership.update({
+          where: { id: existingMembership.id },
+          data: { status: 'ACTIVE' },
+        });
+      }
+      return byOsm;
+    }
   }
 
   // 2. Check by name + city + state (case-insensitive)
@@ -311,6 +372,25 @@ export const getOrCreateParishByOsmId = async (
   });
 
   if (existing) {
+    // Ensure the user has active membership
+    const existingMembership = await context.entities.Membership.findFirst({
+      where: { userId: context.user.id, parishId: existing.id },
+    });
+    if (!existingMembership) {
+      await context.entities.Membership.create({
+        data: {
+          userId: context.user.id,
+          parishId: existing.id,
+          role: 'PARISH_COORDINATOR',
+          status: 'ACTIVE',
+        },
+      });
+    } else if (existingMembership.status !== 'ACTIVE') {
+      await context.entities.Membership.update({
+        where: { id: existingMembership.id },
+        data: { status: 'ACTIVE' },
+      });
+    }
     // Update with osmId if missing, but don't overwrite
     if (args.osmId && !existing.osmId) {
       await context.entities.Parish.update({
@@ -345,6 +425,16 @@ export const getOrCreateParishByOsmId = async (
       plan: 'CATECHIST_FREE',
       status: 'TRIAL',
       trialEndsAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days trial
+    },
+  });
+
+  // Create membership so the user has active access
+  await context.entities.Membership.create({
+    data: {
+      userId: context.user.id,
+      parishId: parish.id,
+      role: 'PARISH_COORDINATOR',
+      status: 'ACTIVE',
     },
   });
 

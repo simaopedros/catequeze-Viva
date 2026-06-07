@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { Church, Users, BookOpen, Building2, Plus, MapPin, BadgeCheck, ArrowRight, Loader2 } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
+import { Input } from '../../client/components/ui/input';
 import { Badge } from '../../client/components/ui/badge';
 import { AppShell } from '../AppShell';
+import { PageHeader } from '../../client/components/PageHeader';
 import { useQuery, listParishes, createParish } from 'wasp/client/operations';
 import { useAuth } from 'wasp/client/auth';
 import { handlePlanLimitError } from '../lib/planLimitToast';
@@ -27,7 +29,8 @@ export default function ParishesPage() {
   const navigate = useNavigate();
   const { data: parishes = [], isLoading: loading } = useQuery(listParishes);
   const { data: user } = useAuth();
-  const [showCreate, setShowCreate] = useState(false);
+  const [searchParams] = useSearchParams();
+  const [showCreate, setShowCreate] = useState(() => searchParams.get('new') === 'true');
   const [newName, setNewName] = useState('');
   const [newCity, setNewCity] = useState('');
   const [newState, setNewState] = useState('');
@@ -74,15 +77,14 @@ export default function ParishesPage() {
   return (
     <AppShell>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Paróquias</h1>
-            <p className="text-muted-foreground text-sm">{parishes.length} paróquia{parishes.length !== 1 ? 's' : ''}</p>
-          </div>
+        <PageHeader
+          title="Paróquias"
+          subtitle={`${parishes.length} paróquia${parishes.length !== 1 ? 's' : ''}`}
+        >
           <Button size="sm" onClick={() => setShowCreate(!showCreate)}>
             <Plus className="mr-1 h-4 w-4" />Nova Paróquia
           </Button>
-        </div>
+        </PageHeader>
 
         {error && (
           <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
@@ -92,7 +94,7 @@ export default function ParishesPage() {
           <div className="rounded-xl border bg-card p-4 space-y-3 animate-in fade-in slide-in-from-top-2">
             <h3 className="font-medium text-sm">Nova Paróquia</h3>
             <div className="flex flex-wrap gap-3 items-end">
-              <input value={newName} onChange={e => setNewName(e.target.value)} className="flex-1 min-w-[200px] h-9 rounded-md border border-input bg-background px-3 text-sm" placeholder="Nome da paróquia *" autoFocus />
+              <Input value={newName} onChange={e => setNewName(e.target.value)} className="flex-1 min-w-[200px] h-9" placeholder="Nome da paróquia *" autoFocus />
               <div className="min-w-[280px]">
                 <CityStateSelect city={newCity} state={newState} onCityChange={setNewCity} onStateChange={setNewState} />
               </div>

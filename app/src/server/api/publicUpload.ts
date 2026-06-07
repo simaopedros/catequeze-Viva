@@ -1,12 +1,14 @@
 import * as fs from 'fs';
-import * as path from 'path';
 import type { Request, Response } from 'express';
 import type { MiddlewareConfigFn } from 'wasp/server';
 import express from 'express';
 import { uploadRateLimiter } from '../middleware/rateLimiter';
 import { logger } from '../logger';
-
-const UPLOADS_DIR = path.resolve(process.cwd(), 'uploads');
+import {
+  UPLOADS_DIR,
+  extensionForMime,
+  generateUploadFileName,
+} from '../uploads/helpers';
 
 const VALID_TYPES = ['BAPTISM_CERTIFICATE', 'BIRTH_CERTIFICATE', 'CONSENT_FORM', 'MARRIAGE_CERTIFICATE', 'PASTORAL_LETTER', 'OTHER'];
 
@@ -88,9 +90,19 @@ export async function publicUploadDocument(req: Request, res: Response, context:
       fs.mkdirSync(UPLOADS_DIR, { recursive: true });
     }
 
-    const ext = mimeType?.split('/')[1] || 'bin';
-    const fileName = `${Date.now()}_${crypto.randomUUID().slice(0, 8)}.${ext}`;
-    const filePath = path.join(UPLOADS_DIR, fileName);
+    const ext = extensionForMime(mimeType, ALLOWED_EXTENSIONS);
+    if (!ext) {
+      return res.status(400).json({ error: 'Extensão de ficheiro não permitida.' });
+    }
+
+    let fileName: string;
+    try {
+      fileName = generateUploadFileName(mimeType, ALLOWED_EXTENSIONS);
+    } catch {
+      return res.status(400).json({ error: 'Formato de ficheiro não permitido.' });
+    }
+
+    const filePath = `${UPLOADS_DIR}/${fileName}`;
 
     fs.writeFileSync(filePath, buffer);
 

@@ -76,7 +76,8 @@
       "Bash(from *)",
       "Bash(union *)",
       "Bash(*)",
-      "Skill(getting-started)"
+      "Skill(getting-started)",
+      "Bash(cp *)"
     ]
   },
   "$version": 4

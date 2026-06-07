@@ -11,28 +11,43 @@ export const searchUsers = async (args: { term: string }, context: any) => {
   requireAuth(context.user);
 
   // Only coordinators and above can search users
+  let scopedParishIds: string[] = [];
   if (!context.user.isAdmin) {
     const membership = await context.entities.Membership.findFirst({
       where: { userId: context.user.id, status: 'ACTIVE' },
-      select: { role: true },
+      select: { role: true, parishId: true },
     });
-    const allowedRoles = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'];
+    const allowedRoles = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'];
     if (!membership || !allowedRoles.includes(membership.role)) {
       throw new HttpError(403, 'Apenas coordenadores podem pesquisar usuários.');
     }
+    // Scope to parish members
+    const memberships = await context.entities.Membership.findMany({
+      where: { parishId: membership.parishId, status: 'ACTIVE' },
+      select: { userId: true },
+    });
+    scopedParishIds = memberships.map((m: any) => m.userId);
+    if (scopedParishIds.length === 0) return [];
   }
 
   const term = (args.term || '').trim();
   if (!term || term.length < 2) return [];
 
+  const where: any = {
+    OR: [
+      { firstName: { contains: term, mode: 'insensitive' } },
+      { lastName: { contains: term, mode: 'insensitive' } },
+      { email: { contains: term, mode: 'insensitive' } },
+    ],
+  };
+
+  // Scope to parish members for non-admins
+  if (scopedParishIds.length > 0) {
+    where.id = { in: scopedParishIds };
+  }
+
   return context.entities.User.findMany({
-    where: {
-      OR: [
-        { firstName: { contains: term, mode: 'insensitive' } },
-        { lastName: { contains: term, mode: 'insensitive' } },
-        { email: { contains: term, mode: 'insensitive' } },
-      ],
-    },
+    where,
     select: { id: true, email: true, firstName: true, lastName: true },
     take: 15,
     orderBy: { firstName: 'asc' },

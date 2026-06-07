@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { Button } from '../../../client/components/ui/button';
 import { useQuery, getClassComparison } from 'wasp/client/operations';
 import { useActiveParish } from '../../../client/hooks/useActiveParish';
-import { Users, BookOpen, TrendingUp, Cross, AlertCircle, Gift, Calendar, Clock, ChevronRight, ArrowUpDown } from 'lucide-react';
+import { Users, BookOpen, TrendingUp, Cross, AlertCircle, Gift, Calendar, Clock, ChevronRight, ArrowUpDown, Info } from 'lucide-react';
 
 interface CoordinatorDashboardProps {
   stats: any;
@@ -20,7 +20,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
 
       {/* KPIs */}
       <div data-tour="dashboard-stats" className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {[{l:t('active_catechumens'),v:stats?.activeCatechumens??0,i:Users,c:'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-950/40'},{l:t('active_classes'),v:stats?.activeClasses??0,i:BookOpen,c:'text-green-600 bg-green-50 dark:text-green-400 dark:bg-green-950/40'},{l:t('avg_attendance'),v:`${stats?.avgAttendance??0}%`,i:TrendingUp,c:'text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/40'},{l:t('pending_sacraments'),v:stats?.pendingSacraments??0,i:Cross,c:'text-purple-600 bg-purple-50 dark:text-purple-400 dark:bg-purple-950/40'}].map(k=>(
+        {[{l:t('active_catechumens'),v:stats?.activeCatechumens??0,i:Users,c:'text-primary bg-primary/10'},{l:t('active_classes'),v:stats?.activeClasses??0,i:BookOpen,c:'text-success bg-success/10'},{l:t('avg_attendance'),v:`${stats?.avgAttendance??0}%`,i:TrendingUp,c:'text-warning bg-warning/10'},{l:t('pending_sacraments'),v:stats?.pendingSacraments??0,i:Cross,c:'text-secondary-foreground bg-secondary'}].map(k=>(
           <div key={k.l} className="rounded-xl border bg-card p-5 shadow-sm hover:shadow-md transition-shadow"><div className="flex items-center gap-4"><div className={`rounded-xl p-2.5 ${k.c}`}><k.i className="h-5 w-5"/></div><div><p className="text-xs text-muted-foreground uppercase tracking-wider">{k.l}</p><p className="text-2xl font-bold mt-0.5">{k.v}</p></div></div></div>
         ))}
       </div>
@@ -93,7 +93,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
 
       {stats?.recentAlerts?.length > 0 && (
         <div className="rounded-xl border bg-card p-4"><h3 className="font-semibold mb-2 text-sm uppercase text-muted-foreground flex items-center gap-1"><AlertCircle className="h-4 w-4"/>{t('pastoral_alerts')}</h3>
-          {stats.recentAlerts.map((a:any,i:number)=><div key={i} className="rounded-lg bg-muted/50 p-3 text-sm flex items-center gap-2"><span>ℹ️</span>{a.message}</div>)}
+          {stats.recentAlerts.map((a:any,i:number)=><div key={i} className="rounded-lg bg-muted/50 p-3 text-sm flex items-center gap-2"><Info className="h-4 w-4 text-muted-foreground shrink-0" />{a.message}</div>)}
         </div>
       )}
 
@@ -125,15 +125,15 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                     <td className="py-2 pr-3 text-center">{c.enrolled}</td>
                     <td className="py-2 pr-3 text-center">{c.totalMeetings}</td>
                     <td className="py-2 pr-3 text-center">
-                      <span className={`font-bold ${c.attendanceRate >= 75 ? 'text-green-600' : c.attendanceRate >= 50 ? 'text-amber-600' : 'text-red-600'}`}>
+                      <span className={`font-bold ${c.attendanceRate >= 75 ? 'text-success' : c.attendanceRate >= 50 ? 'text-warning' : 'text-destructive'}`}>
                         {c.attendanceRate}%
                       </span>
                     </td>
                     <td className="py-2 text-center">
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                        c.riskLevel === 'BAIXO' ? 'bg-green-100 text-green-700' :
-                        c.riskLevel === 'MÉDIO' ? 'bg-amber-100 text-amber-700' :
-                        'bg-red-100 text-red-700'
+                        c.riskLevel === 'BAIXO' ? 'bg-success/10 text-success' :
+                        c.riskLevel === 'MÉDIO' ? 'bg-warning/10 text-warning' :
+                        'bg-destructive/10 text-destructive'
                       }`}>
                         {c.riskLevel}
                       </span>

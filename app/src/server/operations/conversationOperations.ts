@@ -3,7 +3,7 @@ import { requireAuth, getUserMembership } from '../auth/helpers';
 
 // ── Role-based hierarchy constants ──────────────────────────────────────────
 
-const STAFF_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'];
+const STAFF_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'];
 const CATECHIST_ROLES = [...STAFF_ROLES, 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST'];
 const CAN_CREATE_GROUP = [...STAFF_ROLES, 'LEAD_CATECHIST'];
 const CAN_CREATE_ANNOUNCEMENT = STAFF_ROLES;
@@ -15,7 +15,18 @@ async function getUserParishIds(context: any): Promise<string[]> {
     where: { userId: context.user.id, status: 'ACTIVE' },
     select: { parishId: true },
   });
-  return memberships.map((m: any) => m.parishId);
+  const ids = memberships.map((m: any) => m.parishId);
+
+  // Include personal workspace
+  const personal = await context.entities.Parish.findFirst({
+    where: { ownerId: context.user.id, type: 'PERSONAL' },
+    select: { id: true },
+  });
+  if (personal && !ids.includes(personal.id)) {
+    ids.push(personal.id);
+  }
+
+  return ids;
 }
 
 async function getUserRoles(context: any): Promise<string[]> {
@@ -630,7 +641,14 @@ export const getOrCreateClassChat = async (
       where: { userId: context.user.id, parishId: classData.parishId, status: 'ACTIVE' },
     });
     if (!membership) {
-      throw new HttpError(403, 'Você não pertence a esta paróquia.');
+      // Allow personal workspace owner
+      const isPersonalOwner = await context.entities.Parish.findFirst({
+        where: { id: classData.parishId, ownerId: context.user.id, type: 'PERSONAL' },
+        select: { id: true },
+      });
+      if (!isPersonalOwner) {
+        throw new HttpError(403, 'Você não pertence a esta paróquia.');
+      }
     }
   }
 

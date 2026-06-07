@@ -9,10 +9,12 @@ import { AppShell } from '../AppShell';
 import { createClass } from 'wasp/client/operations';
 import { handlePlanLimitError } from '../lib/planLimitToast';
 import { toast } from '../../client/hooks/use-toast';
+import { useActiveWorkspace } from '../../client/hooks/useActiveWorkspace';
 
 export default function CreateClassPage() {
   const { t } = useTranslation('classes');
   const navigate = useNavigate();
+  const { workspaceId } = useActiveWorkspace();
 
   const [name, setName] = useState('');
   const [location, setLocation] = useState('');
@@ -28,7 +30,15 @@ export default function CreateClassPage() {
     setSaving(true);
     setError('');
     try {
-      await createClass({ name, location, dayOfWeek, startTime, endTime, maxCapacity });
+      await createClass({
+        name,
+        location,
+        dayOfWeek,
+        startTime,
+        endTime,
+        maxCapacity,
+        parishId: workspaceId,
+      });
       toast({ title: 'Turma criada com sucesso!' });
       navigate('/app/classes');
     } catch (err: any) {
@@ -44,7 +54,7 @@ export default function CreateClassPage() {
       <div className="max-w-lg mx-auto space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
-            <Link to="/app/classes"><ArrowLeft className="h-5 w-5" /></Link>    
+            <Link to="/app/classes"><ArrowLeft className="h-5 w-5" /></Link>
           </Button>
           <div><h1 className="text-2xl font-bold tracking-tight">{t('create')}</h1></div>
         </div>
@@ -82,7 +92,7 @@ export default function CreateClassPage() {
             <Input id="capacity" type="number" min={1} max={100} value={maxCapacity} onChange={e => setMaxCapacity(Number(e.target.value))} />
           </div>
           <div className="flex gap-3 pt-4">
-            <Button type="button" onClick={handleSubmit} disabled={saving}>     
+            <Button type="button" onClick={handleSubmit} disabled={saving}>
               <Save className="mr-2 h-4 w-4" />
               {saving ? t('loading', { ns: 'common' }) : t('create')}
             </Button>

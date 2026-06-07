@@ -53,7 +53,7 @@ export const generateCheckoutSession: GenerateCheckoutSession<
   // Block Parish/Diocese purchase for users who don't own a parish
   if (['parish', 'diocese'].includes(paymentPlanId) && !context.user.isAdmin) {
     const ownedParish = await context.entities.Parish.findFirst({
-      where: { ownerId: context.user.id },
+      where: { ownerId: context.user.id, type: { not: "PERSONAL" } },
     });
     if (!ownedParish) {
       throw new HttpError(

@@ -22,7 +22,7 @@ export default function AccountPage({ user }: { user: User }) {
       <Card className="mb-4 lg:m-8">
         <CardHeader>
           <CardTitle className="text-foreground text-base font-semibold leading-6">
-            Account Information
+            Informações da Conta
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -31,7 +31,7 @@ export default function AccountPage({ user }: { user: User }) {
               <div className="px-6 py-4">
                 <div className="grid grid-cols-1 sm:grid-cols-3 sm:gap-4">
                   <div className="text-muted-foreground text-sm font-medium">
-                    Email address
+                    E-mail
                   </div>
                   <div className="text-foreground mt-1 text-sm sm:col-span-2 sm:mt-0">
                     {user.email}
@@ -45,7 +45,7 @@ export default function AccountPage({ user }: { user: User }) {
                 <div className="px-6 py-4">
                   <div className="grid grid-cols-1 sm:grid-cols-3 sm:gap-4">
                     <div className="text-muted-foreground text-sm font-medium">
-                      Username
+                      Nome de usuário
                     </div>
                     <div className="text-foreground mt-1 text-sm sm:col-span-2 sm:mt-0">
                       {user.username}
@@ -58,7 +58,7 @@ export default function AccountPage({ user }: { user: User }) {
             <div className="px-6 py-4">
               <div className="grid grid-cols-1 sm:grid-cols-3 sm:gap-4">
                 <div className="text-muted-foreground text-sm font-medium">
-                  Your Plan
+                  Seu Plano
                 </div>
                 <UserCurrentSubscriptionPlan
                   subscriptionPlan={user.subscriptionPlan}
@@ -71,24 +71,13 @@ export default function AccountPage({ user }: { user: User }) {
             <div className="px-6 py-4">
               <div className="grid grid-cols-1 sm:grid-cols-3 sm:gap-4">
                 <div className="text-muted-foreground text-sm font-medium">
-                  Credits
+                  Créditos
                 </div>
                 <div className="text-foreground mt-1 text-sm sm:col-span-1 sm:mt-0">
-                  {user.credits} credits
+                  {user.credits} créditos
                 </div>
                 <div className="ml-auto mt-4 sm:mt-0">
                   <BuyMoreButton subscriptionStatus={user.subscriptionStatus} />
-                </div>
-              </div>
-            </div>
-            <Separator />
-            <div className="px-6 py-4">
-              <div className="grid grid-cols-1 sm:grid-cols-3 sm:gap-4">
-                <div className="text-muted-foreground text-sm font-medium">
-                  About
-                </div>
-                <div className="text-foreground mt-1 text-sm sm:col-span-2 sm:mt-0">
-                  I'm a cool customer.
                 </div>
               </div>
             </div>
@@ -104,7 +93,7 @@ function UserCurrentSubscriptionPlan({
   subscriptionStatus,
   datePaid,
 }: Pick<User, "subscriptionPlan" | "subscriptionStatus" | "datePaid">) {
-  let subscriptionPlanMessage = "Free Plan";
+  let subscriptionPlanMessage = "Plano Gratuito";
   if (
     subscriptionPlan !== null &&
     subscriptionStatus !== null &&
@@ -137,11 +126,11 @@ function formatSubscriptionStatusMessage(
   const paymentPlanName = prettyPaymentPlanName(subscriptionPlan);
   const statusToMessage: Record<SubscriptionStatus, string> = {
     active: `${paymentPlanName}`,
-    past_due: `Payment for your ${paymentPlanName} plan is past due! Please update your subscription payment information.`,
-    cancel_at_period_end: `Your ${paymentPlanName} plan subscription has been canceled, but remains active until the end of the current billing period: ${prettyPrintEndOfBillingPeriod(
+    past_due: `O pagamento do seu plano ${paymentPlanName} está em atraso. Atualize as informações de pagamento da sua assinatura.`,
+    cancel_at_period_end: `Sua assinatura do plano ${paymentPlanName} foi cancelada, mas permanece ativa até o fim do período de cobrança atual: ${prettyPrintEndOfBillingPeriod(
       datePaid,
     )}`,
-    deleted: `Your previous subscription has been canceled and is no longer active.`,
+    deleted: `Sua assinatura anterior foi cancelada e não está mais ativa.`,
   };
 
   if (!statusToMessage[subscriptionStatus]) {
@@ -154,7 +143,7 @@ function formatSubscriptionStatusMessage(
 function prettyPrintEndOfBillingPeriod(date: Date) {
   const oneMonthFromNow = new Date(date);
   oneMonthFromNow.setMonth(oneMonthFromNow.getMonth() + 1);
-  return oneMonthFromNow.toLocaleDateString();
+  return oneMonthFromNow.toLocaleDateString("pt-BR");
 }
 
 function CustomerPortalButton() {
@@ -168,7 +157,7 @@ function CustomerPortalButton() {
   return (
     <a href={customerPortalUrl} target="_blank" rel="noopener noreferrer">
       <Button disabled={isCustomerPortalUrlLoading} variant="link">
-        Manage Payment Details
+        Gerenciar Pagamento
       </Button>
     </a>
   );
@@ -189,7 +178,7 @@ function BuyMoreButton({
       to={routes.PricingPageRoute.to}
       className="text-primary hover:text-primary/80 text-sm font-medium transition-colors duration-200"
     >
-      <Button variant="link">Buy More Credits</Button>
+      <Button variant="link">Comprar Mais Créditos</Button>
     </WaspRouterLink>
   );
 }

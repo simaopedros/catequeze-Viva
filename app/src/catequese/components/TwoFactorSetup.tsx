@@ -101,7 +101,7 @@ export default function TwoFactorSetup() {
       </h3>
 
       {status.required && !status.enabled && (
-        <div className="rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-3 text-sm text-amber-800 dark:text-amber-200">
+        <div className="rounded-lg bg-warning/10 border border-warning/30 p-3 text-sm text-warning">
           Como administrador, a autenticação de dois fatores é <strong>obrigatória</strong> para sua conta.
         </div>
       )}
@@ -110,7 +110,7 @@ export default function TwoFactorSetup() {
         <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
       )}
       {success && (
-        <div className="rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 p-3 text-sm text-green-700 dark:text-green-300">{success}</div>
+        <div className="rounded-lg bg-success/10 border border-success/30 p-3 text-sm text-success">{success}</div>
       )}
 
       {/* Not enabled — show enable flow */}

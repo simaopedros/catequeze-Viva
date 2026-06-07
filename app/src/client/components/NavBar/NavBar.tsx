@@ -86,7 +86,7 @@ export default function NavBar({
                     },
                   )}
                 >
-                  Your SaaS
+                  Catequese Viva
                 </span>
               </WaspRouterLink>
 
@@ -165,7 +165,7 @@ function NavBarMobileMenu({
               "text-muted-foreground hover:text-muted hover:bg-accent inline-flex items-center justify-center rounded-md transition-colors",
             )}
           >
-            <span className="sr-only">Open main menu</span>
+            <span className="sr-only">Abrir menu principal</span>
             <Menu
               className={cn("transition-all duration-300", {
                 "size-8 p-1": !isScrolled,
@@ -179,7 +179,7 @@ function NavBarMobileMenu({
           <SheetHeader>
             <SheetTitle className="flex items-center">
               <WaspRouterLink to={routes.LandingPageRoute.to}>
-                <span className="sr-only">Your SaaS</span>
+                <span className="sr-only">Catequese Viva</span>
                 <NavLogo isScrolled={false} />
               </WaspRouterLink>
             </SheetTitle>
@@ -250,6 +250,6 @@ const NavLogo = ({ isScrolled }: { isScrolled: boolean }) => (
       "size-7": isScrolled,
     })}
     src={logo}
-    alt="Your SaaS App"
+    alt="Catequese Viva"
   />
 );

@@ -76,7 +76,7 @@ export default function SendAnnouncementButton({ classId, className }: Props) {
       </div>
       {error && <p className="text-xs text-destructive">{error}</p>}
       {result && (
-        <div className="rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 p-3 text-sm text-green-700 dark:text-green-300 flex items-center gap-2">
+        <div className="rounded-lg bg-success/10 border border-success/30 p-3 text-sm text-success flex items-center gap-2">
           <CheckCircle className="h-4 w-4"/>
           Enviado para {result.sent} responsáveis{result.failed > 0 ? ` (${result.failed} falhas)` : ''}.
         </div>

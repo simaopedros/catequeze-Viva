@@ -1,8 +1,9 @@
 import { HttpError } from 'wasp/server';
 import { MembershipStatus } from '@prisma/client';
 
-function isCoordinatorOrAbove(role: string): boolean {
-  return ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'].includes(role);
+function isCoordinatorOrAbove(role: string | null): boolean {
+  if (!role) return false;
+  return ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(role);
 }
 
 function isCatechistOrAbove(role: string): boolean {
@@ -33,7 +34,15 @@ async function assertUserBelongsToClass(context: any, classId: string): Promise<
     where: { userId: context.user.id, parishId: classData.parishId, status: MembershipStatus.ACTIVE },
   });
 
-  if (!membership) throw new HttpError(403, 'Você não pertence a esta paróquia.');
+  if (!membership) {
+    // Allow personal workspace owner
+    const isPersonalOwner = await context.entities.Parish.findFirst({
+      where: { id: classData.parishId, ownerId: context.user.id, type: 'PERSONAL' },
+      select: { id: true },
+    });
+    if (isPersonalOwner) return; // Personal owner has full access
+    throw new HttpError(403, 'Você não pertence a esta paróquia.');
+  }
 
   // Coordenadores: acesso a qualquer turma da paróquia
   if (isCoordinatorOrAbove(membership.role)) return;

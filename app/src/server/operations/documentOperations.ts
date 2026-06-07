@@ -2,9 +2,10 @@ import { HttpError } from 'wasp/server';
 import { validateOrThrow, uploadDocumentSchema, verifyDocumentSchema } from '../validation';
 import { requireAuth, writeAuditLog } from '../auth/helpers';
 import * as fs from 'fs';
-import * as path from 'path';
-
-const UPLOADS_DIR = path.resolve(process.cwd(), 'uploads');
+import {
+  UPLOADS_DIR,
+  generateUploadFileName,
+} from '../uploads/helpers';
 
 export const listDocuments = async (_args: void, context: any) => {
   requireAuth(context.user);
@@ -32,7 +33,7 @@ export const listDocuments = async (_args: void, context: any) => {
   const parishIds = memberships.map((m: any) => m.parishId);
 
   // Coordinator and above: all documents from parish
-  if (roles.some((r: string) => ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'].includes(r))) {
+  if (roles.some((r: string) => ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(r))) {
     const parishMembers = await context.entities.Membership.findMany({
       where: { parishId: { in: parishIds } },
       select: { userId: true },
@@ -193,9 +194,13 @@ export const uploadDocument = async (
         fs.mkdirSync(UPLOADS_DIR, { recursive: true });
       }
 
-      const ext = args.mimeType?.split('/')[1] || 'bin';
-      const fileName = `${Date.now()}_${crypto.randomUUID().slice(0, 8)}.${ext}`;
-      const filePath = path.join(UPLOADS_DIR, fileName);
+      let fileName: string;
+      try {
+        fileName = generateUploadFileName(args.mimeType || 'application/octet-stream');
+      } catch {
+        throw new HttpError(400, 'Formato de ficheiro não permitido.');
+      }
+      const filePath = `${UPLOADS_DIR}/${fileName}`;
 
       const buffer = Buffer.from(args.fileBase64, 'base64');
       fs.writeFileSync(filePath, buffer);
@@ -244,7 +249,7 @@ export const verifyDocument = async (args: { id: string }, context: any) => {
       select: { role: true, parishId: true },
     });
 
-    const allowedRoles = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'];
+    const allowedRoles = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'];
     if (!membership || !allowedRoles.includes(membership.role)) {
       throw new HttpError(403, 'Apenas coordenadores podem verificar documentos.');
     }
@@ -283,10 +288,17 @@ export const verifyDocument = async (args: { id: string }, context: any) => {
     }
   }
 
-  return context.entities.Document.update({
+  const updated = await context.entities.Document.update({
     where: { id: args.id },
     data: { verifiedAt: new Date(), verifiedById: context.user.id, status: 'VERIFIED', rejectedAt: null, rejectedReason: null },
   });
+
+  // Sync sacramental milestones that require evidence
+  if (document.catechumenProfile) {
+    await syncDocumentMilestones(context, args.id, document.catechumenProfile, 'APPROVED');
+  }
+
+  return updated;
 };
 
 export const rejectDocument = async (args: { id: string; reason?: string }, context: any) => {
@@ -294,7 +306,11 @@ export const rejectDocument = async (args: { id: string; reason?: string }, cont
 
   const document = await context.entities.Document.findUnique({
     where: { id: args.id },
-    select: { uploadedById: true },
+    select: {
+      id: true,
+      uploadedById: true,
+      catechumenProfile: { select: { id: true } },
+    },
   });
   if (!document) throw new HttpError(404, 'Documento não encontrado.');
 
@@ -304,16 +320,23 @@ export const rejectDocument = async (args: { id: string; reason?: string }, cont
       select: { role: true },
     });
 
-    const allowedRoles = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'];
+    const allowedRoles = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'];
     if (!membership || !allowedRoles.includes(membership.role)) {
       throw new HttpError(403, 'Apenas coordenadores podem rejeitar documentos.');
     }
   }
 
-  return context.entities.Document.update({
+  const updated = await context.entities.Document.update({
     where: { id: args.id },
     data: { status: 'REJECTED', rejectedAt: new Date(), rejectedReason: args.reason || null, verifiedAt: null, verifiedById: null },
   });
+
+  // Sync sacramental milestones that require evidence
+  if (document.catechumenProfile) {
+    await syncDocumentMilestones(context, args.id, document.catechumenProfile, 'REJECTED');
+  }
+
+  return updated;
 };
 
 export const deleteDocument = async (args: { id: string }, context: any) => {
@@ -333,3 +356,62 @@ export const deleteDocument = async (args: { id: string }, context: any) => {
   await writeAuditLog(context, 'DOCUMENT_DELETE', 'Document', args.id);
   return { success: true };
 };
+
+// ─── Document ↔ Sacramental Milestone Sync ────────────────────────────────────
+
+const DOCUMENT_TYPE_KEYWORDS: Record<string, string[]> = {
+  BAPTISM_CERTIFICATE: ['batismo', 'certidão', 'batismal'],
+  BIRTH_CERTIFICATE: ['nascimento', 'certidão'],
+  CONSENT_FORM: ['consentimento', 'termo', 'autorização'],
+  MARRIAGE_CERTIFICATE: ['matrimônio', 'casamento', 'certidão'],
+  PASTORAL_LETTER: ['pastoral', 'carta', 'recomendação'],
+  OTHER: ['documento'],
+};
+
+async function syncDocumentMilestones(
+  context: any,
+  documentId: string,
+  catechumenProfile: { id: string },
+  targetStatus: 'APPROVED' | 'REJECTED'
+) {
+  try {
+    // Find all evidence-required milestones in the catechumen's journeys
+    const journeys = await context.entities.SacramentalJourney.findMany({
+      where: { catechumenProfileId: catechumenProfile.id },
+      select: {
+        id: true,
+        milestones: {
+          where: { templateMilestone: { evidenceRequired: true } },
+          include: { templateMilestone: { select: { id: true, name: true } } },
+        },
+      },
+    });
+
+    for (const journey of journeys) {
+      for (const milestone of journey.milestones) {
+        const milestoneName = (milestone.templateMilestone?.name || '').toLowerCase();
+
+        // Check if any keyword from any document type matches the milestone name
+        // The milestone name should contain keywords matching the document
+        const hasMatch = Object.values(DOCUMENT_TYPE_KEYWORDS).some(keywords =>
+          keywords.some(kw => milestoneName.includes(kw))
+        );
+
+        if (hasMatch) {
+          const data: any = {
+            status: targetStatus === 'APPROVED' ? 'WAITING_APPROVAL' : 'REJECTED',
+          };
+          if (targetStatus === 'APPROVED') {
+            data.evidenceUrl = `/documents/${documentId}`;
+          }
+          await context.entities.SacramentalMilestone.update({
+            where: { id: milestone.id },
+            data,
+          });
+        }
+      }
+    }
+  } catch (_e: any) {
+    // Best-effort sync; don't fail the document operation
+  }
+}

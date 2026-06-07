@@ -5,7 +5,7 @@ const STORAGE_KEY = 'catequese-viva-active-membership';
 const EVENT_NAME = 'membership-changed';
 
 // Roles that require a paid plan (coordinator and above)
-const COORDINATOR_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'];
+const COORDINATOR_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'];
 
 interface MembershipItem {
   id: string;

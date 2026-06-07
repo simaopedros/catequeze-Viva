@@ -30,10 +30,10 @@ export function WelcomeStep({ onPersonal, onManager }: WelcomeStepProps) {
         {/* Personal Account */}
         <button
           onClick={onPersonal}
-          className="flex items-start gap-4 rounded-2xl border-2 border-blue-200 bg-blue-50/50 hover:border-blue-400 hover:bg-blue-50 p-5 text-left transition-all group"
+          className="flex items-start gap-4 rounded-2xl border-2 border-primary/30 bg-primary/5 hover:border-primary/50 hover:bg-primary/10 p-5 text-left transition-all group"
         >
-          <div className="rounded-xl bg-blue-100 p-2.5 group-hover:bg-blue-200 transition-colors shrink-0">
-            <User className="h-7 w-7 text-blue-600" />
+          <div className="rounded-xl bg-primary/10 p-2.5 group-hover:bg-primary/20 transition-colors shrink-0">
+            <User className="h-7 w-7 text-primary" />
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="font-bold text-base">Conta Pessoal</h3>
@@ -41,21 +41,21 @@ export function WelcomeStep({ onPersonal, onManager }: WelcomeStepProps) {
             <ul className="mt-2 space-y-0.5">
               {['Espaço pessoal isolado', 'Suas turmas e catequizandos', 'Gerador de encontros com IA'].map(f => (
                 <li key={f} className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                  <Check className="h-3 w-3 text-blue-500 shrink-0" />{f}
+                  <Check className="h-3 w-3 text-primary shrink-0" />{f}
                 </li>
               ))}
             </ul>
           </div>
-          <ArrowRight className="h-5 w-5 text-blue-400 group-hover:translate-x-1 transition-transform shrink-0 mt-2" />
+          <ArrowRight className="h-5 w-5 text-primary/60 group-hover:translate-x-1 transition-transform shrink-0 mt-2" />
         </button>
 
         {/* Manager Account */}
         <button
           onClick={onManager}
-          className="flex items-start gap-4 rounded-2xl border-2 border-purple-200 bg-purple-50/50 hover:border-purple-400 hover:bg-purple-50 p-5 text-left transition-all group"
+          className="flex items-start gap-4 rounded-2xl border-2 border-secondary/30 bg-secondary/5 hover:border-secondary/50 hover:bg-secondary/10 p-5 text-left transition-all group"
         >
-          <div className="rounded-xl bg-purple-100 p-2.5 group-hover:bg-purple-200 transition-colors shrink-0">
-            <Church className="h-7 w-7 text-purple-600" />
+          <div className="rounded-xl bg-secondary/10 p-2.5 group-hover:bg-secondary/20 transition-colors shrink-0">
+            <Church className="h-7 w-7 text-secondary" />
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="font-bold text-base">Conta de Gestão</h3>
@@ -63,12 +63,12 @@ export function WelcomeStep({ onPersonal, onManager }: WelcomeStepProps) {
             <ul className="mt-2 space-y-0.5">
               {['Multi-catequista', 'Comunicação integrada', 'Gestão completa da catequese'].map(f => (
                 <li key={f} className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                  <Check className="h-3 w-3 text-purple-500 shrink-0" />{f}
+                  <Check className="h-3 w-3 text-secondary shrink-0" />{f}
                 </li>
               ))}
             </ul>
           </div>
-          <ArrowRight className="h-5 w-5 text-purple-400 group-hover:translate-x-1 transition-transform shrink-0 mt-2" />
+          <ArrowRight className="h-5 w-5 text-secondary/60 group-hover:translate-x-1 transition-transform shrink-0 mt-2" />
         </button>
       </div>
     </div>

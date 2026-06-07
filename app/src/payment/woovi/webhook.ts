@@ -116,8 +116,15 @@ async function handleSubscriptionAuthorized(
 
   if (correlationID.startsWith("user-")) {
     // Extract planId from correlationID: user-{userId}-{planId}-{uuid}
-    const parts = correlationID.split('-');
-    const planId = parts.length >= 3 ? parts[2] : null;
+    // Format: user-<userId>-<planId>-<uuid> where planId may contain underscores
+    const withoutPrefix = correlationID.slice(5); // remove "user-"
+    const firstDash = withoutPrefix.indexOf('-');
+    let planId: string | null = null;
+    if (firstDash > 0) {
+      const afterUserId = withoutPrefix.slice(firstDash + 1);
+      const lastDash = afterUserId.lastIndexOf('-');
+      planId = lastDash > 0 ? afterUserId.slice(0, lastDash) : afterUserId;
+    }
 
     await context.entities.User.updateMany({
       where: { wooviCorrelationId: correlationID },
@@ -186,13 +193,45 @@ async function handleChargeCompleted(
 
   // One-time PIX charge was paid — treat as active for the period
   if (correlationID.startsWith("user-")) {
-    await context.entities.User.updateMany({
+    // For PIX charges, the plan is encoded in the correlationID
+    // Format: user-<userId>-<planId>-<uuid>
+    const withoutPrefix = correlationID.slice(5);
+    const firstDash = withoutPrefix.indexOf('-');
+    let planId: string | null = null;
+    if (firstDash > 0) {
+      const afterUserId = withoutPrefix.slice(firstDash + 1);
+      const lastDash = afterUserId.lastIndexOf('-');
+      planId = lastDash > 0 ? afterUserId.slice(0, lastDash) : afterUserId;
+    }
+
+    // Find user by correlationID OR by the subscription correlationID
+    const user = await context.entities.User.findFirst({
       where: { wooviCorrelationId: correlationID },
-      data: {
-        subscriptionStatus: SubscriptionStatus.Active,
-        datePaid: new Date(),
-      },
+      select: { id: true, subscriptionPlan: true },
     });
+
+    if (user) {
+      await context.entities.User.updateMany({
+        where: { wooviCorrelationId: correlationID },
+        data: {
+          subscriptionStatus: SubscriptionStatus.Active,
+          subscriptionPlan: planId || user.subscriptionPlan || 'catechist_pro',
+          datePaid: new Date(),
+        },
+      });
+    } else {
+      // Try to find by subscription correlationID (for PIX charges that reference a subscription)
+      const subscriptionCorrelationId = payload.charge?.subscription?.correlationID;
+      if (subscriptionCorrelationId) {
+        await context.entities.User.updateMany({
+          where: { wooviCorrelationId: subscriptionCorrelationId },
+          data: {
+            subscriptionStatus: SubscriptionStatus.Active,
+            datePaid: new Date(),
+          },
+        });
+      }
+    }
     // Cascade parish/diocese plan activation to TenantBilling
     await cascadePlanToTenantBilling(correlationID, context);
   } else if (correlationID.startsWith("parish-")) {

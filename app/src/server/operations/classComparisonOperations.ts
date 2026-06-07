@@ -2,8 +2,16 @@
  * Get a comparative overview of all classes in a parish.
  * Shows attendance rates, enrollment counts, and risk indicators.
  */
+import { HttpError } from 'wasp/server';
+import { assertCanAccessParishReports } from '../auth/helpers';
+import { assertTwoFactorSessionVerified } from './twoFactorOperations';
+
 export const getClassComparison = async (args: { parishId: string }, context: any) => {
-  if (!context.user) return [];
+  if (!context.user) throw new HttpError(401);
+  if (!args.parishId) throw new HttpError(400, 'parishId é obrigatório.');
+
+  await assertTwoFactorSessionVerified(context);
+  await assertCanAccessParishReports(context, args.parishId);
 
   const classes = await context.entities.CatechesisClass.findMany({
     where: { parishId: args.parishId, status: { not: 'ARCHIVED' } },

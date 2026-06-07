@@ -1,8 +1,16 @@
 /**
  * Monthly/weekly planning operations.
  */
+import { HttpError } from 'wasp/server';
+import { assertCanAccessClass } from '../auth/helpers';
+import { assertTwoFactorSessionVerified } from './twoFactorOperations';
+
 export const getMonthlyPlan = async (args: { classId: string; month?: number; year?: number }, context: any) => {
-  if (!context.user) return null;
+  if (!context.user) throw new HttpError(401);
+  if (!args.classId) throw new HttpError(400, 'classId é obrigatório.');
+
+  await assertTwoFactorSessionVerified(context);
+  const { parishId } = await assertCanAccessClass(context, args.classId);
 
   const now = new Date();
   const month = args.month ?? now.getMonth();
@@ -49,13 +57,14 @@ export const getMonthlyPlan = async (args: { classId: string; month?: number; ye
   // Get class info
   const classInfo = await context.entities.CatechesisClass.findUnique({
     where: { id: args.classId },
-    select: { id: true, name: true, schedule: true },
+    select: { id: true, name: true, dayOfWeek: true, startTime: true, endTime: true, location: true },
   });
 
   // Get content items available (not linked to meetings yet)
   const availableContent = await context.entities.ContentItem.findMany({
     where: {
       status: { in: ['APPROVED', 'PUBLISHED'] },
+      parishId,
     },
     select: { id: true, title: true, theme: true, estimatedTime: true },
     orderBy: { createdAt: 'desc' },

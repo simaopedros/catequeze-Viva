@@ -43,6 +43,23 @@ const ROUTE_LABELS: Record<string, string> = {
   onboarding: 'Boas-vindas',
 };
 
+// Singular forms for ID segments based on parent route
+const SINGULAR_LABELS: Record<string, string> = {
+  parishes: 'Paróquia',
+  classes: 'Turma',
+  catechumens: 'Catequizando',
+  families: 'Família',
+  communities: 'Comunidade',
+  users: 'Usuário',
+  meetings: 'Encontro',
+  activities: 'Atividade',
+  messages: 'Conversa',
+  documents: 'Documento',
+  reports: 'Relatório',
+  'catechetical-years': 'Ano Catequético',
+  'sacramental-journeys': 'Sacramento',
+};
+
 export function Breadcrumbs() {
   const location = useLocation();
 
@@ -54,10 +71,19 @@ export function Breadcrumbs() {
   const segments = location.pathname.split('/').filter(Boolean);
   const items: BreadcrumbItem[] = segments.map((seg, i) => {
     const to = '/' + segments.slice(0, i + 1).join('/');
-    // Check if last segment is an ID (UUID or numeric)
+    // Check if current segment is an ID (UUID or numeric)
     const isId = /^[0-9a-f]{8,}|^\d+$/i.test(seg);
+    if (isId) {
+      // Use singular form of parent segment, or fallback to "Detalhe"
+      const parentSeg = segments[i - 1] || '';
+      const singular = SINGULAR_LABELS[parentSeg] || 'Detalhe';
+      return {
+        label: singular,
+        to: undefined,
+      };
+    }
     return {
-      label: isId ? '#' + seg.substring(0, 8) : (ROUTE_LABELS[seg] || seg),
+      label: ROUTE_LABELS[seg] || seg,
       to: i < segments.length - 1 ? to : undefined,
     };
   });

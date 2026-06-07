@@ -19,6 +19,11 @@ import { HttpError } from 'wasp/server';
  * Falls back to text search if embeddings are not available.
  */
 export const semanticSearchBible = async (args: { query: string; limit?: number }, context: any) => {
+  if (!context.user) throw new HttpError(401);
+  if (!args.query?.trim()) {
+    throw new HttpError(400, 'Informe um termo de busca.');
+  }
+
   const limit = args.limit || 10;
 
   // First try: use PostgreSQL text search (always available)

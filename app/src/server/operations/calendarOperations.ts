@@ -12,6 +12,17 @@ export const listLiturgicalEvents = async (_args: void, context: any) => {
     select: { parishId: true },
   });
   const parishIds = memberships.map((m: any) => m.parishId);
+
+  // Include personal workspace
+  const personalWorkspace = await context.entities.Parish.findFirst({
+    where: { ownerId: context.user.id, type: 'PERSONAL' },
+    select: { id: true },
+  });
+  if (personalWorkspace && !parishIds.includes(personalWorkspace.id)) {
+    parishIds.push(personalWorkspace.id);
+  }
+
+
   if (parishIds.length === 0) return [];
 
   return context.entities.LiturgicalEvent.findMany({
@@ -40,9 +51,19 @@ export const createLiturgicalEvent = async (
     select: { parishId: true, role: true },
   });
 
-  const parishId = membership?.parishId;
+  let parishId = membership?.parishId;
+
+  // Fallback to personal workspace
   if (!parishId && !context.user.isAdmin) {
-    throw new HttpError(400, 'Você não está vinculado a nenhuma paróquia.');
+    const personal = await context.entities.Parish.findFirst({
+      where: { ownerId: context.user.id, type: 'PERSONAL' },
+      select: { id: true },
+    });
+    if (personal) parishId = personal.id;
+  }
+
+  if (!parishId && !context.user.isAdmin) {
+    throw new HttpError(400, 'Voce nao esta vinculado a nenhuma paroquia.');
   }
 
   return context.entities.LiturgicalEvent.create({
@@ -68,14 +89,21 @@ export const deleteLiturgicalEvent = async (args: { id: string }, context: any) 
     where: { id: args.id },
     select: { parishId: true },
   });
-  if (!event) throw new HttpError(404, 'Evento não encontrado.');
+  if (!event) throw new HttpError(404, 'Evento nao encontrado.');
 
   if (!context.user.isAdmin) {
     if (!event.parishId) throw new HttpError(403, 'Apenas admin pode remover eventos globais.');
     const membership = await context.entities.Membership.findFirst({
       where: { userId: context.user.id, parishId: event.parishId, status: 'ACTIVE' },
     });
-    if (!membership) throw new HttpError(403, 'Você não tem permissão para remover este evento.');
+    // Also check personal workspace ownership
+    const isPersonalOwner = !membership && await context.entities.Parish.findFirst({
+      where: { id: event.parishId, ownerId: context.user.id, type: 'PERSONAL' },
+      select: { id: true },
+    });
+    if (!membership && !isPersonalOwner) {
+      throw new HttpError(403, 'Voce nao tem permissao para remover este evento.');
+    }
   }
 
   return context.entities.LiturgicalEvent.delete({ where: { id: args.id } });

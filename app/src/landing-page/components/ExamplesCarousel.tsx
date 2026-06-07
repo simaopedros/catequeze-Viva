@@ -151,7 +151,7 @@ const ExampleCard = forwardRef<HTMLDivElement, ExampleCardProps>(
         <Card
           ref={ref}
           className="w-[280px] overflow-hidden transition-all duration-200 hover:scale-105 sm:w-[320px] md:w-[350px]"
-          variant={isCurrent ? "default" : "faded"}
+          variant="default"
         >
           <CardContent className="h-full p-0">
             <img

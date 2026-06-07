@@ -43,10 +43,10 @@ export const createClassSchema = z.object({
   stageId: z.string().uuid().optional(),
   sacramentId: z.string().uuid().optional(),
   yearId: z.string().uuid().optional(),
-  dayOfWeek: z.string(),
-  startTime: z.string().regex(/^\d{2}:\d{2}$/, 'Formato inválido (HH:mm)'),
-  endTime: z.string().regex(/^\d{2}:\d{2}$/, 'Formato inválido (HH:mm)'),
-  location: z.string().min(1).max(200),
+  dayOfWeek: z.string().optional(),
+  startTime: z.string().regex(/^\d{2}:\d{2}$/, "Formato inválido (HH:mm)").optional(),
+  endTime: z.string().regex(/^\d{2}:\d{2}$/, "Formato inválido (HH:mm)").optional(),
+  location: z.string().max(200).optional(),
   maxCapacity: z.number().int().min(1).max(200).default(30),
 });
 
@@ -148,17 +148,77 @@ export const createMessageCampaignSchema = z.object({
 // ─── Sacraments ───────────────────────────────────────────────────────────
 
 export const createSacramentalJourneySchema = z.object({
-  catechumenProfileId: uuidSchema,
-  templateId: uuidSchema,
+  catechumenProfileId: z.string().min(1, 'Catequizando é obrigatório'),
+  templateId: z.string().min(1, 'Modelo é obrigatório'),
 });
 
 export const updateMilestoneStatusSchema = z.object({
   milestoneId: uuidSchema,
-  status: z.enum(['PENDING', 'IN_PROGRESS', 'WAITING_APPROVAL', 'COMPLETED', 'REJECTED']),
+  status: z.enum(['PENDING', 'IN_PROGRESS', 'WAITING_APPROVAL', 'COMPLETED', 'REJECTED']).optional(),
   notes: z.string().max(1000).optional(),
+  evidenceUrl: z.string().max(500).optional(),
+  completedAt: z.string().datetime().nullable().optional(),
+});
+
+export const updateJourneySchema = z.object({
+  id: uuidSchema,
+  targetDate: z.string().datetime().nullable().optional(),
 });
 
 export const getSacramentalJourneySchema = z.object({
+  id: uuidSchema,
+});
+
+export const copyTemplateSchema = z.object({
+  templateId: uuidSchema,
+  parishId: uuidSchema.optional(),
+});
+
+export const publishTemplateSchema = z.object({
+  templateId: uuidSchema,
+});
+
+export const archiveTemplateSchema = z.object({
+  templateId: uuidSchema,
+});
+
+export const compareTemplateSchema = z.object({
+  templateId: uuidSchema,
+});
+
+export const createTemplateSchema = z.object({
+  name: z.string().min(3, 'Nome deve ter pelo menos 3 caracteres').max(200),
+  description: z.string().max(2000).optional(),
+  sacramentId: z.string().uuid().optional(),
+  parishId: z.string().uuid().optional(),
+  milestones: z.array(z.object({
+    name: z.string().min(1).max(200),
+    description: z.string().max(1000).optional(),
+    required: z.boolean().default(true),
+    evidenceRequired: z.boolean().default(false),
+    order: z.number().int().min(0).default(0),
+    daysBeforeSacrament: z.number().int().min(0).nullable().optional(),
+  })).optional().default([]),
+});
+
+export const updateTemplateSchema = z.object({
+  id: uuidSchema,
+  name: z.string().min(3).max(200).optional(),
+  description: z.string().max(2000).optional(),
+  sacramentId: z.string().uuid().optional(),
+});
+
+export const updateMilestoneTemplateSchema = z.object({
+  id: uuidSchema,
+  name: z.string().min(1).max(200).optional(),
+  description: z.string().max(1000).optional(),
+  required: z.boolean().optional(),
+  evidenceRequired: z.boolean().optional(),
+  order: z.number().int().min(0).optional(),
+  daysBeforeSacrament: z.number().int().min(0).nullable().optional(),
+});
+
+export const deleteMilestoneTemplateSchema = z.object({
   id: uuidSchema,
 });
 

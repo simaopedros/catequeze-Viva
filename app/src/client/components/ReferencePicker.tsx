@@ -373,11 +373,11 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
         <div className="space-y-1">
           <p className="text-[10px] text-muted-foreground px-1">Ou explore por parte:</p>
           {[
-            { part: 'I', label: '📖 Parte I — Catequese na Missão Evangelizadora' },
-            { part: 'II', label: '📖 Parte II — A Mensagem Evangélica' },       
-            { part: 'III', label: '📖 Parte III — A Pedagogia da Fé' },
-            { part: 'IV', label: '📖 Parte IV — Os Destinatários' },
-            { part: 'V', label: '📖 Parte V — A Catequese na Igreja Particular'  },
+            { part: 'I', label: 'Parte I — Catequese na Missão Evangelizadora' },
+            { part: 'II', label: 'Parte II — A Mensagem Evangélica' },
+            { part: 'III', label: 'Parte III — A Pedagogia da Fé' },
+            { part: 'IV', label: 'Parte IV — Os Destinatários' },
+            { part: 'V', label: 'Parte V — A Catequese na Igreja Particular' },
           ].map(({ part, label }) => (
             <button key={part}
               onClick={async () => {
@@ -402,10 +402,10 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
             <span key={i}
               onMouseEnter={e => showTooltip(e, g.text || g.label)}
               onMouseLeave={hideTooltip}
-              className="relative inline-flex items-center gap-1 bg-blue-50 text-blue-700 text-[11px] pl-2 pr-1 py-1 rounded-full cursor-default group">        
-              📖 {g.label}
-              <button onClick={() => g.ids.forEach(id => onRemoveBible(id))}    
-                className="hover:text-red-500 hover:bg-red-50 rounded-full p-0.5">
+              className="relative inline-flex items-center gap-1 bg-primary/10 text-primary text-[11px] pl-2 pr-1 py-1 rounded-full cursor-default group">
+              {g.label}
+              <button onClick={() => g.ids.forEach(id => onRemoveBible(id))}
+                className="hover:text-destructive hover:bg-destructive/10 rounded-full p-0.5">
                 <X className="h-3 w-3" />
               </button>
             </span>
@@ -414,10 +414,10 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
             <span key={r.id || i}
               onMouseEnter={e => showTooltip(e, (r.question || '') + '\n\n' + (r.answer || ''))}
               onMouseLeave={hideTooltip}
-              className="relative inline-flex items-center gap-1 bg-amber-50 text-amber-700 text-[11px] pl-2 pr-1 py-1 rounded-full cursor-default group">      
-              📚 {r.label}
-              <button onClick={() => onRemoveCatechism(r.id || r.entryId)}      
-                className="hover:text-red-500 hover:bg-red-50 rounded-full p-0.5">
+              className="relative inline-flex items-center gap-1 bg-secondary/10 text-secondary text-[11px] pl-2 pr-1 py-1 rounded-full cursor-default group">
+              {r.label}
+              <button onClick={() => onRemoveCatechism(r.id || r.entryId)}
+                className="hover:text-destructive hover:bg-destructive/10 rounded-full p-0.5">
                 <X className="h-3 w-3" />
               </button>
             </span>

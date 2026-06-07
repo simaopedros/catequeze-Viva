@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { AppShell } from '../AppShell';
+import { PageHeader } from '../../client/components/PageHeader';
+import { EmptyState } from '../../client/components/EmptyState';
+import { SkeletonList } from '../../client/components/Skeletons';
 import { useQuery } from 'wasp/client/operations';
 import { listMyAiGenerations } from 'wasp/client/operations';
 import { Button } from '../../client/components/ui/button';
@@ -19,7 +22,7 @@ const STATUS_LABELS: Record<string, string> = {
 const STATUS_COLORS: Record<string, string> = {
   DRAFT: 'bg-gray-100 text-gray-700',
   IN_REVIEW: 'bg-yellow-100 text-yellow-700',
-  APPROVED: 'bg-green-100 text-green-700',
+  APPROVED: 'bg-success/10 text-success',
   PUBLISHED: 'bg-blue-100 text-blue-700',
   ARCHIVED: 'bg-red-100 text-red-700',
 };
@@ -40,23 +43,17 @@ export default function MyAiGenerationsPage() {
   return (
     <AppShell>
       <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2">
-              <Sparkles className="h-6 w-6 text-violet-500" />
-              Minhas Gerações IA
-            </h1>
-            <p className="text-muted-foreground text-sm mt-1">
-              Histórico de encontros, atividades e conteúdos gerados com inteligência artificial
-            </p>
-          </div>
+        <PageHeader
+          title="Minhas Gerações IA"
+          subtitle="Histórico de encontros, atividades e conteúdos gerados com inteligência artificial"
+        >
           <Link to="/app/ai-planner">
             <Button variant="outline" size="sm">
               <Sparkles className="mr-1 h-4 w-4" />
               Novo Encontro
             </Button>
           </Link>
-        </div>
+        </PageHeader>
 
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -69,20 +66,17 @@ export default function MyAiGenerationsPage() {
         </div>
 
         {isLoading ? (
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-20 rounded-xl bg-muted animate-pulse" />
-            ))}
-          </div>
+          <SkeletonList items={3} />
         ) : filtered.length === 0 ? (
-          <div className="text-center py-16 text-muted-foreground">
-            <Sparkles className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
-            <p className="font-medium">Nenhuma geração IA encontrada</p>
-            <p className="text-sm mt-1">
-              {items?.length
+          <EmptyState
+            icon={Sparkles}
+            title="Nenhuma geração IA encontrada"
+            description={
+              items?.length
                 ? 'Nenhum resultado para esta busca.'
-                : 'Gere seu primeiro encontro de catequese com IA!'}
-            </p>
+                : 'Gere seu primeiro encontro de catequese com IA!'
+            }
+          >
             {!items?.length && (
               <Link to="/app/ai-planner" className="inline-block mt-4">
                 <Button>
@@ -91,7 +85,7 @@ export default function MyAiGenerationsPage() {
                 </Button>
               </Link>
             )}
-          </div>
+          </EmptyState>
         ) : (
           <div className="space-y-3">
             {filtered.map((item: any) => (

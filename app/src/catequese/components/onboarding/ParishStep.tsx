@@ -73,8 +73,14 @@ export function ParishStep({ diocese, selected, onSelect, initialState }: Parish
         dioceseId: diocese?.id,
       });
       if (result?.existingParishId) {
-        setError('Já existe uma paróquia com este nome nesta cidade.');
-        setCreating(false);
+        // Parish already exists — membership was created/activated, use it
+        onSelect({
+          id: result.id,
+          name: newName.trim(),
+          city: searchCity,
+          state: searchState,
+          isNew: false,
+        });
         return;
       }
       if (result?.id) {
@@ -166,14 +172,14 @@ export function ParishStep({ diocese, selected, onSelect, initialState }: Parish
                 key={op.osmId}
                 onClick={() => handleOsmSelect(op)}
                 className={`w-full text-left rounded-lg border px-3 py-2 text-sm transition-colors flex items-center gap-2 mb-1 ${
-                  selectedOsm?.osmId === op.osmId ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20' : 'hover:bg-muted/30 border-blue-200'
+                  selectedOsm?.osmId === op.osmId ? 'border-primary bg-primary/10' : 'hover:bg-muted/30 border-primary/20'
                 }`}
               >
                 <div className="flex-1 min-w-0">
                   <span className="font-medium">{op.name}</span>
                   {op.address && <span className="text-xs text-muted-foreground ml-1 block">{op.address}</span>}
                 </div>
-                <span className="text-xs text-blue-600 dark:text-blue-400 shrink-0">OSM</span>
+                <span className="text-xs text-primary shrink-0">OSM</span>
                 {selectedOsm?.osmId === op.osmId && <Check className="h-4 w-4 text-blue-500 shrink-0" />}
               </button>
             ))}
@@ -204,8 +210,8 @@ export function ParishStep({ diocese, selected, onSelect, initialState }: Parish
             placeholder="Ex: Paróquia Santo Antônio"
           />
           {duplicateParish && (
-            <div className="rounded-md bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 p-2 text-xs text-amber-700 dark:text-amber-400">
-              ⚠️ Já existe uma paróquia semelhante: <strong>{duplicateParish.name}</strong>
+            <div className="rounded-md bg-warning/10 border border-warning/30 p-2 text-xs text-warning">
+              Já existe uma paróquia semelhante: <strong>{duplicateParish.name}</strong>
               {duplicateParish.city && <> em {duplicateParish.city}{duplicateParish.state ? `/${duplicateParish.state}` : ''}</>}.
               <button
                 onClick={() => {

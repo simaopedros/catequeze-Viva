@@ -129,7 +129,7 @@ export async function assertCanCreateParish(context: any): Promise<void> {
   if (limits.maxParishes === null) return;
 
   const ownedParishes = await context.entities.Parish.count({
-    where: { ownerId: context.user.id },
+    where: { ownerId: context.user.id, type: { not: "PERSONAL" } },
   });
 
   if (ownedParishes >= limits.maxParishes) {
@@ -159,7 +159,10 @@ export async function assertCanCreateClass(
 
   if (parish?.type === 'PERSONAL') {
     // Personal workspace: limits come from user's subscription
-    const plan = context.user.subscriptionPlan || 'catechist_free';
+    const subscriptionActive = context.user.subscriptionStatus === 'active';
+    const plan = subscriptionActive
+      ? context.user.subscriptionPlan || 'catechist_free'
+      : 'catechist_free';
     const limits = getPlanLimits(plan);
 
     if (limits.maxClasses === null) return; // unlimited
@@ -235,7 +238,10 @@ export async function assertCanEnrollCatechumen(
   });
 
   if (parish?.type === 'PERSONAL') {
-    const plan = context.user.subscriptionPlan || 'catechist_free';
+    const subscriptionActive = context.user.subscriptionStatus === 'active';
+    const plan = subscriptionActive
+      ? context.user.subscriptionPlan || 'catechist_free'
+      : 'catechist_free';
     const limits = getPlanLimits(plan);
     if (limits.maxCatechumens === null) return;
 

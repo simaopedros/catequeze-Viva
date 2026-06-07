@@ -75,7 +75,8 @@
       "Bash(truncate *)",
       "Bash(from *)",
       "Bash(union *)",
-      "Bash(*)"
+      "Bash(*)",
+      "Skill(getting-started)"
     ]
   },
   "$version": 4

@@ -1,21 +1,25 @@
 import { useState, useMemo } from 'react';
 import { useQuery, listCatechumens } from 'wasp/client/operations';
 import { Link } from 'react-router';
-import { GraduationCap, Plus, Search, LayoutGrid, List, Upload, Calendar } from 'lucide-react';
+import { GraduationCap, Plus, LayoutGrid, List, Upload, Calendar, Search } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
+import { PageHeader } from '../../client/components/PageHeader';
+import { SearchInput } from '../../client/components/SearchInput';
+import { EmptyState } from '../../client/components/EmptyState';
+import { SkeletonCard } from '../../client/components/Skeletons';
 import { AppShell } from '../AppShell';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
 import { useUserContext } from '../../client/hooks/useUserContext';
 
 const AVATAR_COLORS = [
-    'bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 dark:border dark:border-blue-900/50',
-    'bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-400 dark:border dark:border-green-900/50',
-    'bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 dark:border dark:border-amber-900/50',
-    'bg-purple-100 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400 dark:border dark:border-purple-900/50',
-    'bg-pink-100 text-pink-700 dark:bg-pink-950/40 dark:text-pink-400 dark:border dark:border-pink-900/50',
-    'bg-cyan-100 text-cyan-700 dark:bg-cyan-950/40 dark:text-cyan-400 dark:border dark:border-cyan-900/50'
-  ];
+  'bg-primary/10 text-primary',
+  'bg-success/10 text-success',
+  'bg-warning/10 text-warning',
+  'bg-secondary text-secondary-foreground',
+  'bg-accent text-accent-foreground',
+  'bg-muted text-muted-foreground',
+];
 
 function getAge(birthDate: string): number | null {
   if (!birthDate) return null;
@@ -46,11 +50,10 @@ export default function CatechumensPage() {
     if (!catechumens) return [];
     let result = [...catechumens];
     if (activeParishId) {
-      // Backend already filters by parish — only apply safe frontend filter for enrolled classes
       result = result.filter((c: any) =>
         c.enrollments?.some((e: any) => e.class?.parishId === activeParishId) ||
         c.household?.parishId === activeParishId ||
-        (!c.enrollments?.length && !c.household?.parishId) // show unlinked catechumens
+        (!c.enrollments?.length && !c.household?.parishId)
       );
     }
     if (search) result = result.filter((c: any) => `${c.firstName} ${c.lastName}`.toLowerCase().includes(search.toLowerCase()));
@@ -58,12 +61,16 @@ export default function CatechumensPage() {
     return result;
   }, [catechumens, search, classFilter, activeParishId]);
 
+  const hasFilters = !!(search || classFilter);
+
   if (isLoading) {
     return (
       <AppShell>
-        <div className="space-y-6 animate-pulse">
-          <div className="h-8 w-44 bg-muted rounded" />
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{[1,2,3,4,5,6].map(i => <div key={i} className="h-28 rounded-xl bg-muted" />)}</div>
+        <div className="space-y-6">
+          <div className="h-8 w-44 animate-pulse rounded bg-muted" />
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3, 4, 5, 6].map(i => <SkeletonCard key={i} />)}
+          </div>
         </div>
       </AppShell>
     );
@@ -72,31 +79,23 @@ export default function CatechumensPage() {
   return (
     <AppShell>
       <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Catequizandos</h1>
-            <p className="text-muted-foreground text-sm">{catechumens?.length || 0} catequizandos cadastrados</p>
-          </div>
-          <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={() => setView(v => v === 'cards' ? 'table' : 'cards')}>
-              {view === 'cards' ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
-            </Button>
-            {canManageCatechumens && (
-              <>
-                <Button size="sm" variant="outline" asChild><Link to="/app/catechumens/import"><Upload className="mr-1 h-4 w-4" />Importar</Link></Button>
-                <Button size="sm" asChild><Link to="/app/catechumens/new"><Plus className="mr-1 h-4 w-4" />Novo</Link></Button>
-              </>
-            )}
-          </div>
-        </div>
+        <PageHeader
+          title="Catequizandos"
+          subtitle={`${catechumens?.length || 0} catequizandos cadastrados`}
+        >
+          <Button size="sm" variant="outline" onClick={() => setView(v => v === 'cards' ? 'table' : 'cards')}>
+            {view === 'cards' ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
+          </Button>
+          {canManageCatechumens && (
+            <>
+              <Button size="sm" variant="outline" asChild><Link to="/app/catechumens/import"><Upload className="mr-1 h-4 w-4" />Importar</Link></Button>
+              <Button size="sm" asChild><Link to="/app/catechumens/new"><Plus className="mr-1 h-4 w-4" />Novo</Link></Button>
+            </>
+          )}
+        </PageHeader>
 
-        {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1 max-w-xs">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input placeholder="Buscar por nome..." value={search} onChange={e => setSearch(e.target.value)}
-              className="flex h-9 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm" />
-          </div>
+          <SearchInput placeholder="Buscar por nome..." value={search} onChange={e => setSearch(e.target.value)} />
           <select value={classFilter} onChange={e => setClassFilter(e.target.value)}
             className="flex h-9 w-44 rounded-md border border-input bg-background px-3 text-sm">
             <option value="">Todas as turmas</option>
@@ -105,12 +104,19 @@ export default function CatechumensPage() {
         </div>
 
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center">
-            <div className="mb-4 rounded-full bg-primary/10 p-4"><GraduationCap className="h-8 w-8 text-primary" /></div>
-            <h3 className="text-lg font-semibold">{search || classFilter ? 'Nenhum resultado' : 'Nenhum catequizando'}</h3>
-            <p className="mt-1 text-sm text-muted-foreground max-w-md">{search || classFilter ? 'Tente ajustar os filtros.' : 'Cadastre catequizandos e vincule-os às turmas.'}</p>
-            {!search && !classFilter && canManageCatechumens && <Button className="mt-4" asChild><Link to="/app/catechumens/new">Cadastrar catequizando</Link></Button>}
-          </div>
+          hasFilters ? (
+            <EmptyState compact icon={Search} title="Nenhum resultado" description="Tente ajustar os filtros." />
+          ) : (
+            <EmptyState
+              icon={GraduationCap}
+              title="Nenhum catequizando"
+              description="Cadastre catequizandos e vincule-os às turmas."
+            >
+              {canManageCatechumens && (
+                <Button className="mt-4" asChild><Link to="/app/catechumens/new">Cadastrar catequizando</Link></Button>
+              )}
+            </EmptyState>
+          )
         ) : view === 'table' ? (
           <div className="rounded-xl border bg-card overflow-x-auto">
             <table className="w-full">
@@ -120,7 +126,7 @@ export default function CatechumensPage() {
                   <td className="p-3">
                     <Link to={`/app/catechumens/${c.id}`} className="flex items-center gap-3 hover:text-primary">
                       <div className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold overflow-hidden ${!c.photoUrl ? AVATAR_COLORS[Math.abs(c.firstName?.charCodeAt(0) || 0) % AVATAR_COLORS.length] : ''}`}>
-                        {c.photoUrl ? <img src={c.photoUrl} className="w-full h-full object-cover" /> : `${c.firstName?.[0]}${c.lastName?.[0]}`}
+                        {c.photoUrl ? <img src={c.photoUrl} className="w-full h-full object-cover" alt="" /> : `${c.firstName?.[0]}${c.lastName?.[0]}`}
                       </div>
                       <div><p className="font-medium text-sm">{c.firstName} {c.lastName}</p>{c.birthDate && <p className="text-[10px] text-muted-foreground"><Calendar className="inline h-3 w-3 mr-0.5" />{new Date(c.birthDate).toLocaleDateString()}</p>}</div>
                     </Link>
@@ -134,15 +140,15 @@ export default function CatechumensPage() {
           </div>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filtered.map((c: any, i: number) => (
+            {filtered.map((c: any) => (
               <Link key={c.id} to={`/app/catechumens/${c.id}`} className="rounded-xl border bg-card p-4 shadow-sm hover:shadow-md transition-shadow hover:border-primary/30 group">
                 <div className="flex items-center gap-3 mb-3">
                   <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold overflow-hidden ${!c.photoUrl ? AVATAR_COLORS[Math.abs(c.firstName?.charCodeAt(0) || 0) % AVATAR_COLORS.length] : ''}`}>
-                    {c.photoUrl ? <img src={c.photoUrl} className="w-full h-full object-cover" /> : `${c.firstName?.[0]}${c.lastName?.[0]}`}
+                    {c.photoUrl ? <img src={c.photoUrl} className="w-full h-full object-cover" alt="" /> : `${c.firstName?.[0]}${c.lastName?.[0]}`}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm truncate group-hover:text-primary">{c.firstName} {c.lastName}</p>
-                    <p className="text-[11px] text-muted-foreground">{getAge(c.birthDate) ? `${getAge(c.birthDate)} anos` : ''}{c.birthDate && ` · ${new Date(c.birthDate).toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'2-digit'})}`}</p>
+                    <p className="text-[11px] text-muted-foreground">{getAge(c.birthDate) ? `${getAge(c.birthDate)} anos` : ''}{c.birthDate && ` · ${new Date(c.birthDate).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' })}`}</p>
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-1">

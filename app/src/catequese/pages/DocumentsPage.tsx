@@ -3,6 +3,8 @@ import { FileText, CheckCircle, Clock, Upload, User, Trash2, XCircle, Loader2, X
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { AppShell } from '../AppShell';
+import { PageHeader } from '../../client/components/PageHeader';
+import { EmptyState } from '../../client/components/EmptyState';
 import { useQuery, listDocuments, listCatechumens, uploadDocument, verifyDocument, rejectDocument, deleteDocument } from 'wasp/client/operations';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { toast } from '../../client/hooks/use-toast';
@@ -17,12 +19,12 @@ const DOC_TYPES: Record<string, string> = {
 };
 
 const STATUS_CONFIG: Record<string, { icon: any; color: string; label: string }> = {
-  VERIFIED: { icon: CheckCircle, color: 'text-green-500', label: 'Verificado' },
-  PENDING: { icon: Clock, color: 'text-amber-500', label: 'Pendente' },
-  REJECTED: { icon: XCircle, color: 'text-red-500', label: 'Rejeitado' },
+  VERIFIED: { icon: CheckCircle, color: 'text-success', label: 'Verificado' },
+  PENDING: { icon: Clock, color: 'text-warning', label: 'Pendente' },
+  REJECTED: { icon: XCircle, color: 'text-destructive', label: 'Rejeitado' },
 };
 
-const COORDINATOR_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'];
+const COORDINATOR_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'];
 
 export default function DocumentsPage() {
   const { userRole } = useUserContext();
@@ -100,10 +102,7 @@ export default function DocumentsPage() {
   return (
     <AppShell>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold">Documentos</h1>
-          <p className="text-muted-foreground text-sm">Gerir documentos dos catequizandos</p>
-        </div>
+        <PageHeader title="Documentos" subtitle="Gerir documentos dos catequizandos" />
 
         {/* Upload modal */}
         {uploadingFor && (
@@ -119,7 +118,7 @@ export default function DocumentsPage() {
               <button onClick={() => { setUploadingFor(null); setFileBase64(''); setFileName(''); }} className="p-1 hover:bg-muted rounded"><X className="h-4 w-4" /></button>
             </div>
             <input type="file" onChange={handleFileChange} className="text-sm" />
-            {fileName && <p className="text-xs text-muted-foreground">Ficheiro: {fileName}</p>}
+            {fileName && <p className="text-xs text-muted-foreground">Arquivo: {fileName}</p>}
             <div className="flex gap-2">
               <Button size="sm" onClick={handleUpload} disabled={!fileBase64}>
                 <Upload className="mr-1 h-3 w-3" />Enviar
@@ -146,7 +145,7 @@ export default function DocumentsPage() {
                     <p className="font-medium text-sm">{c.firstName} {c.lastName}</p>
                     <p className="text-xs text-muted-foreground">
                       {verified}/{Object.keys(DOC_TYPES).length} verificados
-                      {pending > 0 && <span className="text-amber-500"> · {pending} pendentes</span>}
+                      {pending > 0 && <span className="text-warning"> · {pending} pendentes</span>}
                     </p>
                   </div>
                 </div>
@@ -177,18 +176,18 @@ export default function DocumentsPage() {
                           )}
                           {status === 'PENDING' && isCoordinator && (
                             <>
-                              <Button size="sm" variant="ghost" className="h-7 text-xs text-green-600"
+                              <Button size="sm" variant="ghost" className="h-7 text-xs text-success"
                                 onClick={() => handleVerify(doc.id)}>
                                 <CheckCircle className="h-3 w-3" />
                               </Button>
-                              <Button size="sm" variant="ghost" className="h-7 text-xs text-red-500"
+                              <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive"
                                 onClick={() => setRejectingId(doc.id)}>
                                 <XCircle className="h-3 w-3" />
                               </Button>
                             </>
                           )}
                           {status === 'REJECTED' && isCoordinator && (
-                            <Button size="sm" variant="ghost" className="h-7 text-xs text-green-600"
+                            <Button size="sm" variant="ghost" className="h-7 text-xs text-success"
                               onClick={() => handleVerify(doc.id)}>
                               <CheckCircle className="h-3 w-3" />
                             </Button>
@@ -216,10 +215,11 @@ export default function DocumentsPage() {
         </div>
 
         {catechumens.length === 0 && (
-          <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center">
-            <FileText className="h-8 w-8 text-muted-foreground mb-3" />
-            <p className="text-sm text-muted-foreground">Nenhum catequizando encontrado.</p>
-          </div>
+          <EmptyState
+            icon={FileText}
+            title="Nenhum catequizando encontrado"
+            description="Cadastre catequizandos para gerir seus documentos."
+          />
         )}
 
         {/* Reject confirmation */}

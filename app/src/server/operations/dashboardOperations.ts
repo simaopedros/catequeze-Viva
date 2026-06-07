@@ -12,8 +12,29 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
   const parishIds = memberships.map((m: any) => m.parishId);
   const roles = memberships.map((m: any) => m.role);
 
+  // Include personal workspace
+  let personalWorkspaceId: string | null = null;
+  if (!isAdmin) {
+    const personal = await context.entities.Parish.findFirst({
+      where: { ownerId: context.user.id, type: 'PERSONAL' },
+      select: { id: true },
+    });
+    if (personal) {
+      personalWorkspaceId = personal.id;
+      if (!parishIds.includes(personal.id)) {
+        parishIds.push(personal.id);
+        roles.push('PERSONAL_OWNER');
+      }
+    }
+  }
+
   if (parishIds.length === 0 && !isAdmin) {
     return { activeCatechumens: 0, activeClasses: 0, avgAttendance: 0, pendingSacraments: 0, recentAlerts: [], aniversariantes: [], upcomingMeetings: [], reviewQueue: [], myClasses: [] };
+  }
+
+  // Validate args.parishId belongs to user
+  if (args.parishId && !isAdmin && !parishIds.includes(args.parishId)) {
+    throw new HttpError(403, 'Voce nao tem acesso a esta paroquia.');
   }
 
   const whereClause = args.parishId

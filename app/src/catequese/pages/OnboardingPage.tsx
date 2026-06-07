@@ -1,6 +1,5 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router';
-import { AppShell } from '../AppShell';
 import { useAuth } from 'wasp/client/auth';
 import { WelcomeStep } from '../components/onboarding/WelcomeStep';
 import { PersonalSetup } from '../components/onboarding/PersonalSetup';
@@ -29,6 +28,14 @@ type Step = 'welcome' | 'personal_setup' | 'diocese' | 'parish' | 'role' | 'deta
 interface CompletionSummary {
   role: string;
   items: { label: string; value: string }[];
+}
+
+function OnboardingLayout({ children }: { children: ReactNode }) {
+  return (
+    <div className="min-h-screen bg-muted/30 py-8 px-4">
+      <div className="w-full max-w-2xl mx-auto">{children}</div>
+    </div>
+  );
 }
 
 export default function OnboardingPage() {
@@ -72,30 +79,24 @@ export default function OnboardingPage() {
     setError('');
 
     try {
-      // Only create personal workspace for personal accounts
-      if (accountType === 'personal') {
-        try {
-          await ensurePersonalWorkspace();
-        } catch (wsErr: any) {
-          console.warn('Personal workspace creation deferred:', wsErr.message);
-        }
-      }
-
       // ── Personal Account Flow ──────────────────────────────────────
       if (accountType === 'personal') {
+        // Ensure personal workspace exists — fail if it can't be created
+        const personalParish = await ensurePersonalWorkspace();
+        if (!personalParish?.id) {
+          throw new Error('Nao foi possivel criar o espaco pessoal. Tente novamente.');
+        }
+
         // Create class if name provided
         if (details?.className) {
-          const personalParish = await ensurePersonalWorkspace();
-          if (personalParish?.id) {
-            await createClass({
-              name: details.className.trim(),
-              parishId: personalParish.id,
-              dayOfWeek: details.dayOfWeek || '6',
-              startTime: details.startTime || '09:00',
-              endTime: details.endTime || '10:30',
-              location: details.location || personalParish.name,
-            });
-          }
+          await createClass({
+            name: details.className.trim(),
+            parishId: personalParish.id,
+            dayOfWeek: details.dayOfWeek || '6',
+            startTime: details.startTime || '09:00',
+            endTime: details.endTime || '10:30',
+            location: details.location || personalParish.name,
+          });
         }
 
         setCompletionData({
@@ -322,26 +323,26 @@ export default function OnboardingPage() {
 
   if (completionData) {
     return (
-      <AppShell>
-        <div className="max-w-2xl mx-auto">
-          <CompletionStep summary={completionData} onFinish={() => navigate(accountType === 'personal' ? '/app/select-workspace' : '/app')} />
-        </div>
-      </AppShell>
+      <OnboardingLayout>
+        <CompletionStep summary={completionData} onFinish={() => navigate(accountType === 'personal' ? '/app/select-workspace' : '/app')} />
+      </OnboardingLayout>
     );
   }
 
   return (
-    <AppShell>
-      <div className="max-w-2xl mx-auto space-y-8">
+    <OnboardingLayout>
+      <div className="space-y-8">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Configuração Inicial</h1>
           <p className="text-muted-foreground mt-1">
-            Vamos configurar a plataforma em 4 passos.
+            {accountType === 'personal'
+              ? 'Vamos configurar o teu espaço pessoal.'
+              : 'Vamos configurar a plataforma em 4 passos.'}
           </p>
         </div>
 
         {/* Step indicator */}
-        {step !== 'welcome' && step !== 'completion' && (
+        {step !== 'welcome' && step !== 'completion' && step !== 'personal_setup' && (
           <div className="space-y-4">
             {/* Progress bar */}
             <div className="flex items-center gap-1">
@@ -408,19 +409,37 @@ export default function OnboardingPage() {
           />
         )}
         {step === 'personal_setup' && (
-          <PersonalSetup
-            onComplete={(details) => handleComplete(details)}
-            loading={saving}
-          />
+          <>
+            <button
+              onClick={() => { setStep('welcome'); setAccountType(null); }}
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              ← Voltar
+            </button>
+            <PersonalSetup
+              onComplete={(details) => handleComplete(details)}
+              loading={saving}
+            />
+          </>
         )}
 
         {/* DIOCESE */}
         {step === 'diocese' && (
-          <DioceseStep
-            selected={diocese}
-            onSelect={(d) => { setDiocese(d); }}
-            onSkip={handleDioceseSkip}
-          />
+          <>
+            {!diocese && (
+              <button
+                onClick={() => { setStep('welcome'); setAccountType(null); }}
+                className="text-sm text-muted-foreground hover:text-foreground mb-2"
+              >
+                ← Voltar
+              </button>
+            )}
+            <DioceseStep
+              selected={diocese}
+              onSelect={(d) => { setDiocese(d); }}
+              onSkip={handleDioceseSkip}
+            />
+          </>
         )}
         {step === 'diocese' && diocese && (
           <div className="flex justify-between">
@@ -533,6 +552,6 @@ export default function OnboardingPage() {
           </div>
         )}
       </div>
-    </AppShell>
+    </OnboardingLayout>
   );
 }

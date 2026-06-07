@@ -25,14 +25,14 @@ export function PlanLimitBanner({ type, currentCount, userPlan, className, isPar
   const upgradePlan = plan === 'catechist_free' ? 'Catequista Pro' : 'Paróquia';
 
   return (
-    <div className={`rounded-xl border border-amber-500/30 bg-amber-50 dark:bg-amber-950/30 p-4 space-y-3 ${className || ''}`}>
+    <div className={`rounded-xl border border-warning/30 bg-warning/10 p-4 space-y-3 ${className || ''}`}>
       <div className="flex items-start gap-3">
-        <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+        <AlertCircle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
         <div className="space-y-1">
-          <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">
+          <p className="text-sm font-semibold text-warning">
             Limite de {label}s atingido
           </p>
-          <p className="text-sm text-amber-700 dark:text-amber-300">
+          <p className="text-sm text-warning/90">
             O teu plano <strong>{currentPlanName}</strong> permite até{' '}
             <strong>{maxAllowed} {label}{maxAllowed > 1 ? 's' : ''}</strong>.
             Já tens <strong>{currentCount}</strong>.
@@ -40,11 +40,11 @@ export function PlanLimitBanner({ type, currentCount, userPlan, className, isPar
         </div>
       </div>
       {isParishManaged ? (
-        <p className="text-sm text-amber-700 dark:text-amber-300">
+        <p className="text-sm text-warning/90">
           Contacta o <strong>coordenador da paróquia</strong> para expandir os limites do plano.
         </p>
       ) : (
-        <Button asChild size="sm" className="gap-1.5 bg-amber-600 hover:bg-amber-700 text-white w-fit">
+        <Button asChild size="sm" variant="default" className="gap-1.5 bg-warning hover:bg-warning/90 text-warning-foreground w-fit">
           <Link to="/app/billing">
             <Sparkles className="h-3.5 w-3.5" />
             Fazer Upgrade para {upgradePlan}

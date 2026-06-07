@@ -1,8 +1,12 @@
 import { useState, useMemo } from 'react';
 import { useQuery, listHouseholds, listCommunities } from 'wasp/client/operations';
 import { Link } from 'react-router';
-import { Heart, Users, Plus, Search, Phone, MapPin, User, ChevronRight, Building2 } from 'lucide-react';
+import { Heart, Users, Plus, Phone, MapPin, User, ChevronRight, Search } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
+import { PageHeader } from '../../client/components/PageHeader';
+import { SearchInput } from '../../client/components/SearchInput';
+import { EmptyState } from '../../client/components/EmptyState';
+import { SkeletonCard } from '../../client/components/Skeletons';
 import { AppShell } from '../AppShell';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
 import { useUserContext } from '../../client/hooks/useUserContext';
@@ -28,9 +32,11 @@ export default function FamiliesPage() {
   if (isLoading) {
     return (
       <AppShell>
-        <div className="space-y-6 animate-pulse">
-          <div className="h-8 w-32 bg-muted rounded" />
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">{[1,2,3].map(i => <div key={i} className="h-36 rounded-xl bg-muted" />)}</div>
+        <div className="space-y-6">
+          <div className="h-8 w-32 animate-pulse rounded bg-muted" />
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map(i => <SkeletonCard key={i} />)}
+          </div>
         </div>
       </AppShell>
     );
@@ -39,38 +45,43 @@ export default function FamiliesPage() {
   return (
     <AppShell>
       <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Famílias</h1>
-            <p className="text-muted-foreground text-sm">{households?.length || 0} famílias cadastradas</p>
-          </div>
-          <div className="flex gap-2">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <input placeholder="Buscar..." value={search} onChange={e => setSearch(e.target.value)}
-                className="flex h-9 w-40 rounded-md border border-input bg-background pl-9 pr-3 text-sm" />
-            </div>
-            <select
-              value={communityFilter}
-              onChange={e => setCommunityFilter(e.target.value)}
-              className="flex h-9 rounded-md border border-input bg-background px-3 text-sm w-36"
-            >
-              <option value="">Todas comunidades</option>
-              {communities.map((c: any) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
-            {canCreateFamily && <Button asChild><Link to="/app/families/new"><Plus className="mr-1 h-4 w-4" />Nova</Link></Button>}
-          </div>
-        </div>
+        <PageHeader
+          title="Famílias"
+          subtitle={`${households?.length || 0} famílias cadastradas`}
+        >
+          <SearchInput
+            placeholder="Buscar..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            containerClassName="max-w-none w-40 flex-none"
+          />
+          <select
+            value={communityFilter}
+            onChange={e => setCommunityFilter(e.target.value)}
+            className="flex h-9 rounded-md border border-input bg-background px-3 text-sm w-36"
+          >
+            <option value="">Todas comunidades</option>
+            {communities.map((c: any) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
+          {canCreateFamily && <Button asChild><Link to="/app/families/new"><Plus className="mr-1 h-4 w-4" />Nova</Link></Button>}
+        </PageHeader>
 
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center">
-            <div className="mb-4 rounded-full bg-primary/10 p-4"><Heart className="h-8 w-8 text-primary" /></div>
-            <h3 className="text-lg font-semibold">{search ? 'Nenhuma encontrada' : 'Nenhuma família'}</h3>
-            <p className="mt-1 text-sm text-muted-foreground">Cadastre famílias para vincular catequizandos e responsáveis.</p>
-            {!search && canCreateFamily && <Button className="mt-4" asChild><Link to="/app/families/new">Cadastrar família</Link></Button>}
-          </div>
+          search || communityFilter ? (
+            <EmptyState compact icon={Search} title="Nenhuma família encontrada" description="Tente ajustar os filtros." />
+          ) : (
+            <EmptyState
+              icon={Heart}
+              title="Nenhuma família"
+              description="Cadastre famílias para vincular catequizandos e responsáveis."
+            >
+              {canCreateFamily && (
+                <Button className="mt-4" asChild><Link to="/app/families/new">Cadastrar família</Link></Button>
+              )}
+            </EmptyState>
+          )
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((h: any) => (

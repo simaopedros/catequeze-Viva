@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { login } from 'wasp/client/auth';
+import { login, logout } from 'wasp/client/auth';
 import { useNavigate } from 'react-router';
 import { Button } from '../client/components/ui/button';
 import { Input } from '../client/components/ui/input';
 import { Label } from '../client/components/ui/label';
 import { Checkbox } from '../client/components/ui/checkbox';
 import { Cross, Loader2, Eye, EyeOff, ShieldCheck, ArrowLeft } from 'lucide-react';
-import { getTwoFactorStatus, verifyTwoFactorLogin } from 'wasp/client/operations';
+import { getTwoFactorStatus, verifyTwoFactorLogin, beginTwoFactorChallenge } from 'wasp/client/operations';
 
 type Step = 'login' | 'twofactor';
 
@@ -31,9 +31,9 @@ export default function CustomLoginForm() {
     setError('');
     try {
       await login({ email, password });
-      // Check if 2FA is required
       const status = await getTwoFactorStatus();
       if (status.enabled) {
+        await beginTwoFactorChallenge();
         setStep('twofactor');
       } else {
         navigate('/app');
@@ -62,13 +62,17 @@ export default function CustomLoginForm() {
     }
   };
 
-  const handleBackToLogin = () => {
+  const handleBackToLogin = async () => {
+    try {
+      await logout();
+    } catch {
+      // ignore logout errors while resetting the form
+    }
     setStep('login');
     setTwoFactorToken('');
     setError('');
   };
 
-  // ─── 2FA Challenge Step ───
   if (step === 'twofactor') {
     return (
       <div className="space-y-6">
@@ -125,7 +129,6 @@ export default function CustomLoginForm() {
     );
   }
 
-  // ─── Login Step ───
   return (
     <div className="space-y-6">
       <div className="text-center space-y-2">

@@ -5,24 +5,19 @@ import { useActiveWorkspace } from './useActiveWorkspace';
  * Compatibility wrapper during workspace migration.
  */
 export function useActiveParish() {
-  const { workspace, workspaceId, workspaceName, workspacePlan, availableWorkspaces, switchWorkspace } = useActiveWorkspace();
+  const { workspace, workspaceId, workspaceName, workspacePlan, availableWorkspaces, switchWorkspace, isPersonal } = useActiveWorkspace();
 
-  // Map workspaces to legacy parish format with billing info
-  const parishes = availableWorkspaces.map((ws: any) => ({
+  const parishes = availableWorkspaces.map((ws) => ({
     id: ws.id,
     name: ws.name,
     type: ws.type,
-    billing: ws.isPersonal
-      ? null
-      : { plan: ws.plan, status: 'ACTIVE' },
+    billing: { plan: ws.plan, status: ws.billingStatus ?? null },
   }));
 
   const activeParish = workspace ? {
     id: workspace.id,
     name: workspace.name,
-    billing: workspace.isPersonal
-      ? null
-      : { plan: workspace.plan, status: 'ACTIVE' },
+    billing: { plan: workspace.plan, status: workspace.billingStatus ?? null },
   } : null;
 
   return {
@@ -31,5 +26,7 @@ export function useActiveParish() {
     switchParish: switchWorkspace,
     availableParishes: parishes as any,
     activeParish,
+    isPersonal,
+    workspacePlan,
   };
 }

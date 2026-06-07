@@ -1,7 +1,8 @@
 /**
  * Web Push Notification utility — handles subscription and registration.
  */
-const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_KEY || '';
+const VAPID_PUBLIC_KEY =
+  (import.meta.env.REACT_APP_VAPID_PUBLIC_KEY as string | undefined) || '';
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);

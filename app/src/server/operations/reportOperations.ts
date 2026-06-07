@@ -1,14 +1,18 @@
 import { HttpError } from 'wasp/server';
+import { getUserParishRoles, isCoordinatorOrAboveRole } from '../auth/helpers';
 
 export const getReportsOverview = async (_args: void, context: any) => {
   if (!context.user) throw new HttpError(401);
 
-  const memberships = await context.entities.Membership.findMany({
-    where: { userId: context.user.id, status: 'ACTIVE' },
-    select: { parishId: true },
-  });
-  const parishIds = memberships.map((m: any) => m.parishId);
+  const parishRoles = await getUserParishRoles(context);
+  const roles = parishRoles.map(r => r.role);
 
+  // Only coordinators (and PERSONAL_OWNER) can access reports
+  if (!context.user.isAdmin && !roles.some((r: string) => isCoordinatorOrAboveRole(r))) {
+    throw new HttpError(403, 'Apenas coordenadores podem aceder a relatorios.');
+  }
+
+  const parishIds = parishRoles.map(r => r.parishId);
   const whereClause = context.user.isAdmin ? {} : { parishId: { in: parishIds } };
 
   // Classes with attendance stats
@@ -51,7 +55,6 @@ export const getReportsOverview = async (_args: void, context: any) => {
     };
   });
 
-  // Totals
   const totalEnrolled = classReports.reduce((s: number, c: any) => s + c.totalEnrolled, 0);
   const totalMeetings = classReports.reduce((s: number, c: any) => s + c.totalMeetings, 0);
   const avgAttendance = classReports.length > 0

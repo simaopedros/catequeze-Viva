@@ -316,11 +316,11 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="hidden md:flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-foreground border border-input rounded-xl px-3 py-1.5 h-9">
                 {workspaceType === 'PERSONAL' ? (
-                  <User className="h-4 w-4 text-blue-500" />
+                  <User className="h-4 w-4 text-primary" />
                 ) : workspaceType === 'DIOCESE' ? (
-                  <Building2 className="h-4 w-4 text-amber-500" />
+                  <Building2 className="h-4 w-4 text-warning" />
                 ) : workspaceType === 'COMMUNITY' ? (
-                  <Building2 className="h-4 w-4 text-emerald-500" />
+                  <Building2 className="h-4 w-4 text-success" />
                 ) : (
                   <Church className="h-4 w-4 text-primary" />
                 )}
@@ -336,7 +336,7 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
                   onClick={() => switchWorkspace(ws.id)}
                   className="w-full flex items-center gap-3 text-sm px-2 py-2 rounded-sm hover:bg-accent transition-colors cursor-pointer"
                 >
-                  <User className="h-4 w-4 text-blue-500 shrink-0" />
+                  <User className="h-4 w-4 text-primary shrink-0" />
                   <div className="flex-1 text-left min-w-0">
                     <div className="font-medium text-sm">{ws.name}</div>
                     <div className="text-[10px] text-muted-foreground">{ws.subtitle || 'Espaço pessoal'}</div>
@@ -358,9 +358,9 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
                       className="w-full flex items-center gap-3 text-sm px-2 py-2 rounded-sm hover:bg-accent transition-colors cursor-pointer"
                     >
                       {ws.type === 'DIOCESE' ? (
-                        <Building2 className="h-4 w-4 text-amber-500 shrink-0" />
+                        <Building2 className="h-4 w-4 text-warning shrink-0" />
                       ) : ws.type === 'COMMUNITY' ? (
-                        <Building2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                        <Building2 className="h-4 w-4 text-success shrink-0" />
                       ) : (
                         <Church className="h-4 w-4 text-primary shrink-0" />
                       )}
@@ -433,7 +433,7 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
               </div>
               {availableMemberships.map((m: any) => {
                 const isActive = m.id === activeMembership?.id;
-                const needsPaidPlan = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'].includes(m.role);
+                const needsPaidPlan = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'].includes(m.role) && m.role !== 'PERSONAL_OWNER';
                 return (
                   <button
                     key={m.id}
@@ -453,7 +453,7 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
                         {m.parishName || 'Sem paróquia'}
                       </span>
                     </div>
-                    {needsPaidPlan && <span className="text-[9px] text-amber-500 font-medium shrink-0" title="Requer plano pago">💰</span>}
+                    {needsPaidPlan && <span className="text-[9px] text-warning font-medium shrink-0" title="Requer plano pago">💰</span>}
                     {isActive && <Check className="h-4 w-4 text-primary shrink-0" />}
                   </button>
                 );

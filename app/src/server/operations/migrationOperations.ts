@@ -19,16 +19,23 @@ export const executeParishMigration = async (
 
   // Authorization: must be admin OR coordinator of the target parish
   if (!context.user.isAdmin) {
-    const membership = await context.entities.Membership.findFirst({
-      where: {
-        userId: context.user.id,
-        parishId: args.targetParishId,
-        status: 'ACTIVE',
-        role: 'PARISH_COORDINATOR',
-      },
+    // Allow personal workspace owner
+    const isPersonalOwner = await context.entities.Parish.findFirst({
+      where: { id: args.targetParishId, ownerId: context.user.id, type: 'PERSONAL' },
+      select: { id: true },
     });
-    if (!membership) {
-      throw new HttpError(403, 'Apenas o coordenador da paróquia de destino ou um administrador pode executar a migração.');
+    if (!isPersonalOwner) {
+      const membership = await context.entities.Membership.findFirst({
+        where: {
+          userId: context.user.id,
+          parishId: args.targetParishId,
+          status: 'ACTIVE',
+          role: 'PARISH_COORDINATOR',
+        },
+      });
+      if (!membership) {
+        throw new HttpError(403, 'Apenas o coordenador da paróquia de destino ou um administrador pode executar a migração.');
+      }
     }
   }
 

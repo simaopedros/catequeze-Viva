@@ -11,7 +11,6 @@ const cardVariants = cva(
         default: "bg-card text-card-foreground",
         accent:
           "bg-card-accent text-card-accent-foreground hover:scale-[1.02]",
-        faded: "text-card-faded-foreground scale-95 opacity-50",
         bento:
           "bg-card-subtle text-card-subtle-foreground hover:scale-[1.02] border-none shadow-none",
       },

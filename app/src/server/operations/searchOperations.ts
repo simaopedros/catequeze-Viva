@@ -48,18 +48,30 @@ export const globalSearch = async (args: { query: string }, context: any) => {
   ] = await Promise.all([
     safeQuery(() =>
       context.entities.CatechumenProfile.findMany({
-        where: {
-          OR: [
-            { firstName: { contains: q, mode: 'insensitive' } },
-            { lastName: { contains: q, mode: 'insensitive' } },
-          ],
-          ...(isAdmin ? {} : {
-            OR: [
-              { enrollments: { some: { class: parishFilter } } },
-              { household: parishFilter },
-            ],
-          }),
-        },
+        where: isAdmin
+          ? {
+              OR: [
+                { firstName: { contains: q, mode: 'insensitive' } },
+                { lastName: { contains: q, mode: 'insensitive' } },
+              ],
+            }
+          : {
+              AND: [
+                {
+                  OR: [
+                    { firstName: { contains: q, mode: 'insensitive' } },
+                    { lastName: { contains: q, mode: 'insensitive' } },
+                  ],
+                },
+                {
+                  OR: [
+                    { enrollments: { some: { class: parishFilter } } },
+                    { household: parishFilter },
+                    { parishId: { in: parishIds } },
+                  ],
+                },
+              ],
+            },
         select: { id: true, firstName: true, lastName: true },
         take: limit,
       })

@@ -10,6 +10,7 @@ import { getMonthlyAllowance } from '../../shared/aiCredits';
 import { ConfirmDialog } from '../../client/components/ConfirmDialog';
 import { toast } from '../../client/hooks/use-toast';
 import { useUserContext } from '../../client/hooks/useUserContext';
+import { useActiveWorkspace } from '../../client/hooks/useActiveWorkspace';
 
 // ─── Plan definitions ───────────────────────────────────────────────────────
 
@@ -36,7 +37,7 @@ const ALL_PLANS: PlanCard[] = [
     maxClasses: 2,
     maxCatechumens: 30,
     features: ['2 turmas', 'Até 30 catequizandos', 'Presença básica', 'Suporte comunitário'],
-    color: 'bg-green-50 border-green-200',
+    color: 'bg-success/10 border-success/30',
     highlight: false,
     isFree: true,
   },
@@ -50,7 +51,7 @@ const ALL_PLANS: PlanCard[] = [
     maxClasses: null,
     maxCatechumens: null,
     features: ['Turmas ilimitadas', 'Catequizandos ilimitados', 'Relatórios avançados', 'Suporte prioritário', '2 créditos IA/mês (amostra)'],
-    color: 'bg-blue-50 border-blue-200',
+    color: 'bg-primary/10 border-primary/30',
     highlight: false,
     isFree: false,
   },
@@ -64,22 +65,8 @@ const ALL_PLANS: PlanCard[] = [
     maxClasses: null,
     maxCatechumens: null,
     features: ['Tudo do Pro', 'Gerador de encontros por IA', 'Planejamento anual automático', 'Gerador de atividades e quizzes', 'Assistente teológico', 'Mensagens WhatsApp', '15 créditos/mês'],
-    color: 'bg-violet-50 border-violet-300',
+    color: 'bg-accent/10 border-accent/40',
     highlight: true,
-    isFree: false,
-  },
-  {
-    planId: PaymentPlanId.CatechistAiAddon,
-    name: 'Add-on IA',
-    price: 'R$ 15/mês',
-    priceCents: 1500,
-    annualPrice: 'R$ 150/ano (R$ 12,50/mês)',
-    priceCentsAnnual: 15000,
-    maxClasses: null,
-    maxCatechumens: null,
-    features: ['Adiciona 15 créditos IA/mês', 'Compatível com qualquer plano pago', 'Gerador de encontros', 'Assistente teológico'],
-    color: 'bg-indigo-50 border-indigo-200',
-    highlight: false,
     isFree: false,
   },
   {
@@ -92,7 +79,7 @@ const ALL_PLANS: PlanCard[] = [
     maxClasses: null,
     maxCatechumens: null,
     features: ['Tudo do IA', 'Multi-catequista', 'Turmas ilimitadas', 'Comunicação integrada', 'Documentos e certidões', 'Consentimentos LGPD', 'Painel do coordenador', '50 créditos de IA/mês'],
-    color: 'bg-purple-50 border-purple-200',
+    color: 'bg-secondary/10 border-secondary/30',
     highlight: false,
     isFree: false,
   },
@@ -106,7 +93,7 @@ const ALL_PLANS: PlanCard[] = [
     maxClasses: null,
     maxCatechumens: null,
     features: ['Tudo do Paróquia', 'Multi-paróquia', 'Biblioteca oficial', 'Analytics consolidado', 'Gestão centralizada', 'Suporte prioritário', '50 créditos IA/mês por usuário'],
-    color: 'bg-amber-50 border-amber-200',
+    color: 'bg-warning/10 border-warning/30',
     highlight: false,
     isFree: false,
   },
@@ -123,6 +110,7 @@ export default function BillingPage() {
   const { data: aiCredits } = useQuery(getAiCreditsStatus);
   const { data: user } = useAuth();
   const { parishId } = useUserContext();
+  const { isPersonal } = useActiveWorkspace();
   const { data: parish, isLoading: loadingParish } = useQuery(
     getParishById,
     { id: parishId },
@@ -173,8 +161,18 @@ export default function BillingPage() {
     (effectivePlanId === PaymentPlanId.Parish && parish?.ownerId === user?.id) ||
     (effectivePlanId === PaymentPlanId.Diocese && parish?.dioceseAdmins?.some((da: any) => da.user?.id === user?.id));
 
-  // Show all plans including Parish/Diocese — non-admins see them as "institutional" reference
-  const visiblePlans = ALL_PLANS;
+  // Show plans filtered by context: personal vs institutional
+  const visiblePlans = ALL_PLANS.filter((plan) => {
+    // Remove add-on plans that aren't implemented yet (CatechistAiAddon already removed)
+    // Personal workspace: only individual plans (CatechistGrátis, CatechistPro, CatechistAI)
+    // Institutional workspace: only institutional plans (Parish, Diocese) + individual as reference
+    if (isPersonal || (!parishId && !parish)) {
+      // Personal context: show individual plans only
+      return [PaymentPlanId.CatechistFree, PaymentPlanId.CatechistPro, PaymentPlanId.CatechistAi].includes(plan.planId);
+    }
+    // Institutional context: show all
+    return true;
+  });
 
   if (loading || (parishId && loadingParish)) {
     return (
@@ -242,15 +240,15 @@ export default function BillingPage() {
             <h1 className="text-2xl font-bold">Assinatura</h1>
             <p className="text-muted-foreground text-sm flex items-center gap-2">
               Plano atual: <Badge>{effectivePlan.name}</Badge>
-              {isActive && <Badge variant="default" className="bg-green-100 text-green-700 text-xs">Ativo</Badge>}
+              {isActive && <Badge variant="default" className="bg-success/10 text-success text-xs">Ativo</Badge>}
             </p>
             {isParishManaged && (
-              <div className="mt-2 rounded-lg border border-blue-200 bg-blue-50 p-4 space-y-2 text-sm text-blue-800">
+              <div className="mt-2 rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-2 text-sm">
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 flex-shrink-0 text-blue-600" />
+                  <CheckCircle className="h-4 w-4 flex-shrink-0 text-primary" />
                   <span className="font-semibold">Plano Gerenciado Corporativo</span>
                 </div>
-                <div className="pl-6 space-y-1 text-xs text-blue-700">
+                <div className="pl-6 space-y-1 text-xs text-muted-foreground">
                   {effectivePlanId === PaymentPlanId.Diocese && (
                     <>
                       <p>Diocese responsável: <strong>{parish?.diocese?.name || 'Não informada'}</strong></p>
@@ -267,7 +265,7 @@ export default function BillingPage() {
                       )}
                     </>
                   )}
-                  <p className="mt-1.5 text-blue-600/80">Por favor, entre em contato com o responsável indicado para qualquer alteração ou dúvida sobre o plano.</p>
+                  <p className="mt-1.5 text-muted-foreground">Por favor, entre em contato com o responsável indicado para qualquer alteração ou dúvida sobre o plano.</p>
                 </div>
               </div>
             )}
@@ -276,7 +274,7 @@ export default function BillingPage() {
 
         {/* Error alert */}
         {error && (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-4 flex items-center gap-3 text-red-700 text-sm">
+          <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 flex items-center gap-3 text-destructive text-sm">
             <AlertCircle className="h-5 w-5 flex-shrink-0" />
             {error}
           </div>
@@ -321,7 +319,7 @@ export default function BillingPage() {
             </div>
           </div>
           <div className="rounded-xl border bg-card p-5 flex items-center gap-4">
-            <div className={`rounded-lg p-3 ${isActive ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}`}>
+            <div className={`rounded-lg p-3 ${isActive ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'}`}>
               <Clock className="h-6 w-6" />
             </div>
             <div className="flex-1">
@@ -339,7 +337,7 @@ export default function BillingPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="mt-2 text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+                  className="mt-2 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
                   onClick={handleCancel}
                   disabled={cancelling}
                 >

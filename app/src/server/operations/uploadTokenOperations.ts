@@ -1,9 +1,11 @@
 import { HttpError } from 'wasp/server';
 import { requireAuth } from '../auth/helpers';
 import * as fs from 'fs';
-import * as path from 'path';
-
-const UPLOADS_DIR = path.resolve(process.cwd(), 'uploads');
+import {
+  UPLOADS_DIR,
+  generateUploadFileName,
+} from '../uploads/helpers';
+import crypto from 'node:crypto';
 
 /**
  * Generates a unique upload token for a catechumen, valid for 7 days.
@@ -138,8 +140,13 @@ export const uploadDocumentWithToken = async (
   }
 
   const ext = args.mimeType?.split('/')[1] || 'bin';
-  const fileName = `${Date.now()}_${crypto.randomUUID().slice(0, 8)}.${ext}`;
-  const filePath = path.join(UPLOADS_DIR, fileName);
+  let fileName: string;
+  try {
+    fileName = generateUploadFileName(args.mimeType || 'application/octet-stream');
+  } catch {
+    throw new HttpError(400, 'Formato de ficheiro não permitido.');
+  }
+  const filePath = `${UPLOADS_DIR}/${fileName}`;
 
   try {
     const buffer = Buffer.from(args.fileBase64, 'base64');

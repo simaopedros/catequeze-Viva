@@ -1,9 +1,14 @@
 import { useParams, Link, useNavigate } from 'react-router';
 import { useState, useEffect } from 'react';
 import { Button } from '../../client/components/ui/button';
+import { Input } from '../../client/components/ui/input';
+import { Label } from '../../client/components/ui/label';
 import { Badge } from '../../client/components/ui/badge';
-import { ArrowLeft, Plus, Calendar, BookOpen, Sparkles, MessageCircle, ExternalLink } from 'lucide-react';
+import { Plus, Calendar, BookOpen, Sparkles, MessageCircle, ExternalLink } from 'lucide-react';
 import { AppShell } from '../AppShell';
+import { PageHeader } from '../../client/components/PageHeader';
+import { SkeletonPage } from '../../client/components/Skeletons';
+import { EmptyState } from '../../client/components/EmptyState';
 import { useQuery, listMeetings, createMeeting, updateMeeting, listContentItems } from 'wasp/client/operations';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { toast } from '../../client/hooks/use-toast';
@@ -12,7 +17,7 @@ export default function MeetingsPage() {
   const { id: classId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { userRole } = useUserContext();
-  const canManageMeetings = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST'].includes(userRole);
+  const canManageMeetings = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'PERSONAL_OWNER'].includes(userRole);
   const { data: meetings = [], isLoading: loading } = useQuery(listMeetings, { classId: classId! });
   const { data: contentItems = [] } = useQuery(listContentItems);
   const [showForm, setShowForm] = useState(false);
@@ -45,24 +50,24 @@ export default function MeetingsPage() {
     }
   };
 
-  if (loading) return <AppShell><div className="p-6">Carregando...</div></AppShell>;
+  if (loading) return <AppShell><div className="p-6"><SkeletonPage /></div></AppShell>;
 
   return (
     <AppShell>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" asChild><Link to={`/app/classes/${classId}`}><ArrowLeft className="h-5 w-5" /></Link></Button>
-            <div><h1 className="text-2xl font-bold">Encontros</h1><p className="text-muted-foreground text-sm">Gerenciar encontros da turma</p></div>
-          </div>
+        <PageHeader
+          title="Encontros"
+          subtitle="Gerenciar encontros da turma"
+          backTo={`/app/classes/${classId}`}
+        >
           {canManageMeetings && <Button onClick={() => setShowForm(!showForm)}><Plus className="mr-2 h-4 w-4" />Novo</Button>}
-        </div>
+        </PageHeader>
 
         {showForm && (
           <div className="rounded-xl border bg-card p-4 space-y-3">
             <div className="flex gap-3">
-              <input placeholder="Título do encontro" value={title} onChange={e => setTitle(e.target.value)} className="flex h-9 flex-1 rounded-md border border-input bg-background px-3 py-1 text-sm" />
-              <input type="date" value={date} onChange={e => setDate(e.target.value)} className="flex h-9 rounded-md border border-input bg-background px-3 py-1 text-sm" />
+              <div className="flex-1 space-y-1.5"><Label htmlFor="meetingTitle">Título do encontro</Label><Input id="meetingTitle" placeholder="Título do encontro" value={title} onChange={e => setTitle(e.target.value)} /></div>
+              <div className="space-y-1.5"><Label htmlFor="meetingDate">Data</Label><Input id="meetingDate" type="date" value={date} onChange={e => setDate(e.target.value)} /></div>
             </div>
             <div className="flex gap-3 items-center">
               <select
@@ -81,7 +86,12 @@ export default function MeetingsPage() {
         )}
 
         {meetings.length === 0 ? (
-          <div className="text-center text-muted-foreground py-12">Nenhum encontro registrado.</div>
+          <EmptyState
+            icon={Calendar}
+            title="Nenhum encontro registrado"
+            description="Crie o primeiro encontro para esta turma."
+            compact
+          />
         ) : (
           <div className="space-y-3">
             {meetings.map((m: any) => (

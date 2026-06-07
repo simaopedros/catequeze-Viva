@@ -203,21 +203,105 @@ async function seed() {
   // ═══ 5. Create Sacraments ═══
   const sacramentoCrismaId = 'test-sacramento-crisma';
   const sacramentoEucaristiaId = 'test-sacramento-eucaristia';
+  const sacramentoBatismoId = 'test-sacramento-batismo';
+  const sacramentoReconciliacaoId = 'test-sacramento-reconciliacao';
+  const sacramentoMatrimonioId = 'test-sacramento-matrimonio';
+
   const sacramentoTemplateCrismaId = 'test-template-crisma';
   const sacramentoTemplateEucaristiaId = 'test-template-eucaristia';
+  const sacramentoTemplateGlobalBatismoId = 'test-template-global-batismo';
+  const sacramentoTemplateGlobalCrismaId = 'test-template-global-crisma';
+  const sacramentoTemplateGlobalReconciliacaoId = 'test-template-global-reconciliacao';
+  const sacramentoTemplateGlobalMatrimonioId = 'test-template-global-matrimonio';
+
   await p.sacrament.createMany({
     data: [
       { id: sacramentoCrismaId, name: 'Crisma', stageId: stageId2 },
       { id: sacramentoEucaristiaId, name: 'Primeira Eucaristia', stageId: stageId3 },
+      { id: sacramentoBatismoId, name: 'Batismo', stageId: stageId1 },
+      { id: sacramentoReconciliacaoId, name: 'Reconciliação', stageId: stageId1 },
+      { id: sacramentoMatrimonioId, name: 'Matrimônio', stageId: stageId3 },
     ]
   });
   await p.sacramentalJourneyTemplate.createMany({
     data: [
-      { id: sacramentoTemplateCrismaId, name: 'Jornada de Crisma', sacramentId: sacramentoCrismaId, parishId: PARISH_SAO_JOSE_ID },
-      { id: sacramentoTemplateEucaristiaId, name: 'Primeira Eucaristia', sacramentId: sacramentoEucaristiaId, parishId: PARISH_SANTA_MARIA_ID },
+      // Parochial template (demo of local customization)
+      { id: sacramentoTemplateCrismaId, name: 'Jornada de Crisma (São José)', description: 'Modelo paroquial adaptado — inclui retiro e encontro diocesano', sacramentId: sacramentoCrismaId, parishId: PARISH_SAO_JOSE_ID },
+      // Global templates (available to all users)
+      { id: sacramentoTemplateGlobalCrismaId, name: 'Preparação para Crisma', description: 'Modelo global recomendado para preparação ao Crisma', sacramentId: sacramentoCrismaId, parishId: null },
+      { id: sacramentoTemplateEucaristiaId, name: 'Preparação para a Eucaristia', description: 'Modelo global para Primeira Comunhão', sacramentId: sacramentoEucaristiaId, parishId: null },
+      { id: sacramentoTemplateGlobalBatismoId, name: 'Preparação para o Batismo', description: 'Modelo global para preparação batismal', sacramentId: sacramentoBatismoId, parishId: null },
+      { id: sacramentoTemplateGlobalReconciliacaoId, name: 'Preparação para a Confissão', description: 'Modelo global para primeira reconciliação', sacramentId: sacramentoReconciliacaoId, parishId: null },
+      { id: sacramentoTemplateGlobalMatrimonioId, name: 'Preparação para o Matrimônio', description: 'Modelo global para curso de noivos', sacramentId: sacramentoMatrimonioId, parishId: null },
     ]
   });
-  console.log('✅ Sacramentos + Templates de Jornada Sacramental criados');
+
+  // Milestones: Crisma (paroquial — 7 marcos)
+  await p.sacramentalMilestoneTemplate.createMany({
+    data: [
+      { name: 'Inscrição e Entrevista Inicial', description: 'Entrevista com o catequizando e família', required: true, evidenceRequired: false, order: 1, templateId: sacramentoTemplateCrismaId },
+      { name: 'Certidão de Batismo', description: 'Apresentar certidão de batismo atualizada', required: true, evidenceRequired: true, order: 2, daysBeforeSacrament: 90, templateId: sacramentoTemplateCrismaId },
+      { name: 'Retiro de Preparação', description: 'Participação no retiro espiritual', required: true, evidenceRequired: false, order: 3, daysBeforeSacrament: 30, templateId: sacramentoTemplateCrismaId },
+      { name: 'Encontro de Crismandos', description: 'Participação no encontro diocesano de crismandos', required: false, evidenceRequired: false, order: 4, templateId: sacramentoTemplateCrismaId },
+      { name: 'Carta de Intenção', description: 'Carta pessoal explicando o desejo de receber o sacramento', required: true, evidenceRequired: true, order: 5, templateId: sacramentoTemplateCrismaId },
+      { name: 'Confissão', description: 'Realizar o sacramento da reconciliação antes da crisma', required: true, evidenceRequired: false, order: 6, daysBeforeSacrament: 7, templateId: sacramentoTemplateCrismaId },
+      { name: 'Ensaios da Celebração', description: 'Participar dos ensaios da cerimónia', required: true, evidenceRequired: false, order: 7, daysBeforeSacrament: 7, templateId: sacramentoTemplateCrismaId },
+    ]
+  });
+
+  // Milestones: Crisma (global — 6 marcos, mais simples)
+  await p.sacramentalMilestoneTemplate.createMany({
+    data: [
+      { name: 'Inscrição na Catequese', description: 'Confirmar matrícula na turma de crisma', required: true, evidenceRequired: false, order: 1, templateId: sacramentoTemplateGlobalCrismaId },
+      { name: 'Certidão de Batismo', description: 'Apresentar certidão de batismo', required: true, evidenceRequired: true, order: 2, daysBeforeSacrament: 60, templateId: sacramentoTemplateGlobalCrismaId },
+      { name: 'Participação nas Aulas', description: 'Frequência mínima de 75% nas aulas de preparação', required: true, evidenceRequired: false, order: 3, templateId: sacramentoTemplateGlobalCrismaId },
+      { name: 'Retiro Espiritual', description: 'Participar do retiro de crismandos', required: true, evidenceRequired: false, order: 4, daysBeforeSacrament: 30, templateId: sacramentoTemplateGlobalCrismaId },
+      { name: 'Carta ao Bispo', description: 'Carta pessoal solicitando o sacramento', required: true, evidenceRequired: true, order: 5, templateId: sacramentoTemplateGlobalCrismaId },
+      { name: 'Confissão', description: 'Sacramento da reconciliação', required: true, evidenceRequired: false, order: 6, daysBeforeSacrament: 7, templateId: sacramentoTemplateGlobalCrismaId },
+    ]
+  });
+
+  // Milestones: Eucaristia (5 marcos)
+  await p.sacramentalMilestoneTemplate.createMany({
+    data: [
+      { name: 'Inscrição Confirmada', description: 'Confirmação da inscrição na catequese', required: true, evidenceRequired: false, order: 1, templateId: sacramentoTemplateEucaristiaId },
+      { name: 'Certidão de Nascimento', description: 'Documento de identidade para primeira eucaristia', required: true, evidenceRequired: true, order: 2, daysBeforeSacrament: 60, templateId: sacramentoTemplateEucaristiaId },
+      { name: 'Termo de Consentimento', description: 'Autorização dos pais ou responsáveis', required: true, evidenceRequired: true, order: 3, templateId: sacramentoTemplateEucaristiaId },
+      { name: 'Formação sobre a Eucaristia', description: 'Participação nas aulas específicas sobre o sacramento', required: true, evidenceRequired: false, order: 4, templateId: sacramentoTemplateEucaristiaId },
+      { name: 'Primeira Confissão', description: 'Realizar a primeira confissão', required: true, evidenceRequired: false, order: 5, daysBeforeSacrament: 14, templateId: sacramentoTemplateEucaristiaId },
+    ]
+  });
+
+  // Milestones: Batismo (global — 4 marcos)
+  await p.sacramentalMilestoneTemplate.createMany({
+    data: [
+      { name: 'Entrevista com os Pais', description: 'Conversa pastoral com pais e padrinhos', required: true, evidenceRequired: false, order: 1, templateId: sacramentoTemplateGlobalBatismoId },
+      { name: 'Certidão de Nascimento', description: 'Documento do batizando', required: true, evidenceRequired: true, order: 2, daysBeforeSacrament: 30, templateId: sacramentoTemplateGlobalBatismoId },
+      { name: 'Curso de Preparação', description: 'Participação no curso para pais e padrinhos', required: true, evidenceRequired: false, order: 3, templateId: sacramentoTemplateGlobalBatismoId },
+      { name: 'Escolha dos Padrinhos', description: 'Definição e aprovação dos padrinhos', required: true, evidenceRequired: false, order: 4, templateId: sacramentoTemplateGlobalBatismoId },
+    ]
+  });
+
+  // Milestones: Reconciliação (global — 3 marcos)
+  await p.sacramentalMilestoneTemplate.createMany({
+    data: [
+      { name: 'Inscrição na Catequese', description: 'Matrícula na turma de preparação', required: true, evidenceRequired: false, order: 1, templateId: sacramentoTemplateGlobalReconciliacaoId },
+      { name: 'Exame de Consciência', description: 'Participação no encontro sobre o exame de consciência', required: true, evidenceRequired: false, order: 2, templateId: sacramentoTemplateGlobalReconciliacaoId },
+      { name: 'Celebração Penitencial', description: 'Participação na celebração comunitária da reconciliação', required: true, evidenceRequired: false, order: 3, templateId: sacramentoTemplateGlobalReconciliacaoId },
+    ]
+  });
+
+  // Milestones: Matrimônio (global — 5 marcos)
+  await p.sacramentalMilestoneTemplate.createMany({
+    data: [
+      { name: 'Entrevista Inicial', description: 'Conversa com o pároco para abertura do processo', required: true, evidenceRequired: false, order: 1, templateId: sacramentoTemplateGlobalMatrimonioId },
+      { name: 'Certidão de Batismo', description: 'Certidão de batismo atualizada de ambos os noivos', required: true, evidenceRequired: true, order: 2, daysBeforeSacrament: 90, templateId: sacramentoTemplateGlobalMatrimonioId },
+      { name: 'Curso de Noivos', description: 'Participação no curso de preparação para a vida matrimonial', required: true, evidenceRequired: false, order: 3, daysBeforeSacrament: 60, templateId: sacramentoTemplateGlobalMatrimonioId },
+      { name: 'Documentação Civil', description: 'Apresentar documentos civis exigidos (RG, comprovante de residência)', required: true, evidenceRequired: true, order: 4, daysBeforeSacrament: 30, templateId: sacramentoTemplateGlobalMatrimonioId },
+      { name: 'Ensaio da Cerimónia', description: 'Participar do ensaio da celebração', required: true, evidenceRequired: false, order: 5, daysBeforeSacrament: 7, templateId: sacramentoTemplateGlobalMatrimonioId },
+    ]
+  });
+  console.log('✅ 5 Sacramentos + 6 Templates com 30 Marcos criados');
 
   // ═══ 6. Create Classes ═══
   const classCrismaId = 'test-class-crisma-001';
@@ -227,9 +311,9 @@ async function seed() {
 
   await p.catechesisClass.createMany({
     data: [
-      { id: classCrismaId, name: 'Turma Crisma 2026', parishId: PARISH_SAO_JOSE_ID, communityId: COMMUNITY_SAO_JOSE_ID, stageId: stageId2, status: 'ACTIVE', maxCapacity: 30, dayOfWeek: '3', startTime: '19:00', endTime: '20:30' },
+      { id: classCrismaId, name: 'Turma Crisma 2026', parishId: PARISH_SAO_JOSE_ID, communityId: COMMUNITY_SAO_JOSE_ID, stageId: stageId2, sacramentId: sacramentoCrismaId, status: 'ACTIVE', maxCapacity: 30, dayOfWeek: '3', startTime: '19:00', endTime: '20:30' },
       { id: classInfantilId, name: 'Turma Infantil 2026', parishId: PARISH_SAO_JOSE_ID, communityId: COMMUNITY_SAO_JOSE_ID, stageId: stageId1, status: 'ACTIVE', maxCapacity: 20, dayOfWeek: '6', startTime: '09:00', endTime: '10:30' },
-      { id: classEucaristiaId, name: 'Turma Eucaristia 2026', parishId: PARISH_SANTA_MARIA_ID, communityId: COMMUNITY_SANTA_MARIA_ID, stageId: stageId3, status: 'ACTIVE', maxCapacity: 15, dayOfWeek: '5', startTime: '14:00', endTime: '15:30' },
+      { id: classEucaristiaId, name: 'Turma Eucaristia 2026', parishId: PARISH_SANTA_MARIA_ID, communityId: COMMUNITY_SANTA_MARIA_ID, stageId: stageId3, sacramentId: sacramentoEucaristiaId, status: 'ACTIVE', maxCapacity: 15, dayOfWeek: '5', startTime: '14:00', endTime: '15:30' },
       { id: classSanJoaoId, name: 'Turma Rural 2026', parishId: PARISH_SAN_JOAO_ID, communityId: COMMUNITY_SAN_JOAO_ID, stageId: stageId3, status: 'ACTIVE', maxCapacity: 10, dayOfWeek: '7', startTime: '08:00', endTime: '09:30' }
     ]
   });
@@ -434,10 +518,62 @@ async function seed() {
   console.log('✅ 5 Encontros + 11 Registros de Chamada/Presença criados');
 
   // ═══ 15. Create Sacramental Journeys ═══
+  const journeyCrisma1Id = 'test-journey-crisma-01';
+  const journeyEucaristia1Id = 'test-journey-eucaristia-01';
+
+  // Jornada de Crisma para João Silva (parcial: 2 de 7 completos)
   await p.sacramentalJourney.create({
-    data: { catechumenProfileId: 'test-catech-silva-01', templateId: sacramentoTemplateCrismaId }
+    data: { id: journeyCrisma1Id, catechumenProfileId: 'test-catech-silva-01', templateId: sacramentoTemplateCrismaId }
   });
-  console.log('✅ 1 Jornada Sacramental de Crisma criada');
+
+  // Create milestone instances for Crisma journey with mixed progress
+  const crismaTemplateMilestones = await p.sacramentalMilestoneTemplate.findMany({
+    where: { templateId: sacramentoTemplateCrismaId },
+    orderBy: { order: 'asc' },
+  });
+
+  for (let i = 0; i < crismaTemplateMilestones.length; i++) {
+    const tm = crismaTemplateMilestones[i];
+    let status = 'PENDING';
+    if (i === 0) status = 'COMPLETED'; // Inscrição completa
+    else if (i === 1) status = 'WAITING_APPROVAL'; // Certidão de Batismo aguardando aprovação
+    await p.sacramentalMilestone.create({
+      data: {
+        journeyId: journeyCrisma1Id,
+        templateMilestoneId: tm.id,
+        status,
+        notes: i === 0 ? 'Entrevista realizada em 15/03/2026' : i === 1 ? 'Documento enviado pelo responsável' : null,
+        completedAt: i === 0 ? new Date('2026-03-15') : null,
+      },
+    });
+  }
+
+  // Jornada de Eucaristia para Maria Oliveira (parcial: 3 de 5 completos)
+  await p.sacramentalJourney.create({
+    data: { id: journeyEucaristia1Id, catechumenProfileId: 'test-catech-sm-01', templateId: sacramentoTemplateEucaristiaId }
+  });
+
+  const eucaristiaTemplateMilestones = await p.sacramentalMilestoneTemplate.findMany({
+    where: { templateId: sacramentoTemplateEucaristiaId },
+    orderBy: { order: 'asc' },
+  });
+
+  for (let i = 0; i < eucaristiaTemplateMilestones.length; i++) {
+    const tm = eucaristiaTemplateMilestones[i];
+    let status = 'PENDING';
+    if (i <= 2) status = 'COMPLETED'; // Inscrição, certidão, consentimento - completos
+    else if (i === 3) status = 'IN_PROGRESS'; // Formação em andamento
+    await p.sacramentalMilestone.create({
+      data: {
+        journeyId: journeyEucaristia1Id,
+        templateMilestoneId: tm.id,
+        status,
+        notes: i <= 2 ? 'Concluído' : null,
+        completedAt: i <= 2 ? new Date('2026-04-10') : null,
+      },
+    });
+  }
+  console.log('✅ 2 Jornadas Sacramentais com marcos realistas criadas');
 
   // ═══ 16. Create Content Items (Biblioteca de Apoio) ═══
   const contentId = 'test-content-000001';

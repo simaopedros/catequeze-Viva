@@ -1,11 +1,15 @@
 import { HttpError } from 'wasp/server';
 import { validateOrThrow, createClassSchema, updateClassSchema } from '../validation';
-import { requireClassAccess } from '../auth/helpers';
+import { requireClassAccess, getEffectiveParishRole, isCoordinatorOrAboveRole } from '../auth/helpers';
 import { ClassStatus, CatechistAssignmentRole, EnrollmentStatus, MembershipStatus } from '@prisma/client';
 import { assertCanCreateClass, assertCanEnrollCatechumen } from './billingEnforcement';
+import { ensurePersonalWorkspace } from './workspaceOperations';
+import { ensureSacramentalJourneyForCatechumen } from '../sacramentHelpers';
 
-function isCoordinatorOrAbove(role: string): boolean {
-  return ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'].includes(role);
+// isCoordinatorOrAbove now delegates to the auth helper which includes PERSONAL_OWNER
+function isCoordinatorOrAbove(role: string | null): boolean {
+  if (!role) return false;
+  return isCoordinatorOrAboveRole(role);
 }
 
 function isCatechist(role: string): boolean {
@@ -170,19 +174,42 @@ export const listClasses = async (_args: { communityId?: string; workspaceId?: s
     return [];
   }
 
-  const whereFallback: any = { parishId: { in: whereParishIds } };
-  if (args.communityId) whereFallback.communityId = args.communityId;
-  return context.entities.CatechesisClass.findMany({
-    where: whereFallback,
-    orderBy: { name: 'asc' },
-    include: {
-      parish: { select: { id: true, name: true } },
-      community: { select: { id: true, name: true } },
-      stage: { select: { id: true, name: true } },
-      sacrament: { select: { id: true, name: true } },
-      _count: { select: { enrollments: true, meetings: true } },
-    },
-  });
+  // Pastoral viewer: read-only access to parish classes
+  if (roles.includes('PASTORAL_VIEWER')) {
+    const whereViewer: any = { parishId: { in: whereParishIds } };
+    if (args.communityId) whereViewer.communityId = args.communityId;
+    return context.entities.CatechesisClass.findMany({
+      where: whereViewer,
+      orderBy: { name: 'asc' },
+      include: {
+        parish: { select: { id: true, name: true } },
+        community: { select: { id: true, name: true } },
+        stage: { select: { id: true, name: true } },
+        sacrament: { select: { id: true, name: true } },
+        _count: { select: { enrollments: true, meetings: true } },
+      },
+    });
+  }
+
+  // Personal workspace owner: has full access to their workspace classes
+  if (personalParishId) {
+    const wherePersonal: any = { parishId: { in: whereParishIds } };
+    if (args.communityId) wherePersonal.communityId = args.communityId;
+    return context.entities.CatechesisClass.findMany({
+      where: wherePersonal,
+      orderBy: { name: 'asc' },
+      include: {
+        parish: { select: { id: true, name: true } },
+        community: { select: { id: true, name: true } },
+        stage: { select: { id: true, name: true } },
+        sacrament: { select: { id: true, name: true } },
+        catechists: { include: { user: { select: { id: true, firstName: true, lastName: true, email: true } } } },
+        _count: { select: { enrollments: true, meetings: true } },
+      },
+    });
+  }
+
+  return [];
 };
 
 export const createClass = async (args: any, context: any) => {
@@ -203,47 +230,17 @@ export const createClass = async (args: any, context: any) => {
   }
 
   if (!effectiveParishId) {
-    // Try personal workspace
-    const personal = await context.entities.Parish.findFirst({
-      where: { ownerId: context.user.id, type: 'PERSONAL' },
-      select: { id: true },
-    });
-    if (personal) {
-      effectiveParishId = personal.id;
+    // Use shared personal workspace helper (find-or-create, idempotent)
+    const personalWs = await ensurePersonalWorkspace(undefined, context);
+    effectiveParishId = personalWs.id;
+  }
+
+  if (!context.user.isAdmin) {
+    const role = await getEffectiveParishRole(context, effectiveParishId);
+    if (!role) throw new HttpError(403, 'Você não tem permissão para criar turmas nesta paróquia.');
+    if (!isCoordinatorOrAbove(role) && role !== 'LEAD_CATECHIST' && role !== 'ASSISTANT_CATECHIST') {
+      throw new HttpError(403, 'Apenas coordenadores e catequistas podem criar turmas.');
     }
-  }
-
-  // Auto-create personal workspace if none exists
-  if (!effectiveParishId) {
-    const user = await context.entities.User.findUnique({
-      where: { id: context.user.id },
-      select: { firstName: true, lastName: true },
-    });
-    const created = await context.entities.Parish.create({
-      data: {
-        name: `Catequese de ${user?.firstName || 'Catequista'}`,
-        type: 'PERSONAL',
-        city: '—',
-        state: '—',
-        ownerId: context.user.id,
-      },
-    });
-    effectiveParishId = created.id;
-  }
-
-  const membership = await context.entities.Membership.findFirst({
-    where: { userId: context.user.id, parishId: effectiveParishId, status: MembershipStatus.ACTIVE },
-  });
-
-  if (!membership && !context.user.isAdmin) {
-    // Allow if user is the owner of the parish (personal workspace)
-    const isOwner = await context.entities.Parish.findFirst({
-      where: { id: effectiveParishId, ownerId: context.user.id },
-    });
-    if (!isOwner) throw new HttpError(403, 'Você não tem permissão para criar turmas nesta paróquia.');
-  }
-  if (membership && !isCoordinatorOrAbove(membership.role) && membership.role !== 'LEAD_CATECHIST') {
-    throw new HttpError(403, 'Apenas coordenadores e catequistas responsáveis podem criar turmas.');
   }
 
   // Enforce plan limits
@@ -263,15 +260,18 @@ export const createClass = async (args: any, context: any) => {
     },
   });
 
-  // Auto-assign the creator as the lead catechist of this class
-  if (membership && isCatechist(membership.role)) {
-    await context.entities.ClassCatechist.create({
-      data: {
-        classId: newClass.id,
-        userId: context.user.id,
-        role: CatechistAssignmentRole.LEAD,
-      },
-    });
+  // Auto-assign the creator as the lead catechist of this class (only for catechist roles, not coordinators/owners)
+  if (!context.user.isAdmin) {
+    const creatorRole = await getEffectiveParishRole(context, effectiveParishId);
+    if (creatorRole && isCatechist(creatorRole)) {
+      await context.entities.ClassCatechist.create({
+        data: {
+          classId: newClass.id,
+          userId: context.user.id,
+          role: CatechistAssignmentRole.LEAD,
+        },
+      });
+    }
   }
 
   return newClass;
@@ -288,13 +288,11 @@ export const getClassDetails = async (args: { id: string }, context: any) => {
 
   // RBAC: verify user has access to this class
   if (!context.user.isAdmin) {
-    const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, parishId: classData.parishId, status: MembershipStatus.ACTIVE },
-      select: { role: true },
-    });
+    // Use effective role which works for personal workspace owners too
+    const role = await getEffectiveParishRole(context, classData.parishId);
 
-    // Coordinators can access any class in their parish
-    const isCoordinator = membership && isCoordinatorOrAbove(membership.role);
+    // Coordinators (including PERSONAL_OWNER) can access any class in their parish/workspace
+    const isCoordinator = isCoordinatorOrAbove(role);
 
     // Catechists: only classes they're assigned to
     let isCatechistOfClass = false;
@@ -345,7 +343,23 @@ export const getClassDetails = async (args: { id: string }, context: any) => {
       sacrament: { select: { id: true, name: true } },
       year: { select: { id: true, name: true } },
       catechists: { include: { user: { select: { id: true, firstName: true, lastName: true, email: true } } } },
-      enrollments: { include: { catechumenProfile: { select: { id: true, firstName: true, lastName: true } } } },
+      enrollments: {
+        include: {
+          catechumenProfile: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              sacramentalJourneys: {
+                include: {
+                  template: { select: { id: true, name: true, sacramentId: true } },
+                  milestones: { select: { id: true, status: true } },
+                },
+              },
+            },
+          },
+        },
+      },
       meetings: {
         orderBy: { date: 'desc' },
         include: {
@@ -369,11 +383,9 @@ export const updateClass = async (args: any, context: any) => {
   if (!classData) throw new HttpError(404, 'Turma não encontrada.');
 
   if (!context.user.isAdmin) {
-    const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, parishId: classData.parishId, status: MembershipStatus.ACTIVE },
-    });
-    // Allow coordinators OR the lead catechist of this specific class to edit
-    if (!membership || !isCoordinatorOrAbove(membership.role)) {
+    const role = await getEffectiveParishRole(context, classData.parishId);
+    // Allow coordinators (including PERSONAL_OWNER) OR the lead catechist of this specific class to edit
+    if (!isCoordinatorOrAbove(role)) {
       const isLeadCatechist = await context.entities.ClassCatechist.findFirst({
         where: { userId: context.user.id, classId: args.id, role: CatechistAssignmentRole.LEAD },
       });
@@ -409,10 +421,8 @@ export const assignLeadCatechist = async (args: { classId: string; userId: strin
   if (!classData) throw new HttpError(404, 'Turma não encontrada.');
 
   if (!context.user.isAdmin) {
-    const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, parishId: classData.parishId, status: MembershipStatus.ACTIVE },
-    });
-    if (!membership || !isCoordinatorOrAbove(membership.role)) {
+    const role = await getEffectiveParishRole(context, classData.parishId);
+    if (!isCoordinatorOrAbove(role)) {
       throw new HttpError(403, 'Apenas coordenadores podem designar catequistas responsáveis.');
     }
   }
@@ -447,13 +457,10 @@ export const addAssistantCatechist = async (args: { classId: string; userId: str
   }
 
   if (!context.user.isAdmin) {
-    const callerMembership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, parishId: classData.parishId, status: MembershipStatus.ACTIVE },
-    });
-    const role = callerMembership?.role;
+    const role = await getEffectiveParishRole(context, classData.parishId);
     if (!role) throw new HttpError(403, 'Sem permissão para adicionar catequistas.');
 
-    // Coordinator can add anyone
+    // Coordinator (including PERSONAL_OWNER) can add anyone
     if (isCoordinatorOrAbove(role)) {
       // allowed
     } else {
@@ -488,17 +495,14 @@ export const removeCatechistFromClass = async (args: { classId: string; userId: 
   if (!assignment) throw new HttpError(404, 'Catequista não está vinculado a esta turma.');
 
   if (!context.user.isAdmin) {
-    const callerMembership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, parishId: classData.parishId, status: MembershipStatus.ACTIVE },
-    });
-    const role = callerMembership?.role;
+    const role = await getEffectiveParishRole(context, classData.parishId);
     if (!role) throw new HttpError(403, 'Sem permissão para remover catequistas.');
 
     // Self-removal: assistant can remove themselves
     if (args.userId === context.user.id && assignment.role === CatechistAssignmentRole.ASSISTANT) {
       // allowed
     }
-    // Coordinator can remove anyone
+    // Coordinator (including PERSONAL_OWNER) can remove anyone
     else if (isCoordinatorOrAbove(role)) {
       // allowed
     }
@@ -527,20 +531,17 @@ export const enrollCatechumen = async (args: { classId: string; catechumenProfil
 
   const classData = await context.entities.CatechesisClass.findUnique({
     where: { id: args.classId },
-    select: { parishId: true, maxCapacity: true },
+    select: { parishId: true, maxCapacity: true, sacramentId: true },
   });
   if (!classData) throw new HttpError(404, 'Turma não encontrada.');
 
   if (!context.user.isAdmin) {
-    const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, parishId: classData.parishId, status: MembershipStatus.ACTIVE },
-    });
-    const role = membership?.role;
+    const role = await getEffectiveParishRole(context, classData.parishId);
     if (!role) {
       throw new HttpError(403, 'Sem permissão para matricular catequizandos.');
     }
     if (isCoordinatorOrAbove(role)) {
-      // Coordinators can enroll in any class in their parish
+      // Coordinators (including PERSONAL_OWNER) can enroll in any class in their parish/workspace
     } else if (isCatechist(role)) {
       // Catechists can only enroll in classes they are assigned to
       const assignment = await context.entities.ClassCatechist.findFirst({
@@ -571,9 +572,25 @@ export const enrollCatechumen = async (args: { classId: string; catechumenProfil
     where: { classId: args.classId, catechumenProfileId: args.catechumenProfileId },
   });
   if (existing) throw new HttpError(400, 'Já está inscrito.');
-  return context.entities.ClassEnrollment.create({
+  const enrollment = await context.entities.ClassEnrollment.create({
     data: { classId: args.classId, catechumenProfileId: args.catechumenProfileId, status: EnrollmentStatus.ENROLLED },
   });
+
+  // Auto-create sacramental journey if class is linked to a sacrament
+  if (classData.sacramentId) {
+    try {
+      await ensureSacramentalJourneyForCatechumen(
+        args.catechumenProfileId,
+        classData.sacramentId,
+        classData.parishId,
+        context
+      );
+    } catch (_e: any) {
+      // Journey creation is best-effort; enrollment succeeded regardless
+    }
+  }
+
+  return enrollment;
 };
 
 export const archiveClass = async (args: { id: string }, context: any) => {
@@ -586,10 +603,8 @@ export const archiveClass = async (args: { id: string }, context: any) => {
   if (!classData) throw new HttpError(404, 'Turma não encontrada.');
 
   if (!context.user.isAdmin) {
-    const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, parishId: classData.parishId, status: MembershipStatus.ACTIVE },
-    });
-    if (!membership || !isCoordinatorOrAbove(membership.role)) {
+    const role = await getEffectiveParishRole(context, classData.parishId);
+    if (!isCoordinatorOrAbove(role)) {
       throw new HttpError(403, 'Apenas coordenadores podem arquivar turmas.');
     }
   }
@@ -617,15 +632,12 @@ export const cancelEnrollment = async (args: { enrollmentId: string }, context: 
   if (!enrollment) throw new HttpError(404, 'Inscrição não encontrada.');
 
   if (!context.user.isAdmin) {
-    const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, parishId: enrollment.class.parishId, status: MembershipStatus.ACTIVE },
-    });
-    const role = membership?.role;
+    const role = await getEffectiveParishRole(context, enrollment.class.parishId);
     if (!role) {
       throw new HttpError(403, 'Sem permissão para cancelar inscrições.');
     }
     if (isCoordinatorOrAbove(role)) {
-      // Coordinators can cancel any enrollment in their parish
+      // Coordinators (including PERSONAL_OWNER) can cancel any enrollment in their parish/workspace
     } else if (isCatechist(role)) {
       // Catechists can only cancel enrollments in classes they are assigned to
       const assignment = await context.entities.ClassCatechist.findFirst({

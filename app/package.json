@@ -60,6 +60,12 @@
     "@types/react": "^19.2.7",
     "prisma": "5.19.1",
     "typescript": "5.8.2",
-    "vite": "^7.0.6"
+    "vite": "^7.0.6",
+    "vitest": "^3.2.4"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:unit": "vitest run src/__tests__/totp.test.ts",
+    "test:integration": "NODE_ENV=development vitest run --exclude src/__tests__/totp.test.ts"
   }
 }

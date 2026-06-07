@@ -15,12 +15,12 @@ export interface NavSectionConfig {
 const ALL_ROLES = [
   'SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR',
   'LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'GUARDIAN', 'CATECHUMEN',
-  'CONTENT_REVIEWER', 'PASTORAL_VIEWER',
+  'CONTENT_REVIEWER', 'PASTORAL_VIEWER', 'PERSONAL_OWNER',
 ];
 
-const STAFF_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'];
-const CATECHIST_ROLES = [...STAFF_ROLES, 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST'];
-const VIEWER_ROLES = [...CATECHIST_ROLES, 'PASTORAL_VIEWER'];
+const STAFF_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'];
+const CATECHIST_ROLES = [...STAFF_ROLES, 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'PERSONAL_OWNER'];
+const VIEWER_ROLES = [...CATECHIST_ROLES, 'PASTORAL_VIEWER', 'CONTENT_REVIEWER'];
 const LEARNER_ROLES = [...VIEWER_ROLES, 'GUARDIAN', 'CATECHUMEN'];
 
 // ---- Sidebar Navigation Sections ----
@@ -64,7 +64,7 @@ export const NAV_SECTIONS: NavSectionConfig[] = [
       { to: '/app/billing', labelKey: 'billing', iconKey: 'billing', roles: CATECHIST_ROLES },
       { to: '/app/consents', labelKey: 'consents', iconKey: 'consents', roles: ['GUARDIAN'] },
       { to: '/app/catechetical-years', labelKey: 'catechetical_years', iconKey: 'catechetical_years', roles: [...STAFF_ROLES] },
-      { to: '/admin', labelKey: 'admin', iconKey: 'admin', roles: [...STAFF_ROLES] },
+      { to: '/admin', labelKey: 'admin', iconKey: 'admin', roles: ['SUPER_ADMIN'] },
     ],
   },
 ];
@@ -77,7 +77,11 @@ export const BOTTOM_NAV_KEYS = ['dashboard', 'classes', 'catechumens', 'calendar
 export function filterByRole(items: NavItemConfig[], userRole: string, isAdmin: boolean): NavItemConfig[] {
   if (isAdmin) return items;
   if (!userRole) return [];
-  return items.filter(i => i.roles.includes(userRole));
+
+  // PERSONAL_OWNER sees everything a coordinator sees
+  const effectiveRole = userRole === 'PERSONAL_OWNER' ? 'PARISH_COORDINATOR' : userRole;
+
+  return items.filter(i => i.roles.includes(effectiveRole) || i.roles.includes(userRole));
 }
 
 // ---- Flatten all items for lookup ----

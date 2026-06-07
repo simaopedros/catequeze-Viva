@@ -196,12 +196,11 @@ export default function ContentPrintPage() {
                 {activities.map((a: any, ai: number) => {
                   const data = parseData(a.data);
                   const typeLabel = ACTIVITY_TYPES.find(t => t.value === a.type)?.label || a.type;
-                  const typeIcon = ACTIVITY_TYPES.find(t => t.value === a.type)?.icon || '';
 
                   return (
                     <div key={a.id} className="p-4 border rounded-lg print-section">
                       <h3 className="font-bold mb-1">
-                        {ai + 1}. {a.title} — {typeIcon} {typeLabel} {a.points > 0 ? `(${a.points} pts)` : ''}
+                        {ai + 1}. {a.title} — {typeLabel} {a.points > 0 ? `(${a.points} pts)` : ''}
                       </h3>
                       {a.description && <p className="text-sm text-gray-500 italic mb-3">{a.description}</p>}
 

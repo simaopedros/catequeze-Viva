@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from 'wasp/client/auth';
 import { Button } from '../../client/components/ui/button';
+import { Input } from '../../client/components/ui/input';
+import { Label } from '../../client/components/ui/label';
 import { Badge } from '../../client/components/ui/badge';
 import { User, Globe, Bell, Shield, Save, Key, Download, Church, CheckCircle, AlertCircle, GitMerge, RefreshCw } from 'lucide-react';
 import { ROLE_LABELS } from '../../shared/constants';
 import { AppShell } from '../AppShell';
+import { PageHeader } from '../../client/components/PageHeader';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { updateUserProfile, requestDataExport, changePassword, useQuery, listParishes, executeParishMigration } from 'wasp/client/operations';
 import PhoneMaskInput from '../../client/components/PhoneMaskInput';
@@ -111,12 +114,12 @@ export default function SettingsPage() {
   return(
     <AppShell>
       <div className="max-w-2xl mx-auto space-y-6">
-        <div><h1 className="text-2xl font-bold">Configurações</h1><p className="text-muted-foreground text-sm">{user?.email} {userRole&&<Badge className="ml-2">{ROLE_LABELS[userRole]||userRole}</Badge>}</p></div>
+        <PageHeader title="Configurações" subtitle={`${user?.email || ''} ${userRole ? ROLE_LABELS[userRole] || userRole : ''}`} />
 
         {/* Parish info */}
         {ctxParishName&&(
           <div className="rounded-xl border bg-card p-4 flex items-center gap-3">
-            <div className="rounded-lg bg-blue-50 dark:bg-blue-950/30 p-2 text-blue-600 dark:text-blue-400"><Church className="h-5 w-5"/></div>
+            <div className="rounded-lg bg-primary/10 p-2 text-primary"><Church className="h-5 w-5"/></div>
             <div><p className="text-xs text-muted-foreground uppercase">Paróquia vinculada</p><p className="font-medium">{ctxParishName}</p></div>
           </div>
         )}
@@ -125,14 +128,14 @@ export default function SettingsPage() {
         <div className="rounded-xl border bg-card p-6 space-y-4">
           <h3 className="font-semibold flex items-center gap-2"><User className="h-4 w-4"/>Perfil</h3>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div><label className="text-xs font-medium">Nome</label><input value={firstName} onChange={e=>setFirstName(e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1" placeholder="Seu nome"/></div>
-            <div><label className="text-xs font-medium">Sobrenome</label><input value={lastName} onChange={e=>setLastName(e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1" placeholder="Seu sobrenome"/></div>
+            <div className="space-y-1.5"><Label htmlFor="firstName">Nome</Label><Input id="firstName" value={firstName} onChange={e=>setFirstName(e.target.value)} placeholder="Seu nome"/></div>
+            <div className="space-y-1.5"><Label htmlFor="lastName">Sobrenome</Label><Input id="lastName" value={lastName} onChange={e=>setLastName(e.target.value)} placeholder="Seu sobrenome"/></div>
           </div>
-          <div><label className="text-xs font-medium">Telefone</label><PhoneMaskInput value={phone} onChange={setPhone} className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1" placeholder="(11) 99999-9999"/></div>
+          <div className="space-y-1.5"><Label htmlFor="phone">Telefone</Label><PhoneMaskInput value={phone} onChange={setPhone} className="flex h-9 w-full" placeholder="(11) 99999-9999"/></div>
           {saveError && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="h-3 w-3"/>{saveError}</p>}
           <div className="flex gap-2">
             <Button size="sm" onClick={handleSaveProfile} disabled={saving}><Save className="mr-1 h-3 w-3"/>{saving?'Salvando...':'Salvar'}</Button>
-            {saved&&<span className="text-xs text-green-600 flex items-center gap-1 self-center"><CheckCircle className="h-3 w-3"/>Salvo!</span>}
+            {saved&&<span className="text-xs text-success flex items-center gap-1 self-center"><CheckCircle className="h-3 w-3"/>Salvo!</span>}
           </div>
         </div>
 
@@ -140,10 +143,10 @@ export default function SettingsPage() {
         <div className="rounded-xl border bg-card p-6 space-y-4">
           <h3 className="font-semibold flex items-center gap-2"><Key className="h-4 w-4"/>Trocar senha</h3>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div><label className="text-xs font-medium">Senha atual</label><input type="password" value={currentPass} onChange={e=>setCurrentPass(e.target.value)} placeholder="Digite a senha atual" className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1"/></div>
-            <div><label className="text-xs font-medium">Nova senha</label><input type="password" value={newPass} onChange={e=>setNewPass(e.target.value)} placeholder="Mínimo 8 caracteres" className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1"/></div>
+            <div className="space-y-1.5"><Label htmlFor="currentPass">Senha atual</Label><Input id="currentPass" type="password" value={currentPass} onChange={e=>setCurrentPass(e.target.value)} placeholder="Digite a senha atual"/></div>
+            <div className="space-y-1.5"><Label htmlFor="newPass">Nova senha</Label><Input id="newPass" type="password" value={newPass} onChange={e=>setNewPass(e.target.value)} placeholder="Mínimo 8 caracteres"/></div>
           </div>
-          {passMsg && <p className={`text-xs flex items-center gap-1 ${passError?'text-destructive':'text-green-600'}`}>{passError?<AlertCircle className="h-3 w-3"/>:<CheckCircle className="h-3 w-3"/>}{passMsg}</p>}
+          {passMsg && <p className={`text-xs flex items-center gap-1 ${passError?'text-destructive':'text-success'}`}>{passError?<AlertCircle className="h-3 w-3"/>:<CheckCircle className="h-3 w-3"/>}{passMsg}</p>}
           <Button size="sm" onClick={handleChangePassword} disabled={changingPass || !currentPass || !newPass}><Key className="mr-1 h-3 w-3"/>{changingPass?'Alterando...':'Alterar senha'}</Button>
         </div>
 
@@ -154,7 +157,7 @@ export default function SettingsPage() {
         <div className="rounded-xl border bg-card p-4">
           <h3 className="font-semibold text-sm flex items-center gap-2 mb-1"><Download className="h-4 w-4"/>Exportar dados</h3>
           <p className="text-xs text-muted-foreground mb-3">Conforme a LGPD, você pode solicitar a exportação dos seus dados.</p>
-          {exportMsg && <p className={`text-xs mb-3 ${exportMsg.includes('Erro') ? 'text-destructive' : 'text-green-600'}`}>{exportMsg}</p>}
+          {exportMsg && <p className={`text-xs mb-3 ${exportMsg.includes('Erro') ? 'text-destructive' : 'text-success'}`}>{exportMsg}</p>}
           <Button size="sm" variant="outline" onClick={handleExportData} disabled={exporting}><Download className="mr-1 h-3 w-3"/>{exporting?'Solicitando...':'Solicitar exportação'}</Button>
         </div>
 
@@ -181,7 +184,7 @@ export default function SettingsPage() {
               </select>
             </div>
             {migrationMsg && (
-              <p className={`text-xs flex items-center gap-1 ${migrationError ? 'text-destructive' : 'text-green-600'}`}>
+              <p className={`text-xs flex items-center gap-1 ${migrationError ? 'text-destructive' : 'text-success'}`}>
                 {migrationError ? <AlertCircle className="h-3 w-3"/> : <CheckCircle className="h-3 w-3"/>}
                 {migrationMsg}
               </p>

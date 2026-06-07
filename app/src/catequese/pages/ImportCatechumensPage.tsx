@@ -131,13 +131,13 @@ Maria,Santos,2014-07-22`}
               Resultado da importação
             </h3>
             <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-lg bg-green-50 p-4 text-center">
-                <p className="text-2xl font-bold text-green-700">{results.created}</p>
-                <p className="text-sm text-green-600">criados com sucesso</p>   
+              <div className="rounded-lg bg-success/10 p-4 text-center">
+                <p className="text-2xl font-bold text-success">{results.created}</p>
+                <p className="text-sm text-success">criados com sucesso</p>
               </div>
-              <div className="rounded-lg bg-red-50 p-4 text-center">
-                <p className="text-2xl font-bold text-red-700">{results.errors}</p>
-                <p className="text-sm text-red-600">erros</p>
+              <div className="rounded-lg bg-destructive/10 p-4 text-center">
+                <p className="text-2xl font-bold text-destructive">{results.errors}</p>
+                <p className="text-sm text-destructive">erros</p>
               </div>
             </div>
             {results.details?.length > 0 && (

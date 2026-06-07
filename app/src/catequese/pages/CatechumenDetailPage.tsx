@@ -2,7 +2,7 @@ import { useParams, Link, useNavigate } from 'react-router';
 import { useState, useEffect } from 'react';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
-import { ArrowLeft, Calendar, Heart, BookOpen, FileText, CheckCircle, XCircle, Clock, Edit3, Gift, MessageCircle, FilePlus, Upload, Download, Link2, Copy } from 'lucide-react';
+import { ArrowLeft, Calendar, Heart, BookOpen, FileText, CheckCircle, XCircle, Clock, Edit3, Gift, MessageCircle, FilePlus, Upload, Download, Link2, Copy, AlertTriangle, Cross } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { useQuery, getCatechumenProfile, listMeetings, getMeetingAttendance, createConversation, uploadDocument, generateCatechumenUploadToken, getCatechumenAttendanceReport } from 'wasp/client/operations';
 import { toast } from '../../client/hooks/use-toast';
@@ -241,7 +241,7 @@ export default function CatechumenDetailPage() {
                     </div>
                   </div>
                   {report.maxConsecutiveAbsences >= 3 && (
-                    <p className="text-xs text-destructive">⚠️ {report.maxConsecutiveAbsences} faltas consecutivas detectadas.</p>
+                    <p className="text-xs text-destructive flex items-center gap-1"><AlertTriangle className="h-3.5 w-3.5 shrink-0" />{report.maxConsecutiveAbsences} faltas consecutivas detectadas.</p>
                   )}
                   <Button size="sm" variant="ghost" onClick={() => setReport(null)} className="text-xs">Fechar relatório</Button>
                 </div>
@@ -252,17 +252,34 @@ export default function CatechumenDetailPage() {
 
         {profile.sacramentalJourneys?.length>0&&(
           <div className="rounded-xl border bg-card p-4">
-            <h3 className="font-semibold text-sm mb-3">Jornadas Sacramentais</h3>
+            <h3 className="font-semibold text-sm mb-3 flex items-center gap-1">
+              <Cross className="h-4 w-4 text-primary" />Jornadas Sacramentais
+            </h3>
+            <div className="space-y-2">
             {profile.sacramentalJourneys.map((j:any)=>{
               const total=j.milestones?.length||0;
               const done=j.milestones?.filter((m:any)=>m.status==='COMPLETED'||m.status==='APPROVED').length||0;
+              const pct=total>0?Math.round((done/total)*100):0;
+              const hasBlocked = j.milestones?.some((m:any)=>m.status==='REJECTED');
+              const hasWaiting = j.milestones?.some((m:any)=>m.status==='WAITING_APPROVAL');
               return(
-                <div key={j.id} className="flex items-center justify-between py-1.5 text-sm border-b last:border-0">
-                  <span>{j.template?.name}</span>
-                  <Badge variant="outline">{done}/{total}</Badge>
-                </div>
+                <Link key={j.id} to={`/app/sacramental-journeys/${j.id}`} className="block rounded-lg border p-3 hover:bg-muted/50 transition-colors">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-medium text-sm">{j.template?.name}</span>
+                    <Badge variant={pct===100?'default':'outline'} className="text-[10px]">{done}/{total}</Badge>
+                  </div>
+                  <div className="w-full bg-muted rounded-full h-1.5 mb-1">
+                    <div className={`h-1.5 rounded-full transition-all ${pct===100?'bg-emerald-500':pct>=50?'bg-amber-500':'bg-primary'}`} style={{width:`${pct}%`}}/>
+                  </div>
+                  <div className="flex gap-2 mt-1">
+                    {hasBlocked && <span className="text-[10px] text-red-600 flex items-center gap-1"><XCircle className="h-3 w-3"/>Bloqueado</span>}
+                    {hasWaiting && <span className="text-[10px] text-amber-600 flex items-center gap-1"><AlertTriangle className="h-3 w-3"/>Aguardando</span>}
+                    {!hasBlocked && !hasWaiting && pct===100 && <span className="text-[10px] text-emerald-600 flex items-center gap-1"><CheckCircle className="h-3 w-3"/>Pronto</span>}
+                  </div>
+                </Link>
               );
             })}
+            </div>
           </div>
         )}
 

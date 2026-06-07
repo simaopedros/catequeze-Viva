@@ -8,6 +8,7 @@ import { CatechumenDashboard } from '../components/dashboard/CatechumenDashboard
 import { ReviewerDashboard } from '../components/dashboard/ReviewerDashboard';
 import { PastoralDashboard } from '../components/dashboard/PastoralDashboard';
 import { CoordinatorDashboard } from '../components/dashboard/CoordinatorDashboard';
+import { SkeletonPage } from '../../client/components/Skeletons';
 
 export default function DashboardPage() {
   const { activeParishId } = useActiveParish();
@@ -17,12 +18,7 @@ export default function DashboardPage() {
   if (loading || loadingCtx) {
     return (
       <AppShell>
-        <div className="space-y-6 animate-pulse">
-          <div className="h-8 w-48 bg-muted rounded" />
-          <div className="grid gap-4 md:grid-cols-4">
-            {[1,2,3,4].map(i => <div key={i} className="h-24 rounded-xl bg-muted" />)}
-          </div>
-        </div>
+        <SkeletonPage />
       </AppShell>
     );
   }

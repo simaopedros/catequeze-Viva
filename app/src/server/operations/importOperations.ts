@@ -1,19 +1,60 @@
 import { HttpError } from 'wasp/server';
+import { COORDINATOR_ROLES } from '../auth/helpers';
+
+const IMPORT_ROLES = [...COORDINATOR_ROLES, 'LEAD_CATECHIST'];
 
 export const importCatechumensCSV = async (
-  args: { csvData: string },
-  context: any
+  args: { csvData: string; parishId?: string },
+  context: any,
 ) => {
   if (!context.user) throw new HttpError(401);
 
-  // Verify user has permission and resolve parishId
+  const membershipWhere: any = {
+    userId: context.user.id,
+    status: 'ACTIVE',
+    role: { in: IMPORT_ROLES },
+  };
+  if (args.parishId) {
+    membershipWhere.parishId = args.parishId;
+  }
+
   const membership = await context.entities.Membership.findFirst({
-    where: { userId: context.user.id, status: 'ACTIVE' },
+    where: membershipWhere,
     select: { parishId: true, role: true },
+    orderBy: { createdAt: 'asc' },
   });
 
-  if (!membership || !['PARISH_COORDINATOR', 'LEAD_CATECHIST', 'SUPER_ADMIN', 'DIOCESE_ADMIN', 'COMMUNITY_COORDINATOR'].includes(membership.role)) {
-    throw new HttpError(403, 'Sem permissão para realizar importações nesta paróquia.');
+  if (!membership) {
+    // Allow personal workspace owner
+    let allowedByPersonal = false;
+    if (args.parishId) {
+      const isPersonalOwner = await context.entities.Parish.findFirst({
+        where: { id: args.parishId, ownerId: context.user.id, type: 'PERSONAL' },
+        select: { id: true },
+      });
+      allowedByPersonal = !!isPersonalOwner;
+    }
+    if (!allowedByPersonal) {
+      throw new HttpError(
+        403,
+        args.parishId
+          ? 'Sem permissão para importar catequizandos nesta paróquia.'
+          : 'Sem permissão para realizar importações.',
+      );
+    }
+  }
+
+  if (!args.parishId) {
+    const parishCount = await context.entities.Membership.count({
+      where: {
+        userId: context.user.id,
+        status: 'ACTIVE',
+        role: { in: IMPORT_ROLES },
+      },
+    });
+    if (parishCount > 1) {
+      throw new HttpError(400, 'Especifique parishId — você pertence a mais de uma paróquia.');
+    }
   }
 
   const parishId = membership.parishId;

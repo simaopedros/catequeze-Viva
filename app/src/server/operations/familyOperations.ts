@@ -2,7 +2,7 @@ import { HttpError } from 'wasp/server';
 import { CatechistAssignmentRole } from '@prisma/client';
 
 function isCoordinatorOrAbove(role: string): boolean {
-  return ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'].includes(role);
+  return ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(role);
 }
 
 function isCatechist(role: string): boolean {
@@ -14,7 +14,18 @@ async function getParishIds(context: any): Promise<string[]> {
     where: { userId: context.user.id, status: 'ACTIVE' },
     select: { parishId: true },
   });
-  return memberships.map((m: any) => m.parishId);
+  const ids = memberships.map((m: any) => m.parishId);
+
+  // Include personal workspace
+  const personal = await context.entities.Parish.findFirst({
+    where: { ownerId: context.user.id, type: 'PERSONAL' },
+    select: { id: true },
+  });
+  if (personal && !ids.includes(personal.id)) {
+    ids.push(personal.id);
+  }
+
+  return ids;
 }
 
 export const listHouseholds = async (_args: { communityId?: string } | void, context: any) => {
@@ -50,13 +61,28 @@ export const listHouseholds = async (_args: { communityId?: string } | void, con
   });
   const roles = membershipRoles.map((m: any) => m.role);
 
+  // Add PERSONAL_OWNER if user has personal workspace
+  const personalCheck = await context.entities.Parish.findFirst({
+    where: { ownerId: context.user.id, type: 'PERSONAL' },
+    select: { id: true },
+  });
+  if (personalCheck) roles.push('PERSONAL_OWNER');
+
+  // Coordinator or above (including PERSONAL_OWNER): all households in their parishes
+  if (roles.some((r: string) => isCoordinatorOrAbove(r))) {
+    const where: any = { parishId: { in: parishIds } };
+    if (args.communityId) where.communityId = args.communityId;
+    return context.entities.Household.findMany({
+      where,
+      orderBy: { name: 'asc' },
+      include: includeOpts,
+    });
+  }
+
   // Assistant catechist only (no coordinator, no lead): restrict to assisted classes
-  const isStrictAssistant = !roles.some((r: string) => isCoordinatorOrAbove(r)) &&
-    !roles.includes('LEAD_CATECHIST') &&
-    roles.includes('ASSISTANT_CATECHIST');
+  const isStrictAssistant = !roles.includes('LEAD_CATECHIST') && roles.includes('ASSISTANT_CATECHIST');
 
   if (isStrictAssistant) {
-    // Only show households linked to catechumens enrolled in classes the user assists
     const assistedClasses = await context.entities.ClassCatechist.findMany({
       where: { userId: context.user.id, role: CatechistAssignmentRole.ASSISTANT },
       select: { classId: true },
@@ -87,6 +113,17 @@ export const listHouseholds = async (_args: { communityId?: string } | void, con
     });
   }
 
+  // Lead catechist or general catechetical role: households in their parishes
+  if (roles.includes('LEAD_CATECHIST') || roles.includes('ASSISTANT_CATECHIST')) {
+    const where: any = { parishId: { in: parishIds } };
+    if (args.communityId) where.communityId = args.communityId;
+    return context.entities.Household.findMany({
+      where,
+      orderBy: { name: 'asc' },
+      include: includeOpts,
+    });
+  }
+
   const where: any = { parishId: { in: parishIds } };
   if (args.communityId) where.communityId = args.communityId;
   return context.entities.Household.findMany({
@@ -109,10 +146,33 @@ export const createHousehold = async (
       select: { parishId: true },
     });
     parishId = membership?.parishId;
+
+    // Fallback to personal workspace
+    if (!parishId) {
+      const personal = await context.entities.Parish.findFirst({
+        where: { ownerId: context.user.id, type: 'PERSONAL' },
+        select: { id: true },
+      });
+      if (personal) parishId = personal.id;
+    }
   }
 
   if (!parishId && !context.user.isAdmin) {
-    throw new HttpError(400, 'Você não está vinculado a nenhuma paróquia.');
+    // Auto-create personal workspace if none exists
+    const user = await context.entities.User.findUnique({
+      where: { id: context.user.id },
+      select: { firstName: true, lastName: true },
+    });
+    const created = await context.entities.Parish.create({
+      data: {
+        name: `Catequese de ${user?.firstName || 'Catequista'}`,
+        type: 'PERSONAL',
+        city: '—',
+        state: '—',
+        ownerId: context.user.id,
+      },
+    });
+    parishId = created.id;
   }
 
   // Validate communityId belongs to the same parish if provided
@@ -153,15 +213,29 @@ export const addGuardianToHousehold = async (
       where: { userId: context.user.id, status: 'ACTIVE' },
       select: { role: true, parishId: true },
     });
-    if (!membership || (!isCoordinatorOrAbove(membership.role) && !isCatechist(membership.role))) {
+
+    // Check if user is personal workspace owner
+    const isPersonalOwner = !membership && await context.entities.Parish.findFirst({
+      where: { ownerId: context.user.id, type: 'PERSONAL' },
+      select: { id: true },
+    });
+
+    if (!membership && !isPersonalOwner) {
       throw new HttpError(403, 'Apenas coordenadores e catequistas podem vincular responsáveis.');
     }
-    // Verify household belongs to user's parish
+
+    const role = membership?.role || 'PERSONAL_OWNER';
+    if (!isCoordinatorOrAbove(role) && !isCatechist(role)) {
+      throw new HttpError(403, 'Apenas coordenadores e catequistas podem vincular responsáveis.');
+    }
+
+    // Verify household belongs to user's parish or personal workspace
     const household = await context.entities.Household.findUnique({
       where: { id: args.householdId },
       select: { parishId: true },
     });
-    if (!household || household.parishId !== membership.parishId) {
+    const userParishId = membership?.parishId || (isPersonalOwner ? isPersonalOwner.id : null);
+    if (!household || household.parishId !== userParishId) {
       throw new HttpError(403, 'Esta família não pertence à sua paróquia.');
     }
   }
@@ -172,7 +246,6 @@ export const addGuardianToHousehold = async (
       where: { userId: args.userId, householdId: args.householdId },
     });
     if (existingInHousehold) {
-      // Already linked — update relationship/phone if provided
       if (args.relationship !== undefined || args.phone !== undefined) {
         return context.entities.GuardianProfile.update({
           where: { id: existingInHousehold.id },
@@ -185,7 +258,6 @@ export const addGuardianToHousehold = async (
       return existingInHousehold;
     }
 
-    // Check if user is guardian of another household (reassign)
     const existing = await context.entities.GuardianProfile.findFirst({
       where: { userId: args.userId },
     });
@@ -202,7 +274,6 @@ export const addGuardianToHousehold = async (
     }
   }
 
-  // Create new guardian (with or without userId)
   return context.entities.GuardianProfile.create({
     data: {
       userId: args.userId || null,
@@ -233,11 +304,19 @@ export const removeGuardianFromHousehold = async (
       where: { userId: context.user.id, status: 'ACTIVE' },
       select: { role: true, parishId: true },
     });
-    if (!membership || (!isCoordinatorOrAbove(membership.role) && !isCatechist(membership.role))) {
+    const isPersonalOwner = !membership && await context.entities.Parish.findFirst({
+      where: { ownerId: context.user.id, type: 'PERSONAL' },
+      select: { id: true },
+    });
+    if (!membership && !isPersonalOwner) {
       throw new HttpError(403, 'Apenas coordenadores e catequistas podem remover responsáveis.');
     }
-    // Verify household belongs to user's parish
-    if (!guardian.household?.parishId || guardian.household.parishId !== membership.parishId) {
+    const role = membership?.role || 'PERSONAL_OWNER';
+    if (!isCoordinatorOrAbove(role) && !isCatechist(role)) {
+      throw new HttpError(403, 'Apenas coordenadores e catequistas podem remover responsáveis.');
+    }
+    const userParishId = membership?.parishId || (isPersonalOwner ? isPersonalOwner.id : null);
+    if (!guardian.household?.parishId || guardian.household.parishId !== userParishId) {
       throw new HttpError(403, 'Esta família não pertence à sua paróquia.');
     }
   }
@@ -266,17 +345,24 @@ export const updateGuardianProfile = async (
       where: { userId: context.user.id, status: 'ACTIVE' },
       select: { role: true, parishId: true },
     });
-    if (!membership || (!isCoordinatorOrAbove(membership.role) && !isCatechist(membership.role))) {
+    const isPersonalOwner = !membership && await context.entities.Parish.findFirst({
+      where: { ownerId: context.user.id, type: 'PERSONAL' },
+      select: { id: true },
+    });
+    if (!membership && !isPersonalOwner) {
       throw new HttpError(403, 'Apenas coordenadores e catequistas podem editar responsáveis.');
     }
-    // Verify guardian's household belongs to user's parish
-    if (!guardian.household?.parishId || guardian.household.parishId !== membership.parishId) {
+    const role = membership?.role || 'PERSONAL_OWNER';
+    if (!isCoordinatorOrAbove(role) && !isCatechist(role)) {
+      throw new HttpError(403, 'Apenas coordenadores e catequistas podem editar responsáveis.');
+    }
+    const userParishId = membership?.parishId || (isPersonalOwner ? isPersonalOwner.id : null);
+    if (!guardian.household?.parishId || guardian.household.parishId !== userParishId) {
       throw new HttpError(403, 'Esta família não pertence à sua paróquia.');
     }
   }
 
   const data: any = {};
-  // Only allow editing firstName/lastName for guardians without a linked user
   if (!guardian.userId) {
     if (args.firstName !== undefined) data.firstName = args.firstName;
     if (args.lastName !== undefined) data.lastName = args.lastName;
@@ -308,7 +394,15 @@ export const updateHousehold = async (
       where: { userId: context.user.id, status: 'ACTIVE', parishId: household.parishId },
       select: { role: true },
     });
-    if (!membership || (!isCoordinatorOrAbove(membership.role) && !isCatechist(membership.role))) {
+    const isPersonalOwner = !membership && await context.entities.Parish.findFirst({
+      where: { id: household.parishId, ownerId: context.user.id, type: 'PERSONAL' },
+      select: { id: true },
+    });
+    if (!membership && !isPersonalOwner) {
+      throw new HttpError(403, 'Apenas coordenadores e catequistas podem editar famílias.');
+    }
+    const role = membership?.role || 'PERSONAL_OWNER';
+    if (!isCoordinatorOrAbove(role) && !isCatechist(role)) {
       throw new HttpError(403, 'Apenas coordenadores e catequistas podem editar famílias.');
     }
   }

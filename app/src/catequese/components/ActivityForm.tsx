@@ -10,17 +10,17 @@ export type ActivityType =
   | 'GROUP_DYNAMIC' | 'FAMILY_ACTIVITY' | 'BIBLE_READING' | 'MATCHING'
   | 'TASK_WITH_ATTACHMENT' | 'RITE_CELEBRATION';
 
-export const ACTIVITY_TYPES: { value: ActivityType; label: string; icon: string }[] = [
-  { value: 'QUIZ', label: 'Quiz', icon: '❓' },
-  { value: 'OPEN_QUESTION', label: 'Pergunta aberta', icon: '💬' },
-  { value: 'PARTICIPATION_CHECKLIST', label: 'Checklist', icon: '✅' },
-  { value: 'GUIDED_REFLECTION', label: 'Reflexão guiada', icon: '🤔' },
-  { value: 'GROUP_DYNAMIC', label: 'Dinâmica de grupo', icon: '🎯' },
-  { value: 'FAMILY_ACTIVITY', label: 'Atividade em família', icon: '👨‍👩‍👧' },
-  { value: 'BIBLE_READING', label: 'Leitura bíblica', icon: '📖' },
-  { value: 'MATCHING', label: 'Associação', icon: '🔗' },
-  { value: 'TASK_WITH_ATTACHMENT', label: 'Tarefa com anexo', icon: '📎' },
-  { value: 'RITE_CELEBRATION', label: 'Celebração / Rito', icon: '🙏' },
+export const ACTIVITY_TYPES: { value: ActivityType; label: string }[] = [
+  { value: 'QUIZ', label: 'Quiz' },
+  { value: 'OPEN_QUESTION', label: 'Pergunta aberta' },
+  { value: 'PARTICIPATION_CHECKLIST', label: 'Checklist' },
+  { value: 'GUIDED_REFLECTION', label: 'Reflexão guiada' },
+  { value: 'GROUP_DYNAMIC', label: 'Dinâmica de grupo' },
+  { value: 'FAMILY_ACTIVITY', label: 'Atividade em família' },
+  { value: 'BIBLE_READING', label: 'Leitura bíblica' },
+  { value: 'MATCHING', label: 'Associação' },
+  { value: 'TASK_WITH_ATTACHMENT', label: 'Tarefa com anexo' },
+  { value: 'RITE_CELEBRATION', label: 'Celebração / Rito' },
 ];
 
 // ─── Data structures per type ─────────────────────────────────────────────
@@ -203,7 +203,7 @@ export function ActivityForm({
                         type="button"
                         onClick={() => setQuizQuestions(prev => prev.map(p => p.id === q.id ? { ...p, correctIndex: oi } : p))}
                         className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs flex-shrink-0 transition-colors ${
-                          q.correctIndex === oi ? 'bg-green-500 border-green-500 text-white' : 'border-muted-foreground/30'
+                          q.correctIndex === oi ? 'bg-success border-success text-success-foreground' : 'border-muted-foreground/30'
                         }`}
                       >
                         {q.correctIndex === oi ? <Check className="h-3 w-3"/> : <span className="text-[10px]">{['A','B','C','D'][oi]}</span>}
@@ -460,7 +460,7 @@ export function ActivityForm({
           className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm mt-1"
         >
           {ACTIVITY_TYPES.map(t => (
-            <option key={t.value} value={t.value}>{t.icon} {t.label}</option>
+            <option key={t.value} value={t.value}>{t.label}</option>
           ))}
         </select>
       </div>
@@ -500,7 +500,7 @@ export function ActivityForm({
       {/* Sub-formulário específico */}
       <div className="border-t pt-4">
         <p className="text-xs font-medium text-muted-foreground uppercase mb-3">
-          {ACTIVITY_TYPES.find(t => t.value === type)?.icon} Configuração: {ACTIVITY_TYPES.find(t => t.value === type)?.label}
+          Configuração: {ACTIVITY_TYPES.find(t => t.value === type)?.label}
         </p>
         {renderSubForm()}
       </div>

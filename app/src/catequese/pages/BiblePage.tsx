@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Book, Search, ChevronLeft, ChevronRight, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
+import { FilterPills } from '../../client/components/FilterPills';
+import { SearchInput } from '../../client/components/SearchInput';
 import { AppShell } from '../AppShell';
 import { useQuery, listBibleBooks, getBibleBook, getBibleChapter, searchBible } from 'wasp/client/operations';
 
@@ -62,20 +64,14 @@ export default function BiblePage() {
 
         <div className="flex items-center justify-between gap-3">
           <h1 className="text-2xl font-bold">Bíblia Sagrada</h1>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setView('browse')}
-              className={'px-3 py-1.5 text-sm rounded-md ' + (view === 'browse' ? 'bg-primary text-primary-foreground' : 'bg-muted')}
-            >
-              Livros
-            </button>
-            <button
-              onClick={() => setView('search')}
-              className={'px-3 py-1.5 text-sm rounded-md ' + (view === 'search' ? 'bg-primary text-primary-foreground' : 'bg-muted')}
-            >
-              Buscar
-            </button>
-          </div>
+          <FilterPills
+            options={[
+              { value: 'browse', label: 'Livros' },
+              { value: 'search', label: 'Buscar' },
+            ]}
+            value={view}
+            onChange={v => setView(v as 'browse' | 'search')}
+          />
         </div>
 
         {/* Search bar */}

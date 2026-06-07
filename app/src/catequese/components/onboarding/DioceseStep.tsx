@@ -131,14 +131,14 @@ export function DioceseStep({ selected, onSelect, onSkip }: DioceseStepProps) {
                 key={d.wikidataId}
                 onClick={() => handleSelectWiki(d)}
                 className={`w-full text-left rounded-lg border px-3 py-2 text-sm transition-colors flex items-center gap-2 mb-1 ${
-                  selected?.wikidataId === d.wikidataId ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20' : 'hover:bg-muted/30 border-blue-200'
+                  selected?.wikidataId === d.wikidataId ? 'border-primary bg-primary/10' : 'hover:bg-muted/30 border-primary/20'
                 }`}
               >
                 <div className="flex-1 min-w-0">
                   <span className="font-medium">{d.name}</span>
                   {d.state && <span className="text-xs text-muted-foreground ml-1">({d.state})</span>}
                 </div>
-                <span className="text-xs text-blue-600 dark:text-blue-400 shrink-0">WIKI</span>
+                <span className="text-xs text-primary shrink-0">WIKI</span>
                 {selected?.wikidataId === d.wikidataId && <Check className="h-4 w-4 text-blue-500 shrink-0" />}
               </button>
             ))}
@@ -196,8 +196,8 @@ export function DioceseStep({ selected, onSelect, onSkip }: DioceseStepProps) {
             placeholder="Ex: Diocese de São José dos Campos"
           />
           {duplicateDiocese && (
-            <div className="rounded-md bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 p-2 text-xs text-amber-700 dark:text-amber-400">
-              ⚠️ Já existe uma diocese semelhante: <strong>{duplicateDiocese.name}</strong>
+            <div className="rounded-md bg-warning/10 border border-warning/30 p-2 text-xs text-warning">
+              Já existe uma diocese semelhante: <strong>{duplicateDiocese.name}</strong>
               {duplicateDiocese.state && <> ({duplicateDiocese.state})</>}.
               <button
                 onClick={() => {
@@ -205,7 +205,7 @@ export function DioceseStep({ selected, onSelect, onSkip }: DioceseStepProps) {
                   setShowCreate(false);
                   setNewName('');
                 }}
-                className="ml-2 underline font-medium hover:text-amber-900 dark:hover:text-amber-300"
+                className="ml-2 underline font-medium hover:text-warning/80"
               >
                 Usar esta →
               </button>

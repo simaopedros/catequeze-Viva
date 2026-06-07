@@ -1,4 +1,5 @@
 import { HttpError } from 'wasp/server';
+import { isBillingActive } from './billingEnforcement';
 
 /**
  * Ensure the current user has a personal workspace (Parish with type=PERSONAL).
@@ -15,7 +16,23 @@ export const ensurePersonalWorkspace = async (_args: void, context: any) => {
     },
   });
 
-  if (existing) return existing;
+  if (existing) {
+    // Ensure membership exists (may be missing from earlier versions)
+    const existingMembership = await context.entities.Membership.findFirst({
+      where: { userId: context.user.id, parishId: existing.id },
+    });
+    if (!existingMembership) {
+      await context.entities.Membership.create({
+        data: {
+          userId: context.user.id,
+          parishId: existing.id,
+          role: 'PERSONAL_OWNER',
+          status: 'ACTIVE',
+        },
+      });
+    }
+    return existing;
+  }
 
   // Create personal workspace
   const user = await context.entities.User.findUnique({
@@ -25,7 +42,7 @@ export const ensurePersonalWorkspace = async (_args: void, context: any) => {
 
   const personalName = `Catequese de ${user?.firstName || 'Catequista'}`;
 
-  return context.entities.Parish.create({
+  const parish = await context.entities.Parish.create({
     data: {
       name: personalName,
       type: 'PERSONAL',
@@ -34,6 +51,18 @@ export const ensurePersonalWorkspace = async (_args: void, context: any) => {
       ownerId: context.user.id,
     },
   });
+
+  // Auto-create membership so owner is recognized as member
+  await context.entities.Membership.create({
+    data: {
+      userId: context.user.id,
+      parishId: parish.id,
+      role: 'PERSONAL_OWNER',
+      status: 'ACTIVE',
+    },
+  });
+
+  return parish;
 };
 
 /**
@@ -73,7 +102,7 @@ export const listWorkspaces = async (_args: void, context: any) => {
       name: 'Meu Espaço Pessoal',
       subtitle: personalWorkspace.name,
       type: 'PERSONAL' as const,
-      role: 'OWNER',
+      role: 'PERSONAL_OWNER',
       plan: context.user.subscriptionPlan || 'catechist_free',
       isPersonal: true,
     });
@@ -87,12 +116,18 @@ export const listWorkspaces = async (_args: void, context: any) => {
 
     // Get billing for parish/diocese workspaces
     let plan = m.parish.type === 'DIOCESE' ? 'diocese' : 'parish';
+    let billingStatus: string | null = null;
+
     const billing = await context.entities.TenantBilling.findUnique({
       where: { parishId: m.parish.id },
-      select: { plan: true, status: true },
+      select: { plan: true, status: true, trialEndsAt: true },
     });
-    if (billing && billing.status === 'ACTIVE') {
-      plan = billing.plan;
+
+    if (billing) {
+      billingStatus = billing.status;
+      if (isBillingActive(billing)) {
+        plan = billing.plan;
+      }
     }
 
     workspaces.push({
@@ -101,6 +136,7 @@ export const listWorkspaces = async (_args: void, context: any) => {
       type: m.parish.type,
       role: m.role,
       plan,
+      billingStatus,
       isPersonal: false,
       membershipStatus: m.status,
       membershipId: m.id,
