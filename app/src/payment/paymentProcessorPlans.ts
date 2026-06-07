@@ -11,11 +11,11 @@ export const paymentProcessorPlanIds = {
   [PaymentPlanId.Pro]: env.PAYMENTS_PRO_SUBSCRIPTION_PLAN_ID,
   [PaymentPlanId.Credits10]: env.PAYMENTS_CREDITS_10_PLAN_ID,
   [PaymentPlanId.CatechistFree]: "catechist_free",
-  [PaymentPlanId.CatechistPro]: env.WOOVI_CATECHIST_PRO_PLAN_ID,
-  [PaymentPlanId.CatechistAi]: "catechist_ai",
+  [PaymentPlanId.CatechistPro]: env.STRIPE_CATECHIST_PRO_PLAN_ID,
+  [PaymentPlanId.CatechistAi]: env.STRIPE_CATECHIST_AI_PLAN_ID,
   [PaymentPlanId.CatechistAiAddon]: "catechist_ai_addon",
-  [PaymentPlanId.Parish]: env.WOOVI_PARISH_PLAN_ID,
-  [PaymentPlanId.Diocese]: env.WOOVI_DIOCESE_PLAN_ID,
+  [PaymentPlanId.Parish]: env.STRIPE_PARISH_PLAN_ID,
+  [PaymentPlanId.Diocese]: env.STRIPE_DIOCESE_PLAN_ID,
 } as const satisfies Record<PaymentPlanId, string>;
 
 /**

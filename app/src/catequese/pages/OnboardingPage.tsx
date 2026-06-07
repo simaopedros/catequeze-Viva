@@ -12,6 +12,7 @@ import { CatechistDetails } from '../components/onboarding/CatechistDetails';
 import { GuardianDetails } from '../components/onboarding/GuardianDetails';
 import { ViewerDetails } from '../components/onboarding/ViewerDetails';
 import { ConfirmDialog } from '../../client/components/ConfirmDialog';
+import { getIntendedPlan, clearIntendedPlan, isInstitutionalPlanId } from '../lib/intendedPlan';
 import {
   createParish,
   joinParish,
@@ -321,10 +322,26 @@ export default function OnboardingPage() {
 
   // ── Render ────────────────────────────────────────────────────────────
 
+  // Route after onboarding completes. If the visitor picked a paid plan on the
+  // landing/pricing page, send them straight to the right checkout, respecting
+  // the account LEVEL: institutional plans only make sense for manager accounts.
+  const resolveFinishTarget = (): string => {
+    const intended = getIntendedPlan();
+    if (intended) {
+      const institutional = isInstitutionalPlanId(intended);
+      const levelMatchesAccount = institutional ? accountType === 'manager' : accountType === 'personal';
+      if (levelMatchesAccount) {
+        clearIntendedPlan();
+        return `/app/billing?plan=${intended}`;
+      }
+    }
+    return accountType === 'personal' ? '/app/select-workspace' : '/app';
+  };
+
   if (completionData) {
     return (
       <OnboardingLayout>
-        <CompletionStep summary={completionData} onFinish={() => navigate(accountType === 'personal' ? '/app/select-workspace' : '/app')} />
+        <CompletionStep summary={completionData} onFinish={() => navigate(resolveFinishTarget())} />
       </OnboardingLayout>
     );
   }

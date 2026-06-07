@@ -46,6 +46,22 @@ export function planName(plan: string | null): string {
   return PLAN_NAMES[plan.toLowerCase()] || plan;
 }
 
+// Personal-level plans. Institutional plans (parish/diocese) must never apply to
+// a personal workspace — they belong to TenantBilling, not the personal space.
+const PERSONAL_PLAN_IDS = ['catechist_free', 'catechist_pro', 'catechist_ai'];
+
+/**
+ * Effective PERSONAL plan id (lowercase) for a user's personal workspace.
+ * Only honors an active personal subscription; institutional plan values
+ * (parish/diocese) and inactive subscriptions resolve to catechist_free, so an
+ * institutional purchase never upgrades the buyer's personal space.
+ */
+export function getPersonalPlanId(user: { subscriptionStatus?: string | null; subscriptionPlan?: string | null } | null | undefined): string {
+  const active = user?.subscriptionStatus === 'active';
+  const plan = (active ? user?.subscriptionPlan : null)?.toLowerCase() || '';
+  return PERSONAL_PLAN_IDS.includes(plan) ? plan : 'catechist_free';
+}
+
 /**
  * Check if a billing record is currently active.
  * Active means status is ACTIVE, or TRIAL with a future trialEndsAt.

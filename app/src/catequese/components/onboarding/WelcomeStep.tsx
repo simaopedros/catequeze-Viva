@@ -37,7 +37,7 @@ export function WelcomeStep({ onPersonal, onManager }: WelcomeStepProps) {
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="font-bold text-base">Conta Pessoal</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">Para catequistas individuais</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Para catequistas individuais · plano pessoal (Grátis / Pro / IA)</p>
             <ul className="mt-2 space-y-0.5">
               {['Espaço pessoal isolado', 'Suas turmas e catequizandos', 'Gerador de encontros com IA'].map(f => (
                 <li key={f} className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
@@ -59,7 +59,7 @@ export function WelcomeStep({ onPersonal, onManager }: WelcomeStepProps) {
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="font-bold text-base">Conta de Gestão</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">Para paróquias e dioceses</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Para paróquias e dioceses · plano institucional (cobre vários catequistas)</p>
             <ul className="mt-2 space-y-0.5">
               {['Multi-catequista', 'Comunicação integrada', 'Gestão completa da catequese'].map(f => (
                 <li key={f} className="flex items-center gap-1.5 text-[11px] text-muted-foreground">

@@ -4,9 +4,9 @@ import { AppShell } from '../AppShell';
 import { Button } from '../../client/components/ui/button';
 import {
   Church, MapPin, Users, BookOpen, Building2, Settings,
-  ArrowLeft, Loader2, AlertCircle,
+  ArrowLeft, Loader2, AlertCircle, Trash2,
 } from 'lucide-react';
-import { useQuery, getParishById, listCommunities, listParishMembers, updateParish, createCommunity, updateCommunity, inviteUserToParish, removeMembership } from 'wasp/client/operations';
+import { useQuery, getParishById, listCommunities, listParishMembers, updateParish, deleteParish, createCommunity, updateCommunity, inviteUserToParish, removeMembership } from 'wasp/client/operations';
 import { ParishInfoTab } from '../components/parish/ParishInfoTab';
 import { ParishCommunitiesTab } from '../components/parish/ParishCommunitiesTab';
 import { ParishMembersTab } from '../components/parish/ParishMembersTab';
@@ -33,6 +33,10 @@ export default function ParishDetailPage() {
   const [editState, setEditState] = useState('');
   const [saving, setSaving] = useState(false);
 
+  // Delete (archive) state
+  const [showDelete, setShowDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
   const startEditing = () => {
     if (!parish) return;
     setEditName(parish.name || '');
@@ -53,6 +57,19 @@ export default function ParishDetailPage() {
       setError(e.message || 'Erro ao salvar.');
     }
     setSaving(false);
+  };
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await deleteParish({ id: pid, confirmation: 'DELETAR' });
+      toast({ title: 'Paróquia removida.', description: 'Os dados foram arquivados e podem ser restaurados por um administrador.' });
+      navigate('/app/parishes');
+    } catch (e: any) {
+      toast({ title: 'Erro ao remover', description: e.message || 'Tente novamente.', variant: 'destructive' });
+      setDeleting(false);
+      setShowDelete(false);
+    }
   };
 
   const handleCreateCommunity = async (name: string, type: string, location: string) => {
@@ -155,17 +172,36 @@ export default function ParishDetailPage() {
         </div>
 
         {tab === 'info' && (
-          <ParishInfoTab
-            parish={parish}
-            editing={editing}
-            editName={editName} setEditName={setEditName}
-            editCity={editCity} setEditCity={setEditCity}
-            editState={editState} setEditState={setEditState}
-            saving={saving}
-            onSave={handleSave}
-            onCancel={() => setEditing(false)}
-            onStartEdit={startEditing}
-          />
+          <>
+            <ParishInfoTab
+              parish={parish}
+              editing={editing}
+              editName={editName} setEditName={setEditName}
+              editCity={editCity} setEditCity={setEditCity}
+              editState={editState} setEditState={setEditState}
+              saving={saving}
+              onSave={handleSave}
+              onCancel={() => setEditing(false)}
+              onStartEdit={startEditing}
+            />
+
+            {parish?.type !== 'PERSONAL' && (
+              <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-5 space-y-3">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 text-destructive" />
+                  <h3 className="font-semibold text-destructive">Zona de perigo</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Remover a paróquia a oculta da sua lista de espaços e do seletor de workspaces.
+                  Os dados são arquivados (não apagados) e podem ser restaurados por um administrador.
+                </p>
+                <Button variant="destructive" size="sm" onClick={() => setShowDelete(true)}>
+                  <Trash2 className="mr-1.5 h-4 w-4" />
+                  Remover paróquia
+                </Button>
+              </div>
+            )}
+          </>
         )}
 
         {tab === 'communities' && (
@@ -185,6 +221,18 @@ export default function ParishDetailPage() {
           />
         )}
       </div>
+
+      <ConfirmDialog
+        open={showDelete}
+        onOpenChange={setShowDelete}
+        title="Remover paróquia"
+        description={`Tem certeza que deseja remover "${parish?.name}"? Ela será arquivada e ocultada das listagens. Os dados são preservados e a ação pode ser revertida por um administrador.`}
+        confirmLabel="Remover"
+        variant="destructive"
+        confirmPhrase="DELETAR"
+        loading={deleting}
+        onConfirm={handleDelete}
+      />
     </AppShell>
   );
 }

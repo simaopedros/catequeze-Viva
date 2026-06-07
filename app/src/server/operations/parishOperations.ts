@@ -1,6 +1,114 @@
 import { HttpError } from 'wasp/server';
 import { writeAuditLog, getDioceseParishIds, requireDioceseAccess } from '../auth/helpers';
-import { assertCanCreateParish, resolveEffectiveBilling } from './billingEnforcement';
+import { assertCanCreateParish, resolveEffectiveBilling, resolveNewParishBilling } from './billingEnforcement';
+
+/**
+ * Determines whether a parish is already "claimed" by someone other than the
+ * given user — i.e. it has a different owner, or an active admin/coordinator
+ * membership belonging to another user. Claimed parishes can only be joined
+ * through an explicit invitation (see joinParish/inviteUserToParish), never by
+ * matching name/city/state or OSM id during onboarding.
+ */
+export async function isParishClaimedByOthers(
+  context: any,
+  parishId: string,
+  userId: string,
+): Promise<boolean> {
+  const parish = await context.entities.Parish.findUnique({
+    where: { id: parishId },
+    select: { ownerId: true },
+  });
+  if (parish?.ownerId && parish.ownerId !== userId) return true;
+
+  const adminMembership = await context.entities.Membership.findFirst({
+    where: {
+      parishId,
+      status: 'ACTIVE',
+      role: { in: ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR'] },
+      userId: { not: userId },
+    },
+    select: { id: true },
+  });
+  return !!adminMembership;
+}
+
+const PARISH_INVITE_REQUIRED_MESSAGE =
+  'Esta paróquia já existe e pertence a outro coordenador. Solicite um convite a um administrador para participar.';
+
+/**
+ * Returns whether the current user may attach parishes to / manage the given
+ * diocese: platform admins, active DIOCESE_ADMINs of that diocese, or owners of
+ * a parish already in it.
+ */
+export async function canManageDiocese(context: any, dioceseId: string): Promise<boolean> {
+  if (context.user.isAdmin) return true;
+
+  const adminMembership = await context.entities.Membership.findFirst({
+    where: {
+      userId: context.user.id,
+      status: 'ACTIVE',
+      role: 'DIOCESE_ADMIN',
+      parish: { dioceseId },
+    },
+    select: { id: true },
+  });
+  if (adminMembership) return true;
+
+  const ownedInDiocese = await context.entities.Parish.findFirst({
+    where: { ownerId: context.user.id, dioceseId },
+    select: { id: true },
+  });
+  return !!ownedInDiocese;
+}
+
+async function assertCanManageDiocese(context: any, dioceseId: string): Promise<void> {
+  if (!(await canManageDiocese(context, dioceseId))) {
+    throw new HttpError(
+      403,
+      'Você não tem permissão para criar paróquias nesta diocese. Solicite acesso a um administrador diocesano.',
+    );
+  }
+}
+
+/**
+ * Ensures the current user has access to an existing parish during onboarding.
+ * Reactivates an existing membership, or — only if the parish is unclaimed —
+ * creates a coordinator membership and claims ownership. Claimed parishes throw
+ * 403 so the user is routed to the invitation flow instead of silently gaining
+ * access to a foreign parish.
+ */
+async function ensureOnboardingMembership(context: any, parishId: string): Promise<void> {
+  const existingMembership = await context.entities.Membership.findFirst({
+    where: { userId: context.user.id, parishId },
+  });
+
+  if (existingMembership) {
+    if (existingMembership.status !== 'ACTIVE') {
+      await context.entities.Membership.update({
+        where: { id: existingMembership.id },
+        data: { status: 'ACTIVE' },
+      });
+    }
+    return;
+  }
+
+  if (!context.user.isAdmin && (await isParishClaimedByOthers(context, parishId, context.user.id))) {
+    throw new HttpError(403, PARISH_INVITE_REQUIRED_MESSAGE);
+  }
+
+  await context.entities.Membership.create({
+    data: {
+      userId: context.user.id,
+      parishId,
+      role: 'PARISH_COORDINATOR',
+      status: 'ACTIVE',
+    },
+  });
+  await context.entities.Parish.update({
+    where: { id: parishId },
+    data: { owner: { connect: { id: context.user.id } } },
+  });
+}
 
 /**
  * Public search for onboarding — ignores user's Membership.
@@ -80,31 +188,54 @@ export const createParish = async (
   if (!context.user) throw new HttpError(401);
 
   if (!context.user.isAdmin) {
-    await assertCanCreateParish(context);
+    await assertCanCreateParish(context, { dioceseId: args.dioceseId || null });
+  }
+
+  // When attaching the new parish to a diocese, the creator must be allowed to
+  // manage that diocese (platform admin, diocese admin, or owner of a parish in
+  // it). Prevents attaching parishes to a foreign diocese to steal its license.
+  if (args.dioceseId) {
+    await assertCanManageDiocese(context, args.dioceseId);
   }
 
   // Check for duplicate by name + city + state
   const existing = await findParishDuplicate(args, context);
   if (existing) {
-    // Duplicate found — ensure user has access via membership before returning
     const existingMembership = await context.entities.Membership.findFirst({
       where: { userId: context.user.id, parishId: existing.id },
     });
-    if (!existingMembership) {
-      await context.entities.Membership.create({
-        data: {
-          userId: context.user.id,
-          parishId: existing.id,
-          role: args.role || 'PARISH_COORDINATOR',
-          status: 'ACTIVE',
-        },
-      });
-    } else if (existingMembership.status !== 'ACTIVE') {
-      await context.entities.Membership.update({
-        where: { id: existingMembership.id },
-        data: { status: 'ACTIVE' },
-      });
+
+    // Already linked — just reactivate the membership if needed.
+    if (existingMembership) {
+      if (existingMembership.status !== 'ACTIVE') {
+        await context.entities.Membership.update({
+          where: { id: existingMembership.id },
+          data: { status: 'ACTIVE' },
+        });
+      }
+      return { id: existing.id, existingParishId: existing.id };
     }
+
+    // Not yet a member: only auto-join when the parish is unclaimed. Otherwise
+    // joining requires an invitation — prevents anyone from gaining coordinator
+    // access to a foreign parish by matching its name/city/state.
+    if (!context.user.isAdmin && (await isParishClaimedByOthers(context, existing.id, context.user.id))) {
+      throw new HttpError(403, PARISH_INVITE_REQUIRED_MESSAGE);
+    }
+
+    await context.entities.Membership.create({
+      data: {
+        userId: context.user.id,
+        parishId: existing.id,
+        role: args.role || 'PARISH_COORDINATOR',
+        status: 'ACTIVE',
+      },
+    });
+    // Claim ownership of a previously unowned (legacy/imported) parish.
+    await context.entities.Parish.update({
+      where: { id: existing.id },
+      data: { owner: { connect: { id: context.user.id } } },
+    });
     return { id: existing.id, existingParishId: existing.id };
   }
 
@@ -129,21 +260,19 @@ export const createParish = async (
     },
   });
 
-  const userPlan = context.user.subscriptionPlan || 'catechist_free';
-  const userStatus = context.user.subscriptionStatus || 'active';
-  const isPaidPlan = ['catechist_pro', 'catechist_ai', 'parish', 'diocese'].includes(userPlan);
-  const billingPlan = userPlan.toUpperCase();
-  const billingStatus = isPaidPlan && userStatus === 'active' ? 'ACTIVE' : 'TRIAL';
-  const trialEndsAt = billingStatus === 'TRIAL' ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) : null;
-
-  await context.entities.TenantBilling.create({
-    data: {
-      parishId: parish.id,
-      plan: billingPlan,
-      status: billingStatus,
-      trialEndsAt,
-    },
-  });
+  // Institutional billing: inherit the diocese/owner umbrella instead of the
+  // creator's personal plan (kept separate from personal workspaces).
+  const newBilling = await resolveNewParishBilling(context, { dioceseId: args.dioceseId || null });
+  if (!newBilling.skip) {
+    await context.entities.TenantBilling.create({
+      data: {
+        parishId: parish.id,
+        plan: newBilling.plan,
+        status: newBilling.status,
+        trialEndsAt: newBilling.trialEndsAt,
+      },
+    });
+  }
 
   await writeAuditLog(context, 'PARISH_CREATE', 'Parish', parish.id, { parishId: parish.id });
   return { id: parish.id };
@@ -175,6 +304,60 @@ export const updateParish = async (
   const { id, ...data } = args;
   await context.entities.Parish.update({ where: { id }, data });
   await writeAuditLog(context, 'PARISH_UPDATE', 'Parish', args.id, { parishId: args.id });
+  return { success: true };
+};
+
+const DELETE_CONFIRMATION = 'DELETAR';
+const DELETE_AUTHORIZED_ROLES = ['PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'DIOCESE_ADMIN', 'SUPER_ADMIN'];
+
+/**
+ * Archive (soft-delete) a parish: marks it inactive so it disappears from the
+ * user's workspace switcher and parish listings, while preserving all linked
+ * data so the action can be reverted by a platform admin. Requires the literal
+ * "DELETAR" confirmation to guard against accidental removal.
+ */
+export const deleteParish = async (
+  args: { id: string; confirmation: string },
+  context: any,
+): Promise<{ success: boolean }> => {
+  if (!context.user) throw new HttpError(401);
+
+  if (args.confirmation !== DELETE_CONFIRMATION) {
+    throw new HttpError(400, `Confirmação inválida. Digite "${DELETE_CONFIRMATION}" para remover.`);
+  }
+
+  const parish = await context.entities.Parish.findUnique({
+    where: { id: args.id },
+    select: { id: true, type: true, ownerId: true, active: true },
+  });
+  if (!parish) throw new HttpError(404, 'Paróquia não encontrada.');
+  if (parish.type === 'PERSONAL') {
+    throw new HttpError(400, 'O espaço pessoal não pode ser removido.');
+  }
+
+  // Authorization: platform admin, parish owner, an active coordinator/admin
+  // membership, or a diocese admin over this parish.
+  if (!context.user.isAdmin) {
+    const isOwner = parish.ownerId === context.user.id;
+    let authorized = isOwner;
+    if (!authorized) {
+      const membership = await context.entities.Membership.findFirst({
+        where: { userId: context.user.id, parishId: args.id, status: 'ACTIVE' },
+        select: { role: true },
+      });
+      authorized = !!membership && DELETE_AUTHORIZED_ROLES.includes(membership.role);
+    }
+    if (!authorized) {
+      const isDioceseAdmin = await requireDioceseAccess(context, args.id);
+      if (!isDioceseAdmin) throw new HttpError(403);
+    }
+  }
+
+  await context.entities.Parish.update({
+    where: { id: args.id },
+    data: { active: false },
+  });
+  await writeAuditLog(context, 'PARISH_DELETE', 'Parish', args.id, { parishId: args.id, archived: true });
   return { success: true };
 };
 
@@ -275,7 +458,7 @@ export const listParishes = async (_args: void, context: any) => {
     }
 
     parishes = await context.entities.Parish.findMany({
-      where: { id: { in: parishIds } },
+      where: { id: { in: parishIds }, active: true },
       orderBy: { name: 'asc' },
       include: {
         diocese: { select: { id: true, name: true } },
@@ -328,25 +511,7 @@ export const getOrCreateParishByOsmId = async (
       select: { id: true, name: true, city: true, state: true, osmId: true },
     });
     if (byOsm) {
-      // Ensure membership exists
-      const existingMembership = await context.entities.Membership.findFirst({
-        where: { userId: context.user.id, parishId: byOsm.id },
-      });
-      if (!existingMembership) {
-        await context.entities.Membership.create({
-          data: {
-            userId: context.user.id,
-            parishId: byOsm.id,
-            role: 'PARISH_COORDINATOR',
-            status: 'ACTIVE',
-          },
-        });
-      } else if (existingMembership.status !== 'ACTIVE') {
-        await context.entities.Membership.update({
-          where: { id: existingMembership.id },
-          data: { status: 'ACTIVE' },
-        });
-      }
+      await ensureOnboardingMembership(context, byOsm.id);
       return byOsm;
     }
   }
@@ -372,25 +537,7 @@ export const getOrCreateParishByOsmId = async (
   });
 
   if (existing) {
-    // Ensure the user has active membership
-    const existingMembership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, parishId: existing.id },
-    });
-    if (!existingMembership) {
-      await context.entities.Membership.create({
-        data: {
-          userId: context.user.id,
-          parishId: existing.id,
-          role: 'PARISH_COORDINATOR',
-          status: 'ACTIVE',
-        },
-      });
-    } else if (existingMembership.status !== 'ACTIVE') {
-      await context.entities.Membership.update({
-        where: { id: existingMembership.id },
-        data: { status: 'ACTIVE' },
-      });
-    }
+    await ensureOnboardingMembership(context, existing.id);
     // Update with osmId if missing, but don't overwrite
     if (args.osmId && !existing.osmId) {
       await context.entities.Parish.update({
@@ -418,15 +565,19 @@ export const getOrCreateParishByOsmId = async (
     },
   });
 
-  // Create billing record for the new parish
-  await context.entities.TenantBilling.create({
-    data: {
-      parishId: parish.id,
-      plan: 'CATECHIST_FREE',
-      status: 'TRIAL',
-      trialEndsAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days trial
-    },
-  });
+  // Create billing record for the new parish — inherit the owner's institutional
+  // umbrella when present; never apply the creator's personal plan.
+  const osmBilling = await resolveNewParishBilling(context, { dioceseId: null });
+  if (!osmBilling.skip) {
+    await context.entities.TenantBilling.create({
+      data: {
+        parishId: parish.id,
+        plan: osmBilling.plan,
+        status: osmBilling.status,
+        trialEndsAt: osmBilling.trialEndsAt,
+      },
+    });
+  }
 
   // Create membership so the user has active access
   await context.entities.Membership.create({

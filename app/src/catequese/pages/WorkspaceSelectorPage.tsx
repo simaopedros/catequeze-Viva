@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useQuery, useAction } from 'wasp/client/operations';
-import { listWorkspaces, acceptInvitation } from 'wasp/client/operations';
+import { listWorkspaces, getInstitutionalManageContext, acceptInvitation } from 'wasp/client/operations';
 import { Button } from '../../client/components/ui/button';
-import { User, Church, Building2, Plus, ArrowRight, Sparkles, Mail, Check } from 'lucide-react';
+import { User, Church, Building2, Plus, ArrowRight, Sparkles, Mail, Check, ShieldCheck, Users2, Settings } from 'lucide-react';
 
 interface Workspace {
   id: string;
@@ -15,6 +15,16 @@ interface Workspace {
   isPersonal: boolean;
   membershipStatus?: 'ACTIVE' | 'INVITED';
   membershipId?: string;
+  dioceseId?: string | null;
+  dioceseName?: string | null;
+  planInherited?: boolean;
+  isManager?: boolean;
+}
+
+interface ManageDiocese {
+  id: string;
+  name: string;
+  licensed: boolean;
 }
 
 const PLAN_NAMES: Record<string, string> = {
@@ -26,16 +36,68 @@ const PLAN_NAMES: Record<string, string> = {
   community: 'Comunidade',
 };
 
+const ROLE_LABELS: Record<string, string> = {
+  SUPER_ADMIN: 'Administrador',
+  DIOCESE_ADMIN: 'Administrador diocesano',
+  PARISH_COORDINATOR: 'Coordenador',
+  COMMUNITY_COORDINATOR: 'Coordenador de comunidade',
+  LEAD_CATECHIST: 'Catequista responsável',
+  ASSISTANT_CATECHIST: 'Catequista auxiliar',
+  PASTORAL_VIEWER: 'Visitante pastoral',
+  CONTENT_REVIEWER: 'Revisor de conteúdo',
+  GUARDIAN: 'Responsável',
+  CATECHUMEN: 'Catequizando',
+};
+
+function planLabel(plan?: string) {
+  if (!plan) return '';
+  return PLAN_NAMES[plan.toLowerCase()] || plan;
+}
+
+function roleLabel(role?: string) {
+  if (!role) return '';
+  return ROLE_LABELS[role] || role;
+}
+
+function workspaceIcon(type: Workspace['type']) {
+  if (type === 'DIOCESE') return <Building2 className="h-6 w-6 text-secondary" />;
+  if (type === 'COMMUNITY') return <Building2 className="h-6 w-6 text-success" />;
+  return <Church className="h-6 w-6 text-accent" />;
+}
+
 export default function WorkspaceSelectorPage() {
   const { data: workspaces = [], refetch } = useQuery(listWorkspaces);
+  const { data: manageContext } = useQuery(getInstitutionalManageContext);
   const acceptAction = useAction(acceptInvitation);
   const navigate = useNavigate();
-  const [selected, setSelected] = useState<string | null>(null);
   const [accepting, setAccepting] = useState<string | null>(null);
 
   const personal = workspaces.find((w: Workspace) => w.isPersonal);
-  const pendingInvitations = workspaces.filter((w: Workspace) => !w.isPersonal && w.membershipStatus === 'INVITED');
-  const parishWorkspaces = workspaces.filter((w: Workspace) => !w.isPersonal && w.membershipStatus !== 'INVITED');
+  const pendingInvitations = workspaces.filter(
+    (w: Workspace) => !w.isPersonal && w.membershipStatus === 'INVITED',
+  );
+  const institutional = workspaces.filter(
+    (w: Workspace) => !w.isPersonal && w.membershipStatus !== 'INVITED',
+  );
+  const managed = institutional.filter((w: Workspace) => w.isManager);
+  const participating = institutional.filter((w: Workspace) => !w.isManager);
+
+  const manageDioceses: ManageDiocese[] = manageContext?.dioceses ?? [];
+  const canCreateUnderOwnerPlan: boolean = manageContext?.canCreateUnderOwnerPlan ?? false;
+  const ownerPlan: string | null = manageContext?.ownerPlan ?? null;
+
+  // Group the managed workspaces by diocese (independent ones grouped separately).
+  const dioceseGroups = new Map<string, { name: string; items: Workspace[] }>();
+  const independentManaged: Workspace[] = [];
+  for (const ws of managed) {
+    if (ws.dioceseId) {
+      const group = dioceseGroups.get(ws.dioceseId) || { name: ws.dioceseName || 'Diocese', items: [] as Workspace[] };
+      group.items.push(ws);
+      dioceseGroups.set(ws.dioceseId, group);
+    } else {
+      independentManaged.push(ws);
+    }
+  }
 
   const handleEnter = (workspaceId: string) => {
     localStorage.setItem('catequese-viva-active-workspace', workspaceId);
@@ -55,6 +117,76 @@ export default function WorkspaceSelectorPage() {
     }
   };
 
+  const createInDiocese = (dioceseId: string) =>
+    navigate(`/app/parishes?new=true&dioceseId=${dioceseId}`);
+
+  // Open the settings scoped to a workspace: personal -> account settings;
+  // institutional -> that parish/diocese management page. Sets the active
+  // workspace first so the settings operate in the right context.
+  const handleManage = (ws: Workspace) => {
+    localStorage.setItem('catequese-viva-active-workspace', ws.id);
+    window.dispatchEvent(new CustomEvent('workspace-changed', { detail: ws.id }));
+    navigate(ws.isPersonal ? '/app/settings' : `/app/parishes/${ws.id}`);
+  };
+
+  const renderWorkspaceCard = (ws: Workspace, opts?: { showRole?: boolean; covered?: string; canManage?: boolean }) => (
+    <div
+      key={ws.id}
+      role="button"
+      tabIndex={0}
+      onClick={() => handleEnter(ws.id)}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleEnter(ws.id); } }}
+      className="w-full rounded-2xl border-2 border-muted bg-card hover:border-primary/50 hover:shadow-sm transition-all p-5 text-left group cursor-pointer"
+    >
+      <div className="flex items-start gap-4">
+        <div
+          className={`rounded-xl p-3 group-hover:bg-opacity-80 transition-colors ${
+            ws.type === 'DIOCESE' ? 'bg-secondary/10' : ws.type === 'COMMUNITY' ? 'bg-success/10' : 'bg-accent/10'
+          }`}
+        >
+          {workspaceIcon(ws.type)}
+        </div>
+        <div className="flex-1 min-w-0">
+          <h2 className="font-bold text-lg">{ws.name}</h2>
+          <div className="flex flex-wrap items-center gap-2 mt-1">
+            <span
+              className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                ws.type === 'DIOCESE' ? 'bg-secondary/10 text-secondary' : ws.type === 'COMMUNITY' ? 'bg-success/10 text-success' : 'bg-accent/10 text-accent'
+              }`}
+            >
+              {planLabel(ws.plan)}
+            </span>
+            {opts?.showRole && <span className="text-xs text-muted-foreground">{roleLabel(ws.role)}</span>}
+            {opts?.covered && (
+              <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+                <ShieldCheck className="h-3 w-3" />
+                {opts.covered}
+              </span>
+            )}
+          </div>
+        </div>
+        {opts?.canManage && (
+          <button
+            onClick={(e) => { e.stopPropagation(); handleManage(ws); }}
+            title="Configurações deste espaço"
+            aria-label="Configurações deste espaço"
+            className="rounded-lg p-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors mt-1"
+          >
+            <Settings className="h-5 w-5" />
+          </button>
+        )}
+        <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform mt-2" />
+      </div>
+    </div>
+  );
+
+  const coverageLabel = (ws: Workspace): string | undefined => {
+    if (!ws.planInherited) return undefined;
+    if (ws.dioceseName) return `Coberta pela licença da ${ws.dioceseName}`;
+    if (ws.plan === 'parish' || ws.plan === 'diocese') return 'Coberta pela sua licença';
+    return undefined;
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
       <div className="w-full max-w-lg space-y-6">
@@ -65,38 +197,47 @@ export default function WorkspaceSelectorPage() {
             Catequese Viva
           </div>
           <h1 className="text-2xl font-bold">Selecionar Espaço</h1>
-          <p className="text-muted-foreground text-sm">
-            Escolha o workspace onde deseja trabalhar
-          </p>
+          <p className="text-muted-foreground text-sm">Escolha o workspace onde deseja trabalhar</p>
         </div>
 
         {/* Personal Workspace */}
         <div>
           <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider px-1 mb-2">
-            Meu Espaço
+            Meu Espaço Pessoal
           </h3>
           {personal ? (
-            <button
+            <div
+              role="button"
+              tabIndex={0}
               onClick={() => handleEnter(personal.id)}
-              className="w-full rounded-2xl border-2 border-primary/30 bg-primary/5 hover:border-primary/50 hover:bg-primary/10 transition-all p-5 text-left group"
-          >
-            <div className="flex items-start gap-4">
-              <div className="rounded-xl bg-primary/10 p-3 group-hover:bg-primary/20 transition-colors">
-                <User className="h-6 w-6 text-primary" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h2 className="font-bold text-lg">{personal.name}</h2>
-                <p className="text-sm text-muted-foreground">{personal.subtitle}</p>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
-                    {PLAN_NAMES[personal.plan] || personal.plan}
-                  </span>
-                  <span className="text-xs text-muted-foreground">· Espaço individual</span>
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleEnter(personal.id); } }}
+              className="w-full rounded-2xl border-2 border-primary/30 bg-primary/5 hover:border-primary/50 hover:bg-primary/10 transition-all p-5 text-left group cursor-pointer"
+            >
+              <div className="flex items-start gap-4">
+                <div className="rounded-xl bg-primary/10 p-3 group-hover:bg-primary/20 transition-colors">
+                  <User className="h-6 w-6 text-primary" />
                 </div>
+                <div className="flex-1 min-w-0">
+                  <h2 className="font-bold text-lg">{personal.name}</h2>
+                  <p className="text-sm text-muted-foreground">{personal.subtitle}</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
+                      {planLabel(personal.plan)}
+                    </span>
+                    <span className="text-xs text-muted-foreground">· Plano pessoal</span>
+                  </div>
+                </div>
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleManage(personal); }}
+                  title="Configurações da conta"
+                  aria-label="Configurações da conta"
+                  className="rounded-lg p-2 text-primary/70 hover:text-primary hover:bg-primary/10 transition-colors mt-1"
+                >
+                  <Settings className="h-5 w-5" />
+                </button>
+                <ArrowRight className="h-5 w-5 text-primary/60 group-hover:translate-x-1 transition-transform mt-2" />
               </div>
-              <ArrowRight className="h-5 w-5 text-primary/60 group-hover:translate-x-1 transition-transform mt-2" />
             </div>
-          </button>
           ) : (
             <div className="rounded-2xl border-2 border-dashed border-muted-foreground/30 p-6 text-center text-muted-foreground">
               <p className="text-sm">Espaço pessoal será criado ao completar o onboarding.</p>
@@ -112,16 +253,13 @@ export default function WorkspaceSelectorPage() {
               Convites Pendentes
             </h3>
             {pendingInvitations.map((ws: Workspace) => (
-              <div
-                key={ws.id}
-                className="rounded-2xl border-2 border-warning/30 bg-warning/5 p-5 flex items-center gap-4"
-              >
+              <div key={ws.id} className="rounded-2xl border-2 border-warning/30 bg-warning/5 p-5 flex items-center gap-4">
                 <div className="rounded-xl bg-warning/10 p-3">
                   <Church className="h-6 w-6 text-warning" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h2 className="font-bold text-lg">{ws.name}</h2>
-                  <p className="text-sm text-muted-foreground">Você foi convidado(a) como {ws.role}</p>
+                  <p className="text-sm text-muted-foreground">Você foi convidado(a) como {roleLabel(ws.role)}</p>
                 </div>
                 <Button
                   size="sm"
@@ -137,53 +275,108 @@ export default function WorkspaceSelectorPage() {
           </div>
         )}
 
-        {/* Parish / Diocese / Community Workspaces */}
-        {parishWorkspaces.length > 0 && (
-          <div className="space-y-3">
-            <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider px-1">
-              Paróquias, Dioceses e Comunidades
+        {/* Managed institutional workspaces */}
+        {(managed.length > 0 || manageDioceses.length > 0) && (
+          <div className="space-y-4">
+            <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider px-1 flex items-center gap-1.5">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              Que administro
             </h3>
-            {parishWorkspaces.map((ws: Workspace) => (
-              <button
-                key={ws.id}
-                onClick={() => handleEnter(ws.id)}
-                className="w-full rounded-2xl border-2 border-muted bg-card hover:border-primary/50 hover:shadow-sm transition-all p-5 text-left group"
-              >
-                <div className="flex items-start gap-4">
-                  <div className={`rounded-xl p-3 group-hover:bg-opacity-80 transition-colors ${
-                    ws.type === 'DIOCESE' ? 'bg-secondary/10' : ws.type === 'COMMUNITY' ? 'bg-success/10' : 'bg-accent/10'
-                  }`}>
-                    {ws.type === 'DIOCESE' ? (
-                      <Building2 className="h-6 w-6 text-secondary" />
-                    ) : ws.type === 'COMMUNITY' ? (
-                      <Building2 className="h-6 w-6 text-success" />
-                    ) : (
-                      <Church className="h-6 w-6 text-accent" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h2 className="font-bold text-lg">{ws.name}</h2>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                        ws.type === 'DIOCESE' ? 'bg-secondary/10 text-secondary' : ws.type === 'COMMUNITY' ? 'bg-success/10 text-success' : 'bg-accent/10 text-accent'
-                      }`}>
-                        {PLAN_NAMES[ws.plan] || ws.plan}
-                      </span>
-                      <span className="text-xs text-muted-foreground">{ws.role}</span>
+
+            {/* Diocese groups */}
+            {[...dioceseGroups.entries()].map(([dioceseId, group]) => {
+              const licensed = manageDioceses.find((d) => d.id === dioceseId)?.licensed;
+              return (
+                <div key={dioceseId} className="space-y-2 rounded-2xl border border-secondary/30 bg-secondary/5 p-3">
+                  <div className="flex items-center justify-between gap-2 px-1">
+                    <div className="flex items-center gap-1.5 text-sm font-semibold text-secondary">
+                      <Building2 className="h-4 w-4" />
+                      {group.name}
                     </div>
+                    <span
+                      className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${
+                        licensed ? 'bg-secondary/15 text-secondary' : 'bg-muted text-muted-foreground'
+                      }`}
+                    >
+                      {licensed ? 'Licença Diocese ativa' : 'Sem licença Diocese'}
+                    </span>
                   </div>
-                  <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform mt-2" />
+                  {group.items.map((ws) => renderWorkspaceCard(ws, { covered: coverageLabel(ws), canManage: true }))}
+                  <button
+                    onClick={() => createInDiocese(dioceseId)}
+                    className="w-full rounded-xl border-2 border-dashed border-secondary/40 hover:bg-secondary/10 transition-all p-3 text-center text-secondary flex items-center justify-center gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span className="text-sm font-medium">Criar paróquia nesta diocese</span>
+                  </button>
                 </div>
+              );
+            })}
+
+            {/* Dioceses the user manages but has no parish in yet */}
+            {manageDioceses
+              .filter((d) => !dioceseGroups.has(d.id))
+              .map((d) => (
+                <div key={d.id} className="space-y-2 rounded-2xl border border-secondary/30 bg-secondary/5 p-3">
+                  <div className="flex items-center justify-between gap-2 px-1">
+                    <div className="flex items-center gap-1.5 text-sm font-semibold text-secondary">
+                      <Building2 className="h-4 w-4" />
+                      {d.name}
+                    </div>
+                    <span
+                      className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${
+                        d.licensed ? 'bg-secondary/15 text-secondary' : 'bg-muted text-muted-foreground'
+                      }`}
+                    >
+                      {d.licensed ? 'Licença Diocese ativa' : 'Sem licença Diocese'}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => createInDiocese(d.id)}
+                    className="w-full rounded-xl border-2 border-dashed border-secondary/40 hover:bg-secondary/10 transition-all p-3 text-center text-secondary flex items-center justify-center gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span className="text-sm font-medium">Criar paróquia nesta diocese</span>
+                  </button>
+                </div>
+              ))}
+
+            {/* Independent managed parishes (no diocese) */}
+            {independentManaged.map((ws) =>
+              renderWorkspaceCard(ws, { covered: coverageLabel(ws), canManage: true }),
+            )}
+
+            {/* Create under the user's own institutional (Parish) license */}
+            {canCreateUnderOwnerPlan && (
+              <button
+                onClick={() => navigate('/app/parishes?new=true')}
+                className="w-full rounded-2xl border-2 border-dashed border-primary/30 hover:bg-primary/5 transition-all p-4 text-center text-primary flex items-center justify-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                <span className="text-sm font-medium">
+                  Criar paróquia sob sua licença {planLabel(ownerPlan || 'parish')}
+                </span>
               </button>
-            ))}
+            )}
+          </div>
+        )}
+
+        {/* Participating institutional workspaces */}
+        {participating.length > 0 && (
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider px-1 flex items-center gap-1.5">
+              <Users2 className="h-3.5 w-3.5" />
+              Onde participo
+            </h3>
+            {participating.map((ws: Workspace) => renderWorkspaceCard(ws, { showRole: true }))}
           </div>
         )}
 
         {/* Empty state: no workspaces at all */}
-        {!personal && pendingInvitations.length === 0 && parishWorkspaces.length === 0 && (
+        {!personal && pendingInvitations.length === 0 && institutional.length === 0 && manageDioceses.length === 0 && (
           <div className="rounded-2xl border-2 border-dashed border-warning/50 bg-warning/5 p-6 text-center space-y-3">
             <p className="text-sm text-muted-foreground">
-              Nenhum workspace encontrado. Complete o onboarding ou crie uma paroquia.
+              Nenhum workspace encontrado. Complete o onboarding ou crie uma paróquia.
             </p>
             <div className="flex gap-2 justify-center">
               <button
@@ -196,19 +389,19 @@ export default function WorkspaceSelectorPage() {
                 onClick={() => navigate('/app/parishes?new=true')}
                 className="inline-flex items-center justify-center rounded-md border border-input bg-background h-9 px-4 text-sm font-medium"
               >
-                Criar Paroquia
+                Criar Paróquia
               </button>
             </div>
           </div>
         )}
 
-        {/* Create new parish button (if plan allows) */}
+        {/* Create an independent parish (new institutional workspace) */}
         <button
           onClick={() => navigate('/app/parishes?new=true')}
           className="w-full rounded-2xl border-2 border-dashed border-muted-foreground/30 hover:border-primary/40 hover:bg-accent/50 transition-all p-4 text-center text-muted-foreground hover:text-foreground flex items-center justify-center gap-2"
         >
           <Plus className="h-4 w-4" />
-          <span className="text-sm font-medium">Criar nova paróquia</span>
+          <span className="text-sm font-medium">Criar paróquia independente</span>
         </button>
       </div>
     </div>

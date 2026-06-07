@@ -13,6 +13,10 @@ import {
 } from "../plans";
 import { getPaymentPlanIdByPaymentProcessorPlanId } from "../paymentProcessorPlans";
 import { updateUserCredits, updateUserSubscription } from "../user";
+import {
+  cascadeActivatePlanToTenantBilling,
+  cascadeCancelToTenantBilling,
+} from "../billingCascade";
 import { stripeClient } from "./stripeClient";
 
 /**
@@ -44,13 +48,13 @@ export const stripeWebhook: PaymentsWebhook = async (
     // See: https://docs.opensaas.sh/guides/deploying/#setting-up-your-stripe-webhook
     switch (event.type) {
       case "invoice.paid":
-        await handleInvoicePaid(event, prismaUserDelegate);
+        await handleInvoicePaid(event, prismaUserDelegate, context);
         break;
       case "customer.subscription.updated":
         await handleCustomerSubscriptionUpdated(event, prismaUserDelegate);
         break;
       case "customer.subscription.deleted":
-        await handleCustomerSubscriptionDeleted(event, prismaUserDelegate);
+        await handleCustomerSubscriptionDeleted(event, prismaUserDelegate, context);
         break;
       default:
         throw new UnhandledWebhookEventError(event.type);
@@ -98,6 +102,7 @@ function constructStripeEvent(request: express.Request): Stripe.Event {
 async function handleInvoicePaid(
   event: Stripe.InvoicePaidEvent,
   prismaUserDelegate: PrismaClient["user"],
+  context: Parameters<PaymentsWebhook>[2],
 ): Promise<void> {
   const invoice = event.data.object;
   const customerId = getCustomerId(invoice.customer);
@@ -124,8 +129,8 @@ async function handleInvoicePaid(
     case PaymentPlanId.CatechistAi:
     case PaymentPlanId.CatechistAiAddon:
     case PaymentPlanId.Parish:
-    case PaymentPlanId.Diocese:
-      await updateUserSubscription(
+    case PaymentPlanId.Diocese: {
+      const user = await updateUserSubscription(
         {
           paymentProcessorUserId: customerId,
           datePaid: invoicePaidAtDate,
@@ -134,7 +139,16 @@ async function handleInvoicePaid(
         },
         prismaUserDelegate,
       );
+
+      // Institutional plans (Parish/Diocese) must cascade to TenantBilling so
+      // the parishes/dioceses billed through this user are activated.
+      if (paymentPlanId === PaymentPlanId.Parish) {
+        await cascadeActivatePlanToTenantBilling(context, user.id, "PARISH");
+      } else if (paymentPlanId === PaymentPlanId.Diocese) {
+        await cascadeActivatePlanToTenantBilling(context, user.id, "DIOCESE");
+      }
       break;
+    }
     default:
       assertUnreachable(paymentPlanId);
   }
@@ -236,17 +250,22 @@ function getSubscriptionPriceId(
 async function handleCustomerSubscriptionDeleted(
   event: Stripe.CustomerSubscriptionDeletedEvent,
   prismaUserDelegate: PrismaClient["user"],
+  context: Parameters<PaymentsWebhook>[2],
 ): Promise<void> {
   const subscription = event.data.object;
   const customerId = getCustomerId(subscription.customer);
 
-  await updateUserSubscription(
+  const user = await updateUserSubscription(
     {
       paymentProcessorUserId: customerId,
       subscriptionStatus: SubscriptionStatus.Deleted,
     },
     prismaUserDelegate,
   );
+
+  // Downgrade every tenant billed through this user (owned parishes and
+  // administered/owned dioceses) to the free plan.
+  await cascadeCancelToTenantBilling(context, user.id);
 }
 
 function getCustomerId(

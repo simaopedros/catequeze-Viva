@@ -1,68 +1,29 @@
 /**
- * PgBoss job: expires PIX "simples" (one-time) subscriptions after 31 days.
+ * Subscription expiration job — NO-OP under Stripe.
  *
- * When WOOVI_PIX_MODE=simples, payments are one-time PIX charges that grant
- * 30 days of access. This job checks daily for users whose paid period has
- * elapsed and downgrades them to the free tier.
+ * This job previously expired one-time PIX ("simples") subscriptions after 31
+ * days, which was required by the Woovi integration. With Stripe as the active
+ * payment processor, subscription lifecycle (renewals, cancellations, failed
+ * payments) is driven entirely by Stripe webhooks
+ * (`invoice.paid`, `customer.subscription.updated`, `customer.subscription.deleted`),
+ * so this scheduled job must not downgrade users on its own — otherwise it would
+ * wrongly cancel active subscribers (e.g. annual plans whose `datePaid` is more
+ * than 31 days old).
  *
- * Scheduled via main.wasp (daily at 4am).
+ * It is kept as a no-op so the Wasp job declaration in `main.wasp` stays valid
+ * and the previous behavior can be restored if a non-Stripe processor is used.
  */
-import { SubscriptionStatus } from "../../payment/plans";
-
 export const expireSubscriptionsJob = async (
   _args: unknown,
-  context: {
+  _context: {
     entities: {
       User: any;
       TenantBilling: any;
     };
   },
 ) => {
-  const now = new Date();
-  const expirationThreshold = new Date(now.getTime() - 31 * 24 * 60 * 60 * 1000);
-
-  // Find users with active subscriptions whose payment is older than 31 days
-  const expiredUsers = await context.entities.User.findMany({
-    where: {
-      subscriptionStatus: SubscriptionStatus.Active,
-      datePaid: { lt: expirationThreshold },
-    },
-    select: { id: true, email: true },
-  });
-
-  if (expiredUsers.length === 0) {
-    console.log("[subscriptionExpirationJob] No expired subscriptions found.");
-    return { expiredCount: 0 };
-  }
-
-  const userIds = expiredUsers.map((u: { id: string }) => u.id);
-
-  // Mark subscriptions as deleted
-  await context.entities.User.updateMany({
-    where: { id: { in: userIds } },
-    data: {
-      subscriptionStatus: SubscriptionStatus.Deleted,
-      wooviCorrelationId: null,
-    },
-  });
-
-  // Downgrade all parishes owned by these users to CATECHIST_FREE
-  await context.entities.TenantBilling.updateMany({
-    where: {
-      parish: { ownerId: { in: userIds } },
-    },
-    data: {
-      plan: "CATECHIST_FREE",
-      status: "CANCELED",
-      maxClasses: null,
-      maxCatechumens: null,
-    },
-  });
-
   console.log(
-    `[subscriptionExpirationJob] Expired ${expiredUsers.length} subscription(s): ` +
-    expiredUsers.map((u: { email: string }) => u.email).join(", "),
+    "[subscriptionExpirationJob] Skipped — subscription expiration is handled by Stripe webhooks.",
   );
-
-  return { expiredCount: expiredUsers.length };
+  return { expiredCount: 0 };
 };

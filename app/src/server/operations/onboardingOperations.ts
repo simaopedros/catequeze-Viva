@@ -1,4 +1,6 @@
 import { HttpError } from 'wasp/server';
+import { isParishClaimedByOthers } from './parishOperations';
+import { resolveNewParishBilling } from './billingEnforcement';
 
 export const completeCoordinatorOnboarding = async (
   args: {
@@ -36,11 +38,19 @@ export const completeCoordinatorOnboarding = async (
   });
 
   if (existing) {
-    // Found existing parish — create/ensure membership instead of leaving user without access
+    // Found existing parish — only attach the user when they already have access
+    // or the parish is unclaimed. A claimed parish requires an invitation, so we
+    // must NOT create a year/class inside someone else's parish.
     const existingMembership = await context.entities.Membership.findFirst({
       where: { userId: context.user.id, parishId: existing.id },
     });
     if (!existingMembership) {
+      if (!context.user.isAdmin && (await isParishClaimedByOthers(context, existing.id, context.user.id))) {
+        throw new HttpError(
+          403,
+          'Esta paróquia já existe e pertence a outro coordenador. Solicite um convite a um administrador para participar.',
+        );
+      }
       await context.entities.Membership.create({
         data: {
           userId: context.user.id,
@@ -48,6 +58,10 @@ export const completeCoordinatorOnboarding = async (
           role: 'PARISH_COORDINATOR',
           status: 'ACTIVE',
         },
+      });
+      await context.entities.Parish.update({
+        where: { id: existing.id },
+        data: { owner: { connect: { id: context.user.id } } },
       });
     } else if (existingMembership.status !== 'ACTIVE') {
       await context.entities.Membership.update({
@@ -107,22 +121,19 @@ export const completeCoordinatorOnboarding = async (
     },
   });
 
-  // 3. Create tenant billing
-  const userPlan = context.user.subscriptionPlan || 'catechist_free';
-  const userStatus = context.user.subscriptionStatus || 'active';
-  const isPaidPlan = ['catechist_pro', 'catechist_ai', 'parish', 'diocese'].includes(userPlan);
-  const billingPlan = userPlan.toUpperCase();
-  const billingStatus = isPaidPlan && userStatus === 'active' ? 'ACTIVE' : 'TRIAL';
-  const trialEndsAt = billingStatus === 'TRIAL' ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) : null;
-
-  await context.entities.TenantBilling.create({
-    data: {
-      parishId: parish.id,
-      plan: billingPlan,
-      status: billingStatus,
-      trialEndsAt,
-    },
-  });
+  // 3. Create tenant billing — institutional plan only, never the creator's
+  // personal plan (keeps personal/institutional billing separated).
+  const newBilling = await resolveNewParishBilling(context, { dioceseId: null });
+  if (!newBilling.skip) {
+    await context.entities.TenantBilling.create({
+      data: {
+        parishId: parish.id,
+        plan: newBilling.plan,
+        status: newBilling.status,
+        trialEndsAt: newBilling.trialEndsAt,
+      },
+    });
+  }
 
   // 4. Create catechetical year
   const year = await context.entities.CatecheticalYear.create({

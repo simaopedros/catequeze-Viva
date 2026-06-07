@@ -1,5 +1,14 @@
 import { HttpError } from 'wasp/server';
-import { isBillingActive } from './billingEnforcement';
+import { resolveEffectiveBilling, getEffectiveBillingPlan, isBillingActive } from './billingEnforcement';
+import { getPersonalPlanId } from '../../shared/planLimits';
+
+/** Returns the effective PERSONAL plan id (lowercase) for a user's personal workspace. */
+function getPersonalPlan(user: any): string {
+  return getPersonalPlanId(user);
+}
+
+// Roles that grant management access over an institutional workspace.
+const MANAGER_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'];
 
 /**
  * Ensure the current user has a personal workspace (Parish with type=PERSONAL).
@@ -83,11 +92,20 @@ export const listWorkspaces = async (_args: void, context: any) => {
     where: {
       userId: context.user.id,
       status: { in: ['ACTIVE', 'INVITED'] },
-      parish: { type: { in: ['PARISH', 'DIOCESE', 'COMMUNITY'] } },
+      parish: { type: { in: ['PARISH', 'DIOCESE', 'COMMUNITY'] }, active: true },
     },
     select: {
       id: true,
-      parish: { select: { id: true, name: true, type: true } },
+      parish: {
+        select: {
+          id: true,
+          name: true,
+          type: true,
+          ownerId: true,
+          dioceseId: true,
+          diocese: { select: { id: true, name: true } },
+        },
+      },
       role: true,
       status: true,
     },
@@ -103,7 +121,9 @@ export const listWorkspaces = async (_args: void, context: any) => {
       subtitle: personalWorkspace.name,
       type: 'PERSONAL' as const,
       role: 'PERSONAL_OWNER',
-      plan: context.user.subscriptionPlan || 'catechist_free',
+      // Only honor the paid plan while the subscription is active — mirrors the
+      // server-side enforcement in billingEnforcement.ts.
+      plan: getPersonalPlan(context.user),
       isPersonal: true,
     });
   }
@@ -114,21 +134,23 @@ export const listWorkspaces = async (_args: void, context: any) => {
     if (!m.parish || seenIds.has(m.parish.id)) continue;
     seenIds.add(m.parish.id);
 
-    // Get billing for parish/diocese workspaces
-    let plan = m.parish.type === 'DIOCESE' ? 'diocese' : 'parish';
-    let billingStatus: string | null = null;
+    // Resolve the effective plan exactly like the server enforcement does
+    // (includes diocese/owner inheritance, downgrades inactive billing to free).
+    // Returned plan is normalized to lowercase so the UI label maps resolve.
+    const billing = await resolveEffectiveBilling(context, m.parish.id);
+    const billingStatus: string | null = billing?.status ?? null;
+    const plan = getEffectiveBillingPlan(billing).toLowerCase();
 
-    const billing = await context.entities.TenantBilling.findUnique({
+    // The plan is inherited (from diocese/owner umbrella) when the parish has no
+    // active billing record of its own but still resolves to an active plan.
+    const ownBilling = await context.entities.TenantBilling.findUnique({
       where: { parishId: m.parish.id },
       select: { plan: true, status: true, trialEndsAt: true },
     });
+    const ownActive = isBillingActive(ownBilling);
+    const planInherited = plan !== 'catechist_free' && !ownActive;
 
-    if (billing) {
-      billingStatus = billing.status;
-      if (isBillingActive(billing)) {
-        plan = billing.plan;
-      }
-    }
+    const isManager = m.parish.ownerId === context.user.id || MANAGER_ROLES.includes(m.role);
 
     workspaces.push({
       id: m.parish.id,
@@ -140,8 +162,65 @@ export const listWorkspaces = async (_args: void, context: any) => {
       isPersonal: false,
       membershipStatus: m.status,
       membershipId: m.id,
+      dioceseId: m.parish.dioceseId ?? null,
+      dioceseName: m.parish.diocese?.name ?? null,
+      planInherited,
+      isManager,
     });
   }
 
   return workspaces;
+};
+
+/**
+ * Context for managing institutional workspaces from the workspace selector:
+ * which dioceses the user can add parishes to (and whether each has an active
+ * license), plus whether the user holds a personal-level institutional plan
+ * (PARISH/DIOCESE) that umbrellas any new independent parish they create.
+ */
+export const getInstitutionalManageContext = async (_args: void, context: any) => {
+  if (!context.user) return { dioceses: [], canCreateUnderOwnerPlan: false, ownerPlan: null };
+
+  const dioceseIds = new Set<string>();
+
+  const adminMemberships = await context.entities.Membership.findMany({
+    where: { userId: context.user.id, role: 'DIOCESE_ADMIN', status: 'ACTIVE' },
+    select: { parish: { select: { dioceseId: true } } },
+  });
+  for (const m of adminMemberships) {
+    if (m.parish?.dioceseId) dioceseIds.add(m.parish.dioceseId);
+  }
+
+  const ownedParishes = await context.entities.Parish.findMany({
+    where: { ownerId: context.user.id, dioceseId: { not: null } },
+    select: { dioceseId: true },
+  });
+  for (const p of ownedParishes) {
+    if (p.dioceseId) dioceseIds.add(p.dioceseId);
+  }
+
+  const dioceses: any[] = [];
+  for (const dioceseId of dioceseIds) {
+    const diocese = await context.entities.Diocese.findUnique({
+      where: { id: dioceseId },
+      select: { id: true, name: true },
+    });
+    if (!diocese) continue;
+    const dioceseBilling = await context.entities.TenantBilling.findUnique({
+      where: { dioceseId },
+      select: { plan: true, status: true, trialEndsAt: true },
+    });
+    const licensed = !!dioceseBilling && isBillingActive(dioceseBilling) && dioceseBilling.plan === 'DIOCESE';
+    dioceses.push({ id: diocese.id, name: diocese.name, licensed });
+  }
+
+  const ownerActive = context.user.subscriptionStatus === 'active';
+  const ownerPlanRaw = (context.user.subscriptionPlan || '').toLowerCase();
+  const canCreateUnderOwnerPlan = ownerActive && (ownerPlanRaw === 'parish' || ownerPlanRaw === 'diocese');
+
+  return {
+    dioceses,
+    canCreateUnderOwnerPlan,
+    ownerPlan: canCreateUnderOwnerPlan ? ownerPlanRaw : null,
+  };
 };

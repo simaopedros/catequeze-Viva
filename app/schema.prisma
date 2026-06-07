@@ -345,6 +345,7 @@ model Parish {
   conversations        Conversation[]
   messageTemplates     MessageTemplate[]
   catechumens          CatechumenProfile[]
+  pendingInvitations   PendingInvitation[]
 }
 enum CommunityType {
   CHAPEL
@@ -382,6 +383,7 @@ model Community {
   conversations  Conversation[]
   classes        CatechesisClass[]
   households     Household[]
+  pendingInvitations PendingInvitation[]
 
   @@index([parishId])
 }
@@ -404,6 +406,31 @@ model Membership {
   status MembershipStatus @default(ACTIVE)
 
   @@index([userId, parishId])
+  @@index([parishId])
+}
+
+// Invitation for an email address that does not yet have a User account.
+// Converted into a Membership (status INVITED) the first time that email signs
+// up — avoids creating an orphaned placeholder User that would also collide
+// with the unique email/username constraints at signup time.
+model PendingInvitation {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  email String
+
+  parishId String
+  parish   Parish @relation(fields: [parishId], references: [id], onDelete: Cascade)
+
+  communityId String?
+  community   Community? @relation(fields: [communityId], references: [id], onDelete: SetNull)
+
+  role        UserRole  @default(PASTORAL_VIEWER)
+  invitedById String?
+  expiresAt   DateTime?
+
+  @@unique([email, parishId])
+  @@index([email])
   @@index([parishId])
 }
 

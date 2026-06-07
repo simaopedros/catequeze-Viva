@@ -1,11 +1,28 @@
-import { Link } from 'react-router';
-import { Star, Check } from 'lucide-react';
+import { useNavigate } from 'react-router';
+import { Star, Check, User, Building2 } from 'lucide-react';
 import { PublicNavbar } from '../PublicNavbar';
 import { PublicFooter } from '../PublicFooter';
 import { useAuth } from 'wasp/client/auth';
+import { setIntendedPlan } from '../lib/intendedPlan';
 
-const PLANS = [
+type PlanLevel = 'personal' | 'institutional';
+
+interface PricingPlan {
+  planId: string;
+  level: PlanLevel;
+  name: string;
+  price: string;
+  period?: string;
+  desc: string;
+  features: string[];
+  highlight?: boolean;
+  cta: string;
+}
+
+const PLANS: PricingPlan[] = [
   {
+    planId: 'catechist_free',
+    level: 'personal',
     name: 'Catequista Grátis',
     price: 'Grátis',
     period: 'para sempre',
@@ -14,6 +31,8 @@ const PLANS = [
     cta: 'Começar grátis',
   },
   {
+    planId: 'catechist_pro',
+    level: 'personal',
     name: 'Catequista Pro',
     price: 'R$ 9',
     period: '/mês',
@@ -22,6 +41,8 @@ const PLANS = [
     cta: 'Começar agora',
   },
   {
+    planId: 'catechist_ai',
+    level: 'personal',
     name: 'Catequista IA',
     price: 'R$ 29',
     period: '/mês',
@@ -31,6 +52,8 @@ const PLANS = [
     cta: 'Começar agora',
   },
   {
+    planId: 'parish',
+    level: 'institutional',
     name: 'Paróquia',
     price: 'R$ 49',
     period: '/mês',
@@ -39,14 +62,19 @@ const PLANS = [
     cta: 'Começar agora',
   },
   {
+    planId: 'diocese',
+    level: 'institutional',
     name: 'Diocese',
     price: 'R$ 149',
     period: '/mês',
     desc: 'Para gestão diocesana multi-paróquia.',
     features: ['Tudo do plano Paróquia', 'Multi-paróquia', 'Biblioteca oficial diocesana', 'Analytics consolidado', 'Onboarding dedicado', '50 créditos de IA/mês por usuário'],
-    cta: 'Fale conosco',
+    cta: 'Começar agora',
   },
 ];
+
+const PERSONAL_PLANS = PLANS.filter((p) => p.level === 'personal');
+const INSTITUTIONAL_PLANS = PLANS.filter((p) => p.level === 'institutional');
 
 const FAQ = [
   { q: 'Posso experimentar antes de pagar?', a: 'Sim! O plano Catequista Grátis é gratuito para sempre, com 2 turmas, até 30 catequizandos e 3 créditos de IA para testar o gerador de encontros.' },
@@ -60,8 +88,49 @@ const FAQ = [
 
 export default function PricingPage() {
   const { data: user } = useAuth();
+  const navigate = useNavigate();
   const isLoggedIn = !!user;
-  const upgradeUrl = isLoggedIn ? '/app/billing' : '/signup';
+
+  const handleSelect = (plan: PricingPlan) => {
+    if (plan.planId === 'catechist_free') {
+      navigate(isLoggedIn ? '/app' : '/signup');
+      return;
+    }
+    // Remember the chosen plan/level so it survives signup and can pre-open the
+    // right checkout once the user lands in Assinatura.
+    setIntendedPlan(plan.planId);
+    navigate(isLoggedIn ? `/app/billing?plan=${plan.planId}` : '/signup');
+  };
+
+  const renderCard = (plan: PricingPlan) => (
+    <div key={plan.name} className={`rounded-2xl border-2 p-6 bg-card transition-all hover:-translate-y-1 hover:shadow-lg relative flex flex-col ${plan.highlight ? 'border-primary ring-2 ring-primary/20 sm:scale-105 shadow-lg shadow-primary/10' : 'border-border'}`}>
+      {plan.highlight && (
+        <div className="inline-flex items-center gap-1 rounded-full bg-primary text-primary-foreground text-[11px] font-bold px-3 py-1 mb-3 self-start">
+          <Star className="h-3 w-3" /> Mais popular
+        </div>
+      )}
+      <h3 className="text-lg font-bold">{plan.name}</h3>
+      <p className="text-sm text-muted-foreground mt-1">{plan.desc}</p>
+      <div className="mt-4 mb-1">
+        <span className="text-4xl font-bold">{plan.price}</span>
+        {plan.period && <span className="text-base font-normal text-muted-foreground"> {plan.period}</span>}
+      </div>
+      <ul className="mt-5 space-y-2.5 text-sm flex-1">
+        {plan.features.map(f => (
+          <li key={f} className="flex items-start gap-2.5">
+            <Check className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+            <span>{f}</span>
+          </li>
+        ))}
+      </ul>
+      <button
+        onClick={() => handleSelect(plan)}
+        className={`mt-6 block w-full text-center rounded-xl px-4 py-3 text-sm font-semibold transition-all ${plan.highlight ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25' : 'bg-muted hover:bg-muted/80'}`}
+      >
+        {plan.cta}
+      </button>
+    </div>
+  );
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -72,42 +141,31 @@ export default function PricingPage() {
         <section className="max-w-4xl mx-auto px-4 pt-16 pb-8 text-center space-y-4">
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">Planos e Preços</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Escolha o plano ideal para sua paróquia ou diocese. Comece gratuitamente e descubra o poder da IA na catequese.
+            Escolha o nível certo: planos pessoais para catequistas individuais ou planos institucionais para paróquias e dioceses.
           </p>
         </section>
 
-        {/* Plans */}
-        <section className="max-w-6xl mx-auto px-4 pb-20">
+        {/* Personal plans */}
+        <section className="max-w-6xl mx-auto px-4 pb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <User className="h-5 w-5 text-primary" />
+            <h2 className="text-xl font-bold">Para você (catequista)</h2>
+            <span className="text-sm text-muted-foreground">— seu espaço pessoal</span>
+          </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {PLANS.map(plan => (
-              <div key={plan.name} className={`rounded-2xl border-2 p-6 bg-card transition-all hover:-translate-y-1 hover:shadow-lg relative flex flex-col ${plan.highlight ? 'border-primary ring-2 ring-primary/20 sm:scale-105 shadow-lg shadow-primary/10' : 'border-border'}`}>
-                {plan.highlight && (
-                  <div className="inline-flex items-center gap-1 rounded-full bg-primary text-primary-foreground text-[11px] font-bold px-3 py-1 mb-3 self-start">
-                    <Star className="h-3 w-3" /> Mais popular
-                  </div>
-                )}
-                <h3 className="text-lg font-bold">{plan.name}</h3>
-                <p className="text-sm text-muted-foreground mt-1">{plan.desc}</p>
-                <div className="mt-4 mb-1">
-                  <span className="text-4xl font-bold">{plan.price}</span>
-                  {plan.period && <span className="text-base font-normal text-muted-foreground"> {plan.period}</span>}
-                </div>
-                <ul className="mt-5 space-y-2.5 text-sm flex-1">
-                  {plan.features.map(f => (
-                    <li key={f} className="flex items-start gap-2.5">
-                      <Check className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                      <span>{f}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  to={upgradeUrl}
-                  className={`mt-6 block text-center rounded-xl px-4 py-3 text-sm font-semibold transition-all ${plan.highlight ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25' : 'bg-muted hover:bg-muted/80'}`}
-                >
-                  {plan.cta}
-                </Link>
-              </div>
-            ))}
+            {PERSONAL_PLANS.map(renderCard)}
+          </div>
+        </section>
+
+        {/* Institutional plans */}
+        <section className="max-w-6xl mx-auto px-4 pb-20">
+          <div className="flex items-center gap-2 mb-4 mt-6">
+            <Building2 className="h-5 w-5 text-secondary" />
+            <h2 className="text-xl font-bold">Para sua instituição</h2>
+            <span className="text-sm text-muted-foreground">— paróquias e dioceses (cobre vários catequistas)</span>
+          </div>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {INSTITUTIONAL_PLANS.map(renderCard)}
           </div>
         </section>
 

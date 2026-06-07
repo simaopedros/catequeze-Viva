@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
-import { CheckCircle, TrendingUp, Clock, ArrowUpRight, History, AlertCircle, Loader2, XCircle } from 'lucide-react';
+import { CheckCircle, TrendingUp, Clock, ArrowUpRight, History, AlertCircle, Loader2, XCircle, User as UserIcon, Building2 } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { useQuery, getDashboardStats, getAiCreditsStatus, generateCheckoutSession, cancelSubscription, getParishById } from 'wasp/client/operations';
 import { useAuth } from 'wasp/client/auth';
@@ -121,6 +122,9 @@ export default function BillingPage() {
   const [error, setError] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [searchParams] = useSearchParams();
+  const requestedPlan = searchParams.get('plan');
+  const requestedIsInstitutional = requestedPlan === 'parish' || requestedPlan === 'diocese';
 
   // ── Determine effective plan ──────────────────────────────────────────────
   const hasPersonalPlan = user?.subscriptionStatus === SubscriptionStatus.Active;
@@ -238,10 +242,24 @@ export default function BillingPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Assinatura</h1>
-            <p className="text-muted-foreground text-sm flex items-center gap-2">
+            {/* Scope banner: make the account LEVEL of this subscription explicit */}
+            <div className={`mt-1 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${isPersonal ? 'bg-primary/10 text-primary' : 'bg-secondary/10 text-secondary'}`}>
+              {isPersonal ? <UserIcon className="h-3.5 w-3.5" /> : <Building2 className="h-3.5 w-3.5" />}
+              {isPersonal
+                ? 'Assinatura pessoal · cobre apenas o seu espaço pessoal'
+                : `Assinatura institucional · cobre ${parish?.name || 'esta instituição'}`}
+            </div>
+            <p className="text-muted-foreground text-sm flex items-center gap-2 mt-2">
               Plano atual: <Badge>{effectivePlan.name}</Badge>
               {isActive && <Badge variant="default" className="bg-success/10 text-success text-xs">Ativo</Badge>}
             </p>
+            {requestedPlan && requestedIsInstitutional !== !isPersonal && (
+              <p className="mt-2 text-xs text-warning">
+                {requestedIsInstitutional
+                  ? 'O plano selecionado é institucional. Entre em um workspace de paróquia/diocese para contratá-lo.'
+                  : 'O plano selecionado é pessoal. Volte ao seu espaço pessoal para contratá-lo.'}
+              </p>
+            )}
             {isParishManaged && (
               <div className="mt-2 rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-2 text-sm">
                 <div className="flex items-center gap-2">
@@ -331,7 +349,7 @@ export default function BillingPage() {
                   ? 'A sua subscrição está ativa. Aproveite todos os recursos.'
                   : effectivePlan.isFree
                     ? 'Atualize para acessar recursos ilimitados.'
-                    : 'Complete o pagamento PIX para ativar seu plano.'}
+                    : 'Complete o pagamento para ativar seu plano.'}
               </p>
               {isActive && !effectivePlan.isFree && isPlanManager && (
                 <Button
@@ -395,17 +413,19 @@ export default function BillingPage() {
           {visiblePlans.map((plan) => {
             const isCurrent = plan.planId === effectivePlanId;
             const isUpgrading = upgradingPlan === plan.planId;
+            const isRequested = !!requestedPlan && plan.planId === requestedPlan && !isCurrent;
 
             return (
               <div
                 key={plan.planId}
                 className={`rounded-xl border-2 p-5 ${plan.color} ${
                   plan.highlight ? 'ring-2 ring-primary shadow-lg' : ''
-                } ${isCurrent ? 'border-primary' : 'border-muted'}`}
+                } ${isRequested ? 'ring-2 ring-accent shadow-lg' : ''} ${isCurrent ? 'border-primary' : 'border-muted'}`}
               >
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-bold text-sm">{plan.name}</h3>
                   {isCurrent && <Badge>Atual</Badge>}
+                  {isRequested && <Badge className="bg-accent/15 text-accent">Selecionado</Badge>}
                 </div>
                 <p className="text-xl font-bold mb-1">{plan.price}</p>
                 {plan.annualPrice && (
@@ -465,7 +485,7 @@ export default function BillingPage() {
             Histórico de pagamentos
           </h3>
           <p className="text-sm text-muted-foreground">
-            Os pagamentos são processados via PIX pela Woovi. O histórico estará disponível após a primeira cobrança.
+            Os pagamentos são processados de forma segura pela Stripe. O histórico estará disponível após a primeira cobrança.
           </p>
         </div>
       </div>

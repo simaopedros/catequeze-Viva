@@ -30,7 +30,9 @@ export default function ClassesPage() {
   // For personal workspace, billing is derived from user subscription
   const effectivePlan = workspacePlan || 'catechist_free';
   const limits = getPlanLimits(effectivePlan);
-  const isClassLimitReached = limits.maxClasses !== null && classes && classes.length >= limits.maxClasses;
+  // Count only non-archived classes to match the server-side limit enforcement.
+  const activeClassesCount = classes ? classes.filter((c: any) => c.status !== 'ARCHIVED').length : 0;
+  const isClassLimitReached = limits.maxClasses !== null && activeClassesCount >= limits.maxClasses;
 
   const filtered = useMemo(() => {
     if (!classes) return [];
@@ -82,7 +84,7 @@ export default function ClassesPage() {
             {view === 'grid' ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
           </Button>
           {isClassLimitReached ? (
-            <PlanLimitBanner type="class_limit" currentCount={classes!.length} userPlan={effectivePlan} isParishManaged={!isPersonal} className="min-w-[280px]" />
+            <PlanLimitBanner type="class_limit" currentCount={activeClassesCount} userPlan={effectivePlan} isParishManaged={!isPersonal} className="min-w-[280px]" />
           ) : canCreateClass ? (
             <Button asChild>
               <Link to="/app/classes/new"><Plus className="mr-2 h-4 w-4" />Nova turma</Link>
@@ -107,7 +109,7 @@ export default function ClassesPage() {
               <p><span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 text-primary text-xs font-bold mr-2">3</span>Matricule-os na turma</p>
             </div>
             {isClassLimitReached ? (
-              <PlanLimitBanner type="class_limit" currentCount={classes!.length} userPlan={effectivePlan} isParishManaged={!isPersonal} />
+              <PlanLimitBanner type="class_limit" currentCount={activeClassesCount} userPlan={effectivePlan} isParishManaged={!isPersonal} />
             ) : canCreateClass ? (
               <Button className="mt-6" asChild><Link to="/app/classes/new">Criar turma</Link></Button>
             ) : null}

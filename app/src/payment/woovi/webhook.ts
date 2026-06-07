@@ -5,6 +5,11 @@ import { env, type MiddlewareConfigFn } from "wasp/server";
 import { type PaymentsWebhook } from "wasp/server/api";
 import { UnhandledWebhookEventError } from "../errors";
 import { PaymentPlanId, SubscriptionStatus } from "../plans";
+import {
+  cascadeCancelToTenantBilling,
+  cascadeActivatePlanToTenantBilling,
+  getNextPeriodEnd,
+} from "../billingCascade";
 
 /**
  * Woovi requires raw body for HMAC validation.
@@ -172,7 +177,7 @@ async function handleSubscriptionCancelled(
 
     // Downgrade all parishes/dioceses owned or managed by this user
     if (user) {
-      await cascadeCancelToTenantBilling(user.id, context);
+      await cascadeCancelToTenantBilling(context, user.id);
     }
   } else if (correlationID.startsWith("parish-")) {
     await context.entities.TenantBilling.updateMany({
@@ -246,23 +251,22 @@ async function handleChargeCompleted(
 }
 
 /**
- * When a user activates any paid plan, update their parishes' or diocese' TenantBilling
- * to reflect the new plan and reset limits.
+ * When a user activates any paid plan, update their parishes' or diocese'
+ * TenantBilling to reflect the new plan and reset limits. Delegates to the
+ * shared cascade helper, which handles multiple parishes/dioceses.
  */
 async function cascadePlanToTenantBilling(
   correlationID: string,
   context: any,
 ): Promise<void> {
+  // Only INSTITUTIONAL plans (Parish/Diocese) affect TenantBilling. Personal
+  // plans (Pro/AI) belong to the buyer's personal workspace only and must never
+  // upgrade institutional billing.
   const user = await context.entities.User.findFirst({
     where: {
       wooviCorrelationId: correlationID,
       subscriptionPlan: {
-        in: [
-          PaymentPlanId.CatechistPro,
-          PaymentPlanId.CatechistAi,
-          PaymentPlanId.Parish,
-          PaymentPlanId.Diocese,
-        ],
+        in: [PaymentPlanId.Parish, PaymentPlanId.Diocese],
       },
     },
     select: { id: true, subscriptionPlan: true },
@@ -271,117 +275,7 @@ async function cascadePlanToTenantBilling(
   if (!user || !user.subscriptionPlan) return;
 
   // Map PaymentPlanId to BillingPlan enum (uppercase)
-  const billingPlan = user.subscriptionPlan.toUpperCase() as "CATECHIST_FREE" | "CATECHIST_PRO" | "CATECHIST_AI" | "PARISH" | "DIOCESE";
+  const billingPlan = user.subscriptionPlan.toUpperCase() as "PARISH" | "DIOCESE";
 
-  if (billingPlan === "DIOCESE") {
-    // Find the diocese of the user
-    const membership = await context.entities.Membership.findFirst({
-      where: { userId: user.id, role: "DIOCESE_ADMIN", status: "ACTIVE" },
-      include: { parish: true },
-    });
-    let dioceseId = membership?.parish?.dioceseId;
-
-    if (!dioceseId) {
-      const parish = await context.entities.Parish.findFirst({
-        where: { ownerId: user.id },
-        select: { dioceseId: true },
-      });
-      dioceseId = parish?.dioceseId;
-    }
-
-    if (dioceseId) {
-      // Find or create the diocese billing record
-      const existingBilling = await context.entities.TenantBilling.findUnique({
-        where: { dioceseId },
-      });
-      if (existingBilling) {
-        await context.entities.TenantBilling.update({
-          where: { id: existingBilling.id },
-          data: {
-            plan: "DIOCESE",
-            status: "ACTIVE",
-            currentPeriodEnd: getNextPeriodEnd(),
-          },
-        });
-      } else {
-        await context.entities.TenantBilling.create({
-          data: {
-            dioceseId,
-            plan: "DIOCESE",
-            status: "ACTIVE",
-            currentPeriodEnd: getNextPeriodEnd(),
-          },
-        });
-      }
-    }
-  } else {
-    // Update TenantBilling for all parishes owned by this user
-    await context.entities.TenantBilling.updateMany({
-      where: {
-        parish: { ownerId: user.id },
-      },
-      data: {
-        plan: billingPlan,
-        status: "ACTIVE",
-        maxClasses: null,
-        maxCatechumens: null,
-        currentPeriodEnd: getNextPeriodEnd(),
-      },
-    });
-  }
-}
-
-function getNextPeriodEnd(): Date {
-  const d = new Date();
-  d.setMonth(d.getMonth() + 1);
-  return d;
-}
-
-/**
- * Downgrade all parishes/dioceses owned or managed by a user to CATECHIST_FREE when their
- * subscription is cancelled (via webhook or in-app action).
- */
-async function cascadeCancelToTenantBilling(
-  userId: string,
-  context: any,
-): Promise<void> {
-  // 1. Downgrade parishes owned by user
-  await context.entities.TenantBilling.updateMany({
-    where: {
-      parish: { ownerId: userId },
-    },
-    data: {
-      plan: "CATECHIST_FREE",
-      status: "CANCELED",
-      maxClasses: null,
-      maxCatechumens: null,
-    },
-  });
-
-  // 2. Downgrade diocese managed by user
-  const membership = await context.entities.Membership.findFirst({
-    where: { userId, role: "DIOCESE_ADMIN" },
-    include: { parish: true },
-  });
-  let dioceseId = membership?.parish?.dioceseId;
-
-  if (!dioceseId) {
-    const parish = await context.entities.Parish.findFirst({
-      where: { ownerId: userId },
-      select: { dioceseId: true },
-    });
-    dioceseId = parish?.dioceseId;
-  }
-
-  if (dioceseId) {
-    await context.entities.TenantBilling.updateMany({
-      where: { dioceseId },
-      data: {
-        plan: "CATECHIST_FREE",
-        status: "CANCELED",
-        maxClasses: null,
-        maxCatechumens: null,
-      },
-    });
-  }
+  await cascadeActivatePlanToTenantBilling(context, user.id, billingPlan);
 }

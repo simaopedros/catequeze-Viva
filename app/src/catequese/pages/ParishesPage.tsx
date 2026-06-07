@@ -1,15 +1,20 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
-import { Church, Users, BookOpen, Building2, Plus, MapPin, BadgeCheck, ArrowRight, Loader2 } from 'lucide-react';
+import { Church, Users, BookOpen, Building2, Plus, MapPin, BadgeCheck, ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { Input } from '../../client/components/ui/input';
 import { Badge } from '../../client/components/ui/badge';
 import { AppShell } from '../AppShell';
 import { PageHeader } from '../../client/components/PageHeader';
-import { useQuery, listParishes, createParish } from 'wasp/client/operations';
+import { useQuery, listParishes, createParish, getInstitutionalManageContext } from 'wasp/client/operations';
 import { useAuth } from 'wasp/client/auth';
 import { handlePlanLimitError } from '../lib/planLimitToast';
 import CityStateSelect from '../../client/components/CityStateSelect';
+
+const PLAN_LABEL_SHORT: Record<string, string> = {
+  parish: 'Paróquia',
+  diocese: 'Diocese',
+};
 
 const PLAN_LABELS: Record<string, string> = {
   CATECHIST_FREE: 'Gratuito',
@@ -28,24 +33,49 @@ const STATUS_LABELS: Record<string, { label: string; color: string }> = {
 export default function ParishesPage() {
   const navigate = useNavigate();
   const { data: parishes = [], isLoading: loading } = useQuery(listParishes);
+  const { data: manageContext } = useQuery(getInstitutionalManageContext);
   const { data: user } = useAuth();
   const [searchParams] = useSearchParams();
   const [showCreate, setShowCreate] = useState(() => searchParams.get('new') === 'true');
   const [newName, setNewName] = useState('');
   const [newCity, setNewCity] = useState('');
   const [newState, setNewState] = useState('');
+  const [newDioceseId, setNewDioceseId] = useState(() => searchParams.get('dioceseId') || '');
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
+
+  const manageDioceses: { id: string; name: string; licensed: boolean }[] = manageContext?.dioceses ?? [];
+  const canCreateUnderOwnerPlan: boolean = manageContext?.canCreateUnderOwnerPlan ?? false;
+  const ownerPlan: string | null = manageContext?.ownerPlan ?? null;
+  const selectedDiocese = manageDioceses.find((d) => d.id === newDioceseId);
+
+  const coverageNote = (() => {
+    if (selectedDiocese) {
+      return selectedDiocese.licensed
+        ? `Será criada sob a licença da ${selectedDiocese.name} (sem cobrança adicional).`
+        : `Será vinculada à ${selectedDiocese.name}. A diocese ainda não tem licença ativa — a paróquia começará no plano gratuito até a licença ser ativada.`;
+    }
+    if (canCreateUnderOwnerPlan) {
+      return `Será criada sob a sua licença ${PLAN_LABEL_SHORT[ownerPlan || 'parish'] || 'Paróquia'} (sem cobrança adicional).`;
+    }
+    return 'Paróquia independente: começará no plano gratuito. Você pode assinar um plano institucional depois.';
+  })();
 
   const handleCreate = async () => {
     if (!newName.trim()) return;
     setCreating(true);
     setError('');
     try {
-      await createParish({ name: newName.trim(), city: newCity.trim() || undefined, state: newState.trim() || undefined });
+      await createParish({
+        name: newName.trim(),
+        city: newCity.trim() || undefined,
+        state: newState.trim() || undefined,
+        dioceseId: newDioceseId || undefined,
+      });
       setNewName('');
       setNewCity('');
       setNewState('');
+      setNewDioceseId('');
       setShowCreate(false);
     } catch (e: any) {
       if (handlePlanLimitError(e.message || e)) return;
@@ -98,10 +128,31 @@ export default function ParishesPage() {
               <div className="min-w-[280px]">
                 <CityStateSelect city={newCity} state={newState} onCityChange={setNewCity} onStateChange={setNewState} />
               </div>
+              {manageDioceses.length > 0 && (
+                <div className="flex flex-col gap-1 min-w-[200px]">
+                  <label className="text-xs text-muted-foreground">Diocese (licença)</label>
+                  <select
+                    value={newDioceseId}
+                    onChange={e => setNewDioceseId(e.target.value)}
+                    className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+                  >
+                    <option value="">Independente / sob minha licença</option>
+                    {manageDioceses.map(d => (
+                      <option key={d.id} value={d.id}>
+                        {d.name}{d.licensed ? ' (licenciada)' : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
               <Button size="sm" onClick={handleCreate} disabled={creating || !newName.trim()}>
                 {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Criar'}
               </Button>
             </div>
+            <p className="flex items-start gap-1.5 text-xs text-muted-foreground">
+              <ShieldCheck className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+              {coverageNote}
+            </p>
           </div>
         )}
 

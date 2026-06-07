@@ -328,51 +328,58 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
                 <ChevronDown className="h-3.5 w-3.5 opacity-60" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-72 p-2">
-              {/* Personal section */}
-              {availableWorkspaces.filter((w: any) => w.isPersonal).map((ws: any) => (
-                <button
-                  key={ws.id}
-                  onClick={() => switchWorkspace(ws.id)}
-                  className="w-full flex items-center gap-3 text-sm px-2 py-2 rounded-sm hover:bg-accent transition-colors cursor-pointer"
-                >
-                  <User className="h-4 w-4 text-primary shrink-0" />
-                  <div className="flex-1 text-left min-w-0">
-                    <div className="font-medium text-sm">{ws.name}</div>
-                    <div className="text-[10px] text-muted-foreground">{ws.subtitle || 'Espaço pessoal'}</div>
-                  </div>
-                  {ws.id === workspace?.id && <div className="w-2 h-2 rounded-full bg-primary shrink-0" />}
-                </button>
-              ))}
-
-              {/* Institutional section */}
-              {availableWorkspaces.filter((w: any) => !w.isPersonal).length > 0 && (
-                <>
-                  <div className="px-2 pt-3 pb-1 text-[10px] font-bold uppercase text-muted-foreground tracking-wider">
-                    Espaços Institucionais
-                  </div>
-                  {availableWorkspaces.filter((w: any) => !w.isPersonal).map((ws: any) => (
-                    <button
-                      key={ws.id}
-                      onClick={() => switchWorkspace(ws.id)}
-                      className="w-full flex items-center gap-3 text-sm px-2 py-2 rounded-sm hover:bg-accent transition-colors cursor-pointer"
-                    >
-                      {ws.type === 'DIOCESE' ? (
-                        <Building2 className="h-4 w-4 text-warning shrink-0" />
-                      ) : ws.type === 'COMMUNITY' ? (
-                        <Building2 className="h-4 w-4 text-success shrink-0" />
-                      ) : (
-                        <Church className="h-4 w-4 text-primary shrink-0" />
-                      )}
-                      <div className="flex-1 text-left min-w-0">
-                        <div className="font-medium text-sm truncate">{ws.name}</div>
-                        <div className="text-[10px] text-muted-foreground">{ws.role}</div>
+            <DropdownMenuContent align="end" className="w-72 p-2 max-h-[70vh] overflow-y-auto">
+              {(() => {
+                // Group the workspaces the user can switch to, by type, and cap
+                // each group so the menu stays compact when there are many.
+                const MAX_PER_GROUP = 5;
+                const wsIcon = (ws: any) => {
+                  if (ws.isPersonal) return <User className="h-4 w-4 text-primary shrink-0" />;
+                  if (ws.type === 'DIOCESE') return <Building2 className="h-4 w-4 text-warning shrink-0" />;
+                  if (ws.type === 'COMMUNITY') return <Building2 className="h-4 w-4 text-success shrink-0" />;
+                  return <Church className="h-4 w-4 text-primary shrink-0" />;
+                };
+                const renderItem = (ws: any) => (
+                  <button
+                    key={ws.id}
+                    onClick={() => switchWorkspace(ws.id)}
+                    className="w-full flex items-center gap-3 text-sm px-2 py-2 rounded-sm hover:bg-accent transition-colors cursor-pointer"
+                  >
+                    {wsIcon(ws)}
+                    <div className="flex-1 text-left min-w-0">
+                      <div className="font-medium text-sm truncate">{ws.name}</div>
+                      <div className="text-[10px] text-muted-foreground truncate">
+                        {ws.isPersonal ? (ws.subtitle || 'Espaço pessoal') : (ROLE_LABELS[ws.role] || ws.role)}
                       </div>
-                      {ws.id === workspace?.id && <div className="w-2 h-2 rounded-full bg-primary shrink-0" />}
-                    </button>
-                  ))}
-                </>
-              )}
+                    </div>
+                    {ws.id === workspace?.id && <div className="w-2 h-2 rounded-full bg-primary shrink-0" />}
+                  </button>
+                );
+
+                const groups = [
+                  { key: 'personal', label: 'Pessoal', items: availableWorkspaces.filter((w: any) => w.isPersonal) },
+                  { key: 'parish', label: 'Paróquias', items: availableWorkspaces.filter((w: any) => !w.isPersonal && w.type === 'PARISH') },
+                  { key: 'diocese', label: 'Dioceses', items: availableWorkspaces.filter((w: any) => !w.isPersonal && w.type === 'DIOCESE') },
+                  { key: 'community', label: 'Comunidades', items: availableWorkspaces.filter((w: any) => !w.isPersonal && w.type === 'COMMUNITY') },
+                ].filter((g) => g.items.length > 0);
+
+                return groups.map((g) => (
+                  <div key={g.key}>
+                    <div className="px-2 pt-2 pb-1 text-[10px] font-bold uppercase text-muted-foreground tracking-wider">
+                      {g.label} ({g.items.length})
+                    </div>
+                    {g.items.slice(0, MAX_PER_GROUP).map(renderItem)}
+                    {g.items.length > MAX_PER_GROUP && (
+                      <button
+                        onClick={() => navigate('/app/select-workspace')}
+                        className="w-full text-[11px] text-primary hover:underline px-2 py-1 text-left"
+                      >
+                        Ver todos ({g.items.length})
+                      </button>
+                    )}
+                  </div>
+                ));
+              })()}
 
               <div className="border-t mt-2 pt-2">
                 <button

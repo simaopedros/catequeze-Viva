@@ -43,13 +43,12 @@ export function createStripeCheckoutSession({
       },
     ],
     mode,
-    success_url: `${config.frontendUrl}/checkout?status=success`,
-    cancel_url: `${config.frontendUrl}/checkout?status=canceled`,
-    automatic_tax: { enabled: true },
+    success_url: `${config.frontendUrl}/app/billing?status=success`,
+    cancel_url: `${config.frontendUrl}/app/billing?status=canceled`,
+    // `automatic_tax` requires Stripe Tax to be configured in the Dashboard and
+    // a customer address. It is left disabled by default; enable it (together
+    // with `customer_update: { address: "auto" }`) once Stripe Tax is set up.
     allow_promotion_codes: true,
-    customer_update: {
-      address: "auto",
-    },
     invoice_creation: getInvoiceCreationConfig(mode),
   });
 }

@@ -61,6 +61,8 @@ export interface FaqItem {
 }
 
 export interface PricingPlan {
+  planId: string;
+  level: 'personal' | 'institutional';
   name: string;
   price: string;
   period: string;
@@ -204,17 +206,21 @@ export const STEPS: Step[] = [
 
 export const PRICING_PREVIEW: PricingPlan[] = [
   {
+    planId: 'catechist_free',
+    level: 'personal',
     name: 'Catequista Grátis',
     price: 'Grátis',
     period: '',
-    desc: 'Para um catequista individual',
+    desc: 'Pessoal — para um catequista individual',
     features: ['1 turma', '20 catequizandos', 'Presenças digitais', 'Bíblia e Catecismo', '3 créditos de IA (teste)'],
   },
   {
+    planId: 'catechist_ai',
+    level: 'personal',
     name: 'Catequista IA',
     price: 'R$ 29',
     period: '/mês',
-    desc: 'IA para criar encontros, atividades e mensagens em segundos',
+    desc: 'Pessoal — IA para criar encontros, atividades e mensagens em segundos',
     features: [
       'Turmas e catequizandos ilimitados',
       'Gerador de encontros por IA',
@@ -225,10 +231,12 @@ export const PRICING_PREVIEW: PricingPlan[] = [
     highlight: true,
   },
   {
+    planId: 'parish',
+    level: 'institutional',
     name: 'Paróquia',
     price: 'R$ 49',
     period: '/mês',
-    desc: 'Ferramentas para a paróquia inteira',
+    desc: 'Institucional — ferramentas para a paróquia inteira',
     features: [
       'Multi-catequista',
       'Painel do coordenador',

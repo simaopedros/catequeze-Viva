@@ -8,7 +8,8 @@ import * as z from "zod";
 import { PaymentPlanId, paymentPlans, SubscriptionStatus } from "../payment/plans";
 import { validateOrThrow } from "../server/validation";
 import { paymentProcessor } from "./paymentProcessor";
-import { cancelWooviSubscription } from "./woovi/checkoutUtils";
+import { stripeClient } from "./stripe/stripeClient";
+import { cascadeCancelToTenantBilling } from "./billingCascade";
 
 export type CheckoutSession = {
   sessionUrl: string | null;
@@ -50,15 +51,19 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     throw new HttpError(400, 'O plano Catequista Grátis não requer pagamento.');
   }
 
-  // Block Parish/Diocese purchase for users who don't own a parish
-  if (['parish', 'diocese'].includes(paymentPlanId) && !context.user.isAdmin) {
+  // Make the purchase SCOPE explicit:
+  // - Personal plans (Pro/AI) always apply to the buyer's personal space.
+  // - Institutional plans (Parish/Diocese) cover an institution and require the
+  //   buyer to own a parish (so the license has a tenant to attach to).
+  const isInstitutionalPlan = ['parish', 'diocese'].includes(paymentPlanId);
+  if (isInstitutionalPlan && !context.user.isAdmin) {
     const ownedParish = await context.entities.Parish.findFirst({
       where: { ownerId: context.user.id, type: { not: "PERSONAL" } },
     });
     if (!ownedParish) {
       throw new HttpError(
         403,
-        'Apenas coordenadores donos de paróquia podem assinar planos Paróquia ou Diocese.',
+        'O plano Paróquia/Diocese é institucional: crie ou seja dono de uma paróquia antes de contratá-lo. Planos pessoais (Catequista Pro/IA) cobrem apenas o seu espaço pessoal.',
       );
     }
   }
@@ -73,11 +78,11 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     });
     session = result.session;
   } catch (err: any) {
-    const status = err?.response?.status;
+    const status = err?.response?.status ?? err?.statusCode;
     if (status === 401 || status === 403) {
       throw new HttpError(
         503,
-        "Serviço de pagamento indisponível no momento. Verifique a configuração do Woovi (WOOVI_APP_ID) ou tente novamente mais tarde.",
+        "Serviço de pagamento indisponível no momento. Verifique a configuração do Stripe (STRIPE_API_KEY) ou tente novamente mais tarde.",
       );
     }
     throw new HttpError(
@@ -119,19 +124,27 @@ export const cancelSubscription: CancelSubscription<
 
   const user = await context.entities.User.findUnique({
     where: { id: context.user.id },
-    select: { id: true, wooviCorrelationId: true, subscriptionStatus: true },
+    select: { id: true, paymentProcessorUserId: true, subscriptionStatus: true },
   });
 
-  if (!user?.wooviCorrelationId) {
+  if (!user?.paymentProcessorUserId) {
     throw new HttpError(400, "Nenhuma assinatura ativa encontrada.");
   }
 
-  // Cancel on Woovi's side
+  // Cancel the user's active Stripe subscription(s). We cancel immediately so
+  // the in-app state and the tenant billing cascade stay consistent; the
+  // `customer.subscription.deleted` webhook will also fire and is idempotent.
   try {
-    await cancelWooviSubscription(user.wooviCorrelationId);
+    const subscriptions = await stripeClient.subscriptions.list({
+      customer: user.paymentProcessorUserId,
+      status: "active",
+    });
+    for (const subscription of subscriptions.data) {
+      await stripeClient.subscriptions.cancel(subscription.id);
+    }
   } catch (err: any) {
-    console.error("Failed to cancel Woovi subscription:", err?.message || err);
-    // Continue anyway — mark as deleted locally even if Woovi call fails
+    console.error("Failed to cancel Stripe subscription:", err?.message || err);
+    // Continue anyway — mark as deleted locally even if the Stripe call fails.
   }
 
   // Mark user's subscription as deleted
@@ -140,22 +153,13 @@ export const cancelSubscription: CancelSubscription<
     data: {
       subscriptionStatus: SubscriptionStatus.Deleted,
       subscriptionPlan: null,
-      wooviCorrelationId: null,
     },
   });
 
-  // Downgrade all parishes owned by this user to CATECHIST_FREE
-  await context.entities.TenantBilling.updateMany({
-    where: {
-      parish: { ownerId: context.user.id },
-    },
-    data: {
-      plan: "CATECHIST_FREE",
-      status: "CANCELED",
-      maxClasses: null,
-      maxCatechumens: null,
-    },
-  });
+  // Downgrade every tenant billed through this user (owned parishes and
+  // administered/owned dioceses) to CATECHIST_FREE — same cascade used by the
+  // payment webhook.
+  await cascadeCancelToTenantBilling(context, context.user.id);
 
   return { success: true };
 };

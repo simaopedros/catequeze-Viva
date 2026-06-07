@@ -69,6 +69,7 @@ app OpenSaaS {
     },
     onAuthFailedRedirectTo: "/login",
     onAuthSucceededRedirectTo: "/app",
+    onAfterSignup: import { onAfterSignup } from "@src/auth/hooks",
   },
 
   db: {
@@ -404,7 +405,7 @@ query getCurrentUserContext {
 
 query listParishes {
   fn: import { listParishes } from "@src/server/operations/parishOperations",
-  entities: [Parish, Membership, TenantBilling, Diocese]
+  entities: [Parish, Membership, TenantBilling, Diocese, User]
 }
 
 query searchParishesForOnboarding {
@@ -427,6 +428,11 @@ action updateParish {
   entities: [Parish, Membership]
 }
 
+action deleteParish {
+  fn: import { deleteParish } from "@src/server/operations/parishOperations",
+  entities: [Parish, Membership]
+}
+
 action executeParishMigration {
   fn: import { executeParishMigration } from "@src/server/operations/migrationOperations",
   entities: [Parish, Membership, CatechesisClass, Household, CatechumenProfile, ContentItem, SacramentalJourneyTemplate, MessageCampaign, LiturgicalEvent, Conversation, MessageTemplate, CatecheticalYear, Community, AuditLog]
@@ -440,7 +446,7 @@ query getParishById {
 
 action getOrCreateParishByOsmId {
   fn: import { getOrCreateParishByOsmId } from "@src/server/operations/parishOperations",
-  entities: [Parish]
+  entities: [Parish, Membership, TenantBilling]
 }
 // ── Diocese Management ───────────────────────────────────────────────────
 
@@ -473,7 +479,7 @@ query listParishMembers {
 
 action inviteUserToParish {
   fn: import { inviteUserToParish } from "@src/server/operations/memberOperations",
-  entities: [Membership, User, Parish, Community, AuditLog]
+  entities: [Membership, User, Parish, Community, AuditLog, PendingInvitation]
 }
 
 action acceptInvitation {
@@ -503,7 +509,12 @@ action ensurePersonalWorkspace {
 
 query listWorkspaces {
   fn: import { listWorkspaces } from "@src/server/operations/workspaceOperations",
-  entities: [Parish, Membership, TenantBilling, User]
+  entities: [Parish, Membership, TenantBilling, User, Diocese]
+}
+
+query getInstitutionalManageContext {
+  fn: import { getInstitutionalManageContext } from "@src/server/operations/workspaceOperations",
+  entities: [Membership, Parish, Diocese, TenantBilling]
 }
 //#endregion
 
@@ -526,7 +537,7 @@ query listParishCatechists {
 
 action createClass {
   fn: import { createClass } from "@src/server/operations/classOperations",
-  entities: [CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese]
+  entities: [CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User]
 }
 
 action updateClass {
@@ -551,7 +562,7 @@ action removeCatechistFromClass {
 
 action enrollCatechumen {
   fn: import { enrollCatechumen } from "@src/server/operations/classOperations",
-  entities: [ClassEnrollment, CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese]
+  entities: [ClassEnrollment, CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User]
 }
 
 action archiveClass {

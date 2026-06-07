@@ -2,6 +2,7 @@ import { Link } from 'react-router';
 import { CheckCircle2, Star } from 'lucide-react';
 import { PRICING_PREVIEW } from '../content/landingContent';
 import { useScrollReveal } from '../hooks/useScrollReveal';
+import { setIntendedPlan } from '../../catequese/lib/intendedPlan';
 
 export function PricingPreviewSection() {
   const { ref: headerRef, className: headerClass } = useScrollReveal();
@@ -70,6 +71,9 @@ function PricingCard({
       </ul>
       <Link
         to="/signup"
+        onClick={() => {
+          if (plan.planId !== 'catechist_free') setIntendedPlan(plan.planId);
+        }}
         className={`mt-6 block text-center rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
           plan.highlight
             ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25'
