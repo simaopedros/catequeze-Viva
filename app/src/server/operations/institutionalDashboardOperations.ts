@@ -27,7 +27,8 @@ interface KpiBlock {
   value: number;
   delta: number | null;
   deltaLabel: string | null;
-  format?: 'number' | 'percent' | 'currency' | 'days';
+  format?: 'number' | 'percent' | 'currency' | 'days' | 'text';
+  displayValue?: string;
 }
 
 interface InstitutionalOverview {
@@ -369,8 +370,8 @@ export const getInstitutionalOverview = async (args: ScopeArgs, context: any): P
     : null;
 
   const license: KpiBlock[] | null = isManager && tenantBilling ? [
-    { label: 'Plano', value: 0, delta: null, deltaLabel: null, format: 'number' },
-    { label: 'Status', value: 0, delta: null, deltaLabel: null, format: 'number' },
+    { label: 'Plano', value: 0, delta: null, deltaLabel: null, format: 'text', displayValue: tenantBilling.plan || '—' },
+    { label: 'Status', value: 0, delta: null, deltaLabel: null, format: 'text', displayValue: tenantBilling.status || '—' },
     { label: 'Dias para fim do trial', value: daysToTrialEnd ?? 0, delta: null, deltaLabel: null, format: 'days' },
   ] : null;
 
@@ -597,7 +598,7 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
 
   // 4. Capacidade excedida
   const overCapacityClasses = await context.entities.CatechesisClass.findMany({
-    where: { ...classWhere, status: 'ACTIVE', maxCapacity: { not: null } },
+    where: { ...classWhere, status: 'ACTIVE', maxCapacity: { gt: 0 } },
     select: {
       id: true,
       name: true,
@@ -700,7 +701,7 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
   if (recentMeetings.length >= 3) {
     const meetingIds = recentMeetings.map((m: any) => m.id);
     const enrolledCatechumens = await context.entities.ClassEnrollment.findMany({
-      where: { ...enrollmentWhere, status: 'ENROLLED' },
+      where: { ...enrollmentWhere, status: 'ENROLLED', catechumenProfileId: { not: null } },
       select: { catechumenProfileId: true },
       distinct: ['catechumenProfileId'],
     });

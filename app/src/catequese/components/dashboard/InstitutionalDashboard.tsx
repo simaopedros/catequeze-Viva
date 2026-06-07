@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   useQuery,
@@ -6,8 +6,10 @@ import {
   getInstitutionalTrends,
   getInstitutionalAlerts,
   getClassComparison,
+  listCommunities,
 } from 'wasp/client/operations';
 import { useActiveWorkspace } from '../../../client/hooks/useActiveWorkspace';
+import { useUserContext } from '../../../client/hooks/useUserContext';
 import { SkeletonPage } from '../../../client/components/Skeletons';
 import {
   Users, BookOpen, TrendingUp, Cross, FileText, ShieldCheck,
@@ -27,13 +29,16 @@ interface KpiBlock {
   value: number;
   delta: number | null;
   deltaLabel: string | null;
-  format?: 'number' | 'percent' | 'currency' | 'days';
+  format?: 'number' | 'percent' | 'currency' | 'days' | 'text';
+  displayValue?: string;
 }
 
 // ─── KPI Card ─────────────────────────────────────────────────────────────────
 
 function KpiCard({ kpi, icon: Icon, colorClass }: { kpi: KpiBlock; icon: any; colorClass: string }) {
   const formatted = useMemo(() => {
+    if (kpi.displayValue) return kpi.displayValue;
+    if (kpi.format === 'text') return kpi.deltaLabel || '—';
     if (kpi.format === 'percent') return `${kpi.value}%`;
     if (kpi.format === 'days') return `${kpi.value} dias`;
     if (kpi.format === 'currency') return `R$ ${kpi.value.toFixed(2)}`;
@@ -124,36 +129,73 @@ function AlertBanner({ alerts }: { alerts?: any[] }) {
 export function InstitutionalDashboard() {
   const { t } = useTranslation('dashboard');
   const { workspaceId, workspaceType, workspacePlan } = useActiveWorkspace();
+  const { communityId: userCommunityId } = useUserContext();
 
   const [scope, setScope] = useState<'diocese' | 'parish' | 'community'>(
     workspaceType === 'DIOCESE' ? 'diocese' : 'parish'
   );
   const [period, setPeriod] = useState<'month' | 'quarter' | 'year' | 'all'>('quarter');
+  const [selectedCommunityId, setSelectedCommunityId] = useState('');
 
-  const scopeId = workspaceId;
+  const parishIdForCommunities = workspaceType === 'PARISH' ? workspaceId : '';
 
-  const { data: overview, isLoading: loadingOverview } = useQuery(
+  const { data: communities = [], isLoading: loadingCommunities } = useQuery(
+    listCommunities,
+    { parishId: parishIdForCommunities },
+    { enabled: !!parishIdForCommunities },
+  );
+
+  const defaultCommunityId = useMemo(() => {
+    if (communities.length === 0) return '';
+    if (userCommunityId && communities.some((c: any) => c.id === userCommunityId)) {
+      return userCommunityId;
+    }
+    return communities[0]?.id || '';
+  }, [communities, userCommunityId]);
+
+  useEffect(() => {
+    if (scope !== 'community') return;
+    if (!defaultCommunityId) {
+      setSelectedCommunityId('');
+      return;
+    }
+    setSelectedCommunityId((current) =>
+      current && communities.some((c: any) => c.id === current) ? current : defaultCommunityId,
+    );
+  }, [scope, defaultCommunityId, communities]);
+
+  const handleScopeChange = (nextScope: 'diocese' | 'parish' | 'community') => {
+    setScope(nextScope);
+    if (nextScope === 'community' && defaultCommunityId) {
+      setSelectedCommunityId(defaultCommunityId);
+    }
+  };
+
+  const queryScopeId = scope === 'community' ? selectedCommunityId : workspaceId;
+  const queriesEnabled = !!queryScopeId && (scope !== 'community' || !!selectedCommunityId);
+
+  const { data: overview, isLoading: loadingOverview, error: overviewError } = useQuery(
     getInstitutionalOverview,
-    { scope, scopeId, period },
-    { enabled: !!scopeId },
+    { scope, scopeId: queryScopeId, period },
+    { enabled: queriesEnabled },
   );
 
-  const { data: trends, isLoading: loadingTrends } = useQuery(
+  const { data: trends, isLoading: loadingTrends, error: trendsError } = useQuery(
     getInstitutionalTrends,
-    { scope, scopeId, period },
-    { enabled: !!scopeId },
+    { scope, scopeId: queryScopeId, period },
+    { enabled: queriesEnabled },
   );
 
-  const { data: alerts, isLoading: loadingAlerts } = useQuery(
+  const { data: alerts, isLoading: loadingAlerts, error: alertsError } = useQuery(
     getInstitutionalAlerts,
-    { scope, scopeId, period },
-    { enabled: !!scopeId },
+    { scope, scopeId: queryScopeId, period },
+    { enabled: queriesEnabled },
   );
 
   const { data: comparison } = useQuery(
     getClassComparison,
-    { parishId: scope === 'parish' ? scopeId : '' },
-    { enabled: scope === 'parish' && !!scopeId },
+    { parishId: scope === 'parish' ? queryScopeId : parishIdForCommunities || '' },
+    { enabled: scope === 'parish' && !!queryScopeId },
   );
 
   // ── Chart data ── (must be before any conditional return for hook ordering)
@@ -182,7 +224,7 @@ export function InstitutionalDashboard() {
     const options: { value: string; label: string }[] = [];
     if (workspaceType === 'DIOCESE') options.push({ value: 'diocese', label: 'Diocese' });
     options.push({ value: 'parish', label: 'Paróquia' });
-    options.push({ value: 'community', label: 'Comunidade' });
+    if (workspaceType === 'PARISH') options.push({ value: 'community', label: 'Comunidade' });
     return options;
   }, [workspaceType]);
 
@@ -193,8 +235,32 @@ export function InstitutionalDashboard() {
     { value: 'all', label: 'Todo período' },
   ];
 
-  if (loadingOverview) {
+  if (scope === 'community' && loadingCommunities) {
     return <SkeletonPage />;
+  }
+
+  if (scope === 'community' && !loadingCommunities && communities.length === 0) {
+    return (
+      <div className="rounded-xl border bg-card p-8 text-center text-muted-foreground">
+        Nenhuma comunidade encontrada para este escopo.
+      </div>
+    );
+  }
+
+  if (scope === 'community' && !selectedCommunityId) {
+    return <SkeletonPage />;
+  }
+
+  if (queriesEnabled && loadingOverview && !overview) {
+    return <SkeletonPage />;
+  }
+
+  if (overviewError) {
+    return (
+      <div className="rounded-xl border border-destructive/40 bg-destructive/5 p-6 text-destructive">
+        Não foi possível carregar o painel: {overviewError.message}
+      </div>
+    );
   }
 
   return (
@@ -213,7 +279,7 @@ export function InstitutionalDashboard() {
             {scopeOptions.map((opt) => (
               <button
                 key={opt.value}
-                onClick={() => setScope(opt.value as any)}
+                onClick={() => handleScopeChange(opt.value as 'diocese' | 'parish' | 'community')}
                 className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
                   scope === opt.value
                     ? 'bg-background text-foreground shadow-sm'
@@ -234,6 +300,17 @@ export function InstitutionalDashboard() {
               <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
           </select>
+          {scope === 'community' && communities.length > 0 && (
+            <select
+              value={selectedCommunityId}
+              onChange={(e) => setSelectedCommunityId(e.target.value)}
+              className="h-9 rounded-lg border bg-background px-3 text-xs font-medium text-muted-foreground max-w-[200px]"
+            >
+              {communities.map((c: any) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+          )}
         </div>
       </div>
 
