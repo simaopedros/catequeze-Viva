@@ -65,7 +65,7 @@ export const NAV_SECTIONS: NavSectionConfig[] = [
       { to: '/app/billing', labelKey: 'billing', iconKey: 'billing', roles: CATECHIST_ROLES },
       { to: '/app/consents', labelKey: 'consents', iconKey: 'consents', roles: ['GUARDIAN'] },
       { to: '/app/catechetical-years', labelKey: 'catechetical_years', iconKey: 'catechetical_years', roles: [...STAFF_ROLES] },
-      { to: '/admin', labelKey: 'admin', iconKey: 'admin', roles: ['SUPER_ADMIN'] },
+      { to: '/admin', labelKey: 'admin', iconKey: 'admin', roles: [] },
     ],
   },
 ];

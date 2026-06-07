@@ -79,7 +79,7 @@ export const updateUserProfile = async (args: any, context: any) => {
     select: { id: true, firstName: true, lastName: true, phone: true },
   });
 
-  await writeAuditLog(context, 'PROFILE_UPDATE', 'User', context.user.id);
+  await writeAuditLog(context, 'UPDATE', 'User', context.user.id, { operation: 'PROFILE_UPDATE' });
   return updated;
 };
 
@@ -98,7 +98,7 @@ export const requestDataExport = async (_args: any, context: any) => {
     context.entities.GuardianProfile.findUnique({ where: { userId: context.user.id } }),
   ]);
 
-  await writeAuditLog(context, 'DATA_EXPORT', 'User', context.user.id);
+  await writeAuditLog(context, 'EXPORT', 'User', context.user.id, { operation: 'DATA_EXPORT' });
   return {
     success: true,
     message: 'Solicitação de exportação registrada. Você receberá seus dados por email.',
@@ -143,7 +143,7 @@ export const changePassword = async (args: unknown, context: any) => {
     { hashedPassword: newPassword },
   );
 
-  await writeAuditLog(context, 'PASSWORD_CHANGE', 'User', context.user.id);
+  await writeAuditLog(context, 'UPDATE', 'User', context.user.id, { operation: 'PASSWORD_CHANGE' });
 
   return { success: true };
 };

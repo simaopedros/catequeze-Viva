@@ -1,10 +1,21 @@
 import { type AuthUser } from 'wasp/auth';
 import { useQuery, listParishes } from 'wasp/client/operations';
+import { NavLink } from 'react-router';
 import DefaultLayout from '../../layout/DefaultLayout';
-import { Church, MapPin, Users, Crown, Building2 } from 'lucide-react';
+import { Church, MapPin, Users, Crown, Building2, BadgeCheck, AlertTriangle, CircleDot, ChevronRight } from 'lucide-react';
 
 const ParishesPage = ({ user }: { user: AuthUser }) => {
   const { data: parishes = [], isLoading } = useQuery(listParishes);
+
+  const statusIcon = (status: string) => {
+    switch (status) {
+      case 'ACTIVE': return <BadgeCheck className="h-3.5 w-3.5 text-green-600" />;
+      case 'TRIAL': return <CircleDot className="h-3.5 w-3.5 text-blue-600" />;
+      case 'PAST_DUE': return <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />;
+      case 'CANCELED': return <AlertTriangle className="h-3.5 w-3.5 text-red-500" />;
+      default: return null;
+    }
+  };
 
   return (
     <DefaultLayout user={user}>
@@ -32,16 +43,23 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
                   <th className="text-left px-4 py-3 font-medium">Nome</th>
                   <th className="text-left px-4 py-3 font-medium hidden lg:table-cell">Diocese</th>
                   <th className="text-left px-4 py-3 font-medium hidden md:table-cell">Cidade</th>
+                  <th className="text-left px-4 py-3 font-medium hidden lg:table-cell">Plano</th>
+                  <th className="text-left px-4 py-3 font-medium hidden lg:table-cell">Owner</th>
                   <th className="text-left px-4 py-3 font-medium hidden lg:table-cell">Membros</th>
                 </tr>
               </thead>
               <tbody>
                 {parishes.map((p: any) => (
-                  <tr key={p.id} className="border-b last:border-0 hover:bg-muted/30">
+                  <tr key={p.id} className="border-b last:border-0 hover:bg-muted/30 cursor-pointer" onClick={() => window.location.href = `/admin/parishes/${p.id}`}>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <Church className="h-4 w-4 text-primary" />
-                        <span className="font-medium">{p.name}</span>
+                        <Church className="h-4 w-4 text-primary shrink-0" />
+                        <div>
+                          <span className="font-medium hover:underline">{p.name}</span>
+                          {!p.active && (
+                            <span className="ml-2 text-xs bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">Arquivada</span>
+                          )}
+                        </div>
                       </div>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">
@@ -50,11 +68,19 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
                     <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">
                       <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{p.city || '—'}</span>
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">
-                      <span className="flex items-center gap-1"><Users className="h-3 w-3" />{p._count?.memberships || 0}</span>
+                    <td className="px-4 py-3 hidden lg:table-cell">
+                      {p.billing?.plan ? (
+                        <span className="flex items-center gap-1">
+                          {statusIcon(p.billing.status)}
+                          <span className="text-xs font-medium">{p.billing.plan}</span>
+                        </span>
+                      ) : <span className="text-muted-foreground">—</span>}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground text-xs hidden lg:table-cell">
+                      {p.owner?.email || '—'}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">
-                      <span className="flex items-center gap-1"><Crown className="h-3 w-3" />{p.owner?.email || '—'}</span>
+                      <span className="flex items-center gap-1"><Users className="h-3 w-3" />{p._count?.memberships || 0}</span>
                     </td>
                   </tr>
                 ))}
@@ -71,12 +97,12 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
               <p className="text-xs text-muted-foreground">Total de paróquias</p>
             </div>
             <div className="rounded-xl border bg-card p-4">
-              <p className="text-2xl font-bold">{parishes.reduce((sum: number, p: any) => sum + (p._count?.memberships || 0), 0)}</p>
-              <p className="text-xs text-muted-foreground">Total de membros</p>
+              <p className="text-2xl font-bold">{parishes.filter((p: any) => p.active).length}</p>
+              <p className="text-xs text-muted-foreground">Paróquias ativas</p>
             </div>
             <div className="rounded-xl border bg-card p-4">
-              <p className="text-2xl font-bold">{parishes.filter((p: any) => p.city).length}</p>
-              <p className="text-xs text-muted-foreground">Com cidade registada</p>
+              <p className="text-2xl font-bold">{parishes.reduce((sum: number, p: any) => sum + (p._count?.memberships || 0), 0)}</p>
+              <p className="text-xs text-muted-foreground">Total de membros</p>
             </div>
           </div>
         )}

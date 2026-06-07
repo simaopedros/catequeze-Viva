@@ -1,98 +1,106 @@
 import { type AuthUser } from "wasp/auth";
-import { useQuery, getDashboardStats, listParishes, getPaginatedUsers } from "wasp/client/operations";
+import { useQuery, getPlatformOverview, getPlatformAlerts } from "wasp/client/operations";
 import DefaultLayout from "../../layout/DefaultLayout";
-import { Users, Church, GraduationCap, BookOpen, TrendingUp } from 'lucide-react';
+import { Users, Church, GraduationCap, CreditCard, TrendingUp, AlertTriangle, CircleDot, DollarSign } from 'lucide-react';
 
 const Dashboard = ({ user }: { user: AuthUser }) => {
-  const { data: stats, isLoading: loadingStats } = useQuery(getDashboardStats, {});
-  const { data: parishes = [] } = useQuery(listParishes);
-  const { data: usersData } = useQuery(getPaginatedUsers, { skipPages: 0, filter: {} });
+  const { data: overview, isLoading } = useQuery(getPlatformOverview);
+  const { data: alerts = [] } = useQuery(getPlatformAlerts);
 
-  const totalUsers = usersData?.users?.length || 0;
-  const totalParishes = parishes.length;
-  const totalClasses = stats?.activeClasses || 0;
-  const totalCatechumens = stats?.activeCatechumens || 0;
-
-  const cards = [
-    { label: 'Paróquias', value: totalParishes, icon: Church, color: 'text-blue-600 bg-blue-50' },
-    { label: 'Utilizadores', value: totalUsers, icon: Users, color: 'text-green-600 bg-green-50' },
-    { label: 'Turmas Ativas', value: totalClasses, icon: BookOpen, color: 'text-purple-600 bg-purple-50' },
-    { label: 'Catequizandos', value: totalCatechumens, icon: GraduationCap, color: 'text-amber-600 bg-amber-50' },
+  const kpiCards = [
+    {
+      label: 'Utilizadores',
+      value: overview?.totalUsers,
+      subtitle: `+${overview?.newUsers7d || 0} nos últimos 7d`,
+      icon: Users,
+      color: 'text-green-600 bg-green-50',
+    },
+    {
+      label: 'Paróquias Ativas',
+      value: overview?.activeParishes,
+      subtitle: `${overview?.archivedParishes || 0} arquivadas`,
+      icon: Church,
+      color: 'text-blue-600 bg-blue-50',
+    },
+    {
+      label: 'Turmas Ativas',
+      value: overview?.totalClasses,
+      subtitle: `${overview?.totalCatechumens || 0} catequizandos`,
+      icon: GraduationCap,
+      color: 'text-purple-600 bg-purple-50',
+    },
+    {
+      label: 'Assinantes Pagos',
+      value: overview?.payingTenants,
+      subtitle: `${overview?.activeSubscriptions || 0} users ativos`,
+      icon: CreditCard,
+      color: 'text-amber-600 bg-amber-50',
+    },
+    {
+      label: 'MRR Estimado',
+      value: overview?.mrr != null ? `R$ ${overview.mrr.toFixed(0)}` : '—',
+      subtitle: `${overview?.trialsExpiring || 0} trials a expirar`,
+      icon: DollarSign,
+      color: 'text-emerald-600 bg-emerald-50',
+    },
   ];
 
   return (
     <DefaultLayout user={user}>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold">Administração</h1>
-          <p className="text-muted-foreground text-sm mt-1">Visão geral da plataforma Catequese Viva.</p>
+          <h1 className="text-2xl font-bold">Centro de Comando</h1>
+          <p className="text-muted-foreground text-sm mt-1">Visão executiva da plataforma Catequese Viva.</p>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {cards.map((card) => (
-            <div key={card.label} className="rounded-xl border bg-card p-6 shadow-sm">
+        {/* KPI Cards */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+          {kpiCards.map((card) => (
+            <div key={card.label} className="rounded-xl border bg-card p-5 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className={`rounded-lg p-2.5 ${card.color}`}>
                   <card.icon className="h-5 w-5" />
                 </div>
-                <div>
-                  <p className="text-2xl font-bold">{loadingStats && card.label !== 'Paróquias' && card.label !== 'Utilizadores' ? '—' : card.value}</p>
-                  <p className="text-xs text-muted-foreground">{card.label}</p>
-                </div>
+              </div>
+              <div className="mt-3">
+                <p className="text-2xl font-bold">
+                  {isLoading ? '—' : (card.value ?? '—')}
+                </p>
+                <p className="text-xs font-medium text-muted-foreground">{card.label}</p>
+                {card.subtitle && (
+                  <p className="text-[11px] text-muted-foreground/70 mt-0.5">{card.subtitle}</p>
+                )}
               </div>
             </div>
           ))}
         </div>
 
-        {/* Parishes list */}
-        <div className="rounded-xl border bg-card">
-          <div className="p-4 border-b font-medium flex items-center gap-2">
-            <Church className="h-4 w-4 text-primary" />
-            Paróquias
-          </div>
-          <div className="divide-y">
-            {parishes.length === 0 ? (
-              <div className="p-6 text-center text-sm text-muted-foreground">Nenhuma paróquia cadastrada.</div>
-            ) : (
-              parishes.map((p: any) => (
-                <div key={p.id} className="p-4 flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-sm">{p.name}</p>
-                    <p className="text-xs text-muted-foreground">{p.city || '—'}</p>
-                  </div>
-                  <span className="text-xs text-muted-foreground">{p._count?.memberships || 0} membros</span>
+        {/* Alerts */}
+        {alerts.length > 0 && (
+          <div className="rounded-xl border bg-card p-5">
+            <h2 className="font-medium text-sm flex items-center gap-2 mb-3">
+              <AlertTriangle className="h-4 w-4 text-amber-500" />
+              Requer Atenção
+            </h2>
+            <div className="space-y-2">
+              {alerts.map((alert, i) => (
+                <div
+                  key={i}
+                  className={`flex items-center gap-2 text-sm px-3 py-2 rounded-md ${
+                    alert.type === 'warning'
+                      ? 'bg-amber-50 text-amber-800'
+                      : alert.type === 'error'
+                      ? 'bg-red-50 text-red-800'
+                      : 'bg-blue-50 text-blue-800'
+                  }`}
+                >
+                  <CircleDot className="h-3 w-3 shrink-0" />
+                  {alert.message}
                 </div>
-              ))
-            )}
+              ))}
+            </div>
           </div>
-        </div>
-
-        {/* Recent users */}
-        <div className="rounded-xl border bg-card">
-          <div className="p-4 border-b font-medium flex items-center gap-2">
-            <Users className="h-4 w-4 text-primary" />
-            Utilizadores Recentes
-          </div>
-          <div className="divide-y">
-            {(!usersData?.users || usersData.users.length === 0) ? (
-              <div className="p-6 text-center text-sm text-muted-foreground">Nenhum utilizador.</div>
-            ) : (
-              usersData.users.slice(0, 10).map((u: any) => (
-                <div key={u.id} className="p-3 flex items-center justify-between text-sm">
-                  <div>
-                    <span className="font-medium">{u.email}</span>
-                    <span className="text-xs text-muted-foreground ml-2">
-                      {u.firstName ? `${u.firstName} ${u.lastName || ''}` : '—'}
-                    </span>
-                  </div>
-                  <span className="text-xs text-muted-foreground">
-                    {u.isAdmin ? 'Admin' : '—'}
-                  </span>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
+        )}
       </div>
     </DefaultLayout>
   );

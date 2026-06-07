@@ -274,7 +274,7 @@ export const createParish = async (
     });
   }
 
-  await writeAuditLog(context, 'PARISH_CREATE', 'Parish', parish.id, { parishId: parish.id });
+  await writeAuditLog(context, 'CREATE', 'Parish', parish.id, { parishId: parish.id, operation: 'PARISH_CREATE' });
   return { id: parish.id };
 };
 
@@ -303,7 +303,7 @@ export const updateParish = async (
 
   const { id, ...data } = args;
   await context.entities.Parish.update({ where: { id }, data });
-  await writeAuditLog(context, 'PARISH_UPDATE', 'Parish', args.id, { parishId: args.id });
+  await writeAuditLog(context, 'UPDATE', 'Parish', args.id, { parishId: args.id, operation: 'PARISH_UPDATE' });
   return { success: true };
 };
 
@@ -357,7 +357,7 @@ export const deleteParish = async (
     where: { id: args.id },
     data: { active: false },
   });
-  await writeAuditLog(context, 'PARISH_DELETE', 'Parish', args.id, { parishId: args.id, archived: true });
+  await writeAuditLog(context, 'DELETE', 'Parish', args.id, { parishId: args.id, operation: 'PARISH_DELETE', archived: true });
   return { success: true };
 };
 
@@ -432,6 +432,7 @@ export const listParishes = async (_args: void, context: any) => {
         diocese: { select: { id: true, name: true } },
         _count: { select: { communities: true, classes: true, memberships: true } },
         billing: { select: { plan: true, status: true, trialEndsAt: true } },
+        owner: { select: { id: true, email: true, firstName: true, lastName: true } },
       },
     });
   } else {

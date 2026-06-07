@@ -1,4 +1,4 @@
-import { LayoutDashboard, Sheet, X, Building2, Church } from "lucide-react";
+import { LayoutDashboard, Sheet, X, Building2, Church, BarChart3, Bell, ShieldCheck, Settings, Activity } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router";
 import Logo from "../../client/static/logo.webp";
@@ -49,6 +49,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     }
   }, [sidebarExpanded]);
 
+  const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+    cn(
+      "text-muted-foreground hover:bg-accent hover:text-accent-foreground group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium duration-300 ease-in-out",
+      { "bg-accent text-accent-foreground": isActive }
+    );
+
   return (
     <aside
       ref={sidebar}
@@ -68,36 +74,79 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
       <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
         <nav className="mt-5 px-4 py-4 lg:mt-9 lg:px-6">
+
+          {/* VISÃO GERAL */}
           <div>
-            <h3 className="text-muted-foreground mb-4 ml-4 text-sm font-semibold">ADMINISTRAÇÃO</h3>
+            <h3 className="text-muted-foreground mb-4 ml-4 text-sm font-semibold">VISÃO GERAL</h3>
             <ul className="mb-6 flex flex-col gap-1.5">
               <li>
-                <NavLink to="/admin" end className={({ isActive }) => cn("text-muted-foreground hover:bg-accent hover:text-accent-foreground group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium duration-300 ease-in-out", { "bg-accent text-accent-foreground": isActive })}>
+                <NavLink to="/admin" end className={navLinkClass}>
                   <LayoutDashboard />Painel
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/admin/parishes" end className={({ isActive }) => cn("text-muted-foreground hover:bg-accent hover:text-accent-foreground group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium duration-300 ease-in-out", { "bg-accent text-accent-foreground": isActive })}>
-                  <Church />Paróquias
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/admin/users" end className={({ isActive }) => cn("text-muted-foreground hover:bg-accent hover:text-accent-foreground group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium duration-300 ease-in-out", { "bg-accent text-accent-foreground": isActive })}>
-                  <Sheet />Utilizadores
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/admin/dioceses" end className={({ isActive }) => cn("text-muted-foreground hover:bg-accent hover:text-accent-foreground group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium duration-300 ease-in-out", { "bg-accent text-accent-foreground": isActive })}>
-                  <Building2 />Dioceses
+                <NavLink to="/admin/analytics" end className={navLinkClass}>
+                  <BarChart3 />Analytics
                 </NavLink>
               </li>
             </ul>
           </div>
+
+          {/* GOVERNANÇA */}
+          <div>
+            <h3 className="text-muted-foreground mb-4 ml-4 text-sm font-semibold">GOVERNANÇA</h3>
+            <ul className="mb-6 flex flex-col gap-1.5">
+              <li>
+                <NavLink to="/admin/parishes" end className={navLinkClass}>
+                  <Church />Paróquias
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/users" end className={navLinkClass}>
+                  <Sheet />Utilizadores
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/dioceses" end className={navLinkClass}>
+                  <Building2 />Dioceses
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/billing" end className={navLinkClass}>
+                  <Activity />Licenças
+                </NavLink>
+              </li>
+            </ul>
+          </div>
+
+          {/* OPERAÇÕES — future links, disabled for now */}
+          <div>
+            <h3 className="text-muted-foreground mb-4 ml-4 text-sm font-semibold">OPERAÇÕES</h3>
+            <ul className="mb-6 flex flex-col gap-1.5">
+              <li>
+                <NavLink to="/admin/support" end className={navLinkClass}>
+                  <Bell />Suporte
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/audit" end className={navLinkClass}>
+                  <ShieldCheck />Auditoria
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/system" end className={navLinkClass}>
+                  <Settings />Sistema
+                </NavLink>
+              </li>
+            </ul>
+          </div>
+
+          {/* OUTROS */}
           <div>
             <h3 className="text-muted-foreground mb-4 ml-4 text-sm font-semibold">OUTROS</h3>
             <ul className="mb-6 flex flex-col gap-1.5">
               <li>
-                <NavLink to="/app" end className="text-muted-foreground hover:bg-accent hover:text-accent-foreground group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium duration-300 ease-in-out">
+                <NavLink to="/app" end className={navLinkClass}>
                   <LayoutDashboard />Voltar ao App
                 </NavLink>
               </li>

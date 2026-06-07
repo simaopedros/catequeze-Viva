@@ -6,7 +6,7 @@ import { Label } from '../../client/components/ui/label';
 import { Button } from '../../client/components/ui/button';
 import { PublicNavbar } from '../PublicNavbar';
 import { PublicFooter } from '../PublicFooter';
-import { sendMessageEmail } from 'wasp/client/operations';
+import { submitContactMessage } from 'wasp/client/operations';
 import { cn } from '../../client/utils';
 
 export default function ContactPage() {
@@ -24,10 +24,10 @@ export default function ContactPage() {
     setSending(true);
     setFeedback(null);
     try {
-      await sendMessageEmail({
-        to: 'contato@catequeseviva.com.br',
-        subject: `[Contato] ${subject || 'Mensagem do site'} — ${name}`,
-        body: `Nome: ${name}\nEmail: ${email}\n\n${message}`,
+      await submitContactMessage({
+        name,
+        email,
+        message,
       });
       setFeedback({ type: 'success', text: 'Mensagem enviada com sucesso!' });
       setName(''); setEmail(''); setSubject(''); setMessage('');

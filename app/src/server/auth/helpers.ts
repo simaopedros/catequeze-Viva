@@ -1,5 +1,5 @@
 import { HttpError } from 'wasp/server';
-import { MembershipStatus } from '@prisma/client';
+import { MembershipStatus, type AuditAction } from '@prisma/client';
 import { logger } from '../logger';
 import { COORDINATOR_ROLES } from './roles';
 
@@ -83,6 +83,17 @@ export function isCatechistOrAboveRole(role: string): boolean {
 export function requireAuth(user: any): asserts user is NonNullable<typeof user> {
   if (!user) {
     throw new HttpError(401, 'Você precisa estar autenticado.');
+  }
+}
+
+/**
+ * Verifica se o usuário é admin da plataforma (isAdmin).
+ * Usar em operações do painel /admin.
+ */
+export function requirePlatformAdmin(user: any): asserts user is NonNullable<typeof user> {
+  requireAuth(user);
+  if (!user.isAdmin) {
+    throw new HttpError(403, 'Apenas administradores da plataforma têm acesso a esta operação.');
   }
 }
 
@@ -174,11 +185,16 @@ export function assertCatechistCanManageClass(
 }
 
 /**
- * Registra auditoria.
+ * Registra auditoria com action validada contra o enum Prisma.
+ *
+ * @param action Ação do enum AuditAction (CREATE | UPDATE | DELETE | LOGIN |
+ *   LOGOUT | EXPORT | APPROVE | REJECT | PUBLISH).
+ * @param operation Identificador legível da operação (ex.: 'PARISH_CREATE'),
+ *   guardado em metadata.operation para consultas específicas.
  */
 export async function writeAuditLog(
   context: any,
-  action: string,
+  action: AuditAction,
   entityType: string,
   entityId: string,
   metadata?: Record<string, any>

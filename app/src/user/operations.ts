@@ -8,6 +8,7 @@ import {
 import * as z from "zod";
 import { SubscriptionStatus } from "../payment/plans";
 import { validateOrThrow } from "../server/validation";
+import { writeAuditLog } from "../server/auth/helpers";
 
 const updateUserAdminByIdInputSchema = z.object({
   id: z.string().nonempty(),
@@ -42,6 +43,13 @@ export const updateIsUserAdminById: UpdateIsUserAdminById<
   return context.entities.User.update({
     where: { id },
     data: { isAdmin },
+  }).then(async (user) => {
+    await writeAuditLog(context, isAdmin ? 'APPROVE' : 'REJECT', 'User', id, {
+      operation: 'ADMIN_TOGGLE',
+      isAdmin,
+      targetUserId: id,
+    });
+    return user;
   });
 };
 
@@ -51,6 +59,9 @@ type GetPaginatedUsersOutput = {
     | "id"
     | "email"
     | "username"
+    | "firstName"
+    | "lastName"
+    | "createdAt"
     | "subscriptionStatus"
     | "paymentProcessorUserId"
     | "isAdmin"
@@ -137,6 +148,9 @@ export const getPaginatedUsers: GetPaginatedUsers<
       id: true,
       email: true,
       username: true,
+      firstName: true,
+      lastName: true,
+      createdAt: true,
       isAdmin: true,
       subscriptionStatus: true,
       paymentProcessorUserId: true,

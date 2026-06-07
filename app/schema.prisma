@@ -1356,10 +1356,12 @@ model ContactFormMessage {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
 
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
 
-  content   String
+  name    String?
+  email   String?
+  content String
   isRead    Boolean   @default(false)
   repliedAt DateTime?
 }

@@ -33,8 +33,8 @@ describe('Navigation Role Filtering', () => {
       expect(paths).toContain('/app/classes');
     });
 
-    it('sees admin', () => {
-      expect(paths).toContain('/admin');
+    it('does NOT see admin (only isAdmin users see /admin)', () => {
+      expect(paths).not.toContain('/admin');
       expect(paths).toContain('/app/billing');
     });
   });

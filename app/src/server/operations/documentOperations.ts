@@ -363,7 +363,7 @@ export const deleteDocument = async (args: { id: string }, context: any) => {
   }
 
   await context.entities.Document.delete({ where: { id: args.id } });
-  await writeAuditLog(context, 'DOCUMENT_DELETE', 'Document', args.id);
+  await writeAuditLog(context, 'DELETE', 'Document', args.id, { operation: 'DOCUMENT_DELETE' });
   return { success: true };
 };
 

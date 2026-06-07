@@ -28,15 +28,16 @@ export const listDioceses = async (_args: void, context: any) => {
   });
 };
 
-/** Cria uma diocese. Qualquer usuário autenticado pode criar durante o onboarding. */
+/** Cria uma diocese. Apenas admin da plataforma (isAdmin). */
 export const createDiocese = async (args: { name: string; country: string }, context: any) => {
   requireAuth(context.user);
+  if (!context.user.isAdmin) throw new HttpError(403, 'Apenas administradores da plataforma podem criar dioceses.');
 
   const diocese = await context.entities.Diocese.create({
     data: { name: args.name, country: args.country || 'BR' },
   });
 
-  await writeAuditLog(context, 'DIOCESE_CREATE', 'Diocese', diocese.id);
+  await writeAuditLog(context, 'CREATE', 'Diocese', diocese.id, { operation: 'DIOCESE_CREATE' });
   return diocese;
 };
 
@@ -50,7 +51,7 @@ export const updateDiocese = async (args: { id: string; name?: string; country?:
   if (args.country) data.country = args.country;
 
   const diocese = await context.entities.Diocese.update({ where: { id: args.id }, data });
-  await writeAuditLog(context, 'DIOCESE_UPDATE', 'Diocese', diocese.id);
+  await writeAuditLog(context, 'UPDATE', 'Diocese', diocese.id, { operation: 'DIOCESE_UPDATE' });
   return diocese;
 };
 

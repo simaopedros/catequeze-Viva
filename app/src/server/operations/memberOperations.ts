@@ -131,7 +131,8 @@ export const inviteUserToParish = async (
         });
 
     await sendInviteEmail(args.email);
-    await writeAuditLog(context, 'MEMBER_INVITE', 'PendingInvitation', pending.id, {
+    await writeAuditLog(context, 'CREATE', 'PendingInvitation', pending.id, {
+      operation: 'MEMBER_INVITE',
       parishId: args.parishId,
       invitedEmail: args.email,
       role: args.role,
@@ -161,7 +162,8 @@ export const inviteUserToParish = async (
       },
     });
     await sendInviteEmail(invitedUser.email);
-    await writeAuditLog(context, 'MEMBER_INVITE', 'Membership', reinvited.id, {
+    await writeAuditLog(context, 'CREATE', 'Membership', reinvited.id, {
+      operation: 'MEMBER_INVITE',
       parishId: args.parishId,
       invitedUserId: invitedUser.id,
       role: args.role,
@@ -182,7 +184,8 @@ export const inviteUserToParish = async (
 
   await sendInviteEmail(invitedUser.email);
 
-  await writeAuditLog(context, 'MEMBER_INVITE', 'Membership', membership.id, {
+  await writeAuditLog(context, 'CREATE', 'Membership', membership.id, {
+    operation: 'MEMBER_INVITE',
     parishId: args.parishId,
     invitedUserId: invitedUser.id,
     role: args.role,
@@ -212,7 +215,7 @@ export const acceptInvitation = async (
     data: { status: 'ACTIVE' },
   });
 
-  await writeAuditLog(context, 'MEMBER_ACCEPT', 'Membership', membership.id);
+  await writeAuditLog(context, 'CREATE', 'Membership', membership.id, { operation: 'MEMBER_ACCEPT' });
   return updated;
 };
 
@@ -251,7 +254,7 @@ export const removeMembership = async (
     where: { id: args.membershipId },
     data: { status: 'INACTIVE' },
   });
-  await writeAuditLog(context, 'MEMBER_REMOVE', 'Membership', membership.id);
+  await writeAuditLog(context, 'DELETE', 'Membership', membership.id, { operation: 'MEMBER_REMOVE' });
   return { success: true };
 };
 

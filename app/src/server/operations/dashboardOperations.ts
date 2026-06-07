@@ -173,6 +173,8 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
     activeClasses,
     avgAttendance,
     pendingSacraments,
+    totalUsers: isAdmin ? await context.entities.User.count() : undefined,
+    totalParishes: isAdmin ? await context.entities.Parish.count() : undefined,
     recentAlerts,
     aniversariantes,
     upcomingMeetings,

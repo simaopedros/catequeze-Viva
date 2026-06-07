@@ -240,10 +240,52 @@ page AdminUsersPage {
   component: import AdminUsers from "@src/admin/dashboards/users/UsersDashboardPage"
 }
 
+route AdminUserDetailRoute { path: "/admin/users/:id", to: AdminUserDetailPage }
+page AdminUserDetailPage {
+  authRequired: true,
+  component: import AdminUserDetail from "@src/admin/dashboards/users/UserDetailPage"
+}
+
 route AdminParishesRoute { path: "/admin/parishes", to: AdminParishesPage }
 page AdminParishesPage {
   authRequired: true,
   component: import AdminParishes from "@src/admin/dashboards/parishes/ParishesPage"
+}
+
+route AdminParishDetailRoute { path: "/admin/parishes/:id", to: AdminParishDetailPage }
+page AdminParishDetailPage {
+  authRequired: true,
+  component: import AdminParishDetail from "@src/admin/dashboards/parishes/ParishDetailPage"
+}
+
+route AdminAnalyticsRoute { path: "/admin/analytics", to: AdminAnalyticsPage }
+page AdminAnalyticsPage {
+  authRequired: true,
+  component: import AdminAnalytics from "@src/admin/dashboards/analytics/AnalyticsPage"
+}
+
+route AdminBillingRoute { path: "/admin/billing", to: AdminBillingPage }
+page AdminBillingPage {
+  authRequired: true,
+  component: import AdminBilling from "@src/admin/dashboards/billing/BillingPage"
+}
+
+route AdminSupportRoute { path: "/admin/support", to: AdminSupportPage }
+page AdminSupportPage {
+  authRequired: true,
+  component: import AdminSupport from "@src/admin/dashboards/support/SupportInboxPage"
+}
+
+route AdminAuditRoute { path: "/admin/audit", to: AdminAuditPage }
+page AdminAuditPage {
+  authRequired: true,
+  component: import AdminAudit from "@src/admin/dashboards/audit/AuditLogPage"
+}
+
+route AdminSystemRoute { path: "/admin/system", to: AdminSystemPage }
+page AdminSystemPage {
+  authRequired: true,
+  component: import AdminSystem from "@src/admin/dashboards/system/SystemHealthPage"
 }
 
 //#region Catequese Viva App Routes
@@ -677,6 +719,21 @@ action justifyAbsence {
 query getDashboardStats {
   fn: import { getDashboardStats } from "@src/server/operations/dashboardOperations",
   entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, AttendanceRecord, Meeting, ContentItem, CatechumenProfile, ClassCatechist, Parish]
+}
+
+query getInstitutionalOverview {
+  fn: import { getInstitutionalOverview } from "@src/server/operations/institutionalDashboardOperations",
+  entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, SacramentalJourney, AttendanceRecord, Meeting, ContentItem, CatechumenProfile, ClassCatechist, Parish, Community, TenantBilling, Document, ConsentRecord, MessageCampaign, MessageRecipient, UserTwoFactor, Diocese]
+}
+
+query getInstitutionalTrends {
+  fn: import { getInstitutionalTrends } from "@src/server/operations/institutionalDashboardOperations",
+  entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, SacramentalJourney, AttendanceRecord, Meeting, CatechumenProfile, Parish, Community, UserTwoFactor, Diocese]
+}
+
+query getInstitutionalAlerts {
+  fn: import { getInstitutionalAlerts } from "@src/server/operations/institutionalDashboardOperations",
+  entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, SacramentalJourney, AttendanceRecord, Meeting, CatechumenProfile, ClassCatechist, Parish, Community, TenantBilling, ConsentRecord, UserTwoFactor, Diocese]
 }
 //#endregion
 
@@ -1382,6 +1439,58 @@ query searchUsers {
 action createCatecheticalYear {
   fn: import { createCatecheticalYear } from "@src/server/operations/missingOperations",
   entities: [CatecheticalYear, Membership]
+}
+//#endregion
+
+//#region Platform Admin Operations (Centro de Comando)
+query getPlatformOverview {
+  fn: import { getPlatformOverview } from "@src/server/operations/platformOperations",
+  entities: [User, Parish, TenantBilling, CatechesisClass, ClassEnrollment]
+}
+
+query getPlatformGrowth {
+  fn: import { getPlatformGrowth } from "@src/server/operations/platformOperations",
+  entities: [User, Parish]
+}
+
+query getPlatformAlerts {
+  fn: import { getPlatformAlerts } from "@src/server/operations/platformOperations",
+  entities: [User, Parish, TenantBilling]
+}
+
+query getParishAdminDetail {
+  fn: import { getParishAdminDetail } from "@src/server/operations/parishAdminOperations",
+  entities: [Parish, AuditLog, Membership, User, Diocese, TenantBilling, Community, CatechesisClass, CatechumenProfile, MessageCampaign]
+}
+
+query getUserAdminDetail {
+  fn: import { getUserAdminDetail } from "@src/server/operations/userAdminOperations",
+  entities: [User, Membership, AuditLog, DailyAiUsage]
+}
+
+query getContactMessages {
+  fn: import { getContactMessages } from "@src/server/operations/supportOperations",
+  entities: [ContactFormMessage]
+}
+
+action submitContactMessage {
+  fn: import { submitContactMessage } from "@src/server/operations/supportOperations",
+  entities: [ContactFormMessage]
+}
+
+action markContactMessageRead {
+  fn: import { markContactMessageRead } from "@src/server/operations/supportOperations",
+  entities: [ContactFormMessage]
+}
+
+query getAuditLogs {
+  fn: import { getAuditLogs } from "@src/server/operations/auditOperations",
+  entities: [AuditLog]
+}
+
+query getSystemHealth {
+  fn: import { getSystemHealth } from "@src/server/operations/systemOperations",
+  entities: [Logs, DailyAiUsage, User, DailyStats]
 }
 //#endregion
 

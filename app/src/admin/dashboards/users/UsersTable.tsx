@@ -8,6 +8,7 @@ import { Label } from '../../../client/components/ui/label';
 import { Switch } from '../../../client/components/ui/switch';
 import useDebounce from '../../../client/hooks/useDebounce';
 import LoadingSpinner from '../../layout/LoadingSpinner';
+import { useNavigate } from 'react-router';
 
 function AdminSwitch({ id, isAdmin }: Pick<User, 'id' | 'isAdmin'>) {
   const { data: currentUser } = useAuth();
@@ -27,6 +28,7 @@ const UsersTable = () => {
   const [isAdminFilter, setIsAdminFilter] = useState<boolean | undefined>(undefined);
   const debouncedEmailFilter = useDebounce(emailFilter, 300);
   const skipPages = currentPage - 1;
+  const navigate = useNavigate();
 
   const { data, isLoading } = useQuery(getPaginatedUsers, {
     skipPages,
@@ -105,7 +107,7 @@ const UsersTable = () => {
               {user.createdAt ? new Date(user.createdAt).toLocaleDateString('pt-BR') : '—'}
             </div>
             <div className="col-span-1 flex items-center justify-end">
-              <Button variant="ghost" size="sm" className="text-xs" disabled>Detalhes</Button>
+              <Button variant="ghost" size="sm" className="text-xs" onClick={() => navigate(`/admin/users/${user.id}`)}>Detalhes</Button>
             </div>
           </div>
         ))}
