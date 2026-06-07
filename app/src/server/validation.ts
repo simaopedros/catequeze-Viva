@@ -154,7 +154,7 @@ export const createSacramentalJourneySchema = z.object({
 
 export const updateMilestoneStatusSchema = z.object({
   milestoneId: uuidSchema,
-  status: z.enum(['PENDING', 'IN_PROGRESS', 'WAITING_APPROVAL', 'COMPLETED', 'REJECTED']).optional(),
+  status: z.enum(['PENDING', 'IN_PROGRESS', 'WAITING_APPROVAL', 'APPROVED', 'COMPLETED', 'REJECTED']).optional(),
   notes: z.string().max(1000).optional(),
   evidenceUrl: z.string().max(500).optional(),
   completedAt: z.string().datetime().nullable().optional(),

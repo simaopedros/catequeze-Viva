@@ -133,7 +133,7 @@ const TYPE_LABELS: Record<string, string> = {
 };
 
 export const publicUploadMiddleware: MiddlewareConfigFn = (mc) => {
-  mc.set('express.json', express.json({ limit: '10mb' }));
+  mc.set('express.json', express.json({ limit: '50mb' }));
   // Rate limiting: max 30 uploads per hour per IP
   mc.set('rateLimiter', uploadRateLimiter as any);
   return mc;

@@ -59,9 +59,10 @@ export default function SacramentsPage() {
         j.milestones?.some((m: any) => {
           if (m.status === 'COMPLETED' || m.status === 'APPROVED') return false;
           const daysBefore = m.templateMilestone?.daysBeforeSacrament;
-          if (!daysBefore) return false;
-          // Simple heuristic: if it's pending and should have been done
-          return true; // Simplified - in reality would compare with sacrament date
+          if (!daysBefore || !j.targetDate) return false;
+          const targetDate = new Date(j.targetDate);
+          const deadline = new Date(targetDate.getTime() - daysBefore * 24 * 60 * 60 * 1000);
+          return deadline < now;
         })
       );
     } else if (activeFilter === 'waiting_doc') {
@@ -363,12 +364,29 @@ export default function SacramentsPage() {
                             <FileText className="h-2.5 w-2.5 text-muted-foreground flex-shrink-0" />
                           )}
                         </div>
-                        {canManage && m.status !== 'COMPLETED' && m.status !== 'APPROVED' && (
+                        {(isCoordinator && m.status !== 'COMPLETED' && m.status !== 'APPROVED' && m.status !== 'WAITING_APPROVAL') && (
                           <Button size="sm" variant="ghost" className="h-5 text-[10px] text-green-600 px-1 flex-shrink-0" onClick={() => handleUpdate(m.id)}>
                             ✓
                           </Button>
                         )}
-                        {canManage && (m.status === 'COMPLETED' || m.status === 'APPROVED') && (
+                        {(isCatechist && m.status !== 'COMPLETED' && m.status !== 'APPROVED' && m.status !== 'WAITING_APPROVAL') && (
+                          <Button size="sm" variant="ghost" className="h-5 text-[10px] text-green-600 px-1 flex-shrink-0" onClick={() => handleUpdate(m.id)}>
+                            ✓
+                          </Button>
+                        )}
+                        {isCoordinator && m.status === 'WAITING_APPROVAL' && (
+                          <>
+                            <Button size="sm" variant="ghost" className="h-5 text-[10px] text-green-600 px-1 flex-shrink-0" onClick={() => handleUpdate(m.id)}>
+                              ✓
+                            </Button>
+                          </>
+                        )}
+                        {(isCoordinator && (m.status === 'COMPLETED' || m.status === 'APPROVED')) && (
+                          <Button size="sm" variant="ghost" className="h-5 text-[10px] text-muted-foreground hover:text-destructive px-1 flex-shrink-0" onClick={() => handleUndo(m.id)}>
+                            <Undo2 className="h-3 w-3" />
+                          </Button>
+                        )}
+                        {(isCatechist && m.status === 'COMPLETED') && (
                           <Button size="sm" variant="ghost" className="h-5 text-[10px] text-muted-foreground hover:text-destructive px-1 flex-shrink-0" onClick={() => handleUndo(m.id)}>
                             <Undo2 className="h-3 w-3" />
                           </Button>

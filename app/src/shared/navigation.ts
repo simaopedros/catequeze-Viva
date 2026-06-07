@@ -53,6 +53,7 @@ export const NAV_SECTIONS: NavSectionConfig[] = [
     items: [
       { to: '/app/messages', labelKey: 'messages', iconKey: 'messages', roles: [...CATECHIST_ROLES, 'GUARDIAN', 'CATECHUMEN'] },
       { to: '/app/sacramental-journeys', labelKey: 'sacraments', iconKey: 'sacraments', roles: [...STAFF_ROLES, 'LEAD_CATECHIST', 'GUARDIAN', 'CATECHUMEN', 'PASTORAL_VIEWER'] },
+      { to: '/app/journey-templates', labelKey: 'journey_templates', iconKey: 'journey_templates', roles: [...STAFF_ROLES, 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST'] },
       { to: '/app/documents', labelKey: 'documents', iconKey: 'documents', roles: [...CATECHIST_ROLES, 'GUARDIAN'] },
       { to: '/app/reports', labelKey: 'reports', iconKey: 'reports', roles: [...STAFF_ROLES, 'PASTORAL_VIEWER'] },
     ],

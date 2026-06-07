@@ -1,9 +1,24 @@
 import * as fs from 'fs';
-import type { Request, Response } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import type { MiddlewareConfigFn } from 'wasp/server';
 import { documentAccessRateLimiter } from '../middleware/rateLimiter';
 import { logger } from '../logger';
 import { resolveUploadFilePath } from '../uploads/helpers';
+import { makeAuthUserIfPossible } from 'wasp/auth/user';
+
+/**
+ * Populates req.user from the session WITHOUT rejecting unauthenticated requests.
+ * This lets serveDocument support both session-based auth and token-based auth.
+ */
+async function optionalAuth(req: Request, _res: Response, next: NextFunction) {
+  try {
+    const user = await makeAuthUserIfPossible((req as any).user || null);
+    (req as any).user = user;
+  } catch {
+    (req as any).user = null;
+  }
+  next();
+}
 
 /**
  * Serves a document file from the local uploads directory.
@@ -50,6 +65,7 @@ export async function serveDocument(req: Request, res: Response, context: any) {
     if (user) {
       if (user.isAdmin) {
         authorized = true;
+        logger.info(`[doc-access] admin user=${user.id} docId=${docId}`);
       } else {
         const memberships = await entities.Membership.findMany({
           where: { userId: user.id, status: 'ACTIVE' },
@@ -58,18 +74,32 @@ export async function serveDocument(req: Request, res: Response, context: any) {
         const roles = memberships.map((m: any) => m.role);
         const parishIds = memberships.map((m: any) => m.parishId);
 
+        // Include personal workspace
+        const personalWorkspace = await entities.Parish.findFirst({
+          where: { ownerId: user.id, type: 'PERSONAL' },
+          select: { id: true },
+        });
+        if (personalWorkspace) {
+          if (!parishIds.includes(personalWorkspace.id)) parishIds.push(personalWorkspace.id);
+          if (!roles.includes('PERSONAL_OWNER')) roles.push('PERSONAL_OWNER');
+        }
+
+        logger.info(`[doc-access] user=${user.id} docId=${docId} roles=${JSON.stringify(roles)} parishIds=${JSON.stringify(parishIds)} personalWs=${personalWorkspace?.id || 'none'} docCatechumenId=${doc.catechumenProfileId} docUploadedById=${doc.uploadedById}`);
+
         // Coordinator and above: same parish
         if (roles.some((r: string) => ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(r))) {
           if (doc.catechumenProfileId) {
             const catechumen = await entities.CatechumenProfile.findUnique({
               where: { id: doc.catechumenProfileId },
               select: {
+                parishId: true,
                 household: { select: { parishId: true } },
                 enrollments: { select: { class: { select: { parishId: true } } } },
               },
             });
             if (catechumen) {
               const catechumenParishIds = [
+                catechumen.parishId,
                 catechumen.household?.parishId,
                 ...(catechumen.enrollments || []).map((e: any) => e.class?.parishId),
               ].filter(Boolean);
@@ -85,6 +115,16 @@ export async function serveDocument(req: Request, res: Response, context: any) {
             });
             if (uploaderMembership && parishIds.includes(uploaderMembership.parishId)) {
               authorized = true;
+            }
+            // Also check if uploader owns a personal workspace in the user's parish scope
+            if (!authorized) {
+              const uploaderPersonal = await entities.Parish.findFirst({
+                where: { ownerId: doc.uploadedById, type: 'PERSONAL' },
+                select: { id: true },
+              });
+              if (uploaderPersonal && parishIds.includes(uploaderPersonal.id)) {
+                authorized = true;
+              }
             }
           }
         }
@@ -152,10 +192,12 @@ export async function serveDocument(req: Request, res: Response, context: any) {
     }
 
     if (!authorized) {
+      logger.warn(`[doc-access] DENIED user=${user?.id} docId=${docId} token=${uploadToken ? 'present' : 'none'}`);
       return res.status(403).json({ error: 'Acesso negado.' });
     }
 
     const filePath = resolveUploadFilePath(doc.s3Key);
+    logger.info(`[doc-access] docId=${docId} s3Key="${doc.s3Key}" resolvedPath="${filePath}" exists=${filePath ? fs.existsSync(filePath) : 'N/A'}`);
     if (!filePath) {
       return res.status(400).json({ error: 'Referência de arquivo inválida.' });
     }
@@ -177,5 +219,7 @@ export async function serveDocument(req: Request, res: Response, context: any) {
 export const serveDocumentMiddleware: MiddlewareConfigFn = (middlewareConfig) => {
   // Rate limiting: max 60 requests per minute per IP
   middlewareConfig.set('rateLimiter', documentAccessRateLimiter as any);
+  // Add optional auth — populates req.user without rejecting unauthenticated requests
+  middlewareConfig.set('optionalAuth', optionalAuth as any);
   return middlewareConfig;
 };

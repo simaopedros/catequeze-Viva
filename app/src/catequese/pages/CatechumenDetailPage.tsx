@@ -48,6 +48,29 @@ export default function CatechumenDetailPage() {
     OTHER: 'Documento',
   };
 
+  const handleDownloadDocument = async (docId: string, docName: string) => {
+    try {
+      const raw = localStorage.getItem('wasp:sessionId');
+      const token = raw ? JSON.parse(raw) : '';
+      const res = await fetch(`/api/documents/${docId}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'Erro ao baixar' }));
+        throw new Error(err.error || `HTTP ${res.status}`);
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = docName;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e: any) {
+      toast({ title: 'Erro ao baixar documento', description: e.message, variant: 'destructive' });
+    }
+  };
+
   const handleDocUpload = async () => {
     if (!docFile) return;
     setUploading(true);
@@ -289,9 +312,9 @@ export default function CatechumenDetailPage() {
             <div className="space-y-1">
               {profile.documents.map((d:any)=>(
                 <div key={d.id} className="flex items-center justify-between text-sm py-1">
-                  <a href={`/api/documents/${d.id}`} target="_blank" rel="noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                  <button onClick={() => handleDownloadDocument(d.id, d.name)} className="text-primary hover:underline flex items-center gap-1 text-left">
                     <Download className="h-3 w-3" />{d.name}
-                  </a>
+                  </button>
                   <Badge variant={d.verifiedAt?'default':'secondary'} className="text-[10px]">{d.verifiedAt?'✓ Verificado':'Pendente'}</Badge>
                 </div>
               ))}

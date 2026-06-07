@@ -22,7 +22,6 @@ export const ensureSacramentalJourneyForCatechumen = async (
     templates = await context.entities.SacramentalJourneyTemplate.findMany({
       where: {
         sacramentId,
-        archivedAt: null,
         OR: [{ parishId }, { parishId: null }],
       },
       include: { _count: { select: { milestones: true } } },
@@ -36,7 +35,7 @@ export const ensureSacramentalJourneyForCatechumen = async (
     conditions.push({ parishId: null });
 
     templates = await context.entities.SacramentalJourneyTemplate.findMany({
-      where: { sacramentId, archivedAt: null, OR: conditions },
+      where: { sacramentId, OR: conditions },
       include: { _count: { select: { milestones: true } } },
     });
 

@@ -283,11 +283,25 @@ export default function SacramentalJourneyDetailPage() {
                           {config.label}
                         </Badge>
 
-                        {canManage && m.status !== 'COMPLETED' && m.status !== 'APPROVED' && (
+                        {/* Catechist: only show actions when not in approval chain */}
+                        {isCatechist && m.status !== 'COMPLETED' && m.status !== 'APPROVED' && m.status !== 'WAITING_APPROVAL' && (
+                          <>
+                            <Button size="sm" variant="ghost" className="h-7 text-[10px] text-green-600" onClick={() => handleUpdateStatus(m.id, 'COMPLETED')}>
+                              ✓ Concluir
+                            </Button>
+                            <Button size="sm" variant="ghost" className="h-7 text-[10px] text-amber-600" onClick={() => handleUpdateStatus(m.id, 'WAITING_APPROVAL')}>
+                              Enviar para aprovação
+                            </Button>
+                          </>
+                        )}
+
+                        {/* Coordinator: full control on PENDING/IN_PROGRESS */}
+                        {isCoordinator && m.status !== 'COMPLETED' && m.status !== 'APPROVED' && (
                           <Button size="sm" variant="ghost" className="h-7 text-[10px] text-green-600" onClick={() => handleUpdateStatus(m.id, 'COMPLETED')}>
                             ✓ Concluir
                           </Button>
                         )}
+
                         {isCoordinator && m.status === 'WAITING_APPROVAL' && (
                           <>
                             <Button size="sm" variant="ghost" className="h-7 text-[10px] text-green-600" onClick={() => handleUpdateStatus(m.id, 'APPROVED')}>
@@ -298,7 +312,9 @@ export default function SacramentalJourneyDetailPage() {
                             </Button>
                           </>
                         )}
-                        {canManage && (m.status === 'COMPLETED' || m.status === 'APPROVED') && (
+
+                        {/* Undo — only coordinator can undo APPROVED; catechist can undo their own COMPLETED */}
+                        {(isCoordinator || isCatechist) && (m.status === 'COMPLETED' || (isCoordinator && m.status === 'APPROVED')) && (
                           <Button size="sm" variant="ghost" className="h-7 text-[10px]" onClick={() => handleUpdateStatus(m.id, 'PENDING')}>
                             Desfazer
                           </Button>

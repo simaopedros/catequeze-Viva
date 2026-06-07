@@ -358,6 +358,12 @@ page AppSacramentalJourneyDetailPage {
   component: import SacramentalJourneyDetailPage from "@src/catequese/pages/SacramentalJourneyDetailPage"
 }
 
+route AppJourneyTemplatesRoute { path: "/app/journey-templates", to: AppJourneyTemplatesPage }
+page AppJourneyTemplatesPage {
+  authRequired: true,
+  component: import JourneyTemplatesPage from "@src/catequese/pages/JourneyTemplatesPage"
+}
+
 route AppMessagesRoute { path: "/app/messages", to: AppMessagesPage }
 page AppMessagesPage {
   authRequired: true,
@@ -789,6 +795,16 @@ action deleteMilestoneTemplate {
   fn: import { deleteMilestoneTemplate } from "@src/server/operations/sacramentOperations",
   entities: [SacramentalMilestoneTemplate, SacramentalMilestone, Membership, Parish]
 }
+
+action copyTemplate {
+  fn: import { copyTemplate } from "@src/server/operations/sacramentOperations",
+  entities: [SacramentalJourneyTemplate, SacramentalMilestoneTemplate, Membership, Parish]
+}
+
+action publishTemplate {
+  fn: import { publishTemplate } from "@src/server/operations/sacramentOperations",
+  entities: [SacramentalJourneyTemplate, SacramentalMilestoneTemplate, Membership, Parish]
+}
 //#endregion
 
 
@@ -854,7 +870,7 @@ api serveDocument {
   fn: import { serveDocument } from "@src/server/api/documents",
   middlewareConfigFn: import { serveDocumentMiddleware } from "@src/server/api/documents",
   httpRoute: (GET, "/api/documents/:id"),
-  entities: [Document, CatechumenProfile, Membership]
+  entities: [Document, CatechumenProfile, Membership, Parish, ClassCatechist, ClassEnrollment, GuardianProfile]
 }
 
 api publicUploadDocument {

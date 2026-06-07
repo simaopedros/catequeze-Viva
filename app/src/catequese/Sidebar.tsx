@@ -7,7 +7,7 @@ import {
   Calendar, Cross, MessageSquareText, BarChart3, Settings, CreditCard,
   ChevronLeft, ChevronRight, ChevronDown, Church, Building2, FileText,
   BookMarked, ScrollText, FolderOpen, FileCheck, CalendarRange, Shield,
-  Sparkles,
+  Sparkles, ClipboardList,
 } from 'lucide-react';
 import { useUserContext } from '../client/hooks/useUserContext';
 import { NAV_SECTIONS, filterByRole, type NavItemConfig } from '../shared/navigation';
@@ -32,6 +32,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   catechism: ScrollText,
   messages: MessageSquareText,
   sacraments: Cross,
+  journey_templates: ClipboardList,
   documents: FileText,
   reports: BarChart3,
   settings: Settings,

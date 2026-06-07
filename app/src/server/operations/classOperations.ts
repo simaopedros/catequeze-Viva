@@ -5,6 +5,7 @@ import { ClassStatus, CatechistAssignmentRole, EnrollmentStatus, MembershipStatu
 import { assertCanCreateClass, assertCanEnrollCatechumen } from './billingEnforcement';
 import { ensurePersonalWorkspace } from './workspaceOperations';
 import { ensureSacramentalJourneyForCatechumen } from '../sacramentHelpers';
+import { logger } from '../logger';
 
 // isCoordinatorOrAbove now delegates to the auth helper which includes PERSONAL_OWNER
 function isCoordinatorOrAbove(role: string | null): boolean {
@@ -585,8 +586,13 @@ export const enrollCatechumen = async (args: { classId: string; catechumenProfil
         classData.parishId,
         context
       );
-    } catch (_e: any) {
-      // Journey creation is best-effort; enrollment succeeded regardless
+    } catch (e: any) {
+      logger.warn('Failed to auto-create sacramental journey on enrollment', {
+        catechumenProfileId: args.catechumenProfileId,
+        sacramentId: classData.sacramentId,
+        parishId: classData.parishId,
+        error: e instanceof Error ? e.message : String(e),
+      });
     }
   }
 

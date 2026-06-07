@@ -135,21 +135,31 @@ export const uploadDocument = async (
   validateOrThrow(uploadDocumentSchema, args);
   requireAuth(context.user);
 
-  // Only catechists+ or guardians (for their household catechumens) can upload
+  // Only catechists+, PERSONAL_OWNER, or guardians (for their household catechumens) can upload
   if (!context.user.isAdmin) {
     const membership = await context.entities.Membership.findFirst({
       where: { userId: context.user.id, status: 'ACTIVE' },
       select: { role: true, parishId: true },
     });
-    if (!membership) {
+
+    // Check personal workspace as fallback
+    const personalWorkspace = !membership
+      ? await context.entities.Parish.findFirst({
+          where: { ownerId: context.user.id, type: 'PERSONAL' },
+          select: { id: true },
+        })
+      : null;
+
+    if (!membership && !personalWorkspace) {
       throw new HttpError(403, 'Sem permissão para enviar documentos.');
     }
 
-    const catechistRoles = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST'];
+    const catechistRoles = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST'];
+    const effectiveRole = membership?.role || (personalWorkspace ? 'PERSONAL_OWNER' : null);
 
-    if (catechistRoles.includes(membership.role)) {
+    if (effectiveRole && catechistRoles.includes(effectiveRole)) {
       // Allowed
-    } else if (membership.role === 'GUARDIAN') {
+    } else if (effectiveRole === 'GUARDIAN') {
       // Guardian: only for catechumens in their household
       if (!args.catechumenProfileId) {
         throw new HttpError(403, 'Responsáveis devem selecionar um catequizando da sua família.');
