@@ -1,0 +1,23 @@
+{
+  "openMenu": "Open menu",
+  "searchPlaceholder": "Search catechumens, classes, content, Bible...",
+  "noResults": "No results",
+  "searchNavigate": "navigate",
+  "searchOpen": "open",
+  "searchFocusHint": "Ctrl+K to focus",
+  "notifications": "Notifications",
+  "markAllRead": "Mark all as read",
+  "noNotifications": "No notifications",
+  "personalSpace": "Personal space",
+  "workspaceGroups": {
+    "personal": "Personal",
+    "parish": "Parishes",
+    "diocese": "Dioceses",
+    "community": "Communities"
+  },
+  "viewAll": "View all ({{count}})",
+  "viewAllWorkspaces": "View all workspaces",
+  "profiles": "Profiles ({{count}})",
+  "noParish": "No parish",
+  "requiresPaidPlan": "Requires paid plan"
+}

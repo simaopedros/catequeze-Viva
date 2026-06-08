@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { Cross, Menu, X } from 'lucide-react';
 import { Button } from '../client/components/ui/button';
 
 export function PublicNavbar() {
+  const { t: tCommon } = useTranslation('common');
+  const { t } = useTranslation('publicNav');
   const [open, setOpen] = useState(false);
 
   return (
@@ -11,45 +14,42 @@ export function PublicNavbar() {
       <div className="max-w-6xl mx-auto flex h-14 items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2 font-semibold text-primary">
           <Cross className="h-5 w-5" />
-          <span>Catequese Viva</span>
+          <span>{tCommon('app_name')}</span>
         </Link>
 
-        {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
-          <a href="/#recursos" className="hover:text-foreground transition-colors">Recursos</a>
-          <Link to="/about" className="hover:text-foreground transition-colors">Sobre</Link>
-          <Link to="/pricing" className="hover:text-foreground transition-colors">Planos</Link>
-          <Link to="/contact" className="hover:text-foreground transition-colors">Contato</Link>
+          <a href="/#recursos" className="hover:text-foreground transition-colors">{t('resources')}</a>
+          <Link to="/about" className="hover:text-foreground transition-colors">{t('about')}</Link>
+          <Link to="/pricing" className="hover:text-foreground transition-colors">{t('pricing')}</Link>
+          <Link to="/contact" className="hover:text-foreground transition-colors">{t('contact')}</Link>
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
           <Button variant="outline" size="sm" asChild>
-            <Link to="/login">Entrar</Link>
+            <Link to="/login">{t('login')}</Link>
           </Button>
           <Button size="sm" asChild>
-            <Link to="/signup">Criar conta</Link>
+            <Link to="/signup">{t('signup')}</Link>
           </Button>
         </div>
 
-        {/* Mobile menu button */}
-        <button className="md:hidden p-2" onClick={() => setOpen(!open)} aria-label={open ? 'Fechar menu' : 'Abrir menu'} aria-expanded={open}>
+        <button className="md:hidden p-2" onClick={() => setOpen(!open)} aria-label={open ? t('closeMenu') : t('openMenu')} aria-expanded={open}>
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
 
-      {/* Mobile nav */}
       {open && (
         <div className="md:hidden border-t bg-background px-4 py-3 space-y-2">
-          <a href="/#recursos" className="block py-2 text-sm text-muted-foreground" onClick={() => setOpen(false)}>Recursos</a>
-          <Link to="/about" className="block py-2 text-sm text-muted-foreground" onClick={() => setOpen(false)}>Sobre</Link>
-          <Link to="/pricing" className="block py-2 text-sm text-muted-foreground" onClick={() => setOpen(false)}>Planos</Link>
-          <Link to="/contact" className="block py-2 text-sm text-muted-foreground" onClick={() => setOpen(false)}>Contato</Link>
+          <a href="/#recursos" className="block py-2 text-sm text-muted-foreground" onClick={() => setOpen(false)}>{t('resources')}</a>
+          <Link to="/about" className="block py-2 text-sm text-muted-foreground" onClick={() => setOpen(false)}>{t('about')}</Link>
+          <Link to="/pricing" className="block py-2 text-sm text-muted-foreground" onClick={() => setOpen(false)}>{t('pricing')}</Link>
+          <Link to="/contact" className="block py-2 text-sm text-muted-foreground" onClick={() => setOpen(false)}>{t('contact')}</Link>
           <div className="flex gap-2 pt-2">
             <Button variant="outline" size="sm" asChild className="flex-1">
-              <Link to="/login" onClick={() => setOpen(false)}>Entrar</Link>
+              <Link to="/login" onClick={() => setOpen(false)}>{t('login')}</Link>
             </Button>
             <Button size="sm" asChild className="flex-1">
-              <Link to="/signup" onClick={() => setOpen(false)}>Criar conta</Link>
+              <Link to="/signup" onClick={() => setOpen(false)}>{t('signup')}</Link>
             </Button>
           </div>
         </div>

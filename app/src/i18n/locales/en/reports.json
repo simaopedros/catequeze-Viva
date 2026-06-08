@@ -9,5 +9,47 @@
   "messages_sent": "Messages sent",
   "pending_consents": "Pending consents",
   "export_csv": "Export CSV",
-  "export_pdf": "Export PDF"
+  "export_pdf": "Export PDF",
+  "tabs": {
+    "attendance": "Attendance",
+    "ranking": "Ranking",
+    "chart": "Chart"
+  },
+  "periods": {
+    "all": "All period",
+    "month": "Last month",
+    "quarter": "Last quarter"
+  },
+  "kpis": {
+    "total_enrolled": "Total enrolled",
+    "total_meetings": "Total meetings",
+    "avg_attendance": "Average attendance"
+  },
+  "dropout_title": "Dropout risk",
+  "dropout_desc": "Classes with attendance below 50% in recent meetings:",
+  "attendance_by_class": "Attendance by class",
+  "no_classes": "No classes",
+  "no_classes_desc": "Register classes to see attendance reports.",
+  "enrolled_meetings": "{{enrolled}} enrolled · {{meetings}} meetings",
+  "present_absent": "{{present}}P / {{absent}}A",
+  "ranking_title": "Attendance Ranking",
+  "no_data": "No data",
+  "no_frequency_data": "No frequency data to display.",
+  "chart_attendance": "Attendance by Class (%)",
+  "chart_distribution": "Overall Attendance Distribution",
+  "no_chart_data": "No data",
+  "no_distribution_data": "Record attendance to see the distribution.",
+  "present": "Present",
+  "absent": "Absent",
+  "attendance_label": "Attendance",
+  "records": "records",
+  "pdf_soon": "PDF export coming soon",
+  "csv_headers": {
+    "class": "Class",
+    "enrolled": "Enrolled",
+    "meetings": "Meetings",
+    "present": "Present",
+    "absent": "Absent",
+    "rate": "Attendance %"
+  }
 }

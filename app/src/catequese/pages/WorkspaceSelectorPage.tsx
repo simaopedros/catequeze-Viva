@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { useQuery, useAction } from 'wasp/client/operations';
 import { listWorkspaces, getInstitutionalManageContext, acceptInvitation } from 'wasp/client/operations';
@@ -28,36 +29,15 @@ interface ManageDiocese {
   licensed: boolean;
 }
 
-const PLAN_NAMES: Record<string, string> = {
-  catechist_free: 'Catequista Grátis',
-  catechist_pro: 'Catequista Pro',
-  catechist_ai: 'Catequista IA',
-  parish: 'Paróquia',
-  diocese: 'Diocese',
-  community: 'Comunidade',
-};
-
-const ROLE_LABELS: Record<string, string> = {
-  SUPER_ADMIN: 'Administrador',
-  DIOCESE_ADMIN: 'Administrador diocesano',
-  PARISH_COORDINATOR: 'Coordenador',
-  COMMUNITY_COORDINATOR: 'Coordenador de comunidade',
-  LEAD_CATECHIST: 'Catequista responsável',
-  ASSISTANT_CATECHIST: 'Catequista auxiliar',
-  PASTORAL_VIEWER: 'Visitante pastoral',
-  CONTENT_REVIEWER: 'Revisor de conteúdo',
-  GUARDIAN: 'Responsável',
-  CATECHUMEN: 'Catequizando',
-};
-
-function planLabel(plan?: string) {
+function planLabel(plan: string | undefined, t: any) {
   if (!plan) return '';
-  return PLAN_NAMES[plan.toLowerCase()] || plan;
+  const key = plan.toLowerCase();
+  return t(`workspace.plans.${key}`, { defaultValue: plan });
 }
 
-function roleLabel(role?: string) {
+function roleLabel(role: string | undefined, t: any) {
   if (!role) return '';
-  return ROLE_LABELS[role] || role;
+  return t(`workspace.roles.${role}`, { defaultValue: role });
 }
 
 function workspaceIcon(type: Workspace['type']) {
@@ -67,6 +47,7 @@ function workspaceIcon(type: Workspace['type']) {
 }
 
 export default function WorkspaceSelectorPage() {
+  const { t } = useTranslation('public');
   const { data: workspaces = [], refetch } = useQuery(listWorkspaces);
   const { data: manageContext } = useQuery(getInstitutionalManageContext);
   const acceptAction = useAction(acceptInvitation);
@@ -163,9 +144,9 @@ export default function WorkspaceSelectorPage() {
                 ws.type === 'DIOCESE' ? 'bg-secondary/10 text-secondary' : ws.type === 'COMMUNITY' ? 'bg-success/10 text-success' : 'bg-accent/10 text-accent'
               }`}
             >
-              {planLabel(ws.plan)}
+              {planLabel(ws.plan, t)}
             </span>
-            {opts?.showRole && <span className="text-xs text-muted-foreground">{roleLabel(ws.role)}</span>}
+            {opts?.showRole && <span className="text-xs text-muted-foreground">{roleLabel(ws.role, t)}</span>}
             {opts?.covered && (
               <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
                 <ShieldCheck className="h-3 w-3" />
@@ -177,8 +158,8 @@ export default function WorkspaceSelectorPage() {
         {opts?.canManage && (
           <button
             onClick={(e) => { e.stopPropagation(); handleManage(ws); }}
-            title="Configurações deste espaço"
-            aria-label="Configurações deste espaço"
+            title={t('workspace.settings_workspace')}
+            aria-label={t('workspace.settings_workspace')}
             className="rounded-lg p-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors mt-1"
           >
             <Settings className="h-5 w-5" />
@@ -191,8 +172,8 @@ export default function WorkspaceSelectorPage() {
 
   const coverageLabel = (ws: Workspace): string | undefined => {
     if (!ws.planInherited) return undefined;
-    if (ws.dioceseName) return `Coberta pela licença da ${ws.dioceseName}`;
-    if (ws.plan === 'parish' || ws.plan === 'diocese') return 'Coberta pela sua licença';
+    if (ws.dioceseName) return t('workspace.covered_by_diocese', { name: ws.dioceseName });
+    if (ws.plan === 'parish' || ws.plan === 'diocese') return t('workspace.covered_by_license');
     return undefined;
   };
 
@@ -203,16 +184,16 @@ export default function WorkspaceSelectorPage() {
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-primary text-sm font-medium">
             <Sparkles className="h-4 w-4" />
-            Catequese Viva
+            {t('workspace.app_name')}
           </div>
-          <h1 className="text-2xl font-bold">Selecionar Espaço</h1>
-          <p className="text-muted-foreground text-sm">Escolha o workspace onde deseja trabalhar</p>
+          <h1 className="text-2xl font-bold">{t('workspace.title')}</h1>
+          <p className="text-muted-foreground text-sm">{t('workspace.subtitle')}</p>
         </div>
 
         {/* Personal Workspace */}
         <div>
           <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider px-1 mb-2">
-            Meu Espaço Pessoal
+            {t('workspace.personal_section')}
           </h3>
           {personal ? (
             <div
@@ -231,15 +212,15 @@ export default function WorkspaceSelectorPage() {
                   <p className="text-sm text-muted-foreground">{personal.subtitle}</p>
                   <div className="flex items-center gap-2 mt-2">
                     <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
-                      {planLabel(personal.plan)}
+                      {planLabel(personal.plan, t)}
                     </span>
-                    <span className="text-xs text-muted-foreground">· Plano pessoal</span>
+                    <span className="text-xs text-muted-foreground">{t('workspace.personal_plan_hint')}</span>
                   </div>
                 </div>
                 <button
                   onClick={(e) => { e.stopPropagation(); handleManage(personal); }}
-                  title="Configurações da conta"
-                  aria-label="Configurações da conta"
+                  title={t('workspace.settings_account')}
+                  aria-label={t('workspace.settings_account')}
                   className="rounded-lg p-2 text-primary/70 hover:text-primary hover:bg-primary/10 transition-colors mt-1"
                 >
                   <Settings className="h-5 w-5" />
@@ -249,7 +230,7 @@ export default function WorkspaceSelectorPage() {
             </div>
           ) : (
             <div className="rounded-2xl border-2 border-dashed border-muted-foreground/30 p-6 text-center text-muted-foreground">
-              <p className="text-sm">Espaço pessoal será criado ao completar o onboarding.</p>
+              <p className="text-sm">{t('workspace.personal_pending')}</p>
             </div>
           )}
         </div>
@@ -259,7 +240,7 @@ export default function WorkspaceSelectorPage() {
           <div className="space-y-3">
             <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider px-1 flex items-center gap-1.5">
               <Mail className="h-3.5 w-3.5" />
-              Convites Pendentes
+              {t('workspace.pending_invites')}
             </h3>
             {pendingInvitations.map((ws: Workspace) => (
               <div key={ws.id} className="rounded-2xl border-2 border-warning/30 bg-warning/5 p-5 flex items-center gap-4">
@@ -268,7 +249,7 @@ export default function WorkspaceSelectorPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <h2 className="font-bold text-lg">{ws.name}</h2>
-                  <p className="text-sm text-muted-foreground">Você foi convidado(a) como {roleLabel(ws.role)}</p>
+                  <p className="text-sm text-muted-foreground">{t('workspace.invited_as', { role: roleLabel(ws.role, t) })}</p>
                 </div>
                 <Button
                   size="sm"
@@ -277,7 +258,7 @@ export default function WorkspaceSelectorPage() {
                   className="gap-1.5"
                 >
                   <Check className="h-4 w-4" />
-                  {accepting === ws.membershipId ? 'Aceitando...' : 'Aceitar'}
+                  {accepting === ws.membershipId ? t('workspace.accepting') : t('workspace.accept')}
                 </Button>
               </div>
             ))}
@@ -289,7 +270,7 @@ export default function WorkspaceSelectorPage() {
           <div className="space-y-4">
             <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider px-1 flex items-center gap-1.5">
               <ShieldCheck className="h-3.5 w-3.5" />
-              Que administro
+              {t('workspace.managed_section')}
             </h3>
 
             {/* Diocese groups */}
@@ -307,7 +288,7 @@ export default function WorkspaceSelectorPage() {
                         licensed ? 'bg-secondary/15 text-secondary' : 'bg-muted text-muted-foreground'
                       }`}
                     >
-                      {licensed ? 'Licença Diocese ativa' : 'Sem licença Diocese'}
+                      {licensed ? t('workspace.diocese_license_active') : t('workspace.diocese_license_inactive')}
                     </span>
                   </div>
                   {group.items.map((ws) => renderWorkspaceCard(ws, { covered: coverageLabel(ws), canManage: true }))}
@@ -316,7 +297,7 @@ export default function WorkspaceSelectorPage() {
                     className="w-full rounded-xl border-2 border-dashed border-secondary/40 hover:bg-secondary/10 transition-all p-3 text-center text-secondary flex items-center justify-center gap-2"
                   >
                     <Plus className="h-4 w-4" />
-                    <span className="text-sm font-medium">Criar paróquia nesta diocese</span>
+                    <span className="text-sm font-medium">{t('workspace.create_parish_in_diocese')}</span>
                   </button>
                 </div>
               );
@@ -337,7 +318,7 @@ export default function WorkspaceSelectorPage() {
                         d.licensed ? 'bg-secondary/15 text-secondary' : 'bg-muted text-muted-foreground'
                       }`}
                     >
-                      {d.licensed ? 'Licença Diocese ativa' : 'Sem licença Diocese'}
+                      {d.licensed ? t('workspace.diocese_license_active') : t('workspace.diocese_license_inactive')}
                     </span>
                   </div>
                   <button
@@ -345,7 +326,7 @@ export default function WorkspaceSelectorPage() {
                     className="w-full rounded-xl border-2 border-dashed border-secondary/40 hover:bg-secondary/10 transition-all p-3 text-center text-secondary flex items-center justify-center gap-2"
                   >
                     <Plus className="h-4 w-4" />
-                    <span className="text-sm font-medium">Criar paróquia nesta diocese</span>
+                    <span className="text-sm font-medium">{t('workspace.create_parish_in_diocese')}</span>
                   </button>
                 </div>
               ))}
@@ -363,7 +344,7 @@ export default function WorkspaceSelectorPage() {
               >
                 <Plus className="h-4 w-4" />
                 <span className="text-sm font-medium">
-                  Criar paróquia sob sua licença {planLabel(ownerPlan || 'parish')}
+                  {t('workspace.create_under_license', { plan: planLabel(ownerPlan || 'parish', t) })}
                 </span>
               </button>
             )}
@@ -375,7 +356,7 @@ export default function WorkspaceSelectorPage() {
           <div className="space-y-3">
             <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider px-1 flex items-center gap-1.5">
               <Users2 className="h-3.5 w-3.5" />
-              Onde participo
+              {t('workspace.participating_section')}
             </h3>
             {participating.map((ws: Workspace) => renderWorkspaceCard(ws, { showRole: true }))}
           </div>
@@ -385,20 +366,20 @@ export default function WorkspaceSelectorPage() {
         {!personal && pendingInvitations.length === 0 && institutional.length === 0 && manageDioceses.length === 0 && (
           <div className="rounded-2xl border-2 border-dashed border-warning/50 bg-warning/5 p-6 text-center space-y-3">
             <p className="text-sm text-muted-foreground">
-              Nenhum workspace encontrado. Complete o onboarding ou crie uma paróquia.
+              {t('workspace.empty_desc')}
             </p>
             <div className="flex gap-2 justify-center">
               <button
                 onClick={() => navigate('/app/onboarding')}
                 className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground h-9 px-4 text-sm font-medium"
               >
-                Ir para Onboarding
+                {t('workspace.go_onboarding')}
               </button>
               <button
                 onClick={() => navigate('/app/parishes?new=true')}
                 className="inline-flex items-center justify-center rounded-md border border-input bg-background h-9 px-4 text-sm font-medium"
               >
-                Criar Paróquia
+                {t('workspace.create_parish')}
               </button>
             </div>
           </div>
@@ -410,7 +391,7 @@ export default function WorkspaceSelectorPage() {
           className="w-full rounded-2xl border-2 border-dashed border-muted-foreground/30 hover:border-primary/40 hover:bg-accent/50 transition-all p-4 text-center text-muted-foreground hover:text-foreground flex items-center justify-center gap-2"
         >
           <Plus className="h-4 w-4" />
-          <span className="text-sm font-medium">Criar paróquia independente</span>
+          <span className="text-sm font-medium">{t('workspace.create_independent')}</span>
         </button>
       </div>
     </div>

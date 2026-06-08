@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { Textarea } from '../../client/components/ui/textarea';
 import { ArrowLeft, Upload, CheckCircle, AlertCircle, FileUp } from 'lucide-react';
@@ -7,6 +8,7 @@ import { AppShell } from '../AppShell';
 import { importCatechumensCSV } from 'wasp/client/operations';
 
 export default function ImportCatechumensPage() {
+  const { t } = useTranslation('common');
   const [csvData, setCsvData] = useState('');
   const [results, setResults] = useState<any>(null);
   const [importing, setImporting] = useState(false);
@@ -29,9 +31,9 @@ export default function ImportCatechumensPage() {
     if (file && (file.name.endsWith('.csv') || file.type === 'text/csv')) {
       handleFile(file);
     } else {
-      setError('Por favor, solte um arquivo CSV válido.');
+      setError(t('catechumens.import_invalid_csv'));
     }
-  }, [handleFile]);
+  }, [handleFile, t]);
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -46,7 +48,7 @@ export default function ImportCatechumensPage() {
       const result = await importCatechumensCSV({ csvData });
       setResults(result);
     } catch (e: any) {
-      setError(e.message || 'Erro na importação.');
+      setError(e.message || t('catechumens.import_error'));
     } finally {
       setImporting(false);
     }
@@ -60,16 +62,16 @@ export default function ImportCatechumensPage() {
             <Link to="/app/catechumens"><ArrowLeft className="h-5 w-5" /></Link>
           </Button>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Importar Catequizandos</h1>
-            <p className="text-muted-foreground text-sm">Importe múltiplos catequizandos via CSV.</p>
+            <h1 className="text-2xl font-bold tracking-tight">{t('catechumens.import_title')}</h1>
+            <p className="text-muted-foreground text-sm">{t('catechumens.import_subtitle')}</p>
           </div>
         </div>
 
         <div className="rounded-xl border bg-card p-6 space-y-4">
           <div>
-            <h3 className="font-semibold mb-1">Formato esperado</h3>
+            <h3 className="font-semibold mb-1">{t('catechumens.import_format_title')}</h3>
             <p className="text-sm text-muted-foreground">
-              Cole os dados no formato CSV com cabeçalho. Exemplo:
+              {t('catechumens.import_format_desc')}
             </p>
             <pre className="mt-2 rounded-lg bg-muted p-3 text-xs">
 {`nome,sobrenome,nascimento
@@ -79,8 +81,7 @@ Maria,Santos,2014-07-22`}
           </div>
 
           <div>
-            <label className="text-sm font-medium">Dados CSV</label>
-            {/* Drag & drop zone */}
+            <label className="text-sm font-medium">{t('catechumens.import_csv_label')}</label>
             <div
               onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
               onDragLeave={() => setDragOver(false)}
@@ -94,7 +95,7 @@ Maria,Santos,2014-07-22`}
             >
               <FileUp className={`h-8 w-8 mb-2 ${dragOver ? 'text-primary' : 'text-muted-foreground'}`} />
               <p className="text-sm text-muted-foreground text-center">
-                {dragOver ? 'Solte o arquivo aqui' : 'Arraste um arquivo CSV aqui ou clique para selecionar'}
+                {dragOver ? t('catechumens.import_drag_over') : t('catechumens.import_drag_hint')}
               </p>
               <input
                 ref={fileInputRef}
@@ -108,7 +109,7 @@ Maria,Santos,2014-07-22`}
               value={csvData}
               onChange={e => setCsvData(e.target.value)}
               className="flex min-h-[200px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-2 font-mono"
-              placeholder="nome,sobrenome,nascimento&#10;João,Silva,2015-03-15"
+              placeholder={t('catechumens.import_csv_placeholder')}
             />
           </div>
 
@@ -120,7 +121,7 @@ Maria,Santos,2014-07-22`}
 
           <Button onClick={handleImport} disabled={!csvData.trim() || importing}>
             <Upload className="mr-2 h-4 w-4" />
-            {importing ? 'Importando...' : 'Importar'}
+            {importing ? t('catechumens.importing') : t('import')}
           </Button>
         </div>
 
@@ -128,16 +129,16 @@ Maria,Santos,2014-07-22`}
           <div className="rounded-xl border bg-card p-6 space-y-3">
             <h3 className="font-semibold flex items-center gap-2">
               <CheckCircle className="h-5 w-5 text-green-600" />
-              Resultado da importação
+              {t('catechumens.import_result_title')}
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="rounded-lg bg-success/10 p-4 text-center">
                 <p className="text-2xl font-bold text-success">{results.created}</p>
-                <p className="text-sm text-success">criados com sucesso</p>
+                <p className="text-sm text-success">{t('catechumens.import_created')}</p>
               </div>
               <div className="rounded-lg bg-destructive/10 p-4 text-center">
                 <p className="text-2xl font-bold text-destructive">{results.errors}</p>
-                <p className="text-sm text-destructive">erros</p>
+                <p className="text-sm text-destructive">{t('catechumens.import_errors')}</p>
               </div>
             </div>
             {results.details?.length > 0 && (
@@ -148,7 +149,7 @@ Maria,Santos,2014-07-22`}
               </div>
             )}
             <Button asChild variant="outline" className="mt-2">
-              <Link to="/app/catechumens">Ver lista de catequizandos</Link>     
+              <Link to="/app/catechumens">{t('catechumens.import_view_list')}</Link>
             </Button>
           </div>
         )}

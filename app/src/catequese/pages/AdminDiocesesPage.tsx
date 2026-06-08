@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { type AuthUser } from 'wasp/auth';
 import { Button } from '../../client/components/ui/button';
 import { Input } from '../../client/components/ui/input';
@@ -9,6 +10,8 @@ import { EmptyState } from '../../client/components/EmptyState';
 import { useQuery, listDioceses, createDiocese, updateDiocese } from 'wasp/client/operations';
 
 export default function AdminDiocesesPage({ user }: { user: AuthUser }) {
+  const { t } = useTranslation('admin');
+  const { t: tc } = useTranslation('common');
   const { data: dioceses = [], isLoading: loading } = useQuery(listDioceses);
   const [error, setError] = useState('');
   const [showForm, setShowForm] = useState(false);
@@ -25,7 +28,7 @@ export default function AdminDiocesesPage({ user }: { user: AuthUser }) {
       await createDiocese({ name, country });
       setName(''); setShowForm(false);
     } catch (e: any) {
-      setError(e.message || 'Erro ao criar diocese.');
+      setError(e.message || t('create_error'));
     }
     setSaving(false);
   };
@@ -36,7 +39,7 @@ export default function AdminDiocesesPage({ user }: { user: AuthUser }) {
       await updateDiocese({ id, name: editName });
       setEditingId(null);
     } catch (e: any) {
-      setError(e.message || 'Erro ao atualizar.');
+      setError(e.message || t('update_error'));
     }
   };
 
@@ -53,12 +56,9 @@ export default function AdminDiocesesPage({ user }: { user: AuthUser }) {
   return (
     <DefaultLayout user={user}>
       <div className="space-y-6">
-        <PageHeader
-          title="Dioceses"
-          subtitle="Gestão de dioceses (Super Admin)"
-        >
+        <PageHeader title={t('title')} subtitle={t('subtitle')}>
           <Button size="sm" onClick={() => setShowForm(!showForm)}>
-            <Plus className="mr-1 h-4 w-4" />Nova diocese
+            <Plus className="mr-1 h-4 w-4" />{t('new_diocese')}
           </Button>
         </PageHeader>
 
@@ -71,37 +71,32 @@ export default function AdminDiocesesPage({ user }: { user: AuthUser }) {
             <div className="flex gap-3">
               <Input value={name} onChange={e => setName(e.target.value)}
                 className="flex-1 h-9"
-                placeholder="Nome da diocese" />
+                placeholder={t('name_placeholder')} />
               <select value={country} onChange={e => setCountry(e.target.value)}
                 className="h-9 rounded-md border border-input bg-background px-3 text-sm">
-                <option value="BR">Brasil</option>
-                <option value="PT">Portugal</option>
-                <option value="AO">Angola</option>
-                <option value="MZ">Moçambique</option>
+                {(['BR', 'PT', 'AO', 'MZ'] as const).map(c => (
+                  <option key={c} value={c}>{t(`countries.${c}`)}</option>
+                ))}
               </select>
               <Button size="sm" onClick={handleCreate} disabled={saving || !name}>
-                <Save className="mr-1 h-3 w-3" />{saving ? '...' : 'Criar'}
+                <Save className="mr-1 h-3 w-3" />{saving ? t('creating') : t('create')}
               </Button>
-              <Button size="sm" variant="outline" onClick={() => setShowForm(false)}>Cancelar</Button>
+              <Button size="sm" variant="outline" onClick={() => setShowForm(false)}>{tc('cancel')}</Button>
             </div>
           </div>
         )}
 
         <div className="rounded-xl border bg-card overflow-hidden">
           {dioceses.length === 0 ? (
-            <EmptyState
-              icon={Church}
-              title="Nenhuma diocese cadastrada"
-              description="Cadastre a primeira diocese para começar."
-            />
+            <EmptyState icon={Church} title={t('empty_title')} description={t('empty_desc')} />
           ) : (
             <table className="w-full text-sm">
               <thead className="bg-muted/50 border-b">
                 <tr>
-                  <th className="text-left px-4 py-3 font-medium">Nome</th>
-                  <th className="text-left px-4 py-3 font-medium">País</th>
-                  <th className="text-left px-4 py-3 font-medium">Paróquias</th>
-                  <th className="text-right px-4 py-3 font-medium">Ações</th>
+                  <th className="text-left px-4 py-3 font-medium">{t('columns.name')}</th>
+                  <th className="text-left px-4 py-3 font-medium">{t('columns.country')}</th>
+                  <th className="text-left px-4 py-3 font-medium">{t('columns.parishes')}</th>
+                  <th className="text-right px-4 py-3 font-medium">{t('columns.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -113,7 +108,7 @@ export default function AdminDiocesesPage({ user }: { user: AuthUser }) {
                           className="h-8 text-sm w-full" />
                       ) : d.name}
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground">{d.country}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{t(`countries.${d.country}`, { defaultValue: d.country })}</td>
                     <td className="px-4 py-3 text-muted-foreground">{d._count?.parishes || 0}</td>
                     <td className="px-4 py-3 text-right">
                       {editingId === d.id ? (

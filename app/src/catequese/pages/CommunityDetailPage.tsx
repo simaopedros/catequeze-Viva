@@ -1,15 +1,19 @@
 import { useParams, Link, useNavigate } from 'react-router';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
-import { ArrowLeft, Building2, Users, GraduationCap, User, MessageCircle, MapPin, Phone, Mail } from 'lucide-react';
+import { ArrowLeft, Building2, Users, GraduationCap, User, MessageCircle, MapPin, Phone } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { useQuery, listCommunities, listClasses, listHouseholds, createConversation } from 'wasp/client/operations';
-import { COMMUNITY_TYPE_LABELS } from '../../shared/constants';
+import { useCommunityTypeLabels } from '../../i18n/useLabels';
 
 const AVATAR_COLORS = ['bg-blue-100 text-blue-700','bg-green-100 text-green-700','bg-amber-100 text-amber-700','bg-purple-100 text-purple-700','bg-pink-100 text-pink-700'];
 
 export default function CommunityDetailPage() {
+  const { t } = useTranslation('common');
+  const { t: tp } = useTranslation('parishes');
+  const typeLabels = useCommunityTypeLabels();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: communities = [], isLoading: loading } = useQuery(listCommunities, { parishId: '' } as any);
@@ -20,7 +24,6 @@ export default function CommunityDetailPage() {
 
   const [tab, setTab] = useState<'turmas' | 'familias' | 'catequistas'>('turmas');
 
-  // Filter catechists from classes
   const catechistsFromClasses = new Map<string, any>();
   classes.forEach((cls: any) => {
     cls.catechists?.forEach((cc: any) => {
@@ -35,7 +38,7 @@ export default function CommunityDetailPage() {
     try {
       const conv = await createConversation({
         type: 'GROUP',
-        title: `Comunidade: ${community.name}`,
+        title: tp('community_chat_title', { name: community.name }),
         communityId: id!,
         participantUserIds: uniqueCatechists.map((c: any) => c.id),
       });
@@ -51,80 +54,77 @@ export default function CommunityDetailPage() {
       <div className="grid gap-4 md:grid-cols-3">{[1,2,3].map(i => <div key={i} className="h-24 rounded-xl bg-muted" />)}</div>
     </div></AppShell>;
   }
-  if (!community) return <AppShell><div className="p-6 text-destructive">Comunidade não encontrada.</div></AppShell>;
+  if (!community) return <AppShell><div className="p-6 text-destructive">{tp('community_not_found')}</div></AppShell>;
+
+  const tabs = [
+    { id: 'turmas' as const, label: tp('tab_classes', { count: classes.length }), icon: GraduationCap },
+    { id: 'familias' as const, label: tp('tab_families', { count: households.length }), icon: Users },
+    { id: 'catequistas' as const, label: tp('tab_catechists', { count: uniqueCatechists.length }), icon: User },
+  ];
 
   return (
     <AppShell>
       <div className="max-w-4xl mx-auto space-y-6 py-6">
-        {/* Header */}
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild><Link to="/app/communities"><ArrowLeft className="h-5 w-5" /></Link></Button>
           <div className="flex-1">
             <h1 className="text-2xl font-bold">{community.name}</h1>
             <div className="flex items-center gap-2 mt-1">
-              <Badge variant="outline">{COMMUNITY_TYPE_LABELS[community.type] || community.type}</Badge>
+              <Badge variant="outline">{typeLabels[community.type as keyof typeof typeLabels] || community.type}</Badge>
               {community.coordinatorName && (
-                <span className="text-sm text-muted-foreground">Coordenador: {community.coordinatorName}</span>
+                <span className="text-sm text-muted-foreground">{tp('coordinator_label', { name: community.coordinatorName })}</span>
               )}
             </div>
           </div>
           <Button variant="outline" size="sm" onClick={handleOpenCommunityChat}>
-            <MessageCircle className="mr-1 h-3 w-3" />Chat
+            <MessageCircle className="mr-1 h-3 w-3" />{tp('chat')}
           </Button>
         </div>
 
-        {/* Info cards */}
         <div className="grid gap-4 md:grid-cols-3">
           {community.street && (
             <div className="rounded-xl border bg-card p-4">
-              <h3 className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-1 mb-1"><MapPin className="h-3 w-3" />Endereço</h3>
+              <h3 className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-1 mb-1"><MapPin className="h-3 w-3" />{t('address')}</h3>
               <p className="text-sm">{community.street}{community.number ? `, ${community.number}` : ''}</p>
               <p className="text-xs text-muted-foreground">{community.neighborhood} {community.city}/{community.state}</p>
             </div>
           )}
           {community.phone && (
             <div className="rounded-xl border bg-card p-4">
-              <h3 className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-1 mb-1"><Phone className="h-3 w-3" />Contato</h3>
+              <h3 className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-1 mb-1"><Phone className="h-3 w-3" />{tp('contact')}</h3>
               <p className="text-sm">{community.phone}</p>
               {community.email && <p className="text-xs text-muted-foreground">{community.email}</p>}
             </div>
           )}
           <div className="rounded-xl border bg-card p-4">
-            <h3 className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-1 mb-1"><Building2 className="h-3 w-3" />Resumo</h3>
-            <p className="text-sm">{classes.length} turmas · {households.length} famílias · {uniqueCatechists.length} catequistas</p>
+            <h3 className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-1 mb-1"><Building2 className="h-3 w-3" />{tp('summary')}</h3>
+            <p className="text-sm">{tp('summary_counts', { classes: classes.length, families: households.length, catechists: uniqueCatechists.length })}</p>
           </div>
         </div>
 
-        {/* Description */}
         {community.description && (
           <div className="rounded-xl border bg-card p-4">
             <p className="text-sm text-muted-foreground">{community.description}</p>
           </div>
         )}
 
-        {/* Tabs */}
         <div className="flex gap-1 border-b pb-2">
-          {[
-            { id: 'turmas', label: `Turmas (${classes.length})`, icon: GraduationCap },
-            { id: 'familias', label: `Famílias (${households.length})`, icon: Users },
-            { id: 'catequistas', label: `Catequistas (${uniqueCatechists.length})`, icon: User },
-          ].map(t => (
+          {tabs.map(tabItem => (
             <button
-              key={t.id}
-              onClick={() => setTab(t.id as any)}
-              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors flex items-center gap-1 ${tab === t.id ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+              key={tabItem.id}
+              onClick={() => setTab(tabItem.id)}
+              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors flex items-center gap-1 ${tab === tabItem.id ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground hover:text-foreground'}`}
             >
-              <t.icon className="h-3.5 w-3.5" />
-              {t.label}
+              <tabItem.icon className="h-3.5 w-3.5" />
+              {tabItem.label}
             </button>
           ))}
         </div>
 
-        {/* Tab: Turmas */}
         {tab === 'turmas' && (
           <div>
             {classes.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-4">Nenhuma turma nesta comunidade.</p>
+              <p className="text-sm text-muted-foreground py-4">{tp('no_classes_in_community')}</p>
             ) : (
               <div className="grid gap-2">
                 {classes.map((cls: any) => (
@@ -134,7 +134,7 @@ export default function CommunityDetailPage() {
                       <p className="text-xs text-muted-foreground">
                         {cls.stage?.name && `${cls.stage.name} · `}
                         {cls.dayOfWeek && `${cls.dayOfWeek} ${cls.startTime}`}
-                        {cls._count?.enrollments ? ` · ${cls._count.enrollments} inscritos` : ''}
+                        {cls._count?.enrollments ? ` · ${cls._count.enrollments} ${t('enrolled')}` : ''}
                       </p>
                     </div>
                     <GraduationCap className="h-4 w-4 text-muted-foreground" />
@@ -145,18 +145,17 @@ export default function CommunityDetailPage() {
           </div>
         )}
 
-        {/* Tab: Familias */}
         {tab === 'familias' && (
           <div>
             {households.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-4">Nenhuma família nesta comunidade.</p>
+              <p className="text-sm text-muted-foreground py-4">{tp('no_families_in_community')}</p>
             ) : (
               <div className="grid gap-2 md:grid-cols-2">
                 {households.map((h: any) => (
                   <Link key={h.id} to={`/app/families/${h.id}`} className="rounded-lg border p-3 hover:bg-muted/30">
                     <p className="font-medium text-sm">{h.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {h._count?.catechumens || 0} catequizandos · {h.guardians?.length || 0} responsáveis
+                      {t('families.summary', { catechumens: h._count?.catechumens || 0, guardians: h.guardians?.length || 0 })}
                     </p>
                     {h.catechumens?.length > 0 && (
                       <div className="mt-1 flex flex-wrap gap-1">
@@ -172,11 +171,10 @@ export default function CommunityDetailPage() {
           </div>
         )}
 
-        {/* Tab: Catequistas */}
         {tab === 'catequistas' && (
           <div>
             {uniqueCatechists.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-4">Nenhum catequista vinculado às turmas desta comunidade.</p>
+              <p className="text-sm text-muted-foreground py-4">{tp('no_catechists_in_community')}</p>
             ) : (
               <div className="grid gap-2">
                 {uniqueCatechists.map((c: any) => (
@@ -186,7 +184,7 @@ export default function CommunityDetailPage() {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-medium">{c.firstName} {c.lastName}</p>
-                      <p className="text-xs text-muted-foreground">{c.className} · {c.role === 'LEAD' ? 'Responsável' : 'Auxiliar'}</p>
+                      <p className="text-xs text-muted-foreground">{c.className} · {c.role === 'LEAD' ? tp('lead_catechist') : tp('assistant_catechist')}</p>
                     </div>
                   </div>
                 ))}

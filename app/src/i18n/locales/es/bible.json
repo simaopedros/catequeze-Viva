@@ -1,0 +1,16 @@
+{
+  "title": "Sagrada Biblia",
+  "books": "Libros",
+  "search": "Buscar",
+  "search_placeholder": "Ej: Génesis 1, Gn 1:3, Juan 3:16, amor, Dios, luz...",
+  "results_count": "{{count}} resultado(s)",
+  "empty_search_hint": "Busque por libro y capítulo (ej: \"Génesis 1\"), libro capítulo:versículo (ej: \"Gn 1:3\"), o palabra clave (ej: \"amor\", \"luz\", \"Dios\").",
+  "old_testament": "Antiguo Testamento",
+  "new_testament": "Nuevo Testamento",
+  "chapters": "Capítulos",
+  "previous": "Anterior",
+  "next": "Siguiente",
+  "load_book_error": "No se pudo cargar el libro. Verifique su conexión.",
+  "load_chapter_error": "No se pudo cargar el capítulo. Verifique su conexión.",
+  "search_error": "No se pudo realizar la búsqueda. Verifique su conexión."
+}

@@ -1,0 +1,20 @@
+{
+  "title": "Catecismo",
+  "heading": "Catecismo de São Pio X",
+  "searchPlaceholder": "Ex: sacramento, oração, batismo, mandamento, credo...",
+  "searchButton": "Buscar",
+  "resultsCount": "{{count}} resultado(s)",
+  "entriesInCategory": "{{count}} entradas em {{category}}",
+  "noCategory": "Nenhuma entrada nesta categoria.",
+  "emptyTitle": "Catecismo de São Pio X",
+  "emptyDesc": "Selecione uma categoria acima ou busque por palavras-chave para explorar o catecismo.",
+  "loadError": "Não foi possível carregar a categoria.",
+  "categories": {
+    "creed": "O Credo",
+    "sacraments": "Os Sacramentos",
+    "commandments": "Os Mandamentos",
+    "prayer": "A Oração",
+    "virtues": "As Virtudes",
+    "sin": "O Pecado"
+  }
+}

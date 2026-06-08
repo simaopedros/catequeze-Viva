@@ -1,0 +1,93 @@
+{
+  "title": "Assinatura",
+  "personal_scope": "Assinatura pessoal · cobre apenas o seu espaço pessoal",
+  "institutional_scope": "Assinatura institucional · cobre {{name}}",
+  "this_institution": "esta instituição",
+  "current_plan": "Plano atual:",
+  "active": "Ativo",
+  "plan_mismatch_institutional": "O plano selecionado é institucional. Entre em um workspace de paróquia/diocese para contratá-lo.",
+  "plan_mismatch_personal": "O plano selecionado é pessoal. Volte ao seu espaço pessoal para contratá-lo.",
+  "corporate_plan": "Plano Gerenciado Corporativo",
+  "diocese_responsible": "Diocese responsável:",
+  "not_informed": "Não informada",
+  "diocese_admins": "Administrador(es) diocesano(s):",
+  "parish_responsible": "Paróquia responsável:",
+  "coordinator_responsible": "Coordenador responsável:",
+  "contact_manager": "Por favor, entre em contato com o responsável indicado para qualquer alteração ou dúvida sobre o plano.",
+  "usage_title": "Uso do plano",
+  "classes": "Turmas",
+  "catechumens": "Catequizandos",
+  "subscription_active": "Assinatura ativa",
+  "free_plan": "Plano gratuito",
+  "awaiting_payment": "Aguardando pagamento",
+  "active_desc": "A sua subscrição está ativa. Aproveite todos os recursos.",
+  "upgrade_desc": "Atualize para acessar recursos ilimitados.",
+  "payment_desc": "Complete o pagamento para ativar seu plano.",
+  "cancel_subscription": "Cancelar assinatura",
+  "cancelling": "Cancelando…",
+  "ai_credits": "Créditos de IA",
+  "monthly_badge": "Mensal",
+  "trial_badge": "Teste",
+  "credits_used_month": "Créditos usados este mês",
+  "credits_used_trial": "Créditos de teste usados",
+  "remaining": "Restantes",
+  "credit_one": "crédito",
+  "credit_other": "créditos",
+  "available_plans": "Planos disponíveis",
+  "current_plan_btn": "Plano atual",
+  "base_plan_btn": "Plano base",
+  "institutional_plan_btn": "Plano institucional",
+  "institutional_requires_admin": "Requer administrador da paróquia",
+  "subscribe": "Assinar",
+  "redirecting": "Redirecionando…",
+  "selected": "Selecionado",
+  "current": "Atual",
+  "most_popular": "Mais Popular",
+  "payment_history": "Histórico de pagamentos",
+  "payment_history_desc": "Os pagamentos são processados de forma segura pela Stripe. O histórico estará disponível após a primeira cobrança.",
+  "checkout_error": "Erro ao iniciar pagamento. Tente novamente.",
+  "cancel_success": "Assinatura cancelada.",
+  "cancel_error": "Erro ao cancelar. Contacte o suporte.",
+  "cancel_dialog_title": "Cancelar assinatura",
+  "cancel_dialog_desc": "Tens a certeza que queres cancelar a tua assinatura? Perderás o acesso aos recursos premium no final do período atual.",
+  "cancel_confirm": "Sim, cancelar",
+  "cancel_keep": "Manter assinatura",
+  "free": "Grátis",
+  "plans": {
+    "catechist_free": {
+      "name": "Catequista Grátis",
+      "price": "Grátis",
+      "features": ["1 turma", "15 catequizandos", "Presença básica", "Calendário litúrgico", "3 créditos IA iniciais"]
+    },
+    "catechist_pro": {
+      "name": "Catequista Pro",
+      "price": "R$ 19/mês",
+      "annual_price": "R$ 190/ano (R$ 15,83/mês)",
+      "features": ["3 turmas", "150 catequizandos", "Relatórios avançados", "Suporte prioritário", "5 créditos IA/mês"]
+    },
+    "catechist_ai": {
+      "name": "Catequista IA",
+      "price": "R$ 39/mês",
+      "annual_price": "R$ 390/ano (R$ 32,50/mês)",
+      "features": ["Tudo do Pro", "Gerador de encontros por IA", "Planejamento anual automático", "Atividades e quizzes", "Assistente teológico", "Mensagens WhatsApp", "20 créditos/mês"]
+    },
+    "parish_essential": {
+      "name": "Paróquia Essencial",
+      "price": "R$ 79/mês",
+      "annual_price": "R$ 790/ano (R$ 65,83/mês)",
+      "features": ["5 catequistas", "200 catequizandos", "Turmas ilimitadas", "Comunicação integrada", "Documentos e certidões", "Painel do coordenador", "30 créditos IA/mês"]
+    },
+    "parish_complete": {
+      "name": "Paróquia Completa",
+      "price": "R$ 129/mês",
+      "annual_price": "R$ 1.290/ano (R$ 107,50/mês)",
+      "features": ["Catequistas ilimitados", "Catequizandos ilimitados", "Tudo da Essencial", "API de integração", "Onboarding dedicado", "50 créditos IA/mês"]
+    },
+    "diocese": {
+      "name": "Diocese",
+      "price": "R$ 449/mês",
+      "annual_price": "R$ 4.490/ano (R$ 374/mês)",
+      "features": ["Até 10 paróquias", "Tudo da Completa", "Biblioteca oficial", "Analytics consolidado", "Onboarding dedicado", "50 créditos IA por paróquia/mês"]
+    }
+  }
+}

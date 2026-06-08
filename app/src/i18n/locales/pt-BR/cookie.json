@@ -1,0 +1,11 @@
+{
+  "consent_modal": {
+    "title": "Utilizamos cookies",
+    "description": "Utilizamos cookies principalmente para análise estatística, para melhorar a sua experiência. Ao aceitar, concorda com a nossa utilização destes cookies. Pode gerir as suas preferências ou saber mais na nossa política de cookies.",
+    "accept_all": "Aceitar todos",
+    "reject_all": "Rejeitar todos",
+    "privacy_link": "Política de Privacidade",
+    "terms_link": "Termos e Condições"
+  },
+  "analytics_label": "Google Analytics"
+}

@@ -1,40 +1,35 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { Church, Users, BookOpen, Building2, Plus, MapPin, BadgeCheck, ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { Input } from '../../client/components/ui/input';
-import { Badge } from '../../client/components/ui/badge';
 import { AppShell } from '../AppShell';
 import { PageHeader } from '../../client/components/PageHeader';
 import { useQuery, listParishes, createParish, getInstitutionalManageContext } from 'wasp/client/operations';
-import { useAuth } from 'wasp/client/auth';
 import { handlePlanLimitError } from '../lib/planLimitToast';
 import CityStateSelect from '../../client/components/CityStateSelect';
 
-const PLAN_LABEL_SHORT: Record<string, string> = {
-  parish: 'Paróquia',
-  diocese: 'Diocese',
+const PLAN_KEYS: Record<string, string> = {
+  CATECHIST_FREE: 'plan_free',
+  CATECHIST_PRO: 'plan_catechist_pro',
+  CATECHIST_AI: 'plan_catechist_ai',
+  PARISH: 'plan_parish',
+  DIOCESE: 'plan_diocese',
 };
 
-const PLAN_LABELS: Record<string, string> = {
-  CATECHIST_FREE: 'Gratuito',
-  CATECHIST_PRO: 'Catequista Pro',
-  CATECHIST_AI: 'Catequista IA',
-  PARISH: 'Paróquia',
-  DIOCESE: 'Diocese',
-};
-const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  ACTIVE: { label: 'Ativa', color: 'bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-400' },
-  TRIAL: { label: 'Trial', color: 'bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400' },
-  PAST_DUE: { label: 'Em atraso', color: 'bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400' },
-  CANCELED: { label: 'Cancelada', color: 'bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-zinc-400' },
+const STATUS_KEYS: Record<string, { key: string; color: string }> = {
+  ACTIVE: { key: 'active', color: 'bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-400' },
+  TRIAL: { key: 'trial', color: 'bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400' },
+  PAST_DUE: { key: 'past_due', color: 'bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400' },
+  CANCELED: { key: 'canceled', color: 'bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-zinc-400' },
 };
 
 export default function ParishesPage() {
+  const { t: tp } = useTranslation('parishes');
   const navigate = useNavigate();
   const { data: parishes = [], isLoading: loading } = useQuery(listParishes);
   const { data: manageContext } = useQuery(getInstitutionalManageContext);
-  const { data: user } = useAuth();
   const [searchParams] = useSearchParams();
   const [showCreate, setShowCreate] = useState(() => searchParams.get('new') === 'true');
   const [newName, setNewName] = useState('');
@@ -49,16 +44,27 @@ export default function ParishesPage() {
   const ownerPlan: string | null = manageContext?.ownerPlan ?? null;
   const selectedDiocese = manageDioceses.find((d) => d.id === newDioceseId);
 
+  const planLabel = (plan: string) => {
+    const key = PLAN_KEYS[plan];
+    return key ? tp(key) : plan;
+  };
+
+  const statusLabel = (status: string) => {
+    const info = STATUS_KEYS[status];
+    return info ? tp(info.key) : status;
+  };
+
   const coverageNote = (() => {
     if (selectedDiocese) {
       return selectedDiocese.licensed
-        ? `Será criada sob a licença da ${selectedDiocese.name} (sem cobrança adicional).`
-        : `Será vinculada à ${selectedDiocese.name}. A diocese ainda não tem licença ativa — a paróquia começará no plano gratuito até a licença ser ativada.`;
+        ? tp('coverage_licensed', { name: selectedDiocese.name })
+        : tp('coverage_unlicensed', { name: selectedDiocese.name });
     }
     if (canCreateUnderOwnerPlan) {
-      return `Será criada sob a sua licença ${PLAN_LABEL_SHORT[ownerPlan || 'parish'] || 'Paróquia'} (sem cobrança adicional).`;
+      const planName = ownerPlan === 'diocese' ? tp('plan_diocese') : tp('plan_parish');
+      return tp('coverage_owner', { plan: planName });
     }
-    return 'Paróquia independente: começará no plano gratuito. Você pode assinar um plano institucional depois.';
+    return tp('coverage_independent');
   })();
 
   const handleCreate = async () => {
@@ -79,7 +85,7 @@ export default function ParishesPage() {
       setShowCreate(false);
     } catch (e: any) {
       if (handlePlanLimitError(e.message || e)) return;
-      setError(e.message || 'Erro ao criar paróquia.');
+      setError(e.message || tp('create_error'));
     }
     setCreating(false);
   };
@@ -89,7 +95,7 @@ export default function ParishesPage() {
     return (
       <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
         <BadgeCheck className="h-3 w-3" />
-        {PLAN_LABELS[billing.plan] || billing.plan}
+        {planLabel(billing.plan)}
       </span>
     );
   };
@@ -108,11 +114,11 @@ export default function ParishesPage() {
     <AppShell>
       <div className="space-y-6">
         <PageHeader
-          title="Paróquias"
-          subtitle={`${parishes.length} paróquia${parishes.length !== 1 ? 's' : ''}`}
+          title={tp('parishes_title')}
+          subtitle={tp('parish_count', { count: parishes.length })}
         >
           <Button size="sm" onClick={() => setShowCreate(!showCreate)}>
-            <Plus className="mr-1 h-4 w-4" />Nova Paróquia
+            <Plus className="mr-1 h-4 w-4" />{tp('new_parish_btn')}
           </Button>
         </PageHeader>
 
@@ -122,31 +128,31 @@ export default function ParishesPage() {
 
         {showCreate && (
           <div className="rounded-xl border bg-card p-4 space-y-3 animate-in fade-in slide-in-from-top-2">
-            <h3 className="font-medium text-sm">Nova Paróquia</h3>
+            <h3 className="font-medium text-sm">{tp('new_parish')}</h3>
             <div className="flex flex-wrap gap-3 items-end">
-              <Input value={newName} onChange={e => setNewName(e.target.value)} className="flex-1 min-w-[200px] h-9" placeholder="Nome da paróquia *" autoFocus />
+              <Input value={newName} onChange={e => setNewName(e.target.value)} className="flex-1 min-w-[200px] h-9" placeholder={`${tp('parish_name')} *`} autoFocus />
               <div className="min-w-[280px]">
                 <CityStateSelect city={newCity} state={newState} onCityChange={setNewCity} onStateChange={setNewState} />
               </div>
               {manageDioceses.length > 0 && (
                 <div className="flex flex-col gap-1 min-w-[200px]">
-                  <label className="text-xs text-muted-foreground">Diocese (licença)</label>
+                  <label className="text-xs text-muted-foreground">{tp('diocese_license')}</label>
                   <select
                     value={newDioceseId}
                     onChange={e => setNewDioceseId(e.target.value)}
                     className="h-9 rounded-md border border-input bg-background px-3 text-sm"
                   >
-                    <option value="">Independente / sob minha licença</option>
+                    <option value="">{tp('independent_option')}</option>
                     {manageDioceses.map(d => (
                       <option key={d.id} value={d.id}>
-                        {d.name}{d.licensed ? ' (licenciada)' : ''}
+                        {d.name}{d.licensed ? ` ${tp('licensed_suffix')}` : ''}
                       </option>
                     ))}
                   </select>
                 </div>
               )}
               <Button size="sm" onClick={handleCreate} disabled={creating || !newName.trim()}>
-                {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Criar'}
+                {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : tp('create')}
               </Button>
             </div>
             <p className="flex items-start gap-1.5 text-xs text-muted-foreground">
@@ -159,15 +165,15 @@ export default function ParishesPage() {
         {parishes.length === 0 && !loading ? (
           <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center">
             <div className="mb-4 rounded-full bg-primary/10 p-4"><Church className="h-10 w-10 text-primary" /></div>
-            <h3 className="text-lg font-semibold">Nenhuma paróquia</h3>
-            <p className="text-sm text-muted-foreground mt-1 max-w-sm">Crie sua primeira paróquia para começar a gerir turmas, catequizandos e comunidades.</p>
-            <Button className="mt-4" onClick={() => setShowCreate(true)}><Plus className="mr-1 h-4 w-4" />Criar Primeira Paróquia</Button>
+            <h3 className="text-lg font-semibold">{tp('no_parishes')}</h3>
+            <p className="text-sm text-muted-foreground mt-1 max-w-sm">{tp('no_parishes_desc')}</p>
+            <Button className="mt-4" onClick={() => setShowCreate(true)}><Plus className="mr-1 h-4 w-4" />{tp('create_first')}</Button>
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
             {parishes.map((p: any) => {
               const billing = p.billing;
-              const statusInfo = STATUS_LABELS[billing?.status] || { label: billing?.status || 'Desconhecido', color: 'bg-gray-100 text-gray-600' };
+              const statusInfo = STATUS_KEYS[billing?.status] || { key: '', color: 'bg-gray-100 text-gray-600' };
               const isActive = p.active !== false;
               return (
                 <div key={p.id} onClick={() => navigate('/app/parishes/' + p.id)}
@@ -176,25 +182,25 @@ export default function ParishesPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <h3 className="font-semibold truncate group-hover:text-primary transition-colors">{p.name}</h3>
-                        {!isActive && <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600 dark:bg-zinc-800 dark:text-zinc-400">Inativa</span>}
+                        {!isActive && <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600 dark:bg-zinc-800 dark:text-zinc-400">{tp('inactive_label')}</span>}
                       </div>
                       {(p.city || p.state) && <p className="text-sm text-muted-foreground flex items-center gap-1 mt-0.5"><MapPin className="h-3 w-3" />{[p.city, p.state].filter(Boolean).join(', ')}</p>}
                     </div>
                     <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all translate-x-1 group-hover:translate-x-0" />
                   </div>
                   <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5" /><strong>{p._count?.memberships || 0}</strong> membros</span>
-                    <span className="flex items-center gap-1.5"><BookOpen className="h-3.5 w-3.5" /><strong>{p._count?.classes || 0}</strong> turmas</span>
-                    <span className="flex items-center gap-1.5"><Building2 className="h-3.5 w-3.5" /><strong>{p._count?.communities || 0}</strong> comunidades</span>
+                    <span className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5" /><strong>{p._count?.memberships || 0}</strong> {tp('members')}</span>
+                    <span className="flex items-center gap-1.5"><BookOpen className="h-3.5 w-3.5" /><strong>{p._count?.classes || 0}</strong> {tp('classes')}</span>
+                    <span className="flex items-center gap-1.5"><Building2 className="h-3.5 w-3.5" /><strong>{p._count?.communities || 0}</strong> {tp('communities')}</span>
                   </div>
                   <div className="mt-3 flex items-center justify-between gap-3 pt-3 border-t border-border/50">
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={(e) => { e.stopPropagation(); navigate('/app/parishes/' + p.id + '/members'); }}>Membros</Button>
-                      <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={(e) => { e.stopPropagation(); navigate('/app/parishes/' + p.id); }}>Gerir</Button>
+                      <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={(e) => { e.stopPropagation(); navigate('/app/parishes/' + p.id + '/members'); }}>{tp('members')}</Button>
+                      <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={(e) => { e.stopPropagation(); navigate('/app/parishes/' + p.id); }}>{tp('manage')}</Button>
                     </div>
                     <div className="flex items-center gap-2">
                       {planBadge(billing)}
-                      <span className={'inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ' + statusInfo.color}>{statusInfo.label}</span>
+                      <span className={'inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ' + statusInfo.color}>{statusInfo.key ? statusLabel(billing?.status) : (billing?.status || tp('unknown'))}</span>
                     </div>
                   </div>
                 </div>

@@ -1,0 +1,29 @@
+{
+  "title": "Calendar",
+  "month_events": "{{month}} {{year}} · {{count}} events",
+  "today": "Today",
+  "add_event": "Event",
+  "filters": {
+    "all": "All",
+    "liturgical": "Liturgical",
+    "parish": "Parish",
+    "class": "Classes",
+    "sacramental": "Sacramental"
+  },
+  "event_types": {
+    "liturgical": "Liturgical",
+    "parish": "Parish",
+    "class": "Class"
+  },
+  "meeting_default": "Meeting",
+  "day_title": "Day {{day}} of {{month}}",
+  "no_events": "No events on this day.",
+  "add": "Add",
+  "new_event": "New event",
+  "select_day": "Select a day to view events.",
+  "event_name": "Event name *",
+  "description_optional": "Description (optional)",
+  "create_event": "Create event",
+  "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+  "weekdays_short": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+}

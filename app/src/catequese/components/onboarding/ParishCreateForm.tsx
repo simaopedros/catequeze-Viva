@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Church, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Church } from 'lucide-react';
 import { Button } from '../../../client/components/ui/button';
 import CityStateSelect from '../../../client/components/CityStateSelect';
 
@@ -18,6 +19,7 @@ export function ParishCreateForm({
   defaultState = '',
   loading = false,
 }: ParishCreateFormProps) {
+  const { t } = useTranslation('onboarding');
   const [name, setName] = useState(defaultName);
   const [city, setCity] = useState(defaultCity);
   const [state, setState] = useState(defaultState);
@@ -31,20 +33,20 @@ export function ParishCreateForm({
     <div className="rounded-xl border bg-card p-6 space-y-4">
       <h2 className="text-lg font-semibold flex items-center gap-2">
         <Church className="h-5 w-5 text-primary" />
-        Criar Paróquia
+        {t('parish_create.title')}
       </h2>
       <div className="space-y-3">
         <div>
-          <label className="text-sm font-medium">Nome *</label>
+          <label className="text-sm font-medium">{t('parish_create.name_label')}</label>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
-            placeholder="Ex: Paróquia Santo Antônio"
+            placeholder={t('parish_create.name_placeholder')}
           />
         </div>
         <div>
-          <label className="text-sm font-medium">Cidade / Estado</label>
+          <label className="text-sm font-medium">{t('parish_create.city_state')}</label>
           <div className="mt-1">
             <CityStateSelect city={city} state={state} onCityChange={setCity} onStateChange={setState} />
           </div>
@@ -52,7 +54,7 @@ export function ParishCreateForm({
       </div>
       <div className="flex justify-end">
         <Button onClick={handleSubmit} disabled={!name.trim() || loading}>
-          {loading ? 'Criando...' : 'Criar e continuar'}
+          {loading ? t('parish_create.creating') : t('parish_create.submit')}
         </Button>
       </div>
     </div>

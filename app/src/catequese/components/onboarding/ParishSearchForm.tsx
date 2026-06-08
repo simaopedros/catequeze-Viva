@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, ChevronRight, Check } from 'lucide-react';
 import { Button } from '../../../client/components/ui/button';
 
@@ -17,6 +18,7 @@ export function ParishSearchForm({
   defaultSearch = '',
   defaultSelected = '',
 }: ParishSearchFormProps) {
+  const { t } = useTranslation('onboarding');
   const [searchQuery, setSearchQuery] = useState(defaultSearch);
   const [selectedId, setSelectedId] = useState(defaultSelected);
 
@@ -34,7 +36,7 @@ export function ParishSearchForm({
     <div className="rounded-xl border bg-card p-6 space-y-4">
       <h2 className="text-lg font-semibold flex items-center gap-2">
         <Search className="h-5 w-5 text-primary" />
-        Juntar-se a uma Paróquia
+        {t('parish_search.title')}
       </h2>
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -42,14 +44,14 @@ export function ParishSearchForm({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="flex h-10 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm"
-          placeholder="Buscar paróquia..."
+          placeholder={t('parish_search.search_placeholder')}
         />
       </div>
       {loadingList ? (
-        <div className="text-sm text-muted-foreground py-4 text-center">Carregando...</div>
+        <div className="text-sm text-muted-foreground py-4 text-center">{t('parish_search.loading')}</div>
       ) : filtered.length === 0 ? (
         <div className="text-sm text-muted-foreground py-4 text-center">
-          Nenhuma paróquia. Podes criar uma independente.
+          {t('parish_search.empty')}
         </div>
       ) : (
         <div className="space-y-2 max-h-48 overflow-y-auto">
@@ -69,7 +71,7 @@ export function ParishSearchForm({
       )}
       <div className="flex justify-end">
         <Button onClick={handleNext} disabled={!selectedId}>
-          Próximo <ChevronRight className="ml-1 h-4 w-4" />
+          {t('parish_search.next')} <ChevronRight className="ml-1 h-4 w-4" />
         </Button>
       </div>
     </div>

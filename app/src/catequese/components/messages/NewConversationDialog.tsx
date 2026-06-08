@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { X, Search, Users, MessageSquareText, Megaphone, Hash, Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { X, Search, Users, MessageSquareText, Megaphone, Check } from 'lucide-react';
 import { cn } from '../../../client/utils';
 import { getContactsForConversation, createConversation } from 'wasp/client/operations';
 import { useUserContext } from '../../../client/hooks/useUserContext';
@@ -19,37 +20,25 @@ interface NewConversationDialogProps {
   onCreated: (conversationId: string) => void;
 }
 
-const CONVERSATION_TYPES = [
-  { value: 'DIRECT' as const, label: 'Mensagem Direta', icon: MessageSquareText, desc: 'Conversa 1-para-1' },
-  { value: 'GROUP' as const, label: 'Grupo', icon: Users, desc: 'Chat em grupo' },
-  { value: 'ANNOUNCEMENT' as const, label: 'Canal de Avisos', icon: Megaphone, desc: 'Somente coordenadores postam' },
+const CONVERSATION_TYPE_KEYS = [
+  { value: 'DIRECT' as const, key: 'direct', icon: MessageSquareText },
+  { value: 'GROUP' as const, key: 'group', icon: Users },
+  { value: 'ANNOUNCEMENT' as const, key: 'announcement', icon: Megaphone },
 ];
-
-const ROLE_LABELS: Record<string, string> = {
-  SUPER_ADMIN: 'Admin',
-  DIOCESE_ADMIN: 'Diocese',
-  PARISH_COORDINATOR: 'Coordenador',
-  COMMUNITY_COORDINATOR: 'Comunidade',
-  LEAD_CATECHIST: 'Catequista',
-  ASSISTANT_CATECHIST: 'Auxiliar',
-  GUARDIAN: 'Responsável',
-  CATECHUMEN: 'Catequizando',
-  CONTENT_REVIEWER: 'Revisor',
-  PASTORAL_VIEWER: 'Visitante',
-};
 
 function getInitials(firstName: string | null, lastName: string | null): string {
   return [firstName?.[0], lastName?.[0]].filter(Boolean).join('').toUpperCase() || '?';
 }
 
 export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConversationDialogProps) {
+  const { t } = useTranslation('messages');
+  const { t: tp } = useTranslation('public');
   const { userRole } = useUserContext();
   const isRestricted = ['CATECHUMEN', 'GUARDIAN'].includes(userRole);
-  
-  // Filter conversation types based on role
+
   const availableTypes = isRestricted
-    ? CONVERSATION_TYPES.filter(t => t.value === 'DIRECT')
-    : CONVERSATION_TYPES;
+    ? CONVERSATION_TYPE_KEYS.filter(t => t.value === 'DIRECT')
+    : CONVERSATION_TYPE_KEYS;
 
   const [step, setStep] = useState<'type' | 'contacts'>('type');
   const [type, setType] = useState<'DIRECT' | 'GROUP' | 'ANNOUNCEMENT'>('DIRECT');
@@ -60,6 +49,11 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
+
+  const roleLabel = (role?: string) => {
+    if (!role) return '';
+    return tp(`workspace.roles.${role}`, { defaultValue: role });
+  };
 
   useEffect(() => {
     if (isOpen && step === 'contacts') {
@@ -101,11 +95,11 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
 
   const handleCreate = async () => {
     if (selected.size === 0) {
-      setError('Selecione pelo menos um participante.');
+      setError(t('new_dialog.select_participant'));
       return;
     }
     if (type !== 'DIRECT' && !title.trim()) {
-      setError('Dê um nome ao grupo.');
+      setError(t('new_dialog.name_group'));
       return;
     }
 
@@ -120,7 +114,7 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
       onCreated(conversation.id);
       onClose();
     } catch (e: any) {
-      setError(e.message || 'Erro ao criar conversa.');
+      setError(e.message || t('new_dialog.create_error'));
     } finally {
       setCreating(false);
     }
@@ -130,22 +124,18 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
-      {/* Dialog */}
       <div className="relative w-full max-w-md mx-4 bg-card rounded-2xl shadow-2xl border overflow-hidden animate-in zoom-in-95 duration-200">
-        {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           <h3 className="font-semibold">
-            {step === 'type' ? 'Nova Conversa' : 'Selecionar Participantes'}
+            {step === 'type' ? t('new_dialog.title_type') : t('new_dialog.title_contacts')}
           </h3>
           <button onClick={onClose} className="h-7 w-7 flex items-center justify-center rounded-lg hover:bg-muted transition-colors">
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        {/* Step 1: Choose type */}
         {step === 'type' && (
           <div className="p-4 space-y-2">
             {availableTypes.map(ct => {
@@ -163,8 +153,8 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
                     <Icon className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{ct.label}</p>
-                    <p className="text-xs text-muted-foreground">{ct.desc}</p>
+                    <p className="text-sm font-medium">{t(`new_dialog.types.${ct.key}.label`)}</p>
+                    <p className="text-xs text-muted-foreground">{t(`new_dialog.types.${ct.key}.desc`)}</p>
                   </div>
                 </button>
               );
@@ -172,33 +162,29 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
           </div>
         )}
 
-        {/* Step 2: Select contacts */}
         {step === 'contacts' && (
           <>
             <div className="p-4 space-y-3">
-              {/* Group name input */}
               {type !== 'DIRECT' && (
                 <input
                   value={title}
                   onChange={e => setTitle(e.target.value)}
-                  placeholder="Nome do grupo..."
+                  placeholder={t('new_dialog.group_name_placeholder')}
                   maxLength={200}
                   className="w-full h-9 rounded-lg border border-input bg-background px-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary/40"
                 />
               )}
 
-              {/* Search */}
               <div className="relative">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <input
                   value={search}
                   onChange={e => setSearch(e.target.value)}
-                  placeholder="Buscar contatos..."
+                  placeholder={t('new_dialog.search_contacts')}
                   className="w-full h-9 pl-8 pr-3 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-1 focus:ring-primary/40"
                 />
               </div>
 
-              {/* Selected pills */}
               {selected.size > 0 && (
                 <div className="flex flex-wrap gap-1">
                   {Array.from(selected).map(id => {
@@ -222,16 +208,15 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
               )}
             </div>
 
-            {/* Contacts list */}
             <div className="max-h-64 overflow-y-auto border-t scrollbar-thin">
               {loading ? (
-                <div className="p-6 text-center text-sm text-muted-foreground">Carregando contatos...</div>
+                <div className="p-6 text-center text-sm text-muted-foreground">{t('new_dialog.loading_contacts')}</div>
               ) : filteredContacts.length === 0 ? (
-                <div className="p-6 text-center text-sm text-muted-foreground">Nenhum contato encontrado.</div>
+                <div className="p-6 text-center text-sm text-muted-foreground">{t('new_dialog.no_contacts')}</div>
               ) : (
                 filteredContacts.map(c => {
                   const isSelected = selected.has(c.id);
-                  const name = [c.firstName, c.lastName].filter(Boolean).join(' ') || c.email || 'Usuário';
+                  const name = [c.firstName, c.lastName].filter(Boolean).join(' ') || c.email || t('default_user');
                   return (
                     <button
                       key={c.id}
@@ -247,7 +232,7 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">{name}</p>
                         <p className="text-[10px] text-muted-foreground truncate">
-                          {c.role ? ROLE_LABELS[c.role] || c.role : c.email}
+                          {c.role ? roleLabel(c.role) : c.email}
                         </p>
                       </div>
                       <div className={cn(
@@ -264,13 +249,12 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
               )}
             </div>
 
-            {/* Footer */}
             <div className="p-4 border-t flex items-center justify-between gap-2">
               <button
                 onClick={() => { setStep('type'); setSelected(new Set()); setError(''); }}
                 className="text-xs text-muted-foreground hover:text-foreground"
               >
-                ← Voltar
+                {t('new_dialog.back')}
               </button>
               <button
                 onClick={handleCreate}
@@ -282,7 +266,7 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
                     : 'bg-muted text-muted-foreground'
                 )}
               >
-                {creating ? 'Criando...' : type === 'DIRECT' ? 'Iniciar conversa' : `Criar grupo (${selected.size})`}
+                {creating ? t('new_dialog.creating') : type === 'DIRECT' ? t('new_dialog.start_direct') : t('new_dialog.create_group', { count: selected.size })}
               </button>
             </div>
           </>

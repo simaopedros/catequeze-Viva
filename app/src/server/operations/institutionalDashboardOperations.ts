@@ -12,6 +12,7 @@ import {
   COORDINATOR_ROLES,
 } from '../auth/helpers';
 import { assertTwoFactorSessionVerified } from './twoFactorOperations';
+import { formatServerDate, getPeriodLabel, resolveUserLocale } from '../i18n/serverLocale';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -203,10 +204,9 @@ export const getInstitutionalOverview = async (args: ScopeArgs, context: any): P
     previousEnrollmentWhere.createdAt = { gte: previousStart, lt: previousEnd };
   }
 
-  const periodLabel =
-    args.period === 'month' ? 'Último mês' :
-    args.period === 'quarter' ? 'Último trimestre' :
-    args.period === 'year' ? 'Último ano' : 'Todo o período';
+  const userLocale = resolveUserLocale(context.user);
+
+  const periodLabel = getPeriodLabel(args.period, userLocale);
 
   // ── Parallel fetch ──
   const [
@@ -444,6 +444,9 @@ export const getInstitutionalTrends = async (args: ScopeArgs, context: any): Pro
   const attendanceData: number[] = [];
   const milestoneData: number[] = [];
 
+  const userLocale = resolveUserLocale(context.user);
+  const intlLocale = userLocale === 'en' ? 'en-US' : userLocale === 'es' ? 'es' : 'pt-BR';
+
   for (let i = days - 1; i >= 0; i--) {
     let pointStart: Date;
     let pointEnd: Date;
@@ -452,13 +455,13 @@ export const getInstitutionalTrends = async (args: ScopeArgs, context: any): Pro
       // Monthly buckets for year view
       pointStart = new Date(now.getFullYear(), now.getMonth() - i, 1);
       pointEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
-      labels.push(pointStart.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' }));
+      labels.push(pointStart.toLocaleDateString(intlLocale, { month: 'short', year: '2-digit' }));
     } else {
       pointStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
       pointStart.setHours(0, 0, 0, 0);
       pointEnd = new Date(pointStart);
       pointEnd.setDate(pointEnd.getDate() + 1);
-      labels.push(pointStart.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }));
+      labels.push(pointStart.toLocaleDateString(intlLocale, { day: '2-digit', month: '2-digit' }));
     }
 
     const classWhereClause = buildClassWhereClause(parishIds, communityId);

@@ -1,0 +1,21 @@
+{
+  "title": "Encontros",
+  "subtitle": "Gerenciar encontros da turma",
+  "new": "Novo",
+  "meeting_title": "Título do encontro",
+  "date": "Data",
+  "no_content": "Sem conteúdo associado",
+  "create_error": "Erro ao criar encontro: {{message}}",
+  "update_error": "Erro ao atualizar encontro: {{message}}",
+  "no_permission": "Sem permissão ou falha no servidor.",
+  "server_error": "Falha no servidor.",
+  "empty_title": "Nenhum encontro registrado",
+  "empty_desc": "Crie o primeiro encontro para esta turma.",
+  "no_title": "Sem título",
+  "attendance_count": "{{count}} presenças",
+  "attendance_link": "Presença",
+  "unlink": "Desvincular",
+  "link_content": "Vincular conteúdo...",
+  "generate_ai_activity": "Gerar Atividade IA",
+  "generate_whatsapp": "Gerar WhatsApp"
+}

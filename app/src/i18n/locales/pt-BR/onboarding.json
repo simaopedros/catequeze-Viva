@@ -1,0 +1,175 @@
+{
+  "title": "Configuração Inicial",
+  "subtitle_personal": "Vamos configurar o teu espaço pessoal.",
+  "subtitle_manager": "Vamos configurar a plataforma em 3 passos.",
+  "steps": {
+    "diocese": "Diocese",
+    "parish": "Paróquia",
+    "details": "Detalhes"
+  },
+  "back": "← Voltar",
+  "continue_parish": "Continuar para Paróquia →",
+  "continue": "Continuar →",
+  "change_diocese": "← Alterar diocese",
+  "configuring": "A configurar a plataforma...",
+  "finish_error": "Erro ao finalizar configuração.",
+  "personal_workspace_error": "Não foi possível criar o espaço pessoal. Tente novamente.",
+  "parish_not_selected": "Paróquia não selecionada.",
+  "osm_error": "Erro ao registar paróquia do OpenStreetMap.",
+  "create_parish_error": "Erro ao criar paróquia.",
+  "no_parish_selected": "Nenhuma paróquia selecionada.",
+  "summary": {
+    "type": "Tipo",
+    "personal_account": "Conta Pessoal",
+    "plan": "Plano",
+    "plan_free": "Catequista Grátis",
+    "plan_pro": "Catequista Pro/IA",
+    "class": "Turma",
+    "create_later": "Criar depois",
+    "diocese": "Diocese",
+    "parish": "Paróquia",
+    "year": "Ano"
+  },
+  "welcome": {
+    "hello": "Olá, {{name}}!",
+    "hello_default": "Bem-vindo(a)!",
+    "question": "Como queres usar o Catequese Viva?",
+    "personal_title": "Conta Pessoal",
+    "personal_desc": "Para catequistas individuais · plano pessoal (Grátis / Pro / IA)",
+    "personal_features": ["Espaço pessoal isolado", "Suas turmas e catequizandos", "Gerador de encontros com IA"],
+    "manager_title": "Conta de Gestão",
+    "manager_desc": "Para paróquias e dioceses · plano institucional (cobre vários catequistas)",
+    "manager_features": ["Multi-catequista", "Comunicação integrada", "Gestão completa da catequese"]
+  },
+  "personal_setup": {
+    "title": "Conta Pessoal",
+    "subtitle": "O teu espaço individual de catequese está quase pronto!",
+    "included": "O que está incluído:",
+    "isolated_space": "Espaço pessoal isolado",
+    "limits_free": "2 turmas e 30 catequizandos",
+    "limits_unlimited": "Turmas ilimitadas",
+    "ai_generator": "Gerador de encontros com IA",
+    "liturgical_calendar": "Calendário litúrgico",
+    "first_class_label": "Nome da primeira turma (opcional)",
+    "first_class_placeholder": "Ex: Catequese 1º Ano",
+    "first_class_hint": "Podes criar depois em Turmas se preferires.",
+    "creating": "Criando espaço...",
+    "enter_space": "Entrar no meu espaço"
+  },
+  "diocese": {
+    "title": "Em que diocese estás?",
+    "state_label": "Estado (UF)",
+    "all_states": "Todos os estados",
+    "search_placeholder": "Buscar diocese...",
+    "wiki_section": "Wikidata · Dioceses oficiais",
+    "platform_section": "Na Plataforma",
+    "parishes_count": "{{count}} paróquias",
+    "empty_search": "Nenhuma diocese encontrada.",
+    "empty_hint": "Seleciona um estado ou busca pelo nome.",
+    "create_link": "+ Não encontrou? Criar nova diocese",
+    "new_name_label": "Nome da nova diocese",
+    "new_name_placeholder": "Ex: Diocese de São José dos Campos",
+    "duplicate_warning": "Já existe uma diocese semelhante:",
+    "use_this": "Usar esta →",
+    "create_error": "Erro: diocese não foi criada.",
+    "create_error_generic": "Erro ao criar diocese.",
+    "creating": "Criando...",
+    "create_btn": "Criar diocese",
+    "skip": "Pular esta etapa →",
+    "select_hint": "Seleciona uma diocese acima"
+  },
+  "parish": {
+    "title": "Qual a tua paróquia?",
+    "city_state": "Cidade / Estado",
+    "filter_placeholder": "Filtrar por nome...",
+    "platform_section": "Na Plataforma",
+    "osm_section": "OpenStreetMap",
+    "searching_map": "Procurando no mapa...",
+    "create_link": "+ Não encontrou? Criar nova paróquia",
+    "new_name_label": "Nome da nova paróquia",
+    "new_name_placeholder": "Ex: Paróquia Santo Antônio",
+    "duplicate_warning": "Já existe uma paróquia semelhante:",
+    "use_this": "Usar esta →",
+    "create_error": "Erro ao criar paróquia.",
+    "creating": "Criando...",
+    "create_btn": "Criar paróquia",
+    "default_name": "Paróquia",
+    "duplicate_in": "em {{city}}"
+  },
+  "coordinator": {
+    "year_title": "Ano Catequético",
+    "year_name": "Nome do ano *",
+    "year_name_placeholder": "Ex: Catequese 2026",
+    "start": "Início",
+    "end": "Término",
+    "date_error": "A data de término deve ser posterior à de início.",
+    "next": "Próximo",
+    "class_title": "Primeira Turma",
+    "class_desc": "Cria a primeira turma ou pula esta etapa.",
+    "class_name": "Nome da turma",
+    "class_name_placeholder": "Ex: Turma de Crisma 2026",
+    "day_of_week": "Dia da semana",
+    "start_time": "Início",
+    "end_time": "Término",
+    "location": "Local",
+    "skip_class": "Criar turma depois",
+    "finish": "Concluir",
+    "back": "Voltar",
+    "days": {
+      "0": "Domingo",
+      "1": "Segunda-feira",
+      "2": "Terça-feira",
+      "3": "Quarta-feira",
+      "4": "Quinta-feira",
+      "5": "Sexta-feira",
+      "6": "Sábado"
+    }
+  },
+  "completion": {
+    "title": "Tudo pronto!",
+    "desc": "O teu espaço está configurado. Aqui está um resumo do que foi criado:",
+    "redirecting": "Redirecionando em 5 segundos...",
+    "go_dashboard": "Ir para o Dashboard"
+  },
+  "roles": {
+    "coordinator": { "title": "Coordenador(a) Paroquial", "desc": "Geres a catequese da paróquia: turmas, catequistas, sacramentos e relatórios." },
+    "catechist": { "title": "Catequista", "desc": "Dás aulas de catequese e acompanhas os teus catequizandos." },
+    "guardian": { "title": "Responsável (Pai / Mãe)", "desc": "Acompanhas a jornada de fé dos teus filhos na catequese." },
+    "viewer": { "title": "Visitante Pastoral", "desc": "Consultas dados pastorais sem editar." }
+  },
+  "role_step": {
+    "title": "Qual o teu papel na paróquia?",
+    "subtitle": "Escolhe o perfil que melhor descreve a tua atuação."
+  },
+  "catechist": {
+    "class_title": "A tua Turma"
+  },
+  "viewer": {
+    "title": "Liderança Pastoral",
+    "desc": "Terás acesso de visualização às turmas, presenças e relatórios da paróquia, sem permissão para editar.",
+    "confirm": "Confirmar e entrar"
+  },
+  "guardian": {
+    "title": "Criar Família",
+    "household_name": "Nome da família",
+    "household_placeholder": "Ex: Família Silva",
+    "phone": "Telefone",
+    "phone_placeholder": "Ex: (11) 99999-0000",
+    "default_household": "Família"
+  },
+  "parish_search": {
+    "title": "Juntar-se a uma Paróquia",
+    "search_placeholder": "Buscar paróquia...",
+    "loading": "Carregando...",
+    "empty": "Nenhuma paróquia. Podes criar uma independente.",
+    "next": "Próximo"
+  },
+  "parish_create": {
+    "title": "Criar Paróquia",
+    "name_label": "Nome *",
+    "name_placeholder": "Ex: Paróquia Santo Antônio",
+    "city_state": "Cidade / Estado",
+    "creating": "Criando...",
+    "submit": "Criar e continuar"
+  }
+}

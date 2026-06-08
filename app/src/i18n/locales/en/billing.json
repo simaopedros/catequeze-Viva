@@ -1,0 +1,93 @@
+{
+  "title": "Billing",
+  "personal_scope": "Personal subscription · covers only your personal space",
+  "institutional_scope": "Institutional subscription · covers {{name}}",
+  "this_institution": "this institution",
+  "current_plan": "Current plan:",
+  "active": "Active",
+  "plan_mismatch_institutional": "The selected plan is institutional. Switch to a parish/diocese workspace to subscribe.",
+  "plan_mismatch_personal": "The selected plan is personal. Return to your personal space to subscribe.",
+  "corporate_plan": "Corporate Managed Plan",
+  "diocese_responsible": "Responsible diocese:",
+  "not_informed": "Not informed",
+  "diocese_admins": "Diocesan administrator(s):",
+  "parish_responsible": "Responsible parish:",
+  "coordinator_responsible": "Responsible coordinator:",
+  "contact_manager": "Please contact the person indicated for any plan changes or questions.",
+  "usage_title": "Plan usage",
+  "classes": "Classes",
+  "catechumens": "Catechumens",
+  "subscription_active": "Active subscription",
+  "free_plan": "Free plan",
+  "awaiting_payment": "Awaiting payment",
+  "active_desc": "Your subscription is active. Enjoy all features.",
+  "upgrade_desc": "Upgrade to access unlimited features.",
+  "payment_desc": "Complete payment to activate your plan.",
+  "cancel_subscription": "Cancel subscription",
+  "cancelling": "Cancelling…",
+  "ai_credits": "AI Credits",
+  "monthly_badge": "Monthly",
+  "trial_badge": "Trial",
+  "credits_used_month": "Credits used this month",
+  "credits_used_trial": "Trial credits used",
+  "remaining": "Remaining",
+  "credit_one": "credit",
+  "credit_other": "credits",
+  "available_plans": "Available plans",
+  "current_plan_btn": "Current plan",
+  "base_plan_btn": "Base plan",
+  "institutional_plan_btn": "Institutional plan",
+  "institutional_requires_admin": "Requires parish administrator",
+  "subscribe": "Subscribe",
+  "redirecting": "Redirecting…",
+  "selected": "Selected",
+  "current": "Current",
+  "most_popular": "Most Popular",
+  "payment_history": "Payment history",
+  "payment_history_desc": "Payments are processed securely by Stripe. History will be available after the first charge.",
+  "checkout_error": "Error starting payment. Please try again.",
+  "cancel_success": "Subscription cancelled.",
+  "cancel_error": "Error cancelling. Contact support.",
+  "cancel_dialog_title": "Cancel subscription",
+  "cancel_dialog_desc": "Are you sure you want to cancel your subscription? You will lose access to premium features at the end of the current period.",
+  "cancel_confirm": "Yes, cancel",
+  "cancel_keep": "Keep subscription",
+  "free": "Free",
+  "plans": {
+    "catechist_free": {
+      "name": "Catechist Free",
+      "price": "Free",
+      "features": ["1 class", "15 catechumens", "Basic attendance", "Liturgical calendar", "3 initial AI credits"]
+    },
+    "catechist_pro": {
+      "name": "Catechist Pro",
+      "price": "R$ 19/month",
+      "annual_price": "R$ 190/year (R$ 15.83/month)",
+      "features": ["3 classes", "150 catechumens", "Advanced reports", "Priority support", "5 AI credits/month"]
+    },
+    "catechist_ai": {
+      "name": "Catechist AI",
+      "price": "R$ 39/month",
+      "annual_price": "R$ 390/year (R$ 32.50/month)",
+      "features": ["Everything in Pro", "AI meeting generator", "Automatic annual planning", "Activities and quizzes", "Theological assistant", "WhatsApp messages", "20 credits/month"]
+    },
+    "parish_essential": {
+      "name": "Parish Essential",
+      "price": "R$ 79/month",
+      "annual_price": "R$ 790/year (R$ 65.83/month)",
+      "features": ["5 catechists", "200 catechumens", "Unlimited classes", "Integrated communication", "Documents and certificates", "Coordinator dashboard", "30 AI credits/month"]
+    },
+    "parish_complete": {
+      "name": "Parish Complete",
+      "price": "R$ 129/month",
+      "annual_price": "R$ 1,290/year (R$ 107.50/month)",
+      "features": ["Unlimited catechists", "Unlimited catechumens", "Everything in Essential", "Integration API", "Dedicated onboarding", "50 AI credits/month"]
+    },
+    "diocese": {
+      "name": "Diocese",
+      "price": "R$ 449/month",
+      "annual_price": "R$ 4,490/year (R$ 374/month)",
+      "features": ["Up to 10 parishes", "Everything in Complete", "Official library", "Consolidated analytics", "Dedicated onboarding", "50 AI credits per parish/month"]
+    }
+  }
+}

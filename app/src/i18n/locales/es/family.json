@@ -1,0 +1,54 @@
+{
+  "portal_badge": "Portal Familiar",
+  "app_name": "Catequesis Viva",
+  "landing": {
+    "tagline": "Acompañe la jornada de fe de sus hijos.",
+    "invite_title": "Entrada por Invitación",
+    "invite_desc": "El portal familiar se accede mediante una invitación enviada por su parroquia. Si aún no ha recibido una, hable con su catequista o coordinador parroquial.",
+    "enter": "Entrar",
+    "have_invite": "¿Ya tiene una invitación?",
+    "insert_code": "Ingresar código",
+    "staff_hint": "¿Es coordinador o catequista?",
+    "main_portal": "Acceda al portal principal"
+  },
+  "login": {
+    "title": "Entrar",
+    "subtitle": "Acceda a su panel familiar.",
+    "no_account": "¿No tiene cuenta?",
+    "create_account": "Crear cuenta",
+    "token_hint": "Al crear cuenta o entrar, podrá aceptar la invitación recibida."
+  },
+  "signup": {
+    "title": "Crear Cuenta",
+    "requires_invite": "El registro en el portal familiar requiere una invitación de su parroquia. Use el enlace que recibió por email.",
+    "have_code": "Tengo un código de invitación",
+    "already_have": "¿Ya tiene cuenta?",
+    "login": "Entrar",
+    "invited_to": "Fuiste invitado(a) a {{parish}} como {{role}}.",
+    "expired_title": "Invitación Expirada",
+    "invalid_title": "Invitación Inválida",
+    "expired_desc": "Esta invitación ya expiró. Pida una nueva a su coordinador.",
+    "invalid_desc": "Token de invitación inválido. Verifique el enlace."
+  },
+  "invite": {
+    "badge": "Invitación",
+    "title": "¡Fuiste Invitado(a)!",
+    "as_role": "como {{role}}",
+    "sent_to": "Invitación enviada a {{email}}",
+    "expires": " · Expira el {{date}}",
+    "accept_error": "Error al aceptar invitación.",
+    "expired_title": "Invitación Expirada",
+    "accepting": "Aceptando...",
+    "accept": "Aceptar Invitación",
+    "login_to_accept": "Para aceptar la invitación, entre o cree una cuenta.",
+    "accepted_title": "¡Invitación Aceptada!",
+    "accepted_desc": "Ahora formas parte de {{parish}} como {{role}}.",
+    "redirecting": "Redirigiendo a su panel...",
+    "not_found_title": "Invitación No Encontrada",
+    "not_found_desc": "No se pudo encontrar esta invitación. Verifique si el enlace es correcto.",
+    "expired_desc_accept": "Esta invitación ya expiró. Pida una nueva a su coordinador o catequista.",
+    "login": "Entrar",
+    "signup": "Crear Cuenta",
+    "back_portal": "Volver al portal familiar"
+  }
+}

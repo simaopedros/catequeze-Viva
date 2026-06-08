@@ -1,32 +1,22 @@
 import { useState, useMemo } from 'react';
-import { FileText, CheckCircle, Clock, Upload, User, Trash2, XCircle, Loader2, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { FileText, CheckCircle, Clock, Upload, Trash2, XCircle, Loader2, X } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
-import { Badge } from '../../client/components/ui/badge';
 import { AppShell } from '../AppShell';
 import { PageHeader } from '../../client/components/PageHeader';
 import { EmptyState } from '../../client/components/EmptyState';
 import { useQuery, listDocuments, listCatechumens, uploadDocument, verifyDocument, rejectDocument, deleteDocument } from 'wasp/client/operations';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { toast } from '../../client/hooks/use-toast';
+import { useDocumentTypeLabels } from '../../i18n/useLabels';
 
-const DOC_TYPES: Record<string, string> = {
-  BAPTISM_CERTIFICATE: 'Cert. Batismo',
-  BIRTH_CERTIFICATE: 'Cert. Nascimento',
-  CONSENT_FORM: 'Autorização',
-  MARRIAGE_CERTIFICATE: 'Cert. Matrimônio',
-  PASTORAL_LETTER: 'Carta Pastoral',
-  OTHER: 'Outro',
-};
-
-const STATUS_CONFIG: Record<string, { icon: any; color: string; label: string }> = {
-  VERIFIED: { icon: CheckCircle, color: 'text-success', label: 'Verificado' },
-  PENDING: { icon: Clock, color: 'text-warning', label: 'Pendente' },
-  REJECTED: { icon: XCircle, color: 'text-destructive', label: 'Rejeitado' },
-};
+const DOC_TYPE_KEYS = ['BAPTISM_CERTIFICATE', 'BIRTH_CERTIFICATE', 'CONSENT_FORM', 'MARRIAGE_CERTIFICATE', 'PASTORAL_LETTER', 'OTHER'] as const;
 
 const COORDINATOR_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'];
 
 export default function DocumentsPage() {
+  const { t: tc } = useTranslation('common');
+  const docTypes = useDocumentTypeLabels(true);
   const { userRole } = useUserContext();
   const isCoordinator = COORDINATOR_ROLES.includes(userRole);
   const canUpload = isCoordinator || ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'GUARDIAN'].includes(userRole);
@@ -39,7 +29,12 @@ export default function DocumentsPage() {
   const [fileBase64, setFileBase64] = useState('');
   const [fileName, setFileName] = useState('');
 
-  // Build a map: catechumenId → { docType → document }
+  const statusConfig = useMemo(() => ({
+    VERIFIED: { icon: CheckCircle, color: 'text-success', label: tc('documents.verifiedLabel') },
+    PENDING: { icon: Clock, color: 'text-warning', label: tc('documents.status_pending') },
+    REJECTED: { icon: XCircle, color: 'text-destructive', label: tc('documents.status_rejected') },
+  }), [tc]);
+
   const docMap = useMemo(() => {
     const map: Record<string, Record<string, any>> = {};
     for (const d of docs) {
@@ -66,69 +61,70 @@ export default function DocumentsPage() {
     if (!uploadingFor || !fileBase64) return;
     try {
       await uploadDocument({
-        name: fileName || DOC_TYPES[uploadingFor.docType],
+        name: fileName || docTypes[uploadingFor.docType as keyof typeof docTypes],
         type: uploadingFor.docType,
         catechumenProfileId: uploadingFor.catechumenId,
         fileBase64,
         mimeType: fileName.split('.').pop() || 'bin',
       });
-      toast({ title: 'Documento enviado!' });
+      toast({ title: tc('documents.sent_success') });
       setUploadingFor(null);
       setFileBase64('');
       setFileName('');
     } catch (e: any) {
-      toast({ title: 'Erro', description: e.message, variant: 'destructive' });
+      toast({ title: tc('error'), description: e.message, variant: 'destructive' });
     }
   };
 
   const handleVerify = async (id: string) => {
-    try { await verifyDocument({ id }); toast({ title: 'Documento verificado!' }); }
-    catch (e: any) { toast({ title: 'Erro', description: e.message, variant: 'destructive' }); }
+    try { await verifyDocument({ id }); toast({ title: tc('documents.verified_success') }); }
+    catch (e: any) { toast({ title: tc('error'), description: e.message, variant: 'destructive' }); }
   };
 
   const handleReject = async () => {
     if (!rejectingId) return;
-    try { await rejectDocument({ id: rejectingId }); toast({ title: 'Documento rejeitado' }); setRejectingId(null); }
-    catch (e: any) { toast({ title: 'Erro', description: e.message, variant: 'destructive' }); }
+    try { await rejectDocument({ id: rejectingId }); toast({ title: tc('documents.rejected_success') }); setRejectingId(null); }
+    catch (e: any) { toast({ title: tc('error'), description: e.message, variant: 'destructive' }); }
   };
 
   const handleDelete = async (id: string) => {
-    try { await deleteDocument({ id }); toast({ title: 'Documento removido' }); }
-    catch (e: any) { toast({ title: 'Erro', description: e.message, variant: 'destructive' }); }
+    try { await deleteDocument({ id }); toast({ title: tc('documents.removed_success') }); }
+    catch (e: any) { toast({ title: tc('error'), description: e.message, variant: 'destructive' }); }
   };
 
   if (loading) return <AppShell><div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div></AppShell>;
 
+  const uploadingCatechumen = uploadingFor
+    ? catechumens.find((c: any) => c.id === uploadingFor.catechumenId)
+    : null;
+
   return (
     <AppShell>
       <div className="space-y-6">
-        <PageHeader title="Documentos" subtitle="Gerir documentos dos catequizandos" />
+        <PageHeader title={tc('documents.title')} subtitle={tc('documents.page_subtitle')} />
 
-        {/* Upload modal */}
         {uploadingFor && (
           <div className="rounded-xl border bg-card p-4 space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-sm">
-                Enviar {DOC_TYPES[uploadingFor.docType]} — {
-                  catechumens.find((c: any) => c.id === uploadingFor.catechumenId)?.firstName
-                } {
-                  catechumens.find((c: any) => c.id === uploadingFor.catechumenId)?.lastName
-                }
+                {tc('documents.upload_title', {
+                  type: docTypes[uploadingFor.docType as keyof typeof docTypes],
+                  name: `${uploadingCatechumen?.firstName || ''} ${uploadingCatechumen?.lastName || ''}`.trim(),
+                })}
               </h3>
               <button onClick={() => { setUploadingFor(null); setFileBase64(''); setFileName(''); }} className="p-1 hover:bg-muted rounded"><X className="h-4 w-4" /></button>
             </div>
             <input type="file" onChange={handleFileChange} className="text-sm" />
-            {fileName && <p className="text-xs text-muted-foreground">Arquivo: {fileName}</p>}
+            {fileName && <p className="text-xs text-muted-foreground">{tc('documents.file_label', { name: fileName })}</p>}
             <div className="flex gap-2">
               <Button size="sm" onClick={handleUpload} disabled={!fileBase64}>
-                <Upload className="mr-1 h-3 w-3" />Enviar
+                <Upload className="mr-1 h-3 w-3" />{tc('upload')}
               </Button>
-              <Button size="sm" variant="outline" onClick={() => { setUploadingFor(null); setFileBase64(''); setFileName(''); }}>Cancelar</Button>
+              <Button size="sm" variant="outline" onClick={() => { setUploadingFor(null); setFileBase64(''); setFileName(''); }}>{tc('cancel')}</Button>
             </div>
           </div>
         )}
 
-        {/* Catechumens with doc checklist */}
         <div className="space-y-4">
           {catechumens.map((c: any) => {
             const catechumenDocs = docMap[c.id] || {};
@@ -144,22 +140,24 @@ export default function DocumentsPage() {
                   <div>
                     <p className="font-medium text-sm">{c.firstName} {c.lastName}</p>
                     <p className="text-xs text-muted-foreground">
-                      {verified}/{Object.keys(DOC_TYPES).length} verificados
-                      {pending > 0 && <span className="text-warning"> · {pending} pendentes</span>}
+                      {tc('documents.verified_of', { verified, total: DOC_TYPE_KEYS.length })}
+                      {pending > 0 && tc('documents.pending_count', { count: pending })}
                     </p>
                   </div>
                 </div>
 
                 <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                  {Object.entries(DOC_TYPES).map(([type, label]) => {
+                  {DOC_TYPE_KEYS.map(type => {
+                    const label = docTypes[type];
                     const doc = catechumenDocs[type];
                     const status = doc?.status || 'MISSING';
-                    const config = STATUS_CONFIG[status] || STATUS_CONFIG.PENDING;
+                    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.PENDING;
+                    const StatusIcon = config.icon;
 
                     return (
                       <div key={type} className={`flex items-center justify-between rounded-lg border p-2.5 ${status === 'MISSING' ? 'border-dashed bg-muted/20' : ''}`}>
                         <div className="flex items-center gap-2 min-w-0">
-                          <config.icon className={`h-4 w-4 flex-shrink-0 ${config.color}`} />
+                          <StatusIcon className={`h-4 w-4 flex-shrink-0 ${config.color}`} />
                           <div className="min-w-0">
                             <p className="text-xs font-medium truncate">{label}</p>
                             {status !== 'MISSING' && (
@@ -217,20 +215,19 @@ export default function DocumentsPage() {
         {catechumens.length === 0 && (
           <EmptyState
             icon={FileText}
-            title="Nenhum catequizando encontrado"
-            description="Cadastre catequizandos para gerir seus documentos."
+            title={tc('documents.no_catechumen_found')}
+            description={tc('documents.empty_register_hint')}
           />
         )}
 
-        {/* Reject confirmation */}
         {rejectingId && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
             <div className="bg-card rounded-xl p-6 shadow-xl max-w-sm w-full mx-4 space-y-3">
-              <h3 className="font-semibold">Rejeitar documento</h3>
-              <p className="text-sm text-muted-foreground">Confirmas que queres rejeitar este documento?</p>
+              <h3 className="font-semibold">{tc('documents.reject_title')}</h3>
+              <p className="text-sm text-muted-foreground">{tc('documents.reject_confirm')}</p>
               <div className="flex gap-2 justify-end">
-                <Button size="sm" variant="outline" onClick={() => setRejectingId(null)}>Cancelar</Button>
-                <Button size="sm" variant="destructive" onClick={handleReject}>Rejeitar</Button>
+                <Button size="sm" variant="outline" onClick={() => setRejectingId(null)}>{tc('cancel')}</Button>
+                <Button size="sm" variant="destructive" onClick={handleReject}>{tc('documents.reject_btn')}</Button>
               </div>
             </div>
           </div>

@@ -1,69 +1,24 @@
 import { Link, useLocation } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { ChevronRight, Home } from 'lucide-react';
-import { cn } from '../../client/utils';
 
 interface BreadcrumbItem {
   label: string;
   to?: string;
 }
 
-// Map route segments to human-readable labels
-const ROUTE_LABELS: Record<string, string> = {
-  app: 'Painel',
-  classes: 'Turmas',
-  catechumens: 'Catequizandos',
-  families: 'Famílias',
-  'content-library': 'Biblioteca',
-  'ai-planner': 'Gerador IA',
-  'my-ai-generations': 'Minhas Gerações IA',
-  activities: 'Atividades',
-  calendar: 'Calendário',
-  bible: 'Bíblia',
-  catechism: 'Catecismo',
-  directory: 'Diretório',
-  messages: 'Mensagens',
-  'sacramental-journeys': 'Sacramentos',
-  documents: 'Documentos',
-  reports: 'Relatórios',
-  settings: 'Configurações',
-  billing: 'Assinatura',
-  parishes: 'Paróquias',
-  communities: 'Comunidades',
-  consents: 'Consentimentos',
-  'catechetical-years': 'Anos Catequéticos',
-  admin: 'Administração',
-  users: 'Usuários',
-  new: 'Novo',
-  edit: 'Editar',
-  import: 'Importar',
-  print: 'Imprimir',
-  meetings: 'Encontros',
-  attendance: 'Presença',
-  members: 'Membros',
-  onboarding: 'Boas-vindas',
-};
+const BREADCRUMB_ROUTE_KEYS = new Set([
+  'new', 'edit', 'import', 'print', 'meetings', 'attendance', 'members', 'users',
+]);
 
-// Singular forms for ID segments based on parent route
-const SINGULAR_LABELS: Record<string, string> = {
-  parishes: 'Paróquia',
-  classes: 'Turma',
-  catechumens: 'Catequizando',
-  families: 'Família',
-  communities: 'Comunidade',
-  users: 'Usuário',
-  meetings: 'Encontro',
-  activities: 'Atividade',
-  messages: 'Conversa',
-  documents: 'Documento',
-  reports: 'Relatório',
-  'catechetical-years': 'Ano Catequético',
-  'sacramental-journeys': 'Sacramento',
-};
+function segmentToNavKey(seg: string): string {
+  return seg.replace(/-/g, '_');
+}
 
 export function Breadcrumbs() {
   const location = useLocation();
+  const { t } = useTranslation('navigation');
 
-  // Skip breadcrumbs on root app route
   if (location.pathname === '/app' || location.pathname === '/app/') {
     return null;
   }
@@ -71,19 +26,28 @@ export function Breadcrumbs() {
   const segments = location.pathname.split('/').filter(Boolean);
   const items: BreadcrumbItem[] = segments.map((seg, i) => {
     const to = '/' + segments.slice(0, i + 1).join('/');
-    // Check if current segment is an ID (UUID or numeric)
     const isId = /^[0-9a-f]{8,}|^\d+$/i.test(seg);
     if (isId) {
-      // Use singular form of parent segment, or fallback to "Detalhe"
-      const parentSeg = segments[i - 1] || '';
-      const singular = SINGULAR_LABELS[parentSeg] || 'Detalhe';
+      const parentSeg = segmentToNavKey(segments[i - 1] || '');
+      const singular = t(`breadcrumbSingular.${parentSeg}`, { defaultValue: '' }) || t('breadcrumb.detail');
       return {
         label: singular,
         to: undefined,
       };
     }
+
+    const navKey = segmentToNavKey(seg);
+    let label: string;
+    if (seg === 'app') {
+      label = t('dashboard');
+    } else if (BREADCRUMB_ROUTE_KEYS.has(seg)) {
+      label = t(`breadcrumb.${seg}`);
+    } else {
+      label = t(navKey, { defaultValue: seg });
+    }
+
     return {
-      label: ROUTE_LABELS[seg] || seg,
+      label,
       to: i < segments.length - 1 ? to : undefined,
     };
   });
@@ -91,7 +55,7 @@ export function Breadcrumbs() {
   if (items.length <= 1) return null;
 
   return (
-    <nav className="flex items-center gap-1 text-sm text-muted-foreground px-1 py-2 overflow-x-auto" aria-label="Breadcrumb">
+    <nav className="flex items-center gap-1 text-sm text-muted-foreground px-1 py-2 overflow-x-auto" aria-label={t('breadcrumb.ariaLabel')}>
       <Link to="/app" className="hover:text-foreground transition-colors flex-shrink-0">
         <Home className="h-3.5 w-3.5" />
       </Link>

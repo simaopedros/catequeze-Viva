@@ -11,10 +11,12 @@ import {
 import { useActiveWorkspace } from '../../../client/hooks/useActiveWorkspace';
 import { useUserContext } from '../../../client/hooks/useUserContext';
 import { SkeletonPage } from '../../../client/components/Skeletons';
+import { formatCurrency, formatNumber } from '../../../i18n/format';
+import { useLocale } from '../../../i18n/useLocale';
 import {
   Users, BookOpen, TrendingUp, Cross, FileText, ShieldCheck,
-  MessageSquare, Building2, AlertTriangle, ChevronDown,
-  Activity, Clock, CheckCircle, XCircle, BarChart3,
+  MessageSquare, Building2, AlertTriangle,
+  Activity, CheckCircle, BarChart3,
   ArrowUp, ArrowDown, Minus,
 } from 'lucide-react';
 import {
@@ -33,17 +35,55 @@ interface KpiBlock {
   displayValue?: string;
 }
 
+const KPI_LABEL_KEYS: Record<string, string> = {
+  'Catequizandos ativos': 'active_catechumens',
+  'Novas matrículas': 'kpi_new_enrollments',
+  'Evasões': 'chart_dropouts',
+  'Transferências': 'kpi_transfers',
+  'Turmas ativas': 'active_classes',
+  'Taxa de ocupação': 'kpi_occupancy_rate',
+  'Turmas sem líder': 'kpi_classes_without_lead',
+  'Razão catequizando:catequista': 'kpi_catechumen_catechist_ratio',
+  'Presença média': 'avg_attendance',
+  'Encontros realizados': 'kpi_meetings_completed',
+  'Encontros planejados': 'kpi_meetings_planned',
+  'Jornadas ativas': 'funnel_active_journeys',
+  'Marcos concluídos': 'funnel_completed_milestones',
+  'Marcos pendentes': 'kpi_pending_milestones',
+  'Marcos atrasados': 'kpi_overdue_milestones',
+  'Em revisão': 'kpi_in_review',
+  'Publicados no período': 'kpi_published_in_period',
+  '% Conteúdo IA': 'kpi_ai_content_pct',
+  'Documentos totais': 'kpi_total_documents',
+  'Documentos pendentes': 'pending_documents',
+  'Consentimentos ausentes': 'kpi_missing_consents',
+  'Consentimentos expirando': 'kpi_expiring_consents',
+  'Campanhas enviadas': 'kpi_campaigns_sent',
+  'Taxa de leitura': 'kpi_read_rate',
+  'Plano': 'kpi_plan',
+  'Status': 'kpi_status',
+  'Dias para fim do trial': 'kpi_trial_days_remaining',
+};
+
+function translateKpiLabel(label: string, t: (key: string) => string): string {
+  const key = KPI_LABEL_KEYS[label];
+  return key ? t(key) : label;
+}
+
 // ─── KPI Card ─────────────────────────────────────────────────────────────────
 
 function KpiCard({ kpi, icon: Icon, colorClass }: { kpi: KpiBlock; icon: any; colorClass: string }) {
+  const { t } = useTranslation('dashboard');
+  const { currentLocale } = useLocale();
+
   const formatted = useMemo(() => {
     if (kpi.displayValue) return kpi.displayValue;
     if (kpi.format === 'text') return kpi.deltaLabel || '—';
     if (kpi.format === 'percent') return `${kpi.value}%`;
-    if (kpi.format === 'days') return `${kpi.value} dias`;
-    if (kpi.format === 'currency') return `R$ ${kpi.value.toFixed(2)}`;
-    return kpi.value.toLocaleString('pt-BR');
-  }, [kpi]);
+    if (kpi.format === 'days') return `${kpi.value} ${t('days')}`;
+    if (kpi.format === 'currency') return formatCurrency(kpi.value, currentLocale);
+    return formatNumber(kpi.value, currentLocale);
+  }, [kpi, t, currentLocale]);
 
   return (
     <div className="rounded-xl border bg-card p-4 shadow-sm hover:shadow-md transition-shadow">
@@ -52,7 +92,7 @@ function KpiCard({ kpi, icon: Icon, colorClass }: { kpi: KpiBlock; icon: any; co
           <Icon className="h-4 w-4" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-muted-foreground uppercase tracking-wider truncate">{kpi.label}</p>
+          <p className="text-xs text-muted-foreground uppercase tracking-wider truncate">{translateKpiLabel(kpi.label, t)}</p>
           <div className="flex items-baseline gap-2 mt-0.5">
             <p className="text-xl font-bold">{formatted}</p>
             {kpi.delta !== null && kpi.delta !== undefined && (
@@ -96,8 +136,6 @@ function DomainSection({ title, icon: Icon, kpis, colorClass }: {
 // ─── Alert Banner ────────────────────────────────────────────────────────────
 
 function AlertBanner({ alerts }: { alerts?: any[] }) {
-  const { t } = useTranslation('dashboard');
-
   if (!alerts?.length) return null;
 
   const severityColors: Record<string, string> = {
@@ -124,10 +162,20 @@ function AlertBanner({ alerts }: { alerts?: any[] }) {
   );
 }
 
+function getRiskLabel(riskLevel: string, t: (key: string) => string): string {
+  const map: Record<string, string> = {
+    BAIXO: t('risk_low'),
+    MÉDIO: t('risk_medium'),
+    ALTO: t('risk_high'),
+  };
+  return map[riskLevel] ?? riskLevel;
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export function InstitutionalDashboard() {
   const { t } = useTranslation('dashboard');
+  const { t: tcl } = useTranslation('classes');
   const { workspaceId, workspaceType, workspacePlan } = useActiveWorkspace();
   const { communityId: userCommunityId } = useUserContext();
 
@@ -198,42 +246,45 @@ export function InstitutionalDashboard() {
     { enabled: scope === 'parish' && !!queryScopeId },
   );
 
-  // ── Chart data ── (must be before any conditional return for hook ordering)
+  const enrollmentsKey = t('chart_enrollments');
+  const dropoutsKey = t('chart_dropouts');
+  const attendanceKey = t('chart_attendance');
+  const milestonesKey = t('chart_milestones');
 
   const trendChartData = useMemo(() => {
     if (!trends?.enrollments?.labels) return [];
     return trends.enrollments.labels.map((label: string, i: number) => ({
       name: label,
-      Matriculados: trends.enrollments.datasets[0]?.data[i] || 0,
-      Evasões: trends.enrollments.datasets[1]?.data[i] || 0,
-      Presença: trends.attendance?.datasets[0]?.data[i] || 0,
-      Marcos: trends.sacramental?.datasets[0]?.data[i] || 0,
+      [enrollmentsKey]: trends.enrollments.datasets[0]?.data[i] || 0,
+      [dropoutsKey]: trends.enrollments.datasets[1]?.data[i] || 0,
+      [attendanceKey]: trends.attendance?.datasets[0]?.data[i] || 0,
+      [milestonesKey]: trends.sacramental?.datasets[0]?.data[i] || 0,
     }));
-  }, [trends]);
+  }, [trends, enrollmentsKey, dropoutsKey, attendanceKey, milestonesKey]);
 
   const funnelData = useMemo(() => {
     if (!overview?.sacraments) return [];
     return [
-      { name: 'Jornadas ativas', value: overview.sacraments[0]?.value || 0, fill: '#8b5cf6' },
-      { name: 'Marcos concluídos', value: overview.sacraments[1]?.value || 0, fill: '#a78bfa' },
-      { name: 'Pendentes', value: overview.sacraments[2]?.value || 0, fill: '#c4b5fd' },
+      { name: t('funnel_active_journeys'), value: overview.sacraments[0]?.value || 0, fill: '#8b5cf6' },
+      { name: t('funnel_completed_milestones'), value: overview.sacraments[1]?.value || 0, fill: '#a78bfa' },
+      { name: t('funnel_pending'), value: overview.sacraments[2]?.value || 0, fill: '#c4b5fd' },
     ];
-  }, [overview]);
+  }, [overview, t]);
 
   const scopeOptions = useMemo(() => {
     const options: { value: string; label: string }[] = [];
-    if (workspaceType === 'DIOCESE') options.push({ value: 'diocese', label: 'Diocese' });
-    options.push({ value: 'parish', label: 'Paróquia' });
-    if (workspaceType === 'PARISH') options.push({ value: 'community', label: 'Comunidade' });
+    if (workspaceType === 'DIOCESE') options.push({ value: 'diocese', label: t('scope_diocese') });
+    options.push({ value: 'parish', label: t('scope_parish') });
+    if (workspaceType === 'PARISH') options.push({ value: 'community', label: t('scope_community') });
     return options;
-  }, [workspaceType]);
+  }, [workspaceType, t]);
 
-  const periodOptions = [
-    { value: 'month', label: 'Mês' },
-    { value: 'quarter', label: 'Trimestre' },
-    { value: 'year', label: 'Ano' },
-    { value: 'all', label: 'Todo período' },
-  ];
+  const periodOptions = useMemo(() => [
+    { value: 'month', label: t('period_month') },
+    { value: 'quarter', label: t('period_quarter') },
+    { value: 'year', label: t('period_year') },
+    { value: 'all', label: t('period_all') },
+  ], [t]);
 
   if (scope === 'community' && loadingCommunities) {
     return <SkeletonPage />;
@@ -242,7 +293,7 @@ export function InstitutionalDashboard() {
   if (scope === 'community' && !loadingCommunities && communities.length === 0) {
     return (
       <div className="rounded-xl border bg-card p-8 text-center text-muted-foreground">
-        Nenhuma comunidade encontrada para este escopo.
+        {t('no_communities_scope')}
       </div>
     );
   }
@@ -258,7 +309,7 @@ export function InstitutionalDashboard() {
   if (overviewError) {
     return (
       <div className="rounded-xl border border-destructive/40 bg-destructive/5 p-6 text-destructive">
-        Não foi possível carregar o painel: {overviewError.message}
+        {t('load_dashboard_error')}: {overviewError.message}
       </div>
     );
   }
@@ -268,9 +319,9 @@ export function InstitutionalDashboard() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Painel de Gestão Pastoral</h1>
+          <h1 className="text-2xl font-bold">{t('institutional_title')}</h1>
           <p className="text-muted-foreground text-sm">
-            {overview?.periodLabel || ''}
+            {t(`period_label_${period}`)}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -321,50 +372,50 @@ export function InstitutionalDashboard() {
       {overview && (
         <div className="space-y-6">
           <DomainSection
-            title="Pessoas"
+            title={t('domain_people')}
             icon={Users}
             kpis={overview.people}
             colorClass="text-primary bg-primary/10"
           />
           <DomainSection
-            title="Turmas"
+            title={t('domain_classes')}
             icon={BookOpen}
             kpis={overview.classes}
             colorClass="text-success bg-success/10"
           />
           <DomainSection
-            title="Frequência"
+            title={t('domain_attendance')}
             icon={TrendingUp}
             kpis={overview.attendance}
             colorClass="text-warning bg-warning/10"
           />
           <DomainSection
-            title="Sacramentos"
+            title={t('domain_sacraments')}
             icon={Cross}
             kpis={overview.sacraments}
             colorClass="text-secondary-foreground bg-secondary"
           />
           <DomainSection
-            title="Conteúdo"
+            title={t('domain_content')}
             icon={FileText}
             kpis={overview.content}
             colorClass="text-indigo-500 bg-indigo-500/10"
           />
           <DomainSection
-            title="Conformidade"
+            title={t('domain_compliance')}
             icon={ShieldCheck}
             kpis={overview.compliance}
             colorClass="text-red-500 bg-red-500/10"
           />
           <DomainSection
-            title="Comunicação"
+            title={t('domain_communication')}
             icon={MessageSquare}
             kpis={overview.communication}
             colorClass="text-cyan-500 bg-cyan-500/10"
           />
           {overview.license && overview.license.length > 0 && (
             <DomainSection
-              title="Licença"
+              title={t('domain_license')}
               icon={Building2}
               kpis={overview.license}
               colorClass="text-emerald-500 bg-emerald-500/10"
@@ -380,7 +431,7 @@ export function InstitutionalDashboard() {
           <div className="rounded-xl border bg-card p-4">
             <h3 className="font-semibold text-sm uppercase text-muted-foreground mb-4 flex items-center gap-2">
               <Activity className="h-4 w-4" />
-              Matrículas vs Evasão
+              {t('chart_enrollments_vs_dropouts')}
             </h3>
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={trendChartData}>
@@ -388,8 +439,8 @@ export function InstitutionalDashboard() {
                 <XAxis dataKey="name" tick={{ fontSize: 11 }} className="text-muted-foreground" />
                 <YAxis tick={{ fontSize: 11 }} className="text-muted-foreground" />
                 <Tooltip />
-                <Line type="monotone" dataKey="Matriculados" stroke="#2563eb" strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="Evasões" stroke="#ef4444" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey={enrollmentsKey} stroke="#2563eb" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey={dropoutsKey} stroke="#ef4444" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -398,7 +449,7 @@ export function InstitutionalDashboard() {
           <div className="rounded-xl border bg-card p-4">
             <h3 className="font-semibold text-sm uppercase text-muted-foreground mb-4 flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
-              Presença ao longo do tempo
+              {t('chart_attendance_trend')}
             </h3>
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={trendChartData}>
@@ -406,7 +457,7 @@ export function InstitutionalDashboard() {
                 <XAxis dataKey="name" tick={{ fontSize: 11 }} className="text-muted-foreground" />
                 <YAxis tick={{ fontSize: 11 }} domain={[0, 100]} className="text-muted-foreground" />
                 <Tooltip />
-                <Line type="monotone" dataKey="Presença" stroke="#22c55e" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey={attendanceKey} stroke="#22c55e" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -416,7 +467,7 @@ export function InstitutionalDashboard() {
             <div className="rounded-xl border bg-card p-4">
               <h3 className="font-semibold text-sm uppercase text-muted-foreground mb-4 flex items-center gap-2">
                 <Cross className="h-4 w-4" />
-                Funil Sacramental
+                {t('chart_sacramental_funnel')}
               </h3>
               <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
@@ -444,7 +495,7 @@ export function InstitutionalDashboard() {
           <div className="rounded-xl border bg-card p-4">
             <h3 className="font-semibold text-sm uppercase text-muted-foreground mb-4 flex items-center gap-2">
               <CheckCircle className="h-4 w-4" />
-              Marcos Sacramentais Concluídos
+              {t('chart_milestones_completed')}
             </h3>
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={trendChartData}>
@@ -452,7 +503,7 @@ export function InstitutionalDashboard() {
                 <XAxis dataKey="name" tick={{ fontSize: 11 }} className="text-muted-foreground" />
                 <YAxis tick={{ fontSize: 11 }} className="text-muted-foreground" />
                 <Tooltip />
-                <Bar dataKey="Marcos" fill="#a855f7" radius={[4, 4, 0, 0]} />
+                <Bar dataKey={milestonesKey} fill="#a855f7" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -463,18 +514,18 @@ export function InstitutionalDashboard() {
       {comparison && comparison.length > 0 && scope === 'parish' && (
         <div className="rounded-xl border bg-card p-4">
           <h3 className="font-semibold text-sm uppercase text-muted-foreground mb-4 flex items-center gap-1">
-            <BarChart3 className="h-4 w-4" /> Comparativo de Turmas
+            <BarChart3 className="h-4 w-4" /> {t('table_class_comparison')}
           </h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-left text-xs text-muted-foreground uppercase border-b">
-                  <th className="pb-2 pr-3">Turma</th>
-                  <th className="pb-2 pr-3">Etapa</th>
-                  <th className="pb-2 pr-3 text-center">Inscritos</th>
-                  <th className="pb-2 pr-3 text-center">Encontros</th>
-                  <th className="pb-2 pr-3 text-center">Presença</th>
-                  <th className="pb-2 text-center">Risco</th>
+                  <th className="pb-2 pr-3">{t('table_class')}</th>
+                  <th className="pb-2 pr-3">{tcl('stage')}</th>
+                  <th className="pb-2 pr-3 text-center">{tcl('enrolled')}</th>
+                  <th className="pb-2 pr-3 text-center">{t('table_meetings')}</th>
+                  <th className="pb-2 pr-3 text-center">{t('table_attendance')}</th>
+                  <th className="pb-2 text-center">{t('table_risk')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -495,7 +546,7 @@ export function InstitutionalDashboard() {
                         c.riskLevel === 'MÉDIO' ? 'bg-warning/10 text-warning' :
                         'bg-destructive/10 text-destructive'
                       }`}>
-                        {c.riskLevel}
+                        {getRiskLabel(c.riskLevel, t)}
                       </span>
                     </td>
                   </tr>

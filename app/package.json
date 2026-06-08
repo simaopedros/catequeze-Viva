@@ -64,8 +64,10 @@
     "vitest": "^3.2.4"
   },
   "scripts": {
+    "i18n:build": "node scripts/build-i18n.mjs",
+    "i18n:check": "node scripts/build-i18n.mjs --check",
     "test": "vitest run",
-    "test:unit": "vitest run src/__tests__/totp.test.ts",
+    "test:unit": "vitest run src/__tests__/totp.test.ts src/__tests__/i18n.test.ts",
     "test:integration": "NODE_ENV=development vitest run --exclude src/__tests__/totp.test.ts"
   }
 }

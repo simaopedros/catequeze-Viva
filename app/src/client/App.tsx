@@ -17,6 +17,9 @@ import { isFamilyPortalHost } from "../shared/portal";
 import FamilyLandingPage from "../catequese/pages/family/FamilyLandingPage";
 
 import "../i18n/config";
+import { applyStoredLocale } from "../i18n/useLocale";
+
+applyStoredLocale();
 
 export default function App() {
   const location = useLocation();

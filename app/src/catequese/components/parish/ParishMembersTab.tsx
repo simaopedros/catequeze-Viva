@@ -1,19 +1,39 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../../client/components/ui/button';
 import { Badge } from '../../../client/components/ui/badge';
 import { ConfirmDialog } from '../../../client/components/ConfirmDialog';
 import { Users, UserPlus, Mail, Trash2 } from 'lucide-react';
-import { ROLE_LABELS, STATUS_LABELS } from '../../../shared/constants';
+import { useRoleLabels, useMembershipStatusLabels } from '../../../i18n/useLabels';
+
+const INVITE_ROLE_KEYS = [
+  'PARISH_COORDINATOR',
+  'COMMUNITY_COORDINATOR',
+  'LEAD_CATECHIST',
+  'ASSISTANT_CATECHIST',
+  'GUARDIAN',
+  'CATECHUMEN',
+  'CONTENT_REVIEWER',
+  'PASTORAL_VIEWER',
+] as const;
 
 interface ParishMembersTabProps {
   members: any[];
   communities: any[];
   households: any[];
-  onInvite: (email: string, role: string, communityId: string, householdId: string) => Promise<string>;
+  onInvite: (email: string, role: string, communityId: string, householdId: string) => Promise<{ msg: string; isError: boolean }>;
   onRemove: (membershipId: string) => Promise<void>;
 }
 
 export function ParishMembersTab({ members, communities, households, onInvite, onRemove }: ParishMembersTabProps) {
+  const { t } = useTranslation('common');
+  const { t: tp } = useTranslation('parishes');
+  const roleLabels = useRoleLabels();
+  const statusLabels = useMembershipStatusLabels();
+  const inviteRoles = useMemo(
+    () => INVITE_ROLE_KEYS.map((value) => ({ value, label: roleLabels[value] })),
+    [roleLabels],
+  );
   const [showInvite, setShowInvite] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('GUARDIAN');
@@ -21,21 +41,27 @@ export function ParishMembersTab({ members, communities, households, onInvite, o
   const [inviteHouseholdId, setInviteHouseholdId] = useState('');
   const [inviting, setInviting] = useState(false);
   const [inviteMsg, setInviteMsg] = useState('');
+  const [inviteMsgIsError, setInviteMsgIsError] = useState(false);
   const [removeTarget, setRemoveTarget] = useState<string | null>(null);
 
   const handleInvite = async () => {
     if (!inviteEmail) return;
     setInviting(true);
     setInviteMsg('');
+    setInviteMsgIsError(false);
     try {
-      const msg = await onInvite(inviteEmail, inviteRole, inviteCommunityId, inviteHouseholdId);
-      setInviteMsg(msg || 'Convite enviado!');
-      setInviteEmail('');
-      setInviteCommunityId('');
-      setInviteHouseholdId('');
-      setShowInvite(false);
+      const result = await onInvite(inviteEmail, inviteRole, inviteCommunityId, inviteHouseholdId);
+      setInviteMsg(result.msg || tp('invite_sent'));
+      setInviteMsgIsError(result.isError);
+      if (!result.isError) {
+        setInviteEmail('');
+        setInviteCommunityId('');
+        setInviteHouseholdId('');
+        setShowInvite(false);
+      }
     } catch (e: any) {
-      setInviteMsg(e.message || 'Erro ao convidar.');
+      setInviteMsg(e.message || t('error_invite'));
+      setInviteMsgIsError(true);
     }
     setInviting(false);
   };
@@ -53,45 +79,40 @@ export function ParishMembersTab({ members, communities, households, onInvite, o
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">{members.length} membros</p>
-        <Button size="sm" onClick={() => setShowInvite(!showInvite)}><UserPlus className="mr-1 h-4 w-4" />Convidar</Button>
+        <p className="text-sm text-muted-foreground">{tp('members_count_short', { count: members.length })}</p>
+        <Button size="sm" onClick={() => setShowInvite(!showInvite)}><UserPlus className="mr-1 h-4 w-4" />{tp('invite')}</Button>
       </div>
 
       {showInvite && (
         <div className="rounded-xl border bg-card p-4 space-y-3">
-          <h3 className="font-medium text-sm">Convidar novo membro</h3>
+          <h3 className="font-medium text-sm">{tp('invite_member')}</h3>
           <div className="flex flex-wrap gap-3">
-            <input value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} className="flex-1 min-w-[200px] h-9 rounded-md border border-input bg-background px-3 text-sm" placeholder="email@exemplo.com" type="email" />
+            <input value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} className="flex-1 min-w-[200px] h-9 rounded-md border border-input bg-background px-3 text-sm" placeholder={t('families.email_placeholder')} type="email" />
             <select value={inviteRole} onChange={e => setInviteRole(e.target.value)} className="h-9 rounded-md border border-input bg-background px-3 text-sm">
-              <option value="PARISH_COORDINATOR">Coordenador</option>
-              <option value="COMMUNITY_COORDINATOR">Coord. Comunidade</option>
-              <option value="LEAD_CATECHIST">Catequista Resp.</option>
-              <option value="ASSISTANT_CATECHIST">Catequista Aux.</option>
-              <option value="GUARDIAN">Responsável</option>
-              <option value="CATECHUMEN">Catequizando</option>
-              <option value="CONTENT_REVIEWER">Revisor</option>
-              <option value="PASTORAL_VIEWER">Pastoral</option>
+              {inviteRoles.map((r) => (
+                <option key={r.value} value={r.value}>{r.label}</option>
+              ))}
             </select>
             <select value={inviteCommunityId} onChange={e => setInviteCommunityId(e.target.value)} className="h-9 rounded-md border border-input bg-background px-3 text-sm">
-              <option value="">Toda a paróquia</option>
+              <option value="">{tp('all_parish')}</option>
               {communities.map((c: any) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
             {(inviteRole === 'GUARDIAN' || inviteRole === 'CATECHUMEN') && (
               <select value={inviteHouseholdId} onChange={e => setInviteHouseholdId(e.target.value)} className="h-9 rounded-md border border-input bg-background px-3 text-sm min-w-[180px]">
-                <option value="">Sem família (vincular depois)</option>
+                <option value="">{tp('no_family_later')}</option>
                 {households.map((h: any) => (
                   <option key={h.id} value={h.id}>{h.name}</option>
                 ))}
               </select>
             )}
             <Button size="sm" onClick={handleInvite} disabled={inviting || !inviteEmail}>
-              <Mail className="mr-1 h-3 w-3" />{inviting ? '...' : 'Enviar'}
+              <Mail className="mr-1 h-3 w-3" />{inviting ? '...' : tp('send')}
             </Button>
           </div>
           {inviteMsg && (
-            <p className={'text-xs ' + (inviteMsg.includes('Erro') ? 'text-destructive' : 'text-green-600')}>{inviteMsg}</p>
+            <p className={'text-xs ' + (inviteMsgIsError ? 'text-destructive' : 'text-green-600')}>{inviteMsg}</p>
           )}
         </div>
       )}
@@ -99,31 +120,31 @@ export function ParishMembersTab({ members, communities, households, onInvite, o
       {members.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center">
           <div className="mb-4 rounded-full bg-primary/10 p-3"><Users className="h-8 w-8 text-primary" /></div>
-          <h3 className="text-lg font-semibold">Nenhum membro</h3>
-          <p className="text-sm text-muted-foreground">Convide coordenadores, catequistas e responsáveis.</p>
+          <h3 className="text-lg font-semibold">{tp('no_members')}</h3>
+          <p className="text-sm text-muted-foreground">{tp('no_members_desc')}</p>
         </div>
       ) : (
         <div className="rounded-xl border bg-card overflow-hidden">
           <table className="w-full text-sm">
             <thead className="bg-muted/50 border-b">
               <tr>
-                <th className="text-left px-4 py-3 font-medium">Nome</th>
-                <th className="text-left px-4 py-3 font-medium">Email</th>
-                <th className="text-left px-4 py-3 font-medium">Comunidade</th>
-                <th className="text-left px-4 py-3 font-medium">Função</th>
-                <th className="text-left px-4 py-3 font-medium">Status</th>
-                <th className="text-right px-4 py-3 font-medium">Ações</th>
+                <th className="text-left px-4 py-3 font-medium">{tp('name')}</th>
+                <th className="text-left px-4 py-3 font-medium">{tp('email')}</th>
+                <th className="text-left px-4 py-3 font-medium">{tp('communities')}</th>
+                <th className="text-left px-4 py-3 font-medium">{tp('role')}</th>
+                <th className="text-left px-4 py-3 font-medium">{tp('status')}</th>
+                <th className="text-right px-4 py-3 font-medium">{tp('actions')}</th>
               </tr>
             </thead>
             <tbody>
               {members.map((m: any) => {
-                const status = STATUS_LABELS[m.status] || STATUS_LABELS.INACTIVE;
+                const status = statusLabels[m.status as keyof typeof statusLabels] || statusLabels.INACTIVE;
                 return (
                   <tr key={m.id} className="border-b last:border-0 hover:bg-muted/30">
                     <td className="px-4 py-3">{m.user?.firstName || m.user?.email?.split('@')[0] || '\u2014'}</td>
                     <td className="px-4 py-3 text-muted-foreground">{m.user?.email || '\u2014'}</td>
                     <td className="px-4 py-3 text-muted-foreground">{m.community?.name || '\u2014'}</td>
-                    <td className="px-4 py-3"><Badge variant="outline" className="text-xs">{ROLE_LABELS[m.role] || m.role}</Badge></td>
+                    <td className="px-4 py-3"><Badge variant="outline" className="text-xs">{roleLabels[m.role as keyof typeof roleLabels] || m.role}</Badge></td>
                     <td className="px-4 py-3"><span className={'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ' + status.color}>{status.label}</span></td>
                     <td className="px-4 py-3 text-right">
                       <button onClick={() => setRemoveTarget(m.id)} className="text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="h-4 w-4" /></button>
@@ -139,9 +160,9 @@ export function ParishMembersTab({ members, communities, households, onInvite, o
       <ConfirmDialog
         open={!!removeTarget}
         onOpenChange={(open) => { if (!open) setRemoveTarget(null); }}
-        title="Remover membro"
-        description="Tem certeza que deseja remover este membro da paróquia? Esta ação não pode ser desfeita."
-        confirmLabel="Remover"
+        title={tp('member_remove_title')}
+        description={t('remove_confirm')}
+        confirmLabel={t('remove')}
         variant="destructive"
         onConfirm={handleRemove}
       />

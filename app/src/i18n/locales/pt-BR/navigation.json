@@ -28,5 +28,31 @@
   "bible": "Bíblia",
   "catechism": "Catecismo",
   "directory": "Diretório",
-  "admin": "Administração"
+  "breadcrumb": {
+    "ariaLabel": "Navegação",
+    "detail": "Detalhe",
+    "new": "Novo",
+    "edit": "Editar",
+    "import": "Importar",
+    "print": "Imprimir",
+    "meetings": "Encontros",
+    "attendance": "Presença",
+    "members": "Membros",
+    "users": "Usuários"
+  },
+  "breadcrumbSingular": {
+    "parishes": "Paróquia",
+    "classes": "Turma",
+    "catechumens": "Catequizando",
+    "families": "Família",
+    "communities": "Comunidade",
+    "users": "Usuário",
+    "meetings": "Encontro",
+    "activities": "Atividade",
+    "messages": "Conversa",
+    "documents": "Documento",
+    "reports": "Relatório",
+    "catechetical_years": "Ano Catequético",
+    "sacramental_journeys": "Sacramento"
+  }
 }

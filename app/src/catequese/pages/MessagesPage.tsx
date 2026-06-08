@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router';
 import { MessageSquareText, ArrowLeft, Users, Info, BellOff, LogOut, Settings2 } from 'lucide-react';
 import { AppShell } from '../AppShell';
@@ -18,6 +19,7 @@ import { useAuth } from 'wasp/client/auth';
 import { cn } from '../../client/utils';
 
 export default function MessagesPage() {
+  const { t } = useTranslation('messages');
   const { data: user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeConversationId, setActiveConversationId] = useState<string | null>(
@@ -159,8 +161,8 @@ export default function MessagesPage() {
       ? activeConv.participants
           .filter((p: any) => p.userId !== user?.id)
           .map((p: any) => [p.user.firstName, p.user.lastName].filter(Boolean).join(' '))
-          .join(', ') || 'Conversa'
-      : activeConv?.class?.name || 'Grupo');
+          .join(', ') || t('default_conversation')
+      : activeConv?.class?.name || t('default_group'));
   const myParticipant = activeConv?.participants?.find((p: any) => p.userId === user?.id);
 
   return (
@@ -200,10 +202,10 @@ export default function MessagesPage() {
                 <div className="flex-1 min-w-0">
                   <h2 className="font-semibold text-sm truncate">{conversationName}</h2>
                   <p className="text-[10px] text-muted-foreground">
-                    {activeConv.type === 'DIRECT' ? 'Conversa direta' : (
-                      `${activeConv.participants.length} participantes`
+                    {activeConv.type === 'DIRECT' ? t('direct_chat') : (
+                      t('participants_count', { count: activeConv.participants.length })
                     )}
-                    {myParticipant?.mutedAt && ' · Silenciado'}
+                    {myParticipant?.mutedAt && ` · ${t('muted')}`}
                   </p>
                 </div>
 
@@ -211,7 +213,7 @@ export default function MessagesPage() {
                   <button
                     onClick={handleMute}
                     className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
-                    title={myParticipant?.mutedAt ? 'Ativar notificações' : 'Silenciar'}
+                    title={myParticipant?.mutedAt ? t('unmute') : t('mute')}
                   >
                     <BellOff className={cn('h-4 w-4', myParticipant?.mutedAt && 'text-primary')} />
                   </button>
@@ -222,7 +224,7 @@ export default function MessagesPage() {
                         'h-8 w-8 flex items-center justify-center rounded-lg hover:bg-muted transition-colors',
                         showDetails && 'bg-muted'
                       )}
-                      title="Detalhes"
+                      title={t('details')}
                     >
                       <Info className="h-4 w-4" />
                     </button>
@@ -249,7 +251,7 @@ export default function MessagesPage() {
                 {/* Details sidebar */}
                 {showDetails && activeConv.type !== 'DIRECT' && (
                   <div className="w-64 border-l bg-card/50 p-4 overflow-y-auto hidden lg:block animate-in slide-in-from-right-2 duration-200">
-                    <h3 className="font-semibold text-sm mb-3">Participantes</h3>
+                    <h3 className="font-semibold text-sm mb-3">{t('participants')}</h3>
                     <div className="space-y-2">
                       {activeConv.participants.map((p: any) => (
                         <div key={p.id} className="flex items-center gap-2.5">
@@ -273,7 +275,7 @@ export default function MessagesPage() {
                         className="mt-6 w-full flex items-center gap-2 text-xs text-destructive hover:text-destructive/80 py-2 rounded-lg hover:bg-destructive/5 px-2 transition-colors"
                       >
                         <LogOut className="h-3.5 w-3.5" />
-                        Sair do grupo
+                        {t('leave_group')}
                       </button>
                     )}
                   </div>
@@ -286,15 +288,13 @@ export default function MessagesPage() {
               <div className="h-20 w-20 rounded-3xl bg-gradient-to-br from-primary/20 via-primary/10 to-transparent flex items-center justify-center mb-5 animate-in zoom-in-50 duration-500">
                 <MessageSquareText className="h-9 w-9 text-primary/60" />
               </div>
-              <h2 className="text-lg font-semibold mb-1.5">Hub de Comunicação</h2>
-              <p className="text-sm text-muted-foreground max-w-sm mb-5">
-                Converse com catequistas, coordenadores e responsáveis da sua paróquia. Mensagens diretas, grupos e canais de aviso.
-              </p>
+              <h2 className="text-lg font-semibold mb-1.5">{t('hub_title')}</h2>
+              <p className="text-sm text-muted-foreground max-w-sm mb-5">{t('hub_desc')}</p>
               <button
                 onClick={() => setShowNewDialog(true)}
                 className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 shadow-md hover:shadow-lg transition-all active:scale-95"
               >
-                Iniciar uma conversa
+                {t('start_conversation')}
               </button>
             </div>
           )}

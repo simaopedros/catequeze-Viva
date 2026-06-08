@@ -1,5 +1,6 @@
-import { useParams, Link, useNavigate } from 'react-router';
+import { useParams, Link } from 'react-router';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { Textarea } from '../../client/components/ui/textarea';
 import { Input } from '../../client/components/ui/input';
@@ -8,14 +9,15 @@ import { Badge } from '../../client/components/ui/badge';
 import { ArrowLeft, Save, Sparkles, Clock, Loader2 } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { ReferencePicker } from '../../client/components/ReferencePicker';
-import { getContentItem, addBibleRef, removeBibleRef, addCatechismRef, removeCatechismRef, addDirectoryRef, removeDirectoryRef, updateContentStatus, updateContentItem } from 'wasp/client/operations';
+import { getContentItem, addBibleRef, removeBibleRef, addCatechismRef, removeCatechismRef, addDirectoryRef, removeDirectoryRef, updateContentItem } from 'wasp/client/operations';
 import { enhanceContentWithAi } from 'wasp/client/operations';
 import { toast } from '../../client/hooks/use-toast';
 
 export default function EditContentPage() {
+  const { t } = useTranslation('content');
+  const { t: tc } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
   const contentId = id ?? '';
-  const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [theme, setTheme] = useState('');
   const [pastoralObjective, setPastoralObjective] = useState('');
@@ -68,7 +70,7 @@ export default function EditContentPage() {
           setBibleRefs(bible);
           setCatechismRefs(catechism);
         }
-      } catch (e) { console.error('Erro ao carregar conteúdo:', e); }
+      } catch (e) { console.error(e); }
     })();
   }, [id]);
 
@@ -76,37 +78,37 @@ export default function EditContentPage() {
     try {
       const result = await addBibleRef({ contentId: contentId, verseId });
       setBibleRefs(prev => [...prev, { id: result.id, verseId, label, text }]);
-    } catch (e: any) { toast({ title: 'Erro', description: 'Erro: ' + e.message, variant: 'destructive' }); }
+    } catch (e: any) { toast({ title: tc('error'), description: e.message, variant: 'destructive' }); }
   };
   const handleRemoveBibleRef = async (refId: string) => {
     try {
       await removeBibleRef({ id: refId });
       setBibleRefs(prev => prev.filter(r => r.id !== refId));
-    } catch (e: any) { toast({ title: 'Erro', description: 'Erro: ' + e.message, variant: 'destructive' }); }
+    } catch (e: any) { toast({ title: tc('error'), description: e.message, variant: 'destructive' }); }
   };
   const handleAddCatechismRef = async (entryId: string, label: string, question: string) => {
     try {
       const result = await addCatechismRef({ contentId: contentId, entryId });
       setCatechismRefs(prev => [...prev, { id: result.id, entryId, label, question }]);
-    } catch (e: any) { toast({ title: 'Erro', description: 'Erro: ' + e.message, variant: 'destructive' }); }
+    } catch (e: any) { toast({ title: tc('error'), description: e.message, variant: 'destructive' }); }
   };
   const handleAddDirectoryRef = async (entryId: string, label: string, content: string) => {
     try {
       const result = await addDirectoryRef({ contentId: contentId, entryId });
       setDirectoryRefs(prev => [...prev, { id: result.id, entryId, label, content }]);
-    } catch (e: any) { toast({ title: "Erro", description: "Erro: " + e.message, variant: "destructive" }); }
+    } catch (e: any) { toast({ title: tc('error'), description: e.message, variant: 'destructive' }); }
   };
   const handleRemoveDirectoryRef = async (refId: string) => {
     try {
       await removeDirectoryRef({ id: refId });
       setDirectoryRefs(prev => prev.filter(r => r.id !== refId));
-    } catch (e: any) { toast({ title: "Erro", description: "Erro: " + e.message, variant: "destructive" }); }
+    } catch (e: any) { toast({ title: tc('error'), description: e.message, variant: 'destructive' }); }
   };
   const handleRemoveCatechismRef = async (refId: string) => {
     try {
       await removeCatechismRef({ id: refId });
       setCatechismRefs(prev => prev.filter(r => r.id !== refId));
-    } catch (e: any) { toast({ title: 'Erro', description: 'Erro: ' + e.message, variant: 'destructive' }); }
+    } catch (e: any) { toast({ title: tc('error'), description: e.message, variant: 'destructive' }); }
   };
 
   const handleEnhanceWithAi = async () => {
@@ -136,9 +138,9 @@ export default function EditContentPage() {
       if (e.estimatedTime) setEstimatedTime(e.estimatedTime);
       if (e.biblicalReading?.reference) setBiblicalRef(e.biblicalReading.reference);
       if (e.suggestions?.length) setAiSuggestions(e.suggestions);
-      toast({ title: 'Conteúdo melhorado pela IA!', variant: 'default' });
+      toast({ title: t('edit_page.success_enhanced'), variant: 'default' });
     } catch (e: any) {
-      toast({ title: 'Erro', description: e?.message || 'Erro ao melhorar com IA.', variant: 'destructive' });
+      toast({ title: tc('error'), description: e?.message || t('edit_page.error_enhance'), variant: 'destructive' });
     } finally {
       setEnhancing(false);
     }
@@ -163,8 +165,8 @@ export default function EditContentPage() {
         biblicalRef: biblicalRef || undefined,
         catechismRef: catechismRef || undefined,
       });
-      toast({ title: 'Conteúdo salvo.', variant: 'default' });
-    } catch (e: any) { toast({ title: 'Erro', description: 'Erro: ' + e.message, variant: 'destructive' }); }
+      toast({ title: t('edit_page.success_saved'), variant: 'default' });
+    } catch (e: any) { toast({ title: tc('error'), description: e.message, variant: 'destructive' }); }
     setSaving(false);
   };
 
@@ -175,85 +177,75 @@ export default function EditContentPage() {
           <Button variant="ghost" size="icon" asChild><Link to={`/app/content-library/${id}`}><ArrowLeft className="h-5 w-5" /></Link></Button>
           <div className="flex-1">
             <h1 className="text-2xl font-bold flex items-center gap-2">
-              Editar Conteúdo
-              {isAiGenerated && <Badge variant="secondary" className="gap-1"><Sparkles className="h-3 w-3" /> IA</Badge>}
+              {t('edit_page.title')}
+              {isAiGenerated && <Badge variant="secondary" className="gap-1"><Sparkles className="h-3 w-3" /> {t('edit_page.ai_badge')}</Badge>}
             </h1>
           </div>
         </div>
 
         <div className="space-y-5">
-          {/* Básico */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Título</Label>
+              <Label>{t('create_page.title_required').replace(' *', '')}</Label>
               <Input value={title} onChange={e => setTitle(e.target.value)} className="mt-1" />
             </div>
             <div>
-              <Label>Tema</Label>
+              <Label>{t('theme')}</Label>
               <Input value={theme} onChange={e => setTheme(e.target.value)} className="mt-1" />
             </div>
           </div>
 
           <div>
-            <Label>Objetivo Pastoral</Label>
+            <Label>{t('pastoral_objective')}</Label>
             <Input value={pastoralObjective} onChange={e => setPastoralObjective(e.target.value)} className="mt-1" />
           </div>
 
-          {/* Oração Inicial */}
           <div>
-            <Label>Oração Inicial</Label>
+            <Label>{t('opening_prayer')}</Label>
             <Textarea value={openingPrayer} onChange={e => setOpeningPrayer(e.target.value)} className="mt-1 min-h-[80px]" />
           </div>
 
-          {/* Oração Final */}
           <div>
-            <Label>Oração Final</Label>
+            <Label>{t('closing_prayer')}</Label>
             <Textarea value={closingPrayer} onChange={e => setClosingPrayer(e.target.value)} className="mt-1 min-h-[80px]" />
           </div>
 
-          {/* Referência Bíblica e CIC (texto) */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Referência Bíblica</Label>
+              <Label>{t('biblical_ref')}</Label>
               <Input value={biblicalRef} onChange={e => setBiblicalRef(e.target.value)} className="mt-1" />
             </div>
             <div>
-              <Label>Referência CIC</Label>
+              <Label>{t('edit_page.cic_ref')}</Label>
               <Input value={catechismRef} onChange={e => setCatechismRef(e.target.value)} className="mt-1" />
             </div>
           </div>
 
-          {/* Conteúdo Principal */}
           <div>
-            <Label>Conteúdo Central</Label>
+            <Label>{t('edit_page.central_content')}</Label>
             <Textarea value={mainContent} onChange={e => setMainContent(e.target.value)} className="mt-1 min-h-[200px]" />
           </div>
 
-          {/* Dinâmica */}
           <div>
-            <Label>Dinâmica / Atividade em Grupo</Label>
+            <Label>{t('edit_page.group_dynamic')}</Label>
             <Textarea value={dynamic} onChange={e => setDynamic(e.target.value)} className="mt-1 min-h-[120px]" />
           </div>
 
-          {/* Atividade adicional */}
           <div>
-            <Label>Atividade (campo adicional)</Label>
+            <Label>{t('edit_page.additional_activity')}</Label>
             <Textarea value={activity} onChange={e => setActivity(e.target.value)} className="mt-1 min-h-[80px]" />
           </div>
 
-          {/* Tarefa Família */}
           <div>
-            <Label>Compromisso na Família (Tarefa para casa)</Label>
+            <Label>{t('edit_page.family_task')}</Label>
             <Textarea value={familyTask} onChange={e => setFamilyTask(e.target.value)} className="mt-1 min-h-[80px]" />
           </div>
 
-          {/* Tempo estimado */}
           <div>
-            <Label className="flex items-center gap-2"><Clock className="h-4 w-4" /> Duração estimada (minutos)</Label>
+            <Label className="flex items-center gap-2"><Clock className="h-4 w-4" /> {t('edit_page.duration_minutes')}</Label>
             <Input type="number" value={estimatedTime} onChange={e => setEstimatedTime(Number(e.target.value))} className="mt-1 w-32" />
           </div>
 
-          {/* AI Enhance */}
           <div className="border-t pt-4 space-y-3">
             <Button
               type="button"
@@ -263,12 +255,12 @@ export default function EditContentPage() {
               className="gap-2 border-dashed border-2 border-violet-300 dark:border-violet-700 hover:border-violet-500 bg-violet-50/50 dark:bg-violet-950/20 text-violet-700 dark:text-violet-300"
             >
               {enhancing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-              {enhancing ? 'Melhorando...' : 'Melhorar com IA'}
+              {enhancing ? t('edit_page.enhancing') : t('edit_page.enhance_ai')}
             </Button>
             {aiSuggestions.length > 0 && (
               <div className="rounded-xl border border-violet-200 dark:border-violet-800 bg-violet-50/50 dark:bg-violet-950/20 p-4 space-y-2">
                 <p className="text-sm font-semibold text-violet-700 dark:text-violet-300 flex items-center gap-1">
-                  <Sparkles className="h-4 w-4" /> Sugestões da IA
+                  <Sparkles className="h-4 w-4" /> {t('edit_page.ai_suggestions')}
                 </p>
                 <ul className="space-y-1">
                   {aiSuggestions.map((s, i) => (
@@ -281,7 +273,6 @@ export default function EditContentPage() {
             )}
           </div>
 
-          {/* Referências estruturadas */}
           <ReferencePicker
             bibleRefs={bibleRefs}
             catechismRefs={catechismRefs}
@@ -295,8 +286,8 @@ export default function EditContentPage() {
           />
 
           <div className="flex gap-3 pt-2">
-            <Button onClick={handleSave} disabled={saving}><Save className="mr-1 h-4 w-4" />Salvar</Button>
-            <Button variant="outline" asChild><Link to={`/app/content-library/${id}`}>Cancelar</Link></Button>
+            <Button onClick={handleSave} disabled={saving}><Save className="mr-1 h-4 w-4" />{tc('save')}</Button>
+            <Button variant="outline" asChild><Link to={`/app/content-library/${id}`}>{tc('cancel')}</Link></Button>
           </div>
         </div>
       </div>

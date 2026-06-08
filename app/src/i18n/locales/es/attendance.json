@@ -16,5 +16,26 @@
   "justified": "Justificado",
   "not_started": "No iniciada",
   "in_progress": "En curso",
-  "synced": "Sincronizada"
+  "synced": "Sincronizada",
+  "matrix": {
+    "title": "Matriz de Asistencia",
+    "subtitle": "{{catechumens}} · {{meetings}}",
+    "new_meeting": "Nuevo encuentro",
+    "title_placeholder": "Título",
+    "absent_label": "Faltó",
+    "justified_label": "Justificado",
+    "not_filled": "Sin completar",
+    "empty": "Cree un encuentro para comenzar.",
+    "catechumen_column": "Catecúmeno",
+    "totals": "Totales",
+    "mark_error": "Error al marcar asistencia: {{message}}",
+    "create_meeting_error": "Error al crear encuentro: {{message}}",
+    "no_permission": "Sin permiso.",
+    "meetings_count": "{{count}} encuentros",
+    "present_letter": "P",
+    "absent_letter": "F",
+    "justified_letter": "J",
+    "percent_column": "%",
+    "no_title": "—"
+  }
 }

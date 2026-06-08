@@ -1,7 +1,7 @@
 {
   "title": "Informes",
   "attendance_report": "Asistencia por grupo/etapa/período",
-  "dropout_risk": "Catequizandos con riesgo de abandono",
+  "dropout_risk": "Catecúmenos con riesgo de abandono",
   "pending_docs": "Documentos pendientes",
   "sacramental_progress": "Progreso sacramental",
   "catechist_workload": "Carga de catequistas",
@@ -9,5 +9,47 @@
   "messages_sent": "Mensajes enviados",
   "pending_consents": "Consentimientos pendientes",
   "export_csv": "Exportar CSV",
-  "export_pdf": "Exportar PDF"
+  "export_pdf": "Exportar PDF",
+  "tabs": {
+    "attendance": "Asistencia",
+    "ranking": "Ranking",
+    "chart": "Gráfico"
+  },
+  "periods": {
+    "all": "Todo período",
+    "month": "Último mes",
+    "quarter": "Último trimestre"
+  },
+  "kpis": {
+    "total_enrolled": "Total inscritos",
+    "total_meetings": "Total encuentros",
+    "avg_attendance": "Asistencia media"
+  },
+  "dropout_title": "Riesgo de abandono",
+  "dropout_desc": "Grupos con asistencia por debajo del 50% en los últimos encuentros:",
+  "attendance_by_class": "Asistencia por grupo",
+  "no_classes": "Ningún grupo",
+  "no_classes_desc": "Registre grupos para ver los informes de asistencia.",
+  "enrolled_meetings": "{{enrolled}} inscritos · {{meetings}} encuentros",
+  "present_absent": "{{present}}P / {{absent}}A",
+  "ranking_title": "Ranking de Asistencia",
+  "no_data": "Sin datos",
+  "no_frequency_data": "Sin datos de asistencia para mostrar.",
+  "chart_attendance": "Asistencia por Grupo (%)",
+  "chart_distribution": "Distribución General de Asistencia",
+  "no_chart_data": "Sin datos",
+  "no_distribution_data": "Registre asistencias para ver la distribución.",
+  "present": "Presentes",
+  "absent": "Ausentes",
+  "attendance_label": "Asistencia",
+  "records": "registros",
+  "pdf_soon": "Exportación PDF próximamente",
+  "csv_headers": {
+    "class": "Grupo",
+    "enrolled": "Inscritos",
+    "meetings": "Encuentros",
+    "present": "Presentes",
+    "absent": "Ausentes",
+    "rate": "Asistencia %"
+  }
 }

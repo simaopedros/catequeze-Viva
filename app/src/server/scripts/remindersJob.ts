@@ -2,6 +2,8 @@
  * Daily reminder job — sends notifications for:
  * 1. Meetings happening tomorrow
  */
+import { getMeetingReminderNotification, resolveUserLocale } from '../i18n/serverLocale';
+
 export async function sendRemindersJob(_args: any, context: any) {
   const now = new Date();
   const tomorrow = new Date(now);
@@ -66,13 +68,31 @@ export async function sendRemindersJob(_args: any, context: any) {
         }
       }
 
+      const userLocales = new Map<string, ReturnType<typeof resolveUserLocale>>();
+      if (userIds.size > 0) {
+        const users = await context.entities.User.findMany({
+          where: { id: { in: [...userIds] } },
+          select: { id: true, locale: true },
+        });
+        for (const u of users) {
+          userLocales.set(u.id, resolveUserLocale(u));
+        }
+      }
+
       for (const userId of userIds) {
+        const locale = userLocales.get(userId) ?? 'pt-BR';
+        const { title, body } = getMeetingReminderNotification(
+          locale,
+          meeting.class?.name,
+          meeting.title,
+          tomorrow,
+        );
         await context.entities.Notification.create({
           data: {
             userId,
             type: 'ATTENDANCE',
-            title: 'Encontro amanhã',
-            body: `${meeting.class?.name || 'Turma'}: "${meeting.title}" — ${tomorrow.toLocaleDateString('pt-BR')}`,
+            title,
+            body,
             link: `/app/classes/${meeting.classId}/attendance`,
           },
         });

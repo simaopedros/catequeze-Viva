@@ -1,9 +1,13 @@
 import { useTranslation } from 'react-i18next';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
+import { useAuth } from 'wasp/client/auth';
+import { updateLocalePreference } from 'wasp/client/operations';
+import { resolveIntlLocale } from './format';
 
 export type SupportedLocale = 'pt-BR' | 'es' | 'en';
 
 const LOCALE_STORAGE_KEY = 'catequese-viva-locale';
+const VALID_LOCALES: SupportedLocale[] = ['pt-BR', 'es', 'en'];
 
 const localeLabels: Record<SupportedLocale, string> = {
   'pt-BR': 'Português',
@@ -11,23 +15,52 @@ const localeLabels: Record<SupportedLocale, string> = {
   en: 'English',
 };
 
+function parseLocale(value: string | null | undefined): SupportedLocale | null {
+  if (value && VALID_LOCALES.includes(value as SupportedLocale)) {
+    return value as SupportedLocale;
+  }
+  return null;
+}
+
 export function useLocale() {
   const { i18n } = useTranslation();
+  const { data: user } = useAuth();
 
-  const currentLocale = (i18n.language as SupportedLocale) || 'pt-BR';
+  const currentLocale = (parseLocale(i18n.language) ?? 'pt-BR') as SupportedLocale;
+  const intlLocale = resolveIntlLocale(currentLocale);
+
+  // Sync from user profile on login
+  useEffect(() => {
+    const userLocale = parseLocale(user?.locale);
+    if (!userLocale) return;
+    const stored = parseLocale(localStorage.getItem(LOCALE_STORAGE_KEY));
+    const target = stored ?? userLocale;
+    if (i18n.language !== target) {
+      i18n.changeLanguage(target);
+      document.documentElement.lang = target;
+    }
+  }, [user?.locale, i18n]);
+
+  const persistLocale = useCallback(async (locale: SupportedLocale) => {
+    if (!user) return;
+    try {
+      await updateLocalePreference({
+        locale,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      });
+    } catch {
+      // Non-blocking: local preference still applies
+    }
+  }, [user]);
 
   const setLocale = useCallback(
     (locale: SupportedLocale) => {
       i18n.changeLanguage(locale);
       localStorage.setItem(LOCALE_STORAGE_KEY, locale);
-
-      // Update HTML lang attribute
       document.documentElement.lang = locale;
-
-      // Update Intl locale for formatting
-      // Note: full locale support for dates/numbers is handled separately via Intl.DateTimeFormat/Intl.NumberFormat
+      void persistLocale(locale);
     },
-    [i18n]
+    [i18n, persistLocale],
   );
 
   const getLocaleLabel = useCallback((locale: SupportedLocale) => {
@@ -36,9 +69,19 @@ export function useLocale() {
 
   return {
     currentLocale,
+    intlLocale,
     setLocale,
     getLocaleLabel,
-    supportedLocales: Object.keys(localeLabels) as SupportedLocale[],
+    supportedLocales: VALID_LOCALES,
     localeLabels,
   };
+}
+
+/** Call once at app boot to apply stored locale before first paint when possible. */
+export function applyStoredLocale() {
+  if (typeof localStorage === 'undefined' || typeof document === 'undefined') return;
+  const stored = parseLocale(localStorage.getItem(LOCALE_STORAGE_KEY));
+  if (stored) {
+    document.documentElement.lang = stored;
+  }
 }

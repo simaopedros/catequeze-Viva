@@ -24,7 +24,7 @@ export default function DirectoryPage() {
     setError('');
     try {
       setEntries((await listDirectoryByPart({ part: p })) || []);
-    } catch (e) { setError('Não foi possível carregar o diretório. Verifique sua conexão.'); }
+    } catch (e) { setError(t('directory.loadError')); }
     setLoading(false);
   };
 
@@ -36,7 +36,7 @@ export default function DirectoryPage() {
     setError('');
     try {
       setSearchResults((await searchDirectory({ query: searchQuery })) || []);
-    } catch (e) { setError('Não foi possível realizar a busca. Verifique sua conexão.'); }
+    } catch (e) { setError(t('search_error')); }
     setLoading(false);
   };
 
@@ -83,7 +83,7 @@ export default function DirectoryPage() {
           <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center space-y-3">
             <AlertCircle className="h-8 w-8 text-destructive mx-auto" />
             <p className="text-sm text-destructive">{error}</p>
-            <Button size="sm" variant="outline" onClick={() => part ? loadPart(part) : handleSearch()}>Tentar novamente</Button>
+            <Button size="sm" variant="outline" onClick={() => part ? loadPart(part) : handleSearch()}>{t('try_again')}</Button>
           </div>
         )}
 

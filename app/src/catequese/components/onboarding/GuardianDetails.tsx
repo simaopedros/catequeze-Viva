@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../../client/components/ui/button';
 import { Heart, Check } from 'lucide-react';
 import PhoneMaskInput from '../../../client/components/PhoneMaskInput';
@@ -8,31 +9,32 @@ interface GuardianDetailsProps {
 }
 
 export function GuardianDetails({ onComplete }: GuardianDetailsProps) {
+  const { t } = useTranslation('onboarding');
   const [householdName, setHouseholdName] = useState('');
   const [phone, setPhone] = useState('');
 
   return (
     <div className="rounded-xl border bg-card p-6 space-y-4">
       <h2 className="text-lg font-semibold flex items-center gap-2">
-        <Heart className="h-5 w-5 text-primary" />Criar Família
+        <Heart className="h-5 w-5 text-primary" />{t('guardian.title')}
       </h2>
       <div className="space-y-3">
         <div>
-          <label className="text-sm font-medium">Nome da família</label>
+          <label className="text-sm font-medium">{t('guardian.household_name')}</label>
           <input value={householdName} onChange={e => setHouseholdName(e.target.value)}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
-            placeholder="Ex: Família Silva" />
+            placeholder={t('guardian.household_placeholder')} />
         </div>
         <div>
-          <label className="text-sm font-medium">Telefone</label>
+          <label className="text-sm font-medium">{t('guardian.phone')}</label>
           <PhoneMaskInput value={phone} onChange={setPhone}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
-            placeholder="Ex: (11) 99999-0000" />
+            placeholder={t('guardian.phone_placeholder')} />
         </div>
       </div>
       <div className="flex justify-end">
-        <Button onClick={() => onComplete({ householdName: householdName || 'Família', phone: phone || undefined })} disabled={!householdName.trim()}>
-          <Check className="mr-2 h-4 w-4" />Concluir
+        <Button onClick={() => onComplete({ householdName: householdName || t('guardian.default_household'), phone: phone || undefined })} disabled={!householdName.trim()}>
+          <Check className="mr-2 h-4 w-4" />{t('coordinator.finish')}
         </Button>
       </div>
     </div>

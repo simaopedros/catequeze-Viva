@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle } from 'lucide-react';
 import { Textarea } from '../../client/components/ui/textarea';
 import { Input } from '../../client/components/ui/input';
@@ -10,6 +11,7 @@ import { submitContactMessage } from 'wasp/client/operations';
 import { cn } from '../../client/utils';
 
 export default function ContactPage() {
+  const { t } = useTranslation('public');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [subject, setSubject] = useState('');
@@ -24,15 +26,11 @@ export default function ContactPage() {
     setSending(true);
     setFeedback(null);
     try {
-      await submitContactMessage({
-        name,
-        email,
-        message,
-      });
-      setFeedback({ type: 'success', text: 'Mensagem enviada com sucesso!' });
+      await submitContactMessage({ name, email, message });
+      setFeedback({ type: 'success', text: t('contact.success') });
       setName(''); setEmail(''); setSubject(''); setMessage('');
     } catch {
-      setFeedback({ type: 'error', text: 'Erro ao enviar. Tente novamente.' });
+      setFeedback({ type: 'error', text: t('contact.error') });
     }
     setSending(false);
   };
@@ -41,10 +39,8 @@ export default function ContactPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <PublicNavbar />
       <main className="flex-1 max-w-3xl mx-auto px-4 py-20">
-        <h1 className="text-4xl font-bold mb-4">Contato</h1>
-        <p className="text-lg text-muted-foreground mb-10">
-          Entre em contato com a equipe da Catequese Viva.
-        </p>
+        <h1 className="text-4xl font-bold mb-4">{t('contact.title')}</h1>
+        <p className="text-lg text-muted-foreground mb-10">{t('contact.intro')}</p>
 
         <div className="grid gap-8 md:grid-cols-5">
           <div className="md:col-span-2 space-y-4">
@@ -58,27 +54,27 @@ export default function ContactPage() {
             </div>
             <div className="flex items-center gap-3 text-muted-foreground">
               <MapPin className="h-5 w-5 text-primary" />
-              <span>São Paulo, Brasil</span>
+              <span>{t('contact.location')}</span>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="md:col-span-3 space-y-4">
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="contact-name">Nome *</Label>
+                <Label htmlFor="contact-name">{t('contact.name')}</Label>
                 <Input id="contact-name" value={name} onChange={e => setName(e.target.value)} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="contact-email">Email *</Label>
+                <Label htmlFor="contact-email">{t('contact.email')}</Label>
                 <Input id="contact-email" type="email" value={email} onChange={e => setEmail(e.target.value)} required />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="contact-subject">Assunto</Label>
+              <Label htmlFor="contact-subject">{t('contact.subject')}</Label>
               <Input id="contact-subject" value={subject} onChange={e => setSubject(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="contact-message">Mensagem *</Label>
+              <Label htmlFor="contact-message">{t('contact.message')}</Label>
               <Textarea id="contact-message" value={message} onChange={e => setMessage(e.target.value)} required rows={5} className="resize-y" />
             </div>
 
@@ -94,7 +90,7 @@ export default function ContactPage() {
 
             <Button type="submit" disabled={sending || !name || !email || !message} className="gap-2">
               <Send className="h-4 w-4" />
-              {sending ? 'Enviando...' : 'Enviar mensagem'}
+              {sending ? t('contact.sending') : t('contact.send')}
             </Button>
           </form>
         </div>

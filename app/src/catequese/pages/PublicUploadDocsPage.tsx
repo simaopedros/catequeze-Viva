@@ -1,25 +1,27 @@
 import { useParams } from 'react-router';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
-import { FileText, Upload, CheckCircle, Clock, ArrowRight, Loader2 } from 'lucide-react';
+import { FileText, Upload, CheckCircle, Clock, Loader2 } from 'lucide-react';
 import { useQuery, getCatechumenByUploadToken } from 'wasp/client/operations';
 import { toast } from '../../client/hooks/use-toast';
 
-const TYPE_LABELS: Record<string, string> = {
-  BAPTISM_CERTIFICATE: 'Cert. Batismo',
-  BIRTH_CERTIFICATE: 'Cert. Nascimento',
-  CONSENT_FORM: 'Autorização',
-  MARRIAGE_CERTIFICATE: 'Cert. Matrimônio',
-  PASTORAL_LETTER: 'Carta Pastoral',
-  OTHER: 'Outro',
-};
+const DOC_TYPES = [
+  'BAPTISM_CERTIFICATE',
+  'BIRTH_CERTIFICATE',
+  'CONSENT_FORM',
+  'MARRIAGE_CERTIFICATE',
+  'PASTORAL_LETTER',
+  'OTHER',
+] as const;
 
 export default function PublicUploadDocsPage() {
+  const { t } = useTranslation('public');
   const { token } = useParams<{ token: string }>();
   const { data, isLoading, error } = useQuery(getCatechumenByUploadToken, token ? { token } : { token: '' });
 
-  const [docType, setDocType] = useState('BAPTISM_CERTIFICATE');
+  const [docType, setDocType] = useState<string>('BAPTISM_CERTIFICATE');
   const [docFile, setDocFile] = useState<File | null>(null);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
@@ -48,13 +50,13 @@ export default function PublicUploadDocsPage() {
 
       if (!response.ok) {
         const err = await response.json();
-        throw new Error(err.error || 'Erro ao enviar.');
+        throw new Error(err.error || t('upload_docs.upload_error'));
       }
       setSent(true);
       setDocFile(null);
-      toast({ title: 'Documento enviado com sucesso!' });
+      toast({ title: t('upload_docs.toast_success') });
     } catch (e: any) {
-      toast({ title: 'Erro: ' + (e.message || 'Tente novamente.'), variant: 'destructive' });
+      toast({ title: t('upload_docs.toast_error', { message: e.message || t('upload_docs.upload_error') }), variant: 'destructive' });
     } finally {
       setSending(false);
     }
@@ -75,9 +77,9 @@ export default function PublicUploadDocsPage() {
           <div className="rounded-full bg-destructive/10 p-4 w-fit mx-auto">
             <Clock className="h-8 w-8 text-destructive" />
           </div>
-          <h1 className="text-xl font-bold">Link Expirado ou Inválido</h1>
+          <h1 className="text-xl font-bold">{t('upload_docs.invalid_title')}</h1>
           <p className="text-sm text-muted-foreground">
-            {error?.message || 'Este link de upload não é mais válido. Peça ao catequista um novo link.'}
+            {error?.message || t('upload_docs.invalid_desc')}
           </p>
         </div>
       </div>
@@ -89,25 +91,23 @@ export default function PublicUploadDocsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background flex items-center justify-center p-4">
       <div className="max-w-lg w-full space-y-6">
-        {/* Header */}
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary text-sm font-medium px-4 py-1.5 mb-2">
             <FileText className="h-4 w-4" />
-            Catequese Viva
+            {t('workspace.app_name')}
           </div>
           <h1 className="text-2xl font-bold tracking-tight">
-            Olá! Envie os documentos de{' '}
+            {t('upload_docs.greeting')}{' '}
             <span className="text-primary">{catechumen.firstName} {catechumen.lastName}</span>
           </h1>
           <p className="text-sm text-muted-foreground">
-            Use o formulário abaixo para enviar documentos. Não é necessário login.
+            {t('upload_docs.subtitle')}
           </p>
         </div>
 
-        {/* Existing documents */}
         {catechumen.documents?.length > 0 && (
           <div className="rounded-xl border bg-card p-5 shadow-sm">
-            <h2 className="font-semibold text-sm mb-3">Documentos já enviados</h2>
+            <h2 className="font-semibold text-sm mb-3">{t('upload_docs.existing_title')}</h2>
             <div className="space-y-2">
               {catechumen.documents.map((d: any) => (
                 <div key={d.id} className="flex items-center justify-between py-2 border-b last:border-0">
@@ -115,14 +115,14 @@ export default function PublicUploadDocsPage() {
                     <FileText className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">{d.name}</p>
-                      <p className="text-[10px] text-muted-foreground">{TYPE_LABELS[d.type] || d.type}</p>
+                      <p className="text-[10px] text-muted-foreground">{t(`upload_docs.types.${d.type}`, { defaultValue: d.type })}</p>
                     </div>
                   </div>
                   <Badge variant={d.verifiedAt ? 'default' : 'secondary'} className="text-[10px] gap-1">
                     {d.verifiedAt ? (
-                      <><CheckCircle className="h-3 w-3" /> Verificado</>
+                      <><CheckCircle className="h-3 w-3" /> {t('upload_docs.verified')}</>
                     ) : (
-                      <><Clock className="h-3 w-3" /> Pendente</>
+                      <><Clock className="h-3 w-3" /> {t('upload_docs.pending')}</>
                     )}
                   </Badge>
                 </div>
@@ -131,39 +131,38 @@ export default function PublicUploadDocsPage() {
           </div>
         )}
 
-        {/* Upload form */}
         <div className="rounded-xl border bg-card p-5 shadow-sm space-y-4">
-          <h2 className="font-semibold text-sm">Enviar novo documento</h2>
+          <h2 className="font-semibold text-sm">{t('upload_docs.new_title')}</h2>
 
           {sent && (
             <div className="rounded-lg bg-success/10 border border-success/30 p-3 text-sm text-success flex items-center gap-2">
               <CheckCircle className="h-4 w-4" />
-              Documento enviado com sucesso! Pode enviar outro se necessário.
+              {t('upload_docs.sent_success')}
             </div>
           )}
 
           <div>
-            <label className="text-xs font-medium text-muted-foreground">Tipo de documento</label>
+            <label className="text-xs font-medium text-muted-foreground">{t('upload_docs.doc_type')}</label>
             <select
               value={docType}
               onChange={e => setDocType(e.target.value)}
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
             >
-              {Object.entries(TYPE_LABELS).map(([k, v]) => (
-                <option key={k} value={k}>{v}</option>
+              {DOC_TYPES.map((k) => (
+                <option key={k} value={k}>{t(`upload_docs.types.${k}`)}</option>
               ))}
             </select>
           </div>
 
           <div>
-            <label className="text-xs font-medium text-muted-foreground">Arquivo</label>
+            <label className="text-xs font-medium text-muted-foreground">{t('upload_docs.file')}</label>
             <input
               type="file"
               accept=".jpg,.jpeg,.png,.pdf"
               onChange={e => setDocFile(e.target.files?.[0] || null)}
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-sm file:bg-primary/10 file:text-primary"
             />
-            <p className="text-[10px] text-muted-foreground mt-1">Formatos aceites: JPG, PNG, PDF. Máx 5MB.</p>
+            <p className="text-[10px] text-muted-foreground mt-1">{t('upload_docs.file_hint')}</p>
           </div>
 
           <Button
@@ -176,7 +175,7 @@ export default function PublicUploadDocsPage() {
             ) : (
               <Upload className="mr-2 h-4 w-4" />
             )}
-            {sending ? 'Enviando...' : 'Enviar Documento'}
+            {sending ? t('upload_docs.sending') : t('upload_docs.submit')}
           </Button>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
@@ -9,20 +10,25 @@ import { useQuery, listCatechumens, listSacramentalJourneys, createSacramentalJo
 import { useActiveParish } from '../../client/hooks/useActiveParish';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { toast } from '../../client/hooks/use-toast';
+import { useLocale } from '../../i18n/useLocale';
+import { formatDate } from '../../i18n/format';
 
 type FilterKey = 'all' | 'mine' | 'overdue' | 'waiting_doc' | 'waiting_approval' | 'ready' | 'no_journey';
 
-const FILTERS: { key: FilterKey; label: string; icon: typeof Clock }[] = [
-  { key: 'all', label: 'Todas', icon: Users },
-  { key: 'mine', label: 'Meus catequizandos', icon: User },
-  { key: 'overdue', label: 'Em atraso', icon: AlertTriangle },
-  { key: 'waiting_doc', label: 'Aguardando documento', icon: FileText },
-  { key: 'waiting_approval', label: 'Aguardando aprovação', icon: Clock },
-  { key: 'ready', label: 'Prontos', icon: CheckCircle },
-  { key: 'no_journey', label: 'Sem jornada', icon: XCircle },
+const FILTER_KEYS: { key: FilterKey; icon: typeof Clock }[] = [
+  { key: 'all', icon: Users },
+  { key: 'mine', icon: User },
+  { key: 'overdue', icon: AlertTriangle },
+  { key: 'waiting_doc', icon: FileText },
+  { key: 'waiting_approval', icon: Clock },
+  { key: 'ready', icon: CheckCircle },
+  { key: 'no_journey', icon: XCircle },
 ];
 
 export default function SacramentsPage() {
+  const { t } = useTranslation('sacraments');
+  const { t: tc } = useTranslation('common');
+  const { currentLocale } = useLocale();
   const { activeParishId } = useActiveParish();
   const { userRole } = useUserContext();
   const canManage = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST'].includes(userRole);
@@ -112,13 +118,13 @@ export default function SacramentsPage() {
     setSaving(true);
     try {
       const templateId = templates?.find((t: any) => t.name === templateName)?.id;
-      if (!templateId) throw new Error('Modelo de jornada não encontrado.');
+      if (!templateId) throw new Error(t('page.template_not_found'));
       await createSacramentalJourney({ catechumenProfileId: selectedCatechumenId, templateId });
       setShowForm(false);
-      toast({ title: 'Jornada criada!' });
+      toast({ title: t('page.journey_created') });
     } catch (e: any) {
-      const msg = e?.message || 'Tente novamente.';
-      toast({ title: 'Erro', description: msg, variant: 'destructive' });
+      const msg = e?.message || tc('error_generic');
+      toast({ title: tc('error'), description: msg, variant: 'destructive' });
     } finally {
       setSaving(false);
     }
@@ -136,7 +142,7 @@ export default function SacramentsPage() {
     try {
       await updateMilestoneStatus({ milestoneId, status: 'COMPLETED' });
     } catch (e: any) {
-      toast({ title: 'Erro', description: e.message, variant: 'destructive' });
+      toast({ title: tc('error'), description: e.message, variant: 'destructive' });
     }
   };
 
@@ -144,7 +150,7 @@ export default function SacramentsPage() {
     try {
       await updateMilestoneStatus({ milestoneId, status: 'PENDING' });
     } catch (e: any) {
-      toast({ title: 'Erro', description: e.message, variant: 'destructive' });
+      toast({ title: tc('error'), description: e.message, variant: 'destructive' });
     }
   };
 
@@ -153,10 +159,10 @@ export default function SacramentsPage() {
     const date = editingTargetDate[journeyId];
     try {
       await updateJourney({ id: journeyId, targetDate: date || null });
-      toast({ title: 'Data atualizada.' });
+      toast({ title: t('page.date_updated') });
       setEditingTargetDate(prev => { const next = { ...prev }; delete next[journeyId]; return next; });
     } catch (err: any) {
-      toast({ title: 'Erro', description: err.message, variant: 'destructive' });
+      toast({ title: tc('error'), description: err.message, variant: 'destructive' });
     }
   };
 
@@ -186,41 +192,39 @@ export default function SacramentsPage() {
     <AppShell>
       <div className="space-y-6">
         <PageHeader
-          title="Acompanhamento Sacramental"
-          subtitle={isCatechist ? `${filtered.length} jornadas das suas turmas` : `${filtered.length} jornadas ativas`}
+          title={t('page.title')}
+          subtitle={isCatechist ? t('page.subtitle_catechist', { count: filtered.length }) : t('page.subtitle_default', { count: filtered.length })}
         >
           <div className="flex gap-2">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <input placeholder="Buscar..." value={search} onChange={e => setSearch(e.target.value)} className="flex h-9 w-40 rounded-md border border-input bg-background pl-9 pr-3 text-sm" />
+              <input placeholder={tc('search')} value={search} onChange={e => setSearch(e.target.value)} className="flex h-9 w-40 rounded-md border border-input bg-background pl-9 pr-3 text-sm" />
             </div>
-            {canManage && <Button onClick={openForm}><Plus className="mr-1 h-4 w-4" />Nova jornada</Button>}
+            {canManage && <Button onClick={openForm}><Plus className="mr-1 h-4 w-4" />{t('page.new_journey')}</Button>}
           </div>
         </PageHeader>
 
-        {/* Stats banner */}
         <div className="grid gap-3 grid-cols-4">
           <div className="rounded-lg border bg-card p-3 text-center">
             <p className="text-2xl font-bold">{statusCounts.total}</p>
-            <p className="text-[10px] text-muted-foreground">Total</p>
+            <p className="text-[10px] text-muted-foreground">{t('page.total')}</p>
           </div>
           <div className="rounded-lg border bg-card p-3 text-center">
             <p className="text-2xl font-bold text-emerald-600">{statusCounts.ready}</p>
-            <p className="text-[10px] text-muted-foreground">Prontos</p>
+            <p className="text-[10px] text-muted-foreground">{t('page.ready')}</p>
           </div>
           <div className="rounded-lg border bg-card p-3 text-center">
             <p className="text-2xl font-bold text-amber-600">{statusCounts.waitingApproval}</p>
-            <p className="text-[10px] text-muted-foreground">Aguardando</p>
+            <p className="text-[10px] text-muted-foreground">{t('page.waiting')}</p>
           </div>
           <div className="rounded-lg border bg-card p-3 text-center">
             <p className="text-2xl font-bold text-red-600">{statusCounts.blocked}</p>
-            <p className="text-[10px] text-muted-foreground">Bloqueados</p>
+            <p className="text-[10px] text-muted-foreground">{t('page.blocked')}</p>
           </div>
         </div>
 
-        {/* Quick filters */}
         <div className="flex gap-1 flex-wrap">
-          {FILTERS.map(f => {
+          {FILTER_KEYS.map(f => {
             const FIcon = f.icon;
             return (
               <Button
@@ -231,33 +235,31 @@ export default function SacramentsPage() {
                 onClick={() => setActiveFilter(f.key)}
               >
                 <FIcon className="h-3 w-3" />
-                {f.label}
+                {t(`page.filters.${f.key}`)}
               </Button>
             );
           })}
         </div>
 
-        {/* New journey form */}
         {showForm && (
           <div className="rounded-xl border bg-card p-4 flex flex-col sm:flex-row gap-3">
             <select value={selectedCatechumenId} onChange={e => setSelectedCatechumenId(e.target.value)} className="flex h-9 rounded-md border border-input bg-background px-3 text-sm flex-1">
-              <option value="">Selecione o catequizando</option>
+              <option value="">{t('page.select_catechumen')}</option>
               {filteredCatechumens.map((c: any) => <option key={c.id} value={c.id}>{c.firstName} {c.lastName}</option>)}
             </select>
             <select value={templateName} onChange={e => setTemplateName(e.target.value)} className="flex h-9 rounded-md border border-input bg-background px-3 text-sm">
-              {templates.map((t: any) => <option key={t.id}>{t.name}</option>)}
+              {templates.map((tm: any) => <option key={tm.id}>{tm.name}</option>)}
             </select>
-            <Button size="sm" onClick={handleCreateJourney} disabled={!selectedCatechumenId || saving}>{saving ? 'Criando...' : 'Iniciar'}</Button>
-            <Button size="sm" variant="outline" onClick={() => setShowForm(false)}>Cancelar</Button>
+            <Button size="sm" onClick={handleCreateJourney} disabled={!selectedCatechumenId || saving}>{saving ? t('page.creating') : t('page.start')}</Button>
+            <Button size="sm" variant="outline" onClick={() => setShowForm(false)}>{tc('cancel')}</Button>
           </div>
         )}
 
-        {/* Journey cards */}
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center">
             <div className="mb-4 rounded-full bg-primary/10 p-4"><Cross className="h-8 w-8 text-primary" /></div>
-            <h3 className="text-lg font-semibold">{search || activeFilter !== 'all' ? 'Nenhum resultado' : 'Nenhuma jornada'}</h3>
-            <p className="text-sm text-muted-foreground mt-1">{search ? 'Tente outros termos.' : 'Inicie uma jornada sacramental para acompanhar os marcos.'}</p>
+            <h3 className="text-lg font-semibold">{search || activeFilter !== 'all' ? t('page.empty_no_results') : t('page.empty_no_journey')}</h3>
+            <p className="text-sm text-muted-foreground mt-1">{search ? t('page.empty_try_terms') : t('page.empty_start_desc')}</p>
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
@@ -268,7 +270,7 @@ export default function SacramentsPage() {
               const pct = total > 0 ? Math.round((done / total) * 100) : 0;
               const hasBlocked = milestones.some((m: any) => m.status === 'REJECTED');
               const hasWaiting = milestones.some((m: any) => m.status === 'WAITING_APPROVAL');
-              const templateName = j.template?.name || 'Jornada';
+              const templateLabel = j.template?.name || t('page.journey_default');
               const sacramentName = j.template?.sacrament?.name;
 
               return (
@@ -279,13 +281,13 @@ export default function SacramentsPage() {
                       <span className="font-semibold">{j.catechumenProfile?.firstName} {j.catechumenProfile?.lastName}</span>
                     </div>
                     <Badge variant={pct === 100 ? 'default' : 'outline'}>
-                      {sacramentName || templateName}
+                      {sacramentName || templateLabel}
                     </Badge>
                   </div>
 
                   <div className="mb-3">
                     <div className="flex justify-between text-[10px] text-muted-foreground mb-1">
-                      <span>{done}/{total} marcos</span>
+                      <span>{t('page.milestones_count', { done, total })}</span>
                       <span className="font-bold">{pct}%</span>
                     </div>
                     <div className="w-full bg-muted rounded-full h-2">
@@ -312,8 +314,8 @@ export default function SacramentsPage() {
                       <div className="flex items-center gap-1 text-muted-foreground">
                         <Calendar className="h-3 w-3" />
                         {j.targetDate
-                          ? new Date(j.targetDate).toLocaleDateString('pt-BR')
-                          : 'Sem data definida'}
+                          ? formatDate(j.targetDate, currentLocale)
+                          : t('page.no_date')}
                         {canManage && (
                           <button onClick={e => { e.preventDefault(); setEditingTargetDate(prev => ({ ...prev, [j.id]: j.targetDate ? new Date(j.targetDate).toISOString().slice(0,10) : '' })); }}>
                             <Pencil className="h-3 w-3 hover:text-primary" />
@@ -327,17 +329,17 @@ export default function SacramentsPage() {
                   <div className="flex gap-2">
                     {hasBlocked && (
                       <span className="text-[10px] text-red-600 flex items-center gap-1">
-                        <XCircle className="h-3 w-3" />Bloqueado
+                        <XCircle className="h-3 w-3" />{t('page.status_blocked')}
                       </span>
                     )}
                     {hasWaiting && (
                       <span className="text-[10px] text-amber-600 flex items-center gap-1">
-                        <AlertTriangle className="h-3 w-3" />Aguardando
+                        <AlertTriangle className="h-3 w-3" />{t('page.status_waiting')}
                       </span>
                     )}
                     {!hasBlocked && !hasWaiting && pct === 100 && (
                       <span className="text-[10px] text-emerald-600 flex items-center gap-1">
-                        <CheckCircle className="h-3 w-3" />Pronto
+                        <CheckCircle className="h-3 w-3" />{t('page.status_ready')}
                       </span>
                     )}
                   </div>
@@ -395,7 +397,7 @@ export default function SacramentsPage() {
                     ))}
                     {milestones.length > 3 && (
                       <p className="text-[10px] text-muted-foreground text-center pt-1">
-                        +{milestones.length - 3} marcos...
+                        +{t('page.more_milestones', { count: milestones.length - 3 })}
                       </p>
                     )}
                   </div>

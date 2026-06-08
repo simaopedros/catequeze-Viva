@@ -1,0 +1,28 @@
+{
+  "stepOf": "Step {{current}} of {{total}}",
+  "previous": "Previous",
+  "next": "Next",
+  "start": "Get started",
+  "steps": {
+    "dashboard": {
+      "title": "Dashboard",
+      "description": "See a summary of your catechesis: active catechumens, classes, average attendance, and pending items."
+    },
+    "classes": {
+      "title": "Classes",
+      "description": "Manage your classes, catechists, and meetings. Each class has its own calendar and attendance records."
+    },
+    "ai": {
+      "title": "AI Generator",
+      "description": "Create complete catechesis meetings with artificial intelligence — prayers, activities, biblical and Catechism references."
+    },
+    "messages": {
+      "title": "Messages",
+      "description": "Communicate with catechists, parents, and catechumens. Send announcements and direct messages."
+    },
+    "search": {
+      "title": "Quick Search",
+      "description": "Press Ctrl+K to instantly search across the platform: catechumens, classes, Bible, Catechism, and more."
+    }
+  }
+}

@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { AppShell } from '../AppShell';
 import { Button } from '../../client/components/ui/button';
 import {
-  Church, MapPin, Users, BookOpen, Building2, Settings,
+  Church, MapPin, Users, Building2, Settings,
   ArrowLeft, Loader2, AlertCircle, Trash2,
 } from 'lucide-react';
 import { useQuery, getParishById, listCommunities, listHouseholds, listParishMembers, updateParish, deleteParish, createCommunity, updateCommunity, inviteUserToParish, removeMembership } from 'wasp/client/operations';
@@ -16,6 +17,9 @@ import { toast } from '../../client/hooks/use-toast';
 type Tab = 'info' | 'communities' | 'members';
 
 export default function ParishDetailPage() {
+  const { t } = useTranslation('common');
+  const { t: tp } = useTranslation('parishes');
+  const { t: tn } = useTranslation('navigation');
   const { id: parishId } = useParams<{ id: string }>();
   const pid = parishId ?? '';
   const navigate = useNavigate();
@@ -27,14 +31,12 @@ export default function ParishDetailPage() {
   const [error, setError] = useState('');
   const [tab, setTab] = useState<Tab>('info');
 
-  // Edit state
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState('');
   const [editCity, setEditCity] = useState('');
   const [editState, setEditState] = useState('');
   const [saving, setSaving] = useState(false);
 
-  // Delete (archive) state
   const [showDelete, setShowDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -53,9 +55,9 @@ export default function ParishDetailPage() {
     try {
       await updateParish({ id: parishId!, name: editName, city: editCity || undefined, state: editState || undefined });
       setEditing(false);
-      toast({ title: 'Paróquia atualizada.' });
+      toast({ title: tp('parish_updated') });
     } catch (e: any) {
-      setError(e.message || 'Erro ao salvar.');
+      setError(e.message || tp('error_update'));
     }
     setSaving(false);
   };
@@ -64,10 +66,10 @@ export default function ParishDetailPage() {
     setDeleting(true);
     try {
       await deleteParish({ id: pid, confirmation: 'DELETAR' });
-      toast({ title: 'Paróquia removida.', description: 'Os dados foram arquivados e podem ser restaurados por um administrador.' });
+      toast({ title: tp('parish_removed'), description: tp('parish_removed_desc') });
       navigate('/app/parishes');
     } catch (e: any) {
-      toast({ title: 'Erro ao remover', description: e.message || 'Tente novamente.', variant: 'destructive' });
+      toast({ title: tp('remove_parish_error'), description: e.message || t('try_again'), variant: 'destructive' });
       setDeleting(false);
       setShowDelete(false);
     }
@@ -76,38 +78,38 @@ export default function ParishDetailPage() {
   const handleCreateCommunity = async (name: string, type: string, location: string) => {
     try {
       await createCommunity({ name, parishId: parishId || '', type: type || undefined, location: location || undefined });
-      toast({ title: 'Comunidade criada.' });
+      toast({ title: tp('community_created') });
     } catch (e: any) {
-      toast({ title: 'Erro ao criar comunidade', description: e.message || 'Tente novamente.', variant: 'destructive' });
+      toast({ title: tp('community_create_error'), description: e.message || t('try_again'), variant: 'destructive' });
     }
   };
 
   const handleUpdateCommunity = async (id: string, fields: any) => {
     try {
       await updateCommunity({ id, ...fields });
-      toast({ title: 'Comunidade atualizada.' });
+      toast({ title: tp('community_updated') });
     } catch (e: any) {
-      toast({ title: 'Erro ao atualizar', description: e.message || 'Tente novamente.', variant: 'destructive' });
+      toast({ title: tp('community_update_error'), description: e.message || t('try_again'), variant: 'destructive' });
     }
   };
 
-  const handleInvite = async (email: string, role: string, communityId: string, householdId: string) => {
+  const handleInvite = async (email: string, role: string, communityId: string, householdId: string): Promise<{ msg: string; isError: boolean }> => {
     try {
       await inviteUserToParish({ email, parishId: pid, role, communityId: communityId || undefined, householdId: householdId || undefined });
-      toast({ title: 'Convite enviado.' });
-      return 'Convite enviado!';
+      toast({ title: tp('invite_sent') });
+      return { msg: tp('invite_sent'), isError: false };
     } catch (e: any) {
-      toast({ title: 'Erro ao enviar convite', description: e.message || 'Tente novamente.', variant: 'destructive' });
-      return 'Erro ao enviar convite.';
+      toast({ title: tp('invite_send_error'), description: e.message || t('try_again'), variant: 'destructive' });
+      return { msg: e.message || tp('invite_send_error'), isError: true };
     }
   };
 
   const handleRemoveMember = async (membershipId: string) => {
     try {
       await removeMembership({ membershipId });
-      toast({ title: 'Membro removido.' });
+      toast({ title: tp('member_removed') });
     } catch (e: any) {
-      toast({ title: 'Erro ao remover membro', description: e.message || 'Tente novamente.', variant: 'destructive' });
+      toast({ title: tp('member_remove_error'), description: e.message || t('try_again'), variant: 'destructive' });
     }
   };
 
@@ -124,18 +126,24 @@ export default function ParishDetailPage() {
       <AppShell>
         <div className="flex flex-col items-center py-20 gap-2">
           <AlertCircle className="h-10 w-10 text-destructive" />
-          <p className="text-destructive">{error || 'Paróquia não encontrada.'}</p>
-          <Button variant="ghost" onClick={() => navigate('/app/parishes')}><ArrowLeft className="mr-1 h-4 w-4" />Voltar</Button>
+          <p className="text-destructive">{error || tp('parish_not_found')}</p>
+          <Button variant="ghost" onClick={() => navigate('/app/parishes')}><ArrowLeft className="mr-1 h-4 w-4" />{tp('back')}</Button>
         </div>
       </AppShell>
     );
   }
 
+  const tabs: { id: Tab; label: string; icon: any }[] = [
+    { id: 'info', label: tp('tab_data'), icon: Settings },
+    { id: 'communities', label: tp('communities'), icon: Building2 },
+    { id: 'members', label: tp('members'), icon: Users },
+  ];
+
   return (
     <AppShell>
       <div className="space-y-6">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <button onClick={() => navigate('/app/parishes')} className="hover:text-foreground transition-colors">Paróquias</button>
+          <button onClick={() => navigate('/app/parishes')} className="hover:text-foreground transition-colors">{tn('parishes')}</button>
           <span>/</span>
           <span className="text-foreground font-medium truncate">{parish?.name}</span>
         </div>
@@ -150,7 +158,7 @@ export default function ParishDetailPage() {
               )}
             </div>
           </div>
-          <Button variant="outline" size="sm" onClick={() => navigate('/app/parishes')}><ArrowLeft className="mr-1 h-4 w-4" />Voltar</Button>
+          <Button variant="outline" size="sm" onClick={() => navigate('/app/parishes')}><ArrowLeft className="mr-1 h-4 w-4" />{tp('back')}</Button>
         </div>
 
         {error && (
@@ -158,16 +166,12 @@ export default function ParishDetailPage() {
         )}
 
         <div className="flex border-b gap-0">
-          {([
-            { id: 'info', label: 'Dados', icon: Settings },
-            { id: 'communities', label: 'Comunidades', icon: Building2 },
-            { id: 'members', label: 'Membros', icon: Users },
-          ] as { id: Tab; label: string; icon: any }[]).map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)}
+          {tabs.map(tabItem => (
+            <button key={tabItem.id} onClick={() => setTab(tabItem.id)}
               className={'flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ' +
-                (tab === t.id ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground')}
+                (tab === tabItem.id ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground')}
             >
-              <t.icon className="h-4 w-4" />{t.label}
+              <tabItem.icon className="h-4 w-4" />{tabItem.label}
             </button>
           ))}
         </div>
@@ -190,15 +194,14 @@ export default function ParishDetailPage() {
               <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-5 space-y-3">
                 <div className="flex items-center gap-2">
                   <AlertCircle className="h-4 w-4 text-destructive" />
-                  <h3 className="font-semibold text-destructive">Zona de perigo</h3>
+                  <h3 className="font-semibold text-destructive">{tp('danger_zone')}</h3>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Remover a paróquia a oculta da sua lista de espaços e do seletor de workspaces.
-                  Os dados são arquivados (não apagados) e podem ser restaurados por um administrador.
+                  {tp('danger_zone_desc')}
                 </p>
                 <Button variant="destructive" size="sm" onClick={() => setShowDelete(true)}>
                   <Trash2 className="mr-1.5 h-4 w-4" />
-                  Remover paróquia
+                  {tp('remove_parish')}
                 </Button>
               </div>
             )}
@@ -227,9 +230,9 @@ export default function ParishDetailPage() {
       <ConfirmDialog
         open={showDelete}
         onOpenChange={setShowDelete}
-        title="Remover paróquia"
-        description={`Tem certeza que deseja remover "${parish?.name}"? Ela será arquivada e ocultada das listagens. Os dados são preservados e a ação pode ser revertida por um administrador.`}
-        confirmLabel="Remover"
+        title={tp('remove_parish_title')}
+        description={tp('remove_parish_desc', { name: parish?.name })}
+        confirmLabel={t('remove')}
         variant="destructive"
         confirmPhrase="DELETAR"
         loading={deleting}

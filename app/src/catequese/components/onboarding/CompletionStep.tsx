@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Check, ArrowRight } from 'lucide-react';
 import { Button } from '../../../client/components/ui/button';
 
@@ -13,6 +14,8 @@ interface CompletionStepProps {
 }
 
 export function CompletionStep({ summary, onFinish }: CompletionStepProps) {
+  const { t } = useTranslation('onboarding');
+
   useEffect(() => {
     const timer = setTimeout(onFinish, 5000);
     return () => clearTimeout(timer);
@@ -25,10 +28,8 @@ export function CompletionStep({ summary, onFinish }: CompletionStepProps) {
       </div>
 
       <div className="space-y-2 max-w-md">
-        <h2 className="text-2xl font-bold tracking-tight">Tudo pronto!</h2>
-        <p className="text-muted-foreground">
-          O teu espaço está configurado. Aqui está um resumo do que foi criado:
-        </p>
+        <h2 className="text-2xl font-bold tracking-tight">{t('completion.title')}</h2>
+        <p className="text-muted-foreground">{t('completion.desc')}</p>
       </div>
 
       <div className="w-full max-w-sm rounded-xl border bg-card p-4 text-left space-y-2">
@@ -40,10 +41,10 @@ export function CompletionStep({ summary, onFinish }: CompletionStepProps) {
         ))}
       </div>
 
-      <p className="text-xs text-muted-foreground">Redirecionando em 5 segundos...</p>
+      <p className="text-xs text-muted-foreground">{t('completion.redirecting')}</p>
 
       <Button onClick={onFinish} size="lg" className="gap-2">
-        Ir para o Dashboard
+        {t('completion.go_dashboard')}
         <ArrowRight className="h-4 w-4" />
       </Button>
     </div>

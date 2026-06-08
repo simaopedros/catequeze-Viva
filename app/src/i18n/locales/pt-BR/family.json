@@ -1,0 +1,54 @@
+{
+  "portal_badge": "Portal da Família",
+  "app_name": "Catequese Viva",
+  "landing": {
+    "tagline": "Acompanha a jornada de fé dos teus filhos.",
+    "invite_title": "Entrada por Convite",
+    "invite_desc": "O portal da família é acedido através de um convite enviado pela tua paróquia. Se ainda não recebeste um convite, fala com o teu catequista ou coordenador paroquial.",
+    "enter": "Entrar",
+    "have_invite": "Já tens um convite?",
+    "insert_code": "Inserir código",
+    "staff_hint": "És coordenador ou catequista?",
+    "main_portal": "Acede ao portal principal"
+  },
+  "login": {
+    "title": "Entrar",
+    "subtitle": "Acede ao teu painel de família.",
+    "no_account": "Não tens conta?",
+    "create_account": "Criar conta",
+    "token_hint": "Ao criar conta ou entrar, poderás aceitar o convite recebido."
+  },
+  "signup": {
+    "title": "Criar Conta",
+    "requires_invite": "O registo no portal da família requer um convite da tua paróquia. Usa o link que recebeste por email.",
+    "have_code": "Tenho um código de convite",
+    "already_have": "Já tens conta?",
+    "login": "Entrar",
+    "invited_to": "Foste convidado(a) para {{parish}} como {{role}}.",
+    "expired_title": "Convite Expirado",
+    "invalid_title": "Convite Inválido",
+    "expired_desc": "Este convite já expirou. Pede um novo ao teu coordenador.",
+    "invalid_desc": "Token de convite inválido. Verifica o link."
+  },
+  "invite": {
+    "badge": "Convite",
+    "title": "Foste Convidado(a)!",
+    "as_role": "como {{role}}",
+    "sent_to": "Convite enviado para {{email}}",
+    "expires": " · Expira em {{date}}",
+    "accept_error": "Erro ao aceitar convite.",
+    "expired_title": "Convite Expirado",
+    "accepting": "Aceitando...",
+    "accept": "Aceitar Convite",
+    "login_to_accept": "Para aceitar o convite, entra ou cria uma conta.",
+    "accepted_title": "Convite Aceite!",
+    "accepted_desc": "Agora fazes parte de {{parish}} como {{role}}.",
+    "redirecting": "A redirecionar para o teu painel...",
+    "not_found_title": "Convite Não Encontrado",
+    "not_found_desc": "Não foi possível encontrar este convite. Verifica se o link está correto.",
+    "expired_desc_accept": "Este convite já expirou. Pede um novo convite ao teu coordenador ou catequista.",
+    "login": "Entrar",
+    "signup": "Criar Conta",
+    "back_portal": "Voltar ao portal da família"
+  }
+}

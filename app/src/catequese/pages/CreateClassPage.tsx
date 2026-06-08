@@ -13,6 +13,7 @@ import { useActiveWorkspace } from '../../client/hooks/useActiveWorkspace';
 
 export default function CreateClassPage() {
   const { t } = useTranslation('classes');
+  const { t: tc } = useTranslation('common');
   const navigate = useNavigate();
   const { workspaceId } = useActiveWorkspace();
 
@@ -26,7 +27,7 @@ export default function CreateClassPage() {
   const [error, setError] = useState('');
 
   const handleSubmit = async () => {
-    if (!name) { setError('O nome da turma é obrigatório.'); return; }
+    if (!name) { setError(t('name_required')); return; }
     setSaving(true);
     setError('');
     try {
@@ -39,11 +40,11 @@ export default function CreateClassPage() {
         maxCapacity,
         parishId: workspaceId,
       });
-      toast({ title: 'Turma criada com sucesso!' });
+      toast({ title: t('created_success') });
       navigate('/app/classes');
     } catch (err: any) {
       if (handlePlanLimitError(err.message || err)) return;
-      setError(err.message || 'Erro ao criar turma.');
+      setError(err.message || t('create_error'));
     } finally {
       setSaving(false);
     }
@@ -64,26 +65,26 @@ export default function CreateClassPage() {
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">{t('name')} *</Label>
-            <Input id="name" value={name} onChange={e => setName(e.target.value)} placeholder="Ex: Turma de Crisma 2026" />
+            <Input id="name" value={name} onChange={e => setName(e.target.value)} placeholder={t('name_placeholder')} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="location">{t('location')}</Label>
-            <Input id="location" value={location} onChange={e => setLocation(e.target.value)} placeholder="Ex: Salão Paroquial" />
+            <Input id="location" value={location} onChange={e => setLocation(e.target.value)} placeholder={t('location_placeholder')} />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="space-y-2">
-              <Label htmlFor="day">Dia</Label>
+              <Label htmlFor="day">{t('day')}</Label>
               <select id="day" value={dayOfWeek} onChange={e => setDayOfWeek(e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                <option value="">Dia</option>
-                {['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'].map((d, i) => <option key={i} value={i}>{d}</option>)}
+                <option value="">{tc('select_option')}</option>
+                {[0, 1, 2, 3, 4, 5, 6].map(i => <option key={i} value={i}>{t(`days.${i}`)}</option>)}
               </select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="start">Início</Label>
+              <Label htmlFor="start">{t('start')}</Label>
               <Input id="start" type="time" value={startTime} onChange={e => setStartTime(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="end">Fim</Label>
+              <Label htmlFor="end">{t('end')}</Label>
               <Input id="end" type="time" value={endTime} onChange={e => setEndTime(e.target.value)} />
             </div>
           </div>
@@ -94,10 +95,10 @@ export default function CreateClassPage() {
           <div className="flex gap-3 pt-4">
             <Button type="button" onClick={handleSubmit} disabled={saving}>
               <Save className="mr-2 h-4 w-4" />
-              {saving ? t('loading', { ns: 'common' }) : t('create')}
+              {saving ? tc('loading') : t('create')}
             </Button>
             <Button type="button" variant="outline" asChild>
-              <Link to="/app/classes">{t('cancel', { ns: 'common' })}</Link>
+              <Link to="/app/classes">{tc('cancel')}</Link>
             </Button>
           </div>
         </div>

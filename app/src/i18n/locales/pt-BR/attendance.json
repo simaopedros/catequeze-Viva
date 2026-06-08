@@ -16,5 +16,26 @@
   "justified": "Justificado",
   "not_started": "Não iniciada",
   "in_progress": "Em andamento",
-  "synced": "Sincronizada"
+  "synced": "Sincronizada",
+  "matrix": {
+    "title": "Matriz de Presença",
+    "subtitle": "{{catechumens}} · {{meetings}}",
+    "new_meeting": "Novo encontro",
+    "title_placeholder": "Título",
+    "absent_label": "Faltou",
+    "justified_label": "Abonado",
+    "not_filled": "Não preenchido",
+    "empty": "Crie um encontro para começar.",
+    "catechumen_column": "Catequizando",
+    "totals": "Totais",
+    "mark_error": "Erro ao marcar presença: {{message}}",
+    "create_meeting_error": "Erro ao criar encontro: {{message}}",
+    "no_permission": "Sem permissão.",
+    "meetings_count": "{{count}} encontros",
+    "present_letter": "P",
+    "absent_letter": "F",
+    "justified_letter": "A",
+    "percent_column": "%",
+    "no_title": "—"
+  }
 }

@@ -1,0 +1,23 @@
+{
+  "openMenu": "Abrir menu",
+  "searchPlaceholder": "Buscar catequizandos, turmas, conteúdos, Bíblia...",
+  "noResults": "Nenhum resultado",
+  "searchNavigate": "navegar",
+  "searchOpen": "abrir",
+  "searchFocusHint": "Ctrl+K para focar",
+  "notifications": "Notificações",
+  "markAllRead": "Marcar todas como lidas",
+  "noNotifications": "Nenhuma notificação",
+  "personalSpace": "Espaço pessoal",
+  "workspaceGroups": {
+    "personal": "Pessoal",
+    "parish": "Paróquias",
+    "diocese": "Dioceses",
+    "community": "Comunidades"
+  },
+  "viewAll": "Ver todos ({{count}})",
+  "viewAllWorkspaces": "Ver todos os espaços",
+  "profiles": "Perfis ({{count}})",
+  "noParish": "Sem paróquia",
+  "requiresPaidPlan": "Requer plano pago"
+}

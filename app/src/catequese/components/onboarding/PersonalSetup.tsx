@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { User, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
 import { Button } from '../../../client/components/ui/button';
 import { Input } from '../../../client/components/ui/input';
@@ -10,6 +11,7 @@ interface PersonalSetupProps {
 }
 
 export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
+  const { t } = useTranslation('onboarding');
   const { data: user } = useAuth();
   const [className, setClassName] = useState('');
 
@@ -18,6 +20,10 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
     onComplete({ className: className.trim() || undefined });
   };
 
+  const limitsLabel = user?.subscriptionPlan === 'catechist_free'
+    ? t('personal_setup.limits_free')
+    : t('personal_setup.limits_unlimited');
+
   return (
     <div className="flex flex-col items-center text-center space-y-5 py-4 animate-in fade-in duration-500">
       <div className="rounded-full bg-primary/10 p-4">
@@ -25,43 +31,39 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
       </div>
 
       <div className="space-y-1 max-w-md">
-        <h2 className="text-2xl font-bold">Conta Pessoal</h2>
-        <p className="text-muted-foreground text-sm">
-          O teu espaço individual de catequese está quase pronto!
-        </p>
+        <h2 className="text-2xl font-bold">{t('personal_setup.title')}</h2>
+        <p className="text-muted-foreground text-sm">{t('personal_setup.subtitle')}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">
         <div className="rounded-xl bg-primary/5 border border-primary/20 p-4 text-left space-y-2">
           <p className="text-sm font-medium text-primary flex items-center gap-2">
-            <Sparkles className="h-4 w-4" /> O que está incluído:
+            <Sparkles className="h-4 w-4" /> {t('personal_setup.included')}
           </p>
           <ul className="text-xs text-muted-foreground space-y-1">
-            <li>• Espaço pessoal isolado</li>
-            <li>• {user?.subscriptionPlan === 'catechist_free' ? '2 turmas e 30 catequizandos' : 'Turmas ilimitadas'}</li>
-            <li>• Gerador de encontros com IA</li>
-            <li>• Calendário litúrgico</li>
+            <li>• {t('personal_setup.isolated_space')}</li>
+            <li>• {limitsLabel}</li>
+            <li>• {t('personal_setup.ai_generator')}</li>
+            <li>• {t('personal_setup.liturgical_calendar')}</li>
           </ul>
         </div>
 
         <div className="text-left">
-          <label className="text-sm font-medium">Nome da primeira turma (opcional)</label>
+          <label className="text-sm font-medium">{t('personal_setup.first_class_label')}</label>
           <Input
             value={className}
             onChange={(e) => setClassName(e.target.value)}
-            placeholder="Ex: Catequese 1º Ano"
+            placeholder={t('personal_setup.first_class_placeholder')}
             className="mt-1"
           />
-          <p className="text-[11px] text-muted-foreground mt-1">
-            Podes criar depois em Turmas se preferires.
-          </p>
+          <p className="text-[11px] text-muted-foreground mt-1">{t('personal_setup.first_class_hint')}</p>
         </div>
 
         <Button type="submit" className="w-full gap-2" size="lg" disabled={loading}>
           {loading ? (
-            <><Loader2 className="h-4 w-4 animate-spin" /> Criando espaço...</>
+            <><Loader2 className="h-4 w-4 animate-spin" /> {t('personal_setup.creating')}</>
           ) : (
-            <>Entrar no meu espaço <ArrowRight className="h-4 w-4" /></>
+            <>{t('personal_setup.enter_space')} <ArrowRight className="h-4 w-4" /></>
           )}
         </Button>
       </form>

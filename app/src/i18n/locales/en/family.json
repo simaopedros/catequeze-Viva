@@ -1,0 +1,54 @@
+{
+  "portal_badge": "Family Portal",
+  "app_name": "Catequese Viva",
+  "landing": {
+    "tagline": "Follow your children's faith journey.",
+    "invite_title": "Invitation Only",
+    "invite_desc": "The family portal is accessed through an invitation sent by your parish. If you haven't received one yet, speak with your catechist or parish coordinator.",
+    "enter": "Sign in",
+    "have_invite": "Already have an invitation?",
+    "insert_code": "Enter code",
+    "staff_hint": "Are you a coordinator or catechist?",
+    "main_portal": "Go to the main portal"
+  },
+  "login": {
+    "title": "Sign in",
+    "subtitle": "Access your family dashboard.",
+    "no_account": "Don't have an account?",
+    "create_account": "Create account",
+    "token_hint": "When you sign in or create an account, you can accept the invitation you received."
+  },
+  "signup": {
+    "title": "Create Account",
+    "requires_invite": "Family portal registration requires an invitation from your parish. Use the link you received by email.",
+    "have_code": "I have an invitation code",
+    "already_have": "Already have an account?",
+    "login": "Sign in",
+    "invited_to": "You were invited to {{parish}} as {{role}}.",
+    "expired_title": "Invitation Expired",
+    "invalid_title": "Invalid Invitation",
+    "expired_desc": "This invitation has expired. Ask your coordinator for a new one.",
+    "invalid_desc": "Invalid invitation token. Check the link."
+  },
+  "invite": {
+    "badge": "Invitation",
+    "title": "You've Been Invited!",
+    "as_role": "as {{role}}",
+    "sent_to": "Invitation sent to {{email}}",
+    "expires": " · Expires on {{date}}",
+    "accept_error": "Error accepting invitation.",
+    "expired_title": "Invitation Expired",
+    "accepting": "Accepting...",
+    "accept": "Accept Invitation",
+    "login_to_accept": "To accept the invitation, sign in or create an account.",
+    "accepted_title": "Invitation Accepted!",
+    "accepted_desc": "You are now part of {{parish}} as {{role}}.",
+    "redirecting": "Redirecting to your dashboard...",
+    "not_found_title": "Invitation Not Found",
+    "not_found_desc": "Could not find this invitation. Check if the link is correct.",
+    "expired_desc_accept": "This invitation has expired. Ask your coordinator or catechist for a new one.",
+    "login": "Sign in",
+    "signup": "Create Account",
+    "back_portal": "Back to family portal"
+  }
+}

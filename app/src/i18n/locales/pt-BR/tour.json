@@ -1,0 +1,28 @@
+{
+  "stepOf": "Passo {{current}} de {{total}}",
+  "previous": "Anterior",
+  "next": "Próximo",
+  "start": "Começar",
+  "steps": {
+    "dashboard": {
+      "title": "Painel de Controlo",
+      "description": "Aqui você vê um resumo da sua catequese: catequizandos ativos, turmas, presença média e pendências."
+    },
+    "classes": {
+      "title": "Turmas",
+      "description": "Gerencie suas turmas, catequistas e encontros. Cada turma tem seu próprio calendário e registo de presenças."
+    },
+    "ai": {
+      "title": "Gerador IA",
+      "description": "Crie encontros completos de catequese com inteligência artificial — orações, dinâmicas, referências bíblicas e do Catecismo."
+    },
+    "messages": {
+      "title": "Mensagens",
+      "description": "Comunique-se com catequistas, pais e catequizandos. Envie comunicados e mensagens diretas."
+    },
+    "search": {
+      "title": "Busca Rápida",
+      "description": "Pressione Ctrl+K para buscar instantaneamente em toda a plataforma: catequizandos, turmas, Bíblia, Catecismo e muito mais."
+    }
+  }
+}

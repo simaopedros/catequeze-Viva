@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { Book, Search, ChevronLeft, ChevronRight, Loader2, AlertCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Search, ChevronLeft, ChevronRight, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { FilterPills } from '../../client/components/FilterPills';
-import { SearchInput } from '../../client/components/SearchInput';
 import { AppShell } from '../AppShell';
 import { useQuery, listBibleBooks, getBibleBook, getBibleChapter, searchBible } from 'wasp/client/operations';
 
-const TESTAMENTS = { OT: 'Antigo Testamento', NT: 'Novo Testamento' } as Record<string, string>;
-
 export default function BiblePage() {
+  const { t } = useTranslation('bible');
+  const { t: tc } = useTranslation('common');
   const { data: books = [] } = useQuery(listBibleBooks);
   const [selectedBook, setSelectedBook] = useState<any>(null);
   const [selectedChapter, setSelectedChapter] = useState<any>(null);
@@ -27,7 +27,7 @@ export default function BiblePage() {
       setSelectedBook(book);
       setSelectedChapter(null);
       setChapterData(null);
-    } catch (e) { setError('Não foi possível carregar o livro. Verifique sua conexão.'); }
+    } catch { setError(t('load_book_error')); }
   };
 
   const loadChapter = async (bookId: string, chapter: number) => {
@@ -37,7 +37,7 @@ export default function BiblePage() {
       const data = await getBibleChapter({ bookId, chapter });
       setChapterData(data);
       setSelectedChapter(chapter);
-    } catch (e) { setError('Não foi possível carregar o capítulo. Verifique sua conexão.'); }
+    } catch { setError(t('load_chapter_error')); }
     setLoading(false);
   };
 
@@ -48,7 +48,7 @@ export default function BiblePage() {
     try {
       setSearchResults((await searchBible({ query: searchQuery })) || []);
       setView('search');
-    } catch (e) { setError('Não foi possível realizar a busca. Verifique sua conexão.'); }
+    } catch { setError(t('search_error')); }
     setSearching(false);
   };
 
@@ -59,43 +59,41 @@ export default function BiblePage() {
     <AppShell>
       <div className="space-y-4">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-          <span>Bíblia Sagrada</span>
+          <span>{t('title')}</span>
         </div>
 
         <div className="flex items-center justify-between gap-3">
-          <h1 className="text-2xl font-bold">Bíblia Sagrada</h1>
+          <h1 className="text-2xl font-bold">{t('title')}</h1>
           <FilterPills
             options={[
-              { value: 'browse', label: 'Livros' },
-              { value: 'search', label: 'Buscar' },
+              { value: 'browse', label: t('books') },
+              { value: 'search', label: t('search') },
             ]}
             value={view}
             onChange={v => setView(v as 'browse' | 'search')}
           />
         </div>
 
-        {/* Search bar */}
         <div className="flex gap-3">
           <input
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleSearch()}
             className="flex-1 h-9 rounded-md border border-input bg-background px-3 text-sm"
-            placeholder="Ex: Gênesis 1, Gn 1:3, João 3:16, amor, Deus, luz..."  
+            placeholder={t('search_placeholder')}
           />
           <Button size="sm" onClick={handleSearch} disabled={searching || searchQuery.length < 2}>
-            <Search className="mr-1 h-4 w-4" />Buscar
+            <Search className="mr-1 h-4 w-4" />{t('search')}
           </Button>
         </div>
 
-        {/* Search results */}
         {view === 'search' && searchResults.length > 0 && (
           <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">{searchResults.length} resultado(s)</p>
+            <p className="text-sm text-muted-foreground">{t('results_count', { count: searchResults.length })}</p>
             {searchResults.map((v: any) => (
-              <div key={v.id} className="rounded-lg border p-3 text-sm">        
+              <div key={v.id} className="rounded-lg border p-3 text-sm">
                 <p className="font-medium text-xs text-primary mb-1">
-                  {v.chapter?.book?.name} {v.chapter?.number}:{v.number}        
+                  {v.chapter?.book?.name} {v.chapter?.number}:{v.number}
                 </p>
                 <p>{v.text}</p>
               </div>
@@ -106,16 +104,14 @@ export default function BiblePage() {
         {view === 'search' && searchResults.length === 0 && (
           <div className="text-center text-muted-foreground py-12">
             <Search className="mx-auto h-8 w-8 mb-2" />
-            <p>Busque por livro e capítulo (ex: "Gênesis 1"), livro capítulo:versículo (ex: "Gn 1:3"), ou palavra-chave (ex: "amor", "luz", "Deus").</p>        
+            <p>{t('empty_search_hint')}</p>
           </div>
         )}
 
-        {/* Browse view */}
         {view === 'browse' && !selectedBook && (
           <div className="space-y-6">
-            {/* OT */}
             <div>
-              <h2 className="font-semibold text-sm text-muted-foreground mb-2">Antigo Testamento</h2>
+              <h2 className="font-semibold text-sm text-muted-foreground mb-2">{t('old_testament')}</h2>
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-1">
                 {otBooks.map((b: any) => (
                   <button
@@ -128,9 +124,8 @@ export default function BiblePage() {
                 ))}
               </div>
             </div>
-            {/* NT */}
             <div>
-              <h2 className="font-semibold text-sm text-muted-foreground mb-2">Novo Testamento</h2>
+              <h2 className="font-semibold text-sm text-muted-foreground mb-2">{t('new_testament')}</h2>
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-1">
                 {ntBooks.map((b: any) => (
                   <button
@@ -146,12 +141,11 @@ export default function BiblePage() {
           </div>
         )}
 
-        {/* Book detail -> chapter selection */}
         {view === 'browse' && selectedBook && !selectedChapter && (
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="sm" onClick={() => { setSelectedBook(null); setChapterData(null); }}>
-                <ChevronLeft className="h-4 w-4" />Livros
+                <ChevronLeft className="h-4 w-4" />{t('books')}
               </Button>
               <h2 className="font-semibold">{selectedBook.name}</h2>
             </div>
@@ -159,7 +153,7 @@ export default function BiblePage() {
               {selectedBook.chapters?.map((ch: any) => (
                 <button
                   key={ch.id}
-                  onClick={() => loadChapter(selectedBook.id, ch.number)}       
+                  onClick={() => loadChapter(selectedBook.id, ch.number)}
                   className="px-2 py-1.5 text-sm rounded border hover:bg-primary/10 transition-colors text-center"
                 >
                   {ch.number}
@@ -169,12 +163,11 @@ export default function BiblePage() {
           </div>
         )}
 
-        {/* Chapter content */}
         {view === 'browse' && chapterData && (
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="sm" onClick={() => { setSelectedChapter(null); setChapterData(null); }}>
-                <ChevronLeft className="h-4 w-4" />Capítulos
+                <ChevronLeft className="h-4 w-4" />{t('chapters')}
               </Button>
               <h2 className="font-semibold">{chapterData.book?.name} {selectedChapter}</h2>
             </div>
@@ -182,7 +175,7 @@ export default function BiblePage() {
               <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center space-y-3">
                 <AlertCircle className="h-8 w-8 text-destructive mx-auto" />
                 <p className="text-sm text-destructive">{error}</p>
-                <Button size="sm" variant="outline" onClick={() => loadChapter(selectedBook.id, selectedChapter || 1)}>Tentar novamente</Button>
+                <Button size="sm" variant="outline" onClick={() => loadChapter(selectedBook.id, selectedChapter || 1)}>{tc('try_again')}</Button>
               </div>
             ) : loading ? (
               <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
@@ -196,14 +189,13 @@ export default function BiblePage() {
                 ))}
               </div>
             )}
-            {/* Chapter navigation */}
             <div className="flex justify-between pt-2 border-t">
               <Button
                 variant="ghost" size="sm"
                 disabled={selectedChapter <= 1}
                 onClick={() => loadChapter(chapterData.book.id, selectedChapter - 1)}
               >
-                <ChevronLeft className="h-4 w-4" />Anterior
+                <ChevronLeft className="h-4 w-4" />{t('previous')}
               </Button>
               <span className="text-sm text-muted-foreground">{chapterData.book?.name} {selectedChapter}</span>
               <Button
@@ -211,7 +203,7 @@ export default function BiblePage() {
                 disabled={!selectedBook || selectedChapter >= (selectedBook.chapters?.length || 1)}
                 onClick={() => loadChapter(chapterData.book.id, selectedChapter + 1)}
               >
-                Próximo<ChevronRight className="h-4 w-4" />
+                {t('next')}<ChevronRight className="h-4 w-4" />
               </Button>
             </div>
           </div>

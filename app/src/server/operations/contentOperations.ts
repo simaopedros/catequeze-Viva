@@ -1,6 +1,7 @@
 import { HttpError } from 'wasp/server';
 import { MembershipStatus } from '@prisma/client';
 import { getDioceseParishIds } from '../auth/helpers';
+import { resolveUserLocale } from '../i18n/serverLocale';
 
 function isCoordinatorOrAbove(role: string): boolean {
   return ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(role);
@@ -118,7 +119,7 @@ export const createContentItem = async (args: any, context: any) => {
       openingPrayer: args.openingPrayer, dynamic: args.dynamic,
       mainContent: args.mainContent, activity: args.activity,
       familyTask: args.familyTask, estimatedTime: args.estimatedTime,
-      tags: args.tags, status: 'DRAFT', locale: 'pt-BR', createdById: context.user.id,
+      tags: args.tags, status: 'DRAFT', locale: resolveUserLocale(context.user), createdById: context.user.id,
       parishId: parishId || null,
     },
   });

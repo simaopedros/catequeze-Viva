@@ -1,0 +1,24 @@
+{
+  "title": "Dioceses",
+  "subtitle": "Diocese management (Super Admin)",
+  "new_diocese": "New diocese",
+  "name_placeholder": "Diocese name",
+  "create": "Create",
+  "creating": "...",
+  "create_error": "Error creating diocese.",
+  "update_error": "Error updating.",
+  "empty_title": "No dioceses registered",
+  "empty_desc": "Register the first diocese to get started.",
+  "columns": {
+    "name": "Name",
+    "country": "Country",
+    "parishes": "Parishes",
+    "actions": "Actions"
+  },
+  "countries": {
+    "BR": "Brazil",
+    "PT": "Portugal",
+    "AO": "Angola",
+    "MZ": "Mozambique"
+  }
+}

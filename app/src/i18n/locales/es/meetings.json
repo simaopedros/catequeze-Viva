@@ -1,0 +1,21 @@
+{
+  "title": "Encuentros",
+  "subtitle": "Gestionar encuentros del grupo",
+  "new": "Nuevo",
+  "meeting_title": "Título del encuentro",
+  "date": "Fecha",
+  "no_content": "Sin contenido asociado",
+  "create_error": "Error al crear encuentro: {{message}}",
+  "update_error": "Error al actualizar encuentro: {{message}}",
+  "no_permission": "Sin permiso o fallo del servidor.",
+  "server_error": "Fallo del servidor.",
+  "empty_title": "Ningún encuentro registrado",
+  "empty_desc": "Cree el primer encuentro para este grupo.",
+  "no_title": "Sin título",
+  "attendance_count": "{{count}} asistencias",
+  "attendance_link": "Asistencia",
+  "unlink": "Desvincular",
+  "link_content": "Vincular contenido...",
+  "generate_ai_activity": "Generar Actividad IA",
+  "generate_whatsapp": "Generar WhatsApp"
+}

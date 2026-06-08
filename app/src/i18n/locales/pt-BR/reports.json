@@ -9,5 +9,47 @@
   "messages_sent": "Mensagens enviadas",
   "pending_consents": "Consentimentos pendentes",
   "export_csv": "Exportar CSV",
-  "export_pdf": "Exportar PDF"
+  "export_pdf": "Exportar PDF",
+  "tabs": {
+    "attendance": "Presença",
+    "ranking": "Ranking",
+    "chart": "Gráfico"
+  },
+  "periods": {
+    "all": "Todo período",
+    "month": "Último mês",
+    "quarter": "Último trimestre"
+  },
+  "kpis": {
+    "total_enrolled": "Total inscritos",
+    "total_meetings": "Total encontros",
+    "avg_attendance": "Presença média"
+  },
+  "dropout_title": "Risco de evasão",
+  "dropout_desc": "Turmas com presença abaixo de 50% nos últimos encontros:",
+  "attendance_by_class": "Presença por turma",
+  "no_classes": "Nenhuma turma",
+  "no_classes_desc": "Cadastre turmas para ver os relatórios de presença.",
+  "enrolled_meetings": "{{enrolled}} inscritos · {{meetings}} encontros",
+  "present_absent": "{{present}}P / {{absent}}A",
+  "ranking_title": "Ranking de Frequência",
+  "no_data": "Nenhum dado",
+  "no_frequency_data": "Sem dados de frequência para exibir.",
+  "chart_attendance": "Presença por Turma (%)",
+  "chart_distribution": "Distribuição Geral de Presença",
+  "no_chart_data": "Sem dados",
+  "no_distribution_data": "Registre presenças para ver a distribuição.",
+  "present": "Presentes",
+  "absent": "Ausentes",
+  "attendance_label": "Presença",
+  "records": "registros",
+  "pdf_soon": "Exportação PDF em breve",
+  "csv_headers": {
+    "class": "Turma",
+    "enrolled": "Inscritos",
+    "meetings": "Encontros",
+    "present": "Presentes",
+    "absent": "Ausentes",
+    "rate": "Presença %"
+  }
 }

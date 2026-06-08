@@ -1,0 +1,23 @@
+{
+  "openMenu": "Abrir menú",
+  "searchPlaceholder": "Buscar catecúmenos, grupos, contenidos, Biblia...",
+  "noResults": "Sin resultados",
+  "searchNavigate": "navegar",
+  "searchOpen": "abrir",
+  "searchFocusHint": "Ctrl+K para enfocar",
+  "notifications": "Notificaciones",
+  "markAllRead": "Marcar todas como leídas",
+  "noNotifications": "Sin notificaciones",
+  "personalSpace": "Espacio personal",
+  "workspaceGroups": {
+    "personal": "Personal",
+    "parish": "Parroquias",
+    "diocese": "Diócesis",
+    "community": "Comunidades"
+  },
+  "viewAll": "Ver todos ({{count}})",
+  "viewAllWorkspaces": "Ver todos los espacios",
+  "profiles": "Perfiles ({{count}})",
+  "noParish": "Sin parroquia",
+  "requiresPaidPlan": "Requiere plan de pago"
+}

@@ -1,26 +1,21 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { Input } from '../../client/components/ui/input';
 import { Textarea } from '../../client/components/ui/textarea';
 import { Badge } from '../../client/components/ui/badge';
-import { Plus, Trash2, GripVertical, Check, X } from 'lucide-react';
+import { Plus, Trash2, Check } from 'lucide-react';
+import { useActivityTypes } from '../../i18n/useLabels';
 
 export type ActivityType =
   | 'QUIZ' | 'OPEN_QUESTION' | 'PARTICIPATION_CHECKLIST' | 'GUIDED_REFLECTION'
   | 'GROUP_DYNAMIC' | 'FAMILY_ACTIVITY' | 'BIBLE_READING' | 'MATCHING'
   | 'TASK_WITH_ATTACHMENT' | 'RITE_CELEBRATION';
 
-export const ACTIVITY_TYPES: { value: ActivityType; label: string }[] = [
-  { value: 'QUIZ', label: 'Quiz' },
-  { value: 'OPEN_QUESTION', label: 'Pergunta aberta' },
-  { value: 'PARTICIPATION_CHECKLIST', label: 'Checklist' },
-  { value: 'GUIDED_REFLECTION', label: 'Reflexão guiada' },
-  { value: 'GROUP_DYNAMIC', label: 'Dinâmica de grupo' },
-  { value: 'FAMILY_ACTIVITY', label: 'Atividade em família' },
-  { value: 'BIBLE_READING', label: 'Leitura bíblica' },
-  { value: 'MATCHING', label: 'Associação' },
-  { value: 'TASK_WITH_ATTACHMENT', label: 'Tarefa com anexo' },
-  { value: 'RITE_CELEBRATION', label: 'Celebração / Rito' },
+export const ACTIVITY_TYPE_VALUES: ActivityType[] = [
+  'QUIZ', 'OPEN_QUESTION', 'PARTICIPATION_CHECKLIST', 'GUIDED_REFLECTION',
+  'GROUP_DYNAMIC', 'FAMILY_ACTIVITY', 'BIBLE_READING', 'MATCHING',
+  'TASK_WITH_ATTACHMENT', 'RITE_CELEBRATION',
 ];
 
 // ─── Data structures per type ─────────────────────────────────────────────
@@ -92,8 +87,11 @@ export function ActivityForm({
   initialData,
   onSubmit,
   onCancel,
-  submitLabel = 'Salvar',
+  submitLabel,
 }: ActivityFormProps) {
+  const { t } = useTranslation('activities');
+  const { t: tc } = useTranslation('common');
+  const activityTypes = useActivityTypes();
   const [type, setType] = useState<ActivityType>(initialType);
   const [title, setTitle] = useState(initialTitle);
   const [desc, setDesc] = useState(initialDescription);
@@ -179,15 +177,15 @@ export function ActivityForm({
         return (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-medium">{quizQuestions.length} pergunta(s)</p>
-              <Button size="sm" variant="outline" onClick={addQuizQuestion}><Plus className="h-3 w-3 mr-1"/> Pergunta</Button>
+              <p className="text-sm font-medium">{t('form.questions_count', { count: quizQuestions.length })}</p>
+              <Button size="sm" variant="outline" onClick={addQuizQuestion}><Plus className="h-3 w-3 mr-1"/> {t('form.add_question')}</Button>
             </div>
             {quizQuestions.map((q, qi) => (
               <div key={q.id} className="rounded-lg border p-4 space-y-3 bg-muted/20">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold text-muted-foreground">#{qi + 1}</span>
                   <Input
-                    placeholder="Texto da pergunta"
+                    placeholder={t('form.question_text')}
                     value={q.question}
                     onChange={e => setQuizQuestions(prev => prev.map(p => p.id === q.id ? { ...p, question: e.target.value } : p))}
                     className="flex-1"
@@ -209,7 +207,7 @@ export function ActivityForm({
                         {q.correctIndex === oi ? <Check className="h-3 w-3"/> : <span className="text-[10px]">{['A','B','C','D'][oi]}</span>}
                       </button>
                       <Input
-                        placeholder={`Opção ${['A','B','C','D'][oi]}`}
+                        placeholder={t('form.option', { letter: ['A','B','C','D'][oi] })}
                         value={opt}
                         onChange={e => setQuizQuestions(prev => prev.map(p => p.id === q.id ? { ...p, options: p.options.map((o, j) => j === oi ? e.target.value : o) } : p))}
                         className="flex-1 h-8 text-sm"
@@ -218,7 +216,7 @@ export function ActivityForm({
                   ))}
                 </div>
                 <Input
-                  placeholder="Explicação da resposta correta (aparece após responder)"
+                  placeholder={t('form.explanation')}
                   value={q.explanation}
                   onChange={e => setQuizQuestions(prev => prev.map(p => p.id === q.id ? { ...p, explanation: e.target.value } : p))}
                   className="text-xs h-8"
@@ -233,7 +231,7 @@ export function ActivityForm({
         return (
           <div>
             <Textarea
-              placeholder="Digite a pergunta que o catequizando deve responder..."
+              placeholder={t('form.open_question_placeholder')}
               value={openQuestionText}
               onChange={e => setOpenQuestionText(e.target.value)}
               className="min-h-[100px]"
@@ -246,14 +244,14 @@ export function ActivityForm({
         return (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-medium">{checklistItems.length} item(ns)</p>
-              <Button size="sm" variant="outline" onClick={addChecklistItem}><Plus className="h-3 w-3 mr-1"/> Item</Button>
+              <p className="text-sm font-medium">{t('form.items_count', { count: checklistItems.length })}</p>
+              <Button size="sm" variant="outline" onClick={addChecklistItem}><Plus className="h-3 w-3 mr-1"/> {t('form.add_item')}</Button>
             </div>
             {checklistItems.map((item, i) => (
               <div key={item.id} className="flex items-center gap-2">
                 <span className="text-xs text-muted-foreground w-5">{i + 1}.</span>
                 <Input
-                  placeholder="Item do checklist"
+                  placeholder={t('form.checklist_item')}
                   value={item.text}
                   onChange={e => setChecklistItems(prev => prev.map(p => p.id === item.id ? { ...p, text: e.target.value } : p))}
                   className="flex-1"
@@ -271,20 +269,20 @@ export function ActivityForm({
         return (
           <div className="space-y-3">
             <Textarea
-              placeholder="Texto guia da reflexão (contexto, tema, introdução)..."
+              placeholder={t('form.reflection_guide')}
               value={reflectionGuide}
               onChange={e => setReflectionGuide(e.target.value)}
               className="min-h-[100px]"
             />
             <div className="flex items-center justify-between">
-              <p className="text-sm font-medium">{reflectionPrompts.length} pergunta(s) para reflexão</p>
-              <Button size="sm" variant="outline" onClick={addReflectionPrompt}><Plus className="h-3 w-3 mr-1"/> Pergunta</Button>
+              <p className="text-sm font-medium">{t('form.reflection_questions', { count: reflectionPrompts.length })}</p>
+              <Button size="sm" variant="outline" onClick={addReflectionPrompt}><Plus className="h-3 w-3 mr-1"/> {t('form.add_question')}</Button>
             </div>
             {reflectionPrompts.map((p, i) => (
               <div key={p.id} className="flex items-center gap-2">
                 <span className="text-xs text-muted-foreground w-5">{i + 1}.</span>
                 <Input
-                  placeholder="Pergunta para reflexão"
+                  placeholder={t('form.reflection_question')}
                   value={p.question}
                   onChange={e => setReflectionPrompts(prev => prev.map(r => r.id === p.id ? { ...r, question: e.target.value } : r))}
                   className="flex-1"
@@ -302,32 +300,32 @@ export function ActivityForm({
         return (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-medium">{dynamicSteps.length} passo(s)</p>
-              <Button size="sm" variant="outline" onClick={addDynamicStep}><Plus className="h-3 w-3 mr-1"/> Passo</Button>
+              <p className="text-sm font-medium">{t('form.steps_count', { count: dynamicSteps.length })}</p>
+              <Button size="sm" variant="outline" onClick={addDynamicStep}><Plus className="h-3 w-3 mr-1"/> {t('form.add_step')}</Button>
             </div>
             {dynamicSteps.map((step, i) => (
               <div key={step.id} className="rounded-lg border p-3 space-y-2">
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-[10px]">Passo {i + 1}</Badge>
+                  <Badge variant="outline" className="text-[10px]">{t('form.step', { number: i + 1 })}</Badge>
                   <Button size="icon" variant="ghost" className="text-destructive ml-auto" onClick={() => setDynamicSteps(prev => prev.filter(s => s.id !== step.id))}>
                     <Trash2 className="h-3 w-3" />
                   </Button>
                 </div>
                 <Input
-                  placeholder="Instrução do passo"
+                  placeholder={t('form.step_instruction')}
                   value={step.instruction}
                   onChange={e => setDynamicSteps(prev => prev.map(s => s.id === step.id ? { ...s, instruction: e.target.value } : s))}
                 />
                 <div className="flex gap-2">
                   <Input
-                    placeholder="Duração (min)"
+                    placeholder={t('form.duration_min')}
                     type="number"
                     value={step.duration || ''}
                     onChange={e => setDynamicSteps(prev => prev.map(s => s.id === step.id ? { ...s, duration: Number(e.target.value) } : s))}
                     className="w-24 h-8 text-xs"
                   />
                   <Input
-                    placeholder="Materiais necessários"
+                    placeholder={t('form.materials')}
                     value={step.materials || ''}
                     onChange={e => setDynamicSteps(prev => prev.map(s => s.id === step.id ? { ...s, materials: e.target.value } : s))}
                     className="flex-1 h-8 text-xs"
@@ -342,7 +340,7 @@ export function ActivityForm({
       case 'FAMILY_ACTIVITY':
         return (
           <Textarea
-            placeholder="Descreva a atividade para a família fazer em casa..."
+            placeholder={t('form.family_placeholder')}
             value={familyTaskText}
             onChange={e => setFamilyTaskText(e.target.value)}
             className="min-h-[120px]"
@@ -354,19 +352,19 @@ export function ActivityForm({
         return (
           <div className="space-y-3">
             <Input
-              placeholder="Referência bíblica (ex: Jo 6,51-58)"
+              placeholder={t('form.bible_ref_placeholder')}
               value={bibleRef}
               onChange={e => setBibleRef(e.target.value)}
             />
             <div className="flex items-center justify-between">
-              <p className="text-sm font-medium">{bibleQuestions.length} pergunta(s)</p>
-              <Button size="sm" variant="outline" onClick={addBibleQuestion}><Plus className="h-3 w-3 mr-1"/> Pergunta</Button>
+              <p className="text-sm font-medium">{t('form.questions_count', { count: bibleQuestions.length })}</p>
+              <Button size="sm" variant="outline" onClick={addBibleQuestion}><Plus className="h-3 w-3 mr-1"/> {t('form.add_question')}</Button>
             </div>
             {bibleQuestions.map((q, i) => (
               <div key={q.id} className="flex items-center gap-2">
                 <span className="text-xs text-muted-foreground w-5">{i + 1}.</span>
                 <Input
-                  placeholder="Pergunta sobre a leitura"
+                  placeholder={t('form.reading_question')}
                   value={q.question}
                   onChange={e => setBibleQuestions(prev => prev.map(p => p.id === q.id ? { ...p, question: e.target.value } : p))}
                   className="flex-1"
@@ -384,21 +382,21 @@ export function ActivityForm({
         return (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-medium">{matchingPairs.length} par(es)</p>
-              <Button size="sm" variant="outline" onClick={addMatchingPair}><Plus className="h-3 w-3 mr-1"/> Par</Button>
+              <p className="text-sm font-medium">{t('form.pairs_count', { count: matchingPairs.length })}</p>
+              <Button size="sm" variant="outline" onClick={addMatchingPair}><Plus className="h-3 w-3 mr-1"/> {t('form.add_pair')}</Button>
             </div>
             {matchingPairs.map((pair, i) => (
               <div key={pair.id} className="flex items-center gap-2">
                 <span className="text-xs text-muted-foreground w-5">{i + 1}.</span>
                 <Input
-                  placeholder="Esquerda"
+                  placeholder={t('form.left')}
                   value={pair.left}
                   onChange={e => setMatchingPairs(prev => prev.map(p => p.id === pair.id ? { ...p, left: e.target.value } : p))}
                   className="flex-1 h-8 text-sm"
                 />
                 <span className="text-muted-foreground">↔</span>
                 <Input
-                  placeholder="Direita"
+                  placeholder={t('form.right')}
                   value={pair.right}
                   onChange={e => setMatchingPairs(prev => prev.map(p => p.id === pair.id ? { ...p, right: e.target.value } : p))}
                   className="flex-1 h-8 text-sm"
@@ -415,7 +413,7 @@ export function ActivityForm({
       case 'TASK_WITH_ATTACHMENT':
         return (
           <div className="space-y-3">
-            <p className="text-sm text-muted-foreground">A descrição da tarefa vai no campo "Descrição" acima.</p>
+            <p className="text-sm text-muted-foreground">{t('form.task_hint')}</p>
             <label className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer hover:bg-muted/30">
               <input
                 type="checkbox"
@@ -423,7 +421,7 @@ export function ActivityForm({
                 onChange={e => setTaskRequiresUpload(e.target.checked)}
                 className="h-4 w-4"
               />
-              <span className="text-sm">Exigir upload de arquivo (foto, PDF, etc.)</span>
+              <span className="text-sm">{t('form.require_upload')}</span>
             </label>
           </div>
         );
@@ -432,7 +430,7 @@ export function ActivityForm({
       case 'RITE_CELEBRATION':
         return (
           <Textarea
-            placeholder="Descreva o rito ou celebração (texto litúrgico, rubricas, orações)..."
+            placeholder={t('form.rite_placeholder')}
             value={riteText}
             onChange={e => setRiteText(e.target.value)}
             className="min-h-[150px]"
@@ -448,47 +446,43 @@ export function ActivityForm({
   return (
     <div className="rounded-xl border-2 border-dashed border-primary/30 bg-primary/5 p-5 space-y-4">
       <h3 className="font-semibold text-sm flex items-center gap-2">
-        {initialTitle ? 'Editar atividade' : 'Nova atividade'}
+        {initialTitle ? t('form.edit_title') : t('form.new_title')}
       </h3>
 
-      {/* Tipo */}
       <div>
-        <label className="text-xs font-medium">Tipo</label>
+        <label className="text-xs font-medium">{t('form.type')}</label>
         <select
           value={type}
           onChange={e => setType(e.target.value as ActivityType)}
           className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm mt-1"
         >
-          {ACTIVITY_TYPES.map(t => (
-            <option key={t.value} value={t.value}>{t.label}</option>
+          {activityTypes.map(at => (
+            <option key={at.value} value={at.value}>{at.label}</option>
           ))}
         </select>
       </div>
 
-      {/* Título */}
       <div>
-        <label className="text-xs font-medium">Título</label>
+        <label className="text-xs font-medium">{t('form.title')}</label>
         <Input
-          placeholder="Nome da atividade"
+          placeholder={t('form.title_placeholder')}
           value={title}
           onChange={e => setTitle(e.target.value)}
         />
       </div>
 
-      {/* Descrição */}
       <div>
-        <label className="text-xs font-medium">Descrição / Instruções</label>
+        <label className="text-xs font-medium">{t('form.description')}</label>
         <Textarea
-          placeholder="Instruções para o catequista aplicar esta atividade..."
+          placeholder={t('form.description_placeholder')}
           value={desc}
           onChange={e => setDesc(e.target.value)}
           className="min-h-[60px]"
         />
       </div>
 
-      {/* Pontos */}
       <div>
-        <label className="text-xs font-medium">Pontos</label>
+        <label className="text-xs font-medium">{t('form.points')}</label>
         <Input
           type="number"
           value={points}
@@ -497,18 +491,16 @@ export function ActivityForm({
         />
       </div>
 
-      {/* Sub-formulário específico */}
       <div className="border-t pt-4">
         <p className="text-xs font-medium text-muted-foreground uppercase mb-3">
-          Configuração: {ACTIVITY_TYPES.find(t => t.value === type)?.label}
+          {t('form.config', { type: activityTypes.find(at => at.value === type)?.label })}
         </p>
         {renderSubForm()}
       </div>
 
-      {/* Actions */}
       <div className="flex gap-2 pt-2">
-        <Button onClick={handleSubmit} disabled={!title.trim()}>{submitLabel}</Button>
-        <Button variant="outline" onClick={onCancel}>Cancelar</Button>
+        <Button onClick={handleSubmit} disabled={!title.trim()}>{submitLabel || tc('save')}</Button>
+        <Button variant="outline" onClick={onCancel}>{tc('cancel')}</Button>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { Plus, Pencil, Trash2, Copy, Send, ClipboardList, ChevronRight, GripVertical, Save, X } from 'lucide-react';
@@ -10,6 +10,8 @@ import { useUserContext } from '../../client/hooks/useUserContext';
 import { toast } from '../../client/hooks/use-toast';
 
 export default function JourneyTemplatesPage() {
+  const { t } = useTranslation('sacraments');
+  const { t: tc } = useTranslation('common');
   const { userRole } = useUserContext();
   const isCoordinator = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(userRole);
   const isDioceseAdmin = ['SUPER_ADMIN', 'DIOCESE_ADMIN'].includes(userRole);
@@ -17,23 +19,19 @@ export default function JourneyTemplatesPage() {
 
   const { data: templates = [], isLoading } = useQuery(listJourneyTemplates);
 
-  // Create form state
   const [showCreate, setShowCreate] = useState(false);
   const [newName, setNewName] = useState('');
   const [newDescription, setNewDescription] = useState('');
   const [saving, setSaving] = useState(false);
 
-  // Edit state
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [editDescription, setEditDescription] = useState('');
 
-  // Milestone editing
   const [expandedTemplateId, setExpandedTemplateId] = useState<string | null>(null);
   const [editingMilestoneId, setEditingMilestoneId] = useState<string | null>(null);
   const [milestoneEdit, setMilestoneEdit] = useState<{ name: string; description: string; required: boolean; evidenceRequired: boolean; daysBeforeSacrament: string }>({ name: '', description: '', required: true, evidenceRequired: false, daysBeforeSacrament: '' });
 
-  // Copy/publish loading
   const [copyingId, setCopyingId] = useState<string | null>(null);
   const [publishingId, setPublishingId] = useState<string | null>(null);
 
@@ -42,12 +40,12 @@ export default function JourneyTemplatesPage() {
     setSaving(true);
     try {
       await createTemplate({ name: newName.trim(), description: newDescription.trim() || undefined });
-      toast({ title: 'Modelo criado!' });
+      toast({ title: t('templates.template_created') });
       setShowCreate(false);
       setNewName('');
       setNewDescription('');
     } catch (e: any) {
-      toast({ title: 'Erro ao criar modelo', description: e.message, variant: 'destructive' });
+      toast({ title: t('templates.error_create'), description: e.message, variant: 'destructive' });
     } finally {
       setSaving(false);
     }
@@ -57,20 +55,20 @@ export default function JourneyTemplatesPage() {
     if (!editName.trim()) return;
     try {
       await updateTemplate({ id, name: editName.trim(), description: editDescription.trim() || undefined });
-      toast({ title: 'Modelo atualizado.' });
+      toast({ title: t('templates.template_updated') });
       setEditingId(null);
     } catch (e: any) {
-      toast({ title: 'Erro ao atualizar', description: e.message, variant: 'destructive' });
+      toast({ title: t('templates.error_update'), description: e.message, variant: 'destructive' });
     }
   };
 
   const handleDeleteMilestone = async (milestoneId: string) => {
-    if (!confirm('Remover este marco?')) return;
+    if (!confirm(t('templates.confirm_remove_milestone'))) return;
     try {
       await deleteMilestoneTemplate({ id: milestoneId });
-      toast({ title: 'Marco removido.' });
+      toast({ title: t('templates.milestone_removed') });
     } catch (e: any) {
-      toast({ title: 'Erro ao remover marco', description: e.message, variant: 'destructive' });
+      toast({ title: t('templates.error_remove_milestone'), description: e.message, variant: 'destructive' });
     }
   };
 
@@ -85,22 +83,21 @@ export default function JourneyTemplatesPage() {
         evidenceRequired: milestoneEdit.evidenceRequired,
         daysBeforeSacrament: milestoneEdit.daysBeforeSacrament ? parseInt(milestoneEdit.daysBeforeSacrament, 10) : null,
       });
-      toast({ title: 'Marco atualizado.' });
+      toast({ title: t('templates.milestone_updated') });
       setEditingMilestoneId(null);
     } catch (e: any) {
-      toast({ title: 'Erro ao atualizar marco', description: e.message, variant: 'destructive' });
+      toast({ title: t('templates.error_update_milestone'), description: e.message, variant: 'destructive' });
     }
   };
 
   const handleCopy = async (templateId: string) => {
     setCopyingId(templateId);
     try {
-      // copyTemplate will be available after Wasp SDK regeneration
       const { copyTemplate } = await import('wasp/client/operations');
       await copyTemplate({ templateId });
-      toast({ title: 'Modelo copiado!' });
+      toast({ title: t('templates.template_copied') });
     } catch (e: any) {
-      toast({ title: 'Erro ao copiar modelo', description: e.message || 'Reinicie o servidor Wasp.', variant: 'destructive' });
+      toast({ title: t('templates.error_copy'), description: e.message || t('templates.error_restart'), variant: 'destructive' });
     } finally {
       setCopyingId(null);
     }
@@ -111,9 +108,9 @@ export default function JourneyTemplatesPage() {
     try {
       const { publishTemplate } = await import('wasp/client/operations');
       await publishTemplate({ templateId });
-      toast({ title: 'Modelo publicado para a diocese!' });
+      toast({ title: t('templates.template_published') });
     } catch (e: any) {
-      toast({ title: 'Erro ao publicar', description: e.message || 'Reinicie o servidor Wasp.', variant: 'destructive' });
+      toast({ title: t('templates.error_publish'), description: e.message || t('templates.error_restart'), variant: 'destructive' });
     } finally {
       setPublishingId(null);
     }
@@ -126,26 +123,25 @@ export default function JourneyTemplatesPage() {
   return (
     <AppShell>
       <div className="space-y-6">
-        <PageHeader title="Modelos de Jornada" subtitle={`${templates.length} modelos disponíveis`}>
+        <PageHeader title={t('templates.title')} subtitle={t('templates.subtitle', { count: templates.length })}>
           {canManage && (
             <Button onClick={() => setShowCreate(true)}>
-              <Plus className="mr-1 h-4 w-4" />Novo modelo
+              <Plus className="mr-1 h-4 w-4" />{t('templates.new_template')}
             </Button>
           )}
         </PageHeader>
 
-        {/* Create form */}
         {showCreate && (
           <div className="rounded-xl border bg-card p-4 space-y-3">
-            <h3 className="font-semibold text-sm">Criar novo modelo</h3>
+            <h3 className="font-semibold text-sm">{t('templates.create_new')}</h3>
             <input
-              placeholder="Nome do modelo"
+              placeholder={t('templates.name_placeholder')}
               value={newName}
               onChange={e => setNewName(e.target.value)}
               className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
             />
             <textarea
-              placeholder="Descrição (opcional)"
+              placeholder={t('templates.description_placeholder')}
               value={newDescription}
               onChange={e => setNewDescription(e.target.value)}
               className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[60px]"
@@ -153,35 +149,33 @@ export default function JourneyTemplatesPage() {
             />
             <div className="flex gap-2">
               <Button size="sm" onClick={handleCreate} disabled={!newName.trim() || saving}>
-                {saving ? 'Criando...' : 'Criar'}
+                {saving ? t('templates.creating') : tc('create')}
               </Button>
-              <Button size="sm" variant="outline" onClick={() => setShowCreate(false)}>Cancelar</Button>
+              <Button size="sm" variant="outline" onClick={() => setShowCreate(false)}>{tc('cancel')}</Button>
             </div>
           </div>
         )}
 
-        {/* Templates list */}
         {templates.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center">
             <ClipboardList className="h-10 w-10 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold">Nenhum modelo</h3>
-            <p className="text-sm text-muted-foreground mt-1">Crie modelos de jornada sacramental para reutilizar com seus catequizandos.</p>
+            <h3 className="text-lg font-semibold">{t('templates.empty_title')}</h3>
+            <p className="text-sm text-muted-foreground mt-1">{t('templates.empty_desc')}</p>
           </div>
         ) : (
           <div className="space-y-3">
-            {templates.map((t: any) => {
-              const milestones = t.milestones || [];
-              const isExpanded = expandedTemplateId === t.id;
-              const isEditing = editingId === t.id;
-              const scopeLabel = !t.parishId
-                ? 'Diocese / Global'
-                : t.parish?.type === 'PERSONAL'
-                  ? 'Pessoal'
-                  : `Paróquia: ${t.parish?.name || '—'}`;
+            {templates.map((tmpl: any) => {
+              const milestones = tmpl.milestones || [];
+              const isExpanded = expandedTemplateId === tmpl.id;
+              const isEditing = editingId === tmpl.id;
+              const scopeLabel = !tmpl.parishId
+                ? t('templates.scope_diocese')
+                : tmpl.parish?.type === 'PERSONAL'
+                  ? t('templates.scope_personal')
+                  : t('templates.scope_parish', { name: tmpl.parish?.name || '—' });
 
               return (
-                <div key={t.id} className="rounded-xl border bg-card overflow-hidden">
-                  {/* Template header */}
+                <div key={tmpl.id} className="rounded-xl border bg-card overflow-hidden">
                   <div className="p-4 flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       {isEditing ? (
@@ -198,24 +192,23 @@ export default function JourneyTemplatesPage() {
                             rows={2}
                           />
                           <div className="flex gap-1">
-                            <Button size="sm" className="h-7 text-[10px]" onClick={() => handleUpdate(t.id)}><Save className="mr-1 h-3 w-3" />Guardar</Button>
+                            <Button size="sm" className="h-7 text-[10px]" onClick={() => handleUpdate(tmpl.id)}><Save className="mr-1 h-3 w-3" />{tc('save')}</Button>
                             <Button size="sm" variant="ghost" className="h-7 text-[10px]" onClick={() => setEditingId(null)}><X className="h-3 w-3" /></Button>
                           </div>
                         </div>
                       ) : (
                         <>
                           <div className="flex items-center gap-2">
-                            <h3 className="font-semibold">{t.name}</h3>
+                            <h3 className="font-semibold">{tmpl.name}</h3>
                             <Badge variant="outline" className="text-[10px]">{scopeLabel}</Badge>
-                            {t.sacrament?.name && <Badge className="text-[10px]">{t.sacrament.name}</Badge>}
+                            {tmpl.sacrament?.name && <Badge className="text-[10px]">{tmpl.sacrament.name}</Badge>}
                           </div>
-                          {t.description && <p className="text-xs text-muted-foreground mt-0.5">{t.description}</p>}
-                          <p className="text-[10px] text-muted-foreground mt-1">{milestones.length} marcos</p>
+                          {tmpl.description && <p className="text-xs text-muted-foreground mt-0.5">{tmpl.description}</p>}
+                          <p className="text-[10px] text-muted-foreground mt-1">{t('templates.milestones_count', { count: milestones.length })}</p>
                         </>
                       )}
                     </div>
 
-                    {/* Actions */}
                     {!isEditing && (
                       <div className="flex items-center gap-1 flex-shrink-0">
                         {canManage && (
@@ -225,9 +218,9 @@ export default function JourneyTemplatesPage() {
                               variant="ghost"
                               className="h-7 text-[10px]"
                               onClick={() => {
-                                setEditingId(t.id);
-                                setEditName(t.name);
-                                setEditDescription(t.description || '');
+                                setEditingId(tmpl.id);
+                                setEditName(tmpl.name);
+                                setEditDescription(tmpl.description || '');
                               }}
                             >
                               <Pencil className="h-3 w-3" />
@@ -236,18 +229,18 @@ export default function JourneyTemplatesPage() {
                               size="sm"
                               variant="ghost"
                               className="h-7 text-[10px]"
-                              onClick={() => handleCopy(t.id)}
-                              disabled={copyingId === t.id}
+                              onClick={() => handleCopy(tmpl.id)}
+                              disabled={copyingId === tmpl.id}
                             >
                               <Copy className="h-3 w-3" />
                             </Button>
-                            {isDioceseAdmin && t.parishId && (
+                            {isDioceseAdmin && tmpl.parishId && (
                               <Button
                                 size="sm"
                                 variant="ghost"
                                 className="h-7 text-[10px] text-primary"
-                                onClick={() => handlePublish(t.id)}
-                                disabled={publishingId === t.id}
+                                onClick={() => handlePublish(tmpl.id)}
+                                disabled={publishingId === tmpl.id}
                               >
                                 <Send className="h-3 w-3" />
                               </Button>
@@ -258,7 +251,7 @@ export default function JourneyTemplatesPage() {
                           size="sm"
                           variant="ghost"
                           className="h-7 text-[10px]"
-                          onClick={() => setExpandedTemplateId(isExpanded ? null : t.id)}
+                          onClick={() => setExpandedTemplateId(isExpanded ? null : tmpl.id)}
                         >
                           <ChevronRight className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
                         </Button>
@@ -266,14 +259,13 @@ export default function JourneyTemplatesPage() {
                     )}
                   </div>
 
-                  {/* Milestones — expandable */}
                   {isExpanded && (
                     <div className="border-t bg-muted/20 p-4 space-y-2">
-                      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Marcos</h4>
+                      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('milestones')}</h4>
                       {milestones.length === 0 ? (
-                        <p className="text-xs text-muted-foreground">Nenhum marco definido.</p>
+                        <p className="text-xs text-muted-foreground">{t('templates.no_milestones')}</p>
                       ) : (
-                        milestones.map((m: any, idx: number) => {
+                        milestones.map((m: any) => {
                           const isEditingMilestone = editingMilestoneId === m.id;
                           return (
                             <div key={m.id} className="flex items-start gap-3 rounded-md border bg-card p-3">
@@ -285,26 +277,26 @@ export default function JourneyTemplatesPage() {
                                       value={milestoneEdit.name}
                                       onChange={e => setMilestoneEdit(prev => ({ ...prev, name: e.target.value }))}
                                       className="flex h-7 w-full rounded-md border border-input bg-background px-2 text-xs"
-                                      placeholder="Nome do marco"
+                                      placeholder={t('templates.milestone_name')}
                                     />
                                     <textarea
                                       value={milestoneEdit.description}
                                       onChange={e => setMilestoneEdit(prev => ({ ...prev, description: e.target.value }))}
                                       className="flex w-full rounded-md border border-input bg-background px-2 py-1 text-xs min-h-[32px]"
                                       rows={1}
-                                      placeholder="Descrição"
+                                      placeholder={t('templates.description')}
                                     />
                                     <div className="flex items-center gap-3 text-xs flex-wrap">
                                       <label className="flex items-center gap-1">
                                         <input type="checkbox" checked={milestoneEdit.required} onChange={e => setMilestoneEdit(prev => ({ ...prev, required: e.target.checked }))} />
-                                        Obrigatório
+                                        {t('required')}
                                       </label>
                                       <label className="flex items-center gap-1">
                                         <input type="checkbox" checked={milestoneEdit.evidenceRequired} onChange={e => setMilestoneEdit(prev => ({ ...prev, evidenceRequired: e.target.checked }))} />
-                                        Evidência
+                                        {t('evidence')}
                                       </label>
                                       <label className="flex items-center gap-1">
-                                        Dias antes:
+                                        {t('templates.days_before')}
                                         <input
                                           type="number"
                                           value={milestoneEdit.daysBeforeSacrament}
@@ -315,7 +307,7 @@ export default function JourneyTemplatesPage() {
                                       </label>
                                     </div>
                                     <div className="flex gap-1">
-                                      <Button size="sm" className="h-6 text-[10px]" onClick={handleSaveMilestone}><Save className="mr-1 h-2.5 w-2.5" />Guardar</Button>
+                                      <Button size="sm" className="h-6 text-[10px]" onClick={handleSaveMilestone}><Save className="mr-1 h-2.5 w-2.5" />{tc('save')}</Button>
                                       <Button size="sm" variant="ghost" className="h-6 text-[10px]" onClick={() => setEditingMilestoneId(null)}><X className="h-3 w-3" /></Button>
                                     </div>
                                   </div>
@@ -324,9 +316,9 @@ export default function JourneyTemplatesPage() {
                                     <div>
                                       <p className="text-sm font-medium flex items-center gap-1.5 flex-wrap">
                                         {m.name}
-                                        {m.required && <Badge variant="outline" className="text-[9px]">Obrigatório</Badge>}
-                                        {m.evidenceRequired && <Badge variant="outline" className="text-[9px]">Evidência</Badge>}
-                                        {m.daysBeforeSacrament != null && <Badge variant="outline" className="text-[9px]">{m.daysBeforeSacrament}d antes</Badge>}
+                                        {m.required && <Badge variant="outline" className="text-[9px]">{t('required')}</Badge>}
+                                        {m.evidenceRequired && <Badge variant="outline" className="text-[9px]">{t('evidence')}</Badge>}
+                                        {m.daysBeforeSacrament != null && <Badge variant="outline" className="text-[9px]">{t('templates.days_before_badge', { count: m.daysBeforeSacrament })}</Badge>}
                                       </p>
                                       {m.description && <p className="text-xs text-muted-foreground mt-0.5">{m.description}</p>}
                                     </div>

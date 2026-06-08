@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate, Link } from 'react-router';
 import { useQuery, useAction } from 'wasp/client/operations';
 import * as ops from 'wasp/client/operations';
@@ -6,7 +7,6 @@ import { useAuth } from 'wasp/client/auth';
 import { Button } from '../../../client/components/ui/button';
 import { Church, Mail, Clock, AlertTriangle, Check, ArrowRight, Loader2 } from 'lucide-react';
 
-// Operations registered in main.wasp — types are regenerated on wasp build.
 const getInvitationByToken = (ops as any).getInvitationByToken;
 const acceptInvitationByTokenAction = (ops as any).acceptInvitationByToken;
 
@@ -23,6 +23,7 @@ interface InvitationData {
 }
 
 export default function InviteAcceptPage() {
+  const { t, i18n } = useTranslation('family');
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
   const { data: authUser } = useAuth();
@@ -48,7 +49,7 @@ export default function InviteAcceptPage() {
       setAccepted(true);
       setTimeout(() => navigate('/app'), 1500);
     } catch (e: any) {
-      setError(e.message || 'Erro ao aceitar convite.');
+      setError(e.message || t('invite.accept_error'));
     } finally {
       setAccepting(false);
     }
@@ -72,23 +73,20 @@ export default function InviteAcceptPage() {
           </div>
           <div className="space-y-2">
             <h1 className="text-2xl font-bold">
-              {isExpired ? 'Convite Expirado' : 'Convite Não Encontrado'}
+              {isExpired ? t('invite.expired_title') : t('invite.not_found_title')}
             </h1>
             <p className="text-muted-foreground">
-              {isExpired
-                ? 'Este convite já expirou. Pede um novo convite ao teu coordenador ou catequista.'
-                : 'Não foi possível encontrar este convite. Verifica se o link está correto.'}
+              {isExpired ? t('invite.expired_desc_accept') : t('invite.not_found_desc')}
             </p>
           </div>
           <Link to="/" className="text-primary underline underline-offset-2 text-sm">
-            Voltar ao portal da família
+            {t('invite.back_portal')}
           </Link>
         </div>
       </div>
     );
   }
 
-  // Accepted state
   if (accepted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
@@ -97,30 +95,30 @@ export default function InviteAcceptPage() {
             <Check className="h-8 w-8 text-success" />
           </div>
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold">Convite Aceite!</h1>
+            <h1 className="text-2xl font-bold">{t('invite.accepted_title')}</h1>
             <p className="text-muted-foreground">
-              Agora fazes parte de {invitation.parishName} como {invitation.roleLabel}.
+              {t('invite.accepted_desc', { parish: invitation.parishName, role: invitation.roleLabel })}
             </p>
           </div>
-          <p className="text-sm text-muted-foreground">A redirecionar para o teu painel...</p>
+          <p className="text-sm text-muted-foreground">{t('invite.redirecting')}</p>
         </div>
       </div>
     );
   }
 
+  const locale = i18n.language.startsWith('en') ? 'en-US' : i18n.language.startsWith('es') ? 'es-ES' : 'pt-BR';
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
       <div className="w-full max-w-md space-y-6">
-        {/* Header */}
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-primary text-sm font-medium">
             <Mail className="h-4 w-4" />
-            Convite
+            {t('invite.badge')}
           </div>
-          <h1 className="text-2xl font-bold">Foste Convidado(a)!</h1>
+          <h1 className="text-2xl font-bold">{t('invite.title')}</h1>
         </div>
 
-        {/* Invitation card */}
         <div className="rounded-2xl border bg-card p-6 shadow-sm space-y-4">
           <div className="flex items-center gap-4">
             <div className="rounded-xl bg-primary/10 p-3">
@@ -128,20 +126,19 @@ export default function InviteAcceptPage() {
             </div>
             <div>
               <h2 className="font-bold text-lg">{invitation.parishName}</h2>
-              <p className="text-sm text-muted-foreground">como {invitation.roleLabel}</p>
+              <p className="text-sm text-muted-foreground">{t('invite.as_role', { role: invitation.roleLabel })}</p>
             </div>
           </div>
 
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Clock className="h-3.5 w-3.5" />
             <span>
-              Convite enviado para {invitation.emailMasked}
-              {invitation.expiresAt && <> · Expira em {new Date(invitation.expiresAt).toLocaleDateString('pt-PT')}</>}
+              {t('invite.sent_to', { email: invitation.emailMasked })}
+              {invitation.expiresAt && <> {t('invite.expires', { date: new Date(invitation.expiresAt).toLocaleDateString(locale) })}</>}
             </span>
           </div>
         </div>
 
-        {/* Actions */}
         {error && (
           <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
         )}
@@ -156,11 +153,11 @@ export default function InviteAcceptPage() {
             {accepting ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Aceitando...
+                {t('invite.accepting')}
               </>
             ) : (
               <>
-                Aceitar Convite
+                {t('invite.accept')}
                 <ArrowRight className="h-4 w-4" />
               </>
             )}
@@ -168,19 +165,19 @@ export default function InviteAcceptPage() {
         ) : (
           <div className="space-y-3">
             <p className="text-sm text-center text-muted-foreground">
-              Para aceitar o convite, entra ou cria uma conta.
+              {t('invite.login_to_accept')}
             </p>
             <Link
               to={`/entrar?token=${token}`}
               className="block w-full rounded-lg bg-primary text-primary-foreground h-10 px-4 py-2 text-sm font-medium text-center hover:bg-primary/90 transition-colors"
             >
-              Entrar
+              {t('invite.login')}
             </Link>
             <Link
               to={`/criar-conta?token=${token}`}
               className="block w-full rounded-lg border border-input bg-background h-10 px-4 py-2 text-sm font-medium text-center hover:bg-muted/30 transition-colors"
             >
-              Criar Conta
+              {t('invite.signup')}
             </Link>
           </div>
         )}

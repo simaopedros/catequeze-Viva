@@ -1,0 +1,53 @@
+{
+  "terms": {
+    "title": "Terms of Use",
+    "updated": "Last updated: May 31, 2026",
+    "sections": {
+      "acceptance": { "title": "1. Acceptance of Terms", "text": "By accessing and using the Catequese Viva platform, you agree to these Terms of Use." },
+      "service": { "title": "2. Service Description", "text": "Catequese Viva is a SaaS platform for Catholic catechesis management: classes, attendance, content, sacraments, and pastoral communication." },
+      "obligations": {
+        "title": "3. User Obligations",
+        "items": [
+          "Provide true and up-to-date information",
+          "Keep your credentials confidential",
+          "Do not share your account with third parties",
+          "Use the platform only for catechesis and pastoral purposes",
+          "Respect LGPD rules when handling catechumen data"
+        ]
+      },
+      "liability": { "title": "4. Limitation of Liability", "text": "Catequese Viva is not responsible for content published by users, pastoral decisions based on platform data, or temporary unavailability." },
+      "jurisdiction": { "title": "5. Jurisdiction", "text": "The courts of São Paulo, Brazil, are elected to resolve any disputes arising from these Terms of Use." }
+    }
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "updated": "Last updated: May 31, 2026",
+    "sections": {
+      "intro": { "title": "1. Introduction", "text": "Catequese Viva is committed to protecting users' personal data, in compliance with the General Data Protection Law (LGPD — Law No. 13.709/2018). This policy explains how we collect, use, and protect your information." },
+      "collected": {
+        "title": "2. Data collected",
+        "intro": "We collect only data strictly necessary to provide services:",
+        "items": [
+          "Name, email, and phone of users (catechists, coordinators, guardians)",
+          "Name and date of birth of catechumens",
+          "Attendance records at catechetical meetings",
+          "Sacramental documents submitted by families",
+          "Image and communication use consents"
+        ]
+      },
+      "purpose": {
+        "title": "3. Purpose of processing",
+        "intro": "Data is used exclusively to:",
+        "items": [
+          "Manage parish catechesis (classes, attendance, sacraments)",
+          "Pastoral communication between coordinators, catechists, and families",
+          "Generate anonymized pastoral reports",
+          "Comply with legal and canonical obligations"
+        ]
+      },
+      "minors": { "title": "4. Protection of minors' data", "text": "Children's and adolescents' data receives special protection: minimal collection, mandatory parental consent, restricted access, and no sharing with third parties." },
+      "rights": { "title": "5. Your rights (LGPD)", "text": "Access, correct, export, or request deletion of your data. To exercise these rights, go to Settings in the app or contact contato@catequeseviva.com.br." },
+      "dpo": { "title": "6. DPO Contact", "email_label": "Email:", "email": "privacidade@catequeseviva.com.br" }
+    }
+  }
+}

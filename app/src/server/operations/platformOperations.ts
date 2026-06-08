@@ -4,6 +4,7 @@
  */
 import { HttpError } from 'wasp/server';
 import { requirePlatformAdmin } from '../auth/helpers';
+import { formatServerDate, resolveUserLocale } from '../i18n/serverLocale';
 
 // ─── Plan pricing (BRL/month) for MRR estimation ──────────────────────────
 
@@ -92,12 +93,14 @@ export const getPlatformGrowth = async (_args: void, context: any) => {
   const users: number[] = [];
   const parishes: number[] = [];
 
+  const userLocale = resolveUserLocale(context.user);
+
   for (let i = days - 1; i >= 0; i--) {
     const dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
     const dayEnd = new Date(dayStart);
     dayEnd.setDate(dayEnd.getDate() + 1);
 
-    labels.push(dayStart.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }));
+    labels.push(formatServerDate(dayStart, userLocale, { day: '2-digit', month: '2-digit' }));
 
     const [userCount, parishCount] = await Promise.all([
       context.entities.User.count({ where: { createdAt: { lt: dayEnd } } }),

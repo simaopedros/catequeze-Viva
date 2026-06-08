@@ -1,16 +1,9 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../../client/components/ui/button';
 import { CalendarDays, GraduationCap, Check } from 'lucide-react';
 
-const DAYS = [
-  { value: '0', label: 'Domingo' },
-  { value: '1', label: 'Segunda-feira' },
-  { value: '2', label: 'Terça-feira' },
-  { value: '3', label: 'Quarta-feira' },
-  { value: '4', label: 'Quinta-feira' },
-  { value: '5', label: 'Sexta-feira' },
-  { value: '6', label: 'Sábado' },
-];
+const DAY_VALUES = ['0', '1', '2', '3', '4', '5', '6'];
 
 interface CoordinatorDetailsProps {
   parishName: string;
@@ -21,6 +14,7 @@ interface CoordinatorDetailsProps {
 }
 
 export function CoordinatorDetails({ parishName, onComplete }: CoordinatorDetailsProps) {
+  const { t } = useTranslation('onboarding');
   const [step, setStep] = useState<'year' | 'class'>('year');
   const [yearName, setYearName] = useState('');
   const [yearStart, setYearStart] = useState('');
@@ -35,7 +29,7 @@ export function CoordinatorDetails({ parishName, onComplete }: CoordinatorDetail
 
   const handleYearNext = () => {
     if (yearStart && yearEnd && yearEnd <= yearStart) {
-      setDateError('A data de término deve ser posterior à de início.');
+      setDateError(t('coordinator.date_error'));
       return;
     }
     setDateError('');
@@ -60,25 +54,25 @@ export function CoordinatorDetails({ parishName, onComplete }: CoordinatorDetail
       {step === 'year' && (
         <>
           <h2 className="text-lg font-semibold flex items-center gap-2">
-            <CalendarDays className="h-5 w-5 text-primary" />Ano Catequético
+            <CalendarDays className="h-5 w-5 text-primary" />{t('coordinator.year_title')}
           </h2>
           <div className="space-y-3">
             <div>
-              <label className="text-sm font-medium">Nome do ano *</label>
+              <label className="text-sm font-medium">{t('coordinator.year_name')}</label>
               <input value={yearName} onChange={e => setYearName(e.target.value)}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
-                placeholder="Ex: Catequese 2026" />
+                placeholder={t('coordinator.year_name_placeholder')} />
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div><label className="text-sm font-medium">Início</label><input type="date" value={yearStart} onChange={e => setYearStart(e.target.value)}
+              <div><label className="text-sm font-medium">{t('coordinator.start')}</label><input type="date" value={yearStart} onChange={e => setYearStart(e.target.value)}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" /></div>
-              <div><label className="text-sm font-medium">Término</label><input type="date" value={yearEnd} onChange={e => setYearEnd(e.target.value)}
+              <div><label className="text-sm font-medium">{t('coordinator.end')}</label><input type="date" value={yearEnd} onChange={e => setYearEnd(e.target.value)}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" /></div>
             </div>
           </div>
           {dateError && <p className="text-sm text-destructive">{dateError}</p>}
           <div className="flex justify-end">
-            <Button onClick={handleYearNext} disabled={!yearName}>Próximo</Button>
+            <Button onClick={handleYearNext} disabled={!yearName}>{t('coordinator.next')}</Button>
           </div>
         </>
       )}
@@ -86,33 +80,33 @@ export function CoordinatorDetails({ parishName, onComplete }: CoordinatorDetail
       {step === 'class' && (
         <>
           <h2 className="text-lg font-semibold flex items-center gap-2">
-            <GraduationCap className="h-5 w-5 text-primary" />Primeira Turma
+            <GraduationCap className="h-5 w-5 text-primary" />{t('coordinator.class_title')}
           </h2>
-          <p className="text-sm text-muted-foreground">Cria a primeira turma ou pula esta etapa.</p>
+          <p className="text-sm text-muted-foreground">{t('coordinator.class_desc')}</p>
 
           <div>
-            <label className="text-sm font-medium">Nome da turma</label>
+            <label className="text-sm font-medium">{t('coordinator.class_name')}</label>
             <input value={className} onChange={e => setClassName(e.target.value)}
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
-              placeholder="Ex: Turma de Crisma 2026" disabled={skipClass} />
+              placeholder={t('coordinator.class_name_placeholder')} disabled={skipClass} />
           </div>
 
           {!skipClass && (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="text-sm font-medium">Dia da semana</label>
+                <label className="text-sm font-medium">{t('coordinator.day_of_week')}</label>
                 <select value={dayOfWeek} onChange={e => setDayOfWeek(e.target.value)}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1">
-                  {DAYS.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
+                  {DAY_VALUES.map(d => <option key={d} value={d}>{t(`coordinator.days.${d}`)}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-sm font-medium">Início</label>
+                <label className="text-sm font-medium">{t('coordinator.start_time')}</label>
                 <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" />
               </div>
               <div>
-                <label className="text-sm font-medium">Término</label>
+                <label className="text-sm font-medium">{t('coordinator.end_time')}</label>
                 <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" />
               </div>
@@ -121,7 +115,7 @@ export function CoordinatorDetails({ parishName, onComplete }: CoordinatorDetail
 
           {!skipClass && (
             <div>
-              <label className="text-sm font-medium">Local</label>
+              <label className="text-sm font-medium">{t('coordinator.location')}</label>
               <input value={location} onChange={e => setLocation(e.target.value)}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
                 placeholder={parishName} />
@@ -131,12 +125,12 @@ export function CoordinatorDetails({ parishName, onComplete }: CoordinatorDetail
           <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
             <input type="checkbox" checked={skipClass}
               onChange={e => { setSkipClass(e.target.checked); if (e.target.checked) setClassName(''); }} />
-            Criar turma depois
+            {t('coordinator.skip_class')}
           </label>
           <div className="flex justify-between">
-            <Button variant="outline" onClick={() => setStep('year')}>Voltar</Button>
+            <Button variant="outline" onClick={() => setStep('year')}>{t('coordinator.back')}</Button>
             <Button onClick={handleFinish}>
-              <Check className="mr-2 h-4 w-4" />Concluir
+              <Check className="mr-2 h-4 w-4" />{t('coordinator.finish')}
             </Button>
           </div>
         </>

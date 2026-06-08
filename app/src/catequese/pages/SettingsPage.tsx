@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from 'wasp/client/auth';
 import { Button } from '../../client/components/ui/button';
 import { Input } from '../../client/components/ui/input';
@@ -14,6 +15,8 @@ import PhoneMaskInput from '../../client/components/PhoneMaskInput';
 import TwoFactorSetup from '../components/TwoFactorSetup';
 
 export default function SettingsPage() {
+  const { t } = useTranslation('settings');
+  const { t: tc } = useTranslation('common');
   const { data: user } = useAuth();
   const { userRole, parishName: ctxParishName } = useUserContext();
   const [firstName,setFirstName]=useState(''); const [lastName,setLastName]=useState('');
@@ -44,24 +47,24 @@ export default function SettingsPage() {
       setSaved(true);
       setTimeout(()=>setSaved(false),3000);
     }catch(e: any){
-      setSaveError(e.message || 'Erro ao salvar perfil.');
+      setSaveError(e.message || t('save_profile_error'));
     }
     setSaving(false);
   };
 
   const handleChangePassword = async()=>{
-    if(!currentPass||!newPass){setPassMsg('Preencha todos os campos.');setPassError(true);return;}
-    if(newPass.length < 8){setPassMsg('A nova senha deve ter pelo menos 8 caracteres.');setPassError(true);return;}
+    if(!currentPass||!newPass){setPassMsg(t('fill_all_fields'));setPassError(true);return;}
+    if(newPass.length < 8){setPassMsg(t('password_min_length'));setPassError(true);return;}
 
     setChangingPass(true);setPassMsg('');setPassError(false);
     try{
       await changePassword({ currentPassword: currentPass, newPassword: newPass });
-      setPassMsg('Senha alterada com sucesso!');
+      setPassMsg(t('password_changed'));
       setPassError(false);
       setCurrentPass('');
       setNewPass('');
     }catch(e: any){
-      setPassMsg(e.message || 'Erro ao alterar senha.');
+      setPassMsg(e.message || t('password_change_error'));
       setPassError(true);
     }
     setChangingPass(false);
@@ -71,9 +74,9 @@ export default function SettingsPage() {
     setExporting(true); setExportMsg('');
     try {
       const result = await requestDataExport({});
-      setExportMsg(result.message || 'Solicitação enviada com sucesso!');
+      setExportMsg(result.message || t('export_success'));
     } catch(e: any) {
-      setExportMsg('Erro ao solicitar exportação: ' + (e.message || 'Tente novamente.'));
+      setExportMsg(t('export_error', { message: e.message || t('export_retry') }));
     }
     setExporting(false);
   };
@@ -85,12 +88,12 @@ export default function SettingsPage() {
       p._count?.memberships > 0
     );
     if (!coordinatorParish) {
-      setMigrationMsg('Você não é coordenador de nenhuma paróquia.');
+      setMigrationMsg(t('not_coordinator'));
       setMigrationError(true);
       return;
     }
     if (sourceParishId === coordinatorParish.id) {
-      setMigrationMsg('As paróquias de origem e destino devem ser diferentes.');
+      setMigrationMsg(t('different_parishes'));
       setMigrationError(true);
       return;
     }
@@ -101,11 +104,11 @@ export default function SettingsPage() {
         sourceParishId,
         targetParishId: coordinatorParish.id,
       });
-      setMigrationMsg(`Migração concluída! ${result.migrated.classes} turmas, ${result.migrated.households} famílias, ${result.migrated.members} membros transferidos.`);
+      setMigrationMsg(t('migration_success', { classes: result.migrated.classes, households: result.migrated.households, members: result.migrated.members }));
       setMigrationError(false);
       setSourceParishId('');
     } catch (e: any) {
-      setMigrationMsg(e.message || 'Erro ao executar migração.');
+      setMigrationMsg(e.message || t('migration_error'));
       setMigrationError(true);
     }
     setMigrating(false);
@@ -114,40 +117,40 @@ export default function SettingsPage() {
   return(
     <AppShell>
       <div className="max-w-2xl mx-auto space-y-6">
-        <PageHeader title="Configurações" subtitle={`${user?.email || ''} ${userRole ? ROLE_LABELS[userRole] || userRole : ''}`} />
+        <PageHeader title={t('title')} subtitle={`${user?.email || ''} ${userRole ? tc(`roles.${userRole}`) || userRole : ''}`} />
 
         {/* Parish info */}
         {ctxParishName&&(
           <div className="rounded-xl border bg-card p-4 flex items-center gap-3">
             <div className="rounded-lg bg-primary/10 p-2 text-primary"><Church className="h-5 w-5"/></div>
-            <div><p className="text-xs text-muted-foreground uppercase">Paróquia vinculada</p><p className="font-medium">{ctxParishName}</p></div>
+            <div><p className="text-xs text-muted-foreground uppercase">{t('linked_parish')}</p><p className="font-medium">{ctxParishName}</p></div>
           </div>
         )}
 
         {/* Profile */}
         <div className="rounded-xl border bg-card p-6 space-y-4">
-          <h3 className="font-semibold flex items-center gap-2"><User className="h-4 w-4"/>Perfil</h3>
+          <h3 className="font-semibold flex items-center gap-2"><User className="h-4 w-4"/>{t('profile')}</h3>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5"><Label htmlFor="firstName">Nome</Label><Input id="firstName" value={firstName} onChange={e=>setFirstName(e.target.value)} placeholder="Seu nome"/></div>
-            <div className="space-y-1.5"><Label htmlFor="lastName">Sobrenome</Label><Input id="lastName" value={lastName} onChange={e=>setLastName(e.target.value)} placeholder="Seu sobrenome"/></div>
+            <div className="space-y-1.5"><Label htmlFor="firstName">{t('first_name')}</Label><Input id="firstName" value={firstName} onChange={e=>setFirstName(e.target.value)} placeholder={t('first_name_placeholder')}/></div>
+            <div className="space-y-1.5"><Label htmlFor="lastName">{t('last_name')}</Label><Input id="lastName" value={lastName} onChange={e=>setLastName(e.target.value)} placeholder={t('last_name_placeholder')}/></div>
           </div>
-          <div className="space-y-1.5"><Label htmlFor="phone">Telefone</Label><PhoneMaskInput value={phone} onChange={setPhone} className="flex h-9 w-full" placeholder="(11) 99999-9999"/></div>
+          <div className="space-y-1.5"><Label htmlFor="phone">{t('phone')}</Label><PhoneMaskInput value={phone} onChange={setPhone} className="flex h-9 w-full" placeholder={t('phone_placeholder')}/></div>
           {saveError && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="h-3 w-3"/>{saveError}</p>}
           <div className="flex gap-2">
-            <Button size="sm" onClick={handleSaveProfile} disabled={saving}><Save className="mr-1 h-3 w-3"/>{saving?'Salvando...':'Salvar'}</Button>
-            {saved&&<span className="text-xs text-success flex items-center gap-1 self-center"><CheckCircle className="h-3 w-3"/>Salvo!</span>}
+            <Button size="sm" onClick={handleSaveProfile} disabled={saving}><Save className="mr-1 h-3 w-3"/>{saving ? t('saving') : tc('save')}</Button>
+            {saved&&<span className="text-xs text-success flex items-center gap-1 self-center"><CheckCircle className="h-3 w-3"/>{t('saved')}</span>}
           </div>
         </div>
 
         {/* Password */}
         <div className="rounded-xl border bg-card p-6 space-y-4">
-          <h3 className="font-semibold flex items-center gap-2"><Key className="h-4 w-4"/>Trocar senha</h3>
+          <h3 className="font-semibold flex items-center gap-2"><Key className="h-4 w-4"/>{t('change_password')}</h3>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5"><Label htmlFor="currentPass">Senha atual</Label><Input id="currentPass" type="password" value={currentPass} onChange={e=>setCurrentPass(e.target.value)} placeholder="Digite a senha atual"/></div>
-            <div className="space-y-1.5"><Label htmlFor="newPass">Nova senha</Label><Input id="newPass" type="password" value={newPass} onChange={e=>setNewPass(e.target.value)} placeholder="Mínimo 8 caracteres"/></div>
+            <div className="space-y-1.5"><Label htmlFor="currentPass">{t('current_password')}</Label><Input id="currentPass" type="password" value={currentPass} onChange={e=>setCurrentPass(e.target.value)} placeholder={t('current_password_placeholder')}/></div>
+            <div className="space-y-1.5"><Label htmlFor="newPass">{t('new_password')}</Label><Input id="newPass" type="password" value={newPass} onChange={e=>setNewPass(e.target.value)} placeholder={t('new_password_placeholder')}/></div>
           </div>
           {passMsg && <p className={`text-xs flex items-center gap-1 ${passError?'text-destructive':'text-success'}`}>{passError?<AlertCircle className="h-3 w-3"/>:<CheckCircle className="h-3 w-3"/>}{passMsg}</p>}
-          <Button size="sm" onClick={handleChangePassword} disabled={changingPass || !currentPass || !newPass}><Key className="mr-1 h-3 w-3"/>{changingPass?'Alterando...':'Alterar senha'}</Button>
+          <Button size="sm" onClick={handleChangePassword} disabled={changingPass || !currentPass || !newPass}><Key className="mr-1 h-3 w-3"/>{changingPass ? t('changing_password') : t('change_password_btn')}</Button>
         </div>
 
         {/* Two-Factor Authentication */}
@@ -155,27 +158,25 @@ export default function SettingsPage() {
 
         {/* Data export */}
         <div className="rounded-xl border bg-card p-4">
-          <h3 className="font-semibold text-sm flex items-center gap-2 mb-1"><Download className="h-4 w-4"/>Exportar dados</h3>
-          <p className="text-xs text-muted-foreground mb-3">Conforme a LGPD, você pode solicitar a exportação dos seus dados.</p>
+          <h3 className="font-semibold text-sm flex items-center gap-2 mb-1"><Download className="h-4 w-4"/>{t('export_data')}</h3>
+          <p className="text-xs text-muted-foreground mb-3">{t('export_desc')}</p>
           {exportMsg && <p className={`text-xs mb-3 ${exportMsg.includes('Erro') ? 'text-destructive' : 'text-success'}`}>{exportMsg}</p>}
-          <Button size="sm" variant="outline" onClick={handleExportData} disabled={exporting}><Download className="mr-1 h-3 w-3"/>{exporting?'Solicitando...':'Solicitar exportação'}</Button>
+          <Button size="sm" variant="outline" onClick={handleExportData} disabled={exporting}><Download className="mr-1 h-3 w-3"/>{exporting ? t('export_requesting') : t('export_request')}</Button>
         </div>
 
         {/* Migration — only for coordinators */}
         {userRole === 'PARISH_COORDINATOR' && (
           <div className="rounded-xl border bg-card p-6 space-y-4">
-            <h3 className="font-semibold flex items-center gap-2"><GitMerge className="h-4 w-4"/>Migração de Paróquia</h3>
-            <p className="text-xs text-muted-foreground">
-              Se um catequista criou uma paróquia independente e deseja migrar os dados para esta paróquia oficial, selecione a paróquia de origem abaixo.
-            </p>
+            <h3 className="font-semibold flex items-center gap-2"><GitMerge className="h-4 w-4"/>{t('migration')}</h3>
+            <p className="text-xs text-muted-foreground">{t('migration_desc')}</p>
             <div>
-              <label className="text-xs font-medium">Paróquia de origem</label>
+              <label className="text-xs font-medium">{t('source_parish')}</label>
               <select
                 value={sourceParishId}
                 onChange={e => setSourceParishId(e.target.value)}
                 className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1"
               >
-                <option value="">Selecione uma paróquia...</option>
+                <option value="">{t('select_parish')}</option>
                 {userParishes
                   .filter((p: any) => p.active)
                   .map((p: any) => (
@@ -191,7 +192,7 @@ export default function SettingsPage() {
             )}
             <Button size="sm" variant="outline" onClick={handleMigration} disabled={migrating || !sourceParishId}>
               <RefreshCw className={`mr-1 h-3 w-3 ${migrating ? 'animate-spin' : ''}`}/>
-              {migrating ? 'Migrando...' : 'Migrar dados'}
+              {migrating ? t('migrating') : t('migrate_data')}
             </Button>
           </div>
         )}
@@ -199,7 +200,7 @@ export default function SettingsPage() {
         {/* Privacy notice */}
         <div className="rounded-xl border bg-card p-4 flex items-center gap-3"> 
           <div className="rounded-lg bg-purple-50 dark:bg-purple-950/30 p-2 text-purple-600 dark:text-purple-400"><Shield className="h-5 w-5"/></div>
-          <p className="text-xs text-muted-foreground">Seus dados são protegidos conforme a LGPD. Nenhum dado é compartilhado sem consentimento.</p>
+          <p className="text-xs text-muted-foreground">{t('privacy_notice')}</p>
         </div>
       </div>
     </AppShell>

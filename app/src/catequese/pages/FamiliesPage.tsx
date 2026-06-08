@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useQuery, listHouseholds, listCommunities } from 'wasp/client/operations';
 import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { Heart, Users, Plus, Phone, MapPin, User, ChevronRight, Search } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { PageHeader } from '../../client/components/PageHeader';
@@ -12,6 +13,8 @@ import { useActiveParish } from '../../client/hooks/useActiveParish';
 import { useUserContext } from '../../client/hooks/useUserContext';
 
 export default function FamiliesPage() {
+  const { t } = useTranslation('common');
+  const { t: tn } = useTranslation('navigation');
   const { activeParishId } = useActiveParish();
   const { userRole } = useUserContext();
   const canCreateFamily = userRole !== 'ASSISTANT_CATECHIST';
@@ -46,11 +49,11 @@ export default function FamiliesPage() {
     <AppShell>
       <div className="space-y-6">
         <PageHeader
-          title="Famílias"
-          subtitle={`${households?.length || 0} famílias cadastradas`}
+          title={tn('families')}
+          subtitle={t('families.subtitle_registered', { count: households?.length || 0 })}
         >
           <SearchInput
-            placeholder="Buscar..."
+            placeholder={t('search')}
             value={search}
             onChange={e => setSearch(e.target.value)}
             containerClassName="max-w-none w-40 flex-none"
@@ -60,25 +63,25 @@ export default function FamiliesPage() {
             onChange={e => setCommunityFilter(e.target.value)}
             className="flex h-9 rounded-md border border-input bg-background px-3 text-sm w-36"
           >
-            <option value="">Todas comunidades</option>
+            <option value="">{t('families.all_communities')}</option>
             {communities.map((c: any) => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
           </select>
-          {canCreateFamily && <Button asChild><Link to="/app/families/new"><Plus className="mr-1 h-4 w-4" />Nova</Link></Button>}
+          {canCreateFamily && <Button asChild><Link to="/app/families/new"><Plus className="mr-1 h-4 w-4" />{t('new')}</Link></Button>}
         </PageHeader>
 
         {filtered.length === 0 ? (
           search || communityFilter ? (
-            <EmptyState compact icon={Search} title="Nenhuma família encontrada" description="Tente ajustar os filtros." />
+            <EmptyState compact icon={Search} title={t('families.not_found_search')} description={t('catechumens.adjust_filters')} />
           ) : (
             <EmptyState
               icon={Heart}
-              title="Nenhuma família"
-              description="Cadastre famílias para vincular catequizandos e responsáveis."
+              title={t('no_family')}
+              description={t('families.empty_desc')}
             >
               {canCreateFamily && (
-                <Button className="mt-4" asChild><Link to="/app/families/new">Cadastrar família</Link></Button>
+                <Button className="mt-4" asChild><Link to="/app/families/new">{t('families.register')}</Link></Button>
               )}
             </EmptyState>
           )
@@ -93,8 +96,8 @@ export default function FamiliesPage() {
                 {h.address && <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1"><MapPin className="h-3 w-3" />{h.address}</p>}
                 {h.phone && <p className="text-xs text-muted-foreground flex items-center gap-1 mb-3"><Phone className="h-3 w-3" />{h.phone}</p>}
                 <div className="flex items-center gap-4 pt-3 border-t text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1"><Users className="h-3.5 w-3.5" />{h._count?.catechumens || 0} catequizandos</span>
-                  <span className="flex items-center gap-1"><User className="h-3.5 w-3.5" />{h.guardians?.length || 0} responsáveis</span>
+                  <span className="flex items-center gap-1"><Users className="h-3.5 w-3.5" />{t('families.catechumens_count', { count: h._count?.catechumens || 0 })}</span>
+                  <span className="flex items-center gap-1"><User className="h-3.5 w-3.5" />{t('families.guardians_count', { count: h.guardians?.length || 0 })}</span>
                 </div>
                 {h.catechumens?.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-1">
@@ -106,7 +109,7 @@ export default function FamiliesPage() {
             ))}
           </div>
         )}
-        <p className="text-xs text-muted-foreground">{filtered.length} família(s)</p>
+        <p className="text-xs text-muted-foreground">{t('families.count', { count: filtered.length })}</p>
       </div>
     </AppShell>
   );

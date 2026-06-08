@@ -1,16 +1,9 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../../client/components/ui/button';
 import { GraduationCap, Check } from 'lucide-react';
 
-const DAYS = [
-  { value: '0', label: 'Domingo' },
-  { value: '1', label: 'Segunda-feira' },
-  { value: '2', label: 'Terça-feira' },
-  { value: '3', label: 'Quarta-feira' },
-  { value: '4', label: 'Quinta-feira' },
-  { value: '5', label: 'Sexta-feira' },
-  { value: '6', label: 'Sábado' },
-];
+const DAY_VALUES = ['0', '1', '2', '3', '4', '5', '6'];
 
 interface CatechistDetailsProps {
   parishName: string;
@@ -18,6 +11,8 @@ interface CatechistDetailsProps {
 }
 
 export function CatechistDetails({ parishName, onComplete }: CatechistDetailsProps) {
+  const { t } = useTranslation('onboarding');
+  const { t: tc } = useTranslation('common');
   const [className, setClassName] = useState('');
   const [skipClass, setSkipClass] = useState(false);
   const [dayOfWeek, setDayOfWeek] = useState('6');
@@ -38,32 +33,32 @@ export function CatechistDetails({ parishName, onComplete }: CatechistDetailsPro
   return (
     <div className="rounded-xl border bg-card p-6 space-y-4">
       <h2 className="text-lg font-semibold flex items-center gap-2">
-        <GraduationCap className="h-5 w-5 text-primary" />A tua Turma
+        <GraduationCap className="h-5 w-5 text-primary" />{t('catechist.class_title')}
       </h2>
 
       <div>
-        <label className="text-sm font-medium">Nome da turma</label>
+        <label className="text-sm font-medium">{t('coordinator.class_name')}</label>
         <input value={className} onChange={e => setClassName(e.target.value)}
           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
-          placeholder="Ex: Turma de Crisma 2026" disabled={skipClass} />
+          placeholder={t('coordinator.class_name_placeholder')} disabled={skipClass} />
       </div>
 
       {!skipClass && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className="text-sm font-medium">Dia da semana</label>
+            <label className="text-sm font-medium">{t('coordinator.day_of_week')}</label>
             <select value={dayOfWeek} onChange={e => setDayOfWeek(e.target.value)}
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1">
-              {DAYS.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
+              {DAY_VALUES.map(d => <option key={d} value={d}>{t(`coordinator.days.${d}`)}</option>)}
             </select>
           </div>
           <div>
-            <label className="text-sm font-medium">Início</label>
+            <label className="text-sm font-medium">{t('coordinator.start_time')}</label>
             <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)}
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" />
           </div>
           <div>
-            <label className="text-sm font-medium">Término</label>
+            <label className="text-sm font-medium">{t('coordinator.end_time')}</label>
             <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)}
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" />
           </div>
@@ -72,7 +67,7 @@ export function CatechistDetails({ parishName, onComplete }: CatechistDetailsPro
 
       {!skipClass && (
         <div>
-          <label className="text-sm font-medium">Local</label>
+          <label className="text-sm font-medium">{t('coordinator.location')}</label>
           <input value={location} onChange={e => setLocation(e.target.value)}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
             placeholder={parishName} />
@@ -82,12 +77,12 @@ export function CatechistDetails({ parishName, onComplete }: CatechistDetailsPro
       <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
         <input type="checkbox" checked={skipClass}
           onChange={e => { setSkipClass(e.target.checked); if (e.target.checked) setClassName(''); }} />
-        Criar turma depois
+        {t('coordinator.skip_class')}
       </label>
 
       <div className="flex justify-end">
         <Button onClick={handleFinish}>
-          <Check className="mr-2 h-4 w-4" />Concluir
+          <Check className="mr-2 h-4 w-4" />{tc('finish')}
         </Button>
       </div>
     </div>

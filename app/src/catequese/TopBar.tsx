@@ -10,7 +10,9 @@ import DarkModeSwitcher from '../client/components/DarkModeSwitcher';
 import { Badge } from '../client/components/ui/badge';
 import { UserDropdown } from '../user/UserDropdown';
 import { useUserContext } from '../client/hooks/useUserContext';
-import { ROLE_LABELS } from '../shared/constants';
+import { formatRelativeTime } from '../i18n/format';
+import { useLocale } from '../i18n/useLocale';
+import { useRoleLabels } from '../i18n/useLabels';
 import { Button } from '../client/components/ui/button';
 import {
   DropdownMenu,
@@ -37,6 +39,20 @@ const MODULE_ICONS: Record<string, React.ComponentType<any>> = {
   Comunidades: Building2,
 };
 
+const SEARCH_MODULE_KEYS: Record<string, string> = {
+  Catequizandos: 'catechumens',
+  Turmas: 'classes',
+  Biblioteca: 'content_library',
+  Bíblia: 'bible',
+  Catecismo: 'catechism',
+  Diretório: 'directory',
+  Famílias: 'families',
+  Sacramentos: 'sacraments',
+  Documentos: 'documents',
+  Paróquias: 'parishes',
+  Comunidades: 'communities',
+};
+
 const NOTIF_ICONS: Record<string, React.ComponentType<any>> = {
   MESSAGE: MessageSquareText,
   CAMPAIGN: Bell,
@@ -50,21 +66,12 @@ interface TopBarProps {
   onMenuToggle?: () => void;
 }
 
-function formatNotifTime(dateStr: string): string {
-  const date = new Date(dateStr);
-  const now = new Date();
-  const diffMinutes = Math.floor((now.getTime() - date.getTime()) / 60000);
-  if (diffMinutes < 1) return 'Agora';
-  if (diffMinutes < 60) return `${diffMinutes}min`;
-  const diffHours = Math.floor(diffMinutes / 60);
-  if (diffHours < 24) return `${diffHours}h`;
-  const diffDays = Math.floor(diffHours / 24);
-  if (diffDays < 7) return `${diffDays}d`;
-  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
-}
-
 export function TopBar({ onMenuToggle }: TopBarProps) {
   const { t } = useTranslation('common');
+  const { t: tTop } = useTranslation('topbar');
+  const { t: tNav } = useTranslation('navigation');
+  const { currentLocale } = useLocale();
+  const roleLabels = useRoleLabels();
   const { data: user } = useAuth();
   const { activeParishName, switchParish, availableParishes: parishes } = useActiveParish();
   const { workspace, workspaceName, workspaceType, workspacePlan, availableWorkspaces, switchWorkspace } = useActiveWorkspace();
@@ -193,6 +200,11 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
 
   const showDropdown = focused && debouncedQuery.length >= 2;
 
+  const getModuleLabel = (module: string) => {
+    const key = SEARCH_MODULE_KEYS[module];
+    return key ? tNav(key) : module;
+  };
+
   // Auto-focus input when search expands on mobile
   useEffect(() => {
     if (searchExpanded) {
@@ -204,7 +216,7 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
     <header className="flex h-14 items-center gap-3 border-b bg-card px-4">
       {/* Mobile menu toggle — hidden when search expanded */}
       {!searchExpanded && (
-        <Button variant="ghost" size="icon" className="lg:hidden shrink-0" onClick={onMenuToggle} aria-label="Abrir menu">
+        <Button variant="ghost" size="icon" className="lg:hidden shrink-0" onClick={onMenuToggle} aria-label={tTop('openMenu')}>
           <Menu className="h-5 w-5" />
         </Button>
       )}
@@ -236,7 +248,7 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
             onFocus={() => setFocused(true)}
             onBlur={() => { setFocused(false); if (!query) setSearchExpanded(false); }}
             onKeyDown={(e) => { if (e.key === 'Escape') { setSearchExpanded(false); setQuery(''); } handleKeyDown(e); }}
-            placeholder="Buscar catequizandos, turmas, conteúdos, Bíblia..."
+            placeholder={tTop('searchPlaceholder')}
             className="flex-1 bg-transparent border-none outline-none text-sm placeholder:text-muted-foreground/60"
             data-tour="ctrlk"
           />
@@ -260,7 +272,7 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
             {flatResults.length === 0 ? (
               <div className="px-4 py-6 text-center">
                 <Search className="mx-auto h-5 w-5 text-muted-foreground/40 mb-1" />
-                <p className="text-sm text-muted-foreground">Nenhum resultado</p>
+                <p className="text-sm text-muted-foreground">{t('no_results')}</p>
               </div>
             ) : (
               <div className="max-h-48 sm:max-h-72 overflow-y-auto">
@@ -270,7 +282,7 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
                     <div key={module}>
                       <div className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70 bg-muted/30 border-y">
                         <Icon className="h-3 w-3" />
-                        {module}
+                        {getModuleLabel(module)}
                       </div>
                       {grouped[module].map((item: any) => {
                         const globalIdx = flatResults.indexOf(item);
@@ -299,9 +311,9 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
             )}
             {/* Footer */}
             <div className="flex items-center gap-3 px-3 py-1.5 border-t text-[10px] text-muted-foreground/50">
-              <span><kbd className="rounded border px-1 py-0.5 text-[9px] font-mono">↑↓</kbd> navegar</span>
-              <span><kbd className="rounded border px-1 py-0.5 text-[9px] font-mono">↵</kbd> abrir</span>
-              <span className="ml-auto">Ctrl+K para focar</span>
+              <span><kbd className="rounded border px-1 py-0.5 text-[9px] font-mono">↑↓</kbd> {tTop('searchNavigate')}</span>
+              <span><kbd className="rounded border px-1 py-0.5 text-[9px] font-mono">↵</kbd> {tTop('searchOpen')}</span>
+              <span className="ml-auto">{tTop('searchFocusHint')}</span>
             </div>
           </div>
         )}
@@ -349,7 +361,7 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
                     <div className="flex-1 text-left min-w-0">
                       <div className="font-medium text-sm truncate">{ws.name}</div>
                       <div className="text-[10px] text-muted-foreground truncate">
-                        {ws.isPersonal ? (ws.subtitle || 'Espaço pessoal') : (ROLE_LABELS[ws.role] || ws.role)}
+                        {ws.isPersonal ? (ws.subtitle || tTop('personalSpace')) : (roleLabels[ws.role as keyof typeof roleLabels] || ws.role)}
                       </div>
                     </div>
                     {ws.id === workspace?.id && <div className="w-2 h-2 rounded-full bg-primary shrink-0" />}
@@ -357,10 +369,10 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
                 );
 
                 const groups = [
-                  { key: 'personal', label: 'Pessoal', items: availableWorkspaces.filter((w: any) => w.isPersonal) },
-                  { key: 'parish', label: 'Paróquias', items: availableWorkspaces.filter((w: any) => !w.isPersonal && w.type === 'PARISH') },
-                  { key: 'diocese', label: 'Dioceses', items: availableWorkspaces.filter((w: any) => !w.isPersonal && w.type === 'DIOCESE') },
-                  { key: 'community', label: 'Comunidades', items: availableWorkspaces.filter((w: any) => !w.isPersonal && w.type === 'COMMUNITY') },
+                  { key: 'personal', label: tTop('workspaceGroups.personal'), items: availableWorkspaces.filter((w: any) => w.isPersonal) },
+                  { key: 'parish', label: tTop('workspaceGroups.parish'), items: availableWorkspaces.filter((w: any) => !w.isPersonal && w.type === 'PARISH') },
+                  { key: 'diocese', label: tTop('workspaceGroups.diocese'), items: availableWorkspaces.filter((w: any) => !w.isPersonal && w.type === 'DIOCESE') },
+                  { key: 'community', label: tTop('workspaceGroups.community'), items: availableWorkspaces.filter((w: any) => !w.isPersonal && w.type === 'COMMUNITY') },
                 ].filter((g) => g.items.length > 0);
 
                 return groups.map((g) => (
@@ -374,7 +386,7 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
                         onClick={() => navigate('/app/select-workspace')}
                         className="w-full text-[11px] text-primary hover:underline px-2 py-1 text-left"
                       >
-                        Ver todos ({g.items.length})
+                        {tTop('viewAll', { count: g.items.length })}
                       </button>
                     )}
                   </div>
@@ -386,7 +398,7 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
                   onClick={() => { navigate('/app/select-workspace'); }}
                   className="w-full text-xs text-muted-foreground hover:text-foreground px-2 py-1.5 rounded-sm hover:bg-accent transition-colors text-left"
                 >
-                  Ver todos os espaços
+                  {tTop('viewAllWorkspaces')}
                 </button>
               </div>
             </DropdownMenuContent>
@@ -406,7 +418,7 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-64 p-2">
-              <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground border-b mb-1">Paróquias</div>
+              <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground border-b mb-1">{tNav('parishes')}</div>
               {parishes.map((p: any) => (
                 <button
                   key={p.id}
@@ -429,14 +441,14 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
               <Button variant="ghost" size="sm" className="hidden md:flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-foreground border border-input rounded-xl px-3 py-1.5 h-9">
                 <Shield className="h-4 w-4 text-primary" />
                 <span className="truncate max-w-[120px] font-medium text-xs">
-                  {ROLE_LABELS[userRole] || userRole}
+                  {roleLabels[userRole as keyof typeof roleLabels] || userRole}
                 </span>
                 <ChevronDown className="h-3.5 w-3.5 opacity-60 ml-0.5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-72 p-2">
               <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground border-b mb-1">
-                Perfis ({availableMemberships.length})
+                {tTop('profiles', { count: availableMemberships.length })}
               </div>
               {availableMemberships.map((m: any) => {
                 const isActive = m.id === activeMembership?.id;
@@ -454,13 +466,13 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
                     <Shield className="h-4 w-4 text-muted-foreground" />
                     <div className="flex-1 text-left min-w-0">
                       <span className="text-sm font-medium truncate block">
-                        {ROLE_LABELS[m.role] || m.role}
+                        {roleLabels[m.role as keyof typeof roleLabels] || m.role}
                       </span>
                       <span className="text-[10px] text-muted-foreground truncate block">
-                        {m.parishName || 'Sem paróquia'}
+                        {m.parishName || tTop('noParish')}
                       </span>
                     </div>
-                    {needsPaidPlan && <span className="text-[9px] text-warning font-medium shrink-0" title="Requer plano pago">💰</span>}
+                    {needsPaidPlan && <span className="text-[9px] text-warning font-medium shrink-0" title={tTop('requiresPaidPlan')}>💰</span>}
                     {isActive && <Check className="h-4 w-4 text-primary shrink-0" />}
                   </button>
                 );
@@ -483,19 +495,19 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-80 p-0">
             <div className="flex items-center justify-between px-3 py-2 border-b">
-              <span className="text-xs font-semibold text-muted-foreground">Notificações</span>
+              <span className="text-xs font-semibold text-muted-foreground">{tTop('notifications')}</span>
               {unreadCount > 0 && (
                 <button onClick={handleMarkAllRead} className="text-[10px] text-primary hover:underline">
-                  Marcar todas como lidas
+                  {tTop('markAllRead')}
                 </button>
               )}
             </div>
             {notifsLoading ? (
-              <div className="px-3 py-6 text-center text-sm text-muted-foreground">Carregando...</div>
+              <div className="px-3 py-6 text-center text-sm text-muted-foreground">{t('loading')}</div>
             ) : notifs.length === 0 ? (
               <div className="px-3 py-6 text-center text-sm text-muted-foreground">
                 <Bell className="mx-auto h-6 w-6 mb-2 opacity-40" />
-                Nenhuma notificação
+                {tTop('noNotifications')}
               </div>
             ) : (
               <div className="max-h-80 overflow-y-auto divide-y">
@@ -519,7 +531,7 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
                       <div className="flex-1 min-w-0">
                         <p className={cn('text-xs truncate', !n.readAt && 'font-semibold')}>{n.title}</p>
                         {n.body && <p className="text-[10px] text-muted-foreground truncate">{n.body}</p>}
-                        <p className="text-[9px] text-muted-foreground/60 mt-0.5">{formatNotifTime(n.createdAt)}</p>
+                        <p className="text-[9px] text-muted-foreground/60 mt-0.5">{formatRelativeTime(n.createdAt, currentLocale)}</p>
                       </div>
                       {!n.readAt && (
                         <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0 mt-1.5" />
@@ -546,7 +558,7 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
           return (
             <Badge variant={v} className="hidden md:inline-flex items-center gap-1 text-xs font-medium">
               <Shield className="h-3 w-3" />
-              {ROLE_LABELS[userRole] || userRole}
+              {roleLabels[userRole as keyof typeof roleLabels] || userRole}
             </Badge>
           );
         })()}

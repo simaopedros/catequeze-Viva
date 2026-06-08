@@ -1,0 +1,175 @@
+{
+  "title": "Configuración Inicial",
+  "subtitle_personal": "Configuremos tu espacio personal.",
+  "subtitle_manager": "Configuremos la plataforma en 3 pasos.",
+  "steps": {
+    "diocese": "Diócesis",
+    "parish": "Parroquia",
+    "details": "Detalles"
+  },
+  "back": "← Volver",
+  "continue_parish": "Continuar a Parroquia →",
+  "continue": "Continuar →",
+  "change_diocese": "← Cambiar diócesis",
+  "configuring": "Configurando la plataforma...",
+  "finish_error": "Error al finalizar configuración.",
+  "personal_workspace_error": "No se pudo crear el espacio personal. Intente nuevamente.",
+  "parish_not_selected": "Parroquia no seleccionada.",
+  "osm_error": "Error al registrar parroquia de OpenStreetMap.",
+  "create_parish_error": "Error al crear parroquia.",
+  "no_parish_selected": "Ninguna parroquia seleccionada.",
+  "summary": {
+    "type": "Tipo",
+    "personal_account": "Cuenta Personal",
+    "plan": "Plan",
+    "plan_free": "Catequista Gratis",
+    "plan_pro": "Catequista Pro/IA",
+    "class": "Grupo",
+    "create_later": "Crear después",
+    "diocese": "Diócesis",
+    "parish": "Parroquia",
+    "year": "Año"
+  },
+  "welcome": {
+    "hello": "¡Hola, {{name}}!",
+    "hello_default": "¡Bienvenido(a)!",
+    "question": "¿Cómo quieres usar Catequesis Viva?",
+    "personal_title": "Cuenta Personal",
+    "personal_desc": "Para catequistas individuales · plan personal (Gratis / Pro / IA)",
+    "personal_features": ["Espacio personal aislado", "Sus grupos y catecúmenos", "Generador de encuentros con IA"],
+    "manager_title": "Cuenta de Gestión",
+    "manager_desc": "Para parroquias y diócesis · plan institucional (cubre varios catequistas)",
+    "manager_features": ["Multi-catequista", "Comunicación integrada", "Gestión completa de la catequesis"]
+  },
+  "personal_setup": {
+    "title": "Cuenta Personal",
+    "subtitle": "¡Tu espacio individual de catequesis está casi listo!",
+    "included": "Qué incluye:",
+    "isolated_space": "Espacio personal aislado",
+    "limits_free": "2 grupos y 30 catecúmenos",
+    "limits_unlimited": "Grupos ilimitados",
+    "ai_generator": "Generador de encuentros con IA",
+    "liturgical_calendar": "Calendario litúrgico",
+    "first_class_label": "Nombre del primer grupo (opcional)",
+    "first_class_placeholder": "Ej: Catequesis 1er Año",
+    "first_class_hint": "Puede crearlo después en Grupos si prefiere.",
+    "creating": "Creando espacio...",
+    "enter_space": "Entrar a mi espacio"
+  },
+  "diocese": {
+    "title": "¿En qué diócesis estás?",
+    "state_label": "Estado",
+    "all_states": "Todos los estados",
+    "search_placeholder": "Buscar diócesis...",
+    "wiki_section": "Wikidata · Diócesis oficiales",
+    "platform_section": "En la Plataforma",
+    "parishes_count": "{{count}} parroquias",
+    "empty_search": "Ninguna diócesis encontrada.",
+    "empty_hint": "Seleccione un estado o busque por nombre.",
+    "create_link": "+ ¿No la encontró? Crear nueva diócesis",
+    "new_name_label": "Nombre de la nueva diócesis",
+    "new_name_placeholder": "Ej: Diócesis de São José dos Campos",
+    "duplicate_warning": "Ya existe una diócesis similar:",
+    "use_this": "Usar esta →",
+    "create_error": "Error: la diócesis no fue creada.",
+    "create_error_generic": "Error al crear diócesis.",
+    "creating": "Creando...",
+    "create_btn": "Crear diócesis",
+    "skip": "Omitir este paso →",
+    "select_hint": "Seleccione una diócesis arriba"
+  },
+  "parish": {
+    "title": "¿Cuál es tu parroquia?",
+    "city_state": "Ciudad / Estado",
+    "filter_placeholder": "Filtrar por nombre...",
+    "platform_section": "En la Plataforma",
+    "osm_section": "OpenStreetMap",
+    "searching_map": "Buscando en el mapa...",
+    "create_link": "+ ¿No la encontró? Crear nueva parroquia",
+    "new_name_label": "Nombre de la nueva parroquia",
+    "new_name_placeholder": "Ej: Parroquia Santo Antônio",
+    "duplicate_warning": "Ya existe una parroquia similar:",
+    "use_this": "Usar esta →",
+    "create_error": "Error al crear parroquia.",
+    "creating": "Creando...",
+    "create_btn": "Crear parroquia",
+    "default_name": "Parroquia",
+    "duplicate_in": "en {{city}}"
+  },
+  "coordinator": {
+    "year_title": "Año Catequético",
+    "year_name": "Nombre del año *",
+    "year_name_placeholder": "Ej: Catequesis 2026",
+    "start": "Inicio",
+    "end": "Fin",
+    "date_error": "La fecha de fin debe ser posterior a la de inicio.",
+    "next": "Siguiente",
+    "class_title": "Primer Grupo",
+    "class_desc": "Cree el primer grupo u omita este paso.",
+    "class_name": "Nombre del grupo",
+    "class_name_placeholder": "Ej: Grupo de Confirmación 2026",
+    "day_of_week": "Día de la semana",
+    "start_time": "Inicio",
+    "end_time": "Fin",
+    "location": "Lugar",
+    "skip_class": "Crear grupo después",
+    "finish": "Finalizar",
+    "back": "Volver",
+    "days": {
+      "0": "Domingo",
+      "1": "Lunes",
+      "2": "Martes",
+      "3": "Miércoles",
+      "4": "Jueves",
+      "5": "Viernes",
+      "6": "Sábado"
+    }
+  },
+  "completion": {
+    "title": "¡Todo listo!",
+    "desc": "Tu espacio está configurado. Aquí tienes un resumen de lo creado:",
+    "redirecting": "Redirigiendo en 5 segundos...",
+    "go_dashboard": "Ir al Panel"
+  },
+  "roles": {
+    "coordinator": { "title": "Coordinador(a) Parroquial", "desc": "Gestiona la catequesis de la parroquia: grupos, catequistas, sacramentos e informes." },
+    "catechist": { "title": "Catequista", "desc": "Das clases de catequesis y acompañas a tus catecúmenos." },
+    "guardian": { "title": "Responsable (Padre / Madre)", "desc": "Acompañas la jornada de fe de tus hijos en la catequesis." },
+    "viewer": { "title": "Visitante Pastoral", "desc": "Consultas datos pastorales sin editar." }
+  },
+  "role_step": {
+    "title": "¿Cuál es tu papel en la parroquia?",
+    "subtitle": "Elige el perfil que mejor describe tu actuación."
+  },
+  "catechist": {
+    "class_title": "Tu Grupo"
+  },
+  "viewer": {
+    "title": "Liderazgo Pastoral",
+    "desc": "Tendrás acceso de visualización a grupos, asistencia e informes de la parroquia, sin permiso para editar.",
+    "confirm": "Confirmar y entrar"
+  },
+  "guardian": {
+    "title": "Crear Familia",
+    "household_name": "Nombre de la familia",
+    "household_placeholder": "Ej: Familia Silva",
+    "phone": "Teléfono",
+    "phone_placeholder": "Ej: (11) 99999-0000",
+    "default_household": "Familia"
+  },
+  "parish_search": {
+    "title": "Unirse a una Parroquia",
+    "search_placeholder": "Buscar parroquia...",
+    "loading": "Cargando...",
+    "empty": "Ninguna parroquia. Puede crear una independiente.",
+    "next": "Siguiente"
+  },
+  "parish_create": {
+    "title": "Crear Parroquia",
+    "name_label": "Nombre *",
+    "name_placeholder": "Ej: Parroquia Santo Antônio",
+    "city_state": "Ciudad / Estado",
+    "creating": "Creando...",
+    "submit": "Crear y continuar"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "title": "Anos Catequéticos",
+  "subtitle": "Períodos, etapas e sacramentos.",
+  "new_year": "Novo ano",
+  "form_title": "Novo Ano Catequético",
+  "name": "Nome",
+  "start": "Início",
+  "end": "Término",
+  "creating": "Criando...",
+  "create_error": "Erro ao criar ano catequético.",
+  "empty_title": "Nenhum ano catequético",
+  "empty_desc": "Crie o primeiro ano catequético para organizar etapas e turmas.",
+  "create_btn": "Criar ano catequético",
+  "name_placeholder": "Ex: Catequese 2026",
+  "status_active": "Ativo",
+  "status_concluded": "Concluído",
+  "start_label": "Início: {{date}}",
+  "end_label": "Término: {{date}}"
+}

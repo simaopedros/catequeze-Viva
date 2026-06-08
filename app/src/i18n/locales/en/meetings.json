@@ -1,0 +1,21 @@
+{
+  "title": "Meetings",
+  "subtitle": "Manage class meetings",
+  "new": "New",
+  "meeting_title": "Meeting title",
+  "date": "Date",
+  "no_content": "No linked content",
+  "create_error": "Error creating meeting: {{message}}",
+  "update_error": "Error updating meeting: {{message}}",
+  "no_permission": "No permission or server failure.",
+  "server_error": "Server failure.",
+  "empty_title": "No meetings registered",
+  "empty_desc": "Create the first meeting for this class.",
+  "no_title": "No title",
+  "attendance_count": "{{count}} attendances",
+  "attendance_link": "Attendance",
+  "unlink": "Unlink",
+  "link_content": "Link content...",
+  "generate_ai_activity": "Generate AI Activity",
+  "generate_whatsapp": "Generate WhatsApp"
+}

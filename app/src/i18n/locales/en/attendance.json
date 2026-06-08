@@ -16,5 +16,26 @@
   "justified": "Justified",
   "not_started": "Not started",
   "in_progress": "In progress",
-  "synced": "Synced"
+  "synced": "Synced",
+  "matrix": {
+    "title": "Attendance Matrix",
+    "subtitle": "{{catechumens}} · {{meetings}}",
+    "new_meeting": "New meeting",
+    "title_placeholder": "Title",
+    "absent_label": "Absent",
+    "justified_label": "Excused",
+    "not_filled": "Not filled",
+    "empty": "Create a meeting to get started.",
+    "catechumen_column": "Catechumen",
+    "totals": "Totals",
+    "mark_error": "Error marking attendance: {{message}}",
+    "create_meeting_error": "Error creating meeting: {{message}}",
+    "no_permission": "No permission.",
+    "meetings_count": "{{count}} meetings",
+    "present_letter": "P",
+    "absent_letter": "A",
+    "justified_letter": "E",
+    "percent_column": "%",
+    "no_title": "—"
+  }
 }

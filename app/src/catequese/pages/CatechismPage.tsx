@@ -1,19 +1,15 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, BookOpen, Loader2, ChevronDown, ChevronUp, AlertCircle } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { AppShell } from '../AppShell';
 import { listCatechismByCategory, searchCatechism } from 'wasp/client/operations';
 
-const CATEGORIES: Record<string, string> = {
-  creed: 'O Credo',
-  sacraments: 'Os Sacramentos',
-  commandments: 'Os Mandamentos',
-  prayer: 'A Oração',
-  virtues: 'As Virtudes',
-  sin: 'O Pecado',
-};
+const CATEGORY_KEYS = ['creed', 'sacraments', 'commandments', 'prayer', 'virtues', 'sin'] as const;
 
 export default function CatechismPage() {
+  const { t } = useTranslation('catechism');
+  const { t: tCommon } = useTranslation('common');
   const [entries, setEntries] = useState<any[]>([]);
   const [category, setCategory] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,7 +25,7 @@ export default function CatechismPage() {
     setError('');
     try {
       setEntries((await listCatechismByCategory({ category: cat })) || []);
-    } catch (e) { setError('Não foi possível carregar a categoria. Verifique sua conexão.'); }
+    } catch (e) { setError(`${t('loadError')} ${tCommon('connection_error')}`); }
     setLoading(false);
   };
 
@@ -41,7 +37,7 @@ export default function CatechismPage() {
     setError('');
     try {
       setSearchResults((await searchCatechism({ query: searchQuery })) || []);
-    } catch (e) { setError('Não foi possível realizar a busca. Verifique sua conexão.'); }
+    } catch (e) { setError(`${tCommon('search_error')} ${tCommon('connection_error')}`); }
     setLoading(false);
   };
 
@@ -49,52 +45,49 @@ export default function CatechismPage() {
     setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const displayEntries = searchResults.length > 0 ? searchResults : entries;    
+  const displayEntries = searchResults.length > 0 ? searchResults : entries;
 
   return (
     <AppShell>
       <div className="space-y-4">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-          <span>Catecismo</span>
+          <span>{t('title')}</span>
         </div>
 
-        <h1 className="text-2xl font-bold">Catecismo de São Pio X</h1>
+        <h1 className="text-2xl font-bold">{t('heading')}</h1>
 
-        {/* Search bar */}
         <div className="flex gap-3">
           <input
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleSearch()}
             className="flex-1 h-9 rounded-md border border-input bg-background px-3 text-sm"
-            placeholder="Ex: sacramento, oração, batismo, mandamento, credo..." 
+            placeholder={t('searchPlaceholder')}
           />
           <Button size="sm" onClick={handleSearch} disabled={loading || searchQuery.length < 2}>
-            <Search className="mr-1 h-4 w-4" />Buscar
+            <Search className="mr-1 h-4 w-4" />{t('searchButton')}
           </Button>
         </div>
 
-        {/* Category tabs */}
         {searchResults.length === 0 && (
           <div className="flex flex-wrap gap-2">
-            {Object.entries(CATEGORIES).map(([key, label]) => (
+            {CATEGORY_KEYS.map((key) => (
               <button
                 key={key}
                 onClick={() => loadCategory(key)}
                 className={'px-3 py-1.5 text-sm rounded-md transition-colors ' + (category === key ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/70')}
               >
-                {label}
+                {t(`categories.${key}`)}
               </button>
             ))}
           </div>
         )}
 
-        {/* Error */}
         {error && (
           <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center space-y-3">
             <AlertCircle className="h-8 w-8 text-destructive mx-auto" />
             <p className="text-sm text-destructive">{error}</p>
-            <Button size="sm" variant="outline" onClick={() => category ? loadCategory(category) : handleSearch()}>Tentar novamente</Button>
+            <Button size="sm" variant="outline" onClick={() => category ? loadCategory(category) : handleSearch()}>{tCommon('try_again')}</Button>
           </div>
         )}
 
@@ -102,7 +95,7 @@ export default function CatechismPage() {
           <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
         ) : searchResults.length > 0 ? (
           <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">{searchResults.length} resultado(s)</p>
+            <p className="text-sm text-muted-foreground">{t('resultsCount', { count: searchResults.length })}</p>
             {displayEntries.map((entry: any) => (
               <div key={entry.id} className="rounded-lg border">
                 <button
@@ -112,7 +105,7 @@ export default function CatechismPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded">{entry.number}</span>
-                      <p className="font-medium text-sm">{entry.question}</p>   
+                      <p className="font-medium text-sm">{entry.question}</p>
                     </div>
                     {expanded[entry.id] && (
                       <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{entry.answer}</p>
@@ -125,7 +118,7 @@ export default function CatechismPage() {
           </div>
         ) : entries.length > 0 ? (
           <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">{entries.length} entradas em {CATEGORIES[category]}</p>
+            <p className="text-sm text-muted-foreground">{t('entriesInCategory', { count: entries.length, category: t(`categories.${category}`) })}</p>
             {entries.map((entry: any) => (
               <div key={entry.id} className="rounded-lg border">
                 <button
@@ -135,7 +128,7 @@ export default function CatechismPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded">{entry.number}</span>
-                      <p className="font-medium text-sm">{entry.question}</p>   
+                      <p className="font-medium text-sm">{entry.question}</p>
                     </div>
                     {expanded[entry.id] && (
                       <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{entry.answer}</p>
@@ -147,13 +140,13 @@ export default function CatechismPage() {
             ))}
           </div>
         ) : category ? (
-          <div className="text-center text-muted-foreground py-12">Nenhuma entrada nesta categoria.</div>
+          <div className="text-center text-muted-foreground py-12">{t('noCategory')}</div>
         ) : (
           <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center">
             <div className="mb-4 rounded-full bg-primary/10 p-3"><BookOpen className="h-8 w-8 text-primary" /></div>
-            <h3 className="text-lg font-semibold">Catecismo de São Pio X</h3>   
+            <h3 className="text-lg font-semibold">{t('emptyTitle')}</h3>
             <p className="text-sm text-muted-foreground mt-1 max-w-md">
-              Selecione uma categoria acima ou busque por palavras-chave para explorar o catecismo.
+              {t('emptyDesc')}
             </p>
           </div>
         )}

@@ -1,0 +1,10 @@
+{
+  "error_boundary": {
+    "title": "Algo correu mal",
+    "description": "Ocorreu um erro inesperado. Isto pode ser temporário — tente recarregar a página.",
+    "technical_details": "Detalhes técnicos",
+    "reload": "Recarregar página",
+    "retry": "Tentar novamente",
+    "support": "Se o problema persistir, contacte o suporte em suporte@catequeseviva.com"
+  }
+}

@@ -1,7 +1,7 @@
 {
   "dashboard": "Panel",
   "classes": "Grupos",
-  "catechumens": "Catequizandos",
+  "catechumens": "Catecúmenos",
   "families": "Familias",
   "content_library": "Biblioteca",
   "ai_planner": "Generador IA",
@@ -28,5 +28,31 @@
   "bible": "Biblia",
   "catechism": "Catecismo",
   "directory": "Directorio",
-  "admin": "Administración"
+  "breadcrumb": {
+    "ariaLabel": "Navegación",
+    "detail": "Detalle",
+    "new": "Nuevo",
+    "edit": "Editar",
+    "import": "Importar",
+    "print": "Imprimir",
+    "meetings": "Encuentros",
+    "attendance": "Asistencia",
+    "members": "Miembros",
+    "users": "Usuarios"
+  },
+  "breadcrumbSingular": {
+    "parishes": "Parroquia",
+    "classes": "Grupo",
+    "catechumens": "Catecúmeno",
+    "families": "Familia",
+    "communities": "Comunidad",
+    "users": "Usuario",
+    "meetings": "Encuentro",
+    "activities": "Actividad",
+    "messages": "Conversación",
+    "documents": "Documento",
+    "reports": "Informe",
+    "catechetical_years": "Año Catequético",
+    "sacramental_journeys": "Sacramento"
+  }
 }

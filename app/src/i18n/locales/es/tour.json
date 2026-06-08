@@ -1,0 +1,28 @@
+{
+  "stepOf": "Paso {{current}} de {{total}}",
+  "previous": "Anterior",
+  "next": "Siguiente",
+  "start": "Comenzar",
+  "steps": {
+    "dashboard": {
+      "title": "Panel de Control",
+      "description": "Aquí ve un resumen de su catequesis: catecúmenos activos, grupos, asistencia media y pendientes."
+    },
+    "classes": {
+      "title": "Grupos",
+      "description": "Gestione sus grupos, catequistas y encuentros. Cada grupo tiene su propio calendario y registro de asistencia."
+    },
+    "ai": {
+      "title": "Generador IA",
+      "description": "Cree encuentros completos de catequesis con inteligencia artificial — oraciones, dinámicas, referencias bíblicas y del Catecismo."
+    },
+    "messages": {
+      "title": "Mensajes",
+      "description": "Comuníquese con catequistas, padres y catecúmenos. Envíe comunicados y mensajes directos."
+    },
+    "search": {
+      "title": "Búsqueda Rápida",
+      "description": "Presione Ctrl+K para buscar instantáneamente en toda la plataforma: catecúmenos, grupos, Biblia, Catecismo y más."
+    }
+  }
+}

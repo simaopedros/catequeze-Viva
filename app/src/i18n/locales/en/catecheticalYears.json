@@ -1,0 +1,19 @@
+{
+  "title": "Catechetical Years",
+  "subtitle": "Periods, stages, and sacraments.",
+  "new_year": "New year",
+  "form_title": "New Catechetical Year",
+  "name": "Name",
+  "start": "Start",
+  "end": "End",
+  "creating": "Creating...",
+  "create_error": "Error creating catechetical year.",
+  "empty_title": "No catechetical years",
+  "empty_desc": "Create the first catechetical year to organize stages and classes.",
+  "create_btn": "Create catechetical year",
+  "name_placeholder": "Ex: Catechesis 2026",
+  "status_active": "Active",
+  "status_concluded": "Concluded",
+  "start_label": "Start: {{date}}",
+  "end_label": "End: {{date}}"
+}

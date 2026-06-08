@@ -1,46 +1,46 @@
+import { useTranslation } from 'react-i18next';
 import { PublicNavbar } from '../PublicNavbar';
 import { PublicFooter } from '../PublicFooter';
 
 export default function TermsPage() {
+  const { t } = useTranslation('legal');
+  const obligations = t('terms.sections.obligations.items', { returnObjects: true }) as string[];
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <PublicNavbar />
       <main className="flex-1 max-w-3xl mx-auto px-4 py-20 space-y-8">
         <div>
-          <h1 className="text-4xl font-bold mb-4">Termos de Uso</h1>
-          <p className="text-muted-foreground">Última atualização: 31 de maio de 2026</p>
+          <h1 className="text-4xl font-bold mb-4">{t('terms.title')}</h1>
+          <p className="text-muted-foreground">{t('terms.updated')}</p>
         </div>
 
         <div className="space-y-6 text-sm text-muted-foreground">
           <section>
-            <h2 className="text-xl font-semibold text-foreground mb-2">1. Aceitação dos Termos</h2>
-            <p>Ao acessar e usar a plataforma Catequese Viva, você concorda com estes Termos de Uso.</p>
+            <h2 className="text-xl font-semibold text-foreground mb-2">{t('terms.sections.acceptance.title')}</h2>
+            <p>{t('terms.sections.acceptance.text')}</p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-foreground mb-2">2. Descrição do Serviço</h2>
-            <p>A Catequese Viva é uma plataforma SaaS para gestão de catequese católica: turmas, presença, conteúdo, sacramentos e comunicação pastoral.</p>
+            <h2 className="text-xl font-semibold text-foreground mb-2">{t('terms.sections.service.title')}</h2>
+            <p>{t('terms.sections.service.text')}</p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-foreground mb-2">3. Obrigações do Usuário</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-2">{t('terms.sections.obligations.title')}</h2>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Fornecer informações verdadeiras e atualizadas</li>
-              <li>Manter a confidencialidade de suas credenciais</li>
-              <li>Não compartilhar sua conta com terceiros</li>
-              <li>Utilizar a plataforma apenas para fins de catequese e pastoral</li>
-              <li>Respeitar as normas da LGPD ao tratar dados de catequizandos</li>
+              {obligations.map((item, i) => <li key={i}>{item}</li>)}
             </ul>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-foreground mb-2">4. Limitação de Responsabilidade</h2>
-            <p>A Catequese Viva não se responsabiliza por conteúdo publicado pelos usuários, decisões pastorais baseadas nos dados da plataforma, ou indisponibilidade temporária.</p>
+            <h2 className="text-xl font-semibold text-foreground mb-2">{t('terms.sections.liability.title')}</h2>
+            <p>{t('terms.sections.liability.text')}</p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-foreground mb-2">5. Foro</h2>
-            <p>Fica eleito o foro da Comarca de São Paulo, Brasil, para dirimir quaisquer controvérsias decorrentes destes Termos de Uso.</p>
+            <h2 className="text-xl font-semibold text-foreground mb-2">{t('terms.sections.jurisdiction.title')}</h2>
+            <p>{t('terms.sections.jurisdiction.text')}</p>
           </section>
         </div>
       </main>

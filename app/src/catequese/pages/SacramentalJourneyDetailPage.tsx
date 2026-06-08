@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { ArrowLeft, CheckCircle, Clock, AlertTriangle, XCircle, FileText, User, Calendar, BookOpen, Cross, Pencil, Save, Upload, X } from 'lucide-react';
@@ -7,17 +8,33 @@ import { AppShell } from '../AppShell';
 import { useQuery, getSacramentalJourney, updateMilestoneStatus, updateJourney } from 'wasp/client/operations';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { toast } from '../../client/hooks/use-toast';
+import { useSacramentMilestoneStatusMap } from '../../i18n/useLabels';
+import { useLocale } from '../../i18n/useLocale';
+import { formatDate } from '../../i18n/format';
 
-const STATUS_CONFIG: Record<string, { icon: typeof CheckCircle; color: string; label: string }> = {
-  PENDING: { icon: Clock, color: 'text-muted-foreground', label: 'Pendente' },
-  IN_PROGRESS: { icon: Clock, color: 'text-blue-500', label: 'Em andamento' },
-  WAITING_APPROVAL: { icon: AlertTriangle, color: 'text-amber-500', label: 'Aguardando aprovação' },
-  APPROVED: { icon: CheckCircle, color: 'text-green-500', label: 'Aprovado' },
-  REJECTED: { icon: XCircle, color: 'text-red-500', label: 'Rejeitado' },
-  COMPLETED: { icon: CheckCircle, color: 'text-emerald-600', label: 'Concluído' },
+const STATUS_ICONS: Record<string, typeof CheckCircle> = {
+  PENDING: Clock,
+  IN_PROGRESS: Clock,
+  WAITING_APPROVAL: AlertTriangle,
+  APPROVED: CheckCircle,
+  REJECTED: XCircle,
+  COMPLETED: CheckCircle,
+};
+
+const STATUS_COLORS: Record<string, string> = {
+  PENDING: 'text-muted-foreground',
+  IN_PROGRESS: 'text-blue-500',
+  WAITING_APPROVAL: 'text-amber-500',
+  APPROVED: 'text-green-500',
+  REJECTED: 'text-red-500',
+  COMPLETED: 'text-emerald-600',
 };
 
 export default function SacramentalJourneyDetailPage() {
+  const { t } = useTranslation('sacraments');
+  const { t: tc } = useTranslation('common');
+  const statusMap = useSacramentMilestoneStatusMap();
+  const { currentLocale } = useLocale();
   const { id } = useParams<{ id: string }>();
   const { data: journey, isLoading } = useQuery(getSacramentalJourney, { id: id! });
   const { userRole } = useUserContext();
@@ -26,7 +43,6 @@ export default function SacramentalJourneyDetailPage() {
   const isCatechist = ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST'].includes(userRole);
   const canManage = isCoordinator || isCatechist;
 
-  // Local state for inline editing
   const [editingNotes, setEditingNotes] = useState<Record<string, string>>({});
   const [editingTargetDate, setEditingTargetDate] = useState(false);
   const [targetDateInput, setTargetDateInput] = useState('');
@@ -35,9 +51,9 @@ export default function SacramentalJourneyDetailPage() {
   const handleUpdateStatus = async (milestoneId: string, status: string) => {
     try {
       await updateMilestoneStatus({ milestoneId, status });
-      toast({ title: 'Marco atualizado.' });
+      toast({ title: t('detail.milestone_updated') });
     } catch (e: any) {
-      toast({ title: 'Erro', description: e.message || 'Tente novamente.', variant: 'destructive' });
+      toast({ title: tc('error'), description: e.message || tc('error_generic'), variant: 'destructive' });
     }
   };
 
@@ -46,10 +62,10 @@ export default function SacramentalJourneyDetailPage() {
     if (notes === undefined) return;
     try {
       await updateMilestoneStatus({ milestoneId, notes });
-      toast({ title: 'Notas guardadas.' });
+      toast({ title: t('detail.notes_saved') });
       setEditingNotes(prev => { const next = { ...prev }; delete next[milestoneId]; return next; });
     } catch (e: any) {
-      toast({ title: 'Erro ao guardar notas', description: e.message, variant: 'destructive' });
+      toast({ title: t('detail.notes_error'), description: e.message, variant: 'destructive' });
     }
   };
 
@@ -62,12 +78,11 @@ export default function SacramentalJourneyDetailPage() {
         reader.onerror = reject;
         reader.readAsDataURL(file);
       });
-      // Store as data URL for simplicity — in production this would upload to S3
       const evidenceUrl = `data:${file.type};base64,${base64}`;
       await updateMilestoneStatus({ milestoneId, evidenceUrl });
-      toast({ title: 'Anexo enviado.' });
+      toast({ title: t('detail.attachment_sent') });
     } catch (e: any) {
-      toast({ title: 'Erro ao enviar anexo', description: e.message, variant: 'destructive' });
+      toast({ title: t('detail.attachment_error'), description: e.message, variant: 'destructive' });
     } finally {
       setUploadingFor(null);
     }
@@ -77,10 +92,10 @@ export default function SacramentalJourneyDetailPage() {
     if (!id) return;
     try {
       await updateJourney({ id, targetDate: targetDateInput || null });
-      toast({ title: 'Data do sacramento atualizada.' });
+      toast({ title: t('detail.sacrament_date_updated') });
       setEditingTargetDate(false);
     } catch (e: any) {
-      toast({ title: 'Erro', description: e.message, variant: 'destructive' });
+      toast({ title: tc('error'), description: e.message, variant: 'destructive' });
     }
   };
 
@@ -89,7 +104,7 @@ export default function SacramentalJourneyDetailPage() {
   }
 
   if (!journey) {
-    return <AppShell><div className="p-6 text-destructive">Jornada não encontrada.</div></AppShell>;
+    return <AppShell><div className="p-6 text-destructive">{t('detail.not_found')}</div></AppShell>;
   }
 
   const milestones = journey.milestones || [];
@@ -103,7 +118,6 @@ export default function SacramentalJourneyDetailPage() {
   return (
     <AppShell>
       <div className="space-y-6">
-        {/* Header */}
         <div className="flex flex-wrap items-center gap-3">
           <Button variant="ghost" size="icon" asChild>
             <Link to="/app/sacramental-journeys"><ArrowLeft className="h-5 w-5" /></Link>
@@ -111,7 +125,7 @@ export default function SacramentalJourneyDetailPage() {
           <div className="flex-1">
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <Cross className="h-6 w-6 text-primary" />
-              {journey.template?.sacrament?.name || journey.template?.name || 'Jornada Sacramental'}
+              {journey.template?.sacrament?.name || journey.template?.name || t('detail.journey_default')}
             </h1>
             <div className="flex items-center gap-2 mt-1">
               <Link to={`/app/catechumens/${journey.catechumenProfile?.id}`} className="flex items-center gap-1 text-sm text-primary hover:underline">
@@ -124,9 +138,7 @@ export default function SacramentalJourneyDetailPage() {
           </div>
         </div>
 
-        {/* Target date + progress */}
         <div className="rounded-xl border bg-card p-5 space-y-4">
-          {/* Target sacrament date */}
           <div className="flex items-center gap-3">
             <Calendar className="h-4 w-4 text-muted-foreground" />
             {editingTargetDate ? (
@@ -137,15 +149,15 @@ export default function SacramentalJourneyDetailPage() {
                   onChange={e => setTargetDateInput(e.target.value)}
                   className="flex h-8 rounded-md border border-input bg-background px-3 text-sm"
                 />
-                <Button size="sm" onClick={handleSaveTargetDate}><Save className="mr-1 h-3 w-3" />Guardar</Button>
+                <Button size="sm" onClick={handleSaveTargetDate}><Save className="mr-1 h-3 w-3" />{tc('save')}</Button>
                 <Button size="sm" variant="ghost" onClick={() => setEditingTargetDate(false)}><X className="h-4 w-4" /></Button>
               </div>
             ) : (
               <div className="flex items-center gap-2 flex-1">
                 <span className="text-sm font-medium">
                   {targetDate
-                    ? `Data do sacramento: ${targetDate.toLocaleDateString('pt-BR')}`
-                    : 'Data do sacramento não definida'}
+                    ? t('detail.sacrament_date', { date: formatDate(targetDate, currentLocale) })
+                    : t('detail.sacrament_date_undefined')}
                 </span>
                 {canManage && (
                   <Button size="sm" variant="ghost" className="h-6 text-[10px]" onClick={() => { setTargetDateInput(targetDate ? targetDate.toISOString().slice(0, 10) : ''); setEditingTargetDate(true); }}>
@@ -156,11 +168,10 @@ export default function SacramentalJourneyDetailPage() {
             )}
           </div>
 
-          {/* Progress bar */}
           <div>
             <div className="flex justify-between mb-2">
-              <span className="text-sm font-medium">Progresso</span>
-              <span className="text-sm font-bold">{done}/{total} marcos · {pct}%</span>
+              <span className="text-sm font-medium">{t('detail.progress')}</span>
+              <span className="text-sm font-bold">{t('detail.progress_count', { done, total, pct })}</span>
             </div>
             <div className="w-full bg-muted rounded-full h-3">
               <div
@@ -169,22 +180,22 @@ export default function SacramentalJourneyDetailPage() {
               />
             </div>
             <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
-              {blocked > 0 && <span className="flex items-center gap-1"><XCircle className="h-3 w-3 text-red-500" />{blocked} rejeitado{blocked > 1 ? 's' : ''}</span>}
-              {waitingApproval > 0 && <span className="flex items-center gap-1"><AlertTriangle className="h-3 w-3 text-amber-500" />{waitingApproval} aguardando aprovação</span>}
+              {blocked > 0 && <span className="flex items-center gap-1"><XCircle className="h-3 w-3 text-red-500" />{blocked > 1 ? t('detail.rejected_count_plural', { count: blocked }) : t('detail.rejected_count', { count: blocked })}</span>}
+              {waitingApproval > 0 && <span className="flex items-center gap-1"><AlertTriangle className="h-3 w-3 text-amber-500" />{t('detail.waiting_approval_count', { count: waitingApproval })}</span>}
             </div>
           </div>
         </div>
 
-        {/* Milestone timeline */}
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold">Marcos</h2>
+          <h2 className="text-lg font-semibold">{t('milestones')}</h2>
           {milestones.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhum marco definido neste modelo.</p>
+            <p className="text-sm text-muted-foreground">{t('detail.no_milestones')}</p>
           ) : (
             <div className="space-y-2">
-              {milestones.map((m: any, idx: number) => {
-                const config = STATUS_CONFIG[m.status] || STATUS_CONFIG.PENDING;
-                const Icon = config.icon;
+              {milestones.map((m: any) => {
+                const Icon = STATUS_ICONS[m.status] || STATUS_ICONS.PENDING;
+                const color = STATUS_COLORS[m.status] || STATUS_COLORS.PENDING;
+                const statusLabel = statusMap[m.status as keyof typeof statusMap]?.label || m.status;
                 const tm = m.templateMilestone;
                 const isEvidenceRequired = tm?.evidenceRequired;
                 const daysBefore = tm?.daysBeforeSacrament;
@@ -198,37 +209,36 @@ export default function SacramentalJourneyDetailPage() {
                   <div key={m.id} className={`rounded-lg border p-4 ${m.status === 'REJECTED' ? 'border-red-200 bg-red-50/30 dark:border-red-900/30 dark:bg-red-950/10' : m.status === 'APPROVED' || m.status === 'COMPLETED' ? 'border-green-200 bg-green-50/30 dark:border-green-900/30 dark:bg-green-950/10' : isOverdue ? 'border-amber-300 bg-amber-50/30' : 'bg-card'}`}>
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3 min-w-0 flex-1">
-                        <div className={`mt-0.5 flex-shrink-0 ${config.color}`}>
+                        <div className={`mt-0.5 flex-shrink-0 ${color}`}>
                           <Icon className="h-5 w-5" />
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="font-medium text-sm flex items-center gap-2 flex-wrap">
                             {tm?.name}
-                            {tm?.required && <Badge variant="outline" className="text-[10px]">Obrigatório</Badge>}
-                            {isEvidenceRequired && <Badge variant="outline" className="text-[10px]">Evidência</Badge>}
-                            {isOverdue && <Badge variant="outline" className="text-[10px] border-amber-300 text-amber-700">Atrasado</Badge>}
+                            {tm?.required && <Badge variant="outline" className="text-[10px]">{t('required')}</Badge>}
+                            {isEvidenceRequired && <Badge variant="outline" className="text-[10px]">{t('evidence')}</Badge>}
+                            {isOverdue && <Badge variant="outline" className="text-[10px] border-amber-300 text-amber-700">{t('detail.overdue')}</Badge>}
                           </p>
                           {tm?.description && <p className="text-xs text-muted-foreground mt-0.5">{tm.description}</p>}
                           {deadline && (
                             <p className={`text-xs mt-0.5 flex items-center gap-1 ${isOverdue ? 'text-amber-600 font-medium' : 'text-muted-foreground'}`}>
                               <Calendar className="h-3 w-3" />
-                              Prazo: {deadline.toLocaleDateString('pt-BR')}
-                              {isOverdue && ' — vencido'}
+                              {t('detail.deadline', { date: formatDate(deadline, currentLocale) })}
+                              {isOverdue && t('detail.deadline_overdue')}
                             </p>
                           )}
 
-                          {/* Notes — editable inline */}
                           {isEditingNotes ? (
                             <div className="mt-2 space-y-1">
                               <textarea
                                 value={editingNotes[m.id] || ''}
                                 onChange={e => setEditingNotes(prev => ({ ...prev, [m.id]: e.target.value }))}
                                 className="w-full text-xs rounded-md border border-input bg-background px-2 py-1 min-h-[40px]"
-                                placeholder="Adicionar notas..."
+                                placeholder={t('detail.add_notes')}
                                 rows={2}
                               />
                               <div className="flex gap-1">
-                                <Button size="sm" variant="ghost" className="h-6 text-[10px]" onClick={() => handleSaveNotes(m.id)}><Save className="mr-1 h-3 w-3" />Guardar</Button>
+                                <Button size="sm" variant="ghost" className="h-6 text-[10px]" onClick={() => handleSaveNotes(m.id)}><Save className="mr-1 h-3 w-3" />{tc('save')}</Button>
                                 <Button size="sm" variant="ghost" className="h-6 text-[10px]" onClick={() => setEditingNotes(prev => { const next = { ...prev }; delete next[m.id]; return next; })}><X className="h-3 w-3" /></Button>
                               </div>
                             </div>
@@ -237,27 +247,26 @@ export default function SacramentalJourneyDetailPage() {
                               {m.notes ? (
                                 <p className="text-xs italic text-muted-foreground border-l-2 border-muted pl-2">{m.notes}</p>
                               ) : (
-                                <p className="text-xs text-muted-foreground/50 italic">Sem notas</p>
+                                <p className="text-xs text-muted-foreground/50 italic">{t('detail.no_notes')}</p>
                               )}
                               {canManage && (
                                 <Button size="sm" variant="ghost" className="h-5 text-[10px] mt-0.5" onClick={() => setEditingNotes(prev => ({ ...prev, [m.id]: m.notes || '' }))}>
-                                  <Pencil className="mr-1 h-2.5 w-2.5" />Editar notas
+                                  <Pencil className="mr-1 h-2.5 w-2.5" />{t('detail.edit_notes')}
                                 </Button>
                               )}
                             </div>
                           )}
 
-                          {/* Evidence / attachment */}
                           {isEvidenceRequired && (
                             <div className="mt-2">
                               {m.evidenceUrl ? (
                                 <div className="flex items-center gap-2">
                                   <a href={m.evidenceUrl} className="text-xs text-primary hover:underline flex items-center gap-1" target="_blank" rel="noreferrer">
-                                    <FileText className="h-3 w-3" />Ver evidência
+                                    <FileText className="h-3 w-3" />{t('detail.view_evidence')}
                                   </a>
                                   {canManage && (
                                     <label className="cursor-pointer text-xs text-muted-foreground hover:text-primary">
-                                      <Upload className="h-3 w-3 inline mr-0.5" />Substituir
+                                      <Upload className="h-3 w-3 inline mr-0.5" />{t('detail.replace')}
                                       <input type="file" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleFileUpload(m.id, f); }} />
                                     </label>
                                   )}
@@ -265,9 +274,9 @@ export default function SacramentalJourneyDetailPage() {
                               ) : (
                                 <label className={`cursor-pointer text-xs flex items-center gap-1 ${uploadingFor === m.id ? 'text-muted-foreground' : 'text-primary hover:underline'}`}>
                                   {uploadingFor === m.id ? (
-                                    <><Clock className="h-3 w-3 animate-spin" />A enviar...</>
+                                    <><Clock className="h-3 w-3 animate-spin" />{t('detail.uploading')}</>
                                   ) : (
-                                    <><Upload className="h-3 w-3" />Enviar evidência</>
+                                    <><Upload className="h-3 w-3" />{t('detail.upload_evidence')}</>
                                   )}
                                   <input type="file" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleFileUpload(m.id, f); }} disabled={uploadingFor === m.id} />
                                 </label>
@@ -277,46 +286,42 @@ export default function SacramentalJourneyDetailPage() {
                         </div>
                       </div>
 
-                      {/* Status badge + actions */}
                       <div className="flex items-center gap-1 flex-shrink-0">
                         <Badge variant="outline" className={`text-[10px] ${m.status === 'COMPLETED' || m.status === 'APPROVED' ? 'border-green-300 text-green-700' : m.status === 'REJECTED' ? 'border-red-300 text-red-700' : ''}`}>
-                          {config.label}
+                          {statusLabel}
                         </Badge>
 
-                        {/* Catechist: only show actions when not in approval chain */}
                         {isCatechist && m.status !== 'COMPLETED' && m.status !== 'APPROVED' && m.status !== 'WAITING_APPROVAL' && (
                           <>
                             <Button size="sm" variant="ghost" className="h-7 text-[10px] text-green-600" onClick={() => handleUpdateStatus(m.id, 'COMPLETED')}>
-                              ✓ Concluir
+                              ✓ {t('detail.complete')}
                             </Button>
                             <Button size="sm" variant="ghost" className="h-7 text-[10px] text-amber-600" onClick={() => handleUpdateStatus(m.id, 'WAITING_APPROVAL')}>
-                              Enviar para aprovação
+                              {t('detail.send_for_approval')}
                             </Button>
                           </>
                         )}
 
-                        {/* Coordinator: full control on PENDING/IN_PROGRESS */}
                         {isCoordinator && m.status !== 'COMPLETED' && m.status !== 'APPROVED' && (
                           <Button size="sm" variant="ghost" className="h-7 text-[10px] text-green-600" onClick={() => handleUpdateStatus(m.id, 'COMPLETED')}>
-                            ✓ Concluir
+                            ✓ {t('detail.complete')}
                           </Button>
                         )}
 
                         {isCoordinator && m.status === 'WAITING_APPROVAL' && (
                           <>
                             <Button size="sm" variant="ghost" className="h-7 text-[10px] text-green-600" onClick={() => handleUpdateStatus(m.id, 'APPROVED')}>
-                              ✓ Aprovar
+                              ✓ {t('detail.status.approved')}
                             </Button>
                             <Button size="sm" variant="ghost" className="h-7 text-[10px] text-red-500" onClick={() => handleUpdateStatus(m.id, 'REJECTED')}>
-                              ✗ Rejeitar
+                              ✗ {t('detail.reject')}
                             </Button>
                           </>
                         )}
 
-                        {/* Undo — only coordinator can undo APPROVED; catechist can undo their own COMPLETED */}
                         {(isCoordinator || isCatechist) && (m.status === 'COMPLETED' || (isCoordinator && m.status === 'APPROVED')) && (
                           <Button size="sm" variant="ghost" className="h-7 text-[10px]" onClick={() => handleUpdateStatus(m.id, 'PENDING')}>
-                            Desfazer
+                            {t('detail.undo')}
                           </Button>
                         )}
                       </div>
@@ -328,16 +333,15 @@ export default function SacramentalJourneyDetailPage() {
           )}
         </div>
 
-        {/* Template info */}
         {journey.template?.parish && (
           <div className="rounded-xl border bg-card p-4">
-            <h3 className="text-sm font-semibold mb-2 flex items-center gap-1"><BookOpen className="h-4 w-4" />Modelo</h3>
+            <h3 className="text-sm font-semibold mb-2 flex items-center gap-1"><BookOpen className="h-4 w-4" />{t('detail.template')}</h3>
             <p className="text-sm">{journey.template.name}</p>
             <p className="text-xs text-muted-foreground">
-              {journey.template.parish.type === 'PERSONAL' ? 'Modelo pessoal' :
-               journey.template.parish.type === 'PARISH' ? `Paróquia: ${journey.template.parish.name}` :
-               journey.template.parish.type === 'DIOCESE' ? `Diocese: ${journey.template.parish.name}` :
-               'Modelo global'}
+              {journey.template.parish.type === 'PERSONAL' ? t('detail.template_personal') :
+               journey.template.parish.type === 'PARISH' ? t('detail.template_parish', { name: journey.template.parish.name }) :
+               journey.template.parish.type === 'DIOCESE' ? t('detail.template_diocese', { name: journey.template.parish.name }) :
+               t('detail.template_global')}
             </p>
           </div>
         )}

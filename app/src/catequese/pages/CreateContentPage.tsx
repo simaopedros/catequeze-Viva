@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
 import { Button } from '../../client/components/ui/button';
 import { Textarea } from '../../client/components/ui/textarea';
@@ -10,6 +11,8 @@ import { enhanceContentWithAi } from 'wasp/client/operations';
 import { toast } from '../../client/hooks/use-toast';
 
 export default function CreateContentPage() {
+  const { t } = useTranslation('content');
+  const { t: tc } = useTranslation('common');
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -24,7 +27,6 @@ export default function CreateContentPage() {
   const [estimatedTime, setEstimatedTime] = useState(60);
   const [tags, setTags] = useState('');
 
-  // References
   const [bibleRefs, setBibleRefs] = useState<{ verseId: string; label: string; text?: string }[]>([]);
   const [catechismRefs, setCatechismRefs] = useState<{ entryId: string; label: string; question?: string }[]>([]);
   const [directoryRefs, setDirectoryRefs] = useState<{ entryId: string; label: string; content?: string }[]>([]);
@@ -50,7 +52,7 @@ export default function CreateContentPage() {
 
   const handleEnhanceWithAi = async () => {
     if (!title.trim()) {
-      setError('Preencha ao menos o título antes de usar a IA.');
+      setError(t('create_page.error_title_required'));
       return;
     }
     setEnhancing(true);
@@ -70,17 +72,16 @@ export default function CreateContentPage() {
       });
 
       const e = res.enhanced;
-      // Populate fields with AI improvements (preserve originals if AI returns empty)
       if (e.title) setTitle(e.title);
       if (e.theme) setTheme(e.theme);
       if (e.pastoralObjective) setPastoralObjective(e.pastoralObjective);
       if (e.mainContent) setMainContent(e.mainContent);
       if (e.dynamic && !activity) setActivity(e.dynamic);
-      if (e.familyTask) setActivity(prev => prev ? prev + '\n\nTarefa para casa: ' + e.familyTask : 'Tarefa para casa: ' + e.familyTask);
+      if (e.familyTask) setActivity(prev => prev ? prev + '\n\n' + t('create_page.home_task_prefix') + e.familyTask : t('create_page.home_task_prefix') + e.familyTask);
       if (e.estimatedTime) setEstimatedTime(e.estimatedTime);
       if (e.suggestions?.length) setAiSuggestions(e.suggestions);
     } catch (e: any) {
-      setError(e?.message || 'Erro ao melhorar com IA.');
+      setError(e?.message || t('create_page.error_enhance'));
     } finally {
       setEnhancing(false);
     }
@@ -88,7 +89,7 @@ export default function CreateContentPage() {
 
   const handleSubmit = async () => {
     if (!title || !mainContent) {
-      setError('Título e conteúdo principal são obrigatórios.');
+      setError(t('create_page.error_required_fields'));
       return;
     }
     setSaving(true);
@@ -101,7 +102,6 @@ export default function CreateContentPage() {
         estimatedTime, tags: tags || undefined,
       });
 
-      // Add references
       for (const ref of bibleRefs) {
         try { await addBibleRef({ contentId: item.id, verseId: ref.verseId }); } catch (e) { console.error(e); }
       }
@@ -112,10 +112,10 @@ export default function CreateContentPage() {
         try { await addDirectoryRef({ contentId: item.id, entryId: ref.entryId }); } catch (e) { console.error(e); }
       }
 
-      toast({ title: 'Conteúdo criado com sucesso!' });
+      toast({ title: t('create_page.success_created') });
       navigate('/app/content-library');
     } catch (e: any) {
-      setError(e.message || 'Erro ao criar conteúdo.');
+      setError(e.message || t('create_page.error_create'));
     } finally {
       setSaving(false);
     }
@@ -140,31 +140,30 @@ export default function CreateContentPage() {
             <Link to="/app/content-library"><ArrowLeft className="h-5 w-5" /></Link>
           </Button>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Novo Conteúdo</h1>
+            <h1 className="text-2xl font-bold tracking-tight">{t('create_page.title')}</h1>
           </div>
         </div>
 
         {error && <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
 
         <div className="space-y-4">
-          {field('Título *', title, setTitle, 'Ex: Encontro sobre o Batismo')}  
-          {field('Tema', theme, setTheme, 'Ex: Sacramento do Batismo')}
-          {field('Objetivo pastoral', pastoralObjective, setPastoralObjective, 'O que se espera alcançar neste encontro')}
-          {field('Conteúdo principal *', mainContent, setMainContent, 'Desenvolva o conteúdo do encontro...', true)}
-          {field('Atividade / Dinâmica', activity, setActivity, 'Descreva a atividade proposta...', true)}
+          {field(t('create_page.title_required'), title, setTitle, t('create_page.title_placeholder'))}  
+          {field(t('theme'), theme, setTheme, t('create_page.theme_placeholder'))}
+          {field(t('pastoral_objective'), pastoralObjective, setPastoralObjective, t('create_page.objective_placeholder'))}
+          {field(t('create_page.main_content_required'), mainContent, setMainContent, t('create_page.main_content_placeholder'), true)}
+          {field(t('create_page.activity_dynamic'), activity, setActivity, t('create_page.activity_placeholder'), true)}
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-sm font-medium">Tempo estimado (min)</label>
+              <label className="text-sm font-medium">{t('create_page.estimated_time_min')}</label>
               <input type="number" value={estimatedTime} onChange={e => setEstimatedTime(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" />
             </div>
             <div>
-              <label className="text-sm font-medium">Tags</label>
-              <input value={tags} onChange={e => setTags(e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" placeholder="Ex: batismo, liturgia, infantil" />
+              <label className="text-sm font-medium">{t('tags')}</label>
+              <input value={tags} onChange={e => setTags(e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" placeholder={t('create_page.tags_placeholder')} />
             </div>
           </div>
 
-          {/* Reference Picker */}
           <ReferencePicker
             bibleRefs={bibleRefs}
             catechismRefs={catechismRefs}
@@ -177,7 +176,6 @@ export default function CreateContentPage() {
             onRemoveDirectory={handleRemoveDirectory}
           />
 
-          {/* AI Enhance Button */}
           <div className="border-t pt-4 space-y-3">
             <Button
               type="button"
@@ -191,17 +189,16 @@ export default function CreateContentPage() {
               ) : (
                 <Sparkles className="h-4 w-4" />
               )}
-              {enhancing ? 'Melhorando com IA...' : 'Melhorar com IA'}
+              {enhancing ? t('create_page.enhancing') : t('create_page.enhance_ai')}
             </Button>
             <p className="text-xs text-muted-foreground">
-              A IA vai expandir e melhorar seu rascunho, sugerir referências bíblicas e do Catecismo, e completar campos vazios.
+              {t('create_page.enhance_hint')}
             </p>
 
-            {/* AI Suggestions */}
             {aiSuggestions.length > 0 && (
               <div className="rounded-xl border border-violet-200 dark:border-violet-800 bg-violet-50/50 dark:bg-violet-950/20 p-4 space-y-2">
                 <p className="text-sm font-semibold text-violet-700 dark:text-violet-300 flex items-center gap-1">
-                  <Sparkles className="h-4 w-4" /> Sugestões da IA
+                  <Sparkles className="h-4 w-4" /> {t('create_page.ai_suggestions')}
                 </p>
                 <ul className="space-y-1">
                   {aiSuggestions.map((s, i) => (
@@ -217,10 +214,10 @@ export default function CreateContentPage() {
           <div className="flex gap-3 pt-4">
             <Button type="button" onClick={handleSubmit} disabled={saving}>     
               <Save className="mr-2 h-4 w-4" />
-              {saving ? 'Salvando...' : 'Criar conteúdo'}
+              {saving ? tc('saving') : t('create_page.create_content')}
             </Button>
             <Button variant="outline" asChild>
-              <Link to="/app/content-library">Cancelar</Link>
+              <Link to="/app/content-library">{tc('cancel')}</Link>
             </Button>
           </div>
         </div>

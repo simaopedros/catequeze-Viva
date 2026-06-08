@@ -1,0 +1,53 @@
+{
+  "terms": {
+    "title": "Termos de Uso",
+    "updated": "Última atualização: 31 de maio de 2026",
+    "sections": {
+      "acceptance": { "title": "1. Aceitação dos Termos", "text": "Ao acessar e usar a plataforma Catequese Viva, você concorda com estes Termos de Uso." },
+      "service": { "title": "2. Descrição do Serviço", "text": "A Catequese Viva é uma plataforma SaaS para gestão de catequese católica: turmas, presença, conteúdo, sacramentos e comunicação pastoral." },
+      "obligations": {
+        "title": "3. Obrigações do Usuário",
+        "items": [
+          "Fornecer informações verdadeiras e atualizadas",
+          "Manter a confidencialidade de suas credenciais",
+          "Não compartilhar sua conta com terceiros",
+          "Utilizar a plataforma apenas para fins de catequese e pastoral",
+          "Respeitar as normas da LGPD ao tratar dados de catequizandos"
+        ]
+      },
+      "liability": { "title": "4. Limitação de Responsabilidade", "text": "A Catequese Viva não se responsabiliza por conteúdo publicado pelos usuários, decisões pastorais baseadas nos dados da plataforma, ou indisponibilidade temporária." },
+      "jurisdiction": { "title": "5. Foro", "text": "Fica eleito o foro da Comarca de São Paulo, Brasil, para dirimir quaisquer controvérsias decorrentes destes Termos de Uso." }
+    }
+  },
+  "privacy": {
+    "title": "Política de Privacidade",
+    "updated": "Última atualização: 31 de maio de 2026",
+    "sections": {
+      "intro": { "title": "1. Introdução", "text": "A Catequese Viva está comprometida com a proteção dos dados pessoais de seus usuários, em conformidade com a Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018). Esta política explica como coletamos, usamos e protegemos suas informações." },
+      "collected": {
+        "title": "2. Dados coletados",
+        "intro": "Coletamos apenas os dados estritamente necessários para a prestação dos serviços:",
+        "items": [
+          "Nome, email e telefone dos usuários (catequistas, coordenadores, responsáveis)",
+          "Nome e data de nascimento dos catequizandos",
+          "Registros de presença em encontros catequéticos",
+          "Documentos sacramentais enviados pelas famílias",
+          "Consentimentos de uso de imagem e comunicação"
+        ]
+      },
+      "purpose": {
+        "title": "3. Finalidade do tratamento",
+        "intro": "Os dados são utilizados exclusivamente para:",
+        "items": [
+          "Gestão da catequese paroquial (turmas, presença, sacramentos)",
+          "Comunicação pastoral entre coordenadores, catequistas e famílias",
+          "Geração de relatórios pastorais anonimizados",
+          "Cumprimento de obrigações legais e canônicas"
+        ]
+      },
+      "minors": { "title": "4. Proteção de dados de menores", "text": "Dados de crianças e adolescentes recebem proteção especial: coleta mínima, consentimento parental obrigatório, acesso restrito e não compartilhamento com terceiros." },
+      "rights": { "title": "5. Seus direitos (LGPD)", "text": "Acessar, corrigir, exportar ou solicitar exclusão dos seus dados. Para exercer esses direitos, acesse as Configurações no aplicativo ou entre em contato pelo email contato@catequeseviva.com.br." },
+      "dpo": { "title": "6. Contato do DPO", "email_label": "Email:", "email": "privacidade@catequeseviva.com.br" }
+    }
+  }
+}

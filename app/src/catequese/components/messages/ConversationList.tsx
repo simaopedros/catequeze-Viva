@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, Users, MessageSquareText, Megaphone, Filter, Hash } from 'lucide-react';
 import { cn } from '../../../client/utils';
 
@@ -36,23 +37,15 @@ const TYPE_ICONS: Record<string, typeof MessageSquareText> = {
   ANNOUNCEMENT: Megaphone,
 };
 
-const FILTER_OPTIONS = [
-  { value: 'all', label: 'Todas' },
-  { value: 'DIRECT', label: 'Diretas' },
-  { value: 'GROUP', label: 'Grupos' },
-  { value: 'CLASS_CHAT', label: 'Turmas' },
-  { value: 'ANNOUNCEMENT', label: 'Avisos' },
-];
-
-function getConversationName(conv: ConversationItem, currentUserId: string): string {
+function getConversationName(conv: ConversationItem, currentUserId: string, t: (k: string) => string): string {
   if (conv.title) return conv.title;
   if (conv.class?.name) return conv.class.name;
   if (conv.community?.name) return conv.community.name;
   if (conv.type === 'DIRECT') {
     const other = conv.participants.find(p => p.user.id !== currentUserId);
-    if (other) return [other.user.firstName, other.user.lastName].filter(Boolean).join(' ') || other.user.email || 'Usuário';
+    if (other) return [other.user.firstName, other.user.lastName].filter(Boolean).join(' ') || other.user.email || t('default_user');
   }
-  return 'Conversa';
+  return t('default_conversation');
 }
 
 function getAvatarInitials(name: string): string {
@@ -69,15 +62,15 @@ function getAvatarColor(type: string): string {
   }
 }
 
-function formatTime(dateStr: string): string {
+function formatTime(dateStr: string, t: (k: string) => string, locale: string): string {
   const date = new Date(dateStr);
   const now = new Date();
   const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
 
-  if (diffDays === 0) return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-  if (diffDays === 1) return 'Ontem';
-  if (diffDays < 7) return date.toLocaleDateString('pt-BR', { weekday: 'short' });
-  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+  if (diffDays === 0) return date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+  if (diffDays === 1) return t('yesterday');
+  if (diffDays < 7) return date.toLocaleDateString(locale, { weekday: 'short' });
+  return date.toLocaleDateString(locale, { day: '2-digit', month: '2-digit' });
 }
 
 function ConversationSkeleton() {
@@ -94,13 +87,22 @@ function ConversationSkeleton() {
 }
 
 export function ConversationList({ conversations, activeId, onSelect, onNewConversation, currentUserId, isLoading }: ConversationListProps) {
+  const { t, i18n } = useTranslation('messages');
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
+
+  const FILTER_OPTIONS = useMemo(() => [
+    { value: 'all', label: t('filters.all') },
+    { value: 'DIRECT', label: t('filters.direct') },
+    { value: 'GROUP', label: t('filters.groups') },
+    { value: 'CLASS_CHAT', label: t('filters.classes') },
+    { value: 'ANNOUNCEMENT', label: t('filters.announcements') },
+  ], [t]);
 
   const filtered = conversations.filter(c => {
     if (filter !== 'all' && c.type !== filter) return false;
     if (search) {
-      const name = getConversationName(c, currentUserId).toLowerCase();
+      const name = getConversationName(c, currentUserId, t).toLowerCase();
       if (!name.includes(search.toLowerCase())) return false;
     }
     return true;
@@ -111,11 +113,11 @@ export function ConversationList({ conversations, activeId, onSelect, onNewConve
       {/* Header */}
       <div className="p-3 border-b space-y-2">
         <div className="flex items-center justify-between">
-          <h2 className="font-semibold text-sm">Conversas</h2>
+          <h2 className="font-semibold text-sm">{t('conversations')}</h2>
           <button
             onClick={onNewConversation}
             className="h-7 w-7 flex items-center justify-center rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all hover:scale-105 active:scale-95"
-            title="Nova conversa"
+            title={t('new_conversation')}
           >
             <span className="text-lg leading-none">+</span>
           </button>
@@ -128,7 +130,7 @@ export function ConversationList({ conversations, activeId, onSelect, onNewConve
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Buscar conversas..."
+            placeholder={t('search_conversations')}
             className="w-full h-8 pl-8 pr-3 rounded-lg border border-input bg-background text-xs focus:outline-none focus:ring-1 focus:ring-primary/40"
           />
         </div>
@@ -160,7 +162,7 @@ export function ConversationList({ conversations, activeId, onSelect, onNewConve
           <div className="flex flex-col items-center justify-center h-48 px-6 text-center">
             <MessageSquareText className="h-8 w-8 text-muted-foreground/40 mb-2" />
             <p className="text-xs text-muted-foreground">
-              {search ? 'Nenhuma conversa encontrada.' : 'Nenhuma conversa ainda.'}
+              {search ? t('no_conversation_found') : t('no_conversations_yet')}
             </p>
             {!search && (
               <button
@@ -173,7 +175,7 @@ export function ConversationList({ conversations, activeId, onSelect, onNewConve
           </div>
         ) : (
           filtered.map(conv => {
-            const name = getConversationName(conv, currentUserId);
+            const name = getConversationName(conv, currentUserId, t);
             const TypeIcon = TYPE_ICONS[conv.type] || MessageSquareText;
             const isActive = conv.id === activeId;
 
@@ -211,7 +213,7 @@ export function ConversationList({ conversations, activeId, onSelect, onNewConve
                     </span>
                     {conv.lastMessage && (
                       <span className="text-[10px] text-muted-foreground flex-shrink-0">
-                        {formatTime(conv.lastMessage.createdAt)}
+                        {formatTime(conv.lastMessage.createdAt, t, i18n.language)}
                       </span>
                     )}
                   </div>
@@ -228,7 +230,7 @@ export function ConversationList({ conversations, activeId, onSelect, onNewConve
                           {conv.lastMessage.content}
                         </>
                       ) : (
-                        <span className="italic">Sem mensagens</span>
+                        <span className="italic">{t('no_messages')}</span>
                       )}
                     </p>
                     {conv.unreadCount > 0 && (

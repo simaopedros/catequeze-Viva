@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { useAuth } from 'wasp/client/auth';
 import { WelcomeStep } from '../components/onboarding/WelcomeStep';
@@ -33,6 +34,7 @@ function OnboardingLayout({ children }: { children: ReactNode }) {
 }
 
 export default function OnboardingPage() {
+  const { t } = useTranslation('onboarding');
   const navigate = useNavigate();
   const { data: authUser } = useAuth();
   const [step, setStep] = useState<Step>('welcome');
@@ -42,16 +44,6 @@ export default function OnboardingPage() {
   const [completionData, setCompletionData] = useState<CompletionSummary | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
-
-  // ── Step handlers ──────────────────────────────────────────────────────
-
-  const handleDioceseSelect = (d: DioceseSelection) => {
-    setDiocese(d);
-  };
-
-  const handleParishSelect = (p: ParishSelection) => {
-    setParish(p);
-  };
 
   const handleComplete = async (details?: {
     yearName?: string;
@@ -65,19 +57,16 @@ export default function OnboardingPage() {
     householdName?: string;
     phone?: string;
   }) => {
-    // Personal account flow doesn't need parish
-    // Manager account flow always needs a parish
     if (accountType !== 'personal' && !parish) return;
 
     setSaving(true);
     setError('');
 
     try {
-      // ── Personal Account Flow ──────────────────────────────────────
       if (accountType === 'personal') {
         const personalParish = await ensurePersonalWorkspace();
         if (!personalParish?.id) {
-          throw new Error('Nao foi possivel criar o espaco pessoal. Tente novamente.');
+          throw new Error(t('personal_workspace_error'));
         }
 
         if (details?.className) {
@@ -94,22 +83,18 @@ export default function OnboardingPage() {
         setCompletionData({
           role: 'catechist',
           items: [
-            { label: 'Tipo', value: 'Conta Pessoal' },
-            { label: 'Plano', value: (authUser?.subscriptionPlan || 'catechist_free') === 'catechist_free' ? 'Catequista Grátis' : 'Catequista Pro/IA' },
-            { label: 'Turma', value: details?.className || 'Criar depois' },
+            { label: t('summary.type'), value: t('summary.personal_account') },
+            { label: t('summary.plan'), value: (authUser?.subscriptionPlan || 'catechist_free') === 'catechist_free' ? t('summary.plan_free') : t('summary.plan_pro') },
+            { label: t('summary.class'), value: details?.className || t('summary.create_later') },
           ],
         });
         setStep('completion');
         return;
       }
 
-      // ── Manager Account Flow — only Coordinator onboarding ─────────
-      // Guardians, catechists, and catechumens enter exclusively via
-      // invitation from a parish coordinator through the family portal.
-      if (!parish) throw new Error('Paróquia não selecionada.');
+      if (!parish) throw new Error(t('parish_not_selected'));
       let parishId = parish.id;
 
-      // 1. If OSM parish → getOrCreate locally
       if (!parishId && parish.osmId) {
         const created = await getOrCreateParishByOsmId({
           osmId: parish.osmId,
@@ -117,11 +102,10 @@ export default function OnboardingPage() {
           city: parish.city,
           state: parish.state,
         });
-        if (!created?.id) throw new Error('Erro ao registar paróquia do OpenStreetMap.');
+        if (!created?.id) throw new Error(t('osm_error'));
         parishId = created.id;
       }
 
-      // 2. If it's a brand new parish (isNew) → create it
       if (!parishId && parish.isNew) {
         const result = await createParish({
           name: parish.name,
@@ -129,17 +113,15 @@ export default function OnboardingPage() {
           state: parish.state,
           dioceseId: diocese?.id,
         });
-        if (!result?.id) throw new Error('Erro ao criar paróquia.');
+        if (!result?.id) throw new Error(t('create_parish_error'));
         parishId = result.id;
       }
 
-      if (!parishId) throw new Error('Nenhuma paróquia selecionada.');
+      if (!parishId) throw new Error(t('no_parish_selected'));
 
-      // Save as active workspace for manager accounts
       localStorage.setItem('catequese-viva-active-workspace', parishId);
       window.dispatchEvent(new CustomEvent('workspace-changed', { detail: parishId }));
 
-      // Coordinator setup — the only role available for self-service institutional onboarding
       if (details?.yearName && details?.yearStart && details?.yearEnd) {
         const result = await completeCoordinatorOnboarding({
           parishName: parish.name,
@@ -170,31 +152,18 @@ export default function OnboardingPage() {
       setCompletionData({
         role: 'coordinator',
         items: [
-          { label: 'Diocese', value: diocese?.name || '—' },
-          { label: 'Paróquia', value: parish.name },
-          { label: 'Ano', value: details?.yearName || '—' },
-          { label: 'Turma', value: details?.className || 'Criar depois' },
+          { label: t('summary.diocese'), value: diocese?.name || '—' },
+          { label: t('summary.parish'), value: parish.name },
+          { label: t('summary.year'), value: details?.yearName || '—' },
+          { label: t('summary.class'), value: details?.className || t('summary.create_later') },
         ],
       });
 
       setStep('completion');
     } catch (e: any) {
-      setError(e.message || 'Erro ao finalizar configuração.');
+      setError(e.message || t('finish_error'));
     } finally {
       setSaving(false);
-    }
-  };
-
-  // ── Navigation between steps ──────────────────────────────────────────
-
-  const goTo = (next: Step) => {
-    // Auto-advance logic — manager flow skips directly from parish to details
-    if (step === 'diocese' && diocese) {
-      setStep('parish');
-    } else if (step === 'parish' && parish) {
-      setStep('details');
-    } else {
-      setStep(next);
     }
   };
 
@@ -203,11 +172,6 @@ export default function OnboardingPage() {
     setStep('parish');
   };
 
-  // ── Render ────────────────────────────────────────────────────────────
-
-  // Route after onboarding completes. If the visitor picked a paid plan on the
-  // landing/pricing page, send them straight to the right checkout, respecting
-  // the account LEVEL: institutional plans only make sense for manager accounts.
   const resolveFinishTarget = (): string => {
     const intended = getIntendedPlan();
     if (intended) {
@@ -221,6 +185,12 @@ export default function OnboardingPage() {
     return accountType === 'personal' ? '/app/select-workspace' : '/app';
   };
 
+  const stepLabels = [
+    { key: 'diocese', label: t('steps.diocese') },
+    { key: 'parish', label: t('steps.parish') },
+    { key: 'details', label: t('steps.details') },
+  ];
+
   if (completionData) {
     return (
       <OnboardingLayout>
@@ -233,35 +203,25 @@ export default function OnboardingPage() {
     <OnboardingLayout>
       <div className="space-y-8">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Configuração Inicial</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
           <p className="text-muted-foreground mt-1">
-            {accountType === 'personal'
-              ? 'Vamos configurar o teu espaço pessoal.'
-              : 'Vamos configurar a plataforma em 3 passos.'}
+            {accountType === 'personal' ? t('subtitle_personal') : t('subtitle_manager')}
           </p>
         </div>
 
-        {/* Step indicator */}
         {step !== 'welcome' && step !== 'completion' && step !== 'personal_setup' && (
           <div className="space-y-4">
-            {/* Progress bar */}
             <div className="flex items-center gap-1">
-              {[
-                { key: 'diocese', label: 'Diocese' },
-                { key: 'parish', label: 'Paróquia' },
-                { key: 'details', label: 'Detalhes' },
-              ].map((s, i) => {
+              {stepLabels.map((s, i) => {
                 const stepKeys = ['diocese', 'parish', 'details'];
                 const currentIdx = stepKeys.indexOf(step);
                 const isDone = i < currentIdx;
                 const isCurrent = i === currentIdx;
                 return (
                   <div key={s.key} className="flex-1 flex items-center gap-1">
-                    {/* Connector line */}
                     {i > 0 && (
                       <div className={`h-0.5 flex-1 rounded ${isDone || isCurrent ? 'bg-primary' : 'bg-muted'}`} />
                     )}
-                    {/* Step circle */}
                     <div className={`
                       flex items-center justify-center w-7 h-7 rounded-full border-2 text-xs font-bold shrink-0 transition-all
                       ${isDone ? 'bg-primary border-primary text-primary-foreground' : ''}
@@ -274,13 +234,8 @@ export default function OnboardingPage() {
                 );
               })}
             </div>
-            {/* Step labels */}
             <div className="flex items-center justify-between">
-              {[
-                { key: 'diocese', label: 'Diocese' },
-                { key: 'parish', label: 'Paróquia' },
-                { key: 'details', label: 'Detalhes' },
-              ].map((s, i) => {
+              {stepLabels.map((s, i) => {
                 const stepKeys = ['diocese', 'parish', 'details'];
                 const currentIdx = stepKeys.indexOf(step);
                 const isDone = i < currentIdx;
@@ -299,7 +254,6 @@ export default function OnboardingPage() {
           <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
         )}
 
-        {/* WELCOME */}
         {step === 'welcome' && (
           <WelcomeStep
             onPersonal={() => { setAccountType('personal'); setStep('personal_setup'); }}
@@ -312,7 +266,7 @@ export default function OnboardingPage() {
               onClick={() => { setStep('welcome'); setAccountType(null); }}
               className="text-sm text-muted-foreground hover:text-foreground"
             >
-              ← Voltar
+              {t('back')}
             </button>
             <PersonalSetup
               onComplete={(details) => handleComplete(details)}
@@ -321,7 +275,6 @@ export default function OnboardingPage() {
           </>
         )}
 
-        {/* DIOCESE */}
         {step === 'diocese' && (
           <>
             {!diocese && (
@@ -329,7 +282,7 @@ export default function OnboardingPage() {
                 onClick={() => { setStep('welcome'); setAccountType(null); }}
                 className="text-sm text-muted-foreground hover:text-foreground mb-2"
               >
-                ← Voltar
+                {t('back')}
               </button>
             )}
             <DioceseStep
@@ -342,18 +295,17 @@ export default function OnboardingPage() {
         {step === 'diocese' && diocese && (
           <div className="flex justify-between">
             <button onClick={() => setDiocese(null)} className="text-sm text-muted-foreground hover:text-foreground">
-              ← Alterar diocese
+              {t('change_diocese')}
             </button>
             <button
               onClick={() => setStep('parish')}
               className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground h-10 px-4 py-2 text-sm font-medium"
             >
-              Continuar para Paróquia →
+              {t('continue_parish')}
             </button>
           </div>
         )}
 
-        {/* PARISH */}
         {step === 'parish' && (
           <ParishStep
             diocese={diocese}
@@ -365,35 +317,33 @@ export default function OnboardingPage() {
         {step === 'parish' && parish && (
           <div className="flex justify-between">
             <button onClick={() => setStep('diocese')} className="text-sm text-muted-foreground hover:text-foreground">
-              ← Voltar
+              {t('back')}
             </button>
             <button
               onClick={() => setStep('details')}
               className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground h-10 px-4 py-2 text-sm font-medium"
             >
-              Continuar →
+              {t('continue')}
             </button>
           </div>
         )}
 
-        {/* DETAILS — Coordinator only for institutional onboarding */}
         {step === 'details' && (
           <div>
             <button onClick={() => setStep('parish')} className="text-sm text-muted-foreground hover:text-foreground mb-4 block">
-              ← Voltar
+              {t('back')}
             </button>
             <CoordinatorDetails
-              parishName={parish?.name || 'Paróquia'}
+              parishName={parish?.name || t('parish.default_name')}
               onComplete={handleComplete}
             />
           </div>
         )}
 
-        {/* Saving overlay */}
         {saving && (
           <div className="fixed inset-0 bg-background/50 flex items-center justify-center z-50">
             <div className="bg-card border rounded-xl p-6 shadow-lg text-center">
-              <p className="text-sm font-medium">A configurar a plataforma...</p>
+              <p className="text-sm font-medium">{t('configuring')}</p>
             </div>
           </div>
         )}

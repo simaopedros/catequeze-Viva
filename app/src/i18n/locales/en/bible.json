@@ -1,0 +1,16 @@
+{
+  "title": "Holy Bible",
+  "books": "Books",
+  "search": "Search",
+  "search_placeholder": "E.g.: Genesis 1, Gn 1:3, John 3:16, love, God, light...",
+  "results_count": "{{count}} result(s)",
+  "empty_search_hint": "Search by book and chapter (e.g. \"Genesis 1\"), book chapter:verse (e.g. \"Gn 1:3\"), or keyword (e.g. \"love\", \"light\", \"God\").",
+  "old_testament": "Old Testament",
+  "new_testament": "New Testament",
+  "chapters": "Chapters",
+  "previous": "Previous",
+  "next": "Next",
+  "load_book_error": "Could not load the book. Check your connection.",
+  "load_chapter_error": "Could not load the chapter. Check your connection.",
+  "search_error": "Could not perform search. Check your connection."
+}

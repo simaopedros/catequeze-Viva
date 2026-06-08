@@ -1,45 +1,20 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, ChevronRight, ChevronLeft } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 
 interface TourStep {
-  target: string;    // CSS selector for the element to highlight
-  title: string;
-  description: string;
+  target: string;
+  stepKey: 'dashboard' | 'classes' | 'ai' | 'messages' | 'search';
   position?: 'top' | 'bottom' | 'left' | 'right';
 }
 
-const TOUR_STEPS: TourStep[] = [
-  {
-    target: '[data-tour="dashboard-stats"]',
-    title: 'Painel de Controlo',
-    description: 'Aqui você vê um resumo da sua catequese: catequizandos ativos, turmas, presença média e pendências.',
-    position: 'bottom',
-  },
-  {
-    target: '[data-tour="sidebar-classes"]',
-    title: 'Turmas',
-    description: 'Gerencie suas turmas, catequistas e encontros. Cada turma tem seu próprio calendário e registo de presenças.',
-    position: 'right',
-  },
-  {
-    target: '[data-tour="sidebar-ai"]',
-    title: 'Gerador IA',
-    description: 'Crie encontros completos de catequese com inteligência artificial — orações, dinâmicas, referências bíblicas e do Catecismo.',
-    position: 'right',
-  },
-  {
-    target: '[data-tour="sidebar-messages"]',
-    title: 'Mensagens',
-    description: 'Comunique-se com catequistas, pais e catequizandos. Envie comunicados e mensagens diretas.',
-    position: 'right',
-  },
-  {
-    target: '[data-tour="ctrlk"]',
-    title: 'Busca Rápida',
-    description: 'Pressione Ctrl+K para buscar instantaneamente em toda a plataforma: catequizandos, turmas, Bíblia, Catecismo e muito mais.',
-    position: 'bottom',
-  },
+const TOUR_STEP_DEFS: TourStep[] = [
+  { target: '[data-tour="dashboard-stats"]', stepKey: 'dashboard', position: 'bottom' },
+  { target: '[data-tour="sidebar-classes"]', stepKey: 'classes', position: 'right' },
+  { target: '[data-tour="sidebar-ai"]', stepKey: 'ai', position: 'right' },
+  { target: '[data-tour="sidebar-messages"]', stepKey: 'messages', position: 'right' },
+  { target: '[data-tour="ctrlk"]', stepKey: 'search', position: 'bottom' },
 ];
 
 interface GuidedTourProps {
@@ -47,11 +22,22 @@ interface GuidedTourProps {
 }
 
 export function GuidedTour({ onComplete }: GuidedTourProps) {
+  const { t } = useTranslation('tour');
   const [currentStep, setCurrentStep] = useState(0);
   const [dismissed, setDismissed] = useState(false);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
 
-  const step = TOUR_STEPS[currentStep];
+  const steps = useMemo(
+    () =>
+      TOUR_STEP_DEFS.map((def) => ({
+        ...def,
+        title: t(`steps.${def.stepKey}.title`),
+        description: t(`steps.${def.stepKey}.description`),
+      })),
+    [t],
+  );
+
+  const step = steps[currentStep];
 
   const updateTargetRect = useCallback(() => {
     const el = document.querySelector(step.target);
@@ -73,7 +59,7 @@ export function GuidedTour({ onComplete }: GuidedTourProps) {
 
   if (dismissed) return null;
 
-  const isLastStep = currentStep === TOUR_STEPS.length - 1;
+  const isLastStep = currentStep === steps.length - 1;
 
   const handleNext = () => {
     if (isLastStep) {
@@ -93,7 +79,6 @@ export function GuidedTour({ onComplete }: GuidedTourProps) {
     onComplete();
   };
 
-  // Highlight overlay
   const overlayStyle = targetRect ? {
     top: targetRect.top - 4,
     left: targetRect.left - 4,
@@ -101,7 +86,6 @@ export function GuidedTour({ onComplete }: GuidedTourProps) {
     height: targetRect.height + 8,
   } : {};
 
-  // Tooltip position
   const tooltipStyle: React.CSSProperties = targetRect ? (() => {
     const margin = 12;
     switch (step.position) {
@@ -120,10 +104,8 @@ export function GuidedTour({ onComplete }: GuidedTourProps) {
 
   return (
     <>
-      {/* Dimming overlay */}
       <div className="fixed inset-0 z-[100] bg-black/40 transition-opacity" onClick={handleDismiss} />
 
-      {/* Highlight cutout */}
       {targetRect && (
         <div
           className="fixed z-[101] rounded-lg ring-4 ring-primary ring-offset-2 transition-all duration-300 pointer-events-none"
@@ -131,14 +113,13 @@ export function GuidedTour({ onComplete }: GuidedTourProps) {
         />
       )}
 
-      {/* Tooltip card */}
       <div
         className="fixed z-[102] w-80 bg-card border-2 border-primary rounded-xl shadow-2xl p-5 transition-all duration-300"
         style={tooltipStyle}
       >
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs font-bold text-primary uppercase tracking-wider">
-            Passo {currentStep + 1} de {TOUR_STEPS.length}
+            {t('stepOf', { current: currentStep + 1, total: steps.length })}
           </span>
           <button onClick={handleDismiss} className="text-muted-foreground hover:text-foreground">
             <X className="h-4 w-4" />
@@ -152,10 +133,10 @@ export function GuidedTour({ onComplete }: GuidedTourProps) {
             disabled={currentStep === 0}
             className="text-sm text-muted-foreground hover:text-foreground disabled:opacity-30 flex items-center gap-1"
           >
-            <ChevronLeft className="h-4 w-4" /> Anterior
+            <ChevronLeft className="h-4 w-4" /> {t('previous')}
           </button>
           <Button size="sm" onClick={handleNext} className="gap-1">
-            {isLastStep ? 'Começar' : 'Próximo'}
+            {isLastStep ? t('start') : t('next')}
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
@@ -164,17 +145,12 @@ export function GuidedTour({ onComplete }: GuidedTourProps) {
   );
 }
 
-/**
- * Hook to manage the guided tour state.
- * Shows tour on first visit after onboarding.
- */
 export function useGuidedTour() {
   const [showTour, setShowTour] = useState(false);
 
   useEffect(() => {
     const seen = localStorage.getItem('catequese-tour-seen');
     if (!seen) {
-      // Show tour after a short delay
       const timer = setTimeout(() => setShowTour(true), 1000);
       return () => clearTimeout(timer);
     }

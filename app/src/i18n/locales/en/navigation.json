@@ -14,7 +14,7 @@
   "reports": "Reports",
   "settings": "Settings",
   "billing": "Billing",
-  "admin": "Admin",
+  "admin": "Administration",
   "parishes": "Parishes",
   "communities": "Communities",
   "onboarding": "Onboarding",
@@ -28,5 +28,31 @@
   "bible": "Bible",
   "catechism": "Catechism",
   "directory": "Directory",
-  "admin": "Administration"
+  "breadcrumb": {
+    "ariaLabel": "Breadcrumb",
+    "detail": "Detail",
+    "new": "New",
+    "edit": "Edit",
+    "import": "Import",
+    "print": "Print",
+    "meetings": "Meetings",
+    "attendance": "Attendance",
+    "members": "Members",
+    "users": "Users"
+  },
+  "breadcrumbSingular": {
+    "parishes": "Parish",
+    "classes": "Class",
+    "catechumens": "Catechumen",
+    "families": "Family",
+    "communities": "Community",
+    "users": "User",
+    "meetings": "Meeting",
+    "activities": "Activity",
+    "messages": "Conversation",
+    "documents": "Document",
+    "reports": "Report",
+    "catechetical_years": "Catechetical Year",
+    "sacramental_journeys": "Sacrament"
+  }
 }

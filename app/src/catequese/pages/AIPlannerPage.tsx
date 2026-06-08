@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, Link, useSearchParams } from 'react-router';
 import { AppShell } from '../AppShell';
 import { Button } from '../../client/components/ui/button';
 import { Card } from '../../client/components/ui/card';
 import { Input } from '../../client/components/ui/input';
 import { Label } from '../../client/components/ui/label';
-import { Textarea } from '../../client/components/ui/textarea';
 import { Badge } from '../../client/components/ui/badge';
 import { Progress } from '../../client/components/ui/progress';
 import {
@@ -16,7 +16,6 @@ import {
   BookOpen,
   ArrowLeft,
   Copy,
-  Check,
   MessageCircle,
   GraduationCap,
   Church,
@@ -38,52 +37,55 @@ import {
 import { toast } from '../../client/hooks/use-toast';
 import { DetailTabs } from '../../client/components/DetailTabs';
 
-const AGE_GROUPS: { value: string; label: string; icon: LucideIcon; age: string }[] = [
-  { value: 'Pre-catequese: 6-8 anos', label: 'Pré-catequese', icon: Sprout, age: '6-8 anos' },
-  { value: 'Primeira Eucaristia: 9-11 anos', label: '1ª Eucaristia', icon: Wheat, age: '9-11 anos' },
-  { value: 'Crisma: 12-15 anos', label: 'Crisma', icon: Flame, age: '12-15 anos' },
-  { value: 'Adultos', label: 'Adultos', icon: BookOpen, age: '18+ anos' },
-];
+const AGE_GROUP_VALUES = [
+  'Pre-catequese: 6-8 anos',
+  'Primeira Eucaristia: 9-11 anos',
+  'Crisma: 12-15 anos',
+  'Adultos',
+] as const;
 
-const DURATIONS = [
-  { value: 45, label: '45 min' },
-  { value: 60, label: '60 min' },
-  { value: 90, label: '90 min' },
-];
-
-const APPROACHES = [
-  { value: 'Mais dinâmica/lúdica', label: 'Dinâmica e Lúdica', icon: Heart, desc: 'Com jogos, brincadeiras e atividades práticas' },
-  { value: 'Mais bíblica/contemplativa', label: 'Bíblica e Contemplativa', icon: BookOpen, desc: 'Foco na leitura orante e reflexão' },
-  { value: 'Mista: doutrinal com momentos dinâmicos', label: 'Mista', icon: Church, desc: 'Equilíbrio entre doutrina e dinâmica' },
-];
-
-const LOADING_PHRASES = [
-  'Consultando o Catecismo da Igreja Católica...',
-  'Preparando uma dinâmica especial para seus catequizandos...',
-  'Selecionando as melhores passagens bíblicas...',
-  'Adaptando a linguagem para a faixa etária escolhida...',
-  'Organizando o roteiro com carinho pastoral...',
-  'Buscando referências do Magistério da Igreja...',
-  'Rezando para que este encontro toque os corações...',
-];
+const APPROACH_VALUES = [
+  'Mais dinâmica/lúdica',
+  'Mais bíblica/contemplativa',
+  'Mista: doutrinal com momentos dinâmicos',
+] as const;
 
 export default function AIPlannerPage() {
+  const { t } = useTranslation('ai');
+  const { t: tc } = useTranslation('content');
+  const { t: tCommon } = useTranslation('common');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const meetingId = searchParams.get('meetingId');
   const classId = searchParams.get('classId');
 
-  // Step state
+  const ageGroups = useMemo(() => [
+    { value: AGE_GROUP_VALUES[0], label: t('planner.age_groups.pre'), icon: Sprout as LucideIcon, age: t('planner.age_groups.pre_age') },
+    { value: AGE_GROUP_VALUES[1], label: t('planner.age_groups.eucharist'), icon: Wheat as LucideIcon, age: t('planner.age_groups.eucharist_age') },
+    { value: AGE_GROUP_VALUES[2], label: t('planner.age_groups.confirmation'), icon: Flame as LucideIcon, age: t('planner.age_groups.confirmation_age') },
+    { value: AGE_GROUP_VALUES[3], label: t('planner.age_groups.adults'), icon: BookOpen as LucideIcon, age: t('planner.age_groups.adults_age') },
+  ], [t]);
+
+  const approaches = useMemo(() => [
+    { value: APPROACH_VALUES[0], label: t('planner.approaches.dynamic'), icon: Heart as LucideIcon, desc: t('planner.approaches.dynamic_desc') },
+    { value: APPROACH_VALUES[1], label: t('planner.approaches.biblical'), icon: BookOpen as LucideIcon, desc: t('planner.approaches.biblical_desc') },
+    { value: APPROACH_VALUES[2], label: t('planner.approaches.mixed'), icon: Church as LucideIcon, desc: t('planner.approaches.mixed_desc') },
+  ], [t]);
+
+  const loadingPhrases = useMemo(
+    () => t('planner.loading_phrases', { returnObjects: true }) as string[],
+    [t],
+  );
+
   const [step, setStep] = useState(0);
   const [ageGroup, setAgeGroup] = useState('');
-  const [theme, setTheme] = useState(meetingId ? 'Encontro da turma' : ''); // Pre-fill if coming from meeting
+  const [theme, setTheme] = useState(meetingId ? t('planner.class_meeting_theme') : '');
   const [duration, setDuration] = useState(60);
   const [approach, setApproach] = useState('');
   const [error, setError] = useState('');
   const [linking, setLinking] = useState(false);
   const [linked, setLinked] = useState(false);
 
-  // Generation state
   const [generating, setGenerating] = useState(false);
   const [loadingPhrase, setLoadingPhrase] = useState(0);
   const [result, setResult] = useState<any>(null);
@@ -93,17 +95,14 @@ export default function AIPlannerPage() {
   const [generatingWhatsapp, setGeneratingWhatsapp] = useState(false);
   const [creditsLeft, setCreditsLeft] = useState<number | null>(null);
 
-  // Loading phrase rotation
-  useState(() => {
-    if (generating) {
-      const interval = setInterval(() => {
-        setLoadingPhrase(p => (p + 1) % LOADING_PHRASES.length);
-      }, 3000);
-      return () => clearInterval(interval);
-    }
-  });
+  useEffect(() => {
+    if (!generating) return;
+    const interval = setInterval(() => {
+      setLoadingPhrase(p => (p + 1) % loadingPhrases.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [generating, loadingPhrases.length]);
 
-  // Pre-fill age group from class when classId is provided
   useEffect(() => {
     if (!classId) return;
     (async () => {
@@ -112,13 +111,13 @@ export default function AIPlannerPage() {
         if (cls?.stage?.name) {
           const stageName = cls.stage.name.toLowerCase();
           if (stageName.includes('crisma')) {
-            setAgeGroup('Crisma: 12-15 anos');
+            setAgeGroup(AGE_GROUP_VALUES[2]);
           } else if (stageName.includes('eucaristia') || stageName.includes('primeira')) {
-            setAgeGroup('Primeira Eucaristia: 9-11 anos');
+            setAgeGroup(AGE_GROUP_VALUES[1]);
           } else if (stageName.includes('pré') || stageName.includes('pre')) {
-            setAgeGroup('Pre-catequese: 6-8 anos');
+            setAgeGroup(AGE_GROUP_VALUES[0]);
           } else if (stageName.includes('adulto')) {
-            setAgeGroup('Adultos');
+            setAgeGroup(AGE_GROUP_VALUES[3]);
           }
         }
       } catch {}
@@ -141,15 +140,13 @@ export default function AIPlannerPage() {
       setResult(res.generated);
       setContentItemId(res.contentItem?.id || null);
       setWhatsappMessage(res.whatsappMessage || '');
-      setCreditsLeft(res.creditsUsed ? null : null);
 
-      // Load credits status
       try {
         const status = await getAiCreditsStatus();
         if (status) setCreditsLeft(status.creditsLeft);
       } catch {}
     } catch (e: any) {
-      setError(e?.message || 'Erro ao gerar encontro. Tente novamente.');
+      setError(e?.message || t('planner.error_generate'));
     } finally {
       setGenerating(false);
     }
@@ -162,7 +159,7 @@ export default function AIPlannerPage() {
       const res = await generateWhatsAppMessage({ contentId: contentItemId });
       setWhatsappMessage(res.message);
     } catch (e: any) {
-      setError(e?.message || 'Erro ao gerar mensagem.');
+      setError(e?.message || t('planner.error_whatsapp'));
     } finally {
       setGeneratingWhatsapp(false);
     }
@@ -175,16 +172,17 @@ export default function AIPlannerPage() {
       await updateMeeting({ id: meetingId, contentId: contentItemId });
       setLinked(true);
     } catch (e: any) {
-      setError(e?.message || 'Erro ao vincular conteúdo ao encontro.');
+      setError(e?.message || t('planner.error_link'));
     } finally {
       setLinking(false);
     }
   };
 
+  const durations = [45, 60, 90];
+
   return (
     <AppShell>
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
-        {/* Header */}
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => navigate('/app/content-library')}>
             <ArrowLeft className="h-5 w-5" />
@@ -192,21 +190,19 @@ export default function AIPlannerPage() {
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <Sparkles className="h-6 w-6 text-yellow-500" />
-              Gerador Inteligente de Encontros
+              {t('planner.title')}
             </h1>
-            <p className="text-sm text-muted-foreground">Crie roteiros de catequese completos com IA</p>
+            <p className="text-sm text-muted-foreground">{t('planner.subtitle')}</p>
           </div>
         </div>
 
-        {/* Credits indicator */}
         {creditsLeft !== null && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 rounded-lg px-3 py-2 w-fit">
             <GraduationCap className="h-4 w-4" />
-            <span>{creditsLeft} créditos de IA restantes</span>
+            <span>{t('planner.credits_left', { count: creditsLeft })}</span>
           </div>
         )}
 
-        {/* Error */}
         {error && (
           <div className="bg-destructive/10 text-destructive rounded-lg px-4 py-3 text-sm">
             {error.split('/app/billing').length > 1 ? (
@@ -221,10 +217,8 @@ export default function AIPlannerPage() {
           </div>
         )}
 
-        {/* No result yet — show wizard */}
         {!result && !generating && (
           <div className="space-y-6">
-            {/* Progress steps */}
             <div className="flex items-center gap-2">
               {[0, 1, 2].map(i => (
                 <div
@@ -236,15 +230,14 @@ export default function AIPlannerPage() {
               ))}
             </div>
 
-            {/* Step 0: Age group */}
             {step === 0 && (
               <Card className="p-6 space-y-4">
                 <div className="flex items-center gap-2 text-primary">
                   <Users className="h-5 w-5" />
-                  <h2 className="text-lg font-semibold">Para qual faixa etária?</h2>
+                  <h2 className="text-lg font-semibold">{t('planner.step_age')}</h2>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {AGE_GROUPS.map(g => (
+                  {ageGroups.map(g => (
                     <button
                       key={g.value}
                       onClick={() => setAgeGroup(g.value)}
@@ -263,49 +256,47 @@ export default function AIPlannerPage() {
               </Card>
             )}
 
-            {/* Step 1: Theme */}
             {step === 1 && (
               <Card className="p-6 space-y-4">
                 <div className="flex items-center gap-2 text-primary">
                   <Target className="h-5 w-5" />
-                  <h2 className="text-lg font-semibold">Qual o tema do encontro?</h2>
+                  <h2 className="text-lg font-semibold">{t('planner.step_theme')}</h2>
                 </div>
                 <div>
-                  <Label htmlFor="theme">Tema</Label>
+                  <Label htmlFor="theme">{tc('theme')}</Label>
                   <Input
                     id="theme"
-                    placeholder="Ex: O Sacramento da Eucaristia, A Oração do Pai Nosso..."
+                    placeholder={t('planner.theme_placeholder')}
                     value={theme}
                     onChange={e => setTheme(e.target.value)}
                     className="mt-1"
                   />
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Seja específico. A IA usa o tema para montar todo o roteiro.
+                  {t('planner.theme_hint')}
                 </p>
               </Card>
             )}
 
-            {/* Step 2: Duration & Approach */}
             {step === 2 && (
               <div className="space-y-4">
                 <Card className="p-6 space-y-4">
                   <div className="flex items-center gap-2 text-primary">
                     <Clock className="h-5 w-5" />
-                    <h2 className="text-lg font-semibold">Duração do encontro</h2>
+                    <h2 className="text-lg font-semibold">{t('planner.step_duration')}</h2>
                   </div>
                   <div className="flex gap-3">
-                    {DURATIONS.map(d => (
+                    {durations.map(d => (
                       <button
-                        key={d.value}
-                        onClick={() => setDuration(d.value)}
+                        key={d}
+                        onClick={() => setDuration(d)}
                         className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
-                          duration === d.value
+                          duration === d
                             ? 'border-primary bg-primary/10'
                             : 'border-border hover:border-primary/50'
                         }`}
                       >
-                        {d.label}
+                        {d} min
                       </button>
                     ))}
                   </div>
@@ -314,10 +305,10 @@ export default function AIPlannerPage() {
                 <Card className="p-6 space-y-4">
                   <div className="flex items-center gap-2 text-primary">
                     <ScrollText className="h-5 w-5" />
-                    <h2 className="text-lg font-semibold">Abordagem pastoral</h2>
+                    <h2 className="text-lg font-semibold">{t('planner.step_approach')}</h2>
                   </div>
                   <div className="grid gap-3">
-                    {APPROACHES.map(a => (
+                    {approaches.map(a => (
                       <button
                         key={a.value}
                         onClick={() => setApproach(a.value)}
@@ -339,30 +330,28 @@ export default function AIPlannerPage() {
               </div>
             )}
 
-            {/* Navigation */}
             <div className="flex justify-between pt-4">
               <Button
                 variant="outline"
                 onClick={() => setStep(s => s - 1)}
                 disabled={step === 0}
               >
-                Voltar
+                {tCommon('back')}
               </Button>
               {step < 2 ? (
                 <Button onClick={() => setStep(s => s + 1)} disabled={!canProceed()}>
-                  Continuar
+                  {t('planner.continue')}
                 </Button>
               ) : (
                 <Button onClick={handleGenerate} className="gap-2" size="lg">
                   <Sparkles className="h-4 w-4" />
-                  Gerar com IA
+                  {t('planner.generate')}
                 </Button>
               )}
             </div>
           </div>
         )}
 
-        {/* Generating state */}
         {generating && (
           <Card className="p-12 text-center space-y-6">
             <div className="relative w-20 h-20 mx-auto">
@@ -371,50 +360,48 @@ export default function AIPlannerPage() {
               <Sparkles className="absolute inset-0 m-auto h-8 w-8 text-primary" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold">Gerando seu encontro...</h3>
+              <h3 className="text-lg font-semibold">{t('planner.generating_title')}</h3>
               <p className="text-muted-foreground mt-2 animate-pulse">
-                {LOADING_PHRASES[loadingPhrase]}
+                {loadingPhrases[loadingPhrase]}
               </p>
             </div>
             <Progress value={66} className="w-64 mx-auto" />
           </Card>
         )}
 
-        {/* Result */}
         {result && !generating && (
           <div className="space-y-4">
             <DetailTabs
               tabs={[
-                { id: 'meeting', label: 'Encontro Completo' },
-                { id: 'whatsapp', label: 'Mensagem WhatsApp' },
-                { id: 'refs', label: 'Referências' },
+                { id: 'meeting', label: t('planner.tab_meeting') },
+                { id: 'whatsapp', label: t('planner.tab_whatsapp') },
+                { id: 'refs', label: t('planner.tab_refs') },
               ]}
               value={activeTab}
               onChange={v => setActiveTab(v as typeof activeTab)}
             />
 
-            {/* Meeting tab */}
             {activeTab === 'meeting' && (
               <Card className="p-6 space-y-6">
                 <div>
-                  <Badge variant="secondary">Rascunho</Badge>
+                  <Badge variant="secondary">{tc('status_draft')}</Badge>
                   <h2 className="text-2xl font-bold mt-2">{result.title}</h2>
                   <p className="text-muted-foreground">{result.theme}</p>
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">Objetivo Pastoral</h3>
+                  <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">{tc('pastoral_objective')}</h3>
                   <p className="mt-1">{result.pastoralObjective}</p>
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">Oração Inicial</h3>
+                  <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">{tc('opening_prayer')}</h3>
                   <p className="mt-1 italic">{result.openingPrayer}</p>
                 </div>
 
                 {result.biblicalReading && (
                   <div>
-                    <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">Momento da Palavra</h3>
+                    <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">{t('planner.word_moment')}</h3>
                     <p className="font-semibold mt-1">{result.biblicalReading.reference}</p>
                     <p className="text-sm italic mt-1">"{result.biblicalReading.text}"</p>
                     <p className="mt-2 text-sm">{result.biblicalReading.explanation}</p>
@@ -422,7 +409,7 @@ export default function AIPlannerPage() {
                 )}
 
                 <div>
-                  <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">Conteúdo Central</h3>
+                  <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">{t('edit_page.central_content')}</h3>
                   <div className="mt-2 prose prose-sm max-w-none whitespace-pre-line">
                     {result.mainContent}
                   </div>
@@ -430,7 +417,7 @@ export default function AIPlannerPage() {
 
                 {result.dynamic && (
                   <div>
-                    <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">Dinâmica / Atividade</h3>
+                    <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">{tc('dynamic_activity')}</h3>
                     <div className="mt-2 prose prose-sm max-w-none whitespace-pre-line">
                       {result.dynamic}
                     </div>
@@ -439,42 +426,41 @@ export default function AIPlannerPage() {
 
                 {result.familyTask && (
                   <div>
-                    <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">Compromisso na Família</h3>
+                    <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">{tc('family_commitment')}</h3>
                     <p className="mt-1">{result.familyTask}</p>
                   </div>
                 )}
 
                 {result.closingPrayer && (
                   <div>
-                    <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">Oração Final</h3>
+                    <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">{tc('closing_prayer')}</h3>
                     <p className="mt-1 italic">{result.closingPrayer}</p>
                   </div>
                 )}
 
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Clock className="h-4 w-4" />
-                  <span>Duração estimada: {result.estimatedTime} minutos</span>
+                  <span>{t('planner.estimated_duration', { count: result.estimatedTime })}</span>
                 </div>
               </Card>
             )}
 
-            {/* WhatsApp tab */}
             {activeTab === 'whatsapp' && (
               <Card className="p-6 space-y-4">
                 <div className="flex items-center gap-2">
                   <MessageCircle className="h-5 w-5 text-green-500" />
-                  <h3 className="font-semibold">Mensagem para o grupo de pais</h3>
+                  <h3 className="font-semibold">{t('planner.whatsapp_title')}</h3>
                 </div>
                 {!whatsappMessage && !generatingWhatsapp && (
                   <Button onClick={handleGenerateWhatsapp} className="gap-2">
                     <Sparkles className="h-4 w-4" />
-                    Gerar mensagem
+                    {t('planner.generate_message')}
                   </Button>
                 )}
                 {generatingWhatsapp && (
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Gerando mensagem...
+                    {t('planner.generating_message')}
                   </div>
                 )}
                 {whatsappMessage && (
@@ -487,10 +473,10 @@ export default function AIPlannerPage() {
                         variant="outline"
                         size="sm"
                         className="gap-2"
-                        onClick={() => { navigator.clipboard.writeText(whatsappMessage); toast({ title: 'Mensagem copiada!' }); }}
+                        onClick={() => { navigator.clipboard.writeText(whatsappMessage); toast({ title: t('planner.message_copied') }); }}
                       >
                         <Copy className="h-4 w-4" />
-                        Copiar
+                        {t('planner.copy')}
                       </Button>
                       <Button
                         variant="outline"
@@ -499,7 +485,7 @@ export default function AIPlannerPage() {
                         onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(whatsappMessage)}`, '_blank')}
                       >
                         <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
-                        Enviar WhatsApp
+                        {t('planner.send_whatsapp')}
                       </Button>
                     </div>
                   </div>
@@ -507,14 +493,13 @@ export default function AIPlannerPage() {
               </Card>
             )}
 
-            {/* References tab */}
             {activeTab === 'refs' && (
               <div className="space-y-4">
                 {result.catechismRefs?.length > 0 && (
                   <Card className="p-6">
                     <h3 className="font-semibold mb-3 flex items-center gap-2">
                       <Church className="h-4 w-4" />
-                      Referências do Catecismo (CIC)
+                      {t('planner.catechism_refs')}
                     </h3>
                     <ul className="space-y-2">
                       {result.catechismRefs.map((ref: any, i: number) => (
@@ -531,7 +516,7 @@ export default function AIPlannerPage() {
                   <Card className="p-6">
                     <h3 className="font-semibold mb-3 flex items-center gap-2">
                       <BookOpen className="h-4 w-4" />
-                      Referências Bíblicas
+                      {t('planner.bible_refs')}
                     </h3>
                     <ul className="space-y-2">
                       {result.bibleRefs.map((ref: any, i: number) => (
@@ -545,18 +530,17 @@ export default function AIPlannerPage() {
                 )}
 
                 {(!result.catechismRefs?.length && !result.bibleRefs?.length) && (
-                  <p className="text-muted-foreground text-sm">Nenhuma referência gerada.</p>
+                  <p className="text-muted-foreground text-sm">{t('planner.no_refs')}</p>
                 )}
               </div>
             )}
 
-            {/* Action buttons */}
             <div className="flex gap-3 pt-2">
               <Button onClick={() => { setResult(null); setStep(0); setTheme(''); setWhatsappMessage(''); }}>
-                Gerar novo encontro
+                {t('planner.generate_new')}
               </Button>
               <Button variant="outline" onClick={() => navigate(`/app/content-library/${contentItemId}/edit`)}>
-                Editar e publicar
+                {t('planner.edit_publish')}
               </Button>
               {meetingId && (
                 <Button
@@ -565,11 +549,11 @@ export default function AIPlannerPage() {
                   disabled={linking || linked}
                 >
                   {linking ? (
-                    <><Loader2 className="mr-1 h-3 w-3 animate-spin" /> Vinculando...</>
+                    <><Loader2 className="mr-1 h-3 w-3 animate-spin" /> {t('planner.linking')}</>
                   ) : linked ? (
-                    <>✓ Vinculado ao Encontro</>
+                    <>✓ {t('planner.linked')}</>
                   ) : (
-                    <>📌 Vincular ao Encontro</>
+                    <>📌 {t('planner.link_to_meeting')}</>
                   )}
                 </Button>
               )}

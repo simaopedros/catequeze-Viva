@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -21,10 +22,6 @@ interface ConfirmDialogProps {
   variant?: 'default' | 'destructive';
   onConfirm: () => void;
   loading?: boolean;
-  /**
-   * When set, the user must type this exact phrase to enable the confirm
-   * button. Useful for destructive actions (e.g. "DELETAR").
-   */
   confirmPhrase?: string;
 }
 
@@ -33,16 +30,16 @@ export function ConfirmDialog({
   onOpenChange,
   title,
   description,
-  confirmLabel = 'Confirmar',
-  cancelLabel = 'Cancelar',
+  confirmLabel,
+  cancelLabel,
   variant = 'default',
   onConfirm,
   loading = false,
   confirmPhrase,
 }: ConfirmDialogProps) {
+  const { t } = useTranslation('common');
   const [typed, setTyped] = useState('');
 
-  // Reset the typed phrase whenever the dialog opens/closes.
   useEffect(() => {
     if (!open) setTyped('');
   }, [open]);
@@ -60,7 +57,7 @@ export function ConfirmDialog({
         {phraseRequired && (
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">
-              Digite <span className="font-bold text-foreground">{confirmPhrase}</span> para confirmar
+              {t('confirm_phrase_hint', { phrase: confirmPhrase })}
             </label>
             <Input
               value={typed}
@@ -73,7 +70,7 @@ export function ConfirmDialog({
         )}
         <DialogFooter className="gap-2 sm:gap-0">
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
-            {cancelLabel}
+            {cancelLabel ?? t('cancel')}
           </Button>
           <Button
             variant={variant === 'destructive' ? 'destructive' : 'default'}
@@ -81,7 +78,7 @@ export function ConfirmDialog({
             disabled={loading || !phraseMatches}
           >
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {confirmLabel}
+            {confirmLabel ?? t('confirm')}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, Fragment } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Send, Paperclip, Smile, Reply, CornerDownRight, ChevronDown, CheckCheck } from 'lucide-react';
 import { cn } from '../../../client/utils';
 import { markMessageAsRead, getMessageReadReceipts } from 'wasp/client/operations';
@@ -29,14 +30,14 @@ function formatMessageTime(dateStr: string): string {
   return new Date(dateStr).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 }
 
-function formatDateHeader(dateStr: string): string {
+function formatDateHeader(dateStr: string, t: (k: string) => string, locale: string): string {
   const date = new Date(dateStr);
   const now = new Date();
   const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
 
-  if (diffDays === 0) return 'Hoje';
-  if (diffDays === 1) return 'Ontem';
-  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+  if (diffDays === 0) return t('today');
+  if (diffDays === 1) return t('yesterday');
+  return date.toLocaleDateString(locale, { day: '2-digit', month: 'long', year: 'numeric' });
 }
 
 function getSenderInitials(sender: { firstName: string | null; lastName: string | null }): string {
@@ -70,6 +71,7 @@ export function ChatView({
   onSendMessage,
   isSending,
 }: ChatViewProps) {
+  const { t, i18n } = useTranslation('messages');
   const [input, setInput] = useState('');
   const [replyTo, setReplyTo] = useState<MessageItem | null>(null);
   const [showScrollDown, setShowScrollDown] = useState(false);
@@ -151,7 +153,7 @@ export function ChatView({
               disabled={isLoading}
               className="text-xs text-primary hover:underline disabled:opacity-50"
             >
-              {isLoading ? 'Carregando...' : 'Carregar anteriores'}
+              {isLoading ? t('new_dialog.loading_contacts') : t('load_older')}
             </button>
           </div>
         )}
@@ -162,9 +164,9 @@ export function ChatView({
             <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
               <Send className="h-7 w-7 text-primary/60" />
             </div>
-            <h3 className="font-semibold text-sm mb-1">Início da conversa</h3>
+            <h3 className="font-semibold text-sm mb-1">{t('chat_start_title')}</h3>
             <p className="text-xs text-muted-foreground max-w-[240px]">
-              Envie uma mensagem para começar a conversa.
+              {t('chat_start_desc')}
             </p>
           </div>
         )}
@@ -176,7 +178,7 @@ export function ChatView({
             <div className="flex items-center gap-3 py-3">
               <div className="flex-1 h-px bg-border" />
               <span className="text-[10px] font-medium text-muted-foreground bg-background px-2 py-0.5 rounded-full">
-                {formatDateHeader(group.date)}
+                {formatDateHeader(group.date, t, i18n.language)}
               </span>
               <div className="flex-1 h-px bg-border" />
             </div>
@@ -270,7 +272,7 @@ export function ChatView({
                         className="text-[10px] text-muted-foreground hover:text-primary flex items-center gap-0.5"
                       >
                         <Reply className="h-3 w-3" />
-                        Responder
+                        {t('reply')}
                       </button>
                     </div>
 
@@ -335,7 +337,7 @@ export function ChatView({
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Digite sua mensagem..."
+              placeholder={t('message_placeholder')}
               rows={1}
               className="w-full resize-none rounded-xl border border-input bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-shadow min-h-[40px] max-h-[120px]"
             />

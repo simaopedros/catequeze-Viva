@@ -7,6 +7,7 @@
  */
 import { HttpError } from 'wasp/server';
 import { detectProvider, createAiClient, aiCompletion } from '../ai/providers';
+import { resolveUserLocale } from '../i18n/serverLocale';
 import { assertAndDeductCredits, getCreditsStatus } from '../ai/credits';
 import { getCachedResponse, setCachedResponse } from '../ai/cache';
 import { AI_CREDITS } from '../../shared/aiCredits';
@@ -143,7 +144,7 @@ export const generateMeetingWithAi = async (
       biblicalRef: biblicalReadingFull || biblicalReadingRef,
       catechismRef: catechismRefSummary || '',
       status: 'DRAFT',
-      locale: 'pt-BR',
+      locale: resolveUserLocale(context.user),
       isAiGenerated: true,
       aiPrompt: JSON.stringify({ userPrompt: userMessage, whatsappMessage: whatsappMsg }),
       createdById: context.user.id,

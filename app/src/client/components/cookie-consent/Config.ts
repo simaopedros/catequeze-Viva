@@ -1,4 +1,5 @@
 import type { CookieConsentConfig } from "vanilla-cookieconsent";
+import i18n from "../../../i18n/config";
 
 declare global {
   interface Window {
@@ -6,19 +7,34 @@ declare global {
   }
 }
 
+function buildCookieTranslations(lang: string) {
+  const t = (key: string) => i18n.t(key, { ns: 'cookie', lng: lang });
+  return {
+    consentModal: {
+      title: t('consent_modal.title'),
+      description: t('consent_modal.description'),
+      acceptAllBtn: t('consent_modal.accept_all'),
+      acceptNecessaryBtn: t('consent_modal.reject_all'),
+      footer: `
+            <a href="/privacy" target="_blank">${t('consent_modal.privacy_link')}</a>
+            <a href="/terms" target="_blank">${t('consent_modal.terms_link')}</a>
+                    `,
+    },
+    preferencesModal: {
+      sections: [],
+    },
+  };
+}
+
 const getConfig = () => {
-  // See https://cookieconsent.orestbida.com/reference/configuration-reference.html for configuration options.
   const config: CookieConsentConfig = {
-    // Default configuration for the modal.
     root: "body",
     autoShow: true,
     disablePageInteraction: false,
-    hideFromBots: import.meta.env.PROD ? true : false, // Set this to false for dev/headless tests otherwise the modal will not be visible.
+    hideFromBots: import.meta.env.PROD ? true : false,
     mode: "opt-in",
-    // Bump the revision field when you add new services
     revision: 0,
 
-    // Default configuration for the cookie.
     cookie: {
       name: "cc_cookie",
       domain: location.hostname,
@@ -38,29 +54,22 @@ const getConfig = () => {
 
     categories: {
       necessary: {
-        enabled: true, // this category is enabled by default
-        readOnly: true, // this category cannot be disabled
+        enabled: true,
+        readOnly: true,
       },
       analytics: {
         autoClear: {
           cookies: [
-            {
-              name: /^_ga/, // regex: match all cookies starting with '_ga'
-            },
-            {
-              name: "_gid", // string: exact cookie name
-            },
+            { name: /^_ga/ },
+            { name: "_gid" },
           ],
         },
-
-        // https://cookieconsent.orestbida.com/reference/configuration-reference.html#category-services
         services: {
           ga: {
-            label: "Google Analytics",
+            label: i18n.t('analytics_label', { ns: 'cookie' }),
             onAccept: () => {
               try {
-                const GA_ANALYTICS_ID = import.meta.env
-                  .REACT_APP_GOOGLE_ANALYTICS_ID;
+                const GA_ANALYTICS_ID = import.meta.env.REACT_APP_GOOGLE_ANALYTICS_ID;
                 if (!GA_ANALYTICS_ID.length) {
                   throw new Error("Google Analytics ID is missing");
                 }
@@ -71,7 +80,6 @@ const getConfig = () => {
                 gtag("js", new Date());
                 gtag("config", GA_ANALYTICS_ID);
 
-                // Adding the script tag dynamically to the DOM.
                 const script = document.createElement("script");
                 script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ANALYTICS_ID}`;
                 script.async = true;
@@ -87,27 +95,11 @@ const getConfig = () => {
     },
 
     language: {
-      default: "en",
+      default: i18n.language || 'pt-BR',
       translations: {
-        en: {
-          consentModal: {
-            title: "We use cookies",
-            description:
-              "We use cookies primarily for analytics to enhance your experience. By accepting, you agree to our use of these cookies. You can manage your preferences or learn more about our cookie policy.",
-            acceptAllBtn: "Accept all",
-            acceptNecessaryBtn: "Reject all",
-            // showPreferencesBtn: 'Manage Individual preferences', // (OPTIONAL) Activates the preferences modal
-            // TODO: Add your own privacy policy and terms and conditions links below.
-            footer: `
-            <a href="/privacy" target="_blank">Privacy Policy</a>
-            <a href="/terms" target="_blank">Terms and Conditions</a>
-                    `,
-          },
-          // The showPreferencesBtn activates this modal to manage individual preferences https://cookieconsent.orestbida.com/reference/configuration-reference.html#translation-preferencesmodal
-          preferencesModal: {
-            sections: [],
-          },
-        },
+        'pt-BR': buildCookieTranslations('pt-BR'),
+        en: buildCookieTranslations('en'),
+        es: buildCookieTranslations('es'),
       },
     },
   };

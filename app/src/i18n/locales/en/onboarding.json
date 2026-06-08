@@ -1,0 +1,175 @@
+{
+  "title": "Onboarding",
+  "subtitle_personal": "Let's set up your personal space.",
+  "subtitle_manager": "Let's set up the platform in 3 steps.",
+  "steps": {
+    "diocese": "Diocese",
+    "parish": "Parish",
+    "details": "Details"
+  },
+  "back": "← Back",
+  "continue_parish": "Continue to Parish →",
+  "continue": "Continue →",
+  "change_diocese": "← Change diocese",
+  "configuring": "Setting up the platform...",
+  "finish_error": "Error finishing setup.",
+  "personal_workspace_error": "Could not create personal space. Please try again.",
+  "parish_not_selected": "Parish not selected.",
+  "osm_error": "Error registering OpenStreetMap parish.",
+  "create_parish_error": "Error creating parish.",
+  "no_parish_selected": "No parish selected.",
+  "summary": {
+    "type": "Type",
+    "personal_account": "Personal Account",
+    "plan": "Plan",
+    "plan_free": "Catechist Free",
+    "plan_pro": "Catechist Pro/AI",
+    "class": "Class",
+    "create_later": "Create later",
+    "diocese": "Diocese",
+    "parish": "Parish",
+    "year": "Year"
+  },
+  "welcome": {
+    "hello": "Hello, {{name}}!",
+    "hello_default": "Welcome!",
+    "question": "How do you want to use Catequese Viva?",
+    "personal_title": "Personal Account",
+    "personal_desc": "For individual catechists · personal plan (Free / Pro / AI)",
+    "personal_features": ["Isolated personal space", "Your classes and catechumens", "AI meeting generator"],
+    "manager_title": "Management Account",
+    "manager_desc": "For parishes and dioceses · institutional plan (covers multiple catechists)",
+    "manager_features": ["Multi-catechist", "Integrated communication", "Complete catechesis management"]
+  },
+  "personal_setup": {
+    "title": "Personal Account",
+    "subtitle": "Your individual catechesis space is almost ready!",
+    "included": "What's included:",
+    "isolated_space": "Isolated personal space",
+    "limits_free": "2 classes and 30 catechumens",
+    "limits_unlimited": "Unlimited classes",
+    "ai_generator": "AI meeting generator",
+    "liturgical_calendar": "Liturgical calendar",
+    "first_class_label": "First class name (optional)",
+    "first_class_placeholder": "Ex: 1st Year Catechesis",
+    "first_class_hint": "You can create it later in Classes if you prefer.",
+    "creating": "Creating space...",
+    "enter_space": "Enter my space"
+  },
+  "diocese": {
+    "title": "Which diocese are you in?",
+    "state_label": "State",
+    "all_states": "All states",
+    "search_placeholder": "Search diocese...",
+    "wiki_section": "Wikidata · Official dioceses",
+    "platform_section": "On Platform",
+    "parishes_count": "{{count}} parishes",
+    "empty_search": "No diocese found.",
+    "empty_hint": "Select a state or search by name.",
+    "create_link": "+ Not found? Create new diocese",
+    "new_name_label": "New diocese name",
+    "new_name_placeholder": "Ex: Diocese of São José dos Campos",
+    "duplicate_warning": "A similar diocese already exists:",
+    "use_this": "Use this →",
+    "create_error": "Error: diocese was not created.",
+    "create_error_generic": "Error creating diocese.",
+    "creating": "Creating...",
+    "create_btn": "Create diocese",
+    "skip": "Skip this step →",
+    "select_hint": "Select a diocese above"
+  },
+  "parish": {
+    "title": "What is your parish?",
+    "city_state": "City / State",
+    "filter_placeholder": "Filter by name...",
+    "platform_section": "On Platform",
+    "osm_section": "OpenStreetMap",
+    "searching_map": "Searching the map...",
+    "create_link": "+ Not found? Create new parish",
+    "new_name_label": "New parish name",
+    "new_name_placeholder": "Ex: St. Anthony Parish",
+    "duplicate_warning": "A similar parish already exists:",
+    "use_this": "Use this →",
+    "create_error": "Error creating parish.",
+    "creating": "Creating...",
+    "create_btn": "Create parish",
+    "default_name": "Parish",
+    "duplicate_in": "in {{city}}"
+  },
+  "coordinator": {
+    "year_title": "Catechetical Year",
+    "year_name": "Year name *",
+    "year_name_placeholder": "Ex: Catechesis 2026",
+    "start": "Start",
+    "end": "End",
+    "date_error": "End date must be after start date.",
+    "next": "Next",
+    "class_title": "First Class",
+    "class_desc": "Create the first class or skip this step.",
+    "class_name": "Class name",
+    "class_name_placeholder": "Ex: Confirmation Class 2026",
+    "day_of_week": "Day of week",
+    "start_time": "Start",
+    "end_time": "End",
+    "location": "Location",
+    "skip_class": "Create class later",
+    "finish": "Finish",
+    "back": "Back",
+    "days": {
+      "0": "Sunday",
+      "1": "Monday",
+      "2": "Tuesday",
+      "3": "Wednesday",
+      "4": "Thursday",
+      "5": "Friday",
+      "6": "Saturday"
+    }
+  },
+  "completion": {
+    "title": "All set!",
+    "desc": "Your space is configured. Here is a summary of what was created:",
+    "redirecting": "Redirecting in 5 seconds...",
+    "go_dashboard": "Go to Dashboard"
+  },
+  "roles": {
+    "coordinator": { "title": "Parish Coordinator", "desc": "You manage parish catechesis: classes, catechists, sacraments, and reports." },
+    "catechist": { "title": "Catechist", "desc": "You teach catechesis and accompany your catechumens." },
+    "guardian": { "title": "Guardian (Parent)", "desc": "You accompany your children's faith journey in catechesis." },
+    "viewer": { "title": "Pastoral Viewer", "desc": "You view pastoral data without editing." }
+  },
+  "role_step": {
+    "title": "What is your role in the parish?",
+    "subtitle": "Choose the profile that best describes your role."
+  },
+  "catechist": {
+    "class_title": "Your Class"
+  },
+  "viewer": {
+    "title": "Pastoral Leadership",
+    "desc": "You will have view-only access to classes, attendance, and parish reports.",
+    "confirm": "Confirm and enter"
+  },
+  "guardian": {
+    "title": "Create Family",
+    "household_name": "Family name",
+    "household_placeholder": "Ex: Silva Family",
+    "phone": "Phone",
+    "phone_placeholder": "Ex: (11) 99999-0000",
+    "default_household": "Family"
+  },
+  "parish_search": {
+    "title": "Join a Parish",
+    "search_placeholder": "Search parish...",
+    "loading": "Loading...",
+    "empty": "No parishes found. You can create an independent one.",
+    "next": "Next"
+  },
+  "parish_create": {
+    "title": "Create Parish",
+    "name_label": "Name *",
+    "name_placeholder": "Ex: St. Anthony Parish",
+    "city_state": "City / State",
+    "creating": "Creating...",
+    "submit": "Create and continue"
+  }
+}

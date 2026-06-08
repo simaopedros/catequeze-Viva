@@ -1,5 +1,6 @@
 import { HttpError } from 'wasp/server';
 import { getDioceseParishIds } from '../auth/helpers';
+import { resolveUserLocale } from '../i18n/serverLocale';
 
 export const listLiturgicalEvents = async (_args: void, context: any) => {
   if (!context.user) throw new HttpError(401);
@@ -84,7 +85,7 @@ export const createLiturgicalEvent = async (
       type: args.type || 'liturgical',
       recurring: args.recurring || false,
       recurrenceRule: args.recurrenceRule,
-      locale: 'pt-BR',
+      locale: resolveUserLocale(context.user),
       parishId: parishId || null,
     },
   });

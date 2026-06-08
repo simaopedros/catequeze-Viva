@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../../client/components/ui/button';
-import { Church, ChevronRight, Check, Search, MapPin } from 'lucide-react';
-import { useQuery, searchParishesForOnboarding, createParish, getOrCreateParishByOsmId } from 'wasp/client/operations';
+import { Church, Check, Search, MapPin } from 'lucide-react';
+import { useQuery, searchParishesForOnboarding, createParish } from 'wasp/client/operations';
 import { useOsmParishes, type OsmParish } from '../../../client/hooks/useOsmParishes';
 import CityStateSelect from '../../../client/components/CityStateSelect';
 import type { DioceseSelection } from './DioceseStep';
@@ -19,11 +20,12 @@ interface ParishStepProps {
   diocese: DioceseSelection | null;
   selected: ParishSelection | null;
   onSelect: (p: ParishSelection) => void;
-  /** Pre-fill state from the diocese step, so user doesn't have to re-select */
   initialState?: string;
 }
 
 export function ParishStep({ diocese, selected, onSelect, initialState }: ParishStepProps) {
+  const { t } = useTranslation('onboarding');
+  const { t: tc } = useTranslation('common');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchCity, setSearchCity] = useState('');
   const [searchState, setSearchState] = useState(initialState || '');
@@ -40,11 +42,9 @@ export function ParishStep({ diocese, selected, onSelect, initialState }: Parish
   );
   const { parishes: osmParishes, loading: loadingOsm } = useOsmParishes(searchCity, searchState);
 
-  // Remove DB results already matched by OSM selection
   const dbOsmIds = new Set(dbParishes.filter((p: any) => p.osmId).map((p: any) => p.osmId));
   const uniqueOsm = osmParishes.filter((o: any) => !dbOsmIds.has(o.osmId));
 
-  // Real-time duplicate check while typing new parish name
   const duplicateParish = newName.trim().length >= 3
     ? dbParishes.find((p: any) => p.name.toLowerCase().includes(newName.trim().toLowerCase()) || newName.trim().toLowerCase().includes(p.name.toLowerCase()))
     : null;
@@ -73,7 +73,6 @@ export function ParishStep({ diocese, selected, onSelect, initialState }: Parish
         dioceseId: diocese?.id,
       });
       if (result?.existingParishId) {
-        // Parish already exists — membership was created/activated, use it
         onSelect({
           id: result.id,
           name: newName.trim(),
@@ -93,7 +92,7 @@ export function ParishStep({ diocese, selected, onSelect, initialState }: Parish
         });
       }
     } catch (e: any) {
-      setError(e.message || 'Erro ao criar paróquia.');
+      setError(e.message || t('parish.create_error'));
     } finally {
       setCreating(false);
     }
@@ -102,7 +101,7 @@ export function ParishStep({ diocese, selected, onSelect, initialState }: Parish
   return (
     <div className="rounded-xl border bg-card p-6 space-y-4">
       <h2 className="text-lg font-semibold flex items-center gap-2">
-        <Church className="h-5 w-5 text-primary" />Qual a tua paróquia?
+        <Church className="h-5 w-5 text-primary" />{t('parish.title')}
       </h2>
 
       {diocese && (
@@ -113,9 +112,8 @@ export function ParishStep({ diocese, selected, onSelect, initialState }: Parish
         </div>
       )}
 
-      {/* City / State */}
       <div>
-        <label className="text-sm font-medium">Cidade / Estado</label>
+        <label className="text-sm font-medium">{t('parish.city_state')}</label>
         <div className="mt-1">
           <CityStateSelect
             city={searchCity}
@@ -126,23 +124,20 @@ export function ParishStep({ diocese, selected, onSelect, initialState }: Parish
         </div>
       </div>
 
-      {/* Name filter */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <input
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
           className="flex h-10 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm"
-          placeholder="Filtrar por nome..."
+          placeholder={t('parish.filter_placeholder')}
         />
       </div>
 
-      {/* Results */}
       <div className="space-y-3 max-h-64 overflow-y-auto">
-        {/* DB results */}
         {dbParishes.length > 0 && (
           <div>
-            <p className="text-xs font-medium text-muted-foreground uppercase mb-1">Na Plataforma</p>
+            <p className="text-xs font-medium text-muted-foreground uppercase mb-1">{t('parish.platform_section')}</p>
             {dbParishes.map((p: any) => (
               <button
                 key={p.id}
@@ -161,11 +156,10 @@ export function ParishStep({ diocese, selected, onSelect, initialState }: Parish
           </div>
         )}
 
-        {/* OSM results */}
         {searchCity && uniqueOsm.length > 0 && (
           <div>
             <p className="text-xs font-medium text-muted-foreground uppercase mb-1 flex items-center gap-1">
-              <MapPin className="h-3 w-3" />OpenStreetMap
+              <MapPin className="h-3 w-3" />{t('parish.osm_section')}
             </p>
             {uniqueOsm.map((op: any) => (
               <button
@@ -186,33 +180,31 @@ export function ParishStep({ diocese, selected, onSelect, initialState }: Parish
           </div>
         )}
 
-        {/* OSM loading */}
         {searchCity && loadingOsm && (
-          <p className="text-xs text-muted-foreground">Procurando no mapa...</p>
+          <p className="text-xs text-muted-foreground">{t('parish.searching_map')}</p>
         )}
       </div>
 
-      {/* Create new */}
       {!showCreate ? (
         <button
           onClick={() => { setShowCreate(true); setNewName(searchQuery); }}
           className="w-full text-left rounded-lg border border-dashed px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors"
         >
-          + Não encontrou? Criar nova paróquia
+          {t('parish.create_link')}
         </button>
       ) : (
         <div className="rounded-lg border bg-muted/30 p-3 space-y-2">
-          <label className="text-sm font-medium">Nome da nova paróquia</label>
+          <label className="text-sm font-medium">{t('parish.new_name_label')}</label>
           <input
             value={newName}
             onChange={e => setNewName(e.target.value)}
             className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm"
-            placeholder="Ex: Paróquia Santo Antônio"
+            placeholder={t('parish.new_name_placeholder')}
           />
           {duplicateParish && (
             <div className="rounded-md bg-warning/10 border border-warning/30 p-2 text-xs text-warning">
-              Já existe uma paróquia semelhante: <strong>{duplicateParish.name}</strong>
-              {duplicateParish.city && <> em {duplicateParish.city}{duplicateParish.state ? `/${duplicateParish.state}` : ''}</>}.
+              {t('parish.duplicate_warning')} <strong>{duplicateParish.name}</strong>
+              {duplicateParish.city && <> {t('parish.duplicate_in', { city: `${duplicateParish.city}${duplicateParish.state ? `/${duplicateParish.state}` : ''}` })}</>}.
               <button
                 onClick={() => {
                   handleDbSelect(duplicateParish);
@@ -221,15 +213,15 @@ export function ParishStep({ diocese, selected, onSelect, initialState }: Parish
                 }}
                 className="ml-2 underline font-medium hover:text-amber-900 dark:hover:text-amber-300"
               >
-                Usar esta →
+                {t('parish.use_this')}
               </button>
             </div>
           )}
           {error && <p className="text-xs text-destructive">{error}</p>}
           <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={() => setShowCreate(false)}>Cancelar</Button>
+            <Button size="sm" variant="outline" onClick={() => setShowCreate(false)}>{tc('cancel')}</Button>
             <Button size="sm" onClick={handleCreate} disabled={creating || !newName.trim()}>
-              {creating ? 'Criando...' : 'Criar paróquia'}
+              {creating ? t('parish.creating') : t('parish.create_btn')}
             </Button>
           </div>
         </div>
@@ -238,7 +230,6 @@ export function ParishStep({ diocese, selected, onSelect, initialState }: Parish
   );
 }
 
-/** Inline icon to avoid importing a whole lucide icon */
 function BuildingIcon({ className }: { className?: string }) {
   return (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

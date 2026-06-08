@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { ArrowLeft, User, Phone, MapPin, Edit3, Shield, GraduationCap, TrendingUp, Building2, Save, X, Loader2, Plus, Pencil, Trash2 } from 'lucide-react';
@@ -40,15 +41,15 @@ const AVATAR_COLORS = [
   'bg-purple-100 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400 dark:border dark:border-purple-900/50',
 ];
 
-const RELATIONSHIP_OPTIONS = [
-  { value: 'Pai', label: 'Pai' },
-  { value: 'Mãe', label: 'Mãe' },
-  { value: 'Avô/Avó', label: 'Avô/Avó' },
-  { value: 'Tio/Tia', label: 'Tio/Tia' },
-  { value: 'Padrinho/Madrinha', label: 'Padrinho/Madrinha' },
-  { value: 'Responsável Legal', label: 'Responsável Legal' },
-  { value: 'Outro', label: 'Outro' },
-];
+const RELATIONSHIP_KEYS = [
+  { value: 'Pai', key: 'father' },
+  { value: 'Mãe', key: 'mother' },
+  { value: 'Avô/Avó', key: 'grandparent' },
+  { value: 'Tio/Tia', key: 'uncle' },
+  { value: 'Padrinho/Madrinha', key: 'godparent' },
+  { value: 'Responsável Legal', key: 'legal_guardian' },
+  { value: 'Outro', key: 'other' },
+] as const;
 
 function getGuardianDisplayName(g: any): string {
   if (!g) return '';
@@ -63,7 +64,12 @@ function getGuardianAvatarLetter(g: any): string {
 }
 
 export default function FamilyDetailPage() {
+  const { t } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
+  const relationshipOptions = useMemo(
+    () => RELATIONSHIP_KEYS.map((r) => ({ value: r.value, label: t(`families.relationships.${r.key}`) })),
+    [t],
+  );
   const { data: allHouseholds = [], isLoading: loading } = useQuery(listHouseholds);
   const household = allHouseholds?.find((h: any) => h.id === id);
   const [savingConsent, setSavingConsent] = useState<string | null>(null);
@@ -145,9 +151,9 @@ export default function FamilyDetailPage() {
         phone: editPhone.trim() || undefined,
       });
       setEditing(false);
-      toast({ title: 'Família atualizada com sucesso.' });
+      toast({ title: t('families.updated_success') });
     } catch (e: any) {
-      toast({ title: 'Erro: ' + (e.message || 'Falha ao salvar.') });
+      toast({ title: `${t('error')}: ${e.message || t('families.error_save')}` });
     } finally {
       setSaving(false);
     }
@@ -157,9 +163,9 @@ export default function FamilyDetailPage() {
     setSavingConsent(consentType);
     try {
       await saveConsent({ type: consentType, granted });
-      toast({ title: granted ? 'Consentimento autorizado.' : 'Consentimento revogado.' });
+      toast({ title: granted ? t('families.consent_granted') : t('families.consent_revoked') });
     } catch (e: any) {
-      toast({ title: 'Erro: ' + (e.message || 'Falha ao salvar.') });
+      toast({ title: `${t('error')}: ${e.message || t('families.error_save')}` });
     } finally {
       setSavingConsent(null);
     }
@@ -192,10 +198,10 @@ export default function FamilyDetailPage() {
         phone: guardianPhone || undefined,
       });
 
-      toast({ title: 'Responsável adicionado com sucesso.' });
+      toast({ title: t('families.guardian_added') });
       setGuardianDialogOpen(false);
     } catch (e: any) {
-      toast({ title: 'Erro: ' + (e.message || 'Falha ao adicionar responsável.') });
+      toast({ title: `${t('error')}: ${e.message || t('families.error_add_guardian')}` });
     } finally {
       setSavingGuardian(false);
     }
@@ -224,10 +230,10 @@ export default function FamilyDetailPage() {
       data.phone = editGuardianPhone || undefined;
 
       await updateGuardianProfile(data);
-      toast({ title: 'Responsável atualizado com sucesso.' });
+      toast({ title: t('families.guardian_updated') });
       setEditGuardianDialogOpen(false);
     } catch (e: any) {
-      toast({ title: 'Erro: ' + (e.message || 'Falha ao atualizar responsável.') });
+      toast({ title: `${t('error')}: ${e.message || t('families.error_update_guardian')}` });
     } finally {
       setSavingEditGuardian(false);
     }
@@ -243,10 +249,10 @@ export default function FamilyDetailPage() {
     setRemovingGuardianLoading(true);
     try {
       await removeGuardianFromHousehold({ guardianProfileId: removingGuardian.id });
-      toast({ title: 'Responsável removido da família.' });
+      toast({ title: t('families.guardian_removed') });
       setConfirmRemoveOpen(false);
     } catch (e: any) {
-      toast({ title: 'Erro: ' + (e.message || 'Falha ao remover responsável.') });
+      toast({ title: `${t('error')}: ${e.message || t('families.error_remove_guardian')}` });
     } finally {
       setRemovingGuardianLoading(false);
     }
@@ -268,7 +274,7 @@ export default function FamilyDetailPage() {
   if (!household)
     return (
       <AppShell>
-        <div className="p-6 text-destructive">Família não encontrada.</div>
+        <div className="p-6 text-destructive">{t('families.not_found')}</div>
       </AppShell>
     );
 
@@ -293,7 +299,7 @@ export default function FamilyDetailPage() {
               <>
                 <h1 className="text-2xl font-bold">{household.name}</h1>
                 <p className="text-sm text-muted-foreground">
-                  {household._count?.catechumens || 0} catequizandos · {household.guardians?.length || 0} responsáveis
+                  {t('families.summary', { catechumens: household._count?.catechumens || 0, guardians: household.guardians?.length || 0 })}
                 </p>
               </>
             )}
@@ -306,17 +312,17 @@ export default function FamilyDetailPage() {
                 ) : (
                   <Save className="mr-1 h-3 w-3" />
                 )}
-                {saving ? 'Salvando...' : 'Salvar'}
+                {saving ? t('saving') : t('save')}
               </Button>
               <Button size="sm" variant="ghost" onClick={cancelEditing}>
                 <X className="mr-1 h-3 w-3" />
-                Cancelar
+                {t('cancel')}
               </Button>
             </div>
           ) : (
             <Button size="sm" variant="outline" onClick={startEditing}>
               <Edit3 className="mr-1 h-3 w-3" />
-              Editar
+              {t('edit')}
             </Button>
           )}
         </div>
@@ -324,40 +330,40 @@ export default function FamilyDetailPage() {
         {/* Contact info */}
         {editing ? (
           <div className="rounded-xl border bg-card p-4 space-y-3">
-            <h3 className="text-xs font-medium text-muted-foreground uppercase">Editar Endereço e Telefone</h3>
+            <h3 className="text-xs font-medium text-muted-foreground uppercase">{t('families.edit_address_phone')}</h3>
             <div className="space-y-2">
-              <label className="text-xs font-medium text-muted-foreground">CEP</label>
+              <label className="text-xs font-medium text-muted-foreground">{t('families.cep')}</label>
               <div className="flex items-center gap-2">
                 <input
                   value={editCep}
                   onChange={(e) => setEditCep(e.target.value)}
                   className="flex h-9 w-40 rounded-md border border-input bg-background px-3 text-sm"
-                  placeholder="00000-000"
+                  placeholder={t('cep_placeholder')}
                 />
                 {cepLoading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
                 {showCepFill && (
                   <Button size="sm" variant="outline" onClick={fillAddressFromCep} className="text-xs h-8">
-                    Preencher endereço
+                    {t('families.fill_address')}
                   </Button>
                 )}
               </div>
             </div>
             <div>
-              <label className="text-xs font-medium text-muted-foreground">Endereço</label>
+              <label className="text-xs font-medium text-muted-foreground">{t('address')}</label>
               <input
                 value={editAddress}
                 onChange={(e) => setEditAddress(e.target.value)}
                 className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1"
-                placeholder="Ex: Rua das Flores, 123"
+                placeholder={t('families.address_placeholder')}
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-muted-foreground">Telefone</label>
+              <label className="text-xs font-medium text-muted-foreground">{t('phone')}</label>
               <PhoneMaskInput
                 value={editPhone}
                 onChange={setEditPhone}
                 className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1"
-                placeholder="(11) 99999-9999"
+                placeholder={t('phone_placeholder')}
               />
             </div>
           </div>
@@ -367,7 +373,7 @@ export default function FamilyDetailPage() {
               <div className="rounded-xl border bg-card p-4">
                 <h3 className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-1 mb-1">
                   <MapPin className="h-3 w-3" />
-                  Endereço
+                  {t('address')}
                 </h3>
                 <p className="text-sm">{household.address}</p>
               </div>
@@ -376,7 +382,7 @@ export default function FamilyDetailPage() {
               <div className="rounded-xl border bg-card p-4">
                 <h3 className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-1 mb-1">
                   <Phone className="h-3 w-3" />
-                  Telefone
+                  {t('phone')}
                 </h3>
                 <p className="text-sm">{household.phone}</p>
               </div>
@@ -385,7 +391,7 @@ export default function FamilyDetailPage() {
               <div className="rounded-xl border bg-card p-4">
                 <h3 className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-1 mb-1">
                   <Building2 className="h-3 w-3" />
-                  Comunidade
+                  {t('families.community')}
                 </h3>
                 <Link to={`/app/communities/${household.community.id}`} className="text-sm text-primary hover:underline">
                   {household.community.name}
@@ -400,11 +406,11 @@ export default function FamilyDetailPage() {
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-semibold text-sm flex items-center gap-1">
               <User className="h-4 w-4" />
-              Responsáveis
+              {t('families.guardians_title')}
             </h3>
             <Button size="sm" variant="outline" onClick={openAddGuardianDialog}>
               <Plus className="mr-1 h-3 w-3" />
-              Adicionar
+              {t('families.add')}
             </Button>
           </div>
           {household.guardians?.length > 0 ? (
@@ -438,7 +444,7 @@ export default function FamilyDetailPage() {
                         variant="ghost"
                         className="h-7 w-7"
                         onClick={() => openEditGuardianDialog(g)}
-                        title="Editar responsável"
+                        title={t('families.edit_guardian')}
                       >
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
@@ -447,7 +453,7 @@ export default function FamilyDetailPage() {
                         variant="ghost"
                         className="h-7 w-7 text-destructive hover:text-destructive"
                         onClick={() => openRemoveGuardianConfirm(g)}
-                        title="Remover responsável"
+                        title={t('families.remove_guardian')}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
@@ -457,7 +463,7 @@ export default function FamilyDetailPage() {
               })}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">Nenhum responsável vinculado.</p>
+            <p className="text-sm text-muted-foreground">{t('families.no_guardians')}</p>
           )}
         </div>
 
@@ -465,7 +471,7 @@ export default function FamilyDetailPage() {
         <div className="rounded-xl border bg-card p-4">
           <h3 className="font-semibold text-sm mb-3 flex items-center gap-1">
             <GraduationCap className="h-4 w-4" />
-            Catequizandos
+            {t('families.catechumens_title')}
           </h3>
           {household.catechumens?.length > 0 ? (
             <div className="space-y-2">
@@ -496,7 +502,7 @@ export default function FamilyDetailPage() {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">Nenhum catequizando.</p>
+            <p className="text-sm text-muted-foreground">{t('families.no_catechumens')}</p>
           )}
         </div>
 
@@ -504,7 +510,7 @@ export default function FamilyDetailPage() {
         <div className="rounded-xl border bg-card p-4">
           <h3 className="font-semibold text-sm mb-3 flex items-center gap-1">
             <Shield className="h-4 w-4" />
-            Consentimentos (LGPD)
+            {t('families.consents_title')}
           </h3>
           {household.consents?.length > 0 ? (
             <div className="space-y-3">
@@ -512,16 +518,16 @@ export default function FamilyDetailPage() {
                 <div key={c.id} className="flex items-center justify-between py-1 text-sm">
                   <span>
                     {c.type === 'IMAGE_USAGE'
-                      ? 'Uso de imagem'
+                      ? t('families.consent_image')
                       : c.type === 'COMMUNICATION'
-                      ? 'Comunicação'
+                      ? t('families.consent_communication')
                       : c.type === 'DOCUMENTS'
-                      ? 'Documentos'
+                      ? t('families.consent_documents')
                       : c.type}
                   </span>
                   <div className="flex items-center gap-2">
                     <Badge variant={c.granted ? 'default' : 'secondary'} className="text-[10px]">
-                      {c.granted ? 'Autorizado' : 'Negado'}
+                      {c.granted ? t('families.authorized') : t('families.denied')}
                     </Badge>
                     <Button
                       size="sm"
@@ -530,14 +536,14 @@ export default function FamilyDetailPage() {
                       onClick={() => handleToggleConsent(c.type, !c.granted)}
                       disabled={savingConsent === c.type}
                     >
-                      {savingConsent === c.type ? '...' : c.granted ? 'Revogar' : 'Autorizar'}
+                      {savingConsent === c.type ? '...' : c.granted ? t('families.revoke') : t('families.authorize')}
                     </Button>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">Nenhum consentimento registrado.</p>
+            <p className="text-sm text-muted-foreground">{t('families.no_consents')}</p>
           )}
         </div>
       </div>
@@ -546,57 +552,57 @@ export default function FamilyDetailPage() {
       <Dialog open={guardianDialogOpen} onOpenChange={setGuardianDialogOpen}>
         <DialogContent className="sm:max-w-[460px]">
           <DialogHeader>
-            <DialogTitle>Adicionar Responsável</DialogTitle>
+            <DialogTitle>{t('families.add_guardian_title')}</DialogTitle>
             <DialogDescription>
-              Preencha os dados de contato do responsável. Não é necessário que ele tenha cadastro na plataforma.
+              {t('families.add_guardian_desc')}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             {/* First name */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Nome *</label>
+              <label className="text-sm font-medium">{t('first_name')} *</label>
               <input
                 value={guardianFirstName}
                 onChange={(e) => setGuardianFirstName(e.target.value)}
                 className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
-                placeholder="Nome"
+                placeholder={t('first_name')}
                 autoFocus
               />
             </div>
 
             {/* Last name */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Sobrenome</label>
+              <label className="text-sm font-medium">{t('last_name')}</label>
               <input
                 value={guardianLastName}
                 onChange={(e) => setGuardianLastName(e.target.value)}
                 className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
-                placeholder="Sobrenome"
+                placeholder={t('last_name')}
               />
             </div>
 
             {/* Email — essential for invite linking */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Email</label>
+              <label className="text-sm font-medium">{t('email')}</label>
               <input
                 type="email"
                 value={guardianEmail}
                 onChange={(e) => setGuardianEmail(e.target.value)}
                 className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
-                placeholder="email@exemplo.com"
+                placeholder={t('families.email_placeholder')}
               />
-              <p className="text-xs text-muted-foreground">Usado para vincular a conta quando o responsável aceitar o convite.</p>
+              <p className="text-xs text-muted-foreground">{t('families.email_hint')}</p>
             </div>
 
             {/* Relationship */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Relação</label>
+              <label className="text-sm font-medium">{t('families.relationship')}</label>
               <Select value={guardianRelationship} onValueChange={setGuardianRelationship}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecione a relação..." />
+                  <SelectValue placeholder={t('families.relationship_placeholder')} />
                 </SelectTrigger>
                 <SelectContent>
-                  {RELATIONSHIP_OPTIONS.map((opt) => (
+                  {relationshipOptions.map((opt) => (
                     <SelectItem key={opt.value} value={opt.value}>
                       {opt.label}
                     </SelectItem>
@@ -607,22 +613,22 @@ export default function FamilyDetailPage() {
 
             {/* Phone */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Telefone</label>
+              <label className="text-sm font-medium">{t('phone')}</label>
               <PhoneMaskInput
                 value={guardianPhone}
                 onChange={setGuardianPhone}
                 className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
-                placeholder="(11) 99999-9999"
+                placeholder={t('phone_placeholder')}
               />
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setGuardianDialogOpen(false)} disabled={savingGuardian}>
-              Cancelar
+              {t('cancel')}
             </Button>
             <Button onClick={handleAddGuardian} disabled={!guardianFirstName.trim() || savingGuardian}>
               {savingGuardian && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Adicionar
+              {t('families.add')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -632,7 +638,7 @@ export default function FamilyDetailPage() {
       <Dialog open={editGuardianDialogOpen} onOpenChange={setEditGuardianDialogOpen}>
         <DialogContent className="sm:max-w-[460px]">
           <DialogHeader>
-            <DialogTitle>Editar Responsável</DialogTitle>
+            <DialogTitle>{t('families.edit_guardian_title')}</DialogTitle>
             <DialogDescription>
               {getGuardianDisplayName(editingGuardian)}
             </DialogDescription>
@@ -642,21 +648,21 @@ export default function FamilyDetailPage() {
             {!editingGuardian?.userId && (
               <>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Nome</label>
+                  <label className="text-sm font-medium">{t('first_name')}</label>
                   <input
                     value={editGuardianFirstName}
                     onChange={(e) => setEditGuardianFirstName(e.target.value)}
                     className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
-                    placeholder="Nome"
+                    placeholder={t('first_name')}
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Sobrenome</label>
+                  <label className="text-sm font-medium">{t('last_name')}</label>
                   <input
                     value={editGuardianLastName}
                     onChange={(e) => setEditGuardianLastName(e.target.value)}
                     className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
-                    placeholder="Sobrenome"
+                    placeholder={t('last_name')}
                   />
                 </div>
               </>
@@ -664,13 +670,13 @@ export default function FamilyDetailPage() {
 
             {/* Relationship */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Relação</label>
+              <label className="text-sm font-medium">{t('families.relationship')}</label>
               <Select value={editGuardianRelationship} onValueChange={setEditGuardianRelationship}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecione a relação..." />
+                  <SelectValue placeholder={t('families.relationship_placeholder')} />
                 </SelectTrigger>
                 <SelectContent>
-                  {RELATIONSHIP_OPTIONS.map((opt) => (
+                  {relationshipOptions.map((opt) => (
                     <SelectItem key={opt.value} value={opt.value}>
                       {opt.label}
                     </SelectItem>
@@ -681,22 +687,22 @@ export default function FamilyDetailPage() {
 
             {/* Phone */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Telefone</label>
+              <label className="text-sm font-medium">{t('phone')}</label>
               <PhoneMaskInput
                 value={editGuardianPhone}
                 onChange={setEditGuardianPhone}
                 className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
-                placeholder="(11) 99999-9999"
+                placeholder={t('phone_placeholder')}
               />
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditGuardianDialogOpen(false)} disabled={savingEditGuardian}>
-              Cancelar
+              {t('cancel')}
             </Button>
             <Button onClick={handleUpdateGuardian} disabled={savingEditGuardian}>
               {savingEditGuardian && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Salvar
+              {t('save')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -706,9 +712,9 @@ export default function FamilyDetailPage() {
       <ConfirmDialog
         open={confirmRemoveOpen}
         onOpenChange={setConfirmRemoveOpen}
-        title="Remover Responsável"
-        description="Tem certeza que deseja desvincular este responsável da família? O perfil não será excluído, apenas removido desta família."
-        confirmLabel="Remover"
+        title={t('families.remove_guardian_title')}
+        description={t('families.remove_guardian_desc')}
+        confirmLabel={t('remove')}
         variant="destructive"
         onConfirm={handleRemoveGuardian}
         loading={removingGuardianLoading}

@@ -1,10 +1,13 @@
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import { CalendarDays, Plus, Edit, Trash2, Check } from 'lucide-react';
+import { CalendarDays, Plus, Check } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { AppShell } from '../AppShell';
 import { useQuery, listCatecheticalYears, createCatecheticalYear } from 'wasp/client/operations';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
+import { useLocale } from '../../i18n/useLocale';
+import { formatDate } from '../../i18n/format';
 
 interface CatecheticalYear {
   id: string;
@@ -16,6 +19,9 @@ interface CatecheticalYear {
 }
 
 export default function CatecheticalYearsPage() {
+  const { t } = useTranslation('catecheticalYears');
+  const { t: tc } = useTranslation('common');
+  const { currentLocale } = useLocale();
   const { activeParishId } = useActiveParish();
   const { data: years = [], isLoading: loading } = useQuery(listCatecheticalYears);
   const [error, setError] = useState('');
@@ -26,7 +32,6 @@ export default function CatecheticalYearsPage() {
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Form state
   const [name, setName] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -36,11 +41,11 @@ export default function CatecheticalYearsPage() {
     setSaving(true);
     setError('');
     try {
-      await createCatecheticalYear({ name, startDate, endDate });      
+      await createCatecheticalYear({ name, startDate, endDate });
       setName(''); setStartDate(''); setEndDate('');
       setShowForm(false);
     } catch (e: any) {
-      setError(e.message || 'Erro ao criar ano catequético.');
+      setError(e.message || t('create_error'));
     }
     setSaving(false);
   };
@@ -66,12 +71,12 @@ export default function CatecheticalYearsPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Anos Catequéticos</h1>
-            <p className="text-muted-foreground text-sm">Períodos, etapas e sacramentos.</p>
+            <h1 className="text-2xl font-bold">{t('title')}</h1>
+            <p className="text-muted-foreground text-sm">{t('subtitle')}</p>
           </div>
           <Button size="sm" onClick={() => setShowForm(!showForm)}>
             <Plus className="mr-1 h-4 w-4" />
-            Novo ano
+            {t('new_year')}
           </Button>
         </div>
 
@@ -79,24 +84,23 @@ export default function CatecheticalYearsPage() {
           <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
         )}
 
-        {/* Create form */}
         {showForm && (
           <div className="rounded-xl border bg-card p-6 space-y-4">
-            <h3 className="font-semibold">Novo Ano Catequético</h3>
+            <h3 className="font-semibold">{t('form_title')}</h3>
             <div className="grid gap-4 sm:grid-cols-3">
               <div>
-                <label className="text-sm font-medium">Nome *</label>
-                <input value={name} onChange={e => setName(e.target.value)}     
+                <label className="text-sm font-medium">{t('name')} *</label>
+                <input value={name} onChange={e => setName(e.target.value)}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
-                  placeholder="Ex: Catequese 2026" />
+                  placeholder={t('name_placeholder')} />
               </div>
               <div>
-                <label className="text-sm font-medium">Início *</label>
+                <label className="text-sm font-medium">{t('start')} *</label>
                 <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" />
               </div>
               <div>
-                <label className="text-sm font-medium">Término *</label>        
+                <label className="text-sm font-medium">{t('end')} *</label>
                 <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" />
               </div>
@@ -104,25 +108,24 @@ export default function CatecheticalYearsPage() {
             <div className="flex gap-2">
               <Button size="sm" onClick={handleCreate} disabled={saving || !name || !startDate || !endDate}>
                 <Check className="mr-1 h-4 w-4" />
-                {saving ? 'Criando...' : 'Criar'}
+                {saving ? t('creating') : tc('create')}
               </Button>
-              <Button size="sm" variant="outline" onClick={() => setShowForm(false)}>Cancelar</Button>
+              <Button size="sm" variant="outline" onClick={() => setShowForm(false)}>{tc('cancel')}</Button>
             </div>
           </div>
         )}
 
-        {/* List */}
         {filteredYears.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center">
             <div className="mb-4 rounded-full bg-primary/10 p-3">
               <CalendarDays className="h-8 w-8 text-primary" />
             </div>
-            <h3 className="text-lg font-semibold">Nenhum ano catequético</h3>   
+            <h3 className="text-lg font-semibold">{t('empty_title')}</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              Crie o primeiro ano catequético para organizar etapas e turmas.   
+              {t('empty_desc')}
             </p>
             <Button size="sm" onClick={() => setShowForm(true)}>
-              <Plus className="mr-1 h-4 w-4" /> Criar ano catequético
+              <Plus className="mr-1 h-4 w-4" /> {t('create_btn')}
             </Button>
           </div>
         ) : (
@@ -135,19 +138,19 @@ export default function CatecheticalYearsPage() {
                       <CalendarDays className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-sm">{year.name}</h3>    
+                      <h3 className="font-semibold text-sm">{year.name}</h3>
                       {year.parish?.name && (
                         <p className="text-xs text-muted-foreground">{year.parish.name}</p>
                       )}
                     </div>
                   </div>
-                  <Badge variant={isActive(year) ? 'default' : 'secondary'}>    
-                    {isActive(year) ? 'Ativo' : 'Concluído'}
+                  <Badge variant={isActive(year) ? 'default' : 'secondary'}>
+                    {isActive(year) ? t('status_active') : t('status_concluded')}
                   </Badge>
                 </div>
-                <div className="text-xs text-muted-foreground space-y-1">       
-                  <p>Início: {new Date(year.startDate).toLocaleDateString('pt-BR')}</p>
-                  <p>Término: {new Date(year.endDate).toLocaleDateString('pt-BR')}</p>
+                <div className="text-xs text-muted-foreground space-y-1">
+                  <p>{t('start_label', { date: formatDate(year.startDate, currentLocale) })}</p>
+                  <p>{t('end_label', { date: formatDate(year.endDate, currentLocale) })}</p>
                 </div>
               </div>
             ))}

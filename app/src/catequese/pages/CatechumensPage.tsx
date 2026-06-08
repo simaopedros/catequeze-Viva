@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useQuery, listCatechumens } from 'wasp/client/operations';
 import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { GraduationCap, Plus, LayoutGrid, List, Upload, Calendar, Search } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
@@ -31,10 +32,11 @@ function getAge(birthDate: string): number | null {
 }
 
 export default function CatechumensPage() {
+  const { t, i18n } = useTranslation('common');
+  const { t: tn } = useTranslation('navigation');
   const { data: catechumens, isLoading } = useQuery(listCatechumens);
   const { activeParishId } = useActiveParish();
   const { userRole } = useUserContext();
-  // Only coordinators, catechists, and personal owners can manage catechumens
   const canManageCatechumens = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'PERSONAL_OWNER'].includes(userRole);
   const [search, setSearch] = useState('');
   const [classFilter, setClassFilter] = useState('');
@@ -81,47 +83,47 @@ export default function CatechumensPage() {
     <AppShell>
       <div className="space-y-6">
         <PageHeader
-          title="Catequizandos"
-          subtitle={`${catechumens?.length || 0} catequizandos cadastrados`}
+          title={tn('catechumens')}
+          subtitle={t('catechumens.subtitle_registered', { count: catechumens?.length || 0 })}
         >
           <Button size="sm" variant="outline" onClick={() => setView(v => v === 'cards' ? 'table' : 'cards')}>
             {view === 'cards' ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
           </Button>
           {canManageCatechumens && (
             <>
-              <Button size="sm" variant="outline" asChild><Link to="/app/catechumens/import"><Upload className="mr-1 h-4 w-4" />Importar</Link></Button>
-              <Button size="sm" asChild><Link to="/app/catechumens/new"><Plus className="mr-1 h-4 w-4" />Novo</Link></Button>
+              <Button size="sm" variant="outline" asChild><Link to="/app/catechumens/import"><Upload className="mr-1 h-4 w-4" />{t('import')}</Link></Button>
+              <Button size="sm" asChild><Link to="/app/catechumens/new"><Plus className="mr-1 h-4 w-4" />{t('new')}</Link></Button>
             </>
           )}
         </PageHeader>
 
         <div className="flex flex-col sm:flex-row gap-3">
-          <SearchInput placeholder="Buscar por nome..." value={search} onChange={e => setSearch(e.target.value)} />
+          <SearchInput placeholder={t('catechumens.search_by_name')} value={search} onChange={e => setSearch(e.target.value)} />
           <select value={classFilter} onChange={e => setClassFilter(e.target.value)}
             className="flex h-9 w-44 rounded-md border border-input bg-background px-3 text-sm">
-            <option value="">Todas as turmas</option>
+            <option value="">{t('catechumens.all_classes')}</option>
             {classNames.map(n => <option key={n} value={n}>{n}</option>)}
           </select>
         </div>
 
         {filtered.length === 0 ? (
           hasFilters ? (
-            <EmptyState compact icon={Search} title="Nenhum resultado" description="Tente ajustar os filtros." />
+            <EmptyState compact icon={Search} title={t('no_results')} description={t('catechumens.adjust_filters')} />
           ) : (
             <EmptyState
               icon={GraduationCap}
-              title="Nenhum catequizando"
-              description="Cadastre catequizandos e vincule-os às turmas."
+              title={t('no_catechumens')}
+              description={t('catechumens.empty_desc')}
             >
               {canManageCatechumens && (
-                <Button className="mt-4" asChild><Link to="/app/catechumens/new">Cadastrar catequizando</Link></Button>
+                <Button className="mt-4" asChild><Link to="/app/catechumens/new">{t('create_catechumen')}</Link></Button>
               )}
             </EmptyState>
           )
         ) : view === 'table' ? (
           <div className="rounded-xl border bg-card overflow-x-auto">
             <table className="w-full">
-              <thead><tr className="border-b text-left text-xs text-muted-foreground uppercase"><th className="p-3 font-medium">Nome</th><th className="p-3 font-medium hidden md:table-cell">Idade</th><th className="p-3 font-medium hidden md:table-cell">Família</th><th className="p-3 font-medium hidden lg:table-cell">Turmas</th></tr></thead>
+              <thead><tr className="border-b text-left text-xs text-muted-foreground uppercase"><th className="p-3 font-medium">{t('first_name')}</th><th className="p-3 font-medium hidden md:table-cell">{t('age')}</th><th className="p-3 font-medium hidden md:table-cell">{t('catechumens.table_family')}</th><th className="p-3 font-medium hidden lg:table-cell">{t('catechumens.table_classes')}</th></tr></thead>
               <tbody>{filtered.map((c: any) => (
                 <tr key={c.id} className="border-b last:border-0 hover:bg-muted/30">
                   <td className="p-3">
@@ -129,10 +131,10 @@ export default function CatechumensPage() {
                       <div className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold overflow-hidden ${!c.photoUrl ? AVATAR_COLORS[Math.abs(c.firstName?.charCodeAt(0) || 0) % AVATAR_COLORS.length] : ''}`}>
                         {c.photoUrl ? <img src={c.photoUrl} className="w-full h-full object-cover" alt="" /> : `${c.firstName?.[0]}${c.lastName?.[0]}`}
                       </div>
-                      <div><p className="font-medium text-sm">{c.firstName} {c.lastName}</p>{c.birthDate && <p className="text-[10px] text-muted-foreground"><Calendar className="inline h-3 w-3 mr-0.5" />{new Date(c.birthDate).toLocaleDateString()}</p>}</div>
+                      <div><p className="font-medium text-sm">{c.firstName} {c.lastName}</p>{c.birthDate && <p className="text-[10px] text-muted-foreground"><Calendar className="inline h-3 w-3 mr-0.5" />{new Date(c.birthDate).toLocaleDateString(i18n.language)}</p>}</div>
                     </Link>
                   </td>
-                  <td className="p-3 hidden md:table-cell text-sm">{getAge(c.birthDate) ? `${getAge(c.birthDate)} anos` : '—'}</td>
+                  <td className="p-3 hidden md:table-cell text-sm">{getAge(c.birthDate) ? t('catechumens.years_old', { age: getAge(c.birthDate) }) : '—'}</td>
                   <td className="p-3 hidden md:table-cell text-sm">{c.household?.name || '—'}</td>
                   <td className="p-3 hidden lg:table-cell text-sm">{c.enrollments?.map((e: any) => e.class.name).join(', ') || '—'}</td>
                 </tr>
@@ -149,21 +151,21 @@ export default function CatechumensPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm truncate group-hover:text-primary">{c.firstName} {c.lastName}</p>
-                    <p className="text-[11px] text-muted-foreground">{getAge(c.birthDate) ? `${getAge(c.birthDate)} anos` : ''}{c.birthDate && ` · ${new Date(c.birthDate).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' })}`}</p>
+                    <p className="text-[11px] text-muted-foreground">{getAge(c.birthDate) ? t('catechumens.years_old', { age: getAge(c.birthDate) }) : ''}{c.birthDate && ` · ${new Date(c.birthDate).toLocaleDateString(i18n.language, { day: '2-digit', month: '2-digit', year: '2-digit' })}`}</p>
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {c.enrollments?.map((e: any) => (
                     <Badge key={e.id} variant="secondary" className="text-[10px]">{e.class?.name}</Badge>
                   ))}
-                  {(!c.enrollments || c.enrollments.length === 0) && <span className="text-[10px] text-muted-foreground">Sem turma</span>}
+                  {(!c.enrollments || c.enrollments.length === 0) && <span className="text-[10px] text-muted-foreground">{t('catechumens.no_class')}</span>}
                 </div>
                 {c.household?.name && <p className="mt-2 text-[10px] text-muted-foreground">👨‍👩‍👧 {c.household.name}</p>}
               </Link>
             ))}
           </div>
         )}
-        <p className="text-xs text-muted-foreground">{filtered.length} catequizando(s)</p>
+        <p className="text-xs text-muted-foreground">{t('catechumens.count', { count: filtered.length })}</p>
       </div>
     </AppShell>
   );

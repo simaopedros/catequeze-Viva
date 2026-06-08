@@ -1,0 +1,24 @@
+{
+  "title": "Dioceses",
+  "subtitle": "Gestão de dioceses (Super Admin)",
+  "new_diocese": "Nova diocese",
+  "name_placeholder": "Nome da diocese",
+  "create": "Criar",
+  "creating": "...",
+  "create_error": "Erro ao criar diocese.",
+  "update_error": "Erro ao atualizar.",
+  "empty_title": "Nenhuma diocese cadastrada",
+  "empty_desc": "Cadastre a primeira diocese para começar.",
+  "columns": {
+    "name": "Nome",
+    "country": "País",
+    "parishes": "Paróquias",
+    "actions": "Ações"
+  },
+  "countries": {
+    "BR": "Brasil",
+    "PT": "Portugal",
+    "AO": "Angola",
+    "MZ": "Moçambique"
+  }
+}

@@ -1,5 +1,6 @@
 import { useParams, Link, useNavigate } from 'react-router';
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { ArrowLeft, Save, Camera } from 'lucide-react';
 import { AppShell } from '../AppShell';
@@ -28,6 +29,7 @@ function compressImage(file: File): Promise<string> {
 }
 
 export default function EditCatechumenPage() {
+  const { t } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -49,7 +51,7 @@ export default function EditCatechumenPage() {
     })();
   }, [id]);
 
-  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => { 
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const compressed = await compressImage(file);
@@ -61,9 +63,11 @@ export default function EditCatechumenPage() {
     setSaving(true);
     try {
       await updateCatechumen({ id: id!, firstName, lastName, birthDate: birthDate || undefined, photoUrl: photo || undefined });
-      toast({ title: 'Catequizando atualizado com sucesso!' });
+      toast({ title: t('catechumens.updated_success') });
       navigate(`/app/catechumens/${id}`);
-    } catch (e: any) { toast({ title: 'Erro', description: 'Erro: ' + (e.message || ''), variant: 'destructive' }); }
+    } catch (e: any) {
+      toast({ title: t('error'), description: e.message || t('error_generic'), variant: 'destructive' });
+    }
     setSaving(false);
   };
 
@@ -72,26 +76,26 @@ export default function EditCatechumenPage() {
       <div className="max-w-lg mx-auto space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild><Link to={`/app/catechumens/${id}`}><ArrowLeft className="h-5 w-5" /></Link></Button>
-          <h1 className="text-2xl font-bold">Editar Catequizando</h1>
+          <h1 className="text-2xl font-bold">{t('catechumens.edit_title')}</h1>
         </div>
 
         <div className="flex flex-col items-center gap-3">
           <div className="relative w-24 h-24 rounded-full overflow-hidden bg-muted border-2 border-dashed cursor-pointer" onClick={() => fileRef.current?.click()}>
-            {photo ? <img src={photo} alt="Foto" className="w-full h-full object-cover" /> : <div className="flex items-center justify-center h-full text-muted-foreground"><Camera className="h-8 w-8" /></div>}
+            {photo ? <img src={photo} alt={t('catechumens.photo_alt')} className="w-full h-full object-cover" /> : <div className="flex items-center justify-center h-full text-muted-foreground"><Camera className="h-8 w-8" /></div>}
           </div>
           <input ref={fileRef} type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
-          <span className="text-xs text-muted-foreground">Clique para adicionar foto</span>
+          <span className="text-xs text-muted-foreground">{t('catechumens.add_photo')}</span>
         </div>
 
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
-            <div><label className="text-xs font-medium">Nome</label><input value={firstName} onChange={e => setFirstName(e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1" /></div>
-            <div><label className="text-xs font-medium">Sobrenome</label><input value={lastName} onChange={e => setLastName(e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1" /></div>
+            <div><label className="text-xs font-medium">{t('first_name')}</label><input value={firstName} onChange={e => setFirstName(e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1" /></div>
+            <div><label className="text-xs font-medium">{t('last_name')}</label><input value={lastName} onChange={e => setLastName(e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1" /></div>
           </div>
-          <div><label className="text-xs font-medium">Nascimento</label><input type="date" value={birthDate} onChange={e => setBirthDate(e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1" /></div>
+          <div><label className="text-xs font-medium">{t('catechumens.birth_short')}</label><input type="date" value={birthDate} onChange={e => setBirthDate(e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1" /></div>
           <div className="flex gap-3">
-            <Button onClick={handleSave} disabled={saving}><Save className="mr-1 h-4 w-4" />{saving ? 'Salvando...' : 'Salvar'}</Button>
-            <Button variant="outline" asChild><Link to={`/app/catechumens/${id}`}>Cancelar</Link></Button>
+            <Button onClick={handleSave} disabled={saving}><Save className="mr-1 h-4 w-4" />{saving ? t('saving') : t('save')}</Button>
+            <Button variant="outline" asChild><Link to={`/app/catechumens/${id}`}>{t('cancel')}</Link></Button>
           </div>
         </div>
       </div>

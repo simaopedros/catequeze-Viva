@@ -1,10 +1,11 @@
 import { useParams, Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { Printer, ArrowLeft, Clock } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { useQuery, getContentItem, listActivitiesByContent } from 'wasp/client/operations';
-import { ACTIVITY_TYPES } from '../components/ActivityForm';
+import { useActivityTypes } from '../../i18n/useLabels';
 
 function parseData(data: string | null): any {
   if (!data) return {};
@@ -12,15 +13,23 @@ function parseData(data: string | null): any {
 }
 
 export default function ContentPrintPage() {
+  const { t } = useTranslation('content');
+  const activityTypes = useActivityTypes();
   const { id } = useParams<{ id: string }>();
   const { data: item, isLoading } = useQuery(getContentItem, { id: id! });
   const { data: activities = [] } = useQuery(listActivitiesByContent, { contentId: id! });
+
+  const statusLabel = (status: string) => {
+    const key = `status_${status.toLowerCase()}` as const;
+    const translated = t(key);
+    return translated !== key ? translated : status;
+  };
 
   if (isLoading) {
     return (
       <AppShell>
         <div className="max-w-4xl mx-auto p-8 text-center">
-          <p className="text-muted-foreground">Carregando...</p>
+          <p className="text-muted-foreground">{t('print_page.loading')}</p>
         </div>
       </AppShell>
     );
@@ -29,7 +38,7 @@ export default function ContentPrintPage() {
   if (!item) {
     return (
       <AppShell>
-        <div className="p-6 text-destructive text-center">Conteúdo não encontrado.</div>
+        <div className="p-6 text-destructive text-center">{t('print_page.not_found')}</div>
       </AppShell>
     );
   }
@@ -54,12 +63,12 @@ export default function ContentPrintPage() {
       <AppShell>
         <div className="no-print max-w-4xl mx-auto px-4 pt-4 flex items-center justify-between">
           <Button variant="ghost" size="sm" asChild>
-            <Link to={`/app/content-library/${id}`}><ArrowLeft className="mr-1 h-4 w-4"/>Voltar</Link>
+            <Link to={`/app/content-library/${id}`}><ArrowLeft className="mr-1 h-4 w-4"/>{t('print_page.back')}</Link>
           </Button>
           <div className="flex gap-2">
-            <Badge variant="secondary">{item.status === 'DRAFT' ? 'Rascunho' : item.status}</Badge>
+            <Badge variant="secondary">{statusLabel(item.status)}</Badge>
             <Button onClick={() => window.print()} className="gap-2">
-              <Printer className="h-4 w-4"/>Imprimir / Salvar PDF
+              <Printer className="h-4 w-4"/>{t('print_page.print_pdf')}
             </Button>
           </div>
         </div>
@@ -67,34 +76,34 @@ export default function ContentPrintPage() {
         <div id="print-content" className="max-w-4xl mx-auto px-6 py-8 font-serif text-gray-900 bg-white">
           {/* Header */}
           <div className="text-center mb-8 print-section border-b-2 border-gray-300 pb-6">
-            <p className="text-xs text-gray-400 uppercase tracking-widest mb-4">Catequese Viva — Roteiro de Encontro</p>
+            <p className="text-xs text-gray-400 uppercase tracking-widest mb-4">{t('print_page.header_badge')}</p>
             <h1 className="text-2xl font-bold mb-2">{item.title}</h1>
             {item.theme && <p className="text-lg italic text-gray-600 mb-3">{item.theme}</p>}
             <div className="flex justify-center gap-4 text-sm text-gray-500">
-              {item.estimatedTime && <span><Clock className="inline h-4 w-4"/> {item.estimatedTime} min</span>}
-              {item.createdBy && <span>Preparado por: {item.createdBy.firstName} {item.createdBy.lastName}</span>}
+              {item.estimatedTime && <span><Clock className="inline h-4 w-4"/> {t('print_page.minutes', { count: item.estimatedTime })}</span>}
+              {item.createdBy && <span>{t('print_page.prepared_by', { name: `${item.createdBy.firstName} ${item.createdBy.lastName}` })}</span>}
             </div>
             <div className="mt-4 border-b-2 border-gray-300 w-32 mx-auto"/>
           </div>
 
           {/* Materials Checklist */}
           <div className="mb-6 p-4 bg-amber-50 rounded-lg border border-amber-200 print-section">
-            <h2 className="text-sm font-bold uppercase text-amber-700 mb-2">📋 Preparação de Materiais</h2>
+            <h2 className="text-sm font-bold uppercase text-amber-700 mb-2">{t('print_page.materials_title')}</h2>
             <div className="grid grid-cols-2 gap-1 text-sm">
-              <label className="flex items-center gap-2"><input type="checkbox" className="rounded" readOnly /> Bíblia (CNBB)</label>
-              <label className="flex items-center gap-2"><input type="checkbox" className="rounded" readOnly /> Catecismo (CIC)</label>
-              <label className="flex items-center gap-2"><input type="checkbox" className="rounded" readOnly /> Folhas de atividade</label>
-              <label className="flex items-center gap-2"><input type="checkbox" className="rounded" readOnly /> Canetas/lápis</label>
-              <label className="flex items-center gap-2"><input type="checkbox" className="rounded" readOnly /> Velas ou ícones</label>
-              <label className="flex items-center gap-2"><input type="checkbox" className="rounded" readOnly /> Música/áudio</label>
-              <li className="col-span-2"><input type="text" placeholder="Outros: ____________" className="border-0 border-b border-dashed border-gray-300 bg-transparent text-sm w-full outline-none" readOnly /></li>
+              <label className="flex items-center gap-2"><input type="checkbox" className="rounded" readOnly /> {t('print_page.material_bible')}</label>
+              <label className="flex items-center gap-2"><input type="checkbox" className="rounded" readOnly /> {t('print_page.material_catechism')}</label>
+              <label className="flex items-center gap-2"><input type="checkbox" className="rounded" readOnly /> {t('print_page.material_sheets')}</label>
+              <label className="flex items-center gap-2"><input type="checkbox" className="rounded" readOnly /> {t('print_page.material_pens')}</label>
+              <label className="flex items-center gap-2"><input type="checkbox" className="rounded" readOnly /> {t('print_page.material_candles')}</label>
+              <label className="flex items-center gap-2"><input type="checkbox" className="rounded" readOnly /> {t('print_page.material_music')}</label>
+              <li className="col-span-2"><input type="text" placeholder={t('print_page.material_other')} className="border-0 border-b border-dashed border-gray-300 bg-transparent text-sm w-full outline-none" readOnly /></li>
             </div>
           </div>
 
           {/* Pastoral Objective */}
           {item.pastoralObjective && (
             <div className="mb-6 print-section">
-              <h2 className="text-sm font-bold uppercase text-blue-700 mb-2">Objetivo Pastoral</h2>
+              <h2 className="text-sm font-bold uppercase text-blue-700 mb-2">{t('pastoral_objective')}</h2>
               <p>{item.pastoralObjective}</p>
             </div>
           )}
@@ -102,7 +111,7 @@ export default function ContentPrintPage() {
           {/* Opening Prayer */}
           {item.openingPrayer && (
             <div className="mb-6 p-4 bg-gray-50 rounded-lg border print-section ref-box">
-              <h2 className="text-sm font-bold uppercase text-blue-700 mb-2">🙏 Oração Inicial</h2>
+              <h2 className="text-sm font-bold uppercase text-blue-700 mb-2">{t('print_page.opening_prayer')}</h2>
               <p className="italic whitespace-pre-line">{item.openingPrayer}</p>
             </div>
           )}
@@ -110,7 +119,7 @@ export default function ContentPrintPage() {
           {/* Biblical Reading */}
           {item.biblicalRef && (
             <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-100 print-section ref-box">
-              <h2 className="text-sm font-bold uppercase text-blue-800 mb-2">📖 Momento da Palavra</h2>
+              <h2 className="text-sm font-bold uppercase text-blue-800 mb-2">{t('print_page.word_moment')}</h2>
               <p className="whitespace-pre-line text-sm">{item.biblicalRef}</p>
             </div>
           )}
@@ -118,7 +127,7 @@ export default function ContentPrintPage() {
           {/* Main Content */}
           {item.mainContent && (
             <div className="mb-6 print-section">
-              <h2 className="text-sm font-bold uppercase text-blue-700 mb-3">📚 Conteúdo Central</h2>
+              <h2 className="text-sm font-bold uppercase text-blue-700 mb-3">{t('print_page.central_content')}</h2>
               <div className="whitespace-pre-line leading-relaxed">{item.mainContent}</div>
             </div>
           )}
@@ -126,7 +135,7 @@ export default function ContentPrintPage() {
           {/* Dynamic */}
           {item.dynamic && (
             <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-100 print-section ref-box">
-              <h2 className="text-sm font-bold uppercase text-green-700 mb-2">🎯 Dinâmica / Atividade em Grupo</h2>
+              <h2 className="text-sm font-bold uppercase text-green-700 mb-2">{t('print_page.group_dynamic')}</h2>
               <div className="whitespace-pre-line">{item.dynamic}</div>
             </div>
           )}
@@ -134,7 +143,7 @@ export default function ContentPrintPage() {
           {/* Activity */}
           {item.activity && (
             <div className="mb-6 p-4 bg-yellow-50 rounded-lg border border-yellow-100 print-section ref-box">
-              <h2 className="text-sm font-bold uppercase text-yellow-700 mb-2">📝 Atividade</h2>
+              <h2 className="text-sm font-bold uppercase text-yellow-700 mb-2">{t('print_page.activity_section')}</h2>
               <div className="whitespace-pre-line">{item.activity}</div>
             </div>
           )}
@@ -142,7 +151,7 @@ export default function ContentPrintPage() {
           {/* Family Task */}
           {item.familyTask && (
             <div className="mb-6 p-4 bg-purple-50 rounded-lg border border-purple-100 print-section ref-box">
-              <h2 className="text-sm font-bold uppercase text-purple-700 mb-2">👨‍👩‍👧 Compromisso na Família</h2>
+              <h2 className="text-sm font-bold uppercase text-purple-700 mb-2">{t('print_page.family_commitment')}</h2>
               <p>{item.familyTask}</p>
             </div>
           )}
@@ -150,7 +159,7 @@ export default function ContentPrintPage() {
           {/* Closing Prayer */}
           {item.closingPrayer && (
             <div className="mb-6 p-4 bg-gray-50 rounded-lg border print-section ref-box">
-              <h2 className="text-sm font-bold uppercase text-blue-700 mb-2">🙏 Oração Final</h2>
+              <h2 className="text-sm font-bold uppercase text-blue-700 mb-2">{t('print_page.closing_prayer')}</h2>
               <p className="italic whitespace-pre-line">{item.closingPrayer}</p>
             </div>
           )}
@@ -158,7 +167,7 @@ export default function ContentPrintPage() {
           {/* Bible References */}
           {item.bibleRefs?.length > 0 && (
             <div className="mb-6 print-section">
-              <h2 className="text-sm font-bold uppercase text-blue-800 mb-3 border-b pb-2">📖 Referências Bíblicas</h2>
+              <h2 className="text-sm font-bold uppercase text-blue-800 mb-3 border-b pb-2">{t('print_page.bible_refs')}</h2>
               <div className="space-y-3">
                 {item.bibleRefs.map((ref: any) => (
                   <div key={ref.id} className="p-3 bg-blue-50 rounded-lg border border-blue-100 ref-box">
@@ -175,7 +184,7 @@ export default function ContentPrintPage() {
           {/* Catechism References */}
           {item.catechismRefs?.length > 0 && (
             <div className="mb-6 print-section">
-              <h2 className="text-sm font-bold uppercase text-amber-800 mb-3 border-b pb-2">📕 Catecismo da Igreja Católica</h2>
+              <h2 className="text-sm font-bold uppercase text-amber-800 mb-3 border-b pb-2">{t('print_page.catechism_refs')}</h2>
               <div className="space-y-3">
                 {item.catechismRefs.map((ref: any) => (
                   <div key={ref.id} className="p-3 bg-amber-50 rounded-lg border border-amber-100 ref-box">
@@ -191,16 +200,16 @@ export default function ContentPrintPage() {
           {/* Activities */}
           {activities.length > 0 && (
             <div className="mb-6 print-section">
-              <h2 className="text-sm font-bold uppercase text-blue-700 mb-3 border-b pb-2">❓ Atividades ({activities.length})</h2>
+              <h2 className="text-sm font-bold uppercase text-blue-700 mb-3 border-b pb-2">{t('print_page.activities_title', { count: activities.length })}</h2>
               <div className="space-y-6">
                 {activities.map((a: any, ai: number) => {
                   const data = parseData(a.data);
-                  const typeLabel = ACTIVITY_TYPES.find(t => t.value === a.type)?.label || a.type;
+                  const typeLabel = activityTypes.find(at => at.value === a.type)?.label || a.type;
 
                   return (
                     <div key={a.id} className="p-4 border rounded-lg print-section">
                       <h3 className="font-bold mb-1">
-                        {ai + 1}. {a.title} — {typeLabel} {a.points > 0 ? `(${a.points} pts)` : ''}
+                        {ai + 1}. {a.title} — {typeLabel} {a.points > 0 ? t('print_page.points', { count: a.points }) : ''}
                       </h3>
                       {a.description && <p className="text-sm text-gray-500 italic mb-3">{a.description}</p>}
 
@@ -253,7 +262,7 @@ export default function ContentPrintPage() {
                       {/* GROUP_DYNAMIC */}
                       {a.type === 'GROUP_DYNAMIC' && data.steps?.map((step: any, si: number) => (
                         <div key={step.id || si} className="mb-2 p-3 bg-gray-50 rounded">
-                          <p className="text-sm font-semibold">Passo {si + 1}: {step.instruction}</p>
+                          <p className="text-sm font-semibold">{t('print_page.step', { num: si + 1 })} {step.instruction}</p>
                           <div className="flex gap-4 text-xs text-gray-500 mt-1">
                             {step.duration && <span>⏱ {step.duration} min</span>}
                             {step.materials && <span>📦 {step.materials}</span>}
@@ -283,13 +292,13 @@ export default function ContentPrintPage() {
                       {a.type === 'MATCHING' && data.pairs && (
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-1">
-                            <p className="text-xs font-bold uppercase text-gray-500">Coluna A</p>
+                            <p className="text-xs font-bold uppercase text-gray-500">{t('print_page.column_a')}</p>
                             {data.pairs.map((p: any, pi: number) => (
                               <div key={p.id || pi} className="p-2 border rounded text-sm">{pi + 1}. {p.left}</div>
                             ))}
                           </div>
                           <div className="space-y-1">
-                            <p className="text-xs font-bold uppercase text-gray-500">Coluna B</p>
+                            <p className="text-xs font-bold uppercase text-gray-500">{t('print_page.column_b')}</p>
                             {[...data.pairs].sort(() => Math.random() - 0.5).map((p: any, pi: number) => (
                               <div key={p.id || pi} className="p-2 border rounded text-sm">{['A','B','C','D','E','F'][pi]}. {p.right}</div>
                             ))}
@@ -301,8 +310,8 @@ export default function ContentPrintPage() {
                       {a.type === 'TASK_WITH_ATTACHMENT' && (
                         <div className="p-4 bg-gray-50 rounded text-center">
                           <p className="text-4xl mb-2">📎</p>
-                          <p className="text-sm font-medium">Tarefa com entrega de arquivo</p>
-                          {data.requiresUpload && <p className="text-xs text-gray-500 mt-1">Requer upload</p>}
+                          <p className="text-sm font-medium">{t('print_page.task_attachment')}</p>
+                          {data.requiresUpload && <p className="text-xs text-gray-500 mt-1">{t('print_page.requires_upload')}</p>}
                         </div>
                       )}
 
@@ -319,7 +328,7 @@ export default function ContentPrintPage() {
 
           {/* Notes section */}
           <div className="mt-10 print-section">
-            <h2 className="text-sm font-bold uppercase text-gray-500 mb-3 border-b pb-2">📝 Anotações do Catequista</h2>
+            <h2 className="text-sm font-bold uppercase text-gray-500 mb-3 border-b pb-2">{t('print_page.catechist_notes')}</h2>
             <div className="border border-dashed border-gray-300 rounded-lg p-1" style={{ minHeight: '120px' }}>
               <div className="w-full" style={{ minHeight: '100px' }} />
             </div>
@@ -327,7 +336,7 @@ export default function ContentPrintPage() {
 
           {/* Footer */}
           <div className="text-center text-xs text-gray-400 mt-12 pt-6 border-t print-section">
-            <p>Material gerado pela plataforma <strong>Catequese Viva</strong></p>
+            <p>{t('print_page.footer')}</p>
           </div>
         </div>
       </AppShell>
