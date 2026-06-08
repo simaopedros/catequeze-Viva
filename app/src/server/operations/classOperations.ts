@@ -1,6 +1,6 @@
 import { HttpError } from 'wasp/server';
 import { validateOrThrow, createClassSchema, updateClassSchema } from '../validation';
-import { requireClassAccess, getEffectiveParishRole, isCoordinatorOrAboveRole } from '../auth/helpers';
+import { requireClassAccess, getEffectiveParishRole, isCoordinatorOrAboveRole, getDioceseParishIds } from '../auth/helpers';
 import { ClassStatus, CatechistAssignmentRole, EnrollmentStatus, MembershipStatus } from '@prisma/client';
 import { assertCanCreateClass, assertCanEnrollCatechumen } from './billingEnforcement';
 import { ensurePersonalWorkspace } from './workspaceOperations';
@@ -59,6 +59,18 @@ export const listClasses = async (_args: { communityId?: string; workspaceId?: s
   const relevantMemberships = args.workspaceId
     ? memberships.filter((m: { parishId: string; role: string }) => m.parishId === args.workspaceId)
     : memberships;
+
+  // DIOCESE_ADMIN: if filtering by workspace and no direct membership found,
+  // check diocese access and add a virtual coordinator-level entry.
+  if (args.workspaceId && relevantMemberships.length === 0 && !personalParishId) {
+    const dioceseAdminMembership = memberships.find((m: any) => m.role === 'DIOCESE_ADMIN');
+    if (dioceseAdminMembership) {
+      const dioceseParishIds = await getDioceseParishIds(context);
+      if (dioceseParishIds.includes(args.workspaceId)) {
+        relevantMemberships.push({ parishId: args.workspaceId, role: 'DIOCESE_ADMIN' } as any);
+      }
+    }
+  }
 
   if (relevantMemberships.length === 0 && !personalParishId) return [];
 

@@ -76,7 +76,9 @@
       "Bash(from *)",
       "Bash(union *)",
       "Bash(*)",
-      "Skill(getting-started)"
+      "Skill(getting-started)",
+      "Bash(cp *)",
+      "Read(//home/simaopedros/catequese-viva/**)"
     ]
   },
   "$version": 4

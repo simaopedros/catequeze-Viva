@@ -1,5 +1,5 @@
 import { HttpError } from 'wasp/server';
-import { requireAuth } from '../auth/helpers';
+import { requireAuth, getDioceseParishIds } from '../auth/helpers';
 
 const STAFF_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'];
 
@@ -17,10 +17,18 @@ export const listMessageTemplates = async (_args: void, context: any) => {
 
   const memberships = await context.entities.Membership.findMany({
     where: { userId: context.user.id, status: 'ACTIVE' },
-    select: { parishId: true },
+    select: { parishId: true, role: true },
   });
 
   const parishIds = memberships.map((m: any) => m.parishId);
+
+  // DIOCESE_ADMIN: include all parishes in the diocese
+  if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
+    const dioceseParishIds = await getDioceseParishIds(context);
+    for (const id of dioceseParishIds) {
+      if (!parishIds.includes(id)) parishIds.push(id);
+    }
+  }
 
   return context.entities.MessageTemplate.findMany({
     where: {

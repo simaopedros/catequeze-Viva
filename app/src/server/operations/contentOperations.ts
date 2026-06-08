@@ -1,5 +1,6 @@
 import { HttpError } from 'wasp/server';
 import { MembershipStatus } from '@prisma/client';
+import { getDioceseParishIds } from '../auth/helpers';
 
 function isCoordinatorOrAbove(role: string): boolean {
   return ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(role);
@@ -26,9 +27,19 @@ async function getParishIds(context: any): Promise<string[]> {
   if (context.user?.isAdmin) return [];
   const memberships = await context.entities.Membership.findMany({
     where: { userId: context.user.id, status: 'ACTIVE' },
-    select: { parishId: true },
+    select: { parishId: true, role: true },
   });
-  return memberships.map((m: any) => m.parishId);
+  const ids = memberships.map((m: any) => m.parishId);
+
+  // DIOCESE_ADMIN: include all parishes in the diocese
+  if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
+    const dioceseParishIds = await getDioceseParishIds(context);
+    for (const id of dioceseParishIds) {
+      if (!ids.includes(id)) ids.push(id);
+    }
+  }
+
+  return ids;
 }
 
 export const listContentItems = async (_args: void, context: any) => {

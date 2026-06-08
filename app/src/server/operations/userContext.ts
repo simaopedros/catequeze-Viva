@@ -1,5 +1,6 @@
 import { HttpError } from 'wasp/server';
 import { UserRole, MembershipStatus } from '@prisma/client';
+import { getDioceseParishIds } from '../auth/helpers';
 
 type UserContextResult = {
   userId: string;
@@ -41,6 +42,43 @@ export const getCurrentUserContext = async (
     select: { id: true },
   });
 
+  // Build the memberships result array
+  const result: UserContextResult['memberships'] = memberships.map((m: any) => ({
+    id: m.id,
+    parishId: m.parishId,
+    parishName: m.parish.name,
+    role: m.role,
+    status: m.status,
+    communityId: m.communityId,
+    communityName: m.community?.name || null,
+    parishType: m.parish.type,
+  }));
+
+  // DIOCESE_ADMIN: add virtual memberships for all parishes in the diocese
+  // so the client can resolve the user's role when switching workspaces.
+  if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
+    const dioceseParishIds = await getDioceseParishIds(context);
+    const existingIds = new Set(result.map((m: any) => m.parishId));
+    for (const parishId of dioceseParishIds) {
+      if (existingIds.has(parishId)) continue;
+      const parish = await context.entities.Parish.findUnique({
+        where: { id: parishId },
+        select: { id: true, name: true, type: true },
+      });
+      if (!parish) continue;
+      result.push({
+        id: `virtual-diocese-${parish.id}`,
+        parishId: parish.id,
+        parishName: parish.name,
+        role: 'DIOCESE_ADMIN',
+        status: 'ACTIVE',
+        communityId: null,
+        communityName: null,
+        parishType: parish.type,
+      });
+    }
+  }
+
   return {
     userId: context.user.id,
     isAdmin: context.user.isAdmin,
@@ -48,15 +86,6 @@ export const getCurrentUserContext = async (
     needsOnboarding: context.user.isAdmin
       ? false
       : memberships.length === 0 && !personalWorkspace,
-    memberships: memberships.map((m: any) => ({
-      id: m.id,
-      parishId: m.parishId,
-      parishName: m.parish.name,
-      role: m.role,
-      status: m.status,
-      communityId: m.communityId,
-      communityName: m.community?.name || null,
-      parishType: m.parish.type,
-    })),
+    memberships: result,
   };
 };

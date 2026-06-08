@@ -77,7 +77,9 @@
       "Bash(union *)",
       "Bash(*)",
       "Skill(getting-started)",
-      "Bash(cp *)"
+      "Bash(cp *)",
+      "Read(//home/simaopedros/catequese-viva/**)",
+      "Bash(/home/simaopedros/catequese-viva/app/node_modules/.bin/vitest *)"
     ]
   },
   "$version": 4

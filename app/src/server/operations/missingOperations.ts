@@ -1,6 +1,24 @@
 import { HttpError } from 'wasp/server';
 import { createMessageCampaignSchema } from '../validation';
-import { requireAuth, getUserMembership, requireParishRole } from '../auth/helpers';
+import { requireAuth, getUserMembership, requireParishRole, getDioceseParishIds } from '../auth/helpers';
+
+/** Build parishId list from memberships + diocese expansion */
+async function getEffectiveParishIds(context: any): Promise<string[]> {
+  const memberships = await context.entities.Membership.findMany({
+    where: { userId: context.user.id, status: 'ACTIVE' },
+    select: { parishId: true, role: true },
+  });
+  const ids = memberships.map((m: any) => m.parishId);
+
+  if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
+    const dioceseParishIds = await getDioceseParishIds(context);
+    for (const id of dioceseParishIds) {
+      if (!ids.includes(id)) ids.push(id);
+    }
+  }
+
+  return ids;
+}
 
 // listCatecheticalYears — escopo por paróquia
 export const listCatecheticalYears = async (_args: void, context: any) => {
@@ -10,15 +28,11 @@ export const listCatecheticalYears = async (_args: void, context: any) => {
     return context.entities.CatecheticalYear.findMany({ orderBy: { startDate: 'desc' } });
   }
 
-  const memberships = await context.entities.Membership.findMany({
-    where: { userId: context.user.id, status: 'ACTIVE' },
-    select: { parishId: true },
-  });
-
-  if (memberships.length === 0) return [];
+  const parishIds = await getEffectiveParishIds(context);
+  if (parishIds.length === 0) return [];
 
   return context.entities.CatecheticalYear.findMany({
-    where: { parishId: { in: memberships.map((m: any) => m.parishId) } },
+    where: { parishId: { in: parishIds } },
     orderBy: { startDate: 'desc' },
   });
 };
@@ -61,17 +75,13 @@ export const listMessageCampaigns = async (_args: void, context: any) => {
     return context.entities.MessageCampaign.findMany({ orderBy: { createdAt: 'desc' }, take: 20 });
   }
 
-  const memberships = await context.entities.Membership.findMany({
-    where: { userId: context.user.id, status: 'ACTIVE' },
-    select: { parishId: true },
-  });
-
-  if (memberships.length === 0) return [];
+  const parishIds = await getEffectiveParishIds(context);
+  if (parishIds.length === 0) return [];
 
   return context.entities.MessageCampaign.findMany({
     where: {
       OR: [
-        { parishId: { in: memberships.map((m: any) => m.parishId) } },
+        { parishId: { in: parishIds } },
         { createdById: context.user.id },
       ],
     },
@@ -118,12 +128,9 @@ export const exportReport = async (_args: void, context: any) => {
 
   let whereClause: any = { status: 'ACTIVE' };
   if (!context.user.isAdmin) {
-    const memberships = await context.entities.Membership.findMany({
-      where: { userId: context.user.id, status: 'ACTIVE' },
-      select: { parishId: true },
-    });
-    if (memberships.length === 0) return [];
-    whereClause.parishId = { in: memberships.map((m: any) => m.parishId) };
+    const parishIds = await getEffectiveParishIds(context);
+    if (parishIds.length === 0) return [];
+    whereClause.parishId = { in: parishIds };
   }
 
   const reports = await context.entities.CatechesisClass.findMany({

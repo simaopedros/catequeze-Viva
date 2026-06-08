@@ -1,4 +1,5 @@
 import { HttpError } from 'wasp/server';
+import { getDioceseParishIds } from '../auth/helpers';
 
 export const getDashboardStats = async (args: { parishId?: string }, context: any) => {
   if (!context.user) throw new HttpError(401);
@@ -24,6 +25,17 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
       if (!parishIds.includes(personal.id)) {
         parishIds.push(personal.id);
         roles.push('PERSONAL_OWNER');
+      }
+    }
+  }
+
+  // DIOCESE_ADMIN: include all parishes in the diocese for access validation
+  if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
+    const dioceseParishIds = await getDioceseParishIds(context);
+    for (const id of dioceseParishIds) {
+      if (!parishIds.includes(id)) {
+        parishIds.push(id);
+        roles.push('DIOCESE_ADMIN');
       }
     }
   }

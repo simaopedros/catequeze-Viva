@@ -1,6 +1,6 @@
 import { HttpError } from 'wasp/server';
 import { validateOrThrow, uploadDocumentSchema, verifyDocumentSchema } from '../validation';
-import { requireAuth, writeAuditLog } from '../auth/helpers';
+import { requireAuth, writeAuditLog, getDioceseParishIds } from '../auth/helpers';
 import * as fs from 'fs';
 import {
   UPLOADS_DIR,
@@ -31,6 +31,14 @@ export const listDocuments = async (_args: void, context: any) => {
 
   const roles = memberships.map((m: any) => m.role);
   const parishIds = memberships.map((m: any) => m.parishId);
+
+  // DIOCESE_ADMIN: include all parishes in the diocese
+  if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
+    const dioceseParishIds = await getDioceseParishIds(context);
+    for (const id of dioceseParishIds) {
+      if (!parishIds.includes(id)) parishIds.push(id);
+    }
+  }
 
   // Coordinator and above: all documents from parish
   if (roles.some((r: string) => ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(r))) {

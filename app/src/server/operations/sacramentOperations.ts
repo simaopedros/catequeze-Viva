@@ -1,6 +1,6 @@
 import { HttpError } from 'wasp/server';
 import { validateOrThrow, createSacramentalJourneySchema, updateMilestoneStatusSchema, updateJourneySchema, createTemplateSchema, updateTemplateSchema, updateMilestoneTemplateSchema, deleteMilestoneTemplateSchema, copyTemplateSchema, publishTemplateSchema } from '../validation';
-import { requireAuth, getEffectiveParishRole, isCoordinatorOrAboveRole } from '../auth/helpers';
+import { requireAuth, getEffectiveParishRole, isCoordinatorOrAboveRole, getDioceseParishIds } from '../auth/helpers';
 import { ensureSacramentalJourneyForCatechumen } from '../sacramentHelpers';
 
 /** Get all effective parish IDs and roles for the current user, including personal workspace */
@@ -19,6 +19,15 @@ async function getEffectiveParishScope(context: any): Promise<{ parishIds: strin
   if (personalWorkspace) {
     if (!parishIds.includes(personalWorkspace.id)) parishIds.push(personalWorkspace.id);
     if (!roles.includes('PERSONAL_OWNER')) roles.push('PERSONAL_OWNER');
+  }
+
+  // DIOCESE_ADMIN: include all parishes in the diocese
+  if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
+    const dioceseParishIds = await getDioceseParishIds(context);
+    for (const id of dioceseParishIds) {
+      if (!parishIds.includes(id)) parishIds.push(id);
+    }
+    if (!roles.includes('DIOCESE_ADMIN')) roles.push('DIOCESE_ADMIN');
   }
 
   return { parishIds, roles };
