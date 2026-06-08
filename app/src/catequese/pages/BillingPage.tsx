@@ -35,9 +35,9 @@ const ALL_PLANS: PlanCard[] = [
     planId: PaymentPlanId.CatechistFree,
     name: 'Catequista Grátis',
     price: 'Grátis',
-    maxClasses: 2,
-    maxCatechumens: 30,
-    features: ['2 turmas', 'Até 30 catequizandos', 'Presença básica', 'Suporte comunitário'],
+    maxClasses: 1,
+    maxCatechumens: 15,
+    features: ['1 turma', '15 catequizandos', 'Presença básica', 'Calendário litúrgico', '3 créditos IA iniciais'],
     color: 'bg-success/10 border-success/30',
     highlight: false,
     isFree: true,
@@ -45,13 +45,13 @@ const ALL_PLANS: PlanCard[] = [
   {
     planId: PaymentPlanId.CatechistPro,
     name: 'Catequista Pro',
-    price: 'R$ 9/mês',
-    priceCents: 900,
-    annualPrice: 'R$ 90/ano (R$ 7,50/mês)',
-    priceCentsAnnual: 9000,
-    maxClasses: null,
-    maxCatechumens: null,
-    features: ['Turmas ilimitadas', 'Catequizandos ilimitados', 'Relatórios avançados', 'Suporte prioritário', '2 créditos IA/mês (amostra)'],
+    price: 'R$ 19/mês',
+    priceCents: 1900,
+    annualPrice: 'R$ 190/ano (R$ 15,83/mês)',
+    priceCentsAnnual: 19000,
+    maxClasses: 3,
+    maxCatechumens: 150,
+    features: ['3 turmas', '150 catequizandos', 'Relatórios avançados', 'Suporte prioritário', '5 créditos IA/mês'],
     color: 'bg-primary/10 border-primary/30',
     highlight: false,
     isFree: false,
@@ -59,41 +59,55 @@ const ALL_PLANS: PlanCard[] = [
   {
     planId: PaymentPlanId.CatechistAi,
     name: 'Catequista IA',
-    price: 'R$ 29/mês',
-    priceCents: 2900,
-    annualPrice: 'R$ 290/ano (R$ 24/mês)',
-    priceCentsAnnual: 29000,
+    price: 'R$ 39/mês',
+    priceCents: 3900,
+    annualPrice: 'R$ 390/ano (R$ 32,50/mês)',
+    priceCentsAnnual: 39000,
     maxClasses: null,
     maxCatechumens: null,
-    features: ['Tudo do Pro', 'Gerador de encontros por IA', 'Planejamento anual automático', 'Gerador de atividades e quizzes', 'Assistente teológico', 'Mensagens WhatsApp', '15 créditos/mês'],
+    features: ['Tudo do Pro', 'Gerador de encontros por IA', 'Planejamento anual automático', 'Atividades e quizzes', 'Assistente teológico', 'Mensagens WhatsApp', '20 créditos/mês'],
     color: 'bg-accent/10 border-accent/40',
     highlight: true,
     isFree: false,
   },
   {
-    planId: PaymentPlanId.Parish,
-    name: 'Paróquia',
-    price: 'R$ 49/mês',
-    priceCents: 4900,
-    annualPrice: 'R$ 490/ano (R$ 41/mês)',
-    priceCentsAnnual: 49000,
+    planId: PaymentPlanId.ParishEssential,
+    name: 'Paróquia Essencial',
+    price: 'R$ 79/mês',
+    priceCents: 7900,
+    annualPrice: 'R$ 790/ano (R$ 65,83/mês)',
+    priceCentsAnnual: 79000,
     maxClasses: null,
-    maxCatechumens: null,
-    features: ['Tudo do IA', 'Multi-catequista', 'Turmas ilimitadas', 'Comunicação integrada', 'Documentos e certidões', 'Consentimentos LGPD', 'Painel do coordenador', '50 créditos de IA/mês'],
+    maxCatechumens: 200,
+    features: ['5 catequistas', '200 catequizandos', 'Turmas ilimitadas', 'Comunicação integrada', 'Documentos e certidões', 'Painel do coordenador', '30 créditos IA/mês'],
     color: 'bg-secondary/10 border-secondary/30',
     highlight: false,
     isFree: false,
   },
   {
-    planId: PaymentPlanId.Diocese,
-    name: 'Diocese',
-    price: 'R$ 149/mês',
-    priceCents: 14900,
-    annualPrice: 'R$ 1.490/ano (R$ 124/mês)',
-    priceCentsAnnual: 149000,
+    planId: PaymentPlanId.ParishComplete,
+    name: 'Paróquia Completa',
+    price: 'R$ 129/mês',
+    priceCents: 12900,
+    annualPrice: 'R$ 1.290/ano (R$ 107,50/mês)',
+    priceCentsAnnual: 129000,
     maxClasses: null,
     maxCatechumens: null,
-    features: ['Tudo do Paróquia', 'Multi-paróquia', 'Biblioteca oficial', 'Analytics consolidado', 'Gestão centralizada', 'Suporte prioritário', '50 créditos IA/mês por usuário'],
+    features: ['Catequistas ilimitados', 'Catequizandos ilimitados', 'Tudo da Essencial', 'API de integração', 'Onboarding dedicado', '50 créditos IA/mês'],
+    color: 'bg-secondary/10 border-secondary/30',
+    highlight: true,
+    isFree: false,
+  },
+  {
+    planId: PaymentPlanId.Diocese,
+    name: 'Diocese',
+    price: 'R$ 449/mês',
+    priceCents: 44900,
+    annualPrice: 'R$ 4.490/ano (R$ 374/mês)',
+    priceCentsAnnual: 449000,
+    maxClasses: null,
+    maxCatechumens: null,
+    features: ['Até 10 paróquias', 'Tudo da Completa', 'Biblioteca oficial', 'Analytics consolidado', 'Onboarding dedicado', '50 créditos IA por paróquia/mês'],
     color: 'bg-warning/10 border-warning/30',
     highlight: false,
     isFree: false,
@@ -144,8 +158,12 @@ export default function BillingPage() {
       (pBilling.status === 'TRIAL' && pBilling.trialEndsAt && new Date(pBilling.trialEndsAt) >= new Date());
 
     if (isBillingActive) {
-      if (planUpper === 'PARISH') {
-        effectivePlanId = PaymentPlanId.Parish;
+      if (planUpper === 'PARISH' || planUpper === 'PARISH_COMPLETE') {
+        effectivePlanId = PaymentPlanId.ParishComplete;
+        isActive = true;
+        isParishManaged = true;
+      } else if (planUpper === 'PARISH_ESSENTIAL') {
+        effectivePlanId = PaymentPlanId.ParishEssential;
         isActive = true;
         isParishManaged = true;
       } else if (planUpper === 'DIOCESE') {
@@ -162,19 +180,16 @@ export default function BillingPage() {
   const isPlanManager =
     user?.isAdmin ||
     (!isParishManaged) ||
-    (effectivePlanId === PaymentPlanId.Parish && parish?.ownerId === user?.id) ||
+    ((effectivePlanId === PaymentPlanId.Parish || effectivePlanId === PaymentPlanId.ParishEssential || effectivePlanId === PaymentPlanId.ParishComplete) && parish?.ownerId === user?.id) ||
     (effectivePlanId === PaymentPlanId.Diocese && parish?.dioceseAdmins?.some((da: any) => da.user?.id === user?.id));
 
   // Show plans filtered by context: personal vs institutional
   const visiblePlans = ALL_PLANS.filter((plan) => {
-    // Remove add-on plans that aren't implemented yet (CatechistAiAddon already removed)
-    // Personal workspace: only individual plans (CatechistGrátis, CatechistPro, CatechistAI)
-    // Institutional workspace: only institutional plans (Parish, Diocese) + individual as reference
     if (isPersonal || (!parishId && !parish)) {
       // Personal context: show individual plans only
       return [PaymentPlanId.CatechistFree, PaymentPlanId.CatechistPro, PaymentPlanId.CatechistAi].includes(plan.planId);
     }
-    // Institutional context: show all
+    // Institutional context: show all (personal as reference + institutional)
     return true;
   });
 
@@ -206,7 +221,7 @@ export default function BillingPage() {
     setError(null);
     setUpgradingPlan(planId);
     try {
-      const result = await generateCheckoutSession(planId);
+      const result = await generateCheckoutSession({ planId, interval: 'monthly' });
       if (result.sessionUrl) {
         window.location.href = result.sessionUrl;
       }
@@ -447,7 +462,7 @@ export default function BillingPage() {
                   <Button variant="outline" className="w-full text-xs" disabled>
                     Plano base
                   </Button>
-                ) : (plan.planId === PaymentPlanId.Parish || plan.planId === PaymentPlanId.Diocese) && !user?.isAdmin && parish?.ownerId !== user?.id ? (
+                ) : [PaymentPlanId.Parish, PaymentPlanId.ParishEssential, PaymentPlanId.ParishComplete, PaymentPlanId.Diocese].includes(plan.planId) && !user?.isAdmin && parish?.ownerId !== user?.id ? (
                   <Button variant="outline" className="w-full text-xs" disabled title="Requer administrador da paróquia">
                     Plano institucional
                   </Button>

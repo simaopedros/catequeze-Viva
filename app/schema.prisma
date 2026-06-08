@@ -168,7 +168,9 @@ enum BillingPlan {
   CATECHIST_FREE
   CATECHIST_PRO
   CATECHIST_AI
-  PARISH
+  PARISH                // legacy — aliased to PARISH_COMPLETE via pricing.ts
+  PARISH_ESSENTIAL
+  PARISH_COMPLETE
   DIOCESE
 }
 
@@ -254,6 +256,9 @@ model User {
   datePaid                      DateTime?
   credits                       Int       @default(3)
   wooviCorrelationId            String?   @unique
+
+  // Pricing version (grandfathering)
+  pricingVersion      Int?          @default(2)
 
   // Catequese Viva relations
   memberships         Membership[]
@@ -405,8 +410,12 @@ model Membership {
   role   UserRole         @default(PARISH_COORDINATOR)
   status MembershipStatus @default(ACTIVE)
 
+  inviteToken          String?   @unique
+  inviteTokenExpiresAt DateTime?
+
   @@index([userId, parishId])
   @@index([parishId])
+  @@index([inviteToken])
 }
 
 // Invitation for an email address that does not yet have a User account.
@@ -419,6 +428,9 @@ model PendingInvitation {
 
   email String
 
+  token     String   @unique @default(uuid())
+  expiresAt DateTime
+
   parishId String
   parish   Parish @relation(fields: [parishId], references: [id], onDelete: Cascade)
 
@@ -427,11 +439,11 @@ model PendingInvitation {
 
   role        UserRole  @default(PASTORAL_VIEWER)
   invitedById String?
-  expiresAt   DateTime?
 
   @@unique([email, parishId])
   @@index([email])
   @@index([parishId])
+  @@index([token])
 }
 
 // ─── Catechetical Year ────────────────────────────────────────────────────────
@@ -592,6 +604,7 @@ model GuardianProfile {
   userId String? @unique
   user   User?   @relation(fields: [userId], references: [id])
 
+  email        String?
   firstName    String?
   lastName     String?
   householdId  String?
@@ -602,6 +615,7 @@ model GuardianProfile {
 
   @@index([householdId])
   @@index([userId])
+  @@index([email])
 }
 
 model CatechumenProfile {
@@ -611,6 +625,7 @@ model CatechumenProfile {
 
   firstName String
   lastName  String
+  email     String?
   birthDate DateTime?
   photoUrl  String?
   userId    String?
@@ -634,6 +649,7 @@ model CatechumenProfile {
   @@index([householdId])
   @@index([userId])
   @@index([parishId])
+  @@index([email])
 }
 
 // ─── Meetings & Attendance ────────────────────────────────────────────────────
@@ -1162,6 +1178,9 @@ model TenantBilling {
   currentPeriodEnd    DateTime?
   maxClasses          Int?
   maxCatechumens      Int?
+  maxCatechists       Int?
+  maxParishes         Int?
+  pricingVersion      Int?          @default(2)
   wooviCorrelationId  String?       @unique
 }
 
@@ -1314,6 +1333,26 @@ model AuditLog {
   user   User?   @relation(fields: [userId], references: [id])
 
   parishId String?
+}
+
+model PricingEvent {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  userId    String?
+  event     String   // 'checkout_started' | 'checkout_completed' | 'checkout_abandoned' | 'plan_upgraded' | 'plan_downgraded'
+  sessionId String?  // correlacionar started → completed
+
+  fromPlan       String?
+  toPlan         String?
+  processor      String?  // stripe | woovi
+  interval       String?  // monthly | annual
+  pricingVersion Int?
+
+  @@index([userId])
+  @@index([event])
+  @@index([createdAt])
+  @@index([sessionId])
 }
 
 model DailyStats {

@@ -14,7 +14,11 @@ export const paymentProcessorPlanIds = {
   [PaymentPlanId.CatechistPro]: env.STRIPE_CATECHIST_PRO_PLAN_ID,
   [PaymentPlanId.CatechistAi]: env.STRIPE_CATECHIST_AI_PLAN_ID,
   [PaymentPlanId.CatechistAiAddon]: "catechist_ai_addon",
+  [PaymentPlanId.AiCredits20]: env.STRIPE_AI_CREDITS_20_PLAN_ID ?? "ai_credits_20",
+  [PaymentPlanId.AiCredits50]: env.STRIPE_AI_CREDITS_50_PLAN_ID ?? "ai_credits_50",
   [PaymentPlanId.Parish]: env.STRIPE_PARISH_PLAN_ID,
+  [PaymentPlanId.ParishEssential]: env.STRIPE_PARISH_ESSENTIAL_PLAN_ID,
+  [PaymentPlanId.ParishComplete]: env.STRIPE_PARISH_COMPLETE_PLAN_ID,
   [PaymentPlanId.Diocese]: env.STRIPE_DIOCESE_PLAN_ID,
 } as const satisfies Record<PaymentPlanId, string>;
 

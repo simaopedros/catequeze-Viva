@@ -1,17 +1,34 @@
 import { Link, useNavigate } from 'react-router';
 import { useState, useMemo } from 'react';
 import { Button } from '../../client/components/ui/button';
-import { ArrowLeft, Save, UserPlus, Plus } from 'lucide-react';
+import { ArrowLeft, Save, UserPlus, Plus, AlertTriangle } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { useQuery, listHouseholds, createCatechumen } from 'wasp/client/operations';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
 import { toast } from '../../client/hooks/use-toast';
+import { useUserContext } from '../../client/hooks/useUserContext';
 import CreateHouseholdModal from '../components/CreateHouseholdModal';
 
 export default function CreateCatechumenPage() {
   const navigate = useNavigate();
   const { activeParishId } = useActiveParish();
+  const { userRole } = useUserContext();
   const { data: households = [], refetch: refetchHouseholds } = useQuery(listHouseholds);
+
+  // Block GUARDIAN and CATECHUMEN from creating catechumens
+  const canManage = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'PERSONAL_OWNER'].includes(userRole);
+  if (!canManage) {
+    return (
+      <AppShell>
+        <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+          <AlertTriangle className="h-12 w-12 text-destructive" />
+          <h1 className="text-xl font-bold">Acesso Restrito</h1>
+          <p className="text-muted-foreground max-w-md">Apenas coordenadores e catequistas podem cadastrar catequizandos.</p>
+          <Button variant="outline" onClick={() => navigate('/app/catechumens')}>Voltar</Button>
+        </div>
+      </AppShell>
+    );
+  }
 
   const filteredHouseholds = useMemo(() => {
     if (!activeParishId) return households;

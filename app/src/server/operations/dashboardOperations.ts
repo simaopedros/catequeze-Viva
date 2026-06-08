@@ -44,6 +44,16 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
     return { activeCatechumens: 0, activeClasses: 0, avgAttendance: 0, pendingSacraments: 0, recentAlerts: [], aniversariantes: [], upcomingMeetings: [], reviewQueue: [], myClasses: [] };
   }
 
+  // GUARDIAN: scope stats to the guardian's household, not the whole parish
+  let guardianHouseholdId: string | null = null;
+  if (roles.includes('GUARDIAN') && !roles.some((r: string) => ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'DIOCESE_ADMIN', 'PERSONAL_OWNER'].includes(r))) {
+    const guardianProfile = await context.entities.GuardianProfile.findFirst({
+      where: { userId: context.user.id },
+      select: { householdId: true },
+    });
+    guardianHouseholdId = guardianProfile?.householdId || null;
+  }
+
   // Validate args.parishId belongs to user
   if (args.parishId && !isAdmin && !parishIds.includes(args.parishId)) {
     throw new HttpError(403, 'Voce nao tem acesso a esta paroquia.');
@@ -53,22 +63,33 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
     ? { parishId: args.parishId }
     : isAdmin ? {} : { parishId: { in: parishIds } };
 
+  // For GUARDIAN, scope catechumen-related stats to household
+  const catechumenWhere = guardianHouseholdId
+    ? { householdId: guardianHouseholdId }
+    : whereClause;
+
   const [activeClasses, totalEnrollments] = await Promise.all([
     context.entities.CatechesisClass.count({ where: { ...whereClause, status: 'ACTIVE' } }),
     context.entities.ClassEnrollment.count({ where: { status: 'ENROLLED', class: whereClause } }),
   ]);
 
   const pendingSacraments = await context.entities.SacramentalMilestone.count({
-    where: { status: { in: ['PENDING','IN_PROGRESS','WAITING_APPROVAL'] }, journey: { catechumenProfile: { enrollments: { some: { class: whereClause } } } } },
+    where: {
+      status: { in: ['PENDING','IN_PROGRESS','WAITING_APPROVAL'] },
+      journey: { catechumenProfile: guardianHouseholdId ? { householdId: guardianHouseholdId } : { enrollments: { some: { class: whereClause } } } },
+    },
   });
 
-  // ─── avgAttendance (cálculo real baseado em registros) ──────────────────
+  // ─── avgAttendance — scoped to household for GUARDIAN ─────────────────
   let avgAttendance = 0;
+  const attendanceWhere = guardianHouseholdId
+    ? { meeting: { class: { enrollments: { some: { catechumenProfile: { householdId: guardianHouseholdId } } } } } }
+    : { meeting: { class: whereClause } };
   const attendanceTotal = await context.entities.AttendanceRecord.count({
-    where: { status: 'PRESENT', meeting: { class: whereClause } },
+    where: { status: 'PRESENT', ...attendanceWhere },
   });
   const attendanceRecordsTotal = await context.entities.AttendanceRecord.count({
-    where: { meeting: { class: whereClause } },
+    where: attendanceWhere,
   });
   if (attendanceRecordsTotal > 0) {
     avgAttendance = Math.round((attendanceTotal / attendanceRecordsTotal) * 100);
@@ -131,17 +152,49 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
       orderBy: { date: 'asc' },
       include: { class: { select: { id: true, name: true } } },
     });
+  } else if (guardianHouseholdId) {
+    // For guardian with no catechist roles, show meetings for their household's classes
+    const householdEnrollments = await context.entities.ClassEnrollment.findMany({
+      where: { catechumenProfile: { householdId: guardianHouseholdId }, status: 'ENROLLED' },
+      select: { classId: true },
+    });
+    const householdClassIds = [...new Set(householdEnrollments.map((e: any) => e.classId))];
+    if (householdClassIds.length > 0) {
+      todayMeetings = await context.entities.Meeting.findMany({
+        where: {
+          date: { gte: today, lt: tomorrow },
+          classId: { in: householdClassIds },
+        },
+        orderBy: { date: 'asc' },
+        include: { class: { select: { id: true, name: true } } },
+      });
+    }
   }
 
   // ─── Aniversariantes ──────────────────────────────────────────────────
   const allCatechumens = await context.entities.CatechumenProfile.findMany({
-    where: isAdmin ? {} : { enrollments: { some: { class: whereClause } } },
+    where: guardianHouseholdId
+      ? { householdId: guardianHouseholdId }
+      : isAdmin ? {} : { enrollments: { some: { class: whereClause } } },
     select: { id: true, firstName: true, lastName: true, birthDate: true },
   });
   const aniversariantes = allCatechumens
     .filter((c: any) => c.birthDate && new Date(c.birthDate).getMonth() === today.getMonth())
     .sort((a: any, b: any) => new Date(a.birthDate).getDate() - new Date(b.birthDate).getDate())
     .slice(0, 10);
+
+  // ─── Dependents — for GUARDIAN dashboard (catechumens in household) ──
+  let dependents: any[] = [];
+  if (guardianHouseholdId) {
+    dependents = await context.entities.CatechumenProfile.findMany({
+      where: { householdId: guardianHouseholdId },
+      select: {
+        id: true, firstName: true, lastName: true, birthDate: true,
+        enrollments: { select: { class: { select: { id: true, name: true } } } },
+      },
+      orderBy: { firstName: 'asc' },
+    });
+  }
 
   // ─── Proximos encontros (7 dias) ──────────────────────────────────────
   const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
@@ -185,6 +238,7 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
     activeClasses,
     avgAttendance,
     pendingSacraments,
+    dependents,
     totalUsers: isAdmin ? await context.entities.User.count() : undefined,
     totalParishes: isAdmin ? await context.entities.Parish.count() : undefined,
     recentAlerts,

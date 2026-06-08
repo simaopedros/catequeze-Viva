@@ -6,6 +6,7 @@ type UserContextResult = {
   userId: string;
   isAdmin: boolean;
   needsOnboarding: boolean;
+  hasPendingInvitations: boolean;
   personalWorkspaceId: string | null;
   memberships: {
     id: string;
@@ -24,11 +25,15 @@ export const getCurrentUserContext = async (
   context: any
 ): Promise<UserContextResult> => {
   if (!context.user) {
-    return { userId: '', isAdmin: false, needsOnboarding: false, personalWorkspaceId: null, memberships: [] };
+    return { userId: '', isAdmin: false, needsOnboarding: false, hasPendingInvitations: false, personalWorkspaceId: null, memberships: [] };
   }
 
+  // Fetch both ACTIVE and INVITED memberships
   const memberships = await context.entities.Membership.findMany({
-    where: { userId: context.user.id, status: 'ACTIVE' },
+    where: {
+      userId: context.user.id,
+      status: { in: ['ACTIVE', 'INVITED'] },
+    },
     orderBy: { createdAt: 'asc' },
     include: {
       parish: { select: { id: true, name: true, type: true } },
@@ -36,11 +41,20 @@ export const getCurrentUserContext = async (
     },
   });
 
+  // Check for PendingInvitation (email that signed up but hasn't been converted yet)
+  const pendingInvitations = await context.entities.PendingInvitation.findMany({
+    where: { email: context.user.email },
+    select: { id: true },
+  });
+
   // Find personal workspace
   const personalWorkspace = await context.entities.Parish.findFirst({
     where: { ownerId: context.user.id, type: 'PERSONAL' },
     select: { id: true },
   });
+
+  const activeMemberships = memberships.filter((m: any) => m.status === 'ACTIVE');
+  const invitedMemberships = memberships.filter((m: any) => m.status === 'INVITED');
 
   // Build the memberships result array
   const result: UserContextResult['memberships'] = memberships.map((m: any) => ({
@@ -55,8 +69,7 @@ export const getCurrentUserContext = async (
   }));
 
   // DIOCESE_ADMIN: add virtual memberships for all parishes in the diocese
-  // so the client can resolve the user's role when switching workspaces.
-  if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
+  if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN' && m.status === 'ACTIVE')) {
     const dioceseParishIds = await getDioceseParishIds(context);
     const existingIds = new Set(result.map((m: any) => m.parishId));
     for (const parishId of dioceseParishIds) {
@@ -79,13 +92,19 @@ export const getCurrentUserContext = async (
     }
   }
 
+  const hasPendingInvitations = invitedMemberships.length > 0 || pendingInvitations.length > 0;
+
   return {
     userId: context.user.id,
     isAdmin: context.user.isAdmin,
     personalWorkspaceId: personalWorkspace?.id || null,
+    hasPendingInvitations,
+    // User needs onboarding only if they have zero memberships (any status)
+    // AND zero pending invitations AND no personal workspace.
+    // INVITED memberships mean the user should go to workspace selector instead.
     needsOnboarding: context.user.isAdmin
       ? false
-      : memberships.length === 0 && !personalWorkspace,
+      : activeMemberships.length === 0 && invitedMemberships.length === 0 && pendingInvitations.length === 0 && !personalWorkspace,
     memberships: result,
   };
 };

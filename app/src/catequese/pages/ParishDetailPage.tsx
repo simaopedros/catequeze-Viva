@@ -6,7 +6,7 @@ import {
   Church, MapPin, Users, BookOpen, Building2, Settings,
   ArrowLeft, Loader2, AlertCircle, Trash2,
 } from 'lucide-react';
-import { useQuery, getParishById, listCommunities, listParishMembers, updateParish, deleteParish, createCommunity, updateCommunity, inviteUserToParish, removeMembership } from 'wasp/client/operations';
+import { useQuery, getParishById, listCommunities, listHouseholds, listParishMembers, updateParish, deleteParish, createCommunity, updateCommunity, inviteUserToParish, removeMembership } from 'wasp/client/operations';
 import { ParishInfoTab } from '../components/parish/ParishInfoTab';
 import { ParishCommunitiesTab } from '../components/parish/ParishCommunitiesTab';
 import { ParishMembersTab } from '../components/parish/ParishMembersTab';
@@ -23,6 +23,7 @@ export default function ParishDetailPage() {
   const { data: parish, isLoading: loading } = useQuery(getParishById, { id: parishId! });
   const { data: communities = [] } = useQuery(listCommunities, { parishId: parishId! });
   const { data: members = [] } = useQuery(listParishMembers, { parishId: parishId! });
+  const { data: households = [] } = useQuery(listHouseholds, {});
   const [error, setError] = useState('');
   const [tab, setTab] = useState<Tab>('info');
 
@@ -90,9 +91,9 @@ export default function ParishDetailPage() {
     }
   };
 
-  const handleInvite = async (email: string, role: string, communityId: string) => {
+  const handleInvite = async (email: string, role: string, communityId: string, householdId: string) => {
     try {
-      await inviteUserToParish({ email, parishId: pid, role, communityId: communityId || undefined });
+      await inviteUserToParish({ email, parishId: pid, role, communityId: communityId || undefined, householdId: householdId || undefined });
       toast({ title: 'Convite enviado.' });
       return 'Convite enviado!';
     } catch (e: any) {
@@ -216,6 +217,7 @@ export default function ParishDetailPage() {
           <ParishMembersTab
             members={members}
             communities={communities}
+            households={households}
             onInvite={handleInvite}
             onRemove={handleRemoveMember}
           />

@@ -1,5 +1,5 @@
 import { LogOut } from "lucide-react";
-import { logout } from "wasp/client/auth";
+import { signOut } from "../client/analytics/himetrica";
 import { Link as WaspRouterLink } from "wasp/client/router";
 import { type User } from "wasp/entities";
 import { userMenuItems } from "./constants";
@@ -33,7 +33,7 @@ export const UserMenuItems = ({
       <li>
         <button
           onClick={() => {
-            logout();
+            signOut();
             onItemClick?.();
           }}
           className="text-foreground hover:bg-accent hover:text-accent-foreground flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium leading-7 transition-colors"

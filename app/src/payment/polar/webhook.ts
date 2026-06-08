@@ -89,6 +89,8 @@ async function handleOrderPaid(
 
   switch (paymentPlanId) {
     case PaymentPlanId.Credits10:
+    case PaymentPlanId.AiCredits20:
+    case PaymentPlanId.AiCredits50:
       await updateUserCredits(
         {
           paymentProcessorUserId: order.customerId,
@@ -105,6 +107,8 @@ async function handleOrderPaid(
     case PaymentPlanId.CatechistAi:
     case PaymentPlanId.CatechistAiAddon:
     case PaymentPlanId.Parish:
+    case PaymentPlanId.ParishEssential:
+    case PaymentPlanId.ParishComplete:
     case PaymentPlanId.Diocese:
       await updateUserSubscription(
         {

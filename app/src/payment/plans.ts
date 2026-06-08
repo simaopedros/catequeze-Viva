@@ -13,7 +13,11 @@ export enum PaymentPlanId {
   CatechistPro = "catechist_pro",
   CatechistAi = "catechist_ai",
   CatechistAiAddon = "catechist_ai_addon",
-  Parish = "parish",
+  AiCredits20 = "ai_credits_20",
+  AiCredits50 = "ai_credits_50",
+  Parish = "parish",               // legacy alias → parish_complete
+  ParishEssential = "parish_essential",
+  ParishComplete = "parish_complete",
   Diocese = "diocese",
 }
 
@@ -55,8 +59,24 @@ export const paymentPlans = {
     id: PaymentPlanId.CatechistAiAddon,
     effect: { kind: "subscription" },
   },
+  [PaymentPlanId.AiCredits20]: {
+    id: PaymentPlanId.AiCredits20,
+    effect: { kind: "credits", amount: 20 },
+  },
+  [PaymentPlanId.AiCredits50]: {
+    id: PaymentPlanId.AiCredits50,
+    effect: { kind: "credits", amount: 50 },
+  },
   [PaymentPlanId.Parish]: {
     id: PaymentPlanId.Parish,
+    effect: { kind: "subscription" },
+  },
+  [PaymentPlanId.ParishEssential]: {
+    id: PaymentPlanId.ParishEssential,
+    effect: { kind: "subscription" },
+  },
+  [PaymentPlanId.ParishComplete]: {
+    id: PaymentPlanId.ParishComplete,
     effect: { kind: "subscription" },
   },
   [PaymentPlanId.Diocese]: {
@@ -74,7 +94,11 @@ export function prettyPaymentPlanName(planId: PaymentPlanId): string {
     [PaymentPlanId.CatechistPro]: "Catequista Pro",
     [PaymentPlanId.CatechistAi]: "Catequista IA",
     [PaymentPlanId.CatechistAiAddon]: "Add-on IA",
+    [PaymentPlanId.AiCredits20]: "+20 Créditos IA",
+    [PaymentPlanId.AiCredits50]: "+50 Créditos IA",
     [PaymentPlanId.Parish]: "Paróquia",
+    [PaymentPlanId.ParishEssential]: "Paróquia Essencial",
+    [PaymentPlanId.ParishComplete]: "Paróquia Completa",
     [PaymentPlanId.Diocese]: "Diocese",
   };
   return planToName[planId];

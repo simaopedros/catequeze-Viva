@@ -13,9 +13,9 @@ interface OnAfterSignupArgs {
  * Runs right after a new user account is created (any auth method).
  *
  * Converts any PendingInvitations addressed to the new user's email into
- * INVITED memberships, then removes the pending records. This links
- * invitations that were created before the person had an account — without
- * ever creating an orphaned placeholder User.
+ * INVITED memberships. Keeps the PendingInvitation records alive so the
+ * token-based accept flow (family portal) still works — they are deleted
+ * only when the user explicitly accepts via acceptInvitationByToken.
  */
 export const onAfterSignup = async ({ user, prisma }: OnAfterSignupArgs): Promise<void> => {
   const email = user?.email;
@@ -41,5 +41,7 @@ export const onAfterSignup = async ({ user, prisma }: OnAfterSignupArgs): Promis
     });
   }
 
-  await prisma.pendingInvitation.deleteMany({ where: { email } });
+  // Do NOT delete PendingInvitation records here — they carry the token
+  // needed by acceptInvitationByToken on the family portal.
+  // The records are cleaned up when the user accepts via the token flow.
 };

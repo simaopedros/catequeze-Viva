@@ -137,6 +137,23 @@ page EmailVerificationPage {
 }
 //#endregion
 
+//#region Family Portal Routes
+route InviteAcceptRoute { path: "/convite/:token", to: InviteAcceptPage }
+page InviteAcceptPage {
+  component: import InviteAcceptPage from "@src/catequese/pages/family/InviteAcceptPage"
+}
+
+route FamilyLoginRoute { path: "/entrar", to: FamilyLoginPage }
+page FamilyLoginPage {
+  component: import FamilyLoginPage from "@src/catequese/pages/family/FamilyLoginPage"
+}
+
+route FamilySignupRoute { path: "/criar-conta", to: FamilySignupPage }
+page FamilySignupPage {
+  component: import FamilySignupPage from "@src/catequese/pages/family/FamilySignupPage"
+}
+//#endregion
+
 //#region User
 //#region Demo AI App
 //#region Payment
@@ -442,7 +459,7 @@ page AppOnboardingPage {
 //#region Catequese Viva - User Context & Parishes
 query getCurrentUserContext {
   fn: import { getCurrentUserContext } from "@src/server/operations/userContext",
-  entities: [User, Membership, Parish, Community]
+  entities: [User, Membership, Parish, Community, PendingInvitation]
 }
 
 query listParishes {
@@ -521,12 +538,27 @@ query listParishMembers {
 
 action inviteUserToParish {
   fn: import { inviteUserToParish } from "@src/server/operations/memberOperations",
-  entities: [Membership, User, Parish, Community, AuditLog, PendingInvitation]
+  entities: [Membership, User, Parish, Community, AuditLog, PendingInvitation, GuardianProfile, CatechumenProfile, Household]
 }
 
 action acceptInvitation {
   fn: import { acceptInvitation } from "@src/server/operations/memberOperations",
-  entities: [Membership, AuditLog]
+  entities: [Membership, AuditLog, GuardianProfile, CatechumenProfile]
+}
+
+query getInvitationByToken {
+  fn: import { getInvitationByToken } from "@src/server/operations/memberOperations",
+  entities: [PendingInvitation, User, Parish]
+}
+
+action acceptInvitationByToken {
+  fn: import { acceptInvitationByToken } from "@src/server/operations/memberOperations",
+  entities: [PendingInvitation, Membership, GuardianProfile, CatechumenProfile, AuditLog]
+}
+
+action resendInvitation {
+  fn: import { resendInvitation } from "@src/server/operations/memberOperations",
+  entities: [PendingInvitation, Membership, Parish, User, AuditLog]
 }
 
 action removeMembership {
@@ -718,7 +750,7 @@ action justifyAbsence {
 //#region Catequese Viva - Dashboard Operations
 query getDashboardStats {
   fn: import { getDashboardStats } from "@src/server/operations/dashboardOperations",
-  entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, AttendanceRecord, Meeting, ContentItem, CatechumenProfile, ClassCatechist, Parish]
+  entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, AttendanceRecord, Meeting, ContentItem, CatechumenProfile, ClassCatechist, Parish, GuardianProfile, Household]
 }
 
 query getInstitutionalOverview {

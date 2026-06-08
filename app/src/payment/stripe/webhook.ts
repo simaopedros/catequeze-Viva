@@ -18,6 +18,7 @@ import {
   cascadeCancelToTenantBilling,
 } from "../billingCascade";
 import { stripeClient } from "./stripeClient";
+import { PRICING_VERSION } from "../../shared/pricing";
 
 /**
  * Stripe requires a raw request to construct events successfully.
@@ -113,6 +114,8 @@ async function handleInvoicePaid(
 
   switch (paymentPlanId) {
     case PaymentPlanId.Credits10:
+    case PaymentPlanId.AiCredits20:
+    case PaymentPlanId.AiCredits50:
       await updateUserCredits(
         {
           paymentProcessorUserId: customerId,
@@ -129,6 +132,8 @@ async function handleInvoicePaid(
     case PaymentPlanId.CatechistAi:
     case PaymentPlanId.CatechistAiAddon:
     case PaymentPlanId.Parish:
+    case PaymentPlanId.ParishEssential:
+    case PaymentPlanId.ParishComplete:
     case PaymentPlanId.Diocese: {
       const user = await updateUserSubscription(
         {
@@ -140,10 +145,16 @@ async function handleInvoicePaid(
         prismaUserDelegate,
       );
 
-      // Institutional plans (Parish/Diocese) must cascade to TenantBilling so
-      // the parishes/dioceses billed through this user are activated.
+      // Track checkout_completed
+      await trackCheckoutCompleted(context, user.id, paymentPlanId, 'stripe');
+
+      // Cascade institutional plans to TenantBilling
       if (paymentPlanId === PaymentPlanId.Parish) {
         await cascadeActivatePlanToTenantBilling(context, user.id, "PARISH");
+      } else if (paymentPlanId === PaymentPlanId.ParishEssential) {
+        await cascadeActivatePlanToTenantBilling(context, user.id, "PARISH_ESSENTIAL");
+      } else if (paymentPlanId === PaymentPlanId.ParishComplete) {
+        await cascadeActivatePlanToTenantBilling(context, user.id, "PARISH_COMPLETE");
       } else if (paymentPlanId === PaymentPlanId.Diocese) {
         await cascadeActivatePlanToTenantBilling(context, user.id, "DIOCESE");
       }
@@ -285,7 +296,26 @@ function getInvoicePaidAtDate(invoice: Stripe.Invoice): Date {
     throw new Error("Invoice has not been paid yet");
   }
 
-  // Stripe returns timestamps in seconds (Unix time),
-  // so we multiply by 1000 to convert to milliseconds.
   return new Date(invoice.status_transitions.paid_at * 1000);
+}
+
+async function trackCheckoutCompleted(
+  context: any,
+  userId: string,
+  planId: string,
+  processor: string,
+): Promise<void> {
+  try {
+    await (context.entities as any).PricingEvent.create({
+      data: {
+        userId,
+        event: 'checkout_completed',
+        toPlan: planId,
+        processor,
+        pricingVersion: PRICING_VERSION,
+      },
+    });
+  } catch {
+    // Non-critical — don't block webhook processing
+  }
 }

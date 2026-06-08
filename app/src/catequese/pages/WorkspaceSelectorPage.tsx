@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useQuery, useAction } from 'wasp/client/operations';
 import { listWorkspaces, getInstitutionalManageContext, acceptInvitation } from 'wasp/client/operations';
+import { useUserContext } from '../../client/hooks/useUserContext';
 import { Button } from '../../client/components/ui/button';
 import { User, Church, Building2, Plus, ArrowRight, Sparkles, Mail, Check, ShieldCheck, Users2, Settings } from 'lucide-react';
 
@@ -70,7 +71,15 @@ export default function WorkspaceSelectorPage() {
   const { data: manageContext } = useQuery(getInstitutionalManageContext);
   const acceptAction = useAction(acceptInvitation);
   const navigate = useNavigate();
+  const { userRole } = useUserContext();
   const [accepting, setAccepting] = useState<string | null>(null);
+
+  // GUARDIAN and CATECHUMEN don't need workspace selection — redirect to dashboard
+  useEffect(() => {
+    if (userRole === 'GUARDIAN' || userRole === 'CATECHUMEN') {
+      navigate('/app');
+    }
+  }, [userRole, navigate]);
 
   const personal = workspaces.find((w: Workspace) => w.isPersonal);
   const pendingInvitations = workspaces.filter(

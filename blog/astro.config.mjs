@@ -4,6 +4,18 @@ import starlightBlog from "starlight-blog";
 
 import tailwind from "@astrojs/tailwind";
 
+const himetricaApiKey = process.env.PUBLIC_HIMETRICA_API_KEY;
+const himetricaScripts = himetricaApiKey
+  ? ['tracker', 'vitals', 'errors'].map((name) => ({
+      tag: 'script',
+      attrs: {
+        defer: true,
+        src: `https://cdn.himetrica.com/${name}.js`,
+        'data-api-key': himetricaApiKey,
+      },
+    }))
+  : [];
+
 // https://astro.build/config
 export default defineConfig({
   site: "https://your-site.com",
@@ -18,23 +30,7 @@ export default defineConfig({
         alt: "Your SaaS",
       },
       head: [
-        // Add your script tags here. Below is an example for Google analytics, etc.
-        {
-          tag: "script",
-          attrs: {
-            src: "https://www.googletagmanager.com/gtag/js?id=<YOUR-GOOGLE-ANALYTICS-ID>",
-          },
-        },
-        {
-          tag: "script",
-          content: `
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-        
-          gtag('config', '<YOUR-GOOGLE-ANALYTICS-ID>');
-          `,
-        },
+        ...himetricaScripts,
       ],
       editLink: {
         baseUrl: "https://github.com/<your-repo>",

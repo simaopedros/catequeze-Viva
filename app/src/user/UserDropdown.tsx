@@ -1,6 +1,6 @@
 import { ChevronDown, LogOut, User } from "lucide-react";
 import { useState } from "react";
-import { logout } from "wasp/client/auth";
+import { signOut } from "../client/analytics/himetrica";
 import { Link as WaspRouterLink } from "wasp/client/router";
 import { type User as UserEntity } from "wasp/entities";
 import {
@@ -52,7 +52,7 @@ export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
         <DropdownMenuItem>
           <button
             type="button"
-            onClick={() => logout()}
+            onClick={() => signOut()}
             className="flex w-full items-center gap-3"
           >
             <LogOut size="1.1rem" />

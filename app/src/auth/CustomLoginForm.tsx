@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { login, logout } from 'wasp/client/auth';
+import { login } from 'wasp/client/auth';
+import { signOut } from '../client/analytics/himetrica';
 import { useNavigate } from 'react-router';
 import { Button } from '../client/components/ui/button';
 import { Input } from '../client/components/ui/input';
@@ -64,7 +65,7 @@ export default function CustomLoginForm() {
 
   const handleBackToLogin = async () => {
     try {
-      await logout();
+      await signOut();
     } catch {
       // ignore logout errors while resetting the form
     }

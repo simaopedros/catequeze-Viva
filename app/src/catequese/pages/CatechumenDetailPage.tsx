@@ -5,6 +5,7 @@ import { Badge } from '../../client/components/ui/badge';
 import { ArrowLeft, Calendar, Heart, BookOpen, FileText, CheckCircle, XCircle, Clock, Edit3, Gift, MessageCircle, FilePlus, Upload, Download, Link2, Copy, AlertTriangle, Cross } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { useQuery, getCatechumenProfile, listMeetings, getMeetingAttendance, createConversation, uploadDocument, generateCatechumenUploadToken, getCatechumenAttendanceReport } from 'wasp/client/operations';
+import { useUserContext } from '../../client/hooks/useUserContext';
 import { toast } from '../../client/hooks/use-toast';
 import { calculatePoints } from '../../shared/gamification';
 
@@ -19,7 +20,9 @@ const AVATAR_COLORS = [
 export default function CatechumenDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { userRole } = useUserContext();
   const { data: profile, isLoading: loading } = useQuery(getCatechumenProfile, { id: id! });
+  const canEdit = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'PERSONAL_OWNER'].includes(userRole);
   const [attendance, setAttendance] = useState<any[]>([]);
   const [report, setReport] = useState<any>(null);
   const [loadingReport, setLoadingReport] = useState(false);
@@ -173,7 +176,7 @@ export default function CatechumenDetailPage() {
             <h1 className="text-2xl font-bold">{profile.firstName} {profile.lastName}</h1>
             <p className="text-sm text-muted-foreground">{age&&`${age} anos`}{profile.birthDate&&` · ${new Date(profile.birthDate).toLocaleDateString()}`}</p>  
           </div>
-          <Button size="sm" variant="outline" asChild><Link to={`/app/catechumens/${id}/edit`}><Edit3 className="mr-1 h-3 w-3"/>Editar</Link></Button>
+          {canEdit && <Button size="sm" variant="outline" asChild><Link to={`/app/catechumens/${id}/edit`}><Edit3 className="mr-1 h-3 w-3"/>Editar</Link></Button>}
         </div>
 
         {attendancePct!==null&&(
@@ -361,7 +364,8 @@ export default function CatechumenDetailPage() {
           )}
         </div>
 
-        {/* Upload link for parents */}
+        {/* Upload link for parents — only for coordinators/catechists */}
+        {canEdit && (
         <div className="rounded-xl border bg-card p-4">
           <h3 className="font-semibold text-sm mb-3 flex items-center gap-1"><Link2 className="h-4 w-4"/>Link de Envio para Responsáveis</h3>
           {!tokenData ? (
@@ -381,6 +385,7 @@ export default function CatechumenDetailPage() {
             </div>
           )}
         </div>
+        )}
       </div>
     </AppShell>
   );

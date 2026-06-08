@@ -10,6 +10,7 @@ import {
   cascadeActivatePlanToTenantBilling,
   getNextPeriodEnd,
 } from "../billingCascade";
+import { PRICING_VERSION } from "../../shared/pricing";
 
 /**
  * Woovi requires raw body for HMAC validation.
@@ -252,21 +253,22 @@ async function handleChargeCompleted(
 
 /**
  * When a user activates any paid plan, update their parishes' or diocese'
- * TenantBilling to reflect the new plan and reset limits. Delegates to the
- * shared cascade helper, which handles multiple parishes/dioceses.
+ * TenantBilling to reflect the new plan and reset limits.
  */
 async function cascadePlanToTenantBilling(
   correlationID: string,
   context: any,
 ): Promise<void> {
-  // Only INSTITUTIONAL plans (Parish/Diocese) affect TenantBilling. Personal
-  // plans (Pro/AI) belong to the buyer's personal workspace only and must never
-  // upgrade institutional billing.
   const user = await context.entities.User.findFirst({
     where: {
       wooviCorrelationId: correlationID,
       subscriptionPlan: {
-        in: [PaymentPlanId.Parish, PaymentPlanId.Diocese],
+        in: [
+          PaymentPlanId.Parish,
+          PaymentPlanId.ParishEssential,
+          PaymentPlanId.ParishComplete,
+          PaymentPlanId.Diocese,
+        ],
       },
     },
     select: { id: true, subscriptionPlan: true },
@@ -274,8 +276,30 @@ async function cascadePlanToTenantBilling(
 
   if (!user || !user.subscriptionPlan) return;
 
-  // Map PaymentPlanId to BillingPlan enum (uppercase)
-  const billingPlan = user.subscriptionPlan.toUpperCase() as "PARISH" | "DIOCESE";
+  const planMap: Record<string, string> = {
+    [PaymentPlanId.Parish]: "PARISH",
+    [PaymentPlanId.ParishEssential]: "PARISH_ESSENTIAL",
+    [PaymentPlanId.ParishComplete]: "PARISH_COMPLETE",
+    [PaymentPlanId.Diocese]: "DIOCESE",
+  };
 
-  await cascadeActivatePlanToTenantBilling(context, user.id, billingPlan);
+  const billingPlan = planMap[user.subscriptionPlan];
+  if (!billingPlan) return;
+
+  await cascadeActivatePlanToTenantBilling(context, user.id, billingPlan as any);
+
+  // Track checkout_completed
+  try {
+    await (context.entities as any).PricingEvent.create({
+      data: {
+        userId: user.id,
+        event: 'checkout_completed',
+        toPlan: user.subscriptionPlan,
+        processor: 'woovi',
+        pricingVersion: PRICING_VERSION,
+      },
+    });
+  } catch {
+    // Non-critical
+  }
 }

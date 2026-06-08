@@ -16,6 +16,29 @@ import { logger } from './logger';
 export const serverSetup: ServerSetupFn = async ({ app, server }) => {
   const MAX_BODY = 50 * 1024 * 1024; // 50MB
 
+  // ── Cookie domain for cross-subdomain sessions ──────────────────────
+  // When COOKIE_DOMAIN is set (e.g. ".catequeseviva.com"), patch all
+  // Set-Cookie headers so the session is shared between the main app
+  // (catequeseviva.com) and the family portal (familia.catequeseviva.com).
+  const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN;
+  if (COOKIE_DOMAIN) {
+    // Intercept all responses and rewrite Set-Cookie headers with the domain
+    app.use((_req: any, res: any, next: any) => {
+      const originalSetHeader = res.setHeader;
+      res.setHeader = function (name: string, value: any) {
+        if (name.toLowerCase() === 'set-cookie' && typeof value === 'string') {
+          // Only add domain if not already present
+          if (!value.includes('Domain=')) {
+            value = value + '; Domain=' + COOKIE_DOMAIN + '; SameSite=Lax';
+          }
+        }
+        return originalSetHeader.call(res, name, value);
+      };
+      next();
+    });
+    logger.info(`[setup] Cookie domain set to ${COOKIE_DOMAIN}`);
+  }
+
   // Intercept HTTP requests BEFORE Express to pre-parse large JSON bodies
   const originalEmit = server.emit.bind(server);
   server.emit = function (event: string, ...args: any[]) {

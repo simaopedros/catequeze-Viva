@@ -34,7 +34,8 @@ export default function CatechumensPage() {
   const { data: catechumens, isLoading } = useQuery(listCatechumens);
   const { activeParishId } = useActiveParish();
   const { userRole } = useUserContext();
-  const canManageCatechumens = userRole !== 'ASSISTANT_CATECHIST';
+  // Only coordinators, catechists, and personal owners can manage catechumens
+  const canManageCatechumens = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'PERSONAL_OWNER'].includes(userRole);
   const [search, setSearch] = useState('');
   const [classFilter, setClassFilter] = useState('');
   const [view, setView] = useState<'cards' | 'table'>('cards');

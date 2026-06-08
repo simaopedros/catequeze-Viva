@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { logout } from 'wasp/client/auth';
+import { signOut } from '../../client/analytics/himetrica';
 import { getTwoFactorStatus, verifyTwoFactorLogin } from 'wasp/client/operations';
 import { Button } from '../../client/components/ui/button';
 import { Input } from '../../client/components/ui/input';
@@ -44,7 +44,7 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
 
   const handleCancel = async () => {
     try {
-      await logout();
+      await signOut();
     } catch {
       // ignore
     }

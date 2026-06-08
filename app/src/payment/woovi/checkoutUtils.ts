@@ -111,13 +111,21 @@ export async function cancelWooviSubscription(correlationID: string): Promise<vo
 function getPlanValueCents(planId: PaymentPlanId): number {
   switch (planId) {
     case PaymentPlanId.CatechistPro:
-      return 900; // R$ 9,00
+      return 1900; // R$ 19,00
     case PaymentPlanId.CatechistAi:
-      return 2900; // R$ 29,00
+      return 3900; // R$ 39,00
     case PaymentPlanId.Parish:
-      return 4900; // R$ 49,00
+      return 12900; // R$ 129,00 (legacy → parish_complete)
+    case PaymentPlanId.ParishEssential:
+      return 7900; // R$ 79,00
+    case PaymentPlanId.ParishComplete:
+      return 12900; // R$ 129,00
     case PaymentPlanId.Diocese:
-      return 14900; // R$ 149,00
+      return 44900; // R$ 449,00
+    case PaymentPlanId.AiCredits20:
+      return 2900; // R$ 29,00
+    case PaymentPlanId.AiCredits50:
+      return 5900; // R$ 59,00
     default:
       throw new Error(`Plan ${planId} does not have a price`);
   }
@@ -130,9 +138,17 @@ function getPlanComment(planId: PaymentPlanId): string {
     case PaymentPlanId.CatechistAi:
       return "Catequista IA - mensal";
     case PaymentPlanId.Parish:
-      return "Plano Paróquia - mensal";
+      return "Plano Paróquia Completa - mensal";
+    case PaymentPlanId.ParishEssential:
+      return "Plano Paróquia Essencial - mensal";
+    case PaymentPlanId.ParishComplete:
+      return "Plano Paróquia Completa - mensal";
     case PaymentPlanId.Diocese:
       return "Plano Diocese - mensal";
+    case PaymentPlanId.AiCredits20:
+      return "+20 Créditos IA";
+    case PaymentPlanId.AiCredits50:
+      return "+50 Créditos IA";
     default:
       return "Assinatura Catequese Viva";
   }

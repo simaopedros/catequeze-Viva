@@ -1,25 +1,26 @@
 /**
  * Plan enforcement helpers for checking limits before creating classes,
- * enrolling catechumens, or creating parishes.
+ * enrolling catechumens, creating parishes, or adding catechists.
+ *
+ * All limit data is sourced from shared/pricing.ts (single source of truth).
  */
 import { HttpError } from "wasp/server";
 import {
   getPlanLimits,
-  PLAN_LIMITS,
   planName,
   LIMIT_LABELS,
   isBillingActive,
   getEffectiveBillingPlan,
   getPersonalPlanId,
+  isInstitutionalPlan,
+  resolvePlanIdOrFree,
+  PLANS,
+  type PlanLimits,
 } from "../../shared/planLimits";
 
 export type { PlanLimits } from "../../shared/planLimits";
 
-// Re-export the single source of truth for billing status so existing server
-// imports keep working. The implementations live in shared/planLimits.ts and
-// are used identically by client and server (consistent PAST_DUE / CANCELED /
-// expired-trial handling).
-export { isBillingActive, getEffectiveBillingPlan };
+export { isBillingActive, getEffectiveBillingPlan, isInstitutionalPlan };
 
 // ─── Effective billing plan ────────────────────────────────────────────────
 
@@ -29,27 +30,24 @@ interface TenantBillingStub {
   trialEndsAt: Date | null;
   maxClasses: number | null;
   maxCatechumens: number | null;
+  maxCatechists: number | null;
+  maxParishes: number | null;
 }
 
-// Institutional plans that can act as an "umbrella" license covering multiple
-// parishes/communities. Personal plans (free/pro/ai) are intentionally excluded
-// so they never leak into institutional workspaces.
-const INSTITUTIONAL_PLANS = ['PARISH', 'DIOCESE'];
+// Institutional plans that can act as an "umbrella" license.
+const INSTITUTIONAL_PLANS = ['PARISH_ESSENTIAL', 'PARISH_COMPLETE', 'DIOCESE', 'PARISH'];
 
-function isInstitutionalPlan(plan: string | null | undefined): boolean {
+function isInstPlan(plan: string | null | undefined): boolean {
   return !!plan && INSTITUTIONAL_PLANS.includes(plan.toUpperCase());
 }
 
 /**
  * Resolve the institutional umbrella plan inherited from the parish OWNER.
- * Only applies to institutional plans (PARISH/DIOCESE) — personal plans are
- * ignored so the personal/institutional separation is preserved.
  */
 async function resolveOwnerUmbrella(
   context: any,
   ownerId: string,
 ): Promise<TenantBillingStub | null> {
-  // 1. Owner's active institutional subscription (subscriptionPlan)
   const owner = await context.entities.User.findUnique({
     where: { id: ownerId },
     select: { subscriptionStatus: true, subscriptionPlan: true },
@@ -57,7 +55,7 @@ async function resolveOwnerUmbrella(
 
   if (
     owner?.subscriptionStatus === 'active' &&
-    isInstitutionalPlan(owner.subscriptionPlan)
+    isInstPlan(owner.subscriptionPlan)
   ) {
     return {
       plan: owner.subscriptionPlan.toUpperCase(),
@@ -65,22 +63,25 @@ async function resolveOwnerUmbrella(
       trialEndsAt: null,
       maxClasses: null,
       maxCatechumens: null,
+      maxCatechists: null,
+      maxParishes: null,
     };
   }
 
-  // 2. Any other parish owned by the same user with an active institutional plan
   const ownedBillings = await context.entities.TenantBilling.findMany({
     where: {
       parish: { ownerId, type: { not: 'PERSONAL' } },
       plan: { in: INSTITUTIONAL_PLANS },
     },
-    select: { plan: true, status: true, trialEndsAt: true, maxClasses: true, maxCatechumens: true },
+    select: {
+      plan: true, status: true, trialEndsAt: true,
+      maxClasses: true, maxCatechumens: true,
+      maxCatechists: true, maxParishes: true,
+    },
   });
 
   for (const billing of ownedBillings) {
-    if (isBillingActive(billing)) {
-      return billing;
-    }
+    if (isBillingActive(billing)) return billing;
   }
 
   return null;
@@ -90,20 +91,21 @@ export async function resolveEffectiveBilling(
   context: any,
   parishId: string,
 ): Promise<TenantBillingStub | null> {
-  // 1. Fetch parish to see if it belongs to a diocese
   const parish = await context.entities.Parish.findUnique({
     where: { id: parishId },
     select: { dioceseId: true, ownerId: true, type: true },
   });
 
   if (parish?.dioceseId) {
-    // 2. Fetch diocese billing
     const dioceseBilling = await context.entities.TenantBilling.findUnique({
       where: { dioceseId: parish.dioceseId },
-      select: { plan: true, status: true, trialEndsAt: true, maxClasses: true, maxCatechumens: true },
+      select: {
+        plan: true, status: true, trialEndsAt: true,
+        maxClasses: true, maxCatechumens: true,
+        maxCatechists: true, maxParishes: true,
+      },
     });
 
-    // Check if diocese has active DIOCESE plan
     if (dioceseBilling && isBillingActive(dioceseBilling) && dioceseBilling.plan === 'DIOCESE') {
       return {
         plan: 'DIOCESE',
@@ -111,46 +113,40 @@ export async function resolveEffectiveBilling(
         trialEndsAt: dioceseBilling.trialEndsAt,
         maxClasses: dioceseBilling.maxClasses,
         maxCatechumens: dioceseBilling.maxCatechumens,
+        maxCatechists: dioceseBilling.maxCatechists,
+        maxParishes: dioceseBilling.maxParishes,
       };
     }
   }
 
-  // 3. Direct parish billing (when active)
   const parishBilling = await context.entities.TenantBilling.findUnique({
     where: { parishId },
-    select: { plan: true, status: true, trialEndsAt: true, maxClasses: true, maxCatechumens: true },
+    select: {
+      plan: true, status: true, trialEndsAt: true,
+      maxClasses: true, maxCatechumens: true,
+      maxCatechists: true, maxParishes: true,
+    },
   });
 
-  // Check if direct parish billing is active (ACTIVE or non-expired TRIAL)
   if (parishBilling && isBillingActive(parishBilling)) {
     return parishBilling;
   }
 
-  // 4. Owner umbrella — institutional workspaces only. If the parish has no
-  // active billing of its own, inherit the owner's active institutional plan
-  // (PARISH/DIOCESE). Personal workspaces never reach this (resolved elsewhere).
   if (parish && parish.type !== 'PERSONAL' && parish.ownerId) {
     const umbrella = await resolveOwnerUmbrella(context, parish.ownerId);
     if (umbrella) return umbrella;
   }
 
-  return parishBilling; // Fallback to parish record (free or expired)
+  return parishBilling;
 }
 
 /**
- * Decide the TenantBilling to assign to a NEWLY created institutional parish.
- * Enforces the personal/institutional separation: the creator's personal plan
- * (free/pro/ai) never becomes the parish's institutional plan.
- *
- * Returns `skip: true` when the parish is already covered by an active DIOCESE
- * umbrella — in that case no per-parish billing record is created and the
- * diocese inheritance in `resolveEffectiveBilling` governs the limits.
+ * Decide the TenantBilling for a NEW institutional parish.
  */
 export async function resolveNewParishBilling(
   context: any,
   opts: { dioceseId?: string | null },
 ): Promise<{ skip: true } | { skip: false; plan: string; status: string; trialEndsAt: Date | null }> {
-  // 1. Covered by an active DIOCESE umbrella → rely on inheritance.
   if (opts.dioceseId) {
     const dioceseBilling = await context.entities.TenantBilling.findUnique({
       where: { dioceseId: opts.dioceseId },
@@ -161,15 +157,12 @@ export async function resolveNewParishBilling(
     }
   }
 
-  // 2. Creator owns an active institutional plan (PARISH/DIOCESE) → inherit it.
   const creatorActive = context.user?.subscriptionStatus === 'active';
   const creatorPlan = (context.user?.subscriptionPlan || '').toLowerCase();
-  if (creatorActive && (creatorPlan === 'parish' || creatorPlan === 'diocese')) {
+  if (creatorActive && isInstPlan(creatorPlan)) {
     return { skip: false, plan: creatorPlan.toUpperCase(), status: 'ACTIVE', trialEndsAt: null };
   }
 
-  // 3. Independent new parish → free tier (30-day trial flag preserved). The
-  // creator's personal paid plan is intentionally NOT applied here.
   return {
     skip: false,
     plan: 'CATECHIST_FREE',
@@ -181,9 +174,11 @@ export async function resolveNewParishBilling(
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
 function requiredPlan(currentPlan: string | null): string {
-  const p = (currentPlan || 'catechist_free').toLowerCase();
+  const p = resolvePlanIdOrFree(currentPlan);
   if (p === 'catechist_free') return 'Catequista Pro';
-  return 'Paróquia';
+  if (p === 'catechist_pro') return 'Catequista IA';
+  if (p === 'parish_essential') return 'Paróquia Completa';
+  return 'Diocese';
 }
 
 function buildLimitMessage(
@@ -198,24 +193,66 @@ function buildLimitMessage(
   return `Limite de ${label}s do plano ${currentPlanName} atingido (${current}/${max}). Faça upgrade para ${upgradePlan}.`;
 }
 
+// ─── Catechist count ──────────────────────────────────────────────────────
+
+export async function assertCanAddCatechist(
+  context: any,
+  parishId: string,
+): Promise<void> {
+  const parish = await context.entities.Parish.findUnique({
+    where: { id: parishId },
+    select: { type: true },
+  });
+
+  if (parish?.type === 'PERSONAL') {
+    // Personal workspace: max 1 catechist (the owner)
+    const count = await context.entities.Membership.count({
+      where: {
+        parishId,
+        status: 'ACTIVE',
+        role: { in: ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'PARISH_COORDINATOR'] },
+      },
+    });
+    if (count >= 1) {
+      throw new HttpError(403, 'Plano pessoal permite apenas 1 catequista. Faça upgrade para um plano institucional.');
+    }
+    return;
+  }
+
+  const billing = await resolveEffectiveBilling(context, parishId);
+  const effectivePlan = getEffectiveBillingPlan(billing);
+  const planId = resolvePlanIdOrFree(effectivePlan);
+  const planLimits = PLANS[planId].limits;
+
+  const maxCatechists = billing?.maxCatechists != null ? billing.maxCatechists : planLimits.maxCatechists;
+  if (maxCatechists === null) return;
+
+  const currentCount = await context.entities.Membership.count({
+    where: {
+      parishId,
+      status: 'ACTIVE',
+      role: { in: ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'PARISH_COORDINATOR'] },
+    },
+  });
+
+  if (currentCount >= maxCatechists) {
+    throw new HttpError(
+      403,
+      buildLimitMessage('catechist_limit', effectivePlan, currentCount, maxCatechists),
+    );
+  }
+}
+
 // ─── Parish creation ────────────────────────────────────────────────────────
 
-/**
- * Check if creating a new parish would exceed the plan limit.
- * If the user's subscription is not active, forces free-plan limits.
- */
 export async function assertCanCreateParish(
   context: any,
   opts?: { dioceseId?: string | null },
 ): Promise<void> {
   if (!context.user) throw new HttpError(401);
 
-  // Institutional coverage takes precedence over the personal-plan limit. If the
-  // new parish would be covered by an active DIOCESE license or the owner's own
-  // institutional umbrella (PARISH/DIOCESE), the free-plan parish quota does not
-  // apply — only truly independent parishes consume it.
   const coverage = await resolveNewParishBilling(context, { dioceseId: opts?.dioceseId ?? null });
-  if (coverage.skip || isInstitutionalPlan(coverage.plan)) return;
+  if (coverage.skip || isInstPlan(coverage.plan)) return;
 
   const subscriptionActive = context.user.subscriptionStatus === 'active';
   const plan = subscriptionActive
@@ -223,11 +260,8 @@ export async function assertCanCreateParish(
     : 'catechist_free';
 
   const limits = getPlanLimits(plan);
-
   if (limits.maxParishes === null) return;
 
-  // Only count independent parishes (not attached to a diocese and without an
-  // institutional TenantBilling) against the personal-plan quota.
   const ownedParishes = await context.entities.Parish.count({
     where: {
       ownerId: context.user.id,
@@ -250,28 +284,19 @@ export async function assertCanCreateParish(
 
 // ─── Class creation ─────────────────────────────────────────────────────────
 
-/**
- * Check if creating a new class would exceed the plan limit.
- * Reads TenantBilling (with Diocese inheritance), validates status/trial,
- * and falls back to PLAN_LIMITS when custom limits are null.
- */
 export async function assertCanCreateClass(
   context: any,
   parishId: string,
 ): Promise<void> {
-  // Check if this is a personal workspace — use user's subscription plan
   const parish = await context.entities.Parish.findUnique({
     where: { id: parishId },
     select: { type: true, ownerId: true },
   });
 
   if (parish?.type === 'PERSONAL') {
-    // Personal workspace: limits come strictly from the user's PERSONAL plan.
-    // Institutional plan values (parish/diocese) never apply here.
     const plan = getPersonalPlanId(context.user);
     const limits = getPlanLimits(plan);
-
-    if (limits.maxClasses === null) return; // unlimited
+    if (limits.maxClasses === null) return;
 
     const activeCount = await context.entities.CatechesisClass.count({
       where: { parishId, status: { not: 'ARCHIVED' } },
@@ -286,33 +311,22 @@ export async function assertCanCreateClass(
     return;
   }
 
-  // Parish/diocese workspace: use TenantBilling
   const billing = await resolveEffectiveBilling(context, parishId);
-
   const effectivePlan = getEffectiveBillingPlan(billing);
   const planLimits = getPlanLimits(effectivePlan);
 
-  // Use custom override if set, otherwise fall back to plan defaults
-  const maxClasses =
-    billing?.maxClasses != null ? billing.maxClasses : planLimits.maxClasses;
-
-  if (maxClasses === null) return; // unlimited
-
-  const isIndividualPlan =
-    effectivePlan === 'CATECHIST_FREE' || effectivePlan === 'CATECHIST_PRO';
+  const maxClasses = billing?.maxClasses != null ? billing.maxClasses : planLimits.maxClasses;
+  if (maxClasses === null) return;
 
   let activeCount: number;
-  if (isIndividualPlan && !billing) {
+  if (!billing && (effectivePlan === 'CATECHIST_FREE' || effectivePlan === 'CATECHIST_PRO')) {
     const myClassLinks = await context.entities.ClassCatechist.findMany({
       where: { userId: context.user.id },
       select: { classId: true },
     });
     const myClassIds = myClassLinks.map((l: any) => l.classId);
     activeCount = await context.entities.CatechesisClass.count({
-      where: {
-        id: { in: myClassIds },
-        status: { not: 'ARCHIVED' },
-      },
+      where: { id: { in: myClassIds }, status: { not: 'ARCHIVED' } },
     });
   } else {
     activeCount = await context.entities.CatechesisClass.count({
@@ -330,21 +344,16 @@ export async function assertCanCreateClass(
 
 // ─── Catechumen enrollment ──────────────────────────────────────────────────
 
-/**
- * Check if enrolling a new catechumen would exceed the plan limit.
- */
 export async function assertCanEnrollCatechumen(
   context: any,
   parishId: string,
 ): Promise<void> {
-  // Check if personal workspace
   const parish = await context.entities.Parish.findUnique({
     where: { id: parishId },
     select: { type: true },
   });
 
   if (parish?.type === 'PERSONAL') {
-    // Personal workspace: limits come strictly from the user's PERSONAL plan.
     const plan = getPersonalPlanId(context.user);
     const limits = getPlanLimits(plan);
     if (limits.maxCatechumens === null) return;
@@ -363,38 +372,25 @@ export async function assertCanEnrollCatechumen(
   }
 
   const billing = await resolveEffectiveBilling(context, parishId);
-
   const effectivePlan = getEffectiveBillingPlan(billing);
   const planLimits = getPlanLimits(effectivePlan);
 
-  // Use custom override if set, otherwise fall back to plan defaults
-  const maxCatechumens =
-    billing?.maxCatechumens != null ? billing.maxCatechumens : planLimits.maxCatechumens;
-
-  if (maxCatechumens === null) return; // unlimited
-
-  const isIndividualPlan =
-    effectivePlan === 'CATECHIST_FREE' || effectivePlan === 'CATECHIST_PRO';
+  const maxCatechumens = billing?.maxCatechumens != null ? billing.maxCatechumens : planLimits.maxCatechumens;
+  if (maxCatechumens === null) return;
 
   let enrolledCount: number;
-  if (isIndividualPlan && !billing) {
+  if (!billing && (effectivePlan === 'CATECHIST_FREE' || effectivePlan === 'CATECHIST_PRO')) {
     const myClassLinks = await context.entities.ClassCatechist.findMany({
       where: { userId: context.user.id },
       select: { classId: true },
     });
     const myClassIds = myClassLinks.map((l: any) => l.classId);
     enrolledCount = await context.entities.ClassEnrollment.count({
-      where: {
-        status: 'ENROLLED',
-        classId: { in: myClassIds },
-      },
+      where: { status: 'ENROLLED', classId: { in: myClassIds } },
     });
   } else {
     enrolledCount = await context.entities.ClassEnrollment.count({
-      where: {
-        status: 'ENROLLED',
-        class: { parishId },
-      },
+      where: { status: 'ENROLLED', class: { parishId } },
     });
   }
 

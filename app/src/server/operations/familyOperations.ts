@@ -88,6 +88,22 @@ export const listHouseholds = async (_args: { communityId?: string } | void, con
     });
   }
 
+  // GUARDIAN: only return the guardian's own household
+  if (roles.includes('GUARDIAN') && !roles.some((r: string) => isCoordinatorOrAbove(r) || isCatechist(r))) {
+    const guardianProfile = await context.entities.GuardianProfile.findFirst({
+      where: { userId: context.user.id },
+      select: { householdId: true },
+    });
+    if (!guardianProfile?.householdId) return [];
+    const where: any = { id: guardianProfile.householdId };
+    if (args.communityId) where.communityId = args.communityId;
+    return context.entities.Household.findMany({
+      where,
+      orderBy: { name: 'asc' },
+      include: includeOpts,
+    });
+  }
+
   // Assistant catechist only (no coordinator, no lead): restrict to assisted classes
   const isStrictAssistant = !roles.includes('LEAD_CATECHIST') && roles.includes('ASSISTANT_CATECHIST');
 
@@ -207,7 +223,7 @@ export const createHousehold = async (
 };
 
 export const addGuardianToHousehold = async (
-  args: { userId?: string; householdId: string; firstName?: string; lastName?: string; relationship?: string; phone?: string },
+  args: { userId?: string; householdId: string; firstName?: string; lastName?: string; email?: string; relationship?: string; phone?: string },
   context: any
 ) => {
   if (!context.user) throw new HttpError(401);
@@ -255,12 +271,13 @@ export const addGuardianToHousehold = async (
       where: { userId: args.userId, householdId: args.householdId },
     });
     if (existingInHousehold) {
-      if (args.relationship !== undefined || args.phone !== undefined) {
+      if (args.relationship !== undefined || args.phone !== undefined || args.email !== undefined) {
         return context.entities.GuardianProfile.update({
           where: { id: existingInHousehold.id },
           data: {
             ...(args.relationship !== undefined && { relationship: args.relationship }),
             ...(args.phone !== undefined && { phone: args.phone }),
+            ...(args.email !== undefined && { email: args.email }),
           },
         });
       }
@@ -278,6 +295,25 @@ export const addGuardianToHousehold = async (
           householdId: args.householdId,
           ...(args.relationship !== undefined && { relationship: args.relationship }),
           ...(args.phone !== undefined && { phone: args.phone }),
+          ...(args.email !== undefined && { email: args.email }),
+        },
+      });
+    }
+  }
+
+  // If email provided but no userId, check for existing guardian by email in same household
+  if (!args.userId && args.email) {
+    const existingByEmail = await context.entities.GuardianProfile.findFirst({
+      where: { email: args.email, householdId: args.householdId },
+    });
+    if (existingByEmail) {
+      return context.entities.GuardianProfile.update({
+        where: { id: existingByEmail.id },
+        data: {
+          ...(args.firstName !== undefined && { firstName: args.firstName }),
+          ...(args.lastName !== undefined && { lastName: args.lastName }),
+          ...(args.relationship !== undefined && { relationship: args.relationship }),
+          ...(args.phone !== undefined && { phone: args.phone }),
         },
       });
     }
@@ -286,6 +322,7 @@ export const addGuardianToHousehold = async (
   return context.entities.GuardianProfile.create({
     data: {
       userId: args.userId || null,
+      email: args.email,
       firstName: args.firstName,
       lastName: args.lastName,
       householdId: args.householdId,
@@ -349,7 +386,10 @@ export const updateGuardianProfile = async (
 
   if (!guardian) throw new HttpError(404, 'Responsável não encontrado.');
 
-  if (!context.user.isAdmin) {
+  // Allow guardians to edit their own profile (phone, relationship only)
+  const isSelfGuardian = guardian.userId === context.user.id;
+
+  if (!context.user.isAdmin && !isSelfGuardian) {
     const membership = await context.entities.Membership.findFirst({
       where: { userId: context.user.id, status: 'ACTIVE' },
       select: { role: true, parishId: true },
@@ -372,9 +412,10 @@ export const updateGuardianProfile = async (
   }
 
   const data: any = {};
-  if (!guardian.userId) {
-    if (args.firstName !== undefined) data.firstName = args.firstName;
-    if (args.lastName !== undefined) data.lastName = args.lastName;
+  // Self-guardian can only edit phone and relationship, not names
+  if (!guardian.userId || isSelfGuardian) {
+    if (args.firstName !== undefined && !isSelfGuardian) data.firstName = args.firstName;
+    if (args.lastName !== undefined && !isSelfGuardian) data.lastName = args.lastName;
   }
   if (args.relationship !== undefined) data.relationship = args.relationship;
   if (args.phone !== undefined) data.phone = args.phone;

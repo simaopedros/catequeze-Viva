@@ -1,11 +1,10 @@
 /**
  * Shared billing-cascade helpers used by both the in-app cancellation action
- * (payment/operations.ts) and the Woovi webhook (payment/woovi/webhook.ts).
+ * (payment/operations.ts) and webhooks (stripe, woovi).
  *
- * Keeps the activation/downgrade logic in one place and — unlike the previous
- * implementation — handles users that own multiple parishes or administer more
- * than one diocese, instead of silently acting on only the first match.
+ * All plan IDs are resolved through pricing.ts (single source of truth).
  */
+import { PRICING_VERSION, resolvePlanId, PLANS, type PlanId } from '../shared/pricing';
 
 export function getNextPeriodEnd(): Date {
   const d = new Date();
@@ -14,8 +13,7 @@ export function getNextPeriodEnd(): Date {
 }
 
 /**
- * Every diocese the user is responsible for: dioceses they administer
- * (active DIOCESE_ADMIN membership) plus dioceses of parishes they own.
+ * Every diocese the user is responsible for.
  */
 export async function getUserDioceseIds(context: any, userId: string): Promise<string[]> {
   const ids = new Set<string>();
@@ -40,8 +38,7 @@ export async function getUserDioceseIds(context: any, userId: string): Promise<s
 }
 
 /**
- * Downgrade every tenant billed through this user to the free plan: all the
- * parishes they own and all the dioceses they administer/own.
+ * Downgrade every tenant billed through this user to the free plan.
  */
 export async function cascadeCancelToTenantBilling(context: any, userId: string): Promise<void> {
   await context.entities.TenantBilling.updateMany({
@@ -51,6 +48,8 @@ export async function cascadeCancelToTenantBilling(context: any, userId: string)
       status: 'CANCELED',
       maxClasses: null,
       maxCatechumens: null,
+      maxCatechists: null,
+      maxParishes: null,
     },
   });
 
@@ -63,20 +62,25 @@ export async function cascadeCancelToTenantBilling(context: any, userId: string)
         status: 'CANCELED',
         maxClasses: null,
         maxCatechumens: null,
+        maxCatechists: null,
+        maxParishes: null,
       },
     });
   }
 }
 
+type BillingPlanValue =
+  | 'CATECHIST_FREE' | 'CATECHIST_PRO' | 'CATECHIST_AI'
+  | 'PARISH' | 'PARISH_ESSENTIAL' | 'PARISH_COMPLETE' | 'DIOCESE';
+
 /**
  * Activate the given paid plan for every tenant billed through this user.
- * DIOCESE plans activate each diocese the user administers/owns; the other
- * paid plans activate every parish the user owns.
+ * Sets pricingVersion to the current PRICING_VERSION.
  */
 export async function cascadeActivatePlanToTenantBilling(
   context: any,
   userId: string,
-  billingPlan: 'CATECHIST_FREE' | 'CATECHIST_PRO' | 'CATECHIST_AI' | 'PARISH' | 'DIOCESE',
+  billingPlan: BillingPlanValue,
 ): Promise<void> {
   if (billingPlan === 'DIOCESE') {
     const dioceseIds = await getUserDioceseIds(context, userId);
@@ -87,28 +91,48 @@ export async function cascadeActivatePlanToTenantBilling(
       if (existing) {
         await context.entities.TenantBilling.update({
           where: { id: existing.id },
-          data: { plan: 'DIOCESE', status: 'ACTIVE', currentPeriodEnd: getNextPeriodEnd() },
+          data: {
+            plan: 'DIOCESE', status: 'ACTIVE', currentPeriodEnd: getNextPeriodEnd(),
+            pricingVersion: PRICING_VERSION,
+          },
         });
       } else {
         await context.entities.TenantBilling.create({
-          data: { dioceseId, plan: 'DIOCESE', status: 'ACTIVE', currentPeriodEnd: getNextPeriodEnd() },
+          data: {
+            dioceseId, plan: 'DIOCESE', status: 'ACTIVE', currentPeriodEnd: getNextPeriodEnd(),
+            pricingVersion: PRICING_VERSION,
+          },
         });
       }
     }
     return;
   }
 
-  // Institutional (PARISH) plan: activate every institutional parish the user
-  // owns. Never touch the PERSONAL workspace billing — that level is governed by
-  // the user's personal subscription, not by TenantBilling.
+  // Institutional plans: activate every institutional parish the user owns.
+  const planLimits = getDefaultLimitsForPlan(billingPlan);
+
   await context.entities.TenantBilling.updateMany({
     where: { parish: { ownerId: userId, type: { not: 'PERSONAL' } } },
     data: {
       plan: billingPlan,
       status: 'ACTIVE',
-      maxClasses: null,
-      maxCatechumens: null,
+      maxClasses: planLimits.maxClasses,
+      maxCatechumens: planLimits.maxCatechumens,
+      maxCatechists: planLimits.maxCatechists,
+      maxParishes: planLimits.maxParishes,
       currentPeriodEnd: getNextPeriodEnd(),
+      pricingVersion: PRICING_VERSION,
     },
   });
+}
+
+function getDefaultLimitsForPlan(plan: string): {
+  maxClasses: number | null;
+  maxCatechumens: number | null;
+  maxCatechists: number | null;
+  maxParishes: number | null;
+} {
+  const planId = resolvePlanId(plan);
+  if (!planId) return { maxClasses: null, maxCatechumens: null, maxCatechists: null, maxParishes: null };
+  return PLANS[planId]?.limits ?? { maxClasses: null, maxCatechumens: null, maxCatechists: null, maxParishes: null };
 }

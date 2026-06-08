@@ -82,6 +82,7 @@ export default function FamilyDetailPage() {
   const [guardianDialogOpen, setGuardianDialogOpen] = useState(false);
   const [guardianFirstName, setGuardianFirstName] = useState('');
   const [guardianLastName, setGuardianLastName] = useState('');
+  const [guardianEmail, setGuardianEmail] = useState('');
   const [guardianRelationship, setGuardianRelationship] = useState('');
   const [guardianPhone, setGuardianPhone] = useState('');
   const [savingGuardian, setSavingGuardian] = useState(false);
@@ -169,6 +170,7 @@ export default function FamilyDetailPage() {
   const openAddGuardianDialog = () => {
     setGuardianFirstName('');
     setGuardianLastName('');
+    setGuardianEmail('');
     setGuardianRelationship('');
     setGuardianPhone('');
     setGuardianDialogOpen(true);
@@ -185,6 +187,7 @@ export default function FamilyDetailPage() {
         householdId: id,
         firstName: firstName || undefined,
         lastName: guardianLastName.trim() || undefined,
+        email: guardianEmail.trim() || undefined,
         relationship: guardianRelationship || undefined,
         phone: guardianPhone || undefined,
       });
@@ -409,7 +412,7 @@ export default function FamilyDetailPage() {
               {household.guardians.map((g: any) => {
                 const displayName = getGuardianDisplayName(g);
                 const avatarLetter = getGuardianAvatarLetter(g);
-                const emailOrPlaceholder = g.user?.email;
+                const emailOrPlaceholder = g.user?.email || g.email;
                 return (
                   <div key={g.id} className="flex items-center gap-3 group">
                     <div
@@ -570,6 +573,19 @@ export default function FamilyDetailPage() {
                 className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
                 placeholder="Sobrenome"
               />
+            </div>
+
+            {/* Email — essential for invite linking */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Email</label>
+              <input
+                type="email"
+                value={guardianEmail}
+                onChange={(e) => setGuardianEmail(e.target.value)}
+                className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+                placeholder="email@exemplo.com"
+              />
+              <p className="text-xs text-muted-foreground">Usado para vincular a conta quando o responsável aceitar o convite.</p>
             </div>
 
             {/* Relationship */}

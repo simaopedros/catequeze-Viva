@@ -1,4 +1,4 @@
-import { ReactNode, useState, useEffect } from 'react';
+import { ReactNode, useState, useEffect, useMemo, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
@@ -7,7 +7,10 @@ import { AIHelperWidget } from './components/AIHelperWidget';
 import { Breadcrumbs } from './components/Breadcrumbs';
 import { GuidedTour, useGuidedTour } from './components/GuidedTour';
 import { TwoFactorGate } from './components/TwoFactorGate';
+import { FamilyAppShell } from './FamilyAppShell';
 import { useUserContext } from '../client/hooks/useUserContext';
+import { isFamilyPortalHost } from '../shared/portal';
+import { useAction, acceptInvitation } from 'wasp/client/operations';
 
 interface AppShellProps { children: ReactNode; }
 
@@ -15,20 +18,55 @@ export function AppShell({ children }: AppShellProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { needsOnboarding, isLoading, isFetching } = useUserContext();
+  const { needsOnboarding, hasPendingInvitations, isLoading, isFetching, userRole, memberships } = useUserContext();
   const { showTour, completeTour } = useGuidedTour();
+  const acceptInvitationAction = useAction(acceptInvitation);
+  const autoAcceptedRef = useRef(false);
 
-  // Redirecionar para onboarding se necessário (aguarda dados frescos para evitar loop)
+  const isFamily = useMemo(() => isFamilyPortalHost(), []);
+
+  const isFamilyOnlyRole = userRole === 'GUARDIAN' || userRole === 'CATECHUMEN';
+
+  // Auto-accept INVITED memberships for GUARDIAN/CATECHUMEN (they skip workspace selector)
   useEffect(() => {
-    if (!isLoading && !isFetching && needsOnboarding && !location.pathname.includes('/onboarding') && !location.pathname.includes('/select-workspace')) {
+    if (isLoading || isFetching) return;
+    if (!isFamilyOnlyRole) return;
+    if (autoAcceptedRef.current) return;
+    const invited = memberships.filter((m: any) => m.status === 'INVITED');
+    if (invited.length === 0) return;
+    autoAcceptedRef.current = true;
+    Promise.all(invited.map((m: any) => acceptInvitationAction({ membershipId: m.id }).catch(() => {})));
+  }, [isLoading, isFetching, isFamilyOnlyRole, memberships, acceptInvitationAction]);
+
+  // Redirecionar para onboarding ou workspace selector conforme necessário
+  useEffect(() => {
+    if (isLoading || isFetching) return;
+    const path = location.pathname;
+    // GUARDIAN/CATECHUMEN: skip workspace selector, go directly to dashboard
+    if (isFamilyOnlyRole && path === '/app/select-workspace') {
+      navigate('/app');
+      return;
+    }
+    // Users with pending invitations go to workspace selector, not onboarding
+    // (except family-only roles who don't need workspace selection)
+    if (!isFamilyOnlyRole && hasPendingInvitations && !path.includes('/select-workspace') && !path.includes('/onboarding')) {
+      navigate('/app/select-workspace');
+      return;
+    }
+    if (needsOnboarding && !path.includes('/onboarding') && !path.includes('/select-workspace')) {
       navigate('/app/onboarding');
     }
-  }, [isLoading, isFetching, needsOnboarding, location.pathname, navigate]);
+  }, [isLoading, isFetching, needsOnboarding, hasPendingInvitations, isFamilyOnlyRole, location.pathname, navigate]);
 
   // Fechar menu mobile ao navegar
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
+
+  // Family portal gets a simplified shell
+  if (isFamily) {
+    return <FamilyAppShell>{children}</FamilyAppShell>;
+  }
 
   return (
     <TwoFactorGate>

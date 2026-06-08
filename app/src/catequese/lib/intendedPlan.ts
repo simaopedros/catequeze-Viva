@@ -32,7 +32,9 @@ export function clearIntendedPlan(): void {
 }
 
 export function isInstitutionalPlanId(planId: string | null | undefined): boolean {
-  return planId === 'parish' || planId === 'diocese';
+  if (!planId) return false;
+  const institutional = ['parish', 'parish_essential', 'parish_complete', 'diocese'];
+  return institutional.includes(planId.toLowerCase());
 }
 
 export function planLevel(planId: string | null | undefined): IntendedPlanLevel {

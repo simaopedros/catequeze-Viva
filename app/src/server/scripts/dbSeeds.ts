@@ -62,5 +62,6 @@ function generateMockUserData(): MockUserData {
       ? faker.helpers.arrayElement(getSubscriptionPaymentPlanIds())
       : null,
     wooviCorrelationId: null,
+    pricingVersion: 2,
   };
 }

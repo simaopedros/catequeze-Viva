@@ -12,7 +12,7 @@ import { CoordinatorDashboard } from '../components/dashboard/CoordinatorDashboa
 import { InstitutionalDashboard } from '../components/dashboard/InstitutionalDashboard';
 import { SkeletonPage } from '../../client/components/Skeletons';
 
-const INSTITUTIONAL_PLANS = ['parish', 'diocese'];
+const INSTITUTIONAL_PLANS = ['parish', 'parish_essential', 'parish_complete', 'diocese'];
 const INSTITUTIONAL_TYPES = ['PARISH', 'DIOCESE'];
 const STAFF_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'];
 

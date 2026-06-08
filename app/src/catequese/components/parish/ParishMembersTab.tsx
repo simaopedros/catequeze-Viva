@@ -8,15 +8,17 @@ import { ROLE_LABELS, STATUS_LABELS } from '../../../shared/constants';
 interface ParishMembersTabProps {
   members: any[];
   communities: any[];
-  onInvite: (email: string, role: string, communityId: string) => Promise<string>;
+  households: any[];
+  onInvite: (email: string, role: string, communityId: string, householdId: string) => Promise<string>;
   onRemove: (membershipId: string) => Promise<void>;
 }
 
-export function ParishMembersTab({ members, communities, onInvite, onRemove }: ParishMembersTabProps) {
+export function ParishMembersTab({ members, communities, households, onInvite, onRemove }: ParishMembersTabProps) {
   const [showInvite, setShowInvite] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('GUARDIAN');
   const [inviteCommunityId, setInviteCommunityId] = useState('');
+  const [inviteHouseholdId, setInviteHouseholdId] = useState('');
   const [inviting, setInviting] = useState(false);
   const [inviteMsg, setInviteMsg] = useState('');
   const [removeTarget, setRemoveTarget] = useState<string | null>(null);
@@ -26,10 +28,11 @@ export function ParishMembersTab({ members, communities, onInvite, onRemove }: P
     setInviting(true);
     setInviteMsg('');
     try {
-      const msg = await onInvite(inviteEmail, inviteRole, inviteCommunityId);
+      const msg = await onInvite(inviteEmail, inviteRole, inviteCommunityId, inviteHouseholdId);
       setInviteMsg(msg || 'Convite enviado!');
       setInviteEmail('');
       setInviteCommunityId('');
+      setInviteHouseholdId('');
       setShowInvite(false);
     } catch (e: any) {
       setInviteMsg(e.message || 'Erro ao convidar.');
@@ -65,6 +68,7 @@ export function ParishMembersTab({ members, communities, onInvite, onRemove }: P
               <option value="LEAD_CATECHIST">Catequista Resp.</option>
               <option value="ASSISTANT_CATECHIST">Catequista Aux.</option>
               <option value="GUARDIAN">Responsável</option>
+              <option value="CATECHUMEN">Catequizando</option>
               <option value="CONTENT_REVIEWER">Revisor</option>
               <option value="PASTORAL_VIEWER">Pastoral</option>
             </select>
@@ -74,6 +78,14 @@ export function ParishMembersTab({ members, communities, onInvite, onRemove }: P
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
+            {(inviteRole === 'GUARDIAN' || inviteRole === 'CATECHUMEN') && (
+              <select value={inviteHouseholdId} onChange={e => setInviteHouseholdId(e.target.value)} className="h-9 rounded-md border border-input bg-background px-3 text-sm min-w-[180px]">
+                <option value="">Sem família (vincular depois)</option>
+                {households.map((h: any) => (
+                  <option key={h.id} value={h.id}>{h.name}</option>
+                ))}
+              </select>
+            )}
             <Button size="sm" onClick={handleInvite} disabled={inviting || !inviteEmail}>
               <Mail className="mr-1 h-3 w-3" />{inviting ? '...' : 'Enviar'}
             </Button>

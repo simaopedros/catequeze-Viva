@@ -232,6 +232,7 @@ export const createCatechumen = async (args: any, context: any) => {
   return context.entities.CatechumenProfile.create({
     data: {
       firstName: args.firstName, lastName: args.lastName,
+      email: args.email || null,
       birthDate: args.birthDate ? new Date(args.birthDate) : null,
       householdId: args.householdId || null, photoUrl: args.photoUrl || null,
       parishId,

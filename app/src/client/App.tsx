@@ -11,23 +11,33 @@ import {
 import CookieConsentBanner from "./components/cookie-consent/Banner";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
+import HimetricaScripts from "./analytics/HimetricaScripts";
+import { useHimetricaIdentify } from "./analytics/useHimetricaIdentify";
+import { isFamilyPortalHost } from "../shared/portal";
+import FamilyLandingPage from "../catequese/pages/family/FamilyLandingPage";
 
 import "../i18n/config";
 
 export default function App() {
   const location = useLocation();
   const isOnline = useOnlineStatus();
+  useHimetricaIdentify();
+
+  const isFamilyPortal = useMemo(() => isFamilyPortalHost(), []);
+
   const isMarketingPage = useMemo(() => {
+    if (isFamilyPortal) return false;
     return (
       location.pathname === "/" || location.pathname.startsWith("/pricing")
     );
-  }, [location]);
+  }, [location, isFamilyPortal]);
 
   const navigationItems = isMarketingPage
     ? marketingNavigationItems
     : demoNavigationitems;
 
   const shouldDisplayAppNavBar = useMemo(() => {
+    if (isFamilyPortal) return false;
     const publicPaths = [
       "/",
       "/pricing",
@@ -44,7 +54,7 @@ export default function App() {
     if (publicPaths.includes(location.pathname)) return false;
     if (location.pathname.startsWith('/upload-docs/')) return false;
     return true;
-  }, [location]);
+  }, [location, isFamilyPortal]);
 
   const isAdminDashboard = useMemo(() => {
     return location.pathname.startsWith("/admin");
@@ -71,26 +81,36 @@ export default function App() {
           Sem conexão à internet. Algumas funcionalidades podem estar indisponíveis.
         </div>
       )}
-      <div className="bg-background text-foreground min-h-screen">
-        <ErrorBoundary>
-          {isAppRoute ? (
-            <Outlet />
-          ) : isAdminDashboard ? (
-            <Outlet />
-          ) : (
-            <>
-              {shouldDisplayAppNavBar && (
-                <NavBar navigationItems={navigationItems} />
-              )}
-              <div className="mx-auto max-w-(--breakpoint-2xl)">
-                <Outlet />
-              </div>
-            </>
-          )}
-        </ErrorBoundary>
-      </div>
+      {/* Family portal: root path renders FamilyLandingPage */}
+      {isFamilyPortal && location.pathname === '/' ? (
+        <div className="bg-background text-foreground min-h-screen">
+          <ErrorBoundary>
+            <FamilyLandingPage />
+          </ErrorBoundary>
+        </div>
+      ) : (
+        <div className="bg-background text-foreground min-h-screen">
+          <ErrorBoundary>
+            {isAppRoute ? (
+              <Outlet />
+            ) : isAdminDashboard ? (
+              <Outlet />
+            ) : (
+              <>
+                {shouldDisplayAppNavBar && (
+                  <NavBar navigationItems={navigationItems} />
+                )}
+                <div className="mx-auto max-w-(--breakpoint-2xl)">
+                  <Outlet />
+                </div>
+              </>
+            )}
+          </ErrorBoundary>
+        </div>
+      )}
       <Toaster position="top-right" />
       <CookieConsentBanner />
+      <HimetricaScripts />
     </>
   );
 }
