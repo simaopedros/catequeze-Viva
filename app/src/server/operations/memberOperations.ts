@@ -1,4 +1,5 @@
 import { HttpError } from 'wasp/server';
+import { sendInviteEmailJob } from 'wasp/server/jobs';
 import { requireAuth, writeAuditLog, getDioceseParishIds } from '../auth/helpers';
 
 // ── Role hierarchy ────────────────────────────────────────────────────────
@@ -53,7 +54,6 @@ async function sendInviteEmail(
   if (!to) return;
   const payload = { to, location, role, token };
   try {
-    const { sendInviteEmailJob } = await import('wasp/server/jobs');
     await sendInviteEmailJob.submit(payload);
   } catch (e) {
     console.error('Fila de convite indisponível, envio síncrono:', e);

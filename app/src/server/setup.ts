@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node';
 import { type ServerSetupFn } from 'wasp/server';
 import { sessionTimeoutMiddleware } from './middleware/sessionTimeout';
 import { logger } from './logger';
@@ -14,7 +15,6 @@ export const serverSetup: ServerSetupFn = async ({ app, server }) => {
   const sentryDsn = process.env.SENTRY_DSN;
   if (sentryDsn) {
     try {
-      const Sentry = await import('@sentry/node');
       Sentry.init({
         dsn: sentryDsn,
         environment: process.env.SENTRY_ENVIRONMENT || process.env.NODE_ENV || 'production',

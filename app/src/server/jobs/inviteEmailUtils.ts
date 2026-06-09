@@ -20,6 +20,8 @@ export function roleLabel(role: string): string {
   return map[role] || role;
 }
 
+import { sendMessageEmail } from '../operations/sendMessageOperation';
+
 export type InviteEmailPayload = {
   to: string;
   location: string;
@@ -31,7 +33,6 @@ export async function deliverInviteEmail(
   payload: InviteEmailPayload,
   context: any,
 ): Promise<void> {
-  const { sendMessageEmail } = await import('../operations/sendMessageOperation');
   const label = roleLabel(payload.role);
   await sendMessageEmail(
     {
