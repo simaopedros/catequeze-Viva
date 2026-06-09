@@ -24,7 +24,7 @@ COPY --from=builder /app/.wasp/out/server /app/server
 COPY --from=builder /app/.wasp/out/web-app /app/web-app
 
 WORKDIR /app/server
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 ENV NODE_ENV=production
 EXPOSE 3001
