@@ -40,7 +40,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install Wasp CLI
-        run: npm install -g @wasp.sh/wasp-cli@0.22.0
+        run: npm install -g @wasp.sh/wasp-cli@0.22.0 @wasp.sh/wasp-cli-linux-x64-glibc@0.22.0
 
       - name: Compile project
         env:
