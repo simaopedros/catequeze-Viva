@@ -48,7 +48,6 @@ jobs:
           docker push "${IMAGE}:homolog-latest"
 
       - name: Copy web-app to VPS
-        if: ${{ secrets.HOMOLOG_SSH_HOST }}
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOMOLOG_SSH_HOST }}
@@ -59,7 +58,6 @@ jobs:
           strip_components: 4
 
       - name: Deploy via SSH
-        if: ${{ secrets.HOMOLOG_SSH_HOST }}
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOMOLOG_SSH_HOST }}
@@ -74,7 +72,6 @@ jobs:
             curl -fsS https://api.homolog.catechis.app/health
 
       - name: E2E smoke (homolog)
-        if: ${{ secrets.HOMOLOG_SSH_HOST }}
         working-directory: e2e-tests
         run: |
           npm ci
