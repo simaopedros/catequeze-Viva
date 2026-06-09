@@ -46,6 +46,7 @@ jobs:
       - name: Extract web-app from image
         working-directory: app
         run: |
+          mkdir -p .wasp/out
           IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:homolog-${{ github.sha }}"
           CID=$(docker create "${IMAGE}")
           docker cp "${CID}:/app/.wasp/out/web-app" ./.wasp/out/web-app
