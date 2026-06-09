@@ -39,6 +39,7 @@ jobs:
           TAG="homolog-${{ github.sha }}"
           docker build -f deploy/Dockerfile.server \
             --build-arg DATABASE_URL="${{ secrets.HOMOLOG_DATABASE_URL }}" \
+            --build-arg REACT_APP_API_URL=https://api.homolog.catechis.app \
             --build-arg REACT_APP_FAMILY_PORTAL_HOST=familia.homolog.catechis.app \
             --build-arg REACT_APP_STAFF_PORTAL_HOST=homolog.catechis.app \
             -t "${IMAGE}:${TAG}" -t "${IMAGE}:homolog-latest" .

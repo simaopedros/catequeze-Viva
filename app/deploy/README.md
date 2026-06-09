@@ -19,7 +19,7 @@ deploy/
 ## Deploy rápido
 
 1. Copiar ficheiros para `/opt/catechis/` no VPS
-2. Copiar `.wasp/build/web-app/` para `/opt/catechis/web-app/`
+2. Copiar `.wasp/out/web-app/build/` para `/opt/catechis/web-app/`
 3. Configurar `.env.server` (ver exemplos)
 4. `./scripts/deploy.sh homolog` ou `./scripts/deploy.sh prod`
 
