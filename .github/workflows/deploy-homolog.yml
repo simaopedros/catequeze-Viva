@@ -88,4 +88,4 @@ jobs:
         working-directory: e2e-tests
         run: |
           npm ci
-          HOMOLOG_API_URL=https://api.homolog.catechis.app npx playwright test tests/homologSmoke.spec.ts
+          HOMOLOG_API_URL=https://api.homolog.catechis.app SKIP_WEBSERVER=true npx playwright test tests/homologSmoke.spec.ts
