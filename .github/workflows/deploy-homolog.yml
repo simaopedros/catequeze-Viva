@@ -60,10 +60,9 @@ jobs:
             # Extract web-app from Docker image directly on VPS
             CID=$(docker create "${IMAGE}")
             rm -rf /opt/catechis/web-app/*
-            docker cp "${CID}:/app/.wasp/out/web-app/." /opt/catechis/web-app/
+            docker cp "${CID}:/app/web-app/." /opt/catechis/web-app/
             docker rm "${CID}"
             
-            docker compose -f docker-compose.homolog.yml run --rm server npx prisma migrate deploy --schema ../db/schema.prisma
             docker compose -f docker-compose.homolog.yml up -d
             sleep 10
             curl -fsk https://api.homolog.catechis.app/health || curl -fs http://localhost:80/health || echo "⚠️ Health check failed (DNS/SSL may not be ready yet)"
