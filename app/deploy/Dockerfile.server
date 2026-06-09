@@ -9,7 +9,7 @@ FROM base AS builder
 RUN apk add --no-cache python3 build-base libtool autoconf automake
 
 # Install Wasp CLI
-RUN npm install -g @wasp.sh/wasp-cli@0.22.0 @wasp.sh/wasp-cli-linux-x64-glibc@0.22.0
+RUN npm install -g @wasp.sh/wasp-cli@0.22.0 @wasp.sh/wasp-cli-linux-x64-musl@0.22.0
 
 WORKDIR /app
 COPY . .
