@@ -2,32 +2,73 @@
   email admin@catechis.app
 }
 
-homolog.catechis.app {
-  tls internal
-  root * /srv/web-app
-  encode gzip
-  try_files {path} /index.html
-  file_server
-}
-
-familia.homolog.catechis.app {
-  tls internal
-  root * /srv/web-app
-  encode gzip
-  try_files {path} /index.html
-  file_server
-}
-
-api.homolog.catechis.app {
-  tls internal
+(homolog_api) {
   request_body {
     max_size 12MB
   }
-
   reverse_proxy server:3001 {
     header_up Host {host}
     header_up X-Real-IP {remote_host}
     header_up X-Forwarded-For {remote_host}
     header_up X-Forwarded-Proto {scheme}
   }
+}
+
+homolog.catechis.app {
+  tls internal
+  encode gzip
+
+  handle /auth/* {
+    import homolog_api
+  }
+  handle /operations/* {
+    import homolog_api
+  }
+  handle /api/* {
+    import homolog_api
+  }
+  handle /health {
+    import homolog_api
+  }
+  handle /payments-webhook {
+    import homolog_api
+  }
+
+  handle {
+    root * /srv/web-app
+    try_files {path} /index.html
+    file_server
+  }
+}
+
+familia.homolog.catechis.app {
+  tls internal
+  encode gzip
+
+  handle /auth/* {
+    import homolog_api
+  }
+  handle /operations/* {
+    import homolog_api
+  }
+  handle /api/* {
+    import homolog_api
+  }
+  handle /health {
+    import homolog_api
+  }
+  handle /payments-webhook {
+    import homolog_api
+  }
+
+  handle {
+    root * /srv/web-app
+    try_files {path} /index.html
+    file_server
+  }
+}
+
+api.homolog.catechis.app {
+  tls internal
+  import homolog_api
 }

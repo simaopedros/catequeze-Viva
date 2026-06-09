@@ -1,3 +1,4 @@
+import "./setupApiUrlProxy";
 import { useEffect, useMemo } from "react";
 import { Outlet, useLocation } from "react-router";
 import { routes } from "wasp/client/router";

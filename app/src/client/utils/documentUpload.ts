@@ -24,7 +24,7 @@ function getServerUrl(): string {
       return `${protocol}//api.${hostname.replace(/^familia\./, '')}`;
     }
     if (hostname.startsWith('homolog.') || hostname.includes('.homolog.')) {
-      return `${protocol}//api.homolog.catechis.app`;
+      return `${protocol}//${window.location.host}`;
     }
     return `${protocol}//api.${hostname.replace(/^www\./, '')}`;
   }
