@@ -19,6 +19,7 @@ services:
     env_file: .env.server
     environment:
       RUN_JOBS: "false"
+      BUNNY_STORAGE_HOSTNAME: "storage.bunnycdn.com"
     expose:
       - "3001"
 
@@ -28,6 +29,7 @@ services:
     env_file: .env.server
     environment:
       RUN_JOBS: "true"
+      BUNNY_STORAGE_HOSTNAME: "storage.bunnycdn.com"
     depends_on:
       - server
 

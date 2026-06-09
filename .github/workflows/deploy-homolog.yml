@@ -80,9 +80,9 @@ jobs:
             test -f /opt/catechis/web-app/index.html || (echo "ERROR: web-app/index.html missing — Docker build failed" && exit 1)
             
             docker compose -f docker-compose.homolog.yml up -d
-            sleep 5
-            docker compose -f docker-compose.homolog.yml run --rm --entrypoint "npx" server prisma migrate deploy --schema=../db/schema.prisma || echo "⚠️ migrate deploy failed — check DATABASE_URL in .env.server"
             sleep 10
+            docker compose -f docker-compose.homolog.yml run --rm --entrypoint "npx" server prisma migrate deploy --schema=../db/schema.prisma || echo "⚠️ migrate deploy failed — check DATABASE_URL in .env.server"
+            sleep 15
             docker compose -f docker-compose.homolog.yml exec -T server node -e "fetch('http://127.0.0.1:3001/health').then(r=>r.json()).then(j=>{if(j.status!=='ok'){console.error(j);process.exit(1)};console.log(JSON.stringify(j))})"
         env:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}

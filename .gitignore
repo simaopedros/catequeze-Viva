@@ -37,3 +37,4 @@ e2e-tests/prisma/
 
 # SQL backup files
 *.sql
+!app/migrations/**/*.sql
