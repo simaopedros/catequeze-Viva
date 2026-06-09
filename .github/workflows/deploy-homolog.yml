@@ -71,13 +71,18 @@ jobs:
           host: ${{ secrets.HOMOLOG_SSH_HOST }}
           username: ${{ secrets.HOMOLOG_SSH_USER }}
           key: ${{ secrets.HOMOLOG_SSH_KEY }}
+          envs: GHCR_TOKEN
           script: |
             cd /opt/catechis
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u simaopedros --password-stdin
             export IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:homolog-${{ github.sha }}"
             docker compose -f docker-compose.homolog.yml pull
             docker compose -f docker-compose.homolog.yml run --rm server npx prisma migrate deploy
             docker compose -f docker-compose.homolog.yml up -d
-            curl -fsS https://api.homolog.catechis.app/health
+            sleep 5
+            curl -fsk https://api.homolog.catechis.app/health
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: E2E smoke (homolog)
         working-directory: e2e-tests
