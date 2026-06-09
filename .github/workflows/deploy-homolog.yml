@@ -65,6 +65,13 @@ jobs:
           envs: GHCR_TOKEN
           script: |
             cd /opt/catechis
+            if [[ -f .env.server ]]; then
+              upsert_env() { local k="$1" v="$2"; if grep -q "^${k}=" .env.server; then sed -i "s|^${k}=.*|${k}=${v}|" .env.server; else echo "${k}=${v}" >> .env.server; fi; }
+              upsert_env WASP_SERVER_URL "https://api-homolog.catechis.app"
+              upsert_env COOKIE_DOMAIN ".catechis.app"
+              upsert_env FAMILY_PORTAL_HOST "familia-homolog.catechis.app"
+              upsert_env STAFF_PORTAL_HOST "homolog.catechis.app"
+            fi
             echo "$GHCR_TOKEN" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
             export IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:homolog-${{ github.sha }}"
             docker compose -f docker-compose.homolog.yml pull
