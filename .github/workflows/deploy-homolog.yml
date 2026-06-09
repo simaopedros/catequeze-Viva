@@ -51,6 +51,8 @@ jobs:
           CID=$(docker create "${IMAGE}")
           docker cp "${CID}:/app/.wasp/out/web-app" ./.wasp/out/web-app
           docker rm "${CID}"
+          echo "=== Extracted files ==="
+          ls -la ./.wasp/out/web-app/ | head -20
 
       - name: Copy web-app to VPS
         uses: appleboy/scp-action@v0.1.7
@@ -58,9 +60,10 @@ jobs:
           host: ${{ secrets.HOMOLOG_SSH_HOST }}
           username: ${{ secrets.HOMOLOG_SSH_USER }}
           key: ${{ secrets.HOMOLOG_SSH_KEY }}
-          source: "app/.wasp/out/web-app/*"
+          source: "app/.wasp/out/web-app"
           target: "/opt/catechis/web-app"
           strip_components: 4
+          rm: true
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
