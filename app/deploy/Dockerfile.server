@@ -45,6 +45,8 @@ COPY --from=builder /app/.wasp/out/server/node_modules .wasp/out/server/node_mod
 COPY --from=builder /app/.wasp/out/server/bundle .wasp/out/server/bundle
 COPY --from=builder /app/.wasp/out/server/package*.json .wasp/out/server/
 COPY --from=builder /app/.wasp/out/db .wasp/out/db
+# Wasp build does not bundle app/migrations — required for prisma migrate deploy
+COPY --from=builder /app/migrations .wasp/out/db/migrations
 COPY --from=builder /app/node_modules ./node_modules
 
 # Copy web-app static assets (Wasp 0.22 vite output)

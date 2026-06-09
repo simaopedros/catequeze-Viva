@@ -71,7 +71,7 @@ jobs:
             
             docker compose -f docker-compose.homolog.yml up -d
             sleep 5
-            docker compose -f docker-compose.homolog.yml run --rm server npx prisma migrate deploy || echo "⚠️ migrate deploy failed — check DATABASE_URL"
+            docker compose -f docker-compose.homolog.yml run --rm --entrypoint "npx" server prisma migrate deploy --schema=../db/schema.prisma || echo "⚠️ migrate deploy failed — check DATABASE_URL in .env.server"
             sleep 10
             curl -fsk https://api.homolog.catechis.app/health || curl -fs http://localhost:80/health || echo "⚠️ Health check failed (DNS/SSL may not be ready yet)"
         env:
