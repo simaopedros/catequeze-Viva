@@ -17,14 +17,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Wasp CLI
-        run: curl -sSL https://get.wasp.sh/installer.sh | sh -s -- -v 0.22.1
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-      - name: Add Wasp to PATH
-        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Install Wasp CLI
+        run: npm install -g @wasp.sh/wasp-cli@0.22.1
 
       - name: Build Wasp project
         working-directory: app
+        env:
+          DATABASE_URL: ${{ secrets.HOMOLOG_DATABASE_URL }}
         run: wasp build
 
       - name: Log in to GHCR
