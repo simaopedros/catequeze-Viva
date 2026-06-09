@@ -2,14 +2,19 @@
 # Build context: app/ directory (where main.wasp lives).
 #
 # Usage:
-#   docker build -f deploy/Dockerfile.server -t catechis-server .
+#   docker build -f deploy/Dockerfile.server --build-arg DATABASE_URL=... -t catechis-server .
 
 FROM node:22-bookworm-slim AS builder
+
+RUN npm install -g @wasp.sh/wasp-cli@0.22.0 @wasp.sh/wasp-cli-linux-x64-glibc@0.22.0
 
 WORKDIR /app
 COPY . .
 
-# wasp build already ran in CI — .wasp/build/ exists
+ARG DATABASE_URL
+ENV DATABASE_URL=${DATABASE_URL}
+
+RUN wasp build
 
 FROM node:22-bookworm-slim AS runner
 

@@ -25,12 +25,6 @@ jobs:
       - name: Install Wasp CLI
         run: npm install -g @wasp.sh/wasp-cli@0.22.0 @wasp.sh/wasp-cli-linux-x64-glibc@0.22.0
 
-      - name: Build Wasp project
-        working-directory: app
-        env:
-          DATABASE_URL: ${{ secrets.HOMOLOG_DATABASE_URL }}
-        run: wasp build
-
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
@@ -43,9 +37,19 @@ jobs:
         run: |
           IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
           TAG="homolog-${{ github.sha }}"
-          docker build -f deploy/Dockerfile.server -t "${IMAGE}:${TAG}" -t "${IMAGE}:homolog-latest" .
+          docker build -f deploy/Dockerfile.server \
+            --build-arg DATABASE_URL="${{ secrets.HOMOLOG_DATABASE_URL }}" \
+            -t "${IMAGE}:${TAG}" -t "${IMAGE}:homolog-latest" .
           docker push "${IMAGE}:${TAG}"
           docker push "${IMAGE}:homolog-latest"
+
+      - name: Extract web-app from image
+        working-directory: app
+        run: |
+          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:homolog-${{ github.sha }}"
+          CID=$(docker create "${IMAGE}")
+          docker cp "${CID}:/app/web-app" ./.wasp/build/web-app
+          docker rm "${CID}"
 
       - name: Copy web-app to VPS
         uses: appleboy/scp-action@v0.1.7
