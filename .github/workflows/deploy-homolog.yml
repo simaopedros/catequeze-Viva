@@ -43,28 +43,6 @@ jobs:
           docker push "${IMAGE}:${TAG}"
           docker push "${IMAGE}:homolog-latest"
 
-      - name: Extract web-app from image
-        working-directory: app
-        run: |
-          mkdir -p .wasp/out
-          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:homolog-${{ github.sha }}"
-          CID=$(docker create "${IMAGE}")
-          docker cp "${CID}:/app/.wasp/out/web-app" ./.wasp/out/web-app
-          docker rm "${CID}"
-          echo "=== Extracted files ==="
-          ls -la ./.wasp/out/web-app/ | head -20
-
-      - name: Copy web-app to VPS
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.HOMOLOG_SSH_HOST }}
-          username: ${{ secrets.HOMOLOG_SSH_USER }}
-          key: ${{ secrets.HOMOLOG_SSH_KEY }}
-          source: "app/.wasp/out/web-app"
-          target: "/opt/catechis/web-app"
-          strip_components: 4
-          rm: true
-
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -77,6 +55,14 @@ jobs:
             echo "$GHCR_TOKEN" | docker login ghcr.io -u simaopedros --password-stdin
             export IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:homolog-${{ github.sha }}"
             docker compose -f docker-compose.homolog.yml pull
+            docker compose -f docker-compose.homolog.yml down 2>/dev/null || true
+            
+            # Extract web-app from Docker image directly on VPS
+            CID=$(docker create "${IMAGE}")
+            rm -rf /opt/catechis/web-app/*
+            docker cp "${CID}:/app/.wasp/out/web-app/." /opt/catechis/web-app/
+            docker rm "${CID}"
+            
             docker compose -f docker-compose.homolog.yml run --rm server npx prisma migrate deploy --schema ../db/schema.prisma
             docker compose -f docker-compose.homolog.yml up -d
             sleep 10
