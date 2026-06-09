@@ -1,6 +1,8 @@
 # Homologação — Checklist QA Pastoral
 
-Ambiente: `homolog.catechis.app`, `familia.homolog.catechis.app`, `api.homolog.catechis.app`
+Ambiente: `homolog.catechis.app`, `familia-homolog.catechis.app`, `api-homolog.catechis.app`
+
+> Hostnames de **um nível** (`familia-homolog`, não `familia.homolog`) para o SSL gratuito da Cloudflare cobrir todos os subdomínios.
 
 Protegido por **Cloudflare Access** (equipa only).
 
@@ -18,8 +20,9 @@ Protegido por **Cloudflare Access** (equipa only).
 - [ ] DNS apontando para VPS homolog
 - [ ] Cloudflare Access nos 3 hosts
 - [ ] `.env.server` conforme `deploy/.env.server.homolog.example`
-- [ ] `COOKIE_DOMAIN=.homolog.catechis.app`
-- [ ] `FAMILY_PORTAL_HOST=familia.homolog.catechis.app`
+- [ ] `COOKIE_DOMAIN=.catechis.app`
+- [ ] `FAMILY_PORTAL_HOST=familia-homolog.catechis.app`
+- [ ] `WASP_SERVER_URL=https://api-homolog.catechis.app`
 
 ## Staff
 
@@ -31,7 +34,7 @@ Protegido por **Cloudflare Access** (equipa only).
 
 ## Portal da família
 
-- [ ] Email de convite com link `https://familia.homolog.catechis.app/convite/{token}`
+- [ ] Email de convite com link `https://familia-homolog.catechis.app/convite/{token}`
 - [ ] Responsável novo: `/criar-conta?token=` → verificar email → `/entrar?token=` → aceitar → `/app`
 - [ ] Responsável existente: login com token → aceitar convite
 - [ ] `GuardianProfile` pré-cadastrado liga ao `userId` por email
@@ -44,7 +47,7 @@ Protegido por **Cloudflare Access** (equipa only).
 
 ## Infra
 
-- [ ] `GET https://api.homolog.catechis.app/health` → `status: ok`, `database: ok`, `storage.healthy: true`
+- [ ] `GET https://api-homolog.catechis.app/health` (ou `https://homolog.catechis.app/health`) → `status: ok`, `database: ok`, `storage.healthy: true`
 - [ ] Worker processa jobs (`jobs: worker` no health do worker)
 - [ ] Backup diário (`deploy/scripts/backup-db.sh homolog`)
 

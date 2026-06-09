@@ -1,9 +1,10 @@
 /**
  * Rewrites baked-in api.* requests to same-origin when Caddy proxies /auth, /operations, /api.
- * Fixes "Network Error" on signup when api.homolog.catechis.app TLS is broken at Cloudflare edge.
+ * Fixes "Network Error" on signup when api-* host TLS differs from the staff/family portal host.
  */
 const API_HOSTS = new Set([
-  'api.homolog.catechis.app',
+  'api-homolog.catechis.app',
+  'api.homolog.catechis.app', // legado (pré-rename); remover após redeploy
   'api.catechis.app',
 ]);
 

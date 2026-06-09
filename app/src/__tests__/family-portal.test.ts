@@ -192,6 +192,10 @@ describe('portal utilities', () => {
     expect(isFamilyPortalHost('homolog.catechis.app')).toBe(false);
   });
 
+  it('isFamilyPortalHost detects familia-homolog host', () => {
+    expect(isFamilyPortalHost('familia-homolog.catechis.app')).toBe(true);
+  });
+
   it('isFamilyPortalRole identifies family roles', () => {
     expect(isFamilyPortalRole('GUARDIAN')).toBe(true);
     expect(isFamilyPortalRole('CATECHUMEN')).toBe(true);

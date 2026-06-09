@@ -6,9 +6,9 @@ describe('rewriteClientLinkForFamilyPortal', () => {
     const link =
       'https://homolog.catechis.app/email-verification?token=abc123';
     expect(
-      rewriteClientLinkForFamilyPortal(link, 'familia.homolog.catechis.app'),
+      rewriteClientLinkForFamilyPortal(link, 'familia-homolog.catechis.app'),
     ).toBe(
-      'https://familia.homolog.catechis.app/email-verification?token=abc123',
+      'https://familia-homolog.catechis.app/email-verification?token=abc123',
     );
   });
 

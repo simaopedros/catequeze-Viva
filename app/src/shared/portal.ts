@@ -24,7 +24,11 @@ export const STAFF_PORTAL_HOST: string =
  */
 export function isFamilyPortalHost(hostname?: string): boolean {
   const h = hostname || (typeof window !== 'undefined' ? window.location.hostname : '');
-  return h === FAMILY_PORTAL_HOST || h.startsWith('familia.');
+  return (
+    h === FAMILY_PORTAL_HOST ||
+    h.startsWith('familia.') ||
+    h.startsWith('familia-')
+  );
 }
 
 /**

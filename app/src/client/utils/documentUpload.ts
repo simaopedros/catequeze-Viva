@@ -23,7 +23,11 @@ function getServerUrl(): string {
     if (hostname.startsWith('familia.')) {
       return `${protocol}//api.${hostname.replace(/^familia\./, '')}`;
     }
-    if (hostname.startsWith('homolog.') || hostname.includes('.homolog.')) {
+    if (
+      hostname === 'homolog.catechis.app' ||
+      hostname.endsWith('-homolog.catechis.app') ||
+      hostname.includes('.homolog.')
+    ) {
       return `${protocol}//${window.location.host}`;
     }
     return `${protocol}//api.${hostname.replace(/^www\./, '')}`;

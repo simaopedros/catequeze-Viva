@@ -5,7 +5,7 @@
 Configure um monitor externo (UptimeRobot, Better Stack, etc.) em:
 
 - `https://api.catechis.app/health` (produção)
-- `https://api.homolog.catechis.app/health` (homolog)
+- `https://api-homolog.catechis.app/health` (homolog)
 
 Alertar quando HTTP ≠ 200 ou `status` ≠ `ok`.
 

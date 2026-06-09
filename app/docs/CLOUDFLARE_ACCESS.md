@@ -1,6 +1,6 @@
 # Cloudflare Access — Homologação
 
-Protege `homolog.catechis.app`, `familia.homolog.catechis.app` e `api.homolog.catechis.app` para a equipa apenas.
+Protege `homolog.catechis.app`, `familia-homolog.catechis.app` e `api-homolog.catechis.app` para a equipa apenas.
 
 ## Pré-requisitos
 
@@ -11,10 +11,10 @@ Protege `homolog.catechis.app`, `familia.homolog.catechis.app` e `api.homolog.ca
 
 1. **Zero Trust** → **Access** → **Applications** → **Add an application**
 2. Tipo: **Self-hosted**
-3. Criar **três aplicações** (ou uma com wildcard `*.homolog.catechis.app` se o plano permitir):
+3. Criar **três aplicações** (ou uma lista de hostnames):
    - `homolog.catechis.app`
-   - `familia.homolog.catechis.app`
-   - `api.homolog.catechis.app`
+   - `familia-homolog.catechis.app`
+   - `api-homolog.catechis.app`
 4. **Policy**: Allow → Include → **Emails** → adicionar emails da equipa (ex. `dev@catechis.app`)
 5. Método de login: **One-time PIN** ou **Google** (GitHub)
 6. **Session duration**: 24h (homolog)

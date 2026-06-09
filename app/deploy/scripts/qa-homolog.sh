@@ -2,9 +2,9 @@
 # Automated homolog smoke checks (complements app/docs/HOMOLOG.md manual QA).
 set -euo pipefail
 
-API_URL="${HOMOLOG_API_URL:-https://api.homolog.catechis.app}"
+API_URL="${HOMOLOG_API_URL:-https://api-homolog.catechis.app}"
 STAFF_URL="${HOMOLOG_STAFF_URL:-https://homolog.catechis.app}"
-FAMILY_URL="${HOMOLOG_FAMILY_URL:-https://familia.homolog.catechis.app}"
+FAMILY_URL="${HOMOLOG_FAMILY_URL:-https://familia-homolog.catechis.app}"
 
 pass() { echo "✓ $1"; }
 fail() { echo "✗ $1"; exit 1; }

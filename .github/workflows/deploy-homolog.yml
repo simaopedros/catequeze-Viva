@@ -39,8 +39,8 @@ jobs:
           TAG="homolog-${{ github.sha }}"
           docker build -f deploy/Dockerfile.server \
             --build-arg DATABASE_URL="${{ secrets.HOMOLOG_DATABASE_URL }}" \
-            --build-arg REACT_APP_API_URL=https://api.homolog.catechis.app \
-            --build-arg REACT_APP_FAMILY_PORTAL_HOST=familia.homolog.catechis.app \
+            --build-arg REACT_APP_API_URL=https://api-homolog.catechis.app \
+            --build-arg REACT_APP_FAMILY_PORTAL_HOST=familia-homolog.catechis.app \
             --build-arg REACT_APP_STAFF_PORTAL_HOST=homolog.catechis.app \
             -t "${IMAGE}:${TAG}" -t "${IMAGE}:homolog-latest" .
           docker push "${IMAGE}:${TAG}"
@@ -68,8 +68,7 @@ jobs:
             echo "$GHCR_TOKEN" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
             export IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:homolog-${{ github.sha }}"
             docker compose -f docker-compose.homolog.yml pull
-            docker compose -f docker-compose.homolog.yml down 2>/dev/null || true
-            
+
             # Extract web-app from Docker image directly on VPS
             CID=$(docker create "${IMAGE}")
             rm -rf /opt/catechis/web-app/*
@@ -79,9 +78,11 @@ jobs:
             # Verify SPA was extracted (must contain index.html)
             test -f /opt/catechis/web-app/index.html || (echo "ERROR: web-app/index.html missing — Docker build failed" && exit 1)
             
-            docker compose -f docker-compose.homolog.yml up -d
+            docker compose -f docker-compose.homolog.yml up -d --force-recreate --remove-orphans
             sleep 10
-            docker compose -f docker-compose.homolog.yml run --rm --entrypoint "npx" server prisma migrate deploy --schema=../db/schema.prisma || echo "⚠️ migrate deploy failed — check DATABASE_URL in .env.server"
+            docker compose -f docker-compose.homolog.yml run --rm --entrypoint "npx" server prisma migrate deploy --schema=../db/schema.prisma || \
+              (sleep 5 && docker compose -f docker-compose.homolog.yml run --rm --entrypoint "npx" server prisma migrate deploy --schema=../db/schema.prisma) || \
+              echo "⚠️ migrate deploy failed — check DATABASE_URL in .env.server"
             sleep 15
             docker compose -f docker-compose.homolog.yml exec -T server node -e "fetch('http://127.0.0.1:3001/health').then(r=>r.json()).then(j=>{if(j.status!=='ok'){console.error(j);process.exit(1)};console.log(JSON.stringify(j))})"
         env:
@@ -92,4 +93,4 @@ jobs:
         run: |
           npm ci
           npx playwright install chromium
-          HOMOLOG_API_URL=https://api.homolog.catechis.app SKIP_WEBSERVER=true npx playwright test tests/homologSmoke.spec.ts --reporter=list
+          HOMOLOG_STAFF_URL=https://homolog.catechis.app HOMOLOG_FAMILY_URL=https://familia-homolog.catechis.app SKIP_WEBSERVER=true npx playwright test tests/homologSmoke.spec.ts --reporter=list

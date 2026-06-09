@@ -55,8 +55,8 @@ Domínio: `catechis.app` (wildcard `*.catechis.app`)
 | A    | `familia`         | IP VPS prod    | Sim   |
 | A    | `api`             | IP VPS prod    | Sim   |
 | A    | `homolog`         | IP VPS homolog | Sim   |
-| A    | `familia.homolog` | IP VPS homolog | Sim   |
-| A    | `api.homolog`     | IP VPS homolog | Sim   |
+| A    | `familia-homolog` | IP VPS homolog | Sim   |
+| A    | `api-homolog`     | IP VPS homolog | Sim   |
 
 SSL: **Full (Strict)**
 
@@ -64,15 +64,15 @@ SSL: **Full (Strict)**
 
 Criar Application em Zero Trust → Access → Applications para:
 - `homolog.catechis.app`
-- `familia.homolog.catechis.app`
-- `api.homolog.catechis.app`
+- `familia-homolog.catechis.app`
+- `api-homolog.catechis.app`
 
 Política: emails da equipa ou one-time PIN. Produção permanece pública.
 
 ## 6. Resend + Stripe
 
 - **Resend:** verificar domínio `catechis.app` (SPF/DKIM)
-- **Stripe homolog:** chaves `sk_test_*`, webhook → `https://api.homolog.catechis.app/payments-webhook`
+- **Stripe homolog:** chaves `sk_test_*`, webhook → `https://api-homolog.catechis.app/payments-webhook`
 - **Stripe prod:** chaves `sk_live_*`, webhook → `https://api.catechis.app/payments-webhook`
 
 ## 7. Google OAuth (se habilitado)
@@ -82,7 +82,7 @@ Redirect URIs:
 https://catechis.app/auth/google/callback
 https://familia.catechis.app/auth/google/callback
 https://homolog.catechis.app/auth/google/callback
-https://familia.homolog.catechis.app/auth/google/callback
+https://familia-homolog.catechis.app/auth/google/callback
 ```
 
 ## 8. Sentry

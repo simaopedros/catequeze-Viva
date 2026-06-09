@@ -18,8 +18,8 @@ ARG DATABASE_URL
 ENV DATABASE_URL=${DATABASE_URL}
 
 # Client env baked in at vite build time (override per environment in CI)
-ARG REACT_APP_API_URL=https://api.homolog.catechis.app
-ARG REACT_APP_FAMILY_PORTAL_HOST=familia.homolog.catechis.app
+ARG REACT_APP_API_URL=https://api-homolog.catechis.app
+ARG REACT_APP_FAMILY_PORTAL_HOST=familia-homolog.catechis.app
 ARG REACT_APP_STAFF_PORTAL_HOST=homolog.catechis.app
 ENV REACT_APP_API_URL=${REACT_APP_API_URL}
 ENV REACT_APP_FAMILY_PORTAL_HOST=${REACT_APP_FAMILY_PORTAL_HOST}

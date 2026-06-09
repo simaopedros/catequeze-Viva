@@ -1,11 +1,11 @@
 import { test, expect } from '@playwright/test';
 
-const API_URL = process.env.HOMOLOG_API_URL || 'https://api.homolog.catechis.app';
-const FAMILY_URL = process.env.HOMOLOG_FAMILY_URL || 'https://familia.homolog.catechis.app';
+const STAFF_URL = process.env.HOMOLOG_STAFF_URL || 'https://homolog.catechis.app';
+const FAMILY_URL = process.env.HOMOLOG_FAMILY_URL || 'https://familia-homolog.catechis.app';
 
 test.describe('Homolog smoke tests', () => {
-  test('API health check returns ok', async ({ request }) => {
-    const res = await request.get(`${API_URL}/health`);
+  test('API health check returns ok (same-origin proxy)', async ({ request }) => {
+    const res = await request.get(`${STAFF_URL}/health`);
     expect(res.ok()).toBeTruthy();
     const body = await res.json();
     expect(body.status).toBe('ok');
