@@ -19,16 +19,13 @@ Protege `homolog.catechis.app`, `familia.homolog.catechis.app` e `api.homolog.ca
 5. Método de login: **One-time PIN** ou **Google** (GitHub)
 6. **Session duration**: 24h (homolog)
 
-## SSL origem (importante para API)
+## SSL origem (importante — erro 526)
 
-Se `curl https://api.homolog.catechis.app/health` falhar com erro TLS:
+Homolog usa Caddy **só HTTP na porta 80**. No Cloudflare:
 
-| Modo Cloudflare | Quando usar |
-|-----------------|-------------|
-| **Full** | Caddy só HTTP na origem (porta 80) — recomendado para início |
-| **Full (strict)** | Exige certificado válido na origem (Caddy ACME ou Cloudflare Origin Certificate) |
+**SSL/TLS → Overview → Flexible** (não use Full strict sem Origin Certificate).
 
-Com proxy laranja, o Caddy no VPS pode servir HTTP na porta 80; o Cloudflare termina TLS para o utilizador.
+Ver guia completo: [`CLOUDFLARE_SSL.md`](CLOUDFLARE_SSL.md)
 
 ## Produção
 

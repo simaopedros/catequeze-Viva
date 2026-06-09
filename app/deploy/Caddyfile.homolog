@@ -1,5 +1,8 @@
 {
   email admin@catechis.app
+  # Homolog atrás do Cloudflare: use SSL "Flexible" (CF→origem HTTP :80).
+  # Para "Full (strict)": monte certs/ com Cloudflare Origin Certificate (ver docs/CLOUDFLARE_SSL.md).
+  auto_https off
 }
 
 (homolog_api) {
@@ -10,12 +13,11 @@
     header_up Host {host}
     header_up X-Real-IP {remote_host}
     header_up X-Forwarded-For {remote_host}
-    header_up X-Forwarded-Proto {scheme}
+    header_up X-Forwarded-Proto https
   }
 }
 
-homolog.catechis.app {
-  tls internal
+http://homolog.catechis.app {
   encode gzip
 
   handle /auth/* {
@@ -41,8 +43,7 @@ homolog.catechis.app {
   }
 }
 
-familia.homolog.catechis.app {
-  tls internal
+http://familia.homolog.catechis.app {
   encode gzip
 
   handle /auth/* {
@@ -68,7 +69,6 @@ familia.homolog.catechis.app {
   }
 }
 
-api.homolog.catechis.app {
-  tls internal
+http://api.homolog.catechis.app {
   import homolog_api
 }
