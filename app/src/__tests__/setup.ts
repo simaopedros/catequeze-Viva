@@ -13,12 +13,17 @@ import { beforeAll, afterAll } from 'vitest';
 export const prisma = new PrismaClient();
 
 beforeAll(async () => {
-  // Verify database connection
-  await prisma.$connect();
+  // Only connect if DATABASE_URL is set (integration tests).
+  // Unit tests don't need a database connection.
+  if (process.env.DATABASE_URL) {
+    await prisma.$connect();
+  }
 });
 
 afterAll(async () => {
-  await prisma.$disconnect();
+  if (process.env.DATABASE_URL) {
+    await prisma.$disconnect();
+  }
 });
 
 // ═══ Constants from seed ════════════════════════════════════════════════════════
