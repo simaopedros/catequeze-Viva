@@ -17,15 +17,17 @@ COPY . .
 ARG DATABASE_URL
 ENV DATABASE_URL=${DATABASE_URL}
 
+# Client env baked in at wasp build time (override per environment in CI)
+ARG REACT_APP_FAMILY_PORTAL_HOST=familia.homolog.catechis.app
+ARG REACT_APP_STAFF_PORTAL_HOST=homolog.catechis.app
+ENV REACT_APP_FAMILY_PORTAL_HOST=${REACT_APP_FAMILY_PORTAL_HOST}
+ENV REACT_APP_STAFF_PORTAL_HOST=${REACT_APP_STAFF_PORTAL_HOST}
+
 RUN wasp build
 
 # Build server (Prisma generate + Rollup bundle)
 WORKDIR /app/.wasp/out/server
 RUN npm install && npx prisma generate --schema='../db/schema.prisma' && npm run bundle
-
-# Build client (Vite)
-WORKDIR /app/.wasp/out
-RUN npx vite build --outDir web-app 2>&1 || echo "⚠️ Vite build failed, web-app may be empty"
 
 FROM base AS runner
 RUN apk add --no-cache python3
@@ -39,8 +41,8 @@ COPY --from=builder /app/.wasp/out/server/package*.json .wasp/out/server/
 COPY --from=builder /app/.wasp/out/db .wasp/out/db
 COPY --from=builder /app/node_modules ./node_modules
 
-# Copy web-app
-COPY --from=builder /app/.wasp/out/web-app ./web-app
+# Copy web-app (wasp build outputs client to .wasp/build/web-app)
+COPY --from=builder /app/.wasp/build/web-app ./web-app
 
 EXPOSE 3001
 WORKDIR /app/.wasp/out/server

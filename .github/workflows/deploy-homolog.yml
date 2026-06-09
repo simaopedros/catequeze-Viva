@@ -39,6 +39,8 @@ jobs:
           TAG="homolog-${{ github.sha }}"
           docker build -f deploy/Dockerfile.server \
             --build-arg DATABASE_URL="${{ secrets.HOMOLOG_DATABASE_URL }}" \
+            --build-arg REACT_APP_FAMILY_PORTAL_HOST=familia.homolog.catechis.app \
+            --build-arg REACT_APP_STAFF_PORTAL_HOST=homolog.catechis.app \
             -t "${IMAGE}:${TAG}" -t "${IMAGE}:homolog-latest" .
           docker push "${IMAGE}:${TAG}"
           docker push "${IMAGE}:homolog-latest"
@@ -62,8 +64,13 @@ jobs:
             rm -rf /opt/catechis/web-app/*
             docker cp "${CID}:/app/web-app/." /opt/catechis/web-app/
             docker rm "${CID}"
+
+            # Verify SPA was extracted (must contain index.html)
+            test -f /opt/catechis/web-app/index.html || (echo "ERROR: web-app/index.html missing — Docker build failed" && exit 1)
             
             docker compose -f docker-compose.homolog.yml up -d
+            sleep 5
+            docker compose -f docker-compose.homolog.yml run --rm server npx prisma migrate deploy || echo "⚠️ migrate deploy failed — check DATABASE_URL"
             sleep 10
             curl -fsk https://api.homolog.catechis.app/health || curl -fs http://localhost:80/health || echo "⚠️ Health check failed (DNS/SSL may not be ready yet)"
         env:
