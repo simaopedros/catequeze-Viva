@@ -3,6 +3,7 @@
  * Scheduled via main.wasp (daily at 3am — checks if reset is due).
  */
 import { resetAllAiCredits } from '../ai/credits';
+import { skipIfNotJobWorker } from '../jobs/jobGuard';
 
 export const resetAiCreditsJob = async (
   _args: unknown,
@@ -13,6 +14,7 @@ export const resetAiCreditsJob = async (
     };
   },
 ) => {
+  if (skipIfNotJobWorker()) return;
   const count = await resetAllAiCredits(context.entities);
   console.log(`[aiCreditsResetJob] Reset ${count} user(s) AI credits.`);
   return { resetCount: count };

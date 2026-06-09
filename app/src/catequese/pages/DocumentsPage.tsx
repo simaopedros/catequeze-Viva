@@ -5,7 +5,8 @@ import { Button } from '../../client/components/ui/button';
 import { AppShell } from '../AppShell';
 import { PageHeader } from '../../client/components/PageHeader';
 import { EmptyState } from '../../client/components/EmptyState';
-import { useQuery, listDocuments, listCatechumens, uploadDocument, verifyDocument, rejectDocument, deleteDocument } from 'wasp/client/operations';
+import { useQuery, listDocuments, listCatechumens, verifyDocument, rejectDocument, deleteDocument } from 'wasp/client/operations';
+import { uploadDocumentMultipart } from '../../client/utils/documentUpload';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { toast } from '../../client/hooks/use-toast';
 import { useDocumentTypeLabels } from '../../i18n/useLabels';
@@ -26,7 +27,7 @@ export default function DocumentsPage() {
 
   const [uploadingFor, setUploadingFor] = useState<{ catechumenId: string; docType: string } | null>(null);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
-  const [fileBase64, setFileBase64] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState('');
 
   const statusConfig = useMemo(() => ({
@@ -48,28 +49,22 @@ export default function DocumentsPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setSelectedFile(file);
     setFileName(file.name);
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64 = (reader.result as string).split(',')[1];
-      setFileBase64(base64);
-    };
-    reader.readAsDataURL(file);
   };
 
   const handleUpload = async () => {
-    if (!uploadingFor || !fileBase64) return;
+    if (!uploadingFor || !selectedFile) return;
     try {
-      await uploadDocument({
+      await uploadDocumentMultipart({
+        file: selectedFile,
         name: fileName || docTypes[uploadingFor.docType as keyof typeof docTypes],
         type: uploadingFor.docType,
         catechumenProfileId: uploadingFor.catechumenId,
-        fileBase64,
-        mimeType: fileName.split('.').pop() || 'bin',
       });
       toast({ title: tc('documents.sent_success') });
       setUploadingFor(null);
-      setFileBase64('');
+      setSelectedFile(null);
       setFileName('');
     } catch (e: any) {
       toast({ title: tc('error'), description: e.message, variant: 'destructive' });
@@ -112,15 +107,15 @@ export default function DocumentsPage() {
                   name: `${uploadingCatechumen?.firstName || ''} ${uploadingCatechumen?.lastName || ''}`.trim(),
                 })}
               </h3>
-              <button onClick={() => { setUploadingFor(null); setFileBase64(''); setFileName(''); }} className="p-1 hover:bg-muted rounded"><X className="h-4 w-4" /></button>
+              <button onClick={() => { setUploadingFor(null); setSelectedFile(null); setFileName(''); }} className="p-1 hover:bg-muted rounded"><X className="h-4 w-4" /></button>
             </div>
             <input type="file" onChange={handleFileChange} className="text-sm" />
             {fileName && <p className="text-xs text-muted-foreground">{tc('documents.file_label', { name: fileName })}</p>}
             <div className="flex gap-2">
-              <Button size="sm" onClick={handleUpload} disabled={!fileBase64}>
+              <Button size="sm" onClick={handleUpload} disabled={!selectedFile}>
                 <Upload className="mr-1 h-3 w-3" />{tc('upload')}
               </Button>
-              <Button size="sm" variant="outline" onClick={() => { setUploadingFor(null); setFileBase64(''); setFileName(''); }}>{tc('cancel')}</Button>
+              <Button size="sm" variant="outline" onClick={() => { setUploadingFor(null); setSelectedFile(null); setFileName(''); }}>{tc('cancel')}</Button>
             </div>
           </div>
         )}

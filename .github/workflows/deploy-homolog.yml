@@ -1,0 +1,77 @@
+name: Deploy Homolog
+
+on:
+  push:
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Wasp CLI
+        run: curl -sSL https://get.wasp.sh/installer.sh | sh -s -- -v 0.22.1
+
+      - name: Add Wasp to PATH
+        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Build Wasp project
+        working-directory: app
+        run: wasp build
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        working-directory: app
+        run: |
+          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
+          TAG="homolog-${{ github.sha }}"
+          docker build -f deploy/Dockerfile.server -t "${IMAGE}:${TAG}" -t "${IMAGE}:homolog-latest" .
+          docker push "${IMAGE}:${TAG}"
+          docker push "${IMAGE}:homolog-latest"
+
+      - name: Copy web-app to VPS
+        if: ${{ secrets.HOMOLOG_SSH_HOST }}
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOMOLOG_SSH_HOST }}
+          username: ${{ secrets.HOMOLOG_SSH_USER }}
+          key: ${{ secrets.HOMOLOG_SSH_KEY }}
+          source: "app/.wasp/build/web-app/*"
+          target: "/opt/catechis/web-app"
+          strip_components: 4
+
+      - name: Deploy via SSH
+        if: ${{ secrets.HOMOLOG_SSH_HOST }}
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOMOLOG_SSH_HOST }}
+          username: ${{ secrets.HOMOLOG_SSH_USER }}
+          key: ${{ secrets.HOMOLOG_SSH_KEY }}
+          script: |
+            cd /opt/catechis
+            export IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:homolog-${{ github.sha }}"
+            docker compose -f docker-compose.homolog.yml pull
+            docker compose -f docker-compose.homolog.yml run --rm server npx prisma migrate deploy
+            docker compose -f docker-compose.homolog.yml up -d
+            curl -fsS https://api.homolog.catechis.app/health
+
+      - name: E2E smoke (homolog)
+        if: ${{ secrets.HOMOLOG_SSH_HOST }}
+        working-directory: e2e-tests
+        run: |
+          npm ci
+          HOMOLOG_API_URL=https://api.homolog.catechis.app npx playwright test tests/homologSmoke.spec.ts

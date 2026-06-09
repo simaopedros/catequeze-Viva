@@ -23,7 +23,7 @@ export default function FamilyLoginPage() {
         </div>
 
         <div className="rounded-2xl border bg-card p-6 shadow-sm">
-          <CustomLoginForm />
+          <CustomLoginForm inviteToken={token} />
         </div>
 
         <div className="text-center space-y-2">

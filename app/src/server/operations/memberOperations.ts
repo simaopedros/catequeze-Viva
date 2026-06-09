@@ -34,23 +34,14 @@ const ALLOWED_INVITER_ROLES = [
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-/** Derive the invite link host from env or default. */
-function getFamilyPortalHost(): string {
-  return process.env.FAMILY_PORTAL_HOST || 'familia.catequeseviva.com';
-}
-
-/** Build the full invitation link for a token. */
-function inviteLink(token: string): string {
-  const host = getFamilyPortalHost();
-  return `https://${host}/convite/${token}`;
-}
+import { deliverInviteEmail } from '../jobs/inviteEmailUtils';
 
 /** Invitation expires 30 days from now. */
 function defaultExpiry(): Date {
   return new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 }
 
-// ── Send invite email ──────────────────────────────────────────────────────
+// ── Send invite email (via PgBoss queue, sync fallback) ───────────────────
 
 async function sendInviteEmail(
   context: any,
@@ -60,27 +51,17 @@ async function sendInviteEmail(
   token: string,
 ) {
   if (!to) return;
+  const payload = { to, location, role, token };
   try {
-    const { sendMessageEmail } = await import('./sendMessageOperation');
-    const label = roleLabel(role);
-    await sendMessageEmail(
-      {
-        to,
-        subject: `Convite para ${location} — Catequese Viva`,
-        body: [
-          `Você foi convidado(a) para participar de "${location}" como ${label}.`,
-          '',
-          `Para aceitar, acesse: ${inviteLink(token)}`,
-          '',
-          'Este convite expira em 30 dias.',
-          '',
-          '— Equipa Catequese Viva',
-        ].join('\n'),
-      },
-      context
-    );
+    const { sendInviteEmailJob } = await import('wasp/server/jobs');
+    await sendInviteEmailJob.submit(payload);
   } catch (e) {
-    console.error('Erro ao enviar email de convite:', e);
+    console.error('Fila de convite indisponível, envio síncrono:', e);
+    try {
+      await deliverInviteEmail(payload, context);
+    } catch (syncErr) {
+      console.error('Erro ao enviar email de convite:', syncErr);
+    }
   }
 }
 
@@ -455,6 +436,7 @@ export const getInvitationByToken = async (
       parishId: invitation.parishId,
       parishType: invitation.parish.type,
       emailMasked: maskEmail(invitation.email),
+      inviteEmail: !existingUser ? invitation.email : undefined,
       expiresAt: invitation.expiresAt?.toISOString() ?? null,
       hasAccount: !!existingUser,
     };

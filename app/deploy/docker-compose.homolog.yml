@@ -1,0 +1,36 @@
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile.homolog:/etc/caddy/Caddyfile:ro
+      - ./web-app:/srv/web-app:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - server
+
+  server:
+    image: ${IMAGE:-ghcr.io/catechis/catequese-viva:homolog-latest}
+    restart: unless-stopped
+    env_file: .env.server
+    environment:
+      RUN_JOBS: "false"
+    expose:
+      - "3001"
+
+  worker:
+    image: ${IMAGE:-ghcr.io/catechis/catequese-viva:homolog-latest}
+    restart: unless-stopped
+    env_file: .env.server
+    environment:
+      RUN_JOBS: "true"
+    depends_on:
+      - server
+
+volumes:
+  caddy_data:
+  caddy_config:

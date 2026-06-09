@@ -1,0 +1,32 @@
+# Dockerfile for Wasp server + worker (same image, RUN_JOBS differs per service).
+# Build context: app/ directory (where main.wasp lives).
+#
+# Usage:
+#   docker build -f deploy/Dockerfile.server -t catechis-server .
+
+FROM node:20-bookworm-slim AS builder
+
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+RUN curl -sSL https://get.wasp.sh/installer.sh | sh -s -- -v 0.22.1
+ENV PATH="/root/.local/bin:${PATH}"
+
+WORKDIR /app
+COPY . .
+
+RUN wasp build
+
+FROM node:20-bookworm-slim AS runner
+
+WORKDIR /app
+
+COPY --from=builder /app/.wasp/build/server /app/server
+COPY --from=builder /app/.wasp/build/web-app /app/web-app
+
+WORKDIR /app/server
+RUN npm ci --omit=dev
+
+ENV NODE_ENV=production
+EXPOSE 3001
+
+CMD ["node", "bundle/server.js"]

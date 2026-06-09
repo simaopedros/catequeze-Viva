@@ -1,5 +1,6 @@
 import { type DailyStats } from "wasp/entities";
 import { type DailyStatsJob } from "wasp/server/jobs";
+import { skipIfNotJobWorker } from "../server/jobs/jobGuard";
 import {
   getDailyPageViews,
   getSources,
@@ -18,6 +19,8 @@ export const calculateDailyStats: DailyStatsJob<never, void> = async (
   _args,
   context,
 ) => {
+  if (skipIfNotJobWorker()) return;
+
   const nowUTC = new Date(Date.now());
   nowUTC.setUTCHours(0, 0, 0, 0);
 

@@ -3,8 +3,11 @@
  * 1. Meetings happening tomorrow
  */
 import { getMeetingReminderNotification, resolveUserLocale } from '../i18n/serverLocale';
+import { skipIfNotJobWorker } from '../jobs/jobGuard';
 
 export async function sendRemindersJob(_args: any, context: any) {
+  if (skipIfNotJobWorker()) return;
+
   const now = new Date();
   const tomorrow = new Date(now);
   tomorrow.setDate(tomorrow.getDate() + 1);

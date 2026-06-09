@@ -1,11 +1,11 @@
 import { HttpError } from 'wasp/server';
 import { validateOrThrow, uploadDocumentSchema, verifyDocumentSchema } from '../validation';
 import { requireAuth, writeAuditLog, getDioceseParishIds } from '../auth/helpers';
-import * as fs from 'fs';
+import { storeDocumentFile, deleteDocumentFile } from '../storage/documentStorage';
 import {
-  UPLOADS_DIR,
-  generateUploadFileName,
-} from '../uploads/helpers';
+  MAX_FILE_SIZE_BYTES,
+  validateFileSignature,
+} from '../storage/uploadValidation';
 
 export const listDocuments = async (_args: void, context: any) => {
   requireAuth(context.user);
@@ -204,26 +204,25 @@ export const uploadDocument = async (
     throw new HttpError(400, 'Você não está vinculado a nenhuma paróquia.');
   }
 
-  // Handle file upload if base64 data is provided
+  // Handle file upload if base64 data is provided (legacy — prefer POST /api/documents/upload)
   let s3Key = `pending/${Date.now()}_${args.name}`;
   if (args.fileBase64) {
     try {
-      if (!fs.existsSync(UPLOADS_DIR)) {
-        fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-      }
-
-      let fileName: string;
-      try {
-        fileName = generateUploadFileName(args.mimeType || 'application/octet-stream');
-      } catch {
-        throw new HttpError(400, 'Formato de ficheiro não permitido.');
-      }
-      const filePath = `${UPLOADS_DIR}/${fileName}`;
-
       const buffer = Buffer.from(args.fileBase64, 'base64');
-      fs.writeFileSync(filePath, buffer);
-      s3Key = fileName;
+      if (buffer.length > MAX_FILE_SIZE_BYTES) {
+        throw new HttpError(400, 'Ficheiro demasiado grande. Máximo: 10 MB.');
+      }
+      const mimeType = args.mimeType || 'application/octet-stream';
+      if (args.mimeType && !validateFileSignature(buffer, mimeType)) {
+        throw new HttpError(400, 'Ficheiro inválido ou tipo não corresponde ao conteúdo.');
+      }
+      s3Key = await storeDocumentFile({
+        buffer,
+        mimeType,
+        parishId,
+      });
     } catch (err) {
+      if (err instanceof HttpError) throw err;
       console.error('Erro ao salvar arquivo:', err);
       throw new HttpError(500, 'Erro ao processar o arquivo enviado.');
     }
@@ -370,7 +369,20 @@ export const deleteDocument = async (args: { id: string }, context: any) => {
     throw new HttpError(403, 'Apenas o autor ou administrador pode remover este documento.');
   }
 
+  const fullDoc = await context.entities.Document.findUnique({
+    where: { id: args.id },
+    select: { s3Key: true },
+  });
+
   await context.entities.Document.delete({ where: { id: args.id } });
+
+  if (fullDoc?.s3Key && !fullDoc.s3Key.startsWith('pending/')) {
+    try {
+      await deleteDocumentFile(fullDoc.s3Key);
+    } catch {
+      // best-effort blob cleanup
+    }
+  }
   await writeAuditLog(context, 'DELETE', 'Document', args.id, { operation: 'DOCUMENT_DELETE' });
   return { success: true };
 };

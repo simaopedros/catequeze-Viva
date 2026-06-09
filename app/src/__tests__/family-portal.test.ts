@@ -186,10 +186,10 @@ import { isFamilyPortalHost, isFamilyPortalRole, familyPortalUrl } from '../shar
 
 describe('portal utilities', () => {
   it('isFamilyPortalHost detects familia subdomain', () => {
-    expect(isFamilyPortalHost('familia.catequeseviva.com')).toBe(true);
+    expect(isFamilyPortalHost('familia.catechis.app')).toBe(true);
     expect(isFamilyPortalHost('familia.localhost')).toBe(true);
-    expect(isFamilyPortalHost('catequeseviva.com')).toBe(false);
-    expect(isFamilyPortalHost('app.catequeseviva.com')).toBe(false);
+    expect(isFamilyPortalHost('catechis.app')).toBe(false);
+    expect(isFamilyPortalHost('homolog.catechis.app')).toBe(false);
   });
 
   it('isFamilyPortalRole identifies family roles', () => {

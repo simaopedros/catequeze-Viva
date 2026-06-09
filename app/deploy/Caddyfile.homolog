@@ -1,0 +1,30 @@
+{
+  email admin@catechis.app
+}
+
+homolog.catechis.app {
+  root * /srv/web-app
+  encode gzip
+  try_files {path} /index.html
+  file_server
+}
+
+familia.homolog.catechis.app {
+  root * /srv/web-app
+  encode gzip
+  try_files {path} /index.html
+  file_server
+}
+
+api.homolog.catechis.app {
+  request_body {
+    max_size 12MB
+  }
+
+  reverse_proxy server:3001 {
+    header_up Host {host}
+    header_up X-Real-IP {remote_host}
+    header_up X-Forwarded-For {remote_host}
+    header_up X-Forwarded-Proto {scheme}
+  }
+}

@@ -5,9 +5,15 @@ import { Input } from '../client/components/ui/input';
 import { Label } from '../client/components/ui/label';
 import { Checkbox } from '../client/components/ui/checkbox';
 import { Cross, Loader2, Eye, EyeOff } from 'lucide-react';
+import { isFamilyPortalHost } from '../shared/portal';
 
-export default function CustomSignupForm() {
-  const [email, setEmail] = useState('');
+type CustomSignupFormProps = {
+  inviteToken?: string | null;
+  defaultEmail?: string;
+};
+
+export default function CustomSignupForm({ inviteToken, defaultEmail }: CustomSignupFormProps = {}) {
+  const [email, setEmail] = useState(defaultEmail || '');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [acceptTerms, setAcceptTerms] = useState(false);
@@ -49,6 +55,10 @@ export default function CustomSignupForm() {
   };
 
   if (success) {
+    const loginHref = inviteToken
+      ? `${isFamilyPortalHost() ? '/entrar' : '/login'}?token=${encodeURIComponent(inviteToken)}`
+      : isFamilyPortalHost() ? '/entrar' : '/login';
+
     return (
       <div className="space-y-6 text-center">
         <div className="inline-flex rounded-xl bg-green-100 p-3">
@@ -60,6 +70,14 @@ export default function CustomSignupForm() {
             Enviamos um link de confirmação para <strong>{email}</strong>.
             Verifique seu email para ativar a conta.
           </p>
+          {inviteToken && (
+            <p className="text-sm text-muted-foreground">
+              Depois de confirmar,{' '}
+              <a href={loginHref} className="text-primary underline underline-offset-2 font-medium">
+                entre aqui para aceitar o convite
+              </a>.
+            </p>
+          )}
         </div>
         <Button variant="outline" onClick={() => setSuccess(false)} className="w-full">
           Voltar
@@ -169,7 +187,14 @@ export default function CustomSignupForm() {
 
       <p className="text-center text-sm text-muted-foreground">
         Já tem uma conta?{' '}
-        <a href="/login" className="font-medium text-primary hover:underline">
+        <a
+          href={
+            inviteToken
+              ? `${isFamilyPortalHost() ? '/entrar' : '/login'}?token=${encodeURIComponent(inviteToken)}`
+              : isFamilyPortalHost() ? '/entrar' : '/login'
+          }
+          className="font-medium text-primary hover:underline"
+        >
           Entrar
         </a>
       </p>

@@ -8,10 +8,20 @@ import { Label } from '../client/components/ui/label';
 import { Checkbox } from '../client/components/ui/checkbox';
 import { Cross, Loader2, Eye, EyeOff, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { getTwoFactorStatus, verifyTwoFactorLogin, beginTwoFactorChallenge } from 'wasp/client/operations';
+import { isFamilyPortalHost } from '../shared/portal';
 
 type Step = 'login' | 'twofactor';
 
-export default function CustomLoginForm() {
+type CustomLoginFormProps = {
+  inviteToken?: string | null;
+};
+
+function postLoginPath(inviteToken?: string | null): string {
+  if (inviteToken) return `/convite/${encodeURIComponent(inviteToken)}`;
+  return isFamilyPortalHost() ? '/app' : '/app';
+}
+
+export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = {}) {
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>('login');
   const [email, setEmail] = useState('');
@@ -37,7 +47,7 @@ export default function CustomLoginForm() {
         await beginTwoFactorChallenge();
         setStep('twofactor');
       } else {
-        navigate('/app');
+        navigate(postLoginPath(inviteToken));
       }
     } catch (err: any) {
       setError(err?.message || 'Email ou senha incorretos.');
@@ -56,7 +66,7 @@ export default function CustomLoginForm() {
     setError('');
     try {
       await verifyTwoFactorLogin({ token: twoFactorToken });
-      navigate('/app');
+      navigate(postLoginPath(inviteToken));
     } catch (err: any) {
       setError(err?.message || 'Código inválido.');
       setIsLoading(false);
@@ -213,7 +223,14 @@ export default function CustomLoginForm() {
 
       <p className="text-center text-sm text-muted-foreground">
         Ainda não tem uma conta?{' '}
-        <a href="/signup" className="font-medium text-primary hover:underline">
+        <a
+          href={
+            inviteToken
+              ? `${isFamilyPortalHost() ? '/criar-conta' : '/signup'}?token=${encodeURIComponent(inviteToken)}`
+              : isFamilyPortalHost() ? '/criar-conta' : '/signup'
+          }
+          className="font-medium text-primary hover:underline"
+        >
           Criar conta
         </a>
       </p>

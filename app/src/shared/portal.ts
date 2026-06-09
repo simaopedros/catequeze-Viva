@@ -2,21 +2,21 @@
  * Portal host detection and URL helpers.
  *
  * Two hosts serve the same Wasp app:
- *  - catequeseviva.com       (staff / institutional tool)
- *  - familia.catequeseviva.com  (family portal for guardians & catechumens)
+ *  - catechis.app            (staff / institutional tool)
+ *  - familia.catechis.app    (family portal for guardians & catechumens)
  */
 
 /** The family portal hostname (env-configurable, defaults to production). */
 export const FAMILY_PORTAL_HOST: string =
   (typeof process !== 'undefined' && process.env?.FAMILY_PORTAL_HOST) ||
   (typeof import.meta !== 'undefined' && (import.meta as any).env?.REACT_APP_FAMILY_PORTAL_HOST) ||
-  'familia.catequeseviva.com';
+  'familia.catechis.app';
 
 /** The main staff portal hostname (env-configurable). */
 export const STAFF_PORTAL_HOST: string =
   (typeof process !== 'undefined' && process.env?.STAFF_PORTAL_HOST) ||
   (typeof import.meta !== 'undefined' && (import.meta as any).env?.REACT_APP_STAFF_PORTAL_HOST) ||
-  'catequeseviva.com';
+  'catechis.app';
 
 /**
  * Check whether the current hostname is the family portal.

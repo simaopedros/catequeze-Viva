@@ -5,29 +5,34 @@ import { logger } from './logger';
 /**
  * Server setup — configures Express middlewares.
  *
- * 413 FIX: Wasp's express.json() runs with default 100kb limit inside the
- * operations router, and it runs BEFORE our middleware because Wasp mounts
- * routes before calling serverSetup.
- *
- * Strategy: intercept the HTTP 'request' event before Express processes it,
- * read the entire body with a 50mb limit, set req._body = true so Express's
- * own json parser skips, then forward to Express for normal handling.
+ * JSON body limit: 2 MB (document uploads use multipart endpoints, not base64 JSON).
  */
 export const serverSetup: ServerSetupFn = async ({ app, server }) => {
-  const MAX_BODY = 50 * 1024 * 1024; // 50MB
+  const MAX_BODY = 2 * 1024 * 1024; // 2 MB
+
+  // ── Sentry (optional) ───────────────────────────────────────────────
+  const sentryDsn = process.env.SENTRY_DSN;
+  if (sentryDsn) {
+    try {
+      const Sentry = await import('@sentry/node');
+      Sentry.init({
+        dsn: sentryDsn,
+        environment: process.env.SENTRY_ENVIRONMENT || process.env.NODE_ENV || 'production',
+        tracesSampleRate: Number(process.env.SENTRY_TRACES_SAMPLE_RATE || '0.1'),
+      });
+      logger.info('[setup] Sentry initialized');
+    } catch (e) {
+      logger.warn('[setup] Sentry init failed', { error: String(e) });
+    }
+  }
 
   // ── Cookie domain for cross-subdomain sessions ──────────────────────
-  // When COOKIE_DOMAIN is set (e.g. ".catequeseviva.com"), patch all
-  // Set-Cookie headers so the session is shared between the main app
-  // (catequeseviva.com) and the family portal (familia.catequeseviva.com).
   const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN;
   if (COOKIE_DOMAIN) {
-    // Intercept all responses and rewrite Set-Cookie headers with the domain
     app.use((_req: any, res: any, next: any) => {
       const originalSetHeader = res.setHeader;
       res.setHeader = function (name: string, value: any) {
         if (name.toLowerCase() === 'set-cookie' && typeof value === 'string') {
-          // Only add domain if not already present
           if (!value.includes('Domain=')) {
             value = value + '; Domain=' + COOKIE_DOMAIN + '; SameSite=Lax';
           }
@@ -39,7 +44,6 @@ export const serverSetup: ServerSetupFn = async ({ app, server }) => {
     logger.info(`[setup] Cookie domain set to ${COOKIE_DOMAIN}`);
   }
 
-  // Intercept HTTP requests BEFORE Express to pre-parse large JSON bodies
   const originalEmit = server.emit.bind(server);
   server.emit = function (event: string, ...args: any[]) {
     if (event !== 'request') return originalEmit(event, ...args);
@@ -47,12 +51,10 @@ export const serverSetup: ServerSetupFn = async ({ app, server }) => {
     const [req, res] = args;
     const contentType = (req.headers?.['content-type'] || '') as string;
 
-    // Only intercept JSON requests
     if (!contentType.includes('application/json')) {
       return originalEmit(event, ...args);
     }
 
-    // Read body before Express ever sees the request
     const chunks: Buffer[] = [];
     let totalSize = 0;
     let bodyError: Error | null = null;
@@ -87,11 +89,10 @@ export const serverSetup: ServerSetupFn = async ({ app, server }) => {
       }
       (req as any)._body = true;
 
-      // Forward to Express — its json parser will see _body=true and skip
       originalEmit(event, req, res);
     });
 
-    return true; // Signal that we handled the event
+    return true;
   };
 
   app.use(sessionTimeoutMiddleware);

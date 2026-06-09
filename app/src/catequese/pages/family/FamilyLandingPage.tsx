@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { Church, Sparkles } from 'lucide-react';
+import { staffPortalUrl } from '../../../shared/portal';
 
 export default function FamilyLandingPage() {
   const { t } = useTranslation('family');
@@ -42,7 +43,7 @@ export default function FamilyLandingPage() {
 
         <p className="text-xs text-muted-foreground">
           {t('landing.staff_hint')}{' '}
-          <a href="https://catequeseviva.com" className="text-primary underline underline-offset-2">
+          <a href={staffPortalUrl('/')} className="text-primary underline underline-offset-2">
             {t('landing.main_portal')}
           </a>
         </p>

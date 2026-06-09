@@ -6,6 +6,7 @@ import { Badge } from '../../client/components/ui/badge';
 import { FileText, Upload, CheckCircle, Clock, Loader2 } from 'lucide-react';
 import { useQuery, getCatechumenByUploadToken } from 'wasp/client/operations';
 import { toast } from '../../client/hooks/use-toast';
+import { uploadPublicDocumentMultipart } from '../../client/utils/documentUpload';
 
 const DOC_TYPES = [
   'BAPTISM_CERTIFICATE',
@@ -30,28 +31,11 @@ export default function PublicUploadDocsPage() {
     if (!docFile || !token) return;
     setSending(true);
     try {
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve((reader.result as string).split(',')[1]);
-        reader.onerror = reject;
-        reader.readAsDataURL(docFile);
+      await uploadPublicDocumentMultipart({
+        file: docFile,
+        token,
+        type: docType,
       });
-
-      const response = await fetch('/api/upload-document', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          token,
-          type: docType,
-          fileBase64: base64,
-          mimeType: docFile.type,
-        }),
-      });
-
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.error || t('upload_docs.upload_error'));
-      }
       setSent(true);
       setDocFile(null);
       toast({ title: t('upload_docs.toast_success') });

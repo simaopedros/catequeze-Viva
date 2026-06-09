@@ -85,7 +85,7 @@ export default function FamilySignupPage() {
         </div>
 
         <div className="rounded-2xl border bg-card p-6 shadow-sm">
-          <CustomSignupForm />
+          <CustomSignupForm inviteToken={token} defaultEmail={(invitation as any).inviteEmail} />
         </div>
 
         <div className="text-center">

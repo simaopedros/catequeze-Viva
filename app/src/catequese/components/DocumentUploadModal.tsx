@@ -1,8 +1,17 @@
 import { useState } from 'react';
 import { Button } from '../../client/components/ui/button';
 import { FilePlus, Loader2, X } from 'lucide-react';
-import { uploadDocument } from 'wasp/client/operations';
+import { uploadDocumentMultipart } from '../../client/utils/documentUpload';
 import { toast } from '../../client/hooks/use-toast';
+
+const DOC_TYPES = [
+  'BAPTISM_CERTIFICATE',
+  'BIRTH_CERTIFICATE',
+  'CONSENT_FORM',
+  'MARRIAGE_CERTIFICATE',
+  'PASTORAL_LETTER',
+  'OTHER',
+] as const;
 
 interface DocumentUploadModalProps {
   catechumenProfileId: string;
@@ -18,22 +27,25 @@ export function DocumentUploadModal({
   onSuccess,
 }: DocumentUploadModalProps) {
   const [name, setName] = useState('');
-  const [type, setType] = useState('PDF');
+  const [type, setType] = useState<string>('BAPTISM_CERTIFICATE');
+  const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
   if (!open) return null;
 
   const handleUpload = async () => {
-    if (!name.trim()) return;
+    if (!name.trim() || !file) return;
     setUploading(true);
     try {
-      await uploadDocument({
+      await uploadDocumentMultipart({
+        file,
         name: name.trim(),
-        type: type as any,
+        type,
         catechumenProfileId,
       });
       toast({ title: 'Documento enviado com sucesso.' });
       setName('');
+      setFile(null);
       onSuccess?.();
       onClose();
     } catch (e: any) {
@@ -73,17 +85,27 @@ export function DocumentUploadModal({
             onChange={(e) => setType(e.target.value)}
             className="mt-1 flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm"
           >
-            <option value="PDF">PDF</option>
-            <option value="IMAGE">Imagem</option>
-            <option value="DOCX">Documento Word</option>
+            {DOC_TYPES.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
           </select>
+        </div>
+
+        <div>
+          <label className="text-sm font-medium text-muted-foreground">Ficheiro</label>
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png,.webp,.pdf"
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+            className="mt-1 flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm"
+          />
         </div>
 
         <div className="flex gap-2 justify-end">
           <Button variant="ghost" size="sm" onClick={onClose} disabled={uploading}>
             Cancelar
           </Button>
-          <Button size="sm" onClick={handleUpload} disabled={uploading || !name.trim()}>
+          <Button size="sm" onClick={handleUpload} disabled={uploading || !name.trim() || !file}>
             {uploading ? <><Loader2 className="mr-1 h-3 w-3 animate-spin" /> Enviando...</> : 'Enviar'}
           </Button>
         </div>

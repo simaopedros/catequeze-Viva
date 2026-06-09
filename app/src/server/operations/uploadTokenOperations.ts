@@ -1,11 +1,11 @@
 import { HttpError } from 'wasp/server';
 import { requireAuth } from '../auth/helpers';
-import * as fs from 'fs';
-import {
-  UPLOADS_DIR,
-  generateUploadFileName,
-} from '../uploads/helpers';
 import crypto from 'node:crypto';
+import { storeDocumentFile } from '../storage/documentStorage';
+import {
+  MAX_FILE_SIZE_BYTES,
+  validateFileSignature,
+} from '../storage/uploadValidation';
 
 /**
  * Generates a unique upload token for a catechumen, valid for 7 days.
@@ -30,7 +30,6 @@ export const generateCatechumenUploadToken = async (
 
   if (!catechumen) throw new HttpError(404, 'Catequizando não encontrado.');
 
-  // Get all parish IDs this catechumen belongs to
   const catechumenParishIds = [
     catechumen.household?.parishId,
     ...catechumen.enrollments.map((e: any) => e.class?.parishId),
@@ -62,10 +61,6 @@ export const generateCatechumenUploadToken = async (
   return { token, expires };
 };
 
-/**
- * Public query: returns catechumen info and documents by upload token.
- * No authentication required.
- */
 export const getCatechumenByUploadToken = async (
   args: { token: string },
   context: any
@@ -101,10 +96,7 @@ export const getCatechumenByUploadToken = async (
   return catechumen;
 };
 
-/**
- * Public action: upload a document using a valid token.
- * No authentication required.
- */
+/** @deprecated Prefer POST /api/upload-document with multipart */
 export const uploadDocumentWithToken = async (
   args: {
     token: string;
@@ -117,7 +109,12 @@ export const uploadDocumentWithToken = async (
 ) => {
   const catechumen = await context.entities.CatechumenProfile.findUnique({
     where: { uploadToken: args.token },
-    select: { id: true, uploadTokenExpires: true },
+    select: {
+      id: true,
+      uploadTokenExpires: true,
+      parishId: true,
+      household: { select: { parishId: true } },
+    },
   });
 
   if (!catechumen) {
@@ -128,40 +125,29 @@ export const uploadDocumentWithToken = async (
     throw new HttpError(410, 'Este link de upload expirou.');
   }
 
-  // Validate type
   const validTypes = ['BAPTISM_CERTIFICATE', 'BIRTH_CERTIFICATE', 'CONSENT_FORM', 'MARRIAGE_CERTIFICATE', 'PASTORAL_LETTER', 'OTHER'];
   if (!validTypes.includes(args.type)) {
     throw new HttpError(400, 'Tipo de documento inválido.');
   }
 
-  // Save file
-  if (!fs.existsSync(UPLOADS_DIR)) {
-    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+  const buffer = Buffer.from(args.fileBase64, 'base64');
+  if (buffer.length > MAX_FILE_SIZE_BYTES) {
+    throw new HttpError(400, 'Ficheiro demasiado grande. Máximo: 10 MB.');
+  }
+  const mimeType = args.mimeType || 'application/octet-stream';
+  if (args.mimeType && !validateFileSignature(buffer, mimeType)) {
+    throw new HttpError(400, 'Ficheiro inválido.');
   }
 
-  const ext = args.mimeType?.split('/')[1] || 'bin';
-  let fileName: string;
-  try {
-    fileName = generateUploadFileName(args.mimeType || 'application/octet-stream');
-  } catch {
-    throw new HttpError(400, 'Formato de ficheiro não permitido.');
-  }
-  const filePath = `${UPLOADS_DIR}/${fileName}`;
-
-  try {
-    const buffer = Buffer.from(args.fileBase64, 'base64');
-    fs.writeFileSync(filePath, buffer);
-  } catch (err) {
-    console.error('Erro ao salvar arquivo:', err);
-    throw new HttpError(500, 'Erro ao processar o arquivo enviado.');
-  }
+  const parishId = catechumen.parishId || catechumen.household?.parishId || undefined;
+  const s3Key = await storeDocumentFile({ buffer, mimeType, parishId });
 
   return context.entities.Document.create({
     data: {
       name: args.name,
       type: args.type,
-      s3Key: fileName,
-      mimeType: args.mimeType || null,
+      s3Key,
+      mimeType,
       catechumenProfileId: catechumen.id,
     },
   });

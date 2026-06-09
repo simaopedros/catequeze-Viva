@@ -16,7 +16,7 @@ app OpenSaaS {
     "<meta property='og:title' content='Catequese Viva — Plataforma Pastoral de Iniciação Cristã' />",
     "<meta property='og:site_name' content='Catequese Viva' />",
     // ⚠️ PRODUÇÃO: Substitua pelo domínio real antes do deploy
-    "<meta property='og:url' content='https://catequeseviva.com' />",
+    "<meta property='og:url' content='https://catechis.app' />",
     "<meta property='og:description' content='Conectando dioceses, paróquias, catequistas e famílias em uma jornada de fé integrada.' />",
     // ⚠️ PRODUÇÃO: Gere uma imagem OG (1200×630px) e coloque em /public/og-image.webp,
     // depois descomente as linhas abaixo e atualize com o domínio real:
@@ -39,7 +39,7 @@ app OpenSaaS {
       email: {
         fromField: {
           name: "Catequese Viva",
-          email: "onboarding@resend.dev"
+          email: "onboarding@catechis.app"
         },
         emailVerification: {
           clientRoute: EmailVerificationRoute,
@@ -138,6 +138,11 @@ page EmailVerificationPage {
 //#endregion
 
 //#region Family Portal Routes
+route FamilyInviteCodeRoute { path: "/convite", to: FamilyInviteCodePage }
+page FamilyInviteCodePage {
+  component: import FamilyInviteCodePage from "@src/catequese/pages/family/FamilyInviteCodePage"
+}
+
 route InviteAcceptRoute { path: "/convite/:token", to: InviteAcceptPage }
 page InviteAcceptPage {
   component: import InviteAcceptPage from "@src/catequese/pages/family/InviteAcceptPage"
@@ -230,6 +235,14 @@ job remindersJob {
     cron: "0 7 * * *" // daily at 7am
   },
   entities: [Meeting, Notification, Document, User, CatechesisClass]
+}
+
+job sendInviteEmailJob {
+  executor: PgBoss,
+  perform: {
+    fn: import { sendInviteEmailJob } from "@src/server/jobs/sendInviteEmailJob"
+  },
+  entities: [Parish]
 }
 
 job subscriptionExpirationJob {
@@ -980,6 +993,14 @@ api publicUploadDocument {
   entities: [Document, CatechumenProfile]
 }
 
+api authenticatedDocumentUpload {
+  fn: import { authenticatedDocumentUpload } from "@src/server/api/authenticatedDocumentUpload",
+  middlewareConfigFn: import { authenticatedDocumentUploadMiddleware } from "@src/server/api/authenticatedDocumentUpload",
+  auth: true,
+  httpRoute: (POST, "/api/documents/upload"),
+  entities: [Document, Membership, GuardianProfile, CatechumenProfile, Parish]
+}
+
 api chatStreamApi {
   fn: import { chatStreamHandler } from "@src/server/operations/chatStream",
   httpRoute: (POST, "/api/chat-stream"),
@@ -989,7 +1010,7 @@ api chatStreamApi {
 api healthCheckApi {
   fn: import { healthCheckHandler } from "@src/server/api/healthCheck",
   httpRoute: (GET, "/health"),
-  entities: []
+  entities: [User]
 }
 
 action generateCatechumenUploadToken {

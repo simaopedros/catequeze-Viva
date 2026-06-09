@@ -5,7 +5,8 @@ import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { ArrowLeft, Heart, BookOpen, FileText, CheckCircle, XCircle, Edit3, Gift, MessageCircle, FilePlus, Upload, Download, Link2, Copy, AlertTriangle, Cross } from 'lucide-react';
 import { AppShell } from '../AppShell';
-import { useQuery, getCatechumenProfile, listMeetings, getMeetingAttendance, createConversation, uploadDocument, generateCatechumenUploadToken, getCatechumenAttendanceReport } from 'wasp/client/operations';
+import { useQuery, getCatechumenProfile, listMeetings, getMeetingAttendance, createConversation, generateCatechumenUploadToken, getCatechumenAttendanceReport } from 'wasp/client/operations';
+import { uploadDocumentMultipart } from '../../client/utils/documentUpload';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { toast } from '../../client/hooks/use-toast';
 import { calculatePoints } from '../../shared/gamification';
@@ -98,19 +99,11 @@ export default function CatechumenDetailPage() {
     if (!docFile) return;
     setUploading(true);
     try {
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve((reader.result as string).split(',')[1]);
-        reader.onerror = reject;
-        reader.readAsDataURL(docFile);
-      });
-
-      await uploadDocument({
+      await uploadDocumentMultipart({
+        file: docFile,
         name: docTypeLabels[docType] || docType,
         type: docType,
         catechumenProfileId: id!,
-        fileBase64: base64,
-        mimeType: docFile.type,
       });
       setDocFile(null);
       setShowDocUpload(false);

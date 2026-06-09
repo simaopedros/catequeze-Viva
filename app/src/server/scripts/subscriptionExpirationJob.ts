@@ -6,6 +6,8 @@
  * customer.subscription.updated, customer.subscription.deleted), so this job
  * only touches TRIAL records whose trialEndsAt has passed.
  */
+import { skipIfNotJobWorker } from '../jobs/jobGuard';
+
 export const expireSubscriptionsJob = async (
   _args: unknown,
   context: {
@@ -15,6 +17,8 @@ export const expireSubscriptionsJob = async (
     };
   },
 ) => {
+  if (skipIfNotJobWorker()) return;
+
   const now = new Date();
   let expiredCount = 0;
 

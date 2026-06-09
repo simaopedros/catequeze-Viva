@@ -1,14 +1,28 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { useAuth } from "wasp/client/auth";
+import { isFamilyPortalHost } from "../../shared/portal";
 
-export function useRedirectIfLoggedIn(redirectTo = "/app") {
+type Options = {
+  redirectTo?: string;
+};
+
+export function useRedirectIfLoggedIn(options: Options = {}) {
   const { data: user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
+  const defaultRedirect = isFamilyPortalHost() ? "/app" : "/app";
+  const redirectTo = options.redirectTo ?? defaultRedirect;
 
   useEffect(() => {
-    if (user) {
-      navigate(redirectTo);
+    if (!user) return;
+
+    if (token) {
+      navigate(`/convite/${encodeURIComponent(token)}`, { replace: true });
+      return;
     }
-  }, [user, navigate, redirectTo]);
+
+    navigate(redirectTo, { replace: true });
+  }, [user, navigate, redirectTo, token]);
 }

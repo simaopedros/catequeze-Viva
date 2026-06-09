@@ -1,0 +1,36 @@
+{
+  email admin@catechis.app
+}
+
+# ── Produção: staff portal ────────────────────────────────────────────────────
+catechis.app, www.catechis.app {
+  @www host www.catechis.app
+  redir @www https://catechis.app{uri} permanent
+
+  root * /srv/web-app
+  encode gzip
+  try_files {path} /index.html
+  file_server
+}
+
+# ── Produção: family portal (same SPA build) ─────────────────────────────────
+familia.catechis.app {
+  root * /srv/web-app
+  encode gzip
+  try_files {path} /index.html
+  file_server
+}
+
+# ── Produção: API ─────────────────────────────────────────────────────────────
+api.catechis.app {
+  request_body {
+    max_size 12MB
+  }
+
+  reverse_proxy server:3001 {
+    header_up Host {host}
+    header_up X-Real-IP {remote_host}
+    header_up X-Forwarded-For {remote_host}
+    header_up X-Forwarded-Proto {scheme}
+  }
+}

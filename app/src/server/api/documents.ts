@@ -1,9 +1,8 @@
-import * as fs from 'fs';
 import type { Request, Response, NextFunction } from 'express';
 import type { MiddlewareConfigFn } from 'wasp/server';
 import { documentAccessRateLimiter } from '../middleware/rateLimiter';
 import { logger } from '../logger';
-import { resolveUploadFilePath } from '../uploads/helpers';
+import { readDocumentFile } from '../storage/documentStorage';
 import { makeAuthUserIfPossible } from 'wasp/auth/user';
 
 /**
@@ -21,7 +20,7 @@ async function optionalAuth(req: Request, _res: Response, next: NextFunction) {
 }
 
 /**
- * Serves a document file from the local uploads directory.
+ * Serves a document file from Bunny Storage or local uploads (dev).
  * Permissions:
  * - Authenticated users in the same parish as the document's catechumen/uploader
  * - Anyone with a valid uploadToken (public upload page)
@@ -196,20 +195,16 @@ export async function serveDocument(req: Request, res: Response, context: any) {
       return res.status(403).json({ error: 'Acesso negado.' });
     }
 
-    const filePath = resolveUploadFilePath(doc.s3Key);
-    logger.info(`[doc-access] docId=${docId} s3Key="${doc.s3Key}" resolvedPath="${filePath}" exists=${filePath ? fs.existsSync(filePath) : 'N/A'}`);
-    if (!filePath) {
-      return res.status(400).json({ error: 'Referência de arquivo inválida.' });
+    const stored = await readDocumentFile(doc.s3Key);
+    logger.info(`[doc-access] docId=${docId} s3Key="${doc.s3Key}" found=${!!stored}`);
+    if (!stored) {
+      return res.status(404).json({ error: 'Arquivo não encontrado.' });
     }
 
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ error: 'Arquivo físico não encontrado.' });
-    }
-
-    const mimeType = doc.mimeType || 'application/octet-stream';
+    const mimeType = doc.mimeType || stored.contentType || 'application/octet-stream';
     res.setHeader('Content-Type', mimeType);
     res.setHeader('Content-Disposition', `inline; filename="${doc.name}"`);
-    res.sendFile(filePath);
+    res.send(stored.buffer);
   } catch (err) {
     logger.error('Erro ao servir documento', { error: err instanceof Error ? err.message : String(err) });
     return res.status(500).json({ error: 'Erro interno.' });

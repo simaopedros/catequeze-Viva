@@ -9,7 +9,7 @@ import { GuidedTour, useGuidedTour } from './components/GuidedTour';
 import { TwoFactorGate } from './components/TwoFactorGate';
 import { FamilyAppShell } from './FamilyAppShell';
 import { useUserContext } from '../client/hooks/useUserContext';
-import { isFamilyPortalHost } from '../shared/portal';
+import { isFamilyPortalHost, familyPortalUrl } from '../shared/portal';
 import { useAction, acceptInvitation } from 'wasp/client/operations';
 
 interface AppShellProps { children: ReactNode; }
@@ -26,6 +26,14 @@ export function AppShell({ children }: AppShellProps) {
   const isFamily = useMemo(() => isFamilyPortalHost(), []);
 
   const isFamilyOnlyRole = userRole === 'GUARDIAN' || userRole === 'CATECHUMEN';
+
+  // GUARDIAN/CATECHUMEN on staff host → redirect to family portal
+  useEffect(() => {
+    if (isLoading || isFetching) return;
+    if (isFamilyOnlyRole && !isFamily) {
+      window.location.href = familyPortalUrl('/app');
+    }
+  }, [isLoading, isFetching, isFamilyOnlyRole, isFamily]);
 
   // Auto-accept INVITED memberships for GUARDIAN/CATECHUMEN (they skip workspace selector)
   useEffect(() => {

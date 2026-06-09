@@ -1,0 +1,69 @@
+name: Deploy Production
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve homolog image tag
+        id: meta
+        run: |
+          SHA="${GITHUB_SHA}"
+          echo "tag=homolog-${SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Promote homolog image to prod
+        run: |
+          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
+          docker pull "${IMAGE}:homolog-latest" || docker pull "${IMAGE}:${{ steps.meta.outputs.tag }}"
+          docker tag "${IMAGE}:homolog-latest" "${IMAGE}:prod-${{ github.sha }}"
+          docker tag "${IMAGE}:homolog-latest" "${IMAGE}:prod-latest"
+          docker push "${IMAGE}:prod-${{ github.sha }}"
+          docker push "${IMAGE}:prod-latest"
+
+      - name: Pre-deploy backup
+        if: ${{ secrets.PROD_SSH_HOST }}
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_SSH_HOST }}
+          username: ${{ secrets.PROD_SSH_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          script: |
+            cd /opt/catechis
+            ./scripts/backup-db.sh prod
+
+      - name: Deploy to production
+        if: ${{ secrets.PROD_SSH_HOST }}
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_SSH_HOST }}
+          username: ${{ secrets.PROD_SSH_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          script: |
+            cd /opt/catechis
+            export IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:prod-${{ github.sha }}"
+            docker compose -f docker-compose.yml pull
+            docker compose -f docker-compose.yml run --rm server npx prisma migrate deploy
+            docker compose -f docker-compose.yml up -d
+            curl -fsS https://api.catechis.app/health
