@@ -48,7 +48,7 @@ jobs:
         run: |
           IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:homolog-${{ github.sha }}"
           CID=$(docker create "${IMAGE}")
-          docker cp "${CID}:/app/web-app" ./.wasp/build/web-app
+          docker cp "${CID}:/app/web-app" ./.wasp/out/web-app
           docker rm "${CID}"
 
       - name: Copy web-app to VPS
@@ -57,7 +57,7 @@ jobs:
           host: ${{ secrets.HOMOLOG_SSH_HOST }}
           username: ${{ secrets.HOMOLOG_SSH_USER }}
           key: ${{ secrets.HOMOLOG_SSH_KEY }}
-          source: "app/.wasp/build/web-app/*"
+          source: "app/.wasp/out/web-app/*"
           target: "/opt/catechis/web-app"
           strip_components: 4
 
