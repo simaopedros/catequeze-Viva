@@ -4,6 +4,13 @@ Ambiente: `homolog.catechis.app`, `familia.homolog.catechis.app`, `api.homolog.c
 
 Protegido por **Cloudflare Access** (equipa only).
 
+## Verificação automatizada
+
+```bash
+# No VPS homolog ou com URLs públicas:
+./scripts/qa-homolog.sh
+```
+
 ## Pré-requisitos
 
 - [ ] Neon branch homolog com `DATABASE_URL` configurado

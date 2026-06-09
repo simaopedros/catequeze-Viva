@@ -110,17 +110,19 @@ export async function bunnyDeleteObject(key: string): Promise<void> {
   }
 }
 
-/** Health probe — HEAD on zone root path. */
+/** Health probe — GET on zone root (Bunny often rejects HEAD on storage API). */
 export async function bunnyStorageHealthCheck(): Promise<boolean> {
   const config = getBunnyConfig();
   if (!config) return false;
 
   try {
     const res = await fetch(`https://${config.hostname}/${config.zone}/`, {
-      method: 'HEAD',
+      method: 'GET',
       headers: { AccessKey: config.apiKey },
     });
-    return res.status === 200 || res.status === 404;
+    // 200/404 = zone reachable; 401/403 = bad credentials
+    if (res.status === 401 || res.status === 403) return false;
+    return res.status < 500;
   } catch {
     return false;
   }

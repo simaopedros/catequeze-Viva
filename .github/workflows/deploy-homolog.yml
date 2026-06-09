@@ -46,6 +46,16 @@ jobs:
           docker push "${IMAGE}:${TAG}"
           docker push "${IMAGE}:homolog-latest"
 
+      - name: Copy deploy configs to homolog VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOMOLOG_SSH_HOST }}
+          username: ${{ secrets.HOMOLOG_SSH_USER }}
+          key: ${{ secrets.HOMOLOG_SSH_KEY }}
+          source: "app/deploy/docker-compose.homolog.yml,app/deploy/Caddyfile.homolog,app/deploy/scripts/*"
+          target: "/opt/catechis"
+          strip_components: 2
+
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -55,7 +65,7 @@ jobs:
           envs: GHCR_TOKEN
           script: |
             cd /opt/catechis
-            echo "$GHCR_TOKEN" | docker login ghcr.io -u simaopedros --password-stdin
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
             export IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:homolog-${{ github.sha }}"
             docker compose -f docker-compose.homolog.yml pull
             docker compose -f docker-compose.homolog.yml down 2>/dev/null || true
@@ -73,7 +83,7 @@ jobs:
             sleep 5
             docker compose -f docker-compose.homolog.yml run --rm --entrypoint "npx" server prisma migrate deploy --schema=../db/schema.prisma || echo "⚠️ migrate deploy failed — check DATABASE_URL in .env.server"
             sleep 10
-            curl -fsk https://api.homolog.catechis.app/health || curl -fs http://localhost:80/health || echo "⚠️ Health check failed (DNS/SSL may not be ready yet)"
+            docker compose -f docker-compose.homolog.yml exec -T server node -e "fetch('http://127.0.0.1:3001/health').then(r=>r.json()).then(j=>{if(j.status!=='ok'){console.error(j);process.exit(1)};console.log(JSON.stringify(j))})"
         env:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -82,4 +92,4 @@ jobs:
         run: |
           npm ci
           npx playwright install chromium
-          HOMOLOG_API_URL=https://api.homolog.catechis.app SKIP_WEBSERVER=true npx playwright test tests/homologSmoke.spec.ts --reporter=list || echo "⚠️ E2E smoke tests failed (expected — DNS/SSL may still be propagating)"
+          HOMOLOG_API_URL=https://api.homolog.catechis.app SKIP_WEBSERVER=true npx playwright test tests/homologSmoke.spec.ts --reporter=list

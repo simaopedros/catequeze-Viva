@@ -14,7 +14,7 @@ services:
       - server
 
   server:
-    image: ${IMAGE:-ghcr.io/catechis/catequese-viva:prod-latest}
+    image: ${IMAGE:-ghcr.io/simaopedros/catequeze-viva:prod-latest}
     restart: unless-stopped
     env_file: .env.server
     environment:
@@ -23,7 +23,7 @@ services:
       - "3001"
 
   worker:
-    image: ${IMAGE:-ghcr.io/catechis/catequese-viva:prod-latest}
+    image: ${IMAGE:-ghcr.io/simaopedros/catequeze-viva:prod-latest}
     restart: unless-stopped
     env_file: .env.server
     environment:

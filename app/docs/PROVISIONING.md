@@ -89,6 +89,41 @@ https://familia.homolog.catechis.app/auth/google/callback
 
 Criar projetos separados `catechis-homolog` e `catechis-prod`. Configurar `SENTRY_DSN` em cada `.env.server`.
 
-## 9. Primeiro deploy
+## 9. GitHub — secrets e variáveis
 
-Ver `app/deploy/scripts/deploy.sh` e `app/docs/HOMOLOG.md`.
+### Homolog (já em uso)
+
+| Secret | Descrição |
+|--------|-----------|
+| `HOMOLOG_SSH_HOST` | IP VPS homolog |
+| `HOMOLOG_SSH_USER` | `root` |
+| `HOMOLOG_SSH_KEY` | Chave privada SSH |
+| `HOMOLOG_DATABASE_URL` | Neon homolog (pooler) |
+
+### Produção (antes do go-live)
+
+| Secret | Descrição |
+|--------|-----------|
+| `PROD_SSH_HOST` | IP VPS produção |
+| `PROD_SSH_USER` | `root` |
+| `PROD_SSH_KEY` | Chave privada SSH |
+| `PROD_DATABASE_URL` | Neon prod (pooler) |
+
+| Variável repositório | Valor |
+|---------------------|-------|
+| `ENABLE_PROD_DEPLOY` | `true` (após secrets configurados) |
+
+## 10. Primeiro deploy
+
+**Homolog:** push em `main` → workflow `Deploy Homolog` automático.
+
+**Produção:**
+```bash
+# No VPS prod (uma vez):
+./scripts/setup-prod-vps.sh
+# Copiar deploy/, preencher .env.server, depois:
+git tag v0.1.0 && git push origin v0.1.0
+# ou: Actions → Deploy Production → Run workflow
+```
+
+Ver `app/deploy/scripts/deploy.sh`, `app/docs/HOMOLOG.md`, `app/docs/CLOUDFLARE_ACCESS.md`.

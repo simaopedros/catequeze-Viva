@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ${{ github.repository_owner }}/catequeze-viva
 
 jobs:
   deploy:
@@ -20,12 +20,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Resolve homolog image tag
-        id: meta
-        run: |
-          SHA="${GITHUB_SHA}"
-          echo "tag=homolog-${SHA}" >> "$GITHUB_OUTPUT"
-
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
@@ -33,17 +27,21 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Skip notice (prod deploy disabled)
+        if: ${{ vars.ENABLE_PROD_DEPLOY != 'true' }}
+        run: echo "Production SSH deploy skipped — set repository variable ENABLE_PROD_DEPLOY=true when ready."
+
       - name: Promote homolog image to prod
         run: |
           IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
-          docker pull "${IMAGE}:homolog-latest" || docker pull "${IMAGE}:${{ steps.meta.outputs.tag }}"
+          docker pull "${IMAGE}:homolog-latest"
           docker tag "${IMAGE}:homolog-latest" "${IMAGE}:prod-${{ github.sha }}"
           docker tag "${IMAGE}:homolog-latest" "${IMAGE}:prod-latest"
           docker push "${IMAGE}:prod-${{ github.sha }}"
           docker push "${IMAGE}:prod-latest"
 
       - name: Pre-deploy backup
-        if: ${{ secrets.PROD_SSH_HOST }}
+        if: ${{ vars.ENABLE_PROD_DEPLOY == 'true' }}
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.PROD_SSH_HOST }}
@@ -51,19 +49,41 @@ jobs:
           key: ${{ secrets.PROD_SSH_KEY }}
           script: |
             cd /opt/catechis
-            ./scripts/backup-db.sh prod
+            ./scripts/backup-db.sh prod || echo "⚠️ backup skipped — configure Bunny + DATABASE_URL"
+
+      - name: Copy deploy configs to production VPS
+        if: ${{ vars.ENABLE_PROD_DEPLOY == 'true' }}
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.PROD_SSH_HOST }}
+          username: ${{ secrets.PROD_SSH_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          source: "app/deploy/docker-compose.yml,app/deploy/Caddyfile,app/deploy/scripts/*"
+          target: "/opt/catechis"
+          strip_components: 2
 
       - name: Deploy to production
-        if: ${{ secrets.PROD_SSH_HOST }}
+        if: ${{ vars.ENABLE_PROD_DEPLOY == 'true' }}
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.PROD_SSH_HOST }}
           username: ${{ secrets.PROD_SSH_USER }}
           key: ${{ secrets.PROD_SSH_KEY }}
+          envs: GHCR_TOKEN
           script: |
             cd /opt/catechis
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
             export IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:prod-${{ github.sha }}"
             docker compose -f docker-compose.yml pull
-            docker compose -f docker-compose.yml run --rm server npx prisma migrate deploy
+            CID=$(docker create "${IMAGE}")
+            rm -rf /opt/catechis/web-app/*
+            docker cp "${CID}:/app/web-app/." /opt/catechis/web-app/
+            docker rm "${CID}"
+            test -f /opt/catechis/web-app/index.html
             docker compose -f docker-compose.yml up -d
+            sleep 5
+            docker compose -f docker-compose.yml run --rm --entrypoint "npx" server prisma migrate deploy --schema=../db/schema.prisma
+            sleep 10
             curl -fsS https://api.catechis.app/health
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}

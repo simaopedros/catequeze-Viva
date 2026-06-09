@@ -8,9 +8,12 @@
 ## Script
 
 ```bash
-# Cron diário (03:30 UTC) no VPS worker:
-0 3 * * * /opt/catechis/scripts/backup-db.sh prod >> /var/log/catechis-backup.log 2>&1
+# Instalar cron no VPS (homolog ou prod):
+sudo /opt/catechis/scripts/install-backup-cron.sh homolog
+sudo /opt/catechis/scripts/install-backup-cron.sh prod
 ```
+
+Logs: `/var/log/catechis-backup.log`
 
 ## Restore (teste trimestral)
 
