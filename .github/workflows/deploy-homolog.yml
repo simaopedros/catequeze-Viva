@@ -48,7 +48,7 @@ jobs:
         run: |
           IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:homolog-${{ github.sha }}"
           CID=$(docker create "${IMAGE}")
-          docker cp "${CID}:/app/web-app" ./.wasp/out/web-app
+          docker cp "${CID}:/app/.wasp/out/web-app" ./.wasp/out/web-app
           docker rm "${CID}"
 
       - name: Copy web-app to VPS
