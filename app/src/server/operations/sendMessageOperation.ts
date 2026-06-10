@@ -1,6 +1,7 @@
 import { HttpError } from 'wasp/server';
 import { validateOrThrow, sendMessageSchema } from '../validation';
 import { Resend } from 'resend';
+import { isJobWorkerProcess } from '../jobs/jobGuard';
 
 /** Escapa caracteres HTML para prevenir XSS em emails */
 function escapeHtml(unsafe: string): string {
@@ -14,7 +15,7 @@ function escapeHtml(unsafe: string): string {
 
 export const sendMessageEmail = async (args: { to: string; subject: string; body: string }, context: any) => {
   validateOrThrow(sendMessageSchema, args);
-  if (!context.user) throw new HttpError(401);
+  if (!context.user && !isJobWorkerProcess()) throw new HttpError(401);
 
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
