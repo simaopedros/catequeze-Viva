@@ -61,32 +61,32 @@
     },
     "catechist_pro": {
       "name": "Catechist Pro",
-      "price": "R$ 19/month",
-      "annual_price": "R$ 190/year (R$ 15.83/month)",
+      "price": "$5/month",
+      "annual_price": "$50/year ($4.17/month)",
       "features": ["3 classes", "150 catechumens", "Advanced reports", "Priority support", "5 AI credits/month"]
     },
     "catechist_ai": {
       "name": "Catechist AI",
-      "price": "R$ 39/month",
-      "annual_price": "R$ 390/year (R$ 32.50/month)",
+      "price": "$9/month",
+      "annual_price": "$90/year ($7.50/month)",
       "features": ["Everything in Pro", "AI meeting generator", "Automatic annual planning", "Activities and quizzes", "Theological assistant", "WhatsApp messages", "20 credits/month"]
     },
     "parish_essential": {
       "name": "Parish Essential",
-      "price": "R$ 79/month",
-      "annual_price": "R$ 790/year (R$ 65.83/month)",
+      "price": "$19/month",
+      "annual_price": "$190/year ($15.83/month)",
       "features": ["5 catechists", "200 catechumens", "Unlimited classes", "Integrated communication", "Documents and certificates", "Coordinator dashboard", "30 AI credits/month"]
     },
     "parish_complete": {
       "name": "Parish Complete",
-      "price": "R$ 129/month",
-      "annual_price": "R$ 1,290/year (R$ 107.50/month)",
+      "price": "$29/month",
+      "annual_price": "$290/year ($24.17/month)",
       "features": ["Unlimited catechists", "Unlimited catechumens", "Everything in Essential", "Integration API", "Dedicated onboarding", "50 AI credits/month"]
     },
     "diocese": {
       "name": "Diocese",
-      "price": "R$ 449/month",
-      "annual_price": "R$ 4,490/year (R$ 374/month)",
+      "price": "$99/month",
+      "annual_price": "$990/year ($82.50/month)",
       "features": ["Up to 10 parishes", "Everything in Complete", "Official library", "Consolidated analytics", "Dedicated onboarding", "50 AI credits per parish/month"]
     }
   }

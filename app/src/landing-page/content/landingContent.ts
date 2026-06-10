@@ -218,7 +218,7 @@ export const PRICING_PREVIEW: PricingPlan[] = [
     planId: 'catechist_ai',
     level: 'personal',
     name: 'Catequista IA',
-    price: 'R$ 39',
+    price: '$9',
     period: '/mês',
     desc: 'Pessoal — IA para criar encontros, atividades e mensagens em segundos',
     features: [
@@ -234,7 +234,7 @@ export const PRICING_PREVIEW: PricingPlan[] = [
     planId: 'parish_complete',
     level: 'institutional',
     name: 'Paróquia Completa',
-    price: 'R$ 129',
+    price: '$29',
     period: '/mês',
     desc: 'Institucional — ferramentas para a paróquia inteira',
     features: [
@@ -268,7 +268,7 @@ export const TESTIMONIALS: Testimonial[] = [
 export const FAQ: FaqItem[] = [
   {
     q: 'Preciso de cartão de crédito para começar?',
-    a: 'Não. O plano Catequista Grátis é gratuito para sempre — basta criar sua conta e começar a usar. Os planos pagos aceitam pagamento via PIX.',
+    a: 'Não. O plano Catequista Grátis é gratuito para sempre — basta criar sua conta e começar a usar. Os planos pagos aceitam cartão de crédito.',
   },
   {
     q: 'Meus dados estão seguros? A plataforma segue a LGPD?',

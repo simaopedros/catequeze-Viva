@@ -167,7 +167,7 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
   catechist_pro: {
     name: 'Catequista Pro',
     level: 'personal',
-    prices: { monthlyCents: 1900, annualCents: 19000 },
+    prices: { monthlyCents: 500, annualCents: 5000 },
     limits: {
       maxClasses: 3,
       maxCatechumens: 150,
@@ -192,7 +192,7 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
   catechist_ai: {
     name: 'Catequista IA',
     level: 'personal',
-    prices: { monthlyCents: 3900, annualCents: 39000 },
+    prices: { monthlyCents: 900, annualCents: 9000 },
     limits: {
       maxClasses: null,
       maxCatechumens: null,
@@ -219,7 +219,7 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
   parish_essential: {
     name: 'Paróquia Essencial',
     level: 'institutional',
-    prices: { monthlyCents: 7900, annualCents: 79000 },
+    prices: { monthlyCents: 1900, annualCents: 19000 },
     limits: {
       maxClasses: null,
       maxCatechumens: 200,
@@ -246,7 +246,7 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
   parish_complete: {
     name: 'Paróquia Completa',
     level: 'institutional',
-    prices: { monthlyCents: 12900, annualCents: 129000 },
+    prices: { monthlyCents: 2900, annualCents: 29000 },
     limits: {
       maxClasses: null,
       maxCatechumens: null,
@@ -272,7 +272,7 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
   diocese: {
     name: 'Diocese',
     level: 'institutional',
-    prices: { monthlyCents: 44900, annualCents: 449000 },
+    prices: { monthlyCents: 9900, annualCents: 99000 },
     limits: {
       maxClasses: null,
       maxCatechumens: null,
@@ -499,6 +499,6 @@ export const AI_CREDIT_PACK_IDS = ['ai_credits_20', 'ai_credits_50'] as const;
 export type AiCreditPackId = (typeof AI_CREDIT_PACK_IDS)[number];
 
 export const AI_CREDIT_PACKS: Record<AiCreditPackId, { credits: number; priceCents: number }> = {
-  ai_credits_20: { credits: 20, priceCents: 2900 },
-  ai_credits_50: { credits: 50, priceCents: 5900 },
+  ai_credits_20: { credits: 20, priceCents: 700 },
+  ai_credits_50: { credits: 50, priceCents: 1400 },
 };

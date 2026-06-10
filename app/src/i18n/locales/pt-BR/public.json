@@ -52,11 +52,11 @@
       "diocese": "Para gestão diocesana multi-paróquia com IA por paróquia."
     },
     "faq": [
-      { "q": "Posso experimentar antes de pagar?", "a": "Sim! O plano Catequista Grátis é gratuito para sempre, com 2 turmas, até 30 catequizandos e 10 créditos de IA iniciais para testar o gerador de encontros." },
+      { "q": "Posso experimentar antes de pagar?", "a": "Sim! O plano Catequista Grátis é gratuito para sempre, com 1 turma, até 15 catequizandos e 3 créditos de IA iniciais para testar o gerador de encontros." },
       { "q": "Como funcionam os créditos de IA?", "a": "Cada geração de encontro consome 1 crédito, planejamento anual 3 créditos, e atividade 1 crédito. O plano IA inclui 20 créditos/mês, Paróquia Completa 50 créditos/mês e Diocese 50 créditos/mês por paróquia. Créditos não usados não acumulam — renovam a cada mês." },
       { "q": "Qual a diferença entre Paróquia Essencial e Completa?", "a": "A Essencial é ideal para paróquias com até 5 catequistas e 200 catequizandos. A Completa remove todos os limites e inclui 50 créditos de IA/mês." },
-      { "q": "Como funciona o pagamento?", "a": "Aceitamos PIX (à vista ou mensal) e cartão de crédito. No plano anual via PIX, o pagamento é único pelos 12 meses. Sem fidelidade — cancele quando quiser." },
-      { "q": "E o reembolso do plano anual?", "a": "Planos anuais pagos via PIX não têm reembolso automático. O cancelamento encerra a renovação, mas o acesso continua até o fim do período pago. Reembolso proporcional é avaliado caso a caso via contato@catequeseviva.com.br. Planos via cartão seguem a política do Stripe." },
+      { "q": "Como funciona o pagamento?", "a": "Aceitamos cartão de crédito (à vista ou mensal). No plano anual, o pagamento é único pelos 12 meses. Sem fidelidade — cancele quando quiser." },
+      { "q": "E o reembolso do plano anual?", "a": "Planos anuais não têm reembolso automático. O cancelamento encerra a renovação, mas o acesso continua até o fim do período pago. Reembolso proporcional é avaliado caso a caso via contato@catequeseviva.com.br." },
       { "q": "Posso migrar entre planos?", "a": "Sim, a qualquer momento. Ao fazer upgrade, seus dados são preservados automaticamente." },
       { "q": "Os dados ficam seguros?", "a": "Sim. Seguimos a LGPD, com criptografia em trânsito e em repouso. Dados de crianças recebem proteção especial." },
       { "q": "A IA é teologicamente confiável?", "a": "Sim. A IA é instruída a se basear estritamente na Bíblia (CNBB), Catecismo da Igreja Católica, Compêndio e Diretório Geral para a Catequese. Todo conteúdo gerado inclui referências para você auditar." }
