@@ -250,6 +250,16 @@ export async function assertAndDeductCredits(
     });
   }
 
+  if (credits && !isFreePlan && planHasAiAccess(effectivePlan)) {
+    const allowance = resolveUserAiAllowance(plan, effectivePlan);
+    credits = await healStaleFreeTrialCredits(
+      context.entities.UserAiCredits,
+      context.user.id,
+      credits,
+      allowance,
+    );
+  }
+
   if (!credits) {
     throw new HttpError(
       402,
@@ -309,6 +319,62 @@ export async function assertAndDeductCredits(
   await incrementDailyUsage(context.entities, context.user.id, cost);
 
   return { creditsLeft: updated.creditsLeft };
+}
+
+// ─── Subscription activation ───────────────────────────────────────────────
+
+type AiCreditsDelegate = CreditContext['entities']['UserAiCredits'];
+
+/**
+ * Grants the plan's monthly AI allowance when a subscription activates or renews.
+ * Fixes stale free-trial UserAiCredits rows (e.g. 0/3 left) after upgrade.
+ */
+export async function grantSubscriptionAiCredits(
+  userAiCreditsDelegate: AiCreditsDelegate,
+  userId: string,
+  subscriptionPlan: string,
+): Promise<void> {
+  if (!planHasAiAccess(subscriptionPlan)) {
+    return;
+  }
+
+  const allowance = getMonthlyAllowance(subscriptionPlan);
+  if (allowance <= 0) {
+    return;
+  }
+
+  const now = new Date();
+  await userAiCreditsDelegate.upsert({
+    where: { userId },
+    create: {
+      userId,
+      creditsLeft: allowance,
+      lastReset: now,
+    },
+    update: {
+      creditsLeft: allowance,
+      lastReset: now,
+    },
+  });
+}
+
+/** Heal rows left over from the free trial after a paid upgrade (no webhook re-run). */
+async function healStaleFreeTrialCredits(
+  userAiCreditsDelegate: AiCreditsDelegate,
+  userId: string,
+  credits: UserAiCredits,
+  monthlyAllowance: number,
+): Promise<UserAiCredits> {
+  if (
+    monthlyAllowance > AI_CREDITS.FREE_TRIAL_CREDITS &&
+    credits.creditsLeft <= AI_CREDITS.FREE_TRIAL_CREDITS
+  ) {
+    return userAiCreditsDelegate.update({
+      where: { userId },
+      data: { creditsLeft: monthlyAllowance, lastReset: new Date() },
+    });
+  }
+  return credits;
 }
 
 // ─── Reset logic ───────────────────────────────────────────────────────────
@@ -433,6 +499,11 @@ export async function getCreditsStatus(
   if (credits) {
     const lastReset = new Date(credits.lastReset);
     if (shouldReset(lastReset, new Date())) {
+      creditsLeft = monthlyAllowance;
+    } else if (
+      monthlyAllowance > AI_CREDITS.FREE_TRIAL_CREDITS &&
+      credits.creditsLeft <= AI_CREDITS.FREE_TRIAL_CREDITS
+    ) {
       creditsLeft = monthlyAllowance;
     }
   }

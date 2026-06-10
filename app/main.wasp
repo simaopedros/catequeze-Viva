@@ -179,7 +179,7 @@ action cancelSubscription {
 
 api paymentsWebhook {
   fn: import { paymentsWebhook } from "@src/payment/webhook",
-  entities: [User, TenantBilling, Diocese, Parish, Membership],
+  entities: [User, UserAiCredits, TenantBilling, Diocese, Parish, Membership],
   middlewareConfigFn: import { paymentsMiddlewareConfigFn } from "@src/payment/webhook",
   httpRoute: (POST, "/payments-webhook")
 }

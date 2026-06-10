@@ -121,6 +121,25 @@ try {
     },
   });
 
+  const monthlyAiByPlan = {
+    catechist_pro: 5,
+    catechist_ai: 20,
+    parish_essential: 30,
+    parish_complete: 50,
+    parish: 50,
+    diocese: 50,
+  };
+  const aiAllowance = monthlyAiByPlan[subscriptionPlan] ?? 0;
+  if (aiAllowance > 0) {
+    const now = new Date();
+    await prisma.userAiCredits.upsert({
+      where: { userId: user.id },
+      create: { userId: user.id, creditsLeft: aiAllowance, lastReset: now },
+      update: { creditsLeft: aiAllowance, lastReset: now },
+    });
+    console.log(`AI credits granted: ${aiAllowance}/month (${subscriptionPlan})`);
+  }
+
   console.log("After:", JSON.stringify(updated, null, 2));
   console.log("OK — subscription reconciled from Stripe");
 

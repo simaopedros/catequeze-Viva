@@ -17,6 +17,7 @@ import {
   cascadeActivatePlanToTenantBilling,
   cascadeCancelToTenantBilling,
 } from "../billingCascade";
+import { grantSubscriptionAiCredits } from "../../server/ai/credits";
 import { stripeClient } from "./stripeClient";
 import { PRICING_VERSION } from "../../shared/pricing";
 
@@ -59,7 +60,7 @@ export const stripeWebhook: PaymentsWebhook = async (
         await handleInvoicePaid(event, prismaUserDelegate, context);
         break;
       case "customer.subscription.updated":
-        await handleCustomerSubscriptionUpdated(event, prismaUserDelegate);
+        await handleCustomerSubscriptionUpdated(event, prismaUserDelegate, context);
         break;
       case "customer.subscription.deleted":
         await handleCustomerSubscriptionDeleted(event, prismaUserDelegate, context);
@@ -182,6 +183,12 @@ async function processPaidInvoice(
       // Track checkout_completed
       await trackCheckoutCompleted(context, user.id, paymentPlanId, 'stripe');
 
+      await grantSubscriptionAiCredits(
+        context.entities.UserAiCredits,
+        user.id,
+        paymentPlanId,
+      );
+
       // Cascade institutional plans to TenantBilling
       if (paymentPlanId === PaymentPlanId.Parish) {
         await cascadeActivatePlanToTenantBilling(context, user.id, "PARISH");
@@ -221,6 +228,7 @@ function getInvoicePriceId(invoice: Stripe.Invoice): Stripe.Price["id"] {
 async function handleCustomerSubscriptionUpdated(
   event: Stripe.CustomerSubscriptionUpdatedEvent,
   prismaUserDelegate: PrismaClient["user"],
+  context: Parameters<PaymentsWebhook>[2],
 ): Promise<void> {
   const subscription = event.data.object;
 
@@ -239,6 +247,14 @@ async function handleCustomerSubscriptionUpdated(
     { paymentProcessorUserId: customerId, paymentPlanId, subscriptionStatus },
     prismaUserDelegate,
   );
+
+  if (subscriptionStatus === SubscriptionStatus.Active) {
+    await grantSubscriptionAiCredits(
+      context.entities.UserAiCredits,
+      user.id,
+      paymentPlanId,
+    );
+  }
 
   if (subscription.cancel_at_period_end && user.email) {
     await emailSender.send({
