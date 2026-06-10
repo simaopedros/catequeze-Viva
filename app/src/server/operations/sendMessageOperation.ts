@@ -28,7 +28,7 @@ export const sendMessageEmail = async (args: { to: string; subject: string; body
   const safeBody = escapeHtml(args.body).replace(/\n/g, '<br>');
 
   const { data, error } = await resend.emails.send({
-    from: 'Catequese Viva <onboarding@resend.dev>',
+    from: 'Catequese Viva <noreply@catechis.app>',
     to: args.to,
     subject: args.subject,
     html: '<div style="font-family:sans-serif;max-width:600px;margin:0 auto"><h2>' + safeSubject + '</h2><p>' + safeBody + '</p><hr/><p style="color:#666;font-size:12px">Enviado pela Catequese Viva</p></div>',
