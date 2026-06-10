@@ -50,6 +50,13 @@ export const serverSetup: ServerSetupFn = async ({ app, server }) => {
     if (event !== 'request') return originalEmit(event, ...args);
 
     const [req, res] = args;
+    const requestPath = ((req.url as string) || '').split('?')[0];
+
+    // Payment webhooks need the raw body for HMAC/signature verification (Stripe, Woovi, etc.).
+    if (requestPath === '/payments-webhook') {
+      return originalEmit(event, ...args);
+    }
+
     const contentType = (req.headers?.['content-type'] || '') as string;
 
     if (!contentType.includes('application/json')) {

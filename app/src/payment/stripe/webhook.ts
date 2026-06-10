@@ -29,7 +29,7 @@ export const stripeMiddlewareConfigFn: MiddlewareConfigFn = (
   middlewareConfig.delete("express.json");
   middlewareConfig.set(
     "express.raw",
-    express.raw({ type: "*/*" }),
+    express.raw({ type: "application/json" }),
   );
   return middlewareConfig;
 };
@@ -51,6 +51,9 @@ export const stripeWebhook: PaymentsWebhook = async (
       case "invoice.paid":
       case "invoice.payment_succeeded":
         await handleInvoicePaid(event, prismaUserDelegate, context);
+        break;
+      case "invoice_payment.paid":
+        await handleInvoicePaymentPaid(event, prismaUserDelegate, context);
         break;
       case "customer.subscription.updated":
         await handleCustomerSubscriptionUpdated(event, prismaUserDelegate);
@@ -106,7 +109,31 @@ async function handleInvoicePaid(
   prismaUserDelegate: PrismaClient["user"],
   context: Parameters<PaymentsWebhook>[2],
 ): Promise<void> {
-  const invoice = event.data.object;
+  await processPaidInvoice(event.data.object, prismaUserDelegate, context);
+}
+
+/** Stripe Clover API (2025-10+) sends invoice_payment.paid instead of invoice.paid. */
+async function handleInvoicePaymentPaid(
+  event: Stripe.Event,
+  prismaUserDelegate: PrismaClient["user"],
+  context: Parameters<PaymentsWebhook>[2],
+): Promise<void> {
+  const invoicePayment = event.data.object as {
+    invoice: string | Stripe.Invoice;
+  };
+  const invoiceId =
+    typeof invoicePayment.invoice === "string"
+      ? invoicePayment.invoice
+      : invoicePayment.invoice.id;
+  const invoice = await stripeClient.invoices.retrieve(invoiceId);
+  await processPaidInvoice(invoice, prismaUserDelegate, context);
+}
+
+async function processPaidInvoice(
+  invoice: Stripe.Invoice,
+  prismaUserDelegate: PrismaClient["user"],
+  context: Parameters<PaymentsWebhook>[2],
+): Promise<void> {
   const customerId = getCustomerId(invoice.customer);
   const invoicePaidAtDate = getInvoicePaidAtDate(invoice);
   const paymentPlanId = getPaymentPlanIdByPaymentProcessorPlanId(
