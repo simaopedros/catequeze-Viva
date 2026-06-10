@@ -92,6 +92,10 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     });
     session = result.session;
   } catch (err: any) {
+    const message = err?.message || '';
+    if (message.includes('Stripe Price ID não configurado')) {
+      throw new HttpError(503, message);
+    }
     const status = err?.response?.status ?? err?.statusCode;
     if (status === 401 || status === 403) {
       throw new HttpError(
@@ -99,7 +103,7 @@ export const generateCheckoutSession: GenerateCheckoutSession<
         "Serviço de pagamento indisponível no momento. Verifique a configuração do Stripe (STRIPE_API_KEY) ou tente novamente mais tarde.",
       );
     }
-    throw new HttpError(500, "Erro ao comunicar com o serviço de pagamento. Tente novamente.");
+    throw new HttpError(500, message || "Erro ao comunicar com o serviço de pagamento. Tente novamente.");
   }
 
   return {

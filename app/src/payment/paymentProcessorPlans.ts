@@ -22,11 +22,44 @@ export const paymentProcessorPlanIds = {
   [PaymentPlanId.Diocese]: env.STRIPE_DIOCESE_PLAN_ID,
 } as const satisfies Record<PaymentPlanId, string>;
 
+/** Env var name for each vendable Stripe plan (for error messages). */
+export const stripePlanEnvVarByPlanId: Partial<Record<PaymentPlanId, string>> = {
+  [PaymentPlanId.Hobby]: 'PAYMENTS_HOBBY_SUBSCRIPTION_PLAN_ID',
+  [PaymentPlanId.Pro]: 'PAYMENTS_PRO_SUBSCRIPTION_PLAN_ID',
+  [PaymentPlanId.Credits10]: 'PAYMENTS_CREDITS_10_PLAN_ID',
+  [PaymentPlanId.CatechistPro]: 'STRIPE_CATECHIST_PRO_PLAN_ID',
+  [PaymentPlanId.CatechistAi]: 'STRIPE_CATECHIST_AI_PLAN_ID',
+  [PaymentPlanId.AiCredits20]: 'STRIPE_AI_CREDITS_20_PLAN_ID',
+  [PaymentPlanId.AiCredits50]: 'STRIPE_AI_CREDITS_50_PLAN_ID',
+  [PaymentPlanId.Parish]: 'STRIPE_PARISH_PLAN_ID',
+  [PaymentPlanId.ParishEssential]: 'STRIPE_PARISH_ESSENTIAL_PLAN_ID',
+  [PaymentPlanId.ParishComplete]: 'STRIPE_PARISH_COMPLETE_PLAN_ID',
+  [PaymentPlanId.Diocese]: 'STRIPE_DIOCESE_PLAN_ID',
+};
+
 /**
  * Returns your payment processor plan ID for a given Open SaaS `PaymentPlan`.
  */
 export function getPaymentProcessorPlanId(paymentPlan: PaymentPlan): string {
   return paymentProcessorPlanIds[paymentPlan.id];
+}
+
+/**
+ * Stripe Checkout requires a non-empty Price ID (`price_...`).
+ * Throws a clear error when homolog/prod .env.server is missing plan mapping.
+ */
+export function requireStripePriceId(paymentPlan: PaymentPlan): string {
+  const priceId = getPaymentProcessorPlanId(paymentPlan).trim();
+  if (priceId.startsWith('price_')) {
+    return priceId;
+  }
+
+  const envVar =
+    stripePlanEnvVarByPlanId[paymentPlan.id] ?? `STRIPE plan for "${paymentPlan.id}"`;
+  throw new Error(
+    `Stripe Price ID não configurado para o plano "${paymentPlan.id}". ` +
+      `Defina ${envVar}=price_... no .env.server (Stripe Dashboard → Products → Price ID).`,
+  );
 }
 
 /**

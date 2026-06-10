@@ -44,6 +44,7 @@ docker compose -f docker-compose.homolog.yml up -d --force-recreate --pull never
 - [ ] Criar paróquia, turma, família, catequizando
 - [ ] Convidar responsável (`inviteUserToParish` role=GUARDIAN)
 - [ ] Checkout Stripe test + webhook + cascata `TenantBilling`
+- [ ] `STRIPE_*_PLAN_ID=price_...` no `.env.server` (ver `deploy/.env.server.homolog.example`)
 - [ ] Chat IA streaming + créditos; 2FA admin
 
 ## Portal da família
