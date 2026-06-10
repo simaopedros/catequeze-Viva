@@ -36,7 +36,7 @@ const PLAN_STRUCTURE: Omit<PlanCard, 'name' | 'price' | 'annualPrice' | 'feature
     planKey: 'catechist_free',
     maxClasses: 1,
     maxCatechumens: 15,
-    color: 'bg-success/10 border-success/30',
+    color: 'border-border',
     highlight: false,
     isFree: true,
   },
@@ -47,7 +47,7 @@ const PLAN_STRUCTURE: Omit<PlanCard, 'name' | 'price' | 'annualPrice' | 'feature
     priceCentsAnnual: 5000,
     maxClasses: 3,
     maxCatechumens: 150,
-    color: 'bg-primary/10 border-primary/30',
+    color: 'border-border',
     highlight: false,
     isFree: false,
   },
@@ -58,7 +58,7 @@ const PLAN_STRUCTURE: Omit<PlanCard, 'name' | 'price' | 'annualPrice' | 'feature
     priceCentsAnnual: 9000,
     maxClasses: null,
     maxCatechumens: null,
-    color: 'bg-accent/10 border-accent/40',
+    color: 'border-primary',
     highlight: true,
     isFree: false,
   },
@@ -69,7 +69,7 @@ const PLAN_STRUCTURE: Omit<PlanCard, 'name' | 'price' | 'annualPrice' | 'feature
     priceCentsAnnual: 19000,
     maxClasses: null,
     maxCatechumens: 200,
-    color: 'bg-secondary/10 border-secondary/30',
+    color: 'border-border',
     highlight: false,
     isFree: false,
   },
@@ -80,7 +80,7 @@ const PLAN_STRUCTURE: Omit<PlanCard, 'name' | 'price' | 'annualPrice' | 'feature
     priceCentsAnnual: 29000,
     maxClasses: null,
     maxCatechumens: null,
-    color: 'bg-secondary/10 border-secondary/30',
+    color: 'border-primary',
     highlight: true,
     isFree: false,
   },
@@ -91,7 +91,7 @@ const PLAN_STRUCTURE: Omit<PlanCard, 'name' | 'price' | 'annualPrice' | 'feature
     priceCentsAnnual: 99000,
     maxClasses: null,
     maxCatechumens: null,
-    color: 'bg-warning/10 border-warning/30',
+    color: 'border-border',
     highlight: false,
     isFree: false,
   },
@@ -411,9 +411,9 @@ export default function BillingPage() {
                 return (
                   <div
                     key={plan.planId}
-                    className={`rounded-xl border-2 p-5 ${plan.color} ${
-                      plan.highlight ? 'ring-2 ring-primary shadow-lg' : ''
-                    } ${isRequested ? 'ring-2 ring-accent shadow-lg' : ''} ${isCurrent ? 'border-primary' : 'border-muted'}`}
+                    className={`rounded-xl border-2 p-5 bg-card transition-all hover:-translate-y-0.5 hover:shadow-md flex flex-col ${
+                      isCurrent ? 'border-primary' : plan.highlight ? 'border-primary ring-2 ring-primary/20 shadow-sm' : 'border-border'
+                    } ${isRequested ? 'ring-2 ring-accent shadow-lg' : ''}`}
                   >
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-bold text-sm">{plan.name}</h3>
@@ -422,12 +422,12 @@ export default function BillingPage() {
                     </div>
                     <p className="text-xl font-bold mb-1">{plan.price}</p>
                     {plan.annualPrice && (
-                      <p className="text-xs text-green-600 font-medium mb-2">{plan.annualPrice}</p>
+                      <p className="text-xs text-muted-foreground font-medium mb-2">{plan.annualPrice}</p>
                     )}
-                    <ul className="space-y-1.5 text-xs mb-4">
+                    <ul className="space-y-1.5 text-xs mb-4 flex-1">
                       {plan.features.map((f) => (
                         <li key={f} className="flex items-center gap-1.5 text-muted-foreground">
-                          <CheckCircle className="h-3.5 w-3.5 text-green-500 flex-shrink-0" />
+                          <CheckCircle className="h-3.5 w-3.5 text-primary flex-shrink-0" />
                           {f}
                         </li>
                       ))}
