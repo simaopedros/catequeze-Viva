@@ -2,6 +2,7 @@ import * as Sentry from '@sentry/node';
 import { type ServerSetupFn } from 'wasp/server';
 import { sessionTimeoutMiddleware } from './middleware/sessionTimeout';
 import { logger } from './logger';
+import { probeAiHealth } from './api/healthCheck';
 
 /**
  * Server setup — configures Express middlewares.
@@ -96,4 +97,11 @@ export const serverSetup: ServerSetupFn = async ({ app, server }) => {
   };
 
   app.use(sessionTimeoutMiddleware);
+
+  // ── AI health probe (non-blocking) ──────────────────────────────────
+  probeAiHealth().then(() => {
+    logger.info('[setup] AI health probe completed');
+  }).catch((err: unknown) => {
+    logger.warn('[setup] AI health probe failed', { error: String(err) });
+  });
 };
