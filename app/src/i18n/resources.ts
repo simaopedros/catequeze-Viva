@@ -806,8 +806,8 @@ export const billing_pt_BR = {
       },
       "catechist_pro": {
         "name": "Catequista Pro",
-        "price": "R$ 19/mês",
-        "annual_price": "R$ 190/ano (R$ 15,83/mês)",
+        "price": "$5/mês",
+        "annual_price": "$50/ano ($4.17/mês)",
         "features": [
           "3 turmas",
           "150 catequizandos",
@@ -818,8 +818,8 @@ export const billing_pt_BR = {
       },
       "catechist_ai": {
         "name": "Catequista IA",
-        "price": "R$ 39/mês",
-        "annual_price": "R$ 390/ano (R$ 32,50/mês)",
+        "price": "$9/mês",
+        "annual_price": "$90/ano ($7.50/mês)",
         "features": [
           "Tudo do Pro",
           "Gerador de encontros por IA",
@@ -832,8 +832,8 @@ export const billing_pt_BR = {
       },
       "parish_essential": {
         "name": "Paróquia Essencial",
-        "price": "R$ 79/mês",
-        "annual_price": "R$ 790/ano (R$ 65,83/mês)",
+        "price": "$19/mês",
+        "annual_price": "$190/ano ($15.83/mês)",
         "features": [
           "5 catequistas",
           "200 catequizandos",
@@ -846,8 +846,8 @@ export const billing_pt_BR = {
       },
       "parish_complete": {
         "name": "Paróquia Completa",
-        "price": "R$ 129/mês",
-        "annual_price": "R$ 1.290/ano (R$ 107,50/mês)",
+        "price": "$29/mês",
+        "annual_price": "$290/ano ($24.17/mês)",
         "features": [
           "Catequistas ilimitados",
           "Catequizandos ilimitados",
@@ -859,8 +859,8 @@ export const billing_pt_BR = {
       },
       "diocese": {
         "name": "Diocese",
-        "price": "R$ 449/mês",
-        "annual_price": "R$ 4.490/ano (R$ 374/mês)",
+        "price": "$99/mês",
+        "annual_price": "$990/ano ($82.50/mês)",
         "features": [
           "Até 10 paróquias",
           "Tudo da Completa",
@@ -942,8 +942,8 @@ export const billing_en = {
       },
       "catechist_pro": {
         "name": "Catechist Pro",
-        "price": "R$ 19/month",
-        "annual_price": "R$ 190/year (R$ 15.83/month)",
+        "price": "$5/month",
+        "annual_price": "$50/year ($4.17/month)",
         "features": [
           "3 classes",
           "150 catechumens",
@@ -954,8 +954,8 @@ export const billing_en = {
       },
       "catechist_ai": {
         "name": "Catechist AI",
-        "price": "R$ 39/month",
-        "annual_price": "R$ 390/year (R$ 32.50/month)",
+        "price": "$9/month",
+        "annual_price": "$90/year ($7.50/month)",
         "features": [
           "Everything in Pro",
           "AI meeting generator",
@@ -968,8 +968,8 @@ export const billing_en = {
       },
       "parish_essential": {
         "name": "Parish Essential",
-        "price": "R$ 79/month",
-        "annual_price": "R$ 790/year (R$ 65.83/month)",
+        "price": "$19/month",
+        "annual_price": "$190/year ($15.83/month)",
         "features": [
           "5 catechists",
           "200 catechumens",
@@ -982,8 +982,8 @@ export const billing_en = {
       },
       "parish_complete": {
         "name": "Parish Complete",
-        "price": "R$ 129/month",
-        "annual_price": "R$ 1,290/year (R$ 107.50/month)",
+        "price": "$29/month",
+        "annual_price": "$290/year ($24.17/month)",
         "features": [
           "Unlimited catechists",
           "Unlimited catechumens",
@@ -995,8 +995,8 @@ export const billing_en = {
       },
       "diocese": {
         "name": "Diocese",
-        "price": "R$ 449/month",
-        "annual_price": "R$ 4,490/year (R$ 374/month)",
+        "price": "$99/month",
+        "annual_price": "$990/year ($82.50/month)",
         "features": [
           "Up to 10 parishes",
           "Everything in Complete",
@@ -1078,8 +1078,8 @@ export const billing_es = {
       },
       "catechist_pro": {
         "name": "Catequista Pro",
-        "price": "R$ 19/mes",
-        "annual_price": "R$ 190/año (R$ 15,83/mes)",
+        "price": "$5/mes",
+        "annual_price": "$50/año ($4.17/mes)",
         "features": [
           "3 grupos",
           "150 catecúmenos",
@@ -1090,8 +1090,8 @@ export const billing_es = {
       },
       "catechist_ai": {
         "name": "Catequista IA",
-        "price": "R$ 39/mes",
-        "annual_price": "R$ 390/año (R$ 32,50/mes)",
+        "price": "$9/mes",
+        "annual_price": "$90/año ($7.50/mes)",
         "features": [
           "Todo del Pro",
           "Generador de encuentros por IA",
@@ -1104,8 +1104,8 @@ export const billing_es = {
       },
       "parish_essential": {
         "name": "Parroquia Esencial",
-        "price": "R$ 79/mes",
-        "annual_price": "R$ 790/año (R$ 65,83/mes)",
+        "price": "$19/mes",
+        "annual_price": "$190/año ($15.83/mes)",
         "features": [
           "5 catequistas",
           "200 catecúmenos",
@@ -1118,8 +1118,8 @@ export const billing_es = {
       },
       "parish_complete": {
         "name": "Parroquia Completa",
-        "price": "R$ 129/mes",
-        "annual_price": "R$ 1.290/año (R$ 107,50/mes)",
+        "price": "$29/mes",
+        "annual_price": "$290/año ($24.17/mes)",
         "features": [
           "Catequistas ilimitados",
           "Catecúmenos ilimitados",
@@ -1131,8 +1131,8 @@ export const billing_es = {
       },
       "diocese": {
         "name": "Diócesis",
-        "price": "R$ 449/mes",
-        "annual_price": "R$ 4.490/año (R$ 374/mes)",
+        "price": "$99/mes",
+        "annual_price": "$990/año ($82.50/mes)",
         "features": [
           "Hasta 10 parroquias",
           "Todo de la Completa",

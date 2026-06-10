@@ -111,21 +111,21 @@ export async function cancelWooviSubscription(correlationID: string): Promise<vo
 function getPlanValueCents(planId: PaymentPlanId): number {
   switch (planId) {
     case PaymentPlanId.CatechistPro:
-      return 1900; // R$ 19,00
+      return 500; // $5.00
     case PaymentPlanId.CatechistAi:
-      return 3900; // R$ 39,00
+      return 900; // $9.00
     case PaymentPlanId.Parish:
-      return 12900; // R$ 129,00 (legacy → parish_complete)
+      return 2900; // $29.00 (legacy → parish_complete)
     case PaymentPlanId.ParishEssential:
-      return 7900; // R$ 79,00
+      return 1900; // $19.00
     case PaymentPlanId.ParishComplete:
-      return 12900; // R$ 129,00
+      return 2900; // $29.00
     case PaymentPlanId.Diocese:
-      return 44900; // R$ 449,00
+      return 9900; // $99.00
     case PaymentPlanId.AiCredits20:
-      return 2900; // R$ 29,00
+      return 700; // $7.00
     case PaymentPlanId.AiCredits50:
-      return 5900; // R$ 59,00
+      return 1400; // $14.00
     default:
       throw new Error(`Plan ${planId} does not have a price`);
   }

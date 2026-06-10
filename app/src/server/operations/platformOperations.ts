@@ -6,14 +6,14 @@ import { HttpError } from 'wasp/server';
 import { requirePlatformAdmin } from '../auth/helpers';
 import { formatServerDate, resolveUserLocale } from '../i18n/serverLocale';
 
-// ─── Plan pricing (BRL/month) for MRR estimation ──────────────────────────
+// ─── Plan pricing (USD/month) for MRR estimation ──────────────────────────
 
 const PLAN_PRICES: Record<string, number> = {
   CATECHIST_FREE: 0,
-  CATECHIST_PRO: 29.90,
-  CATECHIST_AI: 49.90,
-  PARISH: 99.90,
-  DIOCESE: 199.90,
+  CATECHIST_PRO: 5.00,
+  CATECHIST_AI: 9.00,
+  PARISH: 29.00,
+  DIOCESE: 99.00,
 };
 
 function planPrice(plan: string | null | undefined): number {

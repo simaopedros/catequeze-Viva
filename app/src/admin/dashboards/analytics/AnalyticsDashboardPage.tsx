@@ -38,7 +38,7 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
     },
     {
       label: 'MRR Estimado',
-      value: overview?.mrr != null ? `R$ ${overview.mrr.toFixed(0)}` : '—',
+      value: overview?.mrr != null ? `$ ${overview.mrr.toFixed(0)}` : '—',
       subtitle: `${overview?.trialsExpiring || 0} trials a expirar`,
       icon: DollarSign,
       color: 'text-emerald-600 bg-emerald-50',
