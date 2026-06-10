@@ -43,6 +43,12 @@ export const stripeWebhook: PaymentsWebhook = async (
   try {
     const event = constructStripeEvent(request);
 
+    // Clover API (2025-10+) — not yet in Stripe SDK event union.
+    if ((event.type as string) === "invoice_payment.paid") {
+      await handleInvoicePaymentPaid(event, prismaUserDelegate, context);
+      return response.status(204).send();
+    }
+
     // If you'd like to handle more events, you can add more cases below.
     // When deploying your app, you configure your webhook in the Stripe dashboard
     // to only send the events that you're handling above.
@@ -51,9 +57,6 @@ export const stripeWebhook: PaymentsWebhook = async (
       case "invoice.paid":
       case "invoice.payment_succeeded":
         await handleInvoicePaid(event, prismaUserDelegate, context);
-        break;
-      case "invoice_payment.paid":
-        await handleInvoicePaymentPaid(event, prismaUserDelegate, context);
         break;
       case "customer.subscription.updated":
         await handleCustomerSubscriptionUpdated(event, prismaUserDelegate);
@@ -124,7 +127,10 @@ async function handleInvoicePaymentPaid(
   const invoiceId =
     typeof invoicePayment.invoice === "string"
       ? invoicePayment.invoice
-      : invoicePayment.invoice.id;
+      : invoicePayment.invoice?.id;
+  if (!invoiceId) {
+    throw new Error("invoice_payment.paid missing invoice id");
+  }
   const invoice = await stripeClient.invoices.retrieve(invoiceId);
   await processPaidInvoice(invoice, prismaUserDelegate, context);
 }
