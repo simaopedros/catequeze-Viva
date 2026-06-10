@@ -92,7 +92,7 @@ export const lemonSqueezyMiddlewareConfigFn: MiddlewareConfigFn = (
   middlewareConfig.delete("express.json");
   middlewareConfig.set(
     "express.raw",
-    express.raw({ type: "application/json" }),
+    express.raw({ type: "*/*" }),
   );
   return middlewareConfig;
 };

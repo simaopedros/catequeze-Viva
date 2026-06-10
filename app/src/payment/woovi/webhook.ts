@@ -17,7 +17,7 @@ import { PRICING_VERSION } from "../../shared/pricing";
  */
 export const wooviMiddlewareConfigFn: MiddlewareConfigFn = (middlewareConfig) => {
   middlewareConfig.delete("express.json");
-  middlewareConfig.set("express.raw", express.raw({ type: "application/json" }));
+  middlewareConfig.set("express.raw", express.raw({ type: "*/*" }));
   return middlewareConfig;
 };
 
