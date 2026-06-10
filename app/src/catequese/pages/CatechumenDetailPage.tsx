@@ -6,7 +6,7 @@ import { Badge } from '../../client/components/ui/badge';
 import { ArrowLeft, Heart, BookOpen, FileText, CheckCircle, XCircle, Edit3, Gift, MessageCircle, FilePlus, Upload, Download, Link2, Copy, AlertTriangle, Cross } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { useQuery, getCatechumenProfile, listMeetings, getMeetingAttendance, createConversation, generateCatechumenUploadToken, getCatechumenAttendanceReport } from 'wasp/client/operations';
-import { uploadDocumentMultipart } from '../../client/utils/documentUpload';
+import { fetchAuthenticatedDocument, uploadDocumentMultipart } from '../../client/utils/documentUpload';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { toast } from '../../client/hooks/use-toast';
 import { calculatePoints } from '../../shared/gamification';
@@ -74,16 +74,7 @@ export default function CatechumenDetailPage() {
 
   const handleDownloadDocument = async (docId: string, docName: string) => {
     try {
-      const raw = localStorage.getItem('wasp:sessionId');
-      const token = raw ? JSON.parse(raw) : '';
-      const res = await fetch(`/api/documents/${docId}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: t('catechumens.detail_download_error') }));
-        throw new Error(err.error || `HTTP ${res.status}`);
-      }
-      const blob = await res.blob();
+      const blob = await fetchAuthenticatedDocument(docId);
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;

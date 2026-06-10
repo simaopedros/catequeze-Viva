@@ -22,7 +22,21 @@ Protegido por **Cloudflare Access** (equipa only).
 - [ ] `.env.server` conforme `deploy/.env.server.homolog.example`
 - [ ] `COOKIE_DOMAIN=.catechis.app`
 - [ ] `FAMILY_PORTAL_HOST=familia-homolog.catechis.app`
+- [ ] `WASP_WEB_CLIENT_URL=https://homolog.catechis.app`
 - [ ] `WASP_SERVER_URL=https://api-homolog.catechis.app`
+- [ ] Sem `REACT_APP_*` no `.env.server` (só variáveis de build no CI)
+
+### Migrate manual no VPS (se URLs de convite/email estiverem erradas)
+
+Scripts ficam em `/opt/catechis/scripts/` (não `deploy/scripts/`):
+
+```bash
+cd /opt/catechis
+bash scripts/migrate-homolog-hosts-vps.sh
+docker compose -f docker-compose.homolog.yml up -d --force-recreate --pull never server worker
+```
+
+`--pull never` evita erro `registry: denied` ao recriar sem login GHCR manual.
 
 ## Staff
 

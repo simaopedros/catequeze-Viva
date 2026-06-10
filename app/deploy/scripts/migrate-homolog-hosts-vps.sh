@@ -21,10 +21,16 @@ upsert() {
   fi
 }
 
+upsert WASP_WEB_CLIENT_URL "https://homolog.catechis.app"
 upsert WASP_SERVER_URL "https://api-homolog.catechis.app"
 upsert COOKIE_DOMAIN ".catechis.app"
 upsert FAMILY_PORTAL_HOST "familia-homolog.catechis.app"
 upsert STAFF_PORTAL_HOST "homolog.catechis.app"
+
+# Legado (hostname antigo com dois níveis) — não é lido pelo server em runtime
+if grep -q "^REACT_APP_FAMILY_PORTAL_HOST=" .env.server; then
+  sed -i '/^REACT_APP_FAMILY_PORTAL_HOST=/d' .env.server
+fi
 
 echo "Updated .env.server. Run:"
 echo "  docker compose -f docker-compose.homolog.yml up -d --no-deps --pull never --force-recreate caddy"

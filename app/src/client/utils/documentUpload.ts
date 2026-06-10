@@ -16,12 +16,17 @@ export type PublicDocumentUploadParams = {
 };
 
 function getServerUrl(): string {
-  const envUrl = (import.meta as any).env?.REACT_APP_WASP_SERVER_URL;
+  const envUrl =
+    (import.meta as any).env?.REACT_APP_WASP_SERVER_URL ||
+    (import.meta as any).env?.REACT_APP_API_URL;
   if (envUrl) return envUrl.replace(/\/$/, '');
   if (typeof window !== 'undefined') {
     const { protocol, hostname } = window.location;
     if (hostname.startsWith('familia.')) {
       return `${protocol}//api.${hostname.replace(/^familia\./, '')}`;
+    }
+    if (hostname.startsWith('familia-')) {
+      return `${protocol}//${window.location.host}`;
     }
     if (
       hostname === 'homolog.catechis.app' ||
@@ -33,6 +38,18 @@ function getServerUrl(): string {
     return `${protocol}//api.${hostname.replace(/^www\./, '')}`;
   }
   return 'http://localhost:3001';
+}
+
+/** Wasp stores the session in localStorage; custom fetch must send it explicitly. */
+export function getWaspAuthHeaders(): Record<string, string> {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = localStorage.getItem('wasp:sessionId');
+    const sessionId = raw ? JSON.parse(raw) : null;
+    return sessionId ? { Authorization: `Bearer ${sessionId}` } : {};
+  } catch {
+    return {};
+  }
 }
 
 export async function uploadDocumentMultipart(
@@ -49,6 +66,7 @@ export async function uploadDocumentMultipart(
     method: 'POST',
     body: form,
     credentials: 'include',
+    headers: getWaspAuthHeaders(),
   });
 
   const data = await res.json().catch(() => ({}));
@@ -76,6 +94,18 @@ export async function uploadPublicDocumentMultipart(
     throw new Error(data.error || 'Erro ao enviar documento.');
   }
   return data;
+}
+
+export async function fetchAuthenticatedDocument(docId: string): Promise<Blob> {
+  const res = await fetch(`${getServerUrl()}/api/documents/${docId}`, {
+    credentials: 'include',
+    headers: getWaspAuthHeaders(),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || 'Erro ao aceder ao documento.');
+  }
+  return res.blob();
 }
 
 export function readFileAsUpload(file: File): Promise<File> {

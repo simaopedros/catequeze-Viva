@@ -982,6 +982,7 @@ action deleteDocument {
 api serveDocument {
   fn: import { serveDocument } from "@src/server/api/documents",
   middlewareConfigFn: import { serveDocumentMiddleware } from "@src/server/api/documents",
+  auth: true,
   httpRoute: (GET, "/api/documents/:id"),
   entities: [Document, CatechumenProfile, Membership, Parish, ClassCatechist, ClassEnrollment, GuardianProfile]
 }
