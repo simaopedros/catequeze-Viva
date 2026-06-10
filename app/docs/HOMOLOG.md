@@ -45,6 +45,9 @@ docker compose -f docker-compose.homolog.yml up -d --force-recreate --pull never
 - [ ] Convidar responsável (`inviteUserToParish` role=GUARDIAN)
 - [ ] Checkout Stripe test + webhook + cascata `TenantBilling`
 - [ ] `STRIPE_*_PLAN_ID=price_...` no `.env.server` (ver `deploy/.env.server.homolog.example`)
+- [ ] Se checkout pagou mas plano continua grátis: ver evento `invoice.paid` no Stripe (deve ser **204**, não 400)
+- [ ] Reconciliar manualmente: `bash scripts/reconcile-stripe-billing.sh --resend-last-invoice seu@email.com`
+- [ ] Ou definir `BILLING_RECONCILE_EMAIL=seu@email.com` no `.env.server` (deploy CI reconcilia automaticamente)
 - [ ] Chat IA streaming + créditos; 2FA admin
 
 ## Portal da família

@@ -72,6 +72,7 @@ jobs:
               upsert_env COOKIE_DOMAIN ".catechis.app"
               upsert_env FAMILY_PORTAL_HOST "familia-homolog.catechis.app"
               upsert_env STAFF_PORTAL_HOST "homolog.catechis.app"
+              upsert_env BILLING_RECONCILE_EMAIL "simaopedros@gmail.com"
               sed -i '/^REACT_APP_FAMILY_PORTAL_HOST=/d' .env.server
             fi
             echo "$GHCR_TOKEN" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
@@ -94,6 +95,13 @@ jobs:
               echo "⚠️ migrate deploy failed — check DATABASE_URL in .env.server"
             sleep 15
             docker compose -f docker-compose.homolog.yml exec -T server node -e "fetch('http://127.0.0.1:3001/health').then(r=>r.json()).then(j=>{if(j.status!=='ok'){console.error(j);process.exit(1)};console.log(JSON.stringify(j))})"
+
+            # Idempotent: sync Stripe → User when webhooks failed (e.g. HTTP 400 pre raw-body fix)
+            chmod +x scripts/reconcile-stripe-billing.sh 2>/dev/null || true
+            RECONCILE_EMAIL=$(grep -E '^BILLING_RECONCILE_EMAIL=' .env.server 2>/dev/null | cut -d= -f2- || true)
+            if [[ -n "$RECONCILE_EMAIL" ]]; then
+              bash scripts/reconcile-stripe-billing.sh --resend-last-invoice "$RECONCILE_EMAIL" || echo "⚠️ billing reconcile failed"
+            fi
         env:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

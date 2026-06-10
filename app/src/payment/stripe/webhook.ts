@@ -49,6 +49,7 @@ export const stripeWebhook: PaymentsWebhook = async (
     // See: https://docs.opensaas.sh/guides/deploying/#setting-up-your-stripe-webhook
     switch (event.type) {
       case "invoice.paid":
+      case "invoice.payment_succeeded":
         await handleInvoicePaid(event, prismaUserDelegate, context);
         break;
       case "customer.subscription.updated":
@@ -101,7 +102,7 @@ function constructStripeEvent(request: express.Request): Stripe.Event {
 }
 
 async function handleInvoicePaid(
-  event: Stripe.InvoicePaidEvent,
+  event: Stripe.InvoicePaidEvent | Stripe.InvoicePaymentSucceededEvent,
   prismaUserDelegate: PrismaClient["user"],
   context: Parameters<PaymentsWebhook>[2],
 ): Promise<void> {
@@ -173,7 +174,11 @@ function getInvoicePriceId(invoice: Stripe.Invoice): Stripe.Price["id"] {
     throw new Error("There should be exactly one line item in Stripe invoice");
   }
 
-  const priceId = invoiceLineItems[0].pricing?.price_details?.price;
+  const line = invoiceLineItems[0];
+  const priceId =
+    line.pricing?.price_details?.price ??
+    (typeof line.price === "string" ? line.price : line.price?.id);
+
   if (!priceId) {
     throw new Error("Unable to extract price id from items");
   }
@@ -255,7 +260,17 @@ function getSubscriptionPriceId(
     );
   }
 
-  return subscriptionItems[0].price.id;
+  const item = subscriptionItems[0];
+  const priceId =
+    item.price?.id ??
+    (typeof item.price === "string" ? item.price : undefined) ??
+    item.pricing?.price_details?.price;
+
+  if (!priceId) {
+    throw new Error("Unable to extract price id from subscription items");
+  }
+
+  return priceId;
 }
 
 async function handleCustomerSubscriptionDeleted(
