@@ -4,7 +4,7 @@ Ambiente: `homolog.catechis.app`, `familia-homolog.catechis.app`, `api-homolog.c
 
 > Hostnames de **um nível** (`familia-homolog`, não `familia.homolog`) para o SSL gratuito da Cloudflare cobrir todos os subdomínios.
 
-Protegido por **Cloudflare Access** (equipa only).
+Protegido por **Cloudflare Access** (equipa only — plano Free até 50 users). Guia: [`CLOUDFLARE_ACCESS.md`](CLOUDFLARE_ACCESS.md).
 
 ## Verificação automatizada
 

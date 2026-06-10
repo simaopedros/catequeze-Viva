@@ -80,7 +80,9 @@
       "Bash(cp *)",
       "Read(//home/simaopedros/catequese-viva/**)",
       "Bash(/home/simaopedros/catequese-viva/app/node_modules/.bin/vitest *)",
-      "Skill(copywriting)"
+      "Skill(copywriting)",
+      "WebFetch(developers.cloudflare.com)",
+      "WebFetch(stripe.com)"
     ]
   },
   "$version": 4

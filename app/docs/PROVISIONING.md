@@ -62,12 +62,9 @@ SSL: **Full (Strict)**
 
 ## 5. Cloudflare Access (homolog — dia 1)
 
-Criar Application em Zero Trust → Access → Applications para:
-- `homolog.catechis.app`
-- `familia-homolog.catechis.app`
-- `api-homolog.catechis.app`
+Guia completo: [`CLOUDFLARE_ACCESS.md`](CLOUDFLARE_ACCESS.md)
 
-Política: emails da equipa ou one-time PIN. Produção permanece pública.
+Resumo: uma aplicação com os 3 hostnames; **Bypass** em `/payments-webhook` (Stripe); **Allow** por emails da equipa; Service Token para CI (`CF_ACCESS_CLIENT_ID` / `CF_ACCESS_CLIENT_SECRET` no GitHub).
 
 ## 6. Resend + Stripe
 

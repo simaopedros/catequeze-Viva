@@ -79,7 +79,9 @@
       "Skill(getting-started)",
       "Bash(cp *)",
       "Read(//home/simaopedros/catequese-viva/**)",
-      "Bash(/home/simaopedros/catequese-viva/app/node_modules/.bin/vitest *)"
+      "Bash(/home/simaopedros/catequese-viva/app/node_modules/.bin/vitest *)",
+      "Skill(copywriting)",
+      "WebFetch(developers.cloudflare.com)"
     ]
   },
   "$version": 4

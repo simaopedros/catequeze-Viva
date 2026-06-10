@@ -107,7 +107,14 @@ jobs:
 
       - name: E2E smoke (homolog)
         working-directory: e2e-tests
+        env:
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
         run: |
           npm ci
           npx playwright install chromium
+          if [[ -z "${CF_ACCESS_CLIENT_ID:-}" || -z "${CF_ACCESS_CLIENT_SECRET:-}" ]]; then
+            echo "⚠️ CF_ACCESS_CLIENT_ID/SECRET not set — smoke may fail if Cloudflare Access is enabled."
+            echo "   See app/docs/CLOUDFLARE_ACCESS.md (Service Token + GitHub secrets)."
+          fi
           HOMOLOG_STAFF_URL=https://homolog.catechis.app HOMOLOG_FAMILY_URL=https://familia-homolog.catechis.app SKIP_WEBSERVER=true npx playwright test tests/homologSmoke.spec.ts --reporter=list

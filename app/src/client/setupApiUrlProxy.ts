@@ -41,4 +41,32 @@ function patchFetch(): void {
   }) as typeof fetch;
 }
 
+/** Wasp/axios use XMLHttpRequest — must rewrite api-* host to same-origin for CF Access. */
+function patchXHR(): void {
+  if (typeof window === 'undefined') return;
+  const w = window as Window & { __catechisXhrPatched?: boolean };
+  if (w.__catechisXhrPatched) return;
+  w.__catechisXhrPatched = true;
+
+  const nativeOpen = XMLHttpRequest.prototype.open;
+  XMLHttpRequest.prototype.open = function (
+    method: string,
+    url: string | URL,
+    async?: boolean,
+    username?: string | null,
+    password?: string | null,
+  ) {
+    const urlStr = typeof url === 'string' ? url : url.href;
+    const rewritten = rewriteUrl(urlStr);
+    if (async === undefined) {
+      return nativeOpen.call(this, method, rewritten);
+    }
+    if (username === undefined && password === undefined) {
+      return nativeOpen.call(this, method, rewritten, async);
+    }
+    return nativeOpen.call(this, method, rewritten, async, username, password);
+  };
+}
+
 patchFetch();
+patchXHR();
