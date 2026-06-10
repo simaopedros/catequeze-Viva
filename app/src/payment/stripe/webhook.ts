@@ -176,8 +176,7 @@ function getInvoicePriceId(invoice: Stripe.Invoice): Stripe.Price["id"] {
 
   const line = invoiceLineItems[0];
   const priceId =
-    line.pricing?.price_details?.price ??
-    (typeof line.price === "string" ? line.price : line.price?.id);
+    line.pricing?.price_details?.price ?? getLegacyInvoiceLinePriceId(line);
 
   if (!priceId) {
     throw new Error("Unable to extract price id from items");
@@ -261,16 +260,37 @@ function getSubscriptionPriceId(
   }
 
   const item = subscriptionItems[0];
-  const priceId =
-    item.price?.id ??
-    (typeof item.price === "string" ? item.price : undefined) ??
-    item.pricing?.price_details?.price;
+  const priceId = item.price.id ?? getLegacySubscriptionItemPriceId(item);
 
   if (!priceId) {
     throw new Error("Unable to extract price id from subscription items");
   }
 
   return priceId;
+}
+
+/** Pre-basil API payloads may expose price on the line item directly. */
+function getLegacyInvoiceLinePriceId(
+  line: Stripe.InvoiceLineItem,
+): string | undefined {
+  const legacy = line as Stripe.InvoiceLineItem & {
+    price?: string | Stripe.Price | null;
+  };
+  const price = legacy.price;
+  if (typeof price === "string") {
+    return price;
+  }
+  return price?.id;
+}
+
+/** Basil API payloads may nest price under pricing.price_details. */
+function getLegacySubscriptionItemPriceId(
+  item: Stripe.SubscriptionItem,
+): string | undefined {
+  const legacy = item as Stripe.SubscriptionItem & {
+    pricing?: { price_details?: { price?: string } };
+  };
+  return legacy.pricing?.price_details?.price;
 }
 
 async function handleCustomerSubscriptionDeleted(
