@@ -17,10 +17,10 @@ export function CtaSection() {
             <Cross className="h-3.5 w-3.5" />
             Comece em 5 minutos
           </div>
-          <h2 className="text-3xl font-bold">Sua catequese merece o melhor</h2>
+          <h2 className="text-3xl font-bold">Organize sua catequese hoje</h2>
           <p className="text-muted-foreground max-w-lg mx-auto">
-            Junte-se a coordenadores, catequistas e famílias que já usam a Catequese Viva para
-            organizar, acompanhar e celebrar a formação cristã.
+            Junte-se a catequistas que já usam a Catequese Viva para preparar encontros,
+            fazer a chamada e manter as famílias por dentro — tudo pelo celular.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
             <Link

@@ -10,8 +10,8 @@ export function StepsSection() {
     <section className="bg-muted/30 border-y">
       <div className="max-w-4xl mx-auto px-4 py-20">
         <div ref={headerRef} className={`text-center mb-12 space-y-3 ${headerClass}`}>
-          <h2 className="text-3xl sm:text-4xl font-bold">Comece em três passos</h2>
-          <p className="text-lg text-muted-foreground">Simples, rápido e sem complicação.</p>
+          <h2 className="text-3xl sm:text-4xl font-bold">Três passos para organizar sua catequese</h2>
+          <p className="text-lg text-muted-foreground">Do cadastro da turma à comunicação com as famílias.</p>
         </div>
 
         <div className="relative grid gap-8 md:grid-cols-3">
@@ -30,7 +30,7 @@ export function StepsSection() {
             to="/signup"
             className="inline-flex items-center gap-2 text-primary font-semibold hover:underline"
           >
-            Começar agora <ArrowRight className="h-4 w-4" />
+            Criar conta gratuita <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </div>

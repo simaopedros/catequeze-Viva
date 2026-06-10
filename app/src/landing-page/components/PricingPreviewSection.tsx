@@ -12,7 +12,7 @@ export function PricingPreviewSection() {
       <div ref={headerRef} className={`text-center mb-12 space-y-3 ${headerClass}`}>
         <h2 className="text-3xl sm:text-4xl font-bold">Planos para cada etapa</h2>
         <p className="text-lg text-muted-foreground">
-          Comece gratuitamente. Evolua quando sua catequese crescer.
+          Comece gratuitamente. Evolua quando quiser.
         </p>
       </div>
 

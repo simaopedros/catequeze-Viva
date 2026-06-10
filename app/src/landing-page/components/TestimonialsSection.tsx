@@ -11,7 +11,7 @@ export function TestimonialsSection() {
         <div ref={headerRef} className={`text-center mb-12 space-y-3 ${headerClass}`}>
           <h2 className="text-3xl sm:text-4xl font-bold">Quem usa recomenda</h2>
           <p className="text-lg text-muted-foreground">
-            Depoimentos de quem já transformou a catequese com a plataforma.
+            Catequistas, coordenadores e párocos que já transformaram o dia-a-dia da catequese.
           </p>
         </div>
 

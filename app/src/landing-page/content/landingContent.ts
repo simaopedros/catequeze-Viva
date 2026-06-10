@@ -73,14 +73,14 @@ export interface PricingPlan {
 
 export const PERSONAS: Persona[] = [
   {
-    icon: Church,
-    title: 'Coordenador Paroquial',
-    desc: 'Organize sua equipa de catequistas, crie turmas por etapa e sacramento, acompanhe relatórios de presença e progresso sacramental.',
-  },
-  {
     icon: GraduationCap,
     title: 'Catequista',
     desc: 'Faça a chamada pelo celular, prepare encontros com a biblioteca pastoral integrada, comunique-se com as famílias.',
+  },
+  {
+    icon: Church,
+    title: 'Coordenador Paroquial',
+    desc: 'Organize sua equipa de catequistas, crie turmas por etapa e sacramento, acompanhe relatórios de presença e progresso sacramental.',
   },
   {
     icon: Heart,
@@ -88,70 +88,48 @@ export const PERSONAS: Persona[] = [
     desc: 'Acompanhe a jornada de fé dos seus filhos, veja presenças, justifique faltas, receba avisos e faça upload de documentos.',
   },
   {
-    icon: Building2,
-    title: 'Administrador Diocesano',
-    desc: 'Visão consolidada de múltiplas paróquias, analytics agregado, biblioteca oficial diocesana e gestão centralizada.',
-  },
-  {
     icon: UserCheck,
     title: 'Pároco e Liderança',
     desc: 'Acesso de leitura a dashboards pastorais, relatórios de frequência e progresso sacramental de toda a paróquia.',
+  },
+  {
+    icon: Building2,
+    title: 'Administrador Diocesano',
+    desc: 'Visão consolidada de múltiplas paróquias, analytics agregado, biblioteca oficial diocesana e gestão centralizada.',
   },
 ];
 
 export const SHOWCASES: FeatureShowcaseItem[] = [
   {
-    id: 'dashboard',
-    title: 'Painel do coordenador',
-    desc: 'Visão completa da saúde da catequese em um só lugar: KPIs, encontros do dia, alertas pastorais e comparação entre turmas.',
-    bullets: [
-      'KPIs de catequizandos, turmas e presença média',
-      'Alertas de evasão e documentos pendentes',
-      'Comparação de desempenho entre turmas',
-    ],
-    direction: 'row',
-  },
-  {
     id: 'attendance',
-    title: 'Turmas e presença digital',
-    desc: 'Crie turmas por sacramento e etapa. Registe presenças com um toque no celular e importe catequizandos por CSV.',
+    title: 'Chamada digital no celular',
+    desc: 'Registe presenças com um toque. Monte sua turma, importe catequizandos por CSV e gere relatórios de frequência.',
     bullets: [
       'Chamada rápida com PRESENT, ABSENT, LATE e JUSTIFIED',
       'Importação em lote por planilha CSV',
       'Relatórios de frequência exportáveis',
     ],
-    direction: 'row-reverse',
-  },
-  {
-    id: 'sacraments',
-    title: 'Jornada sacramental',
-    desc: 'Acompanhe os 5 sacramentos com milestones visuais: Batismo, Primeira Eucaristia, Crisma, Reconciliação e Matrimônio.',
-    bullets: [
-      'Etapas com fluxo de aprovação por catequizando',
-      'Templates reutilizáveis por paróquia',
-      'Progresso sacramental visível para coordenadores',
-    ],
     direction: 'row',
   },
   {
-    id: 'library',
-    title: 'Biblioteca pastoral integrada',
-    desc: 'Bíblia completa, Catecismo e Diretório para a Catequese com busca full-text. Crie planos de encontro com referências cruzadas.',
-    bullets: [
-      '66 livros bíblicos com busca semântica',
-      'Planos de encontro com workflow de revisão',
-      'Referências cruzadas entre Bíblia, Catecismo e Diretório',
-    ],
-    direction: 'row-reverse',
-  },
-  {
     id: 'ai-planner',
-    title: 'Gerador de encontros por IA',
-    desc: 'IA teologicamente orientada para criar roteiros, atividades, quizzes e mensagens para famílias em segundos.',
+    title: 'Encontros preparados por IA',
+    desc: 'IA teologicamente orientada para criar roteiros, atividades, quizzes e mensagens para as famílias em segundos.',
     bullets: [
       'Planejamento anual automático de encontros',
       'Base teológica: Bíblia CNBB, Catecismo e Diretório',
       'Assistente teológico flutuante em toda a plataforma',
+    ],
+    direction: 'row-reverse',
+  },
+  {
+    id: 'library',
+    title: 'Biblioteca pastoral integrada',
+    desc: 'Bíblia completa, Catecismo e Diretório para a Catequese com busca full-text. Monte planos de encontro com referências cruzadas.',
+    bullets: [
+      '66 livros bíblicos com busca semântica',
+      'Planos de encontro com workflow de revisão',
+      'Referências cruzadas entre Bíblia, Catecismo e Diretório',
     ],
     direction: 'row',
   },
@@ -163,6 +141,28 @@ export const SHOWCASES: FeatureShowcaseItem[] = [
       'Dashboard personalizado por filho',
       'Justificativa de faltas pelo portal',
       'Upload de certidões via link seguro',
+    ],
+    direction: 'row-reverse',
+  },
+  {
+    id: 'dashboard',
+    title: 'Painel do coordenador',
+    desc: 'Visão completa da saúde da catequese: KPIs, encontros do dia, alertas pastorais e comparação entre turmas.',
+    bullets: [
+      'KPIs de catequizandos, turmas e presença média',
+      'Alertas de evasão e documentos pendentes',
+      'Comparação de desempenho entre turmas',
+    ],
+    direction: 'row',
+  },
+  {
+    id: 'sacraments',
+    title: 'Jornada sacramental',
+    desc: 'Acompanhe os 5 sacramentos com milestones visuais: Batismo, Primeira Eucaristia, Crisma, Reconciliação e Matrimônio.',
+    bullets: [
+      'Etapas com fluxo de aprovação por catequizando',
+      'Templates reutilizáveis por paróquia',
+      'Progresso sacramental visível para coordenadores',
     ],
     direction: 'row-reverse',
   },
@@ -189,18 +189,18 @@ export const SECONDARY_FEATURES: SecondaryFeature[] = [
 export const STEPS: Step[] = [
   {
     number: '1',
-    title: 'Crie sua paróquia',
-    desc: 'Cadastre sua paróquia em minutos. Convide coordenadores e catequistas. Defina o ano catequético.',
+    title: 'Monte sua turma',
+    desc: 'Cadastre seus catequizandos, importe por CSV ou adicione um a um. Em poucos minutos a turma está pronta.',
   },
   {
     number: '2',
-    title: 'Monte suas turmas',
-    desc: 'Crie turmas por sacramento e etapa. Importe catequizandos por CSV ou cadastre um a um. Atribua catequistas.',
+    title: 'Acompanhe os encontros',
+    desc: 'Faça a chamada pelo celular, prepare roteiros com a biblioteca pastoral e a IA integrada. Tudo ao alcance de um toque.',
   },
   {
     number: '3',
-    title: 'Acompanhe a jornada',
-    desc: 'Registe presenças, acompanhe o progresso sacramental, comunique-se com as famílias e gere relatórios.',
+    title: 'Comunique-se com as famílias',
+    desc: 'Pais e responsáveis veem presenças, justificam faltas, recebem avisos e enviam documentos pelo portal. Sem precisar ligar.',
   },
 ];
 
@@ -249,6 +249,11 @@ export const PRICING_PREVIEW: PricingPlan[] = [
 
 export const TESTIMONIALS: Testimonial[] = [
   {
+    name: 'Ana Costa',
+    role: 'Catequista',
+    text: 'A chamada pelo celular é prática demais! A biblioteca com Bíblia, Catecismo e Diretório integrados facilita muito a preparação dos encontros. E os pais adoram o portal da família.',
+  },
+  {
     name: 'Maria Silva',
     role: 'Coordenadora de Catequese',
     text: 'A Catequese Viva transformou a forma como gerenciamos nossas turmas. Antes tudo era em papel, agora temos controle total de presenças, sacramentos e comunicação com as famílias.',
@@ -257,11 +262,6 @@ export const TESTIMONIALS: Testimonial[] = [
     name: 'Pe. João Santos',
     role: 'Pároco',
     text: 'Finalmente uma ferramenta pensada para a realidade pastoral. Consigo ver o panorama da catequese da paróquia inteira sem precisar pedir relatórios para ninguém.',
-  },
-  {
-    name: 'Ana Costa',
-    role: 'Catequista',
-    text: 'A chamada pelo celular é prática demais! A biblioteca com Bíblia, Catecismo e Diretório integrados facilita muito a preparação dos encontros. E os pais adoram o portal da família.',
   },
 ];
 
@@ -293,8 +293,8 @@ export const FAQ: FaqItem[] = [
 ];
 
 export const HERO_BADGE = {
-  icon: Church,
-  text: 'Plataforma pastoral católica de gestão catequética',
+  icon: GraduationCap,
+  text: 'Ferramentas para o dia-a-dia do catequista',
   accentIcon: Sparkles,
 };
 

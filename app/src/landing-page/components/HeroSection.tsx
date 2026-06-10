@@ -40,14 +40,14 @@ export function HeroSection() {
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
-              Toda a catequese
+              Sua catequese
               <br />
-              <span className="text-gradient-primary">num só lugar</span>
+              <span className="text-gradient-primary">mais leve e organizada</span>
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              Turmas, presenças, sacramentos, conteúdos, comunicação e documentos.{' '}
-              <span className="font-semibold text-foreground">Da paróquia à diocese.</span>
+              Faça a chamada pelo celular, prepare encontros com IA e mantenha as famílias informadas —{' '}
+              <span className="font-semibold text-foreground">tudo num só lugar.</span>
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
@@ -68,7 +68,7 @@ export function HeroSection() {
             </div>
 
             <p className="text-xs text-muted-foreground">
-              ✓ Sem cartão de crédito &nbsp; ✓ Plano gratuito para sempre &nbsp; ✓ Comece em 5 minutos
+              ✓ Sem cartão de crédito &nbsp; ✓ Plano gratuito para catequistas &nbsp; ✓ Comece em 2 minutos
             </p>
           </div>
 

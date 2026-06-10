@@ -8,9 +8,9 @@ export function PersonasSection() {
     <section className="border-y bg-card/50 backdrop-blur-sm">
       <div className="max-w-6xl mx-auto px-4 py-16">
         <div ref={headerRef} className={`text-center mb-10 space-y-3 ${headerClass}`}>
-          <h2 className="text-3xl sm:text-4xl font-bold">Para cada pessoa da catequese</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold">Feito para o catequista</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Cada perfil tem as ferramentas certas para o seu papel na jornada de fé.
+            Ferramentas pensadas para o dia-a-dia de quem faz a catequese acontecer — e úteis para toda a equipa.
           </p>
         </div>
 
