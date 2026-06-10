@@ -59,10 +59,10 @@ function patchXHR(): void {
     const urlStr = typeof url === 'string' ? url : url.href;
     const rewritten = rewriteUrl(urlStr);
     if (async === undefined) {
-      return nativeOpen.call(this, method, rewritten);
+      return nativeOpen.call(this, method, rewritten, true);
     }
     if (username === undefined && password === undefined) {
-      return nativeOpen.call(this, method, rewritten, async);
+      return nativeOpen.call(this, method, rewritten, async, undefined, undefined);
     }
     return nativeOpen.call(this, method, rewritten, async, username, password);
   };
