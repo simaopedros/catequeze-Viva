@@ -3,6 +3,7 @@
  * for LGPD compliance and security monitoring.
  */
 import type { AuditAction } from '@prisma/client';
+import { logger } from './logger';
 
 interface AuditParams {
   action: AuditAction;
@@ -27,7 +28,7 @@ export async function logAudit(entities: any, params: AuditParams): Promise<void
     });
   } catch (err) {
     // Audit logging should never break the main operation
-    console.error('[AuditLog] Failed to log:', err);
+    logger.warn('[AuditLog] Failed to log', { error: String(err) });
   }
 }
 

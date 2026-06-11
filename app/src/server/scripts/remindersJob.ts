@@ -3,6 +3,7 @@
  * 1. Meetings happening tomorrow
  */
 import { getMeetingReminderNotification, resolveUserLocale } from '../i18n/serverLocale';
+import { logger } from '../logger';
 import { skipIfNotJobWorker } from '../jobs/jobGuard';
 
 export async function sendRemindersJob(_args: any, context: any) {
@@ -106,9 +107,9 @@ export async function sendRemindersJob(_args: any, context: any) {
     // Document expiration reminders disabled — Document model has no expirationDate field.
     // When sacramental document validity tracking is added, this section can be re-enabled.
 
-    console.log(`[remindersJob] Sent ${meetingReminders} meeting reminders.`);
+    logger.info(`[remindersJob] Sent ${meetingReminders} meeting reminders.`);
   } catch (err: any) {
-    console.error('[remindersJob] Error:', err.message);
+    logger.error('[remindersJob] Error:', { error: err.message });
   }
 
   return { meetingReminders };

@@ -1,3 +1,5 @@
+import { logger } from '../logger';
+
 /**
  * Subscription expiration job — expires trials and downgrades past-due tenants.
  *
@@ -68,7 +70,7 @@ export const expireSubscriptionsJob = async (
       `[subscriptionExpirationJob] Expired ${expiredCount} trials (TenantBilling + User).`,
     );
   } catch (err: any) {
-    console.error('[subscriptionExpirationJob] Error:', err.message);
+    logger.error('[subscriptionExpirationJob] Error:', { error: err.message });
   }
 
   return { expiredCount };

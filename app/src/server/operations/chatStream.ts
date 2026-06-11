@@ -1,3 +1,5 @@
+import { logger } from '../logger';
+
 /**
  * Streaming Chat API — Server-Sent Events (SSE) endpoint for real-time AI chat.
  *
@@ -127,7 +129,7 @@ export async function chatStreamHandler(req: Request, res: Response, context: an
     res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
     res.end();
   } catch (err: any) {
-    console.error('[chat-stream] Error:', err.message);
+    logger.error('[chat-stream] Error:', { error: err.message });
     res.write(`data: ${JSON.stringify({ error: err.message || 'Erro interno.' })}\n\n`);
     res.end();
   }

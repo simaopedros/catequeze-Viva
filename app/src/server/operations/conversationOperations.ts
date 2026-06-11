@@ -711,11 +711,16 @@ export const getOrCreateClassChat = async (
     }
   }
 
-  // Combine unique participant IDs (excluding the creator)
+  // Determine creator role: catechists/coordinators become OWNER, guardians are MEMBER
+  const isCatechist = catechistUserIds.includes(context.user.id);
+  const isCoordinator = membership && ['PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'DIOCESE_ADMIN', 'SUPER_ADMIN', 'PERSONAL_OWNER'].includes(membership.role);
+  const creatorRole = (isCatechist || isCoordinator) ? ('OWNER' as const) : ('MEMBER' as const);
+
+  // Combine unique participant IDs
   const allParticipantIds = [...new Set([...catechistUserIds, ...guardianUserIds])];
   const participantsData = allParticipantIds.map((userId) => ({
     userId,
-    role: userId === context.user.id ? ('OWNER' as const) : ('MEMBER' as const),
+    role: userId === context.user.id ? creatorRole : ('MEMBER' as const),
   }));
 
   if (participantsData.length === 0) {
