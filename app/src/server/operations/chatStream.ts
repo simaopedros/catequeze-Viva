@@ -49,6 +49,11 @@ export async function chatStreamHandler(req: Request, res: Response, context: an
       res.end();
       return;
     }
+    if (message.length > 4000) {
+      res.write(`data: ${JSON.stringify({ error: 'Mensagem muito longa (máx. 4000 caracteres).' })}\n\n`);
+      res.end();
+      return;
+    }
 
     // Wasp injects context via middleware
     if (!context?.user) {

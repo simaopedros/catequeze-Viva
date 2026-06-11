@@ -66,9 +66,7 @@ export const expireSubscriptionsJob = async (
       expiredCount++;
     }
 
-    console.log(
-      `[subscriptionExpirationJob] Expired ${expiredCount} trials (TenantBilling + User).`,
-    );
+    logger.info(`[subscriptionExpirationJob] Expired ${expiredCount} trials (TenantBilling + User).`);
   } catch (err: any) {
     logger.error('[subscriptionExpirationJob] Error:', { error: err.message });
   }
