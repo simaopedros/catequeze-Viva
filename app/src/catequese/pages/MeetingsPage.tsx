@@ -117,9 +117,6 @@ export default function MeetingsPage() {
               </div>
               <Button onClick={handleCreate} disabled={!title && !selectedContentId}>{t('create') || 'Criar'}</Button>
             </div>
-              <Button size="sm" onClick={handleCreate} disabled={!title}>{tc('create')}</Button>
-              <Button size="sm" variant="outline" onClick={() => setShowForm(false)}>{tc('cancel')}</Button>
-            </div>
           </div>
         )}
 
