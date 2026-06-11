@@ -34,7 +34,7 @@ export default function AttendancePage() {
   const { t: tcl } = useTranslation('classes');
   const { currentLocale } = useLocale();
   const { id: classId } = useParams<{ id: string }>();
-  const { data: meetings = [] } = useQuery(listMeetings, { classId: classId! });
+  const { data: meetings = [], refetch: refetchMeetings } = useQuery(listMeetings, { classId: classId! });
   const { data: cls } = useQuery(getClassDetails, { id: classId! });
   const catechumens = cls?.enrollments?.map((e: any) => e.catechumenProfile).filter(Boolean) || [];
   const [matrix, setMatrix] = useState<Record<string, Record<string, string>>>({});
@@ -105,6 +105,7 @@ export default function AttendancePage() {
     try {
       await createMeetingAction({ classId: classId!, title: newTitle, date: newDate });
       setNewTitle(''); setShowNew(false);
+      refetchMeetings();
     } catch (e: any) {
       toast({ title: t('matrix.create_meeting_error', { message: e.message || t('matrix.no_permission') }) });
     }

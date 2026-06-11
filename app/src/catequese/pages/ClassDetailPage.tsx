@@ -104,7 +104,7 @@ export default function ClassDetailPage() {
   };
 
   const handleEnroll=async(cid:string)=>{
-    try{await enrollCatechumen({classId:id!,catechumenProfileId:cid}); toast({title:t('detail.enrolled_success')});}catch(e:any){
+    try{await enrollCatechumen({classId:id!,catechumenProfileId:cid});toast({title:t('detail.enrolled_success')});refetchClass();}catch(e:any){
       if (handlePlanLimitError(e.message || e)) return;
       toast({title:t('detail.enroll_error'), description: (e as any).message || tc('try_again'), variant:'destructive'});
     }
@@ -116,16 +116,18 @@ export default function ClassDetailPage() {
     if(!unenrollConfirm||!id)return;
     const enrollmentId = unenrollConfirm;
     setUnenrollConfirm(null);
-    try{await cancelEnrollment({enrollmentId});toast({title:t('detail.unenrolled_success')});}catch(e:any){
+    try{await cancelEnrollment({enrollmentId});toast({title:t('detail.unenrolled_success')});refetchClass();}catch(e:any){
       if(handlePlanLimitError(e.message||e))return;
       toast({title:t('detail.unenroll_error'),description:(e as any).message||tc('try_again'),variant:'destructive'});
     }
   };
-  const handleStatus=(status:string)=>{
+  const handleStatus=async(status:string)=>{
     if (status==='CONCLUDED') {
       setStatusConfirm(status);
     } else {
-      updateClass({id,status});
+      await updateClass({id,status});
+      toast({title: status==='ACTIVE' ? t('detail.activated_success') : t('detail.paused_success')});
+      refetchClass();
     }
   };
   const confirmStatus=async()=>{
