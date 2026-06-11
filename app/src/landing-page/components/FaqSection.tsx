@@ -23,13 +23,7 @@ export function FaqSection() {
   );
 }
 
-function FaqItem({
-  item,
-  delay,
-}: {
-  item: (typeof FAQ)[number];
-  delay: number;
-}) {
+function FaqItem({ item, delay }: { item: any; delay: number }) {
   const { ref, className } = useScrollReveal<HTMLDivElement>({ delay });
 
   return (
