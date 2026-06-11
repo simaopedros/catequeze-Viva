@@ -1040,7 +1040,7 @@ page AppImportCatechumensPage {
 
 action importCatechumensCSV {
   fn: import { importCatechumensCSV } from "@src/server/operations/importOperations",
-  entities: [CatechumenProfile]
+  entities: [CatechumenProfile, Membership, Parish]
 }
 //#endregion
 

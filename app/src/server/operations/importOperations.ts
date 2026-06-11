@@ -3,61 +3,59 @@ import { COORDINATOR_ROLES } from '../auth/helpers';
 
 const IMPORT_ROLES = [...COORDINATOR_ROLES, 'LEAD_CATECHIST'];
 
+async function resolveImportParish(context: any, args: { csvData: string; parishId?: string }): Promise<string> {
+  if (context.user?.isAdmin) {
+    if (!args.parishId) throw new HttpError(400, 'Especifique parishId.');
+    return args.parishId;
+  }
+
+  // Collect all parishes where user has import permission
+  const importMemberships = await context.entities.Membership.findMany({
+    where: {
+      userId: context.user.id,
+      status: 'ACTIVE',
+      role: { in: IMPORT_ROLES },
+    },
+    select: { parishId: true },
+    orderBy: { createdAt: 'asc' },
+  });
+
+  // Check personal workspace ownership for candidates
+  const personalWorkspace = await context.entities.Parish.findFirst({
+    where: { ownerId: context.user.id, type: 'PERSONAL' },
+    select: { id: true },
+  });
+
+  const allowedParishIds = new Set(importMemberships.map(m => m.parishId));
+  if (personalWorkspace) allowedParishIds.add(personalWorkspace.id);
+
+  if (allowedParishIds.size === 0) {
+    throw new HttpError(403, 'Sem permissão para realizar importações.');
+  }
+
+  // Explicit parishId: validate it's in the allowed set
+  if (args.parishId) {
+    if (!allowedParishIds.has(args.parishId)) {
+      throw new HttpError(403, 'Sem permissão para importar catequizandos nesta paróquia.');
+    }
+    return args.parishId;
+  }
+
+  // No parishId: pick automatically if unique, otherwise require explicit
+  if (allowedParishIds.size === 1) {
+    return [...allowedParishIds][0];
+  }
+
+  throw new HttpError(400, 'Especifique parishId — você pertence a mais de uma paróquia ou comunidade com permissão de importação.');
+}
+
 export const importCatechumensCSV = async (
   args: { csvData: string; parishId?: string },
   context: any,
 ) => {
   if (!context.user) throw new HttpError(401);
 
-  const membershipWhere: any = {
-    userId: context.user.id,
-    status: 'ACTIVE',
-    role: { in: IMPORT_ROLES },
-  };
-  if (args.parishId) {
-    membershipWhere.parishId = args.parishId;
-  }
-
-  const membership = await context.entities.Membership.findFirst({
-    where: membershipWhere,
-    select: { parishId: true, role: true },
-    orderBy: { createdAt: 'asc' },
-  });
-
-  if (!membership) {
-    // Allow personal workspace owner
-    let allowedByPersonal = false;
-    if (args.parishId) {
-      const isPersonalOwner = await context.entities.Parish.findFirst({
-        where: { id: args.parishId, ownerId: context.user.id, type: 'PERSONAL' },
-        select: { id: true },
-      });
-      allowedByPersonal = !!isPersonalOwner;
-    }
-    if (!allowedByPersonal) {
-      throw new HttpError(
-        403,
-        args.parishId
-          ? 'Sem permissão para importar catequizandos nesta paróquia.'
-          : 'Sem permissão para realizar importações.',
-      );
-    }
-  }
-
-  if (!args.parishId) {
-    const parishCount = await context.entities.Membership.count({
-      where: {
-        userId: context.user.id,
-        status: 'ACTIVE',
-        role: { in: IMPORT_ROLES },
-      },
-    });
-    if (parishCount > 1) {
-      throw new HttpError(400, 'Especifique parishId — você pertence a mais de uma paróquia.');
-    }
-  }
-
-  const parishId = membership.parishId;
+  const parishId = await resolveImportParish(context, args);
 
   const lines = args.csvData.trim().split('\n');
   if (lines.length < 1) throw new HttpError(400, 'CSV vazio.');
