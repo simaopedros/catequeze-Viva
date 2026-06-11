@@ -1,5 +1,5 @@
 import { HttpError } from 'wasp/server';
-import { COORDINATOR_ROLES } from '../auth/helpers';
+import { COORDINATOR_ROLES, getDioceseParishIds } from '../auth/helpers';
 
 const IMPORT_ROLES = [...COORDINATOR_ROLES, 'LEAD_CATECHIST'];
 
@@ -28,6 +28,18 @@ async function resolveImportParish(context: any, args: { csvData: string; parish
 
   const allowedParishIds = new Set(importMemberships.map(m => m.parishId));
   if (personalWorkspace) allowedParishIds.add(personalWorkspace.id);
+
+  // DIOCESE_ADMIN: include all parishes in the diocese
+  if (importMemberships.some(m => m.parishId)) {
+    const membershipForRole = await context.entities.Membership.findFirst({
+      where: { userId: context.user.id, status: 'ACTIVE', role: 'DIOCESE_ADMIN' },
+      select: { id: true },
+    });
+    if (membershipForRole) {
+      const dioceseParishIds = await getDioceseParishIds(context);
+      for (const id of dioceseParishIds) allowedParishIds.add(id);
+    }
+  }
 
   if (allowedParishIds.size === 0) {
     throw new HttpError(403, 'Sem permissão para realizar importações.');
