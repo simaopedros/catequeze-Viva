@@ -350,7 +350,7 @@ export const acceptInvitation = async (
   });
 
   // Delete any PendingInvitation for this user+parish to avoid loop
-  if (context.user.email) {
+  if (context.user.email && context.entities.PendingInvitation) {
     await context.entities.PendingInvitation.deleteMany({
       where: { email: context.user.email, parishId: membership.parishId },
     });
@@ -531,7 +531,7 @@ export const acceptInvitationByToken = async (
     data: { status: 'ACTIVE', inviteToken: null, inviteTokenExpiresAt: null },
   });
   // Also delete any matching PendingInvitation
-  if (context.user.email) {
+  if (context.user.email && context.entities.PendingInvitation) {
     await context.entities.PendingInvitation.deleteMany({
       where: { email: context.user.email, parishId: m.parishId },
     });
