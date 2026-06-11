@@ -32,7 +32,14 @@ export function FeaturesSection() {
 function FeatureGridSection() {
   const { t } = useTranslation('landing');
   const { ref: headerRef, className: headerClass } = useScrollReveal();
-  const secondary = t('secondary', { returnObjects: true }) as any[];
+  const secondaryTexts = t('secondary', { returnObjects: true }) as any[];
+
+  // Merge i18n text with static icons (icons are Lucide components, not serializable)
+  const items = SECONDARY_FEATURES.map((sf, i) => ({
+    icon: sf.icon,
+    title: (Array.isArray(secondaryTexts) && secondaryTexts[i]) ? secondaryTexts[i].title : sf.title,
+    desc: (Array.isArray(secondaryTexts) && secondaryTexts[i]) ? secondaryTexts[i].desc : sf.desc,
+  }));
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-16">
@@ -42,7 +49,7 @@ function FeatureGridSection() {
       </div>
 
       <div className="grid gap-6 sm:grid-cols-3">
-        {(Array.isArray(secondary) ? secondary : SECONDARY_FEATURES).map((feature: any, index: number) => (
+        {(Array.isArray(items) ? items : SECONDARY_FEATURES).map((feature: any, index: number) => (
           <SecondaryFeatureCard key={feature.title} feature={feature} delay={index * 50} />
         ))}
       </div>

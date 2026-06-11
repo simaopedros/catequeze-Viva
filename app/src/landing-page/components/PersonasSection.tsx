@@ -7,7 +7,14 @@ const ICONS = [GraduationCap, Church, Heart, UserCheck, Building2];
 export function PersonasSection() {
   const { t } = useTranslation('landing');
   const { ref: headerRef, className: headerClass } = useScrollReveal();
-  const personas = t('personas', { returnObjects: true }) as any[];
+  const personasText = t('personas', { returnObjects: true }) as any[];
+
+  // Merge i18n text with static icons
+  const personas = (Array.isArray(personasText) ? personasText : []).map((p: any, i: number) => ({
+    title: p.title,
+    desc: p.desc,
+    icon: ICONS[i],
+  }));
 
   return (
     <section className="border-y bg-card/50 backdrop-blur-sm">
