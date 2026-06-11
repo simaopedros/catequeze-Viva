@@ -1,23 +1,43 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { User, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
+import { User, Sparkles, ArrowRight, Loader2, Clock, MapPin } from 'lucide-react';
 import { Button } from '../../../client/components/ui/button';
 import { Input } from '../../../client/components/ui/input';
 import { useAuth } from 'wasp/client/auth';
 
 interface PersonalSetupProps {
-  onComplete: (details: { className?: string }) => void;
+  onComplete: (details: { className?: string; dayOfWeek?: string; startTime?: string; endTime?: string; location?: string }) => void;
   loading: boolean;
 }
+
+const DAY_OPTIONS = [
+  { value: '0', label: 'Domingo' },
+  { value: '1', label: 'Segunda' },
+  { value: '2', label: 'Terça' },
+  { value: '3', label: 'Quarta' },
+  { value: '4', label: 'Quinta' },
+  { value: '5', label: 'Sexta' },
+  { value: '6', label: 'Sábado' },
+];
 
 export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
   const { t } = useTranslation('onboarding');
   const { data: user } = useAuth();
   const [className, setClassName] = useState('');
+  const [dayOfWeek, setDayOfWeek] = useState('');
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
+  const [location, setLocation] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onComplete({ className: className.trim() || undefined });
+    onComplete({
+      className: className.trim() || undefined,
+      dayOfWeek: dayOfWeek || undefined,
+      startTime: startTime || undefined,
+      endTime: endTime || undefined,
+      location: location.trim() || undefined,
+    });
   };
 
   const limitsLabel = user?.subscriptionPlan === 'catechist_free'
@@ -57,6 +77,23 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
             className="mt-1"
           />
           <p className="text-[11px] text-muted-foreground mt-1">{t('personal_setup.first_class_hint')}</p>
+        </div>
+
+        <div className="text-left">
+          <label className="text-sm font-medium flex items-center gap-1"><Clock className="h-3 w-3" /> {t('personal_setup.schedule_label') || 'Horário (opcional)'}</label>
+          <div className="grid grid-cols-3 gap-2 mt-1">
+            <select value={dayOfWeek} onChange={e => setDayOfWeek(e.target.value)} className="h-9 rounded-md border border-input bg-background px-2 text-sm">
+              <option value="">{t('personal_setup.day') || 'Dia'}</option>
+              {DAY_OPTIONS.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
+            </select>
+            <Input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} className="h-9" />
+            <Input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} className="h-9" />
+          </div>
+        </div>
+
+        <div className="text-left">
+          <label className="text-sm font-medium flex items-center gap-1"><MapPin className="h-3 w-3" /> {t('personal_setup.location_label') || 'Local (opcional)'}</label>
+          <Input value={location} onChange={e => setLocation(e.target.value)} placeholder={t('personal_setup.location_placeholder') || 'Ex: Salão paroquial'} className="mt-1" />
         </div>
 
         <Button type="submit" className="w-full gap-2" size="lg" disabled={loading}>

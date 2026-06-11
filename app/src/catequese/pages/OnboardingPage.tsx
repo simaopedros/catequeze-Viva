@@ -73,9 +73,9 @@ export default function OnboardingPage() {
           await createClass({
             name: details.className.trim(),
             parishId: personalParish.id,
-            dayOfWeek: details.dayOfWeek || '6',
-            startTime: details.startTime || '09:00',
-            endTime: details.endTime || '10:30',
+            dayOfWeek: details.dayOfWeek || '',
+            startTime: details.startTime || '',
+            endTime: details.endTime || '',
             location: details.location || personalParish.name,
           });
         }
