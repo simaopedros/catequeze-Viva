@@ -183,21 +183,7 @@ export const createHousehold = async (
   }
 
   if (!parishId && !context.user.isAdmin) {
-    // Auto-create personal workspace if none exists
-    const user = await context.entities.User.findUnique({
-      where: { id: context.user.id },
-      select: { firstName: true, lastName: true },
-    });
-    const created = await context.entities.Parish.create({
-      data: {
-        name: `Catequese de ${user?.firstName || 'Catequista'}`,
-        type: 'PERSONAL',
-        city: '—',
-        state: '—',
-        ownerId: context.user.id,
-      },
-    });
-    parishId = created.id;
+    throw new HttpError(400, 'É necessário especificar uma paróquia para criar a família.');
   }
 
   // Validate communityId belongs to the same parish if provided

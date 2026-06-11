@@ -143,11 +143,16 @@ export const exportReport = async (_args: void, context: any) => {
 // getSacramentalJourney movido para sacramentOperations.ts
 
 // updateLocalePreference
+const VALID_LOCALES = ['pt-BR', 'pt', 'en', 'en-US', 'es', 'es-ES'];
+const VALID_TIMEZONES = ['America/Sao_Paulo', 'America/New_York', 'America/Chicago', 'America/Los_Angeles', 'Europe/London', 'Europe/Lisbon', 'Europe/Madrid', 'UTC'];
+
 export const updateLocalePreference = async (
   args: { locale: string; timezone: string },
   context: any
 ) => {
   requireAuth(context.user);
+  if (!VALID_LOCALES.includes(args.locale)) throw new HttpError(400, 'Locale inválido.');
+  if (!VALID_TIMEZONES.includes(args.timezone)) throw new HttpError(400, 'Timezone inválido.');
   return context.entities.User.update({
     where: { id: context.user.id },
     data: { locale: args.locale, timezone: args.timezone },
