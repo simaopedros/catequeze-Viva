@@ -19,7 +19,7 @@ type CustomLoginFormProps = {
 
 function postLoginPath(inviteToken?: string | null): string {
   if (inviteToken) return `/convite/${encodeURIComponent(inviteToken)}`;
-  return isFamilyPortalHost() ? '/app' : '/app';
+  return '/app';
 }
 
 export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = {}) {
@@ -27,7 +27,6 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
   const [step, setStep] = useState<Step>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -201,16 +200,6 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id="remember"
-            checked={rememberMe}
-            onCheckedChange={(v) => setRememberMe(!!v)}
-            disabled={isLoading}
-          />
-          <Label htmlFor="remember" className="text-sm cursor-pointer">Lembrar-me</Label>
         </div>
 
         <Button type="submit" className="w-full" disabled={isLoading}>

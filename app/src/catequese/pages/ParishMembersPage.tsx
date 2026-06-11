@@ -203,9 +203,11 @@ export default function ParishMembersPage() {
                             }}
                             className="h-8 rounded-md border border-input bg-background px-2 text-xs"
                           >
-                            {Object.entries(roleLabels).map(([key, label]) => (
-                              <option key={key} value={key}>{label}</option>
-                            ))}
+                            {Object.entries(roleLabels)
+                              .filter(([key]) => assignable.includes(key) || key === m.role)
+                              .map(([key, label]) => (
+                                <option key={key} value={key}>{label}</option>
+                              ))}
                           </select>
                         ) : (
                           <Badge variant="outline" className="text-xs">{roleLabels[m.role as keyof typeof roleLabels] || m.role}</Badge>
