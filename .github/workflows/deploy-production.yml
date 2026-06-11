@@ -31,12 +31,24 @@ jobs:
         if: ${{ vars.ENABLE_PROD_DEPLOY != 'true' }}
         run: echo "Production SSH deploy skipped — set repository variable ENABLE_PROD_DEPLOY=true when ready."
 
-      - name: Promote homolog image to prod
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Wasp CLI
+        run: npm install -g @wasp.sh/wasp-cli@0.22.0 @wasp.sh/wasp-cli-linux-x64-glibc@0.22.0
+
+      - name: Build and push production Docker image
+        working-directory: app
         run: |
           IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
-          docker pull "${IMAGE}:homolog-latest"
-          docker tag "${IMAGE}:homolog-latest" "${IMAGE}:prod-${{ github.sha }}"
-          docker tag "${IMAGE}:homolog-latest" "${IMAGE}:prod-latest"
+          docker build -f deploy/Dockerfile.server \
+            --build-arg DATABASE_URL="${{ secrets.PROD_DATABASE_URL }}" \
+            --build-arg REACT_APP_API_URL=https://api.catechis.app \
+            --build-arg REACT_APP_FAMILY_PORTAL_HOST=familia.catechis.app \
+            --build-arg REACT_APP_STAFF_PORTAL_HOST=catechis.app \
+            -t "${IMAGE}:prod-${{ github.sha }}" -t "${IMAGE}:prod-latest" .
           docker push "${IMAGE}:prod-${{ github.sha }}"
           docker push "${IMAGE}:prod-latest"
 
