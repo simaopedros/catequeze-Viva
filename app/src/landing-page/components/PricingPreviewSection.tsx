@@ -1,58 +1,46 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Star, PiggyBank } from 'lucide-react';
-import { PRICING_PREVIEW } from '../content/landingContent';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { setIntendedPlan } from '../../catequese/lib/intendedPlan';
 import type { BillingInterval } from '../../catequese/lib/intendedPlan';
 
-/** Formata centavos para string de preço (ex: 900 → "R$9") */
+const PLAN_FEATURES: Record<string, string[]> = {
+  catechist_free: ['1 turma', '15 catequizandos', 'Presenças digitais', 'Bíblia e Catecismo', '3 créditos de IA iniciais'],
+  catechist_ai: ['Turmas e catequizandos ilimitados', 'Gerador de encontros por IA', 'Planejamento anual automático', 'Assistente teológico', '20 créditos de IA/mês'],
+  parish_complete: ['Catequistas ilimitados', 'Painel do coordenador', 'Documentos e consentimentos LGPD', 'Comunicação integrada', '50 créditos de IA/mês'],
+};
+
 function fmt(cents: number): string {
   return `R$${(cents / 100).toFixed(0)}`;
 }
 
 export function PricingPreviewSection() {
+  const { t } = useTranslation('landing');
   const { ref: headerRef, className: headerClass } = useScrollReveal();
   const [billingInterval, setBillingInterval] = useState<BillingInterval>('monthly');
 
   return (
     <section className="max-w-5xl mx-auto px-4 py-20">
       <div ref={headerRef} className={`text-center mb-8 space-y-3 ${headerClass}`}>
-        <h2 className="text-3xl sm:text-4xl font-bold">Planos para cada etapa</h2>
-        <p className="text-lg text-muted-foreground">
-          Comece gratuitamente. Evolua quando quiser.
-        </p>
+        <h2 className="text-3xl sm:text-4xl font-bold">{t('pricing_title')}</h2>
+        <p className="text-lg text-muted-foreground">{t('pricing_subtitle')}</p>
         <div className="inline-flex items-center rounded-lg border bg-muted p-0.5 mt-3">
-          <button
-            type="button"
-            onClick={() => setBillingInterval('monthly')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
-              billingInterval === 'monthly'
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
+          <button type="button" onClick={() => setBillingInterval('monthly')} className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${billingInterval === 'monthly' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>
             Mensal
           </button>
-          <button
-            type="button"
-            onClick={() => setBillingInterval('annual')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-1.5 ${
-              billingInterval === 'annual'
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
+          <button type="button" onClick={() => setBillingInterval('annual')} className={`px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-1.5 ${billingInterval === 'annual' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>
             Anual
-            <span className="text-[11px] text-success font-bold">17% off</span>
+            <span className="text-[11px] text-success font-bold">17% de desconto</span>
           </button>
         </div>
       </div>
 
       <div className="grid gap-6 grid-cols-1 md:grid-cols-3">
-        {PRICING_PREVIEW.map((plan, index) => (
-          <PricingCard key={plan.name} plan={plan} delay={index * 60} billingInterval={billingInterval} />
-        ))}
+        <PricingCard planKey="free" plan={t('plans.free', { returnObjects: true }) as any} features={PLAN_FEATURES.catechist_free} delay={0} billingInterval={billingInterval} priceCents={0} />
+        <PricingCard planKey="ai" plan={t('plans.ai', { returnObjects: true }) as any} features={PLAN_FEATURES.catechist_ai} delay={60} billingInterval={billingInterval} priceCents={900} priceCentsAnnual={9000} highlight />
+        <PricingCard planKey="parish" plan={t('plans.parish', { returnObjects: true }) as any} features={PLAN_FEATURES.parish_complete} delay={120} billingInterval={billingInterval} priceCents={2900} priceCentsAnnual={29000} />
       </div>
 
       <p className="text-center text-sm text-muted-foreground mt-8">

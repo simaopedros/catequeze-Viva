@@ -1,13 +1,16 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { Cross, Menu, X } from 'lucide-react';
+import { Cross, Menu, X, Globe } from 'lucide-react';
 import { Button } from '../client/components/ui/button';
+import { useLocale, SupportedLocale } from '../i18n/useLocale';
 
 export function PublicNavbar() {
   const { t: tCommon } = useTranslation('common');
   const { t } = useTranslation('publicNav');
+  const { currentLocale, setLocale, supportedLocales, getLocaleLabel } = useLocale();
   const [open, setOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -25,6 +28,30 @@ export function PublicNavbar() {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
+          <div className="relative">
+            <button
+              onClick={() => setLangOpen(!langOpen)}
+              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md"
+              aria-label={tCommon('change_language') || 'Change language'}
+            >
+              <Globe className="h-3.5 w-3.5" />
+              <span className="hidden lg:inline">{getLocaleLabel(currentLocale as SupportedLocale)}</span>
+            </button>
+            {langOpen && (
+              <div className="absolute right-0 top-full mt-1 rounded-lg border bg-card shadow-lg py-1 z-50 min-w-[130px]">
+                {supportedLocales.map((locale) => (
+                  <button
+                    key={locale}
+                    onClick={() => { setLocale(locale); setLangOpen(false); }}
+                    className={`block w-full text-left px-3 py-1.5 text-xs hover:bg-muted transition-colors ${currentLocale === locale ? 'font-semibold text-primary' : 'text-muted-foreground'}`}
+                  >
+                    {getLocaleLabel(locale)}
+                    {currentLocale === locale && <span className="ml-2 text-primary">✓</span>}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <Button variant="outline" size="sm" asChild>
             <Link to="/login">{t('login')}</Link>
           </Button>
