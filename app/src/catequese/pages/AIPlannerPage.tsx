@@ -98,6 +98,10 @@ export default function AIPlannerPage() {
   const [creditsLeft, setCreditsLeft] = useState<number | null>(null);
 
   useEffect(() => {
+    getAiCreditsStatus().then(s => setCreditsLeft(s.creditsLeft)).catch(() => {});
+  }, []);
+
+  useEffect(() => {
     if (!generating) return;
     const interval = setInterval(() => {
       setLoadingPhrase(p => (p + 1) % loadingPhrases.length);
@@ -215,6 +219,16 @@ export default function AIPlannerPage() {
               </>
             ) : (
               error
+            )}
+          </div>
+        )}
+
+        {creditsLeft !== null && !result && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Sparkles className="h-4 w-4" />
+            {t('planner.credits_remaining', { count: creditsLeft })}
+            {creditsLeft === 0 && (
+              <Link to="/app/billing" className="text-primary underline text-xs">{t('planner.upgrade')}</Link>
             )}
           </div>
         )}

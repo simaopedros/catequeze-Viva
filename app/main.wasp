@@ -740,6 +740,11 @@ action updateMeeting {
   entities: [Meeting, CatechesisClass, Membership, ContentItem]
 }
 
+action deleteMeeting {
+  fn: import { deleteMeeting } from "@src/server/operations/meetingOperations",
+  entities: [Meeting, AttendanceRecord, CatechesisClass, Membership, Parish]
+}
+
 query getMeetingAttendance {
   fn: import { getMeetingAttendance } from "@src/server/operations/meetingOperations",
   entities: [AttendanceRecord, CatechumenProfile, Meeting, CatechesisClass, Membership]
@@ -1106,10 +1111,11 @@ action submitActivity {
   entities: [ActivitySubmission, Activity, ContentItem, CatechumenProfile, Membership, Parish, ClassEnrollment, ClassCatechist, CatechesisClass]
 }
 
-query getGuardianDashboard {
-  fn: import { getGuardianDashboard } from "@src/server/operations/guardianOperations",
-  entities: [GuardianProfile, CatechumenProfile, AttendanceRecord, Meeting, Document]
-}
+// ⚠️ Deprecated — guardian dashboard uses getDashboardStats instead. Remove after 2026-12.
+// query getGuardianDashboard {
+//   fn: import { getGuardianDashboard } from "@src/server/operations/guardianOperations",
+//   entities: [GuardianProfile, CatechumenProfile, AttendanceRecord, Meeting, Document]
+// }
 //#endregion
 
 

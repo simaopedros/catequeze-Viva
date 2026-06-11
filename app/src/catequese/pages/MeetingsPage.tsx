@@ -5,12 +5,13 @@ import { Button } from '../../client/components/ui/button';
 import { Input } from '../../client/components/ui/input';
 import { Label } from '../../client/components/ui/label';
 import { Badge } from '../../client/components/ui/badge';
-import { Plus, Calendar, BookOpen, Sparkles, MessageCircle } from 'lucide-react';
+import { Plus, Calendar, BookOpen, Sparkles, MessageCircle, Trash2 } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { PageHeader } from '../../client/components/PageHeader';
 import { SkeletonPage } from '../../client/components/Skeletons';
 import { EmptyState } from '../../client/components/EmptyState';
-import { useQuery, listMeetings, createMeeting, updateMeeting, listContentItems } from 'wasp/client/operations';
+import { ConfirmDialog } from '../../client/components/ConfirmDialog';
+import { useQuery, listMeetings, createMeeting, updateMeeting, deleteMeeting, listContentItems } from 'wasp/client/operations';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { toast } from '../../client/hooks/use-toast';
 import { useLocale } from '../../i18n/useLocale';
@@ -25,9 +26,10 @@ export default function MeetingsPage() {
   const navigate = useNavigate();
   const { userRole } = useUserContext();
   const canManageMeetings = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'PERSONAL_OWNER'].includes(userRole);
-  const { data: meetings = [], isLoading: loading } = useQuery(listMeetings, { classId: classId! });
+  const { data: meetings = [], isLoading: loading, refetch: refetchMeetings } = useQuery(listMeetings, { classId: classId! });
   const { data: contentItems = [] } = useQuery(listContentItems);
   const [showForm, setShowForm] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [selectedContentId, setSelectedContentId] = useState('');
@@ -44,9 +46,22 @@ export default function MeetingsPage() {
       setTitle('');
       setSelectedContentId('');
       setShowForm(false);
+      refetchMeetings();
     } catch (e: any) {
       toast({ title: t('create_error', { message: e.message || t('no_permission') }) });
     }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      await deleteMeeting({ id: deleteTarget });
+      toast({ title: t('delete_success') || 'Encontro removido.' });
+      refetchMeetings();
+    } catch (e: any) {
+      toast({ title: t('delete_error', { message: e.message || tc('try_again') }) || 'Erro ao remover encontro.', variant: 'destructive' });
+    }
+    setDeleteTarget(null);
   };
 
   const handleLinkContent = async (meetingId: string, contentId: string | null) => {
@@ -163,11 +178,25 @@ export default function MeetingsPage() {
                     <MessageCircle className="mr-1 h-3 w-3" />
                     {t('generate_whatsapp')}
                   </Button>
+                  {canManageMeetings && (
+                    <Button size="sm" variant="ghost" className="text-xs h-7 text-destructive hover:text-destructive"
+                      onClick={() => setDeleteTarget(m.id)}>
+                      <Trash2 className="mr-1 h-3 w-3" />
+                      {tc('delete') || 'Remover'}
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}
           </div>
         )}
+        <ConfirmDialog
+          open={!!deleteTarget}
+          onOpenChange={(v) => { if (!v) setDeleteTarget(null); }}
+          onConfirm={handleDelete}
+          title={t('delete_confirm_title') || 'Remover encontro?'}
+          description={t('delete_confirm_desc') || 'Esta ação não pode ser desfeita. Os registos de presença serão removidos.'}
+        />
       </div>
     </AppShell>
   );

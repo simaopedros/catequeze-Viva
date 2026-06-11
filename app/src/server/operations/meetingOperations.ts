@@ -254,3 +254,20 @@ export const updateMeeting = async (args: any, context: any) => {
     },
   });
 };
+
+export const deleteMeeting = async (args: { id: string }, context: any) => {
+  if (!context.user) throw new HttpError(401);
+
+  const meeting = await context.entities.Meeting.findUnique({
+    where: { id: args.id },
+    select: { classId: true },
+  });
+  if (!meeting) throw new HttpError(404, 'Encontro não encontrado.');
+
+  await assertUserBelongsToClass(context, meeting.classId);
+
+  await context.entities.AttendanceRecord.deleteMany({ where: { meetingId: args.id } });
+  await context.entities.Meeting.delete({ where: { id: args.id } });
+
+  return { success: true };
+};
