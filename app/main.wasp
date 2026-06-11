@@ -806,7 +806,7 @@ action createContentItem {
 
 action updateContentStatus {
   fn: import { updateContentStatus } from "@src/server/operations/contentOperations",
-  entities: [ContentItem, Membership]
+  entities: [ContentItem, Membership, Parish]
 }
 action updateContentItem {
   fn: import { updateContentItem } from "@src/server/operations/contentOperations",
@@ -814,17 +814,17 @@ action updateContentItem {
 }
 action addBibleRef {
   fn: import { addBibleRef } from "@src/server/operations/contentOperations",
-  entities: [ContentBibleReference, ContentItem, BibleVerse]
+  entities: [ContentBibleReference, ContentItem, BibleVerse, Membership, Parish]
 }
 
 action removeBibleRef {
   fn: import { removeBibleRef } from "@src/server/operations/contentOperations",
-  entities: [ContentBibleReference]
+  entities: [ContentBibleReference, ContentItem, Membership, Parish]
 }
 
 action addCatechismRef {
   fn: import { addCatechismRef } from "@src/server/operations/contentOperations",
-  entities: [ContentCatechismReference, ContentItem, CatechismEntry]
+  entities: [ContentCatechismReference, ContentItem, CatechismEntry, Membership, Parish]
 }
 
 
@@ -857,7 +857,7 @@ action removeDirectoryRef {
 
 action removeCatechismRef {
   fn: import { removeCatechismRef } from "@src/server/operations/contentOperations",
-  entities: [ContentCatechismReference]
+  entities: [ContentCatechismReference, ContentItem, Membership, Parish]
 }
 
 //#endregion

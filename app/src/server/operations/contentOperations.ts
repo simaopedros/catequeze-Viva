@@ -43,6 +43,34 @@ async function getParishIds(context: any): Promise<string[]> {
   return ids;
 }
 
+/** Verifica que o user tem acesso ao conteúdo (parish-scope ou é o criador) */
+async function assertCanAccessContent(context: any, item: { id?: string; parishId?: string | null; createdById?: string | null }) {
+  if (context.user?.isAdmin) return;
+  if (item.createdById === context.user.id) return;
+
+  if (item.parishId) {
+    const parishIds = await getParishIds(context);
+    if (!parishIds.includes(item.parishId)) {
+      throw new HttpError(403, 'Você não tem acesso a este conteúdo.');
+    }
+  }
+}
+
+async function assertCanModifyContent(context: any, item: { parishId?: string | null; createdById?: string | null }) {
+  if (context.user?.isAdmin) return;
+  if (item.createdById === context.user.id) return;
+
+  const { role } = await getUserRoleAndParish(context);
+  if (!canCreateContent(role)) throw new HttpError(403, 'Sem permissão.');
+
+  if (item.parishId) {
+    const parishIds = await getParishIds(context);
+    if (!parishIds.includes(item.parishId)) {
+      throw new HttpError(403, 'Você não tem acesso a este conteúdo.');
+    }
+  }
+}
+
 export const listContentItems = async (_args: void, context: any) => {
   if (!context.user) throw new HttpError(401);
 
@@ -96,13 +124,7 @@ export const getContentItem = async (args: { id: string }, context: any) => {
   });
   if (!item) throw new HttpError(404, 'Conteúdo não encontrado.');
 
-  // Check parish access
-  if (!context.user.isAdmin && item.parishId) {
-    const parishIds = await getParishIds(context);
-    if (!parishIds.includes(item.parishId)) {
-      throw new HttpError(403, 'Você não tem acesso a este conteúdo.');
-    }
-  }
+  await assertCanAccessContent(context, item);
 
   return item;
 };
@@ -127,15 +149,16 @@ export const createContentItem = async (args: any, context: any) => {
 
 export const updateContentStatus = async (args: { id: string; status: string }, context: any) => {
   if (!context.user) throw new HttpError(401);
-  const role = await (async () => {
-    if (context.user.isAdmin) return 'SUPER_ADMIN';
-    const m = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, status: MembershipStatus.ACTIVE },
-      select: { role: true },
-    });
-    return m?.role || '';
-  })();
 
+  const item = await context.entities.ContentItem.findUnique({
+    where: { id: args.id },
+    select: { parishId: true, createdById: true },
+  });
+  if (!item) throw new HttpError(404, 'Conteúdo não encontrado.');
+
+  await assertCanModifyContent(context, item);
+
+  const { role } = await getUserRoleAndParish(context);
   if (['APPROVED', 'PUBLISHED'].includes(args.status) && !canReviewContent(role)) {
     throw new HttpError(403, 'Apenas revisores e coordenadores podem aprovar ou publicar conteúdo.');
   }
@@ -165,21 +188,7 @@ export const updateContentItem = async (args: {
   const item = await context.entities.ContentItem.findUnique({ where: { id: args.id } });
   if (!item) throw new HttpError(404, 'Conteúdo não encontrado.');
 
-  // Validate ownership/tenant/role
-  if (!context.user.isAdmin) {
-    const { role } = await getUserRoleAndParish(context);
-    // Only the creator, coordinators, or content reviewers can edit
-    if (item.createdById !== context.user.id && !canCreateContent(role)) {
-      throw new HttpError(403, 'Voce nao tem permissao para editar este conteudo.');
-    }
-    // Validate tenant access
-    if (item.parishId) {
-      const parishIds = await getParishIds(context);
-      if (!parishIds.includes(item.parishId)) {
-        throw new HttpError(403, 'Voce nao tem acesso a este conteudo.');
-      }
-    }
-  }
+  await assertCanModifyContent(context, item);
 
   return context.entities.ContentItem.update({
     where: { id: args.id },
@@ -204,15 +213,9 @@ export const updateContentItem = async (args: {
 
 export const addBibleRef = async (args: { contentId: string; verseId: string }, context: any) => {
   if (!context.user) throw new HttpError(401);
-  // Validate tenant access to the content
   const item = await context.entities.ContentItem.findUnique({ where: { id: args.contentId }, select: { parishId: true, createdById: true } });
-  if (!item) throw new HttpError(404, 'Conteudo nao encontrado.');
-  if (!context.user.isAdmin) {
-    const { role } = await getUserRoleAndParish(context);
-    if (item.createdById !== context.user.id && !canCreateContent(role)) {
-      throw new HttpError(403, 'Sem permissao.');
-    }
-  }
+  if (!item) throw new HttpError(404, 'Conteúdo não encontrado.');
+  await assertCanModifyContent(context, item);
 
   const existing = await context.entities.ContentBibleReference.findFirst({
     where: { contentId: args.contentId, verseId: args.verseId },
@@ -225,14 +228,18 @@ export const addBibleRef = async (args: { contentId: string; verseId: string }, 
 
 export const removeBibleRef = async (args: { id: string }, context: any) => {
   if (!context.user) throw new HttpError(401);
-  const ref = await context.entities.ContentBibleReference.findUnique({ where: { id: args.id }, select: { contentId: true } });
-  if (ref) {
-    const item = await context.entities.ContentItem.findUnique({ where: { id: ref.contentId }, select: { createdById: true } });
-    if (!context.user.isAdmin && item && item.createdById !== context.user.id) {
-      const { role } = await getUserRoleAndParish(context);
-      if (!canCreateContent(role)) throw new HttpError(403, 'Sem permissao.');
-    }
-  }
+  const ref = await context.entities.ContentBibleReference.findUnique({
+    where: { id: args.id },
+    select: { contentId: true },
+  });
+  if (!ref) return { success: true };
+
+  const item = await context.entities.ContentItem.findUnique({
+    where: { id: ref.contentId },
+    select: { parishId: true, createdById: true },
+  });
+  if (item) await assertCanModifyContent(context, item);
+
   await context.entities.ContentBibleReference.delete({ where: { id: args.id } });
   return { success: true };
 };
@@ -240,13 +247,8 @@ export const removeBibleRef = async (args: { id: string }, context: any) => {
 export const addCatechismRef = async (args: { contentId: string; entryId: string }, context: any) => {
   if (!context.user) throw new HttpError(401);
   const item = await context.entities.ContentItem.findUnique({ where: { id: args.contentId }, select: { parishId: true, createdById: true } });
-  if (!item) throw new HttpError(404, 'Conteudo nao encontrado.');
-  if (!context.user.isAdmin) {
-    const { role } = await getUserRoleAndParish(context);
-    if (item.createdById !== context.user.id && !canCreateContent(role)) {
-      throw new HttpError(403, 'Sem permissao.');
-    }
-  }
+  if (!item) throw new HttpError(404, 'Conteúdo não encontrado.');
+  await assertCanModifyContent(context, item);
 
   const existing = await context.entities.ContentCatechismReference.findFirst({
     where: { contentId: args.contentId, entryId: args.entryId },
@@ -259,14 +261,18 @@ export const addCatechismRef = async (args: { contentId: string; entryId: string
 
 export const removeCatechismRef = async (args: { id: string }, context: any) => {
   if (!context.user) throw new HttpError(401);
-  const ref = await context.entities.ContentCatechismReference.findUnique({ where: { id: args.id }, select: { contentId: true } });
-  if (ref) {
-    const item = await context.entities.ContentItem.findUnique({ where: { id: ref.contentId }, select: { createdById: true } });
-    if (!context.user.isAdmin && item && item.createdById !== context.user.id) {
-      const { role } = await getUserRoleAndParish(context);
-      if (!canCreateContent(role)) throw new HttpError(403, 'Sem permissao.');
-    }
-  }
+  const ref = await context.entities.ContentCatechismReference.findUnique({
+    where: { id: args.id },
+    select: { contentId: true },
+  });
+  if (!ref) return { success: true };
+
+  const item = await context.entities.ContentItem.findUnique({
+    where: { id: ref.contentId },
+    select: { parishId: true, createdById: true },
+  });
+  if (item) await assertCanModifyContent(context, item);
+
   await context.entities.ContentCatechismReference.delete({ where: { id: args.id } });
   return { success: true };
 };
