@@ -117,4 +117,4 @@ jobs:
             echo "⚠️ CF_ACCESS_CLIENT_ID/SECRET not set — smoke may fail if Cloudflare Access is enabled."
             echo "   See app/docs/CLOUDFLARE_ACCESS.md (Service Token + GitHub secrets)."
           fi
-          HOMOLOG_STAFF_URL=https://homolog.catechis.app HOMOLOG_FAMILY_URL=https://familia-homolog.catechis.app SKIP_WEBSERVER=true npx playwright test tests/homologSmoke.spec.ts --reporter=list
+          HOMOLOG_STAFF_URL=https://homolog.catechis.app HOMOLOG_FAMILY_URL=https://familia-homolog.catechis.app HOMOLOG_API_URL=https://api-homolog.catechis.app SKIP_WEBSERVER=true npx playwright test tests/homologSmoke.spec.ts tests/homologPastoral.spec.ts --reporter=list

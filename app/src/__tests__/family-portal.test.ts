@@ -216,6 +216,19 @@ describe('portal utilities', () => {
     const url = familyPortalUrl('convite/abc123');
     expect(url).toContain('/convite/abc123');
   });
+
+  it('familyPortalUrl uses familia-homolog host in homolog env', () => {
+    const prev = process.env.FAMILY_PORTAL_HOST;
+    process.env.FAMILY_PORTAL_HOST = 'familia-homolog.catechis.app';
+    try {
+      const url = familyPortalUrl('/convite/token-qa');
+      expect(url).toContain('familia-homolog.catechis.app');
+      expect(url).toContain('/convite/token-qa');
+    } finally {
+      if (prev === undefined) delete process.env.FAMILY_PORTAL_HOST;
+      else process.env.FAMILY_PORTAL_HOST = prev;
+    }
+  });
 });
 
 // ── Token operations ────────────────────────────────────────────────────────
