@@ -1,12 +1,12 @@
 ---
 name: Pendências Go-Live
-overview: "Checkpoint 11/06 — Homolog ~95% (checklist HOMOLOG.md completo, QA pastoral verde, E2E Playwright CI). Billing mensal Pro OK. Produção 0%, Ops ~25% (scripts prontos). Commit `86f21f7` em `main`."
+overview: "Checkpoint 11/06 — Produção no ar (v0.1.0, commit 060ee02). Neon, Bunny, VPS, DNS, Stripe live, Resend, Google OAuth, Sentry, OpenAI configurados. Backup diário 03:00 UTC. SSH hardened. Uptime monitoring ativo. Homolog ~95%. Ops ~90%."
 last_updated: 2026-06-11
 ---
 
 # Pendências Go-Live — Catequese Viva
 
-Estado real pós-QA pastoral (11/06/2026). Commit [`86f21f7`](https://github.com/simaopedros/catequese-viva/commit/86f21f7) no ar.
+Estado final pós-deploy produção (11/06/2026). Commit [`060ee02`](https://github.com/simaopedros/catequese-viva/commit/060ee02), tag `v0.1.0`.
 
 ```mermaid
 flowchart LR
@@ -81,7 +81,9 @@ O ambiente `homolog.catechis.app` / `familia-homolog.catechis.app` / `api-homolo
 | 2FA | Código | `TwoFactorGate` em staff + família ✓ |
 | E2E | Playwright CI | `homologSmoke.spec.ts` + `homologPastoral.spec.ts` ✓ |
 
-**Commits QA:** `4b910aa` … `c12ee42` (email worker, Resend from, members guard, XHR proxy, Google auth) → `86f21f7` (script pastoral + E2E + checklist).
+**Commits QA:** `4b910aa` … `c12ee42` (email worker, Resend from, members guard, XHR proxy, Google auth) → `86f21f7` (script pastoral + E2E + checklist) → `060ee02` (Sentry, env produção, billing anual, infra go-live).
+
+**Deploy produção:** tag `v0.1.0`, VPS `13.140.171.132`, Docker 3 containers (caddy + server + worker). Health: `status: ok, database: ok, storage: healthy, ai: ok`.
 
 ---
 
@@ -201,20 +203,21 @@ Scripts prontos em `deploy/scripts/`. Executar após primeiro deploy de produç�
 | Infra homolog | 100% | ✅ |
 | QA pastoral | ~95% | ✅ (só cron pendente) |
 | Billing homolog | 95% | ✅ (mensal ok; anual pendente) |
-| Código | ~90% | ✅ (commit `86f21f7`) |
-| Produção | 0% | 🔴 |
-| Ops | ~25% | 🟡 (backup + scripts prontos) |
+| Código | ~95% | ✅ (commit `060ee02`, tag `v0.1.0`) |
+| Produção | 100% | ✅ Deploy concluído |
+| Ops | ~90% | ✅ (backup + SSH + monitoring; restore pendente) |
 
 ---
 
 ## 6. Próximos passos (ordenados)
 
-1. **(Opcional)** Observar logs worker após 07:00 UTC — marcar [`HOMOLOG.md`](../HOMOLOG.md) 100%
-2. **(Opcional)** Adicionar `CF_ACCESS_*` no GitHub Actions + rotacionar token se exposto
-3. **(Opcional)** Criar Prices anuais no Stripe — [`STRIPE_ANNUAL_SETUP.md`](../STRIPE_ANNUAL_SETUP.md)
-4. **Gate** — declarar homolog elegível para produção
-5. **Fase 4** — provisionar produção (D1–D19) — seguir [`PROVISIONING.md`](../PROVISIONING.md)
-6. **Fase 5** — operação (O1–O6) — seguir [`OPS.md`](../OPS.md)
+1. ~~**(Opcional)** Observar logs worker após 07:00 UTC~~ — HOMOLOG.md
+2. ~~**(Opcional)** Adicionar `CF_ACCESS_*` no GitHub Actions~~
+3. ~~**(Opcional)** Criar Prices anuais no Stripe~~
+4. ~~**Gate** — declarar homolog elegível para produção~~ ✅
+5. ~~**Fase 4** — provisionar produção (D1–D19)~~ ✅ Deploy `v0.1.0` concluído
+6. ~~**Fase 5** — operação (O1–O4)~~ ✅ Backup + SSH + Monitoring
+7. ~~**(Trimestral)** O5 — teste restore + O6 — simulacro migração~~ ✅ Restore drill 11/06: 0 erros, 68 tabelas, PostgreSQL 18
 
 ---
 
