@@ -5,13 +5,15 @@
 import { HttpError } from 'wasp/server';
 import { requirePlatformAdmin } from '../auth/helpers';
 import { formatServerDate, resolveUserLocale } from '../i18n/serverLocale';
+import { PLANS } from '../../shared/pricing';
 
 const PLAN_PRICES: Record<string, number> = {
   CATECHIST_FREE: 0,
-  CATECHIST_PRO: 5.00,
-  CATECHIST_AI: 9.00,
-  PARISH: 29.00,
-  DIOCESE: 99.00,
+  CATECHIST_PRO: PLANS.catechist_pro.prices.monthlyCents / 100,
+  CATECHIST_AI: PLANS.catechist_ai.prices.monthlyCents / 100,
+  PARISH_ESSENTIAL: PLANS.parish_essential.prices.monthlyCents / 100,
+  PARISH: PLANS.parish_complete.prices.monthlyCents / 100,
+  DIOCESE: PLANS.diocese.prices.monthlyCents / 100,
 };
 
 function planPrice(plan: string | null | undefined): number {

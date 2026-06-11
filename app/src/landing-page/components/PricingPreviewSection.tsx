@@ -5,6 +5,7 @@ import { CheckCircle2, Star, PiggyBank } from 'lucide-react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { setIntendedPlan } from '../../catequese/lib/intendedPlan';
 import type { BillingInterval } from '../../catequese/lib/intendedPlan';
+import { PLANS } from '../../shared/pricing';
 
 const PLAN_FEATURES: Record<string, string[]> = {
   catechist_free: ['1 turma', '15 catequizandos', 'Presenças digitais', 'Bíblia e Catecismo', '3 créditos de IA iniciais'],
@@ -13,7 +14,7 @@ const PLAN_FEATURES: Record<string, string[]> = {
 };
 
 function fmt(cents: number): string {
-  return `R$${(cents / 100).toFixed(0)}`;
+  return `$${(cents / 100).toFixed(0)}`;
 }
 
 export function PricingPreviewSection({ ns = 'landing' }: { ns?: string }) {
@@ -22,9 +23,9 @@ export function PricingPreviewSection({ ns = 'landing' }: { ns?: string }) {
   const [billingInterval, setBillingInterval] = useState<BillingInterval>('monthly');
 
   const plans = [
-    { planKey: 'free', priceCents: 0, highlight: false },
-    { planKey: 'ai', priceCents: 900, priceCentsAnnual: 9000, highlight: true },
-    { planKey: 'parish', priceCents: 2900, priceCentsAnnual: 29000, highlight: false },
+    { planKey: 'free', priceCents: PLANS.catechist_free.prices.monthlyCents, highlight: false },
+    { planKey: 'ai', priceCents: PLANS.catechist_ai.prices.monthlyCents, priceCentsAnnual: PLANS.catechist_ai.prices.annualCents, highlight: true },
+    { planKey: 'parish', priceCents: PLANS.parish_complete.prices.monthlyCents, priceCentsAnnual: PLANS.parish_complete.prices.annualCents, highlight: false },
   ];
 
   return (

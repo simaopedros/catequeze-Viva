@@ -499,6 +499,6 @@ export const AI_CREDIT_PACK_IDS = ['ai_credits_20', 'ai_credits_50'] as const;
 export type AiCreditPackId = (typeof AI_CREDIT_PACK_IDS)[number];
 
 export const AI_CREDIT_PACKS: Record<AiCreditPackId, { credits: number; priceCents: number }> = {
-  ai_credits_20: { credits: 20, priceCents: 700 },
-  ai_credits_50: { credits: 50, priceCents: 1400 },
+  ai_credits_20: { credits: 20, priceCents: 500 },
+  ai_credits_50: { credits: 50, priceCents: 900 },
 };

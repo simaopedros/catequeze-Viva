@@ -47,7 +47,7 @@ export default function PricingPage() {
         period = tp('pricing.free_forever');
       } else {
         price = tb(`plans.${id}.price`);
-        period = tp('pricing.per_month');
+        period = undefined;
         const annualKey = `plans.${id}.annual_price`;
         if (def.prices.annualCents != null && tb(annualKey) !== annualKey) {
           annualPrice = tb(annualKey);
@@ -108,7 +108,7 @@ export default function PricingPage() {
       <div className="mt-4 mb-1">
         {showAnnual ? (
           <>
-            <span className="text-4xl font-bold">R${(plan.priceCentsAnnual! / 100).toFixed(0)}</span>
+            <span className="text-4xl font-bold">${(plan.priceCentsAnnual! / 100).toFixed(0)}</span>
             <span className="text-base font-normal text-muted-foreground">/ano</span>
           </>
         ) : (
@@ -122,7 +122,7 @@ export default function PricingPage() {
       </div>
       {showAnnual ? (
         <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-          <span>R${(plan.priceCents / 100).toFixed(0)}/mês</span>
+          <span>${(plan.priceCents / 100).toFixed(0)}/mês</span>
         </div>
       ) : plan.annualPrice ? (
         <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">

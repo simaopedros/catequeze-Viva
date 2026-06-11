@@ -14,6 +14,7 @@ import {
   UserCheck,
   Users,
 } from 'lucide-react';
+import { PLANS } from '../../shared/pricing';
 
 export type ShowcaseId =
   | 'dashboard'
@@ -221,7 +222,7 @@ export const PRICING_PREVIEW: PricingPlan[] = [
     planId: 'catechist_ai',
     level: 'personal',
     name: 'Catequista IA',
-    price: 'R$9',
+    price: '$9',
     period: '/mês',
     desc: 'Pessoal — IA para criar encontros, atividades e mensagens em segundos',
     features: [
@@ -232,14 +233,14 @@ export const PRICING_PREVIEW: PricingPlan[] = [
       '20 créditos de IA/mês',
     ],
     highlight: true,
-    priceCents: 900,
-    priceCentsAnnual: 9000,
+    priceCents: PLANS.catechist_ai.prices.monthlyCents,
+    priceCentsAnnual: PLANS.catechist_ai.prices.annualCents,
   },
   {
     planId: 'parish_complete',
     level: 'institutional',
     name: 'Paróquia Completa',
-    price: 'R$29',
+    price: '$29',
     period: '/mês',
     desc: 'Institucional — ferramentas para a paróquia inteira',
     features: [
@@ -249,8 +250,8 @@ export const PRICING_PREVIEW: PricingPlan[] = [
       'Comunicação integrada',
       '50 créditos de IA/mês',
     ],
-    priceCents: 2900,
-    priceCentsAnnual: 29000,
+    priceCents: PLANS.parish_complete.prices.monthlyCents,
+    priceCentsAnnual: PLANS.parish_complete.prices.annualCents,
   },
 ];
 

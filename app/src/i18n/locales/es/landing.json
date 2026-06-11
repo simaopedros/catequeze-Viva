@@ -167,12 +167,12 @@
     "ai": {
       "name": "Catequista IA",
       "desc": "IA ilimitada para crear encuentros, actividades, mensajes y planificación anual automática.",
-      "price": "R$9"
+      "price": "$9"
     },
     "parish": {
       "name": "Parroquia Completa",
       "desc": "Para toda la parroquia — catequistas ilimitados, panel del coordinador, documentos, comunicación integrada.",
-      "price": "R$29"
+      "price": "$29"
     }
   },
   "price_free": "Gratis",

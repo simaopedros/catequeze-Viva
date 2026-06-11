@@ -14,7 +14,7 @@ import { ConfirmDialog } from '../../client/components/ConfirmDialog';
 import { toast } from '../../client/hooks/use-toast';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { useActiveWorkspace } from '../../client/hooks/useActiveWorkspace';
-import type { PlanId } from '../../shared/pricing';
+import { PLANS, type PlanId } from '../../shared/pricing';
 
 interface PlanCard {
   planId: PaymentPlanId;
@@ -36,6 +36,8 @@ const PLAN_STRUCTURE: Omit<PlanCard, 'name' | 'price' | 'annualPrice' | 'feature
   {
     planId: PaymentPlanId.CatechistFree,
     planKey: 'catechist_free',
+    priceCents: PLANS.catechist_free.prices.monthlyCents,
+    priceCentsAnnual: PLANS.catechist_free.prices.annualCents,
     maxClasses: 1,
     maxCatechumens: 15,
     color: 'border-border',
@@ -45,8 +47,8 @@ const PLAN_STRUCTURE: Omit<PlanCard, 'name' | 'price' | 'annualPrice' | 'feature
   {
     planId: PaymentPlanId.CatechistPro,
     planKey: 'catechist_pro',
-    priceCents: 500,
-    priceCentsAnnual: 5000,
+    priceCents: PLANS.catechist_pro.prices.monthlyCents,
+    priceCentsAnnual: PLANS.catechist_pro.prices.annualCents,
     maxClasses: 3,
     maxCatechumens: 150,
     color: 'border-border',
@@ -56,8 +58,8 @@ const PLAN_STRUCTURE: Omit<PlanCard, 'name' | 'price' | 'annualPrice' | 'feature
   {
     planId: PaymentPlanId.CatechistAi,
     planKey: 'catechist_ai',
-    priceCents: 900,
-    priceCentsAnnual: 9000,
+    priceCents: PLANS.catechist_ai.prices.monthlyCents,
+    priceCentsAnnual: PLANS.catechist_ai.prices.annualCents,
     maxClasses: null,
     maxCatechumens: null,
     color: 'border-primary',
@@ -67,8 +69,8 @@ const PLAN_STRUCTURE: Omit<PlanCard, 'name' | 'price' | 'annualPrice' | 'feature
   {
     planId: PaymentPlanId.ParishEssential,
     planKey: 'parish_essential',
-    priceCents: 1900,
-    priceCentsAnnual: 19000,
+    priceCents: PLANS.parish_essential.prices.monthlyCents,
+    priceCentsAnnual: PLANS.parish_essential.prices.annualCents,
     maxClasses: null,
     maxCatechumens: 200,
     color: 'border-border',
@@ -78,8 +80,8 @@ const PLAN_STRUCTURE: Omit<PlanCard, 'name' | 'price' | 'annualPrice' | 'feature
   {
     planId: PaymentPlanId.ParishComplete,
     planKey: 'parish_complete',
-    priceCents: 2900,
-    priceCentsAnnual: 29000,
+    priceCents: PLANS.parish_complete.prices.monthlyCents,
+    priceCentsAnnual: PLANS.parish_complete.prices.annualCents,
     maxClasses: null,
     maxCatechumens: null,
     color: 'border-primary',
@@ -89,8 +91,8 @@ const PLAN_STRUCTURE: Omit<PlanCard, 'name' | 'price' | 'annualPrice' | 'feature
   {
     planId: PaymentPlanId.Diocese,
     planKey: 'diocese',
-    priceCents: 9900,
-    priceCentsAnnual: 99000,
+    priceCents: PLANS.diocese.prices.monthlyCents,
+    priceCentsAnnual: PLANS.diocese.prices.annualCents,
     maxClasses: null,
     maxCatechumens: null,
     color: 'border-border',
@@ -111,7 +113,7 @@ function buildPlanCards(t: any): PlanCard[] {
 
 /** Formata centavos para string de preço (ex: 500 → "$5") */
 function formatPriceFromCents(cents: number): string {
-  return `R$${(cents / 100).toFixed(0)}`;
+  return `$${(cents / 100).toFixed(0)}`;
 }
 
 export default function BillingPage() {
