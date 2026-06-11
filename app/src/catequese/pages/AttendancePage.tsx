@@ -16,14 +16,16 @@ import { toast } from '../../client/hooks/use-toast';
 import { useLocale } from '../../i18n/useLocale';
 import { formatDate } from '../../i18n/format';
 
-const STATUS_KEYS = ['PRESENT', 'ABSENT', 'JUSTIFIED'] as const;
+const STATUS_KEYS = ['PRESENT', 'LATE', 'ABSENT', 'JUSTIFIED'] as const;
 const STATUS_COLORS: Record<string, string> = {
   PRESENT: 'bg-emerald-100 text-emerald-700 border-emerald-300 hover:bg-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800 dark:hover:bg-emerald-950',
+  LATE: 'bg-amber-100 text-amber-700 border-amber-300 hover:bg-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800 dark:hover:bg-amber-950',
   ABSENT: 'bg-red-100 text-red-700 border-red-300 hover:bg-red-200 dark:bg-red-950/40 dark:text-red-400 dark:border-red-800 dark:hover:bg-red-950',
   JUSTIFIED: 'bg-purple-100 text-purple-700 border-purple-300 hover:bg-purple-200 dark:bg-purple-950/40 dark:text-purple-400 dark:border-purple-800 dark:hover:bg-purple-950',
 };
 const STATUS_ICONS: Record<string, ReactNode> = {
   PRESENT: <Check className="h-3 w-3" />,
+  LATE: <Clock className="h-3 w-3" />,
   ABSENT: <X className="h-3 w-3" />,
   JUSTIFIED: <Clock className="h-3 w-3" />,
 };
@@ -46,6 +48,7 @@ export default function AttendancePage() {
 
   const statusLabel = (key: string) => {
     if (key === 'PRESENT') return t('present');
+    if (key === 'LATE') return t('matrix.late_label');
     if (key === 'ABSENT') return t('matrix.absent_label');
     return t('matrix.justified_label');
   };

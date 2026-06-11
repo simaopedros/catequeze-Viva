@@ -63,14 +63,33 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
     ? { parishId: args.parishId }
     : isAdmin ? {} : { parishId: { in: parishIds } };
 
+  // Catechists: scope attendance stats to their own classes, not whole parish
+  const isCatechistOnly = !isAdmin && !roles.some((r: string) =>
+    ['PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'DIOCESE_ADMIN', 'PERSONAL_OWNER'].includes(r));
+  let attendanceWhereClause = whereClause;
+  if (isCatechistOnly) {
+    const myClassLinks = await context.entities.ClassCatechist.findMany({
+      where: { userId: context.user.id },
+      select: { classId: true },
+    });
+    const myClassIds = myClassLinks.map((c: any) => c.classId);
+    if (myClassIds.length > 0) {
+      attendanceWhereClause = { id: { in: myClassIds } };
+    }
+  }
+
   // For GUARDIAN, scope catechumen-related stats to household
   const catechumenWhere = guardianHouseholdId
     ? { householdId: guardianHouseholdId }
     : whereClause;
 
-  const [activeClasses, totalEnrollments] = await Promise.all([
+  const [activeClasses, enrolledCatechumens] = await Promise.all([
     context.entities.CatechesisClass.count({ where: { ...whereClause, status: 'ACTIVE' } }),
-    context.entities.ClassEnrollment.count({ where: { status: 'ENROLLED', class: whereClause } }),
+    context.entities.ClassEnrollment.findMany({
+      where: { status: 'ENROLLED', class: whereClause, catechumenProfileId: { not: null } },
+      select: { catechumenProfileId: true },
+      distinct: ['catechumenProfileId'],
+    }),
   ]);
 
   const pendingSacraments = await context.entities.SacramentalMilestone.count({
@@ -84,7 +103,7 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
   let avgAttendance = 0;
   const attendanceWhere = guardianHouseholdId
     ? { meeting: { class: { enrollments: { some: { catechumenProfile: { householdId: guardianHouseholdId } } } } } }
-    : { meeting: { class: whereClause } };
+    : { meeting: { class: attendanceWhereClause } };
   const attendanceTotal = await context.entities.AttendanceRecord.count({
     where: { status: 'PRESENT', ...attendanceWhere },
   });
@@ -234,7 +253,7 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
   }
 
   return {
-    activeCatechumens: totalEnrollments,
+    activeCatechumens: enrolledCatechumens.length,
     activeClasses,
     avgAttendance,
     pendingSacraments,
