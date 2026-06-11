@@ -175,5 +175,32 @@
   "cta_subtitle": "Junte-se a centenas de catequistas e paróquias.",
   "cta_button": "Criar conta gratuita",
   "features_title": "Tudo que sua catequese precisa",
-  "features_subtitle": "Uma plataforma completa: da chamada de presença à jornada sacramental, da Bíblia ao portal da família."
+  "features_subtitle": "Uma plataforma completa: da chamada de presença à jornada sacramental, da Bíblia ao portal da família.",
+  "mock": {
+    "ai_title": "Gerador de Encontros IA",
+    "ai_subtitle": "Base teológica CNBB · Catecismo · Diretório",
+    "prompt": "Prompt",
+    "ai_example": "Encontro sobre Eucaristia para crianças de 9 anos, 60 minutos, abordagem lúdica",
+    "generate": "Gerar encontro",
+    "generated": "Roteiro gerado",
+    "credits": "3 créditos",
+    "ai_step1": "Acolhida — Dinâmica \"O pão que partilhamos\"",
+    "ai_step2": "Proclamação — Mt 14:13-21 (multiplicação dos pães)",
+    "ai_step3": "Reflexão — O que é a Eucaristia? (CIC §1324)",
+    "ai_step4": "Atividade — Quiz interativo em grupo",
+    "ai_step5": "Envio — Oração e tarefa para família"
+  },
+  "more_features": "E muito mais",
+  "more_features_sub": "Recursos transversais em toda a plataforma.",
+  "faq_subtitle": "Tudo que você precisa saber antes de começar.",
+  "testimonials_subtitle": "Catequistas, coordenadores e párocos que já transformaram o dia-a-dia da catequese.",
+  "price_free": "Grátis",
+  "price_popular": "Mais popular",
+  "price_monthly": "Mensal",
+  "price_annual": "Anual",
+  "price_cta_free": "Começar grátis",
+  "price_cta_start": "Começar agora",
+  "compare_plans": "Ver comparação completa de planos →",
+  "cta_badge": "Comece em 2 minutos",
+  "cta_see_plans": "Ver planos"
 }

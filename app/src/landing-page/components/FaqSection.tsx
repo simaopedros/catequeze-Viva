@@ -11,7 +11,7 @@ export function FaqSection() {
     <section className="max-w-3xl mx-auto px-4 py-20">
       <div ref={headerRef} className={`text-center mb-12 space-y-3 ${headerClass}`}>
         <h2 className="text-3xl sm:text-4xl font-bold">{t('faq_title')}</h2>
-        <p className="text-lg text-muted-foreground">Tudo que você precisa saber antes de começar.</p>
+        <p className="text-lg text-muted-foreground">{t('faq_subtitle') || 'Tudo que você precisa saber antes de começar.'}</p>
       </div>
 
       <div className="space-y-4">

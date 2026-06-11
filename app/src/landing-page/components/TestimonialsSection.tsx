@@ -13,7 +13,7 @@ export function TestimonialsSection() {
         <div ref={headerRef} className={`text-center mb-12 space-y-3 ${headerClass}`}>
           <h2 className="text-3xl sm:text-4xl font-bold">{t('testimonials_title')}</h2>
           <p className="text-lg text-muted-foreground">
-            Catequistas, coordenadores e párocos que já transformaram o dia-a-dia da catequese.
+            {t('testimonials_subtitle') || 'Catequistas, coordenadores e párocos que já transformaram o dia-a-dia da catequese.'}
           </p>
         </div>
 
@@ -44,7 +44,7 @@ function TestimonialCard({ testimonial, delay }: { testimonial: any; delay: numb
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">
           {testimonial.name
             .split(' ')
-            .map((n) => n[0])
+            .map((n: string) => n[0])
             .join('')}
         </div>
         <div>

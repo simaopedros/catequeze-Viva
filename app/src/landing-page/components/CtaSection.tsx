@@ -14,7 +14,7 @@ export function CtaSection() {
         <div className="relative space-y-5">
           <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/20 px-4 py-1.5 text-xs font-medium text-primary">
             <Cross className="h-3.5 w-3.5" />
-            Comece em 2 minutos
+            {t('cta_badge') || 'Comece em 2 minutos'}
           </div>
           <h2 className="text-3xl font-bold">{t('cta_title')}</h2>
           <p className="text-muted-foreground max-w-lg mx-auto">{t('cta_subtitle')}</p>
@@ -24,7 +24,7 @@ export function CtaSection() {
               <ChevronRight className="ml-2 h-4 w-4" />
             </Link>
             <Link to="/pricing" className="inline-flex h-12 items-center justify-center rounded-xl border-2 border-input bg-background px-8 text-sm font-semibold hover:bg-accent transition-all">
-              Ver planos
+              {t('cta_see_plans') || 'Ver planos'}
             </Link>
           </div>
         </div>

@@ -33,8 +33,8 @@ export function PricingPreviewSection() {
         <h2 className="text-3xl sm:text-4xl font-bold">{t('pricing_title')}</h2>
         <p className="text-lg text-muted-foreground">{t('pricing_subtitle')}</p>
         <div className="inline-flex items-center rounded-lg border bg-muted p-0.5 mt-3">
-          <button type="button" onClick={() => setBillingInterval('monthly')} className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${billingInterval === 'monthly' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>Mensal</button>
-          <button type="button" onClick={() => setBillingInterval('annual')} className={`px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-1.5 ${billingInterval === 'annual' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>Anual<span className="text-[11px] text-success font-bold">17% de desconto</span></button>
+          <button type="button" onClick={() => setBillingInterval('monthly')} className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${billingInterval === 'monthly' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>{t('price_monthly') || 'Mensal'}</button>
+          <button type="button" onClick={() => setBillingInterval('annual')} className={`px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-1.5 ${billingInterval === 'annual' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>{t('price_annual') || 'Anual'}<span className="text-[11px] text-success font-bold">17% de desconto</span></button>
         </div>
       </div>
 
@@ -65,6 +65,7 @@ function PricingCard({ planKey, plan, features, delay, billingInterval, priceCen
   planKey: string; plan: any; features: string[]; delay: number; billingInterval: BillingInterval;
   priceCents: number; priceCentsAnnual?: number; highlight?: boolean;
 }) {
+  const { t } = useTranslation('landing');
   const { ref, className } = useScrollReveal({ delay });
   const hasAnnual = !!priceCentsAnnual && priceCents > 0;
   const showAnnual = billingInterval === 'annual' && hasAnnual;
@@ -73,7 +74,7 @@ function PricingCard({ planKey, plan, features, delay, billingInterval, priceCen
     <div ref={ref} className={`rounded-2xl border p-6 space-y-4 relative flex flex-col ${highlight ? 'border-primary shadow-lg shadow-primary/10 scale-[1.02]' : 'bg-card'} ${className}`}>
       {highlight && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-          <span className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-0.5 text-xs font-semibold text-primary-foreground shadow-sm"><Star className="h-3 w-3 fill-current" />Mais popular</span>
+          <span className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-0.5 text-xs font-semibold text-primary-foreground shadow-sm"><Star className="h-3 w-3 fill-current" />{t('price_popular') || 'Mais popular'}</span>
         </div>
       )}
       <div>
@@ -82,7 +83,7 @@ function PricingCard({ planKey, plan, features, delay, billingInterval, priceCen
       </div>
       <div>
         {priceCents === 0 ? (
-          <span className="text-4xl font-bold">Grátis</span>
+          <span className="text-4xl font-bold">{t('price_free') || 'Grátis'}</span>
         ) : showAnnual ? (
           <><span className="text-4xl font-bold">{fmt(priceCentsAnnual!)}</span><span className="text-sm text-muted-foreground">/ano</span></>
         ) : (

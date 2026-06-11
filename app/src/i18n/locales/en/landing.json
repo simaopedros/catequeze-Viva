@@ -175,5 +175,32 @@
   "cta_subtitle": "Join hundreds of catechists and parishes.",
   "cta_button": "Create free account",
   "features_title": "Everything your catechesis needs",
-  "features_subtitle": "A complete platform: from attendance to sacramental journey, from the Bible to the family portal."
+  "features_subtitle": "A complete platform: from attendance to sacramental journey, from the Bible to the family portal.",
+  "mock": {
+    "ai_title": "AI Meeting Generator",
+    "ai_subtitle": "CNBB theological base · Catechism · Directory",
+    "prompt": "Prompt",
+    "ai_example": "Meeting on Eucharist for 9-year-old children, 60 minutes, playful approach",
+    "generate": "Generate meeting",
+    "generated": "Generated script",
+    "credits": "3 credits",
+    "ai_step1": "Welcome — \"The bread we share\" activity",
+    "ai_step2": "Proclamation — Mt 14:13-21 (multiplication of loaves)",
+    "ai_step3": "Reflection — What is the Eucharist? (CCC §1324)",
+    "ai_step4": "Activity — Interactive group quiz",
+    "ai_step5": "Sending — Prayer and family task"
+  },
+  "more_features": "And much more",
+  "more_features_sub": "Cross-cutting resources across the entire platform.",
+  "faq_subtitle": "Everything you need to know before getting started.",
+  "testimonials_subtitle": "Catechists, coordinators and pastors who have transformed their daily catechesis.",
+  "price_free": "Free",
+  "price_popular": "Most popular",
+  "price_monthly": "Monthly",
+  "price_annual": "Annual",
+  "price_cta_free": "Start free",
+  "price_cta_start": "Start now",
+  "compare_plans": "See full plan comparison →",
+  "cta_badge": "Start in 2 minutes",
+  "cta_see_plans": "See plans"
 }
