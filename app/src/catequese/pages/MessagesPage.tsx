@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router';
 import { MessageSquareText, ArrowLeft, Users, Info, BellOff, LogOut, Settings2 } from 'lucide-react';
@@ -75,11 +75,15 @@ export default function MessagesPage() {
     }
   }, [activeConversationId]);
 
+  // Keep latest loadConversation in a ref to avoid stale closures in the polling interval
+  const loadConversationRef = useRef(loadConversation);
+  loadConversationRef.current = loadConversation;
+
   // Polling for new messages in active conversation
   useEffect(() => {
     if (!activeConversationId) return;
     const interval = setInterval(() => {
-      loadConversation(activeConversationId);
+      loadConversationRef.current(activeConversationId);
     }, 5000);
     return () => clearInterval(interval);
   }, [activeConversationId]);

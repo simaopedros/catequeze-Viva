@@ -3,7 +3,7 @@ import { verifyPassword, hashPassword } from 'wasp/auth/password';
 import { createProviderId, findAuthIdentity, getProviderDataWithPassword, updateAuthIdentityProviderData } from 'wasp/auth/utils';
 import type { EmailProviderData } from 'wasp/auth/utils';
 
-import { requireAuth, writeAuditLog } from '../auth/helpers';
+import { requireAuth, writeAuditLog, getDioceseParishIds } from '../auth/helpers';
 import { z } from 'zod';
 import { validateOrThrow } from '../validation';
 
@@ -11,22 +11,38 @@ export const searchUsers = async (args: { term: string }, context: any) => {
   requireAuth(context.user);
 
   // Only coordinators and above can search users
+  const allowedRoles = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'];
   let scopedParishIds: string[] = [];
   if (!context.user.isAdmin) {
-    const membership = await context.entities.Membership.findFirst({
+    const memberships = await context.entities.Membership.findMany({
       where: { userId: context.user.id, status: 'ACTIVE' },
       select: { role: true, parishId: true },
     });
-    const allowedRoles = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'];
-    if (!membership || !allowedRoles.includes(membership.role)) {
+    const hasAllowedRole = memberships.some((m: any) => allowedRoles.includes(m.role));
+    if (!hasAllowedRole) {
       throw new HttpError(403, 'Apenas coordenadores podem pesquisar usuários.');
     }
-    // Scope to parish members
-    const memberships = await context.entities.Membership.findMany({
-      where: { parishId: membership.parishId, status: 'ACTIVE' },
+    // Include personal workspace
+    const personal = await context.entities.Parish.findFirst({
+      where: { ownerId: context.user.id, type: 'PERSONAL' },
+      select: { id: true },
+    });
+    const parishIds = memberships
+      .filter((m: any) => allowedRoles.includes(m.role))
+      .map((m: any) => m.parishId);
+    if (personal) parishIds.push(personal.id);
+    // DIOCESE_ADMIN: include all parishes in diocese
+    if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
+      const dioceseParishIds = await getDioceseParishIds(context);
+      parishIds.push(...dioceseParishIds);
+    }
+    const uniqueParishIds = [...new Set(parishIds)];
+    if (uniqueParishIds.length === 0) return [];
+    const parishMembers = await context.entities.Membership.findMany({
+      where: { parishId: { in: uniqueParishIds }, status: 'ACTIVE' },
       select: { userId: true },
     });
-    scopedParishIds = memberships.map((m: any) => m.userId);
+    scopedParishIds = parishMembers.map((m: any) => m.userId);
     if (scopedParishIds.length === 0) return [];
   }
 
