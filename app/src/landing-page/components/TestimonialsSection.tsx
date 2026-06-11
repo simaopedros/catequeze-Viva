@@ -27,13 +27,7 @@ export function TestimonialsSection() {
   );
 }
 
-function TestimonialCard({
-  testimonial,
-  delay,
-}: {
-  testimonial: (typeof TESTIMONIALS)[number];
-  delay: number;
-}) {
+function TestimonialCard({ testimonial, delay }: { testimonial: any; delay: number }) {
   const { ref, className } = useScrollReveal({ delay });
 
   return (
