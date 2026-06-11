@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { CheckCircle2 } from 'lucide-react';
 import { cn } from '../../client/utils';
 import type { FeatureShowcaseItem } from '../content/landingContent';
@@ -12,10 +13,18 @@ interface FeatureShowcaseProps {
 }
 
 export function FeatureShowcase({ showcase }: FeatureShowcaseProps) {
+  const { t } = useTranslation('landing');
   const { ref: revealRef, className: revealClass } = useScrollReveal();
   const imageRef = useParallax<HTMLDivElement>({ factor: 0.04 });
   const Icon = SHOWCASE_ICONS[showcase.id];
   const isReverse = showcase.direction === 'row-reverse';
+
+  // Feature texts from i18n, falling back to landingContent.ts values
+  const featureId = showcase.id === 'ai-planner' ? 'ai' : showcase.id;
+  const featureI18n = t(`features.${featureId}`, { returnObjects: true }) as any;
+  const title = featureI18n?.title || showcase.title;
+  const desc = featureI18n?.desc || showcase.desc;
+  const bullets = featureI18n ? [featureI18n.b1, featureI18n.b2, featureI18n.b3].filter(Boolean) : showcase.bullets;
 
   return (
     <div ref={revealRef} className={cn('py-10 md:py-14', revealClass)}>
@@ -29,10 +38,10 @@ export function FeatureShowcase({ showcase }: FeatureShowcaseProps) {
           <div className="inline-flex rounded-xl bg-primary/10 p-3">
             <Icon className="h-6 w-6 text-primary" />
           </div>
-          <h3 className="text-2xl sm:text-3xl font-bold">{showcase.title}</h3>
-          <p className="text-muted-foreground leading-relaxed">{showcase.desc}</p>
+          <h3 className="text-2xl sm:text-3xl font-bold">{title}</h3>
+          <p className="text-muted-foreground leading-relaxed">{desc}</p>
           <ul className="space-y-2.5">
-            {showcase.bullets.map((bullet) => (
+            {bullets.map((bullet: string) => (
               <li key={bullet} className="flex items-start gap-2.5 text-sm">
                 <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
                 <span>{bullet}</span>

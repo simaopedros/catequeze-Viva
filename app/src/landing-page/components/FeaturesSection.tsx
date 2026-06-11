@@ -11,9 +11,9 @@ export function FeaturesSection() {
     <section id="recursos" className="scroll-mt-20">
       <div className="max-w-6xl mx-auto px-4 pt-20 pb-6">
         <div ref={headerRef} className={`text-center space-y-3 ${headerClass}`}>
-          <h2 className="text-3xl sm:text-4xl font-bold">Tudo que sua catequese precisa</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold">{t('features_title') || 'Tudo que sua catequese precisa'}</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Uma plataforma completa: da chamada de presença à jornada sacramental, da Bíblia ao portal da família.
+            {t('features_subtitle') || 'Uma plataforma completa: da chamada de presença à jornada sacramental, da Bíblia ao portal da família.'}
           </p>
         </div>
       </div>
