@@ -23,6 +23,7 @@ export function ContentSelector({
   onSelect,
   placeholder = 'Selecionar conteúdo...',
 }: ContentSelectorProps) {
+  const { t } = useTranslation('common');
   const [search, setSearch] = useState('');
   const [open, setOpen] = useState(false);
 
