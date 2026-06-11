@@ -138,7 +138,7 @@ export const generateMeetingWithAi = async (
       closingPrayer: generated.closingPrayer || '',
       dynamic: generated.dynamic,
       mainContent: generated.mainContent,
-      activity: generated.familyTask ? null : generated.dynamic,
+      activity: generated.dynamic || null,
       familyTask: generated.familyTask,
       estimatedTime: generated.estimatedTime || args.input.duration,
       biblicalRef: biblicalReadingFull || biblicalReadingRef,

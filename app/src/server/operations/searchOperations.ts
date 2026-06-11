@@ -20,6 +20,13 @@ async function getParishIds(context: any): Promise<string[]> {
     }
   }
 
+  // Include personal workspace
+  const personal = await context.entities.Parish.findFirst({
+    where: { ownerId: context.user.id, type: 'PERSONAL' },
+    select: { id: true },
+  });
+  if (personal && !ids.includes(personal.id)) ids.push(personal.id);
+
   return ids;
 }
 

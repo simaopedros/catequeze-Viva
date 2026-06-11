@@ -414,6 +414,7 @@ model Membership {
   inviteTokenExpiresAt DateTime?
 
   @@index([userId, parishId])
+  @@index([userId, status])
   @@index([parishId])
   @@index([inviteToken])
 }
@@ -674,6 +675,7 @@ model Meeting {
   attendance AttendanceRecord[]
 
   @@index([classId])
+  @@index([date])
 }
 
 model AttendanceRecord {
@@ -696,6 +698,7 @@ model AttendanceRecord {
   @@unique([meetingId, catechumenProfileId])
   @@index([meetingId])
   @@index([catechumenProfileId])
+  @@index([meetingId, status])
 }
 
 // ─── Content ──────────────────────────────────────────────────────────────────
@@ -1333,6 +1336,10 @@ model AuditLog {
   user   User?   @relation(fields: [userId], references: [id])
 
   parishId String?
+
+  @@index([parishId])
+  @@index([userId])
+  @@index([createdAt])
 }
 
 model PricingEvent {

@@ -747,7 +747,7 @@ query getMeetingAttendance {
 
 action saveAttendance {
   fn: import { saveAttendance } from "@src/server/operations/meetingOperations",
-  entities: [AttendanceRecord, Membership, Meeting, CatechesisClass]
+  entities: [AttendanceRecord, Membership, Meeting, CatechesisClass, ClassEnrollment]
 }
 
 action justifyAbsence {

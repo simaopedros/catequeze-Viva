@@ -155,6 +155,13 @@ export const saveAttendance = async (args: any, context: any) => {
   if (!meeting) throw new HttpError(404, 'Encontro não encontrado.');
   await assertUserBelongsToClass(context, meeting.classId);
 
+  // Validate catechumen is enrolled in this class
+  const isEnrolled = await context.entities.ClassEnrollment.findFirst({
+    where: { classId: meeting.classId, catechumenProfileId: args.catechumenProfileId, status: 'ENROLLED' },
+    select: { id: true },
+  });
+  if (!isEnrolled) throw new HttpError(400, 'Catequizando não está inscrito nesta turma.');
+
   const existing = await context.entities.AttendanceRecord.findFirst({
     where: { meetingId: args.meetingId, catechumenProfileId: args.catechumenProfileId },
   });
