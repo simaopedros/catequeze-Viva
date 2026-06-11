@@ -1,0 +1,177 @@
+{
+  "hero": {
+    "badge": "Tools for the catechist's daily work",
+    "headline_line1": "Your catechesis",
+    "headline_line2": "lighter and organized",
+    "subheadline": "Take attendance on your phone, prepare meetings with AI, and keep families informed — all in one place.",
+    "cta_primary": "Start free",
+    "cta_secondary": "See features",
+    "trust_signals": "No credit card • Free plan for catechists • Start in 2 minutes"
+  },
+  "personas_title": "Made for the catechist",
+  "personas_subtitle": "Tools designed for the daily work of those who make catechesis happen — useful for the whole team.",
+  "personas": [
+    {
+      "title": "Catechist",
+      "desc": "Take attendance on your phone, prepare meetings with the integrated pastoral library, communicate with families."
+    },
+    {
+      "title": "Parish Coordinator",
+      "desc": "Organize your team of catechists, create classes by stage and sacrament, track attendance reports and sacramental progress."
+    },
+    {
+      "title": "Parents & Guardians",
+      "desc": "Follow your children's faith journey, view attendance, justify absences, receive notices and upload documents."
+    },
+    {
+      "title": "Pastor & Leadership",
+      "desc": "Read-only access to pastoral dashboards, attendance reports, and sacramental progress for the entire parish."
+    },
+    {
+      "title": "Diocesan Administrator",
+      "desc": "Consolidated view of multiple parishes, aggregated analytics, official diocesan library, and centralized management."
+    }
+  ],
+  "features": {
+    "attendance": {
+      "title": "Digital attendance on mobile",
+      "desc": "Record attendance with one tap. Set up your class, import catechumens via CSV, and generate attendance reports.",
+      "b1": "Quick attendance with PRESENT, ABSENT, LATE and JUSTIFIED",
+      "b2": "Batch import via CSV spreadsheet",
+      "b3": "Exportable attendance reports"
+    },
+    "ai": {
+      "title": "AI-prepared meetings",
+      "desc": "Theologically-oriented AI to create scripts, activities, quizzes and messages for families in seconds.",
+      "b1": "Automatic annual meeting planning",
+      "b2": "Theological base: CNBB Bible, Catechism and Directory",
+      "b3": "Floating theological assistant across the platform"
+    },
+    "library": {
+      "title": "Integrated pastoral library",
+      "desc": "Complete Bible, Catechism and Directory for Catechesis with full-text search.",
+      "b1": "66 biblical books with semantic search",
+      "b2": "Meeting plans with review workflow",
+      "b3": "Cross-references between Bible, Catechism and Directory"
+    },
+    "family": {
+      "title": "Family portal",
+      "desc": "Parents and guardians track attendance, justify absences, receive notices and send documents.",
+      "b1": "Personalized dashboard per child",
+      "b2": "Absence justification via the portal",
+      "b3": "Certificate upload via secure link"
+    },
+    "dashboard": {
+      "title": "Coordinator dashboard",
+      "desc": "Full view of catechesis health: KPIs, today's meetings, pastoral alerts and class comparison.",
+      "b1": "KPIs for catechumens, classes and average attendance",
+      "b2": "Dropout alerts and pending documents",
+      "b3": "Performance comparison between classes"
+    },
+    "sacraments": {
+      "title": "Sacramental journey",
+      "desc": "Track the 5 sacraments with visual milestones: Baptism, First Eucharist, Confirmation, Reconciliation and Matrimony.",
+      "b1": "Stages with per-catechumen approval flow",
+      "b2": "Reusable templates per parish",
+      "b3": "Sacramental progress visible to coordinators"
+    }
+  },
+  "secondary": [
+    {
+      "title": "Liturgical calendar",
+      "desc": "Liturgical, parish and sacramental events with configurable recurrence."
+    },
+    {
+      "title": "Global search (Ctrl+K)",
+      "desc": "Search Bible, Catechism, catechumens, classes and documents from any page."
+    },
+    {
+      "title": "Multi-language & multi-parish",
+      "desc": "Interface in Portuguese, English and Spanish. Multiple parishes per diocese."
+    }
+  ],
+  "steps": [
+    {
+      "title": "Set up your class",
+      "desc": "Register your catechumens, import via CSV or add one by one. In minutes your class is ready."
+    },
+    {
+      "title": "Track meetings",
+      "desc": "Take attendance on your phone, prepare scripts with the pastoral library and integrated AI."
+    },
+    {
+      "title": "Communicate with families",
+      "desc": "Parents see attendance, justify absences, receive notices and send documents via the portal."
+    }
+  ],
+  "steps_title": "Three steps to organize your catechesis",
+  "steps_subtitle": "From class registration to family communication.",
+  "steps_cta": "Create free account",
+  "pricing_title": "Plans for every reality",
+  "pricing_subtitle": "From individual catechist to the entire diocese.",
+  "pricing_cta": "Start free",
+  "plans": {
+    "free": {
+      "name": "Catechist Free",
+      "desc": "Personal — for an individual catechist"
+    },
+    "ai": {
+      "name": "Catechist AI",
+      "desc": "Personal — AI to create meetings, activities and messages",
+      "price": "$9"
+    },
+    "parish": {
+      "name": "Parish Complete",
+      "desc": "Institutional — tools for the whole parish",
+      "price": "$29"
+    }
+  },
+  "testimonials_title": "Trusted by catechists",
+  "testimonials": [
+    {
+      "name": "Ana Costa",
+      "role": "Catechist",
+      "text": "Taking attendance on mobile is so practical! The integrated library makes meeting preparation much easier. And parents love the family portal."
+    },
+    {
+      "name": "Maria Silva",
+      "role": "Catechesis Coordinator",
+      "text": "Catequese Viva transformed how we manage our classes. Everything was on paper before, now we have full control."
+    },
+    {
+      "name": "Fr. John Santos",
+      "role": "Pastor",
+      "text": "Finally a tool designed for pastoral reality. I can see the parish catechesis overview without asking anyone for reports."
+    }
+  ],
+  "faq_title": "Frequently asked questions",
+  "faqs": [
+    {
+      "q": "Do I need a credit card to start?",
+      "a": "No. The Catechist Free plan is free forever — just create your account and start using it."
+    },
+    {
+      "q": "Is my data safe? Does the platform comply with data protection laws?",
+      "a": "Yes. Catequese Viva was designed with data protection from the start. Consents are digitally recorded and you can request data export or deletion at any time."
+    },
+    {
+      "q": "Can I import catechumens I already have in a spreadsheet?",
+      "a": "Yes. The platform accepts batch import via CSV file. Just upload your spreadsheet with name, surname and birth date."
+    },
+    {
+      "q": "Does it work on mobile? Do I need to install an app?",
+      "a": "It works perfectly in the mobile browser, no installation needed. The interface is adapted for mobile devices."
+    },
+    {
+      "q": "Can I have multiple parishes under one account?",
+      "a": "Yes. The Diocese plan allows managing multiple parishes with consolidated analytics."
+    },
+    {
+      "q": "What kind of support do you offer?",
+      "a": "All plans have community support. Paid plans have priority support."
+    }
+  ],
+  "cta_title": "Start organizing your catechesis today",
+  "cta_subtitle": "Join hundreds of catechists and parishes.",
+  "cta_button": "Create free account"
+}

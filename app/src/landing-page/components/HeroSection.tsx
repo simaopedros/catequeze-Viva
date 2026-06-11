@@ -1,19 +1,17 @@
 import { Link } from 'react-router';
-import { ArrowRight, ChevronRight } from 'lucide-react';
-import { HERO_BADGE } from '../content/landingContent';
+import { useTranslation } from 'react-i18next';
+import { ArrowRight, ChevronRight, GraduationCap, Sparkles } from 'lucide-react';
 import { useParallax } from '../hooks/useParallax';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { BrowserFrame } from './BrowserFrame';
 import { FeatureScreenshot } from './FeatureScreenshot';
 
 export function HeroSection() {
+  const { t } = useTranslation('landing');
   const { ref: revealRef, className: revealClass } = useScrollReveal();
   const blobTopRef = useParallax<HTMLDivElement>({ factor: 0.04 });
   const blobBottomRef = useParallax<HTMLDivElement>({ factor: -0.03 });
   const mockupRef = useParallax<HTMLDivElement>({ factor: 0.06 });
-
-  const BadgeIcon = HERO_BADGE.icon;
-  const AccentIcon = HERO_BADGE.accentIcon;
 
   return (
     <section className="relative overflow-hidden">
@@ -34,20 +32,20 @@ export function HeroSection() {
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
           <div className="space-y-8 text-center lg:text-left">
             <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/20 px-5 py-2 text-sm font-medium text-primary backdrop-blur-sm">
-              <BadgeIcon className="h-4 w-4" />
-              {HERO_BADGE.text}
-              <AccentIcon className="h-4 w-4 text-accent" />
+              <GraduationCap className="h-4 w-4" />
+              {t('hero.badge')}
+              <Sparkles className="h-4 w-4 text-accent" />
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
-              Sua catequese
+              {t('hero.headline_line1')}
               <br />
-              <span className="text-gradient-primary">mais leve e organizada</span>
+              <span className="text-gradient-primary">{t('hero.headline_line2')}</span>
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              Faça a chamada pelo celular, prepare encontros com IA e mantenha as famílias informadas —{' '}
-              <span className="font-semibold text-foreground">tudo num só lugar.</span>
+              {t('hero.subheadline').split('—')[0]}—{' '}
+              <span className="font-semibold text-foreground">{t('hero.subheadline').split('—')[1]?.trim() || t('hero.subheadline')}</span>
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
@@ -55,20 +53,20 @@ export function HeroSection() {
                 to="/signup"
                 className="inline-flex h-12 items-center justify-center rounded-xl bg-primary text-primary-foreground px-8 text-sm font-semibold hover:bg-primary/90 transition-all hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5"
               >
-                Começar gratuitamente
+                {t('hero.cta_primary')}
                 <ChevronRight className="ml-2 h-4 w-4" />
               </Link>
               <a
                 href="#recursos"
                 className="inline-flex h-12 items-center justify-center rounded-xl border-2 border-input bg-background px-8 text-sm font-semibold hover:bg-accent hover:text-accent-foreground transition-all hover:-translate-y-0.5"
               >
-                Ver recursos
+                {t('hero.cta_secondary')}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </a>
             </div>
 
             <p className="text-xs text-muted-foreground">
-              ✓ Sem cartão de crédito &nbsp; ✓ Plano gratuito para catequistas &nbsp; ✓ Comece em 2 minutos
+              {t('hero.trust_signals')}
             </p>
           </div>
 
