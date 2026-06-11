@@ -90,7 +90,9 @@ export default function AIPlannerPage() {
   const [loadingPhrase, setLoadingPhrase] = useState(0);
   const [result, setResult] = useState<any>(null);
   const [contentItemId, setContentItemId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'meeting' | 'whatsapp' | 'refs'>('meeting');
+  const [activeTab, setActiveTab] = useState<'meeting' | 'whatsapp' | 'refs'>(
+    (searchParams.get('tab') as 'meeting' | 'whatsapp' | 'refs') || 'meeting'
+  );
   const [whatsappMessage, setWhatsappMessage] = useState('');
   const [generatingWhatsapp, setGeneratingWhatsapp] = useState(false);
   const [creditsLeft, setCreditsLeft] = useState<number | null>(null);

@@ -28,7 +28,7 @@ export default function ClassDetailPage() {
   const { currentLocale } = useLocale();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { data: cls, isLoading: loading, error: classError } = useQuery(getClassDetails, { id: id! });
+  const { data: cls, isLoading: loading, error: classError, refetch: refetchClass } = useQuery(getClassDetails, { id: id! });
   const { data: allCatechumens = [] } = useQuery(listCatechumens);
   const { data: user } = useAuth();
   const { userRole, parishId } = useUserContext();
@@ -167,7 +167,7 @@ export default function ClassDetailPage() {
       toast({ title: t('detail.catechist_added') });
       setAddUserId('');
       setShowAddCatechist(false);
-      window.location.reload();
+      refetchClass();
     } catch (e: any) {
       toast({ title: t('detail.error'), description: e.message || t('detail.add_error'), variant: 'destructive' });
     } finally {
@@ -181,7 +181,7 @@ export default function ClassDetailPage() {
       await removeCatechistFromClass({ classId: id!, userId: removeCatechistTarget });
       toast({ title: t('detail.catechist_removed') });
       setRemoveCatechistTarget(null);
-      window.location.reload();
+      refetchClass();
     } catch (e: any) {
       toast({ title: t('detail.error'), description: e.message || t('detail.remove_error'), variant: 'destructive' });
     }

@@ -149,7 +149,7 @@ export default function MeetingsPage() {
                     size="sm"
                     variant="ghost"
                     className="text-xs h-7"
-                    onClick={() => navigate(`/app/ai-planner?meetingId=${m.id}&classId=${classId}`)}
+                    onClick={() => navigate(`/app/ai-planner?meetingId=${m.id}&classId=${classId}&tab=meeting`)}
                   >
                     <Sparkles className="mr-1 h-3 w-3" />
                     {t('generate_ai_activity')}
@@ -158,7 +158,7 @@ export default function MeetingsPage() {
                     size="sm"
                     variant="ghost"
                     className="text-xs h-7"
-                    onClick={() => navigate(`/app/ai-planner?meetingId=${m.id}&classId=${classId}`)}
+                    onClick={() => navigate(`/app/ai-planner?meetingId=${m.id}&classId=${classId}&tab=whatsapp`)}
                   >
                     <MessageCircle className="mr-1 h-3 w-3" />
                     {t('generate_whatsapp')}

@@ -17,6 +17,7 @@ import {
 import { useQuery } from 'wasp/client/operations';
 import { useAuth } from 'wasp/client/auth';
 import { cn } from '../../client/utils';
+import { toast } from '../../client/hooks/use-toast';
 
 export default function MessagesPage() {
   const { t } = useTranslation('messages');
@@ -116,8 +117,8 @@ export default function MessagesPage() {
         messages: [...(prev?.messages || []), newMsg],
       }));
       refetchConvs();
-    } catch (error) {
-      // Error handled silently - user will see message didn't appear
+    } catch (error: any) {
+      toast({ title: 'Erro ao enviar mensagem', description: error?.message || 'Tente novamente.', variant: 'destructive' });
     } finally {
       setIsSending(false);
     }
@@ -138,7 +139,9 @@ export default function MessagesPage() {
         mute: !participant?.mutedAt,
       });
       loadConversation(activeConversationId);
-    } catch {}
+    } catch (e: any) {
+      toast({ title: 'Erro', description: e?.message || 'Tente novamente.', variant: 'destructive' });
+    }
   };
 
   const handleLeave = async () => {
@@ -151,7 +154,9 @@ export default function MessagesPage() {
       setActiveConversationId(null);
       setSearchParams({});
       refetchConvs();
-    } catch {}
+    } catch (e: any) {
+      toast({ title: 'Erro ao sair da conversa', description: e?.message || 'Tente novamente.', variant: 'destructive' });
+    }
   };
 
   // Conversation metadata

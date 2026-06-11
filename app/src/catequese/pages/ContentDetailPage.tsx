@@ -11,6 +11,7 @@ import { ActivityForm, type ActivityType } from '../components/ActivityForm';
 import { useContentStatusMap, useActivityTypes } from '../../i18n/useLabels';
 import { useLocale } from '../../i18n/useLocale';
 import { formatDate } from '../../i18n/format';
+import { toast } from '../../client/hooks/use-toast';
 
 function parseData(data: string | null): any {
   if (!data) return {};
@@ -88,7 +89,7 @@ export default function ContentDetailPage(){
     try {
       await generateActivityForMeeting({ contentId: id! });
     } catch (e: any) {
-      alert(e?.message || t('detail.error_generate_activity'));
+      toast({ title: e?.message || t('detail.error_generate_activity'), variant: 'destructive' });
     } finally {
       setGeneratingAi(false);
     }

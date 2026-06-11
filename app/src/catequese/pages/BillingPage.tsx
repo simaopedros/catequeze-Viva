@@ -121,8 +121,8 @@ export default function BillingPage() {
   const getPlanDef = (planId: PaymentPlanId): PlanCard =>
     allPlans.find((p) => p.planId === planId) || allPlans[0];
 
-  const { data: stats, isLoading: loading } = useQuery(getDashboardStats);
-  const { data: aiCredits } = useQuery(getAiCreditsStatus);
+  const { data: stats, isLoading: loading, refetch: refetchStats } = useQuery(getDashboardStats);
+  const { data: aiCredits, refetch: refetchCredits } = useQuery(getAiCreditsStatus);
   const { data: user } = useAuth();
   const { parishId } = useUserContext();
   const { isPersonal } = useActiveWorkspace();
@@ -235,7 +235,9 @@ export default function BillingPage() {
     try {
       await cancelSubscription();
       toast({ title: t('cancel_success') });
-      setTimeout(() => window.location.reload(), 1000);
+      refetchStats();
+      refetchCredits();
+      setCancelling(false);
     } catch (err: any) {
       setError(err?.message || t('cancel_error'));
       setCancelling(false);
