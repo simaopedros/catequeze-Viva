@@ -1,3 +1,4 @@
+import "./instrument";
 import "./setupApiUrlProxy";
 import { useEffect, useMemo } from "react";
 import { Outlet, useLocation } from "react-router";
@@ -10,7 +11,7 @@ import {
   marketingNavigationItems,
 } from "./components/NavBar/constants";
 import CookieConsentBanner from "./components/cookie-consent/Banner";
-import { ErrorBoundary } from "./components/ErrorBoundary";
+import * as Sentry from "@sentry/react";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
 import HimetricaScripts from "./analytics/HimetricaScripts";
 import { useHimetricaIdentify } from "./analytics/useHimetricaIdentify";
@@ -88,13 +89,13 @@ export default function App() {
       {/* Family portal: root path renders FamilyLandingPage */}
       {isFamilyPortal && location.pathname === '/' ? (
         <div className="bg-background text-foreground min-h-screen">
-          <ErrorBoundary>
+          <Sentry.ErrorBoundary fallback={<p>Ocorreu um erro.</p>}>
             <FamilyLandingPage />
-          </ErrorBoundary>
+          </Sentry.ErrorBoundary>
         </div>
       ) : (
         <div className="bg-background text-foreground min-h-screen">
-          <ErrorBoundary>
+          <Sentry.ErrorBoundary fallback={<p>Ocorreu um erro.</p>}>
             {isAppRoute ? (
               <Outlet />
             ) : isAdminDashboard ? (
@@ -109,7 +110,7 @@ export default function App() {
                 </div>
               </>
             )}
-          </ErrorBoundary>
+          </Sentry.ErrorBoundary>
         </div>
       )}
       <Toaster position="top-right" />

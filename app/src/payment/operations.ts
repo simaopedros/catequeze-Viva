@@ -52,16 +52,28 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     throw new HttpError(400, 'O plano Catequista Grátis não requer pagamento.');
   }
 
-  // Institutional plans require a parish
+  // Institutional plans require a parish (or diocese admin for diocese plan)
   if (INSTITUTIONAL_PLAN_IDS.includes(paymentPlanId) && !context.user.isAdmin) {
-    const ownedParish = await context.entities.Parish.findFirst({
-      where: { ownerId: context.user.id, type: { not: "PERSONAL" } },
-    });
-    if (!ownedParish) {
-      throw new HttpError(
-        403,
-        'O plano institucional requer que você crie ou seja dono de uma paróquia antes de contratá-lo. Planos pessoais (Catequista Pro/IA) cobrem apenas o seu espaço pessoal.',
-      );
+    if (paymentPlanId === 'diocese') {
+      const dioceseAdmin = await (context.entities as any).Membership.findFirst({
+        where: { userId: context.user.id, role: 'DIOCESE_ADMIN', status: 'ACTIVE' },
+      });
+      if (!dioceseAdmin) {
+        throw new HttpError(
+          403,
+          'O plano Diocese requer que você seja administrador de uma diocese. Peça ao administrador da plataforma para atribuir essa função.',
+        );
+      }
+    } else {
+      const ownedParish = await context.entities.Parish.findFirst({
+        where: { ownerId: context.user.id, type: { not: "PERSONAL" } },
+      });
+      if (!ownedParish) {
+        throw new HttpError(
+          403,
+          'O plano institucional requer que você crie ou seja dono de uma paróquia antes de contratá-lo. Planos pessoais (Catequista Pro/IA) cobrem apenas o seu espaço pessoal.',
+        );
+      }
     }
   }
 
@@ -88,6 +100,7 @@ export const generateCheckoutSession: GenerateCheckoutSession<
       userId,
       userEmail,
       paymentPlan,
+      interval,
       prismaUserDelegate: context.entities.User,
     });
     session = result.session;

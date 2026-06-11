@@ -3,7 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
-import { CheckCircle, TrendingUp, Clock, ArrowUpRight, History, AlertCircle, Loader2, XCircle, User as UserIcon, Building2 } from 'lucide-react';
+import { CheckCircle, TrendingUp, Clock, ArrowUpRight, History, AlertCircle, Loader2, XCircle, User as UserIcon, Building2, PiggyBank } from 'lucide-react';
+import type { BillingInterval } from '../lib/intendedPlan';
+import { getIntendedInterval } from '../lib/intendedPlan';
 import { AppShell } from '../AppShell';
 import { useQuery, getDashboardStats, getAiCreditsStatus, generateCheckoutSession, cancelSubscription, getParishById } from 'wasp/client/operations';
 import { useAuth } from 'wasp/client/auth';
@@ -107,6 +109,11 @@ function buildPlanCards(t: any): PlanCard[] {
   }));
 }
 
+/** Formata centavos para string de preço (ex: 500 → "$5") */
+function formatPriceFromCents(cents: number): string {
+  return `R$${(cents / 100).toFixed(0)}`;
+}
+
 export default function BillingPage() {
   const { t } = useTranslation('billing');
   const allPlans = useMemo(() => buildPlanCards(t), [t]);
@@ -125,6 +132,7 @@ export default function BillingPage() {
     { enabled: !!parishId }
   );
 
+  const [billingInterval, setBillingInterval] = useState<BillingInterval>(getIntendedInterval);
   const [upgradingPlan, setUpgradingPlan] = useState<PaymentPlanId | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState(false);
@@ -206,7 +214,7 @@ export default function BillingPage() {
     setError(null);
     setUpgradingPlan(planId);
     try {
-      const result = await generateCheckoutSession({ planId, interval: 'monthly' });
+      const result = await generateCheckoutSession({ planId, interval: billingInterval });
       if (result.sessionUrl) {
         window.location.href = result.sessionUrl;
       }
@@ -401,12 +409,40 @@ export default function BillingPage() {
 
         {!isParishManaged && (
           <>
-            <h2 className="text-lg font-semibold mt-8">{t('available_plans')}</h2>
+            <div className="flex items-center justify-between mt-8">
+              <h2 className="text-lg font-semibold">{t('available_plans')}</h2>
+              <div className="inline-flex items-center rounded-lg border bg-muted p-0.5">
+                <button
+                  type="button"
+                  onClick={() => setBillingInterval('monthly')}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                    billingInterval === 'monthly'
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {t('monthly')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBillingInterval('annual')}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all flex items-center gap-1.5 ${
+                    billingInterval === 'annual'
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {t('annual')}
+                  <span className="text-[10px] text-success font-bold">{t('annual_savings')}</span>
+                </button>
+              </div>
+            </div>
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
               {visiblePlans.map((plan) => {
                 const isCurrent = plan.planId === effectivePlanId;
                 const isUpgrading = upgradingPlan === plan.planId;
                 const isRequested = !!requestedPlan && plan.planId === requestedPlan && !isCurrent;
+                const hasAnnual = !!plan.priceCentsAnnual;
 
                 return (
                   <div
@@ -420,9 +456,25 @@ export default function BillingPage() {
                       {isCurrent && <Badge>{t('current')}</Badge>}
                       {isRequested && <Badge className="bg-accent/15 text-accent">{t('selected')}</Badge>}
                     </div>
-                    <p className="text-xl font-bold mb-1">{plan.price}</p>
-                    {plan.annualPrice && (
-                      <p className="text-xs text-muted-foreground font-medium mb-2">{plan.annualPrice}</p>
+                    {billingInterval === 'monthly' || !hasAnnual ? (
+                      <>
+                        <p className="text-xl font-bold mb-1">{plan.price}</p>
+                        {plan.annualPrice && (
+                          <p className="text-xs text-muted-foreground font-medium mb-2">
+                            <PiggyBank className="inline h-3 w-3 mr-0.5" />
+                            {plan.annualPrice}
+                          </p>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-xl font-bold mb-1">
+                          {formatPriceFromCents(plan.priceCentsAnnual!)}<span className="text-base font-normal text-muted-foreground">/ano</span>
+                        </p>
+                        <p className="text-xs text-muted-foreground font-medium mb-2">
+                          {formatPriceFromCents(plan.priceCents!)}/mês
+                        </p>
+                      </>
                     )}
                     <ul className="space-y-1.5 text-xs mb-4 flex-1">
                       {plan.features.map((f) => (
@@ -440,7 +492,7 @@ export default function BillingPage() {
                       <Button variant="outline" className="w-full text-xs" disabled>
                         {t('base_plan_btn')}
                       </Button>
-                    ) : [PaymentPlanId.Parish, PaymentPlanId.ParishEssential, PaymentPlanId.ParishComplete, PaymentPlanId.Diocese].includes(plan.planId) && !user?.isAdmin && parish?.ownerId !== user?.id ? (
+                    ) : [PaymentPlanId.Parish, PaymentPlanId.ParishEssential, PaymentPlanId.ParishComplete, PaymentPlanId.Diocese].includes(plan.planId) && !user?.isAdmin && parish?.ownerId !== user?.id && !(plan.planId === PaymentPlanId.Diocese && parish?.dioceseAdmins?.some((da: any) => da.user?.id === user?.id)) ? (
                       <Button variant="outline" className="w-full text-xs" disabled title={t('institutional_requires_admin')}>
                         {t('institutional_plan_btn')}
                       </Button>

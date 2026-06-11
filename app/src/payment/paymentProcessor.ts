@@ -9,6 +9,7 @@ export interface CreateCheckoutSessionArgs {
   userId: User["id"];
   userEmail: NonNullable<User["email"]>;
   paymentPlan: PaymentPlan;
+  interval?: 'monthly' | 'annual';
   prismaUserDelegate: PrismaClient["user"];
 }
 

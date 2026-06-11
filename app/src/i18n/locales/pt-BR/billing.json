@@ -53,6 +53,9 @@
   "cancel_confirm": "Sim, cancelar",
   "cancel_keep": "Manter assinatura",
   "free": "Grátis",
+  "monthly": "Mensal",
+  "annual": "Anual",
+  "annual_savings": "17% off",
   "plans": {
     "catechist_free": {
       "name": "Catequista Grátis",

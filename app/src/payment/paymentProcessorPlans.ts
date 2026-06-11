@@ -5,6 +5,7 @@ import { type PaymentPlan, PaymentPlanId } from "./plans";
  * The ID under which this payment plan is identified on your payment processor.
  *
  * E.g. price id on Stripe, or variant id on LemonSqueezy.
+ * Each vendable plan has a monthly AND an annual Price ID in Stripe.
  */
 export const paymentProcessorPlanIds = {
   [PaymentPlanId.Hobby]: env.PAYMENTS_HOBBY_SUBSCRIPTION_PLAN_ID,
@@ -22,6 +23,16 @@ export const paymentProcessorPlanIds = {
   [PaymentPlanId.Diocese]: env.STRIPE_DIOCESE_PLAN_ID,
 } as const satisfies Record<PaymentPlanId, string>;
 
+/** Annual Price IDs — separate env vars for each plan's annual billing variant. */
+export const annualPaymentProcessorPlanIds: Partial<Record<PaymentPlanId, string>> = {
+  [PaymentPlanId.CatechistPro]: env.STRIPE_CATECHIST_PRO_ANNUAL_PLAN_ID,
+  [PaymentPlanId.CatechistAi]: env.STRIPE_CATECHIST_AI_ANNUAL_PLAN_ID,
+  [PaymentPlanId.ParishEssential]: env.STRIPE_PARISH_ESSENTIAL_ANNUAL_PLAN_ID,
+  [PaymentPlanId.ParishComplete]: env.STRIPE_PARISH_COMPLETE_ANNUAL_PLAN_ID,
+  [PaymentPlanId.Parish]: env.STRIPE_PARISH_ANNUAL_PLAN_ID, // legacy alias
+  [PaymentPlanId.Diocese]: env.STRIPE_DIOCESE_ANNUAL_PLAN_ID,
+};
+
 /** Env var name for each vendable Stripe plan (for error messages). */
 export const stripePlanEnvVarByPlanId: Partial<Record<PaymentPlanId, string>> = {
   [PaymentPlanId.Hobby]: 'PAYMENTS_HOBBY_SUBSCRIPTION_PLAN_ID',
@@ -37,6 +48,16 @@ export const stripePlanEnvVarByPlanId: Partial<Record<PaymentPlanId, string>> = 
   [PaymentPlanId.Diocese]: 'STRIPE_DIOCESE_PLAN_ID',
 };
 
+/** Env var names for annual plan IDs (for error messages). */
+export const annualStripePlanEnvVarByPlanId: Partial<Record<PaymentPlanId, string>> = {
+  [PaymentPlanId.CatechistPro]: 'STRIPE_CATECHIST_PRO_ANNUAL_PLAN_ID',
+  [PaymentPlanId.CatechistAi]: 'STRIPE_CATECHIST_AI_ANNUAL_PLAN_ID',
+  [PaymentPlanId.ParishEssential]: 'STRIPE_PARISH_ESSENTIAL_ANNUAL_PLAN_ID',
+  [PaymentPlanId.ParishComplete]: 'STRIPE_PARISH_COMPLETE_ANNUAL_PLAN_ID',
+  [PaymentPlanId.Parish]: 'STRIPE_PARISH_ANNUAL_PLAN_ID',
+  [PaymentPlanId.Diocese]: 'STRIPE_DIOCESE_ANNUAL_PLAN_ID',
+};
+
 /**
  * Returns your payment processor plan ID for a given Open SaaS `PaymentPlan`.
  */
@@ -46,9 +67,26 @@ export function getPaymentProcessorPlanId(paymentPlan: PaymentPlan): string {
 
 /**
  * Stripe Checkout requires a non-empty Price ID (`price_...`).
+ * When `interval='annual'`, uses the annual Price ID env var.
  * Throws a clear error when homolog/prod .env.server is missing plan mapping.
  */
-export function requireStripePriceId(paymentPlan: PaymentPlan): string {
+export function requireStripePriceId(
+  paymentPlan: PaymentPlan,
+  interval?: 'monthly' | 'annual',
+): string {
+  if (interval === 'annual') {
+    const annualId = annualPaymentProcessorPlanIds[paymentPlan.id];
+    if (annualId && annualId.trim().startsWith('price_')) {
+      return annualId.trim();
+    }
+    const envVar = annualStripePlanEnvVarByPlanId[paymentPlan.id]
+      ?? `STRIPE_ANNUAL plan for "${paymentPlan.id}"`;
+    throw new Error(
+      `Stripe Annual Price ID não configurado para o plano "${paymentPlan.id}". ` +
+        `Defina ${envVar}=price_... no .env.server (Stripe Dashboard → Products → criar Price anual).`,
+    );
+  }
+
   const priceId = getPaymentProcessorPlanId(paymentPlan).trim();
   if (priceId.startsWith('price_')) {
     return priceId;
@@ -71,7 +109,14 @@ export function requireStripePriceId(paymentPlan: PaymentPlan): string {
 export function getPaymentPlanIdByPaymentProcessorPlanId(
   paymentProcessorPlanId: string,
 ): PaymentPlanId {
+  // Check monthly plan IDs
   for (const [planId, processorPlanId] of Object.entries(paymentProcessorPlanIds)) {
+    if (processorPlanId === paymentProcessorPlanId) {
+      return planId as PaymentPlanId;
+    }
+  }
+  // Check annual plan IDs
+  for (const [planId, processorPlanId] of Object.entries(annualPaymentProcessorPlanIds)) {
     if (processorPlanId === paymentProcessorPlanId) {
       return planId as PaymentPlanId;
     }

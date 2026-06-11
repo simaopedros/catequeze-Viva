@@ -1,11 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { Star, Check, User, Building2, Zap, CreditCard, PiggyBank } from 'lucide-react';
 import { PublicNavbar } from '../PublicNavbar';
 import { PublicFooter } from '../PublicFooter';
 import { useAuth } from 'wasp/client/auth';
-import { setIntendedPlan } from '../lib/intendedPlan';
+import { setIntendedPlan, setIntendedInterval, getIntendedInterval, type BillingInterval } from '../lib/intendedPlan';
 import { PLANS, PLAN_IDS, type PlanId } from '../../shared/pricing';
 
 type PlanLevel = 'personal' | 'institutional';
@@ -21,6 +21,8 @@ interface PricingPlan {
   features: string[];
   highlight?: boolean;
   cta: string;
+  priceCents: number;
+  priceCentsAnnual?: number;
 }
 
 export default function PricingPage() {
@@ -29,6 +31,7 @@ export default function PricingPage() {
   const { data: user } = useAuth();
   const navigate = useNavigate();
   const isLoggedIn = !!user;
+  const [billingInterval, setBillingInterval] = useState<BillingInterval>(getIntendedInterval);
 
   const pricingPlans = useMemo((): PricingPlan[] => {
     return PLAN_IDS.map((id) => {
@@ -62,6 +65,8 @@ export default function PricingPage() {
         features: tb(`plans.${id}.features`, { returnObjects: true }) as string[],
         highlight: def.highlight,
         cta: monthly === 0 ? tp('pricing.cta_free') : tp('pricing.cta_paid'),
+        priceCents: def.prices.monthlyCents,
+        priceCentsAnnual: def.prices.annualCents,
       };
     });
   }, [tp, tb]);
@@ -71,6 +76,7 @@ export default function PricingPage() {
   const faq = tp('pricing.faq', { returnObjects: true }) as { q: string; a: string }[];
 
   const handleSelect = (plan: PricingPlan) => {
+    setIntendedInterval(billingInterval);
     if (plan.planId === 'catechist_free') {
       navigate(isLoggedIn ? '/app' : '/signup');
       return;
@@ -79,7 +85,11 @@ export default function PricingPage() {
     navigate(isLoggedIn ? `/app/billing?plan=${plan.planId}` : '/signup');
   };
 
-  const renderCard = (plan: PricingPlan) => (
+  const renderCard = (plan: PricingPlan) => {
+    const hasAnnual = !!plan.priceCentsAnnual && plan.priceCents > 0;
+    const showAnnual = billingInterval === 'annual' && hasAnnual;
+
+    return (
     <div
       key={plan.planId}
       className={`rounded-2xl border-2 p-6 bg-card transition-all hover:-translate-y-1 hover:shadow-lg relative flex flex-col ${
@@ -96,17 +106,30 @@ export default function PricingPage() {
       <h3 className="text-lg font-bold">{plan.name}</h3>
       <p className="text-sm text-muted-foreground mt-1">{plan.desc}</p>
       <div className="mt-4 mb-1">
-        <span className="text-4xl font-bold">{plan.price}</span>
-        {plan.period && (
-          <span className="text-base font-normal text-muted-foreground"> {plan.period}</span>
+        {showAnnual ? (
+          <>
+            <span className="text-4xl font-bold">R${(plan.priceCentsAnnual! / 100).toFixed(0)}</span>
+            <span className="text-base font-normal text-muted-foreground">/ano</span>
+          </>
+        ) : (
+          <>
+            <span className="text-4xl font-bold">{plan.price}</span>
+            {plan.period && (
+              <span className="text-base font-normal text-muted-foreground"> {plan.period}</span>
+            )}
+          </>
         )}
       </div>
-      {plan.annualPrice && (
+      {showAnnual ? (
+        <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+          <span>R${(plan.priceCents / 100).toFixed(0)}/mês</span>
+        </div>
+      ) : plan.annualPrice ? (
         <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
           <PiggyBank className="h-3 w-3" />
           <span>{plan.annualPrice}</span>
         </div>
-      )}
+      ) : null}
       <ul className="mt-5 space-y-2.5 text-sm flex-1">
         {plan.features.map((f) => (
           <li key={f} className="flex items-start gap-2.5">
@@ -126,7 +149,8 @@ export default function PricingPage() {
         {plan.cta}
       </button>
     </div>
-  );
+    );
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -142,6 +166,31 @@ export default function PricingPage() {
             <span className="flex items-center gap-1"><CreditCard className="h-4 w-4" /> {tp('pricing.payment_card')}</span>
             <span className="flex items-center gap-1"><Zap className="h-4 w-4" /> {tp('pricing.payment_pix')}</span>
             <span className="flex items-center gap-1"><PiggyBank className="h-4 w-4" /> {tp('pricing.annual_savings')}</span>
+          </div>
+          <div className="inline-flex items-center rounded-lg border bg-muted p-0.5 mt-4">
+            <button
+              type="button"
+              onClick={() => setBillingInterval('monthly')}
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
+                billingInterval === 'monthly'
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {tp('pricing.monthly_tab')}
+            </button>
+            <button
+              type="button"
+              onClick={() => setBillingInterval('annual')}
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-1.5 ${
+                billingInterval === 'annual'
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {tp('pricing.annual_tab')}
+              <span className="text-[11px] text-success font-bold">{tp('pricing.annual_savings_badge')}</span>
+            </button>
           </div>
         </section>
 

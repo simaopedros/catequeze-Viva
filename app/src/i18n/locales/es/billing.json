@@ -53,6 +53,9 @@
   "cancel_confirm": "Sí, cancelar",
   "cancel_keep": "Mantener suscripción",
   "free": "Gratis",
+  "monthly": "Mensual",
+  "annual": "Anual",
+  "annual_savings": "17% dto.",
   "plans": {
     "catechist_free": {
       "name": "Catequista Gratis",

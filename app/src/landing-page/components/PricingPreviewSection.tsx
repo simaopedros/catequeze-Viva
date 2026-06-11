@@ -1,24 +1,57 @@
+import { useState } from 'react';
 import { Link } from 'react-router';
-import { CheckCircle2, Star } from 'lucide-react';
+import { CheckCircle2, Star, PiggyBank } from 'lucide-react';
 import { PRICING_PREVIEW } from '../content/landingContent';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { setIntendedPlan } from '../../catequese/lib/intendedPlan';
+import type { BillingInterval } from '../../catequese/lib/intendedPlan';
+
+/** Formata centavos para string de preço (ex: 900 → "R$9") */
+function fmt(cents: number): string {
+  return `R$${(cents / 100).toFixed(0)}`;
+}
 
 export function PricingPreviewSection() {
   const { ref: headerRef, className: headerClass } = useScrollReveal();
+  const [billingInterval, setBillingInterval] = useState<BillingInterval>('monthly');
 
   return (
     <section className="max-w-5xl mx-auto px-4 py-20">
-      <div ref={headerRef} className={`text-center mb-12 space-y-3 ${headerClass}`}>
+      <div ref={headerRef} className={`text-center mb-8 space-y-3 ${headerClass}`}>
         <h2 className="text-3xl sm:text-4xl font-bold">Planos para cada etapa</h2>
         <p className="text-lg text-muted-foreground">
           Comece gratuitamente. Evolua quando quiser.
         </p>
+        <div className="inline-flex items-center rounded-lg border bg-muted p-0.5 mt-3">
+          <button
+            type="button"
+            onClick={() => setBillingInterval('monthly')}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
+              billingInterval === 'monthly'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Mensal
+          </button>
+          <button
+            type="button"
+            onClick={() => setBillingInterval('annual')}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-1.5 ${
+              billingInterval === 'annual'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Anual
+            <span className="text-[11px] text-success font-bold">17% off</span>
+          </button>
+        </div>
       </div>
 
       <div className="grid gap-6 grid-cols-1 md:grid-cols-3">
         {PRICING_PREVIEW.map((plan, index) => (
-          <PricingCard key={plan.name} plan={plan} delay={index * 60} />
+          <PricingCard key={plan.name} plan={plan} delay={index * 60} billingInterval={billingInterval} />
         ))}
       </div>
 
@@ -34,11 +67,15 @@ export function PricingPreviewSection() {
 function PricingCard({
   plan,
   delay,
+  billingInterval,
 }: {
   plan: (typeof PRICING_PREVIEW)[number];
   delay: number;
+  billingInterval: BillingInterval;
 }) {
   const { ref, className } = useScrollReveal({ delay });
+  const hasAnnual = !!plan.priceCentsAnnual && plan.priceCents! > 0;
+  const showAnnual = billingInterval === 'annual' && hasAnnual;
 
   return (
     <div
@@ -57,11 +94,30 @@ function PricingCard({
       <h3 className="text-lg font-bold">{plan.name}</h3>
       <p className="text-sm text-muted-foreground mt-1">{plan.desc}</p>
       <div className="mt-4 mb-1">
-        <span className="text-4xl font-bold">{plan.price}</span>
-        {plan.period && (
-          <span className="text-base font-normal text-muted-foreground">{plan.period}</span>
+        {showAnnual ? (
+          <>
+            <span className="text-4xl font-bold">{fmt(plan.priceCentsAnnual!)}</span>
+            <span className="text-base font-normal text-muted-foreground">/ano</span>
+          </>
+        ) : (
+          <>
+            <span className="text-4xl font-bold">{plan.price}</span>
+            {plan.period && (
+              <span className="text-base font-normal text-muted-foreground">{plan.period}</span>
+            )}
+          </>
         )}
       </div>
+      {showAnnual ? (
+        <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+          <span>{fmt(plan.priceCents!)}/mês</span>
+        </div>
+      ) : (plan.priceCentsAnnual && plan.priceCents! > 0) ? (
+        <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+          <PiggyBank className="h-3 w-3" />
+          <span>{fmt(plan.priceCentsAnnual)}/ano</span>
+        </div>
+      ) : null}
       <ul className="mt-5 space-y-2.5 text-sm text-muted-foreground flex-1">
         {plan.features.map((feature) => (
           <li key={feature} className="flex items-start gap-2.5">

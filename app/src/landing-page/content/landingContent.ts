@@ -69,6 +69,8 @@ export interface PricingPlan {
   desc: string;
   features: string[];
   highlight?: boolean;
+  priceCents?: number;
+  priceCentsAnnual?: number;
 }
 
 export const PERSONAS: Persona[] = [
@@ -213,12 +215,13 @@ export const PRICING_PREVIEW: PricingPlan[] = [
     period: '',
     desc: 'Pessoal — para um catequista individual',
     features: ['1 turma', '15 catequizandos', 'Presenças digitais', 'Bíblia e Catecismo', '3 créditos de IA iniciais'],
+    priceCents: 0,
   },
   {
     planId: 'catechist_ai',
     level: 'personal',
     name: 'Catequista IA',
-    price: '$9',
+    price: 'R$9',
     period: '/mês',
     desc: 'Pessoal — IA para criar encontros, atividades e mensagens em segundos',
     features: [
@@ -229,12 +232,14 @@ export const PRICING_PREVIEW: PricingPlan[] = [
       '20 créditos de IA/mês',
     ],
     highlight: true,
+    priceCents: 900,
+    priceCentsAnnual: 9000,
   },
   {
     planId: 'parish_complete',
     level: 'institutional',
     name: 'Paróquia Completa',
-    price: '$29',
+    price: 'R$29',
     period: '/mês',
     desc: 'Institucional — ferramentas para a paróquia inteira',
     features: [
@@ -244,6 +249,8 @@ export const PRICING_PREVIEW: PricingPlan[] = [
       'Comunicação integrada',
       '50 créditos de IA/mês',
     ],
+    priceCents: 2900,
+    priceCentsAnnual: 29000,
   },
 ];
 
