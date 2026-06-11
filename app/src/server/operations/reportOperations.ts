@@ -19,7 +19,7 @@ export const getReportsOverview = async (_args: void, context: any) => {
   const classes = await context.entities.CatechesisClass.findMany({
     where: { ...whereClause, status: 'ACTIVE' },
     select: {
-      id: true, name: true,
+      id: true, name: true, parishId: true,
       meetings: {
         select: {
           id: true, date: true,
