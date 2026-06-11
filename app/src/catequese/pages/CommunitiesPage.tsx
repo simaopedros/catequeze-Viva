@@ -8,6 +8,7 @@ import { useCommunityTypeOptions } from '../../i18n/useLabels';
 import { AppShell } from '../AppShell';
 import { useQuery, listCommunities, createCommunity, updateCommunity } from 'wasp/client/operations';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
+import { toast } from '../../client/hooks/use-toast';
 import { CommunityCreateForm } from '../components/community/CommunityCreateForm';
 import { CommunityCard } from '../components/community/CommunityCard';
 import PhoneMaskInput from '../../client/components/PhoneMaskInput';
@@ -62,7 +63,7 @@ export default function CommunitiesPage() {
         coordinatorPhone: editFields.coordinatorPhone?.trim() || undefined,
       });
       cancelEdit();
-    } catch (e) { console.error(e); }
+    } catch (e: any) { toast({ title: t('error_saving'), description: e.message || t('try_again'), variant: 'destructive' }); }
     setSaving(false);
   };
 

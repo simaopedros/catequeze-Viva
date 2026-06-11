@@ -4,6 +4,7 @@ import { Button } from '../../client/components/ui/button';
 import { Shield, CheckCircle, XCircle } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { listConsents, saveConsent } from 'wasp/client/operations';
+import { toast } from '../../client/hooks/use-toast';
 
 const CONSENT_TYPE_KEYS = ['IMAGE_USAGE', 'COMMUNICATION', 'DOCUMENTS', 'SENSITIVE_DATA'] as const;
 
@@ -28,14 +29,14 @@ export default function ConsentPage() {
       const map: Record<string, boolean> = {};
       data?.forEach((c: any) => { map[c.type] = c.granted; });
       setConsents(map);
-    } catch (e) { console.error('Erro ao carregar consentimentos:', e); }
+    } catch (e: any) { toast({ title: t('error_loading'), description: e.message, variant: 'destructive' }); }
   };
 
   const toggle = async (type: string, granted: boolean) => {
     try {
       await saveConsent({ type, granted });
       loadConsents();
-    } catch (e) { console.error('Erro ao salvar consentimento:', e); }
+    } catch (e: any) { toast({ title: t('error_saving'), description: e.message, variant: 'destructive' }); }
   };
 
   return (

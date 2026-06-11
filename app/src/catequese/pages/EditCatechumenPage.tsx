@@ -38,18 +38,28 @@ export default function EditCatechumenPage() {
   const [birthDate, setBirthDate] = useState('');
   const [photo, setPhoto] = useState('');
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     (async () => {
-      const p = await getCatechumenProfile({ id: id! });
-      if (p) {
-        setFirstName(p.firstName || '');
-        setLastName(p.lastName || '');
-        setBirthDate(p.birthDate ? new Date(p.birthDate).toISOString().slice(0, 10) : '');
-        setPhoto(p.photoUrl || '');
+      try {
+        setLoading(true);
+        setError('');
+        const p = await getCatechumenProfile({ id: id! });
+        if (p) {
+          setFirstName(p.firstName || '');
+          setLastName(p.lastName || '');
+          setBirthDate(p.birthDate ? new Date(p.birthDate).toISOString().slice(0, 10) : '');
+          setPhoto(p.photoUrl || '');
+        }
+      } catch (e: any) {
+        setError(e.message || t('error_generic'));
+      } finally {
+        setLoading(false);
       }
     })();
-  }, [id]);
+  }, [id, t]);
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -74,6 +84,19 @@ export default function EditCatechumenPage() {
   return (
     <AppShell>
       <div className="max-w-lg mx-auto space-y-6">
+        {loading && (
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 w-48 bg-muted rounded"/>
+            <div className="h-64 bg-muted rounded-xl"/>
+          </div>
+        )}
+        {error && (
+          <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+            {error}
+          </div>
+        )}
+        {!loading && !error && (
+        <>
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild><Link to={`/app/catechumens/${id}`}><ArrowLeft className="h-5 w-5" /></Link></Button>
           <h1 className="text-2xl font-bold">{t('catechumens.edit_title')}</h1>
@@ -98,6 +121,8 @@ export default function EditCatechumenPage() {
             <Button variant="outline" asChild><Link to={`/app/catechumens/${id}`}>{t('cancel')}</Link></Button>
           </div>
         </div>
+        </>
+        )}
       </div>
     </AppShell>
   );

@@ -103,13 +103,13 @@ export default function CreateContentPage() {
       });
 
       for (const ref of bibleRefs) {
-        try { await addBibleRef({ contentId: item.id, verseId: ref.verseId }); } catch (e) { console.error(e); }
+        try { await addBibleRef({ contentId: item.id, verseId: ref.verseId }); } catch (e: any) { toast({ title: t('create_page.error_bible_ref'), description: e.message, variant: 'destructive' }); }
       }
       for (const ref of catechismRefs) {
-        try { await addCatechismRef({ contentId: item.id, entryId: ref.entryId }); } catch (e) { console.error(e); }
+        try { await addCatechismRef({ contentId: item.id, entryId: ref.entryId }); } catch (e: any) { toast({ title: t('create_page.error_catechism_ref'), description: e.message, variant: 'destructive' }); }
       }
       for (const ref of directoryRefs) {
-        try { await addDirectoryRef({ contentId: item.id, entryId: ref.entryId }); } catch (e) { console.error(e); }
+        try { await addDirectoryRef({ contentId: item.id, entryId: ref.entryId }); } catch (e: any) { toast({ title: t('create_page.error_directory_ref'), description: e.message, variant: 'destructive' }); }
       }
 
       toast({ title: t('create_page.success_created') });

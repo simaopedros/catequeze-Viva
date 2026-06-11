@@ -32,6 +32,8 @@ export default function EditContentPage() {
   const [catechismRef, setCatechismRef] = useState('');
   const [isAiGenerated, setIsAiGenerated] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [enhancing, setEnhancing] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
   const [bibleRefs, setBibleRefs] = useState<{ id?: string; verseId: string; label: string; text?: string }[]>([]);
@@ -41,6 +43,8 @@ export default function EditContentPage() {
   useEffect(() => {
     (async () => {
       try {
+        setLoading(true);
+        setLoadError('');
         const item = await getContentItem({ id: id! });
         if (item) {
           setTitle(item.title || '');
@@ -70,9 +74,13 @@ export default function EditContentPage() {
           setBibleRefs(bible);
           setCatechismRefs(catechism);
         }
-      } catch (e) { console.error(e); }
+      } catch (e: any) {
+        setLoadError(e.message || t('edit_page.error_load'));
+      } finally {
+        setLoading(false);
+      }
     })();
-  }, [id]);
+  }, [id, t]);
 
   const handleAddBibleRef = async (verseId: string, label: string, text: string) => {
     try {
@@ -173,6 +181,19 @@ export default function EditContentPage() {
   return (
     <AppShell>
       <div className="max-w-3xl mx-auto space-y-6">
+        {loading && (
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 w-48 bg-muted rounded"/>
+            <div className="h-96 bg-muted rounded-xl"/>
+          </div>
+        )}
+        {loadError && (
+          <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+            {loadError}
+          </div>
+        )}
+        {!loading && !loadError && (
+        <>
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild><Link to={`/app/content-library/${id}`}><ArrowLeft className="h-5 w-5" /></Link></Button>
           <div className="flex-1">
@@ -290,6 +311,8 @@ export default function EditContentPage() {
             <Button variant="outline" asChild><Link to={`/app/content-library/${id}`}>{tc('cancel')}</Link></Button>
           </div>
         </div>
+        </>
+        )}
       </div>
     </AppShell>
   );
