@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { login } from 'wasp/client/auth';
+import { GoogleSignInButton } from 'wasp/client/auth/ui';
 import { signOut } from '../client/analytics/himetrica';
 import { useNavigate } from 'react-router';
 import { Button } from '../client/components/ui/button';
@@ -219,6 +220,13 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
             'Entrar'
           )}
         </Button>
+
+        <div className="relative my-4">
+          <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+          <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground">ou</span></div>
+        </div>
+
+        <GoogleSignInButton />
       </form>
 
       <p className="text-center text-sm text-muted-foreground">
