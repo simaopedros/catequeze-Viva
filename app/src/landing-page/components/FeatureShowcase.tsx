@@ -20,7 +20,7 @@ export function FeatureShowcase({ showcase, ns = 'landing' }: FeatureShowcasePro
   const isReverse = showcase.direction === 'row-reverse';
 
   // Feature texts from i18n, falling back to landingContent.ts values
-  const featureId = showcase.id === 'ai-planner' ? 'ai' : showcase.id;
+  const featureId = showcase.id === 'ai-planner' ? 'ai' : showcase.id === 'family-portal' ? 'family' : showcase.id;
   const featureI18n = t(`features.${featureId}`, { returnObjects: true }) as any;
   const title = featureI18n?.title || showcase.title;
   const desc = featureI18n?.desc || showcase.desc;
