@@ -18,18 +18,18 @@ export function AppShell({ children }: AppShellProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { needsOnboarding, hasPendingInvitations, isLoading, isFetching, userRole, memberships } = useUserContext();
+  const { needsOnboarding, hasPendingInvitations, isLoading, isFetching, userRole, memberships, allMemberships } = useUserContext();
   const { showTour, completeTour } = useGuidedTour();
   const acceptInvitationAction = useAction(acceptInvitation);
   const autoAcceptedRef = useRef(false);
 
   const isFamily = useMemo(() => isFamilyPortalHost(), []);
 
-  // User is "family-only" if ALL their roles are GUARDIAN or CATECHUMEN.
+  // User is "family-only" if ALL their roles across ALL workspaces are GUARDIAN or CATECHUMEN.
   // A user who is ALSO a catechist/coordinator keeps full access to the staff portal.
   const isFamilyOnlyRole = userRole === 'GUARDIAN' || userRole === 'CATECHUMEN';
   const hasStaffRole = isFamilyOnlyRole
-    ? memberships.some((m: any) => !['GUARDIAN', 'CATECHUMEN'].includes(m.role))
+    ? (allMemberships || []).some((m: any) => !['GUARDIAN', 'CATECHUMEN'].includes(m.role))
     : true;
 
   // GUARDIAN/CATECHUMEN on staff host → redirect to family portal (only if no staff role)

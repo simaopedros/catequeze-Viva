@@ -27,6 +27,7 @@ interface UseUserContextReturn {
   hasPendingInvitations: boolean;
   personalWorkspaceId: string | null;
   memberships: MembershipInfo[];
+  allMemberships: MembershipInfo[];
   userRole: string;
   parishId: string;
   parishName: string;
@@ -103,6 +104,7 @@ export function useUserContext(): UseUserContextReturn {
     hasPendingInvitations: ctx.hasPendingInvitations ?? false,
     personalWorkspaceId: ctx.personalWorkspaceId ?? null,
     memberships: workspaceMemberships,
+    allMemberships,
     userRole: effectiveMembership?.role ?? (isPersonalActive ? 'PERSONAL_OWNER' : ''),
     parishId: effectiveMembership?.parishId ?? (isPersonalActive ? ctx.personalWorkspaceId : ''),
     parishName: effectiveMembership?.parishName ?? '',
