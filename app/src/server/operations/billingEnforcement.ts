@@ -178,21 +178,21 @@ export async function resolveAllEffectiveBilling(
   ]);
 
   // Index for fast lookup
-  const dioceseBillingMap = new Map(dioceseBillings.map((b: any) => [b.dioceseId, b]));
-  const parishBillingMap = new Map(parishBillings.map((b: any) => [b.parishId, b]));
+  const dioceseBillingMap = new Map(dioceseBillings.map((b: any) => [b.dioceseId, b as TenantBillingStub]));
+  const parishBillingMap = new Map(parishBillings.map((b: any) => [b.parishId, b as TenantBillingStub]));
 
   for (const parish of parishes) {
     // Diocese umbrella
     if (parish.dioceseId && dioceseBillingMap.has(parish.dioceseId)) {
-      const db = dioceseBillingMap.get(parish.dioceseId);
-      if (db && isBillingActive(db) && db.plan === 'DIOCESE') {
+      const db = dioceseBillingMap.get(parish.dioceseId)!;
+      if (isBillingActive(db) && db.plan === 'DIOCESE') {
         result.set(parish.id, { plan: 'DIOCESE', status: db.status, trialEndsAt: db.trialEndsAt, maxClasses: db.maxClasses, maxCatechumens: db.maxCatechumens, maxCatechists: db.maxCatechists, maxParishes: db.maxParishes });
         continue;
       }
     }
 
     // Parish billing
-    const pb = parishBillingMap.get(parish.id);
+    const pb = parishBillingMap.get(parish.id) as TenantBillingStub | undefined;
     if (pb && isBillingActive(pb)) {
       result.set(parish.id, pb);
       continue;
@@ -200,12 +200,11 @@ export async function resolveAllEffectiveBilling(
 
     // Resident catechist umbrella
     if (parish.type === 'PERSONAL' && parish.ownerId) {
-      result.set(parish.id, null); // Personal workspace — already resolved
-    } else if (parish.ownerId) {
-      result.set(parish.id, pb || null);
+      result.set(parish.id, null);
     } else {
       result.set(parish.id, pb || null);
     }
+
   }
 
   return result;
