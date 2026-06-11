@@ -26,11 +26,11 @@ async function resolveImportParish(context: any, args: { csvData: string; parish
     select: { id: true },
   });
 
-  const allowedParishIds = new Set(importMemberships.map(m => m.parishId));
+  const allowedParishIds = new Set(importMemberships.map((m: any) => m.parishId));
   if (personalWorkspace) allowedParishIds.add(personalWorkspace.id);
 
   // DIOCESE_ADMIN: include all parishes in the diocese
-  if (importMemberships.some(m => m.parishId)) {
+  if (importMemberships.some((m: any) => m.parishId)) {
     const membershipForRole = await context.entities.Membership.findFirst({
       where: { userId: context.user.id, status: 'ACTIVE', role: 'DIOCESE_ADMIN' },
       select: { id: true },
@@ -55,7 +55,7 @@ async function resolveImportParish(context: any, args: { csvData: string; parish
 
   // No parishId: pick automatically if unique, otherwise require explicit
   if (allowedParishIds.size === 1) {
-    return [...allowedParishIds][0];
+    return Array.from(allowedParishIds)[0] as string;
   }
 
   throw new HttpError(400, 'Especifique parishId — você pertence a mais de uma paróquia ou comunidade com permissão de importação.');
