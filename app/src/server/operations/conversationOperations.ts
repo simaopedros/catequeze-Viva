@@ -128,21 +128,26 @@ export const listConversations = async (args: { workspaceId?: string } | void, c
     };
   });
 
-  // Batch compute unread counts
-  const results = await Promise.all(
-    withUnread.map(async (conv: any) => {
-      const unreadCount = await context.entities.Message.count({
+  // Batch compute unread counts — single query instead of N individual counts
+  const convIds = withUnread.map((c: any) => c.id);
+  const allMessages = convIds.length > 0
+    ? await context.entities.Message.findMany({
         where: {
-          conversationId: conv.id,
-          createdAt: { gt: conv._lastReadAt },
+          conversationId: { in: convIds },
           senderId: { not: context.user.id },
           deletedAt: null,
         },
-      });
-      const { _lastReadAt, messages, ...rest } = conv;
-      return { ...rest, lastMessage: conv.lastMessage, unreadCount };
-    })
-  );
+        select: { conversationId: true, createdAt: true },
+      })
+    : [];
+
+  const results = withUnread.map((conv: any) => {
+    const unreadCount = allMessages.filter(
+      (m: any) => m.conversationId === conv.id && m.createdAt > conv._lastReadAt
+    ).length;
+    const { _lastReadAt, messages, ...rest } = conv;
+    return { ...rest, lastMessage: conv.lastMessage, unreadCount };
+  });
 
   return results;
 };

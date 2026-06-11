@@ -140,6 +140,77 @@ export async function resolveEffectiveBilling(
   return parishBilling;
 }
 
+/** Batch version: resolves effective billing for multiple parishes in bulk. */
+export async function resolveAllEffectiveBilling(
+  context: any,
+  parishIds: string[],
+): Promise<Map<string, TenantBillingStub | null>> {
+  const result = new Map<string, TenantBillingStub | null>();
+  if (parishIds.length === 0) return result;
+
+  // Fetch all parishes
+  const parishes = await context.entities.Parish.findMany({
+    where: { id: { in: parishIds } },
+    select: { id: true, dioceseId: true, ownerId: true, type: true },
+  });
+
+  const dioceseIds = [...new Set(parishes.map((p: any) => p.dioceseId).filter(Boolean))];
+  const ownerIds = [...new Set(parishes.map((p: any) => p.ownerId).filter(Boolean))];
+
+  // Batch fetch billings
+  const [dioceseBillings, parishBillings, umbrellaBillings] = await Promise.all([
+    dioceseIds.length > 0
+      ? context.entities.TenantBilling.findMany({
+          where: { dioceseId: { in: dioceseIds } },
+          select: { dioceseId: true, plan: true, status: true, trialEndsAt: true, maxClasses: true, maxCatechumens: true, maxCatechists: true, maxParishes: true },
+        })
+      : [],
+    context.entities.TenantBilling.findMany({
+      where: { parishId: { in: parishIds } },
+      select: { parishId: true, plan: true, status: true, trialEndsAt: true, maxClasses: true, maxCatechumens: true, maxCatechists: true, maxParishes: true },
+    }),
+    ownerIds.length > 0
+      ? context.entities.TenantBilling.findMany({
+          where: { parish: { ownerId: { in: ownerIds }, type: 'PERSONAL' } },
+          select: { plan: true, status: true, trialEndsAt: true, maxClasses: true, maxCatechumens: true, maxCatechists: true, maxParishes: true },
+        })
+      : [],
+  ]);
+
+  // Index for fast lookup
+  const dioceseBillingMap = new Map(dioceseBillings.map((b: any) => [b.dioceseId, b]));
+  const parishBillingMap = new Map(parishBillings.map((b: any) => [b.parishId, b]));
+
+  for (const parish of parishes) {
+    // Diocese umbrella
+    if (parish.dioceseId && dioceseBillingMap.has(parish.dioceseId)) {
+      const db = dioceseBillingMap.get(parish.dioceseId);
+      if (db && isBillingActive(db) && db.plan === 'DIOCESE') {
+        result.set(parish.id, { plan: 'DIOCESE', status: db.status, trialEndsAt: db.trialEndsAt, maxClasses: db.maxClasses, maxCatechumens: db.maxCatechumens, maxCatechists: db.maxCatechists, maxParishes: db.maxParishes });
+        continue;
+      }
+    }
+
+    // Parish billing
+    const pb = parishBillingMap.get(parish.id);
+    if (pb && isBillingActive(pb)) {
+      result.set(parish.id, pb);
+      continue;
+    }
+
+    // Resident catechist umbrella
+    if (parish.type === 'PERSONAL' && parish.ownerId) {
+      result.set(parish.id, null); // Personal workspace — already resolved
+    } else if (parish.ownerId) {
+      result.set(parish.id, pb || null);
+    } else {
+      result.set(parish.id, pb || null);
+    }
+  }
+
+  return result;
+}
+
 /**
  * Decide the TenantBilling for a NEW institutional parish.
  */

@@ -1,6 +1,6 @@
 import { HttpError } from 'wasp/server';
 import { writeAuditLog, getDioceseParishIds, requireDioceseAccess } from '../auth/helpers';
-import { assertCanCreateParish, resolveEffectiveBilling, resolveNewParishBilling } from './billingEnforcement';
+import { assertCanCreateParish, resolveEffectiveBilling, resolveAllEffectiveBilling, resolveNewParishBilling } from './billingEnforcement';
 
 /**
  * Determines whether a parish is already "claimed" by someone other than the
@@ -469,20 +469,22 @@ export const listParishes = async (_args: void, context: any) => {
     });
   }
 
-  const parishesWithResolvedBilling = await Promise.all(
-    parishes.map(async (parish: any) => {
-      const resolvedBilling = await resolveEffectiveBilling(context, parish.id);
-      if (resolvedBilling) {
-        parish.billing = {
-          ...parish.billing,
-          plan: resolvedBilling.plan,
-          status: resolvedBilling.status,
-          trialEndsAt: resolvedBilling.trialEndsAt,
-        };
-      }
-      return parish;
-    })
-  );
+  // Batch-resolve effective billing for all parishes (1 bulk query instead of N individual)
+  const parishIds = parishes.map((p: any) => p.id);
+  const billingMap = await resolveAllEffectiveBilling(context, parishIds);
+
+  const parishesWithResolvedBilling = parishes.map((parish: any) => {
+    const resolvedBilling = billingMap.get(parish.id);
+    if (resolvedBilling) {
+      parish.billing = {
+        ...parish.billing,
+        plan: resolvedBilling.plan,
+        status: resolvedBilling.status,
+        trialEndsAt: resolvedBilling.trialEndsAt,
+      };
+    }
+    return parish;
+  });
 
   return parishesWithResolvedBilling;
 };
