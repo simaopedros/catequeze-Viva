@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { signOut } from '../../client/analytics/himetrica';
 import { getTwoFactorStatus, verifyTwoFactorLogin } from 'wasp/client/operations';
+import { isFamilyPortalHost } from '../../shared/portal';
 import { Button } from '../../client/components/ui/button';
 import { Input } from '../../client/components/ui/input';
 import { Label } from '../../client/components/ui/label';
@@ -48,7 +49,7 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
     } catch {
       // ignore
     }
-    navigate('/login');
+    navigate(isFamilyPortalHost() ? '/entrar' : '/login');
   };
 
   if (checking) {
