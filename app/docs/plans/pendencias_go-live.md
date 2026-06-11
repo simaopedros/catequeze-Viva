@@ -1,7 +1,7 @@
 ---
 name: Pendências Go-Live
-overview: "Checkpoint 11/06 — Produção no ar (v0.1.0, commit 060ee02). Neon, Bunny, VPS, DNS, Stripe live, Resend, Google OAuth, Sentry, OpenAI configurados. Backup diário 03:00 UTC. SSH hardened. Uptime monitoring ativo. Homolog ~95%. Ops ~90%."
-last_updated: 2026-06-11
+overview: "Checkpoint 12/06 — Produção 100%. Homolog 100%. Segurança auditada (6 críticos corrigidos). UX corrigido. i18n 100% (33 namespaces, 3 idiomas, pt-BR sempre br). Landing pages (4 páginas). Performance N+1 eliminado. 78 correções totais."
+last_updated: 2026-06-12
 ---
 
 # Pendências Go-Live — Catequese Viva

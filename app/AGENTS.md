@@ -66,7 +66,15 @@ Key dev vars:
 - **Multi-tenant**: Diocese → Parish → Community → Class. `ParishType` enum distinguishes PERSONAL (individual catechist), PARISH, DIOCESE, COMMUNITY workspaces.
 - **shadcn/ui** components live in `src/client/components/ui/` (new-york style, lucide icons).
 - **Tailwind CSS v4** with `@tailwindcss/vite` plugin. Uses CSS variables for theming.
-- **i18n**: i18next with locale files under `src/i18n/`. Default locale is `pt-BR`. Run `npm run i18n:check` in CI.
+- **i18n**: i18next with 33 namespaces under `src/i18n/locales/`. Default locale is `pt-BR` (NEVER use `pt` without `-BR`). Run `npm run i18n:check` in CI. Supported: pt-BR, en, es. Fallback: pt-BR.
+  - Add new keys: create JSON in all 3 locales, add namespace to `config.ts`, run `npm run i18n:build && npm run i18n:check`.
+  - Components use `useTranslation('namespace')`. Section components accept optional `ns` prop override.
+- **Landing pages**: 4 pages serving different audiences:
+  - `/` — Principal (todos os públicos), namespace `landing`
+  - `/sistema` — Google Ads (gestão), namespace `landingSistema`
+  - `/ia` — Google Ads (IA), namespace `landingIa`
+  - `/presenca` — Google Ads (presença), namespace `landingPresenca`
+  - Section components in `src/landing-page/components/` accept `ns` prop. Each landing reorders sections via `order` prop on `FeaturesSection`.
 - **AI features**: AI-generated content, meeting plans, chat. Rate-limited by `UserAiCredits` and `DailyAiUsage`. OpenAI via `src/server/ai/`.
 - **Billing**: Stripe + LemonSqueezy + Polar + Woovi (PIX). Plans in `src/shared/pricing.ts`. Limits enforced in `src/shared/planLimits.ts`.
 - **CI** (`.github/workflows/ci.yml`): `npm run i18n:check` then `npm run test:unit`, plus `wasp compile`.
