@@ -16,7 +16,7 @@ export default function LandingSistema() {
       <PublicNavbar />
       <main className="flex-1">
         <HeroSection ns={NS} />
-        <FeaturesSection ns={NS} order={["attendance","dashboard","family","sacraments","library","ai"]} />
+        <FeaturesSection ns={NS} order={["attendance","dashboard","family-portal","sacraments","library","ai-planner"]} />
         <PersonasSection ns={NS} />
         <StepsSection ns={NS} />
         <PricingPreviewSection ns={NS} />

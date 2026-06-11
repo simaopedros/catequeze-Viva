@@ -19,7 +19,7 @@ export default function LandingIa() {
       <main className="flex-1">
         <HeroSection ns={NS} />
         <AiShowcaseSection ns={NS} />
-        <FeaturesSection ns={NS} order={["ai","library","attendance","family","dashboard","sacraments"]} />
+        <FeaturesSection ns={NS} order={["ai-planner","library","attendance","family-portal","dashboard","sacraments"]} />
         <MissionSection ns={NS} />
         <PersonasSection ns={NS} />
         <StepsSection ns={NS} />

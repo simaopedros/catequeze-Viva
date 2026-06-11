@@ -12,9 +12,9 @@
   "features_subtitle": "From recording to justification — all integrated and real-time.",
   "features_order": [
     "attendance",
-    "family",
+    "family-portal",
     "dashboard",
-    "ai",
+    "ai-planner",
     "library",
     "sacraments"
   ],

@@ -16,7 +16,7 @@ export default function LandingPresenca() {
       <PublicNavbar />
       <main className="flex-1">
         <HeroSection ns={NS} />
-        <FeaturesSection ns={NS} order={["attendance","family","dashboard","ai","library","sacraments"]} />
+        <FeaturesSection ns={NS} order={["attendance","family-portal","dashboard","ai-planner","library","sacraments"]} />
         <PersonasSection ns={NS} />
         <StepsSection ns={NS} />
         <PricingPreviewSection ns={NS} />

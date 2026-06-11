@@ -21,7 +21,7 @@ export function FeaturesSection({ ns = 'landing', order }: { ns?: string; order?
       <div className="divide-y divide-border/50">
         {(order
           ? order.map(id => {
-              const s = SHOWCASES.find(sc => sc.id === id || (id === 'ai' && sc.id === 'ai-planner') || (id === 'ai-planner' && sc.id === 'ai'));
+              const s = SHOWCASES.find(sc => sc.id === id);
               return s ? <FeatureShowcase key={s.id} showcase={s} ns={ns} /> : null;
             }).filter(Boolean)
           : SHOWCASES.map((showcase) => (

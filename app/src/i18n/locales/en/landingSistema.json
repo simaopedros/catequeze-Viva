@@ -12,10 +12,10 @@
   "features_order": [
     "attendance",
     "dashboard",
-    "family",
+    "family-portal",
     "sacraments",
     "library",
-    "ai"
+    "ai-planner"
   ],
   "ai_showcase_title": "And also: AI-powered meeting preparation",
   "ai_showcase_subtitle": "Beyond management, the platform includes AI to create meeting scripts in seconds."

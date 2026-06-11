@@ -12,10 +12,10 @@
   "features_order": [
     "attendance",
     "dashboard",
-    "family",
+    "family-portal",
     "sacraments",
     "library",
-    "ai"
+    "ai-planner"
   ],
   "ai_showcase_title": "E também: preparação de encontros com IA",
   "ai_showcase_subtitle": "Além da gestão, a plataforma inclui IA para criar roteiros de encontros em segundos."

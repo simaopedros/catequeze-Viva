@@ -12,9 +12,9 @@
   "features_subtitle": "Do registro à justificativa — tudo integrado e em tempo real.",
   "features_order": [
     "attendance",
-    "family",
+    "family-portal",
     "dashboard",
-    "ai",
+    "ai-planner",
     "library",
     "sacraments"
   ],

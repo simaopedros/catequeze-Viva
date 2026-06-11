@@ -11,10 +11,10 @@
   "features_title": "IA que entende de catequese",
   "features_subtitle": "Treinada com a Bíblia CNBB, o Catecismo e o Diretório para a Catequese.",
   "features_order": [
-    "ai",
+    "ai-planner",
     "library",
     "attendance",
-    "family",
+    "family-portal",
     "dashboard",
     "sacraments"
   ],

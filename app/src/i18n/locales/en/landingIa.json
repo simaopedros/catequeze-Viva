@@ -11,10 +11,10 @@
   "features_title": "AI that understands catechesis",
   "features_subtitle": "Trained on the CNBB Bible, the Catechism and the Directory for Catechesis.",
   "features_order": [
-    "ai",
+    "ai-planner",
     "library",
     "attendance",
-    "family",
+    "family-portal",
     "dashboard",
     "sacraments"
   ],
