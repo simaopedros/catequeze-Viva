@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { login } from 'wasp/client/auth';
-import { GoogleSignInButton } from 'wasp/client/auth/ui';
+import { googleSignInUrl } from 'wasp/client/auth';
 import { signOut } from '../client/analytics/himetrica';
 import { useNavigate } from 'react-router';
 import { Button } from '../client/components/ui/button';
@@ -226,7 +226,9 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
           <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground">ou</span></div>
         </div>
 
-        <GoogleSignInButton />
+        <a href={googleSignInUrl} className="block w-full rounded-lg border border-input bg-background h-10 px-4 py-2 text-sm font-medium text-center hover:bg-muted/30 transition-colors">
+          Entrar com Google
+        </a>
       </form>
 
       <p className="text-center text-sm text-muted-foreground">
