@@ -54,7 +54,7 @@ export default function ParishMembersPage() {
   const canManageRoles = isAdmin || ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'].includes(userRole);
   const { data: members = [], isLoading: loading } = useQuery(listParishMembers, { parishId: parishId! });
   const { data: communities = [] } = useQuery(listCommunities, { parishId: parishId! });
-  const { data: households = [] } = useQuery(listHouseholds, {});
+  const { data: households = [] } = useQuery(listHouseholds, { parishId: parishId! } as any);
   const [error, setError] = useState('');
   const [showInvite, setShowInvite] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');

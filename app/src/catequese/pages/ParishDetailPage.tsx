@@ -27,7 +27,7 @@ export default function ParishDetailPage() {
   const { data: parish, isLoading: loading } = useQuery(getParishById, { id: parishId! });
   const { data: communities = [] } = useQuery(listCommunities, { parishId: parishId! });
   const { data: members = [] } = useQuery(listParishMembers, { parishId: parishId! });
-  const { data: households = [] } = useQuery(listHouseholds, {});
+  const { data: households = [] } = useQuery(listHouseholds, { parishId: parishId! } as any);
   const [error, setError] = useState('');
   const [tab, setTab] = useState<Tab>('info');
 

@@ -21,7 +21,7 @@ export default function CommunityDetailPage() {
   const community = communities.find((c: any) => c.id === id);
 
   const { data: classes = [] } = useQuery(listClasses, { communityId: id! } as any);
-  const { data: households = [] } = useQuery(listHouseholds, { communityId: id! } as any);
+  const { data: households = [] } = useQuery(listHouseholds, { communityId: id!, parishId: community?.parishId } as any);
 
   const [tab, setTab] = useState<'turmas' | 'familias' | 'catequistas'>('turmas');
 
