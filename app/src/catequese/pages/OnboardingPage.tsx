@@ -182,7 +182,8 @@ export default function OnboardingPage() {
         return `/app/billing?plan=${intended}`;
       }
     }
-    return accountType === 'personal' ? '/app/select-workspace' : '/app';
+    // Personal: go directly to dashboard (skip workspace selector, it's redundant)
+    return '/app';
   };
 
   const stepLabels = [

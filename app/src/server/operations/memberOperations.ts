@@ -3,6 +3,30 @@ import { sendInviteEmailJob } from 'wasp/server/jobs';
 import { requireAuth, writeAuditLog, getDioceseParishIds } from '../auth/helpers';
 import { logger } from '../logger';
 
+// ── Simple rate limiter for public invite token endpoint ───────────────────
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT_MAX = 10; // max attempts per minute
+const RATE_LIMIT_WINDOW = 60_000; // 1 minute
+
+function checkRateLimit(ip: string): void {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+  if (entry && entry.resetAt > now) {
+    if (entry.count >= RATE_LIMIT_MAX) {
+      throw new HttpError(429, 'Muitas tentativas. Tente novamente em breve.');
+    }
+    entry.count++;
+  } else {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW });
+  }
+  // Cleanup old entries periodically
+  if (rateLimitMap.size > 1000) {
+    for (const [k, v] of rateLimitMap) {
+      if (v.resetAt <= now) rateLimitMap.delete(k);
+    }
+  }
+}
+
 // ── Role hierarchy ────────────────────────────────────────────────────────
 
 /**
@@ -413,6 +437,12 @@ export const getInvitationByToken = async (
   args: { token: string },
   context: any
 ) => {
+  // Rate limit to prevent token enumeration
+  const ip = (context.req?.headers?.['x-forwarded-for'] as string)?.split(',')[0]?.trim()
+    || (context.req?.socket?.remoteAddress as string)
+    || 'unknown';
+  checkRateLimit(ip);
+
   // 1) Try PendingInvitation (for emails without accounts yet)
   let invitation = await context.entities.PendingInvitation.findUnique({
     where: { token: args.token },

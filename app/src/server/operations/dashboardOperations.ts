@@ -66,16 +66,13 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
   // Catechists: scope attendance stats to their own classes, not whole parish
   const isCatechistOnly = !isAdmin && !roles.some((r: string) =>
     ['PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'DIOCESE_ADMIN', 'PERSONAL_OWNER'].includes(r));
-  let attendanceWhereClause = whereClause;
+  let myClassIds: string[] | null = null;
   if (isCatechistOnly) {
     const myClassLinks = await context.entities.ClassCatechist.findMany({
       where: { userId: context.user.id },
       select: { classId: true },
     });
-    const myClassIds = myClassLinks.map((c: any) => c.classId);
-    if (myClassIds.length > 0) {
-      attendanceWhereClause = { id: { in: myClassIds } };
-    }
+    myClassIds = myClassLinks.map((c: any) => c.classId);
   }
 
   // For GUARDIAN, scope catechumen-related stats to household
@@ -83,10 +80,12 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
     ? { householdId: guardianHouseholdId }
     : whereClause;
 
+  const classWhereClause = myClassIds && myClassIds.length > 0 ? { id: { in: myClassIds } } : whereClause;
+
   const [activeClasses, enrolledCatechumens] = await Promise.all([
-    context.entities.CatechesisClass.count({ where: { ...whereClause, status: 'ACTIVE' } }),
+    context.entities.CatechesisClass.count({ where: { ...classWhereClause, status: 'ACTIVE' } }),
     context.entities.ClassEnrollment.findMany({
-      where: { status: 'ENROLLED', class: whereClause, catechumenProfileId: { not: null } },
+      where: { status: 'ENROLLED', class: classWhereClause, catechumenProfileId: { not: null } },
       select: { catechumenProfileId: true },
       distinct: ['catechumenProfileId'],
     }),
@@ -103,7 +102,9 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
   let avgAttendance = 0;
   const attendanceWhere = guardianHouseholdId
     ? { meeting: { class: { enrollments: { some: { catechumenProfile: { householdId: guardianHouseholdId } } } } } }
-    : { meeting: { class: attendanceWhereClause } };
+    : myClassIds && myClassIds.length > 0
+      ? { meeting: { classId: { in: myClassIds } } }
+      : { meeting: { class: whereClause } };
   const attendanceTotal = await context.entities.AttendanceRecord.count({
     where: { status: 'PRESENT', ...attendanceWhere },
   });

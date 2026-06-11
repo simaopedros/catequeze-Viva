@@ -657,8 +657,9 @@ export const getOrCreateClassChat = async (
   });
   if (!classData) throw new HttpError(404, 'Turma não encontrada.');
 
+  let membership: any = null;
   if (!context.user.isAdmin) {
-    const membership = await context.entities.Membership.findFirst({
+    membership = await context.entities.Membership.findFirst({
       where: { userId: context.user.id, parishId: classData.parishId, status: 'ACTIVE' },
     });
     if (!membership) {

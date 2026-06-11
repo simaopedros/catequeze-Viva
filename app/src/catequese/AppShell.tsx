@@ -61,7 +61,7 @@ export function AppShell({ children }: AppShellProps) {
       navigate('/app/select-workspace');
       return;
     }
-    if (needsOnboarding && !path.includes('/onboarding') && !path.includes('/select-workspace')) {
+    if (needsOnboarding && !path.includes('/onboarding') && !path.includes('/select-workspace') && !path.includes('/billing')) {
       navigate('/app/onboarding');
     }
   }, [isLoading, isFetching, needsOnboarding, hasPendingInvitations, isFamilyOnlyRole, location.pathname, navigate]);
