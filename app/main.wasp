@@ -78,6 +78,7 @@ app OpenSaaS {
       // Populates the database with a bunch of fake users to work with during development.
       import { seedMockUsers } from "@src/server/scripts/dbSeeds",
       import { seedBibleAndCatechism } from "@src/server/scripts/bibleCatechismSeed",
+      import { seedJourneyTemplates } from "@src/server/scripts/journeyTemplateSeed",
     ]
   },
 
