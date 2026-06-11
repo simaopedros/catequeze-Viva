@@ -25,20 +25,25 @@ export function AppShell({ children }: AppShellProps) {
 
   const isFamily = useMemo(() => isFamilyPortalHost(), []);
 
+  // User is "family-only" if ALL their roles are GUARDIAN or CATECHUMEN.
+  // A user who is ALSO a catechist/coordinator keeps full access to the staff portal.
   const isFamilyOnlyRole = userRole === 'GUARDIAN' || userRole === 'CATECHUMEN';
+  const hasStaffRole = isFamilyOnlyRole
+    ? memberships.some((m: any) => !['GUARDIAN', 'CATECHUMEN'].includes(m.role))
+    : true;
 
-  // GUARDIAN/CATECHUMEN on staff host → redirect to family portal
+  // GUARDIAN/CATECHUMEN on staff host → redirect to family portal (only if no staff role)
   useEffect(() => {
     if (isLoading || isFetching) return;
-    if (isFamilyOnlyRole && !isFamily) {
+    if (isFamilyOnlyRole && !hasStaffRole && !isFamily) {
       window.location.href = familyPortalUrl('/app');
     }
-  }, [isLoading, isFetching, isFamilyOnlyRole, isFamily]);
+  }, [isLoading, isFetching, isFamilyOnlyRole, hasStaffRole, isFamily]);
 
-  // Auto-accept INVITED memberships for GUARDIAN/CATECHUMEN (they skip workspace selector)
+  // Auto-accept INVITED memberships for GUARDIAN/CATECHUMEN (only if no staff role)
   useEffect(() => {
     if (isLoading || isFetching) return;
-    if (!isFamilyOnlyRole) return;
+    if (!isFamilyOnlyRole || hasStaffRole) return;
     if (autoAcceptedRef.current) return;
     const invited = memberships.filter((m: any) => m.status === 'INVITED');
     if (invited.length === 0) return;
