@@ -1,9 +1,7 @@
-export function getFamilyPortalHost(): string {
-  return process.env.FAMILY_PORTAL_HOST || 'familia.catechis.app';
-}
+import { FAMILY_PORTAL_HOST } from '../../shared/portal';
 
 export function inviteLink(token: string): string {
-  return `https://${getFamilyPortalHost()}/convite/${token}`;
+  return `https://${FAMILY_PORTAL_HOST}/convite/${token}`;
 }
 
 export function roleLabel(role: string): string {
