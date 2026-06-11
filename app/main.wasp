@@ -847,12 +847,12 @@ query getDirectoryEntry {
 
 action addDirectoryRef {
   fn: import { addDirectoryRef } from "@src/server/operations/directoryOperations",
-  entities: [ContentDirectoryReference, ContentItem, DirectoryEntry]
+  entities: [ContentDirectoryReference, ContentItem, DirectoryEntry, Membership, Parish]
 }
 
 action removeDirectoryRef {
   fn: import { removeDirectoryRef } from "@src/server/operations/directoryOperations",
-  entities: [ContentDirectoryReference]
+  entities: [ContentDirectoryReference, ContentItem, Membership, Parish]
 }
 
 action removeCatechismRef {
