@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useState, useMemo } from 'react';
 import { Search } from 'lucide-react';
 
@@ -57,7 +58,7 @@ export function ContentSelector({
           <div className="flex items-center border-b px-3 py-2">
             <Search className="h-3.5 w-3.5 text-muted-foreground mr-2" />
             <input
-              placeholder="Buscar..."
+              placeholder={t("search") || "Buscar..."}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="flex-1 bg-transparent text-sm outline-none"

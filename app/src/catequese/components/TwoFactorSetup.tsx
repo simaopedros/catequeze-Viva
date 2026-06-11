@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { startTwoFactorSetup, verifyTwoFactorSetup, disableTwoFactor, getTwoFactorStatus } from 'wasp/client/operations';
 import { Button } from '../../client/components/ui/button';
 import { Input } from '../../client/components/ui/input';
 import { Shield, ShieldCheck, ShieldAlert, Loader2, QrCode, Key, Trash2 } from 'lucide-react';
 
 export default function TwoFactorSetup() {
+  const { t } = useTranslation('common');
   const [status, setStatus] = useState<{ enabled: boolean; required: boolean }>({ enabled: false, required: false });
   const [loading, setLoading] = useState(true);
   const [setupStep, setSetupStep] = useState<'idle' | 'qr' | 'verify'>('idle');
@@ -146,15 +148,15 @@ export default function TwoFactorSetup() {
             <Input
               value={token}
               onChange={e => setToken(e.target.value.replace(/\D/g, '').slice(0, 6))}
-              placeholder="Código de 6 dígitos"
+              placeholder={t("two_factor_code_placeholder") || "Código de 6 dígitos"}
               maxLength={6}
               className="font-mono text-center tracking-widest"
               disabled={actionLoading}
             />
             <Button size="sm" onClick={handleVerifySetup} disabled={actionLoading || token.length !== 6}>
-              {actionLoading ? <Loader2 className="h-3 w-3 animate-spin"/> : 'Verificar'}
+              {actionLoading ? <Loader2 className="h-3 w-3 animate-spin"/> : t('verify') || 'Verificar'}
             </Button>
-            <Button size="sm" variant="outline" onClick={handleCancelSetup} disabled={actionLoading}>Cancelar</Button>
+            <Button size="sm" variant="outline" onClick={handleCancelSetup} disabled={actionLoading}>{t('cancel')}</Button>
           </div>
         </div>
       )}
@@ -169,7 +171,7 @@ export default function TwoFactorSetup() {
             <Input
               value={disableToken}
               onChange={e => setDisableToken(e.target.value.replace(/\D/g, '').slice(0, 6))}
-              placeholder="Código de 6 dígitos"
+              placeholder={t("two_factor_code_placeholder") || "Código de 6 dígitos"}
               maxLength={6}
               className="font-mono text-center tracking-widest max-w-[160px]"
               disabled={actionLoading}

@@ -398,5 +398,11 @@
     "name_placeholder": "Ex: Família Silva",
     "create_family": "Criar família",
     "create_new_family": "Criar nova família"
-  }
+  },
+  "global_search_placeholder": "Buscar catequizandos, turmas, conteúdos, Bíblia...",
+  "two_factor_code_placeholder": "Código de 6 dígitos",
+  "ai_helper_placeholder": "Tire sua dúvida teológica...",
+  "ai_helper_title": "Assistente Teológico",
+  "ai_helper_useful": "Resposta útil",
+  "ai_helper_not_useful": "Resposta não foi útil"
 }

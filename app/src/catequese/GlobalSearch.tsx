@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { useQuery, globalSearch } from 'wasp/client/operations';
 import { Search, BookMarked, Users, GraduationCap, Home, ScrollText, Library, FileText, Church, Building2, FolderOpen, X, CornerDownLeft } from 'lucide-react';
 import {
@@ -49,6 +50,7 @@ export function GlobalSearch({ open, onClose }: GlobalSearchProps) {
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
 
   // Debounce query
@@ -145,7 +147,7 @@ export function GlobalSearch({ open, onClose }: GlobalSearchProps) {
               setQuery(e.target.value);
               setSelectedIndex(0);
             }}
-            placeholder="Buscar catequizandos, turmas, conteúdos, Bíblia..."
+            placeholder={t('global_search_placeholder') || 'Buscar...'}
             className="flex-1 bg-transparent border-none outline-none text-sm placeholder:text-muted-foreground/60"
           />
           {query && (

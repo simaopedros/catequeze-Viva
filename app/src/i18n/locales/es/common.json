@@ -163,10 +163,22 @@
     "authorize": "Autorizo",
     "deny": "Niego",
     "types": {
-      "IMAGE_USAGE": { "label": "Uso de imagen", "desc": "Autorizo el uso de fotos y vídeos en actividades de catequesis." },
-      "COMMUNICATION": { "label": "Comunicación", "desc": "Autorizo recibir comunicados por correo y notificaciones." },
-      "DOCUMENTS": { "label": "Documentos", "desc": "Autorizo el almacenamiento de documentos y certificados." },
-      "SENSITIVE_DATA": { "label": "Datos sensibles", "desc": "Autorizo el tratamiento de datos sensibles conforme a la LGPD." }
+      "IMAGE_USAGE": {
+        "label": "Uso de imagen",
+        "desc": "Autorizo el uso de fotos y vídeos en actividades de catequesis."
+      },
+      "COMMUNICATION": {
+        "label": "Comunicación",
+        "desc": "Autorizo recibir comunicados por correo y notificaciones."
+      },
+      "DOCUMENTS": {
+        "label": "Documentos",
+        "desc": "Autorizo el almacenamiento de documentos y certificados."
+      },
+      "SENSITIVE_DATA": {
+        "label": "Datos sensibles",
+        "desc": "Autorizo el tratamiento de datos sensibles conforme a la LGPD."
+      }
     }
   },
   "documents": {
@@ -386,5 +398,11 @@
     "name_placeholder": "Ej: Familia García",
     "create_family": "Crear familia",
     "create_new_family": "Crear nueva familia"
-  }
+  },
+  "global_search_placeholder": "Buscar catequizandos, clases, contenidos, Biblia...",
+  "two_factor_code_placeholder": "Código de 6 dígitos",
+  "ai_helper_placeholder": "Haga su pregunta teológica...",
+  "ai_helper_title": "Asistente Teológico",
+  "ai_helper_useful": "Respuesta útil",
+  "ai_helper_not_useful": "Respuesta no útil"
 }

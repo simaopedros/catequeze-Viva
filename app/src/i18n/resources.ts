@@ -2295,7 +2295,13 @@ export const common_pt_BR = {
       "name_placeholder": "Ex: Família Silva",
       "create_family": "Criar família",
       "create_new_family": "Criar nova família"
-    }
+    },
+    "global_search_placeholder": "Buscar catequizandos, turmas, conteúdos, Bíblia...",
+    "two_factor_code_placeholder": "Código de 6 dígitos",
+    "ai_helper_placeholder": "Tire sua dúvida teológica...",
+    "ai_helper_title": "Assistente Teológico",
+    "ai_helper_useful": "Resposta útil",
+    "ai_helper_not_useful": "Resposta não foi útil"
   } as const;
 
 export const common_en = {
@@ -2698,7 +2704,13 @@ export const common_en = {
       "name_placeholder": "Ex: Smith Family",
       "create_family": "Create family",
       "create_new_family": "Create new family"
-    }
+    },
+    "global_search_placeholder": "Search catechumens, classes, content, Bible...",
+    "two_factor_code_placeholder": "6-digit code",
+    "ai_helper_placeholder": "Ask a theological question...",
+    "ai_helper_title": "Theological Assistant",
+    "ai_helper_useful": "Helpful answer",
+    "ai_helper_not_useful": "Not helpful"
   } as const;
 
 export const common_es = {
@@ -3101,7 +3113,13 @@ export const common_es = {
       "name_placeholder": "Ej: Familia García",
       "create_family": "Crear familia",
       "create_new_family": "Crear nueva familia"
-    }
+    },
+    "global_search_placeholder": "Buscar catequizandos, clases, contenidos, Biblia...",
+    "two_factor_code_placeholder": "Código de 6 dígitos",
+    "ai_helper_placeholder": "Haga su pregunta teológica...",
+    "ai_helper_title": "Asistente Teológico",
+    "ai_helper_useful": "Respuesta útil",
+    "ai_helper_not_useful": "Respuesta no útil"
   } as const;
 
 export const components_pt_BR = {

@@ -163,10 +163,22 @@
     "authorize": "I authorize",
     "deny": "I deny",
     "types": {
-      "IMAGE_USAGE": { "label": "Image usage", "desc": "I authorize the use of photos and videos in catechesis activities." },
-      "COMMUNICATION": { "label": "Communication", "desc": "I authorize receiving messages by email and notifications." },
-      "DOCUMENTS": { "label": "Documents", "desc": "I authorize storing documents and certificates." },
-      "SENSITIVE_DATA": { "label": "Sensitive data", "desc": "I authorize processing sensitive data in accordance with LGPD." }
+      "IMAGE_USAGE": {
+        "label": "Image usage",
+        "desc": "I authorize the use of photos and videos in catechesis activities."
+      },
+      "COMMUNICATION": {
+        "label": "Communication",
+        "desc": "I authorize receiving messages by email and notifications."
+      },
+      "DOCUMENTS": {
+        "label": "Documents",
+        "desc": "I authorize storing documents and certificates."
+      },
+      "SENSITIVE_DATA": {
+        "label": "Sensitive data",
+        "desc": "I authorize processing sensitive data in accordance with LGPD."
+      }
     }
   },
   "documents": {
@@ -386,5 +398,11 @@
     "name_placeholder": "Ex: Smith Family",
     "create_family": "Create family",
     "create_new_family": "Create new family"
-  }
+  },
+  "global_search_placeholder": "Search catechumens, classes, content, Bible...",
+  "two_factor_code_placeholder": "6-digit code",
+  "ai_helper_placeholder": "Ask a theological question...",
+  "ai_helper_title": "Theological Assistant",
+  "ai_helper_useful": "Helpful answer",
+  "ai_helper_not_useful": "Not helpful"
 }
