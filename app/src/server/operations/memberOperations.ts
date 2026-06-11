@@ -1,6 +1,7 @@
 import { HttpError } from 'wasp/server';
 import { sendInviteEmailJob } from 'wasp/server/jobs';
 import { requireAuth, writeAuditLog, getDioceseParishIds } from '../auth/helpers';
+import { logger } from '../logger';
 
 // ── Role hierarchy ────────────────────────────────────────────────────────
 
@@ -56,11 +57,11 @@ async function sendInviteEmail(
   try {
     await sendInviteEmailJob.submit(payload);
   } catch (e) {
-    console.error('Fila de convite indisponível, envio síncrono:', e);
+    logger.warn('[memberOperations] Fila de convite indisponível, envio síncrono', { error: String(e) });
     try {
       await deliverInviteEmail(payload, context);
     } catch (syncErr) {
-      console.error('Erro ao enviar email de convite:', syncErr);
+      logger.error('[memberOperations] Erro ao enviar email de convite', { error: String(syncErr) });
     }
   }
 }

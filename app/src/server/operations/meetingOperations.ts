@@ -1,5 +1,6 @@
 import { HttpError } from 'wasp/server';
 import { MembershipStatus } from '@prisma/client';
+import { logger } from '../logger';
 
 function isCoordinatorOrAbove(role: string | null): boolean {
   if (!role) return false;
@@ -118,7 +119,7 @@ export const createMeeting = async (args: any, context: any) => {
       },
     });
   } catch (e: any) {
-    console.error('createMeeting error:', e.message, JSON.stringify(args));
+    logger.warn('[meetingOps] createMeeting error', { error: e.message });
     throw new HttpError(500, 'Erro ao criar encontro: ' + e.message);
   }
 };

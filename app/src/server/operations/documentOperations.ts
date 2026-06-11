@@ -1,6 +1,7 @@
 import { HttpError } from 'wasp/server';
 import { validateOrThrow, uploadDocumentSchema, verifyDocumentSchema } from '../validation';
 import { requireAuth, writeAuditLog, getDioceseParishIds } from '../auth/helpers';
+import { logger } from '../logger';
 import { storeDocumentFile, deleteDocumentFile } from '../storage/documentStorage';
 import {
   MAX_FILE_SIZE_BYTES,
@@ -223,7 +224,7 @@ export const uploadDocument = async (
       });
     } catch (err) {
       if (err instanceof HttpError) throw err;
-      console.error('Erro ao salvar arquivo:', err);
+      logger.error('[documentOps] Erro ao salvar arquivo', { error: String(err) });
       throw new HttpError(500, 'Erro ao processar o arquivo enviado.');
     }
   }
