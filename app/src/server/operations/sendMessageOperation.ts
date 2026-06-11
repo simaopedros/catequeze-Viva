@@ -27,13 +27,18 @@ export const sendMessageEmail = async (args: { to: string; subject: string; body
   const safeSubject = escapeHtml(args.subject);
   const safeBody = escapeHtml(args.body).replace(/\n/g, '<br>');
 
-  const { data, error } = await resend.emails.send({
-    from: 'Catequese Viva <noreply@catechis.app>',
-    to: args.to,
-    subject: args.subject,
-    html: '<div style="font-family:sans-serif;max-width:600px;margin:0 auto"><h2>' + safeSubject + '</h2><p>' + safeBody + '</p><hr/><p style="color:#666;font-size:12px">Enviado pela Catequese Viva</p></div>',
-  });
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'Catequese Viva <noreply@catechis.app>',
+      to: args.to,
+      subject: args.subject,
+      html: '<div style="font-family:sans-serif;max-width:600px;margin:0 auto"><h2>' + safeSubject + '</h2><p>' + safeBody + '</p><hr/><p style="color:#666;font-size:12px">Enviado pela Catequese Viva</p></div>',
+    });
 
-  if (error) throw new HttpError(500, 'Falha no envio: ' + error.message);
-  return { success: true, id: data?.id };
+    if (error) throw new HttpError(500, 'Falha no envio: ' + error.message);
+    return { success: true, id: data?.id };
+  } catch (e: any) {
+    if (e instanceof HttpError) throw e;
+    throw new HttpError(500, 'Falha ao conectar ao serviço de email: ' + (e.message || 'Erro de rede'));
+  }
 };

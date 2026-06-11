@@ -236,10 +236,7 @@ export const updateMeeting = async (args: any, context: any) => {
     }
   }
 
-  // Allow setting contentId to null to unlink
-  if (args.contentId === null) {
-    args.contentId = null;
-  }
+  // Unlink content by passing null contentId — handled by the spread below
 
   const { id, ...data } = args;
 

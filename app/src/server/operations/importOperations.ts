@@ -76,6 +76,8 @@ export const importCatechumensCSV = async (
   const dataLines = lines.slice(1);
   const results = { created: 0, errors: 0, details: [] as string[] };
 
+  const toCreate: { firstName: string; lastName: string; birthDate: Date | null; parishId: string }[] = [];
+
   for (let i = 0; i < dataLines.length; i++) {
     const line = dataLines[i].trim();
     if (!line) continue;
@@ -94,20 +96,23 @@ export const importCatechumensCSV = async (
       continue;
     }
 
-    try {
-      await context.entities.CatechumenProfile.create({
-        data: {
-          firstName,
-          lastName,
-          birthDate: birthDate ? new Date(birthDate) : null,
-          parishId,
-        },
-      });
-      results.created++;
-    } catch (e: any) {
-      results.errors++;
-      results.details.push(`Linha ${i + 2}: ${e.message}`);
+    toCreate.push({
+      firstName,
+      lastName,
+      birthDate: birthDate ? new Date(birthDate) : null,
+      parishId,
+    });
+  }
+
+  // Bulk insert for performance
+  try {
+    if (toCreate.length > 0) {
+      await context.entities.CatechumenProfile.createMany({ data: toCreate });
+      results.created = toCreate.length;
     }
+  } catch (e: any) {
+    results.errors += toCreate.length;
+    results.details.push(`Erro ao criar ${toCreate.length} catequizandos: ${e.message}`);
   }
 
   return results;
