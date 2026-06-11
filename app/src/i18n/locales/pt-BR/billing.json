@@ -49,48 +49,90 @@
   "cancel_success": "Assinatura cancelada.",
   "cancel_error": "Erro ao cancelar. Contacte o suporte.",
   "cancel_dialog_title": "Cancelar assinatura",
-  "cancel_dialog_desc": "Tens a certeza que queres cancelar a tua assinatura? Perderás o acesso aos recursos premium no final do período atual.",
+  "cancel_dialog_desc": "Tem certeza que deseja cancelar a sua assinatura?",
   "cancel_confirm": "Sim, cancelar",
   "cancel_keep": "Manter assinatura",
   "free": "Grátis",
   "monthly": "Mensal",
   "annual": "Anual",
-  "annual_savings": "17% off",
+  "annual_savings": "17% de desconto",
   "plans": {
     "catechist_free": {
       "name": "Catequista Grátis",
       "price": "Grátis",
-      "features": ["1 turma", "15 catequizandos", "Presença básica", "Calendário litúrgico", "3 créditos IA iniciais"]
+      "features": [
+        "1 turma",
+        "15 catequizandos",
+        "Presença básica",
+        "Calendário litúrgico",
+        "3 créditos IA iniciais"
+      ]
     },
     "catechist_pro": {
       "name": "Catequista Pro",
       "price": "$5/mês",
       "annual_price": "$50/ano ($4.17/mês)",
-      "features": ["3 turmas", "150 catequizandos", "Relatórios avançados", "Suporte prioritário", "5 créditos IA/mês"]
+      "features": [
+        "3 turmas",
+        "150 catequizandos",
+        "Relatórios avançados",
+        "Suporte prioritário",
+        "5 créditos IA/mês"
+      ]
     },
     "catechist_ai": {
       "name": "Catequista IA",
       "price": "$9/mês",
       "annual_price": "$90/ano ($7.50/mês)",
-      "features": ["Tudo do Pro", "Gerador de encontros por IA", "Planejamento anual automático", "Atividades e quizzes", "Assistente teológico", "Mensagens WhatsApp", "20 créditos/mês"]
+      "features": [
+        "Tudo do Pro",
+        "Gerador de encontros por IA",
+        "Planejamento anual automático",
+        "Atividades e quizzes",
+        "Assistente teológico",
+        "Mensagens WhatsApp",
+        "20 créditos/mês"
+      ]
     },
     "parish_essential": {
       "name": "Paróquia Essencial",
       "price": "$19/mês",
       "annual_price": "$190/ano ($15.83/mês)",
-      "features": ["5 catequistas", "200 catequizandos", "Turmas ilimitadas", "Comunicação integrada", "Documentos e certidões", "Painel do coordenador", "30 créditos IA/mês"]
+      "features": [
+        "5 catequistas",
+        "200 catequizandos",
+        "Turmas ilimitadas",
+        "Comunicação integrada",
+        "Documentos e certidões",
+        "Painel do coordenador",
+        "30 créditos IA/mês"
+      ]
     },
     "parish_complete": {
       "name": "Paróquia Completa",
       "price": "$29/mês",
       "annual_price": "$290/ano ($24.17/mês)",
-      "features": ["Catequistas ilimitados", "Catequizandos ilimitados", "Tudo da Essencial", "API de integração", "Onboarding dedicado", "50 créditos IA/mês"]
+      "features": [
+        "Catequistas ilimitados",
+        "Catequizandos ilimitados",
+        "Tudo da Essencial",
+        "API de integração",
+        "Onboarding dedicado",
+        "50 créditos IA/mês"
+      ]
     },
     "diocese": {
       "name": "Diocese",
       "price": "$99/mês",
       "annual_price": "$990/ano ($82.50/mês)",
-      "features": ["Até 10 paróquias", "Tudo da Completa", "Biblioteca oficial", "Analytics consolidado", "Onboarding dedicado", "50 créditos IA por paróquia/mês"]
+      "features": [
+        "Até 10 paróquias",
+        "Tudo da Completa",
+        "Biblioteca oficial",
+        "Analytics consolidado",
+        "Onboarding dedicado",
+        "50 créditos IA por paróquia/mês"
+      ]
     }
   }
 }

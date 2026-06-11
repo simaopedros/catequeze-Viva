@@ -788,10 +788,13 @@ export const billing_pt_BR = {
     "cancel_success": "Assinatura cancelada.",
     "cancel_error": "Erro ao cancelar. Contacte o suporte.",
     "cancel_dialog_title": "Cancelar assinatura",
-    "cancel_dialog_desc": "Tens a certeza que queres cancelar a tua assinatura? Perderás o acesso aos recursos premium no final do período atual.",
+    "cancel_dialog_desc": "Tem certeza que deseja cancelar a sua assinatura?",
     "cancel_confirm": "Sim, cancelar",
     "cancel_keep": "Manter assinatura",
     "free": "Grátis",
+    "monthly": "Mensal",
+    "annual": "Anual",
+    "annual_savings": "17% de desconto",
     "plans": {
       "catechist_free": {
         "name": "Catequista Grátis",
@@ -928,6 +931,9 @@ export const billing_en = {
     "cancel_confirm": "Yes, cancel",
     "cancel_keep": "Keep subscription",
     "free": "Free",
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "annual_savings": "17% off",
     "plans": {
       "catechist_free": {
         "name": "Catechist Free",
@@ -1064,6 +1070,9 @@ export const billing_es = {
     "cancel_confirm": "Sí, cancelar",
     "cancel_keep": "Mantener suscripción",
     "free": "Gratis",
+    "monthly": "Mensual",
+    "annual": "Anual",
+    "annual_savings": "17% dto.",
     "plans": {
       "catechist_free": {
         "name": "Catequista Gratis",
@@ -1566,12 +1575,12 @@ export const classes_pt_BR = {
       "available_content": "Conteúdos disponíveis",
       "planning_load_failed": "Não foi possível carregar o planejamento.",
       "confirm_unenroll_title": "Remover catequizando",
-      "confirm_unenroll_desc": "Tens a certeza que queres remover este catequizando da turma? Os históricos de presença serão arquivados.",
+      "confirm_unenroll_desc": "Tem certeza que deseja remover este catequizando da turma? Os históricos de presença serão mantidos.",
       "confirm_conclude_title": "Concluir turma",
-      "confirm_conclude_desc": "Tens a certeza que queres concluir esta turma? A turma será arquivada e não aceitará novas inscrições.",
+      "confirm_conclude_desc": "Tem certeza que deseja concluir esta turma? A turma será arquivada e não aceitará novas inscrições.",
       "confirm_conclude_btn": "Concluir turma",
       "confirm_remove_catechist_title": "Remover catequista",
-      "confirm_remove_catechist_desc": "Tens a certeza que queres remover este catequista da turma?",
+      "confirm_remove_catechist_desc": "Tem certeza que deseja remover este catequista da turma?",
       "error": "Erro"
     }
   } as const;
@@ -2096,7 +2105,7 @@ export const common_pt_BR = {
       "pending_count": " · {{count}} pendentes",
       "empty_register_hint": "Cadastre catequizandos para gerir seus documentos.",
       "reject_title": "Rejeitar documento",
-      "reject_confirm": "Confirmas que queres rejeitar este documento?",
+      "reject_confirm": "Confirma que deseja rejeitar este documento?",
       "reject_btn": "Rejeitar",
       "sent_success": "Documento enviado!",
       "verified_success": "Documento verificado!",
@@ -3260,7 +3269,7 @@ export const content_pt_BR = {
       "bible_refs": "📖 Referências Bíblicas",
       "catechism_refs": "📕 Catecismo da Igreja Católica",
       "activities_title": "❓ Atividades ({{count}})",
-      "points": "({{count}} pts)",
+      "points": "({{count}} pontos)",
       "step": "Passo {{num}}:",
       "column_a": "Coluna A",
       "column_b": "Coluna B",
@@ -3916,7 +3925,7 @@ export const family_pt_BR = {
       "accept": "Aceitar Convite",
       "login_to_accept": "Para aceitar o convite, entra ou cria uma conta.",
       "accepted_title": "Convite Aceite!",
-      "accepted_desc": "Agora fazes parte de {{parish}} como {{role}}.",
+      "accepted_desc": "Agora você faz parte de {{parish}} como {{role}}.",
       "redirecting": "A redirecionar para o teu painel...",
       "not_found_title": "Convite Não Encontrado",
       "not_found_desc": "Não foi possível encontrar este convite. Verifica se o link está correto.",
@@ -4807,7 +4816,7 @@ export const onboarding_pt_BR = {
     "welcome": {
       "hello": "Olá, {{name}}!",
       "hello_default": "Bem-vindo(a)!",
-      "question": "Como queres usar o Catequese Viva?",
+      "question": "Como deseja usar o Catequese Viva?",
       "personal_title": "Conta Pessoal",
       "personal_desc": "Para catequistas individuais · plano pessoal (Grátis / Pro / IA)",
       "personal_features": [
@@ -4834,12 +4843,12 @@ export const onboarding_pt_BR = {
       "liturgical_calendar": "Calendário litúrgico",
       "first_class_label": "Nome da primeira turma (opcional)",
       "first_class_placeholder": "Ex: Catequese 1º Ano",
-      "first_class_hint": "Podes criar depois em Turmas se preferires.",
+      "first_class_hint": "Pode criar depois em Turmas.",
       "creating": "Criando espaço...",
       "enter_space": "Entrar no meu espaço"
     },
     "diocese": {
-      "title": "Em que diocese estás?",
+      "title": "Em que diocese você está?",
       "state_label": "Estado (UF)",
       "all_states": "Todos os estados",
       "search_placeholder": "Buscar diocese...",
@@ -5800,6 +5809,9 @@ export const public_pt_BR = {
       "payment_card": "Cartão",
       "payment_pix": "PIX",
       "annual_savings": "Economize 17% no anual",
+      "monthly_tab": "Mensal",
+      "annual_tab": "Anual",
+      "annual_savings_badge": "17% off",
       "personal_section": "Para você (catequista)",
       "personal_hint": "— seu espaço pessoal",
       "institutional_section": "Para sua instituição",
@@ -5821,7 +5833,7 @@ export const public_pt_BR = {
       "faq": [
         {
           "q": "Posso experimentar antes de pagar?",
-          "a": "Sim! O plano Catequista Grátis é gratuito para sempre, com 2 turmas, até 30 catequizandos e 10 créditos de IA iniciais para testar o gerador de encontros."
+          "a": "Sim! O plano Catequista Grátis é gratuito para sempre, com 1 turma, até 15 catequizandos e 3 créditos de IA iniciais para testar o gerador de encontros."
         },
         {
           "q": "Como funcionam os créditos de IA?",
@@ -5833,11 +5845,11 @@ export const public_pt_BR = {
         },
         {
           "q": "Como funciona o pagamento?",
-          "a": "Aceitamos PIX (à vista ou mensal) e cartão de crédito. No plano anual via PIX, o pagamento é único pelos 12 meses. Sem fidelidade — cancele quando quiser."
+          "a": "Aceitamos cartão de crédito (à vista ou mensal). No plano anual, o pagamento é único pelos 12 meses. Sem fidelidade — cancele quando quiser."
         },
         {
           "q": "E o reembolso do plano anual?",
-          "a": "Planos anuais pagos via PIX não têm reembolso automático. O cancelamento encerra a renovação, mas o acesso continua até o fim do período pago. Reembolso proporcional é avaliado caso a caso via contato@catequeseviva.com.br. Planos via cartão seguem a política do Stripe."
+          "a": "Planos anuais não têm reembolso automático. O cancelamento encerra a renovação, mas o acesso continua até o fim do período pago. Reembolso proporcional é avaliado caso a caso via contato@catequeseviva.com.br."
         },
         {
           "q": "Posso migrar entre planos?",
@@ -5963,6 +5975,9 @@ export const public_en = {
       "payment_card": "Card",
       "payment_pix": "PIX",
       "annual_savings": "Save 17% on annual",
+      "monthly_tab": "Monthly",
+      "annual_tab": "Annual",
+      "annual_savings_badge": "17% off",
       "personal_section": "For you (catechist)",
       "personal_hint": "— your personal space",
       "institutional_section": "For your institution",
@@ -5984,7 +5999,7 @@ export const public_en = {
       "faq": [
         {
           "q": "Can I try before paying?",
-          "a": "Yes! The Catechist Free plan is free forever, with 2 classes, up to 30 catechumens, and 10 initial AI credits to test the meeting generator."
+          "a": "Yes! The Catechist Free plan is free forever, with 1 class, up to 15 catechumens, and 3 initial AI credits to test the meeting generator."
         },
         {
           "q": "How do AI credits work?",
@@ -5996,11 +6011,11 @@ export const public_en = {
         },
         {
           "q": "How does payment work?",
-          "a": "We accept PIX (one-time or monthly) and credit card. On the annual PIX plan, payment is a single charge for 12 months. No commitment — cancel anytime."
+          "a": "We accept credit card (one-time or monthly). On the annual plan, payment is a single charge for 12 months. No commitment — cancel anytime."
         },
         {
           "q": "What about annual plan refunds?",
-          "a": "Annual plans paid via PIX have no automatic refund. Cancellation stops renewal, but access continues until the paid period ends. Proportional refunds are evaluated case by case via contato@catequeseviva.com.br. Card plans follow Stripe policy."
+          "a": "Annual plans have no automatic refund. Cancellation stops renewal, but access continues until the paid period ends. Proportional refunds are evaluated case by case via contato@catequeseviva.com.br."
         },
         {
           "q": "Can I switch plans?",
@@ -6126,6 +6141,9 @@ export const public_es = {
       "payment_card": "Tarjeta",
       "payment_pix": "PIX",
       "annual_savings": "Ahorre 17% en anual",
+      "monthly_tab": "Mensual",
+      "annual_tab": "Anual",
+      "annual_savings_badge": "17% dto.",
       "personal_section": "Para usted (catequista)",
       "personal_hint": "— su espacio personal",
       "institutional_section": "Para su institución",

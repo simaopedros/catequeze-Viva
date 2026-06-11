@@ -163,10 +163,22 @@
     "authorize": "Autorizo",
     "deny": "Nego",
     "types": {
-      "IMAGE_USAGE": { "label": "Uso de imagem", "desc": "Autorizo o uso de fotos e vídeos em atividades da catequese." },
-      "COMMUNICATION": { "label": "Comunicação", "desc": "Autorizo receber comunicados por email e notificações." },
-      "DOCUMENTS": { "label": "Documentos", "desc": "Autorizo o armazenamento de documentos e certidões." },
-      "SENSITIVE_DATA": { "label": "Dados sensíveis", "desc": "Autorizo o tratamento de dados sensíveis conforme LGPD." }
+      "IMAGE_USAGE": {
+        "label": "Uso de imagem",
+        "desc": "Autorizo o uso de fotos e vídeos em atividades da catequese."
+      },
+      "COMMUNICATION": {
+        "label": "Comunicação",
+        "desc": "Autorizo receber comunicados por email e notificações."
+      },
+      "DOCUMENTS": {
+        "label": "Documentos",
+        "desc": "Autorizo o armazenamento de documentos e certidões."
+      },
+      "SENSITIVE_DATA": {
+        "label": "Dados sensíveis",
+        "desc": "Autorizo o tratamento de dados sensíveis conforme LGPD."
+      }
     }
   },
   "documents": {
@@ -196,7 +208,7 @@
     "pending_count": " · {{count}} pendentes",
     "empty_register_hint": "Cadastre catequizandos para gerir seus documentos.",
     "reject_title": "Rejeitar documento",
-    "reject_confirm": "Confirmas que queres rejeitar este documento?",
+    "reject_confirm": "Confirma que deseja rejeitar este documento?",
     "reject_btn": "Rejeitar",
     "sent_success": "Documento enviado!",
     "verified_success": "Documento verificado!",

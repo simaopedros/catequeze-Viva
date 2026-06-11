@@ -130,7 +130,7 @@
     "bible_refs": "📖 Referências Bíblicas",
     "catechism_refs": "📕 Catecismo da Igreja Católica",
     "activities_title": "❓ Atividades ({{count}})",
-    "points": "({{count}} pts)",
+    "points": "({{count}} pontos)",
     "step": "Passo {{num}}:",
     "column_a": "Coluna A",
     "column_b": "Coluna B",

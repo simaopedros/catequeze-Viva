@@ -33,13 +33,21 @@
   "welcome": {
     "hello": "Olá, {{name}}!",
     "hello_default": "Bem-vindo(a)!",
-    "question": "Como queres usar o Catequese Viva?",
+    "question": "Como deseja usar o Catequese Viva?",
     "personal_title": "Conta Pessoal",
     "personal_desc": "Para catequistas individuais · plano pessoal (Grátis / Pro / IA)",
-    "personal_features": ["Espaço pessoal isolado", "Suas turmas e catequizandos", "Gerador de encontros com IA"],
+    "personal_features": [
+      "Espaço pessoal isolado",
+      "Suas turmas e catequizandos",
+      "Gerador de encontros com IA"
+    ],
     "manager_title": "Conta de Gestão",
     "manager_desc": "Para paróquias e dioceses · plano institucional (cobre vários catequistas)",
-    "manager_features": ["Multi-catequista", "Comunicação integrada", "Gestão completa da catequese"]
+    "manager_features": [
+      "Multi-catequista",
+      "Comunicação integrada",
+      "Gestão completa da catequese"
+    ]
   },
   "personal_setup": {
     "title": "Conta Pessoal",
@@ -52,12 +60,12 @@
     "liturgical_calendar": "Calendário litúrgico",
     "first_class_label": "Nome da primeira turma (opcional)",
     "first_class_placeholder": "Ex: Catequese 1º Ano",
-    "first_class_hint": "Podes criar depois em Turmas se preferires.",
+    "first_class_hint": "Pode criar depois em Turmas.",
     "creating": "Criando espaço...",
     "enter_space": "Entrar no meu espaço"
   },
   "diocese": {
-    "title": "Em que diocese estás?",
+    "title": "Em que diocese você está?",
     "state_label": "Estado (UF)",
     "all_states": "Todos os estados",
     "search_placeholder": "Buscar diocese...",
@@ -132,10 +140,22 @@
     "go_dashboard": "Ir para o Dashboard"
   },
   "roles": {
-    "coordinator": { "title": "Coordenador(a) Paroquial", "desc": "Geres a catequese da paróquia: turmas, catequistas, sacramentos e relatórios." },
-    "catechist": { "title": "Catequista", "desc": "Dás aulas de catequese e acompanhas os teus catequizandos." },
-    "guardian": { "title": "Responsável (Pai / Mãe)", "desc": "Acompanhas a jornada de fé dos teus filhos na catequese." },
-    "viewer": { "title": "Visitante Pastoral", "desc": "Consultas dados pastorais sem editar." }
+    "coordinator": {
+      "title": "Coordenador(a) Paroquial",
+      "desc": "Geres a catequese da paróquia: turmas, catequistas, sacramentos e relatórios."
+    },
+    "catechist": {
+      "title": "Catequista",
+      "desc": "Dás aulas de catequese e acompanhas os teus catequizandos."
+    },
+    "guardian": {
+      "title": "Responsável (Pai / Mãe)",
+      "desc": "Acompanhas a jornada de fé dos teus filhos na catequese."
+    },
+    "viewer": {
+      "title": "Visitante Pastoral",
+      "desc": "Consultas dados pastorais sem editar."
+    }
   },
   "role_step": {
     "title": "Qual o teu papel na paróquia?",

@@ -42,7 +42,7 @@
     "accept": "Aceitar Convite",
     "login_to_accept": "Para aceitar o convite, entra ou cria uma conta.",
     "accepted_title": "Convite Aceite!",
-    "accepted_desc": "Agora fazes parte de {{parish}} como {{role}}.",
+    "accepted_desc": "Agora você faz parte de {{parish}} como {{role}}.",
     "redirecting": "A redirecionar para o teu painel...",
     "not_found_title": "Convite Não Encontrado",
     "not_found_desc": "Não foi possível encontrar este convite. Verifica se o link está correto.",

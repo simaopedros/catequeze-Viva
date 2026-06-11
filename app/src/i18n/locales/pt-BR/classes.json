@@ -143,12 +143,12 @@
     "available_content": "Conteúdos disponíveis",
     "planning_load_failed": "Não foi possível carregar o planejamento.",
     "confirm_unenroll_title": "Remover catequizando",
-    "confirm_unenroll_desc": "Tens a certeza que queres remover este catequizando da turma? Os históricos de presença serão arquivados.",
+    "confirm_unenroll_desc": "Tem certeza que deseja remover este catequizando da turma? Os históricos de presença serão mantidos.",
     "confirm_conclude_title": "Concluir turma",
-    "confirm_conclude_desc": "Tens a certeza que queres concluir esta turma? A turma será arquivada e não aceitará novas inscrições.",
+    "confirm_conclude_desc": "Tem certeza que deseja concluir esta turma? A turma será arquivada e não aceitará novas inscrições.",
     "confirm_conclude_btn": "Concluir turma",
     "confirm_remove_catechist_title": "Remover catequista",
-    "confirm_remove_catechist_desc": "Tens a certeza que queres remover este catequista da turma?",
+    "confirm_remove_catechist_desc": "Tem certeza que deseja remover este catequista da turma?",
     "error": "Erro"
   }
 }
