@@ -178,33 +178,27 @@ export async function resolveAllEffectiveBilling(
   ]);
 
   // Index for fast lookup
-  const dioceseBillingMap = new Map(dioceseBillings.map((b: any) => [b.dioceseId, b as TenantBillingStub]));
-  const parishBillingMap = new Map(parishBillings.map((b: any) => [b.parishId, b as TenantBillingStub]));
+  const dioceseBillingMap = new Map<string, any>(dioceseBillings.map((b: any) => [b.dioceseId, b]));
+  const parishBillingMap = new Map<string, any>(parishBillings.map((b: any) => [b.parishId, b]));
 
-  for (const parish of parishes) {
+  for (const parish of parishes as any[]) {
     // Diocese umbrella
     if (parish.dioceseId && dioceseBillingMap.has(parish.dioceseId)) {
-      const db = dioceseBillingMap.get(parish.dioceseId)!;
+      const db: any = dioceseBillingMap.get(parish.dioceseId);
       if (isBillingActive(db) && db.plan === 'DIOCESE') {
-        result.set(parish.id, { plan: 'DIOCESE', status: db.status, trialEndsAt: db.trialEndsAt, maxClasses: db.maxClasses, maxCatechumens: db.maxCatechumens, maxCatechists: db.maxCatechists, maxParishes: db.maxParishes });
+        result.set(parish.id, { plan: 'DIOCESE' as any, status: db.status, trialEndsAt: db.trialEndsAt, maxClasses: db.maxClasses, maxCatechumens: db.maxCatechumens, maxCatechists: db.maxCatechists, maxParishes: db.maxParishes });
         continue;
       }
     }
 
     // Parish billing
-    const pb = parishBillingMap.get(parish.id) as TenantBillingStub | undefined;
-    if (pb && isBillingActive(pb)) {
+    const pb: any = parishBillingMap.get(parish.id);
+    if (isBillingActive(pb)) {
       result.set(parish.id, pb);
       continue;
     }
 
-    // Resident catechist umbrella
-    if (parish.type === 'PERSONAL' && parish.ownerId) {
-      result.set(parish.id, null);
-    } else {
-      result.set(parish.id, pb || null);
-    }
-
+    result.set(parish.id, pb || null);
   }
 
   return result;
