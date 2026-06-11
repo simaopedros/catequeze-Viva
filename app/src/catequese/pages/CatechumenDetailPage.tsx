@@ -5,7 +5,7 @@ import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { ArrowLeft, Heart, BookOpen, FileText, CheckCircle, XCircle, Edit3, Gift, MessageCircle, FilePlus, Upload, Download, Link2, Copy, AlertTriangle, Cross } from 'lucide-react';
 import { AppShell } from '../AppShell';
-import { useQuery, getCatechumenProfile, listMeetings, getMeetingAttendance, createConversation, generateCatechumenUploadToken, getCatechumenAttendanceReport } from 'wasp/client/operations';
+import { useQuery, getCatechumenProfile, listMeetings, getMeetingAttendance, createConversation, generateCatechumenUploadToken, getCatechumenAttendanceReport, justifyAbsence } from 'wasp/client/operations';
 import { fetchAuthenticatedDocument, uploadDocumentMultipart } from '../../client/utils/documentUpload';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { toast } from '../../client/hooks/use-toast';
@@ -53,6 +53,9 @@ export default function CatechumenDetailPage() {
   const [docFile, setDocFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [generatingToken, setGeneratingToken] = useState(false);
+  const [justifyingId, setJustifyingId] = useState<string | null>(null);
+  const [justifyNote, setJustifyNote] = useState('');
+  const [savingJustify, setSavingJustify] = useState(false);
   const [tokenData, setTokenData] = useState<{ token: string; expires: string } | null>(null);
 
   const docTypeLabels = useMemo(() => {
@@ -164,6 +167,21 @@ export default function CatechumenDetailPage() {
   const age=getAge(profile.birthDate);
   const attendancePct=attendance.length?Math.round((attendance.filter((a:any)=>a.status==='PRESENT'||a.status==='JUSTIFIED').length/attendance.length)*100):null;
 
+  const handleJustify = async () => {
+    if (!justifyingId || !justifyNote.trim()) return;
+    setSavingJustify(true);
+    try {
+      await justifyAbsence({ attendanceId: justifyingId, note: justifyNote.trim() });
+      setAttendance(prev => prev.map((a: any) => a.id === justifyingId ? { ...a, status: 'JUSTIFIED' } : a));
+      setJustifyingId(null);
+      setJustifyNote('');
+    } catch (e: any) {
+      // Silently fail — attendance row stays the same
+    } finally {
+      setSavingJustify(false);
+    }
+  };
+
   return(
     <AppShell>
       <div className="max-w-2xl mx-auto space-y-6">
@@ -236,7 +254,22 @@ export default function CatechumenDetailPage() {
               {attendance.map((a:any)=>(
                 <div key={a.id} className="flex items-center justify-between py-1 text-sm">
                   <div><span className="text-xs text-muted-foreground">{new Date(a.meetingDate).toLocaleDateString()}</span> <span className="font-medium">{a.meetingTitle||t('catechumens.detail_meeting')}</span><span className="text-[10px] text-muted-foreground ml-1">({a.className})</span></div>
-                  <Badge variant={a.status==='PRESENT'?'default':a.status==='ABSENT'?'destructive':'secondary'} className="text-[10px]">{a.status==='PRESENT'?t('catechumens.detail_present'):a.status==='ABSENT'?t('catechumens.detail_absent'):a.status}</Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge variant={a.status==='PRESENT'?'default':a.status==='ABSENT'?'destructive':'secondary'} className="text-[10px]">{a.status==='PRESENT'?t('catechumens.detail_present'):a.status==='ABSENT'?t('catechumens.detail_absent'):a.status}</Badge>
+                    {(a.status === 'ABSENT' || a.status === 'LATE') && (
+                      justifyingId === a.id ? (
+                        <form onSubmit={(e) => { e.preventDefault(); handleJustify(); }} className="flex items-center gap-1">
+                          <input value={justifyNote} onChange={e => setJustifyNote(e.target.value)} placeholder={t('catechumens.detail_justify_reason') || 'Motivo...'} className="h-7 w-28 rounded border px-2 text-xs" autoFocus />
+                          <Button type="submit" size="sm" variant="ghost" className="h-7 text-xs" disabled={savingJustify}>{savingJustify ? '...' : '✓'}</Button>
+                          <button type="button" onClick={() => setJustifyingId(null)} className="text-xs text-muted-foreground">✕</button>
+                        </form>
+                      ) : (
+                        <Button size="sm" variant="ghost" className="h-7 text-xs text-muted-foreground hover:text-primary" onClick={() => { setJustifyingId(a.id); setJustifyNote(''); }}>
+                          {t('catechumens.detail_justify') || 'Justificar'}
+                        </Button>
+                      )
+                    )}
+                  </div>
                 </div>
               ))}
             </div>

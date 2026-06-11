@@ -30,6 +30,7 @@ export default function MeetingsPage() {
   const { data: contentItems = [] } = useQuery(listContentItems);
   const [showForm, setShowForm] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [contentSearch, setContentSearch] = useState('');
   const [title, setTitle] = useState('');
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [selectedContentId, setSelectedContentId] = useState('');
@@ -92,16 +93,30 @@ export default function MeetingsPage() {
               <div className="space-y-1.5"><Label htmlFor="meetingDate">{t('date')}</Label><Input id="meetingDate" type="date" value={date} onChange={e => setDate(e.target.value)} /></div>
             </div>
             <div className="flex gap-3 items-center">
-              <select
-                value={selectedContentId}
-                onChange={e => setSelectedContentId(e.target.value)}
-                className="flex h-9 flex-1 rounded-md border border-input bg-background px-3 py-1 text-sm"
-              >
-                <option value="">{t('no_content')}</option>
-                {contentItems.map((c: any) => (
-                  <option key={c.id} value={c.id}>{c.title}{c.theme ? ` — ${c.theme}` : ''}</option>
-                ))}
-              </select>
+              <div className="flex-1 space-y-1.5">
+                <Input
+                  placeholder={t('search_content') || 'Buscar conteúdo...'}
+                  value={contentSearch}
+                  onChange={e => setContentSearch(e.target.value)}
+                  className="h-9"
+                />
+                <select
+                  value={selectedContentId}
+                  onChange={e => setSelectedContentId(e.target.value)}
+                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm"
+                >
+                  <option value="">{t('no_content')}</option>
+                  {contentItems
+                    .filter((c: any) => !contentSearch || c.title?.toLowerCase().includes(contentSearch.toLowerCase()) || c.theme?.toLowerCase().includes(contentSearch.toLowerCase()))
+                    .slice(0, 20)
+                    .map((c: any) => (
+                      <option key={c.id} value={c.id}>{c.title}{c.theme ? ` — ${c.theme}` : ''}</option>
+                    ))
+                  }
+                </select>
+              </div>
+              <Button onClick={handleCreate} disabled={!title && !selectedContentId}>{t('create') || 'Criar'}</Button>
+            </div>
               <Button size="sm" onClick={handleCreate} disabled={!title}>{tc('create')}</Button>
               <Button size="sm" variant="outline" onClick={() => setShowForm(false)}>{tc('cancel')}</Button>
             </div>
