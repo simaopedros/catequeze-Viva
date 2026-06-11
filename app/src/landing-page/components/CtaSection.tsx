@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { ChevronRight, Cross } from 'lucide-react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
-export function CtaSection() {
-  const { t } = useTranslation('landing');
+export function CtaSection({ ns = 'landing' }: { ns?: string }) {
+  const { t } = useTranslation(ns);
   const { ref, className } = useScrollReveal();
 
   return (

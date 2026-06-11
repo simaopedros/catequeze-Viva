@@ -3,8 +3,8 @@ import { SHOWCASES, SECONDARY_FEATURES } from '../content/landingContent';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { FeatureShowcase } from './FeatureShowcase';
 
-export function FeaturesSection() {
-  const { t } = useTranslation('landing');
+export function FeaturesSection({ ns = 'landing', order }: { ns?: string; order?: string[] }) {
+  const { t } = useTranslation(ns);
   const { ref: headerRef, className: headerClass } = useScrollReveal();
 
   return (
@@ -19,18 +19,24 @@ export function FeaturesSection() {
       </div>
 
       <div className="divide-y divide-border/50">
-        {SHOWCASES.map((showcase) => (
-          <FeatureShowcase key={showcase.id} showcase={showcase} />
-        ))}
+        {(order
+          ? order.map(id => {
+              const s = SHOWCASES.find(sc => sc.id === id || (id === 'ai' && sc.id === 'ai-planner') || (id === 'ai-planner' && sc.id === 'ai'));
+              return s ? <FeatureShowcase key={s.id} showcase={s} ns={ns} /> : null;
+            }).filter(Boolean)
+          : SHOWCASES.map((showcase) => (
+              <FeatureShowcase key={showcase.id} showcase={showcase} ns={ns} />
+            ))
+        )}
       </div>
 
-      <FeatureGridSection />
+      <FeatureGridSection ns={ns} />
     </section>
   );
 }
 
-function FeatureGridSection() {
-  const { t } = useTranslation('landing');
+function FeatureGridSection({ ns = 'landing' }: { ns?: string }) {
+  const { t } = useTranslation(ns);
   const { ref: headerRef, className: headerClass } = useScrollReveal();
   const secondaryTexts = t('secondary', { returnObjects: true }) as any[];
 

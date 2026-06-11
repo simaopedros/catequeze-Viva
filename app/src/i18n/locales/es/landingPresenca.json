@@ -1,0 +1,23 @@
+{
+  "hero": {
+    "headline_line1": "Nunca más pierda",
+    "headline_line2": "el control de las asistencias",
+    "subheadline": "Pase lista desde el celular en segundos. Informes automáticos. Historial de faltas. Justificaciones en línea.",
+    "badge": "Control de asistencia digital",
+    "cta_primary": "Comenzar ahora",
+    "cta_secondary": "Ver demo",
+    "trust_signals": "Sin tarjeta • Plan gratuito • Funciona en el celular"
+  },
+  "features_title": "Control total de asistencias",
+  "features_subtitle": "Del registro a la justificación — todo integrado y en tiempo real.",
+  "features_order": [
+    "attendance",
+    "family",
+    "dashboard",
+    "ai",
+    "library",
+    "sacraments"
+  ],
+  "ai_showcase_title": "Y también: notificaciones automáticas para las familias",
+  "ai_showcase_subtitle": "Los padres son notificados automáticamente sobre faltas y pueden justificar en línea, sin llamarlo."
+}

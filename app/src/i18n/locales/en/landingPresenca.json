@@ -1,0 +1,23 @@
+{
+  "hero": {
+    "headline_line1": "Never lose track",
+    "headline_line2": "of attendance again",
+    "subheadline": "Take attendance on your phone in seconds. Automatic reports. Absence history. Online justifications.",
+    "badge": "Digital attendance control",
+    "cta_primary": "Start now",
+    "cta_secondary": "See demo",
+    "trust_signals": "No card • Free plan • Works on mobile"
+  },
+  "features_title": "Complete attendance control",
+  "features_subtitle": "From recording to justification — all integrated and real-time.",
+  "features_order": [
+    "attendance",
+    "family",
+    "dashboard",
+    "ai",
+    "library",
+    "sacraments"
+  ],
+  "ai_showcase_title": "And also: automatic notifications for families",
+  "ai_showcase_subtitle": "Parents are automatically notified about absences and can justify online, without calling you."
+}

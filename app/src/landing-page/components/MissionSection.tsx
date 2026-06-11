@@ -2,8 +2,8 @@ import { useTranslation } from 'react-i18next';
 import { Cross } from 'lucide-react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
-export function MissionSection() {
-  const { t } = useTranslation('landing');
+export function MissionSection({ ns = 'landing' }: { ns?: string }) {
+  const { t } = useTranslation(ns);
   const { ref, className } = useScrollReveal();
 
   return (

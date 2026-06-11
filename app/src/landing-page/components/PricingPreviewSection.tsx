@@ -16,8 +16,8 @@ function fmt(cents: number): string {
   return `R$${(cents / 100).toFixed(0)}`;
 }
 
-export function PricingPreviewSection() {
-  const { t } = useTranslation('landing');
+export function PricingPreviewSection({ ns = 'landing' }: { ns?: string }) {
+  const { t } = useTranslation(ns);
   const { ref: headerRef, className: headerClass } = useScrollReveal();
   const [billingInterval, setBillingInterval] = useState<BillingInterval>('monthly');
 

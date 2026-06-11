@@ -111,6 +111,22 @@ page LandingPage {
   component: import LandingPage from "@src/landing-page/LandingPage"
 }
 
+// Google Ads landing pages
+route IaLandingPageRoute { path: "/ia", to: IaLandingPage }
+page IaLandingPage {
+  component: import LandingIa from "@src/landing-page/LandingIa"
+}
+
+route PresencaLandingPageRoute { path: "/presenca", to: PresencaLandingPage }
+page PresencaLandingPage {
+  component: import LandingPresenca from "@src/landing-page/LandingPresenca"
+}
+
+route SistemaLandingPageRoute { path: "/sistema", to: SistemaLandingPage }
+page SistemaLandingPage {
+  component: import LandingSistema from "@src/landing-page/LandingSistema"
+}
+
 //#region Auth Pages
 route LoginRoute { path: "/login", to: LoginPage }
 page LoginPage {

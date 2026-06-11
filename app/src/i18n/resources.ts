@@ -4763,6 +4763,228 @@ export const landing_es = {
     }
   } as const;
 
+export const landingIa_pt_BR = {
+    "hero": {
+      "headline_line1": "Prepare encontros incríveis",
+      "headline_line2": "em minutos com IA",
+      "subheadline": "Deixe a IA gerar o roteiro completo: objetivo, dinâmica, leitura bíblica, reflexão, atividade e oração. Baseado na doutrina católica.",
+      "badge": "IA teologicamente treinada",
+      "cta_primary": "Testar IA grátis",
+      "cta_secondary": "Ver como funciona",
+      "trust_signals": "Sem cartão de crédito • 3 créditos grátis • Base teológica CNBB"
+    },
+    "features_title": "IA que entende de catequese",
+    "features_subtitle": "Treinada com a Bíblia CNBB, o Catecismo e o Diretório para a Catequese.",
+    "features_order": [
+      "ai",
+      "library",
+      "attendance",
+      "family",
+      "dashboard",
+      "sacraments"
+    ],
+    "ai_showcase_title": "Seu próximo encontro pronto em menos de 30 segundos",
+    "ai_showcase_subtitle": "Digite o tema e a faixa etária. A IA gera o encontro completo — da acolhida à oração final.",
+    "ai_showcase_cta": "Experimente a IA gratuitamente",
+    "mission_title": "Menos tempo preparando. Mais tempo evangelizando.",
+    "mission_text": "Cada minuto que a IA economiza na preparação é um minuto a mais para o que realmente importa: estar presente para seus catequizandos."
+  } as const;
+
+export const landingIa_en = {
+    "hero": {
+      "headline_line1": "Prepare incredible meetings",
+      "headline_line2": "in minutes with AI",
+      "subheadline": "Let AI generate the complete script: objective, activity, Bible reading, reflection, activity and prayer. Based on Catholic doctrine.",
+      "badge": "Theologically trained AI",
+      "cta_primary": "Try AI free",
+      "cta_secondary": "See how it works",
+      "trust_signals": "No credit card • 3 free credits • CNBB theological base"
+    },
+    "features_title": "AI that understands catechesis",
+    "features_subtitle": "Trained on the CNBB Bible, the Catechism and the Directory for Catechesis.",
+    "features_order": [
+      "ai",
+      "library",
+      "attendance",
+      "family",
+      "dashboard",
+      "sacraments"
+    ],
+    "ai_showcase_title": "Your next meeting ready in under 30 seconds",
+    "ai_showcase_subtitle": "Enter the theme and age group. AI generates the complete meeting — from welcome to closing prayer.",
+    "ai_showcase_cta": "Try AI for free",
+    "mission_title": "Less time preparing. More time evangelizing.",
+    "mission_text": "Every minute AI saves on preparation is an extra minute for what truly matters: being present for your catechumens."
+  } as const;
+
+export const landingIa_es = {
+    "hero": {
+      "headline_line1": "Prepare encuentros increíbles",
+      "headline_line2": "en minutos con IA",
+      "subheadline": "Deje que la IA genere el guión completo: objetivo, dinámica, lectura bíblica, reflexión, actividad y oración. Basado en la doctrina católica.",
+      "badge": "IA teológicamente entrenada",
+      "cta_primary": "Probar IA gratis",
+      "cta_secondary": "Ver cómo funciona",
+      "trust_signals": "Sin tarjeta • 3 créditos gratis • Base teológica CNBB"
+    },
+    "features_title": "IA que entiende de catequesis",
+    "features_subtitle": "Entrenada con la Biblia CNBB, el Catecismo y el Directorio para la Catequesis.",
+    "features_order": [
+      "ai",
+      "library",
+      "attendance",
+      "family",
+      "dashboard",
+      "sacraments"
+    ],
+    "ai_showcase_title": "Su próximo encuentro listo en menos de 30 segundos",
+    "ai_showcase_subtitle": "Ingrese el tema y la edad. La IA genera el encuentro completo — de la acogida a la oración final.",
+    "ai_showcase_cta": "Pruebe la IA gratis",
+    "mission_title": "Menos tiempo preparando. Más tiempo evangelizando.",
+    "mission_text": "Cada minuto que la IA ahorra en preparación es un minuto más para lo que realmente importa: estar presente para sus catequizandos."
+  } as const;
+
+export const landingPresenca_pt_BR = {
+    "hero": {
+      "headline_line1": "Nunca mais perca",
+      "headline_line2": "o controle das presenças",
+      "subheadline": "Faça a chamada pelo celular em segundos. Relatórios automáticos. Histórico de faltas. Justificativas online.",
+      "badge": "Controle de presença digital",
+      "cta_primary": "Começar agora",
+      "cta_secondary": "Ver demonstração",
+      "trust_signals": "Sem cartão • Plano gratuito • Funciona no celular"
+    },
+    "features_title": "Controle total de presenças",
+    "features_subtitle": "Do registro à justificativa — tudo integrado e em tempo real.",
+    "features_order": [
+      "attendance",
+      "family",
+      "dashboard",
+      "ai",
+      "library",
+      "sacraments"
+    ],
+    "ai_showcase_title": "E também: notificações automáticas para as famílias",
+    "ai_showcase_subtitle": "Os pais são avisados automaticamente sobre faltas e podem justificar online, sem precisar ligar para você."
+  } as const;
+
+export const landingPresenca_en = {
+    "hero": {
+      "headline_line1": "Never lose track",
+      "headline_line2": "of attendance again",
+      "subheadline": "Take attendance on your phone in seconds. Automatic reports. Absence history. Online justifications.",
+      "badge": "Digital attendance control",
+      "cta_primary": "Start now",
+      "cta_secondary": "See demo",
+      "trust_signals": "No card • Free plan • Works on mobile"
+    },
+    "features_title": "Complete attendance control",
+    "features_subtitle": "From recording to justification — all integrated and real-time.",
+    "features_order": [
+      "attendance",
+      "family",
+      "dashboard",
+      "ai",
+      "library",
+      "sacraments"
+    ],
+    "ai_showcase_title": "And also: automatic notifications for families",
+    "ai_showcase_subtitle": "Parents are automatically notified about absences and can justify online, without calling you."
+  } as const;
+
+export const landingPresenca_es = {
+    "hero": {
+      "headline_line1": "Nunca más pierda",
+      "headline_line2": "el control de las asistencias",
+      "subheadline": "Pase lista desde el celular en segundos. Informes automáticos. Historial de faltas. Justificaciones en línea.",
+      "badge": "Control de asistencia digital",
+      "cta_primary": "Comenzar ahora",
+      "cta_secondary": "Ver demo",
+      "trust_signals": "Sin tarjeta • Plan gratuito • Funciona en el celular"
+    },
+    "features_title": "Control total de asistencias",
+    "features_subtitle": "Del registro a la justificación — todo integrado y en tiempo real.",
+    "features_order": [
+      "attendance",
+      "family",
+      "dashboard",
+      "ai",
+      "library",
+      "sacraments"
+    ],
+    "ai_showcase_title": "Y también: notificaciones automáticas para las familias",
+    "ai_showcase_subtitle": "Los padres son notificados automáticamente sobre faltas y pueden justificar en línea, sin llamarlo."
+  } as const;
+
+export const landingSistema_pt_BR = {
+    "hero": {
+      "headline_line1": "Organize sua catequese",
+      "headline_line2": "em um só lugar",
+      "subheadline": "Controle de presença, gestão de turmas, comunicação com famílias e relatórios para coordenadores. Tudo integrado.",
+      "badge": "Gestão completa para catequese",
+      "cta_primary": "Experimentar gratuitamente",
+      "cta_secondary": "Ver recursos",
+      "trust_signals": "Sem cartão de crédito • Plano gratuito • Comece em 2 minutos"
+    },
+    "features_title": "Tudo para gerir sua catequese",
+    "features_order": [
+      "attendance",
+      "dashboard",
+      "family",
+      "sacraments",
+      "library",
+      "ai"
+    ],
+    "ai_showcase_title": "E também: preparação de encontros com IA",
+    "ai_showcase_subtitle": "Além da gestão, a plataforma inclui IA para criar roteiros de encontros em segundos."
+  } as const;
+
+export const landingSistema_en = {
+    "hero": {
+      "headline_line1": "Organize your catechesis",
+      "headline_line2": "in one place",
+      "subheadline": "Attendance control, class management, family communication and reports for coordinators. All integrated.",
+      "badge": "Complete catechesis management",
+      "cta_primary": "Try it free",
+      "cta_secondary": "See features",
+      "trust_signals": "No credit card • Free plan • Start in 2 minutes"
+    },
+    "features_title": "Everything to manage your catechesis",
+    "features_order": [
+      "attendance",
+      "dashboard",
+      "family",
+      "sacraments",
+      "library",
+      "ai"
+    ],
+    "ai_showcase_title": "And also: AI-powered meeting preparation",
+    "ai_showcase_subtitle": "Beyond management, the platform includes AI to create meeting scripts in seconds."
+  } as const;
+
+export const landingSistema_es = {
+    "hero": {
+      "headline_line1": "Organice su catequesis",
+      "headline_line2": "en un solo lugar",
+      "subheadline": "Control de asistencia, gestión de clases, comunicación con familias e informes para coordinadores. Todo integrado.",
+      "badge": "Gestión completa para catequesis",
+      "cta_primary": "Probar gratis",
+      "cta_secondary": "Ver recursos",
+      "trust_signals": "Sin tarjeta • Plan gratuito • Comience en 2 minutos"
+    },
+    "features_title": "Todo para gestionar su catequesis",
+    "features_order": [
+      "attendance",
+      "dashboard",
+      "family",
+      "sacraments",
+      "library",
+      "ai"
+    ],
+    "ai_showcase_title": "Y también: preparación de encuentros con IA",
+    "ai_showcase_subtitle": "Además de la gestión, la plataforma incluye IA para crear guiones de encuentros en segundos."
+  } as const;
+
 export const legal_pt_BR = {
     "terms": {
       "title": "Termos de Uso",
@@ -7926,6 +8148,9 @@ export const resources = {
     dashboard: dashboard_pt_BR,
     family: family_pt_BR,
     landing: landing_pt_BR,
+    landingIa: landingIa_pt_BR,
+    landingPresenca: landingPresenca_pt_BR,
+    landingSistema: landingSistema_pt_BR,
     legal: legal_pt_BR,
     meetings: meetings_pt_BR,
     messages: messages_pt_BR,
@@ -7958,6 +8183,9 @@ export const resources = {
     dashboard: dashboard_en,
     family: family_en,
     landing: landing_en,
+    landingIa: landingIa_en,
+    landingPresenca: landingPresenca_en,
+    landingSistema: landingSistema_en,
     legal: legal_en,
     meetings: meetings_en,
     messages: messages_en,
@@ -7990,6 +8218,9 @@ export const resources = {
     dashboard: dashboard_es,
     family: family_es,
     landing: landing_es,
+    landingIa: landingIa_es,
+    landingPresenca: landingPresenca_es,
+    landingSistema: landingSistema_es,
     legal: legal_es,
     meetings: meetings_es,
     messages: messages_es,

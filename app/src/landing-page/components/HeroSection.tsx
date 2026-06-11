@@ -6,8 +6,8 @@ import { useScrollReveal } from '../hooks/useScrollReveal';
 import { BrowserFrame } from './BrowserFrame';
 import { FeatureScreenshot } from './FeatureScreenshot';
 
-export function HeroSection() {
-  const { t } = useTranslation('landing');
+export function HeroSection({ ns = 'landing' }: { ns?: string }) {
+  const { t } = useTranslation(ns);
   const { ref: revealRef, className: revealClass } = useScrollReveal();
   const blobTopRef = useParallax<HTMLDivElement>({ factor: 0.04 });
   const blobBottomRef = useParallax<HTMLDivElement>({ factor: -0.03 });

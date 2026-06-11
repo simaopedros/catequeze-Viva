@@ -4,8 +4,8 @@ import { useScrollReveal } from '../hooks/useScrollReveal';
 
 const ICONS = [GraduationCap, Church, Heart, UserCheck, Building2];
 
-export function PersonasSection() {
-  const { t } = useTranslation('landing');
+export function PersonasSection({ ns = 'landing' }: { ns?: string }) {
+  const { t } = useTranslation(ns);
   const { ref: headerRef, className: headerClass } = useScrollReveal();
   const personasText = t('personas', { returnObjects: true }) as any[];
 

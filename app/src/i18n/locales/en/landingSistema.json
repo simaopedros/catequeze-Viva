@@ -1,0 +1,22 @@
+{
+  "hero": {
+    "headline_line1": "Organize your catechesis",
+    "headline_line2": "in one place",
+    "subheadline": "Attendance control, class management, family communication and reports for coordinators. All integrated.",
+    "badge": "Complete catechesis management",
+    "cta_primary": "Try it free",
+    "cta_secondary": "See features",
+    "trust_signals": "No credit card • Free plan • Start in 2 minutes"
+  },
+  "features_title": "Everything to manage your catechesis",
+  "features_order": [
+    "attendance",
+    "dashboard",
+    "family",
+    "sacraments",
+    "library",
+    "ai"
+  ],
+  "ai_showcase_title": "And also: AI-powered meeting preparation",
+  "ai_showcase_subtitle": "Beyond management, the platform includes AI to create meeting scripts in seconds."
+}

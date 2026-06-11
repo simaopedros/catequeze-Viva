@@ -12,8 +12,8 @@ interface FeatureShowcaseProps {
   showcase: FeatureShowcaseItem;
 }
 
-export function FeatureShowcase({ showcase }: FeatureShowcaseProps) {
-  const { t } = useTranslation('landing');
+export function FeatureShowcase({ showcase, ns = 'landing' }: FeatureShowcaseProps & { ns?: string }) {
+  const { t } = useTranslation(ns);
   const { ref: revealRef, className: revealClass } = useScrollReveal();
   const imageRef = useParallax<HTMLDivElement>({ factor: 0.04 });
   const Icon = SHOWCASE_ICONS[showcase.id];

@@ -2,8 +2,8 @@ import { useTranslation } from 'react-i18next';
 import { Star } from 'lucide-react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
-export function TestimonialsSection() {
-  const { t } = useTranslation('landing');
+export function TestimonialsSection({ ns = 'landing' }: { ns?: string }) {
+  const { t } = useTranslation(ns);
   const { ref: headerRef, className: headerClass } = useScrollReveal();
   const testimonials = t('testimonials', { returnObjects: true }) as any[];
 

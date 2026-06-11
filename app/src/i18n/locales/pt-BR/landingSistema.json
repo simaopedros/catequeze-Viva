@@ -1,0 +1,22 @@
+{
+  "hero": {
+    "headline_line1": "Organize sua catequese",
+    "headline_line2": "em um só lugar",
+    "subheadline": "Controle de presença, gestão de turmas, comunicação com famílias e relatórios para coordenadores. Tudo integrado.",
+    "badge": "Gestão completa para catequese",
+    "cta_primary": "Experimentar gratuitamente",
+    "cta_secondary": "Ver recursos",
+    "trust_signals": "Sem cartão de crédito • Plano gratuito • Comece em 2 minutos"
+  },
+  "features_title": "Tudo para gerir sua catequese",
+  "features_order": [
+    "attendance",
+    "dashboard",
+    "family",
+    "sacraments",
+    "library",
+    "ai"
+  ],
+  "ai_showcase_title": "E também: preparação de encontros com IA",
+  "ai_showcase_subtitle": "Além da gestão, a plataforma inclui IA para criar roteiros de encontros em segundos."
+}

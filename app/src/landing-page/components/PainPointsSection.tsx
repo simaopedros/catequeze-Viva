@@ -2,8 +2,8 @@ import { useTranslation } from 'react-i18next';
 import { AlertCircle } from 'lucide-react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
-export function PainPointsSection() {
-  const { t } = useTranslation('landing');
+export function PainPointsSection({ ns = 'landing' }: { ns?: string }) {
+  const { t } = useTranslation(ns);
   const { ref: headerRef, className: headerClass } = useScrollReveal();
   const pains = t('pains', { returnObjects: true }) as any[];
 

@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Sparkles, ChevronRight } from 'lucide-react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
-export function AiShowcaseSection() {
-  const { t } = useTranslation('landing');
+export function AiShowcaseSection({ ns = 'landing' }: { ns?: string }) {
+  const { t } = useTranslation(ns);
   const { ref, className } = useScrollReveal();
 
   return (

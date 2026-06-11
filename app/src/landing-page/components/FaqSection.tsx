@@ -2,8 +2,8 @@ import { useTranslation } from 'react-i18next';
 import { ChevronRight } from 'lucide-react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
-export function FaqSection() {
-  const { t } = useTranslation('landing');
+export function FaqSection({ ns = 'landing' }: { ns?: string }) {
+  const { t } = useTranslation(ns);
   const { ref: headerRef, className: headerClass } = useScrollReveal();
   const faqs = t('faqs', { returnObjects: true }) as any[];
 

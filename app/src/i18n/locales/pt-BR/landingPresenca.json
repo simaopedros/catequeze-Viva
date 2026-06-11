@@ -1,0 +1,23 @@
+{
+  "hero": {
+    "headline_line1": "Nunca mais perca",
+    "headline_line2": "o controle das presenças",
+    "subheadline": "Faça a chamada pelo celular em segundos. Relatórios automáticos. Histórico de faltas. Justificativas online.",
+    "badge": "Controle de presença digital",
+    "cta_primary": "Começar agora",
+    "cta_secondary": "Ver demonstração",
+    "trust_signals": "Sem cartão • Plano gratuito • Funciona no celular"
+  },
+  "features_title": "Controle total de presenças",
+  "features_subtitle": "Do registro à justificativa — tudo integrado e em tempo real.",
+  "features_order": [
+    "attendance",
+    "family",
+    "dashboard",
+    "ai",
+    "library",
+    "sacraments"
+  ],
+  "ai_showcase_title": "E também: notificações automáticas para as famílias",
+  "ai_showcase_subtitle": "Os pais são avisados automaticamente sobre faltas e podem justificar online, sem precisar ligar para você."
+}

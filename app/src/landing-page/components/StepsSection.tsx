@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { ArrowRight } from 'lucide-react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
-export function StepsSection() {
-  const { t } = useTranslation('landing');
+export function StepsSection({ ns = 'landing' }: { ns?: string }) {
+  const { t } = useTranslation(ns);
   const { ref: headerRef, className: headerClass } = useScrollReveal();
   const steps = t('steps', { returnObjects: true }) as any[];
 
