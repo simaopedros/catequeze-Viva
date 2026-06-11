@@ -8,6 +8,18 @@
 import { HttpError } from 'wasp/server';
 import { detectProvider, createAiClient, aiCompletion } from '../ai/providers';
 import { resolveUserLocale } from '../i18n/serverLocale';
+
+/** Sanitize user input for AI prompts — prevents injection of system instructions */
+function sanitizePrompt(input: string): string {
+  return input
+    .replace(/<\/?(system|assistant|user|instruction|prompt)[^>]*>/gi, '')
+    .replace(/^[#*>\-\s]*(system|assistant|user):?\s*/gim, '')
+    .replace(/ignore (all |previous |the above )?(instructions|prompts|rules)/gi, '')
+    .replace(/forget (all |previous )?(instructions|prompts|rules)/gi, '')
+    .replace(/you are now/gi, '')
+    .replace(/\[system\]|\[assistant\]|\[user\]|system:|assistant:|user:/gi, '')
+    .slice(0, 2000); // Limit length
+}
 import { assertAndDeductCredits, getCreditsStatus } from '../ai/credits';
 import { getCachedResponse, setCachedResponse } from '../ai/cache';
 import { AI_CREDITS } from '../../shared/aiCredits';
@@ -74,10 +86,11 @@ export const generateMeetingWithAi = async (
   const { client, model } = await getAiClient();
 
   const userMessage = `Gere um roteiro de encontro de catequese com os seguintes parâmetros:
-- Tema: ${args.input.theme}
-- Faixa etária: ${args.input.ageGroup}
+
+- Tema: ${sanitizePrompt(args.input.theme)}
+- Faixa etária: ${sanitizePrompt(args.input.ageGroup)}
 - Duração: ${args.input.duration} minutos
-- Abordagem: ${args.input.approach}`;
+- Abordagem: ${sanitizePrompt(args.input.approach)}`;
 
   const response = await aiCompletion(client, model, {
     messages: [
@@ -222,7 +235,8 @@ export const generateAnnualPlanning = async (
   const { client, model } = await getAiClient();
 
   const userMessage = `Gere um planejamento anual de catequese:
-- Etapa: ${args.input.stageName}
+
+- Etapa: ${sanitizePrompt(args.input.stageName)}
 - Data de início: ${args.input.startDate}
 - Data de término: ${args.input.endDate}
 - Dias da semana: ${args.input.weekDays.join(', ')}
@@ -281,7 +295,7 @@ export const chatWithAi = async (
   // Check cache first (only for standalone questions, not conversation continuations)
   let cached: string | null = null;
   if (!args.conversationId) {
-    cached = await getCachedResponse(context.entities, args.message);
+    cached = await getCachedResponse(context.entities, sanitizePrompt(args.message));
   }
 
   let reply: string;
@@ -293,7 +307,7 @@ export const chatWithAi = async (
     const response = await aiCompletion(client, model, {
       messages: [
         { role: 'system', content: CHAT_SYSTEM_PROMPT },
-        { role: 'user', content: args.message },
+        { role: 'user', content: sanitizePrompt(args.message) },
       ],
       temperature: 0.7,
       maxTokens: 2048,
@@ -304,7 +318,7 @@ export const chatWithAi = async (
 
     // Cache the response for future queries (standalone only)
     if (!args.conversationId) {
-      setCachedResponse(context.entities, args.message, reply).catch(() => {});
+      setCachedResponse(context.entities, sanitizePrompt(args.message), reply).catch(() => {});
     }
   }
 
