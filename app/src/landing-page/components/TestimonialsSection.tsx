@@ -1,22 +1,24 @@
+import { useTranslation } from 'react-i18next';
 import { Star } from 'lucide-react';
-import { TESTIMONIALS } from '../content/landingContent';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
 export function TestimonialsSection() {
+  const { t } = useTranslation('landing');
   const { ref: headerRef, className: headerClass } = useScrollReveal();
+  const testimonials = t('testimonials', { returnObjects: true }) as any[];
 
   return (
     <section className="bg-muted/30 border-y">
       <div className="max-w-5xl mx-auto px-4 py-20">
         <div ref={headerRef} className={`text-center mb-12 space-y-3 ${headerClass}`}>
-          <h2 className="text-3xl sm:text-4xl font-bold">Quem usa recomenda</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold">{t('testimonials_title')}</h2>
           <p className="text-lg text-muted-foreground">
             Catequistas, coordenadores e párocos que já transformaram o dia-a-dia da catequese.
           </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
-          {TESTIMONIALS.map((testimonial, index) => (
+          {(Array.isArray(testimonials) ? testimonials : []).map((testimonial: any, index: number) => (
             <TestimonialCard key={testimonial.name} testimonial={testimonial} delay={index * 60} />
           ))}
         </div>

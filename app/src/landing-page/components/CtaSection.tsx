@@ -14,7 +14,7 @@ export function CtaSection() {
         <div className="relative space-y-5">
           <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/20 px-4 py-1.5 text-xs font-medium text-primary">
             <Cross className="h-3.5 w-3.5" />
-            Comece em 5 minutos
+            Comece em 2 minutos
           </div>
           <h2 className="text-3xl font-bold">{t('cta_title')}</h2>
           <p className="text-muted-foreground max-w-lg mx-auto">{t('cta_subtitle')}</p>

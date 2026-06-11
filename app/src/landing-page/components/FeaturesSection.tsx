@@ -1,8 +1,10 @@
+import { useTranslation } from 'react-i18next';
 import { SHOWCASES, SECONDARY_FEATURES } from '../content/landingContent';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { FeatureShowcase } from './FeatureShowcase';
 
 export function FeaturesSection() {
+  const { t } = useTranslation('landing');
   const { ref: headerRef, className: headerClass } = useScrollReveal();
 
   return (
@@ -28,7 +30,9 @@ export function FeaturesSection() {
 }
 
 function FeatureGridSection() {
+  const { t } = useTranslation('landing');
   const { ref: headerRef, className: headerClass } = useScrollReveal();
+  const secondary = t('secondary', { returnObjects: true }) as any[];
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-16">
@@ -38,7 +42,7 @@ function FeatureGridSection() {
       </div>
 
       <div className="grid gap-6 sm:grid-cols-3">
-        {SECONDARY_FEATURES.map((feature, index) => (
+        {(Array.isArray(secondary) ? secondary : SECONDARY_FEATURES).map((feature: any, index: number) => (
           <SecondaryFeatureCard key={feature.title} feature={feature} delay={index * 50} />
         ))}
       </div>
@@ -46,13 +50,7 @@ function FeatureGridSection() {
   );
 }
 
-function SecondaryFeatureCard({
-  feature,
-  delay,
-}: {
-  feature: (typeof SECONDARY_FEATURES)[number];
-  delay: number;
-}) {
+function SecondaryFeatureCard({ feature, delay }: { feature: any; delay: number }) {
   const { ref, className } = useScrollReveal({ delay });
 
   return (
