@@ -1083,27 +1083,27 @@ page AppFamilyDetailPage { authRequired: true, component: import FamilyDetailPag
 //#region Catequese Viva - Activities & Guardian
 query listActivitiesByContent {
   fn: import { listActivitiesByContent } from "@src/server/operations/activityOperations",
-  entities: [Activity]
+  entities: [Activity, ContentItem, Membership, Parish]
 }
 
 action createActivity {
   fn: import { createActivity } from "@src/server/operations/activityOperations",
-  entities: [Activity]
+  entities: [Activity, ContentItem, Membership, Parish]
 }
 
 action updateActivity {
   fn: import { updateActivity } from "@src/server/operations/activityOperations",
-  entities: [Activity]
+  entities: [Activity, ContentItem, Membership, Parish]
 }
 
 action deleteActivity {
   fn: import { deleteActivity } from "@src/server/operations/activityOperations",
-  entities: [Activity, ActivitySubmission]
+  entities: [Activity, ActivitySubmission, ContentItem, Membership, Parish]
 }
 
 action submitActivity {
   fn: import { submitActivity } from "@src/server/operations/activityOperations",
-  entities: [ActivitySubmission]
+  entities: [ActivitySubmission, Activity, ContentItem, CatechumenProfile, Membership, Parish, ClassEnrollment, ClassCatechist, CatechesisClass]
 }
 
 query getGuardianDashboard {
