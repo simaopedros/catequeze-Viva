@@ -68,8 +68,12 @@ export default function CommunitiesPage() {
   };
 
   const handleCreate = async (data: any) => {
-    await createCommunity(data);
-    setShowCreate(false);
+    try {
+      await createCommunity(data);
+      setShowCreate(false);
+    } catch (e: any) {
+      toast({ title: t('error_creating'), description: e.message || t('try_again'), variant: 'destructive' });
+    }
   };
 
   const inputClass = "w-full h-9 rounded-md border border-input bg-background px-3 text-sm mt-1";
