@@ -8,8 +8,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from '../../client/components/ui/dropdown-menu';
-import { ArrowLeft, Plus, Check, X, Clock, Minus } from 'lucide-react';
+import { ArrowLeft, Plus, Check, X, Clock, Minus, ClipboardList } from 'lucide-react';
 import { AppShell } from '../AppShell';
+import { EmptyState } from '../../client/components/EmptyState';
 import { useQuery, listMeetings, getClassDetails, getMeetingAttendance, saveAttendance, createMeeting as createMeetingAction } from 'wasp/client/operations';
 import { toast } from '../../client/hooks/use-toast';
 import { useLocale } from '../../i18n/useLocale';
@@ -153,7 +154,7 @@ export default function AttendancePage() {
         </div>
 
         {meetings.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">{t('matrix.empty')}</div>
+          <EmptyState icon={ClipboardList} title={t('matrix.empty')} description={t('matrix.empty_desc')} compact />
         ) : (
           <div className="overflow-x-auto rounded-xl border bg-card">
             <table className="w-full text-xs">

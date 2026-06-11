@@ -5,6 +5,7 @@ import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { ArrowLeft, CheckCircle, Clock, AlertTriangle, XCircle, FileText, User, Calendar, BookOpen, Cross, Pencil, Save, Upload, X } from 'lucide-react';
 import { AppShell } from '../AppShell';
+import { EmptyState } from '../../client/components/EmptyState';
 import { useQuery, getSacramentalJourney, updateMilestoneStatus, updateJourney } from 'wasp/client/operations';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { toast } from '../../client/hooks/use-toast';
@@ -189,7 +190,7 @@ export default function SacramentalJourneyDetailPage() {
         <div className="space-y-3">
           <h2 className="text-lg font-semibold">{t('milestones')}</h2>
           {milestones.length === 0 ? (
-            <p className="text-sm text-muted-foreground">{t('detail.no_milestones')}</p>
+            <EmptyState icon={CheckCircle} title={t('detail.no_milestones')} compact />
           ) : (
             <div className="space-y-2">
               {milestones.map((m: any) => {

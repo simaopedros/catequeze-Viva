@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
+import { EmptyState } from '../../client/components/EmptyState';
 import { ArrowLeft, Clock, Tag, Target, Send, CheckCircle, Archive, Eye, Plus, Puzzle, Edit3, Calendar, FileText, Trash2, Sparkles, Loader2, Printer, BookOpen, BookMarked } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { useQuery, getContentItem, listActivitiesByContent, updateContentStatus, createActivity, updateActivity, deleteActivity } from 'wasp/client/operations';
@@ -217,16 +218,11 @@ export default function ContentDetailPage(){
             )}
 
             {activities.length === 0 && !showForm ? (
-              <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center">
-                <div className="mb-4 rounded-full bg-primary/10 p-4"><Puzzle className="h-8 w-8 text-primary"/></div>
-                <h3 className="text-lg font-semibold">{t('detail.no_activities')}</h3>
-                <p className="text-sm text-muted-foreground mt-1 max-w-sm">
-                  {t('detail.no_activities_desc')}
-                </p>
+              <EmptyState icon={Puzzle} title={t('detail.no_activities')} description={t('detail.no_activities_desc')}>
                 <Button className="mt-4" size="sm" onClick={() => setShowForm(true)}>
                   <Plus className="mr-1 h-4 w-4"/>{t('detail.create_activity')}
                 </Button>
-              </div>
+              </EmptyState>
             ) : (
               <div className="space-y-2">
                 {activities.map((a: any) => {

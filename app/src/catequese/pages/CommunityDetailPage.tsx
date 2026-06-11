@@ -5,6 +5,7 @@ import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { ArrowLeft, Building2, Users, GraduationCap, User, MessageCircle, MapPin, Phone } from 'lucide-react';
 import { AppShell } from '../AppShell';
+import { EmptyState } from '../../client/components/EmptyState';
 import { useQuery, listCommunities, listClasses, listHouseholds, createConversation } from 'wasp/client/operations';
 import { useCommunityTypeLabels } from '../../i18n/useLabels';
 
@@ -124,7 +125,7 @@ export default function CommunityDetailPage() {
         {tab === 'turmas' && (
           <div>
             {classes.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-4">{tp('no_classes_in_community')}</p>
+              <EmptyState icon={GraduationCap} title={tp('no_classes_in_community')} compact />
             ) : (
               <div className="grid gap-2">
                 {classes.map((cls: any) => (
@@ -148,7 +149,7 @@ export default function CommunityDetailPage() {
         {tab === 'familias' && (
           <div>
             {households.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-4">{tp('no_families_in_community')}</p>
+              <EmptyState icon={Users} title={tp('no_families_in_community')} compact />
             ) : (
               <div className="grid gap-2 md:grid-cols-2">
                 {households.map((h: any) => (
@@ -174,7 +175,7 @@ export default function CommunityDetailPage() {
         {tab === 'catequistas' && (
           <div>
             {uniqueCatechists.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-4">{tp('no_catechists_in_community')}</p>
+              <EmptyState icon={User} title={tp('no_catechists_in_community')} compact />
             ) : (
               <div className="grid gap-2">
                 {uniqueCatechists.map((c: any) => (

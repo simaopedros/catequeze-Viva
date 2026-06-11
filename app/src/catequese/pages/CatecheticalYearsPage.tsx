@@ -4,6 +4,7 @@ import { CalendarDays, Plus, Check } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { AppShell } from '../AppShell';
+import { EmptyState } from '../../client/components/EmptyState';
 import { useQuery, listCatecheticalYears, createCatecheticalYear } from 'wasp/client/operations';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
 import { useLocale } from '../../i18n/useLocale';
@@ -116,18 +117,11 @@ export default function CatecheticalYearsPage() {
         )}
 
         {filteredYears.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center">
-            <div className="mb-4 rounded-full bg-primary/10 p-3">
-              <CalendarDays className="h-8 w-8 text-primary" />
-            </div>
-            <h3 className="text-lg font-semibold">{t('empty_title')}</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              {t('empty_desc')}
-            </p>
+          <EmptyState icon={CalendarDays} title={t('empty_title')} description={t('empty_desc')}>
             <Button size="sm" onClick={() => setShowForm(true)}>
               <Plus className="mr-1 h-4 w-4" /> {t('create_btn')}
             </Button>
-          </div>
+          </EmptyState>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filteredYears.map((year: any) => (
