@@ -335,7 +335,7 @@ export default function ClassDetailPage() {
         {tab==='inscritos'&&(
           <div>
             {enrolled.length===0?<EmptyState compact icon={Users} title={t('detail.no_enrolled')} description={t('detail.no_enrolled_alt_desc')} />:
-              <div className="grid gap-2">{enrolled.map((e:any)=>{
+              <div className="grid gap-2 overflow-x-auto">{enrolled.map((e:any)=>{
                 const journeys = e.catechumenProfile?.sacramentalJourneys || [];
                 const relevantJourney = cls.sacrament?.id
                   ? journeys.find((j: any) => j.template?.sacramentId === cls.sacrament?.id) || journeys[0]
@@ -460,18 +460,18 @@ export default function ClassDetailPage() {
             {!cls.catechists?.length ? (
               <EmptyState compact icon={Users} title={t('detail.no_catechists_linked')} description={t('detail.no_catechists_desc')} />
             ) : (
-              <div className="grid gap-2">
+              <div className="grid gap-2 overflow-x-auto">
                 {cls.catechists.map((cc: any) => {
                   const canRemove = isCoordinator || (isLeadCatechist && cc.role === 'ASSISTANT') || (cc.userId === user?.id && cc.role === 'ASSISTANT');
                   return (
                     <div key={cc.id} className="flex items-center justify-between rounded-lg border p-3">
-                      <div className="flex items-center gap-2">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-bold">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-bold flex-shrink-0">
                           {cc.user?.firstName?.[0]}{cc.user?.lastName?.[0]}
                         </div>
-                        <div>
-                          <p className="text-sm font-medium">{cc.user?.firstName} {cc.user?.lastName}</p>
-                          <p className="text-xs text-muted-foreground">{cc.user?.email}</p>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium truncate">{cc.user?.firstName} {cc.user?.lastName}</p>
+                          <p className="text-xs text-muted-foreground truncate">{cc.user?.email}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">

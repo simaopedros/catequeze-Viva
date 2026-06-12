@@ -45,6 +45,15 @@ export default function AttendancePage() {
   const [newDate, setNewDate] = useState(new Date().toISOString().slice(0, 10));
   const [saving, setSaving] = useState<string | null>(null);
   const [stats, setStats] = useState<Record<string, {total: number; presentes: number; abonados: number; faltas: number}>>({});
+  const [studentFilter, setStudentFilter] = useState('');
+
+  const filteredCatechumens = useMemo(() => {
+    if (!studentFilter.trim()) return catechumens;
+    const q = studentFilter.toLowerCase();
+    return catechumens.filter((cat: any) =>
+      `${cat.firstName} ${cat.lastName}`.toLowerCase().includes(q)
+    );
+  }, [catechumens, studentFilter]);
 
   const statusLabel = (key: string) => {
     if (key === 'PRESENT') return t('present');
@@ -155,6 +164,19 @@ export default function AttendancePage() {
           ))}
         </div>
 
+        {/* Student filter */}
+        {catechumens.length > 10 && (
+          <div className="relative">
+            <input
+              type="text"
+              placeholder={t('matrix.filter_students') || 'Filtrar alunos...'}
+              value={studentFilter}
+              onChange={e => setStudentFilter(e.target.value)}
+              className="flex h-8 w-full sm:w-64 rounded-md border border-input bg-background px-3 py-1 text-xs"
+            />
+          </div>
+        )}
+
         {meetings.length === 0 ? (
           <EmptyState icon={ClipboardList} title={t('matrix.empty')} description={t('matrix.empty_desc')} compact />
         ) : (
@@ -207,13 +229,28 @@ export default function AttendancePage() {
                 </tr>
               </thead>
               <tbody>
-                {catechumens.map((cat: any) => (
+                {filteredCatechumens.map((cat: any, rowIdx: number) => (
                   <tr key={cat.id} className="border-t hover:bg-muted/30">
                     <td className="sticky left-0 bg-card p-2 font-medium border-r z-10">{cat.firstName} {cat.lastName}</td>
-                    {meetings.map((m: any) => {
+                    {meetings.map((m: any, colIdx: number) => {
                       const status = matrix[m.id]?.[cat.id];
                       const st = status ? statusOptions.find(o => o.key === status) : null;
                       const isSaving = saving === `${m.id}-${cat.id}`;
+                      const handleCellKeyDown = (e: React.KeyboardEvent) => {
+                        const tbody = (e.target as HTMLElement).closest('tbody');
+                        if (!tbody) return;
+                        const rows = tbody.querySelectorAll('tr');
+                        let nextRow = rowIdx, nextCol = colIdx;
+                        if (e.key === 'ArrowDown') nextRow = Math.min(rowIdx + 1, rows.length - 1);
+                        else if (e.key === 'ArrowUp') nextRow = Math.max(rowIdx - 1, 0);
+                        else if (e.key === 'ArrowRight') nextCol = Math.min(colIdx + 1, meetings.length - 1);
+                        else if (e.key === 'ArrowLeft') nextCol = Math.max(colIdx - 1, 0);
+                        else return;
+                        e.preventDefault();
+                        const targetRow = rows[nextRow];
+                        const targetCell = targetRow?.querySelectorAll('td')[nextCol + 1]; // +1 for name column
+                        (targetCell?.querySelector('button') as HTMLElement)?.focus();
+                      };
                       return (
                         <td key={m.id} className="p-1 text-center">
                           {isSaving ? (
@@ -222,6 +259,9 @@ export default function AttendancePage() {
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <button
+                                  data-row={rowIdx}
+                                  data-col={colIdx}
+                                  onKeyDown={handleCellKeyDown}
                                   className={`inline-flex items-center justify-center min-w-[44px] min-h-[44px] w-8 h-7 rounded border text-xs font-bold transition-all cursor-pointer ${
                                     st
                                       ? st.color

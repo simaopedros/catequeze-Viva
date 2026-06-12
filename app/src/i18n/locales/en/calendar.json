@@ -18,6 +18,7 @@
   "meeting_default": "Meeting",
   "day_title": "Day {{day}} of {{month}}",
   "no_events": "No events on this day.",
+  "no_events_month": "No events this month.",
   "add": "Add",
   "new_event": "New event",
   "select_day": "Select a day to view events.",

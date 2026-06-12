@@ -31,6 +31,10 @@ export function WelcomeStep({ onPersonal, onManager }: WelcomeStepProps) {
       <div className="grid gap-3 w-full max-w-sm">
         <button
           onClick={onPersonal}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPersonal(); } }}
+          role="button"
+          tabIndex={0}
+          aria-pressed={false}
           className="flex items-start gap-4 rounded-2xl border-2 border-primary/30 bg-primary/5 hover:border-primary/50 hover:bg-primary/10 p-5 text-left transition-all group"
         >
           <div className="rounded-xl bg-primary/10 p-2.5 group-hover:bg-primary/20 transition-colors shrink-0">
@@ -52,6 +56,10 @@ export function WelcomeStep({ onPersonal, onManager }: WelcomeStepProps) {
 
         <button
           onClick={onManager}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onManager(); } }}
+          role="button"
+          tabIndex={0}
+          aria-pressed={false}
           className="flex items-start gap-4 rounded-2xl border-2 border-border hover:border-primary/30 hover:bg-muted/50 p-5 text-left transition-all group"
         >
           <div className="rounded-xl bg-muted p-2.5 group-hover:bg-primary/10 transition-colors shrink-0">

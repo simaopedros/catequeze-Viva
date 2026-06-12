@@ -110,103 +110,135 @@ export default function BiblePage() {
           </div>
         )}
 
-        {view === 'browse' && !selectedBook && (
-          <div className="space-y-6">
-            <div>
-              <h2 className="font-semibold text-sm text-muted-foreground mb-2">{t('old_testament')}</h2>
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-1">
-                {otBooks.map((b: any) => (
-                  <button
-                    key={b.id}
-                    onClick={() => loadBook(b.id)}
-                    className="text-left px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors truncate"
-                  >
-                    {b.abbreviation || b.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <h2 className="font-semibold text-sm text-muted-foreground mb-2">{t('new_testament')}</h2>
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-1">
-                {ntBooks.map((b: any) => (
-                  <button
-                    key={b.id}
-                    onClick={() => loadBook(b.id)}
-                    className="text-left px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors truncate"
-                  >
-                    {b.abbreviation || b.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {view === 'browse' && selectedBook && !selectedChapter && (
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" onClick={() => { setSelectedBook(null); setChapterData(null); }}>
-                <ChevronLeft className="h-4 w-4" />{t('books')}
-              </Button>
-              <h2 className="font-semibold">{selectedBook.name}</h2>
-            </div>
-            <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-1">
-              {selectedBook.chapters?.map((ch: any) => (
-                <button
-                  key={ch.id}
-                  onClick={() => loadChapter(selectedBook.id, ch.number)}
-                  className="px-2 py-1.5 text-sm rounded border hover:bg-primary/10 transition-colors text-center"
-                >
-                  {ch.number}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {view === 'browse' && chapterData && (
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" onClick={() => { setSelectedChapter(null); setChapterData(null); }}>
-                <ChevronLeft className="h-4 w-4" />{t('chapters')}
-              </Button>
-              <h2 className="font-semibold">{chapterData.book?.name} {selectedChapter}</h2>
-            </div>
-            {error ? (
-              <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center space-y-3">
-                <AlertCircle className="h-8 w-8 text-destructive mx-auto" />
-                <p className="text-sm text-destructive">{error}</p>
-                <Button size="sm" variant="outline" onClick={() => loadChapter(selectedBook.id, selectedChapter || 1)}>{tc('try_again')}</Button>
-              </div>
-            ) : loading ? (
-              <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
-            ) : (
-              <div className="space-y-3">
-                {chapterData.verses?.map((v: any) => (
-                  <div key={v.id} className="flex gap-3 text-sm leading-relaxed">
-                    <span className="text-primary font-medium text-xs w-6 text-right flex-shrink-0">{v.number}</span>
-                    <p>{v.text}</p>
+        {view === 'browse' && (
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Left column: book/chapter navigation */}
+            <div className="lg:w-64 flex-shrink-0">
+              {!selectedBook ? (
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="font-semibold text-sm text-muted-foreground mb-2">{t('old_testament')}</h2>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-1">
+                      {otBooks.map((b: any) => (
+                        <button
+                          key={b.id}
+                          onClick={() => loadBook(b.id)}
+                          className="text-left px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors truncate"
+                        >
+                          {b.abbreviation || b.name}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                ))}
-              </div>
-            )}
-            <div className="flex justify-between pt-2 border-t">
-              <Button
-                variant="ghost" size="sm"
-                disabled={selectedChapter <= 1}
-                onClick={() => loadChapter(chapterData.book.id, selectedChapter - 1)}
-              >
-                <ChevronLeft className="h-4 w-4" />{t('previous')}
-              </Button>
-              <span className="text-sm text-muted-foreground">{chapterData.book?.name} {selectedChapter}</span>
-              <Button
-                variant="ghost" size="sm"
-                disabled={!selectedBook || selectedChapter >= (selectedBook.chapters?.length || 1)}
-                onClick={() => loadChapter(chapterData.book.id, selectedChapter + 1)}
-              >
-                {t('next')}<ChevronRight className="h-4 w-4" />
-              </Button>
+                  <div>
+                    <h2 className="font-semibold text-sm text-muted-foreground mb-2">{t('new_testament')}</h2>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-1">
+                      {ntBooks.map((b: any) => (
+                        <button
+                          key={b.id}
+                          onClick={() => loadBook(b.id)}
+                          className="text-left px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors truncate"
+                        >
+                          {b.abbreviation || b.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : !selectedChapter ? (
+                <div className="space-y-4">
+                  <Button variant="ghost" size="sm" onClick={() => { setSelectedBook(null); setChapterData(null); }}>
+                    <ChevronLeft className="h-4 w-4" />{t('books')}
+                  </Button>
+                  <h2 className="font-semibold text-sm">{selectedBook.name}</h2>
+                  <div className="grid grid-cols-5 sm:grid-cols-6 gap-1">
+                    {selectedBook.chapters?.map((ch: any) => (
+                      <button
+                        key={ch.id}
+                        onClick={() => loadChapter(selectedBook.id, ch.number)}
+                        className="px-2 py-1.5 text-sm rounded border hover:bg-primary/10 transition-colors text-center"
+                      >
+                        {ch.number}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <Button variant="ghost" size="sm" onClick={() => { setSelectedChapter(null); setChapterData(null); }}>
+                    <ChevronLeft className="h-4 w-4" />{t('chapters')}
+                  </Button>
+                  <h2 className="font-semibold text-sm">{chapterData?.book?.name || selectedBook.name}</h2>
+                  <div className="grid grid-cols-5 sm:grid-cols-6 gap-1">
+                    {selectedBook.chapters?.map((ch: any) => (
+                      <button
+                        key={ch.id}
+                        onClick={() => loadChapter(selectedBook.id, ch.number)}
+                        className={`px-2 py-1.5 text-sm rounded border hover:bg-primary/10 transition-colors text-center ${ch.number === selectedChapter ? 'bg-primary/15 border-primary font-medium' : ''}`}
+                      >
+                        {ch.number}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Right column: scripture text */}
+            <div className="flex-1 min-w-0 lg:border-l lg:pl-6">
+              {!selectedBook ? (
+                <div className="flex flex-col items-center justify-center h-full py-12 text-center text-muted-foreground">
+                  <Search className="h-10 w-10 mb-3 opacity-20" />
+                  <p className="text-sm">{t('empty_search_hint')}</p>
+                </div>
+              ) : !selectedChapter ? (
+                <div className="flex flex-col items-center justify-center h-full py-12 text-center text-muted-foreground">
+                  <p className="text-sm">{t('books')}: {t('search_placeholder')}</p>
+                </div>
+              ) : chapterData ? (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <h2 className="font-semibold">{chapterData.book?.name} {selectedChapter}</h2>
+                  </div>
+                  {error ? (
+                    <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center space-y-3">
+                      <AlertCircle className="h-8 w-8 text-destructive mx-auto" />
+                      <p className="text-sm text-destructive">{error}</p>
+                      <Button size="sm" variant="outline" onClick={() => loadChapter(selectedBook.id, selectedChapter || 1)}>{tc('try_again')}</Button>
+                    </div>
+                  ) : loading ? (
+                    <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+                  ) : (
+                    <div className="space-y-3">
+                      {chapterData.verses?.map((v: any) => (
+                        <div key={v.id} className="flex gap-3 text-sm leading-relaxed">
+                          <span className="text-primary font-medium text-xs w-6 text-right flex-shrink-0">{v.number}</span>
+                          <p>{v.text}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div className="flex justify-between pt-2 border-t">
+                    <Button
+                      variant="ghost" size="sm"
+                      disabled={selectedChapter <= 1}
+                      onClick={() => loadChapter(chapterData.book.id, selectedChapter - 1)}
+                    >
+                      <ChevronLeft className="h-4 w-4" />{t('previous')}
+                    </Button>
+                    <span className="text-sm text-muted-foreground">{chapterData.book?.name} {selectedChapter}</span>
+                    <Button
+                      variant="ghost" size="sm"
+                      disabled={!selectedBook || selectedChapter >= (selectedBook.chapters?.length || 1)}
+                      onClick={() => loadChapter(chapterData.book.id, selectedChapter + 1)}
+                    >
+                      {t('next')}<ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ) : loading ? (
+                <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+              ) : null}
             </div>
           </div>
         )}

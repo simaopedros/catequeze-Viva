@@ -1,13 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, Link, useSearchParams } from 'react-router';
+import { useNavigate, Link, useSearchParams, useBlocker } from 'react-router';
 import { AppShell } from '../AppShell';
 import { Button } from '../../client/components/ui/button';
 import { Card } from '../../client/components/ui/card';
 import { Input } from '../../client/components/ui/input';
 import { Label } from '../../client/components/ui/label';
 import { Badge } from '../../client/components/ui/badge';
-import { Progress } from '../../client/components/ui/progress';
 import {
   Sparkles,
   Clock,
@@ -72,6 +71,13 @@ export default function AIPlannerPage() {
     { value: APPROACH_VALUES[2], label: t('planner.approaches.mixed'), icon: Church as LucideIcon, desc: t('planner.approaches.mixed_desc') },
   ], [t]);
 
+  const TONE_VALUES = ['pastoral', 'ludico', 'didatico'] as const;
+  const TONE_LABELS = useMemo(() => [
+    t('planner.tone_pastoral'),
+    t('planner.tone_playful'),
+    t('planner.tone_didactic'),
+  ], [t]);
+
   const loadingPhrases = useMemo(
     () => t('planner.loading_phrases', { returnObjects: true }) as string[],
     [t],
@@ -82,6 +88,7 @@ export default function AIPlannerPage() {
   const [theme, setTheme] = useState(meetingId ? t('planner.class_meeting_theme') : '');
   const [duration, setDuration] = useState(60);
   const [approach, setApproach] = useState('');
+  const [tone, setTone] = useState(0);
   const [error, setError] = useState('');
   const [linking, setLinking] = useState(false);
   const [linked, setLinked] = useState(false);
@@ -129,6 +136,20 @@ export default function AIPlannerPage() {
       } catch {}
     })();
   }, [classId]);
+
+  // Unsaved changes blocker
+  const dirty = result !== null;
+  const blocker = useBlocker(dirty);
+  useEffect(() => {
+    if (blocker.state === 'blocked') {
+      const proceed = window.confirm(t('planner.unsaved_changes_warning'));
+      if (proceed) {
+        blocker.proceed();
+      } else {
+        blocker.reset();
+      }
+    }
+  }, [blocker.state, blocker, t]);
 
   const canProceed = () => {
     if (step === 0) return !!ageGroup;
@@ -233,7 +254,7 @@ export default function AIPlannerPage() {
           </div>
         )}
 
-        {!result && !generating && (
+        {!result && (
           <div className="space-y-6">
             <div className="flex items-center gap-2">
               {[0, 1, 2].map(i => (
@@ -312,7 +333,7 @@ export default function AIPlannerPage() {
                             : 'border-border hover:border-primary/50'
                         }`}
                       >
-                        {d} min
+                        {d} {t('planner.minutes_abbr')}
                       </button>
                     ))}
                   </div>
@@ -343,6 +364,68 @@ export default function AIPlannerPage() {
                     ))}
                   </div>
                 </Card>
+
+                {/* Tone slider */}
+                <Card className="p-6 space-y-4">
+                  <div className="flex items-center gap-2 text-primary">
+                    <MessageCircle className="h-5 w-5" />
+                    <h2 className="text-lg font-semibold">{t('planner.step_tone')}</h2>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      {TONE_LABELS.map((label, i) => (
+                        <button
+                          key={label}
+                          onClick={() => setTone(i)}
+                          className={`text-xs px-2 py-1 rounded-full transition-colors ${
+                            tone === i
+                              ? 'bg-primary text-primary-foreground font-semibold'
+                              : 'text-muted-foreground hover:text-foreground'
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                    <div
+                      role="slider"
+                      tabIndex={0}
+                      aria-valuenow={tone}
+                      aria-valuemin={0}
+                      aria-valuemax={TONE_LABELS.length - 1}
+                      aria-label={t('planner.tone_label')}
+                      className="relative h-2 bg-muted rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      onClick={(e) => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const pct = x / rect.width;
+                        const idx = Math.round(pct * (TONE_LABELS.length - 1));
+                        setTone(Math.max(0, Math.min(TONE_LABELS.length - 1, idx)));
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+                          e.preventDefault();
+                          setTone(t => Math.min(TONE_LABELS.length - 1, t + 1));
+                        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+                          e.preventDefault();
+                          setTone(t => Math.max(0, t - 1));
+                        }
+                      }}
+                    >
+                      <div
+                        className="absolute top-0 left-0 h-full bg-primary rounded-full transition-all duration-200"
+                        style={{ width: `${((tone) / (TONE_LABELS.length - 1)) * 100}%` }}
+                      />
+                      <div
+                        className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-primary rounded-full shadow border-2 border-background transition-all duration-200"
+                        style={{ left: `calc(${((tone) / (TONE_LABELS.length - 1)) * 100}% - 0.5rem)` }}
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground text-center">
+                      {TONE_LABELS[tone]}
+                    </p>
+                  </div>
+                </Card>
               </div>
             )}
 
@@ -350,39 +433,61 @@ export default function AIPlannerPage() {
               <Button
                 variant="outline"
                 onClick={() => setStep(s => s - 1)}
-                disabled={step === 0}
+                disabled={step === 0 || generating}
               >
                 {tCommon('back')}
               </Button>
               {step < 2 ? (
-                <Button onClick={() => setStep(s => s + 1)} disabled={!canProceed()}>
+                <Button onClick={() => setStep(s => s + 1)} disabled={!canProceed() || generating}>
                   {t('planner.continue')}
                 </Button>
               ) : (
-                <Button onClick={handleGenerate} className="gap-2" size="lg">
-                  <Sparkles className="h-4 w-4" />
-                  {t('planner.generate')}
+                <Button onClick={handleGenerate} className="gap-2" size="lg" disabled={generating}>
+                  {generating ? (
+                    <><Loader2 className="h-4 w-4 animate-spin" /> {t('planner.generating_title')}</>
+                  ) : (
+                    <><Sparkles className="h-4 w-4" /> {t('planner.generate')}</>
+                  )}
                 </Button>
               )}
             </div>
-          </div>
-        )}
 
-        {generating && (
-          <Card className="p-12 text-center space-y-6">
-            <div className="relative w-20 h-20 mx-auto">
-              <div className="absolute inset-0 rounded-full border-4 border-primary/20" />
-              <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-primary animate-spin" />
-              <Sparkles className="absolute inset-0 m-auto h-8 w-8 text-primary" />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold">{t('planner.generating_title')}</h3>
-              <p className="text-muted-foreground mt-2 animate-pulse">
-                {loadingPhrases.length > 0 ? loadingPhrases[loadingPhrase] : t('planner.generating_title')}
-              </p>
-            </div>
-            <Progress value={66} className="w-64 mx-auto" />
-          </Card>
+            {/* Skeleton loading during generation */}
+            {generating && (
+              <div className="space-y-4 animate-pulse">
+                <div className="text-center text-sm text-muted-foreground mb-4">
+                  {loadingPhrases.length > 0 ? loadingPhrases[loadingPhrase] : t('planner.generating_skeleton')}
+                </div>
+                <Card className="p-6 space-y-4">
+                  <div className="h-4 bg-muted rounded w-24" />
+                  <div className="h-8 bg-muted rounded w-3/4" />
+                  <div className="h-4 bg-muted rounded w-1/2" />
+                  <div className="space-y-2 mt-6">
+                    <div className="h-3 bg-muted rounded w-32" />
+                    <div className="h-4 bg-muted rounded w-full" />
+                    <div className="h-4 bg-muted rounded w-5/6" />
+                  </div>
+                  <div className="space-y-2 mt-4">
+                    <div className="h-3 bg-muted rounded w-28" />
+                    <div className="h-4 bg-muted rounded w-full" />
+                    <div className="h-4 bg-muted rounded w-4/5" />
+                    <div className="h-4 bg-muted rounded w-3/4" />
+                  </div>
+                  <div className="space-y-2 mt-4">
+                    <div className="h-3 bg-muted rounded w-36" />
+                    <div className="h-4 bg-muted rounded w-full" />
+                    <div className="h-4 bg-muted rounded w-2/3" />
+                  </div>
+                  <div className="space-y-2 mt-4">
+                    <div className="h-3 bg-muted rounded w-40" />
+                    <div className="h-4 bg-muted rounded w-full" />
+                    <div className="h-4 bg-muted rounded w-5/6" />
+                    <div className="h-4 bg-muted rounded w-3/4" />
+                  </div>
+                </Card>
+              </div>
+            )}
+          </div>
         )}
 
         {result && !generating && (
@@ -552,7 +657,7 @@ export default function AIPlannerPage() {
             )}
 
             <div className="flex gap-3 pt-2">
-              <Button onClick={() => { setResult(null); setStep(0); setTheme(''); setWhatsappMessage(''); }}>
+              <Button onClick={() => { setResult(null); setStep(0); setTheme(''); setWhatsappMessage(''); setTone(0); }}>
                 {t('planner.generate_new')}
               </Button>
               <Button variant="outline" onClick={() => navigate(`/app/content-library/${contentItemId}/edit`)}>

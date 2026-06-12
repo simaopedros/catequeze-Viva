@@ -18,6 +18,7 @@
   "meeting_default": "Encuentro",
   "day_title": "Día {{day}} de {{month}}",
   "no_events": "Ningún evento en este día.",
+  "no_events_month": "Ningún evento este mes.",
   "add": "Agregar",
   "new_event": "Nuevo evento",
   "select_day": "Seleccione un día para ver los eventos.",

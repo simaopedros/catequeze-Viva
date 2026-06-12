@@ -21,6 +21,14 @@ export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<number|null>(null);
   const [mobilePanelOpen, setMobilePanelOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'month'|'agenda'>('month');
+
+  useEffect(() => {
+    const check = () => setViewMode(window.innerWidth < 768 ? 'agenda' : 'month');
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   const parishFilteredEvents = activeParishId
     ? liturgicalEvents.filter((e:any) => e.parishId === activeParishId)
@@ -126,7 +134,51 @@ export default function CalendarPage() {
           ))}
         </div>
 
-        <div className="lg:grid lg:grid-cols-3 lg:gap-6">
+        {viewMode === 'agenda' ? (
+          <div className="space-y-2 max-h-[calc(100vh-280px)] overflow-y-auto">
+            {filteredEvents
+              .filter(e => {
+                const d = typeof e.date === 'string' ? e.date : new Date(e.date).toISOString();
+                return new Date(d).getMonth() === month && new Date(d).getFullYear() === year;
+              })
+              .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+              .map(e => {
+                const eventDate = new Date(typeof e.date === 'string' ? e.date : e.date);
+                const day = eventDate.getDate();
+                return (
+                  <button
+                    key={e.id}
+                    onClick={() => { setSelectedDay(day); setMobilePanelOpen(true); }}
+                    className="w-full rounded-lg border p-3 text-left hover:bg-muted/30 transition-colors flex items-center gap-3"
+                  >
+                    <div className="flex flex-col items-center justify-center w-10 h-10 rounded-lg bg-muted flex-shrink-0">
+                      <span className="text-xs font-bold">{day}</span>
+                      <span className="text-[9px] text-muted-foreground">{months[month].slice(0,3)}</span>
+                    </div>
+                    <div className="w-1.5 h-8 rounded-full flex-shrink-0" style={{ background: e.color || '#6366f1' }} />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium truncate">
+                        {e.name}
+                        {e.className && <span className="text-[10px] text-muted-foreground ml-1">({e.className})</span>}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">{eventTypeLabels[e.type] || e.type}</p>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  </button>
+                );
+              })}
+            {filteredEvents.filter(e => {
+              const d = typeof e.date === 'string' ? e.date : new Date(e.date).toISOString();
+              return new Date(d).getMonth() === month && new Date(d).getFullYear() === year;
+            }).length === 0 && (
+              <div className="text-center py-12 text-muted-foreground">
+                <Calendar className="mx-auto h-8 w-8 mb-2 opacity-30" />
+                <p className="text-sm">{t('no_events_month')}</p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="lg:grid lg:grid-cols-3 lg:gap-6">
           <div className="lg:col-span-2 rounded-xl border bg-card overflow-hidden">
             <div className="grid grid-cols-7 bg-muted/30">
               {weekdays.map((d,i)=>(
@@ -177,6 +229,7 @@ export default function CalendarPage() {
             />
           </div>
         </div>
+        )}
 
         {mobilePanelOpen && selectedDay && (
           <div className="lg:hidden fixed inset-0 z-50 flex items-end">

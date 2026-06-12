@@ -198,7 +198,7 @@ export default function MessagesPage() {
           'flex-1 flex flex-col min-w-0',
           !isMobileChat && !activeConversationId ? 'hidden md:flex' : 'flex'
         )}>
-          {activeConversationId && activeConv ? (
+          {activeConversationId && (loadingChat || activeConv) ? (
             <>
               {/* Chat header */}
               <div className="flex items-center gap-3 px-4 py-3 border-b bg-card/80 backdrop-blur-sm">
@@ -210,10 +210,10 @@ export default function MessagesPage() {
                 </button>
 
                 <div className="flex-1 min-w-0">
-                  <h2 className="font-semibold text-sm truncate">{conversationName}</h2>
+                  <h2 className="font-semibold text-sm truncate">{conversationName || t('default_conversation')}</h2>
                   <p className="text-[10px] text-muted-foreground">
-                    {activeConv.type === 'DIRECT' ? t('direct_chat') : (
-                      t('participants_count', { count: activeConv.participants.length })
+                    {activeConv?.type === 'DIRECT' ? t('direct_chat') : (
+                      t('participants_count', { count: activeConv?.participants?.length ?? 0 })
                     )}
                     {myParticipant?.mutedAt && ` · ${t('muted')}`}
                   </p>
@@ -227,7 +227,7 @@ export default function MessagesPage() {
                   >
                     <BellOff className={cn('h-4 w-4', myParticipant?.mutedAt && 'text-primary')} />
                   </button>
-                  {activeConv.type !== 'DIRECT' && (
+                  {activeConv?.type !== 'DIRECT' && (
                     <button
                       onClick={() => setShowDetails(!showDetails)}
                       className={cn(
@@ -246,11 +246,11 @@ export default function MessagesPage() {
               <div className="flex-1 flex min-h-0">
                 <div className="flex-1 relative">
                   <ChatView
-                    messages={chatData.messages || []}
+                    messages={chatData?.messages || []}
                     currentUserId={user?.id || ''}
-                    conversationTitle={conversationName}
-                    conversationType={activeConv.type}
-                    hasMore={chatData.hasMore || false}
+                    conversationTitle={conversationName || t('default_conversation')}
+                    conversationType={activeConv?.type || 'DIRECT'}
+                    hasMore={chatData?.hasMore || false}
                     isLoading={loadingChat}
                     onLoadMore={handleLoadMore}
                     onSendMessage={handleSendMessage}

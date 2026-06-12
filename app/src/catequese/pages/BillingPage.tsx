@@ -7,7 +7,7 @@ import { CheckCircle, TrendingUp, Clock, ArrowUpRight, History, AlertCircle, Loa
 import type { BillingInterval } from '../lib/intendedPlan';
 import { getIntendedInterval } from '../lib/intendedPlan';
 import { AppShell } from '../AppShell';
-import { useQuery, getDashboardStats, getAiCreditsStatus, generateCheckoutSession, cancelSubscription, getParishById } from 'wasp/client/operations';
+import { useQuery, getDashboardStats, getAiCreditsStatus, generateCheckoutSession, cancelSubscription, getParishById, getCustomerPortalUrl } from 'wasp/client/operations';
 import { useAuth } from 'wasp/client/auth';
 import { PaymentPlanId, SubscriptionStatus } from '../../payment/plans';
 import { ConfirmDialog } from '../../client/components/ConfirmDialog';
@@ -139,6 +139,7 @@ export default function BillingPage() {
   const [upgradingPlan, setUpgradingPlan] = useState<PaymentPlanId | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState(false);
+  const [managePaymentLoading, setManagePaymentLoading] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [searchParams] = useSearchParams();
   const requestedPlan = searchParams.get('plan');
@@ -229,6 +230,20 @@ export default function BillingPage() {
 
   const handleCancel = () => {
     setShowCancelConfirm(true);
+  };
+
+  const handleManagePayment = async () => {
+    setManagePaymentLoading(true);
+    try {
+      const result = await getCustomerPortalUrl();
+      if (result) {
+        window.open(result, '_blank', 'noopener,noreferrer');
+      }
+    } catch {
+      // silently fail - portal might not be available for this processor
+    } finally {
+      setManagePaymentLoading(false);
+    }
   };
 
   const confirmCancel = async () => {
@@ -324,6 +339,11 @@ export default function BillingPage() {
                 <div className="w-full bg-muted rounded-full h-2.5">
                   <div
                     className="bg-primary h-2.5 rounded-full"
+                    role="progressbar"
+                    aria-label={t('classes_quota_label')}
+                    aria-valuenow={classesUsed}
+                    aria-valuemin={0}
+                    aria-valuemax={maxClasses === Infinity ? 0 : maxClasses}
                     style={{ width: `${maxClasses === Infinity ? 0 : Math.min((classesUsed / maxClasses) * 100, 100)}%` }}
                   />
                 </div>
@@ -338,6 +358,11 @@ export default function BillingPage() {
                 <div className="w-full bg-muted rounded-full h-2.5">
                   <div
                     className="bg-primary h-2.5 rounded-full"
+                    role="progressbar"
+                    aria-label={t('catechumens_quota_label')}
+                    aria-valuenow={catechumensUsed}
+                    aria-valuemin={0}
+                    aria-valuemax={maxCatechumens === Infinity ? 0 : maxCatechumens}
                     style={{ width: `${maxCatechumens === Infinity ? 0 : Math.min((catechumensUsed / maxCatechumens) * 100, 100)}%` }}
                   />
                 </div>
@@ -360,16 +385,32 @@ export default function BillingPage() {
                     : t('payment_desc')}
               </p>
               {isActive && !effectivePlan.isFree && isPlanManager && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="mt-2 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
-                  onClick={handleCancel}
-                  disabled={cancelling}
-                >
-                  <XCircle className="mr-1 h-3.5 w-3.5" />
-                  {cancelling ? t('cancelling') : t('cancel_subscription')}
-                </Button>
+                <div className="flex items-center gap-2 mt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
+                    onClick={handleCancel}
+                    disabled={cancelling}
+                  >
+                    <XCircle className="mr-1 h-3.5 w-3.5" />
+                    {cancelling ? t('cancelling') : t('cancel_subscription')}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs"
+                    onClick={handleManagePayment}
+                    disabled={managePaymentLoading}
+                  >
+                    {managePaymentLoading ? (
+                      <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <ArrowUpRight className="mr-1 h-3.5 w-3.5" />
+                    )}
+                    {managePaymentLoading ? t('redirecting') : t('manage_payment')}
+                  </Button>
+                </div>
               )}
             </div>
           </div>
@@ -399,6 +440,11 @@ export default function BillingPage() {
                   <div className="w-full bg-muted rounded-full h-2.5">
                     <div
                       className={`h-2.5 rounded-full ${aiCredits.hasAiAccess ? 'bg-violet-500' : 'bg-gray-500'}`}
+                      role="progressbar"
+                      aria-label={t('ai_credits_quota_label')}
+                      aria-valuenow={aiCredits.monthlyAllowance - aiCredits.creditsLeft}
+                      aria-valuemin={0}
+                      aria-valuemax={aiCredits.monthlyAllowance}
                       style={{ width: `${Math.min(((aiCredits.monthlyAllowance - aiCredits.creditsLeft) / aiCredits.monthlyAllowance) * 100, 100)}%` }}
                     />
                   </div>

@@ -3,7 +3,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
-import { ArrowLeft, User, Phone, MapPin, Edit3, Shield, GraduationCap, TrendingUp, Building2, Save, X, Loader2, Plus, Pencil, Trash2 } from 'lucide-react';
+import { ArrowLeft, User, Phone, MapPin, Edit3, Shield, GraduationCap, TrendingUp, Building2, Save, X, Loader2, Plus, Pencil, Trash2, Copy } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import {
   useQuery,
@@ -265,6 +265,12 @@ export default function FamilyDetailPage() {
     }
   };
 
+  const handleCopyInviteLink = () => {
+    const link = `${window.location.origin}/app/families/${id}`;
+    navigator.clipboard.writeText(link);
+    toast({ title: t('link_copied') || 'Link copiado!' });
+  };
+
   if (loading)
     return (
       <AppShell>
@@ -446,6 +452,15 @@ export default function FamilyDetailPage() {
                       </p>
                     </div>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7"
+                        onClick={handleCopyInviteLink}
+                        title={t('families.copy_invite_link') || 'Copiar link de convite'}
+                      >
+                        <Copy className="h-3.5 w-3.5" />
+                      </Button>
                       <Button
                         size="icon"
                         variant="ghost"

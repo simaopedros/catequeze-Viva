@@ -171,6 +171,36 @@ export function ChatView({
           </div>
         )}
 
+        {/* Loading skeleton */}
+        {messages.length === 0 && isLoading && (
+          <div className="space-y-3 py-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={`skel-${i}`}
+                className={`flex gap-2 ${i % 2 === 0 ? 'flex-row-reverse' : 'flex-row'}`}
+              >
+                {i % 2 !== 0 ? (
+                  <div className="h-8 w-8 rounded-full bg-muted animate-pulse flex-shrink-0 mt-0.5" />
+                ) : (
+                  <div className="w-8 flex-shrink-0" />
+                )}
+                <div
+                  className={`rounded-2xl px-3.5 py-2 animate-pulse ${
+                    i % 2 === 0
+                      ? 'bg-primary/20 rounded-br-md'
+                      : 'bg-muted rounded-bl-md'
+                  }`}
+                  style={{
+                    width: `${30 + Math.random() * 35}%`,
+                    minWidth: '80px',
+                    height: `${40 + (i * 8)}px`,
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Message groups by date */}
         {dateGroups.map((group, gi) => (
           <Fragment key={gi}>
