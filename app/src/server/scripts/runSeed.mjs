@@ -129,7 +129,10 @@ async function seedJourneyTemplatesInline() {
     return;
   }
 
-  // Clear single-language templates
+  // Clear old templates and related data
+  // Order matters — delete children before parents due to FK constraints
+  await prisma.sacramentalMilestone.deleteMany({});
+  await prisma.sacramentalJourney.deleteMany({});
   await prisma.sacramentalMilestoneTemplate.deleteMany({});
   await prisma.sacramentalJourneyTemplate.deleteMany({});
 
