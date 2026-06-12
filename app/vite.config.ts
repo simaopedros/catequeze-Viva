@@ -21,8 +21,12 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          charts: ['recharts', 'apexcharts', 'react-apexcharts'],
+        manualChunks(id: string) {
+          if (id.includes('node_modules/')) {
+            if (id.includes('recharts') || id.includes('apexcharts') || id.includes('react-apexcharts')) {
+              return 'charts';
+            }
+          }
         },
       },
     },
