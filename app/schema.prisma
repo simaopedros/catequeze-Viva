@@ -825,6 +825,7 @@ model SacramentalJourneyTemplate {
 
   name        String
   description String?
+  locale      String   @default("pt-BR")
 
   parishId String?
   parish   Parish? @relation(fields: [parishId], references: [id])
@@ -843,6 +844,7 @@ model SacramentalMilestoneTemplate {
 
   name                String
   description         String?
+  locale              String   @default("pt-BR")
   required            Boolean @default(true)
   evidenceRequired    Boolean @default(false)
   order               Int     @default(0)

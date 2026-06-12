@@ -124,70 +124,77 @@ async function seedDirectoryForLocale(locale) {
 
 async function seedJourneyTemplatesInline() {
   const count = await prisma.sacramentalJourneyTemplate.count();
-  if (count > 0) {
+  if (count >= 12) {
     console.log('  Journey templates: already seeded (' + count + '). Skipping.');
     return;
   }
 
-  const TEMPLATES = [
-    {
-      name: 'Preparação para Crisma', description: 'Modelo global para Crisma — 7 marcos', sacramentName: 'Crisma',
-      milestones: [
-        { name: 'Inscrição na Catequese', description: 'Confirmar matrícula na turma de crisma', required: true, evidenceRequired: false, order: 1 },
-        { name: 'Certidão de Batismo', description: 'Apresentar certidão de batismo', required: true, evidenceRequired: true, order: 2, daysBeforeSacrament: 60 },
-        { name: 'Participação nas Aulas', description: 'Frequência mínima de 75%', required: true, evidenceRequired: false, order: 3 },
-        { name: 'Retiro Espiritual', description: 'Participar do retiro de crismandos', required: true, evidenceRequired: false, order: 4, daysBeforeSacrament: 30 },
-        { name: 'Carta ao Bispo', description: 'Carta pessoal solicitando o sacramento', required: true, evidenceRequired: true, order: 5 },
-        { name: 'Confissão', description: 'Sacramento da reconciliação', required: true, evidenceRequired: false, order: 6, daysBeforeSacrament: 7 },
-        { name: 'Ensaios da Celebração', description: 'Participar dos ensaios', required: true, evidenceRequired: false, order: 7, daysBeforeSacrament: 7 },
-      ],
+  // Clear single-language templates
+  await prisma.sacramentalMilestoneTemplate.deleteMany({});
+  await prisma.sacramentalJourneyTemplate.deleteMany({});
+
+  const LOCALES = ['pt-BR', 'en', 'es'];
+  const NAMES = {
+    'pt-BR': {
+      crisma: { name: 'Preparação para Crisma', desc: 'Modelo global para Crisma — 7 marcos' },
+      eucaristia: { name: 'Preparação para a Primeira Eucaristia', desc: 'Modelo para Primeira Comunhão — 5 marcos' },
+      batismo: { name: 'Preparação para o Batismo', desc: 'Modelo para preparação batismal — 4 marcos' },
+      matrimonio: { name: 'Preparação para o Matrimônio', desc: 'Modelo para curso de noivos — 5 marcos' },
     },
-    {
-      name: 'Preparação para a Primeira Eucaristia', description: 'Modelo para Primeira Comunhão — 5 marcos', sacramentName: 'Eucaristia',
-      milestones: [
-        { name: 'Inscrição Confirmada', description: 'Confirmação da inscrição', required: true, evidenceRequired: false, order: 1 },
-        { name: 'Certidão de Nascimento', description: 'Documento de identidade', required: true, evidenceRequired: true, order: 2, daysBeforeSacrament: 60 },
-        { name: 'Termo de Consentimento', description: 'Autorização dos pais', required: true, evidenceRequired: true, order: 3 },
-        { name: 'Formação sobre a Eucaristia', description: 'Aulas específicas', required: true, evidenceRequired: false, order: 4 },
-        { name: 'Primeira Confissão', description: 'Realizar a primeira confissão', required: true, evidenceRequired: false, order: 5, daysBeforeSacrament: 14 },
-      ],
+    en: {
+      crisma: { name: 'Preparation for Confirmation', desc: 'Global template for Confirmation — 7 milestones' },
+      eucaristia: { name: 'Preparation for First Eucharist', desc: 'Template for First Communion — 5 milestones' },
+      batismo: { name: 'Preparation for Baptism', desc: 'Template for baptismal preparation — 4 milestones' },
+      matrimonio: { name: 'Preparation for Marriage', desc: 'Template for marriage preparation — 5 milestones' },
     },
-    {
-      name: 'Preparação para o Batismo', description: 'Modelo para preparação batismal — 4 marcos', sacramentName: 'Batismo',
-      milestones: [
-        { name: 'Entrevista com os Pais', description: 'Conversa pastoral com pais e padrinhos', required: true, evidenceRequired: false, order: 1 },
-        { name: 'Certidão de Nascimento', description: 'Documento do batizando', required: true, evidenceRequired: true, order: 2, daysBeforeSacrament: 30 },
-        { name: 'Curso de Preparação', description: 'Curso para pais e padrinhos', required: true, evidenceRequired: false, order: 3 },
-        { name: 'Escolha dos Padrinhos', description: 'Definição e aprovação', required: true, evidenceRequired: false, order: 4 },
-      ],
+    es: {
+      crisma: { name: 'Preparación para la Confirmación', desc: 'Plantilla global para Confirmación — 7 hitos' },
+      eucaristia: { name: 'Preparación para la Primera Eucaristía', desc: 'Plantilla para Primera Comunión — 5 hitos' },
+      batismo: { name: 'Preparación para el Bautismo', desc: 'Plantilla para preparación bautismal — 4 hitos' },
+      matrimonio: { name: 'Preparación para el Matrimonio', desc: 'Plantilla para curso prematrimonial — 5 hitos' },
     },
-    {
-      name: 'Preparação para o Matrimônio', description: 'Modelo para curso de noivos — 5 marcos', sacramentName: 'Matrimônio',
-      milestones: [
-        { name: 'Entrevista Inicial', description: 'Conversa com o pároco', required: true, evidenceRequired: false, order: 1 },
-        { name: 'Certidão de Batismo', description: 'Certidão atualizada de ambos', required: true, evidenceRequired: true, order: 2, daysBeforeSacrament: 90 },
-        { name: 'Curso de Noivos', description: 'Curso de preparação matrimonial', required: true, evidenceRequired: false, order: 3, daysBeforeSacrament: 60 },
-        { name: 'Documentação Civil', description: 'Documentos civis exigidos', required: true, evidenceRequired: true, order: 4, daysBeforeSacrament: 30 },
-        { name: 'Ensaio da Cerimónia', description: 'Ensaio da celebração', required: true, evidenceRequired: false, order: 5, daysBeforeSacrament: 7 },
-      ],
+  };
+  const MILESTONE_NAMES = {
+    'pt-BR': {
+      crisma: ['Inscrição na Catequese','Certidão de Batismo','Participação nas Aulas','Retiro Espiritual','Carta ao Bispo','Confissão','Ensaios da Celebração'],
+      eucaristia: ['Inscrição Confirmada','Certidão de Nascimento','Termo de Consentimento','Formação sobre a Eucaristia','Primeira Confissão'],
+      batismo: ['Entrevista com os Pais','Certidão de Nascimento','Curso de Preparação','Escolha dos Padrinhos'],
+      matrimonio: ['Entrevista Inicial','Certidão de Batismo','Curso de Noivos','Documentação Civil','Ensaio da Cerimónia'],
     },
-  ];
+    en: {
+      crisma: ['Enrollment in Catechesis','Baptism Certificate','Class Attendance','Spiritual Retreat','Letter to Bishop','Confession','Ceremony Rehearsal'],
+      eucaristia: ['Confirmed Enrollment','Birth Certificate','Consent Form','Eucharist Formation','First Confession'],
+      batismo: ['Parent Interview','Birth Certificate','Preparation Course','Selection of Godparents'],
+      matrimonio: ['Initial Interview','Baptism Certificate','Marriage Preparation','Civil Documentation','Ceremony Rehearsal'],
+    },
+    es: {
+      crisma: ['Inscripción en la Catequesis','Certificado de Bautismo','Asistencia a Clases','Retiro Espiritual','Carta al Obispo','Confesión','Ensayo de la Ceremonia'],
+      eucaristia: ['Inscripción Confirmada','Certificado de Nacimiento','Formulario de Consentimiento','Formación sobre la Eucaristía','Primera Confesión'],
+      batismo: ['Entrevista con los Padres','Certificado de Nacimiento','Curso de Preparación','Elección de Padrinos'],
+      matrimonio: ['Entrevista Inicial','Certificado de Bautismo','Curso Prematrimonial','Documentación Civil','Ensayo de la Ceremonia'],
+    },
+  };
+  const SAC_NAMES = {
+    'pt-BR': { crisma: 'Crisma', eucaristia: 'Eucaristia', batismo: 'Batismo', matrimonio: 'Matrimônio' },
+    en: { crisma: 'Confirmation', eucaristia: 'Eucharist', batismo: 'Baptism', matrimonio: 'Marriage' },
+    es: { crisma: 'Confirmación', eucaristia: 'Eucaristía', batismo: 'Bautismo', matrimonio: 'Matrimonio' },
+  };
 
   let created = 0;
-  for (const tpl of TEMPLATES) {
-    let sacrament = await prisma.sacrament.findFirst({ where: { name: tpl.sacramentName } });
-    if (!sacrament) {
-      sacrament = await prisma.sacrament.create({ data: { name: tpl.sacramentName, description: tpl.description } });
+  for (const locale of LOCALES) {
+    for (const [key, info] of Object.entries(NAMES[locale])) {
+      const sacName = SAC_NAMES[locale][key];
+      let sacrament = await prisma.sacrament.findFirst({ where: { name: sacName } });
+      if (!sacrament) sacrament = await prisma.sacrament.create({ data: { name: sacName, description: info.desc } });
+      const template = await prisma.sacramentalJourneyTemplate.create({ data: { name: info.name, description: info.desc, locale, sacramentId: sacrament.id } });
+      const mNames = MILESTONE_NAMES[locale][key];
+      for (let i = 0; i < mNames.length; i++) {
+        await prisma.sacramentalMilestoneTemplate.create({ data: { name: mNames[i], description: mNames[i], required: true, evidenceRequired: false, order: i+1, locale, templateId: template.id } });
+      }
+      created++;
     }
-    const template = await prisma.sacramentalJourneyTemplate.create({
-      data: { name: tpl.name, description: tpl.description, sacramentId: sacrament.id },
-    });
-    for (const m of tpl.milestones) {
-      await prisma.sacramentalMilestoneTemplate.create({ data: { ...m, templateId: template.id } });
-    }
-    created++;
   }
-  console.log(`  Journey templates: seeded ${created} templates.`);
+  console.log(`  Journey templates: seeded ${created} templates across ${LOCALES.length} locales.`);
 }
 
 async function main() {
