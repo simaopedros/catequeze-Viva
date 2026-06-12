@@ -9,6 +9,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.join(__dirname, 'data');
 const SUPPORTED_LOCALES = ['pt-BR', 'en', 'es'];
@@ -121,6 +122,74 @@ async function seedDirectoryForLocale(locale) {
   console.log(`  Directory seeded for ${locale}: ${total} entries`);
 }
 
+async function seedJourneyTemplatesInline() {
+  const count = await prisma.sacramentalJourneyTemplate.count();
+  if (count > 0) {
+    console.log('  Journey templates: already seeded (' + count + '). Skipping.');
+    return;
+  }
+
+  const TEMPLATES = [
+    {
+      name: 'Preparação para Crisma', description: 'Modelo global para Crisma — 7 marcos', sacramentName: 'Crisma',
+      milestones: [
+        { name: 'Inscrição na Catequese', description: 'Confirmar matrícula na turma de crisma', required: true, evidenceRequired: false, order: 1 },
+        { name: 'Certidão de Batismo', description: 'Apresentar certidão de batismo', required: true, evidenceRequired: true, order: 2, daysBeforeSacrament: 60 },
+        { name: 'Participação nas Aulas', description: 'Frequência mínima de 75%', required: true, evidenceRequired: false, order: 3 },
+        { name: 'Retiro Espiritual', description: 'Participar do retiro de crismandos', required: true, evidenceRequired: false, order: 4, daysBeforeSacrament: 30 },
+        { name: 'Carta ao Bispo', description: 'Carta pessoal solicitando o sacramento', required: true, evidenceRequired: true, order: 5 },
+        { name: 'Confissão', description: 'Sacramento da reconciliação', required: true, evidenceRequired: false, order: 6, daysBeforeSacrament: 7 },
+        { name: 'Ensaios da Celebração', description: 'Participar dos ensaios', required: true, evidenceRequired: false, order: 7, daysBeforeSacrament: 7 },
+      ],
+    },
+    {
+      name: 'Preparação para a Primeira Eucaristia', description: 'Modelo para Primeira Comunhão — 5 marcos', sacramentName: 'Eucaristia',
+      milestones: [
+        { name: 'Inscrição Confirmada', description: 'Confirmação da inscrição', required: true, evidenceRequired: false, order: 1 },
+        { name: 'Certidão de Nascimento', description: 'Documento de identidade', required: true, evidenceRequired: true, order: 2, daysBeforeSacrament: 60 },
+        { name: 'Termo de Consentimento', description: 'Autorização dos pais', required: true, evidenceRequired: true, order: 3 },
+        { name: 'Formação sobre a Eucaristia', description: 'Aulas específicas', required: true, evidenceRequired: false, order: 4 },
+        { name: 'Primeira Confissão', description: 'Realizar a primeira confissão', required: true, evidenceRequired: false, order: 5, daysBeforeSacrament: 14 },
+      ],
+    },
+    {
+      name: 'Preparação para o Batismo', description: 'Modelo para preparação batismal — 4 marcos', sacramentName: 'Batismo',
+      milestones: [
+        { name: 'Entrevista com os Pais', description: 'Conversa pastoral com pais e padrinhos', required: true, evidenceRequired: false, order: 1 },
+        { name: 'Certidão de Nascimento', description: 'Documento do batizando', required: true, evidenceRequired: true, order: 2, daysBeforeSacrament: 30 },
+        { name: 'Curso de Preparação', description: 'Curso para pais e padrinhos', required: true, evidenceRequired: false, order: 3 },
+        { name: 'Escolha dos Padrinhos', description: 'Definição e aprovação', required: true, evidenceRequired: false, order: 4 },
+      ],
+    },
+    {
+      name: 'Preparação para o Matrimônio', description: 'Modelo para curso de noivos — 5 marcos', sacramentName: 'Matrimônio',
+      milestones: [
+        { name: 'Entrevista Inicial', description: 'Conversa com o pároco', required: true, evidenceRequired: false, order: 1 },
+        { name: 'Certidão de Batismo', description: 'Certidão atualizada de ambos', required: true, evidenceRequired: true, order: 2, daysBeforeSacrament: 90 },
+        { name: 'Curso de Noivos', description: 'Curso de preparação matrimonial', required: true, evidenceRequired: false, order: 3, daysBeforeSacrament: 60 },
+        { name: 'Documentação Civil', description: 'Documentos civis exigidos', required: true, evidenceRequired: true, order: 4, daysBeforeSacrament: 30 },
+        { name: 'Ensaio da Cerimónia', description: 'Ensaio da celebração', required: true, evidenceRequired: false, order: 5, daysBeforeSacrament: 7 },
+      ],
+    },
+  ];
+
+  let created = 0;
+  for (const tpl of TEMPLATES) {
+    let sacrament = await prisma.sacrament.findFirst({ where: { name: tpl.sacramentName } });
+    if (!sacrament) {
+      sacrament = await prisma.sacrament.create({ data: { name: tpl.sacramentName, description: tpl.description } });
+    }
+    const template = await prisma.sacramentalJourneyTemplate.create({
+      data: { name: tpl.name, description: tpl.description, sacramentId: sacrament.id },
+    });
+    for (const m of tpl.milestones) {
+      await prisma.sacramentalMilestoneTemplate.create({ data: { ...m, templateId: template.id } });
+    }
+    created++;
+  }
+  console.log(`  Journey templates: seeded ${created} templates.`);
+}
+
 async function main() {
   console.log('Seed script starting...\n');
 
@@ -131,21 +200,26 @@ async function main() {
     try { await seedDirectoryForLocale(locale); } catch (err) { console.error(`  Directory error:`, err.message); }
   }
 
+  // Journey templates (global, not locale-specific)
+  try { await seedJourneyTemplatesInline(); } catch (err) { console.error('  Journey templates error:', err.message); }
+
   console.log('\nDone.');
 
   // Verification
   console.log('\n📊 Verification...');
-  const totals = { books: {}, verses: {}, cat: {}, dir: {} };
+  const totals = { books: {}, verses: {}, cat: {}, dir: {}, journeys: 0 };
   for (const locale of SUPPORTED_LOCALES) {
     totals.books[locale] = await prisma.bibleBook.count({ where: { locale } });
     totals.verses[locale] = await prisma.bibleVerse.count({ where: { locale } });
     totals.cat[locale] = await prisma.catechismEntry.count({ where: { locale } });
     totals.dir[locale] = await prisma.directoryEntry.count({ where: { locale } });
   }
+  totals.journeys = await prisma.sacramentalJourneyTemplate.count();
   console.log('  Books:', JSON.stringify(totals.books));
   console.log('  Verses:', JSON.stringify(totals.verses));
   console.log('  Catechism:', JSON.stringify(totals.cat));
   console.log('  Directory:', JSON.stringify(totals.dir));
+  console.log('  Journey Templates:', totals.journeys);
   console.log('✅ Seed complete.\n');
 
   await prisma.$disconnect();
