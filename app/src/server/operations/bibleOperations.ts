@@ -2,7 +2,9 @@ import { HttpError } from 'wasp/server';
 
 export const listBibleBooks = async (_args: void, context: any) => {
   if (!context.user) throw new HttpError(401);
+  const locale = context.user.locale || 'pt-BR';
   return context.entities.BibleBook.findMany({
+    where: { locale },
     orderBy: { position: 'asc' },
     include: { _count: { select: { chapters: true } } },
   });
@@ -10,8 +12,9 @@ export const listBibleBooks = async (_args: void, context: any) => {
 
 export const getBibleChapter = async (args: { bookId: string; chapter: number }, context: any) => {
   if (!context.user) throw new HttpError(401);
+  const locale = context.user.locale || 'pt-BR';
   const chapter = await context.entities.BibleChapter.findUnique({
-    where: { bookId_number: { bookId: args.bookId, number: args.chapter } },
+    where: { bookId_number_locale: { bookId: args.bookId, number: args.chapter, locale } },
     include: {
       book: { select: { id: true, name: true, testament: true, position: true } },
       verses: { orderBy: { number: 'asc' } },
@@ -27,11 +30,12 @@ export const searchBible = async (args: { query: string; limit?: number }, conte
 
   const q = args.query.trim();
   const limit = args.limit || 30;
+  const locale = context.user.locale || 'pt-BR';
 
   // Try to parse as "Book Chapter:Verse" or "Book Chapter" reference
   // Patterns: "Gênesis 1:1", "Gn 1", "1:1", "João 3:16"
   const refMatch = q.match(/^(.+?)\s+(\d+)(?::(\d+))?$/);
-  
+
   if (refMatch) {
     const [, bookPart, chapterStr, verseStr] = refMatch;
     const chapter = parseInt(chapterStr);
@@ -40,6 +44,7 @@ export const searchBible = async (args: { query: string; limit?: number }, conte
     // Find book by name or abbreviation
     const books = await context.entities.BibleBook.findMany({
       where: {
+        locale,
         OR: [
           { name: { contains: bookPart, mode: 'insensitive' } },
           { abbreviation: { contains: bookPart, mode: 'insensitive' } },
@@ -52,14 +57,14 @@ export const searchBible = async (args: { query: string; limit?: number }, conte
       // Found matching books - search for verses in those books
       const results: any[] = [];
       for (const book of books.slice(0, 3)) {
-        const chapterWhere: any = { bookId: book.id, number: chapter };
+        const chapterWhere: any = { bookId: book.id, number: chapter, locale };
         const chapters = await context.entities.BibleChapter.findMany({
           where: chapterWhere,
           include: {
             book: { select: { id: true, name: true, abbreviation: true } },
             verses: verse
-              ? { where: { number: verse }, orderBy: { number: 'asc' } }
-              : { orderBy: { number: 'asc' }, take: limit },
+              ? { where: { number: verse, locale }, orderBy: { number: 'asc' } }
+              : { where: { locale }, orderBy: { number: 'asc' }, take: limit },
           },
         });
         for (const ch of chapters) {
@@ -79,7 +84,7 @@ export const searchBible = async (args: { query: string; limit?: number }, conte
 
   // Fallback: full text search
   return context.entities.BibleVerse.findMany({
-    where: { text: { contains: q, mode: 'insensitive' } },
+    where: { text: { contains: q, mode: 'insensitive' }, locale },
     take: limit,
     include: {
       chapter: {
@@ -94,8 +99,10 @@ export const searchCatechism = async (args: { query: string; limit?: number }, c
   if (!context.user) throw new HttpError(401);
   if (!args.query || args.query.length < 3) return [];
 
+  const locale = context.user.locale || 'pt-BR';
   return context.entities.CatechismEntry.findMany({
     where: {
+      locale,
       OR: [
         { question: { contains: args.query, mode: 'insensitive' } },
         { answer: { contains: args.query, mode: 'insensitive' } },
@@ -108,15 +115,17 @@ export const searchCatechism = async (args: { query: string; limit?: number }, c
 
 export const listCatechismByCategory = async (args: { category: string }, context: any) => {
   if (!context.user) throw new HttpError(401);
+  const locale = context.user.locale || 'pt-BR';
   return context.entities.CatechismEntry.findMany({
-    where: { category: args.category },
+    where: { category: args.category, locale },
     orderBy: { number: 'asc' },
   });
 };
 
 export const getCatechismEntry = async (args: { number: number }, context: any) => {
   if (!context.user) throw new HttpError(401);
-  const entry = await context.entities.CatechismEntry.findUnique({ where: { number: args.number } });
+  const locale = context.user.locale || 'pt-BR';
+  const entry = await context.entities.CatechismEntry.findUnique({ where: { number_locale: { number: args.number, locale } } });
   if (!entry) throw new HttpError(404, 'Entrada não encontrada.');
   return entry;
 };

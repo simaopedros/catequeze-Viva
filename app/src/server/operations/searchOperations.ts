@@ -44,6 +44,7 @@ export const globalSearch = async (args: { query: string }, context: any) => {
 
   const q = args.query.trim();
   const limit = MAX_RESULTS_PER_CATEGORY;
+  const locale = context.user.locale || 'pt-BR';
 
   const isAdmin = context.user.isAdmin;
   const parishIds = isAdmin ? [] : await getParishIds(context);
@@ -120,7 +121,7 @@ export const globalSearch = async (args: { query: string }, context: any) => {
 
     safeQuery(() =>
       context.entities.BibleVerse.findMany({
-        where: { text: { contains: q, mode: 'insensitive' } },
+        where: { text: { contains: q, mode: 'insensitive' }, locale },
         select: {
           id: true, text: true, number: true,
           chapter: { select: { number: true, book: { select: { name: true, abbreviation: true } } } },
@@ -132,6 +133,7 @@ export const globalSearch = async (args: { query: string }, context: any) => {
     safeQuery(() =>
       context.entities.CatechismEntry.findMany({
         where: {
+          locale,
           OR: [
             { question: { contains: q, mode: 'insensitive' } },
             { answer: { contains: q, mode: 'insensitive' } },
@@ -144,7 +146,7 @@ export const globalSearch = async (args: { query: string }, context: any) => {
 
     safeQuery(() =>
       context.entities.DirectoryEntry.findMany({
-        where: { content: { contains: q, mode: 'insensitive' } },
+        where: { content: { contains: q, mode: 'insensitive' }, locale },
         select: { id: true, number: true, content: true, part: true },
         take: limit,
       })

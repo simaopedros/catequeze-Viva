@@ -25,11 +25,13 @@ export const semanticSearchBible = async (args: { query: string; limit?: number 
   }
 
   const limit = args.limit || 10;
+  const locale = context.user.locale || 'pt-BR';
 
   // First try: use PostgreSQL text search (always available)
   const textResults = await context.entities.BibleVerse.findMany({
     where: {
       text: { contains: args.query, mode: 'insensitive' },
+      locale,
     },
     include: {
       chapter: {
@@ -57,6 +59,7 @@ export const semanticSearchBible = async (args: { query: string; limit?: number 
   if (words.length > 0) {
     const altResults = await context.entities.BibleVerse.findMany({
       where: {
+        locale,
         OR: words.map((word) => ({
           text: { contains: word, mode: 'insensitive' },
         })),

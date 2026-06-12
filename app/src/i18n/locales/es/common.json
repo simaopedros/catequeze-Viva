@@ -153,12 +153,9 @@
     "emptyDesc": "Documento oficial de la Santa Sede que orienta la acción catequética. Seleccione una parte o busque por palabras clave.",
     "loadError": "No se pudo cargar el directorio.",
     "parts": {
-      "Intr": "Introducción",
       "I": "Parte I — La Catequesis en la Misión Evangelizadora",
-      "II": "Parte II — El Mensaje Evangélico",
-      "III": "Parte III — La Pedagogía de la Fe",
-      "IV": "Parte IV — Los Destinatarios de la Catequesis",
-      "V": "Parte V — La Catequesis en la Iglesia Particular"
+      "II": "Parte II — El Proceso de la Catequesis",
+      "III": "Parte III — La Catequesis en las Iglesias Particulares"
     }
   },
   "consent_page": {

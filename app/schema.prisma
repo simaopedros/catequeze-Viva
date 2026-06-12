@@ -1268,48 +1268,59 @@ model BibleBook {
   abbreviation String?
   testament    String // 'OT' or 'NT'
   position     Int
+  locale       String         @default("pt-BR")
   chapters     BibleChapter[]
+
+  @@unique([name, locale])
 }
 
 model BibleChapter {
   id     String       @id @default(uuid())
   number Int
+  locale String       @default("pt-BR")
   bookId String
   book   BibleBook    @relation(fields: [bookId], references: [id])
   verses BibleVerse[]
 
-  @@unique([bookId, number])
+  @@unique([bookId, number, locale])
 }
 
 model BibleVerse {
   id                    String                  @id @default(uuid())
   number                Int
   text                  String
+  locale                String                  @default("pt-BR")
   chapterId             String
   chapter               BibleChapter            @relation(fields: [chapterId], references: [id])
   ContentBibleReference ContentBibleReference[]
 
-  @@unique([chapterId, number])
+  @@unique([chapterId, number, locale])
 }
 
 model CatechismEntry {
   id                        String                      @id @default(uuid())
-  number                    Int                         @unique
+  number                    Int
+  locale                    String                      @default("pt-BR")
   category                  String // 'creed', 'sacraments', 'commandments', 'prayer', 'virtues', 'sin'
   question                  String
   answer                    String
   ContentCatechismReference ContentCatechismReference[]
+
+  @@unique([number, locale])
 }
 
 model DirectoryEntry {
   id      String  @id @default(uuid())
-  number  Int     @unique
+  number  Int
+  locale  String  @default("pt-BR")
   part    String?
   chapter String?
   title   String?
   content String
 
   contentRefs ContentDirectoryReference[]
+
+  @@unique([number, locale])
 }
 
 model ContentDirectoryReference {

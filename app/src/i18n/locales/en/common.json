@@ -153,12 +153,9 @@
     "emptyDesc": "Official document of the Holy See that guides catechetical action. Select a part or search by keywords.",
     "loadError": "Could not load the directory.",
     "parts": {
-      "Intr": "Introduction",
       "I": "Part I — Catechesis in the Evangelizing Mission",
-      "II": "Part II — The Gospel Message",
-      "III": "Part III — The Pedagogy of Faith",
-      "IV": "Part IV — Those to be Catechized",
-      "V": "Part V — Catechesis in the Particular Church"
+      "II": "Part II — The Process of Catechesis",
+      "III": "Part III — Catechesis in the Particular Churches"
     }
   },
   "consent_page": {

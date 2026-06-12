@@ -171,6 +171,7 @@ export const generateMeetingWithAi = async (
     try {
       const verse = await context.entities.BibleVerse.findFirst({
         where: {
+          locale: resolveUserLocale(context.user),
           chapter: {
             book: { name: { contains: ref.book, mode: 'insensitive' } },
             number: ref.chapter,
@@ -192,8 +193,8 @@ export const generateMeetingWithAi = async (
   let linkedCatechismRefs: any[] = [];
   for (const ref of (generated.catechismRefs || [])) {
     try {
-      const entry = await context.entities.CatechismEntry.findUnique({
-        where: { number: ref.number },
+      const entry = await context.entities.CatechismEntry.findFirst({
+        where: { number: ref.number, locale: resolveUserLocale(context.user) },
         select: { id: true },
       });
       if (entry) {

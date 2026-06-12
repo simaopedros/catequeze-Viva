@@ -60,17 +60,19 @@ export const searchDirectory = async (args: { query: string; limit?: number }, c
 
   const q = args.query.trim();
   const limit = args.limit || 20;
+  const locale = context.user.locale || 'pt-BR';
 
   const num = parseInt(q);
   if (!isNaN(num)) {
     const entry = await context.entities.DirectoryEntry.findUnique({
-      where: { number: num },
+      where: { number_locale: { number: num, locale } },
     });
     if (entry) return [entry];
   }
 
   return context.entities.DirectoryEntry.findMany({
     where: {
+      locale,
       OR: [
         { content: { contains: q, mode: 'insensitive' } },
         { title: { contains: q, mode: 'insensitive' } },
@@ -84,22 +86,26 @@ export const searchDirectory = async (args: { query: string; limit?: number }, c
 
 export const listDirectoryByPart = async (args: { part: string }, context: any) => {
   if (!context.user) throw new HttpError(401);
+  const locale = context.user.locale || 'pt-BR';
   return context.entities.DirectoryEntry.findMany({
-    where: { part: args.part },
+    where: { part: args.part, locale },
     orderBy: { number: 'asc' },
   });
 };
 
 export const getDirectoryEntry = async (args: { number: number }, context: any) => {
   if (!context.user) throw new HttpError(401);
-  const entry = await context.entities.DirectoryEntry.findUnique({ where: { number: args.number } });
+  const locale = context.user.locale || 'pt-BR';
+  const entry = await context.entities.DirectoryEntry.findUnique({ where: { number_locale: { number: args.number, locale } } });
   if (!entry) throw new HttpError(404, 'Entrada não encontrada.');
   return entry;
 };
 
 export const listDirectoryParts = async (_args: void, context: any) => {
   if (!context.user) throw new HttpError(401);
+  const locale = context.user.locale || 'pt-BR';
   const entries = await context.entities.DirectoryEntry.findMany({
+    where: { locale },
     select: { part: true, chapter: true, title: true, number: true },
     orderBy: { number: 'asc' },
     distinct: ['chapter'],

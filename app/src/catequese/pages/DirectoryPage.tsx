@@ -5,7 +5,7 @@ import { Button } from '../../client/components/ui/button';
 import { AppShell } from '../AppShell';
 import { listDirectoryByPart, searchDirectory } from 'wasp/client/operations';
 
-const PART_KEYS = ['Intr', 'I', 'II', 'III', 'IV', 'V'] as const;
+const PART_KEYS = ['I', 'II', 'III'] as const;
 
 export default function DirectoryPage() {
   const { t } = useTranslation('common');
