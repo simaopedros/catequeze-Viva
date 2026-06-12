@@ -62,6 +62,7 @@ jobs:
           host: ${{ secrets.HOMOLOG_SSH_HOST }}
           username: ${{ secrets.HOMOLOG_SSH_USER }}
           key: ${{ secrets.HOMOLOG_SSH_KEY }}
+          command_timeout: 30m
           envs: GHCR_TOKEN
           script: |
             cd /opt/catechis
@@ -94,9 +95,9 @@ jobs:
               (sleep 5 && docker compose -f docker-compose.homolog.yml run --rm --entrypoint "npx" server prisma migrate deploy --schema=../db/schema.prisma) || \
               echo "⚠️ migrate deploy failed — check DATABASE_URL in .env.server"
             sleep 5
-            # Run seed (idempotent — skips if data already exists)
-            docker compose -f docker-compose.homolog.yml exec -T server node /app/src/server/scripts/runSeed.mjs || \
-              echo "⚠️ seed failed — check DATABASE_URL in .env.server"
+            # Run seed in background (idempotent — skips if data already exists)
+            nohup docker compose -f docker-compose.homolog.yml exec -T server node /app/src/server/scripts/runSeed.mjs > /opt/catechis/seed.log 2>&1 &
+            echo "✅ Seed started in background (check /opt/catechis/seed.log)"
             sleep 15
             docker compose -f docker-compose.homolog.yml exec -T server node -e "fetch('http://127.0.0.1:3001/health').then(r=>r.json()).then(j=>{if(j.status!=='ok'){console.error(j);process.exit(1)};console.log(JSON.stringify(j))})"
 
