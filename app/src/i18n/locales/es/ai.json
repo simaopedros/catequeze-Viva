@@ -2,7 +2,8 @@
   "planner": {
     "title": "Generador Inteligente de Encuentros",
     "subtitle": "Cree guiones de catequesis completos con IA",
-    "credits_left": "{{count}} créditos de IA restantes",
+    "credits_remaining": "{{count}} créditos de IA restantes",
+    "upgrade": "Actualizar",
     "class_meeting_theme": "Encuentro del grupo",
     "step_age": "¿Para qué grupo de edad?",
     "step_theme": "¿Cuál es el tema del encuentro?",
@@ -72,5 +73,12 @@
     "empty_search": "Sin resultados para esta búsqueda.",
     "empty_desc": "¡Genere su primer encuentro de catequesis con IA!",
     "create_meeting": "Crear Encuentro con IA"
+  },
+  "widget": {
+    "greeting": "¡Hola! Soy el asistente teológico de Catequese Viva. ¿Cómo puedo ayudarle hoy? Pregúnteme sobre cómo explicar la fe para diferentes edades, dudas sobre sacramentos, sugerencias de dinámicas...",
+    "error_connect": "Error al conectar con la IA.",
+    "error_streaming": "Streaming no soportado.",
+    "upgrade_required": "Necesita el plan Catequista IA o Parroquia para usar el asistente teológico. Vaya a /app/billing para actualizar.",
+    "generic_error": "Lo siento, ocurrió un error. Intente nuevamente más tarde."
   }
 }

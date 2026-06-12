@@ -22,5 +22,78 @@
   "ai_showcase_subtitle": "Enter the theme and age group. AI generates the complete meeting — from welcome to closing prayer.",
   "ai_showcase_cta": "Try AI for free",
   "mission_title": "Less time preparing. More time evangelizing.",
-  "mission_text": "Every minute AI saves on preparation is an extra minute for what truly matters: being present for your catechumens."
+  "mission_text": "Every minute AI saves on preparation is an extra minute for what truly matters: being present for your catechumens.",
+  "mockup_dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Catechesis overview",
+    "catechumens": "Catechumens",
+    "active_classes": "Active classes",
+    "avg_attendance": "Avg attendance",
+    "sacraments": "Sacraments",
+    "today": "Today",
+    "today_class": "Confirmation — Class A",
+    "today_detail": "19:30 · 18 enrolled",
+    "upcoming": "Upcoming",
+    "upcoming_class": "First Eucharist",
+    "upcoming_detail": "Sat, 14:00",
+    "alerts_title": "3 pastoral alerts",
+    "alerts_subtitle": "Consecutive absences · pending docs",
+    "birthdays": "Birthdays",
+    "birthdays_list": "Lucas M. · Sofia R. · Pedro A."
+  },
+  "mockup_attendance": {
+    "title": "Attendance — Confirmation Class A",
+    "meeting": "Meeting 12 · 03/19/2026",
+    "present": "Present",
+    "absent": "Absent",
+    "late": "Late",
+    "justified": "Justified"
+  },
+  "mockup_sacraments": {
+    "enrollment": "Enrollment",
+    "documents": "Documents",
+    "retreat": "Retreat",
+    "interview": "Interview",
+    "celebration": "Celebration",
+    "title": "Sacramental Journey",
+    "subtitle": "First Eucharist · 2026",
+    "class": "First Eucharist Class — São José Community"
+  },
+  "mockup_family": {
+    "title": "Family Portal",
+    "greeting": "Hello, Carlos — children: Ana and Pedro",
+    "first_eucharist": "First Eucharist",
+    "confirmation": "Confirmation",
+    "attendance_pct": "92% attendance",
+    "absence_recent": "1 recent absence",
+    "notice_title": "Catechesis notice",
+    "notice_text": "Special meeting on Saturday at 14:00 — bring craft materials.",
+    "next_meeting": "Next meeting",
+    "next_meeting_detail": "Pedro — Confirmation · Sat 03/19 · 19:30",
+    "justify_absence": "Justify absence",
+    "send_certificate": "Send baptism certificate",
+    "pending_doc": "Pending document for Ana"
+  },
+  "mockup_library": {
+    "title": "Pastoral Library",
+    "subtitle": "Integrated theological resources",
+    "bible": "Bible",
+    "catechism": "Catechism",
+    "directory": "Directory",
+    "search_placeholder": "Search in Jn 3:16, love, Eucharist...",
+    "cic_ref": "CCC §133",
+    "dir_ref": "Dir. Catech. 98",
+    "plan_ref": "Meeting Plan 12",
+    "plan_title": "Plan: God's Love",
+    "published": "Published",
+    "plan_detail": "Confirmation · 45 min"
+  },
+  "footer": {
+    "create_account": "Create free account",
+    "login": "Login",
+    "about": "About",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "contact": "Contact"
+  }
 }

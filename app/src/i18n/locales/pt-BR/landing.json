@@ -162,17 +162,38 @@
   "plans": {
     "free": {
       "name": "Catequista Grátis",
-      "desc": "Para começar — 1 turma, 15 catequizandos, presenças digitais, Bíblia e Catecismo integrados."
+      "desc": "Para começar — 1 turma, 15 catequizandos, presenças digitais, Bíblia e Catecismo integrados.",
+      "features": [
+        "1 turma",
+        "15 catequizandos",
+        "Presenças digitais",
+        "Bíblia e Catecismo",
+        "3 créditos de IA iniciais"
+      ]
     },
     "ai": {
       "name": "Catequista IA",
       "desc": "IA ilimitada para criar encontros, atividades, mensagens e planejamento anual automático.",
-      "price": "$9"
+      "price": "$9",
+      "features": [
+        "Turmas e catequizandos ilimitados",
+        "Gerador de encontros por IA",
+        "Planejamento anual automático",
+        "Assistente teológico",
+        "20 créditos de IA/mês"
+      ]
     },
     "parish": {
       "name": "Paróquia Completa",
       "desc": "Para a paróquia inteira — catequistas ilimitados, painel do coordenador, documentos, comunicação integrada.",
-      "price": "$29"
+      "price": "$29",
+      "features": [
+        "Catequistas ilimitados",
+        "Painel do coordenador",
+        "Documentos e consentimentos LGPD",
+        "Comunicação integrada",
+        "50 créditos de IA/mês"
+      ]
     }
   },
   "price_free": "Grátis",
@@ -181,6 +202,9 @@
   "price_annual": "Anual",
   "price_cta_free": "Começar grátis",
   "price_cta_start": "Começar agora",
+  "per_month": "/mês",
+  "per_year": "/ano",
+  "annual_discount": "17% de desconto",
   "compare_plans": "Ver comparação completa de planos →",
   "faq_title": "Perguntas frequentes",
   "faq_subtitle": "Tudo que você precisa saber antes de começar.",
@@ -228,5 +252,78 @@
     "ai_step3": "Leitura bíblica — Mt 28:19-20 (ide e fazei discípulos)",
     "ai_step4": "Reflexão — O que são os sacramentos? (CIC §1131)",
     "ai_step5": "Atividade — Quiz interativo em grupo + Oração final"
+  },
+  "mockup_dashboard": {
+    "title": "Painel",
+    "subtitle": "Visão geral da catequese",
+    "catechumens": "Catequizandos",
+    "active_classes": "Turmas ativas",
+    "avg_attendance": "Presença média",
+    "sacraments": "Sacramentos",
+    "today": "Hoje",
+    "today_class": "Crisma — Turma A",
+    "today_detail": "19:30 · 18 inscritos",
+    "upcoming": "Próximos",
+    "upcoming_class": "1ª Eucaristia",
+    "upcoming_detail": "Sáb, 14:00",
+    "alerts_title": "3 alertas pastorais",
+    "alerts_subtitle": "Faltas consecutivas · docs pendentes",
+    "birthdays": "Aniversariantes",
+    "birthdays_list": "Lucas M. · Sofia R. · Pedro A."
+  },
+  "mockup_attendance": {
+    "title": "Chamada — Crisma Turma A",
+    "meeting": "Encontro 12 · 19/03/2026",
+    "present": "Presentes",
+    "absent": "Faltas",
+    "late": "Atrasos",
+    "justified": "Justificadas"
+  },
+  "mockup_sacraments": {
+    "enrollment": "Inscrição",
+    "documents": "Documentos",
+    "retreat": "Retiro",
+    "interview": "Entrevista",
+    "celebration": "Celebração",
+    "title": "Jornada Sacramental",
+    "subtitle": "Primeira Eucaristia · 2026",
+    "class": "Turma 1ª Eucaristia — Comunidade São José"
+  },
+  "mockup_family": {
+    "title": "Portal da Família",
+    "greeting": "Olá, Carlos — filhos: Ana e Pedro",
+    "first_eucharist": "1ª Eucaristia",
+    "confirmation": "Crisma",
+    "attendance_pct": "92% presença",
+    "absence_recent": "1 falta recente",
+    "notice_title": "Aviso da catequese",
+    "notice_text": "Encontro especial no sábado às 14h — trazer material de artesanato.",
+    "next_meeting": "Próximo encontro",
+    "next_meeting_detail": "Pedro — Crisma · Sáb 19/03 · 19:30",
+    "justify_absence": "Justificar falta",
+    "send_certificate": "Enviar certidão de batismo",
+    "pending_doc": "Documento pendente para Ana"
+  },
+  "mockup_library": {
+    "title": "Biblioteca Pastoral",
+    "subtitle": "Recursos teológicos integrados",
+    "bible": "Bíblia",
+    "catechism": "Catecismo",
+    "directory": "Diretório",
+    "search_placeholder": "Buscar em Jo 3:16, amor, Eucaristia...",
+    "cic_ref": "CIC §133",
+    "dir_ref": "Dir. Cateq. 98",
+    "plan_ref": "Plano Encontro 12",
+    "plan_title": "Plano: O amor de Deus",
+    "published": "Publicado",
+    "plan_detail": "Crisma · 45 min"
+  },
+  "footer": {
+    "create_account": "Criar conta gratuita",
+    "login": "Entrar",
+    "about": "Sobre",
+    "privacy": "Privacidade",
+    "terms": "Termos",
+    "contact": "Contacto"
   }
 }

@@ -130,5 +130,16 @@
   "no_family_later": "Sin familia (vincular después)",
   "error_update": "Error al actualizar.",
   "member_remove_title": "Eliminar miembro",
-  "members_count_short": "{{count}} miembros"
+  "members_count_short": "{{count}} miembros",
+  "community_name_required": "Nombre *",
+  "community_name_placeholder": "Nombre de la comunidad",
+  "community_phone_label": "Teléfono",
+  "community_phone_placeholder": "(00) 00000-0000",
+  "community_email_placeholder": "comunidad@email.com",
+  "coordinator_responsible": "Coordinador / Responsable",
+  "coordinator_name_placeholder": "Nombre del responsable",
+  "coordinator_phone_placeholder": "Teléfono del responsable",
+  "desc_observations": "Descripción / Observaciones",
+  "desc_placeholder": "Información adicional sobre la comunidad...",
+  "create_community": "Crear Comunidad"
 }

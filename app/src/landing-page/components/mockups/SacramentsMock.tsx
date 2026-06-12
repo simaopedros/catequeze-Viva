@@ -1,19 +1,22 @@
 import { CheckCircle2, Circle, Cross } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
-const MILESTONES = [
-  { label: 'Inscrição', done: true },
-  { label: 'Documentos', done: true },
-  { label: 'Retiro', done: true },
-  { label: 'Entrevista', done: false },
-  { label: 'Celebração', done: false },
-];
+export function SacramentsMock({ ns = 'landing' }: { ns?: string }) {
+  const { t } = useTranslation(ns);
 
-export function SacramentsMock() {
+  const MILESTONES = [
+    { label: t('mockup_sacraments.enrollment'), done: true },
+    { label: t('mockup_sacraments.documents'), done: true },
+    { label: t('mockup_sacraments.retreat'), done: true },
+    { label: t('mockup_sacraments.interview'), done: false },
+    { label: t('mockup_sacraments.celebration'), done: false },
+  ];
+
   return (
     <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-[10px] sm:text-xs">
       <div>
-        <p className="font-bold text-sm">Jornada Sacramental</p>
-        <p className="text-muted-foreground">Primeira Eucaristia · 2026</p>
+        <p className="font-bold text-sm">{t('mockup_sacraments.title')}</p>
+        <p className="text-muted-foreground">{t('mockup_sacraments.subtitle')}</p>
       </div>
 
       <div className="rounded-lg border bg-card p-3">
@@ -23,7 +26,7 @@ export function SacramentsMock() {
           </div>
           <div>
             <p className="font-semibold">Maria Oliveira</p>
-            <p className="text-muted-foreground">Turma 1ª Eucaristia — Comunidade São José</p>
+            <p className="text-muted-foreground">{t('mockup_sacraments.class')}</p>
           </div>
         </div>
 

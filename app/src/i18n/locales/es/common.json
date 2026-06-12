@@ -33,6 +33,7 @@
   "import": "Importar",
   "upload": "Subir archivo",
   "view": "Ver",
+  "verify": "Verificar",
   "close": "Cerrar",
   "confirm": "Confirmar",
   "filter": "Filtrar",
@@ -43,7 +44,10 @@
   "remove": "Quitar",
   "remove_member": "Quitar miembro",
   "remove_confirm": "¿Está seguro de que desea quitar este miembro de la parroquia? Esta acción no se puede deshacer.",
+  "error_creating": "Error al crear.",
+  "error_loading": "Error al cargar.",
   "error_save": "Error al guardar.",
+  "error_saving": "Error al guardar.",
   "error_invite": "Error al invitar.",
   "error_remove": "Error al quitar miembro.",
   "invite_sent": "¡Invitación enviada!",
@@ -191,6 +195,9 @@
     "new": "Nuevo",
     "register": "Registrar documento",
     "name": "Nombre *",
+    "name_placeholder": "Ej: Certificado de Bautismo",
+    "doc_type_label": "Tipo",
+    "doc_file_label": "Archivo",
     "noCatechumen": "Sin catecúmeno",
     "registerBtn": "Registrar",
     "searchPlaceholder": "Buscar...",
@@ -215,6 +222,7 @@
     "rejected_success": "Documento rechazado",
     "removed_success": "Documento eliminado"
   },
+  "new_document": "Nuevo Documento",
   "new": "Nuevo",
   "saving": "Guardando...",
   "register": "Registrar",
@@ -291,6 +299,8 @@
     "detail_present_count": "Presentes",
     "detail_absent_count": "Faltas",
     "detail_justified_count": "Justificadas",
+    "detail_justify": "Justificar",
+    "detail_justify_reason": "Motivo de la justificación",
     "detail_consecutive_absences": "{{count}} faltas consecutivas detectadas.",
     "detail_close_report": "Cerrar informe",
     "detail_sacramental_journeys": "Jornadas Sacramentales",
@@ -404,5 +414,31 @@
   "ai_helper_placeholder": "Haga su pregunta teológica...",
   "ai_helper_title": "Asistente Teológico",
   "ai_helper_useful": "Respuesta útil",
-  "ai_helper_not_useful": "Respuesta no útil"
+  "ai_helper_not_useful": "Respuesta no útil",
+  "upload_error": "Error al enviar documento.",
+  "bible": {
+    "title": "Biblia",
+    "old_testament": "Antiguo Testamento",
+    "new_testament": "Nuevo Testamento",
+    "searchPlaceholder": "Ej: Génesis 1, Gn 1:3, amor, Dios...",
+    "browse_hint": "Navegue o escriba arriba. Ej: \"Génesis 1\", \"Juan 3:16\", \"amor\"",
+    "back_to_books": "← Volver a los libros",
+    "chapters": "capítulos"
+  },
+  "catechism": {
+    "title": "Catecismo",
+    "searchPlaceholder": "Ej: sacramento, oración, bautismo...",
+    "explore_by_category": "O explore por categoría:",
+    "category_creed": "📜 El Credo",
+    "category_sacraments": "💧 Los Sacramentos",
+    "category_commandments": "📋 Los Mandamientos",
+    "category_prayer": "🙏 La Oración"
+  },
+  "references": {
+    "title": "Referencias Bíblicas y del Catecismo",
+    "select_all": "Seleccionar todos",
+    "deselect_all": "Deseleccionar todos",
+    "verses": "versículo(s)",
+    "explore_by_part": "O explore por parte:"
+  }
 }

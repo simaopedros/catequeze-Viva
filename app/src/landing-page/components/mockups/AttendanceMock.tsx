@@ -1,4 +1,5 @@
 import { CheckCircle2, Clock, Users, XCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const STUDENTS = [
   { name: 'Ana Silva', status: 'present' },
@@ -8,14 +9,15 @@ const STUDENTS = [
   { name: 'Elena Ferreira', status: 'present' },
 ];
 
-export function AttendanceMock() {
+export function AttendanceMock({ ns = 'landing' }: { ns?: string }) {
+  const { t } = useTranslation(ns);
   return (
     <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-[10px] sm:text-xs">
       <div className="flex items-center justify-between">
         <div>
-          <p className="font-bold text-sm">Chamada — Crisma Turma A</p>
+          <p className="font-bold text-sm">{t('mockup_attendance.title')}</p>
           <p className="text-muted-foreground flex items-center gap-1">
-            <Clock className="h-3 w-3" /> Encontro 12 · 19/03/2026
+            <Clock className="h-3 w-3" /> {t('mockup_attendance.meeting')}
           </p>
         </div>
         <div className="rounded-full bg-primary/10 px-2 py-0.5 text-primary font-medium flex items-center gap-1">
@@ -25,10 +27,10 @@ export function AttendanceMock() {
 
       <div className="grid grid-cols-4 gap-1.5">
         {[
-          { l: 'Presentes', v: '14', c: 'bg-success/10 text-success' },
-          { l: 'Faltas', v: '2', c: 'bg-destructive/10 text-destructive' },
-          { l: 'Atrasos', v: '1', c: 'bg-warning/10 text-warning' },
-          { l: 'Justificadas', v: '1', c: 'bg-muted text-muted-foreground' },
+          { l: t('mockup_attendance.present'), v: '14', c: 'bg-success/10 text-success' },
+          { l: t('mockup_attendance.absent'), v: '2', c: 'bg-destructive/10 text-destructive' },
+          { l: t('mockup_attendance.late'), v: '1', c: 'bg-warning/10 text-warning' },
+          { l: t('mockup_attendance.justified'), v: '1', c: 'bg-muted text-muted-foreground' },
         ].map((s) => (
           <div key={s.l} className={`rounded-lg p-2 text-center ${s.c}`}>
             <p className="font-bold text-sm">{s.v}</p>

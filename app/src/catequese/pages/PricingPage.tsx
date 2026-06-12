@@ -109,7 +109,7 @@ export default function PricingPage() {
         {showAnnual ? (
           <>
             <span className="text-4xl font-bold">${(plan.priceCentsAnnual! / 100).toFixed(0)}</span>
-            <span className="text-base font-normal text-muted-foreground">/ano</span>
+            <span className="text-base font-normal text-muted-foreground">{tp('per_year')}</span>
           </>
         ) : (
           <>
@@ -122,7 +122,7 @@ export default function PricingPage() {
       </div>
       {showAnnual ? (
         <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-          <span>${(plan.priceCents / 100).toFixed(0)}/mês</span>
+          <span>${(plan.priceCents / 100).toFixed(0)}{tp('per_month')}</span>
         </div>
       ) : plan.annualPrice ? (
         <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">

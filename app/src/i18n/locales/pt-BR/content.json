@@ -84,6 +84,9 @@
     "error_required_fields": "Título e conteúdo principal são obrigatórios.",
     "error_enhance": "Erro ao melhorar com IA.",
     "error_create": "Erro ao criar conteúdo.",
+    "error_bible_ref": "Referência bíblica inválida.",
+    "error_catechism_ref": "Referência do catecismo inválida.",
+    "error_directory_ref": "Referência do diretório inválida.",
     "success_created": "Conteúdo criado com sucesso!",
     "home_task_prefix": "Tarefa para casa: "
   },
@@ -101,7 +104,8 @@
     "ai_suggestions": "Sugestões da IA",
     "success_enhanced": "Conteúdo melhorado pela IA!",
     "error_enhance": "Erro ao melhorar com IA.",
-    "success_saved": "Conteúdo salvo."
+    "success_saved": "Conteúdo salvo.",
+    "error_load": "Erro ao carregar conteúdo."
   },
   "print_page": {
     "loading": "Carregando...",

@@ -19,5 +19,78 @@
     "sacraments"
   ],
   "ai_showcase_title": "Y también: notificaciones automáticas para las familias",
-  "ai_showcase_subtitle": "Los padres son notificados automáticamente sobre faltas y pueden justificar en línea, sin llamarlo."
+  "ai_showcase_subtitle": "Los padres son notificados automáticamente sobre faltas y pueden justificar en línea, sin llamarlo.",
+  "mockup_dashboard": {
+    "title": "Panel",
+    "subtitle": "Visión general de la catequesis",
+    "catechumens": "Catequizandos",
+    "active_classes": "Clases activas",
+    "avg_attendance": "Asistencia media",
+    "sacraments": "Sacramentos",
+    "today": "Hoy",
+    "today_class": "Confirmación — Clase A",
+    "today_detail": "19:30 · 18 inscritos",
+    "upcoming": "Próximos",
+    "upcoming_class": "1ª Eucaristía",
+    "upcoming_detail": "Sáb, 14:00",
+    "alerts_title": "3 alertas pastorales",
+    "alerts_subtitle": "Faltas consecutivas · docs pendientes",
+    "birthdays": "Cumpleañeros",
+    "birthdays_list": "Lucas M. · Sofia R. · Pedro A."
+  },
+  "mockup_attendance": {
+    "title": "Pase de lista — Confirmación Clase A",
+    "meeting": "Encuentro 12 · 19/03/2026",
+    "present": "Presentes",
+    "absent": "Ausentes",
+    "late": "Atrasos",
+    "justified": "Justificadas"
+  },
+  "mockup_sacraments": {
+    "enrollment": "Inscripción",
+    "documents": "Documentos",
+    "retreat": "Retiro",
+    "interview": "Entrevista",
+    "celebration": "Celebración",
+    "title": "Jornada Sacramental",
+    "subtitle": "Primera Eucaristía · 2026",
+    "class": "Clase 1ª Eucaristía — Comunidad São José"
+  },
+  "mockup_family": {
+    "title": "Portal de la Familia",
+    "greeting": "Hola, Carlos — hijos: Ana y Pedro",
+    "first_eucharist": "1ª Eucaristía",
+    "confirmation": "Confirmación",
+    "attendance_pct": "92% asistencia",
+    "absence_recent": "1 falta reciente",
+    "notice_title": "Aviso de catequesis",
+    "notice_text": "Encuentro especial el sábado a las 14:00 — traer material de artesanía.",
+    "next_meeting": "Próximo encuentro",
+    "next_meeting_detail": "Pedro — Confirmación · Sáb 19/03 · 19:30",
+    "justify_absence": "Justificar falta",
+    "send_certificate": "Enviar certificado de bautismo",
+    "pending_doc": "Documento pendiente para Ana"
+  },
+  "mockup_library": {
+    "title": "Biblioteca Pastoral",
+    "subtitle": "Recursos teológicos integrados",
+    "bible": "Biblia",
+    "catechism": "Catecismo",
+    "directory": "Directorio",
+    "search_placeholder": "Buscar en Jn 3:16, amor, Eucaristía...",
+    "cic_ref": "CIC §133",
+    "dir_ref": "Dir. Cateq. 98",
+    "plan_ref": "Plan Encuentro 12",
+    "plan_title": "Plan: El amor de Dios",
+    "published": "Publicado",
+    "plan_detail": "Confirmación · 45 min"
+  },
+  "footer": {
+    "create_account": "Crear cuenta gratuita",
+    "login": "Iniciar sesión",
+    "about": "Acerca de",
+    "privacy": "Privacidad",
+    "terms": "Términos",
+    "contact": "Contacto"
+  }
 }

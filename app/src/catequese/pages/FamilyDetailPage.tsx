@@ -73,6 +73,13 @@ export default function FamilyDetailPage() {
   const { data: allHouseholds = [], isLoading: loading } = useQuery(listHouseholds);
   const household = allHouseholds?.find((h: any) => h.id === id);
   const [savingConsent, setSavingConsent] = useState<string | null>(null);
+  const translateRelationship = useCallback(
+    (value: string | undefined) => {
+      if (!value) return '';
+      return relationshipOptions.find((o) => o.value === value)?.label || value;
+    },
+    [relationshipOptions],
+  );
 
   // Edit state
   const [editing, setEditing] = useState(false);
@@ -433,7 +440,7 @@ export default function FamilyDetailPage() {
                       <p className="text-xs text-muted-foreground truncate">
                         {emailOrPlaceholder}
                         {emailOrPlaceholder && (g.relationship || g.phone) ? ' · ' : ''}
-                        {g.relationship}
+                        {translateRelationship(g.relationship)}
                         {g.relationship && g.phone ? ' · ' : ''}
                         {g.phone}
                       </p>

@@ -6,6 +6,7 @@ import promptpanda from "../client/static/examples/promptpanda.webp";
 import reviewradar from "../client/static/examples/reviewradar.webp";
 import scribeist from "../client/static/examples/scribeist.webp";
 import searchcraft from "../client/static/examples/searchcraft.webp";
+import i18n from "../i18n/config";
 import { DocsUrl } from "../shared/common";
 import type { GridFeature } from "./components/FeaturesGrid";
 
@@ -110,14 +111,14 @@ export const faqs = [
 
 export const footerNavigation = {
   app: [
-    { name: "Criar conta gratuita", href: "/signup" },
-    { name: "Entrar", href: "/login" },
+    { name: i18n.t('footer.create_account', { ns: 'landing' }), href: "/signup" },
+    { name: i18n.t('footer.login', { ns: 'landing' }), href: "/login" },
   ],
   company: [
-    { name: "Sobre", href: "/about" },
-    { name: "Privacidade", href: "/privacy" },
-    { name: "Termos", href: "/terms" },
-    { name: "Contacto", href: "/contact" },
+    { name: i18n.t('footer.about', { ns: 'landing' }), href: "/about" },
+    { name: i18n.t('footer.privacy', { ns: 'landing' }), href: "/privacy" },
+    { name: i18n.t('footer.terms', { ns: 'landing' }), href: "/terms" },
+    { name: i18n.t('footer.contact', { ns: 'landing' }), href: "/contact" },
   ],
 };
 

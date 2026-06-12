@@ -6,5 +6,19 @@
     "reload": "Recarregar página",
     "retry": "Tentar novamente",
     "support": "Se o problema persistir, contacte o suporte em suporte@catequeseviva.com"
-  }
+  },
+  "city_placeholder": "Cidade",
+  "loading": "Carregando...",
+  "address_fill": "Preencher endereço",
+  "street_label": "Rua/Avenida",
+  "street_placeholder": "Rua/Avenida",
+  "number_label": "Número",
+  "number_placeholder": "Nº",
+  "neighborhood_label": "Bairro",
+  "neighborhood_placeholder": "Bairro",
+  "complement_label": "Complemento",
+  "complement_placeholder": "Complemento",
+  "cep_label": "CEP",
+  "cep_placeholder": "00000-000",
+  "city_state_label": "Cidade / Estado"
 }

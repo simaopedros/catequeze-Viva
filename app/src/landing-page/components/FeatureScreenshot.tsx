@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 import type { ShowcaseId } from '../content/landingContent';
 import { AiPlannerMock } from './mockups/AiPlannerMock';
@@ -8,7 +8,7 @@ import { FamilyPortalMock } from './mockups/FamilyPortalMock';
 import { LibraryMock } from './mockups/LibraryMock';
 import { SacramentsMock } from './mockups/SacramentsMock';
 
-const MOCK_COMPONENTS: Record<ShowcaseId, () => ReactNode> = {
+const MOCK_COMPONENTS: Record<ShowcaseId, ComponentType<{ ns?: string }>> = {
   dashboard: DashboardMock,
   attendance: AttendanceMock,
   sacraments: SacramentsMock,

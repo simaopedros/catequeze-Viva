@@ -80,10 +80,10 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
         </div>
 
         <div className="text-left">
-          <label className="text-sm font-medium flex items-center gap-1"><Clock className="h-3 w-3" /> {t('personal_setup.schedule_label') || 'Horário (opcional)'}</label>
+          <label className="text-sm font-medium flex items-center gap-1"><Clock className="h-3 w-3" /> {t('personal_setup.schedule_label')}</label>
           <div className="grid grid-cols-3 gap-2 mt-1">
             <select value={dayOfWeek} onChange={e => setDayOfWeek(e.target.value)} className="h-9 rounded-md border border-input bg-background px-2 text-sm">
-              <option value="">{t('personal_setup.day') || 'Dia'}</option>
+              <option value="">{t('personal_setup.day')}</option>
               {DAY_OPTIONS.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
             </select>
             <Input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} className="h-9" />
@@ -92,8 +92,8 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
         </div>
 
         <div className="text-left">
-          <label className="text-sm font-medium flex items-center gap-1"><MapPin className="h-3 w-3" /> {t('personal_setup.location_label') || 'Local (opcional)'}</label>
-          <Input value={location} onChange={e => setLocation(e.target.value)} placeholder={t('personal_setup.location_placeholder') || 'Ex: Salão paroquial'} className="mt-1" />
+          <label className="text-sm font-medium flex items-center gap-1"><MapPin className="h-3 w-3" /> {t('personal_setup.location_label')}</label>
+          <Input value={location} onChange={e => setLocation(e.target.value)} placeholder={t('personal_setup.location_placeholder')} className="mt-1" />
         </div>
 
         <Button type="submit" className="w-full gap-2" size="lg" disabled={loading}>

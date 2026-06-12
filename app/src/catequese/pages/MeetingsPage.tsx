@@ -57,10 +57,10 @@ export default function MeetingsPage() {
     if (!deleteTarget) return;
     try {
       await deleteMeeting({ id: deleteTarget });
-      toast({ title: t('delete_success') || 'Encontro removido.' });
+      toast({ title: t('delete_success') });
       refetchMeetings();
     } catch (e: any) {
-      toast({ title: t('delete_error', { message: e.message || tc('try_again') }) || 'Erro ao remover encontro.', variant: 'destructive' });
+      toast({ title: t('delete_error', { message: e.message || tc('try_again') }), variant: 'destructive' });
     }
     setDeleteTarget(null);
   };
@@ -95,7 +95,7 @@ export default function MeetingsPage() {
             <div className="flex gap-3 items-center">
               <div className="flex-1 space-y-1.5">
                 <Input
-                  placeholder={t('search_content') || 'Buscar conteúdo...'}
+                  placeholder={t('search_content')}
                   value={contentSearch}
                   onChange={e => setContentSearch(e.target.value)}
                   className="h-9"
@@ -115,7 +115,7 @@ export default function MeetingsPage() {
                   }
                 </select>
               </div>
-              <Button onClick={handleCreate} disabled={!title && !selectedContentId}>{t('create') || 'Criar'}</Button>
+              <Button onClick={handleCreate} disabled={!title && !selectedContentId}>{t('create')}</Button>
             </div>
           </div>
         )}
@@ -194,7 +194,7 @@ export default function MeetingsPage() {
                     <Button size="sm" variant="ghost" className="text-xs h-7 text-destructive hover:text-destructive"
                       onClick={() => setDeleteTarget(m.id)}>
                       <Trash2 className="mr-1 h-3 w-3" />
-                      {tc('delete') || 'Remover'}
+                      {tc('delete')}
                     </Button>
                   )}
                 </div>
@@ -206,8 +206,8 @@ export default function MeetingsPage() {
           open={!!deleteTarget}
           onOpenChange={(v) => { if (!v) setDeleteTarget(null); }}
           onConfirm={handleDelete}
-          title={t('delete_confirm_title') || 'Remover encontro?'}
-          description={t('delete_confirm_desc') || 'Esta ação não pode ser desfeita. Os registos de presença serão removidos.'}
+          title={t('delete_confirm_title')}
+          description={t('delete_confirm_desc')}
         />
       </div>
     </AppShell>

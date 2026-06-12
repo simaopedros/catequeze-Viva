@@ -2,7 +2,8 @@
   "planner": {
     "title": "Smart Meeting Generator",
     "subtitle": "Create complete catechesis scripts with AI",
-    "credits_left": "{{count}} AI credits remaining",
+    "credits_remaining": "{{count}} AI credits remaining",
+    "upgrade": "Upgrade",
     "class_meeting_theme": "Class meeting",
     "step_age": "Which age group?",
     "step_theme": "What is the meeting theme?",
@@ -72,5 +73,12 @@
     "empty_search": "No results for this search.",
     "empty_desc": "Generate your first catechesis meeting with AI!",
     "create_meeting": "Create Meeting with AI"
+  },
+  "widget": {
+    "greeting": "Hello! I'm the Catequese Viva theological assistant. How can I help you today? Ask me about explaining the faith for different ages, questions about sacraments, activity suggestions...",
+    "error_connect": "Error connecting to AI.",
+    "error_streaming": "Streaming not supported.",
+    "upgrade_required": "You need the Catechist AI or Parish plan to use the theological assistant. Go to /app/billing to upgrade.",
+    "generic_error": "Sorry, an error occurred. Please try again later."
   }
 }

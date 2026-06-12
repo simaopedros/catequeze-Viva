@@ -130,5 +130,16 @@
   "no_family_later": "No family (link later)",
   "error_update": "Error updating.",
   "member_remove_title": "Remove member",
-  "members_count_short": "{{count}} members"
+  "members_count_short": "{{count}} members",
+  "community_name_required": "Name *",
+  "community_name_placeholder": "Community name",
+  "community_phone_label": "Phone",
+  "community_phone_placeholder": "(555) 000-0000",
+  "community_email_placeholder": "community@email.com",
+  "coordinator_responsible": "Coordinator / Responsible",
+  "coordinator_name_placeholder": "Coordinator name",
+  "coordinator_phone_placeholder": "Coordinator phone",
+  "desc_observations": "Description / Notes",
+  "desc_placeholder": "Additional information about the community...",
+  "create_community": "Create Community"
 }

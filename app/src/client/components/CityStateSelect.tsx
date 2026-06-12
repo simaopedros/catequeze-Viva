@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { BRAZILIAN_STATES, useIbgeCities } from '../hooks/useIbgeCities';
 
 interface CityStateSelectProps {
@@ -22,6 +23,7 @@ export default function CityStateSelect({
   onStateChange,
   disabled = false,
 }: CityStateSelectProps) {
+  const { t } = useTranslation('components');
   const [cityInput, setCityInput] = useState(city);
   const [showDropdown, setShowDropdown] = useState(false);
   const { cities, loading: loadingCities } = useIbgeCities(state, cityInput);
@@ -61,13 +63,13 @@ export default function CityStateSelect({
           onFocus={() => setShowDropdown(true)}
           onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
           className={inputClass}
-          placeholder="Cidade"
+          placeholder={t('city_placeholder')}
           disabled={disabled}
         />
         {showDropdown && cities.length > 0 && (
           <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover shadow-md max-h-48 overflow-y-auto">
             {loadingCities && (
-              <div className="px-3 py-2 text-xs text-muted-foreground">Carregando...</div>
+              <div className="px-3 py-2 text-xs text-muted-foreground">{t('loading')}</div>
             )}
             {cities.slice(0, 50).map((c) => (
               <button

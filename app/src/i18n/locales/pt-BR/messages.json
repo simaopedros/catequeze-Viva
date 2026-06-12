@@ -71,5 +71,7 @@
     "creating": "Criando...",
     "start_direct": "Iniciar conversa",
     "create_group": "Criar grupo ({{count}})"
-  }
+    },
+  "send_error": "Erro ao enviar mensagem",
+  "leave_error": "Erro ao sair da conversa"
 }

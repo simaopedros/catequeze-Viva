@@ -71,5 +71,7 @@
     "creating": "Creating...",
     "start_direct": "Start conversation",
     "create_group": "Create group ({{count}})"
-  }
+    },
+  "send_error": "Error sending message",
+  "leave_error": "Error leaving conversation"
 }

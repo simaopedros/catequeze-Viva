@@ -50,6 +50,10 @@
     "limits_unlimited": "Grupos ilimitados",
     "ai_generator": "Generador de encuentros con IA",
     "liturgical_calendar": "Calendario litúrgico",
+    "schedule_label": "Horario (opcional)",
+    "day": "Día de la semana",
+    "location_label": "Lugar (opcional)",
+    "location_placeholder": "Ej: Salón parroquial",
     "first_class_label": "Nombre del primer grupo (opcional)",
     "first_class_placeholder": "Ej: Catequesis 1er Año",
     "first_class_hint": "Puede crearlo después en Grupos si prefiere.",
@@ -164,6 +168,7 @@
     "empty": "Ninguna parroquia. Puede crear una independiente.",
     "next": "Siguiente"
   },
+  "error_parish_exists": "Esta parroquia ya existe y pertenece a otro coordinador. Solicite una invitación a un administrador para participar.",
   "parish_create": {
     "title": "Crear Parroquia",
     "name_label": "Nombre *",

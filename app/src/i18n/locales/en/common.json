@@ -33,6 +33,7 @@
   "import": "Import",
   "upload": "Upload",
   "view": "View",
+  "verify": "Verify",
   "close": "Close",
   "confirm": "Confirm",
   "filter": "Filter",
@@ -43,7 +44,10 @@
   "remove": "Remove",
   "remove_member": "Remove member",
   "remove_confirm": "Are you sure you want to remove this member from the parish? This action cannot be undone.",
+  "error_creating": "Error creating.",
+  "error_loading": "Error loading.",
   "error_save": "Error saving.",
+  "error_saving": "Error saving.",
   "error_invite": "Error inviting.",
   "error_remove": "Error removing member.",
   "invite_sent": "Invitation sent!",
@@ -191,6 +195,9 @@
     "new": "New",
     "register": "Register document",
     "name": "Name *",
+    "name_placeholder": "Ex: Baptism Certificate",
+    "doc_type_label": "Type",
+    "doc_file_label": "File",
     "noCatechumen": "No catechumen",
     "registerBtn": "Register",
     "searchPlaceholder": "Search...",
@@ -215,6 +222,7 @@
     "rejected_success": "Document rejected",
     "removed_success": "Document removed"
   },
+  "new_document": "New Document",
   "new": "New",
   "saving": "Saving...",
   "register": "Register",
@@ -291,6 +299,8 @@
     "detail_present_count": "Present",
     "detail_absent_count": "Absent",
     "detail_justified_count": "Justified",
+    "detail_justify": "Justify",
+    "detail_justify_reason": "Justification reason",
     "detail_consecutive_absences": "{{count}} consecutive absences detected.",
     "detail_close_report": "Close report",
     "detail_sacramental_journeys": "Sacramental Journeys",
@@ -404,5 +414,31 @@
   "ai_helper_placeholder": "Ask a theological question...",
   "ai_helper_title": "Theological Assistant",
   "ai_helper_useful": "Helpful answer",
-  "ai_helper_not_useful": "Not helpful"
+  "ai_helper_not_useful": "Not helpful",
+  "upload_error": "Error uploading document.",
+  "bible": {
+    "title": "Bible",
+    "old_testament": "Old Testament",
+    "new_testament": "New Testament",
+    "searchPlaceholder": "Ex: Genesis 1, Gn 1:3, love, God...",
+    "browse_hint": "Browse or type above. Ex: \"Genesis 1\", \"John 3:16\", \"love\"",
+    "back_to_books": "← Back to books",
+    "chapters": "chapters"
+  },
+  "catechism": {
+    "title": "Catechism",
+    "searchPlaceholder": "Ex: sacrament, prayer, baptism...",
+    "explore_by_category": "Or explore by category:",
+    "category_creed": "📜 The Creed",
+    "category_sacraments": "💧 The Sacraments",
+    "category_commandments": "📋 The Commandments",
+    "category_prayer": "🙏 The Prayer"
+  },
+  "references": {
+    "title": "Bible and Catechism References",
+    "select_all": "Select all",
+    "deselect_all": "Deselect all",
+    "verses": "verse(s)",
+    "explore_by_part": "Or explore by part:"
+  }
 }

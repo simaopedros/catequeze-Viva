@@ -17,5 +17,10 @@
   "unlink": "Desvincular",
   "link_content": "Vincular contenido...",
   "generate_ai_activity": "Generar Actividad IA",
-  "generate_whatsapp": "Generar WhatsApp"
+  "generate_whatsapp": "Generar WhatsApp",
+  "delete_confirm_title": "¿Eliminar encuentro?",
+  "delete_confirm_desc": "Esta acción no se puede deshacer. Los registros de asistencia se eliminarán.",
+  "delete_error": "Error al eliminar encuentro.",
+  "delete_success": "Encuentro eliminado.",
+  "search_content": "Buscar contenido..."
 }

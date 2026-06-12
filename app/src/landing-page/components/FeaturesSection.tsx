@@ -11,9 +11,9 @@ export function FeaturesSection({ ns = 'landing', order }: { ns?: string; order?
     <section id="recursos" className="scroll-mt-20">
       <div className="max-w-6xl mx-auto px-4 pt-20 pb-6">
         <div ref={headerRef} className={`text-center space-y-3 ${headerClass}`}>
-          <h2 className="text-3xl sm:text-4xl font-bold">{t('features_title') || 'Tudo que sua catequese precisa'}</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold">{t('features_title')}</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            {t('features_subtitle') || 'Uma plataforma completa: da chamada de presença à jornada sacramental, da Bíblia ao portal da família.'}
+            {t('features_subtitle')}
           </p>
         </div>
       </div>
@@ -50,8 +50,8 @@ function FeatureGridSection({ ns = 'landing' }: { ns?: string }) {
   return (
     <div className="max-w-6xl mx-auto px-4 py-16">
       <div ref={headerRef} className={`text-center mb-10 space-y-2 ${headerClass}`}>
-        <h3 className="text-xl sm:text-2xl font-semibold">{t('more_features') || 'E muito mais'}</h3>
-        <p className="text-muted-foreground">{t('more_features_sub') || 'Recursos transversais em toda a plataforma.'}</p>
+        <h3 className="text-xl sm:text-2xl font-semibold">{t('more_features')}</h3>
+        <p className="text-muted-foreground">{t('more_features_sub')}</p>
       </div>
 
       <div className="grid gap-6 sm:grid-cols-3">

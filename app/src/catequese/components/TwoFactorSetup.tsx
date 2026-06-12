@@ -6,7 +6,7 @@ import { Input } from '../../client/components/ui/input';
 import { Shield, ShieldCheck, ShieldAlert, Loader2, QrCode, Key, Trash2 } from 'lucide-react';
 
 export default function TwoFactorSetup() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['auth', 'common']);
   const [status, setStatus] = useState<{ enabled: boolean; required: boolean }>({ enabled: false, required: false });
   const [loading, setLoading] = useState(true);
   const [setupStep, setSetupStep] = useState<'idle' | 'qr' | 'verify'>('idle');
@@ -38,38 +38,38 @@ export default function TwoFactorSetup() {
       setUri(result.uri);
       setSetupStep('qr');
     } catch (e: any) {
-      setError(e.message || 'Erro ao iniciar configuração.');
+      setError(e.message || t('two_factor_setup_error_init'));
     }
     setActionLoading(false);
   };
 
   const handleVerifySetup = async () => {
-    if (token.length !== 6) { setError('Digite o código de 6 dígitos.'); return; }
+    if (token.length !== 6) { setError(t('two_factor_setup_error_otp_required')); return; }
     setActionLoading(true); setError(''); setSuccess('');
     try {
       await verifyTwoFactorSetup({ token });
-      setSuccess('Autenticação de dois fatores ativada com sucesso!');
+      setSuccess(t('two_factor_setup_success_activate'));
       setSetupStep('idle');
       setToken('');
       setSecret('');
       setUri('');
       loadStatus();
     } catch (e: any) {
-      setError(e.message || 'Código inválido.');
+      setError(e.message || t('two_factor_setup_error_activate'));
     }
     setActionLoading(false);
   };
 
   const handleDisable = async () => {
-    if (disableToken.length !== 6) { setError('Digite o código de 6 dígitos para desativar.'); return; }
+    if (disableToken.length !== 6) { setError(t('two_factor_setup_error_deactivate_required')); return; }
     setActionLoading(true); setError(''); setSuccess('');
     try {
       await disableTwoFactor({ token: disableToken });
-      setSuccess('2FA desativado com sucesso.');
+      setSuccess(t('two_factor_setup_success_deactivate'));
       setDisableToken('');
       loadStatus();
     } catch (e: any) {
-      setError(e.message || 'Código inválido.');
+      setError(e.message || t('two_factor_setup_error_deactivate'));
     }
     setActionLoading(false);
   };
@@ -85,8 +85,8 @@ export default function TwoFactorSetup() {
   if (loading) {
     return (
       <div className="rounded-xl border bg-card p-6 space-y-4">
-        <h3 className="font-semibold flex items-center gap-2"><Shield className="h-4 w-4"/>Segurança</h3>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin"/>Carregando...</div>
+        <h3 className="font-semibold flex items-center gap-2"><Shield className="h-4 w-4"/>{t('two_factor_setup_security_title')}</h3>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin"/>{t('two_factor_setup_loading')}</div>
       </div>
     );
   }
@@ -94,17 +94,17 @@ export default function TwoFactorSetup() {
   return (
     <div className="rounded-xl border bg-card p-6 space-y-4">
       <h3 className="font-semibold flex items-center gap-2">
-        <Shield className="h-4 w-4"/>Segurança
+        <Shield className="h-4 w-4"/>{t('two_factor_setup_security_title')}
         {status.enabled ? (
-          <span className="text-xs text-green-600 flex items-center gap-1"><ShieldCheck className="h-3 w-3"/>Ativado</span>
+          <span className="text-xs text-green-600 flex items-center gap-1"><ShieldCheck className="h-3 w-3"/>{t('two_factor_setup_active')}</span>
         ) : (
-          <span className="text-xs text-muted-foreground flex items-center gap-1"><ShieldAlert className="h-3 w-3"/>Desativado</span>
+          <span className="text-xs text-muted-foreground flex items-center gap-1"><ShieldAlert className="h-3 w-3"/>{t('two_factor_setup_inactive')}</span>
         )}
       </h3>
 
       {status.required && !status.enabled && (
         <div className="rounded-lg bg-warning/10 border border-warning/30 p-3 text-sm text-warning">
-          Como administrador, a autenticação de dois fatores é <strong>obrigatória</strong> para sua conta.
+          {t('two_factor_setup_admin_required')}
         </div>
       )}
 
@@ -119,10 +119,10 @@ export default function TwoFactorSetup() {
       {!status.enabled && setupStep === 'idle' && (
         <div>
           <p className="text-xs text-muted-foreground mb-3">
-            Adicione uma camada extra de segurança à sua conta. Use um aplicativo autenticador (Google Authenticator, Authy, etc.) para gerar códigos de verificação.
+            {t('two_factor_setup_activate_desc')}
           </p>
           <Button size="sm" onClick={handleStartSetup} disabled={actionLoading}>
-            {actionLoading ? <><Loader2 className="mr-1 h-3 w-3 animate-spin"/>Iniciando...</> : <><QrCode className="mr-1 h-3 w-3"/>Ativar 2FA</>}
+            {actionLoading ? <><Loader2 className="mr-1 h-3 w-3 animate-spin"/>{t('two_factor_setup_activating')}</> : <><QrCode className="mr-1 h-3 w-3"/>{t('two_factor_setup_activate_button')}</>}
           </Button>
         </div>
       )}
@@ -130,18 +130,18 @@ export default function TwoFactorSetup() {
       {/* QR Code step */}
       {!status.enabled && setupStep === 'qr' && (
         <div className="space-y-3">
-          <p className="text-xs text-muted-foreground">Escaneie o QR Code com seu aplicativo autenticador e insira o código gerado:</p>
+          <p className="text-xs text-muted-foreground">{t('two_factor_setup_scan_instruction')}</p>
           <div className="flex justify-center">
             <img
               src={`https://api.qrserver.com/v1/create-qr-code/?size=${encodeURIComponent('180x180')}&data=${encodeURIComponent(uri)}`}
-              alt="QR Code 2FA"
+              alt="QR Code"
               className="rounded-lg border"
               width={180}
               height={180}
             />
           </div>
           <details className="text-xs text-muted-foreground">
-            <summary className="cursor-pointer">Não consegue escanear?</summary>
+            <summary className="cursor-pointer">{t('two_factor_setup_cannot_scan')}</summary>
             <p className="mt-1 break-all font-mono text-[10px] bg-muted p-2 rounded">{secret}</p>
           </details>
           <div className="flex gap-2">
@@ -165,7 +165,7 @@ export default function TwoFactorSetup() {
       {status.enabled && (
         <div>
           <p className="text-xs text-muted-foreground mb-3">
-            A autenticação de dois fatores está ativa. Para desativar, insira um código do seu aplicativo autenticador:
+            {t('two_factor_setup_deactivate_instruction')}
           </p>
           <div className="flex gap-2">
             <Input
@@ -177,7 +177,7 @@ export default function TwoFactorSetup() {
               disabled={actionLoading}
             />
             <Button size="sm" variant="destructive" onClick={handleDisable} disabled={actionLoading || disableToken.length !== 6}>
-              {actionLoading ? <Loader2 className="h-3 w-3 animate-spin"/> : <><Trash2 className="mr-1 h-3 w-3"/>Desativar</>}
+              {actionLoading ? <Loader2 className="h-3 w-3 animate-spin"/> : <><Trash2 className="mr-1 h-3 w-3"/>{t('two_factor_setup_deactivate_button')}</>}
             </Button>
           </div>
         </div>

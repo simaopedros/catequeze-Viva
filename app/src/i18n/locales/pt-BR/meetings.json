@@ -17,5 +17,10 @@
   "unlink": "Desvincular",
   "link_content": "Vincular conteúdo...",
   "generate_ai_activity": "Gerar Atividade IA",
-  "generate_whatsapp": "Gerar WhatsApp"
+  "generate_whatsapp": "Gerar WhatsApp",
+  "delete_confirm_title": "Remover encontro?",
+  "delete_confirm_desc": "Esta ação não pode ser desfeita. Os registos de presença serão removidos.",
+  "delete_error": "Erro ao remover encontro.",
+  "delete_success": "Encontro removido.",
+  "search_content": "Buscar conteúdo..."
 }

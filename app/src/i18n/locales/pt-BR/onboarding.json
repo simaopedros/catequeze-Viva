@@ -58,6 +58,10 @@
     "limits_unlimited": "Turmas ilimitadas",
     "ai_generator": "Gerador de encontros com IA",
     "liturgical_calendar": "Calendário litúrgico",
+    "schedule_label": "Horário (opcional)",
+    "day": "Dia da semana",
+    "location_label": "Local (opcional)",
+    "location_placeholder": "Ex: Salão paroquial",
     "first_class_label": "Nome da primeira turma (opcional)",
     "first_class_placeholder": "Ex: Catequese 1º Ano",
     "first_class_hint": "Pode criar depois em Turmas.",
@@ -184,6 +188,7 @@
     "empty": "Nenhuma paróquia. Podes criar uma independente.",
     "next": "Próximo"
   },
+  "error_parish_exists": "Esta paróquia já existe e pertence a outro coordenador. Solicite um convite a um administrador para participar.",
   "parish_create": {
     "title": "Criar Paróquia",
     "name_label": "Nome *",

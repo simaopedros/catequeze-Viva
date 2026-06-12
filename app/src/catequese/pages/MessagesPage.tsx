@@ -21,6 +21,7 @@ import { toast } from '../../client/hooks/use-toast';
 
 export default function MessagesPage() {
   const { t } = useTranslation('messages');
+  const { t: tc } = useTranslation('common');
   const { data: user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeConversationId, setActiveConversationId] = useState<string | null>(
@@ -122,7 +123,7 @@ export default function MessagesPage() {
       }));
       refetchConvs();
     } catch (error: any) {
-      toast({ title: 'Erro ao enviar mensagem', description: error?.message || 'Tente novamente.', variant: 'destructive' });
+      toast({ title: t('send_error'), description: error?.message || tc('try_again'), variant: 'destructive' });
     } finally {
       setIsSending(false);
     }
@@ -144,7 +145,7 @@ export default function MessagesPage() {
       });
       loadConversation(activeConversationId);
     } catch (e: any) {
-      toast({ title: 'Erro', description: e?.message || 'Tente novamente.', variant: 'destructive' });
+      toast({ title: tc('error'), description: e?.message || tc('try_again'), variant: 'destructive' });
     }
   };
 
@@ -159,7 +160,7 @@ export default function MessagesPage() {
       setSearchParams({});
       refetchConvs();
     } catch (e: any) {
-      toast({ title: 'Erro ao sair da conversa', description: e?.message || 'Tente novamente.', variant: 'destructive' });
+      toast({ title: t('leave_error'), description: e?.message || tc('try_again'), variant: 'destructive' });
     }
   };
 

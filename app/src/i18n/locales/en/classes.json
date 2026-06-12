@@ -103,6 +103,8 @@
     "confirm_remove_catechist": "Remove this catechist from the class?",
     "chat": "Chat",
     "concluded_success": "Class concluded.",
+    "activated_success": "Class activated successfully!",
+    "paused_success": "Class paused successfully!",
     "open_chat_error": "Error opening chat",
     "load_planning_error": "Error loading planning",
     "catechist_added": "Catechist added!",

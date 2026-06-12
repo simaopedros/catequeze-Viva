@@ -259,13 +259,13 @@ export default function CatechumenDetailPage() {
                     {(a.status === 'ABSENT' || a.status === 'LATE') && (
                       justifyingId === a.id ? (
                         <form onSubmit={(e) => { e.preventDefault(); handleJustify(); }} className="flex items-center gap-1">
-                          <input value={justifyNote} onChange={e => setJustifyNote(e.target.value)} placeholder={t('catechumens.detail_justify_reason') || 'Motivo...'} className="h-7 w-28 rounded border px-2 text-xs" autoFocus />
+                          <input value={justifyNote} onChange={e => setJustifyNote(e.target.value)} placeholder={t('catechumens.detail_justify_reason')} className="h-7 w-28 rounded border px-2 text-xs" autoFocus />
                           <Button type="submit" size="sm" variant="ghost" className="h-7 text-xs" disabled={savingJustify}>{savingJustify ? '...' : '✓'}</Button>
                           <button type="button" onClick={() => setJustifyingId(null)} className="text-xs text-muted-foreground">✕</button>
                         </form>
                       ) : (
                         <Button size="sm" variant="ghost" className="h-7 text-xs text-muted-foreground hover:text-primary" onClick={() => { setJustifyingId(a.id); setJustifyNote(''); }}>
-                          {t('catechumens.detail_justify') || 'Justificar'}
+                          {t('catechumens.detail_justify')}
                         </Button>
                       )
                     )}

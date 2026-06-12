@@ -2,7 +2,10 @@ import {
   type GetPasswordResetEmailContentFn,
   type GetVerificationEmailContentFn,
 } from "wasp/server/auth";
+import i18n from "../../i18n/config";
 import { rewriteClientLinkForFamilyPortal } from "../emailLinkUtils";
+
+const t = (key: string) => i18n.t(key, { ns: "auth", lng: "pt-BR" });
 
 function familyPortalVerificationLink(verificationLink: string): string | null {
   return rewriteClientLinkForFamilyPortal(
@@ -17,25 +20,25 @@ export const getVerificationEmailContent: GetVerificationEmailContentFn = ({
   const familyLink = familyPortalVerificationLink(verificationLink);
   const familyBlock = familyLink
     ? `
-        <p>Se você criou conta no <strong>portal da família</strong>, use este link:</p>
-        <a href="${familyLink}">Verificar email (portal da família)</a>
+        <p>${t("email_verification_family_body")}</p>
+        <a href="${familyLink}">${t("email_verification_family_button")}</a>
         <br /><br />
     `
     : "";
 
   const familyText = familyLink
-    ? `\n\nPortal da família: ${familyLink}`
+    ? `\n\n${t("email_portal_label")} ${familyLink}`
     : "";
 
   return {
-    subject: "Confirme seu email — Catequese Viva",
-    text: `Clique no link para verificar seu email: ${verificationLink}${familyText}`,
+    subject: t("email_verification_subject"),
+    text: `${t("email_verification_body")} ${verificationLink}${familyText}`,
     html: `
-        <p>Clique no link abaixo para verificar seu email:</p>
-        <a href="${verificationLink}">Verificar email</a>
+        <p>${t("email_verification_body")}</p>
+        <a href="${verificationLink}">${t("email_verification_button")}</a>
         <br /><br />
         ${familyBlock}
-        <p style="color:#666;font-size:12px">Se você não criou esta conta, ignore este email.</p>
+        <p style="color:#666;font-size:12px">${t("email_footer_disclaimer")}</p>
     `,
   };
 };
@@ -46,16 +49,16 @@ export const getPasswordResetEmailContent: GetPasswordResetEmailContentFn = ({
   const familyLink = familyPortalVerificationLink(passwordResetLink);
 
   return {
-    subject: "Redefinir senha — Catequese Viva",
-    text: `Clique no link para redefinir sua senha: ${passwordResetLink}${
-      familyLink ? `\n\nPortal da família: ${familyLink}` : ""
+    subject: t("password_reset_subject"),
+    text: `${t("password_reset_body")} ${passwordResetLink}${
+      familyLink ? `\n\n${t("email_portal_label")} ${familyLink}` : ""
     }`,
     html: `
-        <p>Clique no link abaixo para redefinir sua senha:</p>
-        <a href="${passwordResetLink}">Redefinir senha</a>
+        <p>${t("password_reset_body")}</p>
+        <a href="${passwordResetLink}">${t("password_reset_button")}</a>
         ${
           familyLink
-            ? `<br /><br /><p>Ou no portal da família:</p><a href="${familyLink}">Redefinir senha (família)</a>`
+            ? `<br /><br /><p>${t("password_reset_family_alt")}</p><a href="${familyLink}">${t("password_reset_family_button")}</a>`
             : ""
         }
     `,

@@ -103,6 +103,8 @@
     "confirm_remove_catechist": "Remover este catequista da turma?",
     "chat": "Chat",
     "concluded_success": "Turma concluída.",
+    "activated_success": "Turma ativada com sucesso!",
+    "paused_success": "Turma pausada com sucesso!",
     "open_chat_error": "Erro ao abrir chat",
     "load_planning_error": "Erro ao carregar planejamento",
     "catechist_added": "Catequista adicionado!",

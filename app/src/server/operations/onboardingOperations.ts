@@ -1,4 +1,5 @@
 import { HttpError } from 'wasp/server';
+import i18n from '../../i18n/config';
 import { isParishClaimedByOthers } from './parishOperations';
 import { resolveNewParishBilling } from './billingEnforcement';
 
@@ -48,7 +49,7 @@ export const completeCoordinatorOnboarding = async (
       if (!context.user.isAdmin && (await isParishClaimedByOthers(context, existing.id, context.user.id))) {
         throw new HttpError(
           403,
-          'Esta paróquia já existe e pertence a outro coordenador. Solicite um convite a um administrador para participar.',
+          i18n.t('onboarding:error_parish_exists', { lng: 'pt-BR' }),
         );
       }
       await context.entities.Membership.create({

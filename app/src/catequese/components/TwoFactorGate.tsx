@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { signOut } from '../../client/analytics/himetrica';
 import { getTwoFactorStatus, verifyTwoFactorLogin } from 'wasp/client/operations';
@@ -18,6 +19,7 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const { t } = useTranslation('auth');
 
   useEffect(() => {
     getTwoFactorStatus()
@@ -37,7 +39,7 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
       await verifyTwoFactorLogin({ token });
       setNeedsVerification(false);
     } catch (err: any) {
-      setError(err?.message || 'Código inválido.');
+      setError(err?.message || t('two_factor_gate_error_invalid'));
     } finally {
       setSubmitting(false);
     }
@@ -68,9 +70,9 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
             <div className="inline-flex rounded-xl bg-primary/10 p-3">
               <ShieldCheck className="h-6 w-6 text-primary" />
             </div>
-            <h1 className="text-xl font-bold">Verificação em duas etapas</h1>
+            <h1 className="text-xl font-bold">{t('two_factor_gate_title')}</h1>
             <p className="text-sm text-muted-foreground">
-              Confirme o código do autenticador para continuar.
+              {t('two_factor_gate_subtitle')}
             </p>
           </div>
 
@@ -79,7 +81,7 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
               <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="app-totp">Código de verificação</Label>
+              <Label htmlFor="app-totp">{t('two_factor_gate_otp_label')}</Label>
               <Input
                 id="app-totp"
                 type="text"
@@ -87,7 +89,7 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
                 autoComplete="one-time-code"
                 value={token}
                 onChange={(e) => setToken(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                placeholder="000000"
+                placeholder={t('two_factor_gate_otp_placeholder')}
                 maxLength={6}
                 className="font-mono text-center text-2xl tracking-[0.5em]"
                 autoFocus
@@ -96,13 +98,13 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
             </div>
             <Button type="submit" className="w-full" disabled={submitting || token.length !== 6}>
               {submitting ? (
-                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Verificando...</>
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('two_factor_gate_verify_loading')}</>
               ) : (
-                'Continuar'
+                t('two_factor_gate_verify_button')
               )}
             </Button>
             <Button type="button" variant="ghost" className="w-full" onClick={handleCancel}>
-              Sair
+              {t('two_factor_gate_cancel')}
             </Button>
           </form>
         </div>

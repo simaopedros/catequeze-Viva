@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../../client/components/ui/button';
 import { Textarea } from '../../../client/components/ui/textarea';
 import { Loader2 } from 'lucide-react';
@@ -13,6 +14,7 @@ interface CommunityCreateFormProps {
 }
 
 export function CommunityCreateForm({ parishId, onCreate, onCancel }: CommunityCreateFormProps) {
+  const { t } = useTranslation('parishes');
   const [name, setName] = useState('');
   const [type, setType] = useState('');
   const [description, setDescription] = useState('');
@@ -62,51 +64,51 @@ export function CommunityCreateForm({ parishId, onCreate, onCancel }: CommunityC
 
   return (
     <div className="rounded-xl border bg-card p-5 space-y-4 animate-in fade-in slide-in-from-top-2">
-      <h3 className="font-semibold text-sm">Nova Comunidade</h3>
+      <h3 className="font-semibold text-sm">{t('new_community')}</h3>
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="sm:col-span-2">
-          <label className="text-xs font-medium text-muted-foreground">Nome *</label>
-          <input value={name} onChange={e => setName(e.target.value)} className={inputClass} placeholder="Nome da comunidade" autoFocus />
+          <label className="text-xs font-medium text-muted-foreground">{t('community_name_required')}</label>
+          <input value={name} onChange={e => setName(e.target.value)} className={inputClass} placeholder={t('community_name_placeholder')} autoFocus />
         </div>
         <div>
-          <label className="text-xs font-medium text-muted-foreground">Tipo</label>
+          <label className="text-xs font-medium text-muted-foreground">{t('type')}</label>
           <select value={type} onChange={e => setType(e.target.value)} className={inputClass}>
             {COMMUNITY_TYPE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
         </div>
         <div>
-          <label className="text-xs font-medium text-muted-foreground">Telefone</label>
-          <PhoneMaskInput value={phone} onChange={setPhone} className={inputClass} placeholder="(00) 00000-0000" />
+          <label className="text-xs font-medium text-muted-foreground">{t('community_phone_label')}</label>
+          <PhoneMaskInput value={phone} onChange={setPhone} className={inputClass} placeholder={t('community_phone_placeholder')} />
         </div>
         <div className="sm:col-span-2">
-          <label className="text-xs font-medium text-muted-foreground">Email</label>
-          <input value={email} onChange={e => setEmail(e.target.value)} className={inputClass} placeholder="comunidade@email.com" />
+          <label className="text-xs font-medium text-muted-foreground">{t('email')}</label>
+          <input value={email} onChange={e => setEmail(e.target.value)} className={inputClass} placeholder={t('community_email_placeholder')} />
         </div>
       </div>
 
       <div className="border-t pt-3">
-        <p className="text-xs font-medium text-muted-foreground mb-2">Endereço</p>
+        <p className="text-xs font-medium text-muted-foreground mb-2">{t('location_address')}</p>
         <AddressAutocomplete value={address} onChange={setAddress} />
       </div>
 
       <div className="border-t pt-3">
-        <p className="text-xs font-medium text-muted-foreground mb-2">Coordenador / Responsável</p>
+        <p className="text-xs font-medium text-muted-foreground mb-2">{t('coordinator_responsible')}</p>
         <div className="grid gap-3 sm:grid-cols-2">
-          <div><input value={coordinatorName} onChange={e => setCoordinatorName(e.target.value)} className={inputClass} placeholder="Nome do responsável" /></div>
-          <div><PhoneMaskInput value={coordinatorPhone} onChange={setCoordinatorPhone} className={inputClass} placeholder="Telefone do responsável" /></div>
+          <div><input value={coordinatorName} onChange={e => setCoordinatorName(e.target.value)} className={inputClass} placeholder={t('coordinator_name_placeholder')} /></div>
+          <div><PhoneMaskInput value={coordinatorPhone} onChange={setCoordinatorPhone} className={inputClass} placeholder={t('coordinator_phone_placeholder')} /></div>
         </div>
       </div>
 
       <div className="border-t pt-3">
-        <label className="text-xs font-medium text-muted-foreground">Descrição / Observações</label>
-        <Textarea value={description} onChange={e => setDescription(e.target.value)} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" rows={2} placeholder="Informações adicionais sobre a comunidade..." />
+        <label className="text-xs font-medium text-muted-foreground">{t('desc_observations')}</label>
+        <Textarea value={description} onChange={e => setDescription(e.target.value)} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" rows={2} placeholder={t('desc_placeholder')} />
       </div>
 
       <div className="flex gap-2">
         <Button size="sm" onClick={handleSubmit} disabled={creating || !name.trim()}>
-          {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Criar Comunidade'}
+          {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : t('create_community')}
         </Button>
-        <Button size="sm" variant="ghost" onClick={onCancel}>Cancelar</Button>
+        <Button size="sm" variant="ghost" onClick={onCancel}>{t('cancel')}</Button>
       </div>
     </div>
   );

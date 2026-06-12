@@ -10,7 +10,7 @@ i18n
     resources,
     fallbackLng: 'pt-BR',
     defaultNS: 'common',
-    ns: ['common', 'navigation', 'dashboard', 'classes', 'attendance', 'sacraments', 'content', 'messages', 'reports', 'settings', 'parishes', 'topbar', 'catechism', 'tour', 'publicNav', 'bible', 'ai', 'activities', 'meetings', 'catecheticalYears', 'onboarding', 'billing', 'public', 'legal', 'family', 'admin', 'components', 'cookie', 'calendar', 'landing', 'landingSistema', 'landingIa', 'landingPresenca'],
+    ns: ['common', 'navigation', 'dashboard', 'classes', 'attendance', 'sacraments', 'content', 'messages', 'reports', 'settings', 'parishes', 'topbar', 'catechism', 'tour', 'publicNav', 'bible', 'ai', 'activities', 'meetings', 'catecheticalYears', 'onboarding', 'billing', 'public', 'legal', 'family', 'admin', 'components', 'cookie', 'calendar', 'landing', 'landingSistema', 'landingIa', 'landingPresenca', 'auth'],
     interpolation: {
       escapeValue: false,
     },

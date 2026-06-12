@@ -23,11 +23,12 @@ interface Message {
 
 export function AIHelperWidget() {
   const { t } = useTranslation('common');
+  const { t: ta } = useTranslation('ai');
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: 'Olá! Sou o assistente teológico da Catequese Viva. Como posso ajudar você hoje? Pergunte-me sobre como explicar a fé para diferentes idades, dúvidas sobre sacramentos, sugestões de dinâmicas...',
+      content: ta('widget.greeting'),
     },
   ]);
   const [input, setInput] = useState('');
@@ -62,11 +63,11 @@ export function AIHelperWidget() {
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao conectar com a IA.');
+        throw new Error(ta('widget.error_connect'));
       }
 
       const reader = response.body?.getReader();
-      if (!reader) throw new Error('Streaming não suportado.');
+      if (!reader) throw new Error(ta('widget.error_streaming'));
 
       const decoder = new TextDecoder();
       let buffer = '';
@@ -117,8 +118,8 @@ export function AIHelperWidget() {
       }
     } catch (e: any) {
       const errorMsg = e?.message?.includes('402') || e?.message?.includes('Plano')
-        ? 'Você precisa do plano Catequista IA ou Paróquia para usar o assistente teológico. Acesse /app/billing para fazer upgrade.'
-        : 'Desculpe, ocorreu um erro. Tente novamente mais tarde.';
+        ? ta('widget.upgrade_required')
+        : ta('widget.generic_error');
 
       // Remove placeholder if present, add error message
       setMessages(prev => {
@@ -144,7 +145,7 @@ export function AIHelperWidget() {
         <button
           onClick={() => setOpen(true)}
           className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center justify-center"
-          title={t("ai_helper_title") || "Assistente Teológico"}
+          title={t("ai_helper_title")}
         >
           <Sparkles className="h-6 w-6" />
         </button>
@@ -204,14 +205,14 @@ export function AIHelperWidget() {
                       <button
                         onClick={() => submitAiFeedback({ prompt: m.prompt || '', response: m.content, rating: 'thumbs_up' })}
                         className="p-0.5 rounded hover:bg-green-100 text-muted-foreground hover:text-green-600 transition-colors"
-                        title={t("ai_helper_useful") || "Resposta útil"}
+                        title={t("ai_helper_useful")}
                       >
                         <ThumbsUp className="h-3 w-3" />
                       </button>
                       <button
                         onClick={() => submitAiFeedback({ prompt: m.prompt || '', response: m.content, rating: 'thumbs_down' })}
                         className="p-0.5 rounded hover:bg-red-100 text-muted-foreground hover:text-red-600 transition-colors"
-                        title={t("ai_helper_not_useful") || "Resposta não foi útil"}
+                        title={t("ai_helper_not_useful")}
                       >
                         <ThumbsDown className="h-3 w-3" />
                       </button>
@@ -240,7 +241,7 @@ export function AIHelperWidget() {
           {/* Input */}
           <div className="p-3 border-t flex gap-2">
             <Textarea
-              placeholder={t("ai_helper_placeholder") || "Tire sua dúvida..."}
+              placeholder={t("ai_helper_placeholder")}
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => {

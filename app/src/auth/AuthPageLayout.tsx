@@ -1,7 +1,9 @@
 import { ReactNode } from "react";
+import { useTranslation } from 'react-i18next';
 import { PublicNavbar } from "../catequese/PublicNavbar";
 
 export function AuthPageLayout({ children }: { children: ReactNode }) {
+  const { t } = useTranslation('auth');
   return (
     <div className="flex min-h-screen flex-col">
       <PublicNavbar />
@@ -13,7 +15,7 @@ export function AuthPageLayout({ children }: { children: ReactNode }) {
         </div>
       </div>
       <footer className="border-t py-3 text-center text-xs text-muted-foreground">
-        Catequese Viva &copy; {new Date().getFullYear()}
+        {t('footer_copyright', { year: new Date().getFullYear() })}
       </footer>
     </div>
   );

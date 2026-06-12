@@ -333,7 +333,8 @@ export const ai_pt_BR = {
     "planner": {
       "title": "Gerador Inteligente de Encontros",
       "subtitle": "Crie roteiros de catequese completos com IA",
-      "credits_left": "{{count}} créditos de IA restantes",
+      "credits_remaining": "{{count}} créditos de IA restantes",
+      "upgrade": "Fazer upgrade",
       "class_meeting_theme": "Encontro da turma",
       "step_age": "Para qual faixa etária?",
       "step_theme": "Qual o tema do encontro?",
@@ -403,6 +404,13 @@ export const ai_pt_BR = {
       "empty_search": "Nenhum resultado para esta busca.",
       "empty_desc": "Gere seu primeiro encontro de catequese com IA!",
       "create_meeting": "Criar Encontro com IA"
+    },
+    "widget": {
+      "greeting": "Olá! Sou o assistente teológico da Catequese Viva. Como posso ajudar você hoje? Pergunte-me sobre como explicar a fé para diferentes idades, dúvidas sobre sacramentos, sugestões de dinâmicas...",
+      "error_connect": "Erro ao conectar com a IA.",
+      "error_streaming": "Streaming não suportado.",
+      "upgrade_required": "Você precisa do plano Catequista IA ou Paróquia para usar o assistente teológico. Acesse /app/billing para fazer upgrade.",
+      "generic_error": "Desculpe, ocorreu um erro. Tente novamente mais tarde."
     }
   } as const;
 
@@ -410,7 +418,8 @@ export const ai_en = {
     "planner": {
       "title": "Smart Meeting Generator",
       "subtitle": "Create complete catechesis scripts with AI",
-      "credits_left": "{{count}} AI credits remaining",
+      "credits_remaining": "{{count}} AI credits remaining",
+      "upgrade": "Upgrade",
       "class_meeting_theme": "Class meeting",
       "step_age": "Which age group?",
       "step_theme": "What is the meeting theme?",
@@ -480,6 +489,13 @@ export const ai_en = {
       "empty_search": "No results for this search.",
       "empty_desc": "Generate your first catechesis meeting with AI!",
       "create_meeting": "Create Meeting with AI"
+    },
+    "widget": {
+      "greeting": "Hello! I'm the Catequese Viva theological assistant. How can I help you today? Ask me about explaining the faith for different ages, questions about sacraments, activity suggestions...",
+      "error_connect": "Error connecting to AI.",
+      "error_streaming": "Streaming not supported.",
+      "upgrade_required": "You need the Catechist AI or Parish plan to use the theological assistant. Go to /app/billing to upgrade.",
+      "generic_error": "Sorry, an error occurred. Please try again later."
     }
   } as const;
 
@@ -487,7 +503,8 @@ export const ai_es = {
     "planner": {
       "title": "Generador Inteligente de Encuentros",
       "subtitle": "Cree guiones de catequesis completos con IA",
-      "credits_left": "{{count}} créditos de IA restantes",
+      "credits_remaining": "{{count}} créditos de IA restantes",
+      "upgrade": "Actualizar",
       "class_meeting_theme": "Encuentro del grupo",
       "step_age": "¿Para qué grupo de edad?",
       "step_theme": "¿Cuál es el tema del encuentro?",
@@ -557,6 +574,13 @@ export const ai_es = {
       "empty_search": "Sin resultados para esta búsqueda.",
       "empty_desc": "¡Genere su primer encuentro de catequesis con IA!",
       "create_meeting": "Crear Encuentro con IA"
+    },
+    "widget": {
+      "greeting": "¡Hola! Soy el asistente teológico de Catequese Viva. ¿Cómo puedo ayudarle hoy? Pregúnteme sobre cómo explicar la fe para diferentes edades, dudas sobre sacramentos, sugerencias de dinámicas...",
+      "error_connect": "Error al conectar con la IA.",
+      "error_streaming": "Streaming no soportado.",
+      "upgrade_required": "Necesita el plan Catequista IA o Parroquia para usar el asistente teológico. Vaya a /app/billing para actualizar.",
+      "generic_error": "Lo siento, ocurrió un error. Intente nuevamente más tarde."
     }
   } as const;
 
@@ -586,8 +610,10 @@ export const attendance_pt_BR = {
       "title_placeholder": "Título",
       "absent_label": "Faltou",
       "justified_label": "Abonado",
+      "late_label": "Atrasos",
       "not_filled": "Não preenchido",
       "empty": "Crie um encontro para começar.",
+      "empty_desc": "Nenhum registro de presença encontrado para esta turma.",
       "catechumen_column": "Catequizando",
       "totals": "Totais",
       "mark_error": "Erro ao marcar presença: {{message}}",
@@ -628,8 +654,10 @@ export const attendance_en = {
       "title_placeholder": "Title",
       "absent_label": "Absent",
       "justified_label": "Excused",
+      "late_label": "Late",
       "not_filled": "Not filled",
       "empty": "Create a meeting to get started.",
+      "empty_desc": "No attendance records found for this class.",
       "catechumen_column": "Catechumen",
       "totals": "Totals",
       "mark_error": "Error marking attendance: {{message}}",
@@ -670,8 +698,10 @@ export const attendance_es = {
       "title_placeholder": "Título",
       "absent_label": "Faltó",
       "justified_label": "Justificado",
+      "late_label": "Retrasos",
       "not_filled": "Sin completar",
       "empty": "Cree un encuentro para comenzar.",
+      "empty_desc": "No se encontraron registros de asistencia para este grupo.",
       "catechumen_column": "Catecúmeno",
       "totals": "Totales",
       "mark_error": "Error al marcar asistencia: {{message}}",
@@ -684,6 +714,321 @@ export const attendance_es = {
       "percent_column": "%",
       "no_title": "—"
     }
+  } as const;
+
+export const auth_pt_BR = {
+    "login_title": "Bem-vindo de volta",
+    "login_subtitle": "Entre na sua conta para continuar",
+    "login_email_label": "Email",
+    "login_email_placeholder": "seu@email.com",
+    "login_password_label": "Senha",
+    "login_password_placeholder": "••••••••",
+    "login_forgot_password": "Esqueceu a senha?",
+    "login_button": "Entrar",
+    "login_loading": "Entrando...",
+    "login_divider": "ou",
+    "login_google": "Entrar com Google",
+    "login_no_account": "Ainda não tem uma conta?",
+    "login_create_account": "Criar conta",
+    "login_error_fill_all": "Preencha todos os campos.",
+    "login_error_invalid": "Email ou senha incorretos.",
+    "aria_hide_password": "Ocultar senha",
+    "aria_show_password": "Mostrar senha",
+    "two_factor_title": "Verificação em duas etapas",
+    "two_factor_instruction": "Insira o código de 6 dígitos do seu aplicativo autenticador",
+    "two_factor_otp_label": "Código de verificação",
+    "two_factor_otp_placeholder": "000000",
+    "two_factor_verify_loading": "Verificando...",
+    "two_factor_verify_button": "Verificar",
+    "two_factor_back_button": "Voltar ao login",
+    "two_factor_error_required": "Digite o código de 6 dígitos.",
+    "two_factor_error_invalid": "Código inválido.",
+    "signup_title": "Criar conta",
+    "signup_subtitle": "Comece gratuitamente a organizar a catequese",
+    "signup_email_label": "Email",
+    "signup_email_placeholder": "seu@email.com",
+    "signup_password_label": "Senha",
+    "signup_password_placeholder": "Mínimo 8 caracteres",
+    "signup_password_help": "Mínimo 8 caracteres. Use letras, números e símbolos.",
+    "signup_confirm_label": "Confirmar senha",
+    "signup_confirm_placeholder": "Repita a senha",
+    "signup_terms_prefix": "Aceito os",
+    "signup_terms_and": "e a",
+    "terms_of_use": "Termos de Uso",
+    "privacy_policy": "Política de Privacidade",
+    "signup_button": "Criar conta gratuita",
+    "signup_loading": "Criando conta...",
+    "signup_divider": "ou",
+    "signup_google": "Criar conta com Google",
+    "signup_has_account": "Já tem uma conta?",
+    "signup_login_link": "Entrar",
+    "signup_success_title": "Conta criada!",
+    "signup_success_sent_to": "Enviamos um link de confirmação para <strong>{{email}}</strong>.",
+    "signup_success_check_email": "Verifique seu email para ativar a conta.",
+    "signup_success_invite_hint": "Depois de confirmar,",
+    "signup_success_invite_link": "entre aqui para aceitar o convite",
+    "signup_back_button": "Voltar",
+    "signup_error_fill_all": "Preencha todos os campos.",
+    "signup_error_password_length": "A senha deve ter pelo menos 8 caracteres.",
+    "signup_error_password_mismatch": "As senhas não coincidem.",
+    "signup_error_terms": "Deve aceitar os Termos de Uso e a Política de Privacidade.",
+    "signup_error_create": "Erro ao criar conta. Tente novamente.",
+    "footer_copyright": "Catequese Viva &copy; {{year}}",
+    "email_verified": "E-mail verificado com sucesso?",
+    "password_reset_success": "Senha redefinida com sucesso?",
+    "remember_password": "Lembrou sua senha?",
+    "login_link": "Entrar",
+    "two_factor_gate_title": "Verificação em duas etapas",
+    "two_factor_gate_subtitle": "Confirme o código do autenticador para continuar.",
+    "two_factor_gate_otp_label": "Código de verificação",
+    "two_factor_gate_otp_placeholder": "000000",
+    "two_factor_gate_verify_loading": "Verificando...",
+    "two_factor_gate_verify_button": "Continuar",
+    "two_factor_gate_cancel": "Sair",
+    "two_factor_gate_error_invalid": "Código inválido.",
+    "two_factor_setup_security_title": "Segurança",
+    "two_factor_setup_loading": "Carregando...",
+    "two_factor_setup_active": "Ativado",
+    "two_factor_setup_inactive": "Desativado",
+    "two_factor_setup_admin_required": "Como administrador, a autenticação de dois fatores é obrigatória para sua conta.",
+    "two_factor_setup_activate_desc": "Adicione uma camada extra de segurança à sua conta. Use um aplicativo autenticador como Google Authenticator, Authy ou Microsoft Authenticator.",
+    "two_factor_setup_activate_button": "Ativar 2FA",
+    "two_factor_setup_activating": "Iniciando...",
+    "two_factor_setup_scan_instruction": "Escaneie o QR Code com seu aplicativo autenticador e insira o código gerado:",
+    "two_factor_setup_cannot_scan": "Não consegue escanear?",
+    "two_factor_setup_deactivate_instruction": "A autenticação de dois fatores está ativa. Para desativar, insira um código do seu aplicativo autenticador:",
+    "two_factor_setup_deactivate_button": "Desativar",
+    "two_factor_setup_error_init": "Erro ao iniciar configuração.",
+    "two_factor_setup_error_otp_required": "Digite o código de 6 dígitos.",
+    "two_factor_setup_error_activate": "Código inválido.",
+    "two_factor_setup_error_deactivate_required": "Digite o código de 6 dígitos para desativar.",
+    "two_factor_setup_error_deactivate": "Código inválido.",
+    "two_factor_setup_success_activate": "Autenticação de dois fatores ativada com sucesso!",
+    "two_factor_setup_success_deactivate": "2FA desativado com sucesso.",
+    "two_factor_setup_verify_button": "Verificar",
+    "email_verification_subject": "Confirme seu email — Catequese Viva",
+    "email_verification_body": "Clique no link para verificar seu email:",
+    "email_verification_button": "Verificar email",
+    "email_verification_family_body": "Se você criou conta no <strong>portal da família</strong>, use este link:",
+    "email_verification_family_button": "Verificar email (portal da família)",
+    "password_reset_subject": "Redefinir senha — Catequese Viva",
+    "password_reset_body": "Clique no link para redefinir sua senha:",
+    "password_reset_button": "Redefinir senha",
+    "password_reset_family_alt": "Ou no portal da família:",
+    "password_reset_family_button": "Redefinir senha (família)",
+    "email_portal_label": "Portal da família:",
+    "email_footer_portal": "portal da família",
+    "email_footer_disclaimer": "Se você não criou esta conta, ignore este email."
+  } as const;
+
+export const auth_en = {
+    "login_title": "Welcome back",
+    "login_subtitle": "Sign in to your account to continue",
+    "login_email_label": "Email",
+    "login_email_placeholder": "your@email.com",
+    "login_password_label": "Password",
+    "login_password_placeholder": "••••••••",
+    "login_forgot_password": "Forgot password?",
+    "login_button": "Sign in",
+    "login_loading": "Signing in...",
+    "login_divider": "or",
+    "login_google": "Sign in with Google",
+    "login_no_account": "Don't have an account?",
+    "login_create_account": "Create account",
+    "login_error_fill_all": "Please fill in all fields.",
+    "login_error_invalid": "Invalid email or password.",
+    "aria_hide_password": "Hide password",
+    "aria_show_password": "Show password",
+    "two_factor_title": "Two-step verification",
+    "two_factor_instruction": "Enter the 6-digit code from your authenticator app",
+    "two_factor_otp_label": "Verification code",
+    "two_factor_otp_placeholder": "000000",
+    "two_factor_verify_loading": "Verifying...",
+    "two_factor_verify_button": "Verify",
+    "two_factor_back_button": "Back to login",
+    "two_factor_error_required": "Enter the 6-digit code.",
+    "two_factor_error_invalid": "Invalid code.",
+    "signup_title": "Create account",
+    "signup_subtitle": "Start organizing catechesis for free",
+    "signup_email_label": "Email",
+    "signup_email_placeholder": "your@email.com",
+    "signup_password_label": "Password",
+    "signup_password_placeholder": "Min 8 characters",
+    "signup_password_help": "At least 8 characters. Use letters, numbers and symbols.",
+    "signup_confirm_label": "Confirm password",
+    "signup_confirm_placeholder": "Repeat password",
+    "signup_terms_prefix": "I accept the",
+    "signup_terms_and": "and",
+    "terms_of_use": "Terms of Use",
+    "privacy_policy": "Privacy Policy",
+    "signup_button": "Create free account",
+    "signup_loading": "Creating account...",
+    "signup_divider": "or",
+    "signup_google": "Sign up with Google",
+    "signup_has_account": "Already have an account?",
+    "signup_login_link": "Sign in",
+    "signup_success_title": "Account created!",
+    "signup_success_sent_to": "We sent a confirmation link to <strong>{{email}}</strong>.",
+    "signup_success_check_email": "Check your email to activate your account.",
+    "signup_success_invite_hint": "After confirming,",
+    "signup_success_invite_link": "sign in here to accept the invitation",
+    "signup_back_button": "Back",
+    "signup_error_fill_all": "Please fill in all fields.",
+    "signup_error_password_length": "Password must be at least 8 characters.",
+    "signup_error_password_mismatch": "Passwords do not match.",
+    "signup_error_terms": "You must accept the Terms of Use and Privacy Policy.",
+    "signup_error_create": "Error creating account. Please try again.",
+    "footer_copyright": "Catequese Viva &copy; {{year}}",
+    "email_verified": "Email verified successfully?",
+    "password_reset_success": "Password reset successfully?",
+    "remember_password": "Remembered your password?",
+    "login_link": "Sign in",
+    "two_factor_gate_title": "Two-step verification",
+    "two_factor_gate_subtitle": "Confirm the authenticator code to continue.",
+    "two_factor_gate_otp_label": "Verification code",
+    "two_factor_gate_otp_placeholder": "000000",
+    "two_factor_gate_verify_loading": "Verifying...",
+    "two_factor_gate_verify_button": "Continue",
+    "two_factor_gate_cancel": "Sign out",
+    "two_factor_gate_error_invalid": "Invalid code.",
+    "two_factor_setup_security_title": "Security",
+    "two_factor_setup_loading": "Loading...",
+    "two_factor_setup_active": "Active",
+    "two_factor_setup_inactive": "Inactive",
+    "two_factor_setup_admin_required": "As an administrator, two-factor authentication is mandatory for your account.",
+    "two_factor_setup_activate_desc": "Add an extra layer of security to your account. Use an authenticator app like Google Authenticator, Authy or Microsoft Authenticator.",
+    "two_factor_setup_activate_button": "Enable 2FA",
+    "two_factor_setup_activating": "Starting...",
+    "two_factor_setup_scan_instruction": "Scan the QR Code with your authenticator app and enter the generated code:",
+    "two_factor_setup_cannot_scan": "Can't scan?",
+    "two_factor_setup_deactivate_instruction": "Two-factor authentication is active. To deactivate, enter a code from your authenticator app:",
+    "two_factor_setup_deactivate_button": "Deactivate",
+    "two_factor_setup_error_init": "Error starting setup.",
+    "two_factor_setup_error_otp_required": "Enter the 6-digit code.",
+    "two_factor_setup_error_activate": "Invalid code.",
+    "two_factor_setup_error_deactivate_required": "Enter the 6-digit code to deactivate.",
+    "two_factor_setup_error_deactivate": "Invalid code.",
+    "two_factor_setup_success_activate": "Two-factor authentication enabled successfully!",
+    "two_factor_setup_success_deactivate": "2FA disabled successfully.",
+    "two_factor_setup_verify_button": "Verify",
+    "email_verification_subject": "Confirm your email — Catequese Viva",
+    "email_verification_body": "Click the link to verify your email:",
+    "email_verification_button": "Verify email",
+    "email_verification_family_body": "If you created an account on the <strong>family portal</strong>, use this link:",
+    "email_verification_family_button": "Verify email (family portal)",
+    "password_reset_subject": "Reset password — Catequese Viva",
+    "password_reset_body": "Click the link to reset your password:",
+    "password_reset_button": "Reset password",
+    "password_reset_family_alt": "Or on the family portal:",
+    "password_reset_family_button": "Reset password (family)",
+    "email_portal_label": "Family portal:",
+    "email_footer_portal": "family portal",
+    "email_footer_disclaimer": "If you did not create this account, ignore this email."
+  } as const;
+
+export const auth_es = {
+    "login_title": "Bienvenido de nuevo",
+    "login_subtitle": "Inicia sesión en tu cuenta para continuar",
+    "login_email_label": "Email",
+    "login_email_placeholder": "tu@email.com",
+    "login_password_label": "Contraseña",
+    "login_password_placeholder": "••••••••",
+    "login_forgot_password": "¿Olvidaste la contraseña?",
+    "login_button": "Iniciar sesión",
+    "login_loading": "Iniciando sesión...",
+    "login_divider": "o",
+    "login_google": "Iniciar sesión con Google",
+    "login_no_account": "¿Aún no tienes una cuenta?",
+    "login_create_account": "Crear cuenta",
+    "login_error_fill_all": "Complete todos los campos.",
+    "login_error_invalid": "Email o contraseña incorrectos.",
+    "aria_hide_password": "Ocultar contraseña",
+    "aria_show_password": "Mostrar contraseña",
+    "two_factor_title": "Verificación en dos pasos",
+    "two_factor_instruction": "Ingrese el código de 6 dígitos de su aplicación autenticadora",
+    "two_factor_otp_label": "Código de verificación",
+    "two_factor_otp_placeholder": "000000",
+    "two_factor_verify_loading": "Verificando...",
+    "two_factor_verify_button": "Verificar",
+    "two_factor_back_button": "Volver al inicio de sesión",
+    "two_factor_error_required": "Ingrese el código de 6 dígitos.",
+    "two_factor_error_invalid": "Código inválido.",
+    "signup_title": "Crear cuenta",
+    "signup_subtitle": "Comienza gratis a organizar la catequesis",
+    "signup_email_label": "Email",
+    "signup_email_placeholder": "tu@email.com",
+    "signup_password_label": "Contraseña",
+    "signup_password_placeholder": "Mínimo 8 caracteres",
+    "signup_password_help": "Mínimo 8 caracteres. Use letras, números y símbolos.",
+    "signup_confirm_label": "Confirmar contraseña",
+    "signup_confirm_placeholder": "Repita la contraseña",
+    "signup_terms_prefix": "Acepto los",
+    "signup_terms_and": "y la",
+    "terms_of_use": "Términos de Uso",
+    "privacy_policy": "Política de Privacidad",
+    "signup_button": "Crear cuenta gratuita",
+    "signup_loading": "Creando cuenta...",
+    "signup_divider": "o",
+    "signup_google": "Crear cuenta con Google",
+    "signup_has_account": "¿Ya tienes una cuenta?",
+    "signup_login_link": "Iniciar sesión",
+    "signup_success_title": "¡Cuenta creada!",
+    "signup_success_sent_to": "Enviamos un enlace de confirmación a <strong>{{email}}</strong>.",
+    "signup_success_check_email": "Verifique su email para activar la cuenta.",
+    "signup_success_invite_hint": "Después de confirmar,",
+    "signup_success_invite_link": "inicie sesión aquí para aceptar la invitación",
+    "signup_back_button": "Volver",
+    "signup_error_fill_all": "Complete todos los campos.",
+    "signup_error_password_length": "La contraseña debe tener al menos 8 caracteres.",
+    "signup_error_password_mismatch": "Las contraseñas no coinciden.",
+    "signup_error_terms": "Debe aceptar los Términos de Uso y la Política de Privacidad.",
+    "signup_error_create": "Error al crear cuenta. Intente nuevamente.",
+    "footer_copyright": "Catequesis Viva &copy; {{year}}",
+    "email_verified": "¿Email verificado con éxito?",
+    "password_reset_success": "¿Contraseña restablecida con éxito?",
+    "remember_password": "¿Recordaste tu contraseña?",
+    "login_link": "Iniciar sesión",
+    "two_factor_gate_title": "Verificación en dos pasos",
+    "two_factor_gate_subtitle": "Confirme el código del autenticador para continuar.",
+    "two_factor_gate_otp_label": "Código de verificación",
+    "two_factor_gate_otp_placeholder": "000000",
+    "two_factor_gate_verify_loading": "Verificando...",
+    "two_factor_gate_verify_button": "Continuar",
+    "two_factor_gate_cancel": "Salir",
+    "two_factor_gate_error_invalid": "Código inválido.",
+    "two_factor_setup_security_title": "Seguridad",
+    "two_factor_setup_loading": "Cargando...",
+    "two_factor_setup_active": "Activado",
+    "two_factor_setup_inactive": "Desactivado",
+    "two_factor_setup_admin_required": "Como administrador, la autenticación de dos factores es obligatoria para su cuenta.",
+    "two_factor_setup_activate_desc": "Agregue una capa adicional de seguridad a su cuenta. Use una aplicación autenticadora como Google Authenticator, Authy o Microsoft Authenticator.",
+    "two_factor_setup_activate_button": "Activar 2FA",
+    "two_factor_setup_activating": "Iniciando...",
+    "two_factor_setup_scan_instruction": "Escanee el código QR con su aplicación autenticadora e ingrese el código generado:",
+    "two_factor_setup_cannot_scan": "¿No puede escanear?",
+    "two_factor_setup_deactivate_instruction": "La autenticación de dos factores está activa. Para desactivar, ingrese un código de su aplicación autenticadora:",
+    "two_factor_setup_deactivate_button": "Desactivar",
+    "two_factor_setup_error_init": "Error al iniciar configuración.",
+    "two_factor_setup_error_otp_required": "Ingrese el código de 6 dígitos.",
+    "two_factor_setup_error_activate": "Código inválido.",
+    "two_factor_setup_error_deactivate_required": "Ingrese el código de 6 dígitos para desactivar.",
+    "two_factor_setup_error_deactivate": "Código inválido.",
+    "two_factor_setup_success_activate": "¡Autenticación de dos factores activada con éxito!",
+    "two_factor_setup_success_deactivate": "2FA desactivado con éxito.",
+    "two_factor_setup_verify_button": "Verificar",
+    "email_verification_subject": "Confirme su email — Catequesis Viva",
+    "email_verification_body": "Haga clic en el enlace para verificar su email:",
+    "email_verification_button": "Verificar email",
+    "email_verification_family_body": "Si creó una cuenta en el <strong>portal familiar</strong>, use este enlace:",
+    "email_verification_family_button": "Verificar email (portal familiar)",
+    "password_reset_subject": "Restablecer contraseña — Catequesis Viva",
+    "password_reset_body": "Haga clic en el enlace para restablecer su contraseña:",
+    "password_reset_button": "Restablecer contraseña",
+    "password_reset_family_alt": "O en el portal familiar:",
+    "password_reset_family_button": "Restablecer contraseña (familia)",
+    "email_portal_label": "Portal familiar:",
+    "email_footer_portal": "portal familiar",
+    "email_footer_disclaimer": "Si no creó esta cuenta, ignore este email."
   } as const;
 
 export const bible_pt_BR = {
@@ -1535,6 +1880,8 @@ export const classes_pt_BR = {
       "confirm_remove_catechist": "Remover este catequista da turma?",
       "chat": "Chat",
       "concluded_success": "Turma concluída.",
+      "activated_success": "Turma ativada com sucesso!",
+      "paused_success": "Turma pausada com sucesso!",
       "open_chat_error": "Erro ao abrir chat",
       "load_planning_error": "Erro ao carregar planejamento",
       "catechist_added": "Catequista adicionado!",
@@ -1690,6 +2037,8 @@ export const classes_en = {
       "confirm_remove_catechist": "Remove this catechist from the class?",
       "chat": "Chat",
       "concluded_success": "Class concluded.",
+      "activated_success": "Class activated successfully!",
+      "paused_success": "Class paused successfully!",
       "open_chat_error": "Error opening chat",
       "load_planning_error": "Error loading planning",
       "catechist_added": "Catechist added!",
@@ -1845,6 +2194,8 @@ export const classes_es = {
       "confirm_remove_catechist": "¿Quitar este catequista del grupo?",
       "chat": "Chat",
       "concluded_success": "Grupo concluido.",
+      "activated_success": "¡Grupo activado con éxito!",
+      "paused_success": "¡Grupo pausado con éxito!",
       "open_chat_error": "Error al abrir chat",
       "load_planning_error": "Error al cargar planificación",
       "catechist_added": "¡Catequista agregado!",
@@ -1930,6 +2281,7 @@ export const common_pt_BR = {
     "import": "Importar",
     "upload": "Enviar arquivo",
     "view": "Visualizar",
+    "verify": "Verificar",
     "close": "Fechar",
     "confirm": "Confirmar",
     "filter": "Filtrar",
@@ -1940,7 +2292,10 @@ export const common_pt_BR = {
     "remove": "Remover",
     "remove_member": "Remover membro",
     "remove_confirm": "Tem certeza que deseja remover este membro da paróquia? Esta ação não pode ser desfeita.",
+    "error_creating": "Erro ao criar.",
+    "error_loading": "Erro ao carregar.",
     "error_save": "Erro ao salvar.",
+    "error_saving": "Erro ao salvar.",
     "error_invite": "Erro ao convidar.",
     "error_remove": "Erro ao remover membro.",
     "invite_sent": "Convite enviado!",
@@ -2088,6 +2443,9 @@ export const common_pt_BR = {
       "new": "Novo",
       "register": "Registrar documento",
       "name": "Nome *",
+      "name_placeholder": "Ex: Certidão de Batismo",
+      "doc_type_label": "Tipo",
+      "doc_file_label": "Ficheiro",
       "noCatechumen": "Sem catequizando",
       "registerBtn": "Registrar",
       "searchPlaceholder": "Buscar...",
@@ -2112,6 +2470,7 @@ export const common_pt_BR = {
       "rejected_success": "Documento rejeitado",
       "removed_success": "Documento removido"
     },
+    "new_document": "Novo Documento",
     "new": "Novo",
     "saving": "Salvando...",
     "register": "Cadastrar",
@@ -2188,6 +2547,8 @@ export const common_pt_BR = {
       "detail_present_count": "Presentes",
       "detail_absent_count": "Faltas",
       "detail_justified_count": "Justificadas",
+      "detail_justify": "Justificar",
+      "detail_justify_reason": "Motivo da justificativa",
       "detail_consecutive_absences": "{{count}} faltas consecutivas detectadas.",
       "detail_close_report": "Fechar relatório",
       "detail_sacramental_journeys": "Jornadas Sacramentais",
@@ -2301,7 +2662,33 @@ export const common_pt_BR = {
     "ai_helper_placeholder": "Tire sua dúvida teológica...",
     "ai_helper_title": "Assistente Teológico",
     "ai_helper_useful": "Resposta útil",
-    "ai_helper_not_useful": "Resposta não foi útil"
+    "ai_helper_not_useful": "Resposta não foi útil",
+    "upload_error": "Erro ao enviar documento.",
+    "bible": {
+      "title": "Bíblia",
+      "old_testament": "Antigo Testamento",
+      "new_testament": "Novo Testamento",
+      "searchPlaceholder": "Ex: Gênesis 1, Gn 1:3, amor, Deus...",
+      "browse_hint": "Navegue ou digite acima. Ex: \"Gênesis 1\", \"João 3:16\", \"amor\"",
+      "back_to_books": "← Voltar aos livros",
+      "chapters": "capítulos"
+    },
+    "catechism": {
+      "title": "Catecismo",
+      "searchPlaceholder": "Ex: sacramento, oração, batismo...",
+      "explore_by_category": "Ou explore por categoria:",
+      "category_creed": "📜 O Credo",
+      "category_sacraments": "💧 Os Sacramentos",
+      "category_commandments": "📋 Os Mandamentos",
+      "category_prayer": "🙏 A Oração"
+    },
+    "references": {
+      "title": "Referências Bíblicas e do Catecismo",
+      "select_all": "Selecionar todos",
+      "deselect_all": "Desmarcar todos",
+      "verses": "versículo(s)",
+      "explore_by_part": "Ou explore por parte:"
+    }
   } as const;
 
 export const common_en = {
@@ -2339,6 +2726,7 @@ export const common_en = {
     "import": "Import",
     "upload": "Upload",
     "view": "View",
+    "verify": "Verify",
     "close": "Close",
     "confirm": "Confirm",
     "filter": "Filter",
@@ -2349,7 +2737,10 @@ export const common_en = {
     "remove": "Remove",
     "remove_member": "Remove member",
     "remove_confirm": "Are you sure you want to remove this member from the parish? This action cannot be undone.",
+    "error_creating": "Error creating.",
+    "error_loading": "Error loading.",
     "error_save": "Error saving.",
+    "error_saving": "Error saving.",
     "error_invite": "Error inviting.",
     "error_remove": "Error removing member.",
     "invite_sent": "Invitation sent!",
@@ -2497,6 +2888,9 @@ export const common_en = {
       "new": "New",
       "register": "Register document",
       "name": "Name *",
+      "name_placeholder": "Ex: Baptism Certificate",
+      "doc_type_label": "Type",
+      "doc_file_label": "File",
       "noCatechumen": "No catechumen",
       "registerBtn": "Register",
       "searchPlaceholder": "Search...",
@@ -2521,6 +2915,7 @@ export const common_en = {
       "rejected_success": "Document rejected",
       "removed_success": "Document removed"
     },
+    "new_document": "New Document",
     "new": "New",
     "saving": "Saving...",
     "register": "Register",
@@ -2597,6 +2992,8 @@ export const common_en = {
       "detail_present_count": "Present",
       "detail_absent_count": "Absent",
       "detail_justified_count": "Justified",
+      "detail_justify": "Justify",
+      "detail_justify_reason": "Justification reason",
       "detail_consecutive_absences": "{{count}} consecutive absences detected.",
       "detail_close_report": "Close report",
       "detail_sacramental_journeys": "Sacramental Journeys",
@@ -2710,7 +3107,33 @@ export const common_en = {
     "ai_helper_placeholder": "Ask a theological question...",
     "ai_helper_title": "Theological Assistant",
     "ai_helper_useful": "Helpful answer",
-    "ai_helper_not_useful": "Not helpful"
+    "ai_helper_not_useful": "Not helpful",
+    "upload_error": "Error uploading document.",
+    "bible": {
+      "title": "Bible",
+      "old_testament": "Old Testament",
+      "new_testament": "New Testament",
+      "searchPlaceholder": "Ex: Genesis 1, Gn 1:3, love, God...",
+      "browse_hint": "Browse or type above. Ex: \"Genesis 1\", \"John 3:16\", \"love\"",
+      "back_to_books": "← Back to books",
+      "chapters": "chapters"
+    },
+    "catechism": {
+      "title": "Catechism",
+      "searchPlaceholder": "Ex: sacrament, prayer, baptism...",
+      "explore_by_category": "Or explore by category:",
+      "category_creed": "📜 The Creed",
+      "category_sacraments": "💧 The Sacraments",
+      "category_commandments": "📋 The Commandments",
+      "category_prayer": "🙏 The Prayer"
+    },
+    "references": {
+      "title": "Bible and Catechism References",
+      "select_all": "Select all",
+      "deselect_all": "Deselect all",
+      "verses": "verse(s)",
+      "explore_by_part": "Or explore by part:"
+    }
   } as const;
 
 export const common_es = {
@@ -2748,6 +3171,7 @@ export const common_es = {
     "import": "Importar",
     "upload": "Subir archivo",
     "view": "Ver",
+    "verify": "Verificar",
     "close": "Cerrar",
     "confirm": "Confirmar",
     "filter": "Filtrar",
@@ -2758,7 +3182,10 @@ export const common_es = {
     "remove": "Quitar",
     "remove_member": "Quitar miembro",
     "remove_confirm": "¿Está seguro de que desea quitar este miembro de la parroquia? Esta acción no se puede deshacer.",
+    "error_creating": "Error al crear.",
+    "error_loading": "Error al cargar.",
     "error_save": "Error al guardar.",
+    "error_saving": "Error al guardar.",
     "error_invite": "Error al invitar.",
     "error_remove": "Error al quitar miembro.",
     "invite_sent": "¡Invitación enviada!",
@@ -2906,6 +3333,9 @@ export const common_es = {
       "new": "Nuevo",
       "register": "Registrar documento",
       "name": "Nombre *",
+      "name_placeholder": "Ej: Certificado de Bautismo",
+      "doc_type_label": "Tipo",
+      "doc_file_label": "Archivo",
       "noCatechumen": "Sin catecúmeno",
       "registerBtn": "Registrar",
       "searchPlaceholder": "Buscar...",
@@ -2930,6 +3360,7 @@ export const common_es = {
       "rejected_success": "Documento rechazado",
       "removed_success": "Documento eliminado"
     },
+    "new_document": "Nuevo Documento",
     "new": "Nuevo",
     "saving": "Guardando...",
     "register": "Registrar",
@@ -3006,6 +3437,8 @@ export const common_es = {
       "detail_present_count": "Presentes",
       "detail_absent_count": "Faltas",
       "detail_justified_count": "Justificadas",
+      "detail_justify": "Justificar",
+      "detail_justify_reason": "Motivo de la justificación",
       "detail_consecutive_absences": "{{count}} faltas consecutivas detectadas.",
       "detail_close_report": "Cerrar informe",
       "detail_sacramental_journeys": "Jornadas Sacramentales",
@@ -3119,7 +3552,33 @@ export const common_es = {
     "ai_helper_placeholder": "Haga su pregunta teológica...",
     "ai_helper_title": "Asistente Teológico",
     "ai_helper_useful": "Respuesta útil",
-    "ai_helper_not_useful": "Respuesta no útil"
+    "ai_helper_not_useful": "Respuesta no útil",
+    "upload_error": "Error al enviar documento.",
+    "bible": {
+      "title": "Biblia",
+      "old_testament": "Antiguo Testamento",
+      "new_testament": "Nuevo Testamento",
+      "searchPlaceholder": "Ej: Génesis 1, Gn 1:3, amor, Dios...",
+      "browse_hint": "Navegue o escriba arriba. Ej: \"Génesis 1\", \"Juan 3:16\", \"amor\"",
+      "back_to_books": "← Volver a los libros",
+      "chapters": "capítulos"
+    },
+    "catechism": {
+      "title": "Catecismo",
+      "searchPlaceholder": "Ej: sacramento, oración, bautismo...",
+      "explore_by_category": "O explore por categoría:",
+      "category_creed": "📜 El Credo",
+      "category_sacraments": "💧 Los Sacramentos",
+      "category_commandments": "📋 Los Mandamientos",
+      "category_prayer": "🙏 La Oración"
+    },
+    "references": {
+      "title": "Referencias Bíblicas y del Catecismo",
+      "select_all": "Seleccionar todos",
+      "deselect_all": "Deseleccionar todos",
+      "verses": "versículo(s)",
+      "explore_by_part": "O explore por parte:"
+    }
   } as const;
 
 export const components_pt_BR = {
@@ -3130,7 +3589,21 @@ export const components_pt_BR = {
       "reload": "Recarregar página",
       "retry": "Tentar novamente",
       "support": "Se o problema persistir, contacte o suporte em suporte@catequeseviva.com"
-    }
+    },
+    "city_placeholder": "Cidade",
+    "loading": "Carregando...",
+    "address_fill": "Preencher endereço",
+    "street_label": "Rua/Avenida",
+    "street_placeholder": "Rua/Avenida",
+    "number_label": "Número",
+    "number_placeholder": "Nº",
+    "neighborhood_label": "Bairro",
+    "neighborhood_placeholder": "Bairro",
+    "complement_label": "Complemento",
+    "complement_placeholder": "Complemento",
+    "cep_label": "CEP",
+    "cep_placeholder": "00000-000",
+    "city_state_label": "Cidade / Estado"
   } as const;
 
 export const components_en = {
@@ -3141,7 +3614,21 @@ export const components_en = {
       "reload": "Reload page",
       "retry": "Try again",
       "support": "If the problem persists, contact support at suporte@catequeseviva.com"
-    }
+    },
+    "city_placeholder": "City",
+    "loading": "Loading...",
+    "address_fill": "Fill address",
+    "street_label": "Street",
+    "street_placeholder": "Street",
+    "number_label": "Number",
+    "number_placeholder": "No.",
+    "neighborhood_label": "Neighborhood",
+    "neighborhood_placeholder": "Neighborhood",
+    "complement_label": "Complement",
+    "complement_placeholder": "Complement",
+    "cep_label": "ZIP Code",
+    "cep_placeholder": "00000-000",
+    "city_state_label": "City / State"
   } as const;
 
 export const components_es = {
@@ -3152,7 +3639,21 @@ export const components_es = {
       "reload": "Recargar página",
       "retry": "Intentar de nuevo",
       "support": "Si el problema persiste, contacte soporte en suporte@catequeseviva.com"
-    }
+    },
+    "city_placeholder": "Ciudad",
+    "loading": "Cargando...",
+    "address_fill": "Rellenar dirección",
+    "street_label": "Calle/Avenida",
+    "street_placeholder": "Calle/Avenida",
+    "number_label": "Número",
+    "number_placeholder": "Nº",
+    "neighborhood_label": "Barrio",
+    "neighborhood_placeholder": "Barrio",
+    "complement_label": "Complemento",
+    "complement_placeholder": "Complemento",
+    "cep_label": "Código Postal",
+    "cep_placeholder": "00000-000",
+    "city_state_label": "Ciudad / Estado"
   } as const;
 
 export const content_pt_BR = {
@@ -3241,6 +3742,9 @@ export const content_pt_BR = {
       "error_required_fields": "Título e conteúdo principal são obrigatórios.",
       "error_enhance": "Erro ao melhorar com IA.",
       "error_create": "Erro ao criar conteúdo.",
+      "error_bible_ref": "Referência bíblica inválida.",
+      "error_catechism_ref": "Referência do catecismo inválida.",
+      "error_directory_ref": "Referência do diretório inválida.",
       "success_created": "Conteúdo criado com sucesso!",
       "home_task_prefix": "Tarefa para casa: "
     },
@@ -3258,7 +3762,8 @@ export const content_pt_BR = {
       "ai_suggestions": "Sugestões da IA",
       "success_enhanced": "Conteúdo melhorado pela IA!",
       "error_enhance": "Erro ao melhorar com IA.",
-      "success_saved": "Conteúdo salvo."
+      "success_saved": "Conteúdo salvo.",
+      "error_load": "Erro ao carregar conteúdo."
     },
     "print_page": {
       "loading": "Carregando...",
@@ -3384,6 +3889,9 @@ export const content_en = {
       "error_required_fields": "Title and main content are required.",
       "error_enhance": "Error enhancing with AI.",
       "error_create": "Error creating content.",
+      "error_bible_ref": "Invalid Bible reference.",
+      "error_catechism_ref": "Invalid catechism reference.",
+      "error_directory_ref": "Invalid directory reference.",
       "success_created": "Content created successfully!",
       "home_task_prefix": "Homework task: "
     },
@@ -3401,7 +3909,8 @@ export const content_en = {
       "ai_suggestions": "AI suggestions",
       "success_enhanced": "Content enhanced by AI!",
       "error_enhance": "Error enhancing with AI.",
-      "success_saved": "Content saved."
+      "success_saved": "Content saved.",
+      "error_load": "Error loading content."
     },
     "print_page": {
       "loading": "Loading...",
@@ -3527,6 +4036,9 @@ export const content_es = {
       "error_required_fields": "Título y contenido principal son obligatorios.",
       "error_enhance": "Error al mejorar con IA.",
       "error_create": "Error al crear contenido.",
+      "error_bible_ref": "Referencia bíblica inválida.",
+      "error_catechism_ref": "Referencia del catecismo inválida.",
+      "error_directory_ref": "Referencia del directorio inválida.",
       "success_created": "¡Contenido creado con éxito!",
       "home_task_prefix": "Tarea para casa: "
     },
@@ -3544,7 +4056,8 @@ export const content_es = {
       "ai_suggestions": "Sugerencias de la IA",
       "success_enhanced": "¡Contenido mejorado por la IA!",
       "error_enhance": "Error al mejorar con IA.",
-      "success_saved": "Contenido guardado."
+      "success_saved": "Contenido guardado.",
+      "error_load": "Error al cargar contenido."
     },
     "print_page": {
       "loading": "Cargando...",
@@ -4228,17 +4741,38 @@ export const landing_pt_BR = {
     "plans": {
       "free": {
         "name": "Catequista Grátis",
-        "desc": "Para começar — 1 turma, 15 catequizandos, presenças digitais, Bíblia e Catecismo integrados."
+        "desc": "Para começar — 1 turma, 15 catequizandos, presenças digitais, Bíblia e Catecismo integrados.",
+        "features": [
+          "1 turma",
+          "15 catequizandos",
+          "Presenças digitais",
+          "Bíblia e Catecismo",
+          "3 créditos de IA iniciais"
+        ]
       },
       "ai": {
         "name": "Catequista IA",
         "desc": "IA ilimitada para criar encontros, atividades, mensagens e planejamento anual automático.",
-        "price": "R$9"
+        "price": "$9",
+        "features": [
+          "Turmas e catequizandos ilimitados",
+          "Gerador de encontros por IA",
+          "Planejamento anual automático",
+          "Assistente teológico",
+          "20 créditos de IA/mês"
+        ]
       },
       "parish": {
         "name": "Paróquia Completa",
         "desc": "Para a paróquia inteira — catequistas ilimitados, painel do coordenador, documentos, comunicação integrada.",
-        "price": "R$29"
+        "price": "$29",
+        "features": [
+          "Catequistas ilimitados",
+          "Painel do coordenador",
+          "Documentos e consentimentos LGPD",
+          "Comunicação integrada",
+          "50 créditos de IA/mês"
+        ]
       }
     },
     "price_free": "Grátis",
@@ -4247,6 +4781,9 @@ export const landing_pt_BR = {
     "price_annual": "Anual",
     "price_cta_free": "Começar grátis",
     "price_cta_start": "Começar agora",
+    "per_month": "/mês",
+    "per_year": "/ano",
+    "annual_discount": "17% de desconto",
     "compare_plans": "Ver comparação completa de planos →",
     "faq_title": "Perguntas frequentes",
     "faq_subtitle": "Tudo que você precisa saber antes de começar.",
@@ -4294,6 +4831,79 @@ export const landing_pt_BR = {
       "ai_step3": "Leitura bíblica — Mt 28:19-20 (ide e fazei discípulos)",
       "ai_step4": "Reflexão — O que são os sacramentos? (CIC §1131)",
       "ai_step5": "Atividade — Quiz interativo em grupo + Oração final"
+    },
+    "mockup_dashboard": {
+      "title": "Painel",
+      "subtitle": "Visão geral da catequese",
+      "catechumens": "Catequizandos",
+      "active_classes": "Turmas ativas",
+      "avg_attendance": "Presença média",
+      "sacraments": "Sacramentos",
+      "today": "Hoje",
+      "today_class": "Crisma — Turma A",
+      "today_detail": "19:30 · 18 inscritos",
+      "upcoming": "Próximos",
+      "upcoming_class": "1ª Eucaristia",
+      "upcoming_detail": "Sáb, 14:00",
+      "alerts_title": "3 alertas pastorais",
+      "alerts_subtitle": "Faltas consecutivas · docs pendentes",
+      "birthdays": "Aniversariantes",
+      "birthdays_list": "Lucas M. · Sofia R. · Pedro A."
+    },
+    "mockup_attendance": {
+      "title": "Chamada — Crisma Turma A",
+      "meeting": "Encontro 12 · 19/03/2026",
+      "present": "Presentes",
+      "absent": "Faltas",
+      "late": "Atrasos",
+      "justified": "Justificadas"
+    },
+    "mockup_sacraments": {
+      "enrollment": "Inscrição",
+      "documents": "Documentos",
+      "retreat": "Retiro",
+      "interview": "Entrevista",
+      "celebration": "Celebração",
+      "title": "Jornada Sacramental",
+      "subtitle": "Primeira Eucaristia · 2026",
+      "class": "Turma 1ª Eucaristia — Comunidade São José"
+    },
+    "mockup_family": {
+      "title": "Portal da Família",
+      "greeting": "Olá, Carlos — filhos: Ana e Pedro",
+      "first_eucharist": "1ª Eucaristia",
+      "confirmation": "Crisma",
+      "attendance_pct": "92% presença",
+      "absence_recent": "1 falta recente",
+      "notice_title": "Aviso da catequese",
+      "notice_text": "Encontro especial no sábado às 14h — trazer material de artesanato.",
+      "next_meeting": "Próximo encontro",
+      "next_meeting_detail": "Pedro — Crisma · Sáb 19/03 · 19:30",
+      "justify_absence": "Justificar falta",
+      "send_certificate": "Enviar certidão de batismo",
+      "pending_doc": "Documento pendente para Ana"
+    },
+    "mockup_library": {
+      "title": "Biblioteca Pastoral",
+      "subtitle": "Recursos teológicos integrados",
+      "bible": "Bíblia",
+      "catechism": "Catecismo",
+      "directory": "Diretório",
+      "search_placeholder": "Buscar em Jo 3:16, amor, Eucaristia...",
+      "cic_ref": "CIC §133",
+      "dir_ref": "Dir. Cateq. 98",
+      "plan_ref": "Plano Encontro 12",
+      "plan_title": "Plano: O amor de Deus",
+      "published": "Publicado",
+      "plan_detail": "Crisma · 45 min"
+    },
+    "footer": {
+      "create_account": "Criar conta gratuita",
+      "login": "Entrar",
+      "about": "Sobre",
+      "privacy": "Privacidade",
+      "terms": "Termos",
+      "contact": "Contacto"
     }
   } as const;
 
@@ -4461,17 +5071,38 @@ export const landing_en = {
     "plans": {
       "free": {
         "name": "Catechist Free",
-        "desc": "To get started — 1 class, 15 catechumens, digital attendance, integrated Bible and Catechism."
+        "desc": "To get started — 1 class, 15 catechumens, digital attendance, integrated Bible and Catechism.",
+        "features": [
+          "1 class",
+          "15 catechumens",
+          "Digital attendance",
+          "Bible and Catechism",
+          "3 initial AI credits"
+        ]
       },
       "ai": {
         "name": "Catechist AI",
         "desc": "Unlimited AI to create meetings, activities, messages and automatic annual planning.",
-        "price": "$9"
+        "price": "$9",
+        "features": [
+          "Unlimited classes & catechumens",
+          "AI meeting generator",
+          "Automatic annual planning",
+          "Theological assistant",
+          "20 AI credits/month"
+        ]
       },
       "parish": {
         "name": "Parish Complete",
         "desc": "For the whole parish — unlimited catechists, coordinator dashboard, documents, integrated communication.",
-        "price": "$29"
+        "price": "$29",
+        "features": [
+          "Unlimited catechists",
+          "Coordinator dashboard",
+          "Documents & LGPD consent",
+          "Integrated communication",
+          "50 AI credits/month"
+        ]
       }
     },
     "price_free": "Free",
@@ -4480,6 +5111,9 @@ export const landing_en = {
     "price_annual": "Annual",
     "price_cta_free": "Start free",
     "price_cta_start": "Start now",
+    "per_month": "/month",
+    "per_year": "/year",
+    "annual_discount": "17% discount",
     "compare_plans": "See full plan comparison →",
     "faq_title": "Frequently asked questions",
     "faq_subtitle": "Everything you need to know before getting started.",
@@ -4527,6 +5161,79 @@ export const landing_en = {
       "ai_step3": "Bible reading — Mt 28:19-20 (go and make disciples)",
       "ai_step4": "Reflection — What are the sacraments? (CCC §1131)",
       "ai_step5": "Activity — Interactive group quiz + Closing prayer"
+    },
+    "mockup_dashboard": {
+      "title": "Dashboard",
+      "subtitle": "Catechesis overview",
+      "catechumens": "Catechumens",
+      "active_classes": "Active classes",
+      "avg_attendance": "Avg attendance",
+      "sacraments": "Sacraments",
+      "today": "Today",
+      "today_class": "Confirmation — Class A",
+      "today_detail": "19:30 · 18 enrolled",
+      "upcoming": "Upcoming",
+      "upcoming_class": "First Eucharist",
+      "upcoming_detail": "Sat, 14:00",
+      "alerts_title": "3 pastoral alerts",
+      "alerts_subtitle": "Consecutive absences · pending docs",
+      "birthdays": "Birthdays",
+      "birthdays_list": "Lucas M. · Sofia R. · Pedro A."
+    },
+    "mockup_attendance": {
+      "title": "Attendance — Confirmation Class A",
+      "meeting": "Meeting 12 · 03/19/2026",
+      "present": "Present",
+      "absent": "Absent",
+      "late": "Late",
+      "justified": "Justified"
+    },
+    "mockup_sacraments": {
+      "enrollment": "Enrollment",
+      "documents": "Documents",
+      "retreat": "Retreat",
+      "interview": "Interview",
+      "celebration": "Celebration",
+      "title": "Sacramental Journey",
+      "subtitle": "First Eucharist · 2026",
+      "class": "First Eucharist Class — São José Community"
+    },
+    "mockup_family": {
+      "title": "Family Portal",
+      "greeting": "Hello, Carlos — children: Ana and Pedro",
+      "first_eucharist": "First Eucharist",
+      "confirmation": "Confirmation",
+      "attendance_pct": "92% attendance",
+      "absence_recent": "1 recent absence",
+      "notice_title": "Catechesis notice",
+      "notice_text": "Special meeting on Saturday at 14:00 — bring craft materials.",
+      "next_meeting": "Next meeting",
+      "next_meeting_detail": "Pedro — Confirmation · Sat 03/19 · 19:30",
+      "justify_absence": "Justify absence",
+      "send_certificate": "Send baptism certificate",
+      "pending_doc": "Pending document for Ana"
+    },
+    "mockup_library": {
+      "title": "Pastoral Library",
+      "subtitle": "Integrated theological resources",
+      "bible": "Bible",
+      "catechism": "Catechism",
+      "directory": "Directory",
+      "search_placeholder": "Search in Jn 3:16, love, Eucharist...",
+      "cic_ref": "CCC §133",
+      "dir_ref": "Dir. Catech. 98",
+      "plan_ref": "Meeting Plan 12",
+      "plan_title": "Plan: God's Love",
+      "published": "Published",
+      "plan_detail": "Confirmation · 45 min"
+    },
+    "footer": {
+      "create_account": "Create free account",
+      "login": "Login",
+      "about": "About",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "contact": "Contact"
     }
   } as const;
 
@@ -4694,17 +5401,38 @@ export const landing_es = {
     "plans": {
       "free": {
         "name": "Catequista Gratis",
-        "desc": "Para comenzar — 1 clase, 15 catequizandos, asistencias digitales, Biblia y Catecismo integrados."
+        "desc": "Para comenzar — 1 clase, 15 catequizandos, asistencias digitales, Biblia y Catecismo integrados.",
+        "features": [
+          "1 clase",
+          "15 catecúmenos",
+          "Asistencias digitales",
+          "Biblia y Catecismo",
+          "3 créditos de IA iniciales"
+        ]
       },
       "ai": {
         "name": "Catequista IA",
         "desc": "IA ilimitada para crear encuentros, actividades, mensajes y planificación anual automática.",
-        "price": "R$9"
+        "price": "$9",
+        "features": [
+          "Clases y catecúmenos ilimitados",
+          "Generador de encuentros IA",
+          "Planificación anual automática",
+          "Asistente teológico",
+          "20 créditos IA/mes"
+        ]
       },
       "parish": {
         "name": "Parroquia Completa",
         "desc": "Para toda la parroquia — catequistas ilimitados, panel del coordinador, documentos, comunicación integrada.",
-        "price": "R$29"
+        "price": "$29",
+        "features": [
+          "Catequistas ilimitados",
+          "Panel del coordinador",
+          "Documentos y consentimientos LGPD",
+          "Comunicación integrada",
+          "50 créditos IA/mes"
+        ]
       }
     },
     "price_free": "Gratis",
@@ -4713,6 +5441,9 @@ export const landing_es = {
     "price_annual": "Anual",
     "price_cta_free": "Comenzar gratis",
     "price_cta_start": "Comenzar ahora",
+    "per_month": "/mes",
+    "per_year": "/año",
+    "annual_discount": "17% de descuento",
     "compare_plans": "Ver comparación completa de planes →",
     "faq_title": "Preguntas frecuentes",
     "faq_subtitle": "Todo lo que necesita saber antes de comenzar.",
@@ -4760,6 +5491,79 @@ export const landing_es = {
       "ai_step3": "Lectura bíblica — Mt 28:19-20 (vayan y hagan discípulos)",
       "ai_step4": "Reflexión — ¿Qué son los sacramentos? (CIC §1131)",
       "ai_step5": "Actividad — Quiz interactivo en grupo + Oración final"
+    },
+    "mockup_dashboard": {
+      "title": "Panel",
+      "subtitle": "Visión general de la catequesis",
+      "catechumens": "Catequizandos",
+      "active_classes": "Clases activas",
+      "avg_attendance": "Asistencia media",
+      "sacraments": "Sacramentos",
+      "today": "Hoy",
+      "today_class": "Confirmación — Clase A",
+      "today_detail": "19:30 · 18 inscritos",
+      "upcoming": "Próximos",
+      "upcoming_class": "1ª Eucaristía",
+      "upcoming_detail": "Sáb, 14:00",
+      "alerts_title": "3 alertas pastorales",
+      "alerts_subtitle": "Faltas consecutivas · docs pendientes",
+      "birthdays": "Cumpleañeros",
+      "birthdays_list": "Lucas M. · Sofia R. · Pedro A."
+    },
+    "mockup_attendance": {
+      "title": "Pase de lista — Confirmación Clase A",
+      "meeting": "Encuentro 12 · 19/03/2026",
+      "present": "Presentes",
+      "absent": "Ausentes",
+      "late": "Atrasos",
+      "justified": "Justificadas"
+    },
+    "mockup_sacraments": {
+      "enrollment": "Inscripción",
+      "documents": "Documentos",
+      "retreat": "Retiro",
+      "interview": "Entrevista",
+      "celebration": "Celebración",
+      "title": "Jornada Sacramental",
+      "subtitle": "Primera Eucaristía · 2026",
+      "class": "Clase 1ª Eucaristía — Comunidad São José"
+    },
+    "mockup_family": {
+      "title": "Portal de la Familia",
+      "greeting": "Hola, Carlos — hijos: Ana y Pedro",
+      "first_eucharist": "1ª Eucaristía",
+      "confirmation": "Confirmación",
+      "attendance_pct": "92% asistencia",
+      "absence_recent": "1 falta reciente",
+      "notice_title": "Aviso de catequesis",
+      "notice_text": "Encuentro especial el sábado a las 14:00 — traer material de artesanía.",
+      "next_meeting": "Próximo encuentro",
+      "next_meeting_detail": "Pedro — Confirmación · Sáb 19/03 · 19:30",
+      "justify_absence": "Justificar falta",
+      "send_certificate": "Enviar certificado de bautismo",
+      "pending_doc": "Documento pendiente para Ana"
+    },
+    "mockup_library": {
+      "title": "Biblioteca Pastoral",
+      "subtitle": "Recursos teológicos integrados",
+      "bible": "Biblia",
+      "catechism": "Catecismo",
+      "directory": "Directorio",
+      "search_placeholder": "Buscar en Jn 3:16, amor, Eucaristía...",
+      "cic_ref": "CIC §133",
+      "dir_ref": "Dir. Cateq. 98",
+      "plan_ref": "Plan Encuentro 12",
+      "plan_title": "Plan: El amor de Dios",
+      "published": "Publicado",
+      "plan_detail": "Confirmación · 45 min"
+    },
+    "footer": {
+      "create_account": "Crear cuenta gratuita",
+      "login": "Iniciar sesión",
+      "about": "Acerca de",
+      "privacy": "Privacidad",
+      "terms": "Términos",
+      "contact": "Contacto"
     }
   } as const;
 
@@ -4776,10 +5580,10 @@ export const landingIa_pt_BR = {
     "features_title": "IA que entende de catequese",
     "features_subtitle": "Treinada com a Bíblia CNBB, o Catecismo e o Diretório para a Catequese.",
     "features_order": [
-      "ai",
+      "ai-planner",
       "library",
       "attendance",
-      "family",
+      "family-portal",
       "dashboard",
       "sacraments"
     ],
@@ -4787,7 +5591,80 @@ export const landingIa_pt_BR = {
     "ai_showcase_subtitle": "Digite o tema e a faixa etária. A IA gera o encontro completo — da acolhida à oração final.",
     "ai_showcase_cta": "Experimente a IA gratuitamente",
     "mission_title": "Menos tempo preparando. Mais tempo evangelizando.",
-    "mission_text": "Cada minuto que a IA economiza na preparação é um minuto a mais para o que realmente importa: estar presente para seus catequizandos."
+    "mission_text": "Cada minuto que a IA economiza na preparação é um minuto a mais para o que realmente importa: estar presente para seus catequizandos.",
+    "mockup_dashboard": {
+      "title": "Painel",
+      "subtitle": "Visão geral da catequese",
+      "catechumens": "Catequizandos",
+      "active_classes": "Turmas ativas",
+      "avg_attendance": "Presença média",
+      "sacraments": "Sacramentos",
+      "today": "Hoje",
+      "today_class": "Crisma — Turma A",
+      "today_detail": "19:30 · 18 inscritos",
+      "upcoming": "Próximos",
+      "upcoming_class": "1ª Eucaristia",
+      "upcoming_detail": "Sáb, 14:00",
+      "alerts_title": "3 alertas pastorais",
+      "alerts_subtitle": "Faltas consecutivas · docs pendentes",
+      "birthdays": "Aniversariantes",
+      "birthdays_list": "Lucas M. · Sofia R. · Pedro A."
+    },
+    "mockup_attendance": {
+      "title": "Chamada — Crisma Turma A",
+      "meeting": "Encontro 12 · 19/03/2026",
+      "present": "Presentes",
+      "absent": "Faltas",
+      "late": "Atrasos",
+      "justified": "Justificadas"
+    },
+    "mockup_sacraments": {
+      "enrollment": "Inscrição",
+      "documents": "Documentos",
+      "retreat": "Retiro",
+      "interview": "Entrevista",
+      "celebration": "Celebração",
+      "title": "Jornada Sacramental",
+      "subtitle": "Primeira Eucaristia · 2026",
+      "class": "Turma 1ª Eucaristia — Comunidade São José"
+    },
+    "mockup_family": {
+      "title": "Portal da Família",
+      "greeting": "Olá, Carlos — filhos: Ana e Pedro",
+      "first_eucharist": "1ª Eucaristia",
+      "confirmation": "Crisma",
+      "attendance_pct": "92% presença",
+      "absence_recent": "1 falta recente",
+      "notice_title": "Aviso da catequese",
+      "notice_text": "Encontro especial no sábado às 14h — trazer material de artesanato.",
+      "next_meeting": "Próximo encontro",
+      "next_meeting_detail": "Pedro — Crisma · Sáb 19/03 · 19:30",
+      "justify_absence": "Justificar falta",
+      "send_certificate": "Enviar certidão de batismo",
+      "pending_doc": "Documento pendente para Ana"
+    },
+    "mockup_library": {
+      "title": "Biblioteca Pastoral",
+      "subtitle": "Recursos teológicos integrados",
+      "bible": "Bíblia",
+      "catechism": "Catecismo",
+      "directory": "Diretório",
+      "search_placeholder": "Buscar em Jo 3:16, amor, Eucaristia...",
+      "cic_ref": "CIC §133",
+      "dir_ref": "Dir. Cateq. 98",
+      "plan_ref": "Plano Encontro 12",
+      "plan_title": "Plano: O amor de Deus",
+      "published": "Publicado",
+      "plan_detail": "Crisma · 45 min"
+    },
+    "footer": {
+      "create_account": "Criar conta gratuita",
+      "login": "Entrar",
+      "about": "Sobre",
+      "privacy": "Privacidade",
+      "terms": "Termos",
+      "contact": "Contacto"
+    }
   } as const;
 
 export const landingIa_en = {
@@ -4803,10 +5680,10 @@ export const landingIa_en = {
     "features_title": "AI that understands catechesis",
     "features_subtitle": "Trained on the CNBB Bible, the Catechism and the Directory for Catechesis.",
     "features_order": [
-      "ai",
+      "ai-planner",
       "library",
       "attendance",
-      "family",
+      "family-portal",
       "dashboard",
       "sacraments"
     ],
@@ -4814,7 +5691,80 @@ export const landingIa_en = {
     "ai_showcase_subtitle": "Enter the theme and age group. AI generates the complete meeting — from welcome to closing prayer.",
     "ai_showcase_cta": "Try AI for free",
     "mission_title": "Less time preparing. More time evangelizing.",
-    "mission_text": "Every minute AI saves on preparation is an extra minute for what truly matters: being present for your catechumens."
+    "mission_text": "Every minute AI saves on preparation is an extra minute for what truly matters: being present for your catechumens.",
+    "mockup_dashboard": {
+      "title": "Dashboard",
+      "subtitle": "Catechesis overview",
+      "catechumens": "Catechumens",
+      "active_classes": "Active classes",
+      "avg_attendance": "Avg attendance",
+      "sacraments": "Sacraments",
+      "today": "Today",
+      "today_class": "Confirmation — Class A",
+      "today_detail": "19:30 · 18 enrolled",
+      "upcoming": "Upcoming",
+      "upcoming_class": "First Eucharist",
+      "upcoming_detail": "Sat, 14:00",
+      "alerts_title": "3 pastoral alerts",
+      "alerts_subtitle": "Consecutive absences · pending docs",
+      "birthdays": "Birthdays",
+      "birthdays_list": "Lucas M. · Sofia R. · Pedro A."
+    },
+    "mockup_attendance": {
+      "title": "Attendance — Confirmation Class A",
+      "meeting": "Meeting 12 · 03/19/2026",
+      "present": "Present",
+      "absent": "Absent",
+      "late": "Late",
+      "justified": "Justified"
+    },
+    "mockup_sacraments": {
+      "enrollment": "Enrollment",
+      "documents": "Documents",
+      "retreat": "Retreat",
+      "interview": "Interview",
+      "celebration": "Celebration",
+      "title": "Sacramental Journey",
+      "subtitle": "First Eucharist · 2026",
+      "class": "First Eucharist Class — São José Community"
+    },
+    "mockup_family": {
+      "title": "Family Portal",
+      "greeting": "Hello, Carlos — children: Ana and Pedro",
+      "first_eucharist": "First Eucharist",
+      "confirmation": "Confirmation",
+      "attendance_pct": "92% attendance",
+      "absence_recent": "1 recent absence",
+      "notice_title": "Catechesis notice",
+      "notice_text": "Special meeting on Saturday at 14:00 — bring craft materials.",
+      "next_meeting": "Next meeting",
+      "next_meeting_detail": "Pedro — Confirmation · Sat 03/19 · 19:30",
+      "justify_absence": "Justify absence",
+      "send_certificate": "Send baptism certificate",
+      "pending_doc": "Pending document for Ana"
+    },
+    "mockup_library": {
+      "title": "Pastoral Library",
+      "subtitle": "Integrated theological resources",
+      "bible": "Bible",
+      "catechism": "Catechism",
+      "directory": "Directory",
+      "search_placeholder": "Search in Jn 3:16, love, Eucharist...",
+      "cic_ref": "CCC §133",
+      "dir_ref": "Dir. Catech. 98",
+      "plan_ref": "Meeting Plan 12",
+      "plan_title": "Plan: God's Love",
+      "published": "Published",
+      "plan_detail": "Confirmation · 45 min"
+    },
+    "footer": {
+      "create_account": "Create free account",
+      "login": "Login",
+      "about": "About",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "contact": "Contact"
+    }
   } as const;
 
 export const landingIa_es = {
@@ -4830,10 +5780,10 @@ export const landingIa_es = {
     "features_title": "IA que entiende de catequesis",
     "features_subtitle": "Entrenada con la Biblia CNBB, el Catecismo y el Directorio para la Catequesis.",
     "features_order": [
-      "ai",
+      "ai-planner",
       "library",
       "attendance",
-      "family",
+      "family-portal",
       "dashboard",
       "sacraments"
     ],
@@ -4841,7 +5791,80 @@ export const landingIa_es = {
     "ai_showcase_subtitle": "Ingrese el tema y la edad. La IA genera el encuentro completo — de la acogida a la oración final.",
     "ai_showcase_cta": "Pruebe la IA gratis",
     "mission_title": "Menos tiempo preparando. Más tiempo evangelizando.",
-    "mission_text": "Cada minuto que la IA ahorra en preparación es un minuto más para lo que realmente importa: estar presente para sus catequizandos."
+    "mission_text": "Cada minuto que la IA ahorra en preparación es un minuto más para lo que realmente importa: estar presente para sus catequizandos.",
+    "mockup_dashboard": {
+      "title": "Panel",
+      "subtitle": "Visión general de la catequesis",
+      "catechumens": "Catequizandos",
+      "active_classes": "Clases activas",
+      "avg_attendance": "Asistencia media",
+      "sacraments": "Sacramentos",
+      "today": "Hoy",
+      "today_class": "Confirmación — Clase A",
+      "today_detail": "19:30 · 18 inscritos",
+      "upcoming": "Próximos",
+      "upcoming_class": "1ª Eucaristía",
+      "upcoming_detail": "Sáb, 14:00",
+      "alerts_title": "3 alertas pastorales",
+      "alerts_subtitle": "Faltas consecutivas · docs pendientes",
+      "birthdays": "Cumpleañeros",
+      "birthdays_list": "Lucas M. · Sofia R. · Pedro A."
+    },
+    "mockup_attendance": {
+      "title": "Pase de lista — Confirmación Clase A",
+      "meeting": "Encuentro 12 · 19/03/2026",
+      "present": "Presentes",
+      "absent": "Ausentes",
+      "late": "Atrasos",
+      "justified": "Justificadas"
+    },
+    "mockup_sacraments": {
+      "enrollment": "Inscripción",
+      "documents": "Documentos",
+      "retreat": "Retiro",
+      "interview": "Entrevista",
+      "celebration": "Celebración",
+      "title": "Jornada Sacramental",
+      "subtitle": "Primera Eucaristía · 2026",
+      "class": "Clase 1ª Eucaristía — Comunidad São José"
+    },
+    "mockup_family": {
+      "title": "Portal de la Familia",
+      "greeting": "Hola, Carlos — hijos: Ana y Pedro",
+      "first_eucharist": "1ª Eucaristía",
+      "confirmation": "Confirmación",
+      "attendance_pct": "92% asistencia",
+      "absence_recent": "1 falta reciente",
+      "notice_title": "Aviso de catequesis",
+      "notice_text": "Encuentro especial el sábado a las 14:00 — traer material de artesanía.",
+      "next_meeting": "Próximo encuentro",
+      "next_meeting_detail": "Pedro — Confirmación · Sáb 19/03 · 19:30",
+      "justify_absence": "Justificar falta",
+      "send_certificate": "Enviar certificado de bautismo",
+      "pending_doc": "Documento pendiente para Ana"
+    },
+    "mockup_library": {
+      "title": "Biblioteca Pastoral",
+      "subtitle": "Recursos teológicos integrados",
+      "bible": "Biblia",
+      "catechism": "Catecismo",
+      "directory": "Directorio",
+      "search_placeholder": "Buscar en Jn 3:16, amor, Eucaristía...",
+      "cic_ref": "CIC §133",
+      "dir_ref": "Dir. Cateq. 98",
+      "plan_ref": "Plan Encuentro 12",
+      "plan_title": "Plan: El amor de Dios",
+      "published": "Publicado",
+      "plan_detail": "Confirmación · 45 min"
+    },
+    "footer": {
+      "create_account": "Crear cuenta gratuita",
+      "login": "Iniciar sesión",
+      "about": "Acerca de",
+      "privacy": "Privacidad",
+      "terms": "Términos",
+      "contact": "Contacto"
+    }
   } as const;
 
 export const landingPresenca_pt_BR = {
@@ -4858,14 +5881,87 @@ export const landingPresenca_pt_BR = {
     "features_subtitle": "Do registro à justificativa — tudo integrado e em tempo real.",
     "features_order": [
       "attendance",
-      "family",
+      "family-portal",
       "dashboard",
-      "ai",
+      "ai-planner",
       "library",
       "sacraments"
     ],
     "ai_showcase_title": "E também: notificações automáticas para as famílias",
-    "ai_showcase_subtitle": "Os pais são avisados automaticamente sobre faltas e podem justificar online, sem precisar ligar para você."
+    "ai_showcase_subtitle": "Os pais são avisados automaticamente sobre faltas e podem justificar online, sem precisar ligar para você.",
+    "mockup_dashboard": {
+      "title": "Painel",
+      "subtitle": "Visão geral da catequese",
+      "catechumens": "Catequizandos",
+      "active_classes": "Turmas ativas",
+      "avg_attendance": "Presença média",
+      "sacraments": "Sacramentos",
+      "today": "Hoje",
+      "today_class": "Crisma — Turma A",
+      "today_detail": "19:30 · 18 inscritos",
+      "upcoming": "Próximos",
+      "upcoming_class": "1ª Eucaristia",
+      "upcoming_detail": "Sáb, 14:00",
+      "alerts_title": "3 alertas pastorais",
+      "alerts_subtitle": "Faltas consecutivas · docs pendentes",
+      "birthdays": "Aniversariantes",
+      "birthdays_list": "Lucas M. · Sofia R. · Pedro A."
+    },
+    "mockup_attendance": {
+      "title": "Chamada — Crisma Turma A",
+      "meeting": "Encontro 12 · 19/03/2026",
+      "present": "Presentes",
+      "absent": "Faltas",
+      "late": "Atrasos",
+      "justified": "Justificadas"
+    },
+    "mockup_sacraments": {
+      "enrollment": "Inscrição",
+      "documents": "Documentos",
+      "retreat": "Retiro",
+      "interview": "Entrevista",
+      "celebration": "Celebração",
+      "title": "Jornada Sacramental",
+      "subtitle": "Primeira Eucaristia · 2026",
+      "class": "Turma 1ª Eucaristia — Comunidade São José"
+    },
+    "mockup_family": {
+      "title": "Portal da Família",
+      "greeting": "Olá, Carlos — filhos: Ana e Pedro",
+      "first_eucharist": "1ª Eucaristia",
+      "confirmation": "Crisma",
+      "attendance_pct": "92% presença",
+      "absence_recent": "1 falta recente",
+      "notice_title": "Aviso da catequese",
+      "notice_text": "Encontro especial no sábado às 14h — trazer material de artesanato.",
+      "next_meeting": "Próximo encontro",
+      "next_meeting_detail": "Pedro — Crisma · Sáb 19/03 · 19:30",
+      "justify_absence": "Justificar falta",
+      "send_certificate": "Enviar certidão de batismo",
+      "pending_doc": "Documento pendente para Ana"
+    },
+    "mockup_library": {
+      "title": "Biblioteca Pastoral",
+      "subtitle": "Recursos teológicos integrados",
+      "bible": "Bíblia",
+      "catechism": "Catecismo",
+      "directory": "Diretório",
+      "search_placeholder": "Buscar em Jo 3:16, amor, Eucaristia...",
+      "cic_ref": "CIC §133",
+      "dir_ref": "Dir. Cateq. 98",
+      "plan_ref": "Plano Encontro 12",
+      "plan_title": "Plano: O amor de Deus",
+      "published": "Publicado",
+      "plan_detail": "Crisma · 45 min"
+    },
+    "footer": {
+      "create_account": "Criar conta gratuita",
+      "login": "Entrar",
+      "about": "Sobre",
+      "privacy": "Privacidade",
+      "terms": "Termos",
+      "contact": "Contacto"
+    }
   } as const;
 
 export const landingPresenca_en = {
@@ -4882,14 +5978,87 @@ export const landingPresenca_en = {
     "features_subtitle": "From recording to justification — all integrated and real-time.",
     "features_order": [
       "attendance",
-      "family",
+      "family-portal",
       "dashboard",
-      "ai",
+      "ai-planner",
       "library",
       "sacraments"
     ],
     "ai_showcase_title": "And also: automatic notifications for families",
-    "ai_showcase_subtitle": "Parents are automatically notified about absences and can justify online, without calling you."
+    "ai_showcase_subtitle": "Parents are automatically notified about absences and can justify online, without calling you.",
+    "mockup_dashboard": {
+      "title": "Dashboard",
+      "subtitle": "Catechesis overview",
+      "catechumens": "Catechumens",
+      "active_classes": "Active classes",
+      "avg_attendance": "Avg attendance",
+      "sacraments": "Sacraments",
+      "today": "Today",
+      "today_class": "Confirmation — Class A",
+      "today_detail": "19:30 · 18 enrolled",
+      "upcoming": "Upcoming",
+      "upcoming_class": "First Eucharist",
+      "upcoming_detail": "Sat, 14:00",
+      "alerts_title": "3 pastoral alerts",
+      "alerts_subtitle": "Consecutive absences · pending docs",
+      "birthdays": "Birthdays",
+      "birthdays_list": "Lucas M. · Sofia R. · Pedro A."
+    },
+    "mockup_attendance": {
+      "title": "Attendance — Confirmation Class A",
+      "meeting": "Meeting 12 · 03/19/2026",
+      "present": "Present",
+      "absent": "Absent",
+      "late": "Late",
+      "justified": "Justified"
+    },
+    "mockup_sacraments": {
+      "enrollment": "Enrollment",
+      "documents": "Documents",
+      "retreat": "Retreat",
+      "interview": "Interview",
+      "celebration": "Celebration",
+      "title": "Sacramental Journey",
+      "subtitle": "First Eucharist · 2026",
+      "class": "First Eucharist Class — São José Community"
+    },
+    "mockup_family": {
+      "title": "Family Portal",
+      "greeting": "Hello, Carlos — children: Ana and Pedro",
+      "first_eucharist": "First Eucharist",
+      "confirmation": "Confirmation",
+      "attendance_pct": "92% attendance",
+      "absence_recent": "1 recent absence",
+      "notice_title": "Catechesis notice",
+      "notice_text": "Special meeting on Saturday at 14:00 — bring craft materials.",
+      "next_meeting": "Next meeting",
+      "next_meeting_detail": "Pedro — Confirmation · Sat 03/19 · 19:30",
+      "justify_absence": "Justify absence",
+      "send_certificate": "Send baptism certificate",
+      "pending_doc": "Pending document for Ana"
+    },
+    "mockup_library": {
+      "title": "Pastoral Library",
+      "subtitle": "Integrated theological resources",
+      "bible": "Bible",
+      "catechism": "Catechism",
+      "directory": "Directory",
+      "search_placeholder": "Search in Jn 3:16, love, Eucharist...",
+      "cic_ref": "CCC §133",
+      "dir_ref": "Dir. Catech. 98",
+      "plan_ref": "Meeting Plan 12",
+      "plan_title": "Plan: God's Love",
+      "published": "Published",
+      "plan_detail": "Confirmation · 45 min"
+    },
+    "footer": {
+      "create_account": "Create free account",
+      "login": "Login",
+      "about": "About",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "contact": "Contact"
+    }
   } as const;
 
 export const landingPresenca_es = {
@@ -4906,14 +6075,87 @@ export const landingPresenca_es = {
     "features_subtitle": "Del registro a la justificación — todo integrado y en tiempo real.",
     "features_order": [
       "attendance",
-      "family",
+      "family-portal",
       "dashboard",
-      "ai",
+      "ai-planner",
       "library",
       "sacraments"
     ],
     "ai_showcase_title": "Y también: notificaciones automáticas para las familias",
-    "ai_showcase_subtitle": "Los padres son notificados automáticamente sobre faltas y pueden justificar en línea, sin llamarlo."
+    "ai_showcase_subtitle": "Los padres son notificados automáticamente sobre faltas y pueden justificar en línea, sin llamarlo.",
+    "mockup_dashboard": {
+      "title": "Panel",
+      "subtitle": "Visión general de la catequesis",
+      "catechumens": "Catequizandos",
+      "active_classes": "Clases activas",
+      "avg_attendance": "Asistencia media",
+      "sacraments": "Sacramentos",
+      "today": "Hoy",
+      "today_class": "Confirmación — Clase A",
+      "today_detail": "19:30 · 18 inscritos",
+      "upcoming": "Próximos",
+      "upcoming_class": "1ª Eucaristía",
+      "upcoming_detail": "Sáb, 14:00",
+      "alerts_title": "3 alertas pastorales",
+      "alerts_subtitle": "Faltas consecutivas · docs pendientes",
+      "birthdays": "Cumpleañeros",
+      "birthdays_list": "Lucas M. · Sofia R. · Pedro A."
+    },
+    "mockup_attendance": {
+      "title": "Pase de lista — Confirmación Clase A",
+      "meeting": "Encuentro 12 · 19/03/2026",
+      "present": "Presentes",
+      "absent": "Ausentes",
+      "late": "Atrasos",
+      "justified": "Justificadas"
+    },
+    "mockup_sacraments": {
+      "enrollment": "Inscripción",
+      "documents": "Documentos",
+      "retreat": "Retiro",
+      "interview": "Entrevista",
+      "celebration": "Celebración",
+      "title": "Jornada Sacramental",
+      "subtitle": "Primera Eucaristía · 2026",
+      "class": "Clase 1ª Eucaristía — Comunidad São José"
+    },
+    "mockup_family": {
+      "title": "Portal de la Familia",
+      "greeting": "Hola, Carlos — hijos: Ana y Pedro",
+      "first_eucharist": "1ª Eucaristía",
+      "confirmation": "Confirmación",
+      "attendance_pct": "92% asistencia",
+      "absence_recent": "1 falta reciente",
+      "notice_title": "Aviso de catequesis",
+      "notice_text": "Encuentro especial el sábado a las 14:00 — traer material de artesanía.",
+      "next_meeting": "Próximo encuentro",
+      "next_meeting_detail": "Pedro — Confirmación · Sáb 19/03 · 19:30",
+      "justify_absence": "Justificar falta",
+      "send_certificate": "Enviar certificado de bautismo",
+      "pending_doc": "Documento pendiente para Ana"
+    },
+    "mockup_library": {
+      "title": "Biblioteca Pastoral",
+      "subtitle": "Recursos teológicos integrados",
+      "bible": "Biblia",
+      "catechism": "Catecismo",
+      "directory": "Directorio",
+      "search_placeholder": "Buscar en Jn 3:16, amor, Eucaristía...",
+      "cic_ref": "CIC §133",
+      "dir_ref": "Dir. Cateq. 98",
+      "plan_ref": "Plan Encuentro 12",
+      "plan_title": "Plan: El amor de Dios",
+      "published": "Publicado",
+      "plan_detail": "Confirmación · 45 min"
+    },
+    "footer": {
+      "create_account": "Crear cuenta gratuita",
+      "login": "Iniciar sesión",
+      "about": "Acerca de",
+      "privacy": "Privacidad",
+      "terms": "Términos",
+      "contact": "Contacto"
+    }
   } as const;
 
 export const landingSistema_pt_BR = {
@@ -4930,13 +6172,86 @@ export const landingSistema_pt_BR = {
     "features_order": [
       "attendance",
       "dashboard",
-      "family",
+      "family-portal",
       "sacraments",
       "library",
-      "ai"
+      "ai-planner"
     ],
     "ai_showcase_title": "E também: preparação de encontros com IA",
-    "ai_showcase_subtitle": "Além da gestão, a plataforma inclui IA para criar roteiros de encontros em segundos."
+    "ai_showcase_subtitle": "Além da gestão, a plataforma inclui IA para criar roteiros de encontros em segundos.",
+    "mockup_dashboard": {
+      "title": "Painel",
+      "subtitle": "Visão geral da catequese",
+      "catechumens": "Catequizandos",
+      "active_classes": "Turmas ativas",
+      "avg_attendance": "Presença média",
+      "sacraments": "Sacramentos",
+      "today": "Hoje",
+      "today_class": "Crisma — Turma A",
+      "today_detail": "19:30 · 18 inscritos",
+      "upcoming": "Próximos",
+      "upcoming_class": "1ª Eucaristia",
+      "upcoming_detail": "Sáb, 14:00",
+      "alerts_title": "3 alertas pastorais",
+      "alerts_subtitle": "Faltas consecutivas · docs pendentes",
+      "birthdays": "Aniversariantes",
+      "birthdays_list": "Lucas M. · Sofia R. · Pedro A."
+    },
+    "mockup_attendance": {
+      "title": "Chamada — Crisma Turma A",
+      "meeting": "Encontro 12 · 19/03/2026",
+      "present": "Presentes",
+      "absent": "Faltas",
+      "late": "Atrasos",
+      "justified": "Justificadas"
+    },
+    "mockup_sacraments": {
+      "enrollment": "Inscrição",
+      "documents": "Documentos",
+      "retreat": "Retiro",
+      "interview": "Entrevista",
+      "celebration": "Celebração",
+      "title": "Jornada Sacramental",
+      "subtitle": "Primeira Eucaristia · 2026",
+      "class": "Turma 1ª Eucaristia — Comunidade São José"
+    },
+    "mockup_family": {
+      "title": "Portal da Família",
+      "greeting": "Olá, Carlos — filhos: Ana e Pedro",
+      "first_eucharist": "1ª Eucaristia",
+      "confirmation": "Crisma",
+      "attendance_pct": "92% presença",
+      "absence_recent": "1 falta recente",
+      "notice_title": "Aviso da catequese",
+      "notice_text": "Encontro especial no sábado às 14h — trazer material de artesanato.",
+      "next_meeting": "Próximo encontro",
+      "next_meeting_detail": "Pedro — Crisma · Sáb 19/03 · 19:30",
+      "justify_absence": "Justificar falta",
+      "send_certificate": "Enviar certidão de batismo",
+      "pending_doc": "Documento pendente para Ana"
+    },
+    "mockup_library": {
+      "title": "Biblioteca Pastoral",
+      "subtitle": "Recursos teológicos integrados",
+      "bible": "Bíblia",
+      "catechism": "Catecismo",
+      "directory": "Diretório",
+      "search_placeholder": "Buscar em Jo 3:16, amor, Eucaristia...",
+      "cic_ref": "CIC §133",
+      "dir_ref": "Dir. Cateq. 98",
+      "plan_ref": "Plano Encontro 12",
+      "plan_title": "Plano: O amor de Deus",
+      "published": "Publicado",
+      "plan_detail": "Crisma · 45 min"
+    },
+    "footer": {
+      "create_account": "Criar conta gratuita",
+      "login": "Entrar",
+      "about": "Sobre",
+      "privacy": "Privacidade",
+      "terms": "Termos",
+      "contact": "Contacto"
+    }
   } as const;
 
 export const landingSistema_en = {
@@ -4953,13 +6268,86 @@ export const landingSistema_en = {
     "features_order": [
       "attendance",
       "dashboard",
-      "family",
+      "family-portal",
       "sacraments",
       "library",
-      "ai"
+      "ai-planner"
     ],
     "ai_showcase_title": "And also: AI-powered meeting preparation",
-    "ai_showcase_subtitle": "Beyond management, the platform includes AI to create meeting scripts in seconds."
+    "ai_showcase_subtitle": "Beyond management, the platform includes AI to create meeting scripts in seconds.",
+    "mockup_dashboard": {
+      "title": "Dashboard",
+      "subtitle": "Catechesis overview",
+      "catechumens": "Catechumens",
+      "active_classes": "Active classes",
+      "avg_attendance": "Avg attendance",
+      "sacraments": "Sacraments",
+      "today": "Today",
+      "today_class": "Confirmation — Class A",
+      "today_detail": "19:30 · 18 enrolled",
+      "upcoming": "Upcoming",
+      "upcoming_class": "First Eucharist",
+      "upcoming_detail": "Sat, 14:00",
+      "alerts_title": "3 pastoral alerts",
+      "alerts_subtitle": "Consecutive absences · pending docs",
+      "birthdays": "Birthdays",
+      "birthdays_list": "Lucas M. · Sofia R. · Pedro A."
+    },
+    "mockup_attendance": {
+      "title": "Attendance — Confirmation Class A",
+      "meeting": "Meeting 12 · 03/19/2026",
+      "present": "Present",
+      "absent": "Absent",
+      "late": "Late",
+      "justified": "Justified"
+    },
+    "mockup_sacraments": {
+      "enrollment": "Enrollment",
+      "documents": "Documents",
+      "retreat": "Retreat",
+      "interview": "Interview",
+      "celebration": "Celebration",
+      "title": "Sacramental Journey",
+      "subtitle": "First Eucharist · 2026",
+      "class": "First Eucharist Class — São José Community"
+    },
+    "mockup_family": {
+      "title": "Family Portal",
+      "greeting": "Hello, Carlos — children: Ana and Pedro",
+      "first_eucharist": "First Eucharist",
+      "confirmation": "Confirmation",
+      "attendance_pct": "92% attendance",
+      "absence_recent": "1 recent absence",
+      "notice_title": "Catechesis notice",
+      "notice_text": "Special meeting on Saturday at 14:00 — bring craft materials.",
+      "next_meeting": "Next meeting",
+      "next_meeting_detail": "Pedro — Confirmation · Sat 03/19 · 19:30",
+      "justify_absence": "Justify absence",
+      "send_certificate": "Send baptism certificate",
+      "pending_doc": "Pending document for Ana"
+    },
+    "mockup_library": {
+      "title": "Pastoral Library",
+      "subtitle": "Integrated theological resources",
+      "bible": "Bible",
+      "catechism": "Catechism",
+      "directory": "Directory",
+      "search_placeholder": "Search in Jn 3:16, love, Eucharist...",
+      "cic_ref": "CCC §133",
+      "dir_ref": "Dir. Catech. 98",
+      "plan_ref": "Meeting Plan 12",
+      "plan_title": "Plan: God's Love",
+      "published": "Published",
+      "plan_detail": "Confirmation · 45 min"
+    },
+    "footer": {
+      "create_account": "Create free account",
+      "login": "Login",
+      "about": "About",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "contact": "Contact"
+    }
   } as const;
 
 export const landingSistema_es = {
@@ -4976,13 +6364,86 @@ export const landingSistema_es = {
     "features_order": [
       "attendance",
       "dashboard",
-      "family",
+      "family-portal",
       "sacraments",
       "library",
-      "ai"
+      "ai-planner"
     ],
     "ai_showcase_title": "Y también: preparación de encuentros con IA",
-    "ai_showcase_subtitle": "Además de la gestión, la plataforma incluye IA para crear guiones de encuentros en segundos."
+    "ai_showcase_subtitle": "Además de la gestión, la plataforma incluye IA para crear guiones de encuentros en segundos.",
+    "mockup_dashboard": {
+      "title": "Panel",
+      "subtitle": "Visión general de la catequesis",
+      "catechumens": "Catequizandos",
+      "active_classes": "Clases activas",
+      "avg_attendance": "Asistencia media",
+      "sacraments": "Sacramentos",
+      "today": "Hoy",
+      "today_class": "Confirmación — Clase A",
+      "today_detail": "19:30 · 18 inscritos",
+      "upcoming": "Próximos",
+      "upcoming_class": "1ª Eucaristía",
+      "upcoming_detail": "Sáb, 14:00",
+      "alerts_title": "3 alertas pastorales",
+      "alerts_subtitle": "Faltas consecutivas · docs pendientes",
+      "birthdays": "Cumpleañeros",
+      "birthdays_list": "Lucas M. · Sofia R. · Pedro A."
+    },
+    "mockup_attendance": {
+      "title": "Pase de lista — Confirmación Clase A",
+      "meeting": "Encuentro 12 · 19/03/2026",
+      "present": "Presentes",
+      "absent": "Ausentes",
+      "late": "Atrasos",
+      "justified": "Justificadas"
+    },
+    "mockup_sacraments": {
+      "enrollment": "Inscripción",
+      "documents": "Documentos",
+      "retreat": "Retiro",
+      "interview": "Entrevista",
+      "celebration": "Celebración",
+      "title": "Jornada Sacramental",
+      "subtitle": "Primera Eucaristía · 2026",
+      "class": "Clase 1ª Eucaristía — Comunidad São José"
+    },
+    "mockup_family": {
+      "title": "Portal de la Familia",
+      "greeting": "Hola, Carlos — hijos: Ana y Pedro",
+      "first_eucharist": "1ª Eucaristía",
+      "confirmation": "Confirmación",
+      "attendance_pct": "92% asistencia",
+      "absence_recent": "1 falta reciente",
+      "notice_title": "Aviso de catequesis",
+      "notice_text": "Encuentro especial el sábado a las 14:00 — traer material de artesanía.",
+      "next_meeting": "Próximo encuentro",
+      "next_meeting_detail": "Pedro — Confirmación · Sáb 19/03 · 19:30",
+      "justify_absence": "Justificar falta",
+      "send_certificate": "Enviar certificado de bautismo",
+      "pending_doc": "Documento pendiente para Ana"
+    },
+    "mockup_library": {
+      "title": "Biblioteca Pastoral",
+      "subtitle": "Recursos teológicos integrados",
+      "bible": "Biblia",
+      "catechism": "Catecismo",
+      "directory": "Directorio",
+      "search_placeholder": "Buscar en Jn 3:16, amor, Eucaristía...",
+      "cic_ref": "CIC §133",
+      "dir_ref": "Dir. Cateq. 98",
+      "plan_ref": "Plan Encuentro 12",
+      "plan_title": "Plan: El amor de Dios",
+      "published": "Publicado",
+      "plan_detail": "Confirmación · 45 min"
+    },
+    "footer": {
+      "create_account": "Crear cuenta gratuita",
+      "login": "Iniciar sesión",
+      "about": "Acerca de",
+      "privacy": "Privacidad",
+      "terms": "Términos",
+      "contact": "Contacto"
+    }
   } as const;
 
 export const legal_pt_BR = {
@@ -5241,7 +6702,12 @@ export const meetings_pt_BR = {
     "unlink": "Desvincular",
     "link_content": "Vincular conteúdo...",
     "generate_ai_activity": "Gerar Atividade IA",
-    "generate_whatsapp": "Gerar WhatsApp"
+    "generate_whatsapp": "Gerar WhatsApp",
+    "delete_confirm_title": "Remover encontro?",
+    "delete_confirm_desc": "Esta ação não pode ser desfeita. Os registos de presença serão removidos.",
+    "delete_error": "Erro ao remover encontro.",
+    "delete_success": "Encontro removido.",
+    "search_content": "Buscar conteúdo..."
   } as const;
 
 export const meetings_en = {
@@ -5263,7 +6729,12 @@ export const meetings_en = {
     "unlink": "Unlink",
     "link_content": "Link content...",
     "generate_ai_activity": "Generate AI Activity",
-    "generate_whatsapp": "Generate WhatsApp"
+    "generate_whatsapp": "Generate WhatsApp",
+    "delete_confirm_title": "Remove meeting?",
+    "delete_confirm_desc": "This action cannot be undone. Attendance records will be removed.",
+    "delete_error": "Error removing meeting.",
+    "delete_success": "Meeting removed.",
+    "search_content": "Search content..."
   } as const;
 
 export const meetings_es = {
@@ -5285,7 +6756,12 @@ export const meetings_es = {
     "unlink": "Desvincular",
     "link_content": "Vincular contenido...",
     "generate_ai_activity": "Generar Actividad IA",
-    "generate_whatsapp": "Generar WhatsApp"
+    "generate_whatsapp": "Generar WhatsApp",
+    "delete_confirm_title": "¿Eliminar encuentro?",
+    "delete_confirm_desc": "Esta acción no se puede deshacer. Los registros de asistencia se eliminarán.",
+    "delete_error": "Error al eliminar encuentro.",
+    "delete_success": "Encuentro eliminado.",
+    "search_content": "Buscar contenido..."
   } as const;
 
 export const messages_pt_BR = {
@@ -5370,7 +6846,9 @@ export const messages_pt_BR = {
       "creating": "Criando...",
       "start_direct": "Iniciar conversa",
       "create_group": "Criar grupo ({{count}})"
-    }
+    },
+    "send_error": "Erro ao enviar mensagem",
+    "leave_error": "Erro ao sair da conversa"
   } as const;
 
 export const messages_en = {
@@ -5455,7 +6933,9 @@ export const messages_en = {
       "creating": "Creating...",
       "start_direct": "Start conversation",
       "create_group": "Create group ({{count}})"
-    }
+    },
+    "send_error": "Error sending message",
+    "leave_error": "Error leaving conversation"
   } as const;
 
 export const messages_es = {
@@ -5540,7 +7020,9 @@ export const messages_es = {
       "creating": "Creando...",
       "start_direct": "Iniciar conversación",
       "create_group": "Crear grupo ({{count}})"
-    }
+    },
+    "send_error": "Error al enviar mensaje",
+    "leave_error": "Error al salir de la conversación"
   } as const;
 
 export const navigation_pt_BR = {
@@ -5780,6 +7262,10 @@ export const onboarding_pt_BR = {
       "limits_unlimited": "Turmas ilimitadas",
       "ai_generator": "Gerador de encontros com IA",
       "liturgical_calendar": "Calendário litúrgico",
+      "schedule_label": "Horário (opcional)",
+      "day": "Dia da semana",
+      "location_label": "Local (opcional)",
+      "location_placeholder": "Ex: Salão paroquial",
       "first_class_label": "Nome da primeira turma (opcional)",
       "first_class_placeholder": "Ex: Catequese 1º Ano",
       "first_class_hint": "Pode criar depois em Turmas.",
@@ -5906,6 +7392,7 @@ export const onboarding_pt_BR = {
       "empty": "Nenhuma paróquia. Podes criar uma independente.",
       "next": "Próximo"
     },
+    "error_parish_exists": "Esta paróquia já existe e pertence a outro coordenador. Solicite um convite a um administrador para participar.",
     "parish_create": {
       "title": "Criar Paróquia",
       "name_label": "Nome *",
@@ -5976,6 +7463,10 @@ export const onboarding_en = {
       "limits_unlimited": "Unlimited classes",
       "ai_generator": "AI meeting generator",
       "liturgical_calendar": "Liturgical calendar",
+      "schedule_label": "Schedule (optional)",
+      "day": "Day of the week",
+      "location_label": "Location (optional)",
+      "location_placeholder": "Ex: Parish hall",
       "first_class_label": "First class name (optional)",
       "first_class_placeholder": "Ex: 1st Year Catechesis",
       "first_class_hint": "You can create it later in Classes if you prefer.",
@@ -6102,6 +7593,7 @@ export const onboarding_en = {
       "empty": "No parishes found. You can create an independent one.",
       "next": "Next"
     },
+    "error_parish_exists": "This parish already exists and belongs to another coordinator. Ask an administrator for an invitation to join.",
     "parish_create": {
       "title": "Create Parish",
       "name_label": "Name *",
@@ -6172,6 +7664,10 @@ export const onboarding_es = {
       "limits_unlimited": "Grupos ilimitados",
       "ai_generator": "Generador de encuentros con IA",
       "liturgical_calendar": "Calendario litúrgico",
+      "schedule_label": "Horario (opcional)",
+      "day": "Día de la semana",
+      "location_label": "Lugar (opcional)",
+      "location_placeholder": "Ej: Salón parroquial",
       "first_class_label": "Nombre del primer grupo (opcional)",
       "first_class_placeholder": "Ej: Catequesis 1er Año",
       "first_class_hint": "Puede crearlo después en Grupos si prefiere.",
@@ -6298,6 +7794,7 @@ export const onboarding_es = {
       "empty": "Ninguna parroquia. Puede crear una independiente.",
       "next": "Siguiente"
     },
+    "error_parish_exists": "Esta parroquia ya existe y pertenece a otro coordinador. Solicite una invitación a un administrador para participar.",
     "parish_create": {
       "title": "Crear Parroquia",
       "name_label": "Nombre *",
@@ -6440,7 +7937,18 @@ export const parishes_pt_BR = {
     "no_family_later": "Sem família (vincular depois)",
     "error_update": "Erro ao atualizar.",
     "member_remove_title": "Remover membro",
-    "members_count_short": "{{count}} membros"
+    "members_count_short": "{{count}} membros",
+    "community_name_required": "Nome *",
+    "community_name_placeholder": "Nome da comunidade",
+    "community_phone_label": "Telefone",
+    "community_phone_placeholder": "(00) 00000-0000",
+    "community_email_placeholder": "comunidade@email.com",
+    "coordinator_responsible": "Coordenador / Responsável",
+    "coordinator_name_placeholder": "Nome do responsável",
+    "coordinator_phone_placeholder": "Telefone do responsável",
+    "desc_observations": "Descrição / Observações",
+    "desc_placeholder": "Informações adicionais sobre a comunidade...",
+    "create_community": "Criar Comunidade"
   } as const;
 
 export const parishes_en = {
@@ -6575,7 +8083,18 @@ export const parishes_en = {
     "no_family_later": "No family (link later)",
     "error_update": "Error updating.",
     "member_remove_title": "Remove member",
-    "members_count_short": "{{count}} members"
+    "members_count_short": "{{count}} members",
+    "community_name_required": "Name *",
+    "community_name_placeholder": "Community name",
+    "community_phone_label": "Phone",
+    "community_phone_placeholder": "(555) 000-0000",
+    "community_email_placeholder": "community@email.com",
+    "coordinator_responsible": "Coordinator / Responsible",
+    "coordinator_name_placeholder": "Coordinator name",
+    "coordinator_phone_placeholder": "Coordinator phone",
+    "desc_observations": "Description / Notes",
+    "desc_placeholder": "Additional information about the community...",
+    "create_community": "Create Community"
   } as const;
 
 export const parishes_es = {
@@ -6710,7 +8229,18 @@ export const parishes_es = {
     "no_family_later": "Sin familia (vincular después)",
     "error_update": "Error al actualizar.",
     "member_remove_title": "Eliminar miembro",
-    "members_count_short": "{{count}} miembros"
+    "members_count_short": "{{count}} miembros",
+    "community_name_required": "Nombre *",
+    "community_name_placeholder": "Nombre de la comunidad",
+    "community_phone_label": "Teléfono",
+    "community_phone_placeholder": "(00) 00000-0000",
+    "community_email_placeholder": "comunidad@email.com",
+    "coordinator_responsible": "Coordinador / Responsable",
+    "coordinator_name_placeholder": "Nombre del responsable",
+    "coordinator_phone_placeholder": "Teléfono del responsable",
+    "desc_observations": "Descripción / Observaciones",
+    "desc_placeholder": "Información adicional sobre la comunidad...",
+    "create_community": "Crear Comunidad"
   } as const;
 
 export const public_pt_BR = {
@@ -6758,6 +8288,7 @@ export const public_pt_BR = {
       "faq_title": "Perguntas frequentes",
       "free_forever": "para sempre",
       "per_month": "/mês",
+      "per_year": "/ano",
       "cta_free": "Começar grátis",
       "cta_paid": "Começar agora",
       "most_popular": "Mais Popular",
@@ -6924,6 +8455,7 @@ export const public_en = {
       "faq_title": "Frequently asked questions",
       "free_forever": "forever",
       "per_month": "/month",
+      "per_year": "/year",
       "cta_free": "Start free",
       "cta_paid": "Start now",
       "most_popular": "Most Popular",
@@ -7090,6 +8622,7 @@ export const public_es = {
       "faq_title": "Preguntas frecuentes",
       "free_forever": "para siempre",
       "per_month": "/mes",
+      "per_year": "/año",
       "cta_free": "Comenzar gratis",
       "cta_paid": "Comenzar ahora",
       "most_popular": "Más Popular",
@@ -8135,6 +9668,7 @@ export const resources = {
     admin: admin_pt_BR,
     ai: ai_pt_BR,
     attendance: attendance_pt_BR,
+    auth: auth_pt_BR,
     bible: bible_pt_BR,
     billing: billing_pt_BR,
     calendar: calendar_pt_BR,
@@ -8170,6 +9704,7 @@ export const resources = {
     admin: admin_en,
     ai: ai_en,
     attendance: attendance_en,
+    auth: auth_en,
     bible: bible_en,
     billing: billing_en,
     calendar: calendar_en,
@@ -8205,6 +9740,7 @@ export const resources = {
     admin: admin_es,
     ai: ai_es,
     attendance: attendance_es,
+    auth: auth_es,
     bible: bible_es,
     billing: billing_es,
     calendar: calendar_es,

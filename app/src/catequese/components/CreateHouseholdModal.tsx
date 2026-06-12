@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, Save, Loader2 } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { Input } from '../../client/components/ui/input';
@@ -14,6 +15,7 @@ interface CreateHouseholdModalProps {
 }
 
 export default function CreateHouseholdModal({ isOpen, onClose, onCreated }: CreateHouseholdModalProps) {
+  const { t } = useTranslation('common');
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [cep, setCep] = useState('');
@@ -56,7 +58,7 @@ export default function CreateHouseholdModal({ isOpen, onClose, onCreated }: Cre
 
   const handleSubmit = async () => {
     if (!name) {
-      setError('O nome da família é obrigatório.');
+      setError(t('families.name_required'));
       return;
     }
     setSaving(true);
@@ -70,7 +72,7 @@ export default function CreateHouseholdModal({ isOpen, onClose, onCreated }: Cre
       onCreated(household.id, household.name);
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Erro ao cadastrar família.');
+      setError(err.message || t('families.create_error'));
     } finally {
       setSaving(false);
     }
@@ -87,7 +89,7 @@ export default function CreateHouseholdModal({ isOpen, onClose, onCreated }: Cre
       <div className="relative w-full max-w-md mx-4 bg-card rounded-2xl shadow-2xl border overflow-hidden animate-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
-          <h3 className="font-semibold">Nova Família</h3>
+          <h3 className="font-semibold">{t('families.create_title')}</h3>
           <button
             onClick={onClose}
             className="h-7 w-7 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
@@ -103,23 +105,23 @@ export default function CreateHouseholdModal({ isOpen, onClose, onCreated }: Cre
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="modal-name">Nome da família *</Label>
+            <Label htmlFor="modal-name">{t('families.name_label')}</Label>
             <Input
               id="modal-name"
               value={name}
               onChange={e => setName(e.target.value)}
-              placeholder="Ex: Família Silva"
+              placeholder={t('families.name_placeholder')}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="modal-cep">CEP</Label>
+            <Label htmlFor="modal-cep">{t('families.cep')}</Label>
             <div className="flex items-center gap-2">
               <Input
                 id="modal-cep"
                 value={cep}
                 onChange={e => setCep(e.target.value)}
-                placeholder="00000-000"
+                placeholder={t('cep_placeholder')}
                 className="w-40"
               />
               {cepLoading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
@@ -127,21 +129,21 @@ export default function CreateHouseholdModal({ isOpen, onClose, onCreated }: Cre
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="modal-address">Endereço</Label>
+            <Label htmlFor="modal-address">{t('address')}</Label>
             <Input
               id="modal-address"
               value={address}
               onChange={e => setAddress(e.target.value)}
-              placeholder="Ex: Rua das Flores, 123"
+              placeholder={t('families.address_placeholder')}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="modal-phone">Telefone</Label>
+            <Label htmlFor="modal-phone">{t('phone')}</Label>
             <PhoneMaskInput
               value={phone}
               onChange={setPhone}
-              placeholder="(11) 99999-9999"
+              placeholder={t('phone_placeholder')}
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             />
           </div>
@@ -150,11 +152,11 @@ export default function CreateHouseholdModal({ isOpen, onClose, onCreated }: Cre
         {/* Footer */}
         <div className="p-4 border-t flex items-center justify-end gap-3">
           <Button type="button" variant="outline" onClick={onClose}>
-            Cancelar
+            {t('cancel')}
           </Button>
           <Button type="button" onClick={handleSubmit} disabled={saving}>
             <Save className="mr-2 h-4 w-4" />
-            {saving ? 'Salvando...' : 'Cadastrar'}
+            {saving ? t('saving') : t('register')}
           </Button>
         </div>
       </div>

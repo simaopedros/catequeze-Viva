@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, Plus, X, BookOpen, Church, ChevronRight, Check, FileText } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { listBibleBooks, searchBible, searchCatechism, searchDirectory, getBibleChapter, getBibleBook, listCatechismByCategory, listDirectoryByPart } from 'wasp/client/operations';
@@ -67,6 +68,7 @@ function groupBibleRefs(refs: BibleRef[]): { ids: string[]; label: string; text?
 }
 
 export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAddBible, onRemoveBible, onAddCatechism, onRemoveCatechism, onAddDirectory, onRemoveDirectory }: Props) {
+  const { t } = useTranslation('common');
   const [tab, setTab] = useState<'bible' | 'catechism' | 'directory'>('bible'); 
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<any[]>([]);
@@ -195,21 +197,21 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
 
   return (
     <div className="rounded-xl border bg-card p-4 space-y-3">
-      <h3 className="font-medium text-sm">Referências Bíblicas e do Catecismo</h3>
+      <h3 className="font-medium text-sm">{t('references.title')}</h3>
 
       {/* Tabs */}
       <div className="flex gap-1 bg-muted rounded-lg p-1">
         <button onClick={() => { setTab('bible'); setQuery(''); setResults([]); setSearched(false); setShowResults(false); setBrowseBook(null); setChapterVerses([]); }}
           className={'flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors ' + (tab === 'bible' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground')}>
-          <BookOpen className="h-3.5 w-3.5" />Bíblia
+          <BookOpen className="h-3.5 w-3.5" />{t('bible.title')}
         </button>
         <button onClick={() => { setTab('catechism'); setQuery(''); setResults([]); setSearched(false); setShowResults(false); }}
           className={'flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors ' + (tab === 'catechism' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground')}>      
-          <Church className="h-3.5 w-3.5" />Catecismo
+          <Church className="h-3.5 w-3.5" />{t('catechism.title')}
         </button>
         <button onClick={() => { setTab('directory'); setQuery(''); setResults([]); setSearched(false); setShowResults(false); }}
           className={'flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors ' + (tab === 'directory' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground')}>      
-          <FileText className="h-3.5 w-3.5" />Diretório
+          <FileText className="h-3.5 w-3.5" />{t('directory.title')}
         </button>
       </div>
 
@@ -222,7 +224,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
             onFocus={() => { if (results.length > 0) setShowResults(true); }}   
             onBlur={() => setTimeout(() => setShowResults(false), 200)}
             className="flex-1 h-8 rounded-md border border-input bg-background px-2 text-xs"
-            placeholder={tab === 'bible' ? 'Ex: Gênesis 1, Gn 1:3, amor, Deus...' : tab === 'catechism' ? 'Ex: sacramento, oração, batismo...' : 'Ex: catequese, evangelização, pedagogia...'}
+            placeholder={tab === 'bible' ? t('bible.searchPlaceholder') : tab === 'catechism' ? t('catechism.searchPlaceholder') : t('directory.searchPlaceholder')}
           />
           {searching && <div className="absolute right-10 top-1.5"><div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div>}
         </div>
@@ -235,11 +237,11 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
                 {chapterVerses.length > 0 && (
                   <div className="flex items-center justify-between px-2 py-1 bg-muted/30 border-b">
                     <button onClick={selectAllVerses} className="text-[10px] text-primary hover:underline">
-                      {selectedVerses.size === chapterVerses.length ? 'Desmarcar todos' : 'Selecionar todos'}
+                      {selectedVerses.size === chapterVerses.length ? t('references.deselect_all') : t('references.select_all')}
                     </button>
                     {hasSelected && (
                       <Button size="sm" className="h-6 text-[10px]" onClick={addSelectedVerses}>
-                        <Plus className="h-3 w-3 mr-0.5" />{selectedVerses.size} versículo(s)
+                        <Plus className="h-3 w-3 mr-0.5" />{selectedVerses.size} {t('references.verses')}
                       </Button>
                     )}
                   </div>
@@ -306,8 +308,8 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
       {/* Bible browse tree */}
       {tab === 'bible' && !searched && !browseBook && (
         <div className="max-h-48 overflow-y-auto">
-          <p className="text-[10px] text-muted-foreground px-1 mb-1">Navegue ou digite acima. Ex: "Gênesis 1", "João 3:16", "amor"</p>
-          <div className="text-[10px] font-semibold text-muted-foreground px-1 pt-1">Antigo Testamento</div>
+          <p className="text-[10px] text-muted-foreground px-1 mb-1">{t('bible.browse_hint')}</p>
+          <div className="text-[10px] font-semibold text-muted-foreground px-1 pt-1">{t('bible.old_testament')}</div>
           {otBooks.map((b: any) => (
             <button key={b.id} onClick={() => loadBook(b)}
               className="w-full text-left px-2 py-1 text-xs rounded hover:bg-muted/50 flex justify-between items-center">
@@ -315,7 +317,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
               <ChevronRight className="h-3 w-3 text-muted-foreground" />        
             </button>
           ))}
-          <div className="text-[10px] font-semibold text-muted-foreground px-1 pt-2">Novo Testamento</div>
+          <div className="text-[10px] font-semibold text-muted-foreground px-1 pt-2">{t('bible.new_testament')}</div>
           {ntBooks.map((b: any) => (
             <button key={b.id} onClick={() => loadBook(b)}
               className="w-full text-left px-2 py-1 text-xs rounded hover:bg-muted/50 flex justify-between items-center">
@@ -329,28 +331,29 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
       {/* Bible chapter picker */}
       {tab === 'bible' && browseBook && !searched && (
         <div className="max-h-48 overflow-y-auto">
-          <button onClick={() => setBrowseBook(null)} className="text-xs text-primary hover:underline mb-1">← Voltar aos livros</button>
-          <p className="text-[10px] font-semibold text-muted-foreground">{browseBook.name} — capítulos</p>
+          <button onClick={() => setBrowseBook(null)} className="text-xs text-primary hover:underline mb-1">{t('bible.back_to_books')}</button>
+          <p className="text-[10px] font-semibold text-muted-foreground">{browseBook.name} — {t('bible.chapters')}</p>
           <div className="flex flex-wrap gap-1 mt-1">
             {browseBook.chapters?.map((ch: any) => (
               <button key={ch.id} onClick={() => handleBrowseChapter(browseBook.id, ch.number)}
                 className="px-2 py-1 text-xs rounded border hover:bg-primary/10 transition-colors">
                 {ch.number}
-              </button>
-            ))}
-          </div>
+            </button>
+            )
+          )}
+        </div>
         </div>
       )}
 
       {/* Catechism browse */}
       {tab === 'catechism' && !searched && (
         <div className="space-y-1">
-          <p className="text-[10px] text-muted-foreground px-1">Ou explore por categoria:</p>
+          <p className="text-[10px] text-muted-foreground px-1">{t('catechism.explore_by_category')}</p>
           {[
-            { cat: 'creed', label: '📜 O Credo', icon: 'creed' },
-            { cat: 'sacraments', label: '💧 Os Sacramentos', icon: 'sacraments'  },
-            { cat: 'commandments', label: '📋 Os Mandamentos', icon: 'commandmennts' },
-            { cat: 'prayer', label: '🙏 A Oração', icon: 'prayer' },
+            { cat: 'creed', label: t('catechism.category_creed') },
+            { cat: 'sacraments', label: t('catechism.category_sacraments') },
+            { cat: 'commandments', label: t('catechism.category_commandments') },
+            { cat: 'prayer', label: t('catechism.category_prayer') },
           ].map(({ cat, label }) => (
             <button key={cat}
               onClick={async () => {
@@ -371,14 +374,16 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
       {/* Directory browse */}
       {tab === 'directory' && !searched && (
         <div className="space-y-1">
-          <p className="text-[10px] text-muted-foreground px-1">Ou explore por parte:</p>
+          <p className="text-[10px] text-muted-foreground px-1">{t('references.explore_by_part')}</p>
           {[
-            { part: 'I', label: 'Parte I — Catequese na Missão Evangelizadora' },
-            { part: 'II', label: 'Parte II — A Mensagem Evangélica' },
-            { part: 'III', label: 'Parte III — A Pedagogia da Fé' },
-            { part: 'IV', label: 'Parte IV — Os Destinatários' },
-            { part: 'V', label: 'Parte V — A Catequese na Igreja Particular' },
-          ].map(({ part, label }) => (
+            { part: 'I' },
+            { part: 'II' },
+            { part: 'III' },
+            { part: 'IV' },
+            { part: 'V' },
+          ].map(({ part }) => {
+            const label = t('directory.parts.' + part);
+            return (
             <button key={part}
               onClick={async () => {
                 setSearching(true); setSearched(true);
@@ -391,7 +396,8 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
               className="w-full text-left px-2 py-1.5 text-xs rounded hover:bg-muted/50">
               {label}
             </button>
-          ))}
+            );
+          })}
         </div>
       )}
 

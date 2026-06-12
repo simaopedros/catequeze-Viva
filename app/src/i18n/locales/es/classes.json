@@ -103,6 +103,8 @@
     "confirm_remove_catechist": "¿Quitar este catequista del grupo?",
     "chat": "Chat",
     "concluded_success": "Grupo concluido.",
+    "activated_success": "¡Grupo activado con éxito!",
+    "paused_success": "¡Grupo pausado con éxito!",
     "open_chat_error": "Error al abrir chat",
     "load_planning_error": "Error al cargar planificación",
     "catechist_added": "¡Catequista agregado!",

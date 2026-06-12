@@ -84,6 +84,9 @@
     "error_required_fields": "Title and main content are required.",
     "error_enhance": "Error enhancing with AI.",
     "error_create": "Error creating content.",
+    "error_bible_ref": "Invalid Bible reference.",
+    "error_catechism_ref": "Invalid catechism reference.",
+    "error_directory_ref": "Invalid directory reference.",
     "success_created": "Content created successfully!",
     "home_task_prefix": "Homework task: "
   },
@@ -101,7 +104,8 @@
     "ai_suggestions": "AI suggestions",
     "success_enhanced": "Content enhanced by AI!",
     "error_enhance": "Error enhancing with AI.",
-    "success_saved": "Content saved."
+    "success_saved": "Content saved.",
+    "error_load": "Error loading content."
   },
   "print_page": {
     "loading": "Loading...",

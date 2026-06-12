@@ -50,6 +50,10 @@
     "limits_unlimited": "Unlimited classes",
     "ai_generator": "AI meeting generator",
     "liturgical_calendar": "Liturgical calendar",
+    "schedule_label": "Schedule (optional)",
+    "day": "Day of the week",
+    "location_label": "Location (optional)",
+    "location_placeholder": "Ex: Parish hall",
     "first_class_label": "First class name (optional)",
     "first_class_placeholder": "Ex: 1st Year Catechesis",
     "first_class_hint": "You can create it later in Classes if you prefer.",
@@ -164,6 +168,7 @@
     "empty": "No parishes found. You can create an independent one.",
     "next": "Next"
   },
+  "error_parish_exists": "This parish already exists and belongs to another coordinator. Ask an administrator for an invitation to join.",
   "parish_create": {
     "title": "Create Parish",
     "name_label": "Name *",

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Badge } from '../../../client/components/ui/badge';
 import { MapPin, Users, Phone, Mail, User, ChevronDown, ChevronUp, Pencil } from 'lucide-react';
 import { COMMUNITY_TYPE_LABELS } from '../../../shared/constants';
@@ -11,6 +12,7 @@ interface CommunityCardProps {
 }
 
 export function CommunityCard({ community, onEdit, isEditing, editForm }: CommunityCardProps) {
+  const { t } = useTranslation('common');
   const [expanded, setExpanded] = useState(false);
   const c = community;
 
@@ -36,7 +38,7 @@ export function CommunityCard({ community, onEdit, isEditing, editForm }: Commun
           </div>
         </div>
         <div className="flex items-center gap-2 ml-2">
-          <button onClick={(e) => { e.stopPropagation(); onEdit(c); }} className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors" title="Editar"><Pencil className="h-3.5 w-3.5" /></button>
+           <button onClick={(e) => { e.stopPropagation(); onEdit(c); }} className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors" title={t('edit')}><Pencil className="h-3.5 w-3.5" /></button>
           {c.parish && <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full hidden sm:inline-block">{c.parish.name}</span>}
           {expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
         </div>

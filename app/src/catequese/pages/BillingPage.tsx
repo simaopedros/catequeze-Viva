@@ -118,6 +118,7 @@ function formatPriceFromCents(cents: number): string {
 
 export default function BillingPage() {
   const { t } = useTranslation('billing');
+  const { t: tp } = useTranslation('public');
   const allPlans = useMemo(() => buildPlanCards(t), [t]);
 
   const getPlanDef = (planId: PaymentPlanId): PlanCard =>
@@ -473,10 +474,10 @@ export default function BillingPage() {
                     ) : (
                       <>
                         <p className="text-xl font-bold mb-1">
-                          {formatPriceFromCents(plan.priceCentsAnnual!)}<span className="text-base font-normal text-muted-foreground">/ano</span>
+                          {formatPriceFromCents(plan.priceCentsAnnual!)}<span className="text-base font-normal text-muted-foreground">{tp('per_year')}</span>
                         </p>
                         <p className="text-xs text-muted-foreground font-medium mb-2">
-                          {formatPriceFromCents(plan.priceCents!)}/mês
+                          {formatPriceFromCents(plan.priceCents!)}{tp('per_month')}
                         </p>
                       </>
                     )}

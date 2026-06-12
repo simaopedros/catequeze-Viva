@@ -18,5 +18,78 @@
     "ai-planner"
   ],
   "ai_showcase_title": "E também: preparação de encontros com IA",
-  "ai_showcase_subtitle": "Além da gestão, a plataforma inclui IA para criar roteiros de encontros em segundos."
+  "ai_showcase_subtitle": "Além da gestão, a plataforma inclui IA para criar roteiros de encontros em segundos.",
+  "mockup_dashboard": {
+    "title": "Painel",
+    "subtitle": "Visão geral da catequese",
+    "catechumens": "Catequizandos",
+    "active_classes": "Turmas ativas",
+    "avg_attendance": "Presença média",
+    "sacraments": "Sacramentos",
+    "today": "Hoje",
+    "today_class": "Crisma — Turma A",
+    "today_detail": "19:30 · 18 inscritos",
+    "upcoming": "Próximos",
+    "upcoming_class": "1ª Eucaristia",
+    "upcoming_detail": "Sáb, 14:00",
+    "alerts_title": "3 alertas pastorais",
+    "alerts_subtitle": "Faltas consecutivas · docs pendentes",
+    "birthdays": "Aniversariantes",
+    "birthdays_list": "Lucas M. · Sofia R. · Pedro A."
+  },
+  "mockup_attendance": {
+    "title": "Chamada — Crisma Turma A",
+    "meeting": "Encontro 12 · 19/03/2026",
+    "present": "Presentes",
+    "absent": "Faltas",
+    "late": "Atrasos",
+    "justified": "Justificadas"
+  },
+  "mockup_sacraments": {
+    "enrollment": "Inscrição",
+    "documents": "Documentos",
+    "retreat": "Retiro",
+    "interview": "Entrevista",
+    "celebration": "Celebração",
+    "title": "Jornada Sacramental",
+    "subtitle": "Primeira Eucaristia · 2026",
+    "class": "Turma 1ª Eucaristia — Comunidade São José"
+  },
+  "mockup_family": {
+    "title": "Portal da Família",
+    "greeting": "Olá, Carlos — filhos: Ana e Pedro",
+    "first_eucharist": "1ª Eucaristia",
+    "confirmation": "Crisma",
+    "attendance_pct": "92% presença",
+    "absence_recent": "1 falta recente",
+    "notice_title": "Aviso da catequese",
+    "notice_text": "Encontro especial no sábado às 14h — trazer material de artesanato.",
+    "next_meeting": "Próximo encontro",
+    "next_meeting_detail": "Pedro — Crisma · Sáb 19/03 · 19:30",
+    "justify_absence": "Justificar falta",
+    "send_certificate": "Enviar certidão de batismo",
+    "pending_doc": "Documento pendente para Ana"
+  },
+  "mockup_library": {
+    "title": "Biblioteca Pastoral",
+    "subtitle": "Recursos teológicos integrados",
+    "bible": "Bíblia",
+    "catechism": "Catecismo",
+    "directory": "Diretório",
+    "search_placeholder": "Buscar em Jo 3:16, amor, Eucaristia...",
+    "cic_ref": "CIC §133",
+    "dir_ref": "Dir. Cateq. 98",
+    "plan_ref": "Plano Encontro 12",
+    "plan_title": "Plano: O amor de Deus",
+    "published": "Publicado",
+    "plan_detail": "Crisma · 45 min"
+  },
+  "footer": {
+    "create_account": "Criar conta gratuita",
+    "login": "Entrar",
+    "about": "Sobre",
+    "privacy": "Privacidade",
+    "terms": "Termos",
+    "contact": "Contacto"
+  }
 }

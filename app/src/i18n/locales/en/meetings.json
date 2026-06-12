@@ -17,5 +17,10 @@
   "unlink": "Unlink",
   "link_content": "Link content...",
   "generate_ai_activity": "Generate AI Activity",
-  "generate_whatsapp": "Generate WhatsApp"
+  "generate_whatsapp": "Generate WhatsApp",
+  "delete_confirm_title": "Remove meeting?",
+  "delete_confirm_desc": "This action cannot be undone. Attendance records will be removed.",
+  "delete_error": "Error removing meeting.",
+  "delete_success": "Meeting removed.",
+  "search_content": "Search content..."
 }
