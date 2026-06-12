@@ -563,14 +563,116 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
   const alerts: InstitutionalAlert[] = [];
   const classWhere = buildClassWhereClause(parishIds, communityId);
   const enrollmentWhere = buildEnrollmentWhereClause(parishIds, communityId);
+  const isManager = context.user.isAdmin || (COORDINATOR_ROLES as readonly string[]).includes(membershipRole);
 
-  // ── Preventivos ──────────────────────────────────────────────────────────
+  // ── Fetch all alert data in a single parallel roundtrip ────────────────────
+
+  const [
+    todayMeetings,
+    classesWithoutLead,
+    activeClasses,
+    overCapacityClasses,
+    pendingDocsNearSacrament,
+    consentsExpiring,
+    billing,
+    recentMeetings,
+    enrolledCatechumens,
+    activeClassesWithMeetings,
+    overdueCount,
+  ] = await Promise.all([
+    // 1. Encontro de hoje sem presença lançada
+    context.entities.Meeting.findMany({
+      where: { date: { gte: todayStart, lt: todayEnd }, class: classWhere },
+      select: { id: true, class: { select: { id: true, name: true } }, _count: { select: { attendance: true } } },
+    }),
+    // 2. Turma sem LEAD
+    context.entities.CatechesisClass.findMany({
+      where: { ...classWhere, status: 'ACTIVE', catechists: { none: { role: 'LEAD' } } },
+      select: { id: true, name: true },
+      take: 10,
+    }),
+    // 3. Turma sem encontro há mais de 4 semanas (activeClasses + last meeting)
+    context.entities.CatechesisClass.findMany({
+      where: { ...classWhere, status: 'ACTIVE' },
+      select: {
+        id: true, name: true,
+        meetings: { orderBy: { date: 'desc' }, take: 1, select: { date: true } },
+      },
+    }),
+    // 4. Capacidade excedida
+    context.entities.CatechesisClass.findMany({
+      where: { ...classWhere, status: 'ACTIVE', maxCapacity: { gt: 0 } },
+      select: {
+        id: true, name: true, maxCapacity: true,
+        _count: { select: { enrollments: { where: { status: 'ENROLLED' } } } },
+      },
+    }),
+    // 5. Documentos obrigatórios pendentes próximos do sacramento
+    context.entities.SacramentalMilestone.count({
+      where: {
+        status: 'PENDING',
+        templateMilestone: { required: true, daysBeforeSacrament: { not: null } },
+        journey: {
+          targetDate: { lte: thirtyDaysFromNow },
+          catechumenProfile: { enrollments: { some: enrollmentWhere } },
+        },
+      },
+    }),
+    // 6. Consentimentos expirando
+    context.entities.ConsentRecord.count({
+      where: {
+        expiresAt: { gte: now, lte: thirtyDaysFromNow },
+        household: { catechumens: { some: { enrollments: { some: enrollmentWhere } } } },
+      },
+    }),
+    // 7. Trial/licença (apenas gestores)
+    isManager
+      ? context.entities.TenantBilling.findFirst({
+          where: args.scope === 'diocese'
+            ? { diocese: { parishes: { some: { id: { in: parishIds } } } } }
+            : { parishId: args.scopeId },
+          select: { plan: true, status: true, trialEndsAt: true },
+        })
+      : Promise.resolve(null),
+    // 8a. Recent meetings (for evasion risk)
+    context.entities.Meeting.findMany({
+      where: { class: classWhere, date: { lte: now } },
+      orderBy: { date: 'desc' },
+      take: 5,
+      select: { id: true, date: true },
+    }),
+    // 8b. Enrolled catechumens (for evasion risk)
+    context.entities.ClassEnrollment.findMany({
+      where: { ...enrollmentWhere, status: 'ENROLLED', catechumenProfileId: { not: null } },
+      select: { catechumenProfileId: true },
+      distinct: ['catechumenProfileId'],
+    }),
+    // 9. Active classes with meetings (low attendance risk)
+    context.entities.CatechesisClass.findMany({
+      where: { ...classWhere, status: 'ACTIVE' },
+      select: {
+        id: true, name: true,
+        meetings: {
+          orderBy: { date: 'desc' }, take: 3,
+          select: { id: true, attendance: { select: { status: true } } },
+        },
+      },
+    }),
+    // 10. Prontidão sacramental
+    context.entities.SacramentalMilestone.count({
+      where: {
+        status: { in: ['PENDING', 'IN_PROGRESS'] },
+        journey: {
+          targetDate: { gte: now, lte: thirtyDaysFromNow },
+          catechumenProfile: { enrollments: { some: enrollmentWhere } },
+        },
+      },
+    }),
+  ]);
+
+  // ── Post-process: build alerts from fetched data ────────────────────────────
 
   // 1. Encontro de hoje sem presença lançada
-  const todayMeetings = await context.entities.Meeting.findMany({
-    where: { date: { gte: todayStart, lt: todayEnd }, class: classWhere },
-    select: { id: true, class: { select: { id: true, name: true } }, _count: { select: { attendance: true } } },
-  });
   const meetingsWithoutAttendance = todayMeetings.filter((m: any) => m._count?.attendance === 0);
   if (meetingsWithoutAttendance.length > 0) {
     alerts.push({
@@ -585,11 +687,6 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
   }
 
   // 2. Turma sem LEAD
-  const classesWithoutLead = await context.entities.CatechesisClass.findMany({
-    where: { ...classWhere, status: 'ACTIVE', catechists: { none: { role: 'LEAD' } } },
-    select: { id: true, name: true },
-    take: 10,
-  });
   if (classesWithoutLead.length > 0) {
     alerts.push({
       severity: 'high',
@@ -602,14 +699,6 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
 
   // 3. Turma sem encontro há mais de 4 semanas
   const fourWeeksAgo = new Date(now.getTime() - 28 * 24 * 60 * 60 * 1000);
-  const activeClasses = await context.entities.CatechesisClass.findMany({
-    where: { ...classWhere, status: 'ACTIVE' },
-    select: {
-      id: true,
-      name: true,
-      meetings: { orderBy: { date: 'desc' }, take: 1, select: { date: true } },
-    },
-  });
   const inactiveClasses = activeClasses.filter((c: any) => {
     const lastMeeting = c.meetings[0]?.date;
     return !lastMeeting || lastMeeting < fourWeeksAgo;
@@ -625,15 +714,6 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
   }
 
   // 4. Capacidade excedida
-  const overCapacityClasses = await context.entities.CatechesisClass.findMany({
-    where: { ...classWhere, status: 'ACTIVE', maxCapacity: { gt: 0 } },
-    select: {
-      id: true,
-      name: true,
-      maxCapacity: true,
-      _count: { select: { enrollments: { where: { status: 'ENROLLED' } } } },
-    },
-  });
   const overCap = overCapacityClasses.filter(
     (c: any) => c.maxCapacity && c._count?.enrollments > c.maxCapacity,
   );
@@ -646,17 +726,7 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
     });
   }
 
-  // 5. Documentos obrigatórios pendentes próximos do sacramento
-  const pendingDocsNearSacrament = await context.entities.SacramentalMilestone.count({
-    where: {
-      status: 'PENDING',
-      templateMilestone: { required: true, daysBeforeSacrament: { not: null } },
-      journey: {
-        targetDate: { lte: thirtyDaysFromNow },
-        catechumenProfile: { enrollments: { some: enrollmentWhere } },
-      },
-    },
-  });
+  // 5. Documentos obrigatórios pendentes
   if (pendingDocsNearSacrament > 0) {
     alerts.push({
       severity: 'high',
@@ -666,13 +736,7 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
     });
   }
 
-  // 6. Consentimentos ausentes ou expirando
-  const consentsExpiring = await context.entities.ConsentRecord.count({
-    where: {
-      expiresAt: { gte: now, lte: thirtyDaysFromNow },
-      household: { catechumens: { some: { enrollments: { some: enrollmentWhere } } } },
-    },
-  });
+  // 6. Consentimentos expirando
   if (consentsExpiring > 0) {
     alerts.push({
       severity: 'medium',
@@ -682,17 +746,9 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
     });
   }
 
-  // 7. Trial/licença expirando (apenas gestores)
-  const isManager = context.user.isAdmin || (COORDINATOR_ROLES as readonly string[]).includes(membershipRole);
-  if (isManager) {
-    const billing = await context.entities.TenantBilling.findFirst({
-      where: args.scope === 'diocese'
-        ? { diocese: { parishes: { some: { id: { in: parishIds } } } } }
-        : { parishId: args.scopeId },
-      select: { plan: true, status: true, trialEndsAt: true },
-    });
-
-    if (billing?.status === 'TRIAL' && billing.trialEndsAt) {
+  // 7. Trial/licença expirando
+  if (billing) {
+    if (billing.status === 'TRIAL' && billing.trialEndsAt) {
       const daysLeft = Math.ceil((billing.trialEndsAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
       if (daysLeft <= 7 && daysLeft > 0) {
         alerts.push({
@@ -704,8 +760,7 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
         });
       }
     }
-
-    if (billing?.status === 'PAST_DUE') {
+    if (billing.status === 'PAST_DUE') {
       alerts.push({
         severity: 'critical',
         category: 'license',
@@ -716,27 +771,11 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
     }
   }
 
-  // ── Preditivos ────────────────────────────────────────────────────────────
-
-  // 8. Risco de evasão: catequizandos com 3+ faltas consecutivas não justificadas
-  const recentMeetings = await context.entities.Meeting.findMany({
-    where: { class: classWhere, date: { lte: now } },
-    orderBy: { date: 'desc' },
-    take: 5,
-    select: { id: true, date: true },
-  });
-
+  // 8. Risco de evasão
   if (recentMeetings.length >= 3) {
     const meetingIds = recentMeetings.map((m: any) => m.id);
-    const enrolledCatechumens = await context.entities.ClassEnrollment.findMany({
-      where: { ...enrollmentWhere, status: 'ENROLLED', catechumenProfileId: { not: null } },
-      select: { catechumenProfileId: true },
-      distinct: ['catechumenProfileId'],
-    });
-
     const catechumenIds = enrolledCatechumens.map((e: any) => e.catechumenProfileId).filter(Boolean);
 
-    // Fetch all attendance records in 1 query, then group in-memory
     const allRecords = catechumenIds.length > 0
       ? await context.entities.AttendanceRecord.findMany({
           where: {
@@ -747,7 +786,6 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
         })
       : [];
 
-    // Group by catechumen and count consecutive absences
     const recordsByCatechumen = new Map<string, string[]>();
     for (const r of allRecords) {
       if (!recordsByCatechumen.has(r.catechumenProfileId)) {
@@ -773,23 +811,7 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
     }
   }
 
-  // 9. Risco de turma: turmas com presença < 50% nos últimos 3 encontros
-  const activeClassesWithMeetings = await context.entities.CatechesisClass.findMany({
-    where: { ...classWhere, status: 'ACTIVE' },
-    select: {
-      id: true,
-      name: true,
-      meetings: {
-        orderBy: { date: 'desc' },
-        take: 3,
-        select: {
-          id: true,
-          attendance: { select: { status: true } },
-        },
-      },
-    },
-  });
-
+  // 9. Turmas com presença < 50% nos últimos 3 encontros
   let lowAttendanceClassCount = 0;
   for (const cls of activeClassesWithMeetings) {
     if (cls.meetings.length < 3) continue;
@@ -803,7 +825,6 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
       lowAttendanceClassCount++;
     }
   }
-
   if (lowAttendanceClassCount > 0) {
     alerts.push({
       severity: 'medium',
@@ -813,17 +834,7 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
     });
   }
 
-  // 10. Prontidão sacramental: marcos atrasados com targetDate próxima
-  const overdueCount = await context.entities.SacramentalMilestone.count({
-    where: {
-      status: { in: ['PENDING', 'IN_PROGRESS'] },
-      journey: {
-        targetDate: { gte: now, lte: thirtyDaysFromNow },
-        catechumenProfile: { enrollments: { some: enrollmentWhere } },
-      },
-    },
-  });
-
+  // 10. Prontidão sacramental
   if (overdueCount > 0) {
     alerts.push({
       severity: 'medium',

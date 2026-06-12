@@ -49,14 +49,16 @@ describe('i18n locale parity', () => {
     }
   });
 
-  it('resources.ts is generated and includes all namespaces', () => {
-    const resourcesPath = path.join(__dirname, '../i18n/resources.ts');
-    const content = fs.readFileSync(resourcesPath, 'utf8');
-    expect(content).toContain('Auto-generated i18n resources');
-    for (const ns of namespaces) {
-      expect(content).toContain(`export const ${ns}_pt_BR`);
-      expect(content).toContain(`export const ${ns}_en`);
-      expect(content).toContain(`export const ${ns}_es`);
+  it('per-language resource bundles are generated and include all namespaces', () => {
+    const bundles = ['pt_BR', 'en', 'es'];
+    for (const lang of bundles) {
+      const resourcesPath = path.join(__dirname, `../i18n/resources_${lang}.ts`);
+      const content = fs.readFileSync(resourcesPath, 'utf8');
+      expect(content).toContain('Auto-generated i18n resources');
+      expect(content).toContain(`export const resources_${lang}`);
+      for (const ns of namespaces) {
+        expect(content).toContain(`export const ${ns}_${lang}`);
+      }
     }
   });
 });

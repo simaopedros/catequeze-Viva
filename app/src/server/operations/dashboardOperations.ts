@@ -6,6 +6,7 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
 
   const isAdmin = context.user.isAdmin;
 
+  // ─── Phase 1: Scope resolution (sequential — must resolve permissions first) ──
   const memberships = await context.entities.Membership.findMany({
     where: { userId: context.user.id, status: 'ACTIVE' },
     select: { parishId: true, role: true },
@@ -44,16 +45,6 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
     return { activeCatechumens: 0, activeClasses: 0, avgAttendance: 0, pendingSacraments: 0, recentAlerts: [], aniversariantes: [], upcomingMeetings: [], reviewQueue: [], myClasses: [] };
   }
 
-  // GUARDIAN: scope stats to the guardian's household, not the whole parish
-  let guardianHouseholdId: string | null = null;
-  if (roles.includes('GUARDIAN') && !roles.some((r: string) => ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'DIOCESE_ADMIN', 'PERSONAL_OWNER'].includes(r))) {
-    const guardianProfile = await context.entities.GuardianProfile.findFirst({
-      where: { userId: context.user.id },
-      select: { householdId: true },
-    });
-    guardianHouseholdId = guardianProfile?.householdId || null;
-  }
-
   // Validate args.parishId belongs to user
   if (args.parishId && !isAdmin && !parishIds.includes(args.parishId)) {
     throw new HttpError(403, 'Voce nao tem acesso a esta paroquia.');
@@ -66,59 +57,21 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
   // Catechists: scope attendance stats to their own classes, not whole parish
   const isCatechistOnly = !isAdmin && !roles.some((r: string) =>
     ['PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'DIOCESE_ADMIN', 'PERSONAL_OWNER'].includes(r));
-  let myClassIds: string[] | null = null;
-  if (isCatechistOnly) {
-    const myClassLinks = await context.entities.ClassCatechist.findMany({
+
+  // GUARDIAN: scope stats to the guardian's household, not the whole parish
+  let guardianHouseholdId: string | null = null;
+  if (roles.includes('GUARDIAN') && !roles.some((r: string) => ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'DIOCESE_ADMIN', 'PERSONAL_OWNER'].includes(r))) {
+    const guardianProfile = await context.entities.GuardianProfile.findFirst({
       where: { userId: context.user.id },
-      select: { classId: true },
+      select: { householdId: true },
     });
-    myClassIds = myClassLinks.map((c: any) => c.classId);
+    guardianHouseholdId = guardianProfile?.householdId || null;
   }
 
-  // For GUARDIAN, scope catechumen-related stats to household
-  const catechumenWhere = guardianHouseholdId
-    ? { householdId: guardianHouseholdId }
-    : whereClause;
+  // ─── Phase 2: Independent queries (all run in parallel) ─────────────────────
 
-  const classWhereClause = myClassIds && myClassIds.length > 0 ? { id: { in: myClassIds } } : whereClause;
-
-  const [activeClasses, enrolledCatechumens] = await Promise.all([
-    context.entities.CatechesisClass.count({ where: { ...classWhereClause, status: 'ACTIVE' } }),
-    context.entities.ClassEnrollment.findMany({
-      where: { status: 'ENROLLED', class: classWhereClause, catechumenProfileId: { not: null } },
-      select: { catechumenProfileId: true },
-      distinct: ['catechumenProfileId'],
-    }),
-  ]);
-
-  const pendingSacraments = await context.entities.SacramentalMilestone.count({
-    where: {
-      status: { in: ['PENDING','IN_PROGRESS','WAITING_APPROVAL'] },
-      journey: { catechumenProfile: guardianHouseholdId ? { householdId: guardianHouseholdId } : { enrollments: { some: { class: whereClause } } } },
-    },
-  });
-
-  // ─── avgAttendance — scoped to household for GUARDIAN ─────────────────
-  let avgAttendance = 0;
-  const attendanceWhere = guardianHouseholdId
-    ? { meeting: { class: { enrollments: { some: { catechumenProfile: { householdId: guardianHouseholdId } } } } } }
-    : myClassIds && myClassIds.length > 0
-      ? { meeting: { classId: { in: myClassIds } } }
-      : { meeting: { class: whereClause } };
-  const attendanceTotal = await context.entities.AttendanceRecord.count({
-    where: { status: 'PRESENT', ...attendanceWhere },
-  });
-  const attendanceRecordsTotal = await context.entities.AttendanceRecord.count({
-    where: attendanceWhere,
-  });
-  if (attendanceRecordsTotal > 0) {
-    avgAttendance = Math.round((attendanceTotal / attendanceRecordsTotal) * 100);
-  }
-
-  // ─── myClasses (para catequistas e coordenadores que também dão aulas) ──
-  let myClasses: any[] = [];
-  // Always check ClassCatechist regardless of membership role — coordinators can also be catechists
-  const myClassLinks = await context.entities.ClassCatechist.findMany({
+  // Merged myClassLinks query (was previously queried TWICE — once for scope, once for display)
+  const myClassLinksPromise = context.entities.ClassCatechist.findMany({
     where: { userId: context.user.id },
     include: {
       class: {
@@ -138,87 +91,22 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
       },
     },
   });
-  myClasses = myClassLinks.map((link: any) => ({
-    id: link.class.id,
-      name: link.class.name,
-      enrollmentCount: link.class._count.enrollments,
-      todayMeetings: link.class.meetings,
-    }));
-  
 
-  // ─── todayMeetings ────────────────────────────────────────────────────
+  const pendingSacramentsPromise = context.entities.SacramentalMilestone.count({
+    where: {
+      status: { in: ['PENDING','IN_PROGRESS','WAITING_APPROVAL'] },
+      journey: { catechumenProfile: guardianHouseholdId ? { householdId: guardianHouseholdId } : { enrollments: { some: { class: whereClause } } } },
+    },
+  });
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  let todayMeetings: any[] = [];
-  if (roles.includes('LEAD_CATECHIST') || roles.includes('ASSISTANT_CATECHIST')) {
-    const myClassIds = myClasses.map((c: any) => c.id);
-    todayMeetings = await context.entities.Meeting.findMany({
-      where: {
-        date: { gte: today, lt: tomorrow },
-        classId: { in: myClassIds },
-      },
-      orderBy: { date: 'asc' },
-      include: { class: { select: { id: true, name: true } } },
-    });
-  } else if (isAdmin || roles.some((r: string) => ['PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'DIOCESE_ADMIN'].includes(r))) {
-    todayMeetings = await context.entities.Meeting.findMany({
-      where: {
-        date: { gte: today, lt: tomorrow },
-        class: whereClause,
-      },
-      orderBy: { date: 'asc' },
-      include: { class: { select: { id: true, name: true } } },
-    });
-  } else if (guardianHouseholdId) {
-    // For guardian with no catechist roles, show meetings for their household's classes
-    const householdEnrollments = await context.entities.ClassEnrollment.findMany({
-      where: { catechumenProfile: { householdId: guardianHouseholdId }, status: 'ENROLLED' },
-      select: { classId: true },
-    });
-    const householdClassIds = [...new Set(householdEnrollments.map((e: any) => e.classId))];
-    if (householdClassIds.length > 0) {
-      todayMeetings = await context.entities.Meeting.findMany({
-        where: {
-          date: { gte: today, lt: tomorrow },
-          classId: { in: householdClassIds },
-        },
-        orderBy: { date: 'asc' },
-        include: { class: { select: { id: true, name: true } } },
-      });
-    }
-  }
-
-  // ─── Aniversariantes ──────────────────────────────────────────────────
-  const allCatechumens = await context.entities.CatechumenProfile.findMany({
-    where: guardianHouseholdId
-      ? { householdId: guardianHouseholdId }
-      : isAdmin ? {} : { enrollments: { some: { class: whereClause } } },
-    select: { id: true, firstName: true, lastName: true, birthDate: true },
-  });
-  const aniversariantes = allCatechumens
-    .filter((c: any) => c.birthDate && new Date(c.birthDate).getMonth() === today.getMonth())
-    .sort((a: any, b: any) => new Date(a.birthDate).getDate() - new Date(b.birthDate).getDate())
-    .slice(0, 10);
-
-  // ─── Dependents — for GUARDIAN dashboard (catechumens in household) ──
-  let dependents: any[] = [];
-  if (guardianHouseholdId) {
-    dependents = await context.entities.CatechumenProfile.findMany({
-      where: { householdId: guardianHouseholdId },
-      select: {
-        id: true, firstName: true, lastName: true, birthDate: true,
-        enrollments: { select: { class: { select: { id: true, name: true } } } },
-      },
-      orderBy: { firstName: 'asc' },
-    });
-  }
-
-  // ─── Proximos encontros (7 dias) ──────────────────────────────────────
+  // Upcoming meetings (next 7 days)
   const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-  const upcomingMeetings = await context.entities.Meeting.findMany({
+  const upcomingMeetingsPromise = context.entities.Meeting.findMany({
     where: {
       date: { gte: today, lte: nextWeek },
       ...(isAdmin ? {} : { class: whereClause }),
@@ -228,9 +116,165 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
     include: { class: { select: { id: true, name: true } } },
   });
 
-  // ─── Alertas ──────────────────────────────────────────────────────────
+  // Catechumens for birthday check
+  const allCatechumensPromise = context.entities.CatechumenProfile.findMany({
+    where: guardianHouseholdId
+      ? { householdId: guardianHouseholdId }
+      : isAdmin ? {} : { enrollments: { some: { class: whereClause } } },
+    select: { id: true, firstName: true, lastName: true, birthDate: true },
+  });
+
+  // Review queue
+  const isReviewer = roles.includes('CONTENT_REVIEWER') || isAdmin || roles.some((r: string) => ['PARISH_COORDINATOR', 'DIOCESE_ADMIN'].includes(r));
+  const reviewQueuePromise = isReviewer
+    ? context.entities.ContentItem.findMany({
+        where: { status: 'IN_REVIEW', ...(isAdmin ? {} : { parishId: { in: parishIds } }) },
+        orderBy: { updatedAt: 'asc' },
+        take: 5,
+        select: { id: true, title: true, status: true, updatedAt: true },
+      })
+    : Promise.resolve([]);
+
+  // Dependents for guardian
+  const dependentsPromise = guardianHouseholdId
+    ? context.entities.CatechumenProfile.findMany({
+        where: { householdId: guardianHouseholdId },
+        select: {
+          id: true, firstName: true, lastName: true, birthDate: true,
+          enrollments: { select: { class: { select: { id: true, name: true } } } },
+        },
+        orderBy: { firstName: 'asc' },
+      })
+    : Promise.resolve([]);
+
+  // Admin-only counts
+  const totalUsersPromise = isAdmin ? context.entities.User.count() : Promise.resolve(undefined);
+  const totalParishesPromise = isAdmin ? context.entities.Parish.count() : Promise.resolve(undefined);
+
+  // ─── Resolve Phase 2 ────────────────────────────────────────────────────────
+  const [
+    myClassLinks,
+    pendingSacraments,
+    upcomingMeetings,
+    allCatechumens,
+    reviewQueue,
+    dependents,
+    totalUsers,
+    totalParishes,
+  ] = await Promise.all([
+    myClassLinksPromise,
+    pendingSacramentsPromise,
+    upcomingMeetingsPromise,
+    allCatechumensPromise,
+    reviewQueuePromise,
+    dependentsPromise,
+    totalUsersPromise,
+    totalParishesPromise,
+  ]);
+
+  // ─── Compute myClassIds from merged query ───────────────────────────────────
+  const myClassIds = myClassLinks.map((c: any) => c.classId);
+  const myClasses = myClassLinks.map((link: any) => ({
+    id: link.class.id,
+    name: link.class.name,
+    enrollmentCount: link.class._count.enrollments,
+    todayMeetings: link.class.meetings,
+  }));
+
+  const classWhereClause = isCatechistOnly && myClassIds.length > 0 ? { id: { in: myClassIds } } : whereClause;
+
+  // ─── Phase 3: Queries depending on classWhereClause (run in parallel) ──────
+
+  const activeClassesPromise = context.entities.CatechesisClass.count({ where: { ...classWhereClause, status: 'ACTIVE' } });
+  const enrolledCatechumensPromise = context.entities.ClassEnrollment.findMany({
+    where: { status: 'ENROLLED', class: classWhereClause, catechumenProfileId: { not: null } },
+    select: { catechumenProfileId: true },
+    distinct: ['catechumenProfileId'],
+  });
+
+  const attendanceWhere = guardianHouseholdId
+    ? { meeting: { class: { enrollments: { some: { catechumenProfile: { householdId: guardianHouseholdId } } } } } }
+    : isCatechistOnly && myClassIds.length > 0
+      ? { meeting: { classId: { in: myClassIds } } }
+      : { meeting: { class: whereClause } };
+  const attendanceTotalPromise = context.entities.AttendanceRecord.count({
+    where: { status: 'PRESENT', ...attendanceWhere },
+  });
+  const attendanceRecordsTotalPromise = context.entities.AttendanceRecord.count({
+    where: attendanceWhere,
+  });
+
+  // Today's meetings
+  let todayMeetingsPromise: Promise<any[]>;
+  if (roles.includes('LEAD_CATECHIST') || roles.includes('ASSISTANT_CATECHIST')) {
+    todayMeetingsPromise = context.entities.Meeting.findMany({
+      where: {
+        date: { gte: today, lt: tomorrow },
+        classId: { in: myClassIds },
+      },
+      orderBy: { date: 'asc' },
+      include: { class: { select: { id: true, name: true } } },
+    });
+  } else if (isAdmin || roles.some((r: string) => ['PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'DIOCESE_ADMIN'].includes(r))) {
+    todayMeetingsPromise = context.entities.Meeting.findMany({
+      where: {
+        date: { gte: today, lt: tomorrow },
+        class: whereClause,
+      },
+      orderBy: { date: 'asc' },
+      include: { class: { select: { id: true, name: true } } },
+    });
+  } else if (guardianHouseholdId) {
+    // For guardian: first resolve household class IDs, then query meetings
+    todayMeetingsPromise = context.entities.ClassEnrollment.findMany({
+      where: { catechumenProfile: { householdId: guardianHouseholdId }, status: 'ENROLLED' },
+      select: { classId: true },
+    }).then((householdEnrollments: any[]) => {
+      const householdClassIds = [...new Set(householdEnrollments.map((e: any) => e.classId))];
+      if (householdClassIds.length === 0) return [];
+      return context.entities.Meeting.findMany({
+        where: {
+          date: { gte: today, lt: tomorrow },
+          classId: { in: householdClassIds },
+        },
+        orderBy: { date: 'asc' },
+        include: { class: { select: { id: true, name: true } } },
+      });
+    });
+  } else {
+    todayMeetingsPromise = Promise.resolve([]);
+  }
+
+  const [
+    activeClasses,
+    enrolledCatechumens,
+    attendanceTotal,
+    attendanceRecordsTotal,
+    todayMeetings,
+  ] = await Promise.all([
+    activeClassesPromise,
+    enrolledCatechumensPromise,
+    attendanceTotalPromise,
+    attendanceRecordsTotalPromise,
+    todayMeetingsPromise,
+  ]);
+
+  // ─── Post-processing (pure JS, no DB) ───────────────────────────────────────
+
+  let avgAttendance = 0;
+  if (attendanceRecordsTotal > 0) {
+    avgAttendance = Math.round((attendanceTotal / attendanceRecordsTotal) * 100);
+  }
+
+  const aniversariantes = allCatechumens
+    .filter((c: any) => c.birthDate && new Date(c.birthDate).getMonth() === today.getMonth())
+    .sort((a: any, b: any) => new Date(a.birthDate).getDate() - new Date(b.birthDate).getDate())
+    .slice(0, 10);
+
+  // Alerts
   const recentAlerts: { type: string; message: string }[] = [];
   if (activeClasses === 0) {
+    // We need draft count for the alert message. Run this tiny query inline.
     const draftCount = await context.entities.CatechesisClass.count({
       where: { ...whereClause, status: 'DRAFT' },
     });
@@ -242,25 +286,14 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
   }
   if (avgAttendance < 50 && attendanceRecordsTotal > 0) recentAlerts.push({ type: 'warning', message: 'Presença média abaixo de 50%. Considere entrar em contato com as famílias.' });
 
-  // ─── reviewQueue (conteúdos pendentes de revisão) ─────────────────────
-  let reviewQueue: any[] = [];
-  if (roles.includes('CONTENT_REVIEWER') || isAdmin || roles.some((r: string) => ['PARISH_COORDINATOR', 'DIOCESE_ADMIN'].includes(r))) {
-    reviewQueue = await context.entities.ContentItem.findMany({
-      where: { status: 'IN_REVIEW', ...(isAdmin ? {} : { parishId: { in: parishIds } }) },
-      orderBy: { updatedAt: 'asc' },
-      take: 5,
-      select: { id: true, title: true, status: true, updatedAt: true },
-    });
-  }
-
   return {
     activeCatechumens: enrolledCatechumens.length,
     activeClasses,
     avgAttendance,
     pendingSacraments,
     dependents,
-    totalUsers: isAdmin ? await context.entities.User.count() : undefined,
-    totalParishes: isAdmin ? await context.entities.Parish.count() : undefined,
+    totalUsers,
+    totalParishes,
     recentAlerts,
     aniversariantes,
     upcomingMeetings,

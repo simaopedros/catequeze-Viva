@@ -57,3 +57,85 @@
 | `npm run i18n:check` | ✅ 34 namespaces, 3 idiomas |
 | `npm run test:unit` | ✅ 18/18 testes |
 | `wasp start` | ✅ Frontend :3000 + Backend :3001 |
+
+---
+
+## 2026-06-12 (Round 3) — Sprint Final de Polimento (12 ficheiros)
+
+### 🤖 AIPlannerPage
+- **i18n**: Labels de tom (pastoral/lúdico/didático), "min" e textos do slider extraídos para `ai.json` (3 locales).
+- **Slider ARIA**: Adicionado `role="slider"`, `aria-valuenow/min/max`, `aria-label`, e navegação por teclado (← → ↑ ↓).
+- **Skeleton loading**: Spinner full-screen substituído por placeholder pulsante na área do documento. Sidebar e inputs permanecem visíveis.
+- **Unsaved changes**: Bloqueio de navegação (`useBlocker`) quando há conteúdo gerado por editar, com diálogo de confirmação.
+
+### 📅 AttendancePage
+- **Arrow key navigation**: Setas ↑↓←→ navegam entre células da grelha de presenças (evita 600× Tab).
+- **Student filter**: Input de busca/filtro de alunos aparece quando há > 10 catequizandos.
+
+### 📖 BiblePage
+- **Responsive**: Layout colapsa para coluna única em mobile (`flex-col lg:flex-row`).
+
+### 💳 BillingPage
+- **Stripe loading state**: Botão "Gerenciar Pagamento" mostra spinner e desativa durante o redirect.
+- **Progress bars ARIA**: `role="progressbar"`, `aria-valuenow/min/max`, `aria-label` nas barras de quota.
+
+### 📅 CalendarPage
+- **Mobile agenda view**: Alterna automaticamente para vista de lista (`< 768px`) em vez do grid mensal ilegível.
+
+### 👨‍👩‍👧 ClassDetailPage
+- **Mobile overflow**: `overflow-x-auto` + `min-w-0` nos grids de alunos e catequistas.
+
+### 👪 FamilyDetailPage
+- **Copy toast**: Botão de copiar link de convite mostra toast "Link copiado!".
+
+### 🚪 OnboardingPage (WelcomeStep)
+- **Keyboard nav**: Cards de seleção de perfil com `role="button"`, `tabIndex={0}`, `onKeyDown` (Enter/Space).
+
+### 💬 MessagesPage
+- **Loading skeleton**: Placeholder de mensagens enquanto a conversa carrega.
+
+### 🌐 i18n — Novas chaves
+- **ai.json**: `minutes_abbr`, `step_tone`, `tone_label`, `tone_pastoral`, `tone_playful`, `tone_didactic`, `generating_skeleton`, `unsaved_changes_warning`, `unsaved_changes_title`
+- **billing.json**: `manage_payment`, `manage_payment_loading`
+
+---
+
+## 2026-06-12 (Round 4) — Performance Profunda: Bundle Splitting & Query Parallelization
+
+### ⚡ i18n Code Splitting (—270 KB do bundle inicial)
+
+- **`scripts/build-i18n.mjs`**: Gera 3 ficheiros separados (`resources_pt_BR.ts`, `resources_en.ts`, `resources_es.ts`) em vez de um monolítico de 409 KB. Só o idioma detetado é carregado no boot.
+- **`src/i18n/config.ts`**: Importa apenas `pt-BR` em modo síncrono. Exporta `loadLanguageBundle(lang)` que faz `import()` dinâmico de `en`/`es`.
+- **`src/i18n/useLocale.ts`**: Dispara `loadLanguageBundle()` antes de `i18n.changeLanguage()` para idiomas não-default.
+
+### ⚡ Lazy Loading das Landing Pages
+
+- **4 landing pages** (`LandingPage.tsx`, `LandingSistema.tsx`, `LandingIa.tsx`, `LandingPresenca.tsx`): Secções below-the-fold passam a `React.lazy()` + `<Suspense>`. Hero + Navbar + Footer mantêm-se síncronos (above-the-fold).
+
+### ⚡ Query Parallelization — Backend
+
+- **`dashboardOperations.ts`** (`getDashboardStats`): Refatorado em 3 fases. Query `myClassLinks` duplicada foi unificada. 8 queries independentes (fase 2) e 5 queries dependentes (fase 3) correm em `Promise.all`.
+- **`institutionalDashboardOperations.ts`** (`getInstitutionalAlerts`): 11 queries de alertas passam de execução sequencial para um único `Promise.all`. Redução de 10 roundtrips → 1.
+
+### ⚡ Vendor Chunk Splitting
+
+- **`vite.config.ts`**: `manualChunks` isola `recharts` + `apexcharts` + `react-apexcharts` num chunk `charts` separado. Páginas públicas (login/landing) não carregam gráficos.
+
+### 🧪 Testes
+
+- **`src/__tests__/i18n.test.ts`**: Adaptado para verificar os 3 bundles separados em vez do antigo `resources.ts`.
+
+---
+
+## Balanço Final do Sprint (4 Rondas)
+
+| Categoria | Itens |
+|-----------|-------|
+| 🔴 Segurança | 2 (QR local, Error Boundary) |
+| ⚡ Performance | 2 aggregate queries (N+1 → 1) + 4 otimizações profundas (i18n code-split, lazy loading, query parallelization ×2, vendor chunks) |
+| 🛡️ Crash prevention | 2 (NaN guard, file size guard) |
+| 🖱️ UX/Usabilidade | 12 (bulk actions, touch targets, scroll reset, arrow nav, filters, etc.) |
+| 🌐 i18n | ~30 novas chaves em 3 idiomas + code-splitting dos bundles |
+| ♿ Acessibilidade | 10 (nested buttons, ARIA, sr-only, keyboard nav, touch targets, etc.) |
+| 📱 Mobile/Responsivo | 5 (agenda view, bible layout, overflow fixes, touch targets) |
+| **Total** | **~56 ficheiros alterados** |

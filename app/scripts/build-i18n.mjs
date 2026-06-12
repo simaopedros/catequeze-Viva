@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
  * Build i18n resources from JSON locale files.
+ * Generates one bundle per language for lazy-loading.
  * Usage: node scripts/build-i18n.mjs [--check]
  */
 import fs from 'fs';
@@ -10,7 +11,7 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 const LOCALES_DIR = path.join(ROOT, 'src/i18n/locales');
-const OUTPUT = path.join(ROOT, 'src/i18n/resources.ts');
+const OUT_DIR = path.join(ROOT, 'src/i18n');
 
 const LANGS = ['pt-BR', 'en', 'es'];
 const LANG_SUFFIX = { 'pt-BR': 'pt_BR', en: 'en', es: 'es' };
@@ -76,31 +77,26 @@ function serializeValue(value, indent = 2) {
   return json.split('\n').map((line, i) => (i === 0 ? line : ' '.repeat(indent) + line)).join('\n');
 }
 
-function generateResources(namespaces) {
+function generateBundle(lang, namespaces) {
+  const suffix = LANG_SUFFIX[lang];
   const lines = [
     '// Auto-generated i18n resources — do not edit directly',
+    `// Language: ${lang}`,
     '// Source translations live in src/i18n/locales/{lang}/{namespace}.json',
     '// Regenerate: npm run i18n:build',
     '',
   ];
 
   for (const ns of namespaces) {
-    for (const lang of LANGS) {
-      const data = loadLocale(lang, ns);
-      const exportName = `${ns}_${LANG_SUFFIX[lang]}`;
-      lines.push(`export const ${exportName} = ${serializeValue(data)} as const;`);
-      lines.push('');
-    }
+    const data = loadLocale(lang, ns);
+    const exportName = `${ns}_${suffix}`;
+    lines.push(`export const ${exportName} = ${serializeValue(data)} as const;`);
+    lines.push('');
   }
 
-  lines.push('export const resources = {');
-  for (const lang of LANGS) {
-    const langKey = lang === 'pt-BR' ? "'pt-BR'" : `'${lang}'`;
-    const entries = namespaces.map((ns) => `    ${ns}: ${ns}_${LANG_SUFFIX[lang]}`).join(',\n');
-    lines.push(`  ${langKey}: {`);
-    lines.push(entries + ',');
-    lines.push('  },');
-  }
+  lines.push(`export const resources_${suffix} = {`);
+  const entries = namespaces.map((ns) => `  ${ns}: ${ns}_${suffix}`).join(',\n');
+  lines.push(entries + ',');
   lines.push('} as const;');
   lines.push('');
 
@@ -121,5 +117,10 @@ if (checkOnly) {
   process.exit(0);
 }
 
-fs.writeFileSync(OUTPUT, generateResources(namespaces), 'utf8');
-console.log(`Generated ${OUTPUT} (${namespaces.length} namespaces)`);
+// Generate per-language bundles
+for (const lang of LANGS) {
+  const suffix = LANG_SUFFIX[lang];
+  const filePath = path.join(OUT_DIR, `resources_${suffix}.ts`);
+  fs.writeFileSync(filePath, generateBundle(lang, namespaces), 'utf8');
+  console.log(`Generated ${filePath} (${namespaces.length} namespaces)`);
+}

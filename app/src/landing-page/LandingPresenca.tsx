@@ -1,12 +1,16 @@
+import { lazy, Suspense } from 'react';
 import { PublicFooter } from '../catequese/PublicFooter';
 import { PublicNavbar } from '../catequese/PublicNavbar';
-import { CtaSection } from './components/CtaSection';
-import { FaqSection } from './components/FaqSection';
-import { FeaturesSection } from './components/FeaturesSection';
 import { HeroSection } from './components/HeroSection';
-import { PersonasSection } from './components/PersonasSection';
-import { PricingPreviewSection } from './components/PricingPreviewSection';
-import { StepsSection } from './components/StepsSection';
+
+const CtaSection = lazy(() => import('./components/CtaSection').then(m => ({ default: m.CtaSection })));
+const FaqSection = lazy(() => import('./components/FaqSection').then(m => ({ default: m.FaqSection })));
+const FeaturesSection = lazy(() => import('./components/FeaturesSection').then(m => ({ default: m.FeaturesSection })));
+const PersonasSection = lazy(() => import('./components/PersonasSection').then(m => ({ default: m.PersonasSection })));
+const PricingPreviewSection = lazy(() => import('./components/PricingPreviewSection').then(m => ({ default: m.PricingPreviewSection })));
+const StepsSection = lazy(() => import('./components/StepsSection').then(m => ({ default: m.StepsSection })));
+
+const SectionFallback = () => <div className="h-40 animate-pulse bg-muted/20 rounded-lg" />;
 
 const NS = 'landingPresenca';
 
@@ -16,12 +20,15 @@ export default function LandingPresenca() {
       <PublicNavbar />
       <main className="flex-1">
         <HeroSection ns={NS} />
-        <FeaturesSection ns={NS} order={["attendance","family-portal","dashboard","ai-planner","library","sacraments"]} />
-        <PersonasSection ns={NS} />
-        <StepsSection ns={NS} />
-        <PricingPreviewSection ns={NS} />
-        <FaqSection ns={NS} />
-        <CtaSection ns={NS} />
+
+        <Suspense fallback={<SectionFallback />}>
+          <FeaturesSection ns={NS} order={["attendance","family-portal","dashboard","ai-planner","library","sacraments"]} />
+          <PersonasSection ns={NS} />
+          <StepsSection ns={NS} />
+          <PricingPreviewSection ns={NS} />
+          <FaqSection ns={NS} />
+          <CtaSection ns={NS} />
+        </Suspense>
       </main>
       <PublicFooter />
     </div>

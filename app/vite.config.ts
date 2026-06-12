@@ -18,6 +18,15 @@ function gtmPlugin(): Plugin {
 
 export default defineConfig({
   plugins: [wasp(), tailwindcss(), gtmPlugin()],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          charts: ['recharts', 'apexcharts', 'react-apexcharts'],
+        },
+      },
+    },
+  },
   server: {
     open: true,
     allowedHosts: [

@@ -3,6 +3,7 @@ import { useCallback, useEffect } from 'react';
 import { useAuth } from 'wasp/client/auth';
 import { updateLocalePreference } from 'wasp/client/operations';
 import { resolveIntlLocale } from './format';
+import { loadLanguageBundle } from './config';
 
 export type SupportedLocale = 'pt-BR' | 'es' | 'en';
 
@@ -29,6 +30,18 @@ export function useLocale() {
   const currentLocale = (parseLocale(i18n.language) ?? 'pt-BR') as SupportedLocale;
   const intlLocale = resolveIntlLocale(currentLocale);
 
+  // Sync from stored locale on mount (handles en/es stored before code-split boot)
+  useEffect(() => {
+    const stored = parseLocale(localStorage.getItem(LOCALE_STORAGE_KEY));
+    if (!stored || stored === 'pt-BR') return;
+    if (i18n.language !== stored) {
+      loadLanguageBundle(stored).then(() => {
+        i18n.changeLanguage(stored);
+        document.documentElement.lang = stored;
+      });
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Sync from user profile on login
   useEffect(() => {
     const userLocale = parseLocale(user?.locale);
@@ -36,8 +49,15 @@ export function useLocale() {
     const stored = parseLocale(localStorage.getItem(LOCALE_STORAGE_KEY));
     const target = stored ?? userLocale;
     if (i18n.language !== target) {
-      i18n.changeLanguage(target);
-      document.documentElement.lang = target;
+      if (target !== 'pt-BR') {
+        loadLanguageBundle(target).then(() => {
+          i18n.changeLanguage(target);
+          document.documentElement.lang = target;
+        });
+      } else {
+        i18n.changeLanguage(target);
+        document.documentElement.lang = target;
+      }
     }
   }, [user?.locale, i18n]);
 
@@ -55,10 +75,19 @@ export function useLocale() {
 
   const setLocale = useCallback(
     (locale: SupportedLocale) => {
-      i18n.changeLanguage(locale);
-      localStorage.setItem(LOCALE_STORAGE_KEY, locale);
-      document.documentElement.lang = locale;
-      void persistLocale(locale);
+      if (locale !== 'pt-BR') {
+        loadLanguageBundle(locale).then(() => {
+          i18n.changeLanguage(locale);
+          localStorage.setItem(LOCALE_STORAGE_KEY, locale);
+          document.documentElement.lang = locale;
+          void persistLocale(locale);
+        });
+      } else {
+        i18n.changeLanguage(locale);
+        localStorage.setItem(LOCALE_STORAGE_KEY, locale);
+        document.documentElement.lang = locale;
+        void persistLocale(locale);
+      }
     },
     [i18n, persistLocale],
   );
