@@ -50,6 +50,9 @@ COPY --from=builder /app/.wasp/out/server/package*.json .wasp/out/server/
 COPY --from=builder /app/.wasp/out/db .wasp/out/db
 COPY --from=builder /app/node_modules ./node_modules
 
+# Copy seed scripts and data for runSeed.mjs
+COPY --from=builder /app/src/server/scripts ./src/server/scripts
+
 # Copy web-app static assets (Wasp 0.22 vite output)
 COPY --from=builder /app/.wasp/out/web-app/build ./web-app
 
