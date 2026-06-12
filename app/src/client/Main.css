@@ -336,3 +336,80 @@
     transform: none !important;
   }
 }
+
+/* ── OAuth Callback page ───────────────────────────────────────────── */
+
+.wasp-oauth-callback-wrapper {
+  min-height: 100vh !important;
+  background: hsl(var(--background)) !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* Card container (Message box) */
+.wasp-oauth-callback-wrapper > div {
+  max-width: 28rem !important;
+  width: 100% !important;
+  margin: 0 1rem !important;
+  border-radius: 0.75rem !important;
+  padding: 2rem !important;
+  box-shadow:
+    0 4px 6px -1px hsl(var(--foreground) / 0.05),
+    0 2px 4px -2px hsl(var(--foreground) / 0.05) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  background: hsl(var(--card)) !important;
+  color: hsl(var(--card-foreground)) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 1rem !important;
+}
+
+/* Spinner — overlay via ::before */
+.wasp-oauth-callback-wrapper > div::before {
+  content: "";
+  display: block;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  border: 3px solid hsl(var(--primary));
+  border-top-color: transparent;
+  animation: oauth-spinner 0.6s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes oauth-spinner {
+  to { transform: rotate(360deg); }
+}
+
+/* Loading state — override the grey style */
+.wasp-oauth-callback-wrapper > div[style*="rgb(107 114 128)"],
+.wasp-oauth-callback-wrapper > div[style*="rgb(243 244 246)"] {
+  background: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+  color: hsl(var(--card-foreground)) !important;
+}
+
+/* Error state — branded destructive card */
+.wasp-oauth-callback-wrapper > div[style*="rgb(240 82 82)"],
+.wasp-oauth-callback-wrapper > div[style*="rgb(253 232 232)"] {
+  background: hsl(var(--destructive) / 0.08) !important;
+  border-color: hsl(var(--destructive) / 0.4) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Esconder o SVG genérico do Wasp */
+.wasp-oauth-callback-wrapper > div svg {
+  display: none !important;
+}
+
+/* Estilizar o texto da mensagem */
+.wasp-oauth-callback-wrapper > div > div > div:first-child {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  font-size: 0.9375rem !important;
+  font-weight: 500 !important;
+  color: hsl(var(--foreground)) !important;
+}

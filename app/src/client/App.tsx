@@ -50,6 +50,7 @@ export default function App() {
       "/privacy",
       "/terms",
       "/contact",
+      "/oauth/callback",
       routes.LoginRoute.build(),
       routes.SignupRoute.build(),
       routes.RequestPasswordResetRoute.build(),
