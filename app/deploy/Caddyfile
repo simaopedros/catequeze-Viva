@@ -7,18 +7,40 @@ catechis.app, www.catechis.app {
   @www host www.catechis.app
   redir @www https://catechis.app{uri} permanent
 
-  root * /srv/web-app
   encode gzip
-  try_files {path} /index.html
-  file_server
+
+  handle /auth/* {
+    reverse_proxy server:3001
+  }
+
+  handle /operations/* {
+    reverse_proxy server:3001
+  }
+
+  handle {
+    root * /srv/web-app
+    try_files {path} /index.html
+    file_server
+  }
 }
 
 # ── Produção: family portal (same SPA build) ─────────────────────────────────
 familia.catechis.app {
-  root * /srv/web-app
   encode gzip
-  try_files {path} /index.html
-  file_server
+
+  handle /auth/* {
+    reverse_proxy server:3001
+  }
+
+  handle /operations/* {
+    reverse_proxy server:3001
+  }
+
+  handle {
+    root * /srv/web-app
+    try_files {path} /index.html
+    file_server
+  }
 }
 
 # ── Produção: API ─────────────────────────────────────────────────────────────
