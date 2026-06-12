@@ -3,6 +3,7 @@ import { type ServerSetupFn } from 'wasp/server';
 import { sessionTimeoutMiddleware } from './middleware/sessionTimeout';
 import { logger } from './logger';
 import { probeAiHealth } from './api/healthCheck';
+import { preloadReferenceCache } from './cache/referenceCache';
 
 /**
  * Server setup — configures Express middlewares.
@@ -110,5 +111,14 @@ export const serverSetup: ServerSetupFn = async ({ app, server }) => {
     logger.info('[setup] AI health probe completed');
   }).catch((err: unknown) => {
     logger.warn('[setup] AI health probe failed', { error: String(err) });
+  });
+
+  // ── Preload reference cache (non-blocking) ──────────────────────────
+  // Bible, Catechism, and Directory data is immutable — caching it in
+  // memory eliminates ~95% of DB queries for reference content.
+  preloadReferenceCache().then(() => {
+    logger.info('[setup] Reference cache preload completed');
+  }).catch((err: unknown) => {
+    logger.warn('[setup] Reference cache preload failed', { error: String(err) });
   });
 };

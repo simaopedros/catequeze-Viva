@@ -767,6 +767,16 @@ query getMeetingAttendance {
   entities: [AttendanceRecord, CatechumenProfile, Meeting, CatechesisClass, Membership]
 }
 
+query getClassAttendanceMatrix {
+  fn: import { getClassAttendanceMatrix } from "@src/server/operations/meetingOperations",
+  entities: [Meeting, AttendanceRecord, CatechumenProfile, CatechesisClass, Membership]
+}
+
+query listMeetingsForClasses {
+  fn: import { listMeetingsForClasses } from "@src/server/operations/meetingOperations",
+  entities: [Meeting, CatechesisClass, Membership]
+}
+
 action saveAttendance {
   fn: import { saveAttendance } from "@src/server/operations/meetingOperations",
   entities: [AttendanceRecord, Membership, Meeting, CatechesisClass, ClassEnrollment]

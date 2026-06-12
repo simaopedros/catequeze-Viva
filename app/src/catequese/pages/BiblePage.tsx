@@ -5,11 +5,13 @@ import { Button } from '../../client/components/ui/button';
 import { FilterPills } from '../../client/components/FilterPills';
 import { AppShell } from '../AppShell';
 import { useQuery, listBibleBooks, getBibleBook, getBibleChapter, searchBible } from 'wasp/client/operations';
+import { useLocale } from '../../i18n/useLocale';
 
 export default function BiblePage() {
   const { t } = useTranslation('bible');
   const { t: tc } = useTranslation('common');
-  const { data: books = [] } = useQuery(listBibleBooks);
+  const { currentLocale } = useLocale();
+  const { data: books = [] } = useQuery(listBibleBooks, { locale: currentLocale });
   const [selectedBook, setSelectedBook] = useState<any>(null);
   const [selectedChapter, setSelectedChapter] = useState<any>(null);
   const [chapterData, setChapterData] = useState<any>(null);
@@ -23,7 +25,7 @@ export default function BiblePage() {
   const loadBook = async (bookId: string) => {
     setError('');
     try {
-      const book = await getBibleBook({ id: bookId });
+      const book = await getBibleBook({ id: bookId, locale: currentLocale });
       setSelectedBook(book);
       setSelectedChapter(null);
       setChapterData(null);
@@ -34,7 +36,7 @@ export default function BiblePage() {
     setLoading(true);
     setError('');
     try {
-      const data = await getBibleChapter({ bookId, chapter });
+      const data = await getBibleChapter({ bookId, chapter, locale: currentLocale });
       setChapterData(data);
       setSelectedChapter(chapter);
     } catch { setError(t('load_chapter_error')); }
@@ -46,7 +48,7 @@ export default function BiblePage() {
     setSearching(true);
     setError('');
     try {
-      setSearchResults((await searchBible({ query: searchQuery })) || []);
+      setSearchResults((await searchBible({ query: searchQuery, locale: currentLocale })) || []);
       setView('search');
     } catch { setError(t('search_error')); }
     setSearching(false);

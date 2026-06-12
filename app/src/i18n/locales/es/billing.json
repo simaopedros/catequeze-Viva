@@ -92,5 +92,17 @@
       "annual_price": "$990/año ($82.50/mes)",
       "features": ["Hasta 10 parroquias", "Todo de la Completa", "Biblioteca oficial", "Analytics consolidado", "Onboarding dedicado", "50 créditos IA por parroquia/mes"]
     }
-  }
+  },
+  "checkout_success": "🥳 ¡Pago confirmado!",
+  "checkout_canceled": "😢 Pago cancelado.",
+  "checkout_redirect": "Será redirigido a su cuenta en {{seconds}} segundos...",
+  "go_to_account": "Ir a Mi Cuenta",
+  "admin_title": "Licencias",
+  "admin_subtitle": "Gestión cross-tenant de planes y facturación.",
+  "table_entity": "Entidad",
+  "table_type": "Tipo",
+  "table_plan": "Plan",
+  "table_status": "Estado",
+  "until": "hasta",
+  "no_licenses": "No se encontraron licencias."
 }

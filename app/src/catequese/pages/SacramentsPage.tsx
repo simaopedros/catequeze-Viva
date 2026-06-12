@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { Cross, Plus, User, CheckCircle, Clock, Search, Undo2, AlertTriangle, XCircle, Users, FileText, Calendar, Pencil } from 'lucide-react';
@@ -30,6 +30,7 @@ export default function SacramentsPage() {
   const { t: tc } = useTranslation('common');
   const { currentLocale } = useLocale();
   const { activeParishId } = useActiveParish();
+  const navigate = useNavigate();
   const { userRole } = useUserContext();
   const canManage = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST'].includes(userRole);
   const isCoordinator = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(userRole);
@@ -274,12 +275,16 @@ export default function SacramentsPage() {
               const sacramentName = j.template?.sacrament?.name;
 
               return (
-                <Link key={j.id} to={`/app/sacramental-journeys/${j.id}`} className="block rounded-xl border bg-card p-5 shadow-sm hover:shadow-md transition-shadow">
+                <div key={j.id} className="block rounded-xl border bg-card p-5 shadow-sm hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate(`/app/sacramental-journeys/${j.id}`)}>
                   <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
+                    <Link
+                      to={`/app/sacramental-journeys/${j.id}`}
+                      onClick={e => e.stopPropagation()}
+                      className="flex items-center gap-2 hover:text-primary transition-colors"
+                    >
                       <User className="h-4 w-4 text-primary" />
                       <span className="font-semibold">{j.catechumenProfile?.firstName} {j.catechumenProfile?.lastName}</span>
-                    </div>
+                    </Link>
                     <Badge variant={pct === 100 ? 'default' : 'outline'}>
                       {sacramentName || templateLabel}
                     </Badge>
@@ -299,7 +304,7 @@ export default function SacramentsPage() {
                   </div>
 
                   {/* Target date — inline editable */}
-                  <div className="mb-2 text-xs" onClick={e => e.preventDefault()}>
+                  <div className="mb-2 text-xs" onClick={e => e.stopPropagation()}>
                     {editingTargetDate[j.id] !== undefined ? (
                       <div className="flex items-center gap-1">
                         <input
@@ -317,7 +322,7 @@ export default function SacramentsPage() {
                           ? formatDate(j.targetDate, currentLocale)
                           : t('page.no_date')}
                         {canManage && (
-                          <button onClick={e => { e.preventDefault(); setEditingTargetDate(prev => ({ ...prev, [j.id]: j.targetDate ? new Date(j.targetDate).toISOString().slice(0,10) : '' })); }}>
+                          <button onClick={e => { e.stopPropagation(); setEditingTargetDate(prev => ({ ...prev, [j.id]: j.targetDate ? new Date(j.targetDate).toISOString().slice(0,10) : '' })); }}>
                             <Pencil className="h-3 w-3 hover:text-primary" />
                           </button>
                         )}
@@ -346,7 +351,7 @@ export default function SacramentsPage() {
 
 
                   {/* Inline milestone actions (stop propagation) */}
-                  <div className="mt-3 space-y-1 border-t pt-2" onClick={e => e.preventDefault()}>
+                  <div className="mt-3 space-y-1 border-t pt-2" onClick={e => e.stopPropagation()}>
                     {milestones.slice(0, 3).map((m: any) => (
                       <div key={m.id} className="flex items-center justify-between py-0.5">
                         <div className="flex items-center gap-1.5 min-w-0">
@@ -401,7 +406,7 @@ export default function SacramentsPage() {
                       </p>
                     )}
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>

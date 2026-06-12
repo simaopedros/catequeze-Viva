@@ -18,6 +18,7 @@ export function AppShell({ children }: AppShellProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const mainRef = useRef<HTMLElement>(null);
   const { needsOnboarding, hasPendingInvitations, isLoading, isFetching, userRole, memberships, allMemberships } = useUserContext();
   const { showTour, completeTour } = useGuidedTour();
   const acceptInvitationAction = useAction(acceptInvitation);
@@ -71,9 +72,10 @@ export function AppShell({ children }: AppShellProps) {
     }
   }, [isLoading, isFetching, needsOnboarding, hasPendingInvitations, isFamilyOnlyRole, location.pathname, navigate]);
 
-  // Fechar menu mobile ao navegar
+  // Fechar menu mobile ao navegar + reset scroll
   useEffect(() => {
     setMobileMenuOpen(false);
+    mainRef.current?.scrollTo(0, 0);
   }, [location.pathname]);
 
   // Family portal gets a simplified shell
@@ -103,7 +105,7 @@ export function AppShell({ children }: AppShellProps) {
       <div className="flex flex-1 flex-col overflow-hidden">
         <TopBar onMenuToggle={() => setMobileMenuOpen(prev => !prev)} />
         <Breadcrumbs />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 pb-16 lg:pb-6">{children}</main>
+        <main ref={mainRef} className="flex-1 overflow-y-auto p-4 md:p-6 pb-16 lg:pb-6">{children}</main>
       </div>
       <BottomNav />
       <AIHelperWidget />

@@ -48,8 +48,8 @@ function workspaceIcon(type: Workspace['type']) {
 
 export default function WorkspaceSelectorPage() {
   const { t } = useTranslation('public');
-  const { data: workspaces = [], refetch } = useQuery(listWorkspaces);
-  const { data: manageContext } = useQuery(getInstitutionalManageContext);
+  const { data: workspaces = [], isLoading: loadingWorkspaces, refetch } = useQuery(listWorkspaces);
+  const { data: manageContext, isLoading: loadingContext } = useQuery(getInstitutionalManageContext);
   const acceptAction = useAction(acceptInvitation);
   const navigate = useNavigate();
   const { userRole } = useUserContext();
@@ -180,6 +180,16 @@ export default function WorkspaceSelectorPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
       <div className="w-full max-w-lg space-y-6">
+        {/* Loading state */}
+        {(loadingWorkspaces || loadingContext) ? (
+          <div className="text-center py-16 space-y-4">
+            <div className="inline-flex rounded-full bg-primary/10 p-4">
+              <Sparkles className="h-8 w-8 text-primary animate-pulse" />
+            </div>
+            <p className="text-muted-foreground text-sm">{t('loading')}</p>
+          </div>
+        ) : (
+          <>
         {/* Header */}
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-primary text-sm font-medium">
@@ -393,6 +403,8 @@ export default function WorkspaceSelectorPage() {
           <Plus className="h-4 w-4" />
           <span className="text-sm font-medium">{t('workspace.create_independent')}</span>
         </button>
+          </>
+        )}
       </div>
     </div>
   );

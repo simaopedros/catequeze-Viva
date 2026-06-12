@@ -4,11 +4,13 @@ import { Search, BookOpen, Loader2, ChevronDown, ChevronUp, AlertCircle } from '
 import { Button } from '../../client/components/ui/button';
 import { AppShell } from '../AppShell';
 import { listDirectoryByPart, searchDirectory } from 'wasp/client/operations';
+import { useLocale } from '../../i18n/useLocale';
 
 const PART_KEYS = ['I', 'II', 'III'] as const;
 
 export default function DirectoryPage() {
   const { t } = useTranslation('common');
+  const { currentLocale } = useLocale();
   const [entries, setEntries] = useState<any[]>([]);
   const [part, setPart] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -23,7 +25,7 @@ export default function DirectoryPage() {
     setSearchResults([]);
     setError('');
     try {
-      setEntries((await listDirectoryByPart({ part: p })) || []);
+      setEntries((await listDirectoryByPart({ part: p, locale: currentLocale })) || []);
     } catch (e) { setError(t('directory.loadError')); }
     setLoading(false);
   };
@@ -35,7 +37,7 @@ export default function DirectoryPage() {
     setEntries([]);
     setError('');
     try {
-      setSearchResults((await searchDirectory({ query: searchQuery })) || []);
+      setSearchResults((await searchDirectory({ query: searchQuery, locale: currentLocale })) || []);
     } catch (e) { setError(t('search_error')); }
     setLoading(false);
   };

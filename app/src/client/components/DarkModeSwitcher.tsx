@@ -16,6 +16,7 @@ const DarkModeSwitcher = () => {
       >
         <input
           type="checkbox"
+          aria-label="Alternar modo escuro"
           onChange={() => {
             if (typeof setColorMode === "function") {
               setColorMode(isInLightMode ? "dark" : "light");

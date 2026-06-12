@@ -1218,7 +1218,11 @@ export const billing_pt_BR = {
           "50 créditos IA por paróquia/mês"
         ]
       }
-    }
+    },
+    "checkout_success": "🥳 Pagamento confirmado!",
+    "checkout_canceled": "😢 Pagamento cancelado.",
+    "checkout_redirect": "Será redirecionado para a sua conta em {{seconds}} segundos...",
+    "go_to_account": "Ir para Minha Conta"
   } as const;
 
 export const billing_en = {
@@ -1357,7 +1361,11 @@ export const billing_en = {
           "50 AI credits per parish/month"
         ]
       }
-    }
+    },
+    "checkout_success": "🥳 Payment Successful!",
+    "checkout_canceled": "😢 Payment Canceled.",
+    "checkout_redirect": "You will be redirected to your account page in {{seconds}} seconds...",
+    "go_to_account": "Go to My Account"
   } as const;
 
 export const billing_es = {
@@ -1496,7 +1504,11 @@ export const billing_es = {
           "50 créditos IA por parroquia/mes"
         ]
       }
-    }
+    },
+    "checkout_success": "🥳 ¡Pago confirmado!",
+    "checkout_canceled": "😢 Pago cancelado.",
+    "checkout_redirect": "Será redirigido a su cuenta en {{seconds}} segundos...",
+    "go_to_account": "Ir a Mi Cuenta"
   } as const;
 
 export const calendar_pt_BR = {
@@ -2401,12 +2413,9 @@ export const common_pt_BR = {
       "emptyDesc": "Documento oficial da Santa Sé que orienta a ação catequética. Selecione uma parte ou busque por palavras-chave.",
       "loadError": "Não foi possível carregar o diretório.",
       "parts": {
-        "Intr": "Introdução",
         "I": "Parte I — A Catequese na Missão Evangelizadora",
-        "II": "Parte II — A Mensagem Evangélica",
-        "III": "Parte III — A Pedagogia da Fé",
-        "IV": "Parte IV — Os Destinatários da Catequese",
-        "V": "Parte V — A Catequese na Igreja Particular"
+        "II": "Parte II — O Processo da Catequese",
+        "III": "Parte III — A Catequese nas Igrejas Particulares"
       }
     },
     "consent_page": {
@@ -2846,12 +2855,9 @@ export const common_en = {
       "emptyDesc": "Official document of the Holy See that guides catechetical action. Select a part or search by keywords.",
       "loadError": "Could not load the directory.",
       "parts": {
-        "Intr": "Introduction",
         "I": "Part I — Catechesis in the Evangelizing Mission",
-        "II": "Part II — The Gospel Message",
-        "III": "Part III — The Pedagogy of Faith",
-        "IV": "Part IV — Those to be Catechized",
-        "V": "Part V — Catechesis in the Particular Church"
+        "II": "Part II — The Process of Catechesis",
+        "III": "Part III — Catechesis in the Particular Churches"
       }
     },
     "consent_page": {
@@ -3291,12 +3297,9 @@ export const common_es = {
       "emptyDesc": "Documento oficial de la Santa Sede que orienta la acción catequética. Seleccione una parte o busque por palabras clave.",
       "loadError": "No se pudo cargar el directorio.",
       "parts": {
-        "Intr": "Introducción",
         "I": "Parte I — La Catequesis en la Misión Evangelizadora",
-        "II": "Parte II — El Mensaje Evangélico",
-        "III": "Parte III — La Pedagogía de la Fe",
-        "IV": "Parte IV — Los Destinatarios de la Catequesis",
-        "V": "Parte V — La Catequesis en la Iglesia Particular"
+        "II": "Parte II — El Proceso de la Catequesis",
+        "III": "Parte III — La Catequesis en las Iglesias Particulares"
       }
     },
     "consent_page": {

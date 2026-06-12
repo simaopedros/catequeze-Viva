@@ -71,6 +71,12 @@ export default function SacramentalJourneyDetailPage() {
   };
 
   const handleFileUpload = async (milestoneId: string, file: File) => {
+    // Prevent crash/DoS from large files (Base64 in JSON is memory-intensive)
+    const MAX_SIZE_MB = 2;
+    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+      toast({ title: t('detail.file_too_large', { max: MAX_SIZE_MB }), variant: 'destructive' });
+      return;
+    }
     setUploadingFor(milestoneId);
     try {
       const base64 = await new Promise<string>((resolve, reject) => {
@@ -268,7 +274,7 @@ export default function SacramentalJourneyDetailPage() {
                                   {canManage && (
                                     <label className="cursor-pointer text-xs text-muted-foreground hover:text-primary">
                                       <Upload className="h-3 w-3 inline mr-0.5" />{t('detail.replace')}
-                                      <input type="file" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleFileUpload(m.id, f); }} />
+                                      <input type="file" className="sr-only" onChange={e => { const f = e.target.files?.[0]; if (f) handleFileUpload(m.id, f); }} />
                                     </label>
                                   )}
                                 </div>
@@ -279,7 +285,7 @@ export default function SacramentalJourneyDetailPage() {
                                   ) : (
                                     <><Upload className="h-3 w-3" />{t('detail.upload_evidence')}</>
                                   )}
-                                  <input type="file" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleFileUpload(m.id, f); }} disabled={uploadingFor === m.id} />
+                                  <input type="file" className="sr-only" onChange={e => { const f = e.target.files?.[0]; if (f) handleFileUpload(m.id, f); }} disabled={uploadingFor === m.id} />
                                 </label>
                               )}
                             </div>

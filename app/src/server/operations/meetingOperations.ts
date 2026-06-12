@@ -143,6 +143,35 @@ export const getMeetingAttendance = async (args: { meetingId: string }, context:
   });
 };
 
+export const getClassAttendanceMatrix = async (args: { classId: string }, context: any) => {
+  if (!context.user) throw new HttpError(401);
+  await assertUserBelongsToClass(context, args.classId);
+
+  return context.entities.Meeting.findMany({
+    where: { classId: args.classId },
+    orderBy: { date: 'desc' },
+    include: {
+      attendance: {
+        include: {
+          catechumenProfile: { select: { id: true, firstName: true, lastName: true, photoUrl: true } },
+        },
+      },
+    },
+  });
+};
+
+export const listMeetingsForClasses = async (args: { classIds: string[] }, context: any) => {
+  if (!context.user) throw new HttpError(401);
+
+  // Verify access for all requested classes in parallel
+  await Promise.all(args.classIds.map(classId => assertUserBelongsToClass(context, classId)));
+
+  return context.entities.Meeting.findMany({
+    where: { classId: { in: args.classIds } },
+    orderBy: { date: 'desc' },
+  });
+};
+
 export const saveAttendance = async (args: any, context: any) => {
   if (!context.user) throw new HttpError(401);
   const role = await getUserRole(context);

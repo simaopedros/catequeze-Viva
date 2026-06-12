@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useQuery, globalSearch } from 'wasp/client/operations';
+import { useLocale } from '../i18n/useLocale';
 import { Search, BookMarked, Users, GraduationCap, Home, ScrollText, Library, FileText, Church, Building2, FolderOpen, X, CornerDownLeft } from 'lucide-react';
 import {
   Dialog,
@@ -51,11 +52,12 @@ export function GlobalSearch({ open, onClose }: GlobalSearchProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const { t } = useTranslation('common');
+  const { currentLocale } = useLocale();
   const navigate = useNavigate();
 
-  // Debounce query
+  // Debounce query (400ms — reduces DB hits during fast typing)
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedQuery(query), 200);
+    const timer = setTimeout(() => setDebouncedQuery(query), 400);
     return () => clearTimeout(timer);
   }, [query]);
 
@@ -71,7 +73,7 @@ export function GlobalSearch({ open, onClose }: GlobalSearchProps) {
 
   const { data: results = [], isLoading } = useQuery(
     globalSearch,
-    { query: debouncedQuery },
+    { query: debouncedQuery, locale: currentLocale },
     { enabled: debouncedQuery.length >= 2 }
   );
 

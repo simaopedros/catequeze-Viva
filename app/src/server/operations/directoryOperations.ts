@@ -1,8 +1,22 @@
 import { HttpError } from 'wasp/server';
 import { MembershipStatus } from '@prisma/client';
 import { getDioceseParishIds } from '../auth/helpers';
+import {
+  isCacheReady,
+  getCachedDirectoryEntry,
+  getCachedDirectoryByPart,
+  searchDirectoryInCache,
+  getCachedDirectoryParts,
+} from '../cache/referenceCache';
 
 const ALLOWED_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'CONTENT_REVIEWER', 'PERSONAL_OWNER'];
+
+/**
+ * Resolve locale: explicit arg takes precedence, then user session, then pt-BR.
+ */
+function resolveLocale(context: any, explicitLocale?: string | null): string {
+  return explicitLocale || context.user?.locale || 'pt-BR';
+}
 
 async function getParishIds(context: any): Promise<string[]> {
   if (context.user?.isAdmin) return [];
@@ -54,13 +68,21 @@ async function assertCanModifyContent(context: any, contentId: string) {
   throw new HttpError(403, 'Sem permissão para modificar este conteúdo.');
 }
 
-export const searchDirectory = async (args: { query: string; limit?: number }, context: any) => {
+// ─── Directory Search & Browse ──────────────────────────────────────────────
+
+export const searchDirectory = async (args: { query: string; limit?: number; locale?: string | null }, context: any) => {
   if (!context.user) throw new HttpError(401);
   if (!args.query || args.query.length < 2) return [];
 
+  const locale = resolveLocale(context, args.locale);
+
+  if (isCacheReady()) {
+    return searchDirectoryInCache(args.query, locale, args.limit || 20);
+  }
+
+  // Fallback: DB query
   const q = args.query.trim();
   const limit = args.limit || 20;
-  const locale = context.user.locale || 'pt-BR';
 
   const num = parseInt(q);
   if (!isNaN(num)) {
@@ -84,26 +106,49 @@ export const searchDirectory = async (args: { query: string; limit?: number }, c
   });
 };
 
-export const listDirectoryByPart = async (args: { part: string }, context: any) => {
+export const listDirectoryByPart = async (args: { part: string; locale?: string | null }, context: any) => {
   if (!context.user) throw new HttpError(401);
-  const locale = context.user.locale || 'pt-BR';
+  const locale = resolveLocale(context, args.locale);
+
+  if (isCacheReady()) {
+    return getCachedDirectoryByPart(args.part, locale);
+  }
+
+  // Fallback: DB query
   return context.entities.DirectoryEntry.findMany({
     where: { part: args.part, locale },
     orderBy: { number: 'asc' },
   });
 };
 
-export const getDirectoryEntry = async (args: { number: number }, context: any) => {
+export const getDirectoryEntry = async (args: { number: number; locale?: string | null }, context: any) => {
   if (!context.user) throw new HttpError(401);
-  const locale = context.user.locale || 'pt-BR';
-  const entry = await context.entities.DirectoryEntry.findUnique({ where: { number_locale: { number: args.number, locale } } });
+  const locale = resolveLocale(context, args.locale);
+
+  if (isCacheReady()) {
+    const entry = getCachedDirectoryEntry(args.number, locale);
+    if (!entry) throw new HttpError(404, 'Entrada não encontrada.');
+    return entry;
+  }
+
+  // Fallback: DB query
+  const entry = await context.entities.DirectoryEntry.findUnique({
+    where: { number_locale: { number: args.number, locale } },
+  });
   if (!entry) throw new HttpError(404, 'Entrada não encontrada.');
   return entry;
 };
 
-export const listDirectoryParts = async (_args: void, context: any) => {
+export const listDirectoryParts = async (args: { locale?: string | null } | void, context: any) => {
   if (!context.user) throw new HttpError(401);
-  const locale = context.user.locale || 'pt-BR';
+  const a = args || {};
+  const locale = resolveLocale(context, (a as any).locale);
+
+  if (isCacheReady()) {
+    return getCachedDirectoryParts(locale);
+  }
+
+  // Fallback: DB query
   const entries = await context.entities.DirectoryEntry.findMany({
     where: { locale },
     select: { part: true, chapter: true, title: true, number: true },
@@ -112,6 +157,8 @@ export const listDirectoryParts = async (_args: void, context: any) => {
   });
   return entries;
 };
+
+// ─── Directory References (content linking) ─────────────────────────────────
 
 export const addDirectoryRef = async (args: { contentId: string; entryId: string }, context: any) => {
   if (!context.user) throw new HttpError(401);

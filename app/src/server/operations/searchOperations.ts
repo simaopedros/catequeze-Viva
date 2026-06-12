@@ -1,9 +1,31 @@
 import { HttpError } from 'wasp/server';
 import { MembershipStatus } from '@prisma/client';
 import { getDioceseParishIds } from '../auth/helpers';
+import {
+  isCacheReady,
+  searchBibleInCache,
+  searchCatechismInCache,
+  searchDirectoryInCache,
+} from '../cache/referenceCache';
 
 const MIN_CHARS = 2;
 const MAX_RESULTS_PER_CATEGORY = 3;
+
+// ─── Request-scoped parish ID cache ──────────────────────────────────────────
+// Avoids repeated Membership queries within the same request.
+const parishIdsRequestCache = new WeakMap<object, Promise<string[]>>();
+
+async function getParishIdsCached(context: any): Promise<string[]> {
+  // Use the request object (context.req or context) as a key.
+  // WeakMap ensures entries are garbage-collected when the request is done.
+  const key = context.req || context;
+  const existing = parishIdsRequestCache.get(key);
+  if (existing) return existing;
+
+  const promise = getParishIds(context);
+  parishIdsRequestCache.set(key, promise);
+  return promise;
+}
 
 async function getParishIds(context: any): Promise<string[]> {
   const memberships = await context.entities.Membership.findMany({
@@ -38,27 +60,39 @@ async function safeQuery<T>(fn: () => Promise<T[]>): Promise<T[]> {
   }
 }
 
-export const globalSearch = async (args: { query: string }, context: any) => {
+export const globalSearch = async (args: { query: string; locale?: string | null }, context: any) => {
   if (!context.user) throw new HttpError(401);
   if (!args.query || args.query.trim().length < MIN_CHARS) return [];
 
   const q = args.query.trim();
   const limit = MAX_RESULTS_PER_CATEGORY;
-  const locale = context.user.locale || 'pt-BR';
+  const locale = args.locale || context.user.locale || 'pt-BR';
 
   const isAdmin = context.user.isAdmin;
-  const parishIds = isAdmin ? [] : await getParishIds(context);
+  const parishIds = isAdmin ? [] : await getParishIdsCached(context);
   if (!isAdmin && parishIds.length === 0) return [];
 
   const parishFilter = isAdmin ? {} : { parishId: { in: parishIds } };
+
+  // Reference data: serve from cache if ready, otherwise skip (avoid heavy DB queries)
+  const cacheReady = isCacheReady();
+  const bibleResults = cacheReady
+    ? searchBibleInCache(q, locale, limit)
+    : [];
+  const catechismResults = cacheReady
+    ? searchCatechismInCache(q, locale, limit)
+    : [];
+  const directoryResults = cacheReady
+    ? searchDirectoryInCache(q, locale, limit)
+    : [];
 
   const [
     catechumens,
     classes,
     contentItems,
-    bibleVerses,
-    catechismEntries,
-    directoryEntries,
+    bibleVersesDb,
+    catechismEntriesDb,
+    directoryEntriesDb,
     households,
     sacramentalJourneys,
     documents,
@@ -119,38 +153,45 @@ export const globalSearch = async (args: { query: string }, context: any) => {
       })
     ),
 
-    safeQuery(() =>
-      context.entities.BibleVerse.findMany({
-        where: { text: { contains: q, mode: 'insensitive' }, locale },
-        select: {
-          id: true, text: true, number: true,
-          chapter: { select: { number: true, book: { select: { name: true, abbreviation: true } } } },
-        },
-        take: limit,
-      })
-    ),
+    // DB fallbacks for reference data (only used when cache is not ready)
+    cacheReady
+      ? Promise.resolve([])
+      : safeQuery(() =>
+          context.entities.BibleVerse.findMany({
+            where: { text: { contains: q, mode: 'insensitive' }, locale },
+            select: {
+              id: true, text: true, number: true,
+              chapter: { select: { number: true, book: { select: { name: true, abbreviation: true } } } },
+            },
+            take: limit,
+          })
+        ),
 
-    safeQuery(() =>
-      context.entities.CatechismEntry.findMany({
-        where: {
-          locale,
-          OR: [
-            { question: { contains: q, mode: 'insensitive' } },
-            { answer: { contains: q, mode: 'insensitive' } },
-          ],
-        },
-        select: { id: true, number: true, question: true, category: true },
-        take: limit,
-      })
-    ),
+    cacheReady
+      ? Promise.resolve([])
+      : safeQuery(() =>
+          context.entities.CatechismEntry.findMany({
+            where: {
+              locale,
+              OR: [
+                { question: { contains: q, mode: 'insensitive' } },
+                { answer: { contains: q, mode: 'insensitive' } },
+              ],
+            },
+            select: { id: true, number: true, question: true, category: true },
+            take: limit,
+          })
+        ),
 
-    safeQuery(() =>
-      context.entities.DirectoryEntry.findMany({
-        where: { content: { contains: q, mode: 'insensitive' }, locale },
-        select: { id: true, number: true, content: true, part: true },
-        take: limit,
-      })
-    ),
+    cacheReady
+      ? Promise.resolve([])
+      : safeQuery(() =>
+          context.entities.DirectoryEntry.findMany({
+            where: { content: { contains: q, mode: 'insensitive' }, locale },
+            select: { id: true, number: true, content: true, part: true },
+            take: limit,
+          })
+        ),
 
     safeQuery(() =>
       context.entities.Household.findMany({
@@ -242,16 +283,22 @@ export const globalSearch = async (args: { query: string }, context: any) => {
     results.push({ id: ci.id, type: 'content', module: 'Biblioteca', label: ci.title, description: ci.theme || 'Conteúdo pastoral', route: `/app/content-library/${ci.id}` })
   );
 
-  bibleVerses.forEach((v: any) => {
+  // Bible results: prefer cache, fall back to DB
+  const bibleSource = cacheReady ? bibleResults : bibleVersesDb;
+  bibleSource.forEach((v: any) => {
     const ref = `${v.chapter?.book?.abbreviation || v.chapter?.book?.name} ${v.chapter?.number}:${v.number}`;
     results.push({ id: v.id, type: 'bible', module: 'Bíblia', label: ref, description: (v.text || '').substring(0, 100), route: `/app/bible?ref=${encodeURIComponent(ref)}` });
   });
 
-  catechismEntries.forEach((e: any) =>
+  // Catechism results: prefer cache, fall back to DB
+  const catechismSource = cacheReady ? catechismResults : catechismEntriesDb;
+  catechismSource.forEach((e: any) =>
     results.push({ id: e.id, type: 'catechism', module: 'Catecismo', label: `#${e.number} ${(e.question || '').substring(0, 80)}`, description: e.category || 'Catecismo', route: `/app/catechism?entry=${e.number}` })
   );
 
-  directoryEntries.forEach((e: any) =>
+  // Directory results: prefer cache, fall back to DB
+  const directorySource = cacheReady ? directoryResults : directoryEntriesDb;
+  directorySource.forEach((e: any) =>
     results.push({ id: e.id, type: 'directory', module: 'Diretório', label: `#${e.number} ${e.part || ''}`, description: (e.content || '').substring(0, 100), route: `/app/directory?entry=${e.number}` })
   );
 

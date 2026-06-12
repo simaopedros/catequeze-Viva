@@ -92,5 +92,17 @@
       "annual_price": "$990/year ($82.50/month)",
       "features": ["Up to 10 parishes", "Everything in Complete", "Official library", "Consolidated analytics", "Dedicated onboarding", "50 AI credits per parish/month"]
     }
-  }
+  },
+  "checkout_success": "🥳 Payment Successful!",
+  "checkout_canceled": "😢 Payment Canceled.",
+  "checkout_redirect": "You will be redirected to your account page in {{seconds}} seconds...",
+  "go_to_account": "Go to My Account",
+  "admin_title": "Licenses",
+  "admin_subtitle": "Cross-tenant plan and billing management.",
+  "table_entity": "Entity",
+  "table_type": "Type",
+  "table_plan": "Plan",
+  "table_status": "Status",
+  "until": "until",
+  "no_licenses": "No licenses found."
 }

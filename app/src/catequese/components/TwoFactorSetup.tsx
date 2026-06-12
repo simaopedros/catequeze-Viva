@@ -4,6 +4,7 @@ import { startTwoFactorSetup, verifyTwoFactorSetup, disableTwoFactor, getTwoFact
 import { Button } from '../../client/components/ui/button';
 import { Input } from '../../client/components/ui/input';
 import { Shield, ShieldCheck, ShieldAlert, Loader2, QrCode, Key, Trash2 } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 
 export default function TwoFactorSetup() {
   const { t } = useTranslation(['auth', 'common']);
@@ -132,12 +133,10 @@ export default function TwoFactorSetup() {
         <div className="space-y-3">
           <p className="text-xs text-muted-foreground">{t('two_factor_setup_scan_instruction')}</p>
           <div className="flex justify-center">
-            <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=${encodeURIComponent('180x180')}&data=${encodeURIComponent(uri)}`}
-              alt="QR Code"
-              className="rounded-lg border"
-              width={180}
-              height={180}
+            <QRCodeSVG
+              value={uri}
+              size={180}
+              className="rounded-lg border p-2 bg-white"
             />
           </div>
           <details className="text-xs text-muted-foreground">

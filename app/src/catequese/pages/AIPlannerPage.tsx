@@ -102,7 +102,7 @@ export default function AIPlannerPage() {
   }, []);
 
   useEffect(() => {
-    if (!generating) return;
+    if (!generating || loadingPhrases.length === 0) return;
     const interval = setInterval(() => {
       setLoadingPhrase(p => (p + 1) % loadingPhrases.length);
     }, 3000);
@@ -378,7 +378,7 @@ export default function AIPlannerPage() {
             <div>
               <h3 className="text-lg font-semibold">{t('planner.generating_title')}</h3>
               <p className="text-muted-foreground mt-2 animate-pulse">
-                {loadingPhrases[loadingPhrase]}
+                {loadingPhrases.length > 0 ? loadingPhrases[loadingPhrase] : t('planner.generating_title')}
               </p>
             </div>
             <Progress value={66} className="w-64 mx-auto" />

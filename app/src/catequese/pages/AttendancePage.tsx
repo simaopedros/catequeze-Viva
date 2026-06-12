@@ -11,7 +11,7 @@ import {
 import { ArrowLeft, Plus, Check, X, Clock, Minus, ClipboardList } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { EmptyState } from '../../client/components/EmptyState';
-import { useQuery, listMeetings, getClassDetails, getMeetingAttendance, saveAttendance, createMeeting as createMeetingAction } from 'wasp/client/operations';
+import { useQuery, getClassDetails, getClassAttendanceMatrix, saveAttendance, createMeeting as createMeetingAction } from 'wasp/client/operations';
 import { toast } from '../../client/hooks/use-toast';
 import { useLocale } from '../../i18n/useLocale';
 import { formatDate } from '../../i18n/format';
@@ -36,7 +36,7 @@ export default function AttendancePage() {
   const { t: tcl } = useTranslation('classes');
   const { currentLocale } = useLocale();
   const { id: classId } = useParams<{ id: string }>();
-  const { data: meetings = [], refetch: refetchMeetings } = useQuery(listMeetings, { classId: classId! });
+  const { data: meetings = [], refetch: refetchMeetings } = useQuery(getClassAttendanceMatrix, { classId: classId! });
   const { data: cls } = useQuery(getClassDetails, { id: classId! });
   const catechumens = cls?.enrollments?.map((e: any) => e.catechumenProfile).filter(Boolean) || [];
   const [matrix, setMatrix] = useState<Record<string, Record<string, string>>>({});
@@ -72,23 +72,21 @@ export default function AttendancePage() {
 
   useEffect(() => {
     if (!meetings.length || !catechumens.length) return;
-    (async () => {
-      const mat: Record<string, Record<string, string>> = {};
-      const st: Record<string, {total: number; presentes: number; abonados: number; faltas: number}> = {};
-      for (const m of meetings) {
-        const records = await getMeetingAttendance({ meetingId: m.id }) || [];
-        mat[m.id] = {};
-        st[m.id] = { total: catechumens.length, presentes: 0, abonados: 0, faltas: 0 };
-        for (const r of records) {
-          mat[m.id][r.catechumenProfileId] = r.status;
-          if (r.status === 'PRESENT') st[m.id].presentes++;
-          else if (r.status === 'JUSTIFIED') st[m.id].abonados++;
-          else if (r.status === 'ABSENT') st[m.id].faltas++;
-        }
+    const mat: Record<string, Record<string, string>> = {};
+    const st: Record<string, {total: number; presentes: number; abonados: number; faltas: number}> = {};
+    for (const m of meetings) {
+      const records = m.attendance || [];
+      mat[m.id] = {};
+      st[m.id] = { total: catechumens.length, presentes: 0, abonados: 0, faltas: 0 };
+      for (const r of records) {
+        mat[m.id][r.catechumenProfileId] = r.status;
+        if (r.status === 'PRESENT') st[m.id].presentes++;
+        else if (r.status === 'JUSTIFIED') st[m.id].abonados++;
+        else if (r.status === 'ABSENT') st[m.id].faltas++;
       }
-      setMatrix(mat);
-      setStats(st);
-    })();
+    }
+    setMatrix(mat);
+    setStats(st);
   }, [meetings, catechumens]);
 
   const mark = async (meetingId: string, catechumenId: string, status: string) => {
@@ -160,6 +158,40 @@ export default function AttendancePage() {
         {meetings.length === 0 ? (
           <EmptyState icon={ClipboardList} title={t('matrix.empty')} description={t('matrix.empty_desc')} compact />
         ) : (
+          <>
+            {/* Bulk actions */}
+            <div className="flex gap-2 flex-wrap">
+              {meetings.map((m: any) => (
+                <div key={m.id} className="flex items-center gap-1 text-xs bg-muted/30 rounded-lg px-2 py-1">
+                  <span className="text-muted-foreground truncate max-w-[120px]">{formatDate(m.date, currentLocale, { day: '2-digit', month: '2-digit' })}</span>
+                  <button
+                    onClick={async () => {
+                      for (const cat of catechumens) await saveAttendance({ meetingId: m.id, catechumenProfileId: cat.id, status: 'PRESENT' }).catch(() => {});
+                      setMatrix(prev => {
+                        const updated = { ...(prev[m.id] || {}) };
+                        catechumens.forEach((cat: any) => { updated[cat.id] = 'PRESENT'; });
+                        return { ...prev, [m.id]: updated };
+                      });
+                    }}
+                    className="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400"
+                    title={t('matrix.mark_all_present')}
+                  >✓{t('matrix.present_letter')}</button>
+                  <button
+                    onClick={async () => {
+                      for (const cat of catechumens) await saveAttendance({ meetingId: m.id, catechumenProfileId: cat.id, status: 'ABSENT' }).catch(() => {});
+                      setMatrix(prev => {
+                        const updated = { ...(prev[m.id] || {}) };
+                        catechumens.forEach((cat: any) => { updated[cat.id] = 'ABSENT'; });
+                        return { ...prev, [m.id]: updated };
+                      });
+                    }}
+                    className="px-1.5 py-0.5 rounded bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-950/40 dark:text-red-400"
+                    title={t('matrix.mark_all_absent')}
+                  >✗{t('matrix.absent_letter')}</button>
+                </div>
+              ))}
+            </div>
+
           <div className="overflow-x-auto rounded-xl border bg-card">
             <table className="w-full text-xs">
               <thead>
@@ -185,12 +217,12 @@ export default function AttendancePage() {
                       return (
                         <td key={m.id} className="p-1 text-center">
                           {isSaving ? (
-                            <span className="inline-flex items-center justify-center w-8 h-7 rounded border text-xs bg-muted">{tc('loading')}</span>
+                            <span className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] w-8 h-7 rounded border text-xs bg-muted">{tc('loading')}</span>
                           ) : (
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <button
-                                  className={`inline-flex items-center justify-center w-8 h-7 rounded border text-xs font-bold transition-all cursor-pointer ${
+                                  className={`inline-flex items-center justify-center min-w-[44px] min-h-[44px] w-8 h-7 rounded border text-xs font-bold transition-all cursor-pointer ${
                                     st
                                       ? st.color
                                       : 'bg-muted text-muted-foreground border-border hover:border-foreground/30'
@@ -238,6 +270,7 @@ export default function AttendancePage() {
               </tfoot>
             </table>
           </div>
+          </>
         )}
       </div>
     </AppShell>

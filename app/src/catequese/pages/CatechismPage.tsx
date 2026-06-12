@@ -4,12 +4,14 @@ import { Search, BookOpen, Loader2, ChevronDown, ChevronUp, AlertCircle } from '
 import { Button } from '../../client/components/ui/button';
 import { AppShell } from '../AppShell';
 import { listCatechismByCategory, searchCatechism } from 'wasp/client/operations';
+import { useLocale } from '../../i18n/useLocale';
 
 const CATEGORY_KEYS = ['creed', 'sacraments', 'commandments', 'prayer', 'virtues', 'sin'] as const;
 
 export default function CatechismPage() {
   const { t } = useTranslation('catechism');
   const { t: tCommon } = useTranslation('common');
+  const { currentLocale } = useLocale();
   const [entries, setEntries] = useState<any[]>([]);
   const [category, setCategory] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -24,7 +26,7 @@ export default function CatechismPage() {
     setSearchResults([]);
     setError('');
     try {
-      setEntries((await listCatechismByCategory({ category: cat })) || []);
+      setEntries((await listCatechismByCategory({ category: cat, locale: currentLocale })) || []);
     } catch (e) { setError(`${t('loadError')} ${tCommon('connection_error')}`); }
     setLoading(false);
   };
@@ -36,7 +38,7 @@ export default function CatechismPage() {
     setEntries([]);
     setError('');
     try {
-      setSearchResults((await searchCatechism({ query: searchQuery })) || []);
+      setSearchResults((await searchCatechism({ query: searchQuery, locale: currentLocale })) || []);
     } catch (e) { setError(`${tCommon('search_error')} ${tCommon('connection_error')}`); }
     setLoading(false);
   };

@@ -134,5 +134,17 @@
         "50 créditos IA por paróquia/mês"
       ]
     }
-  }
+  },
+  "checkout_success": "🥳 Pagamento confirmado!",
+  "checkout_canceled": "😢 Pagamento cancelado.",
+  "checkout_redirect": "Será redirecionado para a sua conta em {{seconds}} segundos...",
+  "go_to_account": "Ir para Minha Conta",
+  "admin_title": "Licenças",
+  "admin_subtitle": "Gestão cross-tenant de planos e billing.",
+  "table_entity": "Entidade",
+  "table_type": "Tipo",
+  "table_plan": "Plano",
+  "table_status": "Status",
+  "until": "até",
+  "no_licenses": "Nenhuma licença encontrada."
 }

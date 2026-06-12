@@ -1,10 +1,14 @@
 import { type AuthUser } from "wasp/auth";
+import { useTranslation } from "react-i18next";
 import { useQuery, listParishes } from "wasp/client/operations";
 import DefaultLayout from "../../layout/DefaultLayout";
 import { Activity, Church, Building2, CircleDot, BadgeCheck, AlertTriangle } from 'lucide-react';
 
 const BillingPage = ({ user }: { user: AuthUser }) => {
+  const { t, i18n } = useTranslation('billing');
   const { data: parishes = [], isLoading } = useQuery(listParishes);
+
+  const locale = i18n.language.startsWith('en') ? 'en-US' : i18n.language.startsWith('es') ? 'es-ES' : 'pt-BR';
 
   const statusIcon = (status: string) => {
     switch (status) {
@@ -20,8 +24,8 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
     <DefaultLayout user={user}>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold">Licenças</h1>
-          <p className="text-muted-foreground text-sm mt-1">Gestão cross-tenant de planos e billing.</p>
+          <h1 className="text-2xl font-bold">{t('admin_title')}</h1>
+          <p className="text-muted-foreground text-sm mt-1">{t('admin_subtitle')}</p>
         </div>
 
         {isLoading ? (
@@ -33,10 +37,10 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
             <table className="w-full text-sm">
               <thead className="bg-muted/50 border-b">
                 <tr>
-                  <th className="text-left px-4 py-3 font-medium">Entidade</th>
-                  <th className="text-left px-4 py-3 font-medium">Tipo</th>
-                  <th className="text-left px-4 py-3 font-medium">Plano</th>
-                  <th className="text-left px-4 py-3 font-medium">Status</th>
+                  <th className="text-left px-4 py-3 font-medium">{t('table_entity')}</th>
+                  <th className="text-left px-4 py-3 font-medium">{t('table_type')}</th>
+                  <th className="text-left px-4 py-3 font-medium">{t('table_plan')}</th>
+                  <th className="text-left px-4 py-3 font-medium">{t('table_status')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -56,7 +60,7 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
                         <span className="text-xs">{p.billing?.status}</span>
                         {p.billing?.trialEndsAt && (
                           <span className="text-xs text-muted-foreground ml-2">
-                            até {new Date(p.billing.trialEndsAt).toLocaleDateString('pt-BR')}
+                            {t('until')} {new Date(p.billing.trialEndsAt).toLocaleDateString(locale)}
                           </span>
                         )}
                       </span>
@@ -66,7 +70,7 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
                 {parishes.filter((p: any) => p.billing?.plan).length === 0 && (
                   <tr>
                     <td colSpan={4} className="px-4 py-8 text-center text-sm text-muted-foreground">
-                      Nenhuma licença encontrada.
+                      {t('no_licenses')}
                     </td>
                   </tr>
                 )}

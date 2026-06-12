@@ -129,15 +129,15 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
 
   const unreadCount = unreadData?.count || 0;
 
-  // Debounce query (300ms)
+  // Debounce query (400ms — reduces DB hits during fast typing)
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedQuery(query), 300);
+    const timer = setTimeout(() => setDebouncedQuery(query), 400);
     return () => clearTimeout(timer);
   }, [query]);
 
   const { data: results = [], isLoading } = useQuery(
     globalSearch,
-    { query: debouncedQuery },
+    { query: debouncedQuery, locale: currentLocale },
     { enabled: debouncedQuery.length >= 2 }
   );
 
@@ -246,7 +246,7 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
             value={query}
             onChange={(e) => { setQuery(e.target.value); setSelectedIndex(0); }}
             onFocus={() => setFocused(true)}
-            onBlur={() => { setFocused(false); if (!query) setSearchExpanded(false); }}
+            onBlur={() => { setTimeout(() => { setFocused(false); if (!query) setSearchExpanded(false); }, 150); }}
             onKeyDown={(e) => { if (e.key === 'Escape') { setSearchExpanded(false); setQuery(''); } handleKeyDown(e); }}
             placeholder={tTop('searchPlaceholder')}
             className="flex-1 bg-transparent border-none outline-none text-sm placeholder:text-muted-foreground/60"

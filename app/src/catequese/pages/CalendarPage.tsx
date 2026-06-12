@@ -4,7 +4,7 @@ import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { ChevronLeft, ChevronRight, Plus, Trash2, Calendar, Download, X } from 'lucide-react';
 import { AppShell } from '../AppShell';
-import { useQuery, listLiturgicalEvents, listClasses, listMeetings, createLiturgicalEvent, deleteLiturgicalEvent } from 'wasp/client/operations';
+import { useQuery, listLiturgicalEvents, listClasses, listMeetingsForClasses, createLiturgicalEvent, deleteLiturgicalEvent } from 'wasp/client/operations';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
 
 export default function CalendarPage() {
@@ -38,15 +38,19 @@ export default function CalendarPage() {
     if (!filteredClasses.length) { setMeetings([]); return; }
     setLoadingMeetings(true);
     (async () => {
-      const allMeetings: any[] = [];
-      const meetingPromises = filteredClasses.map(async (cls: any) => {
-        try {
-          const mts = await listMeetings({ classId: cls.id }) || [];
-          mts.forEach((m: any) => allMeetings.push({...m, name: m.title||t('meeting_default'), type:'class', color:'#10b981', className: cls.name, classId: cls.id}));
-        } catch (e) { console.error('Erro ao carregar encontros da turma:', cls.id, e); }
-      });
-      await Promise.all(meetingPromises);
-      setMeetings(allMeetings);
+      try {
+        const classIds = filteredClasses.map((c: any) => c.id);
+        const mts = await listMeetingsForClasses({ classIds }) || [];
+        const enriched = mts.map((m: any) => ({
+          ...m,
+          name: m.title || t('meeting_default'),
+          type: 'class',
+          color: '#10b981',
+          className: filteredClasses.find((c: any) => c.id === m.classId)?.name || '',
+          classId: m.classId,
+        }));
+        setMeetings(enriched);
+      } catch (e) { console.error('Erro ao carregar encontros:', e); }
       setLoadingMeetings(false);
     })();
   }, [classes, activeParishId, filteredClasses, t]);

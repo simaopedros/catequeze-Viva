@@ -3,6 +3,7 @@ import "./setupApiUrlProxy";
 import { useEffect, useMemo } from "react";
 import { Outlet, useLocation } from "react-router";
 import { routes } from "wasp/client/router";
+import { configureQueryClient } from "wasp/client/operations";
 import { Toaster } from "../client/components/ui/toaster";
 import "./Main.css";
 import NavBar from "./components/NavBar/NavBar";
@@ -11,7 +12,7 @@ import {
   marketingNavigationItems,
 } from "./components/NavBar/constants";
 import CookieConsentBanner from "./components/cookie-consent/Banner";
-import * as Sentry from "@sentry/react";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
 import HimetricaScripts from "./analytics/HimetricaScripts";
 import { useHimetricaIdentify } from "./analytics/useHimetricaIdentify";
@@ -22,6 +23,20 @@ import "../i18n/config";
 import { applyStoredLocale } from "../i18n/useLocale";
 
 applyStoredLocale();
+
+// Configure React Query cache times for optimal performance:
+// - Reference data (Bible/Catechism/Directory) never changes → Infinity
+// - Operational data (classes, catechumens) changes infrequently → 5 min
+// - Volatile data (dashboard stats, notifications) → 30 sec
+configureQueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 min default
+      cacheTime: 30 * 60 * 1000, // 30 min garbage collection
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 export default function App() {
   const location = useLocation();
@@ -80,6 +95,10 @@ export default function App() {
     }
   }, [location]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   return (
     <>
       {!isOnline && (
@@ -90,13 +109,13 @@ export default function App() {
       {/* Family portal: root path renders FamilyLandingPage */}
       {isFamilyPortal && location.pathname === '/' ? (
         <div className="bg-background text-foreground min-h-screen">
-          <Sentry.ErrorBoundary fallback={<p>Ocorreu um erro.</p>}>
+          <ErrorBoundary>
             <FamilyLandingPage />
-          </Sentry.ErrorBoundary>
+          </ErrorBoundary>
         </div>
       ) : (
         <div className="bg-background text-foreground min-h-screen">
-          <Sentry.ErrorBoundary fallback={<p>Ocorreu um erro.</p>}>
+          <ErrorBoundary>
             {isAppRoute ? (
               <Outlet />
             ) : isAdminDashboard ? (
@@ -111,7 +130,7 @@ export default function App() {
                 </div>
               </>
             )}
-          </Sentry.ErrorBoundary>
+          </ErrorBoundary>
         </div>
       )}
       <Toaster position="top-right" />
