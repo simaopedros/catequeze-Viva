@@ -3,6 +3,7 @@ import { MembershipStatus } from '@prisma/client';
 import { getDioceseParishIds } from '../auth/helpers';
 import {
   isCacheReady,
+  ensureCacheReady,
   getCachedDirectoryEntry,
   getCachedDirectoryByPart,
   searchDirectoryInCache,
@@ -76,7 +77,7 @@ export const searchDirectory = async (args: { query: string; limit?: number; loc
 
   const locale = resolveLocale(context, args.locale);
 
-  if (isCacheReady()) {
+  if (await ensureCacheReady()) {
     return searchDirectoryInCache(args.query, locale, args.limit || 20);
   }
 
@@ -110,7 +111,7 @@ export const listDirectoryByPart = async (args: { part: string; locale?: string 
   if (!context.user) throw new HttpError(401);
   const locale = resolveLocale(context, args.locale);
 
-  if (isCacheReady()) {
+  if (await ensureCacheReady()) {
     return getCachedDirectoryByPart(args.part, locale);
   }
 
@@ -125,7 +126,7 @@ export const getDirectoryEntry = async (args: { number: number; locale?: string 
   if (!context.user) throw new HttpError(401);
   const locale = resolveLocale(context, args.locale);
 
-  if (isCacheReady()) {
+  if (await ensureCacheReady()) {
     const entry = getCachedDirectoryEntry(args.number, locale);
     if (!entry) throw new HttpError(404, 'Entrada não encontrada.');
     return entry;
@@ -144,7 +145,7 @@ export const listDirectoryParts = async (args: { locale?: string | null } | void
   const a = args || {};
   const locale = resolveLocale(context, (a as any).locale);
 
-  if (isCacheReady()) {
+  if (await ensureCacheReady()) {
     return getCachedDirectoryParts(locale);
   }
 

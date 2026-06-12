@@ -3,6 +3,7 @@ import { MembershipStatus } from '@prisma/client';
 import { getDioceseParishIds } from '../auth/helpers';
 import {
   isCacheReady,
+  triggerBackgroundLoad,
   searchBibleInCache,
   searchCatechismInCache,
   searchDirectoryInCache,
@@ -74,8 +75,11 @@ export const globalSearch = async (args: { query: string; locale?: string | null
 
   const parishFilter = isAdmin ? {} : { parishId: { in: parishIds } };
 
-  // Reference data: serve from cache if ready, otherwise skip (avoid heavy DB queries)
+  // Reference data: serve from cache if ready, otherwise trigger background load
   const cacheReady = isCacheReady();
+  if (!cacheReady) {
+    triggerBackgroundLoad();
+  }
   const bibleResults = cacheReady
     ? searchBibleInCache(q, locale, limit)
     : [];

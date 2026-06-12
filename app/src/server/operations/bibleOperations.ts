@@ -1,6 +1,7 @@
 import { HttpError } from 'wasp/server';
 import {
   isCacheReady,
+  ensureCacheReady,
   getCachedBibleBooks,
   getCachedBibleBook,
   getCachedBibleChapter,
@@ -27,7 +28,7 @@ export const listBibleBooks = async (args: { locale?: string | null } | void, co
   const a = args || {};
   const locale = resolveLocale(context, (a as any).locale);
 
-  if (isCacheReady()) {
+  if (await ensureCacheReady()) {
     return getCachedBibleBooks(locale);
   }
 
@@ -42,7 +43,7 @@ export const getBibleBook = async (args: { id: string; locale?: string | null },
   if (!context.user) throw new HttpError(401);
   const locale = resolveLocale(context, args.locale);
 
-  if (isCacheReady()) {
+  if (await ensureCacheReady()) {
     const cached = getCachedBibleBook(args.id, locale);
     if (!cached) throw new HttpError(404, 'Livro não encontrado.');
     return cached;
@@ -65,7 +66,7 @@ export const getBibleChapter = async (args: { bookId: string; chapter: number; l
   if (!context.user) throw new HttpError(401);
   const locale = resolveLocale(context, args.locale);
 
-  if (isCacheReady()) {
+  if (await ensureCacheReady()) {
     const cached = getCachedBibleChapter(args.bookId, args.chapter, locale);
     if (!cached) throw new HttpError(404, 'Capítulo não encontrado.');
     return cached;
@@ -89,7 +90,7 @@ export const searchBible = async (args: { query: string; limit?: number; locale?
   const locale = resolveLocale(context, args.locale);
   const limit = args.limit || 30;
 
-  if (isCacheReady()) {
+  if (await ensureCacheReady()) {
     return searchBibleInCache(args.query, locale, limit);
   }
 
@@ -161,7 +162,7 @@ export const searchCatechism = async (args: { query: string; limit?: number; loc
 
   const locale = resolveLocale(context, args.locale);
 
-  if (isCacheReady()) {
+  if (await ensureCacheReady()) {
     return searchCatechismInCache(args.query, locale, args.limit || 20);
   }
 
@@ -182,7 +183,7 @@ export const listCatechismByCategory = async (args: { category: string; locale?:
   if (!context.user) throw new HttpError(401);
   const locale = resolveLocale(context, args.locale);
 
-  if (isCacheReady()) {
+  if (await ensureCacheReady()) {
     return getCachedCatechismByCategory(args.category, locale);
   }
 
@@ -196,7 +197,7 @@ export const getCatechismEntry = async (args: { number: number; locale?: string 
   if (!context.user) throw new HttpError(401);
   const locale = resolveLocale(context, args.locale);
 
-  if (isCacheReady()) {
+  if (await ensureCacheReady()) {
     const entry = getCachedCatechismEntry(args.number, locale);
     if (!entry) throw new HttpError(404, 'Entrada não encontrada.');
     return entry;
