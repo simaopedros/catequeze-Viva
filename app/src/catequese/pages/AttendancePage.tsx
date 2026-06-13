@@ -45,7 +45,6 @@ export default function AttendancePage() {
   const [newTitle, setNewTitle] = useState('');
   const [newDate, setNewDate] = useState(new Date().toISOString().slice(0, 10));
   const [saving, setSaving] = useState<string | null>(null);
-  const [stats, setStats] = useState<Record<string, {total: number; presentes: number; abonados: number; faltas: number}>>({});
   const [studentFilter, setStudentFilter] = useState('');
 
   const filteredCatechumens = useMemo(() => {
@@ -83,43 +82,37 @@ export default function AttendancePage() {
   useEffect(() => {
     if (!meetings.length || !catechumens.length) return;
     const mat: Record<string, Record<string, string>> = {};
-    const st: Record<string, {total: number; presentes: number; abonados: number; faltas: number}> = {};
     for (const m of meetings) {
       const records = m.attendance || [];
       mat[m.id] = {};
-      st[m.id] = { total: catechumens.length, presentes: 0, abonados: 0, faltas: 0 };
       for (const r of records) {
         mat[m.id][r.catechumenProfileId] = r.status;
-        if (r.status === 'PRESENT') st[m.id].presentes++;
-        else if (r.status === 'JUSTIFIED') st[m.id].abonados++;
-        else if (r.status === 'ABSENT') st[m.id].faltas++;
       }
     }
     setMatrix(mat);
-    setStats(st);
   }, [meetings, catechumens]);
+
+  // Derived: recompute stats whenever matrix, meetings, or catechumens change
+  const stats = useMemo(() => {
+    const st: Record<string, {total: number; presentes: number; abonados: number; faltas: number}> = {};
+    for (const m of meetings) {
+      st[m.id] = { total: catechumens.length, presentes: 0, abonados: 0, faltas: 0 };
+      const records = matrix[m.id] || {};
+      Object.values(records).forEach((status) => {
+        if (status === 'PRESENT') st[m.id].presentes++;
+        else if (status === 'JUSTIFIED') st[m.id].abonados++;
+        else if (status === 'ABSENT') st[m.id].faltas++;
+      });
+    }
+    return st;
+  }, [matrix, meetings, catechumens]);
 
   const mark = async (meetingId: string, catechumenId: string, status: string) => {
     const key = `${meetingId}-${catechumenId}`;
     setSaving(key);
     try {
       await saveAttendance({ meetingId, catechumenProfileId: catechumenId, status });
-      setMatrix(prev => {
-        const nextMatrix = { ...prev, [meetingId]: { ...(prev[meetingId] || {}), [catechumenId]: status } };
-        
-        // Recalculate stats for this meeting
-        setStats(prevStats => {
-          const newStats = { total: catechumens.length, presentes: 0, abonados: 0, faltas: 0 };
-          Object.entries(nextMatrix[meetingId] || {}).forEach(([catId, s]) => {
-            if (s === 'PRESENT') newStats.presentes++;
-            else if (s === 'JUSTIFIED') newStats.abonados++;
-            else if (s === 'ABSENT') newStats.faltas++;
-          });
-          return { ...prevStats, [meetingId]: newStats };
-        });
-
-        return nextMatrix;
-      });
+      setMatrix(prev => ({ ...prev, [meetingId]: { ...(prev[meetingId] || {}), [catechumenId]: status } }));
     } catch (e: any) {
       toast({ title: t('matrix.mark_error', { message: e.message || t('matrix.no_permission') }) });
     }
@@ -156,18 +149,6 @@ export default function AttendancePage() {
             updated[cat.id] = status;
           }
         });
-        
-        // Recalculate stats for this meeting
-        setStats(prevStats => {
-          const newStats = { total: catechumens.length, presentes: 0, abonados: 0, faltas: 0 };
-          Object.entries(updated).forEach(([catId, s]) => {
-            if (s === 'PRESENT') newStats.presentes++;
-            else if (s === 'JUSTIFIED') newStats.abonados++;
-            else if (s === 'ABSENT') newStats.faltas++;
-          });
-          return { ...prevStats, [meetingId]: newStats };
-        });
-
         return { ...prev, [meetingId]: updated };
       });
 

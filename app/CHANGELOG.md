@@ -1,5 +1,25 @@
 # Changelog
 
+## 2026-06-13 — Correção de Hidratação SSR e Loop Infinito React
+
+### 🔴 Crítico — React #185 (loop infinito)
+
+- **`AttendancePage.tsx`**: `setStats()` era chamado dentro do updater funcional de `setMatrix()`, violando a pureza dos state updaters do React e causando re-renders infinitos. Substituído `stats` state + `setStats` por `useMemo` derivado de `matrix`, `meetings` e `catechumens`.
+
+### 🔴 Crítico — React #418 (hydration mismatch)
+
+- **`App.tsx`**: `applyStoredLocale()` corria a nível de módulo antes da hidratação React, alterando `document.documentElement.lang` para `pt-BR` enquanto o servidor renderizava `lang="en"` → mismatch. Movido para `useEffect` pós-monta gem.
+- **`vite.config.ts`**: GTM `<noscript>` era injetado via `replace("<body>", ...)` fora da árvore React, causando mismatch estrutural entre o HTML do servidor e o virtual DOM. Removida a injeção; o `<noscript>` GTM passou a ser renderizado via React no `layout.tsx`.
+- **`scripts/patch-hydrate-fallback.cjs`**: Script expandido com 4 patches automáticos pós-`wasp compile`:
+  1. `hydrateFallbackElement` no `createBrowserRouter` (React Router v7.16+)
+  2. `hydrateFallbackElement` no `<RouterProvider>` (elimina warning "No HydrateFallback")
+  3. `<html lang="pt-BR">` (locale padrão em vez de `en`)
+  4. `<noscript suppressHydrationWarning>` + GTM `<noscript>` via React (tolera extensões como Kaspersky)
+
+### 📝 Documentação
+
+- **`CHANGELOG.md`**: Esta entrada.
+
 ## 2026-06-12 — Sprint de Correções UI/UX (31 ficheiros, +560/−192 linhas)
 
 ### 🔴 Segurança

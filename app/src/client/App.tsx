@@ -22,8 +22,6 @@ import FamilyLandingPage from "../catequese/pages/family/FamilyLandingPage";
 import "../i18n/config";
 import { applyStoredLocale } from "../i18n/useLocale";
 
-applyStoredLocale();
-
 // Configure React Query cache times for optimal performance:
 // - Reference data (Bible/Catechism/Directory) never changes → Infinity
 // - Operational data (classes, catechumens) changes infrequently → 5 min
@@ -98,6 +96,11 @@ export default function App() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
+
+  // Apply stored locale after hydration to avoid mismatch with SSR
+  useEffect(() => {
+    applyStoredLocale();
+  }, []);
 
   return (
     <>
