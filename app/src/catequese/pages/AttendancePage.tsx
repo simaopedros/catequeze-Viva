@@ -319,7 +319,7 @@ export default function AttendancePage() {
                               {statusOptions.map(opt => (
                                 <DropdownMenuItem
                                   key={opt.key}
-                                  onClick={() => mark(m.id, cat.id, opt.key)}
+                                  onSelect={() => mark(m.id, cat.id, opt.key)}
                                   className="flex items-center gap-2 cursor-pointer"
                                 >
                                   <span className={`inline-flex items-center justify-center w-5 h-5 rounded border text-[10px] font-bold ${opt.color}`}>{opt.label}</span>
