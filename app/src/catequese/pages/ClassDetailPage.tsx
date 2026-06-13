@@ -224,7 +224,7 @@ export default function ClassDetailPage() {
   let attendanceRate=0;
   if(cls.meetings?.length){
     const total=cls.meetings.reduce((s:number,m:any)=>s+(m.attendance?.length||0),0);
-    const present=cls.meetings.reduce((s:number,m:any)=>s+(m.attendance?.filter((a:any)=>a.status==='PRESENT').length||0),0);
+    const present=cls.meetings.reduce((s:number,m:any)=>s+(m.attendance?.filter((a:any)=>a.status==='PRESENT')?.length||0),0);
     if(total>0)attendanceRate=Math.round((present/total)*100);
   }
 
@@ -345,7 +345,7 @@ export default function ClassDetailPage() {
                   ? journeys.find((j: any) => j.template?.sacramentId === cls.sacrament?.id) || journeys[0]
                   : journeys[0];
                 const total = relevantJourney?.milestones?.length || 0;
-                const done = relevantJourney?.milestones?.filter((m: any) => m.status === 'COMPLETED' || m.status === 'APPROVED').length || 0;
+                const done = relevantJourney?.milestones?.filter((m: any) => m.status === 'COMPLETED' || m.status === 'APPROVED')?.length || 0;
                 const pct = total > 0 ? Math.round((done / total) * 100) : 0;
                 const journeyBadge = relevantJourney ? (
                   <Badge variant={pct === 100 ? 'default' : 'outline'} className="text-[10px] gap-1">
@@ -521,11 +521,11 @@ export default function ClassDetailPage() {
                   </div>
                 </div>
 
-                {monthlyPlan.weeks.length === 0 ? (
+                {monthlyPlan.weeks?.length === 0 ? (
                   <p className="text-sm text-muted-foreground py-4">{t('detail.no_meetings_this_month')}</p>
                 ) : (
                   <div className="space-y-3">
-                    {monthlyPlan.weeks.map((week: any, wi: number) => (
+                    {monthlyPlan.weeks?.map((week: any, wi: number) => (
                       <div key={wi} className="rounded-lg border bg-card p-3">
                         <p className="text-xs font-medium text-muted-foreground mb-2">
                           {t('detail.week_of', { date: formatDate(week.weekStart, currentLocale, { day: 'numeric', month: 'short' }) })}
