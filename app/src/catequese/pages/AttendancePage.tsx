@@ -1,13 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useParams, Link } from 'react-router';
-import { useState, useEffect, useMemo, type ReactNode } from 'react';
+import { useState, useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { Button } from '../../client/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from '../../client/components/ui/dropdown-menu';
 import { ArrowLeft, Plus, Check, X, Clock, Minus, ClipboardList, Loader2 } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { EmptyState } from '../../client/components/EmptyState';
@@ -31,6 +25,71 @@ const STATUS_ICONS: Record<string, ReactNode> = {
   JUSTIFIED: <Clock className="h-3 w-3" />,
 };
 
+function StatusCell({
+  status,
+  statusOptions,
+  onMark,
+  isSaving,
+  notFilledLabel,
+}: {
+  status: string | undefined;
+  statusOptions: { key: string; label: string; icon: ReactNode; color: string; fullLabel: string }[];
+  onMark: (status: string) => void;
+  isSaving: boolean;
+  notFilledLabel: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  const st = status ? statusOptions.find(o => o.key === status) : null;
+
+  if (isSaving) {
+    return (
+      <span className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] w-10 h-8 rounded border text-xs bg-muted">
+        <Loader2 className="h-3 w-3 animate-spin" />
+      </span>
+    );
+  }
+
+  return (
+    <div ref={ref} className="relative inline-block">
+      <button
+        onClick={() => setOpen(!open)}
+        className={`min-w-[44px] min-h-[44px] w-10 h-8 rounded border text-xs font-bold flex items-center justify-center cursor-pointer transition-colors ${
+          st ? st.color : 'bg-muted text-muted-foreground border-border hover:border-foreground/30'
+        }`}
+        title={st ? st.fullLabel : notFilledLabel}
+        aria-label={notFilledLabel}
+      >
+        {st ? st.label : <Minus className="h-3 w-3" />}
+      </button>
+      {open && (
+        <div className="absolute z-50 left-1/2 -translate-x-1/2 mt-1 bg-popover border rounded-md shadow-lg p-1 flex flex-col gap-0.5 min-w-[100px]">
+          {statusOptions.map(opt => (
+            <button
+              key={opt.key}
+              onClick={() => { onMark(opt.key); setOpen(false); }}
+              className={`flex items-center gap-2 px-2.5 py-1.5 rounded text-xs font-semibold whitespace-nowrap cursor-pointer transition-colors hover:brightness-95 ${opt.color}`}
+            >
+              <span className="flex items-center justify-center w-4 h-4">{opt.icon}</span>
+              <span className="tabular-nums">{opt.fullLabel}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function AttendancePage() {
   const { t } = useTranslation('attendance');
   const { t: tc } = useTranslation('common');
@@ -41,6 +100,7 @@ export default function AttendancePage() {
   const { data: cls } = useQuery(getClassDetails, { id: classId! });
   const catechumens = cls?.enrollments?.map((e: any) => e.catechumenProfile).filter(Boolean) || [];
   const [matrix, setMatrix] = useState<Record<string, Record<string, string>>>({});
+  const lastProcessedRef = useRef('');
   const [showNew, setShowNew] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newDate, setNewDate] = useState(new Date().toISOString().slice(0, 10));
@@ -81,6 +141,9 @@ export default function AttendancePage() {
 
   useEffect(() => {
     if (!meetings.length || !catechumens.length) return;
+    const key = JSON.stringify(meetings.map(m => [m.id, (m.attendance || []).map(r => r.catechumenProfileId + ':' + r.status).join(',')].join('|')));
+    if (key === lastProcessedRef.current) return;
+    lastProcessedRef.current = key;
     const mat: Record<string, Record<string, string>> = {};
     for (const m of meetings) {
       const records = m.attendance || [];
@@ -275,59 +338,21 @@ export default function AttendancePage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredCatechumens.map((cat: any, rowIdx: number) => (
+                {filteredCatechumens.map((cat: any) => (
                   <tr key={cat.id} className="border-t hover:bg-muted/30">
                     <td className="sticky left-0 bg-card p-2 font-medium border-r z-10">{cat.firstName} {cat.lastName}</td>
-                    {meetings.map((m: any, colIdx: number) => {
+                    {meetings.map((m: any) => {
                       const status = matrix[m.id]?.[cat.id];
-                      const st = status ? statusOptions.find(o => o.key === status) : null;
                       const isSaving = saving === `${m.id}-${cat.id}`;
-                      const handleCellKeyDown = (e: React.KeyboardEvent) => {
-                        const tbody = (e.target as HTMLElement).closest('tbody');
-                        if (!tbody) return;
-                        const rows = tbody.querySelectorAll('tr');
-                        let nextRow = rowIdx, nextCol = colIdx;
-                        if (e.key === 'ArrowDown') nextRow = Math.min(rowIdx + 1, rows.length - 1);
-                        else if (e.key === 'ArrowUp') nextRow = Math.max(rowIdx - 1, 0);
-                        else if (e.key === 'ArrowRight') nextCol = Math.min(colIdx + 1, meetings.length - 1);
-                        else if (e.key === 'ArrowLeft') nextCol = Math.max(colIdx - 1, 0);
-                        else return;
-                        e.preventDefault();
-                        const targetRow = rows[nextRow];
-                        const targetCell = targetRow?.querySelectorAll('td')[nextCol + 1]; // +1 for name column
-                        (targetCell?.querySelector('button') as HTMLElement)?.focus();
-                      };
                       return (
                         <td key={m.id} className="p-1 text-center">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild disabled={!!isSaving}>
-                              <button
-                                data-row={rowIdx}
-                                data-col={colIdx}
-                                onKeyDown={handleCellKeyDown}
-                                className={`inline-flex items-center justify-center min-w-[44px] min-h-[44px] w-8 h-7 rounded border text-xs font-bold transition-all cursor-pointer ${
-                                  isSaving ? 'bg-muted text-muted-foreground opacity-50' : st
-                                    ? st.color
-                                    : 'bg-muted text-muted-foreground border-border hover:border-foreground/30'
-                                }`}
-                                title={isSaving ? tc('loading') : st ? st.fullLabel : t('matrix.not_filled')}
-                              >
-                                {isSaving ? <Loader2 className="h-3 w-3 animate-spin" /> : st ? st.label : <Minus className="h-3 w-3" />}
-                              </button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="center" className="w-28">
-                              {statusOptions.map(opt => (
-                                <DropdownMenuItem
-                                  key={opt.key}
-                                  onSelect={() => mark(m.id, cat.id, opt.key)}
-                                  className="flex items-center gap-2 cursor-pointer"
-                                >
-                                  <span className={`inline-flex items-center justify-center w-5 h-5 rounded border text-[10px] font-bold ${opt.color}`}>{opt.label}</span>
-                                  <span className="text-xs">{opt.fullLabel}</span>
-                                </DropdownMenuItem>
-                              ))}
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                          <StatusCell
+                            status={status}
+                            statusOptions={statusOptions}
+                            onMark={(val) => mark(m.id, cat.id, val)}
+                            isSaving={isSaving}
+                            notFilledLabel={t('matrix.not_filled')}
+                          />
                         </td>
                       );
                     })}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { useQuery, globalSearch, getUnreadNotificationCount } from 'wasp/client/operations';
@@ -66,7 +66,7 @@ interface TopBarProps {
   onMenuToggle?: () => void;
 }
 
-export function TopBar({ onMenuToggle }: TopBarProps) {
+export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
   const { t } = useTranslation('common');
   const { t: tTop } = useTranslation('topbar');
   const { t: tNav } = useTranslation('navigation');
@@ -567,4 +567,4 @@ export function TopBar({ onMenuToggle }: TopBarProps) {
       )}
     </header>
   );
-}
+});

@@ -1,4 +1,4 @@
-import { ReactNode, useState, useEffect, useMemo, useRef } from 'react';
+import { ReactNode, useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
@@ -9,6 +9,7 @@ import { GuidedTour, useGuidedTour } from './components/GuidedTour';
 import { TwoFactorGate } from './components/TwoFactorGate';
 import { FamilyAppShell } from './FamilyAppShell';
 import { useUserContext } from '../client/hooks/useUserContext';
+import { ErrorBoundary } from '../client/components/ErrorBoundary';
 import { isFamilyPortalHost, familyPortalUrl } from '../shared/portal';
 import { useAction, acceptInvitation } from 'wasp/client/operations';
 
@@ -19,6 +20,7 @@ export function AppShell({ children }: AppShellProps) {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
+  const handleMenuToggle = useCallback(() => setMobileMenuOpen(prev => !prev), []);
   const { needsOnboarding, hasPendingInvitations, isLoading, isFetching, userRole, memberships, allMemberships } = useUserContext();
   const { showTour, completeTour } = useGuidedTour();
   const acceptInvitationAction = useAction(acceptInvitation);
@@ -103,7 +105,9 @@ export function AppShell({ children }: AppShellProps) {
       )}
 
       <div className="flex flex-1 flex-col overflow-hidden">
-        <TopBar onMenuToggle={() => setMobileMenuOpen(prev => !prev)} />
+        <ErrorBoundary fallback={<div className="flex h-14 items-center border-b bg-card px-4" />}>
+          <TopBar onMenuToggle={handleMenuToggle} />
+        </ErrorBoundary>
         <Breadcrumbs />
         <main ref={mainRef} className="flex-1 overflow-y-auto p-4 md:p-6 pb-16 lg:pb-6">{children}</main>
       </div>

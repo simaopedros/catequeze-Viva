@@ -1,65 +1,69 @@
 import { ChevronDown, LogOut, User } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { signOut } from "../client/analytics/himetrica";
 import { Link as WaspRouterLink } from "wasp/client/router";
 import { type User as UserEntity } from "wasp/entities";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../client/components/ui/dropdown-menu";
 import { userMenuItems } from "./constants";
 
 export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
   const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const displayName = user.firstName
     ? `${user.firstName} ${user.lastName || ''}`.trim()
     : (user.email || user.username || 'Usuário');
 
-  return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger asChild>
-        <button className="text-foreground hover:text-primary flex items-center transition-colors duration-300 ease-in-out">
-          <span className="text-foreground mr-2 hidden text-right text-sm font-medium lg:block">
-            {displayName}
-          </span>
-          <User className="size-5" />
-          <ChevronDown className="size-4" />
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        {userMenuItems.map((item) => {
-          if (item.isAuthRequired && !user) return null;
-          if (item.isAdminOnly && (!user || !user.isAdmin)) return null;
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
 
-          return (
-            <DropdownMenuItem key={item.name}>
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="text-foreground hover:text-primary flex items-center transition-colors duration-300 ease-in-out"
+      >
+        <span className="text-foreground mr-2 hidden text-right text-sm font-medium lg:block">
+          {displayName}
+        </span>
+        <User className="size-5" />
+        <ChevronDown className="size-4" />
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full mt-2 w-56 rounded-md border bg-popover p-1 shadow-md z-50">
+          {userMenuItems.map((item) => {
+            if (item.isAuthRequired && !user) return null;
+            if (item.isAdminOnly && (!user || !user.isAdmin)) return null;
+            return (
               <WaspRouterLink
+                key={item.name}
                 to={item.to}
-                onClick={() => {
-                  setOpen(false);
-                }}
-                className="flex w-full items-center gap-3"
+                onClick={() => setOpen(false)}
+                className="flex w-full items-center gap-3 rounded-sm px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
               >
                 <item.icon size="1.1rem" />
                 {item.name}
               </WaspRouterLink>
-            </DropdownMenuItem>
-          );
-        })}
-        <DropdownMenuItem>
+            );
+          })}
           <button
             type="button"
             onClick={() => signOut()}
-            className="flex w-full items-center gap-3"
+            className="flex w-full items-center gap-3 rounded-sm px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
           >
             <LogOut size="1.1rem" />
             Sair
           </button>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        </div>
+      )}
+    </div>
   );
 }
