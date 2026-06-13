@@ -63,7 +63,6 @@ export function ConfirmDialog({
               value={typed}
               onChange={(e) => setTyped(e.target.value)}
               placeholder={confirmPhrase}
-              autoFocus
               disabled={loading}
             />
           </div>

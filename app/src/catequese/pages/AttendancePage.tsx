@@ -8,7 +8,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from '../../client/components/ui/dropdown-menu';
-import { ArrowLeft, Plus, Check, X, Clock, Minus, ClipboardList } from 'lucide-react';
+import { ArrowLeft, Plus, Check, X, Clock, Minus, ClipboardList, Loader2 } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { EmptyState } from '../../client/components/EmptyState';
 import { useQuery, getClassDetails, getClassAttendanceMatrix, saveAttendance, createMeeting as createMeetingAction } from 'wasp/client/operations';
@@ -299,39 +299,35 @@ export default function AttendancePage() {
                       };
                       return (
                         <td key={m.id} className="p-1 text-center">
-                          {isSaving ? (
-                            <span className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] w-8 h-7 rounded border text-xs bg-muted">{tc('loading')}</span>
-                          ) : (
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <button
-                                  data-row={rowIdx}
-                                  data-col={colIdx}
-                                  onKeyDown={handleCellKeyDown}
-                                  className={`inline-flex items-center justify-center min-w-[44px] min-h-[44px] w-8 h-7 rounded border text-xs font-bold transition-all cursor-pointer ${
-                                    st
-                                      ? st.color
-                                      : 'bg-muted text-muted-foreground border-border hover:border-foreground/30'
-                                  }`}
-                                  title={st ? st.fullLabel : t('matrix.not_filled')}
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild disabled={!!isSaving}>
+                              <button
+                                data-row={rowIdx}
+                                data-col={colIdx}
+                                onKeyDown={handleCellKeyDown}
+                                className={`inline-flex items-center justify-center min-w-[44px] min-h-[44px] w-8 h-7 rounded border text-xs font-bold transition-all cursor-pointer ${
+                                  isSaving ? 'bg-muted text-muted-foreground opacity-50' : st
+                                    ? st.color
+                                    : 'bg-muted text-muted-foreground border-border hover:border-foreground/30'
+                                }`}
+                                title={isSaving ? tc('loading') : st ? st.fullLabel : t('matrix.not_filled')}
+                              >
+                                {isSaving ? <Loader2 className="h-3 w-3 animate-spin" /> : st ? st.label : <Minus className="h-3 w-3" />}
+                              </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="center" className="w-28">
+                              {statusOptions.map(opt => (
+                                <DropdownMenuItem
+                                  key={opt.key}
+                                  onClick={() => mark(m.id, cat.id, opt.key)}
+                                  className="flex items-center gap-2 cursor-pointer"
                                 >
-                                  {st ? st.label : <Minus className="h-3 w-3" />}
-                                </button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="center" className="w-28">
-                                {statusOptions.map(opt => (
-                                  <DropdownMenuItem
-                                    key={opt.key}
-                                    onClick={() => mark(m.id, cat.id, opt.key)}
-                                    className="flex items-center gap-2 cursor-pointer"
-                                  >
-                                    <span className={`inline-flex items-center justify-center w-5 h-5 rounded border text-[10px] font-bold ${opt.color}`}>{opt.label}</span>
-                                    <span className="text-xs">{opt.fullLabel}</span>
-                                  </DropdownMenuItem>
-                                ))}
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          )}
+                                  <span className={`inline-flex items-center justify-center w-5 h-5 rounded border text-[10px] font-bold ${opt.color}`}>{opt.label}</span>
+                                  <span className="text-xs">{opt.fullLabel}</span>
+                                </DropdownMenuItem>
+                              ))}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </td>
                       );
                     })}
