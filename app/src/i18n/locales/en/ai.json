@@ -2,6 +2,7 @@
   "planner": {
     "title": "Smart Meeting Generator",
     "subtitle": "Create complete catechesis scripts with AI",
+    "credits_left": "{{count}} AI credits remaining",
     "credits_remaining": "{{count}} AI credits remaining",
     "upgrade": "Upgrade",
     "class_meeting_theme": "Class meeting",

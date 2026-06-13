@@ -1,6 +1,7 @@
 import { LogIn, Menu } from "lucide-react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Link as ReactRouterLink, useLocation } from "react-router";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "wasp/client/auth";
 import { Link as WaspRouterLink, routes } from "wasp/client/router";
 import {
@@ -30,6 +31,7 @@ export default function NavBar({
 }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const isLandingPage = useIsLandingPage();
+  const { t } = useTranslation('common');
 
   useEffect(() => {
     const throttledHandler = throttleWithTrailingInvocation(() => {
@@ -86,7 +88,7 @@ export default function NavBar({
                     },
                   )}
                 >
-                  Catequese Viva
+                  {t('app_name')}
                 </span>
               </WaspRouterLink>
 
@@ -155,6 +157,7 @@ function NavBarMobileMenu({
   const { data: user, isLoading: isUserLoading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { t } = useTranslation('common');
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -170,7 +173,7 @@ function NavBarMobileMenu({
               "text-muted-foreground hover:text-muted hover:bg-accent inline-flex items-center justify-center rounded-md transition-colors",
             )}
           >
-            <span className="sr-only">Abrir menu principal</span>
+            <span className="sr-only">{t('open_main_menu')}</span>
             <Menu
               className={cn("transition-all duration-300", {
                 "size-8 p-1": !isScrolled,
@@ -184,7 +187,7 @@ function NavBarMobileMenu({
           <SheetHeader>
             <SheetTitle className="flex items-center">
               <WaspRouterLink to={routes.LandingPageRoute.to}>
-                <span className="sr-only">Catequese Viva</span>
+                <span className="sr-only">{t('app_name')}</span>
                 <NavLogo isScrolled={false} />
               </WaspRouterLink>
             </SheetTitle>
@@ -248,13 +251,15 @@ function renderNavigationItems(
   });
 }
 
-const NavLogo = ({ isScrolled }: { isScrolled: boolean }) => (
+const NavLogo = ({ isScrolled }: { isScrolled: boolean }) => {
+  const { t } = useTranslation('common');
+  return (
   <img
     className={cn("transition-all duration-500", {
       "size-8": !isScrolled,
       "size-7": isScrolled,
     })}
     src={logo}
-    alt="Catequese Viva"
+    alt={t('app_name')}
   />
-);
+)};

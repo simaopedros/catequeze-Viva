@@ -32,12 +32,21 @@
     "totals": "Totales",
     "mark_error": "Error al marcar asistencia: {{message}}",
     "create_meeting_error": "Error al crear encuentro: {{message}}",
+    "filter_students": "Filtrar alumnos...",
     "no_permission": "Sin permiso.",
     "meetings_count": "{{count}} encuentros",
     "present_letter": "P",
     "absent_letter": "F",
     "justified_letter": "J",
     "percent_column": "%",
-    "no_title": "—"
+    "no_title": "—",
+    "mark_all_present": "Marcar todos como Presente",
+    "mark_all_absent": "Marcar todos como Ausente",
+    "mark_all_present_confirm_title": "Marcar todos como Presente",
+    "mark_all_absent_confirm_title": "Marcar todos como Ausente",
+    "mark_all_present_confirm_desc": "¿Realmente desea marcar a todos los {{count}} catecúmenos como PRESENTES en el encuentro \"{{meetingTitle}}\"? Esto sobrescribirá los registros individuales.",
+    "mark_all_absent_confirm_desc": "¿Realmente desea marcar a todos los {{count}} catecúmenos como AUSENTES en el encuentro \"{{meetingTitle}}\"? Esto sobrescribirá los registros individuales.",
+    "bulk_success": "¡Asistencias registradas con éxito!",
+    "bulk_partial_error": "Error al registrar la asistencia para {{failedCount}} de {{total}} catecúmenos."
   }
 }

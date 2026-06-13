@@ -13,6 +13,8 @@ import {
   addGuardianToHousehold,
   removeGuardianFromHousehold,
   updateGuardianProfile,
+  listCatechumens,
+  updateCatechumen,
 } from 'wasp/client/operations';
 import { toast } from '../../client/hooks/use-toast';
 import PhoneMaskInput from '../../client/components/PhoneMaskInput';
@@ -34,12 +36,7 @@ import {
   SelectValue,
 } from '../../client/components/ui/select';
 
-const AVATAR_COLORS = [
-  'bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 dark:border dark:border-blue-900/50',
-  'bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-400 dark:border dark:border-green-900/50',
-  'bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 dark:border dark:border-amber-900/50',
-  'bg-purple-100 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400 dark:border dark:border-purple-900/50',
-];
+import { getAvatarColorClass } from '../lib/avatarColors';
 
 const RELATIONSHIP_KEYS = [
   { value: 'Pai', key: 'father' },
@@ -113,6 +110,20 @@ export default function FamilyDetailPage() {
   const [confirmRemoveOpen, setConfirmRemoveOpen] = useState(false);
   const [removingGuardian, setRemovingGuardian] = useState<any>(null);
   const [removingGuardianLoading, setRemovingGuardianLoading] = useState(false);
+
+  // Add/Remove catechumen state
+  const { data: allCatechumens = [] } = useQuery(listCatechumens);
+  const [addCatechumenDialogOpen, setAddCatechumenDialogOpen] = useState(false);
+  const [selectedCatechumenId, setSelectedCatechumenId] = useState('');
+  const [linkingCatechumen, setLinkingCatechumen] = useState(false);
+
+  const [confirmRemoveCatechumenOpen, setConfirmRemoveCatechumenOpen] = useState(false);
+  const [removingCatechumenId, setRemovingCatechumenId] = useState<string | null>(null);
+  const [removingCatechumenLoading, setRemovingCatechumenLoading] = useState(false);
+
+  const unlinkedCatechumens = useMemo(() => {
+    return allCatechumens.filter((c: any) => !c.householdId && (!household?.parishId || c.parishId === household.parishId));
+  }, [allCatechumens, household]);
 
   // Start editing: copy current values into edit fields
   const startEditing = useCallback(() => {
@@ -268,7 +279,47 @@ export default function FamilyDetailPage() {
   const handleCopyInviteLink = () => {
     const link = `${window.location.origin}/app/families/${id}`;
     navigator.clipboard.writeText(link);
-    toast({ title: t('link_copied') || 'Link copiado!' });
+    toast({ title: t('detail_link_copied') || 'Link copiado!' });
+  };
+
+  const openAddCatechumenDialog = () => {
+    setSelectedCatechumenId('');
+    setAddCatechumenDialogOpen(true);
+  };
+
+  const handleLinkCatechumen = async () => {
+    if (!selectedCatechumenId) return;
+    setLinkingCatechumen(true);
+    try {
+      await updateCatechumen({ id: selectedCatechumenId, householdId: id! });
+      toast({ title: t('families.catechumen_linked_success') || 'Catequizando adicionado com sucesso!' });
+      setAddCatechumenDialogOpen(false);
+      setSelectedCatechumenId('');
+    } catch (e: any) {
+      toast({ title: `${t('error')}: ${e.message || t('families.error_link_catechumen')}` });
+    } finally {
+      setLinkingCatechumen(false);
+    }
+  };
+
+  const openRemoveCatechumenConfirm = (catechumenId: string) => {
+    setRemovingCatechumenId(catechumenId);
+    setConfirmRemoveCatechumenOpen(true);
+  };
+
+  const handleRemoveCatechumen = async () => {
+    if (!removingCatechumenId) return;
+    setRemovingCatechumenLoading(true);
+    try {
+      await updateCatechumen({ id: removingCatechumenId, householdId: null });
+      toast({ title: t('families.catechumen_removed_success') || 'Catequizando removido com sucesso' });
+      setConfirmRemoveCatechumenOpen(false);
+      setRemovingCatechumenId(null);
+    } catch (e: any) {
+      toast({ title: `${t('error')}: ${e.message || t('families.error_remove_catechumen')}` });
+    } finally {
+      setRemovingCatechumenLoading(false);
+    }
   };
 
   if (loading)
@@ -436,7 +487,7 @@ export default function FamilyDetailPage() {
                   <div key={g.id} className="flex items-center gap-3 group">
                     <div
                       className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${
-                        AVATAR_COLORS[Math.abs(avatarLetter.charCodeAt(0) || 0) % AVATAR_COLORS.length]
+                        getAvatarColorClass(avatarLetter)
                       }`}
                     >
                       {avatarLetter}
@@ -491,36 +542,66 @@ export default function FamilyDetailPage() {
 
         {/* Catechumens */}
         <div className="rounded-xl border bg-card p-4">
-          <h3 className="font-semibold text-sm mb-3 flex items-center gap-1">
-            <GraduationCap className="h-4 w-4" />
-            {t('families.catechumens_title')}
-          </h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-sm flex items-center gap-1">
+              <GraduationCap className="h-4 w-4" />
+              {t('families.catechumens_title')}
+            </h3>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 gap-1"
+              onClick={openAddCatechumenDialog}
+            >
+              <Plus className="h-3.5 w-3.5" />
+              {t('families.add_catechumen') || 'Adicionar'}
+            </Button>
+          </div>
           {household.catechumens?.length > 0 ? (
             <div className="space-y-2">
               {household.catechumens.map((c: any) => (
-                <Link
+                <div
                   key={c.id}
-                  to={`/app/catechumens/${c.id}`}
-                  className="flex items-center gap-3 rounded-lg border p-3 hover:bg-muted/30"
+                  className="group flex items-center justify-between gap-3 rounded-lg border p-3 hover:bg-muted/30"
                 >
-                  <div
-                    className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold ${
-                      AVATAR_COLORS[Math.abs(c.firstName?.charCodeAt(0) || 0) % AVATAR_COLORS.length]
-                    }`}
+                  <Link
+                    to={`/app/catechumens/${c.id}`}
+                    className="flex flex-1 items-center gap-3"
                   >
-                    {c.firstName?.[0]}
-                    {c.lastName?.[0]}
+                    <div
+                      className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold ${
+                        getAvatarColorClass(c.firstName)
+                      }`}
+                    >
+                      {c.firstName?.[0]}
+                      {c.lastName?.[0]}
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-sm">
+                        {c.firstName} {c.lastName}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {c.birthDate && new Date(c.birthDate).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </Link>
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="h-4 w-4 text-muted-foreground group-hover:hidden" />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="hidden group-hover:flex h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        openRemoveCatechumenConfirm(c.id);
+                      }}
+                      title={t('remove') || 'Remover'}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <div className="flex-1">
-                    <p className="font-medium text-sm">
-                      {c.firstName} {c.lastName}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {c.birthDate && new Date(c.birthDate).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                </Link>
+                </div>
               ))}
             </div>
           ) : (
@@ -740,6 +821,61 @@ export default function FamilyDetailPage() {
         variant="destructive"
         onConfirm={handleRemoveGuardian}
         loading={removingGuardianLoading}
+      />
+
+      {/* ── Add Catechumen Dialog ── */}
+      <Dialog open={addCatechumenDialogOpen} onOpenChange={setAddCatechumenDialogOpen}>
+        <DialogContent className="sm:max-w-[460px]">
+          <DialogHeader>
+            <DialogTitle>{t('families.add_catechumen') || 'Adicionar Catequizando'}</DialogTitle>
+            <DialogDescription>
+              {t('families.add_catechumen_desc') || 'Selecione um catequizando para vincular a esta família.'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">{t('catechumens.title') || 'Catequizando'}</label>
+              <Select value={selectedCatechumenId} onValueChange={setSelectedCatechumenId}>
+                <SelectTrigger>
+                  <SelectValue placeholder={t('families.select_catechumen_placeholder') || 'Selecione um catequizando'} />
+                </SelectTrigger>
+                <SelectContent>
+                  {unlinkedCatechumens.map((c: any) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.firstName} {c.lastName} ({c.birthDate ? new Date(c.birthDate).toLocaleDateString() : 'Sem data de nascimento'})
+                    </SelectItem>
+                  ))}
+                  {unlinkedCatechumens.length === 0 && (
+                    <div className="p-2 text-sm text-muted-foreground text-center">
+                      {t('families.no_unlinked_catechumens')}
+                    </div>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAddCatechumenDialogOpen(false)} disabled={linkingCatechumen}>
+              {t('cancel')}
+            </Button>
+            <Button onClick={handleLinkCatechumen} disabled={!selectedCatechumenId || linkingCatechumen}>
+              {linkingCatechumen && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {t('families.add') || 'Adicionar'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Confirm Remove Catechumen ── */}
+      <ConfirmDialog
+        open={confirmRemoveCatechumenOpen}
+        onOpenChange={setConfirmRemoveCatechumenOpen}
+        title={t('families.remove_catechumen_title') || 'Desvincular Catequizando'}
+        description={t('families.remove_catechumen_desc') || 'Tem certeza que deseja remover este catequizando desta família?'}
+        confirmLabel={t('remove') || 'Remover'}
+        variant="destructive"
+        onConfirm={handleRemoveCatechumen}
+        loading={removingCatechumenLoading}
       />
     </AppShell>
   );

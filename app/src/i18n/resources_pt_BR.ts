@@ -116,6 +116,7 @@ export const ai_pt_BR = {
     "planner": {
       "title": "Gerador Inteligente de Encontros",
       "subtitle": "Crie roteiros de catequese completos com IA",
+      "credits_left": "{{count}} créditos de IA restantes",
       "credits_remaining": "{{count}} créditos de IA restantes",
       "upgrade": "Fazer upgrade",
       "class_meeting_theme": "Encontro da turma",
@@ -240,13 +241,22 @@ export const attendance_pt_BR = {
       "totals": "Totais",
       "mark_error": "Erro ao marcar presença: {{message}}",
       "create_meeting_error": "Erro ao criar encontro: {{message}}",
+      "filter_students": "Filtrar alunos...",
       "no_permission": "Sem permissão.",
       "meetings_count": "{{count}} encontros",
       "present_letter": "P",
       "absent_letter": "F",
       "justified_letter": "A",
       "percent_column": "%",
-      "no_title": "—"
+      "no_title": "—",
+      "mark_all_present": "Marcar todos como Presente",
+      "mark_all_absent": "Marcar todos como Falta",
+      "mark_all_present_confirm_title": "Marcar todos como Presente",
+      "mark_all_absent_confirm_title": "Marcar todos como Falta",
+      "mark_all_present_confirm_desc": "Deseja realmente marcar todos os {{count}} catequizandos como PRESENTES no encontro \"{{meetingTitle}}\"? Isso sobrescreverá registros individuais.",
+      "mark_all_absent_confirm_desc": "Deseja realmente marcar todos os {{count}} catequizandos como FALTAS no encontro \"{{meetingTitle}}\"? Isso sobrescreverá registros individuais.",
+      "bulk_success": "Presenças atualizadas com sucesso!",
+      "bulk_partial_error": "Falha ao registrar para {{failedCount}} de {{total}} catequizandos."
     }
   } as const;
 
@@ -780,6 +790,9 @@ export const classes_pt_BR = {
 export const common_pt_BR = {
     "app_name": "Catequese Viva",
     "app_tagline": "Plataforma pastoral de iniciação cristã",
+    "toggle_dark_mode": "Alternar modo escuro",
+    "open_main_menu": "Abrir menu principal",
+    "parish": "Paróquia",
     "save": "Salvar",
     "cancel": "Cancelar",
     "delete": "Excluir",
@@ -1005,6 +1018,7 @@ export const common_pt_BR = {
     "first_name": "Nome",
     "last_name": "Sobrenome",
     "email": "E-mail",
+    "email_placeholder": "email@exemplo.com",
     "phone": "Telefone",
     "phone_placeholder": "(11) 99999-9999",
     "cep_placeholder": "00000-000",
@@ -1040,6 +1054,10 @@ export const common_pt_BR = {
       "add_photo": "Clique para adicionar foto",
       "birth_short": "Nascimento",
       "photo_alt": "Foto",
+      "title": "Catequizando",
+      "delete_title": "Excluir Catequizando",
+      "delete_confirm_desc": "Tem certeza que deseja excluir permanentemente este catequizando? Esta ação é irreversível e excluirá todos os registros de presença e sacramentos associados.",
+      "deleted_success": "Catequizando excluído com sucesso!",
       "import_title": "Importar Catequizandos",
       "import_subtitle": "Importe múltiplos catequizandos via CSV.",
       "import_format_title": "Formato esperado",
@@ -1055,6 +1073,11 @@ export const common_pt_BR = {
       "import_created": "criados com sucesso",
       "import_errors": "erros",
       "import_view_list": "Ver lista de catequizandos",
+      "import_preview": "Visualização dos dados",
+      "rows": "linhas",
+      "line": "Linha",
+      "empty": "Vazio",
+      "preview_showing_limit": "Exibindo as primeiras 50 linhas de {{total}}.",
       "detail_presence": "Presença",
       "detail_journeys": "Jornadas",
       "detail_progress": "Progresso",
@@ -1115,7 +1138,10 @@ export const common_pt_BR = {
         "MARRIAGE_SHORT": "Cert. Matrimônio",
         "PASTORAL_SHORT": "Carta Pastoral",
         "OTHER_SHORT": "Outro"
-      }
+      },
+      "detail_access_denied": "Você não tem acesso a este catequizando.",
+      "detail_load_error": "Erro ao carregar catequizando.",
+      "back_to_list": "Voltar para lista"
     },
     "families": {
       "subtitle_registered": "{{count}} famílias cadastradas",
@@ -1183,7 +1209,16 @@ export const common_pt_BR = {
       "name_label": "Nome da família *",
       "name_placeholder": "Ex: Família Silva",
       "create_family": "Criar família",
-      "create_new_family": "Criar nova família"
+      "create_new_family": "Criar nova família",
+      "add_catechumen": "Adicionar Catequizando",
+      "add_catechumen_desc": "Selecione um catequizando para vincular a esta família.",
+      "select_catechumen_placeholder": "Selecione um catequizando...",
+      "remove_catechumen_title": "Desvincular Catequizando",
+      "remove_catechumen_desc": "Tem certeza que deseja remover este catequizando desta família?",
+      "catechumen_linked_success": "Catequizando adicionado com sucesso!",
+      "catechumen_removed_success": "Catequizando removido com sucesso.",
+      "no_unlinked_catechumens": "Nenhum catequizando sem família encontrado nesta paróquia.",
+      "view_families_cta": "Vincular a Famílias"
     },
     "global_search_placeholder": "Buscar catequizandos, turmas, conteúdos, Bíblia...",
     "two_factor_code_placeholder": "Código de 6 dígitos",
@@ -3081,6 +3116,7 @@ export const sacraments_pt_BR = {
       "deadline": "Prazo: {{date}}",
       "deadline_overdue": " — vencido",
       "add_notes": "Adicionar notas...",
+      "file_too_large": "Arquivo muito grande. O tamanho máximo é {{max}}MB.",
       "no_notes": "Sem notas",
       "edit_notes": "Editar notas",
       "view_evidence": "Ver evidência",

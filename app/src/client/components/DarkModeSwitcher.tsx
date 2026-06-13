@@ -2,10 +2,12 @@ import { Moon, Sun } from "lucide-react";
 import { Label } from "../../client/components/ui/label";
 import useColorMode from "../hooks/useColorMode";
 import { cn } from "../utils";
+import { useTranslation } from "react-i18next";
 
 const DarkModeSwitcher = () => {
   const [colorMode, setColorMode] = useColorMode();
   const isInLightMode = colorMode === "light";
+  const { t } = useTranslation('common');
 
   return (
     <div>
@@ -16,7 +18,7 @@ const DarkModeSwitcher = () => {
       >
         <input
           type="checkbox"
-          aria-label="Alternar modo escuro"
+          aria-label={t('toggle_dark_mode')}
           onChange={() => {
             if (typeof setColorMode === "function") {
               setColorMode(isInLightMode ? "dark" : "light");

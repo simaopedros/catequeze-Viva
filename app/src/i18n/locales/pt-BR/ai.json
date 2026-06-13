@@ -2,6 +2,7 @@
   "planner": {
     "title": "Gerador Inteligente de Encontros",
     "subtitle": "Crie roteiros de catequese completos com IA",
+    "credits_left": "{{count}} créditos de IA restantes",
     "credits_remaining": "{{count}} créditos de IA restantes",
     "upgrade": "Fazer upgrade",
     "class_meeting_theme": "Encontro da turma",

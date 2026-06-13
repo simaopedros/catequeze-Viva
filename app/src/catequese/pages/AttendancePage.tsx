@@ -15,6 +15,7 @@ import { useQuery, getClassDetails, getClassAttendanceMatrix, saveAttendance, cr
 import { toast } from '../../client/hooks/use-toast';
 import { useLocale } from '../../i18n/useLocale';
 import { formatDate } from '../../i18n/format';
+import { ConfirmDialog } from '../../client/components/ConfirmDialog';
 
 const STATUS_KEYS = ['PRESENT', 'LATE', 'ABSENT', 'JUSTIFIED'] as const;
 const STATUS_COLORS: Record<string, string> = {
@@ -103,11 +104,89 @@ export default function AttendancePage() {
     setSaving(key);
     try {
       await saveAttendance({ meetingId, catechumenProfileId: catechumenId, status });
-      setMatrix(prev => ({ ...prev, [meetingId]: { ...prev[meetingId], [catechumenId]: status } }));
+      setMatrix(prev => {
+        const nextMatrix = { ...prev, [meetingId]: { ...(prev[meetingId] || {}), [catechumenId]: status } };
+        
+        // Recalculate stats for this meeting
+        setStats(prevStats => {
+          const newStats = { total: catechumens.length, presentes: 0, abonados: 0, faltas: 0 };
+          Object.entries(nextMatrix[meetingId] || {}).forEach(([catId, s]) => {
+            if (s === 'PRESENT') newStats.presentes++;
+            else if (s === 'JUSTIFIED') newStats.abonados++;
+            else if (s === 'ABSENT') newStats.faltas++;
+          });
+          return { ...prevStats, [meetingId]: newStats };
+        });
+
+        return nextMatrix;
+      });
     } catch (e: any) {
       toast({ title: t('matrix.mark_error', { message: e.message || t('matrix.no_permission') }) });
     }
     setSaving(null);
+  };
+
+  // Bulk state & handlers
+  const [confirmBulkOpen, setConfirmBulkOpen] = useState(false);
+  const [bulkTarget, setBulkTarget] = useState<{ meetingId: string; meetingTitle: string; status: 'PRESENT' | 'ABSENT' } | null>(null);
+  const [bulkSaving, setBulkSaving] = useState(false);
+
+  const triggerBulkAction = (meetingId: string, meetingTitle: string, status: 'PRESENT' | 'ABSENT') => {
+    setBulkTarget({ meetingId, meetingTitle, status });
+    setConfirmBulkOpen(true);
+  };
+
+  const handleBulkAction = async () => {
+    if (!bulkTarget) return;
+    setBulkSaving(true);
+    const { meetingId, status } = bulkTarget;
+    try {
+      const results = await Promise.allSettled(
+        catechumens.map((cat: { id: string }) => saveAttendance({ meetingId, catechumenProfileId: cat.id, status }))
+      );
+
+      const failedCount = results.filter(r => r.status === 'rejected').length;
+
+      // Update local state for those that succeeded
+      setMatrix(prev => {
+        const updated = { ...(prev[meetingId] || {}) };
+        results.forEach((r, idx) => {
+          if (r.status === 'fulfilled') {
+            const cat = catechumens[idx];
+            updated[cat.id] = status;
+          }
+        });
+        
+        // Recalculate stats for this meeting
+        setStats(prevStats => {
+          const newStats = { total: catechumens.length, presentes: 0, abonados: 0, faltas: 0 };
+          Object.entries(updated).forEach(([catId, s]) => {
+            if (s === 'PRESENT') newStats.presentes++;
+            else if (s === 'JUSTIFIED') newStats.abonados++;
+            else if (s === 'ABSENT') newStats.faltas++;
+          });
+          return { ...prevStats, [meetingId]: newStats };
+        });
+
+        return { ...prev, [meetingId]: updated };
+      });
+
+      if (failedCount > 0) {
+        toast({
+          title: tc('error'),
+          description: t('matrix.bulk_partial_error', { failedCount, total: catechumens.length }),
+          variant: 'destructive',
+        });
+      } else {
+        toast({ title: t('matrix.bulk_success') || 'Presenças atualizadas com sucesso!' });
+      }
+    } catch (e: any) {
+      toast({ title: tc('error'), description: e.message || tc('error_generic'), variant: 'destructive' });
+    } finally {
+      setBulkSaving(false);
+      setConfirmBulkOpen(false);
+      setBulkTarget(null);
+    }
   };
 
   const handleCreateMeeting = async () => {
@@ -187,26 +266,12 @@ export default function AttendancePage() {
                 <div key={m.id} className="flex items-center gap-1 text-xs bg-muted/30 rounded-lg px-2 py-1">
                   <span className="text-muted-foreground truncate max-w-[120px]">{formatDate(m.date, currentLocale, { day: '2-digit', month: '2-digit' })}</span>
                   <button
-                    onClick={async () => {
-                      for (const cat of catechumens) await saveAttendance({ meetingId: m.id, catechumenProfileId: cat.id, status: 'PRESENT' }).catch(() => {});
-                      setMatrix(prev => {
-                        const updated = { ...(prev[m.id] || {}) };
-                        catechumens.forEach((cat: any) => { updated[cat.id] = 'PRESENT'; });
-                        return { ...prev, [m.id]: updated };
-                      });
-                    }}
+                    onClick={() => triggerBulkAction(m.id, m.title || formatDate(m.date, currentLocale, { day: '2-digit', month: '2-digit' }), 'PRESENT')}
                     className="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400"
                     title={t('matrix.mark_all_present')}
                   >✓{t('matrix.present_letter')}</button>
                   <button
-                    onClick={async () => {
-                      for (const cat of catechumens) await saveAttendance({ meetingId: m.id, catechumenProfileId: cat.id, status: 'ABSENT' }).catch(() => {});
-                      setMatrix(prev => {
-                        const updated = { ...(prev[m.id] || {}) };
-                        catechumens.forEach((cat: any) => { updated[cat.id] = 'ABSENT'; });
-                        return { ...prev, [m.id]: updated };
-                      });
-                    }}
+                    onClick={() => triggerBulkAction(m.id, m.title || formatDate(m.date, currentLocale, { day: '2-digit', month: '2-digit' }), 'ABSENT')}
                     className="px-1.5 py-0.5 rounded bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-950/40 dark:text-red-400"
                     title={t('matrix.mark_all_absent')}
                   >✗{t('matrix.absent_letter')}</button>
@@ -313,6 +378,19 @@ export default function AttendancePage() {
           </>
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmBulkOpen}
+        onOpenChange={setConfirmBulkOpen}
+        title={bulkTarget?.status === 'PRESENT' ? t('matrix.mark_all_present_confirm_title') || 'Marcar todos como Presente' : t('matrix.mark_all_absent_confirm_title') || 'Marcar todos como Falta'}
+        description={bulkTarget?.status === 'PRESENT'
+          ? t('matrix.mark_all_present_confirm_desc', { count: catechumens.length, meetingTitle: bulkTarget?.meetingTitle })
+          : t('matrix.mark_all_absent_confirm_desc', { count: catechumens.length, meetingTitle: bulkTarget?.meetingTitle })}
+        confirmLabel={t('confirm') || 'Confirmar'}
+        variant={bulkTarget?.status === 'ABSENT' ? 'destructive' : 'default'}
+        onConfirm={handleBulkAction}
+        loading={bulkSaving}
+      />
     </AppShell>
   );
 }

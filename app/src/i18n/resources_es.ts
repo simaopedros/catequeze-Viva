@@ -116,6 +116,7 @@ export const ai_es = {
     "planner": {
       "title": "Generador Inteligente de Encuentros",
       "subtitle": "Cree guiones de catequesis completos con IA",
+      "credits_left": "{{count}} créditos de IA restantes",
       "credits_remaining": "{{count}} créditos de IA restantes",
       "upgrade": "Actualizar",
       "class_meeting_theme": "Encuentro del grupo",
@@ -240,13 +241,22 @@ export const attendance_es = {
       "totals": "Totales",
       "mark_error": "Error al marcar asistencia: {{message}}",
       "create_meeting_error": "Error al crear encuentro: {{message}}",
+      "filter_students": "Filtrar alumnos...",
       "no_permission": "Sin permiso.",
       "meetings_count": "{{count}} encuentros",
       "present_letter": "P",
       "absent_letter": "F",
       "justified_letter": "J",
       "percent_column": "%",
-      "no_title": "—"
+      "no_title": "—",
+      "mark_all_present": "Marcar todos como Presente",
+      "mark_all_absent": "Marcar todos como Ausente",
+      "mark_all_present_confirm_title": "Marcar todos como Presente",
+      "mark_all_absent_confirm_title": "Marcar todos como Ausente",
+      "mark_all_present_confirm_desc": "¿Realmente desea marcar a todos los {{count}} catecúmenos como PRESENTES en el encuentro \"{{meetingTitle}}\"? Esto sobrescribirá los registros individuales.",
+      "mark_all_absent_confirm_desc": "¿Realmente desea marcar a todos los {{count}} catecúmenos como AUSENTES en el encuentro \"{{meetingTitle}}\"? Esto sobrescribirá los registros individuales.",
+      "bulk_success": "¡Asistencias registradas con éxito!",
+      "bulk_partial_error": "Error al registrar la asistencia para {{failedCount}} de {{total}} catecúmenos."
     }
   } as const;
 
@@ -780,6 +790,9 @@ export const classes_es = {
 export const common_es = {
     "app_name": "Catequesis Viva",
     "app_tagline": "Plataforma pastoral de iniciación cristiana",
+    "toggle_dark_mode": "Alternar modo oscuro",
+    "open_main_menu": "Abrir menú principal",
+    "parish": "Parroquia",
     "save": "Guardar",
     "cancel": "Cancelar",
     "delete": "Eliminar",
@@ -1005,6 +1018,7 @@ export const common_es = {
     "first_name": "Nombre",
     "last_name": "Apellido",
     "email": "Email",
+    "email_placeholder": "email@ejemplo.com",
     "phone": "Teléfono",
     "phone_placeholder": "(11) 99999-9999",
     "cep_placeholder": "00000-000",
@@ -1029,6 +1043,10 @@ export const common_es = {
       "name_required_error": "Nombre y apellido son obligatorios.",
       "created_success": "¡Catecúmeno registrado con éxito!",
       "create_error": "Error al registrar catecúmeno.",
+      "title": "Catecúmeno",
+      "delete_title": "Eliminar Catecúmeno",
+      "delete_confirm_desc": "¿Está seguro de que desea eliminar permanentemente este catecúmeno? Esta acción es irreversible y eliminará todos los registros de asistencia y sacramentos asociados.",
+      "deleted_success": "¡Catecúmeno eliminado con éxito!",
       "birth_date": "Fecha de nacimiento",
       "family": "Familia",
       "first_name_placeholder": "Ej: Juan",
@@ -1055,6 +1073,11 @@ export const common_es = {
       "import_created": "creados con éxito",
       "import_errors": "errores",
       "import_view_list": "Ver lista de catecúmenos",
+      "import_preview": "Visualización de los datos",
+      "rows": "filas",
+      "line": "Línea",
+      "empty": "Vacío",
+      "preview_showing_limit": "Mostrando las primeras 50 filas de {{total}}.",
       "detail_presence": "Asistencia",
       "detail_journeys": "Jornadas",
       "detail_progress": "Progreso",
@@ -1115,7 +1138,10 @@ export const common_es = {
         "MARRIAGE_SHORT": "Cert. Matrimonio",
         "PASTORAL_SHORT": "Carta Pastoral",
         "OTHER_SHORT": "Otro"
-      }
+      },
+      "detail_access_denied": "No tienes acceso a este catecúmeno.",
+      "detail_load_error": "Error al cargar catecúmeno.",
+      "back_to_list": "Volver a la lista"
     },
     "families": {
       "subtitle_registered": "{{count}} familias registradas",
@@ -1183,7 +1209,16 @@ export const common_es = {
       "name_label": "Nombre de la familia *",
       "name_placeholder": "Ej: Familia García",
       "create_family": "Crear familia",
-      "create_new_family": "Crear nueva familia"
+      "create_new_family": "Crear nueva familia",
+      "add_catechumen": "Añadir Catecúmeno",
+      "add_catechumen_desc": "Seleccione un catecúmeno para vincular a esta familia.",
+      "select_catechumen_placeholder": "Seleccione un catecúmeno...",
+      "remove_catechumen_title": "Desvincular Catecúmeno",
+      "remove_catechumen_desc": "¿Está seguro de que desea eliminar a este catecúmeno de esta familia?",
+      "catechumen_linked_success": "¡Catecúmeno añadido con éxito!",
+      "catechumen_removed_success": "Catecúmeno eliminado con éxito.",
+      "no_unlinked_catechumens": "No se encontraron catecúmenos sin familia en esta parroquia.",
+      "view_families_cta": "Vincular a Familias"
     },
     "global_search_placeholder": "Buscar catequizandos, clases, contenidos, Biblia...",
     "two_factor_code_placeholder": "Código de 6 dígitos",
@@ -3081,6 +3116,7 @@ export const sacraments_es = {
       "deadline": "Plazo: {{date}}",
       "deadline_overdue": " — vencido",
       "add_notes": "Agregar notas...",
+      "file_too_large": "Archivo demasiado grande. El tamaño máximo es {{max}}MB.",
       "no_notes": "Sin notas",
       "edit_notes": "Editar notas",
       "view_evidence": "Ver evidencia",

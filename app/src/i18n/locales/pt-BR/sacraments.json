@@ -72,6 +72,7 @@
     "deadline": "Prazo: {{date}}",
     "deadline_overdue": " — vencido",
     "add_notes": "Adicionar notas...",
+    "file_too_large": "Arquivo muito grande. O tamanho máximo é {{max}}MB.",
     "no_notes": "Sem notas",
     "edit_notes": "Editar notas",
     "view_evidence": "Ver evidência",
