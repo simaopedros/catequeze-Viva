@@ -17,8 +17,10 @@ function isCatechist(role: string): boolean {
   return ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST'].includes(role);
 }
 
-export const listClasses = async (_args: { communityId?: string; workspaceId?: string } | void, context: any) => {
+export const listClasses = async (_args: { communityId?: string; workspaceId?: string; take?: number; skip?: number } | void, context: any) => {
   const args = _args || {};
+  const take = args.take ?? 50;
+  const skip = args.skip ?? 0;
   if (!context.user) throw new HttpError(401);
 
   if (context.user.isAdmin) {
@@ -28,6 +30,8 @@ export const listClasses = async (_args: { communityId?: string; workspaceId?: s
     return context.entities.CatechesisClass.findMany({
       where: whereAdmin,
       orderBy: { name: 'asc' },
+      take,
+      skip,
       include: {
         parish: { select: { id: true, name: true } },
         community: { select: { id: true, name: true } },
@@ -87,6 +91,8 @@ export const listClasses = async (_args: { communityId?: string; workspaceId?: s
     return context.entities.CatechesisClass.findMany({
       where: whereCoords,
       orderBy: { name: 'asc' },
+      take,
+      skip,
       include: {
         parish: { select: { id: true, name: true } },
         community: { select: { id: true, name: true } },
@@ -117,6 +123,8 @@ export const listClasses = async (_args: { communityId?: string; workspaceId?: s
     return context.entities.CatechesisClass.findMany({
       where: whereCatechist,
       orderBy: { name: 'asc' },
+      take,
+      skip,
       include: {
         parish: { select: { id: true, name: true } },
         community: { select: { id: true, name: true } },
@@ -146,6 +154,8 @@ export const listClasses = async (_args: { communityId?: string; workspaceId?: s
       return context.entities.CatechesisClass.findMany({
         where: whereGuardian,
         orderBy: { name: 'asc' },
+        take,
+        skip,
         include: {
           parish: { select: { id: true, name: true } },
           community: { select: { id: true, name: true } },
@@ -176,6 +186,8 @@ export const listClasses = async (_args: { communityId?: string; workspaceId?: s
       return context.entities.CatechesisClass.findMany({
         where: whereCatechumen,
         orderBy: { name: 'asc' },
+        take,
+        skip,
         include: {
           parish: { select: { id: true, name: true } },
           community: { select: { id: true, name: true } },
@@ -194,6 +206,8 @@ export const listClasses = async (_args: { communityId?: string; workspaceId?: s
     return context.entities.CatechesisClass.findMany({
       where: whereViewer,
       orderBy: { name: 'asc' },
+      take,
+      skip,
       include: {
         parish: { select: { id: true, name: true } },
         community: { select: { id: true, name: true } },
@@ -211,6 +225,8 @@ export const listClasses = async (_args: { communityId?: string; workspaceId?: s
     return context.entities.CatechesisClass.findMany({
       where: wherePersonal,
       orderBy: { name: 'asc' },
+      take,
+      skip,
       include: {
         parish: { select: { id: true, name: true } },
         community: { select: { id: true, name: true } },

@@ -1,41 +1,7 @@
 import { HttpError } from 'wasp/server';
 import { MembershipStatus, CatechistAssignmentRole } from '@prisma/client';
-import { assertCanAccessCatechumenProfile, getDioceseParishIds } from '../auth/helpers';
-
-function isCoordinatorOrAbove(role: string): boolean {
-  return ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(role);
-}
-
-function isCatechist(role: string): boolean {
-  return ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST'].includes(role);
-}
-
-async function getParishIds(context: any): Promise<string[]> {
-  const memberships = await context.entities.Membership.findMany({
-    where: { userId: context.user.id, status: MembershipStatus.ACTIVE },
-    select: { parishId: true, role: true },
-  });
-  const ids = memberships.map((m: any) => m.parishId);
-
-  // Include personal workspace
-  const personal = await context.entities.Parish.findFirst({
-    where: { ownerId: context.user.id, type: 'PERSONAL' },
-    select: { id: true },
-  });
-  if (personal && !ids.includes(personal.id)) {
-    ids.push(personal.id);
-  }
-
-  // DIOCESE_ADMIN: include all parishes in the diocese
-  if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
-    const dioceseParishIds = await getDioceseParishIds(context);
-    for (const id of dioceseParishIds) {
-      if (!ids.includes(id)) ids.push(id);
-    }
-  }
-
-  return ids;
-}
+import { assertCanAccessCatechumenProfile } from '../auth/helpers';
+import { resolveUserScope, isCoordinatorOrAbove, isCatechist } from './sharedScope';
 
 export const listCatechumens = async (_args: void, context: any) => {
   if (!context.user) throw new HttpError(401);
@@ -50,22 +16,7 @@ export const listCatechumens = async (_args: void, context: any) => {
     });
   }
 
-  const memberships = await context.entities.Membership.findMany({
-    where: { userId: context.user.id, status: MembershipStatus.ACTIVE },
-    select: { parishId: true, role: true },
-  });
-
-  const roles = memberships.map((m: any) => m.role);
-  const parishIds = await getParishIds(context);
-
-  // Check if user has personal workspace (adds PERSONAL_OWNER virtual role)
-  const personalWorkspace = await context.entities.Parish.findFirst({
-    where: { ownerId: context.user.id, type: 'PERSONAL' },
-    select: { id: true },
-  });
-  if (personalWorkspace) {
-    if (!roles.includes('PERSONAL_OWNER')) roles.push('PERSONAL_OWNER');
-  }
+  const { parishIds, roles } = await resolveUserScope(context);
 
   if (parishIds.length === 0) return [];
 

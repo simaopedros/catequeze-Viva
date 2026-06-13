@@ -71,12 +71,17 @@ async function assertCanModifyContent(context: any, item: { parishId?: string | 
   }
 }
 
-export const listContentItems = async (_args: void, context: any) => {
+export const listContentItems = async (_args: { take?: number; skip?: number } | void, context: any) => {
+  const args = _args || {};
+  const take = args.take ?? 50;
+  const skip = args.skip ?? 0;
   if (!context.user) throw new HttpError(401);
 
   if (context.user.isAdmin) {
     return context.entities.ContentItem.findMany({
       orderBy: { updatedAt: 'desc' },
+      take,
+      skip,
       include: {
         createdBy: { select: { id: true, firstName: true, lastName: true } },
         _count: { select: { activities: true, meetings: true } },
@@ -90,6 +95,8 @@ export const listContentItems = async (_args: void, context: any) => {
   return context.entities.ContentItem.findMany({
     where: { parishId: { in: parishIds } },
     orderBy: { updatedAt: 'desc' },
+    take,
+    skip,
     include: {
       createdBy: { select: { id: true, firstName: true, lastName: true } },
       _count: { select: { activities: true, meetings: true } },

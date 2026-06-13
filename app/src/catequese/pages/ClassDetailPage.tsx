@@ -29,12 +29,18 @@ export default function ClassDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: cls, isLoading: loading, error: classError, refetch: refetchClass } = useQuery(getClassDetails, { id: id! });
-  const { data: allCatechumens = [] } = useQuery(listCatechumens);
   const { data: user } = useAuth();
   const { userRole, parishId } = useUserContext();
-  const { availableParishes, isPersonal } = useActiveParish();
-  const { data: parishCatechists = [] } = useQuery(listParishCatechists, { parishId: cls?.parish?.id || '' }, { enabled: !!cls?.parish?.id });
   const [tab,setTab]=useState<'inscritos'|'encontros'|'catequistas'|'planejamento'>('inscritos');
+
+  const isCoordinator = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(userRole);
+  const isLeadCatechist = !!(cls?.catechists || []).find((cc: any) => cc.userId === user?.id && cc.role === 'LEAD');
+  const isClassCatechist = !!(cls?.catechists || []).find((cc: any) => cc.userId === user?.id);
+  const canEnroll = isCoordinator || isClassCatechist;
+
+  const { data: allCatechumens = [] } = useQuery(listCatechumens, undefined, { enabled: tab === 'inscritos' && canEnroll });
+  const { availableParishes, isPersonal } = useActiveParish();
+  const { data: parishCatechists = [] } = useQuery(listParishCatechists, { parishId: cls?.parish?.id || '' }, { enabled: !!cls?.parish?.id && tab === 'catequistas' });
   const [monthlyPlan, setMonthlyPlan] = useState<any>(null);
   const [loadingPlan, setLoadingPlan] = useState(false);
   const [chatting, setChatting] = useState(false);
@@ -193,12 +199,8 @@ export default function ClassDetailPage() {
     }
   };
 
-  const isCoordinator = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(userRole);
-  const isLeadCatechist = !!(cls?.catechists || []).find((cc: any) => cc.userId === user?.id && cc.role === 'LEAD');
-  const isClassCatechist = !!(cls?.catechists || []).find((cc: any) => cc.userId === user?.id);
   const canManageClass = isCoordinator || isLeadCatechist;
   const canManageCatechists = isCoordinator || isLeadCatechist;
-  const canEnroll = isCoordinator || isClassCatechist;
 
   const classCatechistUserIds = new Set((cls?.catechists || []).map((cc: any) => cc.userId));
   const availableCatechists = parishCatechists.filter((m: any) => !classCatechistUserIds.has(m.userId));

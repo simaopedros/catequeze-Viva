@@ -72,23 +72,24 @@ export const getCurrentUserContext = async (
   if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN' && m.status === 'ACTIVE')) {
     const dioceseParishIds = await getDioceseParishIds(context);
     const existingIds = new Set(result.map((m: any) => m.parishId));
-    for (const parishId of dioceseParishIds) {
-      if (existingIds.has(parishId)) continue;
-      const parish = await context.entities.Parish.findUnique({
-        where: { id: parishId },
+    const missingIds = dioceseParishIds.filter((id: string) => !existingIds.has(id));
+    if (missingIds.length > 0) {
+      const parishes = await context.entities.Parish.findMany({
+        where: { id: { in: missingIds } },
         select: { id: true, name: true, type: true },
       });
-      if (!parish) continue;
-      result.push({
-        id: `virtual-diocese-${parish.id}`,
-        parishId: parish.id,
-        parishName: parish.name,
-        role: 'DIOCESE_ADMIN',
-        status: 'ACTIVE',
-        communityId: null,
-        communityName: null,
-        parishType: parish.type,
-      });
+      for (const parish of parishes) {
+        result.push({
+          id: `virtual-diocese-${parish.id}`,
+          parishId: parish.id,
+          parishName: parish.name,
+          role: 'DIOCESE_ADMIN',
+          status: 'ACTIVE',
+          communityId: null,
+          communityName: null,
+          parishType: parish.type,
+        });
+      }
     }
   }
 

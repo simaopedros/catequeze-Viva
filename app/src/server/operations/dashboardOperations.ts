@@ -1,45 +1,13 @@
 import { HttpError } from 'wasp/server';
 import { getDioceseParishIds } from '../auth/helpers';
+import { resolveUserScope } from './sharedScope';
 
 export const getDashboardStats = async (args: { parishId?: string }, context: any) => {
   if (!context.user) throw new HttpError(401);
 
   const isAdmin = context.user.isAdmin;
 
-  // ─── Phase 1: Scope resolution (sequential — must resolve permissions first) ──
-  const memberships = await context.entities.Membership.findMany({
-    where: { userId: context.user.id, status: 'ACTIVE' },
-    select: { parishId: true, role: true },
-  });
-  const parishIds = memberships.map((m: any) => m.parishId);
-  const roles = memberships.map((m: any) => m.role);
-
-  // Include personal workspace
-  let personalWorkspaceId: string | null = null;
-  if (!isAdmin) {
-    const personal = await context.entities.Parish.findFirst({
-      where: { ownerId: context.user.id, type: 'PERSONAL' },
-      select: { id: true },
-    });
-    if (personal) {
-      personalWorkspaceId = personal.id;
-      if (!parishIds.includes(personal.id)) {
-        parishIds.push(personal.id);
-        roles.push('PERSONAL_OWNER');
-      }
-    }
-  }
-
-  // DIOCESE_ADMIN: include all parishes in the diocese for access validation
-  if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
-    const dioceseParishIds = await getDioceseParishIds(context);
-    for (const id of dioceseParishIds) {
-      if (!parishIds.includes(id)) {
-        parishIds.push(id);
-        roles.push('DIOCESE_ADMIN');
-      }
-    }
-  }
+  const { parishIds, roles, personalWorkspaceId } = await resolveUserScope(context);
 
   if (parishIds.length === 0 && !isAdmin) {
     return { activeCatechumens: 0, activeClasses: 0, avgAttendance: 0, pendingSacraments: 0, recentAlerts: [], aniversariantes: [], upcomingMeetings: [], reviewQueue: [], myClasses: [] };

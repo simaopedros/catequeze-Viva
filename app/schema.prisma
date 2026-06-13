@@ -744,6 +744,9 @@ model ContentItem {
   bibleRefs                 ContentBibleReference[]
   catechismRefs             ContentCatechismReference[]
   ContentDirectoryReference ContentDirectoryReference[]
+
+  @@index([parishId])
+  @@index([parishId, status])
 }
 
 model ContentBibleReference {
@@ -872,6 +875,7 @@ model SacramentalJourney {
   milestones SacramentalMilestone[]
 
   @@unique([catechumenProfileId, templateId])
+  @@index([catechumenProfileId])
 }
 
 model SacramentalMilestone {
@@ -892,6 +896,7 @@ model SacramentalMilestone {
   notes        String?
 
   @@unique([journeyId, templateMilestoneId])
+  @@index([journeyId])
 }
 
 // ─── Communication ────────────────────────────────────────────────────────────

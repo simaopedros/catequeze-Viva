@@ -776,30 +776,21 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
     const meetingIds = recentMeetings.map((m: any) => m.id);
     const catechumenIds = enrolledCatechumens.map((e: any) => e.catechumenProfileId).filter(Boolean);
 
-    const allRecords = catechumenIds.length > 0
-      ? await context.entities.AttendanceRecord.findMany({
+    const absenceCounts = catechumenIds.length > 0
+      ? await context.entities.AttendanceRecord.groupBy({
+          by: ['catechumenProfileId'],
           where: {
             catechumenProfileId: { in: catechumenIds },
             meetingId: { in: meetingIds },
+            status: { in: ['ABSENT', 'LATE'] },
           },
-          select: { catechumenProfileId: true, status: true },
+          _count: { id: true },
         })
       : [];
 
-    const recordsByCatechumen = new Map<string, string[]>();
-    for (const r of allRecords) {
-      if (!recordsByCatechumen.has(r.catechumenProfileId)) {
-        recordsByCatechumen.set(r.catechumenProfileId, []);
-      }
-      recordsByCatechumen.get(r.catechumenProfileId)!.push(r.status);
-    }
-
-    let atRiskCount = 0;
-    for (const catechumenId of catechumenIds) {
-      const statuses = recordsByCatechumen.get(catechumenId) || [];
-      const absences = statuses.filter((s: string) => ['ABSENT', 'LATE'].includes(s)).length;
-      if (absences >= 3) atRiskCount++;
-    }
+    const atRiskCount = (absenceCounts as any[]).filter(
+      (r: any) => r._count.id >= 3,
+    ).length;
 
     if (atRiskCount > 0) {
       alerts.push({
