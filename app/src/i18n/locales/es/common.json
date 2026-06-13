@@ -336,7 +336,10 @@
       "MARRIAGE_SHORT": "Cert. Matrimonio",
       "PASTORAL_SHORT": "Carta Pastoral",
       "OTHER_SHORT": "Otro"
-    }
+    },
+    "detail_access_denied": "No tienes acceso a este catecúmeno.",
+    "detail_load_error": "Error al cargar catecúmeno.",
+    "back_to_list": "Volver a la lista"
   },
   "families": {
     "subtitle_registered": "{{count}} familias registradas",

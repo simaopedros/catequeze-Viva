@@ -336,7 +336,10 @@
       "MARRIAGE_SHORT": "Marriage Cert.",
       "PASTORAL_SHORT": "Pastoral Letter",
       "OTHER_SHORT": "Other"
-    }
+    },
+    "detail_access_denied": "You don't have access to this catechumen.",
+    "detail_load_error": "Error loading catechumen.",
+    "back_to_list": "Back to list"
   },
   "families": {
     "subtitle_registered": "{{count}} families registered",

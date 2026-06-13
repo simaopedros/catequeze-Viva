@@ -43,7 +43,7 @@ export default function CatechumenDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { userRole } = useUserContext();
-  const { data: profile, isLoading: loading } = useQuery(getCatechumenProfile, { id: id! });
+  const { data: profile, isLoading: loading, error: queryError } = useQuery(getCatechumenProfile, { id: id! });
   const canEdit = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'PERSONAL_OWNER'].includes(userRole);
   const [attendance, setAttendance] = useState<any[]>([]);
   const [report, setReport] = useState<any>(null);
@@ -161,6 +161,27 @@ export default function CatechumenDetailPage() {
   },[profile]);
 
   if(loading)return <AppShell><div className="space-y-6 max-w-2xl mx-auto animate-pulse"><div className="flex items-center gap-4"><div className="h-16 w-16 rounded-full bg-muted"/><div className="h-8 w-40 bg-muted rounded"/></div><div className="grid gap-4 md:grid-cols-2">{[1,2,3,4].map(i=><div key={i} className="h-32 rounded-xl bg-muted"/>)}</div></div></AppShell>;
+  if(queryError) {
+    const status = (queryError as any)?.status;
+    const msg = (queryError as any)?.message || String(queryError);
+    const isForbidden = status === 403 || msg?.includes('não tem acesso');
+    return (
+      <AppShell>
+        <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4 text-center px-6">
+          <AlertTriangle className="h-12 w-12 text-destructive" />
+          <div>
+            <p className="text-lg font-semibold text-destructive">
+              {isForbidden ? t('catechumens.detail_access_denied') : t('catechumens.detail_load_error')}
+            </p>
+            <p className="text-sm text-muted-foreground mt-1">{msg}</p>
+          </div>
+          <Button variant="outline" asChild>
+            <Link to="/app/catechumens"><ArrowLeft className="mr-1 h-4 w-4"/>{t('catechumens.back_to_list')}</Link>
+          </Button>
+        </div>
+      </AppShell>
+    );
+  }
   if(!profile)return <AppShell><div className="p-6 text-destructive">{t('not_found')}</div></AppShell>;
 
   const getAge=(bd:string)=>{if(!bd)return null;const b=new Date(bd),n=new Date();let a=n.getFullYear()-b.getFullYear();if(n.getMonth()<b.getMonth()||(n.getMonth()===b.getMonth()&&n.getDate()<b.getDate()))a--;return a;};

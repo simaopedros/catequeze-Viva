@@ -336,7 +336,10 @@
       "MARRIAGE_SHORT": "Cert. Matrimônio",
       "PASTORAL_SHORT": "Carta Pastoral",
       "OTHER_SHORT": "Outro"
-    }
+    },
+    "detail_access_denied": "Você não tem acesso a este catequizando.",
+    "detail_load_error": "Erro ao carregar catequizando.",
+    "back_to_list": "Voltar para lista"
   },
   "families": {
     "subtitle_registered": "{{count}} famílias cadastradas",
