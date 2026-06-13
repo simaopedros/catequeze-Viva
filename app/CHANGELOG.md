@@ -119,7 +119,18 @@
 
 ### ⚡ Vendor Chunk Splitting
 
-- **`vite.config.ts`**: `manualChunks` isola `recharts` + `apexcharts` + `react-apexcharts` num chunk `charts` separado. Páginas públicas (login/landing) não carregam gráficos.
+- **`vite.config.ts`**: `manualChunks` (função) isola `recharts` + `apexcharts` + `react-apexcharts` num chunk `charts` separado (406 kB). Páginas públicas (login/landing) não carregam gráficos.
+- **Fix**: Objeto `manualChunks` trocado por função — o build SSR do Wasp marca `recharts` como externo, conflitando com o formato objeto. Função só é chamada para módulos internos.
+
+### 🚀 Deploy Produção (v1.0.2)
+
+- **Tag**: `v1.0.2` → CI build + Docker push (`prod-078a3ac`)
+- **Build Vite**: SSR 305 módulos (5.2s) + client 4406 módulos (17s)
+  - `charts-BQwnbJ1X.js` → 406 kB (isolado)
+  - `resources_en` → 103 kB, `resources_es` → 110 kB (chunks separados)
+  - Landing pages: ~4 kB cada (eram ~30 kB)
+- **Incidente**: Migration `20260612070000_add_locale_to_content_models` falhada (pré-existente) bloqueou arranque. Resolvida com `prisma migrate resolve --rolled-back`.
+- **Health check**: `{"status":"ok","database":"ok","ai":"ok"}` ✅
 
 ### 🧪 Testes
 
