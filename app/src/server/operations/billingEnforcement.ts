@@ -221,8 +221,16 @@ export async function resolveNewParishBilling(
     }
   }
 
-  const creatorActive = context.user?.subscriptionStatus === 'active';
-  const creatorPlan = (context.user?.subscriptionPlan || '').toLowerCase();
+  // Fetch fresh user from DB — context.user may be stale (cached at login)
+  const freshUser = context.user
+    ? await context.entities.User.findUnique({
+        where: { id: context.user.id },
+        select: { subscriptionStatus: true, subscriptionPlan: true },
+      })
+    : null;
+
+  const creatorActive = freshUser?.subscriptionStatus === 'active';
+  const creatorPlan = (freshUser?.subscriptionPlan || '').toLowerCase();
   if (creatorActive && isInstPlan(creatorPlan)) {
     return { skip: false, plan: creatorPlan.toUpperCase(), status: 'ACTIVE', trialEndsAt: null };
   }
@@ -318,9 +326,15 @@ export async function assertCanCreateParish(
   const coverage = await resolveNewParishBilling(context, { dioceseId: opts?.dioceseId ?? null });
   if (coverage.skip || isInstPlan(coverage.plan)) return;
 
-  const subscriptionActive = context.user.subscriptionStatus === 'active';
+  // Fetch fresh user from DB — context.user may be stale (cached at login)
+  const freshUser = await context.entities.User.findUnique({
+    where: { id: context.user.id },
+    select: { subscriptionStatus: true, subscriptionPlan: true },
+  });
+
+  const subscriptionActive = freshUser?.subscriptionStatus === 'active';
   const plan = subscriptionActive
-    ? context.user.subscriptionPlan || 'catechist_free'
+    ? freshUser?.subscriptionPlan || 'catechist_free'
     : 'catechist_free';
 
   const limits = getPlanLimits(plan);

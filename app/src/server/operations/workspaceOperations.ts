@@ -82,6 +82,12 @@ export const ensurePersonalWorkspace = async (_args: void, context: any) => {
 export const listWorkspaces = async (_args: void, context: any) => {
   if (!context.user) return [];
 
+  // Fetch fresh user from DB — context.user may be stale (cached at login)
+  const freshUser = await context.entities.User.findUnique({
+    where: { id: context.user.id },
+    select: { subscriptionStatus: true, subscriptionPlan: true },
+  });
+
   // Personal workspace — user's own parish with type=PERSONAL
   const personalWorkspace = await context.entities.Parish.findFirst({
     where: { ownerId: context.user.id, type: 'PERSONAL' },
@@ -124,7 +130,7 @@ export const listWorkspaces = async (_args: void, context: any) => {
       role: 'PERSONAL_OWNER',
       // Only honor the paid plan while the subscription is active — mirrors the
       // server-side enforcement in billingEnforcement.ts.
-      plan: getPersonalPlan(context.user),
+      plan: getPersonalPlan(freshUser),
       isPersonal: true,
     });
   }
@@ -266,8 +272,14 @@ export const getInstitutionalManageContext = async (_args: void, context: any) =
     dioceses.push({ id: diocese.id, name: diocese.name, licensed });
   }
 
-  const ownerActive = context.user.subscriptionStatus === 'active';
-  const ownerPlanRaw = (context.user.subscriptionPlan || '').toLowerCase();
+  // Fetch fresh user from DB — context.user may be stale (cached at login)
+  const freshUser = await context.entities.User.findUnique({
+    where: { id: context.user.id },
+    select: { subscriptionStatus: true, subscriptionPlan: true },
+  });
+
+  const ownerActive = freshUser?.subscriptionStatus === 'active';
+  const ownerPlanRaw = (freshUser?.subscriptionPlan || '').toLowerCase();
   const canCreateUnderOwnerPlan = ownerActive && (ownerPlanRaw === 'parish' || ownerPlanRaw === 'diocese');
 
   return {

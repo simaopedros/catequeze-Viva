@@ -138,6 +138,31 @@
 
 ---
 
+## 2026-06-13 — Correção: Plano de subscrição não refletido em limites e mensagens
+
+### 🐛 Bug — `context.user` cacheado (stale subscription data)
+
+- **`workspaceOperations.ts`** (`listWorkspaces`, `getInstitutionalManageContext`): `context.user` do Wasp é carregado no login e nunca atualizado. Alterações manuais de plano na DB não eram refletidas. Adicionado `findUnique` fresco à DB antes de ler `subscriptionPlan`/`subscriptionStatus`.
+- **`billingEnforcement.ts`** (`resolveNewParishBilling`, `assertCanCreateParish`): Mesmo problema — `context.user` substituído por fetch fresco da DB.
+
+### 🐛 Bug — Workspace pessoal sempre via limites do plano grátis na UI
+
+- **`ClassDetailPage.tsx`**: Resolvia o plano exclusivamente pelo `TenantBilling` da paróquia, que não existe para workspaces pessoais → plano sempre `CATECHIST_FREE`. Corrigido para usar `getPersonalPlanId(user)` quando `isPersonal === true`.
+
+### 🐛 Bug — Sugestão de upgrade "Paróquia" em vez de "Catequista Pro"
+
+- **`PlanLimitBanner.tsx`**: Comparação `plan === 'catechist_free'` era case-sensitive, mas `getEffectiveBillingPlan` retorna `'CATECHIST_FREE'` (uppercase). Adicionado `resolvePlanIdOrFree()` para normalizar antes da comparação.
+
+### Verificação
+
+| Verificação | Resultado |
+|-------------|-----------|
+| `wasp compile` | ✅ Sem erros |
+| `npm run test:unit` | ✅ 18/18 |
+| `npm run test:integration` (pricing) | ✅ 58/66 (8 falhas pré-existentes — dados de seed) |
+
+---
+
 ## Balanço Final do Sprint (4 Rondas)
 
 | Categoria | Itens |

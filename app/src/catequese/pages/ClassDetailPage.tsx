@@ -9,7 +9,7 @@ import { useQuery, getClassDetails, listCatechumens, enrollCatechumen, updateCla
 import { useAuth } from 'wasp/client/auth';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
-import { getPlanLimits, getEffectiveBillingPlan, isBillingActive } from '../../shared/planLimits';
+import { getPlanLimits, getEffectiveBillingPlan, getPersonalPlanId, isBillingActive } from '../../shared/planLimits';
 import { PlanLimitBanner } from '../components/PlanLimitBanner';
 import { handlePlanLimitError } from '../lib/planLimitToast';
 import { ConfirmDialog } from '../../client/components/ConfirmDialog';
@@ -32,7 +32,7 @@ export default function ClassDetailPage() {
   const { data: allCatechumens = [] } = useQuery(listCatechumens);
   const { data: user } = useAuth();
   const { userRole, parishId } = useUserContext();
-  const { availableParishes } = useActiveParish();
+  const { availableParishes, isPersonal } = useActiveParish();
   const { data: parishCatechists = [] } = useQuery(listParishCatechists, { parishId: cls?.parish?.id || '' }, { enabled: !!cls?.parish?.id });
   const [tab,setTab]=useState<'inscritos'|'encontros'|'catequistas'|'planejamento'>('inscritos');
   const [monthlyPlan, setMonthlyPlan] = useState<any>(null);
@@ -66,9 +66,13 @@ export default function ClassDetailPage() {
   );
 
   const parishBilling = availableParishes.find((p: any) => p.id === cls?.parish?.id)?.billing;
-  const effectivePlan = getEffectiveBillingPlan(parishBilling);
+  // Personal workspaces: use the user's personal subscription plan.
+  // Institutional workspaces: use parish/umbrella TenantBilling.
+  const effectivePlan = isPersonal
+    ? getPersonalPlanId(user)
+    : getEffectiveBillingPlan(parishBilling);
   const limits = getPlanLimits(effectivePlan);
-  const isParishManaged = !user?.subscriptionPlan && isBillingActive(parishBilling);
+  const isParishManaged = !isPersonal && !user?.subscriptionPlan && isBillingActive(parishBilling);
 
   useEffect(() => {
     if (cls) {

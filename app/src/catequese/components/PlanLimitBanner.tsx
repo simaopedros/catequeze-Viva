@@ -1,7 +1,7 @@
 import { AlertCircle, ArrowRight, Sparkles } from 'lucide-react';
 import { Link } from 'react-router';
 import { Button } from '../../client/components/ui/button';
-import { getPlanLimits, planName, LIMIT_LABELS, type PlanLimits } from '../../shared/planLimits';
+import { getPlanLimits, planName, LIMIT_LABELS, resolvePlanIdOrFree, type PlanLimits } from '../../shared/planLimits';
 
 interface PlanLimitBannerProps {
   type: 'class_limit' | 'catechumen_limit' | 'parish_limit';
@@ -21,8 +21,9 @@ export function PlanLimitBanner({ type, currentCount, userPlan, className, isPar
   if (maxAllowed === null || currentCount < maxAllowed) return null;
 
   const label = LIMIT_LABELS[type] || type;
+  const normalizedPlan = resolvePlanIdOrFree(plan);
   const currentPlanName = planName(plan);
-  const upgradePlan = plan === 'catechist_free' ? 'Catequista Pro' : 'Paróquia';
+  const upgradePlan = normalizedPlan === 'catechist_free' ? 'Catequista Pro' : 'Paróquia';
 
   return (
     <div className={`rounded-xl border border-warning/30 bg-warning/10 p-4 space-y-3 ${className || ''}`}>
