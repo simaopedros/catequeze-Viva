@@ -46,11 +46,11 @@ export default function ContactPage() {
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center gap-3 text-muted-foreground">
               <Mail className="h-5 w-5 text-primary" />
-              <span>contato@catequeseviva.com.br</span>
+              <span>contato@catechis.app</span>
             </div>
             <div className="flex items-center gap-3 text-muted-foreground">
               <Phone className="h-5 w-5 text-primary" />
-              <span>+55 (11) 0000-0000</span>
+              <span>+55 11 93930-7494</span>
             </div>
             <div className="flex items-center gap-3 text-muted-foreground">
               <MapPin className="h-5 w-5 text-primary" />
