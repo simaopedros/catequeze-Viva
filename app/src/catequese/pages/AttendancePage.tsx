@@ -141,7 +141,7 @@ export default function AttendancePage() {
 
   useEffect(() => {
     if (!meetings.length || !catechumens.length) return;
-    const key = JSON.stringify(meetings.map(m => [m.id, (m.attendance || []).map(r => r.catechumenProfileId + ':' + r.status).join(',')].join('|')));
+    const key = JSON.stringify(meetings.map((m: any) => [m.id, (m.attendance || []).map((r: any) => r.catechumenProfileId + ':' + r.status).join(',')].join('|')));
     if (key === lastProcessedRef.current) return;
     lastProcessedRef.current = key;
     const mat: Record<string, Record<string, string>> = {};
