@@ -1,0 +1,16 @@
+# Catequese Viva
+
+> [Catequese Viva](https://catechis.app) é um ecossistema completo de gestão e planejamento para a catequese católica paroquial. Combina ferramentas administrativas modernas com recursos de Inteligência Artificial para apoiar catequistas na evangelização.
+
+## Páginas Públicas Principais
+- [Página Inicial](https://catechis.app/) – Apresentação geral do ecossistema Catequese Viva.
+- [Catequese com IA](https://catechis.app/ia) – Detalhes sobre o planejador de encontros por Inteligência Artificial (gerador de dinâmicas, temas e atividades baseados no Catecismo e na Bíblia).
+- [Controle de Presença](https://catechis.app/presenca) – Apresentação da ferramenta de chamada digital, controle de faltas e engajamento dos catequizandos.
+- [Sistema de Gestão](https://catechis.app/sistema) – Informações para paróquias, dioceses e coordenação sobre cadastro de turmas, catequistas, sacramentos e relatórios.
+
+## Acesso e Cadastro
+- [Entrar (Catequistas / Coordenação)](https://catechis.app/login) – Portal para catequistas e administradores da paróquia.
+- [Criar Conta (Catequistas / Coordenação)](https://catechis.app/signup) – Registro de novos usuários de equipe.
+- [Portal da Família (Entrar)](https://familia.catechis.app/entrar) – Acesso dedicado para pais e responsáveis acompanharem a presença e atividades de seus filhos.
+- [Portal da Família (Criar Conta)](https://familia.catechis.app/criar-conta) – Cadastro inicial para familiares com código de convite da paróquia.
+
