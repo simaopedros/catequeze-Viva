@@ -278,6 +278,82 @@ export async function assertCanAccessCatechumenProfile(
   const roles = memberships.map((m: { role: string }) => m.role);
   const parishIds = memberships.map((m: { parishId: string }) => m.parishId);
 
+  // Coordinators and catechists have access based on parish/class scope —
+  // check these FIRST so they take precedence over guardian/self-access.
+  const hasManagementRole = roles.some((r: string) =>
+    (COORDINATOR_ROLES as readonly string[]).includes(r) ||
+    r === 'LEAD_CATECHIST' ||
+    r === 'ASSISTANT_CATECHIST'
+  );
+
+  if (hasManagementRole) {
+    const catechumen = await context.entities.CatechumenProfile.findUnique({
+      where: { id: catechumenId },
+      select: {
+        userId: true,
+        parishId: true,
+        enrollments: { select: { class: { select: { parishId: true, id: true } } } },
+        household: { select: { parishId: true } },
+      },
+    });
+    if (!catechumen) throw new HttpError(404, 'Catequizando não encontrado.');
+
+    // Check for PERSONAL_OWNER: user has access to catechumens in their personal workspace
+    const personalWorkspace = await context.entities.Parish.findFirst({
+      where: { ownerId: context.user.id, type: 'PERSONAL' },
+      select: { id: true },
+    });
+    const effectiveRoles = personalWorkspace ? [...roles, 'PERSONAL_OWNER'] : roles;
+    const effectiveParishIds = personalWorkspace && !parishIds.includes(personalWorkspace.id)
+      ? [...parishIds, personalWorkspace.id] : parishIds;
+
+    if (effectiveRoles.some((r: string) => (COORDINATOR_ROLES as readonly string[]).includes(r) || r === 'PERSONAL_OWNER')) {
+      const catechumenParishIds = [
+        catechumen.parishId,
+        catechumen.household?.parishId,
+        ...catechumen.enrollments.map((e: { class: { parishId: string } }) => e.class.parishId),
+      ].filter(Boolean) as string[];
+
+      if (!catechumenParishIds.some((pid) => effectiveParishIds.includes(pid))) {
+        throw new HttpError(403, 'Você não tem acesso a este catequizando.');
+      }
+      return;
+    }
+
+    if (roles.includes('ASSISTANT_CATECHIST')) {
+      const myClasses = await context.entities.ClassCatechist.findMany({
+        where: { userId: context.user.id, role: 'ASSISTANT' },
+        select: { classId: true },
+      });
+      const classIds = myClasses.map((cc: { classId: string }) => cc.classId);
+      const enrolled = await context.entities.ClassEnrollment.findFirst({
+        where: { catechumenProfileId: catechumenId, classId: { in: classIds } },
+      });
+      if (!enrolled) {
+        throw new HttpError(403, 'Você não tem acesso a este catequizando.');
+      }
+      return;
+    }
+
+    if (roles.includes('LEAD_CATECHIST')) {
+      const myClasses = await context.entities.ClassCatechist.findMany({
+        where: { userId: context.user.id },
+        select: { classId: true },
+      });
+      const classIds = myClasses.map((cc: { classId: string }) => cc.classId);
+      const enrolled = await context.entities.ClassEnrollment.findFirst({
+        where: { catechumenProfileId: catechumenId, classId: { in: classIds } },
+      });
+      if (!enrolled) {
+        throw new HttpError(403, 'Você não tem acesso a este catequizando.');
+      }
+      return;
+    }
+
+    throw new HttpError(403, 'Você não tem acesso a este catequizando.');
+  }
+
+  // Guardian and catechumen self-access: only checked when user has NO management role.
   if (roles.includes('GUARDIAN')) {
     const guardian = await context.entities.GuardianProfile.findUnique({
       where: { userId: context.user.id },
@@ -299,69 +375,6 @@ export async function assertCanAccessCatechumenProfile(
     });
     if (!catechumen || catechumen.userId !== context.user.id) {
       throw new HttpError(403, 'Você só pode ver seu próprio perfil.');
-    }
-    return;
-  }
-
-  const catechumen = await context.entities.CatechumenProfile.findUnique({
-    where: { id: catechumenId },
-    select: {
-      userId: true,
-      parishId: true,
-      enrollments: { select: { class: { select: { parishId: true, id: true } } } },
-      household: { select: { parishId: true } },
-    },
-  });
-  if (!catechumen) throw new HttpError(404, 'Catequizando não encontrado.');
-
-  // Check for PERSONAL_OWNER: user has access to catechumens in their personal workspace
-  const personalWorkspace = await context.entities.Parish.findFirst({
-    where: { ownerId: context.user.id, type: 'PERSONAL' },
-    select: { id: true },
-  });
-  const effectiveRoles = personalWorkspace ? [...roles, 'PERSONAL_OWNER'] : roles;
-  const effectiveParishIds = personalWorkspace && !parishIds.includes(personalWorkspace.id)
-    ? [...parishIds, personalWorkspace.id] : parishIds;
-
-  if (effectiveRoles.some((r: string) => (COORDINATOR_ROLES as readonly string[]).includes(r) || r === 'PERSONAL_OWNER')) {
-    const catechumenParishIds = [
-      catechumen.parishId,
-      catechumen.household?.parishId,
-      ...catechumen.enrollments.map((e: { class: { parishId: string } }) => e.class.parishId),
-    ].filter(Boolean) as string[];
-
-    if (!catechumenParishIds.some((pid) => effectiveParishIds.includes(pid))) {
-      throw new HttpError(403, 'Você não tem acesso a este catequizando.');
-    }
-    return;
-  }
-
-  if (roles.includes('ASSISTANT_CATECHIST')) {
-    const myClasses = await context.entities.ClassCatechist.findMany({
-      where: { userId: context.user.id, role: 'ASSISTANT' },
-      select: { classId: true },
-    });
-    const classIds = myClasses.map((cc: { classId: string }) => cc.classId);
-    const enrolled = await context.entities.ClassEnrollment.findFirst({
-      where: { catechumenProfileId: catechumenId, classId: { in: classIds } },
-    });
-    if (!enrolled) {
-      throw new HttpError(403, 'Você não tem acesso a este catequizando.');
-    }
-    return;
-  }
-
-  if (roles.includes('LEAD_CATECHIST')) {
-    const myClasses = await context.entities.ClassCatechist.findMany({
-      where: { userId: context.user.id },
-      select: { classId: true },
-    });
-    const classIds = myClasses.map((cc: { classId: string }) => cc.classId);
-    const enrolled = await context.entities.ClassEnrollment.findFirst({
-      where: { catechumenProfileId: catechumenId, classId: { in: classIds } },
-    });
-    if (!enrolled) {
-      throw new HttpError(403, 'Você não tem acesso a este catequizando.');
     }
     return;
   }
