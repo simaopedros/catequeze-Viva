@@ -89,8 +89,9 @@ export function DioceseStep({ selected, onSelect, onSkip }: DioceseStepProps) {
       </h2>
 
       <div>
-        <label className="text-sm font-medium">{t('diocese.state_label')}</label>
+        <label htmlFor="diocese-state-filter" className="text-sm font-medium">{t('diocese.state_label')}</label>
         <select
+          id="diocese-state-filter"
           value={stateFilter}
           onChange={e => setStateFilter(e.target.value)}
           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"

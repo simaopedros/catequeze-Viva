@@ -462,5 +462,13 @@
     "deselect_all": "Deseleccionar todos",
     "verses": "versículo(s)",
     "explore_by_part": "O explore por parte:"
-  }
+  },
+  "searching": "Buscando...",
+  "type_at_least_2": "Escriba al menos 2 caracteres",
+  "more": "Más",
+  "collapse": "Contraer",
+  "expand_menu": "Expandir menú",
+  "collapse_menu": "Contraer menú",
+  "offline_banner": "Sin conexión a internet. Algunas funciones pueden no estar disponibles.",
+  "skip_to_content": "Ir al contenido principal"
 }

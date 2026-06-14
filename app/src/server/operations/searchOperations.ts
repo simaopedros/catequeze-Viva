@@ -276,54 +276,54 @@ export const globalSearch = async (args: { query: string; locale?: string | null
   const results: any[] = [];
 
   catechumens.forEach((c: any) =>
-    results.push({ id: c.id, type: 'catechumen', module: 'Catequizandos', label: `${c.firstName} ${c.lastName}`, description: 'Catequizando', route: `/app/catechumens/${c.id}` })
+    results.push({ id: c.id, type: 'catechumen', module: 'catechumen', label: `${c.firstName} ${c.lastName}`, description: '', route: `/app/catechumens/${c.id}` })
   );
 
   classes.forEach((c: any) =>
-    results.push({ id: c.id, type: 'class', module: 'Turmas', label: c.name, description: c.parish?.name ? `Turma · ${c.parish.name}` : 'Turma', route: `/app/classes/${c.id}` })
+    results.push({ id: c.id, type: 'class', module: 'class', label: c.name, description: c.parish?.name || '', route: `/app/classes/${c.id}` })
   );
 
   contentItems.forEach((ci: any) =>
-    results.push({ id: ci.id, type: 'content', module: 'Biblioteca', label: ci.title, description: ci.theme || 'Conteúdo pastoral', route: `/app/content-library/${ci.id}` })
+    results.push({ id: ci.id, type: 'content', module: 'content', label: ci.title, description: ci.theme || '', route: `/app/content-library/${ci.id}` })
   );
 
   // Bible results: prefer cache, fall back to DB
   const bibleSource = cacheReady ? bibleResults : bibleVersesDb;
   bibleSource.forEach((v: any) => {
     const ref = `${v.chapter?.book?.abbreviation || v.chapter?.book?.name} ${v.chapter?.number}:${v.number}`;
-    results.push({ id: v.id, type: 'bible', module: 'Bíblia', label: ref, description: (v.text || '').substring(0, 100), route: `/app/bible?ref=${encodeURIComponent(ref)}` });
+    results.push({ id: v.id, type: 'bible', module: 'bible', label: ref, description: (v.text || '').substring(0, 100), route: `/app/bible?ref=${encodeURIComponent(ref)}` });
   });
 
   // Catechism results: prefer cache, fall back to DB
   const catechismSource = cacheReady ? catechismResults : catechismEntriesDb;
   catechismSource.forEach((e: any) =>
-    results.push({ id: e.id, type: 'catechism', module: 'Catecismo', label: `#${e.number} ${(e.question || '').substring(0, 80)}`, description: e.category || 'Catecismo', route: `/app/catechism?entry=${e.number}` })
+    results.push({ id: e.id, type: 'catechism', module: 'catechism', label: `#${e.number} ${(e.question || '').substring(0, 80)}`, description: e.category || '', route: `/app/catechism?entry=${e.number}` })
   );
 
   // Directory results: prefer cache, fall back to DB
   const directorySource = cacheReady ? directoryResults : directoryEntriesDb;
   directorySource.forEach((e: any) =>
-    results.push({ id: e.id, type: 'directory', module: 'Diretório', label: `#${e.number} ${e.part || ''}`, description: (e.content || '').substring(0, 100), route: `/app/directory?entry=${e.number}` })
+    results.push({ id: e.id, type: 'directory', module: 'directory', label: `#${e.number} ${e.part || ''}`, description: (e.content || '').substring(0, 100), route: `/app/directory?entry=${e.number}` })
   );
 
   households.forEach((h: any) =>
-    results.push({ id: h.id, type: 'family', module: 'Famílias', label: h.name, description: 'Família', route: `/app/families/${h.id}` })
+    results.push({ id: h.id, type: 'family', module: 'family', label: h.name, description: '', route: `/app/families/${h.id}` })
   );
 
   sacramentalJourneys.forEach((j: any) =>
-    results.push({ id: j.id, type: 'sacrament', module: 'Sacramentos', label: `${j.catechumenProfile?.firstName} ${j.catechumenProfile?.lastName}`, description: `Jornada · ${j.template?.sacrament?.name || 'Sacramento'}`, route: `/app/sacramental-journeys` })
+    results.push({ id: j.id, type: 'sacrament', module: 'sacrament', label: `${j.catechumenProfile?.firstName} ${j.catechumenProfile?.lastName}`, description: j.template?.sacrament?.name || '', route: `/app/sacramental-journeys` })
   );
 
   documents.forEach((d: any) =>
-    results.push({ id: d.id, type: 'document', module: 'Documentos', label: d.name, description: d.type || 'Documento', route: `/app/documents` })
+    results.push({ id: d.id, type: 'document', module: 'document', label: d.name, description: d.type || '', route: `/app/documents` })
   );
 
   parishes.forEach((p: any) =>
-    results.push({ id: p.id, type: 'parish', module: 'Paróquias', label: p.name, description: 'Paróquia', route: `/app/parishes/${p.id}` })
+    results.push({ id: p.id, type: 'parish', module: 'parish', label: p.name, description: '', route: `/app/parishes/${p.id}` })
   );
 
   communities.forEach((c: any) =>
-    results.push({ id: c.id, type: 'community', module: 'Comunidades', label: c.name, description: c.type || 'Comunidade', route: `/app/communities` })
+    results.push({ id: c.id, type: 'community', module: 'community', label: c.name, description: c.type || '', route: `/app/communities` })
   );
 
   return results;

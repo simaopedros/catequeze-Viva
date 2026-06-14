@@ -150,5 +150,17 @@
   "table_plan": "Plano",
   "table_status": "Status",
   "until": "até",
-  "no_licenses": "Nenhuma licença encontrada."
+  "no_licenses": "Nenhuma licença encontrada.",
+  "limit_reached_title": "Limite do plano atingido",
+  "limit_reached_label": "Limite de {{label}}s atingido",
+  "limit_reached_description": "O teu plano <1>{{currentPlanName}}</1> permite até <2>{{maxAllowed}} {{label}}{{plural}}</2>. Já tens <3>{{currentCount}}</3>.",
+  "limit_reached_contact": "Contacta o <1>coordenador da paróquia</1> para expandir os limites do plano.",
+  "upgrade_to": "Fazer Upgrade para {{plan}}",
+  "upgrade_btn": "Fazer Upgrade",
+  "limit_labels": {
+    "parish": "paróquia",
+    "class": "turma",
+    "catechumen": "catequizando",
+    "catechist": "catequista"
+  }
 }

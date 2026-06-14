@@ -26,31 +26,17 @@ import { useActiveMembership } from '../client/hooks/useActiveMembership';
 import { cn } from '../client/utils';
 
 const MODULE_ICONS: Record<string, React.ComponentType<any>> = {
-  Catequizandos: Users,
-  Turmas: GraduationCap,
-  Biblioteca: Library,
-  Bíblia: BookMarked,
-  Catecismo: ScrollText,
-  Diretório: FolderOpen,
-  Famílias: Home,
-  Sacramentos: Church,
-  Documentos: FileText,
-  Paróquias: Church,
-  Comunidades: Building2,
-};
-
-const SEARCH_MODULE_KEYS: Record<string, string> = {
-  Catequizandos: 'catechumens',
-  Turmas: 'classes',
-  Biblioteca: 'content_library',
-  Bíblia: 'bible',
-  Catecismo: 'catechism',
-  Diretório: 'directory',
-  Famílias: 'families',
-  Sacramentos: 'sacraments',
-  Documentos: 'documents',
-  Paróquias: 'parishes',
-  Comunidades: 'communities',
+  catechumen: Users,
+  class: GraduationCap,
+  content: Library,
+  bible: BookMarked,
+  catechism: ScrollText,
+  directory: FolderOpen,
+  family: Home,
+  sacrament: Church,
+  document: FileText,
+  parish: Church,
+  community: Building2,
 };
 
 const NOTIF_ICONS: Record<string, React.ComponentType<any>> = {
@@ -201,8 +187,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
   const showDropdown = focused && debouncedQuery.length >= 2;
 
   const getModuleLabel = (module: string) => {
-    const key = SEARCH_MODULE_KEYS[module];
-    return key ? tNav(key) : module;
+    return tNav(`search_module.${module}`, { defaultValue: module });
   };
 
   // Auto-focus input when search expands on mobile

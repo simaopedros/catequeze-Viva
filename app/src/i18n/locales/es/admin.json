@@ -20,5 +20,16 @@
     "PT": "Portugal",
     "AO": "Angola",
     "MZ": "Mozambique"
-  }
+  },
+  "email": "Email",
+  "name": "Nombre",
+  "admin": "Admin",
+  "created_at": "Creado en",
+  "details": "Detalles",
+  "search_placeholder": "buscar@ejemplo.com",
+  "page": "Página",
+  "user_not_found": "Usuario no encontrado.",
+  "all_filter": "Todos",
+  "yes_filter": "Sí",
+  "no_filter": "No"
 }

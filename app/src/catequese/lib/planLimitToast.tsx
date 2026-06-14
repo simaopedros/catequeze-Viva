@@ -1,4 +1,5 @@
 import { Sparkles } from 'lucide-react';
+import i18n from '../../i18n/config';
 import { toast } from '../../client/hooks/use-toast';
 import { ToastAction } from '../../client/components/ui/toast';
 
@@ -13,19 +14,21 @@ export function handlePlanLimitError(error: Error | string | null): boolean {
   const message = typeof error === 'string' ? error : error.message;
   if (!message || !message.startsWith('Limite de')) return false;
 
+  const t = (key: string, opts?: Record<string, string>) => i18n.t(key, { ns: 'billing', ...opts });
+
   toast({
-    title: 'Limite do plano atingido',
+    title: t('limit_reached_title'),
     description: message,
     action: (
       <ToastAction
-        altText="Fazer Upgrade"
+        altText={t('upgrade_btn')}
         onClick={() => {
           window.location.href = '/app/billing';
         }}
       >
         <span className="flex items-center gap-1">
           <Sparkles className="h-3.5 w-3.5" />
-          Fazer Upgrade
+          {t('upgrade_btn')}
         </span>
       </ToastAction>
     ),

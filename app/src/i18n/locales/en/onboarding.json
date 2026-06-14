@@ -4,6 +4,7 @@
   "subtitle_manager": "Let's set up the platform in 3 steps.",
   "steps": {
     "diocese": "Diocese",
+    "diocese_optional": "Diocese (optional)",
     "parish": "Parish",
     "details": "Details"
   },
@@ -58,7 +59,16 @@
     "first_class_placeholder": "Ex: 1st Year Catechesis",
     "first_class_hint": "You can create it later in Classes if you prefer.",
     "creating": "Creating space...",
-    "enter_space": "Enter my space"
+    "enter_space": "Enter my space",
+    "days": {
+      "0": "Sun",
+      "1": "Mon",
+      "2": "Tue",
+      "3": "Wed",
+      "4": "Thu",
+      "5": "Fri",
+      "6": "Sat"
+    }
   },
   "diocese": {
     "title": "Which diocese are you in?",

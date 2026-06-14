@@ -64,9 +64,9 @@ export function CoordinatorDetails({ parishName, onComplete }: CoordinatorDetail
                 placeholder={t('coordinator.year_name_placeholder')} />
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div><label className="text-sm font-medium">{t('coordinator.start')}</label><input type="date" value={yearStart} onChange={e => setYearStart(e.target.value)}
+              <div><label htmlFor="year-start" className="text-sm font-medium">{t('coordinator.start')}</label><input id="year-start" type="date" value={yearStart} onChange={e => setYearStart(e.target.value)}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" /></div>
-              <div><label className="text-sm font-medium">{t('coordinator.end')}</label><input type="date" value={yearEnd} onChange={e => setYearEnd(e.target.value)}
+              <div><label htmlFor="year-end" className="text-sm font-medium">{t('coordinator.end')}</label><input id="year-end" type="date" value={yearEnd} onChange={e => setYearEnd(e.target.value)}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" /></div>
             </div>
           </div>
@@ -94,20 +94,20 @@ export function CoordinatorDetails({ parishName, onComplete }: CoordinatorDetail
           {!skipClass && (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="text-sm font-medium">{t('coordinator.day_of_week')}</label>
-                <select value={dayOfWeek} onChange={e => setDayOfWeek(e.target.value)}
+                <label htmlFor="coord-day" className="text-sm font-medium">{t('coordinator.day_of_week')}</label>
+                <select id="coord-day" value={dayOfWeek} onChange={e => setDayOfWeek(e.target.value)}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1">
                   {DAY_VALUES.map(d => <option key={d} value={d}>{t(`coordinator.days.${d}`)}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-sm font-medium">{t('coordinator.start_time')}</label>
-                <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)}
+                <label htmlFor="coord-start" className="text-sm font-medium">{t('coordinator.start_time')}</label>
+                <input id="coord-start" type="time" value={startTime} onChange={e => setStartTime(e.target.value)}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" />
               </div>
               <div>
-                <label className="text-sm font-medium">{t('coordinator.end_time')}</label>
-                <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)}
+                <label htmlFor="coord-end" className="text-sm font-medium">{t('coordinator.end_time')}</label>
+                <input id="coord-end" type="time" value={endTime} onChange={e => setEndTime(e.target.value)}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" />
               </div>
             </div>

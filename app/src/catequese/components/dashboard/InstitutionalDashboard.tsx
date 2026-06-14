@@ -89,7 +89,7 @@ function KpiCard({ kpi, icon: Icon, colorClass }: { kpi: KpiBlock; icon: any; co
     <div className="rounded-xl border bg-card p-4 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-center gap-3">
         <div className={`rounded-lg p-2 ${colorClass}`}>
-          <Icon className="h-4 w-4" />
+          <Icon className="h-4 w-4" aria-hidden="true" />
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-xs text-muted-foreground uppercase tracking-wider truncate">{translateKpiLabel(kpi.label, t)}</p>

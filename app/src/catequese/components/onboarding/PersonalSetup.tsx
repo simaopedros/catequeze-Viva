@@ -10,15 +10,7 @@ interface PersonalSetupProps {
   loading: boolean;
 }
 
-const DAY_OPTIONS = [
-  { value: '0', label: 'Domingo' },
-  { value: '1', label: 'Segunda' },
-  { value: '2', label: 'Terça' },
-  { value: '3', label: 'Quarta' },
-  { value: '4', label: 'Quinta' },
-  { value: '5', label: 'Sexta' },
-  { value: '6', label: 'Sábado' },
-];
+const DAY_KEYS = ['0', '1', '2', '3', '4', '5', '6'];
 
 export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
   const { t } = useTranslation('onboarding');
@@ -69,8 +61,9 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
         </div>
 
         <div className="text-left">
-          <label className="text-sm font-medium">{t('personal_setup.first_class_label')}</label>
+          <label htmlFor="ps-class-name" className="text-sm font-medium">{t('personal_setup.first_class_label')}</label>
           <Input
+            id="ps-class-name"
             value={className}
             onChange={(e) => setClassName(e.target.value)}
             placeholder={t('personal_setup.first_class_placeholder')}
@@ -80,11 +73,11 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
         </div>
 
         <div className="text-left">
-          <label className="text-sm font-medium flex items-center gap-1"><Clock className="h-3 w-3" /> {t('personal_setup.schedule_label')}</label>
+          <label htmlFor="ps-day" className="text-sm font-medium flex items-center gap-1"><Clock className="h-3 w-3" /> {t('personal_setup.schedule_label')}</label>
           <div className="grid grid-cols-3 gap-2 mt-1">
-            <select value={dayOfWeek} onChange={e => setDayOfWeek(e.target.value)} className="h-9 rounded-md border border-input bg-background px-2 text-sm">
+            <select id="ps-day" value={dayOfWeek} onChange={e => setDayOfWeek(e.target.value)} className="h-9 rounded-md border border-input bg-background px-2 text-sm">
               <option value="">{t('personal_setup.day')}</option>
-              {DAY_OPTIONS.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
+              {DAY_KEYS.map(d => <option key={d} value={d}>{t(`personal_setup.days.${d}`)}</option>)}
             </select>
             <Input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} className="h-9" />
             <Input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} className="h-9" />
@@ -92,8 +85,8 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
         </div>
 
         <div className="text-left">
-          <label className="text-sm font-medium flex items-center gap-1"><MapPin className="h-3 w-3" /> {t('personal_setup.location_label')}</label>
-          <Input value={location} onChange={e => setLocation(e.target.value)} placeholder={t('personal_setup.location_placeholder')} className="mt-1" />
+          <label htmlFor="ps-location" className="text-sm font-medium flex items-center gap-1"><MapPin className="h-3 w-3" /> {t('personal_setup.location_label')}</label>
+          <Input id="ps-location" value={location} onChange={e => setLocation(e.target.value)} placeholder={t('personal_setup.location_placeholder')} className="mt-1" />
         </div>
 
         <Button type="submit" className="w-full gap-2" size="lg" disabled={loading}>

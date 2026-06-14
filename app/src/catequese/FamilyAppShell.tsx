@@ -1,5 +1,6 @@
 import { ReactNode, useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from 'wasp/client/auth';
 import { UserDropdown } from '../user/UserDropdown';
 import { TwoFactorGate } from './components/TwoFactorGate';
@@ -16,11 +17,12 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { data: user } = useAuth();
+  const { t } = useTranslation('navigation');
 
   const navItems = [
-    { to: '/app', icon: Home, label: 'Painel' },
-    { to: '/app/calendar', icon: Calendar, label: 'Calendário' },
-    { to: '/app/messages', icon: MessageSquare, label: 'Mensagens' },
+    { to: '/app', icon: Home, label: t('dashboard') },
+    { to: '/app/calendar', icon: Calendar, label: t('calendar') },
+    { to: '/app/messages', icon: MessageSquare, label: t('messages') },
   ];
 
   return (
@@ -32,7 +34,7 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
           <div className="flex items-center gap-3">
             <span className="font-bold text-lg text-primary">Catequese Viva</span>
             <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
-              Família
+              {t('family_label')}
             </span>
           </div>
           <div className="flex items-center gap-2">

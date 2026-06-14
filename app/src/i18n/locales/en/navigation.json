@@ -54,5 +54,19 @@
     "reports": "Report",
     "catechetical_years": "Catechetical Year",
     "sacramental_journeys": "Sacrament"
+  },
+  "family_label": "Family",
+  "search_module": {
+    "catechumen": "Catechumens",
+    "class": "Classes",
+    "content": "Library",
+    "bible": "Bible",
+    "catechism": "Catechism",
+    "directory": "Directory",
+    "family": "Families",
+    "sacrament": "Sacraments",
+    "document": "Documents",
+    "parish": "Parishes",
+    "community": "Communities"
   }
 }

@@ -37,7 +37,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
       {/* KPIs */}
       <div data-tour="dashboard-stats" className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[{l:t('active_catechumens'),v:stats?.activeCatechumens??0,i:Users,c:'text-primary bg-primary/10'},{l:t('active_classes'),v:stats?.activeClasses??0,i:BookOpen,c:'text-success bg-success/10'},{l:t('avg_attendance'),v:`${stats?.avgAttendance??0}%`,i:TrendingUp,c:'text-warning bg-warning/10'},{l:t('pending_sacraments'),v:stats?.pendingSacraments??0,i:Cross,c:'text-secondary-foreground bg-secondary'}].map(k=>(
-          <div key={k.l} className="rounded-xl border bg-card p-5 shadow-sm hover:shadow-md transition-shadow"><div className="flex items-center gap-4"><div className={`rounded-xl p-2.5 ${k.c}`}><k.i className="h-5 w-5"/></div><div><p className="text-xs text-muted-foreground uppercase tracking-wider">{k.l}</p><p className="text-2xl font-bold mt-0.5">{k.v}</p></div></div></div>
+          <div key={k.l} className="rounded-xl border bg-card p-5 shadow-sm hover:shadow-md transition-shadow"><div className="flex items-center gap-4"><div className={`rounded-xl p-2.5 ${k.c}`}><k.i className="h-5 w-5" aria-hidden="true"/></div><div><p className="text-xs text-muted-foreground uppercase tracking-wider">{k.l}</p><p className="text-2xl font-bold mt-0.5">{k.v}</p></div></div></div>
         ))}
       </div>
 
@@ -58,7 +58,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
         <div className="space-y-4">
           {stats?.todayMeetings?.length > 0 && (
             <div className="rounded-xl border bg-card p-4 border-primary/30 bg-primary/5">
-              <h3 className="font-semibold text-sm uppercase text-primary flex items-center gap-1 mb-3"><Clock className="h-4 w-4"/>{tc('today')}</h3>
+              <h3 className="font-semibold text-sm uppercase text-primary flex items-center gap-1 mb-3"><Clock className="h-4 w-4" aria-hidden="true"/>{tc('today')}</h3>
               {stats.todayMeetings.map((m: any) => (
                 <Link key={m.id} to={`/app/classes/${m.class?.id}/attendance`} className="flex items-center justify-between py-2 hover:bg-muted/30 rounded px-2 -mx-2">
                   <div><p className="font-medium text-sm">{m.class?.name}</p><p className="text-xs text-muted-foreground">{m._count?.attendance || 0} {tc('records')}</p></div>
@@ -69,7 +69,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
           )}
           {stats?.upcomingMeetings?.length > 0 && (
             <div className="rounded-xl border bg-card p-4">
-              <h3 className="font-semibold text-sm uppercase text-muted-foreground mb-3 flex items-center gap-1"><Calendar className="h-4 w-4"/>{tc('upcoming_meetings')}</h3>
+              <h3 className="font-semibold text-sm uppercase text-muted-foreground mb-3 flex items-center gap-1"><Calendar className="h-4 w-4" aria-hidden="true"/>{tc('upcoming_meetings')}</h3>
               {stats.upcomingMeetings.map((m: any) => (
                 <div key={m.id} className="flex items-center justify-between py-1.5 text-sm"><span className="font-medium">{m.class?.name}</span><span className="text-xs text-muted-foreground">{formatDate(m.date, currentLocale, dateOpts)}</span></div>
               ))}
@@ -91,7 +91,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
           )}
           {stats?.aniversariantes?.length > 0 && (
             <div className="rounded-xl border bg-card p-4">
-              <h3 className="font-semibold text-sm uppercase text-muted-foreground mb-3 flex items-center gap-1"><Gift className="h-4 w-4 text-pink-500"/>{tc('birthdays_month')}</h3>
+              <h3 className="font-semibold text-sm uppercase text-muted-foreground mb-3 flex items-center gap-1"><Gift className="h-4 w-4 text-pink-500" aria-hidden="true"/>{tc('birthdays_month')}</h3>
               <div className="flex flex-wrap gap-2">
                 {stats.aniversariantes.map((c: any) => (
                   <div key={c.id} className="flex items-center gap-1.5 rounded-full bg-pink-50 dark:bg-pink-950/30 border border-pink-200 dark:border-pink-800 px-3 py-1 text-xs">

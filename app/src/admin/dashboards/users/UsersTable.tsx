@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from 'wasp/client/auth';
 import { getPaginatedUsers, updateIsUserAdminById, useQuery } from 'wasp/client/operations';
 import { type User } from 'wasp/entities';
@@ -23,6 +24,7 @@ function AdminSwitch({ id, isAdmin }: Pick<User, 'id' | 'isAdmin'>) {
 }
 
 const UsersTable = () => {
+  const { t } = useTranslation('admin');
   const [currentPage, setCurrentPage] = useState(1);
   const [emailFilter, setEmailFilter] = useState<string | undefined>(undefined);
   const [isAdminFilter, setIsAdminFilter] = useState<boolean | undefined>(undefined);
@@ -44,15 +46,15 @@ const UsersTable = () => {
     <div className="flex flex-col gap-4">
       <div className="border-border bg-card rounded-sm border shadow-sm">
         <div className="bg-muted/40 flex w-full items-center gap-4 p-4">
-          <Label htmlFor="email-filter" className="text-muted-foreground text-sm">Email:</Label>
+          <Label htmlFor="email-filter" className="text-muted-foreground text-sm">{t('email')}:</Label>
           <Input
             type="text"
             id="email-filter"
-            placeholder="buscar@exemplo.com"
+            placeholder={t('search_placeholder')}
             className="w-64"
             onChange={(e) => setEmailFilter(e.currentTarget.value || undefined)}
           />
-          <Label className="text-muted-foreground text-sm ml-4">Admin:</Label>
+          <Label className="text-muted-foreground text-sm ml-4">{t('admin')}:</Label>
           <select
             className="h-9 rounded-md border border-input bg-background px-3 text-sm"
             onChange={(e) => {
@@ -61,13 +63,13 @@ const UsersTable = () => {
             }}
             defaultValue="both"
           >
-            <option value="both">Todos</option>
-            <option value="true">Sim</option>
-            <option value="false">Não</option>
+            <option value="both">{t('all_filter')}</option>
+            <option value="true">{t('yes_filter')}</option>
+            <option value="false">{t('no_filter')}</option>
           </select>
           {data?.totalPages && (
             <div className="ml-auto flex items-center gap-2 text-sm text-muted-foreground">
-              <span>Página</span>
+              <span>{t('page')}</span>
               <Input
                 type="number"
                 min={1}
@@ -85,16 +87,16 @@ const UsersTable = () => {
         </div>
 
         <div className="py-3 grid grid-cols-7 border-t-2 px-4 md:px-6 bg-muted/20">
-          <div className="col-span-2 font-medium text-sm">Email</div>
-          <div className="col-span-2 font-medium text-sm">Nome</div>
-          <div className="col-span-1 font-medium text-sm">Admin</div>
-          <div className="col-span-1 font-medium text-sm">Criado em</div>
-          <div className="col-span-1 font-medium text-sm text-right">Ações</div>
+          <div className="col-span-2 font-medium text-sm">{t('email')}</div>
+          <div className="col-span-2 font-medium text-sm">{t('name')}</div>
+          <div className="col-span-1 font-medium text-sm">{t('admin')}</div>
+          <div className="col-span-1 font-medium text-sm">{t('created_at')}</div>
+          <div className="col-span-1 font-medium text-sm text-right">{t('columns.actions')}</div>
         </div>
 
         {isLoading && <LoadingSpinner />}
         {data?.users?.length === 0 && (
-          <div className="p-8 text-center text-sm text-muted-foreground">Nenhum utilizador encontrado.</div>
+          <div className="p-8 text-center text-sm text-muted-foreground">{t('user_not_found')}</div>
         )}
         {data?.users?.map((user: any) => (
           <div key={user.id} className="py-3 grid grid-cols-7 gap-4 px-4 md:px-6 border-t">
@@ -107,7 +109,7 @@ const UsersTable = () => {
               {user.createdAt ? new Date(user.createdAt).toLocaleDateString('pt-BR') : '—'}
             </div>
             <div className="col-span-1 flex items-center justify-end">
-              <Button variant="ghost" size="sm" className="text-xs" onClick={() => navigate(`/admin/users/${user.id}`)}>Detalhes</Button>
+              <Button variant="ghost" size="sm" className="text-xs" onClick={() => navigate(`/admin/users/${user.id}`)}>{t('details')}</Button>
             </div>
           </div>
         ))}

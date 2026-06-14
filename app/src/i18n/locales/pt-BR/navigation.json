@@ -54,5 +54,19 @@
     "reports": "Relatório",
     "catechetical_years": "Ano Catequético",
     "sacramental_journeys": "Sacramento"
+  },
+  "family_label": "Família",
+  "search_module": {
+    "catechumen": "Catequizandos",
+    "class": "Turmas",
+    "content": "Biblioteca",
+    "bible": "Bíblia",
+    "catechism": "Catecismo",
+    "directory": "Diretório",
+    "family": "Famílias",
+    "sacrament": "Sacramentos",
+    "document": "Documentos",
+    "parish": "Paróquias",
+    "community": "Comunidades"
   }
 }

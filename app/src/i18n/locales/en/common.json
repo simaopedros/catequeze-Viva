@@ -463,5 +463,13 @@
     "deselect_all": "Deselect all",
     "verses": "verse(s)",
     "explore_by_part": "Or explore by part:"
-  }
+  },
+  "searching": "Searching...",
+  "type_at_least_2": "Type at least 2 characters",
+  "more": "More",
+  "collapse": "Collapse",
+  "expand_menu": "Expand menu",
+  "collapse_menu": "Collapse menu",
+  "offline_banner": "No internet connection. Some features may be unavailable.",
+  "skip_to_content": "Skip to main content"
 }

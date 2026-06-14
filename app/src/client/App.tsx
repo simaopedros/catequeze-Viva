@@ -1,7 +1,8 @@
 import "./instrument";
 import "./setupApiUrlProxy";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Outlet, useLocation } from "react-router";
+import { useTranslation } from "react-i18next";
 import { routes } from "wasp/client/router";
 import { configureQueryClient } from "wasp/client/operations";
 import { Toaster } from "../client/components/ui/toaster";
@@ -39,6 +40,8 @@ configureQueryClient({
 export default function App() {
   const location = useLocation();
   const isOnline = useOnlineStatus();
+  const { t } = useTranslation('common');
+  const [offlineDismissed, setOfflineDismissed] = useState(false);
   useHimetricaIdentify();
 
   const isFamilyPortal = useMemo(() => isFamilyPortalHost(), []);
@@ -104,9 +107,12 @@ export default function App() {
 
   return (
     <>
-      {!isOnline && (
-        <div className="fixed top-0 left-0 right-0 z-[100] bg-amber-500 text-white text-center py-1.5 text-sm font-medium">
-          Sem conexão à internet. Algumas funcionalidades podem estar indisponíveis.
+      {!isOnline && !offlineDismissed && (
+        <div className="fixed top-0 left-0 right-0 z-[100] bg-amber-500 text-white text-center py-1.5 text-sm font-medium flex items-center justify-center gap-3" role="alert" aria-live="assertive">
+          {t('offline_banner')}
+          <button onClick={() => setOfflineDismissed(true)} className="underline hover:text-white/80 text-xs" aria-label={t('close')}>
+            {t('close')}
+          </button>
         </div>
       )}
       {/* Family portal: root path renders FamilyLandingPage */}

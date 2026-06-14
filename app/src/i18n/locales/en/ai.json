@@ -89,6 +89,9 @@
     "error_connect": "Error connecting to AI.",
     "error_streaming": "Streaming not supported.",
     "upgrade_required": "You need the Catechist AI or Parish plan to use the theological assistant. Go to /app/billing to upgrade.",
-    "generic_error": "Sorry, an error occurred. Please try again later."
+    "generic_error": "Sorry, an error occurred. Please try again later.",
+    "theological_assistant": "Theological Assistant",
+    "catholic_ai": "Catholic AI • Catequese Viva",
+    "empty_response": "Empty AI response."
   }
 }

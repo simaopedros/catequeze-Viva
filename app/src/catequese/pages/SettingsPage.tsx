@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from 'wasp/client/auth';
 import { Button } from '../../client/components/ui/button';
 import { Input } from '../../client/components/ui/input';
-import { Label } from '../../client/components/ui/label';
 import { Badge } from '../../client/components/ui/badge';
 import { User, Globe, Bell, Shield, Save, Key, Download, Church, CheckCircle, AlertCircle, GitMerge, RefreshCw } from 'lucide-react';
 import { ROLE_LABELS } from '../../shared/constants';
@@ -13,22 +14,25 @@ import { useUserContext } from '../../client/hooks/useUserContext';
 import { updateUserProfile, requestDataExport, changePassword, useQuery, listParishes, executeParishMigration } from 'wasp/client/operations';
 import PhoneMaskInput from '../../client/components/PhoneMaskInput';
 import TwoFactorSetup from '../components/TwoFactorSetup';
+import { changePasswordSchema, type ChangePasswordValues } from '../../client/validation/schemas';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../../client/components/ui/form';
 
 export default function SettingsPage() {
   const { t } = useTranslation('settings');
   const { t: tc } = useTranslation('common');
   const { data: user } = useAuth();
   const { userRole, parishName: ctxParishName } = useUserContext();
-  const [firstName,setFirstName]=useState(''); const [lastName,setLastName]=useState('');
-  const [phone,setPhone]=useState(''); const [saving,setSaving]=useState(false); const [saved,setSaved]=useState(false);
+  const [saving,setSaving]=useState(false); const [saved,setSaved]=useState(false);
   const [saveError,setSaveError]=useState('');
-  // Password
-  const [currentPass,setCurrentPass]=useState(''); const [newPass,setNewPass]=useState('');
-  const [changingPass,setChangingPass]=useState(false); const [passMsg,setPassMsg]=useState('');
-  const [passError,setPassError]=useState(false);
   // Export
   const [exporting,setExporting]=useState(false); const [exportMsg,setExportMsg]=useState('');
-
   // Migration
   const [migrating, setMigrating] = useState(false);
   const [migrationMsg, setMigrationMsg] = useState('');
@@ -36,9 +40,20 @@ export default function SettingsPage() {
   const [sourceParishId, setSourceParishId] = useState('');
   const { data: userParishes = [] } = useQuery(listParishes);
 
+  // Profile form (manual since it uses PhoneMaskInput which doesn't support ref)
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState('');
+
   useEffect(()=>{
     setFirstName(user?.firstName||''); setLastName(user?.lastName||''); setPhone(user?.phone||'');
   },[user]);
+
+  // Password form with Zod
+  const passwordForm = useForm<ChangePasswordValues>({
+    resolver: zodResolver(changePasswordSchema),
+    defaultValues: { currentPassword: '', newPassword: '' },
+  });
 
   const handleSaveProfile = async()=>{
     setSaving(true); setSaved(false); setSaveError('');
@@ -52,22 +67,14 @@ export default function SettingsPage() {
     setSaving(false);
   };
 
-  const handleChangePassword = async()=>{
-    if(!currentPass||!newPass){setPassMsg(t('fill_all_fields'));setPassError(true);return;}
-    if(newPass.length < 8){setPassMsg(t('password_min_length'));setPassError(true);return;}
-
-    setChangingPass(true);setPassMsg('');setPassError(false);
+  const handleChangePassword = async(values: ChangePasswordValues)=>{
     try{
-      await changePassword({ currentPassword: currentPass, newPassword: newPass });
-      setPassMsg(t('password_changed'));
-      setPassError(false);
-      setCurrentPass('');
-      setNewPass('');
+      await changePassword({ currentPassword: values.currentPassword, newPassword: values.newPassword });
+      passwordForm.reset();
+      passwordForm.setError('root', { message: t('password_changed') });
     }catch(e: any){
-      setPassMsg(e.message || t('password_change_error'));
-      setPassError(true);
+      passwordForm.setError('root', { message: e.message || t('password_change_error') });
     }
-    setChangingPass(false);
   };
 
   const handleExportData = async() => {
@@ -83,7 +90,6 @@ export default function SettingsPage() {
 
   const handleMigration = async () => {
     if (!sourceParishId) return;
-    // Find the user's primary parish (first coordinator parish)
     const coordinatorParish = userParishes.find((p: any) =>
       p._count?.memberships > 0
     );
@@ -131,10 +137,10 @@ export default function SettingsPage() {
         <div className="rounded-xl border bg-card p-6 space-y-4">
           <h3 className="font-semibold flex items-center gap-2"><User className="h-4 w-4"/>{t('profile')}</h3>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5"><Label htmlFor="firstName">{t('first_name')}</Label><Input id="firstName" value={firstName} onChange={e=>setFirstName(e.target.value)} placeholder={t('first_name_placeholder')}/></div>
-            <div className="space-y-1.5"><Label htmlFor="lastName">{t('last_name')}</Label><Input id="lastName" value={lastName} onChange={e=>setLastName(e.target.value)} placeholder={t('last_name_placeholder')}/></div>
+            <div className="space-y-1.5"><label htmlFor="firstName" className="text-sm font-medium">{t('first_name')}</label><Input id="firstName" value={firstName} onChange={e=>setFirstName(e.target.value)} placeholder={t('first_name_placeholder')}/></div>
+            <div className="space-y-1.5"><label htmlFor="lastName" className="text-sm font-medium">{t('last_name')}</label><Input id="lastName" value={lastName} onChange={e=>setLastName(e.target.value)} placeholder={t('last_name_placeholder')}/></div>
           </div>
-          <div className="space-y-1.5"><Label htmlFor="phone">{t('phone')}</Label><PhoneMaskInput value={phone} onChange={setPhone} className="flex h-9 w-full" placeholder={t('phone_placeholder')}/></div>
+          <div className="space-y-1.5"><label htmlFor="phone" className="text-sm font-medium">{t('phone')}</label><PhoneMaskInput value={phone} onChange={setPhone} className="flex h-9 w-full" placeholder={t('phone_placeholder')}/></div>
           {saveError && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="h-3 w-3"/>{saveError}</p>}
           <div className="flex gap-2">
             <Button size="sm" onClick={handleSaveProfile} disabled={saving}><Save className="mr-1 h-3 w-3"/>{saving ? t('saving') : tc('save')}</Button>
@@ -145,12 +151,47 @@ export default function SettingsPage() {
         {/* Password */}
         <div className="rounded-xl border bg-card p-6 space-y-4">
           <h3 className="font-semibold flex items-center gap-2"><Key className="h-4 w-4"/>{t('change_password')}</h3>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5"><Label htmlFor="currentPass">{t('current_password')}</Label><Input id="currentPass" type="password" value={currentPass} onChange={e=>setCurrentPass(e.target.value)} placeholder={t('current_password_placeholder')}/></div>
-            <div className="space-y-1.5"><Label htmlFor="newPass">{t('new_password')}</Label><Input id="newPass" type="password" value={newPass} onChange={e=>setNewPass(e.target.value)} placeholder={t('new_password_placeholder')}/></div>
-          </div>
-          {passMsg && <p className={`text-xs flex items-center gap-1 ${passError?'text-destructive':'text-success'}`}>{passError?<AlertCircle className="h-3 w-3"/>:<CheckCircle className="h-3 w-3"/>}{passMsg}</p>}
-          <Button size="sm" onClick={handleChangePassword} disabled={changingPass || !currentPass || !newPass}><Key className="mr-1 h-3 w-3"/>{changingPass ? t('changing_password') : t('change_password_btn')}</Button>
+          {passwordForm.formState.errors.root && (
+            <p className={`text-xs flex items-center gap-1 ${passwordForm.formState.errors.root.message === t('password_changed') ? 'text-success' : 'text-destructive'}`}>
+              {passwordForm.formState.errors.root.message === t('password_changed') ? <CheckCircle className="h-3 w-3"/> : <AlertCircle className="h-3 w-3"/>}
+              {passwordForm.formState.errors.root.message}
+            </p>
+          )}
+          <Form {...passwordForm}>
+            <form onSubmit={passwordForm.handleSubmit(handleChangePassword)} className="space-y-3">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <FormField
+                  control={passwordForm.control}
+                  name="currentPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('current_password')}</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder={t('current_password_placeholder')} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={passwordForm.control}
+                  name="newPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('new_password')}</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder={t('new_password_placeholder')} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <Button type="submit" size="sm" disabled={passwordForm.formState.isSubmitting}>
+                <Key className="mr-1 h-3 w-3"/>{passwordForm.formState.isSubmitting ? t('changing_password') : t('change_password_btn')}
+              </Button>
+            </form>
+          </Form>
         </div>
 
         {/* Two-Factor Authentication */}
@@ -170,8 +211,9 @@ export default function SettingsPage() {
             <h3 className="font-semibold flex items-center gap-2"><GitMerge className="h-4 w-4"/>{t('migration')}</h3>
             <p className="text-xs text-muted-foreground">{t('migration_desc')}</p>
             <div>
-              <label className="text-xs font-medium">{t('source_parish')}</label>
+              <label htmlFor="source-parish" className="text-xs font-medium">{t('source_parish')}</label>
               <select
+                id="source-parish"
                 value={sourceParishId}
                 onChange={e => setSourceParishId(e.target.value)}
                 className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1"

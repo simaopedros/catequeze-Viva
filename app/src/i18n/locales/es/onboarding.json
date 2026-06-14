@@ -4,6 +4,7 @@
   "subtitle_manager": "Configuremos la plataforma en 3 pasos.",
   "steps": {
     "diocese": "Diócesis",
+    "diocese_optional": "Diócesis (opcional)",
     "parish": "Parroquia",
     "details": "Detalles"
   },
@@ -58,7 +59,16 @@
     "first_class_placeholder": "Ej: Catequesis 1er Año",
     "first_class_hint": "Puede crearlo después en Grupos si prefiere.",
     "creating": "Creando espacio...",
-    "enter_space": "Entrar a mi espacio"
+    "enter_space": "Entrar a mi espacio",
+    "days": {
+      "0": "Dom",
+      "1": "Lun",
+      "2": "Mar",
+      "3": "Mié",
+      "4": "Jue",
+      "5": "Vie",
+      "6": "Sáb"
+    }
   },
   "diocese": {
     "title": "¿En qué diócesis estás?",

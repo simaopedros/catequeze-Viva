@@ -20,6 +20,7 @@ export function FilterPills({ options, value, onChange, className }: FilterPills
           key={opt.value}
           type="button"
           onClick={() => onChange(opt.value)}
+          aria-pressed={value === opt.value}
           className={cn(
             'rounded-full px-3 py-1.5 text-xs font-medium transition-colors',
             value === opt.value

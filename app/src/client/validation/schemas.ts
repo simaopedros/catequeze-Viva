@@ -1,0 +1,49 @@
+import { z } from 'zod';
+
+export const createClassSchema = z.object({
+  name: z.string().min(3, 'name_min').max(100),
+  location: z.string().max(200).optional(),
+  dayOfWeek: z.string().optional(),
+  startTime: z.string().optional(),
+  endTime: z.string().optional(),
+  maxCapacity: z.coerce.number().int().min(1).max(200).default(30),
+});
+
+export type CreateClassValues = z.infer<typeof createClassSchema>;
+
+export const createCatechumenSchema = z.object({
+  firstName: z.string().min(1, 'first_name_required').max(100),
+  lastName: z.string().min(1, 'last_name_required').max(100),
+  birthDate: z.string().optional(),
+  email: z.string().email('email_invalid').optional().or(z.literal('')),
+  householdId: z.string().optional(),
+});
+
+export type CreateCatechumenValues = z.infer<typeof createCatechumenSchema>;
+
+export const createHouseholdSchema = z.object({
+  name: z.string().min(1, 'name_required').max(200),
+  address: z.string().max(300).optional(),
+  phone: z.string().max(20).optional(),
+});
+
+export type CreateHouseholdValues = z.infer<typeof createHouseholdSchema>;
+
+export const createContentSchema = z.object({
+  title: z.string().min(3, 'title_min').max(200),
+  theme: z.string().max(500).optional(),
+  pastoralObjective: z.string().max(2000).optional(),
+  mainContent: z.string().min(1, 'content_required').max(100000),
+  activity: z.string().max(10000).optional(),
+  estimatedTime: z.coerce.number().int().min(1).max(480).default(60),
+  tags: z.string().optional(),
+});
+
+export type CreateContentValues = z.infer<typeof createContentSchema>;
+
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, 'current_password_required'),
+  newPassword: z.string().min(8, 'password_min_length'),
+});
+
+export type ChangePasswordValues = z.infer<typeof changePasswordSchema>;

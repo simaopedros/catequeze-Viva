@@ -108,5 +108,17 @@
   "table_plan": "Plan",
   "table_status": "Status",
   "until": "until",
-  "no_licenses": "No licenses found."
+  "no_licenses": "No licenses found.",
+  "limit_reached_title": "Plan limit reached",
+  "limit_reached_label": "{{label}} limit reached",
+  "limit_reached_description": "Your <1>{{currentPlanName}}</1> plan allows up to <2>{{maxAllowed}} {{label}}{{plural}}</2>. You currently have <3>{{currentCount}}</3>.",
+  "limit_reached_contact": "Contact the <1>parish coordinator</1> to expand plan limits.",
+  "upgrade_to": "Upgrade to {{plan}}",
+  "upgrade_btn": "Upgrade",
+  "limit_labels": {
+    "parish": "parish",
+    "class": "class",
+    "catechumen": "catechumen",
+    "catechist": "catechist"
+  }
 }

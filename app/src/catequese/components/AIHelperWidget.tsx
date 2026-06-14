@@ -114,7 +114,7 @@ export function AIHelperWidget() {
       }
 
       if (!fullReply) {
-        throw new Error('Resposta vazia da IA.');
+        throw new Error(ta('widget.empty_response'));
       }
     } catch (e: any) {
       const errorMsg = e?.message?.includes('402') || e?.message?.includes('Plano')
@@ -161,8 +161,8 @@ export function AIHelperWidget() {
                 <Bot className="h-4 w-4 text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold text-sm">Assistente Teológico</h3>
-                <p className="text-xs text-muted-foreground">IA Católica • Catequese Viva</p>
+                <h3 className="font-semibold text-sm">{ta('widget.theological_assistant')}</h3>
+                <p className="text-xs text-muted-foreground">{ta('widget.catholic_ai')}</p>
               </div>
             </div>
             <Button variant="ghost" size="icon" onClick={() => setOpen(false)}>

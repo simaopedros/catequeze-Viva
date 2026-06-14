@@ -1,63 +1,60 @@
 import { Link, useNavigate } from 'react-router';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '../../client/components/ui/button';
 import { Input } from '../../client/components/ui/input';
-import { Label } from '../../client/components/ui/label';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { createHousehold } from 'wasp/client/operations';
 import PhoneMaskInput from '../../client/components/PhoneMaskInput';
 import { useViaCep } from '../../client/hooks/useViaCep';
+import { createHouseholdSchema, type CreateHouseholdValues } from '../../client/validation/schemas';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../../client/components/ui/form';
 
 export default function CreateHouseholdPage() {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
 
-  const [name, setName] = useState('');
-  const [address, setAddress] = useState('');
-  const [cep, setCep] = useState('');
-  const [phone, setPhone] = useState('');
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
-  const [cepAutoFilled, setCepAutoFilled] = useState(false);
+  const form = useForm<CreateHouseholdValues>({
+    resolver: zodResolver(createHouseholdSchema),
+    defaultValues: { name: '', address: '', phone: '' },
+  });
 
-  const { data: cepData, loading: cepLoading } = useViaCep(cep);
+  const cep = form.watch('address');
+  const { data: cepData, loading: cepLoading } = useViaCep(cep || '');
 
   useEffect(() => {
-    if (cepData && !cepAutoFilled) {
+    if (cepData) {
       const parts = [
         cepData.street,
         cepData.neighborhood && `- ${cepData.neighborhood}`,
         cepData.city && `- ${cepData.city}/${cepData.state}`,
       ].filter(Boolean);
-      setAddress(parts.join(' ') || address);
-      setCepAutoFilled(true);
+      if (parts.length > 0) {
+        form.setValue('address', parts.join(' '));
+      }
     }
-  }, [cepData]);
+  }, [cepData, form]);
 
-  useEffect(() => {
-    setCepAutoFilled(false);
-  }, [cep]);
-
-  const handleSubmit = async () => {
-    if (!name) {
-      setError(t('families.name_required'));
-      return;
-    }
-    setSaving(true);
-    setError('');
+  const onSubmit = async (values: CreateHouseholdValues) => {
     try {
       await createHousehold({
-        name,
-        address: address || undefined,
-        phone: phone || undefined,
+        name: values.name,
+        address: values.address || undefined,
+        phone: values.phone || undefined,
       });
       navigate('/app/families');
     } catch (err: any) {
-      setError(err.message || t('families.create_error'));
-    } finally {
-      setSaving(false);
+      form.setError('root', { message: err.message || t('families.create_error') });
     }
   };
 
@@ -73,48 +70,75 @@ export default function CreateHouseholdPage() {
           </div>
         </div>
 
-        {error && <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
-
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">{t('families.name_label')}</Label>
-            <Input id="name" value={name} onChange={e => setName(e.target.value)} placeholder={t('families.name_placeholder')} />
+        {form.formState.errors.root && (
+          <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+            {form.formState.errors.root.message}
           </div>
+        )}
 
-          <div className="space-y-2">
-            <Label htmlFor="cep">{t('families.cep')}</Label>
-            <div className="flex items-center gap-2">
-              <Input
-                id="cep"
-                value={cep}
-                onChange={e => setCep(e.target.value)}
-                placeholder={t('cep_placeholder')}
-                className="w-40"
-              />
-              {cepLoading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('families.name_label')}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t('families.name_placeholder')} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('address')}</FormLabel>
+                  <FormControl>
+                    <div className="flex items-center gap-2">
+                      <Input placeholder={t('families.address_placeholder')} {...field} />
+                      {cepLoading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('phone')}</FormLabel>
+                  <FormControl>
+                    <PhoneMaskInput
+                      value={field.value || ''}
+                      onChange={field.onChange}
+                      placeholder={t('phone_placeholder')}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex gap-3 pt-4">
+              <Button type="submit" disabled={form.formState.isSubmitting}>
+                <Save className="mr-2 h-4 w-4" />
+                {form.formState.isSubmitting ? t('saving') : t('register')}
+              </Button>
+              <Button type="button" variant="outline" asChild>
+                <Link to="/app/families">{t('cancel')}</Link>
+              </Button>
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="address">{t('address')}</Label>
-            <Input id="address" value={address} onChange={e => setAddress(e.target.value)} placeholder={t('families.address_placeholder')} />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="phone">{t('phone')}</Label>
-            <PhoneMaskInput value={phone} onChange={setPhone} placeholder={t('phone_placeholder')} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
-          </div>
-
-          <div className="flex gap-3 pt-4">
-            <Button type="button" onClick={handleSubmit} disabled={saving}>
-              <Save className="mr-2 h-4 w-4" />
-              {saving ? t('saving') : t('register')}
-            </Button>
-            <Button type="button" variant="outline" asChild>
-              <Link to="/app/families">{t('cancel')}</Link>
-            </Button>
-          </div>
-        </div>
+          </form>
+        </Form>
       </div>
     </AppShell>
   );

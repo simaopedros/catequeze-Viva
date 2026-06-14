@@ -89,6 +89,9 @@
     "error_connect": "Error al conectar con la IA.",
     "error_streaming": "Streaming no soportado.",
     "upgrade_required": "Necesita el plan Catequista IA o Parroquia para usar el asistente teológico. Vaya a /app/billing para actualizar.",
-    "generic_error": "Lo siento, ocurrió un error. Intente nuevamente más tarde."
+    "generic_error": "Lo siento, ocurrió un error. Intente nuevamente más tarde.",
+    "theological_assistant": "Asistente Teológico",
+    "catholic_ai": "IA Católica • Catequese Viva",
+    "empty_response": "Respuesta vacía de la IA."
   }
 }

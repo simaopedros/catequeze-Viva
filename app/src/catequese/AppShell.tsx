@@ -1,5 +1,6 @@
 import { ReactNode, useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { BottomNav } from './BottomNav';
@@ -16,6 +17,7 @@ import { useAction, acceptInvitation } from 'wasp/client/operations';
 interface AppShellProps { children: ReactNode; }
 
 export function AppShell({ children }: AppShellProps) {
+  const { t } = useTranslation('common');
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -88,6 +90,9 @@ export function AppShell({ children }: AppShellProps) {
   return (
     <TwoFactorGate>
     <div className="flex h-screen overflow-hidden bg-background">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[200] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md">
+        {t('skip_to_content')}
+      </a>
       {/* Desktop sidebar */}
       <div className="hidden lg:block"><Sidebar /></div>
 
@@ -109,7 +114,7 @@ export function AppShell({ children }: AppShellProps) {
           <TopBar onMenuToggle={handleMenuToggle} />
         </ErrorBoundary>
         <Breadcrumbs />
-        <main ref={mainRef} className="flex-1 overflow-y-auto p-4 md:p-6 pb-16 lg:pb-6">{children}</main>
+        <main id="main-content" ref={mainRef} className="flex-1 overflow-y-auto p-4 md:p-6 pb-16 lg:pb-6">{children}</main>
       </div>
       <BottomNav />
       <AIHelperWidget />

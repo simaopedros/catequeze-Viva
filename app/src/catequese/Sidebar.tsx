@@ -90,6 +90,7 @@ function NavItemLink({ item, collapsed, badge }: NavItemProps & { badge?: number
 
 export function Sidebar() {
   const { t } = useTranslation('navigation');
+  const { t: tc } = useTranslation('common');
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
@@ -216,8 +217,8 @@ export function Sidebar() {
             badge={item.iconKey === 'messages' ? unreadMessagesCount : undefined}
           />
         ))}
-        <button onClick={() => setCollapsed(!collapsed)} className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent" aria-label={collapsed ? 'Expandir menu' : 'Recolher menu'}>
-          {collapsed ? <ChevronRight className="h-5 w-5 mx-auto" /> : <><ChevronLeft className="h-5 w-5" /><span>Recolher</span></>}
+        <button onClick={() => setCollapsed(!collapsed)} className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent" aria-label={collapsed ? tc('expand_menu') : tc('collapse_menu')}>
+          {collapsed ? <ChevronRight className="h-5 w-5 mx-auto" /> : <><ChevronLeft className="h-5 w-5" /><span>{tc('collapse')}</span></>}
         </button>
       </div>
     </aside>

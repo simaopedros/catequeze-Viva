@@ -187,7 +187,7 @@ export default function OnboardingPage() {
   };
 
   const stepLabels = [
-    { key: 'diocese', label: t('steps.diocese') },
+    { key: 'diocese', label: t('steps.diocese_optional') },
     { key: 'parish', label: t('steps.parish') },
     { key: 'details', label: t('steps.details') },
   ];

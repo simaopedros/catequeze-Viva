@@ -9,13 +9,13 @@ interface SkeletonProps {
 
 function Skeleton({ className }: SkeletonProps) {
   return (
-    <div className={cn('animate-pulse rounded bg-muted', className)} />
+    <div aria-hidden="true" className={cn('animate-pulse rounded bg-muted', className)} />
   );
 }
 
 export function SkeletonCard({ className }: SkeletonProps) {
   return (
-    <div className={cn('rounded-xl border bg-card p-5 space-y-3', className)}>
+    <div role="status" aria-busy="true" className={cn('rounded-xl border bg-card p-5 space-y-3', className)}>
       <Skeleton className="h-4 w-3/4" />
       <Skeleton className="h-3 w-1/2" />
       <Skeleton className="h-8 w-full mt-4" />
@@ -25,7 +25,7 @@ export function SkeletonCard({ className }: SkeletonProps) {
 
 export function SkeletonTable({ rows = 5, className }: SkeletonProps & { rows?: number }) {
   return (
-    <div className={cn('rounded-xl border bg-card overflow-hidden', className)}>
+    <div role="status" aria-busy="true" className={cn('rounded-xl border bg-card overflow-hidden', className)}>
       <div className="border-b p-3">
         <Skeleton className="h-4 w-1/3" />
       </div>
@@ -45,7 +45,7 @@ export function SkeletonTable({ rows = 5, className }: SkeletonProps & { rows?: 
 
 export function SkeletonList({ items = 3, className }: SkeletonProps & { items?: number }) {
   return (
-    <div className={cn('space-y-3', className)}>
+    <div role="status" aria-busy="true" className={cn('space-y-3', className)}>
       {Array.from({ length: items }).map((_, i) => (
         <div key={i} className="flex items-center gap-3 rounded-lg border p-3">
           <Skeleton className="h-10 w-10 rounded-lg" />
@@ -62,7 +62,7 @@ export function SkeletonList({ items = 3, className }: SkeletonProps & { items?:
 
 export function SkeletonForm({ fields = 4, className }: SkeletonProps & { fields?: number }) {
   return (
-    <div className={cn('space-y-4', className)}>
+    <div role="status" aria-busy="true" className={cn('space-y-4', className)}>
       {Array.from({ length: fields }).map((_, i) => (
         <div key={i} className="space-y-2">
           <Skeleton className="h-3 w-16" />
@@ -76,7 +76,7 @@ export function SkeletonForm({ fields = 4, className }: SkeletonProps & { fields
 
 export function SkeletonPage({ className }: SkeletonProps) {
   return (
-    <div className={cn('space-y-6', className)}>
+    <div role="status" aria-busy="true" className={cn('space-y-6', className)}>
       <Skeleton className="h-8 w-48" />
       <div className="grid gap-4 md:grid-cols-4">
         {[1, 2, 3, 4].map(i => (

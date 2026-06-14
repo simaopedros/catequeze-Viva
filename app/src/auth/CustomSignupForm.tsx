@@ -70,7 +70,7 @@ export default function CustomSignupForm({ inviteToken, defaultEmail }: CustomSi
         <div className="space-y-2">
           <h1 className="text-2xl font-bold tracking-tight">{t('signup_success_title')}</h1>
           <p className="text-sm text-muted-foreground">
-            <span dangerouslySetInnerHTML={{ __html: t('signup_success_sent_to', { email }) }} />
+            <span>{t('signup_success_sent_to', { email })}</span>
             {' '}{t('signup_success_check_email')}
           </p>
           {inviteToken && (

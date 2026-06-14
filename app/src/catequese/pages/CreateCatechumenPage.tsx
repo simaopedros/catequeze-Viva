@@ -1,7 +1,10 @@
 import { Link, useNavigate } from 'react-router';
-import { useState, useMemo, useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '../../client/components/ui/button';
+import { Input } from '../../client/components/ui/input';
 import { ArrowLeft, Save, Plus, AlertTriangle, Camera } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { useQuery, listHouseholds, createCatechumen } from 'wasp/client/operations';
@@ -9,6 +12,16 @@ import { useActiveParish } from '../../client/hooks/useActiveParish';
 import { toast } from '../../client/hooks/use-toast';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import CreateHouseholdModal from '../components/CreateHouseholdModal';
+import { createCatechumenSchema, type CreateCatechumenValues } from '../../client/validation/schemas';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../../client/components/ui/form';
+import { useState } from 'react';
 
 function compressImage(file: File): Promise<string> {
   return new Promise((resolve) => {
@@ -45,16 +58,20 @@ export default function CreateCatechumenPage() {
     return households.filter((h: any) => h.parishId === activeParishId);
   }, [households, activeParishId]);
 
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [birthDate, setBirthDate] = useState('');
-  const [email, setEmail] = useState('');
   const [photo, setPhoto] = useState('');
-  const [householdId, setHouseholdId] = useState('');
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
   const [showCreateHouseholdModal, setShowCreateHouseholdModal] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const form = useForm<CreateCatechumenValues>({
+    resolver: zodResolver(createCatechumenSchema),
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      birthDate: '',
+      email: '',
+      householdId: '',
+    },
+  });
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -63,28 +80,20 @@ export default function CreateCatechumenPage() {
     setPhoto(compressed);
   };
 
-  const handleSubmit = async () => {
-    if (!firstName.trim() || !lastName.trim()) {
-      setError(t('catechumens.name_required_error'));
-      return;
-    }
-    setSaving(true);
-    setError('');
+  const onSubmit = async (values: CreateCatechumenValues) => {
     try {
       const result = await createCatechumen({
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        birthDate: birthDate || undefined,
-        email: email.trim() || undefined,
+        firstName: values.firstName.trim(),
+        lastName: values.lastName.trim(),
+        birthDate: values.birthDate || undefined,
+        email: values.email?.trim() || undefined,
         photoUrl: photo || undefined,
-        householdId: householdId || undefined,
+        householdId: values.householdId || undefined,
       });
       toast({ title: t('catechumens.created_success') });
       navigate(`/app/catechumens/${result.id}`);
     } catch (err: any) {
-      setError(err.message || t('catechumens.create_error'));
-    } finally {
-      setSaving(false);
+      form.setError('root', { message: err.message || t('catechumens.create_error') });
     }
   };
 
@@ -101,9 +110,6 @@ export default function CreateCatechumenPage() {
     );
   }
 
-  const inputClass = "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1";
-  const labelClass = "text-sm font-medium";
-
   return (
     <AppShell>
       <div className="max-w-lg mx-auto space-y-6">
@@ -116,7 +122,11 @@ export default function CreateCatechumenPage() {
           </div>
         </div>
 
-        {error && <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
+        {form.formState.errors.root && (
+          <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+            {form.formState.errors.root.message}
+          </div>
+        )}
 
         <div className="flex flex-col items-center gap-3">
           <div className="relative w-24 h-24 rounded-full overflow-hidden bg-muted border-2 border-dashed cursor-pointer" onClick={() => fileRef.current?.click()}>
@@ -126,79 +136,130 @@ export default function CreateCatechumenPage() {
           <span className="text-xs text-muted-foreground">{t('catechumens.add_photo')}</span>
         </div>
 
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className={labelClass}>{t('first_name')} *</label>
-              <input value={firstName} onChange={e => setFirstName(e.target.value)} className={inputClass} placeholder={t('catechumens.first_name_placeholder')} />
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('first_name')} *</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t('catechumens.first_name_placeholder')} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('last_name')} *</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t('catechumens.last_name_placeholder')} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
-            <div>
-              <label className={labelClass}>{t('last_name')} *</label>
-              <input value={lastName} onChange={e => setLastName(e.target.value)} className={inputClass} placeholder={t('catechumens.last_name_placeholder')} />
+
+            <FormField
+              control={form.control}
+              name="birthDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('catechumens.birth_date')}</FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('email')}</FormLabel>
+                  <FormControl>
+                    <Input type="email" placeholder={t('email_placeholder')} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="householdId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('catechumens.family')}</FormLabel>
+                  <FormControl>
+                    <select
+                      {...field}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="">{t('catechumens.no_family')}</option>
+                      {filteredHouseholds.map((h: any) => (
+                        <option key={h.id} value={h.id}>{h.name}</option>
+                      ))}
+                    </select>
+                  </FormControl>
+                  {filteredHouseholds.length === 0 && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {t('catechumens.no_families_registered')}{' '}
+                      <button
+                        type="button"
+                        onClick={() => setShowCreateHouseholdModal(true)}
+                        className="text-primary underline"
+                      >
+                        {t('families.create_family')}
+                      </button>
+                    </p>
+                  )}
+                  {filteredHouseholds.length > 0 && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      <button
+                        type="button"
+                        onClick={() => setShowCreateHouseholdModal(true)}
+                        className="text-primary underline inline-flex items-center gap-1"
+                      >
+                        <Plus className="h-3 w-3" />
+                        {t('families.create_new_family')}
+                      </button>
+                    </p>
+                  )}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex gap-3 pt-4">
+              <Button type="submit" disabled={form.formState.isSubmitting}>
+                <Save className="mr-2 h-4 w-4" />
+                {form.formState.isSubmitting ? t('saving') : t('register')}
+              </Button>
+              <Button type="button" variant="outline" asChild>
+                <Link to="/app/catechumens">{t('cancel')}</Link>
+              </Button>
             </div>
-          </div>
-
-          <div>
-            <label className={labelClass}>{t('catechumens.birth_date')}</label>
-            <input type="date" value={birthDate} onChange={e => setBirthDate(e.target.value)} className={inputClass} />
-          </div>
-
-          <div>
-            <label className={labelClass}>{t('email')}</label>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)} className={inputClass} placeholder={t('email_placeholder')} />
-          </div>
-
-          <div>
-            <label className={labelClass}>{t('catechumens.family')}</label>
-            <select value={householdId} onChange={e => setHouseholdId(e.target.value)} className={inputClass}>
-              <option value="">{t('catechumens.no_family')}</option>
-              {filteredHouseholds.map((h: any) => (
-                <option key={h.id} value={h.id}>{h.name}</option>
-              ))}
-            </select>
-            {filteredHouseholds.length === 0 && (
-              <p className="text-xs text-muted-foreground mt-1">
-                {t('catechumens.no_families_registered')}{' '}
-                <button
-                  type="button"
-                  onClick={() => setShowCreateHouseholdModal(true)}
-                  className="text-primary underline"
-                >
-                  {t('families.create_family')}
-                </button>
-              </p>
-            )}
-            {filteredHouseholds.length > 0 && (
-              <p className="text-xs text-muted-foreground mt-1">
-                <button
-                  type="button"
-                  onClick={() => setShowCreateHouseholdModal(true)}
-                  className="text-primary underline inline-flex items-center gap-1"
-                >
-                  <Plus className="h-3 w-3" />
-                  {t('families.create_new_family')}
-                </button>
-              </p>
-            )}
-          </div>
-
-          <div className="flex gap-3 pt-4">
-            <Button type="button" onClick={handleSubmit} disabled={saving}>
-              <Save className="mr-2 h-4 w-4" />
-              {saving ? t('saving') : t('register')}
-            </Button>
-            <Button variant="outline" asChild>
-              <Link to="/app/catechumens">{t('cancel')}</Link>
-            </Button>
-          </div>
-        </div>
+          </form>
+        </Form>
       </div>
 
       <CreateHouseholdModal
         isOpen={showCreateHouseholdModal}
         onClose={() => setShowCreateHouseholdModal(false)}
         onCreated={(newHouseholdId, _householdName) => {
-          setHouseholdId(newHouseholdId);
+          form.setValue('householdId', newHouseholdId);
           refetchHouseholds();
         }}
       />
