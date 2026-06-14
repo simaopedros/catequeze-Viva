@@ -105,13 +105,19 @@ try {
   }
 
   const subscriptionPlan = resolvePlanId(priceId);
+
+  const currentPeriodStart = subscription.current_period_start;
+  const datePaid = currentPeriodStart
+    ? new Date(currentPeriodStart * 1000)
+    : new Date();
+
   const updated = await prisma.user.update({
     where: { id: user.id },
     data: {
       paymentProcessorUserId: customerId,
       subscriptionPlan,
       subscriptionStatus: "active",
-      datePaid: new Date(subscription.current_period_start * 1000),
+      datePaid,
     },
     select: {
       email: true,
