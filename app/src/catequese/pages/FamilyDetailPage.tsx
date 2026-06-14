@@ -37,6 +37,7 @@ import {
 } from '../../client/components/ui/select';
 
 import { getAvatarColorClass } from '../lib/avatarColors';
+import { formatDateOnly } from '../../i18n/format';
 
 const RELATIONSHIP_KEYS = [
   { value: 'Pai', key: 'father' },
@@ -581,7 +582,7 @@ export default function FamilyDetailPage() {
                         {c.firstName} {c.lastName}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {c.birthDate && new Date(c.birthDate).toLocaleDateString()}
+                        {c.birthDate && formatDateOnly(c.birthDate, 'pt-BR')}
                       </p>
                     </div>
                   </Link>
@@ -842,7 +843,7 @@ export default function FamilyDetailPage() {
                 <SelectContent>
                   {unlinkedCatechumens.map((c: any) => (
                     <SelectItem key={c.id} value={c.id}>
-                      {c.firstName} {c.lastName} ({c.birthDate ? new Date(c.birthDate).toLocaleDateString() : 'Sem data de nascimento'})
+                      {c.firstName} {c.lastName} ({c.birthDate ? formatDateOnly(c.birthDate, 'pt-BR') : 'Sem data de nascimento'})
                     </SelectItem>
                   ))}
                   {unlinkedCatechumens.length === 0 && (

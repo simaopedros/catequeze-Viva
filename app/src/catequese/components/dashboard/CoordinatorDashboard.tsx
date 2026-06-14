@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { Button } from '../../../client/components/ui/button';
 import { useQuery, getClassComparison } from 'wasp/client/operations';
 import { useActiveParish } from '../../../client/hooks/useActiveParish';
-import { formatDate } from '../../../i18n/format';
+import { formatDate, formatDateOnly } from '../../../i18n/format';
 import { useLocale } from '../../../i18n/useLocale';
 import { Users, BookOpen, TrendingUp, Cross, AlertCircle, Gift, Calendar, Clock, ChevronRight, ArrowUpDown, Info } from 'lucide-react';
 
@@ -95,7 +95,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
               <div className="flex flex-wrap gap-2">
                 {stats.aniversariantes.map((c: any) => (
                   <div key={c.id} className="flex items-center gap-1.5 rounded-full bg-pink-50 dark:bg-pink-950/30 border border-pink-200 dark:border-pink-800 px-3 py-1 text-xs">
-                    <span className="font-bold text-pink-600 dark:text-pink-400">{formatDate(c.birthDate, currentLocale, { day: '2-digit', month: '2-digit' })}</span>
+                    <span className="font-bold text-pink-600 dark:text-pink-400">{formatDateOnly(c.birthDate, currentLocale, { day: '2-digit', month: '2-digit' })}</span>
                     <span>{c.firstName}</span>
                   </div>
                 ))}

@@ -235,8 +235,8 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
   }
 
   const aniversariantes = allCatechumens
-    .filter((c: any) => c.birthDate && new Date(c.birthDate).getMonth() === today.getMonth())
-    .sort((a: any, b: any) => new Date(a.birthDate).getDate() - new Date(b.birthDate).getDate())
+    .filter((c: any) => c.birthDate && new Date(c.birthDate).getUTCMonth() === today.getUTCMonth())
+    .sort((a: any, b: any) => new Date(a.birthDate).getUTCDate() - new Date(b.birthDate).getUTCDate())
     .slice(0, 10);
 
   // Alerts

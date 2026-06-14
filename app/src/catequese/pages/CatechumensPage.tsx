@@ -12,6 +12,7 @@ import { SkeletonCard } from '../../client/components/Skeletons';
 import { AppShell } from '../AppShell';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
 import { useUserContext } from '../../client/hooks/useUserContext';
+import { formatDateOnly, getAgeFromDate } from '../../i18n/format';
 
 const AVATAR_COLORS = [
   'bg-primary/10 text-primary',
@@ -23,12 +24,7 @@ const AVATAR_COLORS = [
 ];
 
 function getAge(birthDate: string): number | null {
-  if (!birthDate) return null;
-  const b = new Date(birthDate);
-  const now = new Date();
-  let age = now.getFullYear() - b.getFullYear();
-  if (now.getMonth() < b.getMonth() || (now.getMonth() === b.getMonth() && now.getDate() < b.getDate())) age--;
-  return age;
+  return getAgeFromDate(birthDate);
 }
 
 export default function CatechumensPage() {
@@ -131,7 +127,7 @@ export default function CatechumensPage() {
                       <div className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold overflow-hidden ${!c.photoUrl ? AVATAR_COLORS[Math.abs(c.firstName?.charCodeAt(0) || 0) % AVATAR_COLORS.length] : ''}`}>
                         {c.photoUrl ? <img src={c.photoUrl} className="w-full h-full object-cover" alt="" /> : `${c.firstName?.[0]}${c.lastName?.[0]}`}
                       </div>
-                      <div><p className="font-medium text-sm">{c.firstName} {c.lastName}</p>{c.birthDate && <p className="text-[10px] text-muted-foreground"><Calendar className="inline h-3 w-3 mr-0.5" />{new Date(c.birthDate).toLocaleDateString(i18n.language)}</p>}</div>
+                      <div><p className="font-medium text-sm">{c.firstName} {c.lastName}</p>{c.birthDate && <p className="text-[10px] text-muted-foreground"><Calendar className="inline h-3 w-3 mr-0.5" />{formatDateOnly(c.birthDate, i18n.language)}</p>}</div>
                     </Link>
                   </td>
                   <td className="p-3 hidden md:table-cell text-sm">{getAge(c.birthDate) ? t('catechumens.years_old', { age: getAge(c.birthDate) }) : '—'}</td>
@@ -151,7 +147,7 @@ export default function CatechumensPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm truncate group-hover:text-primary">{c.firstName} {c.lastName}</p>
-                    <p className="text-[11px] text-muted-foreground">{getAge(c.birthDate) ? t('catechumens.years_old', { age: getAge(c.birthDate) }) : ''}{c.birthDate && ` · ${new Date(c.birthDate).toLocaleDateString(i18n.language, { day: '2-digit', month: '2-digit', year: '2-digit' })}`}</p>
+                    <p className="text-[11px] text-muted-foreground">{getAge(c.birthDate) ? t('catechumens.years_old', { age: getAge(c.birthDate) }) : ''}{c.birthDate && ` · ${formatDateOnly(c.birthDate, i18n.language, { day: '2-digit', month: '2-digit', year: '2-digit' })}`}</p>
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-1">

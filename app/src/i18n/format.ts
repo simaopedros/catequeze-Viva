@@ -19,6 +19,35 @@ export function formatDate(
   return d.toLocaleDateString(resolveIntlLocale(locale), options);
 }
 
+export function parseDateParts(dateStr: string): { year: number; month: number; day: number } {
+  const [y, m, d] = dateStr.slice(0, 10).split('-').map(Number);
+  return { year: y, month: m - 1, day: d };
+}
+
+export function dateStringToNoonUTC(dateStr: string): Date {
+  const { year, month, day } = parseDateParts(dateStr);
+  return new Date(Date.UTC(year, month, day, 12, 0, 0));
+}
+
+export function formatDateOnly(
+  date: Date | string | number,
+  locale: SupportedLocale | string,
+  options?: Intl.DateTimeFormatOptions,
+): string {
+  const d = date instanceof Date ? date : new Date(date);
+  return new Intl.DateTimeFormat(resolveIntlLocale(locale as SupportedLocale), { timeZone: 'UTC', ...options }).format(d);
+}
+
+export function getAgeFromDate(birthDate: string): number | null {
+  if (!birthDate) return null;
+  const b = new Date(birthDate);
+  const now = new Date();
+  let age = now.getUTCFullYear() - b.getUTCFullYear();
+  const m = now.getUTCMonth() - b.getUTCMonth();
+  if (m < 0 || (m === 0 && now.getUTCDate() < b.getUTCDate())) age--;
+  return age;
+}
+
 export function formatNumber(
   value: number,
   locale: SupportedLocale,

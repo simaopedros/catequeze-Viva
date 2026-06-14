@@ -184,7 +184,7 @@ export const createCatechumen = async (args: any, context: any) => {
     data: {
       firstName: args.firstName, lastName: args.lastName,
       email: args.email || null,
-      birthDate: args.birthDate ? new Date(args.birthDate) : null,
+      birthDate: args.birthDate ? (() => { const [y, m, d] = args.birthDate.slice(0, 10).split('-').map(Number); return new Date(Date.UTC(y, m - 1, d, 12, 0, 0)); })() : null,
       householdId: args.householdId || null, photoUrl: args.photoUrl || null,
       parishId,
     },
@@ -221,6 +221,6 @@ export const updateCatechumen = async (args: any, context: any) => {
   const { id, ...data } = args;
   return context.entities.CatechumenProfile.update({
     where: { id },
-    data: { ...data, birthDate: data.birthDate ? new Date(data.birthDate) : undefined },
+    data: { ...data, birthDate: data.birthDate ? (() => { const [y, m, d] = data.birthDate.slice(0, 10).split('-').map(Number); return new Date(Date.UTC(y, m - 1, d, 12, 0, 0)); })() : undefined },
   });
 };

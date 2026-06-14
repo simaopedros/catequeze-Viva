@@ -99,7 +99,7 @@ export const importCatechumensCSV = async (
     toCreate.push({
       firstName,
       lastName,
-      birthDate: birthDate ? new Date(birthDate) : null,
+      birthDate: birthDate ? (() => { const [y, m, d] = birthDate.slice(0, 10).split('-').map(Number); return new Date(Date.UTC(y, m - 1, d, 12, 0, 0)); })() : null,
       parishId,
     });
   }

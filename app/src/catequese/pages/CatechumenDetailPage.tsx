@@ -10,6 +10,7 @@ import { fetchAuthenticatedDocument, uploadDocumentMultipart } from '../../clien
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { toast } from '../../client/hooks/use-toast';
 import { calculatePoints } from '../../shared/gamification';
+import { formatDateOnly, getAgeFromDate } from '../../i18n/format';
 
 const AVATAR_COLORS = [
     'bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 dark:border dark:border-blue-900/50',
@@ -184,7 +185,7 @@ export default function CatechumenDetailPage() {
   }
   if(!profile)return <AppShell><div className="p-6 text-destructive">{t('not_found')}</div></AppShell>;
 
-  const getAge=(bd:string)=>{if(!bd)return null;const b=new Date(bd),n=new Date();let a=n.getFullYear()-b.getFullYear();if(n.getMonth()<b.getMonth()||(n.getMonth()===b.getMonth()&&n.getDate()<b.getDate()))a--;return a;};
+  const getAge=(bd:string)=>getAgeFromDate(bd);
   const age=getAge(profile.birthDate);
   const attendancePct=attendance.length?Math.round((attendance.filter((a:any)=>a.status==='PRESENT'||a.status==='JUSTIFIED').length/attendance.length)*100):null;
 
@@ -217,7 +218,7 @@ export default function CatechumenDetailPage() {
           </div>
           <div className="flex-1">
             <h1 className="text-2xl font-bold">{profile.firstName} {profile.lastName}</h1>
-            <p className="text-sm text-muted-foreground">{age && t('catechumens.years_old', { age })}{profile.birthDate && ` · ${new Date(profile.birthDate).toLocaleDateString()}`}</p>
+            <p className="text-sm text-muted-foreground">{age && t('catechumens.years_old', { age })}{profile.birthDate && ` · ${formatDateOnly(profile.birthDate, 'pt-BR')}`}</p>
           </div>
           {canEdit && <Button size="sm" variant="outline" asChild><Link to={`/app/catechumens/${id}/edit`}><Edit3 className="mr-1 h-3 w-3"/>{t('edit')}</Link></Button>}
         </div>
