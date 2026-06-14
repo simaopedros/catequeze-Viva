@@ -49,9 +49,6 @@ export function createStripeCheckoutSession({
     // a customer address. It is left disabled by default; enable it (together
     // with `customer_update: { address: "auto" }`) once Stripe Tax is set up.
     allow_promotion_codes: true,
-    adaptive_pricing: {
-      enabled: true,
-    },
     invoice_creation: getInvoiceCreationConfig(mode),
   });
 }

@@ -12,6 +12,31 @@ import { stripeClient } from "./stripe/stripeClient";
 import { cascadeCancelToTenantBilling } from "./billingCascade";
 import { PRICING_VERSION } from "../shared/pricing";
 
+/**
+ * Detect the client's country from request headers.
+ * Uses Cloudflare's `cf-ipcountry` header when behind Cloudflare proxy,
+ * falls back to `Accept-Language` header parsing.
+ */
+function getClientCountry(context: any): string | undefined {
+  const headers = context?.request?.headers;
+  if (!headers) return undefined;
+
+  // Cloudflare IP country header (most reliable)
+  const cfCountry = headers['cf-ipcountry'];
+  if (typeof cfCountry === 'string' && cfCountry.length === 2) {
+    return cfCountry.toUpperCase();
+  }
+
+  // Fallback: parse Accept-Language (e.g. "pt-BR,pt;q=0.9,en;q=0.8")
+  const acceptLang = headers['accept-language'];
+  if (typeof acceptLang === 'string') {
+    const match = acceptLang.match(/[a-z]{2}-([A-Z]{2})/);
+    if (match) return match[1];
+  }
+
+  return undefined;
+}
+
 export type CheckoutSession = {
   sessionUrl: string | null;
   sessionId: string;
@@ -96,11 +121,15 @@ export const generateCheckoutSession: GenerateCheckoutSession<
 
   let session;
   try {
+    const country = getClientCountry(context);
+    const currency = country === 'BR' ? 'BRL' : 'USD';
+
     const result = await paymentProcessor.createCheckoutSession({
       userId,
       userEmail,
       paymentPlan,
       interval,
+      currency,
       prismaUserDelegate: context.entities.User,
     });
     session = result.session;
