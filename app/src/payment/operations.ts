@@ -18,7 +18,9 @@ import { PRICING_VERSION } from "../shared/pricing";
  * falls back to `Accept-Language` header parsing.
  */
 function getClientCountry(context: any): string | undefined {
-  const headers = context?.request?.headers;
+  // Wasp operations use context.req (Express request), not context.request
+  const req = context?.req || context?.request;
+  const headers = req?.headers;
   if (!headers) return undefined;
 
   // Cloudflare IP country header (most reliable)
