@@ -112,6 +112,21 @@ function buildPlanCards(t: any): PlanCard[] {
 }
 
 /** Formata centavos para string de preço (ex: 500 → "$5") */
+function detectCurrency(): 'BRL' | 'USD' {
+  // Detect if user is in Brazil via navigator.language
+  if (typeof navigator !== 'undefined' && navigator.language?.startsWith('pt')) {
+    return 'BRL';
+  }
+  // Fallback: check timezone for Brazil (GMT-2 to GMT-5)
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (tz?.startsWith('America/Sao_Paulo') || tz?.startsWith('America/') && ['Bahia', 'Belem', 'Fortaleza', 'Maceio', 'Manaus', 'Noronha', 'Recife', 'Santarem'].some(c => tz.includes(c))) {
+      return 'BRL';
+    }
+  } catch {}
+  return 'USD';
+}
+
 function formatPriceFromCents(cents: number): string {
   return `$${(cents / 100).toFixed(0)}`;
 }
@@ -218,7 +233,11 @@ export default function BillingPage() {
     setError(null);
     setUpgradingPlan(planId);
     try {
-      const result = await generateCheckoutSession({ planId, interval: billingInterval });
+      const result = await generateCheckoutSession({
+        planId,
+        interval: billingInterval,
+        currency: detectCurrency(),
+      });
       if (result.sessionUrl) {
         window.location.href = result.sessionUrl;
       }

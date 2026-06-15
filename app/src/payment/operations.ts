@@ -47,6 +47,7 @@ export type CheckoutSession = {
 const generateCheckoutSessionSchema = z.object({
   planId: z.nativeEnum(PaymentPlanId),
   interval: z.enum(['monthly', 'annual']).optional().default('monthly'),
+  currency: z.enum(['BRL', 'USD']).optional(),
 });
 
 type GenerateCheckoutSessionInput = z.infer<typeof generateCheckoutSessionSchema>;
@@ -62,7 +63,7 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     throw new HttpError(401, "Only authenticated users are allowed to perform this operation");
   }
 
-  const { planId: paymentPlanId, interval } = validateOrThrow(
+  const { planId: paymentPlanId, interval, currency: inputCurrency } = validateOrThrow(
     generateCheckoutSessionSchema,
     rawInput,
   );
@@ -123,8 +124,9 @@ export const generateCheckoutSession: GenerateCheckoutSession<
 
   let session;
   try {
-    const country = getClientCountry(context);
-    const currency = country === 'BR' ? 'BRL' : 'USD';
+    // Use client-provided currency if available, otherwise try server detection
+    const currency = inputCurrency
+      || (getClientCountry(context) === 'BR' ? 'BRL' : 'USD');
 
     const result = await paymentProcessor.createCheckoutSession({
       userId,

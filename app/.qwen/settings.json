@@ -82,7 +82,8 @@
       "Bash(/home/simaopedros/catequese-viva/app/node_modules/.bin/vitest *)",
       "Skill(copywriting)",
       "WebFetch(developers.cloudflare.com)",
-      "WebFetch(stripe.com)"
+      "WebFetch(stripe.com)",
+      "Bash(git commit *)"
     ]
   },
   "$version": 4
