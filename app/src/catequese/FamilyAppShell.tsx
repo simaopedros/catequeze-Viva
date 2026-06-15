@@ -29,7 +29,7 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
     <TwoFactorGate>
     <div className="min-h-screen bg-background flex flex-col">
       {/* Top bar */}
-      <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-sticky border-b bg-background/95 backdrop-blur-sm shadow-elevation-sticky">
         <div className="flex h-14 items-center justify-between px-4">
           <div className="flex items-center gap-3">
             <span className="font-bold text-lg text-primary">Catequese Viva</span>
@@ -49,7 +49,7 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
       </main>
 
       {/* Bottom nav (mobile) */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-sticky border-t bg-background/95 backdrop-blur-sm shadow-elevation-sticky md:hidden">
         <div className="flex items-center justify-around h-16">
           {navItems.map((item) => {
             const isActive = location.pathname === item.to || (item.to !== '/app' && location.pathname.startsWith(item.to));
@@ -62,7 +62,7 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
                 }`}
               >
                 <item.icon className="h-5 w-5" />
-                <span className="text-[10px] font-medium">{item.label}</span>
+                <span className="text-overline font-medium">{item.label}</span>
               </button>
             );
           })}

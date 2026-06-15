@@ -2,13 +2,30 @@ import * as React from "react";
 
 import { cn } from "../../utils";
 
-function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+interface InputProps extends React.ComponentProps<"input"> {
+  variant?: 'default' | 'filled';
+  state?: 'error' | 'success' | 'default';
+}
+
+function Input({ className, type, variant = 'default', state = 'default', ...props }: InputProps) {
+  const variantStyles = {
+    default: 'bg-transparent',
+    filled: 'bg-muted border-transparent focus-visible:bg-background',
+  };
+  const stateStyles = {
+    default: '',
+    error: 'border-destructive focus-visible:ring-destructive',
+    success: 'border-success focus-visible:ring-success',
+  };
+
   return (
     <input
       type={type}
       data-slot="input"
       className={cn(
-        "border-input file:text-foreground placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+        "border-input file:text-foreground placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 py-1 text-base shadow-elevation-xs transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+        variantStyles[variant],
+        stateStyles[state],
         className
       )}
       {...props}

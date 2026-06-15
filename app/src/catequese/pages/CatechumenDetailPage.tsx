@@ -275,9 +275,9 @@ export default function CatechumenDetailPage() {
             <div className="space-y-1">
               {attendance.map((a:any)=>(
                 <div key={a.id} className="flex items-center justify-between py-1 text-sm">
-                  <div><span className="text-xs text-muted-foreground">{new Date(a.meetingDate).toLocaleDateString()}</span> <span className="font-medium">{a.meetingTitle||t('catechumens.detail_meeting')}</span><span className="text-[10px] text-muted-foreground ml-1">({a.className})</span></div>
+                  <div><span className="text-xs text-muted-foreground">{new Date(a.meetingDate).toLocaleDateString()}</span> <span className="font-medium">{a.meetingTitle||t('catechumens.detail_meeting')}</span><span className="text-overline text-muted-foreground ml-1">({a.className})</span></div>
                   <div className="flex items-center gap-2">
-                    <Badge variant={a.status==='PRESENT'?'default':a.status==='ABSENT'?'destructive':'secondary'} className="text-[10px]">{a.status==='PRESENT'?t('catechumens.detail_present'):a.status==='ABSENT'?t('catechumens.detail_absent'):a.status}</Badge>
+                    <Badge variant={a.status==='PRESENT'?'default':a.status==='ABSENT'?'destructive':'secondary'} className="text-overline">{a.status==='PRESENT'?t('catechumens.detail_present'):a.status==='ABSENT'?t('catechumens.detail_absent'):a.status}</Badge>
                     {(a.status === 'ABSENT' || a.status === 'LATE') && (
                       justifyingId === a.id ? (
                         <form onSubmit={(e) => { e.preventDefault(); handleJustify(); }} className="flex items-center gap-1">
@@ -304,7 +304,7 @@ export default function CatechumenDetailPage() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <h4 className="text-sm font-semibold">{t('catechumens.detail_attendance_report')}</h4>
-                    <Badge variant={report.riskLevel === 'ALTO' ? 'destructive' : report.riskLevel === 'MÉDIO' ? 'secondary' : 'default'} className="text-[10px]">
+                    <Badge variant={report.riskLevel === 'ALTO' ? 'destructive' : report.riskLevel === 'MÉDIO' ? 'secondary' : 'default'} className="text-overline">
                       {t('catechumens.detail_risk', { level: report.riskLevel })}
                     </Badge>
                   </div>
@@ -348,15 +348,15 @@ export default function CatechumenDetailPage() {
                 <Link key={j.id} to={`/app/sacramental-journeys/${j.id}`} className="block rounded-lg border p-3 hover:bg-muted/50 transition-colors">
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-medium text-sm">{j.template?.name}</span>
-                    <Badge variant={pct===100?'default':'outline'} className="text-[10px]">{done}/{total}</Badge>
+                    <Badge variant={pct===100?'default':'outline'} className="text-overline">{done}/{total}</Badge>
                   </div>
                   <div className="w-full bg-muted rounded-full h-1.5 mb-1">
                     <div className={`h-1.5 rounded-full transition-all ${pct===100?'bg-emerald-500':pct>=50?'bg-amber-500':'bg-primary'}`} style={{width:`${pct}%`}}/>
                   </div>
                   <div className="flex gap-2 mt-1">
-                    {hasBlocked && <span className="text-[10px] text-red-600 flex items-center gap-1"><XCircle className="h-3 w-3"/>{t('catechumens.detail_blocked')}</span>}
-                    {hasWaiting && <span className="text-[10px] text-amber-600 flex items-center gap-1"><AlertTriangle className="h-3 w-3"/>{t('catechumens.detail_waiting')}</span>}
-                    {!hasBlocked && !hasWaiting && pct===100 && <span className="text-[10px] text-emerald-600 flex items-center gap-1"><CheckCircle className="h-3 w-3"/>{t('catechumens.detail_ready')}</span>}
+                    {hasBlocked && <span className="text-overline text-red-600 flex items-center gap-1"><XCircle className="h-3 w-3"/>{t('catechumens.detail_blocked')}</span>}
+                    {hasWaiting && <span className="text-overline text-amber-600 flex items-center gap-1"><AlertTriangle className="h-3 w-3"/>{t('catechumens.detail_waiting')}</span>}
+                    {!hasBlocked && !hasWaiting && pct===100 && <span className="text-overline text-emerald-600 flex items-center gap-1"><CheckCircle className="h-3 w-3"/>{t('catechumens.detail_ready')}</span>}
                   </div>
                 </Link>
               );
@@ -374,7 +374,7 @@ export default function CatechumenDetailPage() {
                   <button onClick={() => handleDownloadDocument(d.id, d.name)} className="text-primary hover:underline flex items-center gap-1 text-left">
                     <Download className="h-3 w-3" />{d.name}
                   </button>
-                  <Badge variant={d.verifiedAt?'default':'secondary'} className="text-[10px]">{d.verifiedAt?t('catechumens.detail_verified'):t('pending')}</Badge>
+                  <Badge variant={d.verifiedAt?'default':'secondary'} className="text-overline">{d.verifiedAt?t('catechumens.detail_verified'):t('pending')}</Badge>
                 </div>
               ))}
             </div>

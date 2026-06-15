@@ -412,6 +412,12 @@ page AppAIPlannerPage {
   component: import AIPlannerPage from "@src/catequese/pages/AIPlannerPage"
 }
 
+route AppCollaborativePlannerRoute { path: "/app/collaborative-planner", to: AppCollaborativePlannerPage }
+page AppCollaborativePlannerPage {
+  authRequired: true,
+  component: import CollaborativePlannerPage from "@src/catequese/pages/CollaborativePlannerPage"
+}
+
 route AppMyAiGenerationsRoute { path: "/app/my-ai-generations", to: AppMyAiGenerationsPage }
 page AppMyAiGenerationsPage {
   authRequired: true,
@@ -1480,6 +1486,83 @@ query listMyAiGenerations {
   fn: import { listMyAiGenerations } from "@src/server/operations/myAiGenerations",
   entities: [ContentItem]
 }
+
+// ── Collaborative Co-Creation Operations ───────────────────────────────────
+
+action startCollaborativeSession {
+  fn: import { startCollaborativeSession } from "@src/server/operations/collaborativeOperations",
+  entities: [CollaborativeSession, ContentItem, SessionMessage, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
+}
+
+api collaborativeChatApi {
+  fn: import { collaborativeChatHandler } from "@src/server/api/collaborativeChatStream",
+  httpRoute: (POST, "/api/collaborative-chat-stream"),
+  entities: [CollaborativeSession, SessionMessage, ContentItem, ContextAttachment, ContentVersion, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
+}
+
+api generateBlockApi {
+  fn: import { generateBlockHandler } from "@src/server/api/generateBlockStream",
+  httpRoute: (POST, "/api/generate-block-stream"),
+  entities: [CollaborativeSession, ContentItem, SessionMessage, ContentVersion, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
+}
+
+api adjustDepthApi {
+  fn: import { adjustDepthHandler } from "@src/server/api/adjustDepthStream",
+  httpRoute: (POST, "/api/adjust-depth-stream"),
+  entities: [CollaborativeSession, ContentItem, SessionMessage, ContentVersion, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
+}
+
+query getSessionHistory {
+  fn: import { getSessionHistory } from "@src/server/operations/collaborativeOperations",
+  entities: [SessionMessage, CollaborativeSession, ContentItem, Membership, Parish]
+}
+
+query getSessionContentItem {
+  fn: import { getSessionContentItem } from "@src/server/operations/collaborativeOperations",
+  entities: [ContentItem, Membership, Parish]
+}
+
+action addContextAttachment {
+  fn: import { addContextAttachment } from "@src/server/operations/collaborativeOperations",
+  entities: [ContextAttachment, CollaborativeSession, ContentItem, Membership, Parish]
+}
+
+action removeContextAttachment {
+  fn: import { removeContextAttachment } from "@src/server/operations/collaborativeOperations",
+  entities: [ContextAttachment, CollaborativeSession, ContentItem, Membership, Parish]
+}
+
+action saveContentVersion {
+  fn: import { saveContentVersion } from "@src/server/operations/collaborativeOperations",
+  entities: [ContentVersion, ContentItem, User]
+}
+
+query getContentVersions {
+  fn: import { getContentVersions } from "@src/server/operations/collaborativeOperations",
+  entities: [ContentVersion, ContentItem, Membership, Parish]
+}
+
+action restoreContentVersion {
+  fn: import { restoreContentVersion } from "@src/server/operations/collaborativeOperations",
+  entities: [ContentVersion, ContentItem, Membership, Parish]
+}
+
+query getAiSuggestions {
+  fn: import { getAiSuggestions } from "@src/server/operations/collaborativeOperations",
+  entities: [CollaborativeSession, ContentItem, Membership, Parish]
+}
+
+query getSaintStory {
+  fn: import { getSaintStory } from "@src/server/operations/collaborativeOperations",
+  entities: []
+}
+
+query getPedagogicalHooks {
+  fn: import { getPedagogicalHooks } from "@src/server/operations/collaborativeOperations",
+  entities: []
+}
+
+// ───────────────────────────────────────────────────────────────────────────
 
 query globalSearch {
   fn: import { globalSearch } from "@src/server/operations/searchOperations",

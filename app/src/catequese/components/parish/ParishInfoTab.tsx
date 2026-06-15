@@ -95,7 +95,7 @@ export function ParishInfoTab({
         <div className="flex items-center gap-2 pt-2 text-sm text-muted-foreground border-t">
           {tp('plan_label')}: <strong>{planLabel(billing.plan)}</strong>
           {statusInfo && (
-            <span className={'inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ' + statusInfo.color}>{STATUS_KEYS[billing.status] ? tp(statusInfo.key) : billing.status}</span>
+            <span className={'inline-flex items-center rounded-full px-2 py-0.5 text-overline font-medium ' + statusInfo.color}>{STATUS_KEYS[billing.status] ? tp(statusInfo.key) : billing.status}</span>
           )}
         </div>
       )}

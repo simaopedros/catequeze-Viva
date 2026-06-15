@@ -1,0 +1,111 @@
+{
+  "title": "Collaborative Co-Creation",
+  "subtitle": "Interactive workspace — AI + Catechist",
+  "workspace": {
+    "subtitle": "Realtime collaborative co-creation — AI + Catechist",
+    "live_status": "Live session",
+    "presence": "You + AI",
+    "copilot": "Pastoral co-pilot",
+    "awaiting_theme": "Preparing the meeting",
+    "ai_ready": "AI ready",
+    "messages": "messages",
+    "sources": "sources",
+    "ideas": "ideas"
+  },
+  "actions": {
+    "back_to_library": "Back to library"
+  },
+  "chat": {
+    "tab": "Chat",
+    "you": "You",
+    "ai": "AI",
+    "placeholder": "Chat with the AI co-pilot...",
+    "thinking": "Thinking...",
+    "empty": "Chat with the AI to build the meeting together. You can ask to refine specific sections, add references, or suggest dynamics.",
+    "tips": "Tips:",
+    "tip_refine": "Say what you want to improve in the script on the right",
+    "tip_catechism": "Ask for Catechism or Bible references",
+    "tip_dynamic": "Request dynamics, prayers, or activities",
+    "send": "Send"
+  },
+  "context": {
+    "title": "Context Sources",
+    "empty": "No context sources. Use the search above to add Bible, Catechism, or Directory passages.",
+    "search_bible": "Search the Bible...",
+    "search_catechism": "Search the Catechism...",
+    "bible": "Bible",
+    "catechism": "Catechism",
+    "directory": "Directory",
+    "text": "Text"
+  },
+  "suggestions": {
+    "title": "AI Suggestions",
+    "empty": "No suggestions available. Start a chat conversation to receive suggestions.",
+    "refresh": "Refresh"
+  },
+  "tools": {
+    "title": "Tools",
+    "depth": {
+      "title": "Theological Depth",
+      "description": "Adjust content complexity",
+      "levels": {
+        "1": "Very Simple",
+        "2": "Simple",
+        "3": "Moderate",
+        "4": "Advanced",
+        "5": "Deep"
+      }
+    },
+    "saint": {
+      "title": "Saint Story",
+      "description": "Add an example from the life of a saint",
+      "search": "Find Saint",
+      "searching": "Searching for saint story...",
+      "insert": "Insert into Content",
+      "virtue": "Virtue",
+      "lesson": "Lesson",
+      "error": "Error fetching saint story."
+    },
+    "hooks": {
+      "title": "Pedagogical Hooks",
+      "description": "Ideas to start the meeting in an impactful way",
+      "generate": "Generate Hooks",
+      "generating": "Generating creative ideas...",
+      "use": "Use this hook",
+      "materials": "Materials",
+      "error": "Error generating hooks."
+    }
+  },
+  "editor": {
+    "waiting": "Waiting for initial generation...",
+    "no_title": "Untitled",
+    "refine": "Refine",
+    "apply_refine": "Apply",
+    "generating": "Generating...",
+    "instruction_placeholder": "Optional instruction...",
+    "awaiting_content": "Awaiting content...",
+    "edit_publish": "Edit",
+    "versions": "Versions",
+    "history": "Version History",
+    "save_version": "Save current version",
+    "no_versions": "No versions saved yet.",
+    "restore": "Restore",
+    "version": "Version",
+    "no_description": "No description"
+  },
+  "blocks": {
+    "pastoralObjective": "Pastoral Objective",
+    "openingPrayer": "Opening Prayer",
+    "biblicalRef": "Word of God",
+    "mainContent": "Main Content",
+    "dynamic": "Group Dynamic",
+    "familyTask": "Family Commitment",
+    "closingPrayer": "Closing Prayer"
+  },
+  "setup": {
+    "title": "Start Co-Creation",
+    "select_age": "Select the age group",
+    "theme_required": "Enter the meeting theme",
+    "error": "Error starting session"
+  }
+}

@@ -23,6 +23,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   catechumens: GraduationCap,
   families: Heart,
   content_library: Library,
+  collaborative_planner: Sparkles,
   ai_planner: Sparkles,
   my_ai_generations: Puzzle,
   activities: Puzzle,
@@ -65,10 +66,11 @@ function NavItemLink({ item, collapsed, badge }: NavItemProps & { badge?: number
     <NavLink
       key={item.to}
       to={item.to}
+      end={item.to === '/app'}
       data-tour={tourMap[item.iconKey] || undefined}
       className={({ isActive }) => cn(
-        'flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors w-full relative',
-        isActive ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
+        'flex items-center justify-between rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors w-full relative',
+        isActive ? 'bg-primary/10 text-primary border-l-2 border-primary' : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
         collapsed && 'justify-center px-2'
       )}
     >
@@ -77,7 +79,7 @@ function NavItemLink({ item, collapsed, badge }: NavItemProps & { badge?: number
         {!collapsed && <span>{t(item.labelKey)}</span>}
       </div>
       {!collapsed && badge !== undefined && badge > 0 && (
-        <span className="h-4.5 min-w-[18px] flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold px-1 animate-in zoom-in-50">
+        <span className="h-4.5 min-w-[18px] flex items-center justify-center rounded-full bg-primary text-primary-foreground text-overline font-bold px-1 animate-in zoom-in-50">
           {badge > 99 ? '99+' : badge}
         </span>
       )}
@@ -123,21 +125,13 @@ export function Sidebar() {
   };
 
   return (
-    <aside className={cn('flex flex-col border-r bg-card transition-all duration-200 h-full', collapsed ? 'w-16' : 'w-60')}>
+    <aside className={cn('flex flex-col border-r bg-card shadow-elevation-sticky transition-all duration-200 h-full', collapsed ? 'w-16' : 'w-60')}>
       <div className="flex h-14 items-center border-b px-3">
         {!collapsed && <span className="text-lg font-semibold tracking-tight text-primary">Catequese Viva</span>}
         {collapsed && <Cross className="mx-auto h-6 w-6 text-primary" />}
       </div>
 
-      <nav
-        className="flex-1 overflow-y-auto py-4
-          [&::-webkit-scrollbar]:w-1.5
-          [&::-webkit-scrollbar-track]:bg-transparent
-          [&::-webkit-scrollbar-thumb]:bg-muted-foreground/15
-          [&::-webkit-scrollbar-thumb]:rounded-full
-          hover:[&::-webkit-scrollbar-thumb]:bg-muted-foreground/30"
-        style={{ scrollbarWidth: 'thin', scrollbarColor: 'hsl(var(--muted-foreground) / 0.15) transparent' }}
-      >
+      <nav className="flex-1 overflow-y-auto py-4 no-scrollbar">
         {mainSections.map((section) => {
           let filtered = filterByRole(section.items, userRole, isAdmin);
           
@@ -164,9 +158,9 @@ export function Sidebar() {
               {!collapsed ? (
                 <button
                   onClick={() => toggleSection(section.section)}
-                  className="flex w-full items-center justify-between mb-1 px-3 py-1 rounded-md hover:bg-accent/50 transition-colors"
+                  className="flex w-full items-center justify-between mb-0.5 px-2.5 py-1 rounded-md hover:bg-accent/50 transition-colors"
                 >
-                  <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-wider select-none">
+                  <p className="text-overline font-bold text-text-tertiary uppercase select-none">
                     {t(`${section.section}Section`)}
                   </p>
                   <ChevronDown

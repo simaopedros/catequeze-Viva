@@ -9,7 +9,7 @@ const ALL_NS = [
   'catechism', 'tour', 'publicNav', 'bible', 'ai', 'activities', 'meetings',
   'catecheticalYears', 'onboarding', 'billing', 'public', 'legal', 'family',
   'admin', 'components', 'cookie', 'calendar', 'landing', 'landingSistema',
-  'landingIa', 'landingPresenca', 'auth',
+  'landingIa', 'landingPresenca', 'auth', 'collaborative',
 ] as const;
 
 i18n

@@ -167,7 +167,7 @@ export default function SacramentalJourneyDetailPage() {
                     : t('detail.sacrament_date_undefined')}
                 </span>
                 {canManage && (
-                  <Button size="sm" variant="ghost" className="h-6 text-[10px]" onClick={() => { setTargetDateInput(targetDate ? targetDate.toISOString().slice(0, 10) : ''); setEditingTargetDate(true); }}>
+                  <Button size="sm" variant="ghost" className="h-6 text-overline" onClick={() => { setTargetDateInput(targetDate ? targetDate.toISOString().slice(0, 10) : ''); setEditingTargetDate(true); }}>
                     <Pencil className="h-3 w-3" />
                   </Button>
                 )}
@@ -222,9 +222,9 @@ export default function SacramentalJourneyDetailPage() {
                         <div className="min-w-0 flex-1">
                           <p className="font-medium text-sm flex items-center gap-2 flex-wrap">
                             {tm?.name}
-                            {tm?.required && <Badge variant="outline" className="text-[10px]">{t('required')}</Badge>}
-                            {isEvidenceRequired && <Badge variant="outline" className="text-[10px]">{t('evidence')}</Badge>}
-                            {isOverdue && <Badge variant="outline" className="text-[10px] border-amber-300 text-amber-700">{t('detail.overdue')}</Badge>}
+                            {tm?.required && <Badge variant="outline" className="text-overline">{t('required')}</Badge>}
+                            {isEvidenceRequired && <Badge variant="outline" className="text-overline">{t('evidence')}</Badge>}
+                            {isOverdue && <Badge variant="outline" className="text-overline border-amber-300 text-amber-700">{t('detail.overdue')}</Badge>}
                           </p>
                           {tm?.description && <p className="text-xs text-muted-foreground mt-0.5">{tm.description}</p>}
                           {deadline && (
@@ -245,8 +245,8 @@ export default function SacramentalJourneyDetailPage() {
                                 rows={2}
                               />
                               <div className="flex gap-1">
-                                <Button size="sm" variant="ghost" className="h-6 text-[10px]" onClick={() => handleSaveNotes(m.id)}><Save className="mr-1 h-3 w-3" />{tc('save')}</Button>
-                                <Button size="sm" variant="ghost" className="h-6 text-[10px]" onClick={() => setEditingNotes(prev => { const next = { ...prev }; delete next[m.id]; return next; })}><X className="h-3 w-3" /></Button>
+                                <Button size="sm" variant="ghost" className="h-6 text-overline" onClick={() => handleSaveNotes(m.id)}><Save className="mr-1 h-3 w-3" />{tc('save')}</Button>
+                                <Button size="sm" variant="ghost" className="h-6 text-overline" onClick={() => setEditingNotes(prev => { const next = { ...prev }; delete next[m.id]; return next; })}><X className="h-3 w-3" /></Button>
                               </div>
                             </div>
                           ) : (
@@ -257,7 +257,7 @@ export default function SacramentalJourneyDetailPage() {
                                 <p className="text-xs text-muted-foreground/50 italic">{t('detail.no_notes')}</p>
                               )}
                               {canManage && (
-                                <Button size="sm" variant="ghost" className="h-5 text-[10px] mt-0.5" onClick={() => setEditingNotes(prev => ({ ...prev, [m.id]: m.notes || '' }))}>
+                                <Button size="sm" variant="ghost" className="h-5 text-overline mt-0.5" onClick={() => setEditingNotes(prev => ({ ...prev, [m.id]: m.notes || '' }))}>
                                   <Pencil className="mr-1 h-2.5 w-2.5" />{t('detail.edit_notes')}
                                 </Button>
                               )}
@@ -294,40 +294,40 @@ export default function SacramentalJourneyDetailPage() {
                       </div>
 
                       <div className="flex items-center gap-1 flex-shrink-0">
-                        <Badge variant="outline" className={`text-[10px] ${m.status === 'COMPLETED' || m.status === 'APPROVED' ? 'border-green-300 text-green-700' : m.status === 'REJECTED' ? 'border-red-300 text-red-700' : ''}`}>
+                        <Badge variant="outline" className={`text-overline ${m.status === 'COMPLETED' || m.status === 'APPROVED' ? 'border-green-300 text-green-700' : m.status === 'REJECTED' ? 'border-red-300 text-red-700' : ''}`}>
                           {statusLabel}
                         </Badge>
 
                         {isCatechist && m.status !== 'COMPLETED' && m.status !== 'APPROVED' && m.status !== 'WAITING_APPROVAL' && (
                           <>
-                            <Button size="sm" variant="ghost" className="h-7 text-[10px] text-green-600" onClick={() => handleUpdateStatus(m.id, 'COMPLETED')}>
+                            <Button size="sm" variant="ghost" className="h-7 text-overline text-green-600" onClick={() => handleUpdateStatus(m.id, 'COMPLETED')}>
                               ✓ {t('detail.complete')}
                             </Button>
-                            <Button size="sm" variant="ghost" className="h-7 text-[10px] text-amber-600" onClick={() => handleUpdateStatus(m.id, 'WAITING_APPROVAL')}>
+                            <Button size="sm" variant="ghost" className="h-7 text-overline text-amber-600" onClick={() => handleUpdateStatus(m.id, 'WAITING_APPROVAL')}>
                               {t('detail.send_for_approval')}
                             </Button>
                           </>
                         )}
 
                         {isCoordinator && m.status !== 'COMPLETED' && m.status !== 'APPROVED' && (
-                          <Button size="sm" variant="ghost" className="h-7 text-[10px] text-green-600" onClick={() => handleUpdateStatus(m.id, 'COMPLETED')}>
+                          <Button size="sm" variant="ghost" className="h-7 text-overline text-green-600" onClick={() => handleUpdateStatus(m.id, 'COMPLETED')}>
                             ✓ {t('detail.complete')}
                           </Button>
                         )}
 
                         {isCoordinator && m.status === 'WAITING_APPROVAL' && (
                           <>
-                            <Button size="sm" variant="ghost" className="h-7 text-[10px] text-green-600" onClick={() => handleUpdateStatus(m.id, 'APPROVED')}>
+                            <Button size="sm" variant="ghost" className="h-7 text-overline text-green-600" onClick={() => handleUpdateStatus(m.id, 'APPROVED')}>
                               ✓ {t('detail.status.approved')}
                             </Button>
-                            <Button size="sm" variant="ghost" className="h-7 text-[10px] text-red-500" onClick={() => handleUpdateStatus(m.id, 'REJECTED')}>
+                            <Button size="sm" variant="ghost" className="h-7 text-overline text-red-500" onClick={() => handleUpdateStatus(m.id, 'REJECTED')}>
                               ✗ {t('detail.reject')}
                             </Button>
                           </>
                         )}
 
                         {(isCoordinator || isCatechist) && (m.status === 'COMPLETED' || (isCoordinator && m.status === 'APPROVED')) && (
-                          <Button size="sm" variant="ghost" className="h-7 text-[10px]" onClick={() => handleUpdateStatus(m.id, 'PENDING')}>
+                          <Button size="sm" variant="ghost" className="h-7 text-overline" onClick={() => handleUpdateStatus(m.id, 'PENDING')}>
                             {t('detail.undo')}
                           </Button>
                         )}

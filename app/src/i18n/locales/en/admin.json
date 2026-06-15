@@ -1,4 +1,20 @@
 {
+  "sidebar": {
+    "overview": "Overview",
+    "dashboard": "Dashboard",
+    "analytics": "Analytics",
+    "governance": "Governance",
+    "parishes": "Parishes",
+    "users": "Users",
+    "dioceses": "Dioceses",
+    "licenses": "Licenses",
+    "operations": "Operations",
+    "support": "Support",
+    "audit": "Audit",
+    "system": "System",
+    "other": "Other",
+    "back_to_app": "Back to App"
+  },
   "title": "Dioceses",
   "subtitle": "Diocese management (Super Admin)",
   "new_diocese": "New diocese",

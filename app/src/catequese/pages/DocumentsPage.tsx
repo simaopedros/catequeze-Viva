@@ -156,7 +156,7 @@ export default function DocumentsPage() {
                           <div className="min-w-0">
                             <p className="text-xs font-medium truncate">{label}</p>
                             {status !== 'MISSING' && (
-                              <p className="text-[10px] text-muted-foreground">{config.label}</p>
+                              <p className="text-overline text-muted-foreground">{config.label}</p>
                             )}
                           </div>
                         </div>

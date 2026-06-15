@@ -182,7 +182,7 @@ export default function ParishesPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <h3 className="font-semibold truncate group-hover:text-primary transition-colors">{p.name}</h3>
-                        {!isActive && <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600 dark:bg-zinc-800 dark:text-zinc-400">{tp('inactive_label')}</span>}
+                        {!isActive && <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-overline font-medium text-gray-600 dark:bg-zinc-800 dark:text-zinc-400">{tp('inactive_label')}</span>}
                       </div>
                       {(p.city || p.state) && <p className="text-sm text-muted-foreground flex items-center gap-1 mt-0.5"><MapPin className="h-3 w-3" />{[p.city, p.state].filter(Boolean).join(', ')}</p>}
                     </div>
@@ -200,7 +200,7 @@ export default function ParishesPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       {planBadge(billing)}
-                      <span className={'inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ' + statusInfo.color}>{statusInfo.key ? statusLabel(billing?.status) : (billing?.status || tp('unknown'))}</span>
+                      <span className={'inline-flex items-center rounded-full px-2 py-0.5 text-overline font-medium ' + statusInfo.color}>{statusInfo.key ? statusLabel(billing?.status) : (billing?.status || tp('unknown'))}</span>
                     </div>
                   </div>
                 </div>

@@ -148,7 +148,7 @@ export default function WorkspaceSelectorPage() {
             </span>
             {opts?.showRole && <span className="text-xs text-muted-foreground">{roleLabel(ws.role, t)}</span>}
             {opts?.covered && (
-              <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+              <span className="inline-flex items-center gap-1 text-overline text-muted-foreground">
                 <ShieldCheck className="h-3 w-3" />
                 {opts.covered}
               </span>
@@ -294,7 +294,7 @@ export default function WorkspaceSelectorPage() {
                       {group.name}
                     </div>
                     <span
-                      className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${
+                      className={`text-overline px-2 py-0.5 rounded-full font-medium ${
                         licensed ? 'bg-secondary/15 text-secondary' : 'bg-muted text-muted-foreground'
                       }`}
                     >
@@ -324,7 +324,7 @@ export default function WorkspaceSelectorPage() {
                       {d.name}
                     </div>
                     <span
-                      className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${
+                      className={`text-overline px-2 py-0.5 rounded-full font-medium ${
                         d.licensed ? 'bg-secondary/15 text-secondary' : 'bg-muted text-muted-foreground'
                       }`}
                     >

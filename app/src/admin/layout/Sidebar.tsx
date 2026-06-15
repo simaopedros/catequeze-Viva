@@ -1,6 +1,7 @@
 import { LayoutDashboard, Sheet, X, Building2, Church, BarChart3, Bell, ShieldCheck, Settings, Activity } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router";
+import { useTranslation } from 'react-i18next';
 import Logo from "../../client/static/logo.webp";
 import { cn } from "../../client/utils";
 
@@ -12,6 +13,7 @@ interface SidebarProps {
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const location = useLocation();
   const { pathname } = location;
+  const { t } = useTranslation('admin');
 
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
@@ -77,16 +79,16 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
           {/* VISÃO GERAL */}
           <div>
-            <h3 className="text-muted-foreground mb-4 ml-4 text-sm font-semibold">VISÃO GERAL</h3>
+            <h3 className="text-muted-foreground mb-4 ml-4 text-sm font-semibold">{t('sidebar.overview')}</h3>
             <ul className="mb-6 flex flex-col gap-1.5">
               <li>
                 <NavLink to="/admin" end className={navLinkClass}>
-                  <LayoutDashboard />Painel
+                  <LayoutDashboard />{t('sidebar.dashboard')}
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/admin/analytics" end className={navLinkClass}>
-                  <BarChart3 />Analytics
+                  <BarChart3 />{t('sidebar.analytics')}
                 </NavLink>
               </li>
             </ul>
@@ -94,48 +96,48 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
           {/* GOVERNANÇA */}
           <div>
-            <h3 className="text-muted-foreground mb-4 ml-4 text-sm font-semibold">GOVERNANÇA</h3>
+            <h3 className="text-muted-foreground mb-4 ml-4 text-sm font-semibold">{t('sidebar.governance')}</h3>
             <ul className="mb-6 flex flex-col gap-1.5">
               <li>
                 <NavLink to="/admin/parishes" end className={navLinkClass}>
-                  <Church />Paróquias
+                  <Church />{t('sidebar.parishes')}
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/admin/users" end className={navLinkClass}>
-                  <Sheet />Utilizadores
+                  <Sheet />{t('sidebar.users')}
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/admin/dioceses" end className={navLinkClass}>
-                  <Building2 />Dioceses
+                  <Building2 />{t('sidebar.dioceses')}
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/admin/billing" end className={navLinkClass}>
-                  <Activity />Licenças
+                  <Activity />{t('sidebar.licenses')}
                 </NavLink>
               </li>
             </ul>
           </div>
 
-          {/* OPERAÇÕES — future links, disabled for now */}
+          {/* OPERAÇÕES */}
           <div>
-            <h3 className="text-muted-foreground mb-4 ml-4 text-sm font-semibold">OPERAÇÕES</h3>
+            <h3 className="text-muted-foreground mb-4 ml-4 text-sm font-semibold">{t('sidebar.operations')}</h3>
             <ul className="mb-6 flex flex-col gap-1.5">
               <li>
                 <NavLink to="/admin/support" end className={navLinkClass}>
-                  <Bell />Suporte
+                  <Bell />{t('sidebar.support')}
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/admin/audit" end className={navLinkClass}>
-                  <ShieldCheck />Auditoria
+                  <ShieldCheck />{t('sidebar.audit')}
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/admin/system" end className={navLinkClass}>
-                  <Settings />Sistema
+                  <Settings />{t('sidebar.system')}
                 </NavLink>
               </li>
             </ul>
@@ -143,11 +145,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
           {/* OUTROS */}
           <div>
-            <h3 className="text-muted-foreground mb-4 ml-4 text-sm font-semibold">OUTROS</h3>
+            <h3 className="text-muted-foreground mb-4 ml-4 text-sm font-semibold">{t('sidebar.other')}</h3>
             <ul className="mb-6 flex flex-col gap-1.5">
               <li>
                 <NavLink to="/app" end className={navLinkClass}>
-                  <LayoutDashboard />Voltar ao App
+                  <LayoutDashboard />{t('sidebar.back_to_app')}
                 </NavLink>
               </li>
             </ul>

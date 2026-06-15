@@ -204,7 +204,7 @@ export function ActivityForm({
                           q.correctIndex === oi ? 'bg-success border-success text-success-foreground' : 'border-muted-foreground/30'
                         }`}
                       >
-                        {q.correctIndex === oi ? <Check className="h-3 w-3"/> : <span className="text-[10px]">{['A','B','C','D'][oi]}</span>}
+                        {q.correctIndex === oi ? <Check className="h-3 w-3"/> : <span className="text-overline">{['A','B','C','D'][oi]}</span>}
                       </button>
                       <Input
                         placeholder={t('form.option', { letter: ['A','B','C','D'][oi] })}
@@ -306,7 +306,7 @@ export function ActivityForm({
             {dynamicSteps.map((step, i) => (
               <div key={step.id} className="rounded-lg border p-3 space-y-2">
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-[10px]">{t('form.step', { number: i + 1 })}</Badge>
+                  <Badge variant="outline" className="text-overline">{t('form.step', { number: i + 1 })}</Badge>
                   <Button size="icon" variant="ghost" className="text-destructive ml-auto" onClick={() => setDynamicSteps(prev => prev.filter(s => s.id !== step.id))}>
                     <Trash2 className="h-3 w-3" />
                   </Button>

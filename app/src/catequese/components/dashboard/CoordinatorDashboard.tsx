@@ -37,7 +37,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
       {/* KPIs */}
       <div data-tour="dashboard-stats" className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[{l:t('active_catechumens'),v:stats?.activeCatechumens??0,i:Users,c:'text-primary bg-primary/10'},{l:t('active_classes'),v:stats?.activeClasses??0,i:BookOpen,c:'text-success bg-success/10'},{l:t('avg_attendance'),v:`${stats?.avgAttendance??0}%`,i:TrendingUp,c:'text-warning bg-warning/10'},{l:t('pending_sacraments'),v:stats?.pendingSacraments??0,i:Cross,c:'text-secondary-foreground bg-secondary'}].map(k=>(
-          <div key={k.l} className="rounded-xl border bg-card p-5 shadow-sm hover:shadow-md transition-shadow"><div className="flex items-center gap-4"><div className={`rounded-xl p-2.5 ${k.c}`}><k.i className="h-5 w-5" aria-hidden="true"/></div><div><p className="text-xs text-muted-foreground uppercase tracking-wider">{k.l}</p><p className="text-2xl font-bold mt-0.5">{k.v}</p></div></div></div>
+          <div key={k.l} className="rounded-xl border bg-card p-5 shadow-elevation-sm hover:shadow-elevation-md transition-shadow"><div className="flex items-center gap-4"><div className={`rounded-xl p-2.5 ${k.c}`}><k.i className="h-5 w-5" aria-hidden="true"/></div><div><p className="text-xs text-muted-foreground uppercase tracking-wider">{k.l}</p><p className="text-2xl font-bold mt-0.5">{k.v}</p></div></div></div>
         ))}
       </div>
 
@@ -144,7 +144,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                       </span>
                     </td>
                     <td className="py-2 text-center">
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                      <span className={`text-overline font-bold px-2 py-0.5 rounded-full ${
                         c.riskLevel === 'BAIXO' ? 'bg-success/10 text-success' :
                         c.riskLevel === 'MÉDIO' ? 'bg-warning/10 text-warning' :
                         'bg-destructive/10 text-destructive'

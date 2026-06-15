@@ -383,6 +383,7 @@ export const AI_CREDIT_COST = {
   generateAnnualPlanning: 3,
   generateActivity: 1,
   chatMessage: 0,
+  collaborativeSession: 1,
 } as const;
 
 /** One-time free credits for trial. */

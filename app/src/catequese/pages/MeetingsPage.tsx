@@ -140,7 +140,7 @@ export default function MeetingsPage() {
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-[10px]">{t('attendance_count', { count: m._count?.attendance || 0 })}</Badge>
+                    <Badge variant="outline" className="text-overline">{t('attendance_count', { count: m._count?.attendance || 0 })}</Badge>
                     <Link to={`/app/classes/${classId}/attendance`} className="text-xs text-primary hover:underline">{tcl('attendance')}</Link>
                   </div>
                 </div>
@@ -151,7 +151,7 @@ export default function MeetingsPage() {
                     <Link to={`/app/content-library/${m.content.id}`} className="text-primary hover:underline font-medium">{m.content.title}</Link>
                     <button
                       onClick={() => handleLinkContent(m.id, null)}
-                      className="ml-auto text-muted-foreground hover:text-destructive text-[10px]"
+                      className="ml-auto text-muted-foreground hover:text-destructive text-overline"
                     >
                       {t('unlink')}
                     </button>
@@ -176,7 +176,7 @@ export default function MeetingsPage() {
                     size="sm"
                     variant="ghost"
                     className="text-xs h-7"
-                    onClick={() => navigate(`/app/ai-planner?meetingId=${m.id}&classId=${classId}&tab=meeting`)}
+                    onClick={() => navigate(`/app/collaborative-planner?meetingId=${m.id}&classId=${classId}&tab=meeting`)}
                   >
                     <Sparkles className="mr-1 h-3 w-3" />
                     {t('generate_ai_activity')}
@@ -185,7 +185,7 @@ export default function MeetingsPage() {
                     size="sm"
                     variant="ghost"
                     className="text-xs h-7"
-                    onClick={() => navigate(`/app/ai-planner?meetingId=${m.id}&classId=${classId}&tab=whatsapp`)}
+                    onClick={() => navigate(`/app/collaborative-planner?meetingId=${m.id}&classId=${classId}&tab=whatsapp`)}
                   >
                     <MessageCircle className="mr-1 h-3 w-3" />
                     {t('generate_whatsapp')}

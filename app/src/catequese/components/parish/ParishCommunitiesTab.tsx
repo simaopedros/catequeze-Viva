@@ -123,7 +123,7 @@ export function ParishCommunitiesTab({ communities, onCreate, onUpdate }: Parish
                   <div>
                     <div className="flex items-center gap-2">
                       <p className="font-medium">{c.name}</p>
-                      {c.type && <span className="text-[10px] bg-muted px-1.5 py-0.5 rounded">{typeShortLabel(c.type)}</span>}
+                      {c.type && <span className="text-overline bg-muted px-1.5 py-0.5 rounded">{typeShortLabel(c.type)}</span>}
                     </div>
                     {c.location && <p className="text-sm text-muted-foreground flex items-center gap-1 mt-0.5"><MapPin className="h-3 w-3" />{c.location}</p>}
                     <p className="text-xs text-muted-foreground mt-1">{tp('members_count_short', { count: c._count?.memberships || 0 })}</p>

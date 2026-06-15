@@ -1,6 +1,3 @@
-/**
- * Reusable skeleton loading components for consistent UX.
- */
 import { cn } from '../utils';
 
 interface SkeletonProps {
@@ -87,6 +84,37 @@ export function SkeletonPage({ className }: SkeletonProps) {
         <Skeleton className="h-40 rounded-xl" />
         <Skeleton className="h-40 rounded-xl" />
       </div>
+    </div>
+  );
+}
+
+export function SkeletonChart({ height = 'h-64', className }: SkeletonProps & { height?: string }) {
+  return (
+    <div role="status" aria-busy="true" className={cn('rounded-xl border bg-card p-5', className)}>
+      <Skeleton className="h-4 w-1/3 mb-4" />
+      <Skeleton className={cn('w-full rounded-lg', height)} />
+    </div>
+  );
+}
+
+export function SkeletonStats({ count = 4, className }: SkeletonProps & { count?: number }) {
+  return (
+    <div role="status" aria-busy="true" className={cn('grid gap-4 grid-cols-2 lg:grid-cols-4', className)}>
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="rounded-xl border bg-card p-5 space-y-3">
+          <Skeleton className="h-4 w-20" />
+          <Skeleton className="h-8 w-16" />
+          <Skeleton className="h-3 w-24" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function SkeletonAvatar({ size = 'h-10 w-10', className }: SkeletonProps & { size?: string }) {
+  return (
+    <div role="status" aria-busy="true" className={cn('inline-flex', className)}>
+      <Skeleton className={cn('rounded-full', size)} />
     </div>
   );
 }

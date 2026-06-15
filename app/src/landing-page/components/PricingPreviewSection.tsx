@@ -29,7 +29,7 @@ export function PricingPreviewSection({ ns = 'landing' }: { ns?: string }) {
         <p className="text-lg text-muted-foreground">{t('pricing_subtitle')}</p>
         <div className="inline-flex items-center rounded-lg border bg-muted p-0.5 mt-3">
           <button type="button" onClick={() => setBillingInterval('monthly')} className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${billingInterval === 'monthly' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>{t('price_monthly')}</button>
-          <button type="button" onClick={() => setBillingInterval('annual')} className={`px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-1.5 ${billingInterval === 'annual' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>{t('price_annual')}<span className="text-[11px] text-success font-bold">{t('annual_discount')}</span></button>
+          <button type="button" onClick={() => setBillingInterval('annual')} className={`px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-1.5 ${billingInterval === 'annual' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>{t('price_annual')}<span className="text-caption text-success font-bold">{t('annual_discount')}</span></button>
         </div>
       </div>
 

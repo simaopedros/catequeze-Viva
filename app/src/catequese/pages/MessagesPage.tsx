@@ -211,7 +211,7 @@ export default function MessagesPage() {
 
                 <div className="flex-1 min-w-0">
                   <h2 className="font-semibold text-sm truncate">{conversationName || t('default_conversation')}</h2>
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="text-overline text-muted-foreground">
                     {activeConv?.type === 'DIRECT' ? t('direct_chat') : (
                       t('participants_count', { count: activeConv?.participants?.length ?? 0 })
                     )}
@@ -265,14 +265,14 @@ export default function MessagesPage() {
                     <div className="space-y-2">
                       {activeConv.participants.map((p: any) => (
                         <div key={p.id} className="flex items-center gap-2.5">
-                          <div className="h-7 w-7 rounded-full bg-gradient-to-br from-primary/60 to-primary/30 flex items-center justify-center text-white text-[9px] font-semibold flex-shrink-0">
+                          <div className="h-7 w-7 rounded-full bg-gradient-to-br from-primary/60 to-primary/30 flex items-center justify-center text-white text-overline font-semibold flex-shrink-0">
                             {[p.user.firstName?.[0], p.user.lastName?.[0]].filter(Boolean).join('').toUpperCase() || '?'}
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-medium truncate">
                               {[p.user.firstName, p.user.lastName].filter(Boolean).join(' ') || p.user.email}
                             </p>
-                            <p className="text-[9px] text-muted-foreground capitalize">{p.role.toLowerCase()}</p>
+                            <p className="text-overline text-muted-foreground capitalize">{p.role.toLowerCase()}</p>
                           </div>
                         </div>
                       ))}

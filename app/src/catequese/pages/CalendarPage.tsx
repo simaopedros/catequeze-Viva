@@ -153,15 +153,15 @@ export default function CalendarPage() {
                   >
                     <div className="flex flex-col items-center justify-center w-10 h-10 rounded-lg bg-muted flex-shrink-0">
                       <span className="text-xs font-bold">{day}</span>
-                      <span className="text-[9px] text-muted-foreground">{months[month].slice(0,3)}</span>
+                      <span className="text-overline text-muted-foreground">{months[month].slice(0,3)}</span>
                     </div>
                     <div className="w-1.5 h-8 rounded-full flex-shrink-0" style={{ background: e.color || '#6366f1' }} />
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium truncate">
                         {e.name}
-                        {e.className && <span className="text-[10px] text-muted-foreground ml-1">({e.className})</span>}
+                        {e.className && <span className="text-overline text-muted-foreground ml-1">({e.className})</span>}
                       </p>
-                      <p className="text-[10px] text-muted-foreground">{eventTypeLabels[e.type] || e.type}</p>
+                      <p className="text-overline text-muted-foreground">{eventTypeLabels[e.type] || e.type}</p>
                     </div>
                     <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                   </button>
@@ -182,7 +182,7 @@ export default function CalendarPage() {
           <div className="lg:col-span-2 rounded-xl border bg-card overflow-hidden">
             <div className="grid grid-cols-7 bg-muted/30">
               {weekdays.map((d,i)=>(
-                <div key={d} className={`p-1.5 sm:p-2 text-center text-[10px] sm:text-xs font-medium uppercase ${i>=5?'text-red-400':'text-muted-foreground'}`}>{d}</div>
+                <div key={d} className={`p-1.5 sm:p-2 text-center text-overline sm:text-xs font-medium uppercase ${i>=5?'text-red-400':'text-muted-foreground'}`}>{d}</div>
               ))}
             </div>
 
@@ -197,12 +197,12 @@ export default function CalendarPage() {
                 const isSelected=selectedDay===day;
                 return(
                   <button key={day} onClick={()=>handleDayClick(day)} className={`p-1 sm:p-2 border-t border-l text-left transition-colors flex flex-col ${isSelected?'bg-primary/10 ring-1 ring-inset ring-primary':isWeekend?'bg-muted/20 hover:bg-muted/40':'hover:bg-muted/30'}`}>
-                    <span className={`inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full text-[10px] sm:text-xs font-medium flex-shrink-0 ${isToday?'bg-primary text-primary-foreground':''}`}>{day}</span>
+                    <span className={`inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full text-overline sm:text-xs font-medium flex-shrink-0 ${isToday?'bg-primary text-primary-foreground':''}`}>{day}</span>
                     <div className="flex flex-wrap gap-0.5 mt-0.5 sm:mt-1">
                       {de.slice(0,3).map(e=><div key={e.id} className="h-1.5 w-1.5 sm:hidden rounded-full flex-shrink-0" style={{background:e.color||'#6366f1'}} title={e.name}/>)}
-                      {de.slice(0,2).map(e=><div key={`lbl-${e.id}`} className="hidden sm:block truncate rounded px-1 py-0.5 text-[10px] font-medium text-white w-full" style={{background:e.color||'#6366f1'}}>{e.name}</div>)}
-                      {de.length>2 && <div className="text-[10px] text-muted-foreground hidden sm:block">+{de.length-2}</div>}
-                      {de.length>3 && <div className="text-[9px] text-muted-foreground sm:hidden">+{de.length-3}</div>}
+                      {de.slice(0,2).map(e=><div key={`lbl-${e.id}`} className="hidden sm:block truncate rounded px-1 py-0.5 text-overline font-medium text-white w-full" style={{background:e.color||'#6366f1'}}>{e.name}</div>)}
+                      {de.length>2 && <div className="text-overline text-muted-foreground hidden sm:block">+{de.length-2}</div>}
+                      {de.length>3 && <div className="text-overline text-muted-foreground sm:hidden">+{de.length-3}</div>}
                     </div>
                   </button>
                 );
@@ -314,10 +314,10 @@ function SidePanelContent({
                     <div className="min-w-0">
                       <p className="text-sm font-medium truncate">
                         {e.name}
-                        {e.className && <span className="text-[10px] text-muted-foreground ml-1">({e.className})</span>}
+                        {e.className && <span className="text-overline text-muted-foreground ml-1">({e.className})</span>}
                       </p>
                       {e.description && <p className="text-xs text-muted-foreground mt-0.5">{e.description}</p>}
-                      <Badge variant="outline" className="mt-1 text-[10px]">{eventTypeLabels[e.type] || e.type}</Badge>
+                      <Badge variant="outline" className="mt-1 text-overline">{eventTypeLabels[e.type] || e.type}</Badge>
                     </div>
                   </div>
                   <div className="flex gap-1 flex-shrink-0 ml-2">

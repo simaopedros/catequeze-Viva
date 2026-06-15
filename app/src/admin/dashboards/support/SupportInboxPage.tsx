@@ -56,7 +56,7 @@ const SupportInboxPage = ({ user }: { user: AuthUser }) => {
                       <span className="font-medium text-sm">{msg.name}</span>
                       <span className="text-xs text-muted-foreground">{msg.email}</span>
                       {!msg.isRead && (
-                        <span className="text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full">
+                        <span className="text-overline bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full">
                           Nova
                         </span>
                       )}

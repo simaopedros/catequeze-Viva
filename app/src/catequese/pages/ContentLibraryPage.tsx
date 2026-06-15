@@ -100,7 +100,7 @@ export default function ContentLibraryPage() {
           subtitle={t('library.subtitle', { scripts: items.length, activities: totalActivities })}
         >
           <Button size="sm" variant="outline" asChild>
-            <Link to="/app/ai-planner" className="gap-1"><Sparkles className="h-4 w-4"/>{t('library.generate_ai')}</Link>
+            <Link to="/app/collaborative-planner" className="gap-1"><Sparkles className="h-4 w-4"/>{t('library.generate_ai')}</Link>
           </Button>
           <Button size="sm" variant="outline" onClick={() => setSort(s => s==='recent'?'az':'recent')}><ArrowUpDown className="h-4 w-4" /></Button>
           <Button size="sm" variant="outline" onClick={() => setView(v => v==='grid'?'list':'grid')}>{view==='grid'?<List className="h-4 w-4"/>:<LayoutGrid className="h-4 w-4"/>}</Button>
@@ -136,21 +136,21 @@ export default function ContentLibraryPage() {
           )
         ) : view === 'list' ? (
           <div className="rounded-xl border bg-card"><table className="w-full"><thead><tr className="border-b text-left text-xs text-muted-foreground uppercase"><th className="p-3">{t('library.table_title')}</th><th className="p-3 hidden md:table-cell">{t('library.table_status')}</th><th className="p-3 hidden md:table-cell">{t('library.table_activities')}</th><th className="p-3 hidden lg:table-cell">{t('library.table_time')}</th></tr></thead><tbody>{filtered.map((i:any)=>(
-            <tr key={i.id} className="border-b hover:bg-muted/30"><td className="p-3"><Link to={`/app/content-library/${i.id}`} className="font-medium text-sm hover:text-primary">{i.title}</Link><p className="text-[10px] text-muted-foreground">{i.theme}</p></td><td className="p-3 hidden md:table-cell"><Badge variant={statusVariant[i.status]||'secondary'} className="text-[10px]">{statusLabel(i.status)}</Badge></td><td className="p-3 hidden md:table-cell text-sm">{i._count?.activities||0}</td><td className="p-3 hidden lg:table-cell text-sm">{i.estimatedTime ? t('library.minutes', { count: i.estimatedTime }) : '—'}</td></tr>
+            <tr key={i.id} className="border-b hover:bg-muted/30"><td className="p-3"><Link to={`/app/content-library/${i.id}`} className="font-medium text-sm hover:text-primary">{i.title}</Link><p className="text-overline text-muted-foreground">{i.theme}</p></td><td className="p-3 hidden md:table-cell"><Badge variant={statusVariant[i.status]||'secondary'} className="text-overline">{statusLabel(i.status)}</Badge></td><td className="p-3 hidden md:table-cell text-sm">{i._count?.activities||0}</td><td className="p-3 hidden lg:table-cell text-sm">{i.estimatedTime ? t('library.minutes', { count: i.estimatedTime }) : '—'}</td></tr>
           ))}</tbody></table></div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((item:any)=>(
-              <Link key={item.id} to={`/app/content-library/${item.id}`} className="rounded-xl border bg-card p-5 shadow-sm hover:shadow-md transition-shadow group">
+              <Link key={item.id} to={`/app/content-library/${item.id}`} className="rounded-xl border bg-card p-5 shadow-elevation-sm hover:shadow-elevation-md transition-shadow group">
                 <div className="flex items-start justify-between mb-2">
                   <h3 className="font-semibold text-sm group-hover:text-primary flex-1 line-clamp-2">{item.title}</h3>
                   <div className="flex items-center gap-1 ml-2 flex-shrink-0">
-                    {item.isDioceseShared && <Badge variant="outline" className="text-[10px] gap-0.5"><BookMarked className="h-2.5 w-2.5" />{t('library.diocese')}</Badge>}
-                    <Badge variant={statusVariant[item.status]||'secondary'} className="text-[10px]">{statusLabel(item.status)}</Badge>
+                    {item.isDioceseShared && <Badge variant="outline" className="text-overline gap-0.5"><BookMarked className="h-2.5 w-2.5" />{t('library.diocese')}</Badge>}
+                    <Badge variant={statusVariant[item.status]||'secondary'} className="text-overline">{statusLabel(item.status)}</Badge>
                   </div>
                 </div>
                 {item.theme&&<p className="text-xs text-muted-foreground mb-2 line-clamp-1">{item.theme}</p>}
-                <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-3 border-t">
+                <div className="flex items-center justify-between text-overline text-muted-foreground pt-3 border-t">
                   <span className="flex items-center gap-1"><User className="h-3 w-3"/>{item.createdBy?.firstName||'—'}</span>
                   <span className="flex items-center gap-1"><Clock className="h-3 w-3"/>{item.estimatedTime ? t('library.minutes', { count: item.estimatedTime }) : '—'}</span>
                   <span className={`flex items-center gap-1 font-medium ${(item._count?.activities||0) > 0 ? 'text-primary' : ''}`}>

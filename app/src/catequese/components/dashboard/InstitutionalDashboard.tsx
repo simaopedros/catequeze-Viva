@@ -11,6 +11,8 @@ import {
 import { useActiveWorkspace } from '../../../client/hooks/useActiveWorkspace';
 import { useUserContext } from '../../../client/hooks/useUserContext';
 import { SkeletonPage } from '../../../client/components/Skeletons';
+import { Badge } from '../../../client/components/ui/badge';
+import { ChartCard } from '../../../client/components/ChartCard';
 import { formatCurrency, formatNumber } from '../../../i18n/format';
 import { useLocale } from '../../../i18n/useLocale';
 import {
@@ -86,13 +88,13 @@ function KpiCard({ kpi, icon: Icon, colorClass }: { kpi: KpiBlock; icon: any; co
   }, [kpi, t, currentLocale]);
 
   return (
-    <div className="rounded-xl border bg-card p-4 shadow-sm hover:shadow-md transition-shadow">
+    <div className="rounded-xl border bg-card p-4 shadow-elevation-sm hover:shadow-elevation-md transition-shadow">
       <div className="flex items-center gap-3">
         <div className={`rounded-lg p-2 ${colorClass}`}>
           <Icon className="h-4 w-4" aria-hidden="true" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-muted-foreground uppercase tracking-wider truncate">{translateKpiLabel(kpi.label, t)}</p>
+          <p className="text-overline text-text-tertiary uppercase truncate">{translateKpiLabel(kpi.label, t)}</p>
           <div className="flex items-baseline gap-2 mt-0.5">
             <p className="text-xl font-bold">{formatted}</p>
             {kpi.delta !== null && kpi.delta !== undefined && (
@@ -153,7 +155,7 @@ function AlertBanner({ alerts }: { alerts?: any[] }) {
           <div className="flex-1 min-w-0">
             <span className="text-sm">{a.message}</span>
             {a.count > 0 && (
-              <span className="ml-2 text-xs font-bold px-2 py-0.5 rounded-full bg-background/50">{a.count}</span>
+              <Badge variant="outline" size="sm" className="ml-2">{a.count}</Badge>
             )}
           </div>
         </div>
@@ -319,8 +321,8 @@ export function InstitutionalDashboard() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">{t('institutional_title')}</h1>
-          <p className="text-muted-foreground text-sm">
+          <h1 className="text-title-md font-bold">{t('institutional_title')}</h1>
+          <p className="text-text-secondary text-body-sm">
             {t(`period_label_${period}`)}
           </p>
         </div>
@@ -428,11 +430,7 @@ export function InstitutionalDashboard() {
       {trendChartData.length > 0 && (
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Enrollment & Dropout Trend */}
-          <div className="rounded-xl border bg-card p-4">
-            <h3 className="font-semibold text-sm uppercase text-muted-foreground mb-4 flex items-center gap-2">
-              <Activity className="h-4 w-4" />
-              {t('chart_enrollments_vs_dropouts')}
-            </h3>
+          <ChartCard title={t('chart_enrollments_vs_dropouts')}>
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={trendChartData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted-foreground/20" />
@@ -443,14 +441,10 @@ export function InstitutionalDashboard() {
                 <Line type="monotone" dataKey={dropoutsKey} stroke="#ef4444" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
-          </div>
+          </ChartCard>
 
           {/* Attendance Trend */}
-          <div className="rounded-xl border bg-card p-4">
-            <h3 className="font-semibold text-sm uppercase text-muted-foreground mb-4 flex items-center gap-2">
-              <TrendingUp className="h-4 w-4" />
-              {t('chart_attendance_trend')}
-            </h3>
+          <ChartCard title={t('chart_attendance_trend')}>
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={trendChartData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted-foreground/20" />
@@ -460,26 +454,14 @@ export function InstitutionalDashboard() {
                 <Line type="monotone" dataKey={attendanceKey} stroke="#22c55e" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
-          </div>
+          </ChartCard>
 
           {/* Sacramental Funnel */}
           {funnelData.length > 0 && (
-            <div className="rounded-xl border bg-card p-4">
-              <h3 className="font-semibold text-sm uppercase text-muted-foreground mb-4 flex items-center gap-2">
-                <Cross className="h-4 w-4" />
-                {t('chart_sacramental_funnel')}
-              </h3>
+            <ChartCard title={t('chart_sacramental_funnel')}>
               <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
-                  <Pie
-                    data={funnelData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={90}
-                    paddingAngle={3}
-                    dataKey="value"
-                  >
+                  <Pie data={funnelData} cx="50%" cy="50%" innerRadius={50} outerRadius={90} paddingAngle={3} dataKey="value">
                     {funnelData.map((entry: any, index: number) => (
                       <Cell key={`cell-${index}`} fill={entry.fill} />
                     ))}
@@ -488,15 +470,11 @@ export function InstitutionalDashboard() {
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
-            </div>
+            </ChartCard>
           )}
 
           {/* Sacramental Milestones Trend */}
-          <div className="rounded-xl border bg-card p-4">
-            <h3 className="font-semibold text-sm uppercase text-muted-foreground mb-4 flex items-center gap-2">
-              <CheckCircle className="h-4 w-4" />
-              {t('chart_milestones_completed')}
-            </h3>
+          <ChartCard title={t('chart_milestones_completed')}>
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={trendChartData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted-foreground/20" />
@@ -506,20 +484,20 @@ export function InstitutionalDashboard() {
                 <Bar dataKey={milestonesKey} fill="#a855f7" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
-          </div>
+          </ChartCard>
         </div>
       )}
 
       {/* Class Comparison Table (only for parish scope) */}
       {comparison && comparison.length > 0 && scope === 'parish' && (
-        <div className="rounded-xl border bg-card p-4">
-          <h3 className="font-semibold text-sm uppercase text-muted-foreground mb-4 flex items-center gap-1">
+        <div className="rounded-xl border bg-card p-4 shadow-elevation-sm">
+          <h3 className="font-semibold text-overline uppercase text-text-tertiary mb-4 flex items-center gap-1">
             <BarChart3 className="h-4 w-4" /> {t('table_class_comparison')}
           </h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-xs text-muted-foreground uppercase border-b">
+                <tr className="text-left text-overline text-text-tertiary uppercase border-b">
                   <th className="pb-2 pr-3">{t('table_class')}</th>
                   <th className="pb-2 pr-3">{tcl('stage')}</th>
                   <th className="pb-2 pr-3 text-center">{tcl('enrolled')}</th>
@@ -541,13 +519,7 @@ export function InstitutionalDashboard() {
                       </span>
                     </td>
                     <td className="py-2 text-center">
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                        c.riskLevel === 'BAIXO' ? 'bg-success/10 text-success' :
-                        c.riskLevel === 'MÉDIO' ? 'bg-warning/10 text-warning' :
-                        'bg-destructive/10 text-destructive'
-                      }`}>
-                        {getRiskLabel(c.riskLevel, t)}
-                      </span>
+                      <Badge variant={c.riskLevel === 'BAIXO' ? 'success' : c.riskLevel === 'MÉDIO' ? 'warning' : 'destructive'} size="sm">{getRiskLabel(c.riskLevel, t)}</Badge>
                     </td>
                   </tr>
                 ))}

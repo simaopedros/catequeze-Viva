@@ -208,19 +208,19 @@ export default function SacramentsPage() {
         <div className="grid gap-3 grid-cols-4">
           <div className="rounded-lg border bg-card p-3 text-center">
             <p className="text-2xl font-bold">{statusCounts.total}</p>
-            <p className="text-[10px] text-muted-foreground">{t('page.total')}</p>
+            <p className="text-overline text-muted-foreground">{t('page.total')}</p>
           </div>
           <div className="rounded-lg border bg-card p-3 text-center">
             <p className="text-2xl font-bold text-emerald-600">{statusCounts.ready}</p>
-            <p className="text-[10px] text-muted-foreground">{t('page.ready')}</p>
+            <p className="text-overline text-muted-foreground">{t('page.ready')}</p>
           </div>
           <div className="rounded-lg border bg-card p-3 text-center">
             <p className="text-2xl font-bold text-amber-600">{statusCounts.waitingApproval}</p>
-            <p className="text-[10px] text-muted-foreground">{t('page.waiting')}</p>
+            <p className="text-overline text-muted-foreground">{t('page.waiting')}</p>
           </div>
           <div className="rounded-lg border bg-card p-3 text-center">
             <p className="text-2xl font-bold text-red-600">{statusCounts.blocked}</p>
-            <p className="text-[10px] text-muted-foreground">{t('page.blocked')}</p>
+            <p className="text-overline text-muted-foreground">{t('page.blocked')}</p>
           </div>
         </div>
 
@@ -291,7 +291,7 @@ export default function SacramentsPage() {
                   </div>
 
                   <div className="mb-3">
-                    <div className="flex justify-between text-[10px] text-muted-foreground mb-1">
+                    <div className="flex justify-between text-overline text-muted-foreground mb-1">
                       <span>{t('page.milestones_count', { done, total })}</span>
                       <span className="font-bold">{pct}%</span>
                     </div>
@@ -313,7 +313,7 @@ export default function SacramentsPage() {
                           onChange={e => setEditingTargetDate(prev => ({ ...prev, [j.id]: e.target.value }))}
                           className="flex h-7 rounded-md border border-input bg-background px-2 text-xs flex-1"
                         />
-                        <Button size="sm" className="h-6 text-[10px]" onClick={(e) => handleSaveTargetDate(j.id, e)}>✓</Button>
+                        <Button size="sm" className="h-6 text-overline" onClick={(e) => handleSaveTargetDate(j.id, e)}>✓</Button>
                       </div>
                     ) : (
                       <div className="flex items-center gap-1 text-muted-foreground">
@@ -333,17 +333,17 @@ export default function SacramentsPage() {
                   {/* Quick status indicators */}
                   <div className="flex gap-2">
                     {hasBlocked && (
-                      <span className="text-[10px] text-red-600 flex items-center gap-1">
+                      <span className="text-overline text-red-600 flex items-center gap-1">
                         <XCircle className="h-3 w-3" />{t('page.status_blocked')}
                       </span>
                     )}
                     {hasWaiting && (
-                      <span className="text-[10px] text-amber-600 flex items-center gap-1">
+                      <span className="text-overline text-amber-600 flex items-center gap-1">
                         <AlertTriangle className="h-3 w-3" />{t('page.status_waiting')}
                       </span>
                     )}
                     {!hasBlocked && !hasWaiting && pct === 100 && (
-                      <span className="text-[10px] text-emerald-600 flex items-center gap-1">
+                      <span className="text-overline text-emerald-600 flex items-center gap-1">
                         <CheckCircle className="h-3 w-3" />{t('page.status_ready')}
                       </span>
                     )}
@@ -372,36 +372,36 @@ export default function SacramentsPage() {
                           )}
                         </div>
                         {(isCoordinator && m.status !== 'COMPLETED' && m.status !== 'APPROVED' && m.status !== 'WAITING_APPROVAL') && (
-                          <Button size="sm" variant="ghost" className="h-5 text-[10px] text-green-600 px-1 flex-shrink-0" onClick={() => handleUpdate(m.id)}>
+                          <Button size="sm" variant="ghost" className="h-5 text-overline text-green-600 px-1 flex-shrink-0" onClick={() => handleUpdate(m.id)}>
                             ✓
                           </Button>
                         )}
                         {(isCatechist && m.status !== 'COMPLETED' && m.status !== 'APPROVED' && m.status !== 'WAITING_APPROVAL') && (
-                          <Button size="sm" variant="ghost" className="h-5 text-[10px] text-green-600 px-1 flex-shrink-0" onClick={() => handleUpdate(m.id)}>
+                          <Button size="sm" variant="ghost" className="h-5 text-overline text-green-600 px-1 flex-shrink-0" onClick={() => handleUpdate(m.id)}>
                             ✓
                           </Button>
                         )}
                         {isCoordinator && m.status === 'WAITING_APPROVAL' && (
                           <>
-                            <Button size="sm" variant="ghost" className="h-5 text-[10px] text-green-600 px-1 flex-shrink-0" onClick={() => handleUpdate(m.id)}>
+                            <Button size="sm" variant="ghost" className="h-5 text-overline text-green-600 px-1 flex-shrink-0" onClick={() => handleUpdate(m.id)}>
                               ✓
                             </Button>
                           </>
                         )}
                         {(isCoordinator && (m.status === 'COMPLETED' || m.status === 'APPROVED')) && (
-                          <Button size="sm" variant="ghost" className="h-5 text-[10px] text-muted-foreground hover:text-destructive px-1 flex-shrink-0" onClick={() => handleUndo(m.id)}>
+                          <Button size="sm" variant="ghost" className="h-5 text-overline text-muted-foreground hover:text-destructive px-1 flex-shrink-0" onClick={() => handleUndo(m.id)}>
                             <Undo2 className="h-3 w-3" />
                           </Button>
                         )}
                         {(isCatechist && m.status === 'COMPLETED') && (
-                          <Button size="sm" variant="ghost" className="h-5 text-[10px] text-muted-foreground hover:text-destructive px-1 flex-shrink-0" onClick={() => handleUndo(m.id)}>
+                          <Button size="sm" variant="ghost" className="h-5 text-overline text-muted-foreground hover:text-destructive px-1 flex-shrink-0" onClick={() => handleUndo(m.id)}>
                             <Undo2 className="h-3 w-3" />
                           </Button>
                         )}
                       </div>
                     ))}
                     {milestones.length > 3 && (
-                      <p className="text-[10px] text-muted-foreground text-center pt-1">
+                      <p className="text-overline text-muted-foreground text-center pt-1">
                         +{t('page.more_milestones', { count: milestones.length - 3 })}
                       </p>
                     )}

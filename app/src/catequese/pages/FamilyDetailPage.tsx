@@ -630,13 +630,13 @@ export default function FamilyDetailPage() {
                       : c.type}
                   </span>
                   <div className="flex items-center gap-2">
-                    <Badge variant={c.granted ? 'default' : 'secondary'} className="text-[10px]">
+                    <Badge variant={c.granted ? 'default' : 'secondary'} className="text-overline">
                       {c.granted ? t('families.authorized') : t('families.denied')}
                     </Badge>
                     <Button
                       size="sm"
                       variant={c.granted ? 'outline' : 'default'}
-                      className="text-[10px] h-7"
+                      className="text-overline h-7"
                       onClick={() => handleToggleConsent(c.type, !c.granted)}
                       disabled={savingConsent === c.type}
                     >

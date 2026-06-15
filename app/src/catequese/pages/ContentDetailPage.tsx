@@ -232,12 +232,12 @@ export default function ContentDetailPage(){
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <p className="text-sm font-medium">{a.title}</p>
-                          <Badge variant="outline" className="text-[10px]">
+                          <Badge variant="outline" className="text-overline">
                             {activityTypes.find(at => at.value === a.type)?.label || a.type}
                           </Badge>
                         </div>
                         {a.description && <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{a.description}</p>}
-                        <p className="text-[11px] text-muted-foreground mt-1">
+                        <p className="text-caption text-muted-foreground mt-1">
                           {activityPreview(a.type, data, ta)}
                           {a.points > 0 && ` · ${t('detail.points', { count: a.points })}`}
                           {a.submissions?.length > 0 && ` · ${t('detail.responses', { count: a.submissions.length })}`}

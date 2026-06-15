@@ -236,11 +236,11 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
               <>
                 {chapterVerses.length > 0 && (
                   <div className="flex items-center justify-between px-2 py-1 bg-muted/30 border-b">
-                    <button onClick={selectAllVerses} className="text-[10px] text-primary hover:underline">
+                    <button onClick={selectAllVerses} className="text-overline text-primary hover:underline">
                       {selectedVerses.size === chapterVerses.length ? t('references.deselect_all') : t('references.select_all')}
                     </button>
                     {hasSelected && (
-                      <Button size="sm" className="h-6 text-[10px]" onClick={addSelectedVerses}>
+                      <Button size="sm" className="h-6 text-overline" onClick={addSelectedVerses}>
                         <Plus className="h-3 w-3 mr-0.5" />{selectedVerses.size} {t('references.verses')}
                       </Button>
                     )}
@@ -266,7 +266,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
                     {chapterVerses.length === 0 && !isBibleAdded(v.id) && (     
                       <Plus className="h-3.5 w-3.5 text-primary flex-shrink-0 mt-0.5" />
                     )}
-                    {isBibleAdded(v.id) && <span className="text-green-600 text-[10px] flex-shrink-0 mt-0.5">✓</span>}
+                    {isBibleAdded(v.id) && <span className="text-green-600 text-overline flex-shrink-0 mt-0.5">✓</span>}
                   </div>
                 ))}
               </>
@@ -280,7 +280,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
                     {e.title && <span className="text-muted-foreground ml-1 truncate">— {e.title}</span>}
                   </div>
                   {directoryRefs.some(r => r.entryId === e.id) ? (
-                    <span className="text-green-600 text-[10px] font-medium flex-shrink-0">✓</span>
+                    <span className="text-green-600 text-overline font-medium flex-shrink-0">✓</span>
                   ) : (
                     <Plus className="h-3.5 w-3.5 text-primary flex-shrink-0" /> 
                   )}
@@ -295,7 +295,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
                   <span className="text-muted-foreground ml-1 truncate">— {e.question}</span>
                 </div>
                 {isCatechismAdded(e.id) ? (
-                  <span className="text-green-600 text-[10px] font-medium flex-shrink-0">✓</span>
+                  <span className="text-green-600 text-overline font-medium flex-shrink-0">✓</span>
                 ) : (
                   <Plus className="h-3.5 w-3.5 text-primary flex-shrink-0" />   
                 )}
@@ -308,8 +308,8 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
       {/* Bible browse tree */}
       {tab === 'bible' && !searched && !browseBook && (
         <div className="max-h-48 overflow-y-auto">
-          <p className="text-[10px] text-muted-foreground px-1 mb-1">{t('bible.browse_hint')}</p>
-          <div className="text-[10px] font-semibold text-muted-foreground px-1 pt-1">{t('bible.old_testament')}</div>
+          <p className="text-overline text-muted-foreground px-1 mb-1">{t('bible.browse_hint')}</p>
+          <div className="text-overline font-semibold text-muted-foreground px-1 pt-1">{t('bible.old_testament')}</div>
           {otBooks.map((b: any) => (
             <button key={b.id} onClick={() => loadBook(b)}
               className="w-full text-left px-2 py-1 text-xs rounded hover:bg-muted/50 flex justify-between items-center">
@@ -317,7 +317,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
               <ChevronRight className="h-3 w-3 text-muted-foreground" />        
             </button>
           ))}
-          <div className="text-[10px] font-semibold text-muted-foreground px-1 pt-2">{t('bible.new_testament')}</div>
+          <div className="text-overline font-semibold text-muted-foreground px-1 pt-2">{t('bible.new_testament')}</div>
           {ntBooks.map((b: any) => (
             <button key={b.id} onClick={() => loadBook(b)}
               className="w-full text-left px-2 py-1 text-xs rounded hover:bg-muted/50 flex justify-between items-center">
@@ -332,7 +332,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
       {tab === 'bible' && browseBook && !searched && (
         <div className="max-h-48 overflow-y-auto">
           <button onClick={() => setBrowseBook(null)} className="text-xs text-primary hover:underline mb-1">{t('bible.back_to_books')}</button>
-          <p className="text-[10px] font-semibold text-muted-foreground">{browseBook.name} — {t('bible.chapters')}</p>
+          <p className="text-overline font-semibold text-muted-foreground">{browseBook.name} — {t('bible.chapters')}</p>
           <div className="flex flex-wrap gap-1 mt-1">
             {browseBook.chapters?.map((ch: any) => (
               <button key={ch.id} onClick={() => handleBrowseChapter(browseBook.id, ch.number)}
@@ -348,7 +348,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
       {/* Catechism browse */}
       {tab === 'catechism' && !searched && (
         <div className="space-y-1">
-          <p className="text-[10px] text-muted-foreground px-1">{t('catechism.explore_by_category')}</p>
+          <p className="text-overline text-muted-foreground px-1">{t('catechism.explore_by_category')}</p>
           {[
             { cat: 'creed', label: t('catechism.category_creed') },
             { cat: 'sacraments', label: t('catechism.category_sacraments') },
@@ -374,7 +374,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
       {/* Directory browse */}
       {tab === 'directory' && !searched && (
         <div className="space-y-1">
-          <p className="text-[10px] text-muted-foreground px-1">{t('references.explore_by_part')}</p>
+          <p className="text-overline text-muted-foreground px-1">{t('references.explore_by_part')}</p>
           {[
             { part: 'I' },
             { part: 'II' },
@@ -408,7 +408,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
             <span key={i}
               onMouseEnter={e => showTooltip(e, g.text || g.label)}
               onMouseLeave={hideTooltip}
-              className="relative inline-flex items-center gap-1 bg-primary/10 text-primary text-[11px] pl-2 pr-1 py-1 rounded-full cursor-default group">
+              className="relative inline-flex items-center gap-1 bg-primary/10 text-primary text-caption pl-2 pr-1 py-1 rounded-full cursor-default group">
               {g.label}
               <button onClick={() => g.ids.forEach(id => onRemoveBible(id))}
                 className="hover:text-destructive hover:bg-destructive/10 rounded-full p-0.5">
@@ -420,7 +420,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
             <span key={r.id || i}
               onMouseEnter={e => showTooltip(e, (r.question || '') + '\n\n' + (r.answer || ''))}
               onMouseLeave={hideTooltip}
-              className="relative inline-flex items-center gap-1 bg-secondary/10 text-secondary text-[11px] pl-2 pr-1 py-1 rounded-full cursor-default group">
+              className="relative inline-flex items-center gap-1 bg-secondary/10 text-secondary text-caption pl-2 pr-1 py-1 rounded-full cursor-default group">
               {r.label}
               <button onClick={() => onRemoveCatechism(r.id || r.entryId)}
                 className="hover:text-destructive hover:bg-destructive/10 rounded-full p-0.5">
@@ -432,7 +432,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
             <span key={r.id || i}
               onMouseEnter={e => showTooltip(e, r.content || r.label)}
               onMouseLeave={hideTooltip}
-              className="relative inline-flex items-center gap-1 bg-green-50 text-green-700 text-[11px] pl-2 pr-1 py-1 rounded-full cursor-default group">      
+              className="relative inline-flex items-center gap-1 bg-green-50 text-green-700 text-caption pl-2 pr-1 py-1 rounded-full cursor-default group">      
               📋 {r.label}
               <button onClick={() => onRemoveDirectory(r.id || r.entryId)}      
                 className="hover:text-red-500 hover:bg-red-50 rounded-full p-0.5">
@@ -445,7 +445,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
 
       {/* Tooltip */}
       {tooltip && (
-        <div className="fixed z-[100] max-w-xs p-2 bg-foreground text-background text-[11px] rounded-md shadow-lg pointer-events-none whitespace-pre-wrap leading-relaxed"
+        <div className="fixed z-[100] max-w-xs p-2 bg-foreground text-background text-caption rounded-md shadow-lg pointer-events-none whitespace-pre-wrap leading-relaxed"
           style={{ left: tooltip.x + 'px', bottom: (window.innerHeight - tooltip.y) + 'px' }}>
           {tooltip.text.slice(0, 300)}{tooltip.text.length > 300 ? '...' : ''}  
         </div>

@@ -234,7 +234,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
             onBlur={() => { setTimeout(() => { setFocused(false); if (!query) setSearchExpanded(false); }, 150); }}
             onKeyDown={(e) => { if (e.key === 'Escape') { setSearchExpanded(false); setQuery(''); } handleKeyDown(e); }}
             placeholder={tTop('searchPlaceholder')}
-            className="flex-1 bg-transparent border-none outline-none text-sm placeholder:text-muted-foreground/60"
+            className="flex-1 bg-transparent border-none outline-none text-sm placeholder:text-text-tertiary"
             data-tour="ctrlk"
           />
           {isLoading && debouncedQuery.length >= 2 && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground shrink-0" />}
@@ -256,7 +256,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
           <div className="absolute top-full mt-1 left-0 right-0 z-50 rounded-xl border bg-card shadow-lg overflow-hidden">
             {flatResults.length === 0 ? (
               <div className="px-4 py-6 text-center">
-                <Search className="mx-auto h-5 w-5 text-muted-foreground/40 mb-1" />
+                <Search className="mx-auto h-5 w-5 text-text-tertiary mb-1" />
                 <p className="text-sm text-muted-foreground">{t('no_results')}</p>
               </div>
             ) : (
@@ -265,7 +265,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                   const Icon = MODULE_ICONS[module] || Search;
                   return (
                     <div key={module}>
-                      <div className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70 bg-muted/30 border-y">
+                      <div className="flex items-center gap-2 px-3 py-1.5 text-overline font-semibold uppercase tracking-wider text-text-tertiary bg-muted/50 border-y">
                         <Icon className="h-3 w-3" />
                         {getModuleLabel(module)}
                       </div>
@@ -278,7 +278,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                             onMouseDown={(e) => { e.preventDefault(); handleSelect(item.route); }}
                             onMouseEnter={() => setSelectedIndex(globalIdx)}
                             className={`w-full text-left px-3 py-2 flex items-start gap-2.5 transition-colors ${
-                              isSelected ? 'bg-accent' : 'hover:bg-muted/30'
+                              isSelected ? 'bg-accent' : 'hover:bg-muted/50'
                             }`}
                           >
                             <Icon className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
@@ -295,9 +295,9 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
               </div>
             )}
             {/* Footer */}
-            <div className="flex items-center gap-3 px-3 py-1.5 border-t text-[10px] text-muted-foreground/50">
-              <span><kbd className="rounded border px-1 py-0.5 text-[9px] font-mono">↑↓</kbd> {tTop('searchNavigate')}</span>
-              <span><kbd className="rounded border px-1 py-0.5 text-[9px] font-mono">↵</kbd> {tTop('searchOpen')}</span>
+            <div className="flex items-center gap-3 px-3 py-1.5 border-t text-overline text-text-tertiary">
+              <span><kbd className="rounded border px-1 py-0.5 text-overline font-mono">↑↓</kbd> {tTop('searchNavigate')}</span>
+              <span><kbd className="rounded border px-1 py-0.5 text-overline font-mono">↵</kbd> {tTop('searchOpen')}</span>
               <span className="ml-auto">{tTop('searchFocusHint')}</span>
             </div>
           </div>
@@ -345,7 +345,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                     {wsIcon(ws)}
                     <div className="flex-1 text-left min-w-0">
                       <div className="font-medium text-sm truncate">{ws.name}</div>
-                      <div className="text-[10px] text-muted-foreground truncate">
+                      <div className="text-overline text-muted-foreground truncate">
                         {ws.isPersonal ? (ws.subtitle || tTop('personalSpace')) : (roleLabels[ws.role as keyof typeof roleLabels] || ws.role)}
                       </div>
                     </div>
@@ -362,14 +362,14 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
 
                 return groups.map((g) => (
                   <div key={g.key}>
-                    <div className="px-2 pt-2 pb-1 text-[10px] font-bold uppercase text-muted-foreground tracking-wider">
+                    <div className="px-2 pt-2 pb-1 text-overline font-bold uppercase text-muted-foreground tracking-wider">
                       {g.label} ({g.items.length})
                     </div>
                     {g.items.slice(0, MAX_PER_GROUP).map(renderItem)}
                     {g.items.length > MAX_PER_GROUP && (
                       <button
                         onClick={() => navigate('/app/select-workspace')}
-                        className="w-full text-[11px] text-primary hover:underline px-2 py-1 text-left"
+                        className="w-full text-caption text-primary hover:underline px-2 py-1 text-left"
                       >
                         {tTop('viewAll', { count: g.items.length })}
                       </button>
@@ -453,11 +453,11 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                       <span className="text-sm font-medium truncate block">
                         {roleLabels[m.role as keyof typeof roleLabels] || m.role}
                       </span>
-                      <span className="text-[10px] text-muted-foreground truncate block">
+                      <span className="text-overline text-muted-foreground truncate block">
                         {m.parishName || tTop('noParish')}
                       </span>
                     </div>
-                    {needsPaidPlan && <span className="text-[9px] text-warning font-medium shrink-0" title={tTop('requiresPaidPlan')}>💰</span>}
+                    {needsPaidPlan && <span className="text-overline text-warning font-medium shrink-0" title={tTop('requiresPaidPlan')}>💰</span>}
                     {isActive && <Check className="h-4 w-4 text-primary shrink-0" />}
                   </button>
                 );
@@ -472,7 +472,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
             <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-xl hover:bg-accent/50">
               <Bell className="h-5 w-5" />
               {unreadCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 h-[18px] min-w-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold px-1 animate-in zoom-in-50 shadow-sm">
+                <span className="absolute -top-0.5 -right-0.5 h-[18px] min-w-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-overline font-bold px-1 animate-in zoom-in-50 shadow-sm">
                   {unreadCount > 99 ? '99+' : unreadCount}
                 </span>
               )}
@@ -482,7 +482,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
             <div className="flex items-center justify-between px-3 py-2 border-b">
               <span className="text-xs font-semibold text-muted-foreground">{tTop('notifications')}</span>
               {unreadCount > 0 && (
-                <button onClick={handleMarkAllRead} className="text-[10px] text-primary hover:underline">
+                <button onClick={handleMarkAllRead} className="text-overline text-primary hover:underline">
                   {tTop('markAllRead')}
                 </button>
               )}
@@ -515,8 +515,8 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className={cn('text-xs truncate', !n.readAt && 'font-semibold')}>{n.title}</p>
-                        {n.body && <p className="text-[10px] text-muted-foreground truncate">{n.body}</p>}
-                        <p className="text-[9px] text-muted-foreground/60 mt-0.5">{formatRelativeTime(n.createdAt, currentLocale)}</p>
+                        {n.body && <p className="text-overline text-muted-foreground truncate">{n.body}</p>}
+                        <p className="text-overline text-text-tertiary mt-0.5">{formatRelativeTime(n.createdAt, currentLocale)}</p>
                       </div>
                       {!n.readAt && (
                         <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0 mt-1.5" />

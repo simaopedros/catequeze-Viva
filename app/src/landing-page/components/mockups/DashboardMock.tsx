@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 export function DashboardMock({ ns = 'landing' }: { ns?: string }) {
   const { t } = useTranslation(ns);
   return (
-    <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-[10px] sm:text-xs">
+    <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-overline sm:text-xs">
       <div>
         <p className="font-bold text-sm">{t('mockup_dashboard.title')}</p>
         <p className="text-muted-foreground">{t('mockup_dashboard.subtitle')}</p>
@@ -23,7 +23,7 @@ export function DashboardMock({ ns = 'landing' }: { ns?: string }) {
                 <k.i className="h-3 w-3" />
               </div>
               <div>
-                <p className="text-[9px] text-muted-foreground uppercase">{k.l}</p>
+                <p className="text-overline text-muted-foreground uppercase">{k.l}</p>
                 <p className="font-bold text-sm">{k.v}</p>
               </div>
             </div>

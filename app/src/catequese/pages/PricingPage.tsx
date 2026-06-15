@@ -99,7 +99,7 @@ export default function PricingPage() {
       }`}
     >
       {plan.highlight && (
-        <div className="inline-flex items-center gap-1 rounded-full bg-primary text-primary-foreground text-[11px] font-bold px-3 py-1 mb-3 self-start">
+        <div className="inline-flex items-center gap-1 rounded-full bg-primary text-primary-foreground text-caption font-bold px-3 py-1 mb-3 self-start">
           <Star className="h-3 w-3" /> {tp('pricing.most_popular')}
         </div>
       )}
@@ -189,7 +189,7 @@ export default function PricingPage() {
               }`}
             >
               {tp('pricing.annual_tab')}
-              <span className="text-[11px] text-success font-bold">{tp('pricing.annual_savings_badge')}</span>
+              <span className="text-caption text-success font-bold">{tp('pricing.annual_savings_badge')}</span>
             </button>
           </div>
         </section>

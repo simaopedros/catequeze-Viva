@@ -109,7 +109,18 @@ export const admin_en = {
       "PT": "Portugal",
       "AO": "Angola",
       "MZ": "Mozambique"
-    }
+    },
+    "email": "Email",
+    "name": "Name",
+    "admin": "Admin",
+    "created_at": "Created at",
+    "details": "Details",
+    "search_placeholder": "search@example.com",
+    "page": "Page",
+    "user_not_found": "User not found.",
+    "all_filter": "All",
+    "yes_filter": "Yes",
+    "no_filter": "No"
   } as const;
 
 export const ai_en = {
@@ -203,7 +214,10 @@ export const ai_en = {
       "error_connect": "Error connecting to AI.",
       "error_streaming": "Streaming not supported.",
       "upgrade_required": "You need the Catechist AI or Parish plan to use the theological assistant. Go to /app/billing to upgrade.",
-      "generic_error": "Sorry, an error occurred. Please try again later."
+      "generic_error": "Sorry, an error occurred. Please try again later.",
+      "theological_assistant": "Theological Assistant",
+      "catholic_ai": "Catholic AI • Catequese Viva",
+      "empty_response": "Empty AI response."
     }
   } as const;
 
@@ -307,7 +321,7 @@ export const auth_en = {
     "signup_has_account": "Already have an account?",
     "signup_login_link": "Sign in",
     "signup_success_title": "Account created!",
-    "signup_success_sent_to": "We sent a confirmation link to <strong>{{email}}</strong>.",
+    "signup_success_sent_to": "We sent a confirmation link to {{email}}.",
     "signup_success_check_email": "Check your email to activate your account.",
     "signup_success_invite_hint": "After confirming,",
     "signup_success_invite_link": "sign in here to accept the invitation",
@@ -534,7 +548,19 @@ export const billing_en = {
     "table_plan": "Plan",
     "table_status": "Status",
     "until": "until",
-    "no_licenses": "No licenses found."
+    "no_licenses": "No licenses found.",
+    "limit_reached_title": "Plan limit reached",
+    "limit_reached_label": "{{label}} limit reached",
+    "limit_reached_description": "Your <1>{{currentPlanName}}</1> plan allows up to <2>{{maxAllowed}} {{label}}{{plural}}</2>. You currently have <3>{{currentCount}}</3>.",
+    "limit_reached_contact": "Contact the <1>parish coordinator</1> to expand plan limits.",
+    "upgrade_to": "Upgrade to {{plan}}",
+    "upgrade_btn": "Upgrade",
+    "limit_labels": {
+      "parish": "parish",
+      "class": "class",
+      "catechumen": "catechumen",
+      "catechist": "catechist"
+    }
   } as const;
 
 export const calendar_en = {
@@ -784,6 +810,118 @@ export const classes_en = {
       "confirm_remove_catechist_title": "Remove catechist",
       "confirm_remove_catechist_desc": "Are you sure you want to remove this catechist from the class?",
       "error": "Error"
+    }
+  } as const;
+
+export const collaborative_en = {
+    "title": "Collaborative Co-Creation",
+    "subtitle": "Interactive workspace — AI + Catechist",
+    "workspace": {
+      "subtitle": "Realtime collaborative co-creation — AI + Catechist",
+      "live_status": "Live session",
+      "presence": "You + AI",
+      "copilot": "Pastoral co-pilot",
+      "awaiting_theme": "Preparing the meeting",
+      "ai_ready": "AI ready",
+      "messages": "messages",
+      "sources": "sources",
+      "ideas": "ideas"
+    },
+    "actions": {
+      "back_to_library": "Back to library"
+    },
+    "chat": {
+      "tab": "Chat",
+      "you": "You",
+      "ai": "AI",
+      "placeholder": "Chat with the AI co-pilot...",
+      "thinking": "Thinking...",
+      "empty": "Chat with the AI to build the meeting together. You can ask to refine specific sections, add references, or suggest dynamics.",
+      "tips": "Tips:",
+      "tip_refine": "Say what you want to improve in the script on the right",
+      "tip_catechism": "Ask for Catechism or Bible references",
+      "tip_dynamic": "Request dynamics, prayers, or activities",
+      "send": "Send"
+    },
+    "context": {
+      "title": "Context Sources",
+      "empty": "No context sources. Use the search above to add Bible, Catechism, or Directory passages.",
+      "search_bible": "Search the Bible...",
+      "search_catechism": "Search the Catechism...",
+      "bible": "Bible",
+      "catechism": "Catechism",
+      "directory": "Directory",
+      "text": "Text"
+    },
+    "suggestions": {
+      "title": "AI Suggestions",
+      "empty": "No suggestions available. Start a chat conversation to receive suggestions.",
+      "refresh": "Refresh"
+    },
+    "tools": {
+      "title": "Tools",
+      "depth": {
+        "title": "Theological Depth",
+        "description": "Adjust content complexity",
+        "levels": {
+          "1": "Very Simple",
+          "2": "Simple",
+          "3": "Moderate",
+          "4": "Advanced",
+          "5": "Deep"
+        }
+      },
+      "saint": {
+        "title": "Saint Story",
+        "description": "Add an example from the life of a saint",
+        "search": "Find Saint",
+        "searching": "Searching for saint story...",
+        "insert": "Insert into Content",
+        "virtue": "Virtue",
+        "lesson": "Lesson",
+        "error": "Error fetching saint story."
+      },
+      "hooks": {
+        "title": "Pedagogical Hooks",
+        "description": "Ideas to start the meeting in an impactful way",
+        "generate": "Generate Hooks",
+        "generating": "Generating creative ideas...",
+        "use": "Use this hook",
+        "materials": "Materials",
+        "error": "Error generating hooks."
+      }
+    },
+    "editor": {
+      "waiting": "Waiting for initial generation...",
+      "no_title": "Untitled",
+      "refine": "Refine",
+      "apply_refine": "Apply",
+      "generating": "Generating...",
+      "instruction_placeholder": "Optional instruction...",
+      "awaiting_content": "Awaiting content...",
+      "edit_publish": "Edit",
+      "versions": "Versions",
+      "history": "Version History",
+      "save_version": "Save current version",
+      "no_versions": "No versions saved yet.",
+      "restore": "Restore",
+      "version": "Version",
+      "no_description": "No description"
+    },
+    "blocks": {
+      "pastoralObjective": "Pastoral Objective",
+      "openingPrayer": "Opening Prayer",
+      "biblicalRef": "Word of God",
+      "mainContent": "Main Content",
+      "dynamic": "Group Dynamic",
+      "familyTask": "Family Commitment",
+      "closingPrayer": "Closing Prayer"
+    },
+    "setup": {
+      "title": "Start Co-Creation",
+      "select_age": "Select the age group",
+      "theme_required": "Enter the meeting theme",
+      "error": "Error starting session"
     }
   } as const;
 
@@ -1251,7 +1389,15 @@ export const common_en = {
       "deselect_all": "Deselect all",
       "verses": "verse(s)",
       "explore_by_part": "Or explore by part:"
-    }
+    },
+    "searching": "Searching...",
+    "type_at_least_2": "Type at least 2 characters",
+    "more": "More",
+    "collapse": "Collapse",
+    "expand_menu": "Expand menu",
+    "collapse_menu": "Collapse menu",
+    "offline_banner": "No internet connection. Some features may be unavailable.",
+    "skip_to_content": "Skip to main content"
   } as const;
 
 export const components_en = {
@@ -2409,6 +2555,7 @@ export const navigation_en = {
     "families": "Families",
     "content_library": "Library",
     "ai_planner": "AI Generator",
+    "collaborative_planner": "Co-Creation",
     "my_ai_generations": "My AI Generations",
     "activities": "Activities",
     "calendar": "Calendar",
@@ -2458,6 +2605,20 @@ export const navigation_en = {
       "reports": "Report",
       "catechetical_years": "Catechetical Year",
       "sacramental_journeys": "Sacrament"
+    },
+    "family_label": "Family",
+    "search_module": {
+      "catechumen": "Catechumens",
+      "class": "Classes",
+      "content": "Library",
+      "bible": "Bible",
+      "catechism": "Catechism",
+      "directory": "Directory",
+      "family": "Families",
+      "sacrament": "Sacraments",
+      "document": "Documents",
+      "parish": "Parishes",
+      "community": "Communities"
     }
   } as const;
 
@@ -2467,6 +2628,7 @@ export const onboarding_en = {
     "subtitle_manager": "Let's set up the platform in 3 steps.",
     "steps": {
       "diocese": "Diocese",
+      "diocese_optional": "Diocese (optional)",
       "parish": "Parish",
       "details": "Details"
     },
@@ -2529,7 +2691,16 @@ export const onboarding_en = {
       "first_class_placeholder": "Ex: 1st Year Catechesis",
       "first_class_hint": "You can create it later in Classes if you prefer.",
       "creating": "Creating space...",
-      "enter_space": "Enter my space"
+      "enter_space": "Enter my space",
+      "days": {
+        "0": "Sun",
+        "1": "Mon",
+        "2": "Tue",
+        "3": "Wed",
+        "4": "Thu",
+        "5": "Fri",
+        "6": "Sat"
+      }
     },
     "diocese": {
       "title": "Which diocese are you in?",
@@ -3294,6 +3465,7 @@ export const resources_en = {
   catecheticalYears: catecheticalYears_en,
   catechism: catechism_en,
   classes: classes_en,
+  collaborative: collaborative_en,
   common: common_en,
   components: components_en,
   content: content_en,

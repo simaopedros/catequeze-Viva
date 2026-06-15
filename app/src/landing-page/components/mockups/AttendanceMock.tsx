@@ -12,7 +12,7 @@ const STUDENTS = [
 export function AttendanceMock({ ns = 'landing' }: { ns?: string }) {
   const { t } = useTranslation(ns);
   return (
-    <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-[10px] sm:text-xs">
+    <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-overline sm:text-xs">
       <div className="flex items-center justify-between">
         <div>
           <p className="font-bold text-sm">{t('mockup_attendance.title')}</p>
@@ -34,7 +34,7 @@ export function AttendanceMock({ ns = 'landing' }: { ns?: string }) {
         ].map((s) => (
           <div key={s.l} className={`rounded-lg p-2 text-center ${s.c}`}>
             <p className="font-bold text-sm">{s.v}</p>
-            <p className="text-[9px]">{s.l}</p>
+            <p className="text-overline">{s.l}</p>
           </div>
         ))}
       </div>

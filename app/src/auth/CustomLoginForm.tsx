@@ -106,7 +106,7 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
 
           <div className="space-y-2">
             <Label htmlFor="totp">{t('two_factor_otp_label')}</Label>
-            <Input
+            <Input variant="filled"
               id="totp"
               type="text"
               inputMode="numeric"
@@ -161,7 +161,7 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
 
         <div className="space-y-2">
           <Label htmlFor="email">{t('login_email_label')}</Label>
-          <Input
+          <Input variant="filled"
             id="email"
             type="email"
             value={email}
@@ -181,7 +181,7 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
             </a>
           </div>
           <div className="relative">
-            <Input
+            <Input variant="filled"
               id="password"
               type={showPassword ? 'text' : 'password'}
               value={password}

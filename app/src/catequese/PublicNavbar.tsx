@@ -13,7 +13,7 @@ export function PublicNavbar() {
   const [langOpen, setLangOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-sticky border-b bg-background/95 backdrop-blur-sm shadow-elevation-sticky">
       <div className="max-w-6xl mx-auto flex h-14 items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2 font-semibold text-primary">
           <Cross className="h-5 w-5" />
@@ -66,7 +66,7 @@ export function PublicNavbar() {
       </div>
 
       {open && (
-        <div className="md:hidden border-t bg-background px-4 py-3 space-y-2">
+        <div className="md:hidden border-t bg-card shadow-elevation-md animate-in slide-in-from-top-2 duration-200 px-4 py-3 space-y-2">
           <a href="/#recursos" className="block py-2 text-sm text-muted-foreground" onClick={() => setOpen(false)}>{t('resources')}</a>
           <Link to="/about" className="block py-2 text-sm text-muted-foreground" onClick={() => setOpen(false)}>{t('about')}</Link>
           <Link to="/pricing" className="block py-2 text-sm text-muted-foreground" onClick={() => setOpen(false)}>{t('pricing')}</Link>

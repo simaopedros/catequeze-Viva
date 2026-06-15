@@ -45,7 +45,7 @@ export function BottomSheetNav({ open, onClose }: BottomSheetNavProps) {
 
             return (
               <div key={section.section}>
-                <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-wider mb-2 px-1">
+                <p className="text-overline font-bold text-muted-foreground/60 uppercase tracking-wider mb-2 px-1">
                   {t(`${section.section}Section`)}
                 </p>
                 <div className="space-y-1">
@@ -55,6 +55,7 @@ export function BottomSheetNav({ open, onClose }: BottomSheetNavProps) {
                       <NavLink
                         key={item.to}
                         to={item.to}
+                        end={item.to === '/app'}
                         onClick={onClose}
                         className={({ isActive }) => cn(
                           'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',

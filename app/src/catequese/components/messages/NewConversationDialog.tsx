@@ -226,12 +226,12 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
                         isSelected ? 'bg-primary/5' : 'hover:bg-muted/50'
                       )}
                     >
-                      <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary/60 to-primary/30 flex items-center justify-center text-white text-[10px] font-semibold flex-shrink-0">
+                      <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary/60 to-primary/30 flex items-center justify-center text-white text-overline font-semibold flex-shrink-0">
                         {getInitials(c.firstName, c.lastName)}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">{name}</p>
-                        <p className="text-[10px] text-muted-foreground truncate">
+                        <p className="text-overline text-muted-foreground truncate">
                           {c.role ? roleLabel(c.role) : c.email}
                         </p>
                       </div>

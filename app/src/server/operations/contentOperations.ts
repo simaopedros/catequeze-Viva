@@ -1,75 +1,13 @@
 import { HttpError } from 'wasp/server';
-import { MembershipStatus } from '@prisma/client';
-import { getDioceseParishIds } from '../auth/helpers';
 import { resolveUserLocale } from '../i18n/serverLocale';
-
-function isCoordinatorOrAbove(role: string): boolean {
-  return ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(role);
-}
-
-function canCreateContent(role: string): boolean {
-  return isCoordinatorOrAbove(role) || ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'CONTENT_REVIEWER'].includes(role);
-}
-
-function canReviewContent(role: string): boolean {
-  return isCoordinatorOrAbove(role) || role === 'CONTENT_REVIEWER';
-}
-
-async function getUserRoleAndParish(context: any): Promise<{ role: string; parishId: string | null }> {
-  if (context.user?.isAdmin) return { role: 'SUPER_ADMIN', parishId: null };
-  const m = await context.entities.Membership.findFirst({
-    where: { userId: context.user.id, status: MembershipStatus.ACTIVE },
-    select: { role: true, parishId: true },
-  });
-  return { role: m?.role || '', parishId: m?.parishId || null };
-}
-
-async function getParishIds(context: any): Promise<string[]> {
-  if (context.user?.isAdmin) return [];
-  const memberships = await context.entities.Membership.findMany({
-    where: { userId: context.user.id, status: 'ACTIVE' },
-    select: { parishId: true, role: true },
-  });
-  const ids = memberships.map((m: any) => m.parishId);
-
-  // DIOCESE_ADMIN: include all parishes in the diocese
-  if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
-    const dioceseParishIds = await getDioceseParishIds(context);
-    for (const id of dioceseParishIds) {
-      if (!ids.includes(id)) ids.push(id);
-    }
-  }
-
-  return ids;
-}
-
-/** Verifica que o user tem acesso ao conteúdo (parish-scope ou é o criador) */
-async function assertCanAccessContent(context: any, item: { id?: string; parishId?: string | null; createdById?: string | null }) {
-  if (context.user?.isAdmin) return;
-  if (item.createdById === context.user.id) return;
-
-  if (item.parishId) {
-    const parishIds = await getParishIds(context);
-    if (!parishIds.includes(item.parishId)) {
-      throw new HttpError(403, 'Você não tem acesso a este conteúdo.');
-    }
-  }
-}
-
-async function assertCanModifyContent(context: any, item: { parishId?: string | null; createdById?: string | null }) {
-  if (context.user?.isAdmin) return;
-  if (item.createdById === context.user.id) return;
-
-  const { role } = await getUserRoleAndParish(context);
-  if (!canCreateContent(role)) throw new HttpError(403, 'Sem permissão.');
-
-  if (item.parishId) {
-    const parishIds = await getParishIds(context);
-    if (!parishIds.includes(item.parishId)) {
-      throw new HttpError(403, 'Você não tem acesso a este conteúdo.');
-    }
-  }
-}
+import {
+  canCreateContent,
+  canReviewContent,
+  getUserRoleAndParish,
+  getParishIds,
+  assertCanAccessContent,
+  assertCanModifyContent,
+} from '../auth/contentAccess';
 
 export const listContentItems = async (_args: { take?: number; skip?: number } | void, context: any) => {
   const args = _args || {};

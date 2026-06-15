@@ -207,7 +207,7 @@ export function ChatView({
             {/* Date separator */}
             <div className="flex items-center gap-3 py-3">
               <div className="flex-1 h-px bg-border" />
-              <span className="text-[10px] font-medium text-muted-foreground bg-background px-2 py-0.5 rounded-full">
+              <span className="text-overline font-medium text-muted-foreground bg-background px-2 py-0.5 rounded-full">
                 {formatDateHeader(group.date, t, i18n.language)}
               </span>
               <div className="flex-1 h-px bg-border" />
@@ -224,7 +224,7 @@ export function ChatView({
               if (isSystem) {
                 return (
                   <div key={msg.id} className="flex justify-center py-1">
-                    <span className="text-[10px] text-muted-foreground italic bg-muted/30 px-3 py-1 rounded-full">
+                    <span className="text-overline text-muted-foreground italic bg-muted/30 px-3 py-1 rounded-full">
                       {msg.content}
                     </span>
                   </div>
@@ -242,7 +242,7 @@ export function ChatView({
                 >
                   {/* Avatar */}
                   {!isMe && !isConsecutive ? (
-                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary/70 to-primary/40 flex items-center justify-center text-white text-[10px] font-semibold flex-shrink-0 mt-0.5 shadow-sm">
+                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary/70 to-primary/40 flex items-center justify-center text-white text-overline font-semibold flex-shrink-0 mt-0.5 shadow-sm">
                       {getSenderInitials(msg.sender)}
                     </div>
                   ) : !isMe ? (
@@ -253,7 +253,7 @@ export function ChatView({
                   <div className={cn('max-w-[70%] min-w-[60px]', isMe && 'items-end')}>
                     {/* Sender name */}
                     {!isMe && !isConsecutive && conversationType !== 'DIRECT' && (
-                      <p className="text-[10px] font-semibold text-primary/80 mb-0.5 ml-1">
+                      <p className="text-overline font-semibold text-primary/80 mb-0.5 ml-1">
                         {[msg.sender.firstName, msg.sender.lastName].filter(Boolean).join(' ')}
                       </p>
                     )}
@@ -261,7 +261,7 @@ export function ChatView({
                     {/* Reply context */}
                     {msg.parent && (
                       <div className={cn(
-                        'flex items-center gap-1.5 mb-1 ml-1 px-2 py-1 rounded-md text-[10px] border-l-2',
+                        'flex items-center gap-1.5 mb-1 ml-1 px-2 py-1 rounded-md text-overline border-l-2',
                         isMe
                           ? 'bg-primary/5 border-l-primary/50 text-primary/70'
                           : 'bg-muted/40 border-l-muted-foreground/30 text-muted-foreground'
@@ -284,7 +284,7 @@ export function ChatView({
                     >
                       <p className="whitespace-pre-wrap break-words leading-relaxed">{msg.content}</p>
                       <span className={cn(
-                        'text-[9px] float-right mt-1 ml-2 flex items-center gap-0.5',
+                        'text-overline float-right mt-1 ml-2 flex items-center gap-0.5',
                         isMe ? 'text-primary-foreground/60' : 'text-muted-foreground/60'
                       )}>
                         {isMe && <CheckCheck className="h-2.5 w-2.5" />}
@@ -299,7 +299,7 @@ export function ChatView({
                     )}>
                       <button
                         onClick={() => setReplyTo(msg)}
-                        className="text-[10px] text-muted-foreground hover:text-primary flex items-center gap-0.5"
+                        className="text-overline text-muted-foreground hover:text-primary flex items-center gap-0.5"
                       >
                         <Reply className="h-3 w-3" />
                         {t('reply')}
@@ -315,7 +315,7 @@ export function ChatView({
                             return acc;
                           }, {})
                         ).map(([emoji, count]) => (
-                          <span key={emoji} className="bg-muted/50 rounded-full px-1.5 py-0.5 text-[10px] border">
+                          <span key={emoji} className="bg-muted/50 rounded-full px-1.5 py-0.5 text-overline border">
                             {emoji} {count > 1 && count}
                           </span>
                         ))}
@@ -349,7 +349,7 @@ export function ChatView({
         <div className="mx-4 mb-0 px-3 py-2 bg-muted/50 rounded-t-lg border border-b-0 flex items-center gap-2 animate-in slide-in-from-bottom-2">
           <Reply className="h-3.5 w-3.5 text-primary flex-shrink-0" />
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] font-semibold text-primary">
+            <p className="text-overline font-semibold text-primary">
               {[replyTo.sender.firstName, replyTo.sender.lastName].filter(Boolean).join(' ')}
             </p>
             <p className="text-xs text-muted-foreground truncate">{replyTo.content}</p>

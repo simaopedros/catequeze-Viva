@@ -141,7 +141,7 @@ export default function TwoFactorSetup() {
           </div>
           <details className="text-xs text-muted-foreground">
             <summary className="cursor-pointer">{t('two_factor_setup_cannot_scan')}</summary>
-            <p className="mt-1 break-all font-mono text-[10px] bg-muted p-2 rounded">{secret}</p>
+            <p className="mt-1 break-all font-mono text-overline bg-muted p-2 rounded">{secret}</p>
           </details>
           <div className="flex gap-2">
             <Input

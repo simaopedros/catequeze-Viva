@@ -140,7 +140,7 @@ export default function ReportsPage() {
                 <p className="text-xs text-destructive/90 mb-2">{t('dropout_desc')}</p>
                 <div className="flex flex-wrap gap-2">
                   {riskClasses.map((r:any)=>(
-                    <Badge key={r.id} variant="destructive" className="text-[11px]">{r.name}: {r.attendanceRate}%</Badge>
+                    <Badge key={r.id} variant="destructive" className="text-caption">{r.name}: {r.attendanceRate}%</Badge>
                   ))}
                 </div>
               </div>

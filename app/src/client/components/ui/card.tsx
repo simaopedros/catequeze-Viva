@@ -4,15 +4,19 @@ import { cva, VariantProps } from "class-variance-authority";
 import { cn } from "../../utils";
 
 const cardVariants = cva(
-  "rounded-xl border shadow hover:shadow-lg transition-all duration-300",
+  "rounded-xl border",
   {
     variants: {
       variant: {
-        default: "bg-card text-card-foreground",
+        default: "bg-card text-card-foreground shadow-elevation-sm",
         accent:
-          "bg-card-accent text-card-accent-foreground hover:scale-[1.02]",
+          "bg-card-accent text-card-accent-foreground",
         bento:
-          "bg-card-subtle text-card-subtle-foreground hover:scale-[1.02] border-none shadow-none",
+          "bg-card-subtle text-card-subtle-foreground border-none shadow-none",
+        interactive:
+          "bg-card text-card-foreground shadow-elevation-sm hover:shadow-elevation-md transition-shadow cursor-pointer",
+        flat:
+          "bg-muted/50 border-0 shadow-none",
       },
     },
   }
@@ -36,7 +40,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-header"
-      className={cn("flex flex-col space-y-1.5 p-6", className)}
+      className={cn("flex flex-col space-y-1.5 p-5", className)}
       {...props}
     />
   );
@@ -64,7 +68,7 @@ function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
 
 function CardContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div data-slot="card-content" className={cn("p-6 pt-0", className)} {...props} />
+    <div data-slot="card-content" className={cn("p-5 pt-0", className)} {...props} />
   );
 }
 
@@ -72,7 +76,17 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-footer"
-      className={cn("flex items-center p-6 pt-0", className)}
+      className={cn("flex items-center p-5 pt-0", className)}
+      {...props}
+    />
+  );
+}
+
+function CardMedia({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-media"
+      className={cn("-mx-5 -mt-5 mb-4 overflow-hidden rounded-t-xl", className)}
       {...props}
     />
   );
@@ -84,5 +98,7 @@ export {
   CardDescription,
   CardFooter,
   CardHeader,
+  CardMedia,
   CardTitle,
+  cardVariants,
 };

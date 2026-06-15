@@ -99,10 +99,10 @@ export default function PublicUploadDocsPage() {
                     <FileText className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">{d.name}</p>
-                      <p className="text-[10px] text-muted-foreground">{t(`upload_docs.types.${d.type}`, { defaultValue: d.type })}</p>
+                      <p className="text-overline text-muted-foreground">{t(`upload_docs.types.${d.type}`, { defaultValue: d.type })}</p>
                     </div>
                   </div>
-                  <Badge variant={d.verifiedAt ? 'default' : 'secondary'} className="text-[10px] gap-1">
+                  <Badge variant={d.verifiedAt ? 'default' : 'secondary'} className="text-overline gap-1">
                     {d.verifiedAt ? (
                       <><CheckCircle className="h-3 w-3" /> {t('upload_docs.verified')}</>
                     ) : (
@@ -146,7 +146,7 @@ export default function PublicUploadDocsPage() {
               onChange={e => setDocFile(e.target.files?.[0] || null)}
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-sm file:bg-primary/10 file:text-primary"
             />
-            <p className="text-[10px] text-muted-foreground mt-1">{t('upload_docs.file_hint')}</p>
+            <p className="text-overline text-muted-foreground mt-1">{t('upload_docs.file_hint')}</p>
           </div>
 
           <Button

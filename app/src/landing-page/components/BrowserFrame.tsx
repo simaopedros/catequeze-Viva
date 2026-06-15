@@ -21,7 +21,7 @@ export function BrowserFrame({ children, className, url = 'app.catequese.viva' }
           <span className="h-2.5 w-2.5 rounded-full bg-warning/60" />
           <span className="h-2.5 w-2.5 rounded-full bg-success/60" />
         </div>
-        <div className="mx-auto flex-1 max-w-[200px] rounded-md bg-background/80 px-3 py-1 text-center text-[10px] text-muted-foreground truncate">
+        <div className="mx-auto flex-1 max-w-[200px] rounded-md bg-background/80 px-3 py-1 text-center text-overline text-muted-foreground truncate">
           {url}
         </div>
       </div>

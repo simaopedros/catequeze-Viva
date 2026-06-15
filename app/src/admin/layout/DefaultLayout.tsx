@@ -1,8 +1,9 @@
-import { FC, ReactNode, useState, useEffect } from "react";
+import { FC, ReactNode, useState } from "react";
 import { Navigate, useLocation } from "react-router";
 import { type AuthUser } from "wasp/auth";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
+import { ShellBase } from "../../client/components/ShellBase";
 
 interface Props {
   user: AuthUser;
@@ -25,23 +26,17 @@ const DefaultLayout: FC<Props> = ({ children, user }) => {
   // }
 
   return (
-    <div className="bg-background text-foreground">
-      <div className="flex h-screen overflow-hidden">
-        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-        <div className="relative flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
-          <Header
-            sidebarOpen={sidebarOpen}
-            setSidebarOpen={setSidebarOpen}
-            user={user}
-          />
-          <main>
-            <div className="mx-auto max-w-(--breakpoint-2xl) p-4 md:p-6 2xl:p-10">
-              {children}
-            </div>
-          </main>
-        </div>
+    <ShellBase variant="app">
+      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+      <div className="relative flex flex-1 flex-col overflow-y-auto">
+        <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} user={user} />
+        <main>
+          <div className="mx-auto max-w-(--breakpoint-2xl) p-4 md:p-6 2xl:p-10">
+            {children}
+          </div>
+        </main>
       </div>
-    </div>
+    </ShellBase>
   );
 };
 

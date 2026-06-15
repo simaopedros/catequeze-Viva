@@ -69,7 +69,7 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
             placeholder={t('personal_setup.first_class_placeholder')}
             className="mt-1"
           />
-          <p className="text-[11px] text-muted-foreground mt-1">{t('personal_setup.first_class_hint')}</p>
+          <p className="text-caption text-muted-foreground mt-1">{t('personal_setup.first_class_hint')}</p>
         </div>
 
         <div className="text-left">

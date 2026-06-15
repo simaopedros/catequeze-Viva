@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { SHOWCASES, SECONDARY_FEATURES } from '../content/landingContent';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { FeatureShowcase } from './FeatureShowcase';
+import { Card, CardContent } from '../../client/components/ui/card';
 
 export function FeaturesSection({ ns = 'landing', order }: { ns?: string; order?: string[] }) {
   const { t } = useTranslation(ns);
@@ -11,8 +12,8 @@ export function FeaturesSection({ ns = 'landing', order }: { ns?: string; order?
     <section id="recursos" className="scroll-mt-20">
       <div className="max-w-6xl mx-auto px-4 pt-20 pb-6">
         <div ref={headerRef} className={`text-center space-y-3 ${headerClass}`}>
-          <h2 className="text-3xl sm:text-4xl font-bold">{t('features_title')}</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <h2 className="text-title-xl font-bold">{t('features_title')}</h2>
+          <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">
             {t('features_subtitle')}
           </p>
         </div>
@@ -67,15 +68,16 @@ function SecondaryFeatureCard({ feature, delay }: { feature: any; delay: number 
   const { ref, className } = useScrollReveal({ delay });
 
   return (
-    <div
+    <Card
       ref={ref}
-      className={`rounded-2xl border bg-card p-6 space-y-3 hover:shadow-md hover:border-primary/20 transition-all ${className}`}
+      variant="interactive"
+      className={`p-6 space-y-3 ${className}`}
     >
       <div className="inline-flex rounded-xl bg-primary/10 p-2.5">
         <feature.icon className="h-5 w-5 text-primary" />
       </div>
       <h4 className="font-semibold">{feature.title}</h4>
-      <p className="text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
-    </div>
+      <p className="text-body-sm text-text-secondary leading-relaxed">{feature.desc}</p>
+    </Card>
   );
 }

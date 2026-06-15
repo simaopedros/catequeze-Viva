@@ -350,12 +350,12 @@ export default function ClassDetailPage() {
                 const done = relevantJourney?.milestones?.filter((m: any) => m.status === 'COMPLETED' || m.status === 'APPROVED')?.length || 0;
                 const pct = total > 0 ? Math.round((done / total) * 100) : 0;
                 const journeyBadge = relevantJourney ? (
-                  <Badge variant={pct === 100 ? 'default' : 'outline'} className="text-[10px] gap-1">
+                  <Badge variant={pct === 100 ? 'default' : 'outline'} className="text-overline gap-1">
                     <Cross className="h-3 w-3" />
                     {done}/{total}
                   </Badge>
                 ) : cls.sacrament ? (
-                  <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                  <span className="text-overline text-muted-foreground flex items-center gap-1">
                     <Cross className="h-3 w-3 opacity-50" />
                     {t('detail.no_journey')}
                   </span>
@@ -417,7 +417,7 @@ export default function ClassDetailPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-[10px]">{t('detail.attendance_records', { count: m._count?.attendance||0 })}</Badge>
+                    <Badge variant="outline" className="text-overline">{t('detail.attendance_records', { count: m._count?.attendance||0 })}</Badge>
                     <Link to={`/app/classes/${id}/attendance`} className="text-xs text-primary hover:underline">{t('attendance')}</Link>
                   </div>
                 </div>
@@ -536,7 +536,7 @@ export default function ClassDetailPage() {
                           {week.meetings.map((m: any) => (
                             <div key={m.id} className="flex items-center justify-between py-1 text-sm">
                               <div className="flex items-center gap-2">
-                                <Badge variant="outline" className="text-[10px]">
+                                <Badge variant="outline" className="text-overline">
                                   {formatDate(m.date, currentLocale, { weekday: 'short', day: 'numeric' })}
                                 </Badge>
                                 <span className="font-medium">{m.title || t('detail.no_title')}</span>

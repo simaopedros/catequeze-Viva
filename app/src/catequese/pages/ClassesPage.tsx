@@ -132,7 +132,7 @@ export default function ClassesPage() {
                 {filtered.map((cls: any) => (
                   <tr key={cls.id} className="border-b last:border-0 hover:bg-muted/30">
                     <td className="p-3"><Link to={`/app/classes/${cls.id}`} className="font-medium text-sm hover:text-primary">{cls.name}</Link></td>
-                    <td className="p-3"><Badge variant={classStatusMap[cls.status as keyof typeof classStatusMap]?.variant || 'secondary'} className="text-[10px]">{classStatusMap[cls.status as keyof typeof classStatusMap]?.label || cls.status}</Badge></td>
+                    <td className="p-3"><Badge variant={classStatusMap[cls.status as keyof typeof classStatusMap]?.variant || 'secondary'} className="text-overline">{classStatusMap[cls.status as keyof typeof classStatusMap]?.label || cls.status}</Badge></td>
                     <td className="p-3 hidden md:table-cell text-sm">{cls._count?.enrollments || 0}</td>
                     <td className="p-3 hidden md:table-cell text-sm text-muted-foreground">{formatDay(cls.dayOfWeek)}{cls.startTime && ` ${cls.startTime}`}</td>
                     <td className="p-3"><div className="flex gap-1">
@@ -153,7 +153,7 @@ export default function ClassesPage() {
                     <Link to={`/app/classes/${cls.id}`} className="font-semibold hover:text-primary truncate block">{cls.name}</Link>
                     <p className="text-xs text-muted-foreground mt-0.5">{cls.parish?.name}{cls.stage && ` · ${cls.stage.name}`}</p>
                   </div>
-                  <Badge variant={classStatusMap[cls.status as keyof typeof classStatusMap]?.variant || 'secondary'} className="text-[10px] ml-2">{classStatusMap[cls.status as keyof typeof classStatusMap]?.label}</Badge>
+                  <Badge variant={classStatusMap[cls.status as keyof typeof classStatusMap]?.variant || 'secondary'} className="text-overline ml-2">{classStatusMap[cls.status as keyof typeof classStatusMap]?.label}</Badge>
                 </div>
 
                 <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
@@ -162,7 +162,7 @@ export default function ClassesPage() {
                 </div>
 
                 {cls.meetings?.[0] && (
-                  <div className={`rounded-lg px-2 py-1 text-[10px] font-medium mb-3 ${isToday(cls.meetings[0].date) ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                  <div className={`rounded-lg px-2 py-1 text-overline font-medium mb-3 ${isToday(cls.meetings[0].date) ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
                     {isToday(cls.meetings[0].date) ? `🔴 ${t('meeting_today')}` : t('next_meeting', { date: formatDate(cls.meetings[0].date, currentLocale, { day: '2-digit', month: '2-digit' }) })}
                   </div>
                 )}

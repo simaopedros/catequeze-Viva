@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 export function FamilyPortalMock({ ns = 'landing' }: { ns?: string }) {
   const { t } = useTranslation(ns);
   return (
-    <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-[10px] sm:text-xs">
+    <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-overline sm:text-xs">
       <div>
         <p className="font-bold text-sm">{t('mockup_family.title')}</p>
         <p className="text-muted-foreground">{t('mockup_family.greeting')}</p>

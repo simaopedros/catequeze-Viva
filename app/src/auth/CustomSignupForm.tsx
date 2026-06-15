@@ -96,12 +96,12 @@ export default function CustomSignupForm({ inviteToken, defaultEmail }: CustomSi
           <Cross className="h-6 w-6 text-primary" />
         </div>
         <h1 className="text-2xl font-bold tracking-tight">{t('signup_title')}</h1>
-        <p className="text-sm text-muted-foreground">{t('signup_subtitle')}</p>
+          <p className="text-body-sm text-text-secondary">{t('signup_subtitle')}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+          <div className="rounded-lg bg-destructive/10 p-3 text-body-sm text-destructive">
             {error}
           </div>
         )}
@@ -110,6 +110,7 @@ export default function CustomSignupForm({ inviteToken, defaultEmail }: CustomSi
           <Label htmlFor="email">{t('signup_email_label')}</Label>
           <Input
             id="email"
+            variant="filled"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -144,7 +145,7 @@ export default function CustomSignupForm({ inviteToken, defaultEmail }: CustomSi
               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-caption text-muted-foreground">
             {t('signup_password_help')}
           </p>
         </div>

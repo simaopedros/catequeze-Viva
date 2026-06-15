@@ -331,7 +331,7 @@ export default function AttendancePage() {
                   {meetings.map((m: any) => (
                     <th key={m.id} className="p-2 text-center font-medium min-w-[90px]">
                       <div>{formatDate(m.date, currentLocale, { day: '2-digit', month: '2-digit' })}</div>
-                      <div className="text-[10px] text-muted-foreground truncate max-w-[80px]">{m.title || t('matrix.no_title')}</div>
+                      <div className="text-overline text-muted-foreground truncate max-w-[80px]">{m.title || t('matrix.no_title')}</div>
                     </th>
                   ))}
                   <th className="p-2 text-center font-medium bg-muted/30 min-w-[50px]">{t('matrix.percent_column')}</th>
@@ -366,7 +366,7 @@ export default function AttendancePage() {
                 <tr className="border-t-2 bg-muted/30 font-medium">
                   <td className="sticky left-0 bg-muted/30 p-2 border-r z-10">{t('matrix.totals')}</td>
                   {meetings.map((m: any) => (
-                    <td key={m.id} className="p-2 text-center text-[10px]">
+                    <td key={m.id} className="p-2 text-center text-overline">
                       <span className="text-emerald-600 dark:text-emerald-400">{stats[m.id]?.presentes || 0}{t('matrix.present_letter')}</span>{' '}
                       <span className="text-red-600 dark:text-red-400">{stats[m.id]?.faltas || 0}{t('matrix.absent_letter')}</span>{' '}
                       <span className="text-purple-600 dark:text-purple-400">{stats[m.id]?.abonados || 0}{t('matrix.justified_letter')}</span>

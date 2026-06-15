@@ -1,10 +1,12 @@
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { ArrowRight, ChevronRight, GraduationCap, Sparkles } from 'lucide-react';
+import { ArrowRight, GraduationCap, Sparkles } from 'lucide-react';
 import { useParallax } from '../hooks/useParallax';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { BrowserFrame } from './BrowserFrame';
 import { FeatureScreenshot } from './FeatureScreenshot';
+import { Button } from '../../client/components/ui/button';
+import { Badge } from '../../client/components/ui/badge';
 
 export function HeroSection({ ns = 'landing' }: { ns?: string }) {
   const { t } = useTranslation(ns);
@@ -31,41 +33,41 @@ export function HeroSection({ ns = 'landing' }: { ns?: string }) {
       >
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
           <div className="space-y-8 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/20 px-5 py-2 text-sm font-medium text-primary backdrop-blur-sm">
-              <GraduationCap className="h-4 w-4" />
-              {t('hero.badge')}
-              <Sparkles className="h-4 w-4 text-accent" />
+            <div className="inline-flex items-center gap-2">
+              <Badge variant="brand" size="lg" className="gap-1.5 backdrop-blur-sm">
+                <GraduationCap className="h-3.5 w-3.5" />
+                {t('hero.badge')}
+                <Sparkles className="h-3.5 w-3.5 text-accent" />
+              </Badge>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
+            <h1 className="text-title-xxl font-bold tracking-tight leading-tight text-balance">
               {t('hero.headline_line1')}
               <br />
               <span className="text-gradient-primary">{t('hero.headline_line2')}</span>
             </h1>
 
-            <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed">
+            <p className="text-body-lg md:text-xl text-text-secondary max-w-xl mx-auto lg:mx-0 leading-relaxed">
               {t('hero.subheadline').split('—')[0]}—{' '}
               <span className="font-semibold text-foreground">{t('hero.subheadline').split('—')[1]?.trim() || t('hero.subheadline')}</span>
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Link
-                to="/signup"
-                className="inline-flex h-12 items-center justify-center rounded-xl bg-primary text-primary-foreground px-8 text-sm font-semibold hover:bg-primary/90 transition-all hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5"
-              >
-                {t('hero.cta_primary')}
-                <ChevronRight className="ml-2 h-4 w-4" />
-              </Link>
-              <a
-                href="#recursos"
-                className="inline-flex h-12 items-center justify-center rounded-xl border-2 border-input bg-background px-8 text-sm font-semibold hover:bg-accent hover:text-accent-foreground transition-all hover:-translate-y-0.5"
-              >
-                {t('hero.cta_secondary')}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </a>
+              <Button size="xl" variant="brand" asChild>
+                <Link to="/signup">
+                  {t('hero.cta_primary')}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button size="xl" variant="outline" asChild>
+                <a href="#recursos">
+                  {t('hero.cta_secondary')}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </a>
+              </Button>
             </div>
 
-            <p className="text-xs text-muted-foreground">
+            <p className="text-body-xs text-text-secondary">
               {t('hero.trust_signals')}
             </p>
           </div>

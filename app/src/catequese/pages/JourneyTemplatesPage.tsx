@@ -192,19 +192,19 @@ export default function JourneyTemplatesPage() {
                             rows={2}
                           />
                           <div className="flex gap-1">
-                            <Button size="sm" className="h-7 text-[10px]" onClick={() => handleUpdate(tmpl.id)}><Save className="mr-1 h-3 w-3" />{tc('save')}</Button>
-                            <Button size="sm" variant="ghost" className="h-7 text-[10px]" onClick={() => setEditingId(null)}><X className="h-3 w-3" /></Button>
+                            <Button size="sm" className="h-7 text-overline" onClick={() => handleUpdate(tmpl.id)}><Save className="mr-1 h-3 w-3" />{tc('save')}</Button>
+                            <Button size="sm" variant="ghost" className="h-7 text-overline" onClick={() => setEditingId(null)}><X className="h-3 w-3" /></Button>
                           </div>
                         </div>
                       ) : (
                         <>
                           <div className="flex items-center gap-2">
                             <h3 className="font-semibold">{tmpl.name}</h3>
-                            <Badge variant="outline" className="text-[10px]">{scopeLabel}</Badge>
-                            {tmpl.sacrament?.name && <Badge className="text-[10px]">{tmpl.sacrament.name}</Badge>}
+                            <Badge variant="outline" className="text-overline">{scopeLabel}</Badge>
+                            {tmpl.sacrament?.name && <Badge className="text-overline">{tmpl.sacrament.name}</Badge>}
                           </div>
                           {tmpl.description && <p className="text-xs text-muted-foreground mt-0.5">{tmpl.description}</p>}
-                          <p className="text-[10px] text-muted-foreground mt-1">{t('templates.milestones_count', { count: milestones.length })}</p>
+                          <p className="text-overline text-muted-foreground mt-1">{t('templates.milestones_count', { count: milestones.length })}</p>
                         </>
                       )}
                     </div>
@@ -216,7 +216,7 @@ export default function JourneyTemplatesPage() {
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="h-7 text-[10px]"
+                              className="h-7 text-overline"
                               onClick={() => {
                                 setEditingId(tmpl.id);
                                 setEditName(tmpl.name);
@@ -228,7 +228,7 @@ export default function JourneyTemplatesPage() {
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="h-7 text-[10px]"
+                              className="h-7 text-overline"
                               onClick={() => handleCopy(tmpl.id)}
                               disabled={copyingId === tmpl.id}
                             >
@@ -238,7 +238,7 @@ export default function JourneyTemplatesPage() {
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                className="h-7 text-[10px] text-primary"
+                                className="h-7 text-overline text-primary"
                                 onClick={() => handlePublish(tmpl.id)}
                                 disabled={publishingId === tmpl.id}
                               >
@@ -250,7 +250,7 @@ export default function JourneyTemplatesPage() {
                         <Button
                           size="sm"
                           variant="ghost"
-                          className="h-7 text-[10px]"
+                          className="h-7 text-overline"
                           onClick={() => setExpandedTemplateId(isExpanded ? null : tmpl.id)}
                         >
                           <ChevronRight className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
@@ -307,8 +307,8 @@ export default function JourneyTemplatesPage() {
                                       </label>
                                     </div>
                                     <div className="flex gap-1">
-                                      <Button size="sm" className="h-6 text-[10px]" onClick={handleSaveMilestone}><Save className="mr-1 h-2.5 w-2.5" />{tc('save')}</Button>
-                                      <Button size="sm" variant="ghost" className="h-6 text-[10px]" onClick={() => setEditingMilestoneId(null)}><X className="h-3 w-3" /></Button>
+                                      <Button size="sm" className="h-6 text-overline" onClick={handleSaveMilestone}><Save className="mr-1 h-2.5 w-2.5" />{tc('save')}</Button>
+                                      <Button size="sm" variant="ghost" className="h-6 text-overline" onClick={() => setEditingMilestoneId(null)}><X className="h-3 w-3" /></Button>
                                     </div>
                                   </div>
                                 ) : (
@@ -316,9 +316,9 @@ export default function JourneyTemplatesPage() {
                                     <div>
                                       <p className="text-sm font-medium flex items-center gap-1.5 flex-wrap">
                                         {m.name}
-                                        {m.required && <Badge variant="outline" className="text-[9px]">{t('required')}</Badge>}
-                                        {m.evidenceRequired && <Badge variant="outline" className="text-[9px]">{t('evidence')}</Badge>}
-                                        {m.daysBeforeSacrament != null && <Badge variant="outline" className="text-[9px]">{t('templates.days_before_badge', { count: m.daysBeforeSacrament })}</Badge>}
+                                        {m.required && <Badge variant="outline" className="text-overline">{t('required')}</Badge>}
+                                        {m.evidenceRequired && <Badge variant="outline" className="text-overline">{t('evidence')}</Badge>}
+                                        {m.daysBeforeSacrament != null && <Badge variant="outline" className="text-overline">{t('templates.days_before_badge', { count: m.daysBeforeSacrament })}</Badge>}
                                       </p>
                                       {m.description && <p className="text-xs text-muted-foreground mt-0.5">{m.description}</p>}
                                     </div>
@@ -327,7 +327,7 @@ export default function JourneyTemplatesPage() {
                                         <Button
                                           size="sm"
                                           variant="ghost"
-                                          className="h-6 text-[10px]"
+                                          className="h-6 text-overline"
                                           onClick={() => {
                                             setEditingMilestoneId(m.id);
                                             setMilestoneEdit({
@@ -344,7 +344,7 @@ export default function JourneyTemplatesPage() {
                                         <Button
                                           size="sm"
                                           variant="ghost"
-                                          className="h-6 text-[10px] text-destructive hover:text-destructive"
+                                          className="h-6 text-overline text-destructive hover:text-destructive"
                                           onClick={() => handleDeleteMilestone(m.id)}
                                         >
                                           <Trash2 className="h-2.5 w-2.5" />

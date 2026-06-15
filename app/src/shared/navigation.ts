@@ -40,6 +40,7 @@ export const NAV_SECTIONS: NavSectionConfig[] = [
     section: 'pedagogy',
     items: [
       { to: '/app/content-library', labelKey: 'content_library', iconKey: 'content_library', roles: [...CATECHIST_ROLES, 'CONTENT_REVIEWER'] },
+      { to: '/app/collaborative-planner', labelKey: 'collaborative_planner', iconKey: 'collaborative_planner', roles: [...CATECHIST_ROLES, 'CONTENT_REVIEWER'] },
       { to: '/app/ai-planner', labelKey: 'ai_planner', iconKey: 'ai_planner', roles: [...CATECHIST_ROLES, 'CONTENT_REVIEWER'] },
       { to: '/app/my-ai-generations', labelKey: 'my_ai_generations', iconKey: 'my_ai_generations', roles: [...CATECHIST_ROLES, 'CONTENT_REVIEWER'] },
       { to: '/app/calendar', labelKey: 'calendar', iconKey: 'calendar', roles: LEARNER_ROLES },

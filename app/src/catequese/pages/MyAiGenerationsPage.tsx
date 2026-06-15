@@ -41,7 +41,7 @@ export default function MyAiGenerationsPage() {
     <AppShell>
       <div className="max-w-4xl mx-auto space-y-6">
         <PageHeader title={t('generations.title')} subtitle={t('generations.subtitle')}>
-          <Link to="/app/ai-planner">
+          <Link to="/app/collaborative-planner">
             <Button variant="outline" size="sm">
               <Sparkles className="mr-1 h-4 w-4" />
               {t('generations.new_meeting')}
@@ -68,7 +68,7 @@ export default function MyAiGenerationsPage() {
             description={items?.length ? t('generations.empty_search') : t('generations.empty_desc')}
           >
             {!items?.length && (
-              <Link to="/app/ai-planner" className="inline-block mt-4">
+              <Link to="/app/collaborative-planner" className="inline-block mt-4">
                 <Button>
                   <Sparkles className="mr-1 h-4 w-4" />
                   {t('generations.create_meeting')}
@@ -89,7 +89,7 @@ export default function MyAiGenerationsPage() {
                     <div className="flex items-center gap-2 mb-1">
                       <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                       <h3 className="font-semibold truncate group-hover:text-primary transition-colors">{item.title}</h3>
-                      <Badge className={`text-[10px] ${STATUS_COLORS[item.status] || 'bg-gray-100'}`}>
+                      <Badge className={`text-overline ${STATUS_COLORS[item.status] || 'bg-gray-100'}`}>
                         {STATUS_MAP[item.status as keyof typeof STATUS_MAP]?.label || item.status}
                       </Badge>
                     </div>

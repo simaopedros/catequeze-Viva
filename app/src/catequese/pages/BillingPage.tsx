@@ -443,9 +443,9 @@ export default function BillingPage() {
                 </svg>
                 {t('ai_credits')}
                 {aiCredits.hasAiAccess ? (
-                  <Badge className="bg-violet-100 text-violet-700 text-[10px] ml-1">{t('monthly_badge')}</Badge>
+                  <Badge className="bg-violet-100 text-violet-700 text-overline ml-1">{t('monthly_badge')}</Badge>
                 ) : (
-                  <Badge className="bg-gray-100 text-gray-600 text-[10px] ml-1">{t('trial_badge')}</Badge>
+                  <Badge className="bg-gray-100 text-gray-600 text-overline ml-1">{t('trial_badge')}</Badge>
                 )}
               </h3>
               <div className="space-y-3">
@@ -503,7 +503,7 @@ export default function BillingPage() {
                   }`}
                 >
                   {t('annual')}
-                  <span className="text-[10px] text-success font-bold">{t('annual_savings')}</span>
+                  <span className="text-overline text-success font-bold">{t('annual_savings')}</span>
                 </button>
               </div>
             </div>

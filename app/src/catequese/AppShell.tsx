@@ -11,6 +11,7 @@ import { TwoFactorGate } from './components/TwoFactorGate';
 import { FamilyAppShell } from './FamilyAppShell';
 import { useUserContext } from '../client/hooks/useUserContext';
 import { ErrorBoundary } from '../client/components/ErrorBoundary';
+import { ShellBase } from '../client/components/ShellBase';
 import { isFamilyPortalHost, familyPortalUrl } from '../shared/portal';
 import { useAction, acceptInvitation } from 'wasp/client/operations';
 
@@ -89,16 +90,16 @@ export function AppShell({ children }: AppShellProps) {
 
   return (
     <TwoFactorGate>
-    <div className="flex h-screen overflow-hidden bg-background">
-      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[200] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md">
+    <ShellBase variant="app">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-overlay focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md">
         {t('skip_to_content')}
       </a>
       {/* Desktop sidebar */}
-      <div className="hidden lg:block"><Sidebar /></div>
+      <div className="hidden lg:block flex-shrink-0"><Sidebar /></div>
 
       {/* Mobile sidebar overlay */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
+        <div className="fixed inset-0 z-overlay lg:hidden">
           <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
             onClick={() => setMobileMenuOpen(false)}
@@ -110,7 +111,7 @@ export function AppShell({ children }: AppShellProps) {
       )}
 
       <div className="flex flex-1 flex-col overflow-hidden">
-        <ErrorBoundary fallback={<div className="flex h-14 items-center border-b bg-card px-4" />}>
+        <ErrorBoundary fallback={<div className="flex h-14 items-center border-b bg-card shadow-elevation-sticky px-4" />}>
           <TopBar onMenuToggle={handleMenuToggle} />
         </ErrorBoundary>
         <Breadcrumbs />
@@ -119,7 +120,7 @@ export function AppShell({ children }: AppShellProps) {
       <BottomNav />
       <AIHelperWidget />
       {showTour && <GuidedTour onComplete={completeTour} />}
-    </div>
+    </ShellBase>
     </TwoFactorGate>
   );
 }

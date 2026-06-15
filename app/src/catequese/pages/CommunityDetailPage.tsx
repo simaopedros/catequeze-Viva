@@ -161,7 +161,7 @@ export default function CommunityDetailPage() {
                     {h.catechumens?.length > 0 && (
                       <div className="mt-1 flex flex-wrap gap-1">
                         {h.catechumens.slice(0, 3).map((c: any) => (
-                          <span key={c.id} className="text-[10px] bg-muted px-2 py-0.5 rounded-full">{c.firstName}</span>
+                          <span key={c.id} className="text-overline bg-muted px-2 py-0.5 rounded-full">{c.firstName}</span>
                         ))}
                       </div>
                     )}

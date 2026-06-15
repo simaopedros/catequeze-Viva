@@ -13,7 +13,7 @@ export function SacramentsMock({ ns = 'landing' }: { ns?: string }) {
   ];
 
   return (
-    <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-[10px] sm:text-xs">
+    <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-overline sm:text-xs">
       <div>
         <p className="font-bold text-sm">{t('mockup_sacraments.title')}</p>
         <p className="text-muted-foreground">{t('mockup_sacraments.subtitle')}</p>
@@ -39,7 +39,7 @@ export function SacramentsMock({ ns = 'landing' }: { ns?: string }) {
               ) : (
                 <Circle className="h-5 w-5 text-muted-foreground bg-background" />
               )}
-              <span className={`text-[8px] text-center max-w-[48px] ${m.done ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
+              <span className={`text-overline text-center max-w-[48px] ${m.done ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
                 {m.label}
               </span>
             </div>

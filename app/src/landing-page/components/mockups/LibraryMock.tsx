@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 export function LibraryMock({ ns = 'landing' }: { ns?: string }) {
   const { t } = useTranslation(ns);
   return (
-    <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-[10px] sm:text-xs">
+    <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-overline sm:text-xs">
       <div>
         <p className="font-bold text-sm">{t('mockup_library.title')}</p>
         <p className="text-muted-foreground">{t('mockup_library.subtitle')}</p>
@@ -19,7 +19,7 @@ export function LibraryMock({ ns = 'landing' }: { ns?: string }) {
           <button
             key={tab.label}
             type="button"
-            className={`flex-1 flex items-center justify-center gap-1 rounded-md py-1.5 text-[9px] font-medium ${
+            className={`flex-1 flex items-center justify-center gap-1 rounded-md py-1.5 text-overline font-medium ${
               tab.active ? 'bg-background shadow-sm text-primary' : 'text-muted-foreground'
             }`}
           >
@@ -43,7 +43,7 @@ export function LibraryMock({ ns = 'landing' }: { ns?: string }) {
         </p>
         <div className="flex flex-wrap gap-1 pt-1">
           {[t('mockup_library.cic_ref'), t('mockup_library.dir_ref'), t('mockup_library.plan_ref')].map((ref) => (
-            <span key={ref} className="rounded-full bg-primary/10 text-primary px-2 py-0.5 text-[9px]">
+            <span key={ref} className="rounded-full bg-primary/10 text-primary px-2 py-0.5 text-overline">
               {ref}
             </span>
           ))}
@@ -53,7 +53,7 @@ export function LibraryMock({ ns = 'landing' }: { ns?: string }) {
       <div className="rounded-lg border bg-card p-2">
         <p className="font-medium mb-1">{t('mockup_library.plan_title')}</p>
         <div className="flex items-center gap-2">
-          <span className="rounded-full bg-success/10 text-success px-2 py-0.5 text-[9px]">{t('mockup_library.published')}</span>
+          <span className="rounded-full bg-success/10 text-success px-2 py-0.5 text-overline">{t('mockup_library.published')}</span>
           <span className="text-muted-foreground">{t('mockup_library.plan_detail')}</span>
         </div>
       </div>

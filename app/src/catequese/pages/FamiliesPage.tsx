@@ -101,8 +101,8 @@ export default function FamiliesPage() {
                 </div>
                 {h.catechumens?.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-1">
-                    {h.catechumens.slice(0, 3).map((c: any) => <span key={c.id} className="text-[10px] bg-muted px-2 py-0.5 rounded-full">{c.firstName}</span>)}
-                    {h.catechumens.length > 3 && <span className="text-[10px] text-muted-foreground">+{h.catechumens.length - 3}</span>}
+                    {h.catechumens.slice(0, 3).map((c: any) => <span key={c.id} className="text-overline bg-muted px-2 py-0.5 rounded-full">{c.firstName}</span>)}
+                    {h.catechumens.length > 3 && <span className="text-overline text-muted-foreground">+{h.catechumens.length - 3}</span>}
                   </div>
                 )}
               </Link>

@@ -1,0 +1,111 @@
+{
+  "title": "Co-Criação Colaborativa",
+  "subtitle": "Espaço de trabalho interativo — IA + Catequista",
+  "workspace": {
+    "subtitle": "Co-criação colaborativa em tempo real — IA + Catequista",
+    "live_status": "Sessão ao vivo",
+    "presence": "Você + IA",
+    "copilot": "Co-piloto pastoral",
+    "awaiting_theme": "Preparando o encontro",
+    "ai_ready": "IA pronta",
+    "messages": "mensagens",
+    "sources": "fontes",
+    "ideas": "ideias"
+  },
+  "actions": {
+    "back_to_library": "Voltar para a biblioteca"
+  },
+  "chat": {
+    "tab": "Chat",
+    "you": "Você",
+    "ai": "IA",
+    "placeholder": "Converse com o co-piloto IA...",
+    "thinking": "Pensando...",
+    "empty": "Converse com a IA para construir o encontro juntos. Você pode pedir para refinar seções específicas, adicionar referências, ou sugerir dinâmicas.",
+    "tips": "Dicas:",
+    "tip_refine": "Diga o que quer melhorar no roteiro à direita",
+    "tip_catechism": "Peça referências do Catecismo ou Bíblia",
+    "tip_dynamic": "Solicite dinâmicas, orações ou atividades",
+    "send": "Enviar"
+  },
+  "context": {
+    "title": "Fontes de Contexto",
+    "empty": "Nenhuma fonte de contexto. Use a busca acima para adicionar passagens da Bíblia, Catecismo ou Diretório.",
+    "search_bible": "Buscar na Bíblia...",
+    "search_catechism": "Buscar no Catecismo...",
+    "bible": "Bíblia",
+    "catechism": "Catecismo",
+    "directory": "Diretório",
+    "text": "Texto"
+  },
+  "suggestions": {
+    "title": "Sugestões da IA",
+    "empty": "Nenhuma sugestão disponível. Inicie uma conversa no chat para receber sugestões.",
+    "refresh": "Atualizar"
+  },
+  "tools": {
+    "title": "Ferramentas",
+    "depth": {
+      "title": "Profundidade Teológica",
+      "description": "Ajuste a complexidade do conteúdo",
+      "levels": {
+        "1": "Muito Simples",
+        "2": "Simples",
+        "3": "Moderada",
+        "4": "Avançada",
+        "5": "Profunda"
+      }
+    },
+    "saint": {
+      "title": "História de Santo",
+      "description": "Adicione um exemplo com a vida de um santo",
+      "search": "Buscar Santo",
+      "searching": "Buscando história de santo...",
+      "insert": "Inserir no Conteúdo",
+      "virtue": "Virtude",
+      "lesson": "Lição",
+      "error": "Erro ao buscar história do santo."
+    },
+    "hooks": {
+      "title": "Ganchos Pedagógicos",
+      "description": "Ideias para iniciar o encontro de forma impactante",
+      "generate": "Gerar Ganchos",
+      "generating": "Gerando ideias criativas...",
+      "use": "Usar este gancho",
+      "materials": "Materiais",
+      "error": "Erro ao gerar ganchos."
+    }
+  },
+  "editor": {
+    "waiting": "Aguardando geração inicial...",
+    "no_title": "Sem título",
+    "refine": "Refinar",
+    "apply_refine": "Aplicar",
+    "generating": "Gerando...",
+    "instruction_placeholder": "Instrução opcional...",
+    "awaiting_content": "Aguardando conteúdo...",
+    "edit_publish": "Editar",
+    "versions": "Versões",
+    "history": "Histórico de Versões",
+    "save_version": "Salvar versão atual",
+    "no_versions": "Nenhuma versão salva ainda.",
+    "restore": "Restaurar",
+    "version": "Versão",
+    "no_description": "Sem descrição"
+  },
+  "blocks": {
+    "pastoralObjective": "Objetivo Pastoral",
+    "openingPrayer": "Oração Inicial",
+    "biblicalRef": "Palavra de Deus",
+    "mainContent": "Conteúdo Central",
+    "dynamic": "Dinâmica",
+    "familyTask": "Compromisso Familiar",
+    "closingPrayer": "Oração Final"
+  },
+  "setup": {
+    "title": "Iniciar Co-Criação",
+    "select_age": "Selecione a faixa etária",
+    "theme_required": "Digite o tema do encontro",
+    "error": "Erro ao iniciar sessão"
+  }
+}

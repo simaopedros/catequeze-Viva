@@ -142,7 +142,7 @@ export function ConversationList({ conversations, activeId, onSelect, onNewConve
               key={opt.value}
               onClick={() => setFilter(opt.value)}
               className={cn(
-                'px-2.5 py-1 rounded-full text-[10px] font-medium whitespace-nowrap transition-all',
+                'px-2.5 py-1 rounded-full text-overline font-medium whitespace-nowrap transition-all',
                 filter === opt.value
                   ? 'bg-primary text-primary-foreground shadow-sm'
                   : 'bg-muted/50 text-muted-foreground hover:bg-muted'
@@ -169,7 +169,7 @@ export function ConversationList({ conversations, activeId, onSelect, onNewConve
                 onClick={onNewConversation}
                 className="mt-2 text-xs text-primary hover:underline"
               >
-                Iniciar uma conversa
+                {t('start_conversation')}
               </button>
             )}
           </div>
@@ -212,7 +212,7 @@ export function ConversationList({ conversations, activeId, onSelect, onNewConve
                       {name}
                     </span>
                     {conv.lastMessage && (
-                      <span className="text-[10px] text-muted-foreground flex-shrink-0">
+                      <span className="text-overline text-muted-foreground flex-shrink-0">
                         {formatTime(conv.lastMessage.createdAt, t, i18n.language)}
                       </span>
                     )}
@@ -234,7 +234,7 @@ export function ConversationList({ conversations, activeId, onSelect, onNewConve
                       )}
                     </p>
                     {conv.unreadCount > 0 && (
-                      <span className="flex-shrink-0 h-4.5 min-w-[18px] flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold px-1 animate-in zoom-in-50">
+                      <span className="flex-shrink-0 h-4.5 min-w-[18px] flex items-center justify-center rounded-full bg-primary text-primary-foreground text-overline font-bold px-1 animate-in zoom-in-50">
                         {conv.unreadCount > 99 ? '99+' : conv.unreadCount}
                       </span>
                     )}

@@ -28,7 +28,7 @@ export function CommunityCard({ community, onEdit, isEditing, editForm }: Commun
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <p className="font-medium truncate">{c.name}</p>
-            {c.type && <Badge variant="outline" className="text-[10px]">{COMMUNITY_TYPE_LABELS[c.type] || c.type}</Badge>}
+            {c.type && <Badge variant="outline" className="text-overline">{COMMUNITY_TYPE_LABELS[c.type] || c.type}</Badge>}
           </div>
           {address && <p className="text-sm text-muted-foreground flex items-center gap-1 mt-0.5 truncate"><MapPin className="h-3 w-3 flex-shrink-0" />{address}</p>}
           <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
@@ -39,7 +39,7 @@ export function CommunityCard({ community, onEdit, isEditing, editForm }: Commun
         </div>
         <div className="flex items-center gap-2 ml-2">
            <button onClick={(e) => { e.stopPropagation(); onEdit(c); }} className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors" title={t('edit')}><Pencil className="h-3.5 w-3.5" /></button>
-          {c.parish && <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full hidden sm:inline-block">{c.parish.name}</span>}
+          {c.parish && <span className="text-overline text-muted-foreground bg-muted px-2 py-0.5 rounded-full hidden sm:inline-block">{c.parish.name}</span>}
           {expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
         </div>
       </div>

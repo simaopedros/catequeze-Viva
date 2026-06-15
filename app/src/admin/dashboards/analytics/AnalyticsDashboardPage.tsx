@@ -68,7 +68,7 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
                 </p>
                 <p className="text-xs font-medium text-muted-foreground">{card.label}</p>
                 {card.subtitle && (
-                  <p className="text-[11px] text-muted-foreground/70 mt-0.5">{card.subtitle}</p>
+                  <p className="text-caption text-muted-foreground/70 mt-0.5">{card.subtitle}</p>
                 )}
               </div>
             </div>

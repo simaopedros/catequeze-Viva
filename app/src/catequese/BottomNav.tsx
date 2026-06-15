@@ -40,14 +40,15 @@ export function BottomNav() {
 
   return (
     <>
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-sticky border-t bg-background/95 backdrop-blur-sm shadow-elevation-sticky">
         <div className="grid h-14 items-center" style={{ gridTemplateColumns: `repeat(${visible.length + 1}, 1fr)` }}>
           {visible.map(item => (
             <NavLink
               key={item.to}
               to={item.to}
+              end={item.to === '/app'}
               className={({ isActive }) => cn(
-                'flex flex-col items-center justify-center gap-0.5 h-full text-[10px] font-medium transition-colors',
+                'flex flex-col items-center justify-center gap-0.5 h-full text-overline font-medium transition-colors',
                 isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
               )}
             >
@@ -57,12 +58,12 @@ export function BottomNav() {
           ))}
           <button
             onClick={() => setSheetOpen(true)}
-            className="relative flex flex-col items-center justify-center gap-0.5 h-full text-[10px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="relative flex flex-col items-center justify-center gap-0.5 h-full text-overline font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             <Menu className="h-5 w-5" />
             <span>{t('more', { ns: 'common' })}</span>
             {unreadCount > 0 && (
-              <span className="absolute -top-0.5 right-1/4 h-[18px] min-w-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold px-1 animate-in zoom-in-50 shadow-sm">
+              <span className="absolute -top-0.5 right-1/4 h-[18px] min-w-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-overline font-bold px-1 animate-in zoom-in-50 shadow-sm">
                 {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )}

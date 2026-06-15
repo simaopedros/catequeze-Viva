@@ -6,35 +6,69 @@ interface EmptyStateProps {
   title: string;
   description?: string;
   children?: React.ReactNode;
+  /** Compact: centered, no card wrapper, minimal icon */
   compact?: boolean;
+  /** Minimal: just icon + text, inline */
+  minimal?: boolean;
+  /** Inline: for table cells or tight spaces */
+  inline?: boolean;
   className?: string;
 }
 
-export function EmptyState({ icon: Icon, title, description, children, compact, className }: EmptyStateProps) {
+export function EmptyState({
+  icon: Icon,
+  title,
+  description,
+  children,
+  compact,
+  minimal,
+  inline,
+  className,
+}: EmptyStateProps) {
+  if (inline) {
+    return (
+      <span className={cn('inline-flex items-center gap-1.5 text-body-xs text-text-tertiary', className)}>
+        {Icon && <Icon className="h-3.5 w-3.5" />}
+        {title}
+      </span>
+    );
+  }
+
+  if (minimal) {
+    return (
+      <div className={cn('flex flex-col items-center justify-center gap-2 py-8', className)}>
+        {Icon && <Icon className="h-8 w-8 text-muted-foreground/50" />}
+        <p className="text-body-sm text-text-secondary">{title}</p>
+        {description && <p className="text-body-xs text-text-tertiary max-w-xs text-center">{description}</p>}
+        {children}
+      </div>
+    );
+  }
+
   if (compact) {
     return (
-      <div className={cn('flex flex-col items-center justify-center py-12 text-center text-muted-foreground', className)}>
+      <div className={cn('flex flex-col items-center justify-center py-12 text-center', className)}>
         {Icon && (
           <div className="mb-3 rounded-full bg-muted p-3">
             <Icon className="h-5 w-5 text-muted-foreground/70" />
           </div>
         )}
-        <p className="text-sm font-medium text-foreground/80">{title}</p>
-        {description && <p className="text-xs mt-1 max-w-sm">{description}</p>}
+        <p className="text-body-sm font-medium text-foreground/80">{title}</p>
+        {description && <p className="text-body-xs mt-1 max-w-sm text-text-secondary">{description}</p>}
         {children}
       </div>
     );
   }
 
   return (
-    <div className={cn('flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center', className)}>
+    <div className={cn('flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center shadow-elevation-xs', className)}>
       {Icon && (
         <div className="mb-4 rounded-full bg-primary/10 p-4">
           <Icon className="h-8 w-8 text-primary" />
         </div>
       )}
       <h3 className="text-lg font-semibold">{title}</h3>
-      {description && <p className="mt-1 text-sm text-muted-foreground max-w-md">{description}</p>}
+      {description && <p className="mt-1 text-body-sm text-text-secondary max-w-md">{description}</p>}
       {children}
     </div>
   );
