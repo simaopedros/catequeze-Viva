@@ -250,7 +250,6 @@ model User {
 
   // Payment (from OpenSaaS)
   paymentProcessorUserId        String?   @unique
-  stripeSubscriptionId          String?   // Stripe sub_... for identity tracking
   lemonSqueezyCustomerPortalUrl String?
   subscriptionStatus            String?
   subscriptionPlan              String?  @default("catechist_free")
@@ -1413,29 +1412,19 @@ model PricingEvent {
   createdAt DateTime @default(now())
 
   userId    String?
-  event     String   // checkout_started | checkout_completed | checkout_abandoned | plan_changed | cancel_scheduled | cancel_effective | portal_opened
+  event     String
   sessionId String?
 
   fromPlan       String?
   toPlan         String?
-  processor      String?  // stripe | woovi
-  interval       String?  // monthly | annual
+  processor      String?
+  interval       String?
   pricingVersion Int?
-  subscriptionId String?  // Stripe sub_...
-  stripePriceId  String?  // Stripe price_...
-  scope          String?  // personal | institutional
 
   @@index([userId])
   @@index([event])
   @@index([createdAt])
   @@index([sessionId])
-}
-
-model StripeWebhookEvent {
-  id        String   @id // Stripe evt_...
-  createdAt DateTime @default(now())
-  type      String
-  processed Boolean  @default(true)
 }
 
 model DailyStats {
