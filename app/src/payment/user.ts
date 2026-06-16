@@ -42,7 +42,6 @@ interface UpdateUserSubscriptionArgs {
   subscriptionStatus: SubscriptionStatus;
   paymentPlanId?: PaymentPlanId;
   datePaid?: Date;
-  stripeSubscriptionId?: string | null;
 }
 
 export function updateUserSubscription(
@@ -51,7 +50,6 @@ export function updateUserSubscription(
     paymentPlanId,
     subscriptionStatus,
     datePaid,
-    stripeSubscriptionId,
   }: UpdateUserSubscriptionArgs,
   userDelegate: PrismaClient["user"],
 ): Promise<User> {
@@ -63,7 +61,6 @@ export function updateUserSubscription(
       subscriptionPlan: paymentPlanId,
       subscriptionStatus,
       datePaid,
-      ...(stripeSubscriptionId !== undefined ? { stripeSubscriptionId } : {}),
     },
   });
 }
