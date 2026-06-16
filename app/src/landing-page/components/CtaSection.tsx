@@ -1,9 +1,10 @@
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { ArrowRight, Cross } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
+import { BrandMark } from '../../client/components/brand/Brand';
 
 export function CtaSection({ ns = 'landing' }: { ns?: string }) {
   const { t } = useTranslation(ns);
@@ -15,7 +16,7 @@ export function CtaSection({ ns = 'landing' }: { ns?: string }) {
         <div className="absolute top-0 right-0 w-40 h-40 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative space-y-5">
           <Badge variant="brand" className="inline-flex items-center gap-1.5">
-            <Cross className="h-3.5 w-3.5" />
+            <BrandMark className="h-3.5 w-3.5" />
             {t('cta_badge')}
           </Badge>
           <h2 className="text-title-xl font-bold">{t('cta_title')}</h2>

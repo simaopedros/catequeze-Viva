@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router';
-import { MessageSquareText, ArrowLeft, Users, Info, BellOff, LogOut, Settings2 } from 'lucide-react';
+import { MessageSquareText, ArrowLeft, Info, BellOff, LogOut } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { ConversationList } from '../components/messages/ConversationList';
 import { ChatView } from '../components/messages/ChatView';
@@ -18,11 +18,13 @@ import { useQuery } from 'wasp/client/operations';
 import { useAuth } from 'wasp/client/auth';
 import { cn } from '../../client/utils';
 import { toast } from '../../client/hooks/use-toast';
+import { useActiveWorkspace } from '../../client/hooks/useActiveWorkspace';
 
 export default function MessagesPage() {
   const { t } = useTranslation('messages');
   const { t: tc } = useTranslation('common');
   const { data: user } = useAuth();
+  const { workspaceId } = useActiveWorkspace();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeConversationId, setActiveConversationId] = useState<string | null>(
     searchParams.get('c') || null
@@ -34,8 +36,8 @@ export default function MessagesPage() {
   // Conversations list
   const { data: conversations, isLoading: loadingConvs, refetch: refetchConvs } = useQuery(
     listConversations,
-    undefined,
-    { refetchInterval: 8000 }
+    workspaceId ? ({ workspaceId } as any) : undefined,
+    { enabled: !!workspaceId, refetchInterval: 8000 }
   );
 
   // Active conversation
@@ -43,12 +45,27 @@ export default function MessagesPage() {
   const [loadingChat, setLoadingChat] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [chatCursor, setChatCursor] = useState<string | null>(null);
+  const [conversationError, setConversationError] = useState<string | null>(null);
+  const activeConversationIdRef = useRef<string | null>(activeConversationId);
+  const requestVersionRef = useRef(0);
+
+  useEffect(() => {
+    activeConversationIdRef.current = activeConversationId;
+  }, [activeConversationId]);
 
   const loadConversation = useCallback(async (convId: string, cursor?: string) => {
+    const requestVersion = ++requestVersionRef.current;
     setLoadingChat(true);
+    if (!cursor) {
+      setConversationError(null);
+    }
     try {
       const result = await getConversation({ conversationId: convId, cursor, take: 50 });
-      if (cursor && chatData) {
+      if (requestVersion !== requestVersionRef.current || activeConversationIdRef.current !== convId) {
+        return;
+      }
+
+      if (cursor) {
         // Prepend older messages
         setChatData((prev: any) => ({
           ...result,
@@ -58,23 +75,44 @@ export default function MessagesPage() {
         setChatData(result);
       }
       setChatCursor(result.nextCursor);
-    } catch (error) {
-      // Silently handle - conversation might have been deleted
+      setConversationError(null);
+      if (!cursor) {
+        markConversationRead({ conversationId: convId })
+          .then(() => refetchConvs())
+          .catch(() => {});
+      }
+    } catch (error: any) {
+      if (requestVersion !== requestVersionRef.current || activeConversationIdRef.current !== convId) {
+        return;
+      }
       setChatData(null);
+      setChatCursor(null);
+      setConversationError(error?.message || tc('try_again'));
     } finally {
-      setLoadingChat(false);
+      if (requestVersion === requestVersionRef.current && activeConversationIdRef.current === convId) {
+        setLoadingChat(false);
+      }
     }
-  }, [chatData]);
+  }, [refetchConvs, tc]);
 
-  // Load conversation when activeConversationId changes
   useEffect(() => {
-    if (activeConversationId) {
+    const conversationIdFromUrl = searchParams.get('c') || null;
+    setActiveConversationId((prev) => prev === conversationIdFromUrl ? prev : conversationIdFromUrl);
+    if (conversationIdFromUrl) {
+      setIsMobileChat(true);
+    }
+  }, [searchParams]);
+
+  // Load conversation when activeConversationId or workspace changes
+  useEffect(() => {
+    if (activeConversationId && workspaceId) {
       loadConversation(activeConversationId);
     } else {
       setChatData(null);
       setChatCursor(null);
+      setConversationError(null);
     }
-  }, [activeConversationId]);
+  }, [activeConversationId, workspaceId, loadConversation]);
 
   // Keep latest loadConversation in a ref to avoid stale closures in the polling interval
   const loadConversationRef = useRef(loadConversation);
@@ -198,7 +236,7 @@ export default function MessagesPage() {
           'flex-1 flex flex-col min-w-0',
           !isMobileChat && !activeConversationId ? 'hidden md:flex' : 'flex'
         )}>
-          {activeConversationId && (loadingChat || activeConv) ? (
+          {activeConversationId && (loadingChat || activeConv || conversationError) ? (
             <>
               {/* Chat header */}
               <div className="flex items-center gap-3 px-4 py-3 border-b bg-card/80 backdrop-blur-sm">
@@ -244,22 +282,40 @@ export default function MessagesPage() {
 
               {/* Chat body */}
               <div className="flex-1 flex min-h-0">
-                <div className="flex-1 relative">
-                  <ChatView
-                    messages={chatData?.messages || []}
-                    currentUserId={user?.id || ''}
-                    conversationTitle={conversationName || t('default_conversation')}
-                    conversationType={activeConv?.type || 'DIRECT'}
-                    hasMore={chatData?.hasMore || false}
-                    isLoading={loadingChat}
-                    onLoadMore={handleLoadMore}
-                    onSendMessage={handleSendMessage}
-                    isSending={isSending}
-                  />
-                </div>
+                {activeConv ? (
+                  <div className="flex-1 relative">
+                    <ChatView
+                      messages={chatData?.messages || []}
+                      currentUserId={user?.id || ''}
+                      conversationTitle={conversationName || t('default_conversation')}
+                      conversationType={activeConv?.type || 'DIRECT'}
+                      hasMore={chatData?.hasMore || false}
+                      isLoading={loadingChat}
+                      onLoadMore={handleLoadMore}
+                      onSendMessage={handleSendMessage}
+                      isSending={isSending}
+                    />
+                  </div>
+                ) : (
+                  <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
+                    <div className="h-16 w-16 rounded-2xl bg-destructive/10 flex items-center justify-center mb-4">
+                      <MessageSquareText className="h-7 w-7 text-destructive/70" />
+                    </div>
+                    <h3 className="text-base font-semibold mb-1">{t('title')}</h3>
+                    <p className="text-sm text-muted-foreground max-w-sm mb-4">
+                      {conversationError || tc('try_again')}
+                    </p>
+                    <button
+                      onClick={() => activeConversationId && loadConversation(activeConversationId)}
+                      className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90"
+                    >
+                      {tc('try_again')}
+                    </button>
+                  </div>
+                )}
 
                 {/* Details sidebar */}
-                {showDetails && activeConv.type !== 'DIRECT' && (
+                {showDetails && activeConv?.type !== 'DIRECT' && (
                   <div className="w-64 border-l bg-card/50 p-4 overflow-y-auto hidden lg:block animate-in slide-in-from-right-2 duration-200">
                     <h3 className="font-semibold text-sm mb-3">{t('participants')}</h3>
                     <div className="space-y-2">

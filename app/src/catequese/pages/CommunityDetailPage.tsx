@@ -40,6 +40,7 @@ export default function CommunityDetailPage() {
       const conv = await createConversation({
         type: 'GROUP',
         title: tp('community_chat_title', { name: community.name }),
+        parishId: community.parishId,
         communityId: id!,
         participantUserIds: uniqueCatechists.map((c: any) => c.id),
       });

@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Send, Paperclip, Smile, Reply, CornerDownRight, ChevronDown, CheckCheck } from 'lucide-react';
+import { Send, Reply, CornerDownRight, ChevronDown } from 'lucide-react';
 import { cn } from '../../../client/utils';
-import { markMessageAsRead, getMessageReadReceipts } from 'wasp/client/operations';
 
 interface MessageItem {
   id: string;
@@ -26,8 +25,8 @@ interface ChatViewProps {
   isSending: boolean;
 }
 
-function formatMessageTime(dateStr: string): string {
-  return new Date(dateStr).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+function formatMessageTime(dateStr: string, locale: string): string {
+  return new Date(dateStr).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
 }
 
 function formatDateHeader(dateStr: string, t: (k: string) => string, locale: string): string {
@@ -78,18 +77,6 @@ export function ChatView({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const markedRef = useRef<Set<string>>(new Set());
-
-  // Mark incoming messages as read when they appear
-  useEffect(() => {
-    const toMark = messages.filter(
-      (m) => m.sender.id !== currentUserId && !markedRef.current.has(m.id)
-    );
-    for (const m of toMark) {
-      markedRef.current.add(m.id);
-      markMessageAsRead({ messageId: m.id }).catch(() => {});
-    }
-  }, [messages, currentUserId]);
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
@@ -287,8 +274,7 @@ export function ChatView({
                         'text-overline float-right mt-1 ml-2 flex items-center gap-0.5',
                         isMe ? 'text-primary-foreground/60' : 'text-muted-foreground/60'
                       )}>
-                        {isMe && <CheckCheck className="h-2.5 w-2.5" />}
-                        {formatMessageTime(msg.createdAt)}
+                        {formatMessageTime(msg.createdAt, i18n.language)}
                       </span>
                     </div>
 

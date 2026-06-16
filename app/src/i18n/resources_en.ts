@@ -3,6 +3,24 @@
 // Source translations live in src/i18n/locales/{lang}/{namespace}.json
 // Regenerate: npm run i18n:build
 
+export const account_en = {
+    "title": "Account",
+    "subtitle": "Your account and subscription details",
+    "linked_parish": "Linked parish",
+    "account_info": "Account Information",
+    "email": "Email",
+    "username": "Username",
+    "plan": "Your Plan",
+    "credits": "Credits",
+    "credits_value": "{{count}} credits",
+    "free_plan": "Free Plan",
+    "manage_payment": "Manage Payment",
+    "buy_credits": "Buy More Credits",
+    "plan_past_due": "Your {{plan}} plan payment is past due. Please update your subscription payment details.",
+    "plan_cancel_at_period_end": "Your {{plan}} subscription has been cancelled, but remains active until the end of the current billing period: {{date}}",
+    "plan_deleted": "Your previous subscription has been cancelled and is no longer active."
+  } as const;
+
 export const activities_en = {
     "redirect": "Redirecting to Library...",
     "types": {
@@ -3623,6 +3641,7 @@ export const tour_en = {
   } as const;
 
 export const resources_en = {
+  account: account_en,
   activities: activities_en,
   admin: admin_en,
   ai: ai_en,

@@ -1,4 +1,4 @@
-import { HttpError } from 'wasp/server';
+import { HttpError, prisma } from 'wasp/server';
 
 export const executeParishMigration = async (
   args: { sourceParishId: string; targetParishId: string },
@@ -35,7 +35,7 @@ export const executeParishMigration = async (
   if (!target) throw new HttpError(404, 'Paróquia de destino não encontrada.');
 
   // Run atomic migration in a transaction
-  const result = await context.entities.$transaction(async (tx: any) => {
+  const result = await prisma.$transaction(async (tx: any) => {
     // 1. Migrate classes
     const classesResult = await tx.CatechesisClass.updateMany({
       where: { parishId: args.sourceParishId },

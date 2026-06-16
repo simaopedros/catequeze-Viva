@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from 'react-router';
+import { NavLink } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { cn } from '../client/utils';
@@ -13,6 +13,7 @@ import { useUserContext } from '../client/hooks/useUserContext';
 import { NAV_SECTIONS, filterByRole, type NavItemConfig } from '../shared/navigation';
 import { useQuery, listConversations } from 'wasp/client/operations';
 import { useActiveWorkspace } from '../client/hooks/useActiveWorkspace';
+import { BrandLockup, BrandMark } from '../client/components/brand/Brand';
 
 // ---- Icon Map (iconKey → Lucide component) ----
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -91,7 +92,6 @@ function NavItemLink({ item, collapsed, badge }: NavItemProps & { badge?: number
 export function Sidebar() {
   const { t } = useTranslation('navigation');
   const { t: tc } = useTranslation('common');
-  const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     () => new Set(ALL_SECTIONS)
@@ -135,8 +135,8 @@ export function Sidebar() {
   return (
     <aside className={cn('flex flex-col border-r bg-card shadow-elevation-sticky transition-all duration-200 h-full', collapsed ? 'w-16' : 'w-60')}>
       <div className="flex h-14 items-center border-b px-3">
-        {!collapsed && <span className="text-lg font-semibold tracking-tight text-primary">Catequese Viva</span>}
-        {collapsed && <Cross className="mx-auto h-6 w-6 text-primary" />}
+        {!collapsed && <BrandLockup compact hideBadge className="max-w-full" />}
+        {collapsed && <BrandMark className="mx-auto h-8 w-8" />}
       </div>
 
       <nav className="flex-1 overflow-y-auto py-4 no-scrollbar">

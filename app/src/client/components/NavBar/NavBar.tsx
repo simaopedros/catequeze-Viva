@@ -14,8 +14,7 @@ import {
 import { throttleWithTrailingInvocation } from "../../../shared/utils";
 import { UserDropdown } from "../../../user/UserDropdown";
 import { UserMenuItems } from "../../../user/UserMenuItems";
-import { useIsLandingPage } from "../../hooks/useIsLandingPage";
-import logo from "../../static/logo.webp";
+import { BrandLockup, BrandMark } from "../brand/Brand";
 import { cn } from "../../utils";
 import DarkModeSwitcher from "../DarkModeSwitcher";
 
@@ -30,8 +29,6 @@ export default function NavBar({
   navigationItems: NavigationItem[];
 }) {
   const [isScrolled, setIsScrolled] = useState(false);
-  const isLandingPage = useIsLandingPage();
-  const { t } = useTranslation('common');
 
   useEffect(() => {
     const throttledHandler = throttleWithTrailingInvocation(() => {
@@ -78,18 +75,7 @@ export default function NavBar({
                 to={routes.LandingPageRoute.to}
                 className="text-foreground hover:text-primary flex items-center transition-colors duration-300 ease-in-out"
               >
-                <NavLogo isScrolled={isScrolled} />
-                <span
-                  className={cn(
-                    "text-foreground leading-6 font-semibold transition-all duration-300",
-                    {
-                      "ml-2 text-sm": !isScrolled,
-                      "ml-2 text-xs": isScrolled,
-                    },
-                  )}
-                >
-                  {t('app_name')}
-                </span>
+                <BrandLockup compact={isScrolled} />
               </WaspRouterLink>
 
               <ul className="ml-4 hidden items-center gap-6 lg:flex">
@@ -188,7 +174,7 @@ function NavBarMobileMenu({
             <SheetTitle className="flex items-center">
               <WaspRouterLink to={routes.LandingPageRoute.to}>
                 <span className="sr-only">{t('app_name')}</span>
-                <NavLogo isScrolled={false} />
+                <BrandMark className="h-8 w-8" />
               </WaspRouterLink>
             </SheetTitle>
           </SheetHeader>
@@ -250,16 +236,3 @@ function renderNavigationItems(
     );
   });
 }
-
-const NavLogo = ({ isScrolled }: { isScrolled: boolean }) => {
-  const { t } = useTranslation('common');
-  return (
-  <img
-    className={cn("transition-all duration-500", {
-      "size-8": !isScrolled,
-      "size-7": isScrolled,
-    })}
-    src={logo}
-    alt={t('app_name')}
-  />
-)};

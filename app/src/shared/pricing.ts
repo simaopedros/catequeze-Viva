@@ -576,21 +576,21 @@ export function getWorkspaceEffectivePlan(opts: {
 
   // Institutional workspace — resolve by coverage order
 
-  // 1. Diocese umbrella
+  // 1. Parish own billing (takes priority over diocese umbrella)
+  if (billing && isBillingActive(billing)) {
+    const plan = getInstitutionalPlanId(billing);
+    if (plan) {
+      return { plan, source: 'institutional', billingInfo: billing };
+    }
+  }
+
+  // 2. Diocese umbrella (fallback when parish has no billing)
   if (dioceseBilling && isBillingActive(dioceseBilling) && dioceseBilling.plan?.toUpperCase() === 'DIOCESE') {
     return {
       plan: 'diocese',
       source: 'diocese_umbrella',
       billingInfo: dioceseBilling,
     };
-  }
-
-  // 2. Parish own billing
-  if (billing && isBillingActive(billing)) {
-    const plan = getInstitutionalPlanId(billing);
-    if (plan) {
-      return { plan, source: 'institutional', billingInfo: billing };
-    }
   }
 
   // 3. If billing exists but is TRIAL and not expired

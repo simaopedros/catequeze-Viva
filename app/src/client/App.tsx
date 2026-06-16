@@ -83,7 +83,7 @@ export default function App() {
   }, [location]);
 
   const isAppRoute = useMemo(() => {
-    return location.pathname.startsWith("/app");
+    return location.pathname.startsWith("/app") || location.pathname === "/account";
   }, [location]);
 
   useEffect(() => {

@@ -1,11 +1,11 @@
-import { ReactNode, useState, useEffect } from 'react';
+import { ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from 'wasp/client/auth';
 import { UserDropdown } from '../user/UserDropdown';
 import { TwoFactorGate } from './components/TwoFactorGate';
-import { familyPortalUrl, staffPortalUrl } from '../shared/portal';
-import { Home, Calendar, MessageSquare, User, Menu, X } from 'lucide-react';
+import { Home, Calendar, MessageSquare } from 'lucide-react';
+import { BrandLockup } from '../client/components/brand/Brand';
 
 interface FamilyAppShellProps { children: ReactNode; }
 
@@ -32,7 +32,7 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
       <header className="sticky top-0 z-sticky border-b bg-background/95 backdrop-blur-sm shadow-elevation-sticky">
         <div className="flex h-14 items-center justify-between px-4">
           <div className="flex items-center gap-3">
-            <span className="font-bold text-lg text-primary">Catequese Viva</span>
+            <BrandLockup compact hideBadge />
             <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
               {t('family_label')}
             </span>

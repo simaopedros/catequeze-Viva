@@ -1,7 +1,8 @@
-import { HttpError } from 'wasp/server';
+import { HttpError, prisma } from 'wasp/server';
 import { MembershipStatus, CatechistAssignmentRole } from '@prisma/client';
-import { assertCanAccessCatechumenProfile } from '../auth/helpers';
+import { assertCanAccessCatechumenProfile, requireAuth, writeAuditLog } from '../auth/helpers';
 import { resolveUserScope, isCoordinatorOrAbove, isCatechist } from './sharedScope';
+import { deleteDocumentFile } from '../storage/documentStorage';
 
 export const listCatechumens = async (_args: void, context: any) => {
   if (!context.user) throw new HttpError(401);
@@ -223,4 +224,88 @@ export const updateCatechumen = async (args: any, context: any) => {
     where: { id },
     data: { ...data, birthDate: data.birthDate ? (() => { const [y, m, d] = data.birthDate.slice(0, 10).split('-').map(Number); return new Date(Date.UTC(y, m - 1, d, 12, 0, 0)); })() : undefined },
   });
+};
+
+export const deleteCatechumen = async (args: { id: string }, context: any) => {
+  requireAuth(context.user);
+
+  if (!args.id) {
+    throw new HttpError(400, 'ID do catequizando é obrigatório.');
+  }
+
+  await assertCanAccessCatechumenProfile(context, args.id);
+
+  if (!context.user.isAdmin) {
+    const { roles } = await resolveUserScope(context);
+    const canManage = roles.some((role: string) => isCoordinatorOrAbove(role) || isCatechist(role));
+    if (!canManage) {
+      throw new HttpError(403, 'Apenas coordenadores e catequistas podem excluir catequizandos.');
+    }
+  }
+
+  const catechumen = await context.entities.CatechumenProfile.findUnique({
+    where: { id: args.id },
+    select: {
+      id: true,
+      parishId: true,
+      documents: { select: { id: true, s3Key: true } },
+      sacramentalJourneys: { select: { id: true } },
+    },
+  });
+
+  if (!catechumen) {
+    throw new HttpError(404, 'Catequizando não encontrado.');
+  }
+
+  const documentKeys = catechumen.documents
+    .map((document: any) => document.s3Key)
+    .filter((s3Key: string | null) => !!s3Key && !s3Key.startsWith('pending/')) as string[];
+  const journeyIds = catechumen.sacramentalJourneys.map((journey: any) => journey.id);
+
+  await prisma.$transaction(async (tx: any) => {
+    if (journeyIds.length > 0) {
+      await tx.SacramentalMilestone.deleteMany({
+        where: { journeyId: { in: journeyIds } },
+      });
+    }
+
+    await tx.AttendanceRecord.deleteMany({
+      where: { catechumenProfileId: args.id },
+    });
+
+    await tx.ActivitySubmission.deleteMany({
+      where: { catechumenProfileId: args.id },
+    });
+
+    await tx.ClassEnrollment.deleteMany({
+      where: { catechumenProfileId: args.id },
+    });
+
+    await tx.SacramentalJourney.deleteMany({
+      where: { catechumenProfileId: args.id },
+    });
+
+    await tx.Document.deleteMany({
+      where: { catechumenProfileId: args.id },
+    });
+
+    await tx.CatechumenProfile.delete({
+      where: { id: args.id },
+    });
+  });
+
+  for (const s3Key of documentKeys) {
+    try {
+      await deleteDocumentFile(s3Key);
+    } catch {
+      // best-effort blob cleanup after the database transaction succeeds
+    }
+  }
+
+  await writeAuditLog(context, 'DELETE', 'CatechumenProfile', args.id, {
+    operation: 'CATECHUMEN_DELETE',
+    parishId: catechumen.parishId || null,
+  });
+
+  return { success: true };
 };

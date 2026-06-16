@@ -6,7 +6,10 @@ app OpenSaaS {
   title: "Catequese Viva",
 
   head: [
-    "<link rel='icon' href='/favicon.ico' />",
+    "<link rel='icon' type='image/svg+xml' href='/favicon.svg' />",
+    "<link rel='alternate icon' href='/favicon.ico' />",
+    "<link rel='apple-touch-icon' href='/brand/catequese-viva-mark.svg' />",
+    "<meta name='theme-color' content='#071A2D' />",
 
     "<meta name='description' content='Catequese Viva — Plataforma completa de gestão para catequese católica: turmas, presença, conteúdos, sacramentos e comunicação pastoral.' />",
     "<meta name='author' content='Catequese Viva' />",
@@ -708,6 +711,11 @@ action updateCatechumen {
   fn: import { updateCatechumen } from "@src/server/operations/catechumenOperations",
   entities: [CatechumenProfile, Membership, Parish]
 }
+
+action deleteCatechumen {
+  fn: import { deleteCatechumen } from "@src/server/operations/catechumenOperations",
+  entities: [CatechumenProfile, Membership, GuardianProfile, ClassEnrollment, ClassCatechist, CatechesisClass, Household, AttendanceRecord, ActivitySubmission, SacramentalJourney, SacramentalMilestone, Document, Parish, AuditLog]
+}
 //#endregion
 
 //#region Catequese Viva - Families
@@ -1227,17 +1235,17 @@ action sendMessageEmail {
 //#region Communication Hub - Conversations
 query listConversations {
   fn: import { listConversations } from "@src/server/operations/conversationOperations",
-  entities: [Conversation, ConversationParticipant, Message, User, Parish]
+  entities: [Conversation, ConversationParticipant, Message, User, Membership, Parish, CatechesisClass, Community]
 }
 
 query getConversation {
   fn: import { getConversation } from "@src/server/operations/conversationOperations",
-  entities: [Conversation, ConversationParticipant, Message, MessageReaction, User]
+  entities: [Conversation, ConversationParticipant, Message, MessageReaction, User, CatechesisClass, Community]
 }
 
 action createConversation {
   fn: import { createConversation } from "@src/server/operations/conversationOperations",
-  entities: [Conversation, ConversationParticipant, Message, Membership, User]
+  entities: [Conversation, ConversationParticipant, Message, Membership, User, Parish, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist, CatechesisClass, Household]
 }
 
 action sendMessage {
@@ -1252,27 +1260,27 @@ action markConversationRead {
 
 action addConversationParticipant {
   fn: import { addConversationParticipant } from "@src/server/operations/conversationOperations",
-  entities: [ConversationParticipant, Message, User]
+  entities: [Conversation, ConversationParticipant, Message, User, Parish, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist, CatechesisClass, Household, Membership]
 }
 
 action removeConversationParticipant {
   fn: import { removeConversationParticipant } from "@src/server/operations/conversationOperations",
-  entities: [ConversationParticipant]
+  entities: [Conversation, ConversationParticipant]
 }
 
 action muteConversation {
   fn: import { muteConversation } from "@src/server/operations/conversationOperations",
-  entities: [ConversationParticipant]
+  entities: [Conversation, ConversationParticipant]
 }
 
 action getOrCreateClassChat {
   fn: import { getOrCreateClassChat } from "@src/server/operations/conversationOperations",
-  entities: [Conversation, CatechesisClass, Membership, ClassEnrollment, Message]
+  entities: [Conversation, ConversationParticipant, CatechesisClass, CatechumenProfile, Membership, ClassEnrollment, Message, Parish, GuardianProfile, Household]
 }
 
 query getContactsForConversation {
   fn: import { getContactsForConversation } from "@src/server/operations/conversationOperations",
-  entities: [User, Membership, Parish]
+  entities: [User, Membership, Parish, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist, CatechesisClass, Household]
 }
 //#endregion
 

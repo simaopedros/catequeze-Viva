@@ -4,6 +4,7 @@ import { X, Search, Users, MessageSquareText, Megaphone, Check } from 'lucide-re
 import { cn } from '../../../client/utils';
 import { getContactsForConversation, createConversation } from 'wasp/client/operations';
 import { useUserContext } from '../../../client/hooks/useUserContext';
+import { useActiveWorkspace } from '../../../client/hooks/useActiveWorkspace';
 
 interface Contact {
   id: string;
@@ -34,7 +35,8 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
   const { t } = useTranslation('messages');
   const { t: tp } = useTranslation('public');
   const { userRole } = useUserContext();
-  const isRestricted = ['CATECHUMEN', 'GUARDIAN'].includes(userRole);
+  const { workspaceId, isPersonal } = useActiveWorkspace();
+  const isRestricted = ['CATECHUMEN', 'GUARDIAN'].includes(userRole) || isPersonal;
 
   const availableTypes = isRestricted
     ? CONVERSATION_TYPE_KEYS.filter(t => t.value === 'DIRECT')
@@ -56,14 +58,14 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
   };
 
   useEffect(() => {
-    if (isOpen && step === 'contacts') {
+    if (isOpen && step === 'contacts' && workspaceId) {
       setLoading(true);
-      getContactsForConversation()
+      getContactsForConversation({ workspaceId })
         .then(setContacts)
         .catch(() => setContacts([]))
         .finally(() => setLoading(false));
     }
-  }, [isOpen, step]);
+  }, [isOpen, step, workspaceId]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -94,6 +96,10 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
   };
 
   const handleCreate = async () => {
+    if (!workspaceId) {
+      setError(t('new_dialog.create_error'));
+      return;
+    }
     if (selected.size === 0) {
       setError(t('new_dialog.select_participant'));
       return;
@@ -110,6 +116,7 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
         type,
         title: type !== 'DIRECT' ? title.trim() : undefined,
         participantUserIds: Array.from(selected),
+        parishId: workspaceId,
       });
       onCreated(conversation.id);
       onClose();

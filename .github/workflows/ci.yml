@@ -71,9 +71,70 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/catequese_test
         run: wasp db migrate-dev
 
+      - name: Seed test data
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/catequese_test
+          NODE_ENV: development
+          SKIP_EMAIL_VERIFICATION_IN_DEV: "true"
+          WASP_SERVER_URL: http://localhost:3001
+          WASP_WEB_CLIENT_URL: http://localhost:3000
+          JWT_SECRET: test-jwt-secret
+          PAYMENTS_HOBBY_SUBSCRIPTION_PLAN_ID: ci_test_hobby
+          PAYMENTS_PRO_SUBSCRIPTION_PLAN_ID: ci_test_pro
+          PAYMENTS_CREDITS_10_PLAN_ID: ci_test_credits10
+          STRIPE_API_KEY: sk_test_ci
+          STRIPE_WEBHOOK_SECRET: whsec_ci
+          LEMONSQUEEZY_API_KEY: ci_test
+          LEMONSQUEEZY_WEBHOOK_SECRET: ci_test
+          LEMONSQUEEZY_STORE_ID: ci_test
+          POLAR_ORGANIZATION_ACCESS_TOKEN: ci_test
+          POLAR_SANDBOX_MODE: "true"
+          POLAR_WEBHOOK_SECRET: ci_test
+          PLAUSIBLE_API_KEY: ci_test
+          PLAUSIBLE_SITE_ID: ci_test
+          PLAUSIBLE_BASE_URL: https://ci.example.com
+          GOOGLE_ANALYTICS_CLIENT_EMAIL: ci@example.com
+          GOOGLE_ANALYTICS_PRIVATE_KEY: ci_test
+          GOOGLE_ANALYTICS_PROPERTY_ID: ci_test
+          SMTP_HOST: localhost
+          SMTP_PORT: "1025"
+          SMTP_USERNAME: ci_test
+          SMTP_PASSWORD: ci_test
+          GOOGLE_CLIENT_ID: ci_test
+          GOOGLE_CLIENT_SECRET: ci_test
+        run: wasp db seed
+
       - name: Run integration tests
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/catequese_test
+          NODE_ENV: development
+          SKIP_EMAIL_VERIFICATION_IN_DEV: "true"
+          WASP_SERVER_URL: http://localhost:3001
+          WASP_WEB_CLIENT_URL: http://localhost:3000
+          JWT_SECRET: test-jwt-secret
+          PAYMENTS_HOBBY_SUBSCRIPTION_PLAN_ID: ci_test_hobby
+          PAYMENTS_PRO_SUBSCRIPTION_PLAN_ID: ci_test_pro
+          PAYMENTS_CREDITS_10_PLAN_ID: ci_test_credits10
+          STRIPE_API_KEY: sk_test_ci
+          STRIPE_WEBHOOK_SECRET: whsec_ci
+          LEMONSQUEEZY_API_KEY: ci_test
+          LEMONSQUEEZY_WEBHOOK_SECRET: ci_test
+          LEMONSQUEEZY_STORE_ID: ci_test
+          POLAR_ORGANIZATION_ACCESS_TOKEN: ci_test
+          POLAR_SANDBOX_MODE: "true"
+          POLAR_WEBHOOK_SECRET: ci_test
+          PLAUSIBLE_API_KEY: ci_test
+          PLAUSIBLE_SITE_ID: ci_test
+          PLAUSIBLE_BASE_URL: https://ci.example.com
+          GOOGLE_ANALYTICS_CLIENT_EMAIL: ci@example.com
+          GOOGLE_ANALYTICS_PRIVATE_KEY: ci_test
+          GOOGLE_ANALYTICS_PROPERTY_ID: ci_test
+          SMTP_HOST: localhost
+          SMTP_PORT: "1025"
+          SMTP_USERNAME: ci_test
+          SMTP_PASSWORD: ci_test
+          GOOGLE_CLIENT_ID: ci_test
+          GOOGLE_CLIENT_SECRET: ci_test
         run: npm run test:integration
 
   compile:

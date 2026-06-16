@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { Cross, Menu, X, Globe } from 'lucide-react';
+import { Menu, X, Globe } from 'lucide-react';
 import { Button } from '../client/components/ui/button';
 import { useLocale, SupportedLocale } from '../i18n/useLocale';
+import { BrandLockup } from '../client/components/brand/Brand';
 
 export function PublicNavbar() {
   const { t: tCommon } = useTranslation('common');
@@ -16,8 +17,7 @@ export function PublicNavbar() {
     <header className="sticky top-0 z-sticky border-b bg-background/95 backdrop-blur-sm shadow-elevation-sticky">
       <div className="max-w-6xl mx-auto flex h-14 items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2 font-semibold text-primary">
-          <Cross className="h-5 w-5" />
-          <span>{tCommon('app_name')}</span>
+          <BrandLockup compact hideBadge />
         </Link>
 
         <nav className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">

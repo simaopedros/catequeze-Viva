@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @plugin "@tailwindcss/forms";
@@ -12,6 +12,7 @@
 @theme inline {
   /* Font */
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-brand-display: 'Cormorant Garamond', Georgia, serif;
   --font-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
 
   /* ── Color tokens (HSL components) ───────────────────────────────── */

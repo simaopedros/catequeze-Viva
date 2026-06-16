@@ -3,11 +3,13 @@ import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
-import { ArrowLeft, Heart, BookOpen, FileText, CheckCircle, XCircle, Edit3, Gift, MessageCircle, FilePlus, Upload, Download, Link2, Copy, AlertTriangle, Cross } from 'lucide-react';
+import { ArrowLeft, Heart, BookOpen, FileText, CheckCircle, XCircle, Edit3, Gift, MessageCircle, FilePlus, Upload, Download, Link2, Copy, AlertTriangle, Cross, Trash2 } from 'lucide-react';
+import { ConfirmDialog } from '../../client/components/ConfirmDialog';
 import { AppShell } from '../AppShell';
-import { useQuery, getCatechumenProfile, listMeetings, getMeetingAttendance, createConversation, generateCatechumenUploadToken, getCatechumenAttendanceReport, justifyAbsence } from 'wasp/client/operations';
+import { useQuery, getCatechumenProfile, listMeetings, getMeetingAttendance, createConversation, generateCatechumenUploadToken, getCatechumenAttendanceReport, justifyAbsence, deleteCatechumen } from 'wasp/client/operations';
 import { fetchAuthenticatedDocument, uploadDocumentMultipart } from '../../client/utils/documentUpload';
 import { useUserContext } from '../../client/hooks/useUserContext';
+import { useActiveWorkspace } from '../../client/hooks/useActiveWorkspace';
 import { toast } from '../../client/hooks/use-toast';
 import { calculatePoints } from '../../shared/gamification';
 import { formatDateOnly, getAgeFromDate } from '../../i18n/format';
@@ -44,6 +46,7 @@ export default function CatechumenDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { userRole } = useUserContext();
+  const { workspaceId } = useActiveWorkspace();
   const { data: profile, isLoading: loading, error: queryError } = useQuery(getCatechumenProfile, { id: id! });
   const canEdit = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'PERSONAL_OWNER'].includes(userRole);
   const [attendance, setAttendance] = useState<any[]>([]);
@@ -58,6 +61,8 @@ export default function CatechumenDetailPage() {
   const [justifyNote, setJustifyNote] = useState('');
   const [savingJustify, setSavingJustify] = useState(false);
   const [tokenData, setTokenData] = useState<{ token: string; expires: string } | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const docTypeLabels = useMemo(() => {
     const labels: Record<string, string> = {};
@@ -68,8 +73,17 @@ export default function CatechumenDetailPage() {
   }, [t]);
 
   const handleDmGuardian = async (guardianUserId: string) => {
+    const targetWorkspaceId = workspaceId || profile?.parish?.id;
+    if (!targetWorkspaceId) {
+      toast({ title: t('error'), description: t('try_again'), variant: 'destructive' });
+      return;
+    }
     try {
-      const conv = await createConversation({ type: 'DIRECT', participantUserIds: [guardianUserId] });
+      const conv = await createConversation({
+        type: 'DIRECT',
+        parishId: targetWorkspaceId,
+        participantUserIds: [guardianUserId],
+      });
       navigate(`/app/messages?c=${conv.id}`);
     } catch (e: any) {
       toast({ title: t('catechumens.detail_chat_error', { message: e.message || t('try_again') }) });
@@ -201,6 +215,20 @@ export default function CatechumenDetailPage() {
       // Silently fail — attendance row stays the same
     } finally {
       setSavingJustify(false);
+    }
+  };
+
+  const handleDeleteCatechumen = async () => {
+    setDeleting(true);
+    try {
+      await deleteCatechumen({ id: id! });
+      toast({ title: t('catechumens.deleted_success') });
+      navigate('/app/catechumens');
+    } catch (e: any) {
+      toast({ title: t('error'), description: e?.message || t('try_again'), variant: 'destructive' });
+    } finally {
+      setDeleting(false);
+      setDeleteOpen(false);
     }
   };
 
@@ -437,7 +465,28 @@ export default function CatechumenDetailPage() {
           )}
         </div>
         )}
+
+        {canEdit && (
+          <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+            <h3 className="font-semibold text-sm text-destructive mb-2">{t('catechumens.delete_title')}</h3>
+            <p className="text-sm text-muted-foreground mb-4">{t('catechumens.delete_confirm_desc')}</p>
+            <Button variant="destructive" size="sm" onClick={() => setDeleteOpen(true)}>
+              <Trash2 className="mr-1 h-4 w-4" />
+              {t('delete')}
+            </Button>
+          </div>
+        )}
       </div>
+      <ConfirmDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        onConfirm={handleDeleteCatechumen}
+        loading={deleting}
+        variant="destructive"
+        title={t('catechumens.delete_title')}
+        description={t('catechumens.delete_confirm_desc')}
+        confirmLabel={t('delete')}
+      />
     </AppShell>
   );
 }

@@ -3,6 +3,24 @@
 // Source translations live in src/i18n/locales/{lang}/{namespace}.json
 // Regenerate: npm run i18n:build
 
+export const account_pt_BR = {
+    "title": "Conta",
+    "subtitle": "Informações da sua conta e assinatura",
+    "linked_parish": "Paróquia vinculada",
+    "account_info": "Informações da Conta",
+    "email": "E-mail",
+    "username": "Nome de usuário",
+    "plan": "Seu Plano",
+    "credits": "Créditos",
+    "credits_value": "{{count}} créditos",
+    "free_plan": "Plano Gratuito",
+    "manage_payment": "Gerenciar Pagamento",
+    "buy_credits": "Comprar Mais Créditos",
+    "plan_past_due": "O pagamento do seu plano {{plan}} está em atraso. Atualize as informações de pagamento da sua assinatura.",
+    "plan_cancel_at_period_end": "Sua assinatura do plano {{plan}} foi cancelada, mas permanece ativa até o fim do período de cobrança atual: {{date}}",
+    "plan_deleted": "Sua assinatura anterior foi cancelada e não está mais ativa."
+  } as const;
+
 export const activities_pt_BR = {
     "redirect": "Redirecionando para a Biblioteca...",
     "types": {
@@ -3623,6 +3641,7 @@ export const tour_pt_BR = {
   } as const;
 
 export const resources_pt_BR = {
+  account: account_pt_BR,
   activities: activities_pt_BR,
   admin: admin_pt_BR,
   ai: ai_pt_BR,

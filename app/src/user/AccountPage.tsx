@@ -1,90 +1,127 @@
-import { getCustomerPortalUrl, useQuery } from "wasp/client/operations";
-import { Link as WaspRouterLink, routes } from "wasp/client/router";
-import type { User } from "wasp/entities";
-import { Button } from "../client/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../client/components/ui/card";
-import { Separator } from "../client/components/ui/separator";
+import { useTranslation } from 'react-i18next';
+import { useAuth } from 'wasp/client/auth';
+import { Link as WaspRouterLink, routes } from 'wasp/client/router';
+import type { User } from 'wasp/entities';
+import { getCustomerPortalUrl, useQuery } from 'wasp/client/operations';
+import { AppShell } from '../catequese/AppShell';
+import { PageHeader } from '../client/components/PageHeader';
+import { useUserContext } from '../client/hooks/useUserContext';
+import { Button } from '../client/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../client/components/ui/card';
+import { Separator } from '../client/components/ui/separator';
+import { Church, User as UserIcon, CreditCard, Coins } from 'lucide-react';
 import {
   PaymentPlanId,
   SubscriptionStatus,
   parsePaymentPlanId,
   prettyPaymentPlanName,
-} from "../payment/plans";
+} from '../payment/plans';
 
-export default function AccountPage({ user }: { user: User }) {
+export default function AccountPage() {
+  const { t } = useTranslation('account');
+  const { data: user } = useAuth();
+  const { parishName: ctxParishName } = useUserContext();
+
+  if (!user) return null;
+
   return (
-    <div className="mt-10 px-6">
-      <Card className="mb-4 lg:m-8">
-        <CardHeader>
-          <CardTitle className="text-foreground text-base font-semibold leading-6">
-            Informações da Conta
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="space-y-0">
-            {!!user.email && (
-              <div className="px-6 py-4">
-                <div className="grid grid-cols-1 sm:grid-cols-3 sm:gap-4">
-                  <div className="text-muted-foreground text-sm font-medium">
-                    E-mail
-                  </div>
-                  <div className="text-foreground mt-1 text-sm sm:col-span-2 sm:mt-0">
-                    {user.email}
-                  </div>
-                </div>
-              </div>
-            )}
-            {!!user.username && (
-              <>
-                <Separator />
+    <AppShell>
+      <div className="max-w-2xl mx-auto space-y-6">
+        <PageHeader
+          title={t('title')}
+          subtitle={user.email || ''}
+        />
+
+        {/* Parish info */}
+        {ctxParishName && (
+          <div className="rounded-xl border bg-card p-4 flex items-center gap-3">
+            <div className="rounded-lg bg-primary/10 p-2 text-primary">
+              <Church className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground uppercase">{t('linked_parish')}</p>
+              <p className="font-medium">{ctxParishName}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Account info */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base font-semibold flex items-center gap-2">
+              <UserIcon className="h-4 w-4" />
+              {t('account_info')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="space-y-0">
+              {user.email && (
                 <div className="px-6 py-4">
                   <div className="grid grid-cols-1 sm:grid-cols-3 sm:gap-4">
                     <div className="text-muted-foreground text-sm font-medium">
-                      Nome de usuário
+                      {t('email')}
                     </div>
                     <div className="text-foreground mt-1 text-sm sm:col-span-2 sm:mt-0">
-                      {user.username}
+                      {user.email}
                     </div>
                   </div>
                 </div>
-              </>
-            )}
-            <Separator />
-            <div className="px-6 py-4">
-              <div className="grid grid-cols-1 sm:grid-cols-3 sm:gap-4">
-                <div className="text-muted-foreground text-sm font-medium">
-                  Seu Plano
-                </div>
-                <UserCurrentSubscriptionPlan
-                  subscriptionPlan={user.subscriptionPlan}
-                  subscriptionStatus={user.subscriptionStatus}
-                  datePaid={user.datePaid}
-                />
-              </div>
+              )}
+              {user.username && (
+                <>
+                  <Separator />
+                  <div className="px-6 py-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 sm:gap-4">
+                      <div className="text-muted-foreground text-sm font-medium">
+                        {t('username')}
+                      </div>
+                      <div className="text-foreground mt-1 text-sm sm:col-span-2 sm:mt-0">
+                        {user.username}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
-            <Separator />
-            <div className="px-6 py-4">
-              <div className="grid grid-cols-1 sm:grid-cols-3 sm:gap-4">
-                <div className="text-muted-foreground text-sm font-medium">
-                  Créditos
-                </div>
-                <div className="text-foreground mt-1 text-sm sm:col-span-1 sm:mt-0">
-                  {user.credits} créditos
-                </div>
-                <div className="ml-auto mt-4 sm:mt-0">
-                  <BuyMoreButton subscriptionStatus={user.subscriptionStatus} />
-                </div>
-              </div>
+          </CardContent>
+        </Card>
+
+        {/* Plan */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base font-semibold flex items-center gap-2">
+              <CreditCard className="h-4 w-4" />
+              {t('plan')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <UserCurrentSubscriptionPlan
+              subscriptionPlan={user.subscriptionPlan}
+              subscriptionStatus={user.subscriptionStatus}
+              datePaid={user.datePaid}
+            />
+          </CardContent>
+        </Card>
+
+        {/* Credits */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base font-semibold flex items-center gap-2">
+              <Coins className="h-4 w-4" />
+              {t('credits')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <span className="text-sm">
+                {t('credits_value', { count: user.credits })}
+              </span>
+              <BuyMoreButton subscriptionStatus={user.subscriptionStatus} />
             </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+          </CardContent>
+        </Card>
+      </div>
+    </AppShell>
   );
 }
 
@@ -92,14 +129,17 @@ function UserCurrentSubscriptionPlan({
   subscriptionPlan,
   subscriptionStatus,
   datePaid,
-}: Pick<User, "subscriptionPlan" | "subscriptionStatus" | "datePaid">) {
-  let subscriptionPlanMessage = "Plano Gratuito";
+}: Pick<User, 'subscriptionPlan' | 'subscriptionStatus' | 'datePaid'>) {
+  const { t } = useTranslation('account');
+
+  let message = t('free_plan');
   if (
     subscriptionPlan !== null &&
     subscriptionStatus !== null &&
     datePaid !== null
   ) {
-    subscriptionPlanMessage = formatSubscriptionStatusMessage(
+    message = formatSubscriptionStatusMessage(
+      t,
       parsePaymentPlanId(subscriptionPlan),
       datePaid,
       subscriptionStatus as SubscriptionStatus,
@@ -107,35 +147,29 @@ function UserCurrentSubscriptionPlan({
   }
 
   return (
-    <>
-      <div className="text-foreground mt-1 text-sm sm:col-span-1 sm:mt-0">
-        {subscriptionPlanMessage}
-      </div>
-      <div className="ml-auto mt-4 sm:mt-0">
-        <CustomerPortalButton />
-      </div>
-    </>
+    <div className="flex items-center justify-between">
+      <span className="text-sm">{message}</span>
+      <CustomerPortalButton />
+    </div>
   );
 }
 
 function formatSubscriptionStatusMessage(
+  t: ReturnType<typeof useTranslation>['t'],
   subscriptionPlan: PaymentPlanId,
   datePaid: Date,
   subscriptionStatus: SubscriptionStatus,
 ): string {
-  const paymentPlanName = prettyPaymentPlanName(subscriptionPlan);
+  const planName = prettyPaymentPlanName(subscriptionPlan);
   const statusToMessage: Record<SubscriptionStatus, string> = {
-    active: `${paymentPlanName}`,
-    past_due: `O pagamento do seu plano ${paymentPlanName} está em atraso. Atualize as informações de pagamento da sua assinatura.`,
-    cancel_at_period_end: `Sua assinatura do plano ${paymentPlanName} foi cancelada, mas permanece ativa até o fim do período de cobrança atual: ${prettyPrintEndOfBillingPeriod(
-      datePaid,
-    )}`,
-    deleted: `Sua assinatura anterior foi cancelada e não está mais ativa.`,
+    [SubscriptionStatus.Active]: planName,
+    [SubscriptionStatus.PastDue]: t('plan_past_due', { plan: planName }),
+    [SubscriptionStatus.CancelAtPeriodEnd]: t('plan_cancel_at_period_end', {
+      plan: planName,
+      date: prettyPrintEndOfBillingPeriod(datePaid),
+    }),
+    [SubscriptionStatus.Deleted]: t('plan_deleted'),
   };
-
-  if (!statusToMessage[subscriptionStatus]) {
-    throw new Error(`Invalid subscription status: ${subscriptionStatus}`);
-  }
 
   return statusToMessage[subscriptionStatus];
 }
@@ -143,10 +177,11 @@ function formatSubscriptionStatusMessage(
 function prettyPrintEndOfBillingPeriod(date: Date) {
   const oneMonthFromNow = new Date(date);
   oneMonthFromNow.setMonth(oneMonthFromNow.getMonth() + 1);
-  return oneMonthFromNow.toLocaleDateString("pt-BR");
+  return oneMonthFromNow.toLocaleDateString('pt-BR');
 }
 
 function CustomerPortalButton() {
+  const { t } = useTranslation('account');
   const { data: customerPortalUrl, isLoading: isCustomerPortalUrlLoading } =
     useQuery(getCustomerPortalUrl);
 
@@ -157,7 +192,7 @@ function CustomerPortalButton() {
   return (
     <a href={customerPortalUrl} target="_blank" rel="noopener noreferrer">
       <Button disabled={isCustomerPortalUrlLoading} variant="link">
-        Gerenciar Pagamento
+        {t('manage_payment')}
       </Button>
     </a>
   );
@@ -165,7 +200,9 @@ function CustomerPortalButton() {
 
 function BuyMoreButton({
   subscriptionStatus,
-}: Pick<User, "subscriptionStatus">) {
+}: Pick<User, 'subscriptionStatus'>) {
+  const { t } = useTranslation('account');
+
   if (
     subscriptionStatus === SubscriptionStatus.Active ||
     subscriptionStatus === SubscriptionStatus.CancelAtPeriodEnd
@@ -178,7 +215,7 @@ function BuyMoreButton({
       to={routes.PricingPageRoute.to}
       className="text-primary hover:text-primary/80 text-sm font-medium transition-colors duration-200"
     >
-      <Button variant="link">Comprar Mais Créditos</Button>
+      <Button variant="link">{t('buy_credits')}</Button>
     </WaspRouterLink>
   );
 }

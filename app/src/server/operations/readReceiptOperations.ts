@@ -3,7 +3,6 @@
  * Creates a MessageReadReceipt if one doesn't exist.
  */
 import { HttpError } from 'wasp/server';
-import { assertTwoFactorSessionVerified } from './twoFactorOperations';
 
 async function assertMessageParticipant(context: any, messageId: string): Promise<void> {
   const message = await context.entities.Message.findUnique({
@@ -28,7 +27,6 @@ async function assertMessageParticipant(context: any, messageId: string): Promis
 
 export const markMessageAsRead = async (args: { messageId: string }, context: any) => {
   if (!context.user) throw new HttpError(401);
-  await assertTwoFactorSessionVerified(context);
   await assertMessageParticipant(context, args.messageId);
 
   try {
@@ -56,13 +54,12 @@ export const markMessageAsRead = async (args: { messageId: string }, context: an
  */
 export const getMessageReadReceipts = async (args: { messageId: string }, context: any) => {
   if (!context.user) throw new HttpError(401);
-  await assertTwoFactorSessionVerified(context);
   await assertMessageParticipant(context, args.messageId);
 
   const receipts = await context.entities.MessageReadReceipt.findMany({
     where: { messageId: args.messageId },
     include: {
-      user: { select: { id: true, firstName: true, lastName: true, profileImage: true } },
+      user: { select: { id: true, firstName: true, lastName: true, avatarUrl: true } },
     },
     orderBy: { readAt: 'asc' },
   });

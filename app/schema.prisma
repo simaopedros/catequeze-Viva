@@ -1015,6 +1015,8 @@ model Conversation {
 
   participants ConversationParticipant[]
   messages     Message[]
+
+  @@unique([classId, type])
 }
 
 model ConversationParticipant {
