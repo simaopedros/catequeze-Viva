@@ -10,6 +10,7 @@ import { PaymentPlanId, paymentPlans, SubscriptionStatus } from "../payment/plan
 import { validateOrThrow } from "../server/validation";
 import { paymentProcessor } from "./paymentProcessor";
 import { stripeClient } from "./stripe/stripeClient";
+import { requireStripePriceId } from "./paymentProcessorPlans";
 import { PRICING_VERSION, isSubscriptionActiveLike } from "../shared/pricing";
 
 /**
@@ -234,12 +235,59 @@ export const cancelSubscription: CancelSubscription<
 export const changeSubscriptionPlan: ChangeSubscriptionPlan<
   { planId: string; interval?: 'monthly' | 'annual' },
   { success: boolean }
-> = async (_rawInput, _context) => {
-  // This operation requires stripeSubscriptionId on the User model.
-  // Run `wasp db migrate-dev` to apply the pending migration,
-  // then this will manage the Stripe subscription directly.
-  throw new HttpError(
-    503,
-    'Alteração de plano indisponível. Utilize o portal de pagamento para gerir a sua assinatura.',
-  );
+> = async (rawInput, context) => {
+  if (!context.user) {
+    throw new HttpError(401, "Only authenticated users are allowed to perform this operation.");
+  }
+
+  const { planId: paymentPlanId, interval } = rawInput;
+  const userId = context.user.id;
+
+  const user = await context.entities.User.findUnique({
+    where: { id: userId },
+    select: { id: true, paymentProcessorUserId: true, subscriptionStatus: true },
+  });
+
+  if (!user?.paymentProcessorUserId) {
+    throw new HttpError(400, "Nenhuma assinatura ativa encontrada para alterar.");
+  }
+
+  const paymentPlan = paymentPlans[paymentPlanId as PaymentPlanId];
+  if (!paymentPlan || paymentPlanId === PaymentPlanId.CatechistFree) {
+    throw new HttpError(400, "Plano inválido para alteração.");
+  }
+
+  try {
+    const priceId = requireStripePriceId(paymentPlan, interval || 'monthly');
+
+    // Find the active subscription via Stripe customer ID
+    const subscriptions = await stripeClient.subscriptions.list({
+      customer: user.paymentProcessorUserId,
+      status: 'active',
+      limit: 1,
+    });
+    const stripeSubscriptionId = subscriptions.data[0]?.id;
+    if (!stripeSubscriptionId) {
+      throw new HttpError(400, "Nenhuma assinatura ativa encontrada para alterar.");
+    }
+
+    const subscription = await stripeClient.subscriptions.retrieve(stripeSubscriptionId);
+    const itemId = subscription.items.data[0]?.id;
+
+    await stripeClient.subscriptions.update(stripeSubscriptionId, {
+      items: [{ id: itemId, price: priceId }],
+      proration_behavior: 'always_invoice',
+      metadata: { fromPlan: user.subscriptionStatus || '', toPlan: paymentPlanId },
+    });
+
+    await context.entities.User.update({
+      where: { id: userId },
+      data: { subscriptionPlan: paymentPlanId },
+    });
+  } catch (err: any) {
+    console.error("Failed to change subscription plan:", err?.message || err);
+    throw new HttpError(500, "Erro ao alterar plano. Tente novamente ou contacte o suporte.");
+  }
+
+  return { success: true };
 };

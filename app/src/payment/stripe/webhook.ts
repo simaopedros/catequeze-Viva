@@ -44,6 +44,18 @@ export const stripeWebhook: PaymentsWebhook = async (
   try {
     const event = constructStripeEvent(request);
 
+    // Idempotency: skip already-processed events
+    try {
+      await (context.entities as any).StripeWebhookEvent.create({
+        data: { id: event.id, type: event.type },
+      });
+    } catch (err: any) {
+      if (err?.code === 'P2002' || err?.message?.includes('Unique constraint')) {
+        return response.status(204).send();
+      }
+      throw err;
+    }
+
     // Clover API (2025-10+) — not yet in Stripe SDK event union.
     if ((event.type as string) === "invoice_payment.paid") {
       await handleInvoicePaymentPaid(event, prismaUserDelegate, context);
