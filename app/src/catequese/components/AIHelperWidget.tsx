@@ -12,8 +12,12 @@ import {
   User,
   ThumbsUp,
   ThumbsDown,
+  MessageSquareText,
+  ExternalLink,
+  Coins,
 } from 'lucide-react';
 import { getAiCreditsStatus, submitAiFeedback } from 'wasp/client/operations';
+import { BuyCreditsButton } from './BuyCreditsButton';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -34,15 +38,26 @@ export function AIHelperWidget() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [hasAccess, setHasAccess] = useState(true);
+  const [creditsLeft, setCreditsLeft] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (open) {
       getAiCreditsStatus()
-        .then(s => setHasAccess(s?.hasAiAccess ?? false))
+        .then(s => {
+          setHasAccess(s?.hasAiAccess ?? false);
+          setCreditsLeft(s?.creditsLeft ?? null);
+        })
         .catch(() => setHasAccess(false));
     }
   }, [open]);
+
+  // Listen for external open event (e.g. from HubHome)
+  useEffect(() => {
+    const handler = () => setOpen(true);
+    window.addEventListener('open-ai-widget', handler);
+    return () => window.removeEventListener('open-ai-widget', handler);
+  }, []);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -117,16 +132,25 @@ export function AIHelperWidget() {
         throw new Error(ta('widget.empty_response'));
       }
     } catch (e: any) {
-      const errorMsg = e?.message?.includes('402') || e?.message?.includes('Plano')
-        ? ta('widget.upgrade_required')
-        : ta('widget.generic_error');
+      const isCreditError = e?.message?.includes('402') || e?.message?.includes('Créditos');
+      const errorMsg = isCreditError
+        ? (creditsLeft != null && creditsLeft <= 0
+            ? ta('widget.no_credits')
+            : ta('widget.low_credits'))
+        : e?.message?.includes('Plano')
+          ? ta('widget.upgrade_required')
+          : ta('widget.generic_error');
 
-      // Remove placeholder if present, add error message
+      // Show contextual notice instead of raw error
       setMessages(prev => {
-        // If the last message is an empty assistant placeholder, replace it
         if (prev.length > 0 && prev[prev.length - 1].role === 'assistant' && prev[prev.length - 1].content === '') {
           const updated = [...prev];
-          updated[updated.length - 1] = { role: 'assistant', content: errorMsg };
+          updated[updated.length - 1] = {
+            role: 'assistant',
+            content: isCreditError
+              ? ta('widget.credits_cta')
+              : errorMsg,
+          };
           return updated;
         }
         return [...prev, { role: 'assistant', content: errorMsg }];
@@ -165,9 +189,17 @@ export function AIHelperWidget() {
                 <p className="text-xs text-muted-foreground">{ta('widget.catholic_ai')}</p>
               </div>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => setOpen(false)}>
-              <X className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-1">
+              <Link to="/app/ai-hub" className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title={ta('widget.open_copilot')}>
+                <ExternalLink className="h-4 w-4" />
+              </Link>
+              <Link to="/app/messages" className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title={ta('widget.view_history')}>
+                <MessageSquareText className="h-4 w-4" />
+              </Link>
+              <Button variant="ghost" size="icon" onClick={() => setOpen(false)}>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
 
           {/* Messages */}
@@ -200,6 +232,13 @@ export function AIHelperWidget() {
                       m.content
                     )}
                   </div>
+                  {/* Show inline Buy Credits CTA for credit-related errors */}
+                  {(m.content.includes(ta('widget.no_credits')) || m.content.includes(ta('widget.credits_cta'))) && (
+                    <div className="mt-2 flex gap-2">
+                      <BuyCreditsButton pack="20" size="sm" variant="default" />
+                      <BuyCreditsButton pack="50" size="sm" variant="outline" />
+                    </div>
+                  )}
                   {m.role === 'assistant' && m.content && !m.content.startsWith('Desculpe') && !m.content.startsWith('Você precisa') && (
                     <div className="flex gap-1 mt-1.5 pt-1.5 border-t border-border/50">
                       <button

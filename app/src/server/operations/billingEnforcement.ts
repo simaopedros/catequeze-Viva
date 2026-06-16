@@ -305,7 +305,7 @@ function buildLimitMessage(
   const label = LIMIT_LABELS[type] || type;
   const currentPlanName = planName(plan);
   const upgradePlan = requiredPlan(plan);
-  return `Limite de ${label}s do plano ${currentPlanName} atingido (${current}/${max}). Faça upgrade para ${upgradePlan}.`;
+  return `LIMIT: Limite de ${label}s do plano ${currentPlanName} atingido (${current}/${max}). Faça upgrade para ${upgradePlan}.`;
 }
 
 // ─── Catechist count ──────────────────────────────────────────────────────
@@ -329,7 +329,7 @@ export async function assertCanAddCatechist(
       },
     });
     if (count >= 1) {
-      throw new HttpError(403, 'Plano pessoal permite apenas 1 catequista. Faça upgrade para um plano institucional.');
+      throw new HttpError(403, 'LIMIT: Plano pessoal permite apenas 1 catequista. Faça upgrade para um plano institucional.');
     }
     return;
   }
@@ -426,7 +426,7 @@ export async function assertCanCreateClass(
     if (activeCount >= limits.maxClasses!) {
       throw new HttpError(
         403,
-        `Limite de turmas do plano ${planName(plan)} atingido (${activeCount}/${limits.maxClasses}). Faça upgrade.`,
+        `LIMIT: Limite de turmas do plano ${planName(plan)} atingido (${activeCount}/${limits.maxClasses}). Faça upgrade.`,
       );
     }
     return;
@@ -486,7 +486,7 @@ export async function assertCanEnrollCatechumen(
     if (enrolledCount >= limits.maxCatechumens!) {
       throw new HttpError(
         403,
-        `Limite de catequizandos do plano ${planName(plan)} atingido (${enrolledCount}/${limits.maxCatechumens}).`,
+        `LIMIT: Limite de catequizandos do plano ${planName(plan)} atingido (${enrolledCount}/${limits.maxCatechumens}).`,
       );
     }
     return;

@@ -177,7 +177,7 @@ async function assertAndDeductDioceseCredits(
   if (credits.creditsLeft < cost) {
     throw new HttpError(
       402,
-      `Créditos insuficientes da paróquia (${credits.creditsLeft} restantes, ${cost} necessários). Os créditos renovam no próximo mês.`,
+      `CREDITS_INSUFFICIENT: ${credits.creditsLeft} restantes (paróquia), ${cost} necessários. Compre créditos avulsos ou aguarde a renovação.`,
     );
   }
 
@@ -263,7 +263,7 @@ export async function assertAndDeductCredits(
   if (!credits) {
     throw new HttpError(
       402,
-      'Plano sem acesso à IA. Faça upgrade para Catequista IA ou Paróquia em /app/billing.',
+      'PLAN_NO_AI: Plano sem acesso à IA. Faça upgrade para Catequista IA ou Paróquia em /app/billing.',
     );
   }
 
@@ -281,21 +281,21 @@ export async function assertAndDeductCredits(
     if (credits.creditsLeft <= 0) {
       throw new HttpError(
         402,
-        'Créditos de teste esgotados. Faça upgrade para Catequista IA para continuar usando a IA.',
+        'CREDITS_EXHAUSTED: Créditos de teste esgotados. Compre créditos avulsos ou faça upgrade para continuar usando a IA.',
       );
     }
   } else {
     if (!planHasAiAccess(effectivePlan)) {
       throw new HttpError(
         402,
-        'Plano sem acesso à IA. Faça upgrade para Catequista IA ou Paróquia em /app/billing.',
+        'PLAN_NO_AI: Plano sem acesso à IA. Faça upgrade para um plano com IA em /app/billing.',
       );
     }
 
     if (credits.creditsLeft < cost) {
       throw new HttpError(
         402,
-        `Créditos insuficientes (${credits.creditsLeft} restantes, ${cost} necessários). Seus créditos renovam no próximo mês.`,
+        `CREDITS_INSUFFICIENT: ${credits.creditsLeft} restantes, ${cost} necessários. Compre créditos avulsos ou aguarde a renovação mensal.`,
       );
     }
   }

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
-import { CheckCircle, TrendingUp, Clock, ArrowUpRight, History, AlertCircle, Loader2, XCircle, User as UserIcon, Building2, PiggyBank } from 'lucide-react';
+import { CheckCircle, TrendingUp, Clock, ArrowUpRight, History, AlertCircle, Loader2, XCircle, User as UserIcon, Building2, PiggyBank, Coins } from 'lucide-react';
 import type { BillingInterval } from '../lib/intendedPlan';
 import { getIntendedInterval } from '../lib/intendedPlan';
 import { AppShell } from '../AppShell';
@@ -15,6 +15,7 @@ import { toast } from '../../client/hooks/use-toast';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { useActiveWorkspace } from '../../client/hooks/useActiveWorkspace';
 import { PLANS, type PlanId, isSubscriptionActiveLike, hasPersonalAccess, hasInstitutionalAccess, isBillingActive, getPersonalPlanId, getInstitutionalPlanId } from '../../shared/pricing';
+import { BuyCreditsButton } from '../components/BuyCreditsButton';
 
 interface PlanCard {
   planId: PaymentPlanId;
@@ -490,6 +491,30 @@ export default function BillingPage() {
                   <span>{t('remaining')}</span>
                   <span className="font-bold text-foreground">{aiCredits.creditsLeft} {creditLabel}</span>
                 </div>
+              </div>
+            </div>
+          )}
+          {/* AI Credit purchase packs */}
+          {aiCredits && aiCredits.creditsLeft <= 10 && (
+            <div className="rounded-xl border bg-card p-5 space-y-3">
+              <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <Coins className="h-4 w-4" />
+                {t('buy_credits_title')}
+              </h3>
+              <p className="text-xs text-muted-foreground">{t('buy_credits_desc')}</p>
+              <div className="flex gap-3">
+                <BuyCreditsButton
+                  pack="20"
+                  size="sm"
+                  variant="outline"
+                  label={t('buy_credits_20')}
+                />
+                <BuyCreditsButton
+                  pack="50"
+                  size="sm"
+                  variant="outline"
+                  label={t('buy_credits_50')}
+                />
               </div>
             </div>
           )}
