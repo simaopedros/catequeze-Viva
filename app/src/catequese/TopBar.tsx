@@ -155,6 +155,8 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
     setFocused(false);
     setQuery('');
     setSelectedIndex(0);
+    setSearchSheetOpen(false);
+    setSearchExpanded(false);
     navigate(route);
   }, [navigate]);
 

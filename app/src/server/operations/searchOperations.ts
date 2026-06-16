@@ -291,7 +291,13 @@ export const globalSearch = async (args: { query: string; locale?: string | null
   const bibleSource = cacheReady ? bibleResults : bibleVersesDb;
   bibleSource.forEach((v: any) => {
     const ref = `${v.chapter?.book?.abbreviation || v.chapter?.book?.name} ${v.chapter?.number}:${v.number}`;
-    results.push({ id: v.id, type: 'bible', module: 'bible', label: ref, description: (v.text || '').substring(0, 100), route: `/app/bible?ref=${encodeURIComponent(ref)}` });
+    const bookId = v.chapter?.book?.id;
+    const chapterNum = v.chapter?.number;
+    const verseNum = v.number;
+    const route = bookId && chapterNum
+      ? `/app/bible?book=${bookId}&chapter=${chapterNum}&verse=${verseNum}`
+      : `/app/bible?ref=${encodeURIComponent(ref)}`;
+    results.push({ id: v.id, type: 'bible', module: 'bible', label: ref, description: (v.text || '').substring(0, 100), route });
   });
 
   // Catechism results: prefer cache, fall back to DB
@@ -311,7 +317,7 @@ export const globalSearch = async (args: { query: string; locale?: string | null
   );
 
   sacramentalJourneys.forEach((j: any) =>
-    results.push({ id: j.id, type: 'sacrament', module: 'sacrament', label: `${j.catechumenProfile?.firstName} ${j.catechumenProfile?.lastName}`, description: j.template?.sacrament?.name || '', route: `/app/sacramental-journeys` })
+    results.push({ id: j.id, type: 'sacrament', module: 'sacrament', label: `${j.catechumenProfile?.firstName} ${j.catechumenProfile?.lastName}`, description: j.template?.sacrament?.name || '', route: `/app/sacramental-journeys/${j.id}` })
   );
 
   documents.forEach((d: any) =>
@@ -323,7 +329,7 @@ export const globalSearch = async (args: { query: string; locale?: string | null
   );
 
   communities.forEach((c: any) =>
-    results.push({ id: c.id, type: 'community', module: 'community', label: c.name, description: c.type || '', route: `/app/communities` })
+    results.push({ id: c.id, type: 'community', module: 'community', label: c.name, description: c.type || '', route: `/app/communities/${c.id}` })
   );
 
   return results;

@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router';
 import { Search, BookOpen, Loader2, ChevronDown, ChevronUp, AlertCircle } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { AppShell } from '../AppShell';
-import { listDirectoryByPart, searchDirectory } from 'wasp/client/operations';
+import { listDirectoryByPart, searchDirectory, getDirectoryEntry } from 'wasp/client/operations';
 import { useLocale } from '../../i18n/useLocale';
 
 const PART_KEYS = ['I', 'II', 'III'] as const;
@@ -11,6 +12,8 @@ const PART_KEYS = ['I', 'II', 'III'] as const;
 export default function DirectoryPage() {
   const { t } = useTranslation('common');
   const { currentLocale } = useLocale();
+  const [searchParams] = useSearchParams();
+
   const [entries, setEntries] = useState<any[]>([]);
   const [part, setPart] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,11 +22,45 @@ export default function DirectoryPage() {
   const [error, setError] = useState('');
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
+  // URL-driven entry loading
+  const urlEntryLoaded = useRef<string | null>(null);
+  const entryRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+
+  useEffect(() => {
+    const entryParam = searchParams.get('entry');
+    if (!entryParam || entryParam === urlEntryLoaded.current) return;
+
+    const entryNum = parseInt(entryParam);
+    if (isNaN(entryNum)) return;
+
+    urlEntryLoaded.current = entryParam;
+
+    (async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const entry = await getDirectoryEntry({ number: entryNum, locale: currentLocale });
+        setEntries([]);
+        setPart('');
+        setSearchResults([entry]);
+        setExpanded({ [entry.id]: true });
+        setTimeout(() => {
+          const el = entryRefs.current.get(entry.id);
+          el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+      } catch {
+        setError(t('directory.loadError'));
+      }
+      setLoading(false);
+    })();
+  }, [searchParams, currentLocale]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const loadPart = async (p: string) => {
     setLoading(true);
     setPart(p);
     setSearchResults([]);
     setError('');
+    urlEntryLoaded.current = null;
     try {
       setEntries((await listDirectoryByPart({ part: p, locale: currentLocale })) || []);
     } catch (e) { setError(t('directory.loadError')); }
@@ -36,6 +73,7 @@ export default function DirectoryPage() {
     setPart('');
     setEntries([]);
     setError('');
+    urlEntryLoaded.current = null;
     try {
       setSearchResults((await searchDirectory({ query: searchQuery, locale: currentLocale })) || []);
     } catch (e) { setError(t('search_error')); }
@@ -54,7 +92,6 @@ export default function DirectoryPage() {
         <h1 className="text-2xl font-bold">{t('directory.title')}</h1>
         <p className="text-sm text-muted-foreground">{t('directory.subtitle')}</p>
 
-        {/* Search */}
         <div className="flex gap-3">
           <input
             value={searchQuery}
@@ -68,7 +105,6 @@ export default function DirectoryPage() {
           </Button>
         </div>
 
-        {/* Parts */}
         {searchResults.length === 0 && (
           <div className="flex flex-wrap gap-2">
             {PART_KEYS.map((key) => (
@@ -80,7 +116,6 @@ export default function DirectoryPage() {
           </div>
         )}
 
-        {/* Error */}
         {error && (
           <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center space-y-3">
             <AlertCircle className="h-8 w-8 text-destructive mx-auto" />
@@ -89,14 +124,20 @@ export default function DirectoryPage() {
           </div>
         )}
 
-        {/* Results */}
         {!error && loading ? (
           <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
         ) : displayEntries.length > 0 ? (
           <div className="space-y-2">
             <p className="text-sm text-muted-foreground">{displayEntries.length} {t('directory.paragraphs')}</p>
             {displayEntries.map((entry: any) => (
-              <div key={entry.id} className="rounded-lg border">
+              <div
+                key={entry.id}
+                ref={(el) => {
+                  if (el) entryRefs.current.set(entry.id, el);
+                  else entryRefs.current.delete(entry.id);
+                }}
+                className="rounded-lg border"
+              >
                 <button onClick={() => toggle(entry.id)} className="w-full text-left p-4 flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
