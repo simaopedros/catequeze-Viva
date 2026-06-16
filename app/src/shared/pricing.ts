@@ -451,15 +451,35 @@ export function isInstitutionalPlan(plan: string | null | undefined): boolean {
 /** Personal-level plan IDs. Everything not institutional. */
 const PERSONAL_PLAN_IDS: PlanId[] = ['catechist_free', 'catechist_pro', 'catechist_ai'];
 
+// ─── Entitlement helpers (single source of truth) ─────────────────────────
+
+/**
+ * Subscription statuses that grant access.
+ * `cancel_at_period_end` grants access until the period ends.
+ * `past_due` grants access during the dunning grace period.
+ */
+const ACTIVE_LIKE_STATUSES = new Set(['active', 'cancel_at_period_end', 'past_due']);
+
+/**
+ * Whether a subscription status string counts as having access.
+ * Treats `active`, `cancel_at_period_end`, and `past_due` as active-like.
+ * Never compare subscriptionStatus strings directly — use this.
+ */
+export function isSubscriptionActiveLike(status: string | null | undefined): boolean {
+  if (!status) return false;
+  return ACTIVE_LIKE_STATUSES.has(status.toLowerCase());
+}
+
 /**
  * Effective PERSONAL plan id (lowercase) for a user's personal workspace.
- * Only honors an active personal subscription; institutional plan values
- * (parish/diocese) and inactive subscriptions resolve to catechist_free.
+ * Honors active-like subscriptions (active, cancel_at_period_end, past_due).
+ * Institutional plan values on User.subscription* resolve to catechist_free
+ * (institutional access is governed by TenantBilling).
  */
 export function getPersonalPlanId(
   user: { subscriptionStatus?: string | null; subscriptionPlan?: string | null } | null | undefined,
 ): string {
-  const active = user?.subscriptionStatus === 'active';
+  const active = isSubscriptionActiveLike(user?.subscriptionStatus);
   const plan = (active ? user?.subscriptionPlan : null)?.toLowerCase() || '';
   const resolved = resolvePlanId(plan);
   if (resolved && (PERSONAL_PLAN_IDS as readonly string[]).includes(resolved)) {
@@ -468,7 +488,14 @@ export function getPersonalPlanId(
   return 'catechist_free';
 }
 
-// ─── Billing helpers ──────────────────────────────────────────────────────
+/** Whether the user has paid personal access (Pro/IA, even cancel_at_period_end). */
+export function hasPersonalAccess(
+  user: { subscriptionStatus?: string | null; subscriptionPlan?: string | null } | null | undefined,
+): boolean {
+  return getPersonalPlanId(user) !== 'catechist_free';
+}
+
+// ─── Institutional billing helpers ────────────────────────────────────────
 
 export interface BillingInfo {
   plan: string;
@@ -476,9 +503,14 @@ export interface BillingInfo {
   trialEndsAt?: string | null | Date;
 }
 
+/**
+ * Whether a TenantBilling record grants active access.
+ * ACTIVE always grants access. TRIAL grants access until trialEndsAt.
+ * PAST_DUE grants access (grace period).
+ */
 export function isBillingActive(billing: BillingInfo | null | undefined): boolean {
   if (!billing) return false;
-  if (billing.status === 'ACTIVE') return true;
+  if (billing.status === 'ACTIVE' || billing.status === 'PAST_DUE') return true;
   if (billing.status === 'TRIAL' && billing.trialEndsAt) {
     const trialEnd = typeof billing.trialEndsAt === 'string'
       ? new Date(billing.trialEndsAt)
@@ -492,6 +524,87 @@ export function getEffectiveBillingPlan(billing: BillingInfo | null | undefined)
   if (!billing) return 'CATECHIST_FREE';
   if (!isBillingActive(billing)) return 'CATECHIST_FREE';
   return billing.plan.toUpperCase() || 'CATECHIST_FREE';
+}
+
+/** Whether an institutional workspace has paid access via TenantBilling. */
+export function hasInstitutionalAccess(billing: BillingInfo | null | undefined): boolean {
+  if (!isBillingActive(billing)) return false;
+  const plan = billing?.plan?.toUpperCase() || '';
+  return plan !== 'CATECHIST_FREE';
+}
+
+/** Resolve the institutional plan from TenantBilling (or null if free). */
+export function getInstitutionalPlanId(billing: BillingInfo | null | undefined): PlanId | null {
+  if (!isBillingActive(billing)) return null;
+  const plan = billing?.plan?.toUpperCase() || '';
+  const resolved = resolvePlanId(plan);
+  if (resolved && (INSTITUTIONAL_PLAN_IDS as readonly string[]).includes(resolved)) {
+    return resolved;
+  }
+  return null;
+}
+
+// ─── Workspace-effective plan ─────────────────────────────────────────────
+
+export interface WorkspaceEffectivePlan {
+  plan: PlanId;
+  source: 'personal' | 'institutional' | 'diocese_umbrella' | 'trial' | 'free';
+  billingInfo?: BillingInfo | null;
+}
+
+/**
+ * Determine the effective plan for a workspace, considering both personal
+ * and institutional context. This is the single function UI and guards
+ * should use to decide what plan governs the current workspace.
+ */
+export function getWorkspaceEffectivePlan(opts: {
+  user: { subscriptionStatus?: string | null; subscriptionPlan?: string | null } | null | undefined;
+  parishType?: string | null;
+  billing?: BillingInfo | null;
+  dioceseBilling?: BillingInfo | null;
+}): WorkspaceEffectivePlan {
+  const { user, parishType, billing, dioceseBilling } = opts;
+  const isPersonal = !parishType || parishType === 'PERSONAL';
+
+  if (isPersonal) {
+    const plan = resolvePlanIdOrFree(getPersonalPlanId(user));
+    return {
+      plan,
+      source: plan === 'catechist_free' ? 'free' : 'personal',
+    };
+  }
+
+  // Institutional workspace — resolve by coverage order
+
+  // 1. Diocese umbrella
+  if (dioceseBilling && isBillingActive(dioceseBilling) && dioceseBilling.plan?.toUpperCase() === 'DIOCESE') {
+    return {
+      plan: 'diocese',
+      source: 'diocese_umbrella',
+      billingInfo: dioceseBilling,
+    };
+  }
+
+  // 2. Parish own billing
+  if (billing && isBillingActive(billing)) {
+    const plan = getInstitutionalPlanId(billing);
+    if (plan) {
+      return { plan, source: 'institutional', billingInfo: billing };
+    }
+  }
+
+  // 3. If billing exists but is TRIAL and not expired
+  if (billing && billing.status === 'TRIAL' && billing.trialEndsAt) {
+    const trialEnd = typeof billing.trialEndsAt === 'string'
+      ? new Date(billing.trialEndsAt)
+      : billing.trialEndsAt;
+    if (trialEnd >= new Date()) {
+      return { plan: 'catechist_free', source: 'trial', billingInfo: billing };
+    }
+  }
+
+  // 4. Free fallback
+  return { plan: 'catechist_free', source: 'free' };
 }
 
 // ─── AI credit packs (one-time add-ons) ───────────────────────────────────

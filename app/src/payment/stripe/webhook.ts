@@ -146,6 +146,14 @@ async function processPaidInvoice(
   const paymentPlanId = getPaymentPlanIdByPaymentProcessorPlanId(
     getInvoicePriceId(invoice),
   );
+  const subscriptionId = (invoice as any).subscription
+    ? (typeof (invoice as any).subscription === 'string'
+        ? (invoice as any).subscription
+        : (invoice as any).subscription?.id)
+    : null;
+
+  // Log subscription identity for debugging
+  console.info(`[Stripe] processPaidInvoice customer=${customerId} subscription=${subscriptionId} plan=${paymentPlanId}`);
 
   switch (paymentPlanId) {
     case PaymentPlanId.Credits10:
@@ -243,8 +251,15 @@ async function handleCustomerSubscriptionUpdated(
     getSubscriptionPriceId(subscription),
   );
 
+  // Log subscription identity for debugging
+  console.info(`[Stripe] subscription.updated customer=${customerId} subscription=${subscription.id} status=${subscriptionStatus} plan=${paymentPlanId}`);
+
   const user = await updateUserSubscription(
-    { paymentProcessorUserId: customerId, paymentPlanId, subscriptionStatus },
+    {
+      paymentProcessorUserId: customerId,
+      paymentPlanId,
+      subscriptionStatus,
+    },
     prismaUserDelegate,
   );
 
@@ -349,6 +364,8 @@ async function handleCustomerSubscriptionDeleted(
 ): Promise<void> {
   const subscription = event.data.object;
   const customerId = getCustomerId(subscription.customer);
+
+  console.info(`[Stripe] subscription.deleted customer=${customerId} subscription=${subscription.id}`);
 
   const user = await updateUserSubscription(
     {

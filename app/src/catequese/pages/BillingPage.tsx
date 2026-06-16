@@ -9,12 +9,12 @@ import { getIntendedInterval } from '../lib/intendedPlan';
 import { AppShell } from '../AppShell';
 import { useQuery, getDashboardStats, getAiCreditsStatus, generateCheckoutSession, cancelSubscription, getParishById, getCustomerPortalUrl } from 'wasp/client/operations';
 import { useAuth } from 'wasp/client/auth';
-import { PaymentPlanId, SubscriptionStatus } from '../../payment/plans';
+import { PaymentPlanId } from '../../payment/plans';
 import { ConfirmDialog } from '../../client/components/ConfirmDialog';
 import { toast } from '../../client/hooks/use-toast';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { useActiveWorkspace } from '../../client/hooks/useActiveWorkspace';
-import { PLANS, type PlanId } from '../../shared/pricing';
+import { PLANS, type PlanId, isSubscriptionActiveLike, hasPersonalAccess, hasInstitutionalAccess, isBillingActive, getPersonalPlanId, getInstitutionalPlanId } from '../../shared/pricing';
 
 interface PlanCard {
   planId: PaymentPlanId;
@@ -160,37 +160,36 @@ export default function BillingPage() {
   const requestedPlan = searchParams.get('plan');
   const requestedIsInstitutional = requestedPlan === 'parish' || requestedPlan === 'diocese';
 
-  const hasPersonalPlan = user?.subscriptionStatus === SubscriptionStatus.Active;
+  const hasPersonalPlan = hasPersonalAccess(user);
+  const userPersonalPlanId = hasPersonalPlan && user?.subscriptionPlan
+    ? user.subscriptionPlan as PaymentPlanId
+    : null;
 
   let effectivePlanId = PaymentPlanId.CatechistFree;
   let isActive = false;
   let isParishManaged = false;
 
-  if (hasPersonalPlan && user?.subscriptionPlan) {
-    effectivePlanId = user.subscriptionPlan as PaymentPlanId;
-    isActive = true;
-  } else if (parish?.billing) {
+  // When in an institutional workspace, the institutional billing is primary.
+  // The user's personal plan is shown separately (if applicable).
+  if (!isPersonal && parish?.billing) {
     const pBilling = parish.billing;
-    const planUpper = pBilling.plan?.toUpperCase();
-    const isBillingActive =
-      pBilling.status === 'ACTIVE' ||
-      (pBilling.status === 'TRIAL' && pBilling.trialEndsAt && new Date(pBilling.trialEndsAt) >= new Date());
+    const billingIsActive = isBillingActive(pBilling);
 
-    if (isBillingActive) {
-      if (planUpper === 'PARISH' || planUpper === 'PARISH_COMPLETE') {
+    if (billingIsActive && hasInstitutionalAccess(pBilling)) {
+      const instPlan = getInstitutionalPlanId(pBilling);
+      isActive = true;
+      isParishManaged = true;
+      if (instPlan === 'parish_complete') {
         effectivePlanId = PaymentPlanId.ParishComplete;
-        isActive = true;
-        isParishManaged = true;
-      } else if (planUpper === 'PARISH_ESSENTIAL') {
+      } else if (instPlan === 'parish_essential') {
         effectivePlanId = PaymentPlanId.ParishEssential;
-        isActive = true;
-        isParishManaged = true;
-      } else if (planUpper === 'DIOCESE') {
+      } else if (instPlan === 'diocese') {
         effectivePlanId = PaymentPlanId.Diocese;
-        isActive = true;
-        isParishManaged = true;
       }
     }
+  } else if (hasPersonalPlan && user?.subscriptionPlan) {
+    effectivePlanId = user.subscriptionPlan as PaymentPlanId;
+    isActive = true;
   }
 
   const effectivePlan = getPlanDef(effectivePlanId);
@@ -328,6 +327,18 @@ export default function BillingPage() {
                     </>
                   )}
                   <p className="mt-1.5 text-muted-foreground">{t('contact_manager')}</p>
+                </div>
+              </div>
+            )}
+            {/* Show personal plan when in institutional workspace and user has one */}
+            {!isPersonal && userPersonalPlanId && (
+              <div className="mt-2 rounded-lg border border-muted bg-muted/30 p-3 text-sm">
+                <div className="flex items-center gap-2">
+                  <UserIcon className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+                  <span className="text-muted-foreground">{t('your_personal_plan')}:</span>
+                  <Badge variant="outline" className="text-xs">
+                    {getPlanDef(userPersonalPlanId).name}
+                  </Badge>
                 </div>
               </div>
             )}

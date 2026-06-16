@@ -1,6 +1,6 @@
 import { HttpError } from 'wasp/server';
 import { resolveEffectiveBilling, getEffectiveBillingPlan, isBillingActive } from './billingEnforcement';
-import { getPersonalPlanId } from '../../shared/planLimits';
+import { getPersonalPlanId, isSubscriptionActiveLike } from '../../shared/planLimits';
 import { getDioceseParishIds } from '../auth/helpers';
 
 /** Returns the effective PERSONAL plan id (lowercase) for a user's personal workspace. */
@@ -278,7 +278,7 @@ export const getInstitutionalManageContext = async (_args: void, context: any) =
     select: { subscriptionStatus: true, subscriptionPlan: true },
   });
 
-  const ownerActive = freshUser?.subscriptionStatus === 'active';
+  const ownerActive = isSubscriptionActiveLike(freshUser?.subscriptionStatus);
   const ownerPlanRaw = (freshUser?.subscriptionPlan || '').toLowerCase();
   const canCreateUnderOwnerPlan = ownerActive && (ownerPlanRaw === 'parish' || ownerPlanRaw === 'diocese');
 

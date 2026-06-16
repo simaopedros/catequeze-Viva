@@ -14,6 +14,7 @@ import {
   getPersonalPlanId,
   isInstitutionalPlan,
   resolvePlanIdOrFree,
+  isSubscriptionActiveLike,
   PLANS,
   type PlanLimits,
 } from "../../shared/planLimits";
@@ -54,7 +55,7 @@ async function resolveOwnerUmbrella(
   });
 
   if (
-    owner?.subscriptionStatus === 'active' &&
+    isSubscriptionActiveLike(owner?.subscriptionStatus) &&
     isInstPlan(owner.subscriptionPlan)
   ) {
     return {
@@ -155,10 +156,13 @@ export async function resolveAllEffectiveBilling(
   });
 
   const dioceseIds = [...new Set(parishes.map((p: any) => p.dioceseId).filter(Boolean))];
-  const ownerIds = [...new Set(parishes.map((p: any) => p.ownerId).filter(Boolean))];
+  const ownerIds = [...new Set(parishes
+    .filter((p: any) => p.type !== 'PERSONAL')
+    .map((p: any) => p.ownerId)
+    .filter(Boolean))];
 
-  // Batch fetch billings
-  const [dioceseBillings, parishBillings, umbrellaBillings] = await Promise.all([
+  // Batch fetch billings + owner subscriptions + owner institutional billings
+  const [dioceseBillings, parishBillings, owners, ownerInstitutionalBillings] = await Promise.all([
     dioceseIds.length > 0
       ? context.entities.TenantBilling.findMany({
           where: { dioceseId: { in: dioceseIds } },
@@ -170,8 +174,14 @@ export async function resolveAllEffectiveBilling(
       select: { parishId: true, plan: true, status: true, trialEndsAt: true, maxClasses: true, maxCatechumens: true, maxCatechists: true, maxParishes: true },
     }),
     ownerIds.length > 0
+      ? context.entities.User.findMany({
+          where: { id: { in: ownerIds } },
+          select: { id: true, subscriptionStatus: true, subscriptionPlan: true },
+        })
+      : [],
+    ownerIds.length > 0
       ? context.entities.TenantBilling.findMany({
-          where: { parish: { ownerId: { in: ownerIds }, type: 'PERSONAL' } },
+          where: { parish: { ownerId: { in: ownerIds }, type: { not: 'PERSONAL' } } },
           select: { plan: true, status: true, trialEndsAt: true, maxClasses: true, maxCatechumens: true, maxCatechists: true, maxParishes: true },
         })
       : [],
@@ -180,9 +190,10 @@ export async function resolveAllEffectiveBilling(
   // Index for fast lookup
   const dioceseBillingMap = new Map<string, any>(dioceseBillings.map((b: any) => [b.dioceseId, b]));
   const parishBillingMap = new Map<string, any>(parishBillings.map((b: any) => [b.parishId, b]));
+  const ownerMap = new Map<string, any>(owners.map((o: any) => [o.id, o]));
 
   for (const parish of parishes as any[]) {
-    // Diocese umbrella
+    // 1. Diocese umbrella
     if (parish.dioceseId && dioceseBillingMap.has(parish.dioceseId)) {
       const db: any = dioceseBillingMap.get(parish.dioceseId);
       if (isBillingActive(db) && db.plan === 'DIOCESE') {
@@ -191,11 +202,43 @@ export async function resolveAllEffectiveBilling(
       }
     }
 
-    // Parish billing
+    // 2. Parish own billing
     const pb: any = parishBillingMap.get(parish.id);
-    if (isBillingActive(pb)) {
+    if (pb && isBillingActive(pb)) {
       result.set(parish.id, pb);
       continue;
+    }
+
+    // 3. Owner umbrella (only for institutional parishes)
+    if (parish.type !== 'PERSONAL' && parish.ownerId) {
+      const owner = ownerMap.get(parish.ownerId);
+      if (owner?.subscriptionStatus && isSubscriptionActiveLike(owner.subscriptionStatus) && isInstPlan(owner.subscriptionPlan)) {
+        result.set(parish.id, {
+          plan: owner.subscriptionPlan.toUpperCase(),
+          status: 'ACTIVE',
+          trialEndsAt: null,
+          maxClasses: null,
+          maxCatechumens: null,
+          maxCatechists: null,
+          maxParishes: null,
+        });
+        continue;
+      }
+
+      // Also check if owner has an institutional TenantBilling on another parish
+      const ownedActive = ownerInstitutionalBillings.find((b: any) => isBillingActive(b));
+      if (ownedActive) {
+        result.set(parish.id, {
+          plan: ownedActive.plan.toUpperCase(),
+          status: ownedActive.status,
+          trialEndsAt: ownedActive.trialEndsAt,
+          maxClasses: ownedActive.maxClasses,
+          maxCatechumens: ownedActive.maxCatechumens,
+          maxCatechists: ownedActive.maxCatechists,
+          maxParishes: ownedActive.maxParishes,
+        });
+        continue;
+      }
     }
 
     result.set(parish.id, pb || null);
@@ -229,7 +272,7 @@ export async function resolveNewParishBilling(
       })
     : null;
 
-  const creatorActive = freshUser?.subscriptionStatus === 'active';
+  const creatorActive = isSubscriptionActiveLike(freshUser?.subscriptionStatus);
   const creatorPlan = (freshUser?.subscriptionPlan || '').toLowerCase();
   if (creatorActive && isInstPlan(creatorPlan)) {
     return { skip: false, plan: creatorPlan.toUpperCase(), status: 'ACTIVE', trialEndsAt: null };
@@ -332,7 +375,7 @@ export async function assertCanCreateParish(
     select: { subscriptionStatus: true, subscriptionPlan: true },
   });
 
-  const subscriptionActive = freshUser?.subscriptionStatus === 'active';
+  const subscriptionActive = isSubscriptionActiveLike(freshUser?.subscriptionStatus);
   const plan = subscriptionActive
     ? freshUser?.subscriptionPlan || 'catechist_free'
     : 'catechist_free';

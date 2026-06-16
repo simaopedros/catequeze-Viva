@@ -12,9 +12,16 @@ export {
   getPersonalPlanId,
   isInstitutionalPlan,
   resolvePlanIdOrFree,
+  isSubscriptionActiveLike,
+  hasPersonalAccess,
+  hasInstitutionalAccess,
+  getInstitutionalPlanId,
+  getWorkspaceEffectivePlan,
   PLANS,
+  type PlanId,
   type PlanLimits,
   type BillingInfo,
+  type WorkspaceEffectivePlan,
 } from './pricing';
 
 // PLAN_LIMITS is derived from pricing.ts for backward compatibility

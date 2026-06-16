@@ -9,8 +9,7 @@ import { PaymentPlanId, paymentPlans, SubscriptionStatus } from "../payment/plan
 import { validateOrThrow } from "../server/validation";
 import { paymentProcessor } from "./paymentProcessor";
 import { stripeClient } from "./stripe/stripeClient";
-import { cascadeCancelToTenantBilling } from "./billingCascade";
-import { PRICING_VERSION } from "../shared/pricing";
+import { PRICING_VERSION, isSubscriptionActiveLike } from "../shared/pricing";
 
 /**
  * Detect the client's country from request headers.
@@ -105,6 +104,21 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     }
   }
 
+  // Prevent duplicate subscriptions: if the user already has an active-like
+  // subscription for this scope, they should use changeSubscriptionPlan instead.
+  const isInstitutionalPlan = INSTITUTIONAL_PLAN_IDS.includes(paymentPlanId);
+  const freshUser = await context.entities.User.findUnique({
+    where: { id: userId },
+    select: { subscriptionStatus: true, subscriptionPlan: true },
+  });
+  const hasActiveSub = isSubscriptionActiveLike(freshUser?.subscriptionStatus);
+  if (hasActiveSub && !isInstitutionalPlan) {
+    throw new HttpError(
+      409,
+      'Você já possui uma assinatura ativa. Para trocar de plano, use a opção de alterar plano no portal de pagamento.',
+    );
+  }
+
   // Track checkout_started event (for abandonment funnel)
   try {
     await (context.entities as any).PricingEvent.create({
@@ -189,26 +203,29 @@ export const cancelSubscription: CancelSubscription<
   }
 
   try {
+    // Schedule cancellation at period end — do NOT cancel immediately.
+    // Access is preserved until the current period expires.
     const subscriptions = await stripeClient.subscriptions.list({
       customer: user.paymentProcessorUserId,
       status: "active",
     });
     for (const subscription of subscriptions.data) {
-      await stripeClient.subscriptions.cancel(subscription.id);
+      await stripeClient.subscriptions.update(subscription.id, {
+        cancel_at_period_end: true,
+      });
     }
   } catch (err: any) {
-    console.error("Failed to cancel Stripe subscription:", err?.message || err);
+    console.error("Failed to schedule Stripe subscription cancellation:", err?.message || err);
   }
 
+  // Set cancel_at_period_end — access continues until webhook fires subscription.deleted.
+  // Do NOT zero out subscriptionPlan or cascade cancel yet.
   await context.entities.User.update({
     where: { id: context.user.id },
     data: {
-      subscriptionStatus: SubscriptionStatus.Deleted,
-      subscriptionPlan: null,
+      subscriptionStatus: SubscriptionStatus.CancelAtPeriodEnd,
     },
   });
-
-  await cascadeCancelToTenantBilling(context, context.user.id);
 
   return { success: true };
 };

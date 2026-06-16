@@ -8,6 +8,7 @@ import {
   cancelWooviSubscription,
 } from "./checkoutUtils";
 import { wooviMiddlewareConfigFn, wooviWebhook } from "./webhook";
+import { isSubscriptionActiveLike } from "../../shared/pricing";
 
 export const wooviPaymentProcessor: PaymentProcessor = {
   id: "woovi",
@@ -22,8 +23,8 @@ export const wooviPaymentProcessor: PaymentProcessor = {
       select: { id: true, email: true, firstName: true, lastName: true, wooviCorrelationId: true, subscriptionStatus: true },
     });
 
-    // If user already has an active Woovi subscription, cancel it first to avoid double billing
-    if (user.wooviCorrelationId && user.subscriptionStatus === "active") {
+    // If user already has an active-like Woovi subscription, cancel it first to avoid double billing
+    if (user.wooviCorrelationId && isSubscriptionActiveLike(user.subscriptionStatus)) {
       try {
         await cancelWooviSubscription(user.wooviCorrelationId);
         console.info(`[Woovi] Cancelled previous subscription ${user.wooviCorrelationId} for user ${userId}`);
@@ -69,7 +70,7 @@ export const wooviPaymentProcessor: PaymentProcessor = {
       select: { subscriptionStatus: true, wooviCorrelationId: true },
     });
 
-    if (user.subscriptionStatus === "active" || user.subscriptionStatus === "past_due") {
+    if (isSubscriptionActiveLike(user.subscriptionStatus)) {
       return null; // No external portal — managed in-app
     }
     return null;
