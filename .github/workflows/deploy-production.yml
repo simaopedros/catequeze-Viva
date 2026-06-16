@@ -2,6 +2,11 @@ name: Deploy Production
 
 on:
   workflow_dispatch:
+    inputs:
+      promote_from_homolog:
+        description: 'Promote homolog image instead of rebuilding'
+        type: boolean
+        default: false
   push:
     tags:
       - 'v*'
@@ -32,14 +37,28 @@ jobs:
         run: echo "Production SSH deploy skipped — set repository variable ENABLE_PROD_DEPLOY=true when ready."
 
       - name: Setup Node.js
+        if: ${{ inputs.promote_from_homolog != true }}
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
       - name: Install Wasp CLI
+        if: ${{ inputs.promote_from_homolog != true }}
         run: npm install -g @wasp.sh/wasp-cli@0.22.0 @wasp.sh/wasp-cli-linux-x64-glibc@0.22.0
 
+      - name: Promote homolog image
+        if: ${{ inputs.promote_from_homolog == true }}
+        run: |
+          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
+          docker pull "${IMAGE}:homolog-${{ github.sha }}"
+          docker tag "${IMAGE}:homolog-${{ github.sha }}" "${IMAGE}:prod-${{ github.sha }}"
+          docker tag "${IMAGE}:homolog-${{ github.sha }}" "${IMAGE}:prod-latest"
+          docker push "${IMAGE}:prod-${{ github.sha }}"
+          docker push "${IMAGE}:prod-latest"
+          echo "✅ Promoted homolog image to production"
+
       - name: Build and push production Docker image
+        if: ${{ inputs.promote_from_homolog != true }}
         working-directory: app
         run: |
           IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
@@ -51,6 +70,15 @@ jobs:
             -t "${IMAGE}:prod-${{ github.sha }}" -t "${IMAGE}:prod-latest" .
           docker push "${IMAGE}:prod-${{ github.sha }}"
           docker push "${IMAGE}:prod-latest"
+
+      - name: Smoke-test production image
+        run: |
+          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:prod-${{ github.sha }}"
+          CID=$(docker create "${IMAGE}")
+          docker cp "${CID}:/app/web-app/index.html" /tmp/smoke-index.html
+          docker rm "${CID}"
+          test -f /tmp/smoke-index.html && echo "✅ Image smoke test passed"
+          grep -q 'Catequese Viva' /tmp/smoke-index.html && echo "✅ Content check passed"
 
       - name: Pre-deploy backup
         if: ${{ vars.ENABLE_PROD_DEPLOY == 'true' }}

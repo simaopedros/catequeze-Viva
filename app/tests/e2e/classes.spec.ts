@@ -52,8 +52,9 @@ test.describe('Class Management', () => {
     }
     await navigateTo(page, `/app/classes/${CLASS_CRISMA}`);
     await page.waitForLoadState('domcontentloaded');
-    // Should show 403 or redirect
-    await page.waitForTimeout(3000);
+    // Should be denied access — page should not show the class name
+    const bodyText = await page.locator('body').innerText();
+    expect(bodyText).not.toContain('Crisma');
   });
 
   test('Guardian can see classes of their enrolled dependents', async ({ page }) => {

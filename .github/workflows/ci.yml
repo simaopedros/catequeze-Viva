@@ -7,7 +7,7 @@ on:
 
 jobs:
   unit-tests:
-    name: Unit tests
+    name: Unit + i18n
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -29,6 +29,52 @@ jobs:
 
       - name: Run unit tests
         run: npm run test:unit
+
+  integration-tests:
+    name: Integration tests
+    runs-on: ubuntu-latest
+    needs: [compile]
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: catequese_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install Wasp CLI
+        run: npm install -g @wasp.sh/wasp-cli@0.22.0 @wasp.sh/wasp-cli-linux-x64-glibc@0.22.0
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run DB migrations
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/catequese_test
+        run: wasp db migrate-dev
+
+      - name: Run integration tests
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/catequese_test
+        run: npm run test:integration
 
   compile:
     name: Wasp compile

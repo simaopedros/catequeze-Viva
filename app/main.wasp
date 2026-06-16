@@ -15,19 +15,14 @@ app OpenSaaS {
     "<meta property='og:type' content='website' />",
     "<meta property='og:title' content='Catequese Viva — Plataforma Pastoral de Iniciação Cristã' />",
     "<meta property='og:site_name' content='Catequese Viva' />",
-    // ⚠️ PRODUÇÃO: Substitua pelo domínio real antes do deploy
     "<meta property='og:url' content='https://catechis.app' />",
     "<meta property='og:description' content='Conectando dioceses, paróquias, catequistas e famílias em uma jornada de fé integrada.' />",
-    // ⚠️ PRODUÇÃO: Gere uma imagem OG (1200×630px) e coloque em /public/og-image.webp,
-    // depois descomente as linhas abaixo e atualize com o domínio real:
-    // "<meta property='og:image' content='https://catequeseviva.com/og-image.webp' />",
-    // "<meta name='twitter:image' content='https://catequeseviva.com/og-image.webp' />",
-    "<meta name='twitter:image:width' content='800' />",
-    "<meta name='twitter:image:height' content='400' />",
+    "<meta property='og:image' content='https://catechis.app/og-image.webp' />",
+    "<meta property='og:image:width' content='1200' />",
+    "<meta property='og:image:height' content='630' />",
     "<meta name='twitter:card' content='summary_large_image' />",
-    // TODO: Configurar Plausible analytics quando tiver domínio (https://docs.opensaas.sh/guides/analytics/)
-    // "<script async data-domain='seu-dominio.com' src='https://plausible.io/js/script.js'></script>",  // for production
-    // "<script async data-domain='seu-dominio.com' src='https://plausible.io/js/script.local.js'></script>",  // for development
+    "<meta name='twitter:image' content='https://catechis.app/og-image.webp' />",
+    "<script defer data-domain='catechis.app' src='https://plausible.io/js/script.js'></script>",
   ],
 
   // 🔐 Auth out of the box! https://wasp.sh/docs/auth/overview
@@ -92,16 +87,10 @@ app OpenSaaS {
   },
 
   emailSender: {
-    // ⚠️ PRODUÇÃO: O provider SMTP usa as variáveis SMTP_HOST, SMTP_PORT,
-    //   SMTP_USERNAME e SMTP_PASSWORD definidas no .env.server.
-    //   O email abaixo DEVE ser um endereço verificado no seu provedor (Resend/SendGrid/Mailgun).
-    //   Em dev, use o domínio de teste do Resend. Em produção, use o seu domínio real.
-    //   Docs: https://docs.opensaas.sh/guides/email-sending/
     provider: SMTP,
     defaultFrom: {
       name: "Catequese Viva",
-      // ⚠️ PRODUÇÃO: Troque pelo email verificado no seu provedor SMTP
-      email: "onboarding@resend.dev"
+      email: "noreply@catechis.app"
     },
   },
 }
