@@ -63,5 +63,6 @@ function generateMockUserData(): MockUserData {
       : null,
     wooviCorrelationId: null,
     pricingVersion: 2,
+    stripeSubscriptionId: null,
   };
 }

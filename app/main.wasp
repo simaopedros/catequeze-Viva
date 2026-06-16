@@ -194,6 +194,11 @@ action cancelSubscription {
   entities: [User, TenantBilling, Diocese, Parish, Membership]
 }
 
+action changeSubscriptionPlan {
+  fn: import { changeSubscriptionPlan } from "@src/payment/operations",
+  entities: [User]
+}
+
 api paymentsWebhook {
   fn: import { paymentsWebhook } from "@src/payment/webhook",
   entities: [User, UserAiCredits, TenantBilling, Diocese, Parish, Membership],
@@ -406,22 +411,30 @@ page AppContentLibraryPage {
   component: import ContentLibraryPage from "@src/catequese/pages/ContentLibraryPage"
 }
 
-route AppAIPlannerRoute { path: "/app/ai-planner", to: AppAIPlannerPage }
-page AppAIPlannerPage {
+// ── AI Hub (unified entry point) ──
+route AppAIHubRoute { path: "/app/ai-hub", to: AppAIHubPage }
+page AppAIHubPage {
   authRequired: true,
-  component: import AIPlannerPage from "@src/catequese/pages/AIPlannerPage"
+  component: import AIHubPage from "@src/catequese/pages/AIHubPage"
 }
 
-route AppCollaborativePlannerRoute { path: "/app/collaborative-planner", to: AppCollaborativePlannerPage }
-page AppCollaborativePlannerPage {
+// ── Legacy redirects ──
+route AppAIPlannerRedirect { path: "/app/ai-planner", to: AppAIPlannerRedirectPage }
+page AppAIPlannerRedirectPage {
   authRequired: true,
-  component: import CollaborativePlannerPage from "@src/catequese/pages/CollaborativePlannerPage"
+  component: import RedirectToAiHub from "@src/catequese/pages/RedirectToAIHub"
 }
 
-route AppMyAiGenerationsRoute { path: "/app/my-ai-generations", to: AppMyAiGenerationsPage }
-page AppMyAiGenerationsPage {
+route AppCollaborativePlannerRedirect { path: "/app/collaborative-planner", to: AppCollaborativePlannerRedirectPage }
+page AppCollaborativePlannerRedirectPage {
   authRequired: true,
-  component: import MyAiGenerationsPage from "@src/catequese/pages/MyAiGenerationsPage"
+  component: import RedirectToAiHub from "@src/catequese/pages/RedirectToAIHub"
+}
+
+route AppMyAiGenerationsRedirect { path: "/app/my-ai-generations", to: AppMyAiGenerationsRedirectPage }
+page AppMyAiGenerationsRedirectPage {
+  authRequired: true,
+  component: import RedirectToContentLibraryAI from "@src/catequese/pages/RedirectToContentLibraryAI"
 }
 
 route WorkspaceSelectorRoute { path: "/app/select-workspace", to: WorkspaceSelectorPage }
@@ -766,6 +779,11 @@ action updateMeeting {
 action deleteMeeting {
   fn: import { deleteMeeting } from "@src/server/operations/meetingOperations",
   entities: [Meeting, AttendanceRecord, CatechesisClass, Membership, Parish]
+}
+
+query getMeeting {
+  fn: import { getMeeting } from "@src/server/operations/meetingOperations",
+  entities: [Meeting, ContentItem, CatechesisClass]
 }
 
 query getMeetingAttendance {

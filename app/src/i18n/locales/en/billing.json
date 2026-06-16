@@ -57,6 +57,8 @@
   "cancel_dialog_desc": "Are you sure you want to cancel your subscription? You will lose access to premium features at the end of the current period.",
   "cancel_confirm": "Yes, cancel",
   "cancel_keep": "Keep subscription",
+  "cancel_scheduled": "Cancellation scheduled",
+  "cancel_scheduled_desc": "Your subscription will be cancelled at the end of the current billing period. You can continue using all features until then.",
   "free": "Free",
   "monthly": "Monthly",
   "annual": "Annual",

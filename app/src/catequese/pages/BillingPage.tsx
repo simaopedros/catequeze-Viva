@@ -296,8 +296,15 @@ export default function BillingPage() {
             </div>
             <p className="text-muted-foreground text-sm flex items-center gap-2 mt-2">
               {t('current_plan')} <Badge>{effectivePlan.name}</Badge>
-              {isActive && <Badge variant="default" className="bg-success/10 text-success text-xs">{t('active')}</Badge>}
+              {isActive && user?.subscriptionStatus === 'cancel_at_period_end' ? (
+                <Badge variant="outline" className="bg-warning/10 text-warning text-xs">{t('cancel_scheduled')}</Badge>
+              ) : isActive ? (
+                <Badge variant="default" className="bg-success/10 text-success text-xs">{t('active')}</Badge>
+              ) : null}
             </p>
+            {user?.subscriptionStatus === 'cancel_at_period_end' && (
+              <p className="text-xs text-muted-foreground mt-1">{t('cancel_scheduled_desc')}</p>
+            )}
             {requestedPlan && requestedIsInstitutional !== !isPersonal && (
               <p className="mt-2 text-xs text-warning">
                 {requestedIsInstitutional ? t('plan_mismatch_institutional') : t('plan_mismatch_personal')}

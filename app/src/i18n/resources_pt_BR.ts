@@ -88,6 +88,22 @@ export const activities_pt_BR = {
   } as const;
 
 export const admin_pt_BR = {
+    "sidebar": {
+      "overview": "Visão Geral",
+      "dashboard": "Painel",
+      "analytics": "Analytics",
+      "governance": "Governança",
+      "parishes": "Paróquias",
+      "users": "Utilizadores",
+      "dioceses": "Dioceses",
+      "licenses": "Licenças",
+      "operations": "Operações",
+      "support": "Suporte",
+      "audit": "Auditoria",
+      "system": "Sistema",
+      "other": "Outros",
+      "back_to_app": "Voltar ao App"
+    },
     "title": "Dioceses",
     "subtitle": "Gestão de dioceses (Super Admin)",
     "new_diocese": "Nova diocese",
@@ -125,8 +141,8 @@ export const admin_pt_BR = {
 
 export const ai_pt_BR = {
     "planner": {
-      "title": "Gerador Inteligente de Encontros",
-      "subtitle": "Crie roteiros de catequese completos com IA",
+      "title": "Copiloto de Conteúdo",
+      "subtitle": "Crie, melhore e adapte encontros de catequese com IA",
       "credits_left": "{{count}} créditos de IA restantes",
       "credits_remaining": "{{count}} créditos de IA restantes",
       "upgrade": "Fazer upgrade",
@@ -138,6 +154,7 @@ export const ai_pt_BR = {
       "step_duration": "Duração do encontro",
       "step_approach": "Abordagem pastoral",
       "continue": "Continuar",
+      "adapt": "Adaptar com IA",
       "generate": "Gerar com IA",
       "minutes_abbr": "min",
       "step_tone": "Tom da linguagem",
@@ -168,9 +185,29 @@ export const ai_pt_BR = {
       "no_refs": "Nenhuma referência gerada.",
       "generate_new": "Gerar novo encontro",
       "edit_publish": "Editar e publicar",
+      "back_to_hub": "Voltar ao hub",
+      "untitled": "Sem título",
+      "selected_content": "Conteúdo selecionado",
+      "selected_meeting": "Encontro selecionado",
       "linking": "Vinculando...",
       "linked": "Vinculado ao Encontro",
       "link_to_meeting": "Vincular ao Encontro",
+      "improve_hint": "Os campos abaixo serão usados como contexto para melhorar o conteúdo.",
+      "adapt_hint": "Defina a faixa etária e o ajuste desejado para a IA adaptar linguagem e metodologia.",
+      "activity_hint": "A IA vai gerar uma atividade complementar adequada à sua turma.",
+      "whatsapp_hint": "A IA vai gerar uma mensagem pronta para enviar às famílias.",
+      "adapt_field_hint": "Ex: tornar mais simples para 9-11 anos, deixar mais pastoral, incluir mais participação da turma.",
+      "step_improve_goal": "O que você quer melhorar?",
+      "improve_goal_placeholder": "Ex: Clareza da redação, profundidade teológica, ritmo do encontro, engajamento da turma...",
+      "improve_goal_hint": "Descreva o ajuste desejado. A IA usará isso como guia para revisar o roteiro.",
+      "step_context": "Qual o conteúdo?",
+      "step_context_additional": "Que ajuste você quer fazer nesse conteúdo?",
+      "step_adaptation_request": "Como você quer adaptar esse conteúdo?",
+      "context_placeholder": "Ex: Encontro sobre a Eucaristia, roteiro da Crisma...",
+      "context_additional_placeholder": "Ex: aprofundar a explicação central, simplificar a dinâmica, melhorar a clareza do roteiro...",
+      "adaptation_request_placeholder": "Ex: adaptar para 9-11 anos, deixar mais participativo, tornar a linguagem mais simples...",
+      "context_hint": "Identifique o conteúdo que será trabalhado.",
+      "context_additional_hint": "Descreva apenas o ajuste desejado. O conteúdo escolhido já será usado como base.",
       "age_groups": {
         "pre": "Pré-catequese",
         "pre_age": "6-8 anos",
@@ -199,25 +236,114 @@ export const ai_pt_BR = {
         "Rezando para que este encontro toque os corações..."
       ]
     },
-    "generations": {
-      "title": "Minhas Gerações IA",
-      "subtitle": "Histórico de encontros, atividades e conteúdos gerados com inteligência artificial",
-      "new_meeting": "Novo Encontro",
-      "search_placeholder": "Buscar por título ou tema...",
-      "empty_title": "Nenhuma geração IA encontrada",
-      "empty_search": "Nenhum resultado para esta busca.",
-      "empty_desc": "Gere seu primeiro encontro de catequese com IA!",
-      "create_meeting": "Criar Encontro com IA"
+    "hub": {
+      "title": "O que você quer fazer hoje?",
+      "subtitle": "Escolha como o Copiloto de Conteúdo pode ajudar",
+      "create_new": "Criar um encontro do zero",
+      "create_new_desc": "Planeje um roteiro completo do início com ajuda da IA",
+      "work_on_existing": "Usar um conteúdo já criado",
+      "work_on_existing_desc": "Melhore, crie atividades ou gere mensagens a partir de um conteúdo existente",
+      "use_existing": "Usar um conteúdo já criado",
+      "use_existing_desc": "Melhore, crie atividades ou gere mensagens a partir de um conteúdo existente",
+      "existing_title": "O que você quer fazer com esse conteúdo?",
+      "existing_subtitle": "Escolha o resultado desejado",
+      "existing_improve": "Melhorar o roteiro",
+      "existing_improve_desc": "Revise e enriqueça a redação e a estrutura",
+      "existing_activity": "Gerar atividade complementar",
+      "existing_activity_desc": "Crie uma dinâmica ou atividade para o encontro",
+      "existing_whatsapp": "Gerar mensagem para famílias",
+      "existing_whatsapp_desc": "Crie uma mensagem pronta para enviar pelo WhatsApp",
+      "existing_adapt": "Ajustar linguagem ou metodologia",
+      "existing_adapt_desc": "Adapte o tom, a faixa etária ou a abordagem pedagógica",
+      "ask_cta": "Consultar o Assistente Teológico",
+      "ask_cta_desc": "Tire dúvidas rápidas sobre fé, doutrina e pastoral",
+      "create_meeting": "Criar um encontro do zero",
+      "create_meeting_desc": "Planeje um roteiro completo de catequese com ajuda da IA",
+      "improve_content": "Melhorar um conteúdo existente",
+      "improve_content_desc": "Revise e enriqueça um roteiro que você já tem",
+      "generate_activity": "Gerar atividade complementar",
+      "generate_whatsapp": "Gerar mensagem para famílias",
+      "support": "Gerar apoio para um encontro",
+      "support_desc": "Crie atividades, mensagens para famílias ou ajustes pedagógicos",
+      "ask": "Consultar o assistente teológico",
+      "ask_desc": "Tire dúvidas rápidas sobre fé, doutrina e pastoral",
+      "pick_content": "Selecione um conteúdo para trabalhar",
+      "search_content_placeholder": "Buscar conteúdo por título ou tema...",
+      "no_content_found": "Nenhum conteúdo encontrado"
+    },
+    "activity": {
+      "type_label": "Tipo de atividade",
+      "type_quiz": "Quiz",
+      "type_reflection": "Reflexão guiada",
+      "type_dynamic": "Dinâmica de grupo",
+      "type_family": "Atividade familiar",
+      "type_bible": "Leitura bíblica",
+      "type_open": "Pergunta aberta",
+      "generate": "Gerar atividade",
+      "generating": "Gerando atividade...",
+      "no_content": "Selecione um conteúdo para gerar a atividade.",
+      "error": "Erro ao gerar atividade.",
+      "error_title": "Erro",
+      "config_subtitle": "Configure o tipo de atividade que você deseja gerar",
+      "source_content": "Conteúdo de origem",
+      "description": "Descrição",
+      "points": "pontos",
+      "materials": "Materiais",
+      "back_config": "Voltar à configuração",
+      "regenerate": "Gerar outra",
+      "view_content": "Ver conteúdo"
+    },
+    "whatsapp": {
+      "tone_label": "Tom da mensagem",
+      "tone_warm": "Acolhedor",
+      "tone_direct": "Direto",
+      "tone_pastoral": "Pastoral",
+      "tone_brief": "Breve",
+      "length_label": "Tamanho",
+      "length_short": "Curto",
+      "length_medium": "Médio",
+      "length_detailed": "Detalhado",
+      "generate": "Gerar mensagem",
+      "generating": "Gerando mensagem...",
+      "no_content": "Selecione um conteúdo para gerar a mensagem.",
+      "error": "Erro ao gerar mensagem.",
+      "error_title": "Erro",
+      "config_subtitle": "Configure o tom e tamanho da mensagem para as famílias",
+      "source_content": "Encontro de origem",
+      "result_title": "Mensagem para as famílias",
+      "result_subtitle": "Edite o texto abaixo antes de copiar e enviar",
+      "empty_message": "A mensagem está vazia.",
+      "copy": "Copiar mensagem",
+      "copied": "Mensagem copiada!",
+      "back_config": "Voltar à configuração",
+      "regenerate": "Gerar outra",
+      "view_content": "Ver conteúdo"
+    },
+    "improve": {
+      "decision_subtitle": "Como você quer aplicar as melhorias?",
+      "choice_prompt": "Escolha como a IA deve gerar o resultado:",
+      "create_copy": "Criar uma cópia melhorada",
+      "create_copy_desc": "Gera um novo conteúdo com as melhorias, mantendo o original intacto.",
+      "apply_original": "Aplicar no original",
+      "apply_original_desc": "Altera diretamente o conteúdo existente. Use com cuidado.",
+      "recommended": "Recomendado",
+      "copy_mode_badge": "Modo: criando cópia — o original não será alterado",
+      "original_mode_badge": "Modo: editando o original",
+      "copy_badge": "Cópia",
+      "original_badge": "Original",
+      "no_content_selected": "Nenhum conteúdo selecionado para melhoria."
     },
     "widget": {
-      "greeting": "Olá! Sou o assistente teológico da Catequese Viva. Como posso ajudar você hoje? Pergunte-me sobre como explicar a fé para diferentes idades, dúvidas sobre sacramentos, sugestões de dinâmicas...",
+      "greeting": "Olá! Sou o Assistente Teológico. Pergunte-me sobre fé, doutrina, sacramentos e pastoral. Para criar ou adaptar roteiros de encontro, acesse o Copiloto de Conteúdo no menu lateral.",
       "error_connect": "Erro ao conectar com a IA.",
       "error_streaming": "Streaming não suportado.",
       "upgrade_required": "Você precisa do plano Catequista IA ou Paróquia para usar o assistente teológico. Acesse /app/billing para fazer upgrade.",
       "generic_error": "Desculpe, ocorreu um erro. Tente novamente mais tarde.",
       "theological_assistant": "Assistente Teológico",
       "catholic_ai": "IA Católica • Catequese Viva",
-      "empty_response": "Resposta vazia da IA."
+      "empty_response": "Resposta vazia da IA.",
+      "view_history": "Ver histórico de conversas",
+      "open_copilot": "Abrir Copiloto de Conteúdo"
     }
   } as const;
 
@@ -302,7 +428,7 @@ export const auth_pt_BR = {
     "two_factor_error_required": "Digite o código de 6 dígitos.",
     "two_factor_error_invalid": "Código inválido.",
     "signup_title": "Criar conta",
-    "signup_subtitle": "Comece gratuitamente a organizar a catequese",
+    "signup_subtitle": "Crie sua conta para montar a turma e gerar seu primeiro encontro grátis",
     "signup_email_label": "Email",
     "signup_email_placeholder": "seu@email.com",
     "signup_password_label": "Senha",
@@ -412,6 +538,7 @@ export const billing_pt_BR = {
     "parish_responsible": "Paróquia responsável:",
     "coordinator_responsible": "Coordenador responsável:",
     "contact_manager": "Por favor, entre em contato com o responsável indicado para qualquer alteração ou dúvida sobre o plano.",
+    "your_personal_plan": "Seu plano pessoal",
     "usage_title": "Uso do plano",
     "classes": "Turmas",
     "catechumens": "Catequizandos",
@@ -454,6 +581,8 @@ export const billing_pt_BR = {
     "cancel_dialog_desc": "Tem certeza que deseja cancelar a sua assinatura?",
     "cancel_confirm": "Sim, cancelar",
     "cancel_keep": "Manter assinatura",
+    "cancel_scheduled": "Cancelamento agendado",
+    "cancel_scheduled_desc": "A sua assinatura será cancelada no fim do período de cobrança atual. Pode continuar a usar todos os recursos até lá.",
     "free": "Grátis",
     "monthly": "Mensal",
     "annual": "Anual",
@@ -827,6 +956,9 @@ export const collaborative_pt_BR = {
       "sources": "fontes",
       "ideas": "ideias"
     },
+    "briefing": "Contexto",
+    "refine": "Refinar",
+    "chat_toggle": "Abrir chat",
     "actions": {
       "back_to_library": "Voltar para a biblioteca"
     },
@@ -1465,6 +1597,7 @@ export const content_pt_BR = {
       "generate_ai": "Gerar com IA",
       "diocese": "Diocese",
       "with_activities": "Com atividades",
+      "ai_generated": "Gerado por IA",
       "table_title": "Título",
       "table_status": "Status",
       "table_activities": "Atividades",
@@ -1483,6 +1616,7 @@ export const content_pt_BR = {
       "new_activity": "Nova atividade",
       "generate_ai": "Gerar com IA",
       "generating": "Gerando...",
+      "open_copilot": "Abrir no Copiloto",
       "update_activity": "Atualizar",
       "create_activity": "Criar atividade",
       "no_activities": "Nenhuma atividade",
@@ -1507,6 +1641,7 @@ export const content_pt_BR = {
       "enhance_hint": "A IA vai expandir e melhorar seu rascunho, sugerir referências bíblicas e do Catecismo, e completar campos vazios.",
       "ai_suggestions": "Sugestões da IA",
       "create_content": "Criar conteúdo",
+      "open_copilot": "Abrir no Copiloto",
       "error_title_required": "Preencha ao menos o título antes de usar a IA.",
       "error_required_fields": "Título e conteúdo principal são obrigatórios.",
       "error_enhance": "Erro ao melhorar com IA.",
@@ -1532,7 +1667,8 @@ export const content_pt_BR = {
       "success_enhanced": "Conteúdo melhorado pela IA!",
       "error_enhance": "Erro ao melhorar com IA.",
       "success_saved": "Conteúdo salvo.",
-      "error_load": "Erro ao carregar conteúdo."
+      "error_load": "Erro ao carregar conteúdo.",
+      "open_copilot": "Abrir no Copiloto"
     },
     "print_page": {
       "loading": "Carregando...",
@@ -1734,12 +1870,12 @@ export const family_pt_BR = {
 
 export const landing_pt_BR = {
     "hero": {
-      "headline_line1": "Prepare encontros incríveis em minutos",
-      "headline_line2": "com ajuda da IA",
-      "subheadline": "Crie encontros, registre presença, acompanhe catequizandos e mantenha as famílias informadas — sem planilhas, papel ou horas de preparação.",
+      "headline_line1": "Prepare seu próximo encontro de catequese",
+      "headline_line2": "em poucos minutos",
+      "subheadline": "Receba um roteiro completo com objetivo, dinâmica, leitura bíblica, atividade e oração final — e ainda faça a chamada e acompanhe sua turma no celular.",
       "badge": "Ferramentas para o dia-a-dia do catequista",
-      "cta_primary": "Experimentar gratuitamente",
-      "cta_secondary": "Ver como funciona",
+      "cta_primary": "Gerar meu primeiro encontro grátis",
+      "cta_secondary": "Ver recursos do catequista",
       "trust_signals": "Sem cartão de crédito • Plano gratuito • Comece em 2 minutos"
     },
     "pain_title": "Você dedica mais tempo organizando do que evangelizando?",
@@ -1765,8 +1901,8 @@ export const landing_pt_BR = {
       }
     ],
     "ai_showcase_title": "Seu próximo encontro pronto em menos de 30 segundos",
-    "ai_showcase_subtitle": "A IA teologicamente treinada gera o encontro completo — da acolhida à oração final.",
-    "ai_showcase_cta": "Experimente a IA gratuitamente",
+    "ai_showcase_subtitle": "A IA gera o encontro completo para a sua turma, com base na Bíblia, no Catecismo e no Diretório para a Catequese.",
+    "ai_showcase_cta": "Gerar encontro grátis",
     "features_title": "Tudo que você precisa, num só lugar",
     "features_subtitle": "Menos tempo com burocracia. Mais tempo formando discípulos.",
     "features": {
@@ -1816,7 +1952,7 @@ export const landing_pt_BR = {
     "mission_title": "Menos tempo com burocracia. Mais tempo formando discípulos.",
     "mission_text": "A Catequese Viva nasceu para ajudar catequistas a focarem no que realmente importa: evangelizar, acolher e transformar vidas. Cada minuto que você economiza com organização é um minuto a mais dedicado à sua missão.",
     "personas_title": "Feito para quem faz a catequese acontecer",
-    "personas_subtitle": "Do catequista individual ao coordenador paroquial — todos encontram valor.",
+    "personas_subtitle": "Pensado primeiro para o catequista, com estrutura para coordenação e paróquia crescerem depois.",
     "personas": [
       {
         "title": "Catequista",
@@ -1855,23 +1991,23 @@ export const landing_pt_BR = {
     ],
     "more_features": "E muito mais",
     "more_features_sub": "Recursos que fazem a diferença no dia-a-dia.",
-    "steps_title": "Três passos para transformar sua catequese",
-    "steps_subtitle": "Do primeiro acesso ao primeiro encontro preparado com IA.",
+    "steps_title": "Três passos para sair do papel ainda hoje",
+    "steps_subtitle": "Entre, monte a turma e gere o primeiro encontro sem depender de planilhas ou cadernos.",
     "steps": [
       {
         "title": "Crie sua conta gratuita",
-        "desc": "Em 2 minutos você está dentro. Sem cartão de crédito, sem burocracia."
+        "desc": "Entre em 2 minutos, sem cartão de crédito, e comece pela sua própria turma."
       },
       {
         "title": "Monte sua turma",
-        "desc": "Cadastre seus catequizandos ou importe sua planilha. A turma fica pronta em instantes."
+        "desc": "Cadastre seus catequizandos ou importe a planilha que você já usa. A turma fica pronta em instantes."
       },
       {
-        "title": "Prepare seu primeiro encontro com IA",
-        "desc": "Deixe a IA criar o roteiro completo. Depois é só aplicar — ou editar como quiser."
+        "title": "Gere o primeiro encontro",
+        "desc": "A IA monta o roteiro completo. Depois você ajusta, aplica e registra a presença no mesmo lugar."
       }
     ],
-    "steps_cta": "Criar conta gratuita",
+    "steps_cta": "Criar conta e montar minha turma",
     "testimonials_title": "Quem usa recomenda",
     "testimonials_subtitle": "Catequistas que já transformaram seu dia-a-dia.",
     "testimonials": [
@@ -1891,12 +2027,12 @@ export const landing_pt_BR = {
         "text": "Finalmente uma ferramenta que entende a realidade pastoral. Vejo o panorama completo da catequese sem precisar pedir relatórios para ninguém."
       }
     ],
-    "pricing_title": "Planos para cada realidade",
-    "pricing_subtitle": "Do catequista individual à diocese inteira. Comece grátis, evolua quando quiser.",
+    "pricing_title": "Comece grátis e assine quando quiser acelerar",
+    "pricing_subtitle": "O foco principal é o catequista individual. A estrutura para paróquia fica disponível quando você precisar ampliar.",
     "plans": {
       "free": {
         "name": "Catequista Grátis",
-        "desc": "Para começar — 1 turma, 15 catequizandos, presenças digitais, Bíblia e Catecismo integrados.",
+        "desc": "Para testar com a sua turma: 1 turma, 15 catequizandos, presenças digitais, Bíblia e Catecismo integrados.",
         "features": [
           "1 turma",
           "15 catequizandos",
@@ -1907,7 +2043,7 @@ export const landing_pt_BR = {
       },
       "ai": {
         "name": "Catequista IA",
-        "desc": "IA ilimitada para criar encontros, atividades, mensagens e planejamento anual automático.",
+        "desc": "Para catequistas que querem preparar encontros, atividades e comunicados em minutos, toda semana.",
         "price": "$9",
         "features": [
           "Turmas e catequizandos ilimitados",
@@ -1919,7 +2055,7 @@ export const landing_pt_BR = {
       },
       "parish": {
         "name": "Paróquia Completa",
-        "desc": "Para a paróquia inteira — catequistas ilimitados, painel do coordenador, documentos, comunicação integrada.",
+        "desc": "Para quando a coordenação quiser levar o mesmo processo para a paróquia inteira.",
         "price": "$29",
         "features": [
           "Catequistas ilimitados",
@@ -1968,9 +2104,9 @@ export const landing_pt_BR = {
         "a": "Sim. O plano Paróquia permite múltiplas turmas e catequistas. O plano Diocese gerencia várias paróquias com analytics consolidado."
       }
     ],
-    "cta_title": "Comece a transformar sua catequese hoje",
-    "cta_subtitle": "Junte-se a catequistas que já preparam encontros melhores em menos tempo.",
-    "cta_button": "Criar conta gratuita",
+    "cta_title": "Entre hoje e prepare o próximo encontro mais rápido",
+    "cta_subtitle": "Cadastre sua turma, gere o roteiro e acompanhe presença e famílias no mesmo fluxo.",
+    "cta_button": "Criar conta e gerar encontro grátis",
     "cta_badge": "Comece em 2 minutos",
     "cta_see_plans": "Ver planos",
     "mock": {
@@ -2554,9 +2690,7 @@ export const navigation_pt_BR = {
     "catechumens": "Catequizandos",
     "families": "Famílias",
     "content_library": "Biblioteca",
-    "ai_planner": "Gerador IA",
-    "collaborative_planner": "Co-Criação",
-    "my_ai_generations": "Minhas Gerações IA",
+    "ai_hub": "Copiloto de Conteúdo",
     "activities": "Atividades",
     "calendar": "Calendário",
     "sacraments": "Sacramentos",
@@ -2573,6 +2707,7 @@ export const navigation_pt_BR = {
     "peopleSection": "Pessoas & Turmas",
     "pedagogySection": "Pedagogia & Encontros",
     "pastoralSection": "Comunicação & Gestão",
+    "moreSection": "Mais",
     "documents": "Documentos",
     "consents": "Consentimentos",
     "catechetical_years": "Anos Catequéticos",
@@ -2625,13 +2760,12 @@ export const navigation_pt_BR = {
 export const onboarding_pt_BR = {
     "title": "Configuração Inicial",
     "subtitle_personal": "Vamos configurar o teu espaço pessoal.",
-    "subtitle_manager": "Vamos configurar a plataforma em 3 passos.",
+    "subtitle_manager": "Vamos configurar a plataforma em 2 passos.",
     "steps": {
-      "diocese": "Diocese",
-      "diocese_optional": "Diocese (opcional)",
-      "parish": "Paróquia",
+      "institution": "Paróquia & Diocese",
       "details": "Detalhes"
     },
+    "diocese_selected": "Diocese",
     "back": "← Voltar",
     "continue_parish": "Continuar para Paróquia →",
     "continue": "Continuar →",
@@ -2976,7 +3110,13 @@ export const parishes_pt_BR = {
     "coordinator_phone_placeholder": "Telefone do responsável",
     "desc_observations": "Descrição / Observações",
     "desc_placeholder": "Informações adicionais sobre a comunidade...",
-    "create_community": "Criar Comunidade"
+    "create_community": "Criar Comunidade",
+    "search_communities": "Buscar comunidades...",
+    "no_communities_found": "Nenhuma comunidade encontrada para esta busca.",
+    "found_count": "{{count}} comunidade(s) encontrada(s)",
+    "search_parishes": "Buscar paróquias...",
+    "no_parishes_found": "Nenhuma paróquia encontrada para esta busca.",
+    "no_results": "Sem resultados"
   } as const;
 
 export const public_pt_BR = {
@@ -3092,6 +3232,10 @@ export const public_pt_BR = {
       "go_onboarding": "Ir para Onboarding",
       "create_parish": "Criar Paróquia",
       "create_independent": "Criar paróquia independente",
+      "continue_title": "Continuar de onde parei",
+      "continue_button": "Continuar",
+      "last_used": "Último acesso",
+      "switch_workspace": "Trocar de espaço",
       "settings_workspace": "Configurações deste espaço",
       "settings_account": "Configurações da conta",
       "covered_by_diocese": "Coberta pela licença da {{name}}",
@@ -3421,7 +3565,10 @@ export const topbar_pt_BR = {
     "viewAllWorkspaces": "Ver todos os espaços",
     "profiles": "Perfis ({{count}})",
     "noParish": "Sem paróquia",
-    "requiresPaidPlan": "Requer plano pago"
+    "requiresPaidPlan": "Requer plano pago",
+    "language": "Idioma",
+    "theme": "Tema",
+    "context": "Espaço e perfil"
   } as const;
 
 export const tour_pt_BR = {

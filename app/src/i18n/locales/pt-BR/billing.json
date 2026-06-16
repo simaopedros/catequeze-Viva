@@ -57,6 +57,8 @@
   "cancel_dialog_desc": "Tem certeza que deseja cancelar a sua assinatura?",
   "cancel_confirm": "Sim, cancelar",
   "cancel_keep": "Manter assinatura",
+  "cancel_scheduled": "Cancelamento agendado",
+  "cancel_scheduled_desc": "A sua assinatura será cancelada no fim do período de cobrança atual. Pode continuar a usar todos os recursos até lá.",
   "free": "Grátis",
   "monthly": "Mensal",
   "annual": "Anual",

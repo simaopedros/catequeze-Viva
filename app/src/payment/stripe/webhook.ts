@@ -44,6 +44,18 @@ export const stripeWebhook: PaymentsWebhook = async (
   try {
     const event = constructStripeEvent(request);
 
+    // Idempotency: skip already-processed events
+    try {
+      await (context.entities as any).StripeWebhookEvent.create({
+        data: { id: event.id, type: event.type },
+      });
+    } catch (err: any) {
+      if (err?.code === 'P2002' || err?.message?.includes('Unique constraint')) {
+        return response.status(204).send();
+      }
+      throw err;
+    }
+
     // Clover API (2025-10+) — not yet in Stripe SDK event union.
     if ((event.type as string) === "invoice_payment.paid") {
       await handleInvoicePaymentPaid(event, prismaUserDelegate, context);
@@ -184,12 +196,13 @@ async function processPaidInvoice(
           datePaid: invoicePaidAtDate,
           paymentPlanId,
           subscriptionStatus: SubscriptionStatus.Active,
+          stripeSubscriptionId: subscriptionId,
         },
         prismaUserDelegate,
       );
 
       // Track checkout_completed
-      await trackCheckoutCompleted(context, user.id, paymentPlanId, 'stripe');
+      await trackCheckoutCompleted(context, user.id, paymentPlanId, 'stripe', subscriptionId);
 
       await grantSubscriptionAiCredits(
         context.entities.UserAiCredits,
@@ -259,6 +272,7 @@ async function handleCustomerSubscriptionUpdated(
       paymentProcessorUserId: customerId,
       paymentPlanId,
       subscriptionStatus,
+      stripeSubscriptionId: subscription.id,
     },
     prismaUserDelegate,
   );
@@ -371,6 +385,7 @@ async function handleCustomerSubscriptionDeleted(
     {
       paymentProcessorUserId: customerId,
       subscriptionStatus: SubscriptionStatus.Deleted,
+      stripeSubscriptionId: subscription.id,
     },
     prismaUserDelegate,
   );
@@ -405,6 +420,7 @@ async function trackCheckoutCompleted(
   userId: string,
   planId: string,
   processor: string,
+  subscriptionId?: string | null,
 ): Promise<void> {
   try {
     await (context.entities as any).PricingEvent.create({
@@ -414,6 +430,7 @@ async function trackCheckoutCompleted(
         toPlan: planId,
         processor,
         pricingVersion: PRICING_VERSION,
+        subscriptionId,
       },
     });
   } catch {
