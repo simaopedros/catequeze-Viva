@@ -141,5 +141,11 @@
   "coordinator_phone_placeholder": "Teléfono del responsable",
   "desc_observations": "Descripción / Observaciones",
   "desc_placeholder": "Información adicional sobre la comunidad...",
-  "create_community": "Crear Comunidad"
+  "create_community": "Crear Comunidad",
+  "search_communities": "Buscar comunidades...",
+  "no_communities_found": "No se encontraron comunidades para esta búsqueda.",
+  "found_count": "{{count}} comunidad(es) encontrada(s)",
+  "search_parishes": "Buscar parroquias...",
+  "no_parishes_found": "No se encontraron parroquias para esta búsqueda.",
+  "no_results": "Sin resultados"
 }

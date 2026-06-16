@@ -1,13 +1,12 @@
 {
   "title": "Onboarding",
   "subtitle_personal": "Let's set up your personal space.",
-  "subtitle_manager": "Let's set up the platform in 3 steps.",
+  "subtitle_manager": "Let's set up the platform in 2 steps.",
   "steps": {
-    "diocese": "Diocese",
-    "diocese_optional": "Diocese (optional)",
-    "parish": "Parish",
+    "institution": "Parish & Diocese",
     "details": "Details"
   },
+  "diocese_selected": "Diocese",
   "back": "← Back",
   "continue_parish": "Continue to Parish →",
   "continue": "Continue →",

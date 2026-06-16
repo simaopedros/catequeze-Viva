@@ -267,20 +267,33 @@ export default function CreateContentPage() {
             />
 
             <div className="border-t pt-4 space-y-3">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleEnhanceWithAi}
-                disabled={enhancing}
-                className="gap-2 border-dashed border-2 border-violet-300 dark:border-violet-700 hover:border-violet-500 bg-violet-50/50 dark:bg-violet-950/20 text-violet-700 dark:text-violet-300 hover:bg-violet-100 dark:hover:bg-violet-950/40"
-              >
-                {enhancing ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Sparkles className="h-4 w-4" />
-                )}
-                {enhancing ? t('create_page.enhancing') : t('create_page.enhance_ai')}
-              </Button>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleEnhanceWithAi}
+                  disabled={enhancing}
+                  className="gap-2 border-dashed border-2 border-violet-300 dark:border-violet-700 hover:border-violet-500 bg-violet-50/50 dark:bg-violet-950/20 text-violet-700 dark:text-violet-300 hover:bg-violet-100 dark:hover:bg-violet-950/40"
+                >
+                  {enhancing ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-4 w-4" />
+                  )}
+                  {enhancing ? t('create_page.enhancing') : t('create_page.enhance_ai')}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  asChild
+                  className="gap-2"
+                >
+                  <Link to="/app/ai-hub?mode=create-meeting">
+                    <Sparkles className="h-4 w-4" />
+                    {t('create_page.open_copilot')}
+                  </Link>
+                </Button>
+              </div>
               <p className="text-xs text-muted-foreground">
                 {t('create_page.enhance_hint')}
               </p>

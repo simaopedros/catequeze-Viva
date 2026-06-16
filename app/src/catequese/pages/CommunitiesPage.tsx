@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { Textarea } from '../../client/components/ui/textarea';
-import { Building2, Plus, Loader2, Check, X } from 'lucide-react';
+import { Building2, Plus, Loader2, Check, X, Search } from 'lucide-react';
 import { useCommunityTypeOptions } from '../../i18n/useLabels';
 import { AppShell } from '../AppShell';
 import { useQuery, listCommunities, createCommunity, updateCommunity } from 'wasp/client/operations';
@@ -12,6 +12,10 @@ import { toast } from '../../client/hooks/use-toast';
 import { CommunityCreateForm } from '../components/community/CommunityCreateForm';
 import { CommunityCard } from '../components/community/CommunityCard';
 import PhoneMaskInput from '../../client/components/PhoneMaskInput';
+import { PageHeader } from '../../client/components/PageHeader';
+import { SearchInput } from '../../client/components/SearchInput';
+import { EmptyState } from '../../client/components/EmptyState';
+import { SkeletonCard } from '../../client/components/Skeletons';
 
 export default function CommunitiesPage() {
   const { t } = useTranslation('common');
@@ -26,6 +30,7 @@ export default function CommunitiesPage() {
   );
 
   const [showCreate, setShowCreate] = useState(false);
+  const [search, setSearch] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editFields, setEditFields] = useState<any>({});
   const [saving, setSaving] = useState(false);
@@ -76,26 +81,28 @@ export default function CommunitiesPage() {
     }
   };
 
+  const filterCommunities = useMemo(() => {
+    if (!search) return communities;
+    const q = search.toLowerCase();
+    return communities.filter((c: any) =>
+      c.name?.toLowerCase().includes(q) ||
+      c.type?.toLowerCase().includes(q) ||
+      c.city?.toLowerCase().includes(q)
+    );
+  }, [communities, search]);
+
+  const hasFilters = !!search;
+
   const inputClass = "w-full h-9 rounded-md border border-input bg-background px-3 text-sm mt-1";
 
   return (
     <AppShell>
       <div className="space-y-6">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <button onClick={() => navigate('/app/parishes')} className="hover:text-foreground transition-colors">{tn('parishes')}</button>
-          <span>/</span>
-          <span className="text-foreground font-medium">{tn('communities')}</span>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">{tn('communities')}</h1>
-            <p className="text-muted-foreground text-sm">{tp('communities_page_subtitle')}</p>
-          </div>
+        <PageHeader title={tn('communities')} subtitle={tp('communities_page_subtitle')}>
           <Button size="sm" onClick={() => setShowCreate(!showCreate)}>
             <Plus className="mr-1 h-4 w-4" />{tp('new_community_btn')}
           </Button>
-        </div>
+        </PageHeader>
 
         {showCreate && activeParishId && (
           <CommunityCreateForm
@@ -105,17 +112,27 @@ export default function CommunitiesPage() {
           />
         )}
 
+        <div className="flex flex-col sm:flex-row gap-3">
+          <SearchInput placeholder={tp('search_communities')} value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+
         {loading ? (
-          <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
-        ) : communities.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center">
-            <div className="mb-4 rounded-full bg-primary/10 p-3"><Building2 className="h-8 w-8 text-primary" /></div>
-            <h3 className="text-lg font-semibold">{tp('no_community')}</h3>
-            <p className="text-sm text-muted-foreground">{activeParishId ? tp('no_communities_desc') : tp('select_parish_hint')}</p>
+          <div className="grid gap-3 md:grid-cols-2">
+            {[...Array(4)].map((_, i) => <SkeletonCard key={i} />)}
           </div>
+        ) : filterCommunities.length === 0 ? (
+          hasFilters ? (
+            <EmptyState compact icon={Search} title={t('no_results')} description={tp('no_communities_found')} />
+          ) : (
+            <EmptyState
+              icon={Building2}
+              title={tp('no_community')}
+              description={activeParishId ? tp('no_communities_desc') : tp('select_parish_hint')}
+            />
+          )
         ) : (
           <div className="grid gap-3 md:grid-cols-2">
-            {communities.map((c: any) => (
+            {filterCommunities.map((c: any) => (
               <CommunityCard
                 key={c.id}
                 community={c}
@@ -148,6 +165,7 @@ export default function CommunitiesPage() {
                 }
               />
             ))}
+            <p className="col-span-full text-xs text-muted-foreground">{tp('found_count', { count: filterCommunities.length })}</p>
           </div>
         )}
       </div>

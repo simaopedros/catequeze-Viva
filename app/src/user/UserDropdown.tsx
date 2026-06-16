@@ -4,8 +4,12 @@ import { signOut } from "../client/analytics/himetrica";
 import { Link as WaspRouterLink } from "wasp/client/router";
 import { type User as UserEntity } from "wasp/entities";
 import { userMenuItems } from "./constants";
+import { LanguageSwitcher } from "../i18n/LanguageSwitcher";
+import DarkModeSwitcher from "../client/components/DarkModeSwitcher";
+import { useTranslation } from "react-i18next";
 
 export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
+  const { t } = useTranslation('topbar');
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -38,7 +42,7 @@ export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
         <ChevronDown className="size-4" />
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-56 rounded-md border bg-popover p-1 shadow-md z-50">
+        <div className="absolute right-0 top-full mt-2 w-64 rounded-md border bg-popover p-1 shadow-md z-50">
           {userMenuItems.map((item) => {
             if (item.isAuthRequired && !user) return null;
             if (item.isAdminOnly && (!user || !user.isAdmin)) return null;
@@ -54,6 +58,17 @@ export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
               </WaspRouterLink>
             );
           })}
+          <div className="border-t my-1" />
+          {/* Language and theme inline in the user menu */}
+          <div className="flex items-center justify-between px-2 py-1.5">
+            <span className="text-xs text-muted-foreground">{t('language')}</span>
+            <LanguageSwitcher variant="inline" />
+          </div>
+          <div className="flex items-center justify-between px-2 py-1.5">
+            <span className="text-xs text-muted-foreground">{t('theme')}</span>
+            <DarkModeSwitcher />
+          </div>
+          <div className="border-t my-1" />
           <button
             type="button"
             onClick={() => signOut()}

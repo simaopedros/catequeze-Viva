@@ -38,6 +38,7 @@
     "generate_ai": "Generar con IA",
     "diocese": "Diócesis",
     "with_activities": "Con actividades",
+    "ai_generated": "Generado por IA",
     "table_title": "Título",
     "table_status": "Estado",
     "table_activities": "Actividades",
@@ -56,6 +57,7 @@
     "new_activity": "Nueva actividad",
     "generate_ai": "Generar con IA",
     "generating": "Generando...",
+    "open_copilot": "Abrir en Copiloto",
     "update_activity": "Actualizar",
     "create_activity": "Crear actividad",
     "no_activities": "Sin actividades",
@@ -80,6 +82,7 @@
     "enhance_hint": "La IA expandirá y mejorará su borrador, sugerirá referencias bíblicas y del Catecismo, y completará campos vacíos.",
     "ai_suggestions": "Sugerencias de la IA",
     "create_content": "Crear contenido",
+    "open_copilot": "Abrir en Copiloto",
     "error_title_required": "Complete al menos el título antes de usar la IA.",
     "error_required_fields": "Título y contenido principal son obligatorios.",
     "error_enhance": "Error al mejorar con IA.",
@@ -105,7 +108,8 @@
     "success_enhanced": "¡Contenido mejorado por la IA!",
     "error_enhance": "Error al mejorar con IA.",
     "success_saved": "Contenido guardado.",
-    "error_load": "Error al cargar contenido."
+    "error_load": "Error al cargar contenido.",
+    "open_copilot": "Abrir en Copiloto"
   },
   "print_page": {
     "loading": "Cargando...",

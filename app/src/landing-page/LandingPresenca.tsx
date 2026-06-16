@@ -1,10 +1,10 @@
 import { lazy, Suspense } from 'react';
 import { PublicFooter } from '../catequese/PublicFooter';
 import { PublicNavbar } from '../catequese/PublicNavbar';
+import { FaqSection } from './components/FaqSection';
 import { HeroSection } from './components/HeroSection';
 
 const CtaSection = lazy(() => import('./components/CtaSection').then(m => ({ default: m.CtaSection })));
-const FaqSection = lazy(() => import('./components/FaqSection').then(m => ({ default: m.FaqSection })));
 const FeaturesSection = lazy(() => import('./components/FeaturesSection').then(m => ({ default: m.FeaturesSection })));
 const PersonasSection = lazy(() => import('./components/PersonasSection').then(m => ({ default: m.PersonasSection })));
 const PricingPreviewSection = lazy(() => import('./components/PricingPreviewSection').then(m => ({ default: m.PricingPreviewSection })));

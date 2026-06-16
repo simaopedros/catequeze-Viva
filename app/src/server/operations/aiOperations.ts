@@ -73,6 +73,14 @@ function parseJsonResponse(content: string): any {
   }
 }
 
+function stripMarkdownFences(content: string) {
+  let text = content.trim();
+  if (text.startsWith('```json')) text = text.slice(7);
+  if (text.startsWith('```')) text = text.slice(3);
+  if (text.endsWith('```')) text = text.slice(0, -3);
+  return text.trim();
+}
+
 // ─── 1. Generate Meeting with AI ──────────────────────────────────────────
 
 export const generateMeetingWithAi = async (
@@ -337,7 +345,7 @@ export const chatWithAi = async (
       data: {
         conversationId: args.conversationId,
         senderId: context.user.id, // AI replies as system, but we store under user's conversation
-        content: `🤖 *Assistente IA:* ${reply}`,
+        content: `🤖 *Assistente Teológico:* ${reply}`,
         contentType: 'TEXT',
       },
     });
@@ -352,7 +360,7 @@ export const chatWithAi = async (
 // ─── 4. Generate Activity for Meeting ─────────────────────────────────────
 
 export const generateActivityForMeeting = async (
-  args: { contentId: string },
+  args: { contentId: string; activityType?: string; meetingId?: string },
   context: any,
 ) => {
   if (!context.user) throw new HttpError(401);
@@ -368,17 +376,126 @@ export const generateActivityForMeeting = async (
   });
   if (!content) throw new HttpError(404, 'Conteúdo não encontrado.');
 
+  const meeting = args.meetingId
+    ? await context.entities.Meeting.findUnique({
+        where: { id: args.meetingId },
+        include: {
+          class: { select: { id: true, name: true, ageGroup: true } },
+        },
+      })
+    : null;
+
   const { client, model } = await getAiClient();
+  const requestedType = args.activityType || 'QUIZ';
+
+  const activityTypeInstructions: Record<string, string> = {
+    QUIZ: `Crie um quiz com 4 perguntas de multipla escolha.
+Formato JSON:
+{
+  "title": "Titulo da atividade",
+  "description": "Breve descricao pastoral da atividade",
+  "points": 10,
+  "data": {
+    "questions": [
+      {
+        "question": "Pergunta",
+        "options": ["A", "B", "C", "D"],
+        "correctIndex": 0,
+        "explanation": "Explicacao curta"
+      }
+    ]
+  }
+}`,
+    GUIDED_REFLECTION: `Crie uma reflexao guiada.
+Formato JSON:
+{
+  "title": "Titulo da atividade",
+  "description": "Breve descricao pastoral da atividade",
+  "points": 10,
+  "data": {
+    "guide": "Texto curto orientando a reflexao",
+    "prompts": [
+      { "question": "Pergunta de reflexao" }
+    ]
+  }
+}`,
+    GROUP_DYNAMIC: `Crie uma dinamica de grupo prática.
+Formato JSON:
+{
+  "title": "Titulo da atividade",
+  "description": "Breve descricao pastoral da atividade",
+  "points": 10,
+  "data": {
+    "steps": [
+      {
+        "instruction": "Passo da dinamica",
+        "duration": 5,
+        "materials": "Materiais necessarios"
+      }
+    ]
+  }
+}`,
+    FAMILY_ACTIVITY: `Crie uma atividade para fazer em familia.
+Formato JSON:
+{
+  "title": "Titulo da atividade",
+  "description": "Breve descricao pastoral da atividade",
+  "points": 10,
+  "data": {
+    "task": "Tarefa clara para a familia realizar em casa"
+  }
+}`,
+    BIBLE_READING: `Crie uma leitura biblica guiada.
+Formato JSON:
+{
+  "title": "Titulo da atividade",
+  "description": "Breve descricao pastoral da atividade",
+  "points": 10,
+  "data": {
+    "reference": "Referencia biblica",
+    "questions": [
+      { "question": "Pergunta sobre a leitura" }
+    ]
+  }
+}`,
+    OPEN_QUESTION: `Crie uma pergunta aberta para discussao.
+Formato JSON:
+{
+  "title": "Titulo da atividade",
+  "description": "Breve descricao pastoral da atividade",
+  "points": 10,
+  "data": {
+    "question": "Pergunta aberta"
+  }
+}`,
+  };
+
+  const activityTypeLabel: Record<string, string> = {
+    QUIZ: 'quiz',
+    GUIDED_REFLECTION: 'reflexao guiada',
+    GROUP_DYNAMIC: 'dinamica de grupo',
+    FAMILY_ACTIVITY: 'atividade familiar',
+    BIBLE_READING: 'leitura biblica',
+    OPEN_QUESTION: 'pergunta aberta',
+  };
 
   const userMessage = `Com base neste encontro de catequese, gere uma atividade:
 Título: ${content.title}
 Tema: ${content.theme || ''}
 Objetivo: ${content.pastoralObjective || ''}
-Conteúdo: ${content.mainContent?.substring(0, 500) || ''}`;
+Conteúdo: ${content.mainContent?.substring(0, 700) || ''}
+Tipo solicitado: ${activityTypeLabel[requestedType] || requestedType}
+${meeting ? `Turma: ${meeting.class?.name || ''}\nFaixa etária da turma: ${meeting.class?.ageGroup || ''}` : ''}`;
 
   const response = await aiCompletion(client, model, {
     messages: [
-      { role: 'system', content: ACTIVITY_GENERATOR_PROMPT },
+      {
+        role: 'system',
+        content: `${ACTIVITY_GENERATOR_PROMPT}
+
+Você deve respeitar o tipo de atividade solicitado e devolver SOMENTE JSON valido.
+${activityTypeInstructions[requestedType] || activityTypeInstructions.QUIZ}`,
+      },
       { role: 'user', content: userMessage },
     ],
     temperature: 0.7,
@@ -386,13 +503,34 @@ Conteúdo: ${content.mainContent?.substring(0, 500) || ''}`;
     jsonMode: true,
   });
 
-  const generated = parseJsonResponse(response.content);
+  let generated: Record<string, any>;
+  try {
+    generated = parseJsonResponse(response.content);
+  } catch {
+    const fallbackText = stripMarkdownFences(response.content || '');
+    generated = {
+      title: `Atividade: ${content.title}`,
+      description: fallbackText || 'Atividade complementar gerada pela IA.',
+      data: requestedType === 'OPEN_QUESTION'
+        ? { question: fallbackText || `O que mais chamou sua atenção no encontro "${content.title}"?` }
+        : requestedType === 'FAMILY_ACTIVITY'
+        ? { task: fallbackText || `Conversem em família sobre o tema "${content.title}".` }
+        : requestedType === 'BIBLE_READING'
+        ? { reference: content.biblicalRef || '', questions: [{ question: fallbackText || 'O que Deus nos ensina nesta leitura?' }] }
+        : requestedType === 'GUIDED_REFLECTION'
+        ? { guide: fallbackText || 'Reflita com calma sobre o encontro.', prompts: [{ question: 'O que Deus quer me ensinar com este tema?' }] }
+        : requestedType === 'GROUP_DYNAMIC'
+        ? { steps: [{ instruction: fallbackText || 'Realize uma partilha em grupo sobre o tema.', duration: 10, materials: '' }] }
+        : { questions: [{ question: fallbackText || `O que aprendemos no encontro "${content.title}"?`, options: ['Opcao A', 'Opcao B', 'Opcao C', 'Opcao D'], correctIndex: 0, explanation: '' }] },
+      points: 10,
+    };
+  }
 
   const activity = await context.entities.Activity.create({
     data: {
       title: generated.title || `Atividade: ${content.title}`,
       description: generated.description,
-      type: generated.type || 'QUIZ',
+      type: requestedType as any,
       data: generated.data ? JSON.stringify(generated.data) : null,
       points: generated.points || 10,
       contentId: args.contentId,
@@ -408,7 +546,7 @@ Conteúdo: ${content.mainContent?.substring(0, 500) || ''}`;
 // ─── 5. Generate WhatsApp Message ─────────────────────────────────────────
 
 export const generateWhatsAppMessage = async (
-  args: { contentId: string },
+  args: { contentId: string; tone?: string; length?: string; meetingId?: string },
   context: any,
 ) => {
   if (!context.user) throw new HttpError(401);
@@ -425,17 +563,43 @@ export const generateWhatsAppMessage = async (
   });
   if (!content) throw new HttpError(404, 'Conteúdo não encontrado.');
 
+  const meeting = args.meetingId
+    ? await context.entities.Meeting.findUnique({
+        where: { id: args.meetingId },
+        include: {
+          class: { select: { id: true, name: true, ageGroup: true } },
+        },
+      })
+    : null;
+
   const { client, model } = await getAiClient();
+  const tone = sanitizePrompt(args.tone || 'acolhedor');
+  const length = sanitizePrompt(args.length || 'medio');
 
   const userMessage = `Encontro de catequese:
 Título: ${content.title}
 Tema: ${content.theme || ''}
 O que as crianças aprenderam: ${content.mainContent?.substring(0, 300) || ''}
-Tarefa para casa: ${content.familyTask || 'Nenhuma tarefa específica'}`;
+Tarefa para casa: ${content.familyTask || 'Nenhuma tarefa específica'}
+Tom desejado: ${tone}
+Tamanho desejado: ${length}
+${meeting ? `Turma: ${meeting.class?.name || ''}\nFaixa etária: ${meeting.class?.ageGroup || ''}` : ''}`;
 
   const response = await aiCompletion(client, model, {
     messages: [
-      { role: 'system', content: WHATSAPP_MESSAGE_PROMPT },
+      {
+        role: 'system',
+        content: `${WHATSAPP_MESSAGE_PROMPT}
+
+Respeite o tom e o tamanho pedidos.
+- Tom: ${tone}
+- Tamanho: ${length}
+
+Devolva SOMENTE JSON valido no formato:
+{
+  "message": "Mensagem pronta para enviar"
+}`,
+      },
       { role: 'user', content: userMessage },
     ],
     temperature: 0.8,
@@ -443,7 +607,12 @@ Tarefa para casa: ${content.familyTask || 'Nenhuma tarefa específica'}`;
     jsonMode: true,
   });
 
-  const generated = parseJsonResponse(response.content);
+  let generated: Record<string, any>;
+  try {
+    generated = parseJsonResponse(response.content);
+  } catch {
+    generated = { message: stripMarkdownFences(response.content || '') };
+  }
 
   return {
     message: generated.message || '',

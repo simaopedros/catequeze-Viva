@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { PublicFooter } from '../catequese/PublicFooter';
 import { PublicNavbar } from '../catequese/PublicNavbar';
+import { FaqSection } from './components/FaqSection';
 import { HeroSection } from './components/HeroSection';
 
 const AiShowcaseSection = lazy(() => import('./components/AiShowcaseSection').then(m => ({ default: m.AiShowcaseSection })));
@@ -10,8 +11,6 @@ const MissionSection = lazy(() => import('./components/MissionSection').then(m =
 const PersonasSection = lazy(() => import('./components/PersonasSection').then(m => ({ default: m.PersonasSection })));
 const PricingPreviewSection = lazy(() => import('./components/PricingPreviewSection').then(m => ({ default: m.PricingPreviewSection })));
 const StepsSection = lazy(() => import('./components/StepsSection').then(m => ({ default: m.StepsSection })));
-const FaqSection = lazy(() => import('./components/FaqSection').then(m => ({ default: m.FaqSection })));
-
 const SectionFallback = () => <div className="h-40 animate-pulse bg-muted/20 rounded-lg" />;
 
 const NS = 'landingIa';

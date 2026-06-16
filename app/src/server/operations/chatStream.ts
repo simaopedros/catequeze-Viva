@@ -4,7 +4,7 @@ import { logger } from '../logger';
  * Streaming Chat API — Server-Sent Events (SSE) endpoint for real-time AI chat.
  *
  * Endpoint: POST /api/chat-stream
- * Body: { message: string }
+ * Body: { message: string, conversationId?: string }
  * Response: text/event-stream with chunks of the AI reply
  */
 import type { Request, Response } from 'express';
@@ -43,7 +43,7 @@ export async function chatStreamHandler(req: Request, res: Response, context: an
   });
 
   try {
-    const { message } = req.body || {};
+    const { message, conversationId } = req.body || {};
     if (!message || typeof message !== 'string' || message.trim().length === 0) {
       res.write(`data: ${JSON.stringify({ error: 'Mensagem vazia.' })}\n\n`);
       res.end();
@@ -97,8 +97,8 @@ export async function chatStreamHandler(req: Request, res: Response, context: an
       }
     }
 
-    // Check cache
-    const cached = await getCachedResponse(context.entities, message);
+    // Check cache (skip if continuing a conversation)
+    const cached = !conversationId ? await getCachedResponse(context.entities, message) : null;
     if (cached) {
       res.write(`data: ${JSON.stringify({ chunk: cached })}\n\n`);
       res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
@@ -125,10 +125,36 @@ export async function chatStreamHandler(req: Request, res: Response, context: an
       }
     }
 
-    // Cache the full response
+    // Cache the full response (only for standalone queries)
     if (fullResponse) {
-      setCachedResponse(context.entities, message, fullResponse).catch(() => {});
+      if (!conversationId) {
+        setCachedResponse(context.entities, message, fullResponse).catch(() => {});
+      }
       await incrementDailyUsage(context.entities, context.user.id, CHAT_DAILY_COST);
+    }
+
+    // Persist to conversation if conversationId is provided
+    if (conversationId && fullResponse) {
+      try {
+        await context.entities.Message.create({
+          data: {
+            conversationId,
+            senderId: context.user.id,
+            content: message,
+            contentType: 'TEXT',
+          },
+        });
+        await context.entities.Message.create({
+          data: {
+            conversationId,
+            senderId: context.user.id,
+            content: `🤖 *Assistente Teológico:* ${fullResponse}`,
+            contentType: 'TEXT',
+          },
+        });
+      } catch (e: any) {
+        logger.error('[chat-stream] Failed to persist conversation messages:', e.message);
+      }
     }
 
     res.write(`data: ${JSON.stringify({ done: true })}\n\n`);

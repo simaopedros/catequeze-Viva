@@ -12,6 +12,9 @@
     "sources": "sources",
     "ideas": "ideas"
   },
+  "briefing": "Briefing",
+  "refine": "Refine",
+  "chat_toggle": "Open chat",
   "actions": {
     "back_to_library": "Back to library"
   },

@@ -19,5 +19,8 @@
   "viewAllWorkspaces": "View all workspaces",
   "profiles": "Profiles ({{count}})",
   "noParish": "No parish",
-  "requiresPaidPlan": "Requires paid plan"
+  "requiresPaidPlan": "Requires paid plan",
+  "language": "Language",
+  "theme": "Theme",
+  "context": "Workspace & role"
 }

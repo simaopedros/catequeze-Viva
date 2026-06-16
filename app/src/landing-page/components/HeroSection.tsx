@@ -29,10 +29,10 @@ export function HeroSection({ ns = 'landing' }: { ns?: string }) {
 
       <div
         ref={revealRef}
-        className={`relative max-w-6xl mx-auto px-4 py-20 md:py-28 lg:py-32 ${revealClass}`}
+        className={`relative max-w-6xl mx-auto px-4 py-14 sm:py-16 md:py-20 lg:py-28 ${revealClass}`}
       >
-        <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
-          <div className="space-y-8 text-center lg:text-left">
+        <div className="grid gap-8 md:gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14 items-center">
+          <div className="space-y-6 md:space-y-8 text-center lg:text-left">
             <div className="inline-flex items-center gap-2">
               <Badge variant="brand" size="lg" className="gap-1.5 backdrop-blur-sm">
                 <GraduationCap className="h-3.5 w-3.5" />
@@ -52,7 +52,7 @@ export function HeroSection({ ns = 'landing' }: { ns?: string }) {
               <span className="font-semibold text-foreground">{t('hero.subheadline').split('—')[1]?.trim() || t('hero.subheadline')}</span>
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <div className="flex max-w-md mx-auto lg:mx-0 flex-col md:flex-row gap-3 md:gap-4 justify-center lg:justify-start">
               <Button size="xl" variant="brand" asChild>
                 <Link to="/signup">
                   {t('hero.cta_primary')}
@@ -72,12 +72,12 @@ export function HeroSection({ ns = 'landing' }: { ns?: string }) {
             </p>
           </div>
 
-          <div ref={mockupRef} className="parallax-layer relative mx-auto w-full max-w-lg lg:max-w-none">
+          <div ref={mockupRef} className="parallax-layer relative mx-auto w-full max-w-md md:max-w-xl lg:max-w-none">
             <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-primary/10 to-accent/10 blur-2xl opacity-60" />
             <BrowserFrame className="relative" url="app.catequese.viva/painel">
               <FeatureScreenshot
-                id="dashboard"
-                alt="Painel do coordenador da Catequese Viva com KPIs e alertas pastorais"
+                id="ai-planner"
+                alt="Gerador de encontros da Catequese Viva com roteiro, leitura biblica e atividade"
               />
             </BrowserFrame>
           </div>

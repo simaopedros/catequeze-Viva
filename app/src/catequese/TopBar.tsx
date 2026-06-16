@@ -3,27 +3,21 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { useQuery, globalSearch, getUnreadNotificationCount } from 'wasp/client/operations';
 import { listNotifications, markNotificationRead, markAllNotificationsRead } from 'wasp/client/operations';
-import { Search, Bell, Menu, Church, ChevronDown, X, Loader2, Users, User, GraduationCap, Home, ScrollText, BookMarked, FileText, Building2, Library, FolderOpen, Check, MessageSquareText, CalendarDays, Shield } from 'lucide-react';
+import { Search, Bell, Menu, X, Loader2, Users, GraduationCap, ScrollText, BookMarked, FileText, Library, FolderOpen, MessageSquareText, CalendarDays, Home, Church, Building2, Shield } from 'lucide-react';
 import { useAuth } from 'wasp/client/auth';
-import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
-import DarkModeSwitcher from '../client/components/DarkModeSwitcher';
-import { Badge } from '../client/components/ui/badge';
 import { UserDropdown } from '../user/UserDropdown';
 import { useUserContext } from '../client/hooks/useUserContext';
 import { formatRelativeTime } from '../i18n/format';
 import { useLocale } from '../i18n/useLocale';
-import { useRoleLabels } from '../i18n/useLabels';
 import { Button } from '../client/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../client/components/ui/dropdown-menu';
-import { useActiveParish } from '../client/hooks/useActiveParish';
-import { useActiveWorkspace } from '../client/hooks/useActiveWorkspace';
-import { useActiveMembership } from '../client/hooks/useActiveMembership';
 import { cn } from '../client/utils';
+import { ContextSelector } from './components/ContextSelector';
+import { SearchSheet } from './components/SearchSheet';
 
 const MODULE_ICONS: Record<string, React.ComponentType<any>> = {
   catechumen: Users,
@@ -57,15 +51,8 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
   const { t: tTop } = useTranslation('topbar');
   const { t: tNav } = useTranslation('navigation');
   const { currentLocale } = useLocale();
-  const roleLabels = useRoleLabels();
   const { data: user } = useAuth();
-  const { activeParishName, switchParish, availableParishes: parishes } = useActiveParish();
-  const { workspace, workspaceName, workspaceType, workspacePlan, availableWorkspaces, switchWorkspace } = useActiveWorkspace();
-  const { userRole, parishName } = useUserContext();
-  const { activeMembership, availableMemberships, switchMembership, requiresPaidPlan } = useActiveMembership();
   const navigate = useNavigate();
-
-  const yearLabel = new Date().getFullYear().toString();
 
   // Search state
   const [query, setQuery] = useState('');
@@ -73,6 +60,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
   const [focused, setFocused] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [searchExpanded, setSearchExpanded] = useState(false);
+  const [searchSheetOpen, setSearchSheetOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -207,15 +195,15 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
       )}
 
       {/* Search — icon-only on mobile, expands on tap */}
-      <div ref={containerRef} className={`relative flex-1 ${!searchExpanded ? 'sm:max-w-lg' : ''}`}>
-        {/* Mobile collapsed: icon button centered in available space */}
+      <div ref={containerRef} className={`relative min-w-0 flex-1 ${!searchExpanded ? 'sm:max-w-lg' : ''}`}>
+        {/* Mobile collapsed: icon button opens search sheet */}
         {!searchExpanded && (
           <div className="flex justify-center sm:justify-start">
             <Button
               variant="ghost"
               size="icon"
               className="sm:hidden h-9 w-9 rounded-xl hover:bg-accent/50 shrink-0"
-              onClick={() => { setSearchExpanded(true); setTimeout(() => inputRef.current?.focus(), 100); }}
+              onClick={() => setSearchSheetOpen(true)}
             >
               <Search className="h-5 w-5" />
             </Button>
@@ -306,165 +294,9 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
 
       {/* Right section — hidden when search expanded on mobile */}
       {!searchExpanded && (
-      <div className="flex items-center gap-2 shrink-0">
-        {/* Workspace Switcher */}
-        {availableWorkspaces.length > 0 && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="hidden md:flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-foreground border border-input rounded-xl px-3 py-1.5 h-9">
-                {workspaceType === 'PERSONAL' ? (
-                  <User className="h-4 w-4 text-primary" />
-                ) : workspaceType === 'DIOCESE' ? (
-                  <Building2 className="h-4 w-4 text-warning" />
-                ) : workspaceType === 'COMMUNITY' ? (
-                  <Building2 className="h-4 w-4 text-success" />
-                ) : (
-                  <Church className="h-4 w-4 text-primary" />
-                )}
-                <span className="truncate max-w-[120px] font-medium text-sm">{workspaceName}</span>
-                <ChevronDown className="h-3.5 w-3.5 opacity-60" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-72 p-2 max-h-[70vh] overflow-y-auto">
-              {(() => {
-                // Group the workspaces the user can switch to, by type, and cap
-                // each group so the menu stays compact when there are many.
-                const MAX_PER_GROUP = 5;
-                const wsIcon = (ws: any) => {
-                  if (ws.isPersonal) return <User className="h-4 w-4 text-primary shrink-0" />;
-                  if (ws.type === 'DIOCESE') return <Building2 className="h-4 w-4 text-warning shrink-0" />;
-                  if (ws.type === 'COMMUNITY') return <Building2 className="h-4 w-4 text-success shrink-0" />;
-                  return <Church className="h-4 w-4 text-primary shrink-0" />;
-                };
-                const renderItem = (ws: any) => (
-                  <button
-                    key={ws.id}
-                    onClick={() => switchWorkspace(ws.id)}
-                    className="w-full flex items-center gap-3 text-sm px-2 py-2 rounded-sm hover:bg-accent transition-colors cursor-pointer"
-                  >
-                    {wsIcon(ws)}
-                    <div className="flex-1 text-left min-w-0">
-                      <div className="font-medium text-sm truncate">{ws.name}</div>
-                      <div className="text-overline text-muted-foreground truncate">
-                        {ws.isPersonal ? (ws.subtitle || tTop('personalSpace')) : (roleLabels[ws.role as keyof typeof roleLabels] || ws.role)}
-                      </div>
-                    </div>
-                    {ws.id === workspace?.id && <div className="w-2 h-2 rounded-full bg-primary shrink-0" />}
-                  </button>
-                );
-
-                const groups = [
-                  { key: 'personal', label: tTop('workspaceGroups.personal'), items: availableWorkspaces.filter((w: any) => w.isPersonal) },
-                  { key: 'parish', label: tTop('workspaceGroups.parish'), items: availableWorkspaces.filter((w: any) => !w.isPersonal && w.type === 'PARISH') },
-                  { key: 'diocese', label: tTop('workspaceGroups.diocese'), items: availableWorkspaces.filter((w: any) => !w.isPersonal && w.type === 'DIOCESE') },
-                  { key: 'community', label: tTop('workspaceGroups.community'), items: availableWorkspaces.filter((w: any) => !w.isPersonal && w.type === 'COMMUNITY') },
-                ].filter((g) => g.items.length > 0);
-
-                return groups.map((g) => (
-                  <div key={g.key}>
-                    <div className="px-2 pt-2 pb-1 text-overline font-bold uppercase text-muted-foreground tracking-wider">
-                      {g.label} ({g.items.length})
-                    </div>
-                    {g.items.slice(0, MAX_PER_GROUP).map(renderItem)}
-                    {g.items.length > MAX_PER_GROUP && (
-                      <button
-                        onClick={() => navigate('/app/select-workspace')}
-                        className="w-full text-caption text-primary hover:underline px-2 py-1 text-left"
-                      >
-                        {tTop('viewAll', { count: g.items.length })}
-                      </button>
-                    )}
-                  </div>
-                ));
-              })()}
-
-              <div className="border-t mt-2 pt-2">
-                <button
-                  onClick={() => { navigate('/app/select-workspace'); }}
-                  className="w-full text-xs text-muted-foreground hover:text-foreground px-2 py-1.5 rounded-sm hover:bg-accent transition-colors text-left"
-                >
-                  {tTop('viewAllWorkspaces')}
-                </button>
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
-
-        {/* Legacy parish selector — keep for backward compat during migration */}
-        {activeParishName && availableWorkspaces.length === 0 && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="hidden md:flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-foreground border border-input rounded-xl px-3 py-1.5 h-9">
-                <Church className="h-4 w-4 text-primary" />
-                <span className="truncate max-w-[160px] font-medium">{activeParishName}</span>
-                <span className="text-xs">•</span>
-                <span className="font-semibold text-primary">{yearLabel}</span>
-                <ChevronDown className="h-3.5 w-3.5 opacity-60 ml-0.5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64 p-2">
-              <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground border-b mb-1">{tNav('parishes')}</div>
-              {parishes.map((p: any) => (
-                <button
-                  key={p.id}
-                  onClick={() => switchParish(p.id)}
-                  className="w-full flex items-center gap-2 text-sm px-2 py-1.5 rounded-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
-                >
-                  <Church className="h-4 w-4 text-muted-foreground" />
-                  <span className="flex-1 truncate text-left">{p.name}</span>
-                  {p.name === activeParishName && <Check className="h-4 w-4 text-primary shrink-0" />}
-                </button>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
-
-        {/* Membership/Role selector — visible when user has multiple memberships */}
-        {availableMemberships.length > 1 && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="hidden md:flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-foreground border border-input rounded-xl px-3 py-1.5 h-9">
-                <Shield className="h-4 w-4 text-primary" />
-                <span className="truncate max-w-[120px] font-medium text-xs">
-                  {roleLabels[userRole as keyof typeof roleLabels] || userRole}
-                </span>
-                <ChevronDown className="h-3.5 w-3.5 opacity-60 ml-0.5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-72 p-2">
-              <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground border-b mb-1">
-                {tTop('profiles', { count: availableMemberships.length })}
-              </div>
-              {availableMemberships.map((m: any) => {
-                const isActive = m.id === activeMembership?.id;
-                const needsPaidPlan = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'].includes(m.role) && m.role !== 'PERSONAL_OWNER';
-                return (
-                  <button
-                    key={m.id}
-                    onClick={() => {
-                      switchMembership(m.id);
-                      // Also switch parish to match the membership
-                      if (m.parishId) switchParish(m.parishId);
-                    }}
-                    className="w-full flex items-center gap-2 text-sm px-2 py-1.5 rounded-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
-                  >
-                    <Shield className="h-4 w-4 text-muted-foreground" />
-                    <div className="flex-1 text-left min-w-0">
-                      <span className="text-sm font-medium truncate block">
-                        {roleLabels[m.role as keyof typeof roleLabels] || m.role}
-                      </span>
-                      <span className="text-overline text-muted-foreground truncate block">
-                        {m.parishName || tTop('noParish')}
-                      </span>
-                    </div>
-                    {needsPaidPlan && <span className="text-overline text-warning font-medium shrink-0" title={tTop('requiresPaidPlan')}>💰</span>}
-                    {isActive && <Check className="h-4 w-4 text-primary shrink-0" />}
-                  </button>
-                );
-              })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+      <div className="ml-auto flex items-center gap-2 shrink-0">
+        {/* Unified context selector: workspace + role */}
+        <ContextSelector />
 
         {/* Notifications with real data */}
         <DropdownMenu open={notifOpen} onOpenChange={setNotifOpen}>
@@ -529,27 +361,22 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <span className="hidden sm:inline"><LanguageSwitcher /></span>
-        <span className="hidden sm:inline"><DarkModeSwitcher /></span>
-        {userRole && (() => {
-          const variantMap: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-            SUPER_ADMIN: 'destructive', DIOCESE_ADMIN: 'destructive',
-            PARISH_COORDINATOR: 'default', COMMUNITY_COORDINATOR: 'default',
-            LEAD_CATECHIST: 'secondary', ASSISTANT_CATECHIST: 'secondary',
-            CONTENT_REVIEWER: 'outline', PASTORAL_VIEWER: 'outline',
-            GUARDIAN: 'outline', CATECHUMEN: 'outline',
-          };
-          const v = variantMap[userRole] || 'secondary';
-          return (
-            <Badge variant={v} className="hidden md:inline-flex items-center gap-1 text-xs font-medium">
-              <Shield className="h-3 w-3" />
-              {roleLabels[userRole as keyof typeof roleLabels] || userRole}
-            </Badge>
-          );
-        })()}
+        {/* User dropdown — contains lang, theme, profile links, logout */}
         {user && <UserDropdown user={user} />}
       </div>
       )}
+
+      {/* Mobile search sheet */}
+      <SearchSheet
+        open={searchSheetOpen}
+        onClose={() => setSearchSheetOpen(false)}
+        query={query}
+        onQueryChange={(q) => { setQuery(q); setSelectedIndex(0); }}
+        results={debouncedQuery.length >= 2 ? (results || []) : []}
+        isLoading={isLoading}
+        onSelect={handleSelect}
+        currentLocale={currentLocale}
+      />
     </header>
   );
 });

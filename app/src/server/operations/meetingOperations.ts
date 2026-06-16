@@ -284,6 +284,22 @@ export const updateMeeting = async (args: any, context: any) => {
   });
 };
 
+export const getMeeting = async (args: { id: string }, context: any) => {
+  if (!context.user) throw new HttpError(401);
+
+  const meeting = await context.entities.Meeting.findUnique({
+    where: { id: args.id },
+    include: {
+      content: true,
+      class: { select: { id: true, name: true, ageGroup: true } },
+    },
+  });
+
+  if (!meeting) throw new HttpError(404, 'Encontro não encontrado.');
+
+  return meeting;
+};
+
 export const deleteMeeting = async (args: { id: string }, context: any) => {
   if (!context.user) throw new HttpError(401);
 

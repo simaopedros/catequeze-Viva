@@ -23,9 +23,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   catechumens: GraduationCap,
   families: Heart,
   content_library: Library,
-  collaborative_planner: Sparkles,
-  ai_planner: Sparkles,
-  my_ai_generations: Puzzle,
+  ai_hub: Sparkles,
   activities: Puzzle,
   calendar: Calendar,
   bible: BookMarked,
@@ -44,7 +42,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 // ---- Section label keys for collapse state initialization ----
-const ALL_SECTIONS = ['people', 'pedagogy', 'pastoral'];
+const ALL_SECTIONS = ['more'];
 
 interface NavItemProps {
   item: NavItemConfig;
@@ -58,7 +56,7 @@ function NavItemLink({ item, collapsed, badge }: NavItemProps & { badge?: number
   // Map iconKey to data-tour attributes for the guided tour
   const tourMap: Record<string, string> = {
     classes: 'sidebar-classes',
-    ai_planner: 'sidebar-ai',
+    ai_hub: 'sidebar-ai',
     messages: 'sidebar-messages',
   };
 
@@ -112,6 +110,16 @@ export function Sidebar() {
   const mainSections = NAV_SECTIONS.filter(s => s.section !== 'bottom');
   const bottomSection = NAV_SECTIONS.find(s => s.section === 'bottom');
 
+  // Items only available in institutional parishes
+  const institutionalOnlyItems = [
+    'parishes', 'communities', 'reports', 'admin', 'catechetical_years', 'consents',
+  ];
+
+  const filterForWorkspace = (items: NavItemConfig[]) => {
+    if (!isPersonal) return items;
+    return items.filter(item => !institutionalOnlyItems.includes(item.iconKey));
+  };
+
   const toggleSection = (section: string) => {
     setExpandedSections(prev => {
       const next = new Set(prev);
@@ -133,35 +141,41 @@ export function Sidebar() {
 
       <nav className="flex-1 overflow-y-auto py-4 no-scrollbar">
         {mainSections.map((section) => {
+          const isPrimary = section.section === 'primary';
+          const isMore = section.section === 'more';
           let filtered = filterByRole(section.items, userRole, isAdmin);
-          
-          // Workspace-specific filtering: hide institutional-only items in personal workspace
-          if (isPersonal) {
-            // Items only available in institutional parishes
-            const institutionalOnlyItems = [
-              'parishes',        // Multi-parish management
-              'communities',     // Community subdivisions
-              'reports',         // Parish-wide reports
-              'admin',           // Platform admin
-              'catechetical_years', // Institutional years
-              'consents',        // LGPD institutional
-            ];
-            filtered = filtered.filter(item => !institutionalOnlyItems.includes(item.iconKey));
-          }
-          
-          if (filtered.length === 0) return null;
-          const isExpanded = expandedSections.has(section.section);
+          filtered = filterForWorkspace(filtered);
 
+          if (filtered.length === 0) return null;
+
+          // Primary section: items always visible, no collapsible header
+          if (isPrimary) {
+            return (
+              <div key={section.section} className="px-3 space-y-1">
+                {filtered.map((item) => (
+                  <NavItemLink
+                    key={item.to}
+                    item={item}
+                    collapsed={collapsed}
+                    badge={item.iconKey === 'messages' ? unreadMessagesCount : undefined}
+                  />
+                ))}
+                <div className="border-t my-2" />
+              </div>
+            );
+          }
+
+          // More section: collapsible with header
+          const isExpanded = expandedSections.has(section.section);
           return (
             <div key={section.section} className="mt-2 first:mt-0 px-3">
-              {/* Section header — clickable when not collapsed */}
               {!collapsed ? (
                 <button
                   onClick={() => toggleSection(section.section)}
                   className="flex w-full items-center justify-between mb-0.5 px-2.5 py-1 rounded-md hover:bg-accent/50 transition-colors"
                 >
                   <p className="text-overline font-bold text-text-tertiary uppercase select-none">
-                    {t(`${section.section}Section`)}
+                    {t('moreSection')}
                   </p>
                   <ChevronDown
                     className={cn(
@@ -174,7 +188,6 @@ export function Sidebar() {
                 <div className="mb-1" />
               )}
 
-              {/* Items — in collapsed mode always visible; otherwise toggled by section */}
               {(collapsed || isExpanded) && (
                 <div
                   className={cn(
@@ -190,7 +203,6 @@ export function Sidebar() {
                       key={item.to}
                       item={item}
                       collapsed={collapsed}
-                      badge={item.iconKey === 'messages' ? unreadMessagesCount : undefined}
                     />
                   ))}
                 </div>
@@ -201,8 +213,7 @@ export function Sidebar() {
       </nav>
 
       <div className="border-t p-2 space-y-1">
-        {filterByRole(bottomSection?.items || [], userRole, isAdmin)
-          .filter(item => !isPersonal || !['admin', 'catechetical_years'].includes(item.iconKey))
+        {filterForWorkspace(filterByRole(bottomSection?.items || [], userRole, isAdmin))
           .map((item) => (
           <NavItemLink
             key={item.to}

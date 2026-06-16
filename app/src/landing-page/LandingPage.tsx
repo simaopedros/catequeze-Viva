@@ -1,11 +1,11 @@
 import { lazy, Suspense } from 'react';
 import { PublicFooter } from '../catequese/PublicFooter';
 import { PublicNavbar } from '../catequese/PublicNavbar';
+import { FaqSection } from './components/FaqSection';
 import { HeroSection } from './components/HeroSection';
 
 const AiShowcaseSection = lazy(() => import('./components/AiShowcaseSection').then(m => ({ default: m.AiShowcaseSection })));
 const CtaSection = lazy(() => import('./components/CtaSection').then(m => ({ default: m.CtaSection })));
-const FaqSection = lazy(() => import('./components/FaqSection').then(m => ({ default: m.FaqSection })));
 const FeaturesSection = lazy(() => import('./components/FeaturesSection').then(m => ({ default: m.FeaturesSection })));
 const MissionSection = lazy(() => import('./components/MissionSection').then(m => ({ default: m.MissionSection })));
 const PainPointsSection = lazy(() => import('./components/PainPointsSection').then(m => ({ default: m.PainPointsSection })));

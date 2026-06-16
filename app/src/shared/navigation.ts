@@ -24,35 +24,31 @@ const VIEWER_ROLES = [...CATECHIST_ROLES, 'PASTORAL_VIEWER', 'CONTENT_REVIEWER']
 const LEARNER_ROLES = [...VIEWER_ROLES, 'GUARDIAN', 'CATECHUMEN'];
 
 // ---- Sidebar Navigation Sections ----
+// Primary section: daily-use items, always visible without a section header.
+// More section: secondary items, collapsed by default under "More".
+// Bottom section: always-visible utilities at the sidebar bottom.
 export const NAV_SECTIONS: NavSectionConfig[] = [
   {
-    section: 'people',
+    section: 'primary',
     items: [
       { to: '/app', labelKey: 'dashboard', iconKey: 'dashboard', roles: LEARNER_ROLES },
-      { to: '/app/parishes', labelKey: 'parishes', iconKey: 'parishes', roles: STAFF_ROLES },
-      { to: '/app/communities', labelKey: 'communities', iconKey: 'communities', roles: CATECHIST_ROLES },
       { to: '/app/classes', labelKey: 'classes', iconKey: 'classes', roles: VIEWER_ROLES },
       { to: '/app/catechumens', labelKey: 'catechumens', iconKey: 'catechumens', roles: [...VIEWER_ROLES, 'GUARDIAN'] },
-      { to: '/app/families', labelKey: 'families', iconKey: 'families', roles: CATECHIST_ROLES },
+      { to: '/app/content-library', labelKey: 'content_library', iconKey: 'content_library', roles: [...CATECHIST_ROLES, 'CONTENT_REVIEWER'] },
+      { to: '/app/ai-hub', labelKey: 'ai_hub', iconKey: 'ai_hub', roles: [...CATECHIST_ROLES, 'CONTENT_REVIEWER'] },
+      { to: '/app/calendar', labelKey: 'calendar', iconKey: 'calendar', roles: LEARNER_ROLES },
+      { to: '/app/messages', labelKey: 'messages', iconKey: 'messages', roles: [...CATECHIST_ROLES, 'GUARDIAN', 'CATECHUMEN'] },
     ],
   },
   {
-    section: 'pedagogy',
+    section: 'more',
     items: [
-      { to: '/app/content-library', labelKey: 'content_library', iconKey: 'content_library', roles: [...CATECHIST_ROLES, 'CONTENT_REVIEWER'] },
-      { to: '/app/collaborative-planner', labelKey: 'collaborative_planner', iconKey: 'collaborative_planner', roles: [...CATECHIST_ROLES, 'CONTENT_REVIEWER'] },
-      { to: '/app/ai-planner', labelKey: 'ai_planner', iconKey: 'ai_planner', roles: [...CATECHIST_ROLES, 'CONTENT_REVIEWER'] },
-      { to: '/app/my-ai-generations', labelKey: 'my_ai_generations', iconKey: 'my_ai_generations', roles: [...CATECHIST_ROLES, 'CONTENT_REVIEWER'] },
-      { to: '/app/calendar', labelKey: 'calendar', iconKey: 'calendar', roles: LEARNER_ROLES },
+      { to: '/app/parishes', labelKey: 'parishes', iconKey: 'parishes', roles: STAFF_ROLES },
+      { to: '/app/communities', labelKey: 'communities', iconKey: 'communities', roles: CATECHIST_ROLES },
+      { to: '/app/families', labelKey: 'families', iconKey: 'families', roles: CATECHIST_ROLES },
       { to: '/app/bible', labelKey: 'bible', iconKey: 'bible', roles: [...LEARNER_ROLES, 'CONTENT_REVIEWER'] },
       { to: '/app/directory', labelKey: 'directory', iconKey: 'directory', roles: [...LEARNER_ROLES, 'CONTENT_REVIEWER'] },
       { to: '/app/catechism', labelKey: 'catechism', iconKey: 'catechism', roles: [...LEARNER_ROLES, 'CONTENT_REVIEWER'] },
-    ],
-  },
-  {
-    section: 'pastoral',
-    items: [
-      { to: '/app/messages', labelKey: 'messages', iconKey: 'messages', roles: [...CATECHIST_ROLES, 'GUARDIAN', 'CATECHUMEN'] },
       { to: '/app/sacramental-journeys', labelKey: 'sacraments', iconKey: 'sacraments', roles: [...STAFF_ROLES, 'LEAD_CATECHIST', 'GUARDIAN', 'CATECHUMEN', 'PASTORAL_VIEWER'] },
       { to: '/app/journey-templates', labelKey: 'journey_templates', iconKey: 'journey_templates', roles: [...STAFF_ROLES, 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST'] },
       { to: '/app/documents', labelKey: 'documents', iconKey: 'documents', roles: [...CATECHIST_ROLES, 'GUARDIAN'] },

@@ -18,7 +18,7 @@ import {
   ensurePersonalWorkspace,
 } from 'wasp/client/operations';
 
-type Step = 'welcome' | 'personal_setup' | 'diocese' | 'parish' | 'details' | 'completion';
+type Step = 'welcome' | 'personal_setup' | 'parish' | 'details' | 'completion';
 
 interface CompletionSummary {
   role: string;
@@ -40,6 +40,7 @@ export default function OnboardingPage() {
   const [step, setStep] = useState<Step>('welcome');
   const [accountType, setAccountType] = useState<'personal' | 'manager' | null>(null);
   const [diocese, setDiocese] = useState<DioceseSelection | null>(null);
+  const [dioceseStepDone, setDioceseStepDone] = useState(false);
   const [parish, setParish] = useState<ParishSelection | null>(null);
   const [completionData, setCompletionData] = useState<CompletionSummary | null>(null);
   const [saving, setSaving] = useState(false);
@@ -167,11 +168,6 @@ export default function OnboardingPage() {
     }
   };
 
-  const handleDioceseSkip = () => {
-    setDiocese(null);
-    setStep('parish');
-  };
-
   const resolveFinishTarget = (): string => {
     const intended = getIntendedPlan();
     if (intended) {
@@ -187,8 +183,7 @@ export default function OnboardingPage() {
   };
 
   const stepLabels = [
-    { key: 'diocese', label: t('steps.diocese_optional') },
-    { key: 'parish', label: t('steps.parish') },
+    { key: 'parish', label: t('steps.institution') },
     { key: 'details', label: t('steps.details') },
   ];
 
@@ -214,7 +209,7 @@ export default function OnboardingPage() {
           <div className="space-y-4">
             <div className="flex items-center gap-1">
               {stepLabels.map((s, i) => {
-                const stepKeys = ['diocese', 'parish', 'details'];
+                const stepKeys = ['parish', 'details'];
                 const currentIdx = stepKeys.indexOf(step);
                 const isDone = i < currentIdx;
                 const isCurrent = i === currentIdx;
@@ -237,7 +232,7 @@ export default function OnboardingPage() {
             </div>
             <div className="flex items-center justify-between">
               {stepLabels.map((s, i) => {
-                const stepKeys = ['diocese', 'parish', 'details'];
+                const stepKeys = ['parish', 'details'];
                 const currentIdx = stepKeys.indexOf(step);
                 const isDone = i < currentIdx;
                 const isCurrent = i === currentIdx;
@@ -258,7 +253,7 @@ export default function OnboardingPage() {
         {step === 'welcome' && (
           <WelcomeStep
             onPersonal={() => { setAccountType('personal'); setStep('personal_setup'); }}
-            onManager={() => { setAccountType('manager'); setStep('diocese'); }}
+            onManager={() => { setAccountType('manager'); setStep('parish'); }}
           />
         )}
         {step === 'personal_setup' && (
@@ -276,48 +271,59 @@ export default function OnboardingPage() {
           </>
         )}
 
-        {step === 'diocese' && (
-          <>
-            {!diocese && (
-              <button
-                onClick={() => { setStep('welcome'); setAccountType(null); }}
-                className="text-sm text-muted-foreground hover:text-foreground mb-2"
-              >
-                {t('back')}
-              </button>
-            )}
-            <DioceseStep
-              selected={diocese}
-              onSelect={(d) => { setDiocese(d); }}
-              onSkip={handleDioceseSkip}
-            />
-          </>
-        )}
-        {step === 'diocese' && diocese && (
-          <div className="flex justify-between">
-            <button onClick={() => setDiocese(null)} className="text-sm text-muted-foreground hover:text-foreground">
-              {t('change_diocese')}
-            </button>
-            <button
-              onClick={() => setStep('parish')}
-              className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground h-10 px-4 py-2 text-sm font-medium"
-            >
-              {t('continue_parish')}
-            </button>
-          </div>
-        )}
-
         {step === 'parish' && (
-          <ParishStep
-            diocese={diocese}
-            selected={parish}
-            initialState={diocese?.state}
-            onSelect={(p) => { setParish(p); }}
-          />
+          <>
+            {!dioceseStepDone && (
+              <>
+                <button
+                  onClick={() => { setStep('welcome'); setAccountType(null); }}
+                  className="text-sm text-muted-foreground hover:text-foreground mb-2"
+                >
+                  {t('back')}
+                </button>
+                <DioceseStep
+                  selected={diocese}
+                  onSelect={(d) => setDiocese(d)}
+                  onSkip={() => setDioceseStepDone(true)}
+                />
+                {diocese && (
+                  <div className="flex justify-between mt-4">
+                    <button onClick={() => setDiocese(null)} className="text-sm text-muted-foreground hover:text-foreground">
+                      {t('change_diocese')}
+                    </button>
+                    <button
+                      onClick={() => setDioceseStepDone(true)}
+                      className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground h-10 px-4 py-2 text-sm font-medium"
+                    >
+                      {t('continue')}
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+            {dioceseStepDone && (
+              <>
+                {diocese && (
+                  <div className="rounded-lg bg-secondary/10 border border-secondary/20 p-3 mb-4 flex items-center gap-2">
+                    <span className="text-xs font-medium text-secondary">{t('diocese_selected')}: {diocese.name}</span>
+                    <button onClick={() => { setDiocese(null); setDioceseStepDone(false); }} className="text-xs text-muted-foreground hover:text-foreground ml-auto">
+                      {t('change_diocese')}
+                    </button>
+                  </div>
+                )}
+                <ParishStep
+                  diocese={diocese}
+                  selected={parish}
+                  initialState={diocese?.state}
+                  onSelect={(p) => { setParish(p); }}
+                />
+              </>
+            )}
+          </>
         )}
         {step === 'parish' && parish && (
           <div className="flex justify-between">
-            <button onClick={() => setStep('diocese')} className="text-sm text-muted-foreground hover:text-foreground">
+            <button onClick={() => setParish(null)} className="text-sm text-muted-foreground hover:text-foreground">
               {t('back')}
             </button>
             <button

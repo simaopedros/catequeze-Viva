@@ -1,13 +1,12 @@
-import { useParams, Link } from 'react-router';
+import { useParams, Link, useSearchParams } from 'react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { EmptyState } from '../../client/components/EmptyState';
-import { ArrowLeft, Clock, Tag, Target, Send, CheckCircle, Archive, Eye, Plus, Puzzle, Edit3, Calendar, FileText, Trash2, Sparkles, Loader2, Printer, BookOpen, BookMarked } from 'lucide-react';
+import { ArrowLeft, Clock, Tag, Target, Send, CheckCircle, Archive, Eye, Plus, Puzzle, Edit3, Calendar, FileText, Trash2, Sparkles, Printer, BookOpen, BookMarked, MessageCircle } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { useQuery, getContentItem, listActivitiesByContent, updateContentStatus, createActivity, updateActivity, deleteActivity } from 'wasp/client/operations';
-import { generateActivityForMeeting } from 'wasp/client/operations';
 import { ActivityForm, type ActivityType } from '../components/ActivityForm';
 import { useContentStatusMap, useActivityTypes } from '../../i18n/useLabels';
 import { useLocale } from '../../i18n/useLocale';
@@ -38,17 +37,19 @@ function activityPreview(type: string, data: any, t: any): string {
 export default function ContentDetailPage(){
   const { t } = useTranslation('content');
   const { t: ta } = useTranslation('activities');
+  const { t: tai } = useTranslation('ai');
   const { t: tc } = useTranslation('common');
   const STATUS_MAP = useContentStatusMap();
   const activityTypes = useActivityTypes();
   const { currentLocale } = useLocale();
   const {id}=useParams<{id:string}>();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { data: item, isLoading: loading } = useQuery(getContentItem, { id: id! });
   const { data: activities = [] } = useQuery(listActivitiesByContent, { contentId: id! });
-  const [tab, setTab] = useState<'meeting'|'activities'>('meeting');
+  const initialTab = searchParams.get('tab') === 'activities' ? 'activities' : 'meeting';
+  const [tab, setTab] = useState<'meeting'|'activities'>(initialTab);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [generatingAi, setGeneratingAi] = useState(false);
 
   const changeStatus = async (status: string) => {
     await updateContentStatus({ id: id!, status });
@@ -85,21 +86,22 @@ export default function ContentDetailPage(){
     await deleteActivity({ id: activityId });
   };
 
-  const handleGenerateAiActivity = async () => {
-    setGeneratingAi(true);
-    try {
-      await generateActivityForMeeting({ contentId: id! });
-    } catch (e: any) {
-      toast({ title: e?.message || t('detail.error_generate_activity'), variant: 'destructive' });
-    } finally {
-      setGeneratingAi(false);
-    }
-  };
-
   if(loading) return <AppShell><div className="max-w-3xl mx-auto space-y-6 animate-pulse"><div className="h-8 w-48 bg-muted rounded"/><div className="h-48 rounded-xl bg-muted"/></div></AppShell>;
   if(!item) return <AppShell><div className="p-6 text-destructive">{t('not_found')}</div></AppShell>;
 
   const editingActivity = editingId ? activities.find((a: any) => a.id === editingId) : null;
+  const handleTabChange = (nextTab: 'meeting' | 'activities') => {
+    setTab(nextTab);
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      if (nextTab === 'activities') {
+        next.set('tab', 'activities');
+      } else {
+        next.delete('tab');
+      }
+      return next;
+    });
+  };
 
   return(
     <AppShell>
@@ -127,13 +129,24 @@ export default function ContentDetailPage(){
           {item.status==='IN_REVIEW'&&<><Button size="sm" onClick={()=>changeStatus('APPROVED')}><CheckCircle className="mr-1 h-3 w-3"/>{t('approve')}</Button><Button size="sm" variant="outline" onClick={()=>changeStatus('DRAFT')}>{t('back_to_draft')}</Button></>}
           {item.status==='APPROVED'&&<Button size="sm" onClick={()=>changeStatus('PUBLISHED')}><Eye className="mr-1 h-3 w-3"/>{t('publish')}</Button>}
           {item.status==='PUBLISHED'&&<Button size="sm" variant="outline" onClick={()=>changeStatus('ARCHIVED')}><Archive className="mr-1 h-3 w-3"/>{t('archive')}</Button>}
+          <Button
+            size="sm"
+            variant="outline"
+            asChild
+            className="gap-1 border-dashed"
+          >
+            <Link to={`/app/ai-hub?mode=generate-whatsapp&contentId=${id}&contentTitle=${encodeURIComponent(item.title || '')}&contentTheme=${encodeURIComponent(item.theme || '')}`}>
+              <MessageCircle className="h-3 w-3" />
+              {tai('hub.existing_whatsapp')}
+            </Link>
+          </Button>
         </div>
 
         <div className="flex border-b">
-          <button onClick={() => setTab('meeting')} className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${tab === 'meeting' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
+          <button onClick={() => handleTabChange('meeting')} className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${tab === 'meeting' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
             <FileText className="h-4 w-4" /> {t('script')}
           </button>
-          <button onClick={() => setTab('activities')} className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${tab === 'activities' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
+          <button onClick={() => handleTabChange('activities')} className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${tab === 'activities' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
             <Puzzle className="h-4 w-4" /> {t('activities_tab')} ({activities.length})
           </button>
         </div>
@@ -207,12 +220,13 @@ export default function ContentDetailPage(){
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={handleGenerateAiActivity}
-                  disabled={generatingAi}
+                  asChild
                   className="gap-2 border-dashed border-violet-300 dark:border-violet-700 text-violet-700 dark:text-violet-300 hover:bg-violet-50 dark:hover:bg-violet-950/30"
                 >
-                  {generatingAi ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                  {generatingAi ? t('detail.generating') : t('detail.generate_ai')}
+                  <Link to={`/app/ai-hub?mode=generate-activity&contentId=${id}&contentTitle=${encodeURIComponent(item.title || '')}&contentTheme=${encodeURIComponent(item.theme || '')}`}>
+                    <Sparkles className="h-4 w-4" />
+                    {t('detail.open_copilot') ? t('detail.open_copilot') : t('detail.generate_ai')}
+                  </Link>
                 </Button>
               </div>
             )}

@@ -19,5 +19,8 @@
   "viewAllWorkspaces": "Ver todos los espacios",
   "profiles": "Perfiles ({{count}})",
   "noParish": "Sin parroquia",
-  "requiresPaidPlan": "Requiere plan de pago"
+  "requiresPaidPlan": "Requiere plan de pago",
+  "language": "Idioma",
+  "theme": "Tema",
+  "context": "Espacio y perfil"
 }

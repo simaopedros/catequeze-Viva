@@ -71,6 +71,24 @@ export function PublicNavbar() {
           <Link to="/about" className="block py-2 text-sm text-muted-foreground" onClick={() => setOpen(false)}>{t('about')}</Link>
           <Link to="/pricing" className="block py-2 text-sm text-muted-foreground" onClick={() => setOpen(false)}>{t('pricing')}</Link>
           <Link to="/contact" className="block py-2 text-sm text-muted-foreground" onClick={() => setOpen(false)}>{t('contact')}</Link>
+          <div className="border-t pt-2 flex items-center gap-2">
+            <Globe className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+            <div className="flex gap-1.5 overflow-x-auto">
+              {supportedLocales.map((locale) => (
+                <button
+                  key={locale}
+                  onClick={() => { setLocale(locale); }}
+                  className={`text-xs px-2 py-1 rounded-md transition-colors ${
+                    currentLocale === locale
+                      ? 'bg-primary/10 text-primary font-semibold'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  }`}
+                >
+                  {getLocaleLabel(locale)}
+                </button>
+              ))}
+            </div>
+          </div>
           <div className="flex gap-2 pt-2">
             <Button variant="outline" size="sm" asChild className="flex-1">
               <Link to="/login" onClick={() => setOpen(false)}>{t('login')}</Link>

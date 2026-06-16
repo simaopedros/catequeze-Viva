@@ -116,7 +116,7 @@
   --text-caption--line-height: 1rem;
   --text-overline: 0.625rem;
   --text-overline--line-height: 0.875rem;
-  --text-overline--letter-spacing: 0.08em;
+  --text-overline--letter-spacing: 0.05em;
 
   /* ── Radius scale ────────────────────────────────────────────────── */
   --radius-none: 0px;

@@ -150,10 +150,23 @@ export function useGuidedTour() {
 
   useEffect(() => {
     const seen = localStorage.getItem('catequese-tour-seen');
-    if (!seen) {
+    if (seen) return;
+
+    const tryShow = () => {
+      // Defer tour until cookie consent has been handled.
+      // vanilla-cookieconsent sets cc_cookie once the user accepts/rejects.
+      const hasCookieConsent = document.cookie.includes('cc_cookie');
+      if (!hasCookieConsent) {
+        // Banner still visible — wait and retry
+        const timer = setTimeout(tryShow, 500);
+        return () => clearTimeout(timer);
+      }
       const timer = setTimeout(() => setShowTour(true), 1000);
       return () => clearTimeout(timer);
-    }
+    };
+
+    const cleanup = tryShow();
+    return cleanup;
   }, []);
 
   const completeTour = () => {

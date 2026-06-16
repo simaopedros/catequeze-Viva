@@ -12,6 +12,9 @@
     "sources": "fuentes",
     "ideas": "ideas"
   },
+  "briefing": "Contexto",
+  "refine": "Refinar",
+  "chat_toggle": "Abrir chat",
   "actions": {
     "back_to_library": "Volver a la biblioteca"
   },

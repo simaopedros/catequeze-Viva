@@ -1,11 +1,14 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { Church, Users, BookOpen, Building2, Plus, MapPin, BadgeCheck, ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
+import { Church, Users, BookOpen, Building2, Plus, MapPin, BadgeCheck, ArrowRight, Loader2, ShieldCheck, Search } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { Input } from '../../client/components/ui/input';
 import { AppShell } from '../AppShell';
 import { PageHeader } from '../../client/components/PageHeader';
+import { SearchInput } from '../../client/components/SearchInput';
+import { EmptyState } from '../../client/components/EmptyState';
+import { SkeletonCard } from '../../client/components/Skeletons';
 import { useQuery, listParishes, createParish, getInstitutionalManageContext } from 'wasp/client/operations';
 import { handlePlanLimitError } from '../lib/planLimitToast';
 import CityStateSelect from '../../client/components/CityStateSelect';
@@ -38,6 +41,19 @@ export default function ParishesPage() {
   const [newDioceseId, setNewDioceseId] = useState(() => searchParams.get('dioceseId') || '');
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
+
+  const filterParishes = useMemo(() => {
+    if (!search) return parishes;
+    const q = search.toLowerCase();
+    return parishes.filter((p: any) =>
+      p.name?.toLowerCase().includes(q) ||
+      p.city?.toLowerCase().includes(q) ||
+      p.state?.toLowerCase().includes(q)
+    );
+  }, [parishes, search]);
+
+  const hasFilters = !!search;
 
   const manageDioceses: { id: string; name: string; licensed: boolean }[] = manageContext?.dioceses ?? [];
   const canCreateUnderOwnerPlan: boolean = manageContext?.canCreateUnderOwnerPlan ?? false;
@@ -103,8 +119,11 @@ export default function ParishesPage() {
   if (loading) {
     return (
       <AppShell>
-        <div className="flex justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="space-y-6 p-4 md:p-6">
+          <div className="h-8 w-48 bg-muted rounded animate-pulse" />
+          <div className="grid gap-4 md:grid-cols-2">
+            {[...Array(4)].map((_, i) => <SkeletonCard key={i} />)}
+          </div>
         </div>
       </AppShell>
     );
@@ -121,6 +140,10 @@ export default function ParishesPage() {
             <Plus className="mr-1 h-4 w-4" />{tp('new_parish_btn')}
           </Button>
         </PageHeader>
+
+        <div className="flex flex-col sm:flex-row gap-3">
+          <SearchInput placeholder={tp('search_parishes')} value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
 
         {error && (
           <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
@@ -162,16 +185,19 @@ export default function ParishesPage() {
           </div>
         )}
 
-        {parishes.length === 0 && !loading ? (
-          <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center">
-            <div className="mb-4 rounded-full bg-primary/10 p-4"><Church className="h-10 w-10 text-primary" /></div>
-            <h3 className="text-lg font-semibold">{tp('no_parishes')}</h3>
-            <p className="text-sm text-muted-foreground mt-1 max-w-sm">{tp('no_parishes_desc')}</p>
-            <Button className="mt-4" onClick={() => setShowCreate(true)}><Plus className="mr-1 h-4 w-4" />{tp('create_first')}</Button>
-          </div>
+        {filterParishes.length === 0 ? (
+          hasFilters ? (
+            <EmptyState compact icon={Search} title={tp('no_results')} description={tp('no_parishes_found')} />
+          ) : (
+            <EmptyState
+              icon={Church}
+              title={tp('no_parishes')}
+              description={tp('no_parishes_desc')}
+            />
+          )
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
-            {parishes.map((p: any) => {
+            {filterParishes.map((p: any) => {
               const billing = p.billing;
               const statusInfo = STATUS_KEYS[billing?.status] || { key: '', color: 'bg-gray-100 text-gray-600' };
               const isActive = p.active !== false;

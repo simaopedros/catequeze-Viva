@@ -1,11 +1,11 @@
 {
   "hero": {
-    "headline_line1": "Prepare encontros incríveis em minutos",
-    "headline_line2": "com ajuda da IA",
-    "subheadline": "Crie encontros, registre presença, acompanhe catequizandos e mantenha as famílias informadas — sem planilhas, papel ou horas de preparação.",
+    "headline_line1": "Prepare seu próximo encontro de catequese",
+    "headline_line2": "em poucos minutos",
+    "subheadline": "Receba um roteiro completo com objetivo, dinâmica, leitura bíblica, atividade e oração final — e ainda faça a chamada e acompanhe sua turma no celular.",
     "badge": "Ferramentas para o dia-a-dia do catequista",
-    "cta_primary": "Experimentar gratuitamente",
-    "cta_secondary": "Ver como funciona",
+    "cta_primary": "Gerar meu primeiro encontro grátis",
+    "cta_secondary": "Ver recursos do catequista",
     "trust_signals": "Sem cartão de crédito • Plano gratuito • Comece em 2 minutos"
   },
   "pain_title": "Você dedica mais tempo organizando do que evangelizando?",
@@ -31,8 +31,8 @@
     }
   ],
   "ai_showcase_title": "Seu próximo encontro pronto em menos de 30 segundos",
-  "ai_showcase_subtitle": "A IA teologicamente treinada gera o encontro completo — da acolhida à oração final.",
-  "ai_showcase_cta": "Experimente a IA gratuitamente",
+  "ai_showcase_subtitle": "A IA gera o encontro completo para a sua turma, com base na Bíblia, no Catecismo e no Diretório para a Catequese.",
+  "ai_showcase_cta": "Gerar encontro grátis",
   "features_title": "Tudo que você precisa, num só lugar",
   "features_subtitle": "Menos tempo com burocracia. Mais tempo formando discípulos.",
   "features": {
@@ -82,7 +82,7 @@
   "mission_title": "Menos tempo com burocracia. Mais tempo formando discípulos.",
   "mission_text": "A Catequese Viva nasceu para ajudar catequistas a focarem no que realmente importa: evangelizar, acolher e transformar vidas. Cada minuto que você economiza com organização é um minuto a mais dedicado à sua missão.",
   "personas_title": "Feito para quem faz a catequese acontecer",
-  "personas_subtitle": "Do catequista individual ao coordenador paroquial — todos encontram valor.",
+  "personas_subtitle": "Pensado primeiro para o catequista, com estrutura para coordenação e paróquia crescerem depois.",
   "personas": [
     {
       "title": "Catequista",
@@ -121,23 +121,23 @@
   ],
   "more_features": "E muito mais",
   "more_features_sub": "Recursos que fazem a diferença no dia-a-dia.",
-  "steps_title": "Três passos para transformar sua catequese",
-  "steps_subtitle": "Do primeiro acesso ao primeiro encontro preparado com IA.",
+  "steps_title": "Três passos para sair do papel ainda hoje",
+  "steps_subtitle": "Entre, monte a turma e gere o primeiro encontro sem depender de planilhas ou cadernos.",
   "steps": [
     {
       "title": "Crie sua conta gratuita",
-      "desc": "Em 2 minutos você está dentro. Sem cartão de crédito, sem burocracia."
+      "desc": "Entre em 2 minutos, sem cartão de crédito, e comece pela sua própria turma."
     },
     {
       "title": "Monte sua turma",
-      "desc": "Cadastre seus catequizandos ou importe sua planilha. A turma fica pronta em instantes."
+      "desc": "Cadastre seus catequizandos ou importe a planilha que você já usa. A turma fica pronta em instantes."
     },
     {
-      "title": "Prepare seu primeiro encontro com IA",
-      "desc": "Deixe a IA criar o roteiro completo. Depois é só aplicar — ou editar como quiser."
+      "title": "Gere o primeiro encontro",
+      "desc": "A IA monta o roteiro completo. Depois você ajusta, aplica e registra a presença no mesmo lugar."
     }
   ],
-  "steps_cta": "Criar conta gratuita",
+  "steps_cta": "Criar conta e montar minha turma",
   "testimonials_title": "Quem usa recomenda",
   "testimonials_subtitle": "Catequistas que já transformaram seu dia-a-dia.",
   "testimonials": [
@@ -157,12 +157,12 @@
       "text": "Finalmente uma ferramenta que entende a realidade pastoral. Vejo o panorama completo da catequese sem precisar pedir relatórios para ninguém."
     }
   ],
-  "pricing_title": "Planos para cada realidade",
-  "pricing_subtitle": "Do catequista individual à diocese inteira. Comece grátis, evolua quando quiser.",
+  "pricing_title": "Comece grátis e assine quando quiser acelerar",
+  "pricing_subtitle": "O foco principal é o catequista individual. A estrutura para paróquia fica disponível quando você precisar ampliar.",
   "plans": {
     "free": {
       "name": "Catequista Grátis",
-      "desc": "Para começar — 1 turma, 15 catequizandos, presenças digitais, Bíblia e Catecismo integrados.",
+      "desc": "Para testar com a sua turma: 1 turma, 15 catequizandos, presenças digitais, Bíblia e Catecismo integrados.",
       "features": [
         "1 turma",
         "15 catequizandos",
@@ -173,7 +173,7 @@
     },
     "ai": {
       "name": "Catequista IA",
-      "desc": "IA ilimitada para criar encontros, atividades, mensagens e planejamento anual automático.",
+      "desc": "Para catequistas que querem preparar encontros, atividades e comunicados em minutos, toda semana.",
       "price": "$9",
       "features": [
         "Turmas e catequizandos ilimitados",
@@ -185,7 +185,7 @@
     },
     "parish": {
       "name": "Paróquia Completa",
-      "desc": "Para a paróquia inteira — catequistas ilimitados, painel do coordenador, documentos, comunicação integrada.",
+      "desc": "Para quando a coordenação quiser levar o mesmo processo para a paróquia inteira.",
       "price": "$29",
       "features": [
         "Catequistas ilimitados",
@@ -234,9 +234,9 @@
       "a": "Sim. O plano Paróquia permite múltiplas turmas e catequistas. O plano Diocese gerencia várias paróquias com analytics consolidado."
     }
   ],
-  "cta_title": "Comece a transformar sua catequese hoje",
-  "cta_subtitle": "Junte-se a catequistas que já preparam encontros melhores em menos tempo.",
-  "cta_button": "Criar conta gratuita",
+  "cta_title": "Entre hoje e prepare o próximo encontro mais rápido",
+  "cta_subtitle": "Cadastre sua turma, gere o roteiro e acompanhe presença e famílias no mesmo fluxo.",
+  "cta_button": "Criar conta e gerar encontro grátis",
   "cta_badge": "Comece em 2 minutos",
   "cta_see_plans": "Ver planos",
   "mock": {

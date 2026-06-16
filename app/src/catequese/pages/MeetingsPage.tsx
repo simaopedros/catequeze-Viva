@@ -176,7 +176,7 @@ export default function MeetingsPage() {
                     size="sm"
                     variant="ghost"
                     className="text-xs h-7"
-                    onClick={() => navigate(`/app/collaborative-planner?meetingId=${m.id}&classId=${classId}&tab=meeting`)}
+                    onClick={() => navigate(`/app/ai-hub?mode=generate-activity&meetingId=${m.id}&meetingTitle=${encodeURIComponent(m.title || '')}${m.content ? `&contentId=${m.content.id}&contentTitle=${encodeURIComponent(m.content.title || '')}&contentTheme=${encodeURIComponent(m.content.theme || '')}` : ''}`)}
                   >
                     <Sparkles className="mr-1 h-3 w-3" />
                     {t('generate_ai_activity')}
@@ -185,7 +185,7 @@ export default function MeetingsPage() {
                     size="sm"
                     variant="ghost"
                     className="text-xs h-7"
-                    onClick={() => navigate(`/app/collaborative-planner?meetingId=${m.id}&classId=${classId}&tab=whatsapp`)}
+                    onClick={() => navigate(`/app/ai-hub?mode=generate-whatsapp&meetingId=${m.id}&meetingTitle=${encodeURIComponent(m.title || '')}${m.content ? `&contentId=${m.content.id}&contentTitle=${encodeURIComponent(m.content.title || '')}&contentTheme=${encodeURIComponent(m.content.theme || '')}` : ''}`)}
                   >
                     <MessageCircle className="mr-1 h-3 w-3" />
                     {t('generate_whatsapp')}

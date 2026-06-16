@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 import { useNavigate } from 'react-router';
 import type { ContentItem } from 'wasp/entities';
+import type { AiIntent, SessionContext } from '../../../shared/intent';
 import {
   startCollaborativeSession,
   getSessionHistory,
@@ -49,10 +50,12 @@ interface CollaborativeState {
   streamingBlock: string | null;
   depth: number;
   setupComplete: boolean;
+  intent: AiIntent | null;
 }
 
 interface CollaborativeContextType extends CollaborativeState {
-  startSession: (theme: string, ageGroup: string, duration?: number, approach?: string) => Promise<void>;
+  startSession: (ctx: SessionContext) => Promise<void>;
+  setIntent: (intent: AiIntent) => void;
   sendMessage: (message: string) => Promise<void>;
   generateBlock: (blockField: string, instruction?: string) => Promise<void>;
   adjustDepth: (depth: number) => Promise<void>;
@@ -83,6 +86,7 @@ export function CollaborativeProvider({ children }: { children: ReactNode }) {
     streamingBlock: null,
     depth: 3,
     setupComplete: false,
+    intent: null,
   });
 
   const navigate = useNavigate();
@@ -96,15 +100,26 @@ export function CollaborativeProvider({ children }: { children: ReactNode }) {
     } catch {}
   }, [state.contentItemId]);
 
-  const startSession = useCallback(async (theme: string, ageGroup: string, duration?: number, approach?: string) => {
-    setState(s => ({ ...s, generating: true }));
+  const startSession = useCallback(async (ctx: SessionContext) => {
+    setState(s => ({ ...s, generating: true, intent: ctx.intent }));
     try {
-      const result = await startCollaborativeSession({ theme, ageGroup, duration, approach });
+      const result = await startCollaborativeSession({
+        theme: ctx.theme,
+        ageGroup: ctx.ageGroup,
+        duration: ctx.duration,
+        approach: ctx.approach,
+        intent: ctx.intent,
+        contentId: ctx.contentId ?? undefined,
+        meetingId: ctx.meetingId ?? undefined,
+        applyToOriginal: ctx.applyToOriginal,
+      } as any);
+      const typedResult = result as unknown as { sessionId: string; contentItemId: string; contentItem: ContentItem; attachments?: ContextAttachment[] };
       setState(s => ({
         ...s,
-        sessionId: result.sessionId,
-        contentItemId: result.contentItemId,
-        contentItem: result.contentItem as unknown as ContentItem,
+        sessionId: typedResult.sessionId,
+        contentItemId: typedResult.contentItemId,
+        contentItem: typedResult.contentItem,
+        attachments: typedResult.attachments || [],
         setupComplete: true,
         generating: false,
       }));
@@ -368,6 +383,10 @@ export function CollaborativeProvider({ children }: { children: ReactNode }) {
     setState(s => ({ ...s, contentItem: item }));
   }, []);
 
+  const setIntent = useCallback((intent: AiIntent) => {
+    setState(s => ({ ...s, intent }));
+  }, []);
+
   const saveVersion = useCallback(async (args: { contentItemId: string; changeNotes?: string }) => {
     return saveContentVersion(args);
   }, []);
@@ -384,6 +403,7 @@ export function CollaborativeProvider({ children }: { children: ReactNode }) {
     <CollaborativeContext.Provider value={{
       ...state,
       startSession,
+      setIntent,
       sendMessage,
       generateBlock,
       adjustDepth,

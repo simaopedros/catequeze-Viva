@@ -12,6 +12,9 @@
     "sources": "fontes",
     "ideas": "ideias"
   },
+  "briefing": "Contexto",
+  "refine": "Refinar",
+  "chat_toggle": "Abrir chat",
   "actions": {
     "back_to_library": "Voltar para a biblioteca"
   },

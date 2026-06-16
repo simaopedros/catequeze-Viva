@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Star, PiggyBank } from 'lucide-react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
-import { setIntendedPlan } from '../../catequese/lib/intendedPlan';
+import { setIntendedInterval, setIntendedPlan } from '../../catequese/lib/intendedPlan';
 import type { BillingInterval } from '../../catequese/lib/intendedPlan';
 import { PLANS } from '../../shared/pricing';
 
@@ -17,9 +17,9 @@ export function PricingPreviewSection({ ns = 'landing' }: { ns?: string }) {
   const [billingInterval, setBillingInterval] = useState<BillingInterval>('monthly');
 
   const plans = [
-    { planKey: 'free', priceCents: PLANS.catechist_free.prices.monthlyCents, highlight: false },
-    { planKey: 'ai', priceCents: PLANS.catechist_ai.prices.monthlyCents, priceCentsAnnual: PLANS.catechist_ai.prices.annualCents, highlight: true },
-    { planKey: 'parish', priceCents: PLANS.parish_complete.prices.monthlyCents, priceCentsAnnual: PLANS.parish_complete.prices.annualCents, highlight: false },
+    { planKey: 'free', planId: 'catechist_free', priceCents: PLANS.catechist_free.prices.monthlyCents, highlight: false },
+    { planKey: 'ai', planId: 'catechist_ai', priceCents: PLANS.catechist_ai.prices.monthlyCents, priceCentsAnnual: PLANS.catechist_ai.prices.annualCents, highlight: true },
+    { planKey: 'parish', planId: 'parish_complete', priceCents: PLANS.parish_complete.prices.monthlyCents, priceCentsAnnual: PLANS.parish_complete.prices.annualCents, highlight: false },
   ];
 
   return (
@@ -38,6 +38,7 @@ export function PricingPreviewSection({ ns = 'landing' }: { ns?: string }) {
           <PricingCard
             key={cfg.planKey}
             planKey={cfg.planKey}
+            planId={cfg.planId}
             plan={t(`plans.${cfg.planKey}`, { returnObjects: true }) as any}
             features={t(`plans.${cfg.planKey}.features`, { returnObjects: true }) as string[]}
             delay={cfg.planKey === 'free' ? 0 : cfg.planKey === 'ai' ? 60 : 120}
@@ -56,8 +57,8 @@ export function PricingPreviewSection({ ns = 'landing' }: { ns?: string }) {
   );
 }
 
-function PricingCard({ planKey, plan, features, delay, billingInterval, priceCents, priceCentsAnnual, highlight }: {
-  planKey: string; plan: any; features: string[]; delay: number; billingInterval: BillingInterval;
+function PricingCard({ planKey, planId, plan, features, delay, billingInterval, priceCents, priceCentsAnnual, highlight }: {
+  planKey: string; planId: string; plan: any; features: string[]; delay: number; billingInterval: BillingInterval;
   priceCents: number; priceCentsAnnual?: number; highlight?: boolean;
 }) {
   const { t } = useTranslation('landing');
@@ -97,7 +98,12 @@ function PricingCard({ planKey, plan, features, delay, billingInterval, priceCen
       </ul>
       <Link
         to="/signup"
-        onClick={() => { if (planKey !== 'catechist_free') setIntendedPlan(planKey); }}
+        onClick={() => {
+          setIntendedInterval(billingInterval);
+          if (planId !== 'catechist_free') {
+            setIntendedPlan(planId);
+          }
+        }}
         className={`mt-6 block text-center rounded-xl px-4 py-3 text-sm font-semibold transition-all ${highlight ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25' : 'bg-muted hover:bg-muted/80'}`}
       >
         {priceCents === 0 ? t('price_cta_free') : t('price_cta_start')}

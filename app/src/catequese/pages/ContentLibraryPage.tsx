@@ -30,6 +30,9 @@ export default function ContentLibraryPage() {
   const [onlyWithActivities, setOnlyWithActivities] = useState(
     searchParams.get('activities') === '1'
   );
+  const [onlyAiGenerated, setOnlyAiGenerated] = useState(
+    searchParams.get('filter') === 'ai'
+  );
 
   const statusLabel = (status: string) => {
     const map: Record<string, string> = {
@@ -59,9 +62,10 @@ export default function ContentLibraryPage() {
     if (filter !== 'all') result = result.filter((i: any) => i.status === filter);
     if (search) result = result.filter((i: any) => `${i.title} ${i.theme||''}`.toLowerCase().includes(search.toLowerCase()));
     if (onlyWithActivities) result = result.filter((i: any) => (i._count?.activities || 0) > 0);
+    if (onlyAiGenerated) result = result.filter((i: any) => i.isAiGenerated);
     if (sort === 'az') result.sort((a: any, b: any) => a.title.localeCompare(b.title));
     return result;
-  }, [items, dioceseItems, filter, search, sort, activeParishId, onlyWithActivities, showDiocese]);
+  }, [items, dioceseItems, filter, search, sort, activeParishId, onlyWithActivities, onlyAiGenerated, showDiocese]);
 
   const totalActivities = useMemo(
     () => items.reduce((sum: number, i: any) => sum + (i._count?.activities || 0), 0),
@@ -71,13 +75,14 @@ export default function ContentLibraryPage() {
   const activityFilterOptions = [
     { value: 'all', label: tc('all') },
     { value: 'activities', label: <span className="flex items-center gap-1"><Puzzle className="h-3 w-3" /> {t('library.with_activities')}</span> },
+    { value: 'ai', label: <span className="flex items-center gap-1"><Sparkles className="h-3 w-3" /> {t('library.ai_generated')}</span> },
   ];
   const statusFilterOptions = STATUS_KEYS.map(key => ({
     value: key,
     label: key === 'all' ? tc('all') : statusLabel(key),
   }));
 
-  const hasFilters = !!(search || filter !== 'all' || onlyWithActivities);
+  const hasFilters = !!(search || filter !== 'all' || onlyWithActivities || onlyAiGenerated);
 
   if (loading) {
     return (
@@ -100,7 +105,7 @@ export default function ContentLibraryPage() {
           subtitle={t('library.subtitle', { scripts: items.length, activities: totalActivities })}
         >
           <Button size="sm" variant="outline" asChild>
-            <Link to="/app/collaborative-planner" className="gap-1"><Sparkles className="h-4 w-4"/>{t('library.generate_ai')}</Link>
+            <Link to="/app/ai-hub?mode=create-meeting" className="gap-1"><Sparkles className="h-4 w-4"/>{t('library.generate_ai')}</Link>
           </Button>
           <Button size="sm" variant="outline" onClick={() => setSort(s => s==='recent'?'az':'recent')}><ArrowUpDown className="h-4 w-4" /></Button>
           <Button size="sm" variant="outline" onClick={() => setView(v => v==='grid'?'list':'grid')}>{view==='grid'?<List className="h-4 w-4"/>:<LayoutGrid className="h-4 w-4"/>}</Button>
@@ -112,8 +117,11 @@ export default function ContentLibraryPage() {
           <div className="flex gap-1 flex-wrap items-center">
             <FilterPills
               options={activityFilterOptions}
-              value={onlyWithActivities ? 'activities' : 'all'}
-              onChange={v => setOnlyWithActivities(v === 'activities')}
+              value={onlyAiGenerated ? 'ai' : onlyWithActivities ? 'activities' : 'all'}
+              onChange={v => {
+                setOnlyWithActivities(v === 'activities');
+                setOnlyAiGenerated(v === 'ai');
+              }}
             />
             <span className="w-px h-6 bg-border self-center mx-1" />
             <FilterPills options={statusFilterOptions} value={filter} onChange={setFilter} />
@@ -136,7 +144,7 @@ export default function ContentLibraryPage() {
           )
         ) : view === 'list' ? (
           <div className="rounded-xl border bg-card"><table className="w-full"><thead><tr className="border-b text-left text-xs text-muted-foreground uppercase"><th className="p-3">{t('library.table_title')}</th><th className="p-3 hidden md:table-cell">{t('library.table_status')}</th><th className="p-3 hidden md:table-cell">{t('library.table_activities')}</th><th className="p-3 hidden lg:table-cell">{t('library.table_time')}</th></tr></thead><tbody>{filtered.map((i:any)=>(
-            <tr key={i.id} className="border-b hover:bg-muted/30"><td className="p-3"><Link to={`/app/content-library/${i.id}`} className="font-medium text-sm hover:text-primary">{i.title}</Link><p className="text-overline text-muted-foreground">{i.theme}</p></td><td className="p-3 hidden md:table-cell"><Badge variant={statusVariant[i.status]||'secondary'} className="text-overline">{statusLabel(i.status)}</Badge></td><td className="p-3 hidden md:table-cell text-sm">{i._count?.activities||0}</td><td className="p-3 hidden lg:table-cell text-sm">{i.estimatedTime ? t('library.minutes', { count: i.estimatedTime }) : '—'}</td></tr>
+            <tr key={i.id} className="border-b hover:bg-muted/30"><td className="p-3"><Link to={`/app/content-library/${i.id}`} className="font-medium text-sm hover:text-primary">{i.title}</Link><p className="text-overline text-muted-foreground">{i.theme}</p></td><td className="p-3 hidden md:table-cell"><div className="flex items-center gap-1">{i.isAiGenerated && <Badge variant="outline" className="text-overline bg-yellow-50 border-yellow-200 text-yellow-700"><Sparkles className="h-2.5 w-2.5" />IA</Badge>}<Badge variant={statusVariant[i.status]||'secondary'} className="text-overline">{statusLabel(i.status)}</Badge></div></td><td className="p-3 hidden md:table-cell text-sm">{i._count?.activities||0}</td><td className="p-3 hidden lg:table-cell text-sm">{i.estimatedTime ? t('library.minutes', { count: i.estimatedTime }) : '—'}</td></tr>
           ))}</tbody></table></div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -146,6 +154,7 @@ export default function ContentLibraryPage() {
                   <h3 className="font-semibold text-sm group-hover:text-primary flex-1 line-clamp-2">{item.title}</h3>
                   <div className="flex items-center gap-1 ml-2 flex-shrink-0">
                     {item.isDioceseShared && <Badge variant="outline" className="text-overline gap-0.5"><BookMarked className="h-2.5 w-2.5" />{t('library.diocese')}</Badge>}
+                    {item.isAiGenerated && <Badge variant="outline" className="text-overline gap-0.5 bg-yellow-50 border-yellow-200 text-yellow-700"><Sparkles className="h-2.5 w-2.5" />IA</Badge>}
                     <Badge variant={statusVariant[item.status]||'secondary'} className="text-overline">{statusLabel(item.status)}</Badge>
                   </div>
                 </div>

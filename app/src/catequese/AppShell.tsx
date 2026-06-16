@@ -5,7 +5,6 @@ import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { BottomNav } from './BottomNav';
 import { AIHelperWidget } from './components/AIHelperWidget';
-import { Breadcrumbs } from './components/Breadcrumbs';
 import { GuidedTour, useGuidedTour } from './components/GuidedTour';
 import { TwoFactorGate } from './components/TwoFactorGate';
 import { FamilyAppShell } from './FamilyAppShell';
@@ -114,7 +113,6 @@ export function AppShell({ children }: AppShellProps) {
         <ErrorBoundary fallback={<div className="flex h-14 items-center border-b bg-card shadow-elevation-sticky px-4" />}>
           <TopBar onMenuToggle={handleMenuToggle} />
         </ErrorBoundary>
-        <Breadcrumbs />
         <main id="main-content" ref={mainRef} className="flex-1 overflow-y-auto p-4 md:p-6 pb-16 lg:pb-6">{children}</main>
       </div>
       <BottomNav />

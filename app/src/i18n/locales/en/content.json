@@ -38,6 +38,7 @@
     "generate_ai": "Generate with AI",
     "diocese": "Diocese",
     "with_activities": "With activities",
+    "ai_generated": "AI Generated",
     "table_title": "Title",
     "table_status": "Status",
     "table_activities": "Activities",
@@ -56,6 +57,7 @@
     "new_activity": "New activity",
     "generate_ai": "Generate with AI",
     "generating": "Generating...",
+    "open_copilot": "Open in Copilot",
     "update_activity": "Update",
     "create_activity": "Create activity",
     "no_activities": "No activities",
@@ -80,6 +82,7 @@
     "enhance_hint": "AI will expand and improve your draft, suggest biblical and Catechism references, and fill empty fields.",
     "ai_suggestions": "AI suggestions",
     "create_content": "Create content",
+    "open_copilot": "Open in Copilot",
     "error_title_required": "Fill in at least the title before using AI.",
     "error_required_fields": "Title and main content are required.",
     "error_enhance": "Error enhancing with AI.",
@@ -105,7 +108,8 @@
     "success_enhanced": "Content enhanced by AI!",
     "error_enhance": "Error enhancing with AI.",
     "success_saved": "Content saved.",
-    "error_load": "Error loading content."
+    "error_load": "Error loading content.",
+    "open_copilot": "Open in Copilot"
   },
   "print_page": {
     "loading": "Loading...",

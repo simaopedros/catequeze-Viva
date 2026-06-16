@@ -5,7 +5,7 @@ import { useQuery, useAction } from 'wasp/client/operations';
 import { listWorkspaces, getInstitutionalManageContext, acceptInvitation } from 'wasp/client/operations';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { Button } from '../../client/components/ui/button';
-import { User, Church, Building2, Plus, ArrowRight, Sparkles, Mail, Check, ShieldCheck, Users2, Settings } from 'lucide-react';
+import { User, Church, Building2, Plus, ArrowRight, Sparkles, Mail, Check, ShieldCheck, Users2, Settings, History } from 'lucide-react';
 
 interface Workspace {
   id: string;
@@ -61,6 +61,21 @@ export default function WorkspaceSelectorPage() {
       navigate('/app');
     }
   }, [userRole, navigate]);
+
+  // Auto-skip: if user has only 1 workspace, go directly to /app
+  useEffect(() => {
+    if (loadingWorkspaces) return;
+    if (workspaces.length === 1) {
+      const ws = workspaces[0];
+      localStorage.setItem('catequese-viva-active-workspace', ws.id);
+      window.dispatchEvent(new CustomEvent('workspace-changed', { detail: ws.id }));
+      navigate('/app');
+    }
+  }, [workspaces, loadingWorkspaces, navigate]);
+
+  // Last-used workspace from localStorage
+  const lastUsedId = localStorage.getItem('catequese-viva-active-workspace');
+  const lastUsed = lastUsedId ? workspaces.find((w: Workspace) => w.id === lastUsedId) : null;
 
   const personal = workspaces.find((w: Workspace) => w.isPersonal);
   const pendingInvitations = workspaces.filter(
@@ -199,6 +214,48 @@ export default function WorkspaceSelectorPage() {
           <h1 className="text-2xl font-bold">{t('workspace.title')}</h1>
           <p className="text-muted-foreground text-sm">{t('workspace.subtitle')}</p>
         </div>
+
+        {/* Continue where you left off — shown when user has been here before */}
+        {lastUsed && workspaces.length > 1 && (
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider px-1 flex items-center gap-1.5">
+              <History className="h-3.5 w-3.5" />
+              {t('workspace.continue_title')}
+            </h3>
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => handleEnter(lastUsed.id)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleEnter(lastUsed.id); } }}
+              className="w-full rounded-2xl border-2 border-primary/40 bg-primary/5 hover:border-primary/60 hover:bg-primary/10 transition-all p-5 text-left group cursor-pointer"
+            >
+              <div className="flex items-start gap-4">
+                <div className="rounded-xl bg-primary/10 p-3 group-hover:bg-primary/20 transition-colors">
+                  {lastUsed.isPersonal ? (
+                    <User className="h-6 w-6 text-primary" />
+                  ) : (
+                    workspaceIcon(lastUsed.type)
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h2 className="font-bold text-lg">{lastUsed.name}</h2>
+                    <span className="text-overline text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{t('workspace.last_used')}</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {lastUsed.isPersonal ? lastUsed.subtitle : roleLabel(lastUsed.role, t)}
+                  </p>
+                </div>
+                <ArrowRight className="h-5 w-5 text-primary/60 group-hover:translate-x-1 transition-transform mt-2" />
+              </div>
+            </div>
+            <div className="border-t pt-3">
+              <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider px-1 mb-2">
+                {t('workspace.switch_workspace')}
+              </h3>
+            </div>
+          </div>
+        )}
 
         {/* Personal Workspace */}
         <div>

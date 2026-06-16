@@ -1,13 +1,12 @@
 {
   "title": "Configuración Inicial",
   "subtitle_personal": "Configuremos tu espacio personal.",
-  "subtitle_manager": "Configuremos la plataforma en 3 pasos.",
+  "subtitle_manager": "Configuremos la plataforma en 2 pasos.",
   "steps": {
-    "diocese": "Diócesis",
-    "diocese_optional": "Diócesis (opcional)",
-    "parish": "Parroquia",
+    "institution": "Parroquia & Diócesis",
     "details": "Detalles"
   },
+  "diocese_selected": "Diócesis",
   "back": "← Volver",
   "continue_parish": "Continuar a Parroquia →",
   "continue": "Continuar →",
