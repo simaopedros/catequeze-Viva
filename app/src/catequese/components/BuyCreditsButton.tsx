@@ -4,6 +4,7 @@ import { Button } from '../../client/components/ui/button';
 import { generateCheckoutSession } from 'wasp/client/operations';
 import { PaymentPlanId } from '../../payment/plans';
 import { cn } from '../../client/utils';
+import { detectCurrency } from '../../shared/currency';
 
 interface BuyCreditsButtonProps {
   /** Visual size */
@@ -33,7 +34,7 @@ export function BuyCreditsButton({ size = 'sm', variant = 'default', pack, label
   const handleBuy = async () => {
     setLoading(true);
     try {
-      const result = await generateCheckoutSession({ planId, interval: 'monthly' });
+      const result = await generateCheckoutSession({ planId, interval: 'monthly', currency: detectCurrency() });
       if (result.sessionUrl) {
         window.location.href = result.sessionUrl;
       }

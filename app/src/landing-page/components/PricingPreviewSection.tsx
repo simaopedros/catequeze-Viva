@@ -6,9 +6,10 @@ import { useScrollReveal } from '../hooks/useScrollReveal';
 import { setIntendedInterval, setIntendedPlan } from '../../catequese/lib/intendedPlan';
 import type { BillingInterval } from '../../catequese/lib/intendedPlan';
 import { PLANS } from '../../shared/pricing';
+import { formatPrice } from '../../shared/currency';
 
 function fmt(cents: number): string {
-  return `$${(cents / 100).toFixed(0)}`;
+  return formatPrice(cents);
 }
 
 export function PricingPreviewSection({ ns = 'landing' }: { ns?: string }) {

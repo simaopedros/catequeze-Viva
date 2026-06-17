@@ -16,6 +16,7 @@ import { useUserContext } from '../../client/hooks/useUserContext';
 import { useActiveWorkspace } from '../../client/hooks/useActiveWorkspace';
 import { PLANS, type PlanId, isSubscriptionActiveLike, hasPersonalAccess, hasInstitutionalAccess, isBillingActive, getPersonalPlanId, getInstitutionalPlanId } from '../../shared/pricing';
 import { BuyCreditsButton } from '../components/BuyCreditsButton';
+import { detectCurrency, formatPrice } from '../../shared/currency';
 
 interface PlanCard {
   planId: PaymentPlanId;
@@ -112,24 +113,13 @@ function buildPlanCards(t: any): PlanCard[] {
   }));
 }
 
-/** Formata centavos para string de preço (ex: 500 → "$5") */
-function detectCurrency(): 'BRL' | 'USD' {
-  // Detect if user is in Brazil via navigator.language
-  if (typeof navigator !== 'undefined' && navigator.language?.startsWith('pt')) {
-    return 'BRL';
-  }
-  // Fallback: check timezone for Brazil (GMT-2 to GMT-5)
-  try {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    if (tz?.startsWith('America/Sao_Paulo') || tz?.startsWith('America/') && ['Bahia', 'Belem', 'Fortaleza', 'Maceio', 'Manaus', 'Noronha', 'Recife', 'Santarem'].some(c => tz.includes(c))) {
-      return 'BRL';
-    }
-  } catch {}
-  return 'USD';
+/** Moeda detectada do cliente */
+function getCurrency(): 'BRL' | 'USD' {
+  return detectCurrency();
 }
 
 function formatPriceFromCents(cents: number): string {
-  return `$${(cents / 100).toFixed(0)}`;
+  return formatPrice(cents);
 }
 
 export default function BillingPage() {
@@ -236,7 +226,7 @@ export default function BillingPage() {
       const result = await generateCheckoutSession({
         planId,
         interval: billingInterval,
-        currency: detectCurrency(),
+        currency: getCurrency(),
       });
       if (result.sessionUrl) {
         window.location.href = result.sessionUrl;

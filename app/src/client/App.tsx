@@ -17,6 +17,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
 import HimetricaScripts from "./analytics/HimetricaScripts";
 import { useHimetricaIdentify } from "./analytics/useHimetricaIdentify";
+import GoogleTagScripts from "./analytics/GoogleTagScripts";
 import { isFamilyPortalHost } from "../shared/portal";
 import FamilyLandingPage from "../catequese/pages/family/FamilyLandingPage";
 
@@ -100,6 +101,19 @@ export default function App() {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
+  // Push SPA route changes to dataLayer for Google Tag Manager
+  useEffect(() => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'page_view',
+      page: {
+        path: location.pathname,
+        title: document.title,
+        location: window.location.href,
+      },
+    });
+  }, [location.pathname]);
+
   // Apply stored locale after hydration to avoid mismatch with SSR
   useEffect(() => {
     applyStoredLocale();
@@ -145,6 +159,7 @@ export default function App() {
       <Toaster position="top-right" />
       <CookieConsentBanner />
       <HimetricaScripts />
+      <GoogleTagScripts />
     </>
   );
 }
