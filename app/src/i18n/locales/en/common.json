@@ -192,6 +192,8 @@
     "no_catechumen_found": "No catechumen found",
     "status_pending": "Pending",
     "status_rejected": "Rejected",
+    "status_verified": "Verified",
+    "status_missing": "Missing",
     "summary": "docs · {{verified}} verified · {{pending}} pending",
     "new": "New",
     "register": "Register document",
@@ -221,7 +223,18 @@
     "sent_success": "Document uploaded!",
     "verified_success": "Document verified!",
     "rejected_success": "Document rejected",
-    "removed_success": "Document removed"
+    "removed_success": "Document removed",
+    "upload_dialog_title": "Upload document",
+    "upload_dialog_desc": "Select the {{type}} file for {{name}}",
+    "select_file": "Select file",
+    "no_file_selected": "No file selected",
+    "tooltip_upload": "Upload document",
+    "tooltip_approve": "Approve document",
+    "tooltip_reject": "Reject document",
+    "tooltip_replace": "Replace document",
+    "tooltip_delete": "Delete document",
+    "alert_pending": "{{count}} pending",
+    "alert_rejected": "{{count}} rejected"
   },
   "new_document": "New Document",
   "new": "New",
@@ -470,6 +483,7 @@
   "collapse": "Collapse",
   "expand_menu": "Expand menu",
   "collapse_menu": "Collapse menu",
+  "load_more": "Load more",
   "offline_banner": "No internet connection. Some features may be unavailable.",
   "skip_to_content": "Skip to main content"
 }

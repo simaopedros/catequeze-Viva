@@ -157,10 +157,21 @@ export function useSacramentMilestoneStatusMap() {
   );
 }
 
+const DOC_TYPE_SHORT_BASE: Record<string, string> = {
+  BAPTISM_CERTIFICATE: 'BAPTISM',
+  BIRTH_CERTIFICATE: 'BIRTH',
+  CONSENT_FORM: 'CONSENT',
+  MARRIAGE_CERTIFICATE: 'MARRIAGE',
+  PASTORAL_LETTER: 'PASTORAL',
+  OTHER: 'OTHER',
+};
+
 export function useDocumentTypeLabels(short = false) {
   const { t } = useTranslation('common');
   const docKey = (type: string) =>
-    short ? `documents.doc_types.${type}_SHORT` : `documents.doc_types.${type}`;
+    short
+      ? `catechumens.doc_types.${DOC_TYPE_SHORT_BASE[type]}_SHORT`
+      : `catechumens.doc_types.${type}`;
   return useMemo(
     () => ({
       BAPTISM_CERTIFICATE: t(docKey('BAPTISM_CERTIFICATE')),

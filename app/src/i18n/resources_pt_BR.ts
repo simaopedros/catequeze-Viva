@@ -641,8 +641,8 @@ export const billing_pt_BR = {
       },
       "catechist_pro": {
         "name": "Catequista Pro",
-        "price": "$5/mês",
-        "annual_price": "$50/ano ($4.17/mês)",
+        "price": "R$5/mês",
+        "annual_price": "R$50/ano (R$4,17/mês)",
         "features": [
           "3 turmas",
           "150 catequizandos",
@@ -653,8 +653,8 @@ export const billing_pt_BR = {
       },
       "catechist_ai": {
         "name": "Catequista IA",
-        "price": "$9/mês",
-        "annual_price": "$90/ano ($7.50/mês)",
+        "price": "R$9/mês",
+        "annual_price": "R$90/ano (R$7,50/mês)",
         "features": [
           "Tudo do Pro",
           "Gerador de encontros por IA",
@@ -667,8 +667,8 @@ export const billing_pt_BR = {
       },
       "parish_essential": {
         "name": "Paróquia Essencial",
-        "price": "$19/mês",
-        "annual_price": "$190/ano ($15.83/mês)",
+        "price": "R$19/mês",
+        "annual_price": "R$190/ano (R$15,83/mês)",
         "features": [
           "5 catequistas",
           "200 catequizandos",
@@ -681,8 +681,8 @@ export const billing_pt_BR = {
       },
       "parish_complete": {
         "name": "Paróquia Completa",
-        "price": "$29/mês",
-        "annual_price": "$290/ano ($24.17/mês)",
+        "price": "R$29/mês",
+        "annual_price": "R$290/ano (R$24,17/mês)",
         "features": [
           "Catequistas ilimitados",
           "Catequizandos ilimitados",
@@ -694,8 +694,8 @@ export const billing_pt_BR = {
       },
       "diocese": {
         "name": "Diocese",
-        "price": "$99/mês",
-        "annual_price": "$990/ano ($82.50/mês)",
+        "price": "R$99/mês",
+        "annual_price": "R$990/ano (R$82,50/mês)",
         "features": [
           "Até 10 paróquias",
           "Tudo da Completa",
@@ -1290,6 +1290,8 @@ export const common_pt_BR = {
       "no_catechumen_found": "Nenhum catequizando encontrado",
       "status_pending": "Pendente",
       "status_rejected": "Rejeitado",
+      "status_verified": "Verificado",
+      "status_missing": "Faltando",
       "summary": "docs · {{verified}} verificados · {{pending}} pendentes",
       "new": "Novo",
       "register": "Registrar documento",
@@ -1319,7 +1321,18 @@ export const common_pt_BR = {
       "sent_success": "Documento enviado!",
       "verified_success": "Documento verificado!",
       "rejected_success": "Documento rejeitado",
-      "removed_success": "Documento removido"
+      "removed_success": "Documento removido",
+      "upload_dialog_title": "Enviar documento",
+      "upload_dialog_desc": "Selecione o arquivo {{type}} de {{name}}",
+      "select_file": "Selecionar arquivo",
+      "no_file_selected": "Nenhum arquivo selecionado",
+      "tooltip_upload": "Enviar documento",
+      "tooltip_approve": "Aprovar documento",
+      "tooltip_reject": "Rejeitar documento",
+      "tooltip_replace": "Substituir documento",
+      "tooltip_delete": "Excluir documento",
+      "alert_pending": "{{count}} pendente(s)",
+      "alert_rejected": "{{count}} rejeitado(s)"
     },
     "new_document": "Novo Documento",
     "new": "Novo",
@@ -1568,6 +1581,7 @@ export const common_pt_BR = {
     "collapse": "Recolher",
     "expand_menu": "Expandir menu",
     "collapse_menu": "Recolher menu",
+    "load_more": "Carregar mais",
     "offline_banner": "Sem conexão à internet. Algumas funcionalidades podem estar indisponíveis.",
     "skip_to_content": "Ir para o conteúdo principal"
   } as const;

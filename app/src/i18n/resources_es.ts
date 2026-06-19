@@ -1290,6 +1290,8 @@ export const common_es = {
       "no_catechumen_found": "Ningún catecúmeno encontrado",
       "status_pending": "Pendiente",
       "status_rejected": "Rechazado",
+      "status_verified": "Verificado",
+      "status_missing": "Faltante",
       "summary": "docs · {{verified}} verificados · {{pending}} pendientes",
       "new": "Nuevo",
       "register": "Registrar documento",
@@ -1319,7 +1321,18 @@ export const common_es = {
       "sent_success": "¡Documento enviado!",
       "verified_success": "¡Documento verificado!",
       "rejected_success": "Documento rechazado",
-      "removed_success": "Documento eliminado"
+      "removed_success": "Documento eliminado",
+      "upload_dialog_title": "Enviar documento",
+      "upload_dialog_desc": "Seleccione el archivo {{type}} de {{name}}",
+      "select_file": "Seleccionar archivo",
+      "no_file_selected": "Ningún archivo seleccionado",
+      "tooltip_upload": "Enviar documento",
+      "tooltip_approve": "Aprobar documento",
+      "tooltip_reject": "Rechazar documento",
+      "tooltip_replace": "Reemplazar documento",
+      "tooltip_delete": "Eliminar documento",
+      "alert_pending": "{{count}} pendiente(s)",
+      "alert_rejected": "{{count}} rechazado(s)"
     },
     "new_document": "Nuevo Documento",
     "new": "Nuevo",
@@ -1568,6 +1581,7 @@ export const common_es = {
     "collapse": "Contraer",
     "expand_menu": "Expandir menú",
     "collapse_menu": "Contraer menú",
+    "load_more": "Cargar más",
     "offline_banner": "Sin conexión a internet. Algunas funciones pueden no estar disponibles.",
     "skip_to_content": "Ir al contenido principal"
   } as const;

@@ -191,6 +191,8 @@
     "no_catechumen_found": "Nenhum catequizando encontrado",
     "status_pending": "Pendente",
     "status_rejected": "Rejeitado",
+    "status_verified": "Verificado",
+    "status_missing": "Faltando",
     "summary": "docs · {{verified}} verificados · {{pending}} pendentes",
     "new": "Novo",
     "register": "Registrar documento",
@@ -220,7 +222,18 @@
     "sent_success": "Documento enviado!",
     "verified_success": "Documento verificado!",
     "rejected_success": "Documento rejeitado",
-    "removed_success": "Documento removido"
+    "removed_success": "Documento removido",
+    "upload_dialog_title": "Enviar documento",
+    "upload_dialog_desc": "Selecione o arquivo {{type}} de {{name}}",
+    "select_file": "Selecionar arquivo",
+    "no_file_selected": "Nenhum arquivo selecionado",
+    "tooltip_upload": "Enviar documento",
+    "tooltip_approve": "Aprovar documento",
+    "tooltip_reject": "Rejeitar documento",
+    "tooltip_replace": "Substituir documento",
+    "tooltip_delete": "Excluir documento",
+    "alert_pending": "{{count}} pendente(s)",
+    "alert_rejected": "{{count}} rejeitado(s)"
   },
   "new_document": "Novo Documento",
   "new": "Novo",
@@ -469,6 +482,7 @@
   "collapse": "Recolher",
   "expand_menu": "Expandir menu",
   "collapse_menu": "Recolher menu",
+  "load_more": "Carregar mais",
   "offline_banner": "Sem conexão à internet. Algumas funcionalidades podem estar indisponíveis.",
   "skip_to_content": "Ir para o conteúdo principal"
 }
