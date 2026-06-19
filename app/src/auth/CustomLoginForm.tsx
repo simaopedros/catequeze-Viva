@@ -44,6 +44,13 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
     setError('');
     try {
       await login({ email, password });
+    } catch (err: any) {
+      setError(err?.message || t('login_error_invalid'));
+      setIsLoading(false);
+      return;
+    }
+
+    try {
       const status = await getTwoFactorStatus();
       if (status.enabled) {
         await beginTwoFactorChallenge();
@@ -52,7 +59,8 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
         navigate(postLoginPath(inviteToken));
       }
     } catch (err: any) {
-      setError(err?.message || t('login_error_invalid'));
+      console.error('2FA status check failed after successful login:', err);
+      setError(t('login_error_twofactor_check'));
     } finally {
       setIsLoading(false);
     }

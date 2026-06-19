@@ -178,7 +178,7 @@ query getCustomerPortalUrl {
 
 action generateCheckoutSession {
   fn: import { generateCheckoutSession } from "@src/payment/operations",
-  entities: [User, Parish]
+  entities: [User, Parish, Membership, PricingEvent]
 }
 
 action cancelSubscription {
@@ -193,7 +193,7 @@ action changeSubscriptionPlan {
 
 api paymentsWebhook {
   fn: import { paymentsWebhook } from "@src/payment/webhook",
-  entities: [User, UserAiCredits, TenantBilling, Diocese, Parish, Membership],
+  entities: [User, UserAiCredits, TenantBilling, Diocese, Parish, Membership, PricingEvent],
   middlewareConfigFn: import { paymentsMiddlewareConfigFn } from "@src/payment/webhook",
   httpRoute: (POST, "/payments-webhook")
 }
@@ -647,7 +647,7 @@ query getClassDetails {
 
 query listParishCatechists {
   fn: import { listParishCatechists } from "@src/server/operations/classOperations",
-  entities: [Membership]
+  entities: [Membership, User]
 }
 
 action createClass {
@@ -657,7 +657,7 @@ action createClass {
 
 action updateClass {
   fn: import { updateClass } from "@src/server/operations/classOperations",
-  entities: [CatechesisClass, Membership, ClassCatechist, Parish]
+  entities: [CatechesisClass, Membership, ClassCatechist, Parish, Community]
 }
 
 action assignLeadCatechist {
@@ -1371,7 +1371,7 @@ action createCommunity {
 
 action updateCommunity {
   fn: import { updateCommunity } from "@src/server/operations/communityOperations",
-  entities: [Community, Membership]
+  entities: [Community, Membership, Parish]
 }
 //#endregion
 
@@ -1496,22 +1496,22 @@ action deleteMessageTemplate {
 //#region Missing blueprint operations
 query listCatecheticalYears {
   fn: import { listCatecheticalYears } from "@src/server/operations/missingOperations",
-  entities: [CatecheticalYear, Membership]
+  entities: [CatecheticalYear, Membership, Parish]
 }
 
 query listMessageCampaigns {
   fn: import { listMessageCampaigns } from "@src/server/operations/missingOperations",
-  entities: [MessageCampaign, Membership]
+  entities: [MessageCampaign, Membership, Parish]
 }
 
 action createMessageCampaign {
   fn: import { createMessageCampaign } from "@src/server/operations/missingOperations",
-  entities: [MessageCampaign, Membership]
+  entities: [MessageCampaign, Membership, Parish]
 }
 
 query exportReport {
   fn: import { exportReport } from "@src/server/operations/missingOperations",
-  entities: [CatechesisClass, Membership]
+  entities: [CatechesisClass, Membership, Parish]
 }
 
 query getSacramentalJourney {
@@ -1785,7 +1785,7 @@ query searchUsers {
 
 action createCatecheticalYear {
   fn: import { createCatecheticalYear } from "@src/server/operations/missingOperations",
-  entities: [CatecheticalYear, Membership]
+  entities: [CatecheticalYear, Membership, Parish]
 }
 //#endregion
 

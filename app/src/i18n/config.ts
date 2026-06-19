@@ -8,6 +8,9 @@ import {
   common_pt_BR,
   navigation_pt_BR,
   auth_pt_BR,
+  publicNav_pt_BR,
+  public_pt_BR,
+  billing_pt_BR,
   landing_pt_BR,
   landingSistema_pt_BR,
   landingIa_pt_BR,
@@ -15,7 +18,7 @@ import {
 } from './resources_pt_BR';
 
 const CORE_NS = [
-  'common', 'navigation', 'auth',
+  'common', 'navigation', 'auth', 'publicNav', 'public', 'billing',
   'landing', 'landingSistema', 'landingIa', 'landingPresenca',
 ] as const;
 
@@ -23,8 +26,8 @@ const ALL_NS = [
   ...CORE_NS,
   'dashboard', 'classes', 'attendance', 'sacraments',
   'content', 'messages', 'reports', 'settings', 'parishes', 'topbar',
-  'account', 'catechism', 'tour', 'publicNav', 'bible', 'ai', 'activities', 'meetings',
-  'catecheticalYears', 'onboarding', 'billing', 'public', 'legal', 'family',
+  'account', 'catechism', 'tour', 'bible', 'ai', 'activities', 'meetings',
+  'catecheticalYears', 'onboarding', 'legal', 'family',
   'admin', 'components', 'cookie', 'calendar', 'collaborative',
 ] as const;
 
@@ -32,6 +35,9 @@ const coreResources = {
   common: common_pt_BR,
   navigation: navigation_pt_BR,
   auth: auth_pt_BR,
+  publicNav: publicNav_pt_BR,
+  public: public_pt_BR,
+  billing: billing_pt_BR,
   landing: landing_pt_BR,
   landingSistema: landingSistema_pt_BR,
   landingIa: landingIa_pt_BR,

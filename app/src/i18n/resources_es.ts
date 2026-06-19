@@ -437,6 +437,7 @@ export const auth_es = {
     "login_create_account": "Crear cuenta",
     "login_error_fill_all": "Complete todos los campos.",
     "login_error_invalid": "Email o contraseña incorrectos.",
+    "login_error_twofactor_check": "Error al verificar autenticación. Intente nuevamente.",
     "aria_hide_password": "Ocultar contraseña",
     "aria_show_password": "Mostrar contraseña",
     "two_factor_title": "Verificación en dos pasos",

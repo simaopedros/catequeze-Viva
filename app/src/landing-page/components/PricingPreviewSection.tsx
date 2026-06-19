@@ -7,12 +7,13 @@ import { setIntendedInterval, setIntendedPlan } from '../../catequese/lib/intend
 import type { BillingInterval } from '../../catequese/lib/intendedPlan';
 import { PLANS } from '../../shared/pricing';
 import { formatPrice } from '../../shared/currency';
+import { cn } from '../../client/utils';
 
 function fmt(cents: number): string {
-  return formatPrice(cents);
+  return formatPrice(cents, 'USD');
 }
 
-export function PricingPreviewSection({ ns = 'landing' }: { ns?: string }) {
+export function PricingPreviewSection({ ns = 'landing', responsiveCtas = false }: { ns?: string; responsiveCtas?: boolean }) {
   const { t } = useTranslation(ns);
   const { ref: headerRef, className: headerClass } = useScrollReveal();
   const [billingInterval, setBillingInterval] = useState<BillingInterval>('monthly');
@@ -28,9 +29,31 @@ export function PricingPreviewSection({ ns = 'landing' }: { ns?: string }) {
       <div ref={headerRef} className={`text-center mb-8 space-y-3 ${headerClass}`}>
         <h2 className="text-3xl sm:text-4xl font-bold">{t('pricing_title')}</h2>
         <p className="text-lg text-muted-foreground">{t('pricing_subtitle')}</p>
-        <div className="inline-flex items-center rounded-lg border bg-muted p-0.5 mt-3">
-          <button type="button" onClick={() => setBillingInterval('monthly')} className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${billingInterval === 'monthly' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>{t('price_monthly')}</button>
-          <button type="button" onClick={() => setBillingInterval('annual')} className={`px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-1.5 ${billingInterval === 'annual' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>{t('price_annual')}<span className="text-caption text-success font-bold">{t('annual_discount')}</span></button>
+        <div
+          className={cn(
+            'inline-flex items-center rounded-lg border bg-muted p-0.5 mt-3',
+            responsiveCtas && 'max-w-full',
+          )}
+        >
+          <button
+            type="button"
+            onClick={() => setBillingInterval('monthly')}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${billingInterval === 'monthly' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            {t('price_monthly')}
+          </button>
+          <button
+            type="button"
+            onClick={() => setBillingInterval('annual')}
+            className={cn(
+              'px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-1.5',
+              responsiveCtas && 'min-w-0 whitespace-normal leading-tight',
+              billingInterval === 'annual' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground',
+            )}
+          >
+            {t('price_annual')}
+            <span className={cn('text-caption text-success font-bold', responsiveCtas && 'leading-tight')}>{t('annual_discount')}</span>
+          </button>
         </div>
       </div>
 
@@ -47,6 +70,8 @@ export function PricingPreviewSection({ ns = 'landing' }: { ns?: string }) {
             priceCents={cfg.priceCents}
             priceCentsAnnual={cfg.priceCentsAnnual}
             highlight={cfg.highlight}
+            ns={ns}
+            responsiveCtas={responsiveCtas}
           />
         ))}
       </div>
@@ -58,11 +83,11 @@ export function PricingPreviewSection({ ns = 'landing' }: { ns?: string }) {
   );
 }
 
-function PricingCard({ planKey, planId, plan, features, delay, billingInterval, priceCents, priceCentsAnnual, highlight }: {
+function PricingCard({ planKey, planId, plan, features, delay, billingInterval, priceCents, priceCentsAnnual, highlight, ns, responsiveCtas }: {
   planKey: string; planId: string; plan: any; features: string[]; delay: number; billingInterval: BillingInterval;
-  priceCents: number; priceCentsAnnual?: number; highlight?: boolean;
+  priceCents: number; priceCentsAnnual?: number; highlight?: boolean; ns: string; responsiveCtas?: boolean;
 }) {
-  const { t } = useTranslation('landing');
+  const { t } = useTranslation(ns);
   const { ref, className } = useScrollReveal({ delay });
   const hasAnnual = !!priceCentsAnnual && priceCents > 0;
   const showAnnual = billingInterval === 'annual' && hasAnnual;
@@ -105,7 +130,11 @@ function PricingCard({ planKey, planId, plan, features, delay, billingInterval, 
             setIntendedPlan(planId);
           }
         }}
-        className={`mt-6 block text-center rounded-xl px-4 py-3 text-sm font-semibold transition-all ${highlight ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25' : 'bg-muted hover:bg-muted/80'}`}
+        className={cn(
+          'mt-6 block text-center rounded-xl px-4 py-3 text-sm font-semibold transition-all',
+          responsiveCtas && 'min-h-11 whitespace-normal leading-snug',
+          highlight ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25' : 'bg-muted hover:bg-muted/80',
+        )}
       >
         {priceCents === 0 ? t('price_cta_free') : t('price_cta_start')}
       </Link>

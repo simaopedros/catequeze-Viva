@@ -4,8 +4,8 @@
     "headline_line2": "em poucos minutos",
     "subheadline": "Receba um roteiro completo com objetivo, dinâmica, leitura bíblica, atividade e oração final — e ainda faça a chamada e acompanhe sua turma no celular.",
     "badge": "Ferramentas para o dia-a-dia do catequista",
-    "cta_primary": "Gerar meu primeiro encontro grátis",
-    "cta_secondary": "Ver recursos do catequista",
+    "cta_primary": "Gerar encontro grátis",
+    "cta_secondary": "Ver recursos",
     "trust_signals": "Sem cartão de crédito • Plano gratuito • Comece em 2 minutos"
   },
   "pain_title": "Você dedica mais tempo organizando do que evangelizando?",
@@ -137,7 +137,7 @@
       "desc": "A IA monta o roteiro completo. Depois você ajusta, aplica e registra a presença no mesmo lugar."
     }
   ],
-  "steps_cta": "Criar conta e montar minha turma",
+  "steps_cta": "Criar conta grátis",
   "testimonials_title": "Quem usa recomenda",
   "testimonials_subtitle": "Catequistas que já transformaram seu dia-a-dia.",
   "testimonials": [
@@ -236,7 +236,7 @@
   ],
   "cta_title": "Entre hoje e prepare o próximo encontro mais rápido",
   "cta_subtitle": "Cadastre sua turma, gere o roteiro e acompanhe presença e famílias no mesmo fluxo.",
-  "cta_button": "Criar conta e gerar encontro grátis",
+  "cta_button": "Criar conta grátis",
   "cta_badge": "Comece em 2 minutos",
   "cta_see_plans": "Ver planos",
   "mock": {

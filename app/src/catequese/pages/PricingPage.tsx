@@ -26,6 +26,19 @@ interface PricingPlan {
   priceCentsAnnual?: number;
 }
 
+function translatedString(t: (key: string, options?: any) => any, key: string, fallback: string): string {
+  const value = t(key);
+  return typeof value === 'string' && value !== key ? value : fallback;
+}
+
+function translatedArray<T>(value: unknown, fallback: T[]): T[] {
+  return Array.isArray(value) ? value as T[] : fallback;
+}
+
+function formatDisplayPrice(cents: number): string {
+  return formatPrice(cents, 'USD');
+}
+
 export default function PricingPage() {
   const { t: tp } = useTranslation('public');
   const { t: tb } = useTranslation('billing');
@@ -44,28 +57,30 @@ export default function PricingPage() {
       let period: string | undefined;
 
       if (monthly === 0) {
-        price = tb('free');
-        period = tp('pricing.free_forever');
+        price = translatedString(tb, 'free', 'Grátis');
+        period = translatedString(tp, 'pricing.free_forever', 'para sempre');
       } else {
-        price = tb(`plans.${id}.price`);
+        price = `${formatDisplayPrice(monthly)}${translatedString(tp, 'per_month', '/mês')}`;
         period = undefined;
         const annualKey = `plans.${id}.annual_price`;
-        if (def.prices.annualCents != null && tb(annualKey) !== annualKey) {
-          annualPrice = tb(annualKey);
+        if (def.prices.annualCents != null) {
+          annualPrice = `${formatDisplayPrice(def.prices.annualCents)}${translatedString(tp, 'per_year', '/ano')}`;
         }
       }
 
       return {
         planId: id,
         level: def.level,
-        name: tb(`plans.${id}.name`),
+        name: translatedString(tb, `plans.${id}.name`, def.name),
         price,
         annualPrice,
         period,
-        desc: tp(`pricing.plan_desc.${id}`),
-        features: tb(`plans.${id}.features`, { returnObjects: true }) as string[],
+        desc: translatedString(tp, `pricing.plan_desc.${id}`, def.name),
+        features: translatedArray(tb(`plans.${id}.features`, { returnObjects: true }), def.features),
         highlight: def.highlight,
-        cta: monthly === 0 ? tp('pricing.cta_free') : tp('pricing.cta_paid'),
+        cta: monthly === 0
+          ? translatedString(tp, 'pricing.cta_free', 'Começar grátis')
+          : translatedString(tp, 'pricing.cta_paid', 'Começar agora'),
         priceCents: def.prices.monthlyCents,
         priceCentsAnnual: def.prices.annualCents,
       };
@@ -74,7 +89,8 @@ export default function PricingPage() {
 
   const personalPlans = pricingPlans.filter((p) => p.level === 'personal');
   const institutionalPlans = pricingPlans.filter((p) => p.level === 'institutional');
-  const faq = tp('pricing.faq', { returnObjects: true }) as { q: string; a: string }[];
+  const faqResult = tp('pricing.faq', { returnObjects: true });
+  const faq = Array.isArray(faqResult) ? faqResult as { q: string; a: string }[] : [];
 
   const handleSelect = (plan: PricingPlan) => {
     setIntendedInterval(billingInterval);
@@ -109,7 +125,7 @@ export default function PricingPage() {
       <div className="mt-4 mb-1">
         {showAnnual ? (
           <>
-            <span className="text-4xl font-bold">{formatPrice(plan.priceCentsAnnual!)}</span>
+            <span className="text-4xl font-bold">{formatDisplayPrice(plan.priceCentsAnnual!)}</span>
             <span className="text-base font-normal text-muted-foreground">{tp('per_year')}</span>
           </>
         ) : (
@@ -123,7 +139,7 @@ export default function PricingPage() {
       </div>
       {showAnnual ? (
         <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-          <span>{formatPrice(plan.priceCents)}{tp('per_month')}</span>
+          <span>{formatDisplayPrice(plan.priceCents)}{tp('per_month')}</span>
         </div>
       ) : plan.annualPrice ? (
         <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">

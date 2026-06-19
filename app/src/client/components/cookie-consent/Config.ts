@@ -7,6 +7,13 @@ declare global {
   }
 }
 
+/** Normalize i18n language to one of the cookie-consent supported locales. */
+function normalizeLocale(lang: string | undefined): string {
+  if (!lang || lang === 'pt') return 'pt-BR';
+  if (['pt-BR', 'en', 'es'].includes(lang)) return lang;
+  return 'pt-BR';
+}
+
 function buildCookieTranslations(lang: string) {
   const t = (key: string) => i18n.t(key, { ns: 'cookie', lng: lang });
   return {
@@ -95,7 +102,7 @@ const getConfig = () => {
     },
 
     language: {
-      default: i18n.language || 'pt-BR',
+      default: normalizeLocale(i18n.language),
       translations: {
         'pt-BR': buildCookieTranslations('pt-BR'),
         en: buildCookieTranslations('en'),

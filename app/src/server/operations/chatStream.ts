@@ -34,6 +34,57 @@ function getAiClientOrThrow() {
 }
 
 export async function chatStreamHandler(req: Request, res: Response, context: any) {
+  // ── Validate auth, payload, and plan BEFORE opening the SSE stream ──
+
+  if (!context?.user) {
+    res.status(401).json({ error: 'Autenticação necessária.' });
+    return;
+  }
+
+  try {
+    await assertTwoFactorSessionVerified(context);
+  } catch (err: any) {
+    res.status(403).json({ error: err.message || 'Verificação 2FA necessária.' });
+    return;
+  }
+
+  const { message, conversationId } = req.body || {};
+  if (!message || typeof message !== 'string' || message.trim().length === 0) {
+    res.status(400).json({ error: 'Mensagem vazia.' });
+    return;
+  }
+  if (message.length > 4000) {
+    res.status(400).json({ error: 'Mensagem muito longa (máx. 4000 caracteres).' });
+    return;
+  }
+
+  // Check AI access
+  const status = await getCreditsStatus(context);
+  if (!status.hasAiAccess) {
+    res.status(403).json({ error: 'Plano sem acesso à IA.' });
+    return;
+  }
+
+  const user = await context.entities.User.findUnique({
+    where: { id: context.user.id },
+    select: { subscriptionPlan: true },
+  });
+  const { effectivePlan } = await resolveUserEffectivePlanAndStatus(
+    context,
+    context.user.id,
+    user?.subscriptionPlan ?? null,
+  );
+  const dailyLimit = getDailyLimit(effectivePlan ?? user?.subscriptionPlan);
+  if (dailyLimit > 0) {
+    const todayUsage = await getDailyUsage(context.entities, context.user.id);
+    if (todayUsage + CHAT_DAILY_COST > dailyLimit) {
+      res.status(429).json({ error: `Limite diário de IA atingido (${dailyLimit} créditos/dia).` });
+      return;
+    }
+  }
+
+  // ── All validations passed — open SSE stream ──
+
   // Set SSE headers
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
@@ -43,60 +94,6 @@ export async function chatStreamHandler(req: Request, res: Response, context: an
   });
 
   try {
-    const { message, conversationId } = req.body || {};
-    if (!message || typeof message !== 'string' || message.trim().length === 0) {
-      res.write(`data: ${JSON.stringify({ error: 'Mensagem vazia.' })}\n\n`);
-      res.end();
-      return;
-    }
-    if (message.length > 4000) {
-      res.write(`data: ${JSON.stringify({ error: 'Mensagem muito longa (máx. 4000 caracteres).' })}\n\n`);
-      res.end();
-      return;
-    }
-
-    // Wasp injects context via middleware
-    if (!context?.user) {
-      res.write(`data: ${JSON.stringify({ error: 'Autenticação necessária.' })}\n\n`);
-      res.end();
-      return;
-    }
-
-    try {
-      await assertTwoFactorSessionVerified(context);
-    } catch (err: any) {
-      res.write(`data: ${JSON.stringify({ error: err.message || 'Verificação 2FA necessária.' })}\n\n`);
-      res.end();
-      return;
-    }
-
-    // Check AI access
-    const status = await getCreditsStatus(context);
-    if (!status.hasAiAccess) {
-      res.write(`data: ${JSON.stringify({ error: 'Plano sem acesso à IA.' })}\n\n`);
-      res.end();
-      return;
-    }
-
-    const user = await context.entities.User.findUnique({
-      where: { id: context.user.id },
-      select: { subscriptionPlan: true },
-    });
-    const { effectivePlan } = await resolveUserEffectivePlanAndStatus(
-      context,
-      context.user.id,
-      user?.subscriptionPlan ?? null,
-    );
-    const dailyLimit = getDailyLimit(effectivePlan ?? user?.subscriptionPlan);
-    if (dailyLimit > 0) {
-      const todayUsage = await getDailyUsage(context.entities, context.user.id);
-      if (todayUsage + CHAT_DAILY_COST > dailyLimit) {
-        res.write(`data: ${JSON.stringify({ error: `Limite diário de IA atingido (${dailyLimit} créditos/dia).` })}\n\n`);
-        res.end();
-        return;
-      }
-    }
-
     // Check cache (skip if continuing a conversation)
     const cached = !conversationId ? await getCachedResponse(context.entities, message) : null;
     if (cached) {
@@ -160,7 +157,7 @@ export async function chatStreamHandler(req: Request, res: Response, context: an
     res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
     res.end();
   } catch (err: any) {
-    logger.error('[chat-stream] Error:', { error: err.message });
+    logger.error('[chat-stream] Streaming error:', { error: err.message });
     res.write(`data: ${JSON.stringify({ error: err.message || 'Erro interno.' })}\n\n`);
     res.end();
   }

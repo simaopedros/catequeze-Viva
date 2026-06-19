@@ -1,8 +1,42 @@
 import { HttpError } from 'wasp/server';
-import { createMessageCampaignSchema } from '../validation';
-import { requireAuth, getUserMembership, requireParishRole, getDioceseParishIds } from '../auth/helpers';
+import * as z from 'zod';
+import { requireAuth, getUserMembership, COORDINATOR_ROLES, getDioceseParishIds } from '../auth/helpers';
+import { validateOrThrow } from '../validation';
 
-/** Build parishId list from memberships + diocese expansion */
+// ─── Shared schemas ─────────────────────────────────────────────────────
+
+const createCatecheticalYearSchema = z.object({
+  name: z.string().min(1, 'Nome é obrigatório.').max(100),
+  startDate: z.string().refine((v) => !isNaN(Date.parse(v)), 'Data de início inválida.'),
+  endDate: z.string().refine((v) => !isNaN(Date.parse(v)), 'Data de fim inválida.'),
+  parishId: z.string().optional(),
+}).refine(
+  (data) => new Date(data.startDate) < new Date(data.endDate),
+  { message: 'A data de início deve ser anterior à data de fim.', path: ['endDate'] },
+);
+
+const createMessageCampaignSchema = z.object({
+  title: z.string().min(1, 'Título é obrigatório.').max(200),
+  body: z.string().min(1, 'Corpo da mensagem é obrigatório.'),
+  channel: z.enum(['email', 'whatsapp', 'sms']).optional().default('email'),
+  segment: z.string().optional().default('all_parish'),
+  parishId: z.string().optional(),
+});
+
+const VALID_LOCALES = ['pt-BR', 'en', 'es'] as const;
+const VALID_TIMEZONES = [
+  'America/Sao_Paulo', 'America/New_York', 'America/Chicago',
+  'America/Los_Angeles', 'Europe/London', 'Europe/Lisbon', 'Europe/Madrid', 'UTC',
+] as const;
+
+const updateLocalePreferenceSchema = z.object({
+  locale: z.enum(VALID_LOCALES),
+  timezone: z.enum(VALID_TIMEZONES),
+});
+
+// ─── Helpers ─────────────────────────────────────────────────────────────
+
+/** Build parishId list from the user's active memberships, expanded by diocese if applicable. */
 async function getEffectiveParishIds(context: any): Promise<string[]> {
   const memberships = await context.entities.Membership.findMany({
     where: { userId: context.user.id, status: 'ACTIVE' },
@@ -20,7 +54,55 @@ async function getEffectiveParishIds(context: any): Promise<string[]> {
   return ids;
 }
 
-// listCatecheticalYears — escopo por paróquia
+/**
+ * Validates that the user has write-access to a given parishId.
+ * Admins always pass. Non-admins must have a coordinator+ role
+ * (PERSONAL_OWNER, PARISH_COORDINATOR, DIOCESE_ADMIN) on the parish.
+ */
+async function assertCanWriteParish(context: any, parishId: string) {
+  if (context.user.isAdmin) return;
+
+  // Check personal workspace ownership
+  const personal = await context.entities.Parish.findFirst({
+    where: { id: parishId, ownerId: context.user.id, type: 'PERSONAL' },
+    select: { id: true },
+  });
+  if (personal) return;
+
+  const membership = await context.entities.Membership.findFirst({
+    where: { userId: context.user.id, parishId, status: 'ACTIVE' },
+    select: { role: true },
+  });
+  const allowedRoles = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'];
+  if (!membership || !allowedRoles.includes(membership.role)) {
+    throw new HttpError(403, 'Você não tem permissão para gerenciar esta paróquia.');
+  }
+}
+
+/** Resolve a parishId from args, falling back to the first active membership (or personal workspace). */
+async function resolveParishId(context: any, args: { parishId?: string }): Promise<string | undefined> {
+  let parishId = args.parishId;
+  if (!parishId) {
+    const membership = await context.entities.Membership.findFirst({
+      where: { userId: context.user.id, status: 'ACTIVE' },
+      select: { parishId: true },
+    });
+    if (!membership) {
+      const personal = await context.entities.Parish.findFirst({
+        where: { ownerId: context.user.id, type: 'PERSONAL' },
+        select: { id: true },
+      });
+      parishId = personal?.id;
+    } else {
+      parishId = membership.parishId;
+    }
+  }
+  return parishId || undefined;
+}
+
+// ─── Queries ────────────────────────────────────────────────────────────
+
+/** List catechetical years scoped to the user's parishes. */
 export const listCatecheticalYears = async (_args: void, context: any) => {
   requireAuth(context.user);
 
@@ -37,37 +119,7 @@ export const listCatecheticalYears = async (_args: void, context: any) => {
   });
 };
 
-// listMessageCampaigns — escopo por paróquia ou remetente
-
-
-// createCatecheticalYear
-export const createCatecheticalYear = async (
-  args: { name: string; startDate: string; endDate: string; parishId?: string },
-  context: any
-) => {
-  requireAuth(context.user);
-
-  let parishId = args.parishId;
-  if (!parishId) {
-    const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, status: 'ACTIVE' },
-      select: { parishId: true },
-    });
-    if (!membership && !context.user.isAdmin) {
-      throw new HttpError(400, 'Você não está vinculado a nenhuma paróquia.');
-    }
-    parishId = membership?.parishId;
-  }
-
-  return context.entities.CatecheticalYear.create({
-    data: {
-      name: args.name,
-      startDate: new Date(args.startDate),
-      endDate: new Date(args.endDate),
-      parishId: parishId || undefined,
-    },
-  });
-};
+/** List message campaigns scoped to the user's parishes or own creations. */
 export const listMessageCampaigns = async (_args: void, context: any) => {
   requireAuth(context.user);
 
@@ -90,39 +142,7 @@ export const listMessageCampaigns = async (_args: void, context: any) => {
   });
 };
 
-// createMessageCampaign
-export const createMessageCampaign = async (
-  args: { title: string; body: string; channel: string; segment: string; parishId?: string },
-  context: any
-) => {
-  requireAuth(context.user);
-
-  let parishId = args.parishId;
-  if (!parishId) {
-    const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, status: 'ACTIVE' },
-      select: { parishId: true, role: true },
-    });
-    if (!membership && !context.user.isAdmin) {
-      throw new HttpError(400, 'Você não está vinculado a nenhuma paróquia.');
-    }
-    parishId = membership?.parishId;
-  }
-
-  return context.entities.MessageCampaign.create({
-    data: {
-      title: args.title,
-      body: args.body,
-      channel: args.channel || 'email',
-      segment: args.segment || 'all_parish',
-      status: 'DRAFT',
-      createdById: context.user.id,
-      parishId: parishId || undefined,
-    },
-  });
-};
-
-// exportReport (server-side CSV generation) — escopo por paróquia
+/** Server-side CSV export: classes with enrollment counts, scoped by parish. */
 export const exportReport = async (_args: void, context: any) => {
   requireAuth(context.user);
 
@@ -133,28 +153,78 @@ export const exportReport = async (_args: void, context: any) => {
     whereClause.parishId = { in: parishIds };
   }
 
-  const reports = await context.entities.CatechesisClass.findMany({
+  return context.entities.CatechesisClass.findMany({
     where: whereClause,
     select: { id: true, name: true, _count: { select: { enrollments: true } } },
   });
-  return reports;
 };
 
-// getSacramentalJourney movido para sacramentOperations.ts
+// ─── Actions ────────────────────────────────────────────────────────────
 
-// updateLocalePreference
-const VALID_LOCALES = ['pt-BR', 'pt', 'en', 'en-US', 'es', 'es-ES'];
-const VALID_TIMEZONES = ['America/Sao_Paulo', 'America/New_York', 'America/Chicago', 'America/Los_Angeles', 'Europe/London', 'Europe/Lisbon', 'Europe/Madrid', 'UTC'];
+export const createCatecheticalYear = async (
+  args: { name: string; startDate: string; endDate: string; parishId?: string },
+  context: any,
+) => {
+  requireAuth(context.user);
+  const validated = validateOrThrow(createCatecheticalYearSchema, args);
+
+  const parishId = await resolveParishId(context, validated);
+  if (!parishId && !context.user.isAdmin) {
+    throw new HttpError(400, 'Você não está vinculado a nenhuma paróquia.');
+  }
+
+  if (parishId) {
+    await assertCanWriteParish(context, parishId);
+  }
+
+  return context.entities.CatecheticalYear.create({
+    data: {
+      name: validated.name,
+      startDate: new Date(validated.startDate),
+      endDate: new Date(validated.endDate),
+      parishId: parishId || undefined,
+    },
+  });
+};
+
+export const createMessageCampaign = async (
+  args: { title: string; body: string; channel: string; segment: string; parishId?: string },
+  context: any,
+) => {
+  requireAuth(context.user);
+  const validated = validateOrThrow(createMessageCampaignSchema, args);
+
+  const parishId = await resolveParishId(context, validated);
+  if (!parishId && !context.user.isAdmin) {
+    throw new HttpError(400, 'Você não está vinculado a nenhuma paróquia.');
+  }
+
+  if (parishId) {
+    await assertCanWriteParish(context, parishId);
+  }
+
+  return context.entities.MessageCampaign.create({
+    data: {
+      title: validated.title,
+      body: validated.body,
+      channel: validated.channel,
+      segment: validated.segment,
+      status: 'DRAFT',
+      createdById: context.user.id,
+      parishId: parishId || undefined,
+    },
+  });
+};
 
 export const updateLocalePreference = async (
   args: { locale: string; timezone: string },
-  context: any
+  context: any,
 ) => {
   requireAuth(context.user);
-  if (!VALID_LOCALES.includes(args.locale)) throw new HttpError(400, 'Locale inválido.');
-  if (!VALID_TIMEZONES.includes(args.timezone)) throw new HttpError(400, 'Timezone inválido.');
+  const validated = validateOrThrow(updateLocalePreferenceSchema, args);
+
   return context.entities.User.update({
     where: { id: context.user.id },
-    data: { locale: args.locale, timezone: args.timezone },
+    data: { locale: validated.locale, timezone: validated.timezone },
   });
 };

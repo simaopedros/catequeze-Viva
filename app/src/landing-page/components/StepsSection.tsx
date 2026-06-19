@@ -2,8 +2,9 @@ import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ArrowRight } from 'lucide-react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
+import { cn } from '../../client/utils';
 
-export function StepsSection({ ns = 'landing' }: { ns?: string }) {
+export function StepsSection({ ns = 'landing', responsiveCtas = false }: { ns?: string; responsiveCtas?: boolean }) {
   const { t } = useTranslation(ns);
   const { ref: headerRef, className: headerClass } = useScrollReveal();
   const steps = t('steps', { returnObjects: true }) as any[];
@@ -24,8 +25,14 @@ export function StepsSection({ ns = 'landing' }: { ns?: string }) {
         </div>
 
         <div className="flex justify-center mt-10">
-          <Link to="/signup" className="inline-flex items-center gap-2 text-primary font-semibold hover:underline">
-            {t('steps_cta')} <ArrowRight className="h-4 w-4" />
+          <Link
+            to="/signup"
+            className={cn(
+              'inline-flex items-center justify-center gap-2 text-primary font-semibold hover:underline',
+              responsiveCtas && 'max-w-full text-center leading-snug whitespace-normal',
+            )}
+          >
+            {t('steps_cta')} <ArrowRight className="h-4 w-4 shrink-0" />
           </Link>
         </div>
       </div>

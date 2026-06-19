@@ -437,6 +437,7 @@ export const auth_pt_BR = {
     "login_create_account": "Criar conta",
     "login_error_fill_all": "Preencha todos os campos.",
     "login_error_invalid": "Email ou senha incorretos.",
+    "login_error_twofactor_check": "Erro ao verificar autenticação. Tente novamente.",
     "aria_hide_password": "Ocultar senha",
     "aria_show_password": "Mostrar senha",
     "two_factor_title": "Verificação em duas etapas",
@@ -1928,8 +1929,8 @@ export const landing_pt_BR = {
       "headline_line2": "em poucos minutos",
       "subheadline": "Receba um roteiro completo com objetivo, dinâmica, leitura bíblica, atividade e oração final — e ainda faça a chamada e acompanhe sua turma no celular.",
       "badge": "Ferramentas para o dia-a-dia do catequista",
-      "cta_primary": "Gerar meu primeiro encontro grátis",
-      "cta_secondary": "Ver recursos do catequista",
+      "cta_primary": "Gerar encontro grátis",
+      "cta_secondary": "Ver recursos",
       "trust_signals": "Sem cartão de crédito • Plano gratuito • Comece em 2 minutos"
     },
     "pain_title": "Você dedica mais tempo organizando do que evangelizando?",
@@ -2061,7 +2062,7 @@ export const landing_pt_BR = {
         "desc": "A IA monta o roteiro completo. Depois você ajusta, aplica e registra a presença no mesmo lugar."
       }
     ],
-    "steps_cta": "Criar conta e montar minha turma",
+    "steps_cta": "Criar conta grátis",
     "testimonials_title": "Quem usa recomenda",
     "testimonials_subtitle": "Catequistas que já transformaram seu dia-a-dia.",
     "testimonials": [
@@ -2160,7 +2161,7 @@ export const landing_pt_BR = {
     ],
     "cta_title": "Entre hoje e prepare o próximo encontro mais rápido",
     "cta_subtitle": "Cadastre sua turma, gere o roteiro e acompanhe presença e famílias no mesmo fluxo.",
-    "cta_button": "Criar conta e gerar encontro grátis",
+    "cta_button": "Criar conta grátis",
     "cta_badge": "Comece em 2 minutos",
     "cta_see_plans": "Ver planos",
     "mock": {

@@ -106,6 +106,7 @@ export default function WorkspaceSelectorPage() {
 
   const handleEnter = (workspaceId: string) => {
     localStorage.setItem('catequese-viva-active-workspace', workspaceId);
+    localStorage.removeItem('catequese-viva-active-membership');
     window.dispatchEvent(new CustomEvent('workspace-changed', { detail: workspaceId }));
     navigate('/app');
   };
@@ -139,6 +140,7 @@ export default function WorkspaceSelectorPage() {
       key={ws.id}
       role="button"
       tabIndex={0}
+      data-testid={`workspace-card-${ws.id}`}
       onClick={() => handleEnter(ws.id)}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleEnter(ws.id); } }}
       className="w-full rounded-2xl border-2 border-muted bg-card hover:border-primary/50 hover:shadow-sm transition-all p-5 text-left group cursor-pointer"
@@ -225,6 +227,7 @@ export default function WorkspaceSelectorPage() {
             <div
               role="button"
               tabIndex={0}
+              data-testid="workspace-card-last-used"
               onClick={() => handleEnter(lastUsed.id)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleEnter(lastUsed.id); } }}
               className="w-full rounded-2xl border-2 border-primary/40 bg-primary/5 hover:border-primary/60 hover:bg-primary/10 transition-all p-5 text-left group cursor-pointer"
@@ -266,6 +269,7 @@ export default function WorkspaceSelectorPage() {
             <div
               role="button"
               tabIndex={0}
+              data-testid="workspace-card-personal"
               onClick={() => handleEnter(personal.id)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleEnter(personal.id); } }}
               className="w-full rounded-2xl border-2 border-primary/30 bg-primary/5 hover:border-primary/50 hover:bg-primary/10 transition-all p-5 text-left group cursor-pointer"

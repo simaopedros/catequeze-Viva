@@ -94,13 +94,25 @@ export const generateCheckoutSession: GenerateCheckoutSession<
         );
       }
     } else {
+      // Accept parish owner OR coordinator+ membership on an institutional parish
       const ownedParish = await context.entities.Parish.findFirst({
         where: { ownerId: context.user.id, type: { not: "PERSONAL" } },
       });
-      if (!ownedParish) {
+      const coordinatorMembership = !ownedParish
+        ? await context.entities.Membership.findFirst({
+            where: {
+              userId: context.user.id,
+              status: 'ACTIVE',
+              role: { in: ['PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'DIOCESE_ADMIN'] },
+              parish: { type: { not: 'PERSONAL' } },
+            },
+            select: { id: true },
+          })
+        : null;
+      if (!ownedParish && !coordinatorMembership) {
         throw new HttpError(
           403,
-          'O plano institucional requer que você crie ou seja dono de uma paróquia antes de contratá-lo. Planos pessoais (Catequista Pro/IA) cobrem apenas o seu espaço pessoal.',
+          'O plano institucional requer que você crie ou seja administrador de uma paróquia antes de contratá-lo. Planos pessoais (Catequista Pro/IA) cobrem apenas o seu espaço pessoal.',
         );
       }
     }

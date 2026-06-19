@@ -7,13 +7,17 @@ import { BrowserFrame } from './BrowserFrame';
 import { FeatureScreenshot } from './FeatureScreenshot';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
+import { cn } from '../../client/utils';
 
-export function HeroSection({ ns = 'landing' }: { ns?: string }) {
+export function HeroSection({ ns = 'landing', responsiveCtas = false }: { ns?: string; responsiveCtas?: boolean }) {
   const { t } = useTranslation(ns);
   const { ref: revealRef, className: revealClass } = useScrollReveal();
   const blobTopRef = useParallax<HTMLDivElement>({ factor: 0.04 });
   const blobBottomRef = useParallax<HTMLDivElement>({ factor: -0.03 });
   const mockupRef = useParallax<HTMLDivElement>({ factor: 0.06 });
+  const ctaClassName = responsiveCtas
+    ? 'h-auto min-h-12 w-full px-6 text-center leading-snug whitespace-normal sm:w-auto sm:px-10'
+    : undefined;
 
   return (
     <section className="relative overflow-hidden">
@@ -52,17 +56,22 @@ export function HeroSection({ ns = 'landing' }: { ns?: string }) {
               <span className="font-semibold text-foreground">{t('hero.subheadline').split('—')[1]?.trim() || t('hero.subheadline')}</span>
             </p>
 
-            <div className="flex max-w-md mx-auto lg:mx-0 flex-col md:flex-row gap-3 md:gap-4 justify-center lg:justify-start">
-              <Button size="xl" variant="brand" asChild>
+            <div
+              className={cn(
+                'flex max-w-md mx-auto lg:mx-0 flex-col md:flex-row gap-3 md:gap-4 justify-center lg:justify-start',
+                responsiveCtas && 'w-full sm:w-auto sm:max-w-none',
+              )}
+            >
+              <Button size="xl" variant="brand" asChild className={ctaClassName}>
                 <Link to="/signup">
                   {t('hero.cta_primary')}
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="h-4 w-4 shrink-0" />
                 </Link>
               </Button>
-              <Button size="xl" variant="outline" asChild>
+              <Button size="xl" variant="outline" asChild className={ctaClassName}>
                 <a href="#recursos">
                   {t('hero.cta_secondary')}
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="h-4 w-4 shrink-0" />
                 </a>
               </Button>
             </div>

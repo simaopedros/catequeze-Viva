@@ -22,19 +22,19 @@ export default function LandingPage() {
       <PublicNavbar />
 
       <main className="flex-1">
-        <HeroSection />
+        <HeroSection responsiveCtas />
 
         <Suspense fallback={<SectionFallback />}>
           <PainPointsSection />
-          <AiShowcaseSection />
+          <AiShowcaseSection responsiveCtas />
           <FeaturesSection />
           <MissionSection />
           <PersonasSection />
-          <StepsSection />
+          <StepsSection responsiveCtas />
           <TestimonialsSection />
-          <PricingPreviewSection />
+          <PricingPreviewSection responsiveCtas />
           <FaqSection />
-          <CtaSection />
+          <CtaSection responsiveCtas />
         </Suspense>
       </main>
 

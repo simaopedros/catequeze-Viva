@@ -73,12 +73,27 @@ export function useActiveWorkspace(): UseActiveWorkspaceReturn {
 
   // Auto-select personal workspace if none stored
   useEffect(() => {
-    if (!isLoading && workspaces.length > 0 && !getStoredWorkspaceId()) {
-      const personal = workspaces.find((w: Workspace) => w.isPersonal);
-      const firstId = personal?.id || workspaces[0]?.id;
-      if (firstId) {
-        localStorage.setItem(STORAGE_KEY, firstId);
-        workspaceStore.notify();
+    if (!isLoading && workspaces.length > 0) {
+      const storedId = getStoredWorkspaceId();
+      if (!storedId) {
+        const personal = workspaces.find((w: Workspace) => w.isPersonal);
+        const firstId = personal?.id || workspaces[0]?.id;
+        if (firstId) {
+          localStorage.setItem(STORAGE_KEY, firstId);
+          workspaceStore.notify();
+        }
+      } else {
+        // Validate stored workspace still exists
+        const exists = workspaces.some((w: Workspace) => w.id === storedId);
+        if (!exists) {
+          const personal = workspaces.find((w: Workspace) => w.isPersonal);
+          const firstId = personal?.id || workspaces[0]?.id;
+          if (firstId) {
+            localStorage.setItem(STORAGE_KEY, firstId);
+            localStorage.removeItem('catequese-viva-active-membership');
+            workspaceStore.notify();
+          }
+        }
       }
     }
   }, [workspaces, isLoading]);
@@ -96,6 +111,7 @@ export function useActiveWorkspace(): UseActiveWorkspaceReturn {
 
   const switchWorkspace = useCallback((id: string) => {
     localStorage.setItem(STORAGE_KEY, id);
+    localStorage.removeItem('catequese-viva-active-membership');
     workspaceStore.notify();
     window.dispatchEvent(new CustomEvent(EVENT_NAME, { detail: id }));
   }, []);
