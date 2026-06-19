@@ -5,6 +5,7 @@
 # To include specific dotenv files, use the `!` operator or adjust these rules.
 .env
 .env.*
+*.env
 
 # Don't ignore example dotenv files.
 !.env.example
@@ -34,6 +35,12 @@ e2e-tests/reports/
 e2e-tests/test-results/
 e2e-tests/.cache/
 e2e-tests/prisma/
+
+# Python virtual environment for migration
+.venv-migration/
+
+# Migration scripts (contains sensitive .env files)
+scripts/
 
 # SQL backup files
 *.sql
