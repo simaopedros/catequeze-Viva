@@ -1584,7 +1584,12 @@ export const common_es = {
     "collapse_menu": "Contraer menú",
     "load_more": "Cargar más",
     "offline_banner": "Sin conexión a internet. Algunas funciones pueden no estar disponibles.",
-    "skip_to_content": "Ir al contenido principal"
+    "skip_to_content": "Ir al contenido principal",
+    "install_title": "Instalar App",
+    "install_description": "Agregue a la pantalla de inicio para acceso rápido y sin conexión.",
+    "install_button": "Instalar",
+    "offline_title": "Sin conexión",
+    "offline_description": "Estás sin conexión. Verifica tu conexión e inténtalo de nuevo."
   } as const;
 
 export const components_es = {

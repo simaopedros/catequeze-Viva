@@ -1584,7 +1584,12 @@ export const common_pt_BR = {
     "collapse_menu": "Recolher menu",
     "load_more": "Carregar mais",
     "offline_banner": "Sem conexão à internet. Algumas funcionalidades podem estar indisponíveis.",
-    "skip_to_content": "Ir para o conteúdo principal"
+    "skip_to_content": "Ir para o conteúdo principal",
+    "install_title": "Instalar App",
+    "install_description": "Adicione à tela inicial para acesso rápido e offline.",
+    "install_button": "Instalar",
+    "offline_title": "Sem conexão",
+    "offline_description": "Você está offline. Verifique sua conexão e tente novamente."
   } as const;
 
 export const components_pt_BR = {
