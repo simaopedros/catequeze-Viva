@@ -6,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '../../client/components/ui/button';
 import { Input } from '../../client/components/ui/input';
 import { ArrowLeft, Save, Plus, AlertTriangle, Camera } from 'lucide-react';
-import { AppShell } from '../AppShell';
 import { useQuery, listHouseholds, createCatechumen } from 'wasp/client/operations';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
 import { toast } from '../../client/hooks/use-toast';
@@ -99,19 +98,17 @@ export default function CreateCatechumenPage() {
 
   if (!canManage) {
     return (
-      <AppShell>
         <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
           <AlertTriangle className="h-12 w-12 text-destructive" />
           <h1 className="text-xl font-bold">{t('catechumens.access_restricted')}</h1>
           <p className="text-muted-foreground max-w-md">{t('catechumens.access_restricted_desc')}</p>
           <Button variant="outline" onClick={() => navigate('/app/catechumens')}>{t('back')}</Button>
         </div>
-      </AppShell>
     );
   }
 
   return (
-    <AppShell>
+    <>
       <div className="max-w-lg mx-auto space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
@@ -263,6 +260,6 @@ export default function CreateCatechumenPage() {
           refetchHouseholds();
         }}
       />
-    </AppShell>
+    </>
   );
 }

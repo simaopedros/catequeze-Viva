@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useParams, Link, useNavigate } from 'react-router';
 import { useState } from 'react';
+import { AppShell } from '../AppShell';
 import { Button } from '../../client/components/ui/button';
 import { Input } from '../../client/components/ui/input';
 import { Label } from '../../client/components/ui/label';
@@ -13,7 +14,6 @@ import {
   SelectValue,
 } from '../../client/components/ui/select';
 import { Plus, Calendar, BookOpen, Sparkles, MessageCircle, Trash2 } from 'lucide-react';
-import { AppShell } from '../AppShell';
 import { PageHeader } from '../../client/components/PageHeader';
 import { SkeletonPage } from '../../client/components/Skeletons';
 import { EmptyState } from '../../client/components/EmptyState';
@@ -83,7 +83,6 @@ export default function MeetingsPage() {
   if (loading) return <AppShell><div className="p-6"><SkeletonPage /></div></AppShell>;
 
   return (
-    <AppShell>
       <div className="space-y-6">
         <PageHeader
           title={t('title')}
@@ -225,6 +224,5 @@ export default function MeetingsPage() {
           description={t('delete_confirm_desc')}
         />
       </div>
-    </AppShell>
   );
 }

@@ -42,6 +42,12 @@ export function AppShell({ children }: AppShellProps) {
     ? (allMemberships || []).some((m: any) => !['GUARDIAN', 'CATECHUMEN'].includes(m.role))
     : true;
 
+  // Minimal chrome for onboarding, workspace-selector, and billing (no sidebar/topbar/bottomnav)
+  const isMinimalPath = useMemo(() => {
+    const path = location.pathname;
+    return path === '/app/onboarding' || path === '/app/select-workspace';
+  }, [location.pathname]);
+
   // Lazy-load the remaining i18n namespaces once authenticated
   useEffect(() => {
     if (userRole || isAdmin) {
@@ -99,6 +105,15 @@ export function AppShell({ children }: AppShellProps) {
     return <FamilyAppShell>{children}</FamilyAppShell>;
   }
 
+  // Minimal paths: 2FA gate + content only, no app chrome
+  if (isMinimalPath) {
+    return (
+      <TwoFactorGate>
+        <div className="min-h-screen bg-background">{children}</div>
+      </TwoFactorGate>
+    );
+  }
+
   return (
     <TwoFactorGate>
     <ShellBase variant="app">
@@ -125,7 +140,9 @@ export function AppShell({ children }: AppShellProps) {
         <ErrorBoundary fallback={<div className="flex h-14 items-center border-b bg-card shadow-elevation-sticky px-4" />}>
           <TopBar onMenuToggle={handleMenuToggle} />
         </ErrorBoundary>
-        <main id="main-content" ref={mainRef} className="flex-1 overflow-y-auto p-4 md:p-6 pb-16 lg:pb-6">{children}</main>
+        <main id="main-content" ref={mainRef} className="flex-1 overflow-y-auto p-4 md:p-6 pb-16 lg:pb-6">
+          <div key={location.pathname} className="content-transition">{children}</div>
+        </main>
       </div>
       <BottomNav />
       <Suspense fallback={null}>

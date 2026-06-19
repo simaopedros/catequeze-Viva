@@ -6,7 +6,6 @@ import { Badge } from '../../client/components/ui/badge';
 import { Users, UserPlus, Trash2, Mail, AlertCircle, ArrowLeft, Loader2 } from 'lucide-react';
 import { useRoleLabels, useMembershipStatusLabels } from '../../i18n/useLabels';
 import { ConfirmDialog } from '../../client/components/ConfirmDialog';
-import { AppShell } from '../AppShell';
 import { useQuery, listParishMembers, listCommunities, listHouseholds, inviteUserToParish, removeMembership, updateMembershipRole } from 'wasp/client/operations';
 import { useUserContext } from '../../client/hooks/useUserContext';
 
@@ -97,14 +96,12 @@ export default function ParishMembersPage() {
 
   if (loading) {
     return (
-      <AppShell>
         <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
-      </AppShell>
     );
   }
 
   return (
-    <AppShell>
+    <>
       <div className="space-y-6">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <button onClick={() => navigate('/app/parishes')} className="hover:text-foreground transition-colors">{tn('parishes')}</button>
@@ -250,6 +247,6 @@ export default function ParishMembersPage() {
           }
         }}
       />
-    </AppShell>
+    </>
   );
 }

@@ -6,7 +6,6 @@ import { BarChart3, Users, Calendar, TrendingUp, Download, Trophy, AlertTriangle
 import { FilterPills } from '../../client/components/FilterPills';
 import { PageHeader } from '../../client/components/PageHeader';
 import { EmptyState } from '../../client/components/EmptyState';
-import { AppShell } from '../AppShell';
 import { useQuery, getReportsOverview } from 'wasp/client/operations';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RPieChart, Pie, Cell, Legend, LineChart, Line } from 'recharts';
@@ -82,17 +81,14 @@ export default function ReportsPage() {
   },[classReports]);
 
   if(loading)return(
-    <AppShell>
       <div className="space-y-6 animate-pulse">
         <div className="h-8 w-40 bg-muted rounded"/>
         <div className="grid gap-4 md:grid-cols-3">{[1,2,3].map(i=><div key={i} className="h-24 rounded-xl bg-muted"/>)}</div>
         <div className="h-64 rounded-xl bg-muted"/>
       </div>
-    </AppShell>
   );
 
   return(
-    <AppShell>
       <div className="space-y-6">
         <PageHeader title={t('title')}>
           <div className="flex gap-2">
@@ -229,6 +225,5 @@ export default function ReportsPage() {
           </div>
         )}
       </div>
-    </AppShell>
   );
 }

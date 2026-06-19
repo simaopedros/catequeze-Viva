@@ -12,7 +12,6 @@ import {
 } from '../../client/components/ui/select';
 import { EmptyState } from '../../client/components/EmptyState';
 import { ChevronLeft, ChevronRight, Plus, Trash2, Calendar, Download, X } from 'lucide-react';
-import { AppShell } from '../AppShell';
 import { useQuery, listLiturgicalEvents, listClasses, listMeetingsForClasses, createLiturgicalEvent, deleteLiturgicalEvent } from 'wasp/client/operations';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
 
@@ -139,18 +138,15 @@ export default function CalendarPage() {
     day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear();
 
   if (loading) return (
-    <AppShell>
       <div className="space-y-6 animate-pulse">
         <div className="h-8 w-48 bg-muted rounded" />
         <div className="h-80 rounded-xl bg-muted" />
       </div>
-    </AppShell>
   );
 
   const activeFilterCount = typeFilter !== 'all' ? 1 : 0;
 
   return (
-    <AppShell>
       <div className="space-y-4">
         {/* ── Header: 3 camadas ─────────────────────────────────────────────── */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
@@ -325,7 +321,6 @@ export default function CalendarPage() {
           </div>
         )}
       </div>
-    </AppShell>
   );
 }
 

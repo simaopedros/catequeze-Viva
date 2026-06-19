@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { AppShell } from '../AppShell';
 import { Button } from '../../client/components/ui/button';
 import {
   Church, MapPin, Users, Building2, Settings,
@@ -115,21 +114,17 @@ export default function ParishDetailPage() {
 
   if (loading) {
     return (
-      <AppShell>
         <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
-      </AppShell>
     );
   }
 
   if (!parish && !loading) {
     return (
-      <AppShell>
         <div className="flex flex-col items-center py-20 gap-2">
           <AlertCircle className="h-10 w-10 text-destructive" />
           <p className="text-destructive">{error || tp('parish_not_found')}</p>
           <Button variant="ghost" onClick={() => navigate('/app/parishes')}><ArrowLeft className="mr-1 h-4 w-4" />{tp('back')}</Button>
         </div>
-      </AppShell>
     );
   }
 
@@ -140,7 +135,7 @@ export default function ParishDetailPage() {
   ];
 
   return (
-    <AppShell>
+    <>
       <div className="space-y-6">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <button onClick={() => navigate('/app/parishes')} className="hover:text-foreground transition-colors">{tn('parishes')}</button>
@@ -238,6 +233,6 @@ export default function ParishDetailPage() {
         loading={deleting}
         onConfirm={handleDelete}
       />
-    </AppShell>
+    </>
   );
 }

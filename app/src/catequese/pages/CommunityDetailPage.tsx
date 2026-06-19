@@ -1,10 +1,10 @@
 import { useParams, Link, useNavigate } from 'react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AppShell } from '../AppShell';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { ArrowLeft, Building2, Users, GraduationCap, User, MessageCircle, MapPin, Phone } from 'lucide-react';
-import { AppShell } from '../AppShell';
 import { EmptyState } from '../../client/components/EmptyState';
 import { useQuery, listCommunities, listClasses, listHouseholds, createConversation } from 'wasp/client/operations';
 import { useCommunityTypeLabels } from '../../i18n/useLabels';
@@ -65,7 +65,6 @@ export default function CommunityDetailPage() {
   ];
 
   return (
-    <AppShell>
       <div className="max-w-4xl mx-auto space-y-6 py-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild><Link to="/app/communities"><ArrowLeft className="h-5 w-5" /></Link></Button>
@@ -195,6 +194,5 @@ export default function CommunityDetailPage() {
           </div>
         )}
       </div>
-    </AppShell>
   );
 }

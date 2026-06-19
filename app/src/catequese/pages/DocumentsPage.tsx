@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AppShell } from '../AppShell';
 import { FileText, CheckCircle, Clock, Upload, Trash2, XCircle, AlertTriangle, FileUp } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
@@ -14,7 +15,6 @@ import {
 } from '../../client/components/ui/dialog';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../../client/components/ui/tooltip';
 import { Avatar, AvatarFallback } from '../../client/components/ui/avatar';
-import { AppShell } from '../AppShell';
 import { PageHeader } from '../../client/components/PageHeader';
 import { EmptyState } from '../../client/components/EmptyState';
 import { SkeletonTable } from '../../client/components/Skeletons';
@@ -122,7 +122,6 @@ export default function DocumentsPage() {
     : null;
 
   return (
-    <AppShell>
       <div className="space-y-6">
         <PageHeader title={tc('documents.title')} subtitle={tc('documents.page_subtitle')} />
 
@@ -373,6 +372,5 @@ export default function DocumentsPage() {
           />
         )}
       </div>
-    </AppShell>
   );
 }

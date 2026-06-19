@@ -20,6 +20,7 @@ import { useHimetricaIdentify } from "./analytics/useHimetricaIdentify";
 import GoogleTagScripts from "./analytics/GoogleTagScripts";
 import { isFamilyPortalHost } from "../shared/portal";
 import FamilyLandingPage from "../catequese/pages/family/FamilyLandingPage";
+import { AppShell } from "../catequese/AppShell";
 
 import "../i18n/config";
 import { applyStoredLocale } from "../i18n/useLocale";
@@ -140,7 +141,9 @@ export default function App() {
         <div className="bg-background text-foreground min-h-screen">
           <ErrorBoundary>
             {isAppRoute ? (
-              <Outlet />
+              <AppShell>
+                <Outlet />
+              </AppShell>
             ) : isAdminDashboard ? (
               <Outlet />
             ) : (

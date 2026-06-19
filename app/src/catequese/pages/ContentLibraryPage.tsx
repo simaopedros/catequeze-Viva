@@ -9,7 +9,6 @@ import { SearchInput } from '../../client/components/SearchInput';
 import { EmptyState } from '../../client/components/EmptyState';
 import { SkeletonCard } from '../../client/components/Skeletons';
 import { Plus, BookOpen, Clock, User, Puzzle, LayoutGrid, List, ArrowUpDown, Sparkles, BookMarked, Search, Loader2 } from 'lucide-react';
-import { AppShell } from '../AppShell';
 import { useQuery, listContentItems, listDioceseSharedContent } from 'wasp/client/operations';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
 
@@ -90,19 +89,16 @@ export default function ContentLibraryPage() {
 
   if (loading) {
     return (
-      <AppShell>
         <div className="space-y-6">
           <div className="h-8 w-48 animate-pulse rounded bg-muted" />
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map(i => <SkeletonCard key={i} />)}
           </div>
         </div>
-      </AppShell>
     );
   }
 
   return (
-    <AppShell>
       <div className="space-y-6">
         <PageHeader
           title={t('title')}
@@ -183,6 +179,5 @@ export default function ContentLibraryPage() {
           </div>
         )}
       </div>
-    </AppShell>
   );
 }

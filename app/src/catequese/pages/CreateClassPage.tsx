@@ -5,7 +5,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '../../client/components/ui/button';
 import { Input } from '../../client/components/ui/input';
 import { ArrowLeft, Save } from 'lucide-react';
-import { AppShell } from '../AppShell';
 import { createClass } from 'wasp/client/operations';
 import { handlePlanLimitError } from '../lib/planLimitToast';
 import { toast } from '../../client/hooks/use-toast';
@@ -53,7 +52,6 @@ export default function CreateClassPage() {
   };
 
   return (
-    <AppShell>
       <div className="max-w-lg mx-auto space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
@@ -176,6 +174,5 @@ export default function CreateClassPage() {
           </form>
         </Form>
       </div>
-    </AppShell>
   );
 }

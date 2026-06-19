@@ -3,7 +3,6 @@ import { useAuth } from 'wasp/client/auth';
 import { Link as WaspRouterLink, routes } from 'wasp/client/router';
 import type { User } from 'wasp/entities';
 import { getCustomerPortalUrl, useQuery } from 'wasp/client/operations';
-import { AppShell } from '../catequese/AppShell';
 import { PageHeader } from '../client/components/PageHeader';
 import { useUserContext } from '../client/hooks/useUserContext';
 import { Button } from '../client/components/ui/button';
@@ -25,7 +24,6 @@ export default function AccountPage() {
   if (!user) return null;
 
   return (
-    <AppShell>
       <div className="max-w-2xl mx-auto space-y-6">
         <PageHeader
           title={t('title')}
@@ -121,7 +119,6 @@ export default function AccountPage() {
           </CardContent>
         </Card>
       </div>
-    </AppShell>
   );
 }
 

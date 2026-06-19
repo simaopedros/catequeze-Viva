@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next';
-import { AppShell } from '../AppShell';
 import { useQuery, getDashboardStats } from 'wasp/client/operations';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
@@ -24,9 +23,7 @@ export default function DashboardPage() {
 
   if (loading || loadingCtx) {
     return (
-      <AppShell>
         <SkeletonPage />
-      </AppShell>
     );
   }
 
@@ -37,9 +34,7 @@ export default function DashboardPage() {
     STAFF_ROLES.includes(userRole)
   ) {
     return (
-      <AppShell>
         <InstitutionalDashboard />
-      </AppShell>
     );
   }
 
@@ -53,8 +48,6 @@ export default function DashboardPage() {
   const DashboardComponent = roleDashboards[userRole] || CoordinatorDashboard;
 
   return (
-    <AppShell>
       <DashboardComponent stats={stats} />
-    </AppShell>
   );
 }

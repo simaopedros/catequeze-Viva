@@ -3,7 +3,6 @@ import { useParams, Link } from 'react-router';
 import { useState, useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { Button } from '../../client/components/ui/button';
 import { ArrowLeft, Plus, Check, X, Clock, Minus, ClipboardList, Loader2 } from 'lucide-react';
-import { AppShell } from '../AppShell';
 import { EmptyState } from '../../client/components/EmptyState';
 import { useQuery, getClassDetails, getClassAttendanceMatrix, saveAttendance, createMeeting as createMeetingAction } from 'wasp/client/operations';
 import { toast } from '../../client/hooks/use-toast';
@@ -252,7 +251,7 @@ export default function AttendancePage() {
   };
 
   return (
-    <AppShell>
+    <>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -393,6 +392,6 @@ export default function AttendancePage() {
         onConfirm={handleBulkAction}
         loading={bulkSaving}
       />
-    </AppShell>
+    </>
   );
 }

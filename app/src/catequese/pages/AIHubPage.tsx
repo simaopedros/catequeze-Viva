@@ -1,5 +1,4 @@
 import { useSearchParams } from 'react-router';
-import { AppShell } from '../AppShell';
 import { AIHubHome } from '../components/ai-hub/AIHubHome';
 import { CreateMeetingFlow } from '../components/ai-hub/CreateMeetingFlow';
 import { ImproveContentFlow } from '../components/ai-hub/ImproveContentFlow';
@@ -43,8 +42,6 @@ function HubContent() {
 
 export default function AIHubPage() {
   return (
-    <AppShell>
       <HubContent />
-    </AppShell>
   );
 }

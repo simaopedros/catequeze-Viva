@@ -10,7 +10,6 @@ import { FilterPills } from '../../client/components/FilterPills';
 import { SearchInput } from '../../client/components/SearchInput';
 import { EmptyState } from '../../client/components/EmptyState';
 import { SkeletonCard } from '../../client/components/Skeletons';
-import { AppShell } from '../AppShell';
 import { useActiveWorkspace } from '../../client/hooks/useActiveWorkspace';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { getPlanLimits } from '../../shared/planLimits';
@@ -67,7 +66,6 @@ export default function ClassesPage() {
 
   if (isLoading) {
     return (
-      <AppShell>
         <div className="space-y-6">
           <div className="h-8 w-40 animate-pulse rounded bg-muted" />
           <div className="flex gap-2">
@@ -77,12 +75,10 @@ export default function ClassesPage() {
             {[1, 2, 3].map(i => <SkeletonCard key={i} />)}
           </div>
         </div>
-      </AppShell>
     );
   }
 
   return (
-    <AppShell>
       <div className="space-y-6">
         <PageHeader
           title={t('title')}
@@ -182,6 +178,5 @@ export default function ClassesPage() {
 
         <p className="text-xs text-muted-foreground">{t('found_count', { count: filtered.length })}</p>
       </div>
-    </AppShell>
   );
 }

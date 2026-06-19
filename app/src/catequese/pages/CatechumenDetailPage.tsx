@@ -1,11 +1,11 @@
 import { useParams, Link, useNavigate } from 'react-router';
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AppShell } from '../AppShell';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { ArrowLeft, Heart, BookOpen, FileText, CheckCircle, XCircle, Edit3, Gift, MessageCircle, FilePlus, Upload, Download, Link2, Copy, AlertTriangle, Cross, Trash2 } from 'lucide-react';
 import { ConfirmDialog } from '../../client/components/ConfirmDialog';
-import { AppShell } from '../AppShell';
 import { useQuery, getCatechumenProfile, listMeetings, getMeetingAttendance, createConversation, generateCatechumenUploadToken, getCatechumenAttendanceReport, justifyAbsence, deleteCatechumen } from 'wasp/client/operations';
 import { fetchAuthenticatedDocument, uploadDocumentMultipart } from '../../client/utils/documentUpload';
 import { useUserContext } from '../../client/hooks/useUserContext';
@@ -181,7 +181,6 @@ export default function CatechumenDetailPage() {
     const msg = (queryError as any)?.message || String(queryError);
     const isForbidden = status === 403 || msg?.includes('não tem acesso');
     return (
-      <AppShell>
         <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4 text-center px-6">
           <AlertTriangle className="h-12 w-12 text-destructive" />
           <div>
@@ -194,7 +193,6 @@ export default function CatechumenDetailPage() {
             <Link to="/app/catechumens"><ArrowLeft className="mr-1 h-4 w-4"/>{t('catechumens.back_to_list')}</Link>
           </Button>
         </div>
-      </AppShell>
     );
   }
   if(!profile)return <AppShell><div className="p-6 text-destructive">{t('not_found')}</div></AppShell>;
@@ -233,7 +231,7 @@ export default function CatechumenDetailPage() {
   };
 
   return(
-    <AppShell>
+    <>
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild><Link to="/app/catechumens"><ArrowLeft className="h-5 w-5"/></Link></Button>
@@ -487,6 +485,6 @@ export default function CatechumenDetailPage() {
         description={t('catechumens.delete_confirm_desc')}
         confirmLabel={t('delete')}
       />
-    </AppShell>
+    </>
   );
 }

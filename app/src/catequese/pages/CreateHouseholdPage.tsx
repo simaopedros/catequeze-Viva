@@ -6,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '../../client/components/ui/button';
 import { Input } from '../../client/components/ui/input';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
-import { AppShell } from '../AppShell';
 import { createHousehold } from 'wasp/client/operations';
 import PhoneMaskInput from '../../client/components/PhoneMaskInput';
 import { useViaCep } from '../../client/hooks/useViaCep';
@@ -59,7 +58,6 @@ export default function CreateHouseholdPage() {
   };
 
   return (
-    <AppShell>
       <div className="max-w-lg mx-auto space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
@@ -140,6 +138,5 @@ export default function CreateHouseholdPage() {
           </form>
         </Form>
       </div>
-    </AppShell>
   );
 }

@@ -16,7 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../client/components/ui/select';
-import { AppShell } from '../AppShell';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { formatDateOnly, getAgeFromDate } from '../../i18n/format';
@@ -80,19 +79,16 @@ export default function CatechumensPage() {
 
   if (isLoading) {
     return (
-      <AppShell>
         <div className="space-y-6">
           <div className="h-8 w-44 animate-pulse rounded bg-muted" />
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3, 4, 5, 6].map(i => <SkeletonCard key={i} />)}
           </div>
         </div>
-      </AppShell>
     );
   }
 
   return (
-    <AppShell>
       <div className="space-y-6">
         <PageHeader
           title={tn('catechumens')}
@@ -191,6 +187,5 @@ export default function CatechumensPage() {
           </div>
         )}
       </div>
-    </AppShell>
   );
 }

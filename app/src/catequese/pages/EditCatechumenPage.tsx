@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { ArrowLeft, Save, Camera } from 'lucide-react';
-import { AppShell } from '../AppShell';
 import { getCatechumenProfile, updateCatechumen } from 'wasp/client/operations';
 import { toast } from '../../client/hooks/use-toast';
 
@@ -82,7 +81,6 @@ export default function EditCatechumenPage() {
   };
 
   return (
-    <AppShell>
       <div className="max-w-lg mx-auto space-y-6">
         {loading && (
           <div className="animate-pulse space-y-4">
@@ -124,6 +122,5 @@ export default function EditCatechumenPage() {
         </>
         )}
       </div>
-    </AppShell>
   );
 }

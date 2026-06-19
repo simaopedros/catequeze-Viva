@@ -6,7 +6,6 @@ import { Badge } from '../../client/components/ui/badge';
 import { CheckCircle, TrendingUp, Clock, ArrowUpRight, History, AlertCircle, Loader2, XCircle, User as UserIcon, Building2, PiggyBank, Coins } from 'lucide-react';
 import type { BillingInterval } from '../lib/intendedPlan';
 import { getIntendedInterval } from '../lib/intendedPlan';
-import { AppShell } from '../AppShell';
 import { useQuery, getDashboardStats, getAiCreditsStatus, generateCheckoutSession, cancelSubscription, getParishById, getCustomerPortalUrl } from 'wasp/client/operations';
 import { useAuth } from 'wasp/client/auth';
 import { PaymentPlanId } from '../../payment/plans';
@@ -200,7 +199,6 @@ export default function BillingPage() {
 
   if (loading || (parishId && loadingParish)) {
     return (
-      <AppShell>
         <div className="space-y-6 animate-pulse">
           <div className="h-8 w-32 bg-muted rounded" />
           <div className="grid gap-4 md:grid-cols-3">
@@ -209,7 +207,6 @@ export default function BillingPage() {
             ))}
           </div>
         </div>
-      </AppShell>
     );
   }
 
@@ -274,7 +271,7 @@ export default function BillingPage() {
   const creditLabel = aiCredits?.creditsLeft === 1 ? t('credit_one') : t('credit_other');
 
   return (
-    <AppShell>
+    <>
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div>
@@ -646,6 +643,6 @@ export default function BillingPage() {
         variant="destructive"
         onConfirm={confirmCancel}
       />
-    </AppShell>
+    </>
   );
 }

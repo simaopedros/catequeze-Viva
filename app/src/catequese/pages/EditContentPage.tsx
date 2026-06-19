@@ -7,7 +7,6 @@ import { Input } from '../../client/components/ui/input';
 import { Label } from '../../client/components/ui/label';
 import { Badge } from '../../client/components/ui/badge';
 import { ArrowLeft, Save, Sparkles, Clock, Loader2 } from 'lucide-react';
-import { AppShell } from '../AppShell';
 import { ReferencePicker } from '../../client/components/ReferencePicker';
 import { getContentItem, addBibleRef, removeBibleRef, addCatechismRef, removeCatechismRef, addDirectoryRef, removeDirectoryRef, updateContentItem } from 'wasp/client/operations';
 import { enhanceContentWithAi } from 'wasp/client/operations';
@@ -179,7 +178,6 @@ export default function EditContentPage() {
   };
 
   return (
-    <AppShell>
       <div className="max-w-3xl mx-auto space-y-6">
         {loading && (
           <div className="animate-pulse space-y-4">
@@ -327,6 +325,5 @@ export default function EditContentPage() {
         </>
         )}
       </div>
-    </AppShell>
   );
 }

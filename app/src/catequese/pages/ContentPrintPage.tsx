@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { Printer, ArrowLeft, Clock } from 'lucide-react';
-import { AppShell } from '../AppShell';
 import { useQuery, getContentItem, listActivitiesByContent } from 'wasp/client/operations';
 import { useActivityTypes } from '../../i18n/useLabels';
 
@@ -27,19 +26,15 @@ export default function ContentPrintPage() {
 
   if (isLoading) {
     return (
-      <AppShell>
         <div className="max-w-4xl mx-auto p-8 text-center">
           <p className="text-muted-foreground">{t('print_page.loading')}</p>
         </div>
-      </AppShell>
     );
   }
 
   if (!item) {
     return (
-      <AppShell>
         <div className="p-6 text-destructive text-center">{t('print_page.not_found')}</div>
-      </AppShell>
     );
   }
 
@@ -59,8 +54,6 @@ export default function ContentPrintPage() {
           .ref-box { border: 1px solid #ccc; background: #f9f9f9 !important; }
         }
       `}</style>
-
-      <AppShell>
         <div className="no-print max-w-4xl mx-auto px-4 pt-4 flex items-center justify-between">
           <Button variant="ghost" size="sm" asChild>
             <Link to={`/app/content-library/${id}`}><ArrowLeft className="mr-1 h-4 w-4"/>{t('print_page.back')}</Link>
@@ -339,7 +332,6 @@ export default function ContentPrintPage() {
             <p>{t('print_page.footer')}</p>
           </div>
         </div>
-      </AppShell>
     </>
   );
 }

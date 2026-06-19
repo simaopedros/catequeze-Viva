@@ -8,7 +8,6 @@ import { Input } from '../../client/components/ui/input';
 import { Badge } from '../../client/components/ui/badge';
 import { User, Globe, Bell, Shield, Save, Key, Download, Church, CheckCircle, AlertCircle, GitMerge, RefreshCw } from 'lucide-react';
 import { ROLE_LABELS } from '../../shared/constants';
-import { AppShell } from '../AppShell';
 import { PageHeader } from '../../client/components/PageHeader';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { updateUserProfile, requestDataExport, changePassword, useQuery, listParishes, executeParishMigration } from 'wasp/client/operations';
@@ -121,7 +120,6 @@ export default function SettingsPage() {
   };
 
   return(
-    <AppShell>
       <div className="max-w-2xl mx-auto space-y-6">
         <PageHeader title={t('title')} subtitle={`${user?.email || ''} ${userRole ? tc(`roles.${userRole}`) || userRole : ''}`} />
 
@@ -245,6 +243,5 @@ export default function SettingsPage() {
           <p className="text-xs text-muted-foreground">{t('privacy_notice')}</p>
         </div>
       </div>
-    </AppShell>
   );
 }

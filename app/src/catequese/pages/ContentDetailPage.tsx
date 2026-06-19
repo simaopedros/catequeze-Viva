@@ -1,11 +1,11 @@
 import { useParams, Link, useSearchParams } from 'react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AppShell } from '../AppShell';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { EmptyState } from '../../client/components/EmptyState';
 import { ArrowLeft, Clock, Tag, Target, Send, CheckCircle, Archive, Eye, Plus, Puzzle, Edit3, Calendar, FileText, Trash2, Sparkles, Printer, BookOpen, BookMarked, MessageCircle } from 'lucide-react';
-import { AppShell } from '../AppShell';
 import { useQuery, getContentItem, listActivitiesByContent, updateContentStatus, createActivity, updateActivity, deleteActivity } from 'wasp/client/operations';
 import { ActivityForm, type ActivityType } from '../components/ActivityForm';
 import { useContentStatusMap, useActivityTypes } from '../../i18n/useLabels';
@@ -104,7 +104,6 @@ export default function ContentDetailPage(){
   };
 
   return(
-    <AppShell>
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild><Link to="/app/content-library"><ArrowLeft className="h-5 w-5"/></Link></Button>
@@ -269,6 +268,5 @@ export default function ContentDetailPage(){
           </div>
         )}
       </div>
-    </AppShell>
   );
 }

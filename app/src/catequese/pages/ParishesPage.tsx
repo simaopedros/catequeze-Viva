@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { Church, Users, BookOpen, Building2, Plus, MapPin, BadgeCheck, ArrowRight, Loader2, ShieldCheck, Search } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { Input } from '../../client/components/ui/input';
-import { AppShell } from '../AppShell';
 import { PageHeader } from '../../client/components/PageHeader';
 import { SearchInput } from '../../client/components/SearchInput';
 import { EmptyState } from '../../client/components/EmptyState';
@@ -118,19 +117,16 @@ export default function ParishesPage() {
 
   if (loading) {
     return (
-      <AppShell>
         <div className="space-y-6 p-4 md:p-6">
           <div className="h-8 w-48 bg-muted rounded animate-pulse" />
           <div className="grid gap-4 md:grid-cols-2">
             {[...Array(4)].map((_, i) => <SkeletonCard key={i} />)}
           </div>
         </div>
-      </AppShell>
     );
   }
 
   return (
-    <AppShell>
       <div className="space-y-6">
         <PageHeader
           title={tp('parishes_title')}
@@ -235,6 +231,5 @@ export default function ParishesPage() {
           </div>
         )}
       </div>
-    </AppShell>
   );
 }

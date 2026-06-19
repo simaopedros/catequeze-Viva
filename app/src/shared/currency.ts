@@ -1,7 +1,7 @@
 export type Currency = 'BRL' | 'USD';
 
 export const CURRENCY_SYMBOLS: Record<Currency, string> = {
-  BRL: 'R$',
+  BRL: '$',
   USD: '$',
 };
 

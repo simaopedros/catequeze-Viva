@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AppShell } from '../AppShell';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { Plus, Pencil, Trash2, Copy, Send, ClipboardList, ChevronRight, GripVertical, Save, X } from 'lucide-react';
-import { AppShell } from '../AppShell';
 import { PageHeader } from '../../client/components/PageHeader';
 import { useQuery, listJourneyTemplates, createTemplate, updateTemplate, updateMilestoneTemplate, deleteMilestoneTemplate } from 'wasp/client/operations';
 import { useUserContext } from '../../client/hooks/useUserContext';
@@ -121,7 +121,6 @@ export default function JourneyTemplatesPage() {
   }
 
   return (
-    <AppShell>
       <div className="space-y-6">
         <PageHeader title={t('templates.title')} subtitle={t('templates.subtitle', { count: templates.length })}>
           {canManage && (
@@ -366,6 +365,5 @@ export default function JourneyTemplatesPage() {
           </div>
         )}
       </div>
-    </AppShell>
   );
 }

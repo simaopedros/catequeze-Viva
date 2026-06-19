@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
+import { AppShell } from '../AppShell';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import {
@@ -11,7 +12,6 @@ import {
   SelectValue,
 } from '../../client/components/ui/select';
 import { Cross, Plus, User, CheckCircle, Clock, Search, Undo2, AlertTriangle, XCircle, Users, FileText, Calendar, Pencil } from 'lucide-react';
-import { AppShell } from '../AppShell';
 import { PageHeader } from '../../client/components/PageHeader';
 import { EmptyState } from '../../client/components/EmptyState';
 import { useQuery, listCatechumens, listSacramentalJourneys, createSacramentalJourney, listJourneyTemplates, updateMilestoneStatus, updateJourney } from 'wasp/client/operations';
@@ -198,7 +198,6 @@ export default function SacramentsPage() {
   if (loading) return <AppShell><div className="space-y-6 animate-pulse"><div className="h-8 w-56 bg-muted rounded"/><div className="grid gap-4 md:grid-cols-2">{[1,2].map(i => <div key={i} className="h-48 rounded-xl bg-muted"/>)}</div></div></AppShell>;
 
   return (
-    <AppShell>
       <div className="space-y-6">
         <PageHeader
           title={t('page.title')}
@@ -430,6 +429,5 @@ export default function SacramentsPage() {
           </div>
         )}
       </div>
-    </AppShell>
   );
 }

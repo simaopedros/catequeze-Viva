@@ -7,7 +7,6 @@ import { Button } from '../../client/components/ui/button';
 import { Input } from '../../client/components/ui/input';
 import { Textarea } from '../../client/components/ui/textarea';
 import { ArrowLeft, Save, Sparkles, Loader2 } from 'lucide-react';
-import { AppShell } from '../AppShell';
 import { ReferencePicker } from '../../client/components/ReferencePicker';
 import { createContentItem, addBibleRef, addCatechismRef, addDirectoryRef } from 'wasp/client/operations';
 import { enhanceContentWithAi } from 'wasp/client/operations';
@@ -135,7 +134,6 @@ export default function CreateContentPage() {
   };
 
   return (
-    <AppShell>
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
@@ -326,6 +324,5 @@ export default function CreateContentPage() {
           </form>
         </Form>
       </div>
-    </AppShell>
   );
 }

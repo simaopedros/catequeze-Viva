@@ -1,10 +1,10 @@
 import { useParams, Link } from 'react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AppShell } from '../AppShell';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { ArrowLeft, CheckCircle, Clock, AlertTriangle, XCircle, FileText, User, Calendar, BookOpen, Cross, Pencil, Save, Upload, X } from 'lucide-react';
-import { AppShell } from '../AppShell';
 import { EmptyState } from '../../client/components/EmptyState';
 import { useQuery, getSacramentalJourney, updateMilestoneStatus, updateJourney } from 'wasp/client/operations';
 import { useUserContext } from '../../client/hooks/useUserContext';
@@ -123,7 +123,6 @@ export default function SacramentalJourneyDetailPage() {
   const targetDate = journey.targetDate ? new Date(journey.targetDate) : null;
 
   return (
-    <AppShell>
       <div className="space-y-6">
         <div className="flex flex-wrap items-center gap-3">
           <Button variant="ghost" size="icon" asChild>
@@ -353,6 +352,5 @@ export default function SacramentalJourneyDetailPage() {
           </div>
         )}
       </div>
-    </AppShell>
   );
 }

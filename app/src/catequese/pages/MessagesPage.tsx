@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router';
 import { MessageSquareText, ArrowLeft, Info, BellOff, LogOut } from 'lucide-react';
-import { AppShell } from '../AppShell';
 import { ConversationList } from '../components/messages/ConversationList';
 import { ChatView } from '../components/messages/ChatView';
 import { NewConversationDialog } from '../components/messages/NewConversationDialog';
@@ -214,7 +213,7 @@ export default function MessagesPage() {
   const myParticipant = activeConv?.participants?.find((p: any) => p.userId === user?.id);
 
   return (
-    <AppShell>
+    <>
       <div className="chat-height flex overflow-hidden rounded-xl border bg-card/30 backdrop-blur-sm shadow-elevation-sm mx-auto max-w-7xl">
         {/* Conversation list - hidden on mobile when chat is open */}
         <div className={cn(
@@ -373,6 +372,6 @@ export default function MessagesPage() {
         onClose={() => setShowNewDialog(false)}
         onCreated={handleNewConversationCreated}
       />
-    </AppShell>
+    </>
   );
 }

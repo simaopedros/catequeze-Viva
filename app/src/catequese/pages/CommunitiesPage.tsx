@@ -5,7 +5,6 @@ import { Button } from '../../client/components/ui/button';
 import { Textarea } from '../../client/components/ui/textarea';
 import { Building2, Plus, Loader2, Check, X, Search } from 'lucide-react';
 import { useCommunityTypeOptions } from '../../i18n/useLabels';
-import { AppShell } from '../AppShell';
 import { useQuery, listCommunities, createCommunity, updateCommunity } from 'wasp/client/operations';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
 import { toast } from '../../client/hooks/use-toast';
@@ -96,7 +95,6 @@ export default function CommunitiesPage() {
   const inputClass = "w-full h-9 rounded-md border border-input bg-background px-3 text-sm mt-1";
 
   return (
-    <AppShell>
       <div className="space-y-6">
         <PageHeader title={tn('communities')} subtitle={tp('communities_page_subtitle')}>
           <Button size="sm" onClick={() => setShowCreate(!showCreate)}>
@@ -169,6 +167,5 @@ export default function CommunitiesPage() {
           </div>
         )}
       </div>
-    </AppShell>
   );
 }

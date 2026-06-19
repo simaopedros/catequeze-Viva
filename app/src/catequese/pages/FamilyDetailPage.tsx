@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { ArrowLeft, User, Phone, MapPin, Edit3, Shield, GraduationCap, TrendingUp, Building2, Save, X, Loader2, Plus, Pencil, Trash2, Copy } from 'lucide-react';
-import { AppShell } from '../AppShell';
 import {
   useQuery,
   listHouseholds,
@@ -325,7 +324,6 @@ export default function FamilyDetailPage() {
 
   if (loading)
     return (
-      <AppShell>
         <div className="max-w-2xl mx-auto space-y-6 animate-pulse">
           <div className="h-8 w-40 bg-muted rounded" />
           <div className="grid gap-4 md:grid-cols-2">
@@ -334,17 +332,14 @@ export default function FamilyDetailPage() {
             ))}
           </div>
         </div>
-      </AppShell>
     );
   if (!household)
     return (
-      <AppShell>
         <div className="p-6 text-destructive">{t('families.not_found')}</div>
-      </AppShell>
     );
 
   return (
-    <AppShell>
+    <>
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
@@ -878,6 +873,6 @@ export default function FamilyDetailPage() {
         onConfirm={handleRemoveCatechumen}
         loading={removingCatechumenLoading}
       />
-    </AppShell>
+    </>
   );
 }

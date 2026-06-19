@@ -1,10 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import { useParams, Link, useNavigate } from 'react-router';
 import { useState, useEffect, useMemo } from 'react';
+import { AppShell } from '../AppShell';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { ArrowLeft, UserPlus, Users, MapPin, Clock, ClipboardList, TrendingUp, XCircle, Calendar, MessageCircle, BookOpen, Building2, Pencil, Check, X, Trash2, Cross } from 'lucide-react';
-import { AppShell } from '../AppShell';
 import { useQuery, getClassDetails, listCatechumens, enrollCatechumen, updateClass, getOrCreateClassChat, cancelEnrollment, addAssistantCatechist, removeCatechistFromClass, listParishCatechists, getMonthlyPlan } from 'wasp/client/operations';
 import { useAuth } from 'wasp/client/auth';
 import { useUserContext } from '../../client/hooks/useUserContext';
@@ -233,7 +233,7 @@ export default function ClassDetailPage() {
   const statusBadge = classStatusMap[cls.status as keyof typeof classStatusMap];
 
   return(
-    <AppShell>
+    <>
       <div className="space-y-6">
         <div className="flex flex-wrap items-center gap-3">
           <Button variant="ghost" size="icon" asChild><Link to="/app/classes"><ArrowLeft className="h-5 w-5"/></Link></Button>
@@ -598,6 +598,6 @@ export default function ClassDetailPage() {
         variant="destructive"
         onConfirm={handleRemoveCatechist}
       />
-    </AppShell>
+    </>
   );
 }

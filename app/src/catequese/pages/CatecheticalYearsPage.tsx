@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { CalendarDays, Plus, Check } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
-import { AppShell } from '../AppShell';
 import { EmptyState } from '../../client/components/EmptyState';
 import { useQuery, listCatecheticalYears, createCatecheticalYear } from 'wasp/client/operations';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
@@ -59,16 +58,13 @@ export default function CatecheticalYearsPage() {
 
   if (loading) {
     return (
-      <AppShell>
         <div className="flex items-center justify-center py-20">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
-      </AppShell>
     );
   }
 
   return (
-    <AppShell>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
@@ -151,6 +147,5 @@ export default function CatecheticalYearsPage() {
           </div>
         )}
       </div>
-    </AppShell>
   );
 }

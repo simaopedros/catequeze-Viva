@@ -224,15 +224,68 @@
     50%      { transform: rotate(0deg); }
   }
 
-  /* Page transition */
+  /* Page / content transitions */
   @keyframes page-enter {
     from { opacity: 0; transform: translateY(6px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+
+  @keyframes content-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes slide-indicator {
+    from { opacity: 0; transform: scaleX(0.85); }
+    to   { opacity: 1; transform: scaleX(1); }
+  }
 }
+
+/* ── Motion utilities ─────────────────────────────────────────────── */
 
 @utility page-enter {
   animation: page-enter 0.3s ease-out both;
+}
+
+@utility content-transition {
+  animation: page-enter var(--motion-duration-normal, 250ms) var(--motion-easing-default, ease-out) both;
+}
+
+@utility content-fade-in {
+  animation: content-fade-in var(--motion-duration-normal, 250ms) var(--motion-easing-default, ease-out) both;
+}
+
+/* ── Content area stabilization ───────────────────────────────────── */
+
+/* Prevent content containers from collapsing during loading/transitions */
+@utility app-content-min-height {
+  min-height: calc(100vh - 10rem); /* viewport minus topbar + padding */
+}
+
+/* Skeleton-to-content transition: keep skeletons in-flow without layout shift */
+@utility skeleton-stable {
+  min-height: 4rem;
+  transition: opacity var(--motion-duration-fast, 150ms) var(--motion-easing-default, ease-out);
+}
+
+/* ── Surface micro-interactions ───────────────────────────────────── */
+
+/* Subtle lift on hover for cards and clickable surfaces */
+.surface-hover {
+  transition: transform var(--motion-duration-fast, 150ms) var(--motion-easing-default, ease-out),
+              box-shadow var(--motion-duration-fast, 150ms) var(--motion-easing-default, ease-out);
+}
+.surface-hover:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-elevation-md, 0px 4px 10px rgba(0,0,0,0.1));
+}
+
+/* Subtle press feedback for buttons and interactive elements */
+.press-feedback {
+  transition: transform var(--motion-duration-fast, 150ms) var(--motion-easing-default, ease-out);
+}
+.press-feedback:active {
+  transform: scale(0.97);
 }
 
 /* ── Global reset ──────────────────────────────────────────────────── */
@@ -286,6 +339,16 @@
 
     /* Radius */
     --radius: 0.5rem;
+
+    /* ── Motion ──────────────────────────────────────────────────────── */
+    --motion-duration-fast: 150ms;
+    --motion-duration-normal: 250ms;
+    --motion-duration-slow: 350ms;
+    --motion-easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+    --motion-easing-emphasized: cubic-bezier(0.4, 0, 0, 1);
+    --motion-distance-xs: 4px;
+    --motion-distance-sm: 8px;
+    --motion-distance-md: 16px;
 
     /* Info */
     --info: 200 98% 39%;

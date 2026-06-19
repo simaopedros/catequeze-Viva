@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router';
 import { Search, BookOpen, Loader2, ChevronDown, ChevronUp, AlertCircle } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
-import { AppShell } from '../AppShell';
 import { listDirectoryByPart, searchDirectory, getDirectoryEntry } from 'wasp/client/operations';
 import { useLocale } from '../../i18n/useLocale';
 
@@ -84,7 +83,6 @@ export default function DirectoryPage() {
   const displayEntries = searchResults.length > 0 ? searchResults : entries;
 
   return (
-    <AppShell>
       <div className="space-y-4">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
           <span>{t('directory.title')}</span>
@@ -166,6 +164,5 @@ export default function DirectoryPage() {
           </div>
         )}
       </div>
-    </AppShell>
   );
 }

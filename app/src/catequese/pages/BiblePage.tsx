@@ -20,7 +20,6 @@ import { FilterPills } from '../../client/components/FilterPills';
 import { PageHeader } from '../../client/components/PageHeader';
 import { SearchInput } from '../../client/components/SearchInput';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../../client/components/ui/sheet';
-import { AppShell } from '../AppShell';
 import { useQuery, listBibleBooks, getBibleBook, getBibleChapter, searchBible } from 'wasp/client/operations';
 import { useLocale } from '../../i18n/useLocale';
 import { toast } from '../../client/hooks/use-toast';
@@ -635,7 +634,6 @@ export default function BiblePage() {
   );
 
   return (
-    <AppShell>
       <div className="space-y-4">
         <PageHeader title={t('title')} compact breadcrumbs={breadcrumbs}>
           <div className="flex items-center gap-2">
@@ -921,6 +919,5 @@ export default function BiblePage() {
           </div>
         )}
       </div>
-    </AppShell>
   );
 }

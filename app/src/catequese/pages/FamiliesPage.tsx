@@ -15,7 +15,6 @@ import {
 } from '../../client/components/ui/select';
 import { EmptyState } from '../../client/components/EmptyState';
 import { SkeletonCard } from '../../client/components/Skeletons';
-import { AppShell } from '../AppShell';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
 import { useUserContext } from '../../client/hooks/useUserContext';
 
@@ -50,19 +49,16 @@ export default function FamiliesPage() {
 
   if (isLoading) {
     return (
-      <AppShell>
         <div className="space-y-6">
           <div className="h-8 w-32 animate-pulse rounded bg-muted" />
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map(i => <SkeletonCard key={i} />)}
           </div>
         </div>
-      </AppShell>
     );
   }
 
   return (
-    <AppShell>
       <div className="space-y-6">
         <PageHeader
           title={tn('families')}
@@ -136,6 +132,5 @@ export default function FamiliesPage() {
           </div>
         )}
       </div>
-    </AppShell>
   );
 }

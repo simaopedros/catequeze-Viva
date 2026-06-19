@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { Shield, CheckCircle, XCircle } from 'lucide-react';
-import { AppShell } from '../AppShell';
 import { listConsents, saveConsent } from 'wasp/client/operations';
 import { toast } from '../../client/hooks/use-toast';
 
@@ -40,7 +39,6 @@ export default function ConsentPage() {
   };
 
   return (
-    <AppShell>
       <div className="max-w-2xl mx-auto space-y-6">
         <div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
@@ -70,6 +68,5 @@ export default function ConsentPage() {
           ))}
         </div>
       </div>
-    </AppShell>
   );
 }
