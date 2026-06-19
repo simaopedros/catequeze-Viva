@@ -14,6 +14,7 @@ import { NAV_SECTIONS, filterByRole, type NavItemConfig } from '../shared/naviga
 import { useQuery, listConversations } from 'wasp/client/operations';
 import { useActiveWorkspace } from '../client/hooks/useActiveWorkspace';
 import { BrandLockup, BrandMark } from '../client/components/brand/Brand';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '../client/components/ui/tooltip';
 
 // ---- Icon Map (iconKey → Lucide component) ----
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -61,16 +62,19 @@ function NavItemLink({ item, collapsed, badge }: NavItemProps & { badge?: number
     messages: 'sidebar-messages',
   };
 
-  return (
+  const link = (
     <NavLink
       key={item.to}
       to={item.to}
       end={item.to === '/app'}
       data-tour={tourMap[item.iconKey] || undefined}
       className={({ isActive }) => cn(
-        'flex items-center justify-between rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors w-full relative',
-        isActive ? 'bg-primary/10 text-primary border-l-2 border-primary' : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
-        collapsed && 'justify-center px-2'
+        'flex items-center justify-between rounded-md px-2.5 py-1.5 text-sm font-medium transition-all duration-200 w-full relative',
+        isActive
+          ? 'bg-primary/10 text-primary border-l-2 border-primary shadow-[inset_2px_0_0_var(--color-primary)]'
+          : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground border-l-2 border-transparent',
+        collapsed && 'justify-center px-2',
+        'motion-reduce:transition-none'
       )}
     >
       <div className="flex items-center gap-3">
@@ -87,6 +91,26 @@ function NavItemLink({ item, collapsed, badge }: NavItemProps & { badge?: number
       )}
     </NavLink>
   );
+
+  if (collapsed) {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            {link}
+          </TooltipTrigger>
+          <TooltipContent side="right">
+            <span>{t(item.labelKey)}</span>
+            {badge !== undefined && badge > 0 && (
+              <span className="ml-1.5 opacity-70">({badge > 99 ? '99+' : badge})</span>
+            )}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+
+  return link;
 }
 
 export function Sidebar() {

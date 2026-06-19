@@ -6,7 +6,16 @@ interface SkeletonProps {
 
 function Skeleton({ className }: SkeletonProps) {
   return (
-    <div aria-hidden="true" className={cn('animate-pulse rounded bg-muted', className)} />
+    <div
+      aria-hidden="true"
+      className={cn(
+        'rounded bg-muted/60 overflow-hidden relative',
+        'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_ease-in-out_infinite]',
+        'before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent',
+        'dark:before:via-white/5',
+        className
+      )}
+    />
   );
 }
 

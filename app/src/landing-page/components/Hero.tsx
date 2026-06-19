@@ -1,91 +1,45 @@
 import { Link as WaspRouterLink, routes } from "wasp/client/router";
 import { Button } from "../../client/components/ui/button";
-import openSaasBannerDark from "../../client/static/open-saas-banner-dark.svg";
-import openSaasBannerLight from "../../client/static/open-saas-banner-light.svg";
+import { useTranslation } from "react-i18next";
+import { ArrowRight, Sparkles } from "lucide-react";
 
 export default function Hero() {
+  const { t } = useTranslation('landing');
+
   return (
-    <div className="relative w-full pt-14">
-      <TopGradient />
-      <BottomGradient />
-      <div className="md:p-24">
+    <div className="relative w-full pt-14 overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5" />
+      <div className="absolute top-20 right-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="md:p-24 relative">
         <div className="max-w-8xl mx-auto px-6 lg:px-8">
           <div className="lg:mb-18 mx-auto max-w-3xl text-center">
-            <h1 className="text-foreground text-5xl font-bold sm:text-6xl">
-              Some <span className="italic">cool</span> words about{" "}
-              <span className="text-gradient-primary">your product</span>
+            <h1 className="text-foreground text-5xl font-bold sm:text-6xl tracking-tight text-balance">
+              {t('hero.headline_line1')}{' '}
+              <span className="text-gradient-primary">{t('hero.headline_line2')}</span>
             </h1>
             <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-lg leading-8">
-              With some more exciting words about your product!
+              {t('hero.subheadline')}
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Button size="lg" variant="outline" asChild>
                 <WaspRouterLink to={routes.PricingPageRoute.to}>
-                  Learn More
+                  {t('hero.cta_secondary')}
                 </WaspRouterLink>
               </Button>
-              <Button size="lg" variant="default" asChild>
+              <Button size="lg" variant="brand" asChild>
                 <WaspRouterLink to={routes.SignupRoute.to}>
-                  Get Started <span aria-hidden="true">→</span>
+                  {t('hero.cta_primary')}
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </WaspRouterLink>
               </Button>
             </div>
-          </div>
-          <div className="mt-14 flow-root sm:mt-14">
-            <div className="m-2 hidden justify-center rounded-xl md:flex lg:-m-4 lg:rounded-2xl lg:p-4">
-              <img
-                src={openSaasBannerLight}
-                alt="App screenshot"
-                width={1000}
-                height={530}
-                loading="lazy"
-                className="rounded-md shadow-2xl ring-1 ring-gray-900/10 dark:hidden"
-              />
-              <img
-                src={openSaasBannerDark}
-                alt="App screenshot"
-                width={1000}
-                height={530}
-                loading="lazy"
-                className="hidden rounded-md shadow-2xl ring-1 ring-gray-900/10 dark:block"
-              />
-            </div>
+            <p className="mt-4 text-sm text-muted-foreground">
+              <Sparkles className="inline h-3.5 w-3.5 mr-1" />
+              {t('hero.trust_signals')}
+            </p>
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-function TopGradient() {
-  return (
-    <div
-      className="absolute right-0 top-0 -z-10 w-full transform-gpu overflow-hidden blur-3xl sm:top-0"
-      aria-hidden="true"
-    >
-      <div
-        className="aspect-1020/880 w-280 flex-none bg-linear-to-tr from-amber-400 to-purple-300 opacity-10 sm:right-1/4 sm:translate-x-1/2 dark:hidden"
-        style={{
-          clipPath:
-            "polygon(80% 20%, 90% 55%, 50% 100%, 70% 30%, 20% 50%, 50% 0)",
-        }}
-      />
-    </div>
-  );
-}
-
-function BottomGradient() {
-  return (
-    <div
-      className="absolute inset-x-0 top-[calc(100%-40rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-65rem)]"
-      aria-hidden="true"
-    >
-      <div
-        className="relative aspect-1020/880 w-360 bg-linear-to-br from-amber-400 to-purple-300 opacity-10 sm:-left-3/4 sm:translate-x-1/4 dark:hidden"
-        style={{
-          clipPath: "ellipse(80% 30% at 80% 50%)",
-        }}
-      />
     </div>
   );
 }

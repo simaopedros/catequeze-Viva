@@ -2,13 +2,20 @@ import { useState, useMemo } from 'react';
 import { useQuery, listCatechumens } from 'wasp/client/operations';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { GraduationCap, Plus, LayoutGrid, List, Upload, Calendar, Search } from 'lucide-react';
+import { GraduationCap, Plus, LayoutGrid, List, Upload, Calendar, Search, Users } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { PageHeader } from '../../client/components/PageHeader';
 import { SearchInput } from '../../client/components/SearchInput';
 import { EmptyState } from '../../client/components/EmptyState';
 import { SkeletonCard } from '../../client/components/Skeletons';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../client/components/ui/select';
 import { AppShell } from '../AppShell';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
 import { useUserContext } from '../../client/hooks/useUserContext';
@@ -56,11 +63,11 @@ export default function CatechumensPage() {
       );
     }
     if (search) result = result.filter((c: any) => `${c.firstName} ${c.lastName}`.toLowerCase().includes(search.toLowerCase()));
-    if (classFilter) result = result.filter((c: any) => c.enrollments?.some((e: any) => e.class?.name === classFilter));
+    if (classFilter && classFilter !== 'all') result = result.filter((c: any) => c.enrollments?.some((e: any) => e.class?.name === classFilter));
     return result;
   }, [catechumens, search, classFilter, activeParishId]);
 
-  const hasFilters = !!(search || classFilter);
+  const hasFilters = !!(search || (classFilter && classFilter !== 'all'));
 
   if (isLoading) {
     return (
@@ -95,11 +102,15 @@ export default function CatechumensPage() {
 
         <div className="flex flex-col sm:flex-row gap-3">
           <SearchInput placeholder={t('catechumens.search_by_name')} value={search} onChange={e => setSearch(e.target.value)} />
-          <select value={classFilter} onChange={e => setClassFilter(e.target.value)}
-            className="flex h-9 w-44 rounded-md border border-input bg-background px-3 text-sm">
-            <option value="">{t('catechumens.all_classes')}</option>
-            {classNames.map(n => <option key={n} value={n}>{n}</option>)}
-          </select>
+          <Select value={classFilter || 'all'} onValueChange={(v) => setClassFilter(v)}>
+            <SelectTrigger className="w-44 h-9">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t('catechumens.all_classes')}</SelectItem>
+              {classNames.map(n => <SelectItem key={n} value={n}>{n}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </div>
 
         {filtered.length === 0 ? (
@@ -156,7 +167,7 @@ export default function CatechumensPage() {
                   ))}
                   {(!c.enrollments || c.enrollments.length === 0) && <span className="text-overline text-muted-foreground">{t('catechumens.no_class')}</span>}
                 </div>
-                {c.household?.name && <p className="mt-2 text-overline text-muted-foreground">👨‍👩‍👧 {c.household.name}</p>}
+                {c.household?.name && <p className="mt-2 text-overline text-muted-foreground"><Users className="inline h-3 w-3 mr-0.5" />{c.household.name}</p>}
               </Link>
             ))}
           </div>

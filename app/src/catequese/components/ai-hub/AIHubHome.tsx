@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router';
 import { Sparkles, FilePenLine, ArrowLeft, MessageSquareText, Pencil, Puzzle, Smartphone, Wand2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { InteractiveCard } from '../../../client/components/InteractiveCard';
 
 type HubStep = 'menu' | 'existing';
 
@@ -85,19 +86,14 @@ export function AIHubHome() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             {EXISTING_OPTIONS.map((option) => (
-              <button
+              <InteractiveCard
                 key={option.key}
+                icon={option.icon}
+                title={t(option.titleKey)}
+                description={t(option.descKey)}
                 onClick={() => handleSubOption(option)}
-                className="group flex flex-col items-start gap-3 rounded-xl border-2 border-border p-5 text-left transition-all hover:border-primary/50 hover:bg-primary/5 hover:-translate-y-0.5"
-              >
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                  <option.icon className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-sm">{t(option.titleKey)}</h3>
-                  <p className="mt-1 text-xs text-muted-foreground">{t(option.descKey)}</p>
-                </div>
-              </button>
+                showArrow
+              />
             ))}
           </div>
 
@@ -125,31 +121,20 @@ export function AIHubHome() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <button
+          <InteractiveCard
+            icon={Sparkles}
+            title={t('hub.create_new')}
+            description={t('hub.create_new_desc')}
             onClick={handleCreateNew}
-            className="group flex flex-col items-start gap-3 rounded-xl border-2 border-border p-5 text-left transition-all hover:border-primary/50 hover:bg-primary/5 hover:-translate-y-0.5"
-          >
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-              <Sparkles className="h-5 w-5" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm">{t('hub.create_new')}</h3>
-              <p className="mt-1 text-xs text-muted-foreground">{t('hub.create_new_desc')}</p>
-            </div>
-          </button>
-
-          <button
+            showArrow
+          />
+          <InteractiveCard
+            icon={FilePenLine}
+            title={t('hub.use_existing')}
+            description={t('hub.use_existing_desc')}
             onClick={handleExisting}
-            className="group flex flex-col items-start gap-3 rounded-xl border-2 border-border p-5 text-left transition-all hover:border-primary/50 hover:bg-primary/5 hover:-translate-y-0.5"
-          >
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-              <FilePenLine className="h-5 w-5" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm">{t('hub.use_existing')}</h3>
-              <p className="mt-1 text-xs text-muted-foreground">{t('hub.use_existing_desc')}</p>
-            </div>
-          </button>
+            showArrow
+          />
         </div>
 
         {/* Secondary CTA: Assistente Teológico */}

@@ -88,7 +88,7 @@ export function StatCard({ variant = 'default', href, className, ...props }: Sta
         variant === 'centered'
           ? 'p-5 flex flex-col items-center text-center gap-3'
           : 'p-5 flex items-start gap-4',
-        href && 'hover:shadow-elevation-md transition-shadow cursor-pointer',
+        href && 'hover:shadow-elevation-md transition-all duration-200 cursor-pointer active:scale-[0.98] motion-reduce:transition-none motion-reduce:active:scale-100',
         className
       )}
     >

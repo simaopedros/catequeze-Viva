@@ -63,8 +63,8 @@ export function EmptyState({
   return (
     <div className={cn('flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center shadow-elevation-xs', className)}>
       {Icon && (
-        <div className="mb-4 rounded-full bg-primary/10 p-4">
-          <Icon className="h-8 w-8 text-primary" />
+        <div className="mb-4 rounded-full bg-primary/5 ring-1 ring-primary/10 p-4">
+          <Icon className="h-8 w-8 text-primary/70" />
         </div>
       )}
       <h3 className="text-lg font-semibold">{title}</h3>
