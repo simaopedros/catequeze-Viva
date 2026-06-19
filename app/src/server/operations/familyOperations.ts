@@ -37,8 +37,11 @@ async function getParishIds(context: any): Promise<string[]> {
   return ids;
 }
 
-export const listHouseholds = async (_args: { communityId?: string } | void, context: any) => {
+export const listHouseholds = async (_args: { communityId?: string; take?: number; skip?: number; search?: string } | void, context: any) => {
   const args = _args || {};
+  const take = args.take;
+  const skip = args.skip || 0;
+  const search = args.search?.trim();
   if (!context.user) throw new HttpError(401);
 
   const includeOpts = {
@@ -50,12 +53,24 @@ export const listHouseholds = async (_args: { communityId?: string } | void, con
     _count: { select: { catechumens: true } },
   };
 
+  const buildWhere = (baseWhere: any) => {
+    if (!search) return baseWhere;
+    return {
+      AND: [
+        baseWhere,
+        { name: { contains: search, mode: 'insensitive' as const } },
+      ],
+    };
+  };
+
   if (context.user.isAdmin) {
     const whereAdmin: any = {};
     if (args.communityId) whereAdmin.communityId = args.communityId;
     return context.entities.Household.findMany({
-      where: whereAdmin,
+      where: buildWhere(whereAdmin),
       orderBy: { name: 'asc' },
+      take,
+      skip,
       include: includeOpts,
     });
   }
@@ -82,8 +97,10 @@ export const listHouseholds = async (_args: { communityId?: string } | void, con
     const where: any = { parishId: { in: parishIds } };
     if (args.communityId) where.communityId = args.communityId;
     return context.entities.Household.findMany({
-      where,
+      where: buildWhere(where),
       orderBy: { name: 'asc' },
+      take,
+      skip,
       include: includeOpts,
     });
   }
@@ -98,8 +115,10 @@ export const listHouseholds = async (_args: { communityId?: string } | void, con
     const where: any = { id: guardianProfile.householdId };
     if (args.communityId) where.communityId = args.communityId;
     return context.entities.Household.findMany({
-      where,
+      where: buildWhere(where),
       orderBy: { name: 'asc' },
+      take,
+      skip,
       include: includeOpts,
     });
   }
@@ -132,8 +151,10 @@ export const listHouseholds = async (_args: { communityId?: string } | void, con
     const where: any = { id: { in: householdIds } };
     if (args.communityId) where.communityId = args.communityId;
     return context.entities.Household.findMany({
-      where,
+      where: buildWhere(where),
       orderBy: { name: 'asc' },
+      take,
+      skip,
       include: includeOpts,
     });
   }
@@ -143,8 +164,10 @@ export const listHouseholds = async (_args: { communityId?: string } | void, con
     const where: any = { parishId: { in: parishIds } };
     if (args.communityId) where.communityId = args.communityId;
     return context.entities.Household.findMany({
-      where,
+      where: buildWhere(where),
       orderBy: { name: 'asc' },
+      take,
+      skip,
       include: includeOpts,
     });
   }
@@ -152,8 +175,10 @@ export const listHouseholds = async (_args: { communityId?: string } | void, con
   const where: any = { parishId: { in: parishIds } };
   if (args.communityId) where.communityId = args.communityId;
   return context.entities.Household.findMany({
-    where,
+    where: buildWhere(where),
     orderBy: { name: 'asc' },
+    take,
+    skip,
     include: includeOpts,
   });
 };

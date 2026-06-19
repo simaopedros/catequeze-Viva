@@ -596,6 +596,7 @@ model Household {
 
   @@index([parishId])
   @@index([communityId])
+  @@index([parishId, name])
 }
 
 model GuardianProfile {
@@ -652,6 +653,7 @@ model CatechumenProfile {
   @@index([userId])
   @@index([parishId])
   @@index([email])
+  @@index([parishId, firstName, lastName])
 }
 
 // ─── Meetings & Attendance ────────────────────────────────────────────────────
@@ -1065,6 +1067,8 @@ model Message {
 
   @@index([conversationId])
   @@index([senderId])
+  @@index([conversationId, createdAt])
+  @@index([conversationId, senderId, deletedAt, createdAt])
 }
 
 model MessageAttachment {
@@ -1125,6 +1129,8 @@ model Notification {
 
   entityType String?
   entityId   String?
+
+  @@index([userId, readAt, createdAt])
 }
 
 // ─── Message Templates ────────────────────────────────────────────────────────

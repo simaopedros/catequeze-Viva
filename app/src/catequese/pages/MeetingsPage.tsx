@@ -27,7 +27,7 @@ export default function MeetingsPage() {
   const { userRole } = useUserContext();
   const canManageMeetings = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'PERSONAL_OWNER'].includes(userRole);
   const { data: meetings = [], isLoading: loading, refetch: refetchMeetings } = useQuery(listMeetings, { classId: classId! });
-  const { data: contentItems = [] } = useQuery(listContentItems);
+  const { data: contentItems = [] } = useQuery(listContentItems, { take: 100 });
   const [showForm, setShowForm] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [contentSearch, setContentSearch] = useState('');

@@ -1395,6 +1395,11 @@ query listConversations {
   entities: [Conversation, ConversationParticipant, Message, User, Membership, Parish, CatechesisClass, Community]
 }
 
+query getUnreadMessagesCount {
+  fn: import { getUnreadMessagesCount } from "@src/server/operations/conversationOperations",
+  entities: [ConversationParticipant, Message]
+}
+
 query getConversation {
   fn: import { getConversation } from "@src/server/operations/conversationOperations",
   entities: [Conversation, ConversationParticipant, Message, MessageReaction, User, CatechesisClass, Community]

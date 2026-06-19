@@ -1,11 +1,9 @@
-import { ReactNode, useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { ReactNode, useState, useEffect, useMemo, useRef, useCallback, lazy, Suspense } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { BottomNav } from './BottomNav';
-import { AIHelperWidget } from './components/AIHelperWidget';
-import { GuidedTour, useGuidedTour } from './components/GuidedTour';
 import { TwoFactorGate } from './components/TwoFactorGate';
 import { FamilyAppShell } from './FamilyAppShell';
 import { useUserContext } from '../client/hooks/useUserContext';
@@ -13,6 +11,13 @@ import { ErrorBoundary } from '../client/components/ErrorBoundary';
 import { ShellBase } from '../client/components/ShellBase';
 import { isFamilyPortalHost, familyPortalUrl } from '../shared/portal';
 import { useAction, acceptInvitation } from 'wasp/client/operations';
+import { loadAppNamespaces } from '../i18n/config';
+
+const AIHelperWidget = lazy(() => import('./components/AIHelperWidget').then(m => ({ default: m.AIHelperWidget })));
+const GuidedTour = lazy(() => import('./components/GuidedTour').then(m => ({ default: m.GuidedTour })));
+
+// useGuidedTour is a hook — must be imported eagerly (hooks can't be lazy-loaded)
+import { useGuidedTour } from './components/GuidedTour';
 
 interface AppShellProps { children: ReactNode; }
 
@@ -23,7 +28,7 @@ export function AppShell({ children }: AppShellProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
   const handleMenuToggle = useCallback(() => setMobileMenuOpen(prev => !prev), []);
-  const { needsOnboarding, hasPendingInvitations, isLoading, isFetching, userRole, memberships, allMemberships } = useUserContext();
+  const { needsOnboarding, hasPendingInvitations, isLoading, isFetching, userRole, memberships, allMemberships, isAdmin } = useUserContext();
   const { showTour, completeTour } = useGuidedTour();
   const acceptInvitationAction = useAction(acceptInvitation);
   const autoAcceptedRef = useRef(false);
@@ -36,6 +41,13 @@ export function AppShell({ children }: AppShellProps) {
   const hasStaffRole = isFamilyOnlyRole
     ? (allMemberships || []).some((m: any) => !['GUARDIAN', 'CATECHUMEN'].includes(m.role))
     : true;
+
+  // Lazy-load the remaining i18n namespaces once authenticated
+  useEffect(() => {
+    if (userRole || isAdmin) {
+      loadAppNamespaces();
+    }
+  }, [userRole, isAdmin]);
 
   // GUARDIAN/CATECHUMEN on staff host → redirect to family portal (only if no staff role)
   useEffect(() => {
@@ -116,8 +128,14 @@ export function AppShell({ children }: AppShellProps) {
         <main id="main-content" ref={mainRef} className="flex-1 overflow-y-auto p-4 md:p-6 pb-16 lg:pb-6">{children}</main>
       </div>
       <BottomNav />
-      <AIHelperWidget />
-      {showTour && <GuidedTour onComplete={completeTour} />}
+      <Suspense fallback={null}>
+        <AIHelperWidget />
+      </Suspense>
+      {showTour && (
+        <Suspense fallback={null}>
+          <GuidedTour onComplete={completeTour} />
+        </Suspense>
+      )}
     </ShellBase>
     </TwoFactorGate>
   );

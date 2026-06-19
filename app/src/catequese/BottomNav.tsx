@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { LayoutDashboard, Users, GraduationCap, Calendar, Settings, Heart, Menu, Bell } from 'lucide-react';
 import { cn } from '../client/utils';
 import { useUserContext } from '../client/hooks/useUserContext';
+import { useUnreadNotificationCount } from '../client/hooks/useUnreadNotificationCount';
 import { ALL_NAV_ITEMS, filterByRole, BOTTOM_NAV_KEYS, type NavItemConfig } from '../shared/navigation';
 import { BottomSheetNav } from './components/BottomSheetNav';
-import { useQuery, getUnreadNotificationCount } from 'wasp/client/operations';
 
 // Icon map matching bottom nav keys
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -22,8 +22,7 @@ export function BottomNav() {
   const { t } = useTranslation('navigation');
   const { userRole, isAdmin } = useUserContext();
   const [sheetOpen, setSheetOpen] = useState(false);
-  const { data: unreadData } = useQuery(getUnreadNotificationCount, undefined, { refetchInterval: 15000 });
-  const unreadCount = unreadData?.count || 0;
+  const unreadCount = useUnreadNotificationCount();
 
   // Build items matching BOTTOM_NAV_KEYS order, filtered by role
   const filtered: (NavItemConfig & { Icon: React.ComponentType<{ className?: string }> })[] = [];
@@ -47,6 +46,7 @@ export function BottomNav() {
               key={item.to}
               to={item.to}
               end={item.to === '/app'}
+              prefetch="intent"
               className={({ isActive }) => cn(
                 'flex flex-col items-center justify-center gap-0.5 h-full text-overline font-medium transition-colors',
                 isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'

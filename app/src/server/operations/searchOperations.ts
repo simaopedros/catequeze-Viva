@@ -9,7 +9,7 @@ import {
   searchDirectoryInCache,
 } from '../cache/referenceCache';
 
-const MIN_CHARS = 2;
+const MIN_CHARS = 3;
 const MAX_RESULTS_PER_CATEGORY = 3;
 
 // ─── Request-scoped parish ID cache ──────────────────────────────────────────

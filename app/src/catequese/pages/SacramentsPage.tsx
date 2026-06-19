@@ -36,7 +36,7 @@ export default function SacramentsPage() {
   const isCoordinator = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(userRole);
   const isCatechist = ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST'].includes(userRole);
 
-  const { data: catechumens = [] } = useQuery(listCatechumens);
+  const { data: catechumens = [] } = useQuery(listCatechumens, { take: 200 });
   const { data: journeys = [], isLoading: loading } = useQuery(listSacramentalJourneys);
   const [showForm, setShowForm] = useState(false);
   const [selectedCatechumenId, setSelectedCatechumenId] = useState('');

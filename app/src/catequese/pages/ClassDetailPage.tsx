@@ -38,7 +38,7 @@ export default function ClassDetailPage() {
   const isClassCatechist = !!(cls?.catechists || []).find((cc: any) => cc.userId === user?.id);
   const canEnroll = isCoordinator || isClassCatechist;
 
-  const { data: allCatechumens = [] } = useQuery(listCatechumens, undefined, { enabled: tab === 'inscritos' && canEnroll });
+  const { data: allCatechumens = [] } = useQuery(listCatechumens, { take: 200 }, { enabled: tab === 'inscritos' && canEnroll });
   const { availableParishes, isPersonal } = useActiveParish();
   const { data: parishCatechists = [] } = useQuery(listParishCatechists, { parishId: cls?.parish?.id || '' }, { enabled: !!cls?.parish?.id && tab === 'catequistas' });
   const [monthlyPlan, setMonthlyPlan] = useState<any>(null);

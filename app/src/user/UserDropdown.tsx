@@ -33,13 +33,13 @@ export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
     <div ref={containerRef} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="text-foreground hover:text-primary flex items-center transition-colors duration-300 ease-in-out"
+        className="text-foreground hover:text-primary flex items-center h-9 w-9 lg:w-auto justify-center lg:justify-start transition-colors duration-300 ease-in-out rounded-xl lg:rounded-none hover:bg-accent/50 lg:hover:bg-transparent"
       >
         <span className="text-foreground mr-2 hidden text-right text-sm font-medium lg:block">
           {displayName}
         </span>
-        <User className="size-5" />
-        <ChevronDown className="size-4" />
+        <User className="size-5 shrink-0" />
+        <ChevronDown className="size-4 hidden lg:block shrink-0" />
       </button>
       {open && (
         <div className="absolute right-0 top-full mt-2 w-64 rounded-md border bg-popover p-1 shadow-md z-50">

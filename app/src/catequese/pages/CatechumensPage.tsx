@@ -1,8 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useQuery, listCatechumens } from 'wasp/client/operations';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { GraduationCap, Plus, LayoutGrid, List, Upload, Calendar, Search, Users } from 'lucide-react';
+import { GraduationCap, Plus, LayoutGrid, List, Upload, Calendar, Search, Users, Loader2 } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { PageHeader } from '../../client/components/PageHeader';
@@ -21,6 +21,8 @@ import { useActiveParish } from '../../client/hooks/useActiveParish';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { formatDateOnly, getAgeFromDate } from '../../i18n/format';
 
+const PAGE_SIZE = 50;
+
 const AVATAR_COLORS = [
   'bg-primary/10 text-primary',
   'bg-success/10 text-success',
@@ -37,23 +39,28 @@ function getAge(birthDate: string): number | null {
 export default function CatechumensPage() {
   const { t, i18n } = useTranslation('common');
   const { t: tn } = useTranslation('navigation');
-  const { data: catechumens, isLoading } = useQuery(listCatechumens);
   const { activeParishId } = useActiveParish();
   const { userRole } = useUserContext();
   const canManageCatechumens = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'PERSONAL_OWNER'].includes(userRole);
   const [search, setSearch] = useState('');
   const [classFilter, setClassFilter] = useState('');
   const [view, setView] = useState<'cards' | 'table'>('cards');
+  const [pages, setPages] = useState(1);
+
+  const { data: catechumens = [], isLoading } = useQuery(
+    listCatechumens,
+    { take: PAGE_SIZE * pages, search: search || undefined },
+  );
 
   const classNames = useMemo(() => {
-    if (!catechumens) return [];
+    if (!catechumens || catechumens.length === 0) return [];
     const names = new Set<string>();
     catechumens.forEach((c: any) => c.enrollments?.forEach((e: any) => names.add(e.class?.name)));
     return [...names].sort();
   }, [catechumens]);
 
   const filtered = useMemo(() => {
-    if (!catechumens) return [];
+    if (!catechumens || catechumens.length === 0) return [];
     let result = [...catechumens];
     if (activeParishId) {
       result = result.filter((c: any) =>
@@ -62,10 +69,12 @@ export default function CatechumensPage() {
         (!c.enrollments?.length && !c.household?.parishId)
       );
     }
-    if (search) result = result.filter((c: any) => `${c.firstName} ${c.lastName}`.toLowerCase().includes(search.toLowerCase()));
     if (classFilter && classFilter !== 'all') result = result.filter((c: any) => c.enrollments?.some((e: any) => e.class?.name === classFilter));
     return result;
-  }, [catechumens, search, classFilter, activeParishId]);
+  }, [catechumens, classFilter, activeParishId]);
+
+  const hasMore = catechumens.length === PAGE_SIZE * pages;
+  const loadMore = useCallback(() => setPages(p => p + 1), []);
 
   const hasFilters = !!(search || (classFilter && classFilter !== 'all'));
 
@@ -173,6 +182,14 @@ export default function CatechumensPage() {
           </div>
         )}
         <p className="text-xs text-muted-foreground">{t('catechumens.count', { count: filtered.length })}</p>
+        {hasMore && (
+          <div className="flex justify-center pt-2">
+            <Button variant="outline" size="sm" onClick={loadMore} disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
+              {t('load_more')}
+            </Button>
+          </div>
+        )}
       </div>
     </AppShell>
   );

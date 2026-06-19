@@ -1,8 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useQuery, listHouseholds, listCommunities } from 'wasp/client/operations';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { Heart, Users, Plus, Phone, MapPin, User, ChevronRight, Search } from 'lucide-react';
+import { Heart, Users, Plus, Phone, MapPin, User, ChevronRight, Search, Loader2 } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { PageHeader } from '../../client/components/PageHeader';
 import { SearchInput } from '../../client/components/SearchInput';
@@ -12,25 +12,34 @@ import { AppShell } from '../AppShell';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
 import { useUserContext } from '../../client/hooks/useUserContext';
 
+const PAGE_SIZE = 50;
+
 export default function FamiliesPage() {
   const { t } = useTranslation('common');
   const { t: tn } = useTranslation('navigation');
   const { activeParishId } = useActiveParish();
   const { userRole } = useUserContext();
   const canCreateFamily = userRole !== 'ASSISTANT_CATECHIST';
-  const { data: households, isLoading } = useQuery(listHouseholds);
-  const { data: communities = [] } = useQuery(listCommunities, activeParishId ? { parishId: activeParishId } : { parishId: undefined } as any);
   const [search, setSearch] = useState('');
   const [communityFilter, setCommunityFilter] = useState('');
+  const [pages, setPages] = useState(1);
+
+  const { data: households = [], isLoading } = useQuery(
+    listHouseholds,
+    { take: PAGE_SIZE * pages, search: search || undefined },
+  );
+  const { data: communities = [] } = useQuery(listCommunities, activeParishId ? { parishId: activeParishId } : { parishId: undefined } as any);
 
   const filtered = useMemo(() => {
-    if (!households) return [];
+    if (!households || households.length === 0) return [];
     let result = [...households];
     if (activeParishId) result = result.filter((h: any) => h.parishId === activeParishId);
     if (communityFilter) result = result.filter((h: any) => h.communityId === communityFilter);
-    if (!search) return result;
-    return result.filter((h: any) => h.name?.toLowerCase().includes(search.toLowerCase()));
-  }, [households, search, activeParishId, communityFilter]);
+    return result;
+  }, [households, activeParishId, communityFilter]);
+
+  const hasMore = households.length === PAGE_SIZE * pages;
+  const loadMore = useCallback(() => setPages(p => p + 1), []);
 
   if (isLoading) {
     return (
@@ -110,6 +119,14 @@ export default function FamiliesPage() {
           </div>
         )}
         <p className="text-xs text-muted-foreground">{t('families.count', { count: filtered.length })}</p>
+        {hasMore && (
+          <div className="flex justify-center pt-2">
+            <Button variant="outline" size="sm" onClick={loadMore} disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
+              {t('load_more')}
+            </Button>
+          </div>
+        )}
       </div>
     </AppShell>
   );

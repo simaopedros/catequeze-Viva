@@ -4,16 +4,42 @@ import { assertCanAccessCatechumenProfile, requireAuth, writeAuditLog } from '..
 import { resolveUserScope, isCoordinatorOrAbove, isCatechist } from './sharedScope';
 import { deleteDocumentFile } from '../storage/documentStorage';
 
-export const listCatechumens = async (_args: void, context: any) => {
+export const listCatechumens = async (_args: { take?: number; skip?: number; search?: string } | void, context: any) => {
+  const args = _args || {};
+  const take = args.take;
+  const skip = args.skip || 0;
+  const search = args.search?.trim();
   if (!context.user) throw new HttpError(401);
+
+  const orderBy: any = [{ firstName: 'asc' }, { lastName: 'asc' }];
+  const include = {
+    parish: { select: { id: true, name: true } },
+    household: { select: { id: true, name: true, parishId: true } },
+    enrollments: { include: { class: { select: { id: true, name: true, parishId: true } } } },
+  };
+
+  const buildWhere = (baseWhere: any) => {
+    if (!search) return baseWhere;
+    return {
+      AND: [
+        baseWhere,
+        {
+          OR: [
+            { firstName: { contains: search, mode: 'insensitive' as const } },
+            { lastName: { contains: search, mode: 'insensitive' as const } },
+          ],
+        },
+      ],
+    };
+  };
+
   if (context.user.isAdmin) {
     return context.entities.CatechumenProfile.findMany({
-      orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }],
-      include: {
-        parish: { select: { id: true, name: true } },
-        household: { select: { id: true, name: true, parishId: true } },
-        enrollments: { include: { class: { select: { id: true, name: true, parishId: true } } } },
-      },
+      where: buildWhere({}),
+      orderBy,
+      take,
+      skip,
+      include,
     });
   }
 
@@ -24,19 +50,17 @@ export const listCatechumens = async (_args: void, context: any) => {
   // Coordinator and above (including PERSONAL_OWNER): see all catechumens in parish
   if (roles.some((r: string) => isCoordinatorOrAbove(r))) {
     return context.entities.CatechumenProfile.findMany({
-      where: {
+      where: buildWhere({
         OR: [
           { enrollments: { some: { class: { parishId: { in: parishIds } } } } },
           { household: { parishId: { in: parishIds } } },
           { parishId: { in: parishIds } },
         ],
-      },
-      orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }],
-      include: {
-        parish: { select: { id: true, name: true } },
-        household: { select: { id: true, name: true, parishId: true } },
-        enrollments: { include: { class: { select: { id: true, name: true, parishId: true } } } },
-      },
+      }),
+      orderBy,
+      take,
+      skip,
+      include,
     });
   }
 
@@ -57,13 +81,11 @@ export const listCatechumens = async (_args: void, context: any) => {
     if (enrolledIds.length === 0) return [];
 
     return context.entities.CatechumenProfile.findMany({
-      where: { id: { in: enrolledIds } },
-      orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }],
-      include: {
-        parish: { select: { id: true, name: true } },
-        household: { select: { id: true, name: true, parishId: true } },
-        enrollments: { include: { class: { select: { id: true, name: true, parishId: true } } } },
-      },
+      where: buildWhere({ id: { in: enrolledIds } }),
+      orderBy,
+      take,
+      skip,
+      include,
     });
   }
 
@@ -82,13 +104,11 @@ export const listCatechumens = async (_args: void, context: any) => {
     const enrolledIds = enrollments.map((e: any) => e.catechumenProfileId);
 
     return context.entities.CatechumenProfile.findMany({
-      where: { id: { in: enrolledIds } },
-      orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }],
-      include: {
-        parish: { select: { id: true, name: true } },
-        household: { select: { id: true, name: true, parishId: true } },
-        enrollments: { include: { class: { select: { id: true, name: true, parishId: true } } } },
-      },
+      where: buildWhere({ id: { in: enrolledIds } }),
+      orderBy,
+      take,
+      skip,
+      include,
     });
   }
 
@@ -96,13 +116,11 @@ export const listCatechumens = async (_args: void, context: any) => {
     const guardian = await context.entities.GuardianProfile.findUnique({ where: { userId: context.user.id } });
     if (guardian?.householdId) {
       return context.entities.CatechumenProfile.findMany({
-        where: { householdId: guardian.householdId },
-        orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }],
-        include: {
-          parish: { select: { id: true, name: true } },
-          household: { select: { id: true, name: true, parishId: true } },
-          enrollments: { include: { class: { select: { id: true, name: true, parishId: true } } } },
-        },
+        where: buildWhere({ householdId: guardian.householdId }),
+        orderBy,
+        take,
+        skip,
+        include,
       });
     }
     return [];
@@ -110,13 +128,11 @@ export const listCatechumens = async (_args: void, context: any) => {
 
   if (roles.includes('CATECHUMEN')) {
     return context.entities.CatechumenProfile.findMany({
-      where: { userId: context.user.id },
-      orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }],
-      include: {
-        parish: { select: { id: true, name: true } },
-        household: { select: { id: true, name: true, parishId: true } },
-        enrollments: { include: { class: { select: { id: true, name: true, parishId: true } } } },
-      },
+      where: buildWhere({ userId: context.user.id }),
+      orderBy,
+      take,
+      skip,
+      include,
     });
   }
 

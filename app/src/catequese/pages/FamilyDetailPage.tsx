@@ -68,7 +68,7 @@ export default function FamilyDetailPage() {
     () => RELATIONSHIP_KEYS.map((r) => ({ value: r.value, label: t(`families.relationships.${r.key}`) })),
     [t],
   );
-  const { data: allHouseholds = [], isLoading: loading } = useQuery(listHouseholds);
+  const { data: allHouseholds = [], isLoading: loading } = useQuery(listHouseholds, { take: 200 });
   const household = allHouseholds?.find((h: any) => h.id === id);
   const [savingConsent, setSavingConsent] = useState<string | null>(null);
   const translateRelationship = useCallback(
@@ -113,7 +113,7 @@ export default function FamilyDetailPage() {
   const [removingGuardianLoading, setRemovingGuardianLoading] = useState(false);
 
   // Add/Remove catechumen state
-  const { data: allCatechumens = [] } = useQuery(listCatechumens);
+  const { data: allCatechumens = [] } = useQuery(listCatechumens, { take: 200 });
   const [addCatechumenDialogOpen, setAddCatechumenDialogOpen] = useState(false);
   const [selectedCatechumenId, setSelectedCatechumenId] = useState('');
   const [linkingCatechumen, setLinkingCatechumen] = useState(false);

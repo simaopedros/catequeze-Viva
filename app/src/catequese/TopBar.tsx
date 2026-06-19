@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback, useRef, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
-import { useQuery, globalSearch, getUnreadNotificationCount } from 'wasp/client/operations';
+import { useQuery, globalSearch } from 'wasp/client/operations';
 import { listNotifications, markNotificationRead, markAllNotificationsRead } from 'wasp/client/operations';
 import { Search, Bell, Menu, X, Loader2, Users, GraduationCap, ScrollText, BookMarked, FileText, Library, FolderOpen, MessageSquareText, CalendarDays, Home, Church, Building2, Shield } from 'lucide-react';
 import { useAuth } from 'wasp/client/auth';
 import { UserDropdown } from '../user/UserDropdown';
 import { useUserContext } from '../client/hooks/useUserContext';
+import { useUnreadNotificationCount } from '../client/hooks/useUnreadNotificationCount';
 import { formatRelativeTime } from '../i18n/format';
 import { useLocale } from '../i18n/useLocale';
 import { Button } from '../client/components/ui/button';
@@ -65,7 +66,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Notifications
-  const { data: unreadData } = useQuery(getUnreadNotificationCount, undefined, { refetchInterval: 15000 });
+  const unreadCount = useUnreadNotificationCount();
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifs, setNotifs] = useState<any[]>([]);
   const [notifsLoading, setNotifsLoading] = useState(false);
@@ -100,8 +101,6 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
       setNotifs(prev => prev.map(n => ({ ...n, readAt: new Date().toISOString() })));
     } catch {}
   };
-
-  const unreadCount = unreadData?.count || 0;
 
   // Debounce query (400ms — reduces DB hits during fast typing)
   useEffect(() => {
@@ -188,7 +187,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
   }, [searchExpanded]);
 
   return (
-    <header className="flex h-14 items-center gap-3 border-b bg-card px-4">
+    <header className="flex h-14 items-center gap-2 sm:gap-3 border-b bg-card px-3 sm:px-4 lg:px-5">
       {/* Mobile menu toggle — hidden when search expanded */}
       {!searchExpanded && (
         <Button variant="ghost" size="icon" className="lg:hidden shrink-0" onClick={onMenuToggle} aria-label={tTop('openMenu')}>
@@ -296,7 +295,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
 
       {/* Right section — hidden when search expanded on mobile */}
       {!searchExpanded && (
-      <div className="ml-auto flex items-center gap-2 shrink-0">
+      <div className="ml-auto flex items-center gap-1.5 sm:gap-2 min-w-0">
         {/* Unified context selector: workspace + role */}
         <ContextSelector />
 

@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { useUserContext } from '../client/hooks/useUserContext';
 import { NAV_SECTIONS, filterByRole, type NavItemConfig } from '../shared/navigation';
-import { useQuery, listConversations } from 'wasp/client/operations';
+import { useQuery, getUnreadMessagesCount } from 'wasp/client/operations';
 import { useActiveWorkspace } from '../client/hooks/useActiveWorkspace';
 import { BrandLockup, BrandMark } from '../client/components/brand/Brand';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '../client/components/ui/tooltip';
@@ -67,6 +67,7 @@ function NavItemLink({ item, collapsed, badge }: NavItemProps & { badge?: number
       key={item.to}
       to={item.to}
       end={item.to === '/app'}
+      prefetch="intent"
       data-tour={tourMap[item.iconKey] || undefined}
       className={({ isActive }) => cn(
         'flex items-center justify-between rounded-md px-2.5 py-1.5 text-sm font-medium transition-all duration-200 w-full relative',
@@ -121,15 +122,15 @@ export function Sidebar() {
     () => new Set(ALL_SECTIONS)
   );
   const { userRole, isAdmin } = useUserContext();
-  const { isPersonal, workspaceId } = useActiveWorkspace();
+  const { isPersonal } = useActiveWorkspace();
 
-  // Fetch unread count for messages
-  const { data: conversations } = useQuery(listConversations, { workspaceId } as any, {
+  // Fetch unread count for messages — lightweight count query instead of full conversation list
+  const { data: unreadMessages } = useQuery(getUnreadMessagesCount, undefined, {
     enabled: !!userRole || isAdmin,
-    refetchInterval: 15000,
+    refetchInterval: 30000,
   });
 
-  const unreadMessagesCount = conversations?.reduce((acc: number, conv: any) => acc + (conv.unreadCount || 0), 0) || 0;
+  const unreadMessagesCount = unreadMessages?.count || 0;
 
   const mainSections = NAV_SECTIONS.filter(s => s.section !== 'bottom');
   const bottomSection = NAV_SECTIONS.find(s => s.section === 'bottom');

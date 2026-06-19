@@ -801,6 +801,34 @@ export const muteConversation = async (
   return { success: true };
 };
 
+// ── getUnreadMessagesCount ─────────────────────────────────────────────────
+
+export const getUnreadMessagesCount = async (_args: void, context: any) => {
+  requireAuth(context.user);
+
+  const participations = await context.entities.ConversationParticipant.findMany({
+    where: { userId: context.user.id },
+    select: { conversationId: true, lastReadAt: true },
+  });
+
+  if (participations.length === 0) return { count: 0 };
+
+  const conditions = participations.map((p: any) => ({
+    conversationId: p.conversationId,
+    createdAt: { gt: p.lastReadAt || new Date(0) },
+  }));
+
+  const count = await context.entities.Message.count({
+    where: {
+      senderId: { not: context.user.id },
+      deletedAt: null,
+      OR: conditions,
+    },
+  });
+
+  return { count };
+};
+
 // ── getContactsForConversation ──────────────────────────────────────────────
 
 export const getContactsForConversation = async (args: { workspaceId: string }, context: any) => {

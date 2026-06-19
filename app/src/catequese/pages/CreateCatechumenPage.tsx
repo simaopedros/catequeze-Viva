@@ -49,7 +49,7 @@ export default function CreateCatechumenPage() {
   const navigate = useNavigate();
   const { activeParishId } = useActiveParish();
   const { userRole } = useUserContext();
-  const { data: households = [], refetch: refetchHouseholds } = useQuery(listHouseholds);
+  const { data: households = [], refetch: refetchHouseholds } = useQuery(listHouseholds, { take: 200 });
 
   const canManage = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'PERSONAL_OWNER'].includes(userRole);
 

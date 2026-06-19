@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Church, ChevronDown, User, Building2, Shield, Check } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
+import { cn } from '../../client/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,19 +56,19 @@ export function ContextSelector() {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-foreground border border-input rounded-xl px-3 py-1.5 h-9 max-w-[240px]">
+          <Button variant="ghost" size="sm" className="flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-foreground border border-input rounded-xl px-2.5 sm:px-3 py-1.5 h-9 max-w-[160px] sm:max-w-[240px] xl:max-w-[280px]">
             {wsIcon(workspaceType || 'PERSONAL')}
-            <span className="truncate font-medium text-sm">{workspaceName}</span>
+            <span className="truncate font-medium text-sm min-w-0">{workspaceName}</span>
             {currentRoleLabel && (
               <>
-                <span className="text-border">·</span>
-                <span className="text-xs text-muted-foreground truncate">{currentRoleLabel}</span>
+                <span className="text-border hidden sm:inline shrink-0">·</span>
+                <span className="text-xs text-muted-foreground truncate hidden sm:inline min-w-0">{currentRoleLabel}</span>
               </>
             )}
             <ChevronDown className="h-3.5 w-3.5 opacity-60 shrink-0" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-80 p-2 max-h-[70vh] overflow-y-auto">
+        <DropdownMenuContent align="end" sideOffset={4} className="w-[min(22rem,calc(100vw-1rem))] p-2 max-h-[70vh] overflow-y-auto">
           {groups.map(g => (
             <div key={g.key}>
               <div className="px-2 pt-2 pb-1 text-overline font-bold uppercase text-muted-foreground tracking-wider">
@@ -79,7 +80,10 @@ export function ContextSelector() {
                   <button
                     key={ws.id}
                     onClick={() => switchWorkspace(ws.id)}
-                    className="w-full flex items-center gap-3 text-sm px-2 py-2 rounded-sm hover:bg-accent transition-colors cursor-pointer"
+                    className={cn(
+                      'w-full flex items-center gap-3 text-sm px-2 py-2 rounded-sm hover:bg-accent transition-colors cursor-pointer',
+                      isActive && 'bg-accent/70'
+                    )}
                   >
                     {wsIcon(ws.isPersonal ? 'PERSONAL' : ws.type)}
                     <div className="flex-1 text-left min-w-0">
@@ -88,7 +92,7 @@ export function ContextSelector() {
                         {ws.isPersonal ? (ws.subtitle || t('personalSpace')) : (roleLabels[ws.role as keyof typeof roleLabels] || ws.role)}
                       </div>
                     </div>
-                    {isActive && <div className="w-2 h-2 rounded-full bg-primary shrink-0" />}
+                    {isActive && <Check className="h-4 w-4 text-primary shrink-0" />}
                   </button>
                 );
               })}
@@ -118,7 +122,10 @@ export function ContextSelector() {
                       switchMembership(m.id);
                       if (m.parishId) switchParish(m.parishId);
                     }}
-                    className="w-full flex items-center gap-2 text-sm px-2 py-1.5 rounded-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
+                    className={cn(
+                      'w-full flex items-center gap-2 text-sm px-2 py-2 rounded-sm hover:bg-accent transition-colors cursor-pointer',
+                      isActive && 'bg-accent/70'
+                    )}
                   >
                     <Shield className="h-4 w-4 text-muted-foreground shrink-0" />
                     <div className="flex-1 text-left min-w-0">
@@ -159,15 +166,15 @@ export function ContextSelector() {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-foreground border border-input rounded-xl px-3 py-1.5 h-9 max-w-[240px]">
+          <Button variant="ghost" size="sm" className="flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-foreground border border-input rounded-xl px-2.5 sm:px-3 py-1.5 h-9 max-w-[160px] sm:max-w-[240px] xl:max-w-[280px]">
             <Church className="h-4 w-4 text-primary shrink-0" />
-            <span className="truncate font-medium text-sm">{activeParishName}</span>
+            <span className="truncate font-medium text-sm min-w-0">{activeParishName}</span>
             <span className="text-xs text-muted-foreground hidden sm:inline">·</span>
             <span className="font-semibold text-primary text-xs hidden sm:inline">{yearLabel}</span>
             <ChevronDown className="h-3.5 w-3.5 opacity-60 shrink-0" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-64 p-2">
+        <DropdownMenuContent align="end" sideOffset={4} className="w-[min(22rem,calc(100vw-1rem))] p-2">
           <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground border-b mb-1">
             {t('workspaceGroups.parish')}
           </div>

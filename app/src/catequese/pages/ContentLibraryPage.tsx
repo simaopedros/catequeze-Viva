@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
@@ -8,17 +8,19 @@ import { FilterPills } from '../../client/components/FilterPills';
 import { SearchInput } from '../../client/components/SearchInput';
 import { EmptyState } from '../../client/components/EmptyState';
 import { SkeletonCard } from '../../client/components/Skeletons';
-import { Plus, BookOpen, Clock, User, Puzzle, LayoutGrid, List, ArrowUpDown, Sparkles, BookMarked, Search } from 'lucide-react';
+import { Plus, BookOpen, Clock, User, Puzzle, LayoutGrid, List, ArrowUpDown, Sparkles, BookMarked, Search, Loader2 } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { useQuery, listContentItems, listDioceseSharedContent } from 'wasp/client/operations';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
 
 const STATUS_KEYS = ['all', 'DRAFT', 'IN_REVIEW', 'APPROVED', 'PUBLISHED'] as const;
+const PAGE_SIZE = 50;
 
 export default function ContentLibraryPage() {
   const { t } = useTranslation('content');
   const { t: tc } = useTranslation('common');
-  const { data: items = [], isLoading: loading } = useQuery(listContentItems);
+  const [pages, setPages] = useState(1);
+  const { data: items = [], isLoading: loading } = useQuery(listContentItems, { take: PAGE_SIZE * pages });
   const { data: dioceseItems = [] } = useQuery(listDioceseSharedContent);
   const { activeParishId } = useActiveParish();
   const [searchParams] = useSearchParams();
@@ -83,6 +85,8 @@ export default function ContentLibraryPage() {
   }));
 
   const hasFilters = !!(search || filter !== 'all' || onlyWithActivities || onlyAiGenerated);
+  const hasMore = items.length === PAGE_SIZE * pages;
+  const loadMore = useCallback(() => setPages(p => p + 1), []);
 
   if (loading) {
     return (
@@ -168,6 +172,14 @@ export default function ContentLibraryPage() {
                 </div>
               </Link>
             ))}
+          </div>
+        )}
+        {hasMore && (
+          <div className="flex justify-center pt-2">
+            <Button variant="outline" size="sm" onClick={loadMore} disabled={loading}>
+              {loading && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
+              {tc('load_more')}
+            </Button>
           </div>
         )}
       </div>
