@@ -125,22 +125,24 @@ export function AppShell({ children }: AppShellProps) {
 
       {/* Mobile sidebar overlay */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-overlay lg:hidden">
+        <>
+          {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 z-modal bg-black/50 backdrop-blur-sm lg:hidden"
             onClick={() => setMobileMenuOpen(false)}
           />
-          <div className="relative z-10 h-full w-64 animate-in slide-in-from-left-5 duration-200">
+          {/* Sidebar panel — above backdrop */}
+          <nav className="fixed inset-y-0 left-0 z-[501] w-64 bg-card shadow-elevation-lg overflow-y-auto lg:hidden animate-in slide-in-from-left-5 duration-200">
             <Sidebar />
-          </div>
-        </div>
+          </nav>
+        </>
       )}
 
       <div className="flex flex-1 flex-col overflow-hidden">
         <ErrorBoundary fallback={<div className="flex h-14 items-center border-b bg-card shadow-elevation-sticky px-4" />}>
           <TopBar onMenuToggle={handleMenuToggle} />
         </ErrorBoundary>
-        <main id="main-content" ref={mainRef} className="flex-1 overflow-y-auto p-4 md:p-6 pb-16 lg:pb-6">
+        <main id="main-content" ref={mainRef} className="flex-1 overflow-y-auto bg-background p-4 md:p-6 no-overscroll scroll-touch" style={{ paddingBottom: 'calc(4rem + env(safe-area-inset-bottom, 0px))' }}>
           <div key={location.pathname} className="content-transition">{children}</div>
         </main>
       </div>

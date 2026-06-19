@@ -14,7 +14,7 @@ interface DetailTabsProps {
 
 export function DetailTabs({ tabs, value, onChange, className }: DetailTabsProps) {
   return (
-    <div className={cn('flex gap-0 border-b', className)} role="tablist">
+    <div className={cn('flex gap-0 border-b overflow-x-auto no-scrollbar scroll-touch -mx-4 px-4 sm:mx-0 sm:px-0', className)} role="tablist">
       {tabs.map(tab => (
         <button
           key={tab.id}
@@ -23,7 +23,7 @@ export function DetailTabs({ tabs, value, onChange, className }: DetailTabsProps
           aria-selected={value === tab.id}
           onClick={() => onChange(tab.id)}
           className={cn(
-            'relative px-4 py-2.5 text-sm font-medium transition-all duration-[var(--motion-duration-fast,150ms)] ease-[var(--motion-easing-default,ease-out)]',
+            'relative px-4 py-2.5 text-sm font-medium transition-all duration-[var(--motion-duration-fast,150ms)] ease-[var(--motion-easing-default,ease-out)] whitespace-nowrap shrink-0',
             'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
             value === tab.id
               ? 'text-primary'

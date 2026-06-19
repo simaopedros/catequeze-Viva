@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams, Link } from 'react-router';
 import { useState, useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { Button } from '../../client/components/ui/button';
+import { cn } from '../../client/utils';
 import { ArrowLeft, Plus, Check, X, Clock, Minus, ClipboardList, Loader2 } from 'lucide-react';
 import { EmptyState } from '../../client/components/EmptyState';
 import { useQuery, getClassDetails, getClassAttendanceMatrix, saveAttendance, createMeeting as createMeetingAction } from 'wasp/client/operations';
@@ -322,7 +323,7 @@ export default function AttendancePage() {
               ))}
             </div>
 
-          <div className="overflow-x-auto rounded-xl border bg-card">
+          <div className="overflow-x-auto rounded-xl border bg-card hidden md:block">
             <table className="w-full text-xs">
               <thead>
                 <tr className="bg-muted/50">
@@ -375,6 +376,49 @@ export default function AttendancePage() {
                 </tr>
               </tfoot>
             </table>
+          </div>
+
+          {/* Mobile: stacked card view per catechumen */}
+          <div className="md:hidden space-y-4">
+            {filteredCatechumens.map((cat: any) => {
+              const pct = meetings.length > 0
+                ? Math.round((Object.values(matrix).filter(m => m[cat.id] === 'PRESENT' || m[cat.id] === 'JUSTIFIED').length / meetings.length) * 100)
+                : 0;
+              return (
+                <div key={cat.id} className="rounded-xl border bg-card p-4 shadow-elevation-xs">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-semibold text-sm">{cat.firstName} {cat.lastName}</span>
+                    <span className={cn(
+                      'text-sm font-bold px-2 py-0.5 rounded-full',
+                      pct >= 80 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400' :
+                      pct >= 50 ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400' :
+                      'bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400'
+                    )}>{pct}%</span>
+                  </div>
+                  <div className="space-y-2">
+                    {meetings.map((m: any) => {
+                      const status = matrix[m.id]?.[cat.id];
+                      const isSaving = saving === `${m.id}-${cat.id}`;
+                      return (
+                        <div key={m.id} className="flex items-center justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <span className="text-xs font-medium block truncate">{formatDate(m.date, currentLocale, { day: '2-digit', month: '2-digit' })}</span>
+                            <span className="text-overline text-muted-foreground truncate block">{m.title || t('matrix.no_title')}</span>
+                          </div>
+                          <StatusCell
+                            status={status}
+                            statusOptions={statusOptions}
+                            onMark={(val) => mark(m.id, cat.id, val)}
+                            isSaving={isSaving}
+                            notFilledLabel={t('matrix.not_filled')}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
           </div>
           </>
         )}

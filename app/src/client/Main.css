@@ -416,6 +416,41 @@
 
 /* ── Utilities ─────────────────────────────────────────────────────── */
 
+/* ── PWA / Mobile safe-area ────────────────────────────────────────── */
+/* Pads elements to not overlap the notch / home indicator on iPhones */
+@utility safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+@utility safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@utility safe-left {
+  padding-left: env(safe-area-inset-left, 0px);
+}
+@utility safe-right {
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* Standalone / app-like feel */
+@utility no-overscroll {
+  overscroll-behavior-y: contain;
+}
+@utility no-select {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Minimum touch target: WCAG 2.1 AAA (44×44 CSS px) */
+@utility touch-target {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Smooth native-like scrolling */
+@utility scroll-touch {
+  -webkit-overflow-scrolling: touch;
+}
+
 @utility no-scrollbar {
   &::-webkit-scrollbar { display: none; }
   -ms-overflow-style: none;

@@ -485,5 +485,11 @@
   "collapse_menu": "Collapse menu",
   "load_more": "Load more",
   "offline_banner": "No internet connection. Some features may be unavailable.",
-  "skip_to_content": "Skip to main content"
+  "skip_to_content": "Skip to main content",
+  "install_title": "Install App",
+  "install_description": "Add to your home screen for quick access and offline use.",
+  "install_button": "Install",
+  "offline_title": "No connection",
+  "offline_description": "You are offline. Check your connection and try again.",
+  "try_again": "Try again"
 }

@@ -21,9 +21,43 @@ import GoogleTagScripts from "./analytics/GoogleTagScripts";
 import { isFamilyPortalHost } from "../shared/portal";
 import FamilyLandingPage from "../catequese/pages/family/FamilyLandingPage";
 import { AppShell } from "../catequese/AppShell";
+import { InstallPrompt } from "./components/InstallPrompt";
 
 import "../i18n/config";
 import { applyStoredLocale } from "../i18n/useLocale";
+
+// ── Service Worker registration ──────────────────────────────────────
+
+function isStandalone(): boolean {
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    (window.navigator as any).standalone === true
+  );
+}
+
+function registerServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js', { scope: '/' }).then(
+        (registration) => {
+          console.log('[SW] Registered:', registration.scope);
+          // Listen for updates
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            if (!newWorker) return;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // New content available — could show a "Update available" banner
+                console.log('[SW] New version available');
+              }
+            });
+          });
+        },
+        (err) => console.warn('[SW] Registration failed:', err),
+      );
+    });
+  }
+}
 
 // Configure React Query cache times for optimal performance:
 // - Reference data (Bible/Catechism/Directory) never changes → Infinity
@@ -120,6 +154,11 @@ export default function App() {
     applyStoredLocale();
   }, []);
 
+  // Register Service Worker for PWA
+  useEffect(() => {
+    registerServiceWorker();
+  }, []);
+
   return (
     <>
       {!isOnline && !offlineDismissed && (
@@ -161,6 +200,7 @@ export default function App() {
       )}
       <Toaster position="top-right" />
       <CookieConsentBanner />
+      <InstallPrompt />
       <HimetricaScripts />
       <GoogleTagScripts />
     </>

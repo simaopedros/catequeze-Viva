@@ -498,7 +498,7 @@ export default function FamilyDetailPage() {
                         {g.phone}
                       </p>
                     </div>
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center gap-1">
                       <Button
                         size="icon"
                         variant="ghost"
@@ -582,11 +582,11 @@ export default function FamilyDetailPage() {
                     </div>
                   </Link>
                   <div className="flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-muted-foreground group-hover:hidden" />
+                    <TrendingUp className="h-4 w-4 text-muted-foreground sm:block hidden" />
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="hidden group-hover:flex h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                      className="flex h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();

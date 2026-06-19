@@ -53,11 +53,11 @@ export function PageHeader({
                   <span key={i} className="flex items-center gap-1.5 shrink-0">
                     {i > 0 && <span className="text-border">/</span>}
                     {crumb.href ? (
-                      <Link to={crumb.href} className="hover:text-foreground transition-colors truncate max-w-[160px]">
+                      <Link to={crumb.href} className="hover:text-foreground transition-colors truncate max-w-[100px] sm:max-w-[160px]">
                         {crumb.label}
                       </Link>
                     ) : (
-                      <span className="text-foreground truncate max-w-[160px]">{crumb.label}</span>
+                      <span className="text-foreground truncate max-w-[100px] sm:max-w-[160px]">{crumb.label}</span>
                     )}
                   </span>
                 ))}

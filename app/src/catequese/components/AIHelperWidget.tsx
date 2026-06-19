@@ -168,7 +168,7 @@ export function AIHelperWidget() {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center justify-center"
+          className="fixed bottom-6 max-lg:bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] right-4 lg:right-6 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center justify-center"
           title={t("ai_helper_title")}
         >
           <Sparkles className="h-6 w-6" />
@@ -177,9 +177,9 @@ export function AIHelperWidget() {
 
       {/* Chat panel */}
       {open && (
-        <div className="fixed bottom-6 right-6 z-50 w-96 h-[500px] bg-card border rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+        <div className="fixed inset-0 z-modal lg:inset-auto lg:bottom-6 lg:right-6 lg:w-96 lg:h-[500px] bg-card border lg:rounded-2xl shadow-2xl flex flex-col overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b bg-primary/5">
+          <div className="flex items-center justify-between p-4 border-b bg-primary/5" style={{ paddingTop: 'calc(1rem + env(safe-area-inset-top, 0px))' }}>
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                 <Bot className="h-4 w-4 text-primary" />
@@ -278,7 +278,7 @@ export function AIHelperWidget() {
           </div>
 
           {/* Input */}
-          <div className="p-3 border-t flex gap-2">
+          <div className="p-3 border-t flex gap-2" style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))' }}>
             <Textarea
               placeholder={t("ai_helper_placeholder")}
               value={input}

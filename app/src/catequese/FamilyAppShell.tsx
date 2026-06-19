@@ -29,7 +29,7 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
     <TwoFactorGate>
     <div className="min-h-screen bg-background flex flex-col">
       {/* Top bar */}
-      <header className="sticky top-0 z-sticky border-b bg-background/95 backdrop-blur-sm shadow-elevation-sticky">
+      <header className="sticky top-0 z-sticky border-b bg-background shadow-elevation-sticky" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <div className="flex h-14 items-center justify-between px-4">
           <div className="flex items-center gap-3">
             <BrandLockup compact hideBadge />
@@ -44,13 +44,13 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
       </header>
 
       {/* Content */}
-      <main className="flex-1 p-4 md:p-6 pb-20">
+      <main className="flex-1 bg-background p-4 md:p-6 no-overscroll scroll-touch" style={{ paddingBottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))' }}>
         {children}
       </main>
 
       {/* Bottom nav (mobile) */}
-      <nav className="fixed bottom-0 left-0 right-0 z-sticky border-t bg-background/95 backdrop-blur-sm shadow-elevation-sticky md:hidden">
-        <div className="flex items-center justify-around h-16">
+      <nav className="fixed bottom-0 left-0 right-0 z-sticky border-t bg-background shadow-elevation-sticky md:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+        <div className="flex items-center justify-around" style={{ height: 'calc(4rem + env(safe-area-inset-bottom, 0px))' }}>
           {navItems.map((item) => {
             const isActive = location.pathname === item.to || (item.to !== '/app' && location.pathname.startsWith(item.to));
             return (
