@@ -215,7 +215,7 @@ export default function MessagesPage() {
 
   return (
     <AppShell>
-      <div className="chat-height flex overflow-hidden rounded-xl border bg-card/30 backdrop-blur-sm shadow-sm mx-auto max-w-7xl">
+      <div className="chat-height flex overflow-hidden rounded-xl border bg-card/30 backdrop-blur-sm shadow-elevation-sm mx-auto max-w-7xl">
         {/* Conversation list - hidden on mobile when chat is open */}
         <div className={cn(
           'w-80 flex-shrink-0 border-r transition-all',

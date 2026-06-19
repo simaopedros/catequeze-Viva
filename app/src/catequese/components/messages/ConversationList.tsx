@@ -131,7 +131,7 @@ export function ConversationList({ conversations, activeId, onSelect, onNewConve
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder={t('search_conversations')}
-            className="w-full h-8 pl-8 pr-3 rounded-lg border border-input bg-background text-xs focus:outline-none focus:ring-1 focus:ring-primary/40"
+            className="w-full h-8 pl-8 pr-3 rounded-lg border border-input bg-background text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
           />
         </div>
 
@@ -144,7 +144,7 @@ export function ConversationList({ conversations, activeId, onSelect, onNewConve
               className={cn(
                 'px-2.5 py-1 rounded-full text-overline font-medium whitespace-nowrap transition-all',
                 filter === opt.value
-                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  ? 'bg-primary text-primary-foreground shadow-elevation-xs'
                   : 'bg-muted/50 text-muted-foreground hover:bg-muted'
               )}
             >

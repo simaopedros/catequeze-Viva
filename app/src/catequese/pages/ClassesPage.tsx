@@ -147,7 +147,7 @@ export default function ClassesPage() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((cls: any) => (
-              <div key={cls.id} className="rounded-xl border bg-card p-5 shadow-sm hover:shadow-md transition-shadow group">
+              <div key={cls.id} className="rounded-xl border bg-card p-5 shadow-elevation-sm hover:shadow-elevation-md transition-shadow group">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1 min-w-0">
                     <Link to={`/app/classes/${cls.id}`} className="font-semibold hover:text-primary truncate block">{cls.name}</Link>

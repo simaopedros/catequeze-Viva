@@ -5,6 +5,13 @@ import { Button } from '../../client/components/ui/button';
 import { Input } from '../../client/components/ui/input';
 import { Label } from '../../client/components/ui/label';
 import { Badge } from '../../client/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../client/components/ui/select';
 import { Plus, Calendar, BookOpen, Sparkles, MessageCircle, Trash2 } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { PageHeader } from '../../client/components/PageHeader';
@@ -100,20 +107,24 @@ export default function MeetingsPage() {
                   onChange={e => setContentSearch(e.target.value)}
                   className="h-9"
                 />
-                <select
-                  value={selectedContentId}
-                  onChange={e => setSelectedContentId(e.target.value)}
-                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm"
+                <Select
+                  value={selectedContentId || 'none'}
+                  onValueChange={(v) => setSelectedContentId(v === 'none' ? '' : v)}
                 >
-                  <option value="">{t('no_content')}</option>
-                  {contentItems
-                    .filter((c: any) => !contentSearch || c.title?.toLowerCase().includes(contentSearch.toLowerCase()) || c.theme?.toLowerCase().includes(contentSearch.toLowerCase()))
-                    .slice(0, 20)
-                    .map((c: any) => (
-                      <option key={c.id} value={c.id}>{c.title}{c.theme ? ` — ${c.theme}` : ''}</option>
-                    ))
-                  }
-                </select>
+                  <SelectTrigger className="h-9">
+                    <SelectValue placeholder={t('no_content')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t('no_content')}</SelectItem>
+                    {contentItems
+                      .filter((c: any) => !contentSearch || c.title?.toLowerCase().includes(contentSearch.toLowerCase()) || c.theme?.toLowerCase().includes(contentSearch.toLowerCase()))
+                      .slice(0, 20)
+                      .map((c: any) => (
+                        <SelectItem key={c.id} value={c.id}>{c.title}{c.theme ? ` — ${c.theme}` : ''}</SelectItem>
+                      ))
+                    }
+                  </SelectContent>
+                </Select>
               </div>
               <Button onClick={handleCreate} disabled={!title && !selectedContentId}>{t('create')}</Button>
             </div>
@@ -158,16 +169,20 @@ export default function MeetingsPage() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">
-                    <select
-                      onChange={e => { if (e.target.value) handleLinkContent(m.id, e.target.value); }}
-                      className="flex h-8 rounded-md border border-input bg-background px-2 text-xs"
-                      defaultValue=""
+                    <Select
+                      onValueChange={(v) => { if (v !== 'none') handleLinkContent(m.id, v); }}
+                      defaultValue="none"
                     >
-                      <option value="">{t('link_content')}</option>
-                      {contentItems.map((c: any) => (
-                        <option key={c.id} value={c.id}>{c.title}</option>
-                      ))}
-                    </select>
+                      <SelectTrigger className="h-8 text-xs min-w-[180px]">
+                        <SelectValue placeholder={t('link_content')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">{t('link_content')}</SelectItem>
+                        {contentItems.map((c: any) => (
+                          <SelectItem key={c.id} value={c.id}>{c.title}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 )}
 

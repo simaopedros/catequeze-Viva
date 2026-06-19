@@ -133,7 +133,7 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative w-full max-w-md mx-4 bg-card rounded-2xl shadow-2xl border overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-md mx-4 bg-card rounded-2xl shadow-elevation-modal border overflow-hidden animate-in zoom-in-95 duration-200">
         <div className="flex items-center justify-between p-4 border-b">
           <h3 className="font-semibold">
             {step === 'type' ? t('new_dialog.title_type') : t('new_dialog.title_contacts')}
@@ -178,7 +178,7 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
                   onChange={e => setTitle(e.target.value)}
                   placeholder={t('new_dialog.group_name_placeholder')}
                   maxLength={200}
-                  className="w-full h-9 rounded-lg border border-input bg-background px-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary/40"
+                  className="w-full h-9 rounded-lg border border-input bg-background px-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
                 />
               )}
 
@@ -188,7 +188,7 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   placeholder={t('new_dialog.search_contacts')}
-                  className="w-full h-9 pl-8 pr-3 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-1 focus:ring-primary/40"
+                  className="w-full h-9 pl-8 pr-3 rounded-lg border border-input bg-background text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
                 />
               </div>
 

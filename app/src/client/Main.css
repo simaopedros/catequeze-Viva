@@ -78,6 +78,9 @@
   --color-brand-warm: hsl(var(--secondary));
   --color-brand-support: hsl(var(--accent));
 
+  --color-info: hsl(var(--info));
+  --color-info-foreground: hsl(var(--info-foreground));
+
   --color-feedback-success: hsl(var(--success));
   --color-feedback-warning: hsl(var(--warning));
   --color-feedback-error: hsl(var(--destructive));
@@ -122,9 +125,7 @@
   /* ── Radius scale ────────────────────────────────────────────────── */
   --radius-none: 0px;
   --radius-xs: 0.125rem;
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
+  /* --radius-sm, --radius-md, --radius-lg are shadcn-compatible aliases defined below */
   --radius-xl: 1rem;
   --radius-2xl: 1.5rem;
   --radius-full: 9999px;
@@ -288,6 +289,7 @@
 
     /* Info */
     --info: 200 98% 39%;
+    --info-foreground: 0 0% 98%;
   }
 
   .dark {
@@ -333,6 +335,7 @@
 
     /* Info */
     --info: 200 80% 55%;
+    --info-foreground: 0 0% 98%;
   }
 }
 

@@ -160,7 +160,7 @@ export default function CatechumensPage() {
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filtered.map((c: any) => (
-              <Link key={c.id} to={`/app/catechumens/${c.id}`} className="rounded-xl border bg-card p-4 shadow-sm hover:shadow-md transition-shadow hover:border-primary/30 group">
+              <Link key={c.id} to={`/app/catechumens/${c.id}`} className="rounded-xl border bg-card p-4 shadow-elevation-sm hover:shadow-elevation-md transition-shadow hover:border-primary/30 group">
                 <div className="flex items-center gap-3 mb-3">
                   <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold overflow-hidden ${!c.photoUrl ? AVATAR_COLORS[Math.abs(c.firstName?.charCodeAt(0) || 0) % AVATAR_COLORS.length] : ''}`}>
                     {c.photoUrl ? <img src={c.photoUrl} className="w-full h-full object-cover" alt="" /> : `${c.firstName?.[0]}${c.lastName?.[0]}`}

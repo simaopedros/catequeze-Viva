@@ -18,7 +18,7 @@ export default function FamilyLandingPage() {
           <p className="text-muted-foreground text-lg">{t('landing.tagline')}</p>
         </div>
 
-        <div className="rounded-2xl border bg-card p-8 shadow-sm space-y-6">
+        <div className="rounded-2xl border bg-card p-8 shadow-elevation-xs space-y-6">
           <Church className="h-12 w-12 text-primary mx-auto" />
           <div className="space-y-2">
             <h2 className="text-xl font-semibold">{t('landing.invite_title')}</h2>

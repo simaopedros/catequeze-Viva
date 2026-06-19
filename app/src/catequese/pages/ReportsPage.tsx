@@ -125,7 +125,7 @@ export default function ReportsPage() {
         {/* KPIs */}
         <div className="grid gap-4 md:grid-cols-3">
           {[{l:t('kpis.total_enrolled'),v:data?.totalEnrolled??0,i:Users,c:'text-primary bg-primary/10'},{l:t('kpis.total_meetings'),v:data?.totalMeetings??0,i:Calendar,c:'text-success bg-success/10'},{l:t('kpis.avg_attendance'),v:(data?.avgAttendance??0)+'%',i:TrendingUp,c:'text-warning bg-warning/10'}].map(k=>(
-            <div key={k.l} className="rounded-xl border bg-card p-5 shadow-sm">
+            <div key={k.l} className="rounded-xl border bg-card p-5 shadow-elevation-sm">
               <div className="flex items-center gap-3"><div className={`rounded-lg p-2 ${k.c}`}><k.i className="h-5 w-5"/></div><div><p className="text-xs text-muted-foreground uppercase">{k.l}</p><p className="text-2xl font-bold">{k.v}</p></div></div>
             </div>
           ))}

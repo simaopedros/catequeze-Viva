@@ -6,6 +6,13 @@ import { Heart, Users, Plus, Phone, MapPin, User, ChevronRight, Search, Loader2 
 import { Button } from '../../client/components/ui/button';
 import { PageHeader } from '../../client/components/PageHeader';
 import { SearchInput } from '../../client/components/SearchInput';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../client/components/ui/select';
 import { EmptyState } from '../../client/components/EmptyState';
 import { SkeletonCard } from '../../client/components/Skeletons';
 import { AppShell } from '../AppShell';
@@ -67,16 +74,17 @@ export default function FamiliesPage() {
             onChange={e => setSearch(e.target.value)}
             containerClassName="max-w-none w-40 flex-none"
           />
-          <select
-            value={communityFilter}
-            onChange={e => setCommunityFilter(e.target.value)}
-            className="flex h-9 rounded-md border border-input bg-background px-3 text-sm w-36"
-          >
-            <option value="">{t('families.all_communities')}</option>
-            {communities.map((c: any) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
+          <Select value={communityFilter || 'all'} onValueChange={(v) => setCommunityFilter(v === 'all' ? '' : v)}>
+            <SelectTrigger className="w-36 h-9">
+              <SelectValue placeholder={t('families.all_communities')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t('families.all_communities')}</SelectItem>
+              {communities.map((c: any) => (
+                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           {canCreateFamily && <Button asChild><Link to="/app/families/new"><Plus className="mr-1 h-4 w-4" />{t('new')}</Link></Button>}
         </PageHeader>
 
@@ -97,7 +105,7 @@ export default function FamiliesPage() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((h: any) => (
-              <Link key={h.id} to={`/app/families/${h.id}`} className="rounded-xl border bg-card p-5 shadow-sm hover:shadow-md transition-shadow group">
+              <Link key={h.id} to={`/app/families/${h.id}`} className="rounded-xl border bg-card p-5 shadow-elevation-sm hover:shadow-elevation-md transition-shadow group">
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="font-semibold group-hover:text-primary">{h.name}</h3>
                   <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />

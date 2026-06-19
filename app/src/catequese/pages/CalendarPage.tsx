@@ -2,10 +2,21 @@ import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
+import { Input } from '../../client/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../client/components/ui/select';
+import { EmptyState } from '../../client/components/EmptyState';
 import { ChevronLeft, ChevronRight, Plus, Trash2, Calendar, Download, X } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { useQuery, listLiturgicalEvents, listClasses, listMeetingsForClasses, createLiturgicalEvent, deleteLiturgicalEvent } from 'wasp/client/operations';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
+
+const DEFAULT_COLOR = '#6366f1';
 
 export default function CalendarPage() {
   const { t } = useTranslation('calendar');
@@ -19,9 +30,9 @@ export default function CalendarPage() {
   const [meetings, setMeetings] = useState<any[]>([]);
   const [loadingMeetings, setLoadingMeetings] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDay, setSelectedDay] = useState<number|null>(null);
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [mobilePanelOpen, setMobilePanelOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<'month'|'agenda'>('month');
+  const [viewMode, setViewMode] = useState<'month' | 'agenda'>('month');
 
   useEffect(() => {
     const check = () => setViewMode(window.innerWidth < 768 ? 'agenda' : 'month');
@@ -31,15 +42,17 @@ export default function CalendarPage() {
   }, []);
 
   const parishFilteredEvents = activeParishId
-    ? liturgicalEvents.filter((e:any) => e.parishId === activeParishId)
+    ? liturgicalEvents.filter((e: any) => e.parishId === activeParishId)
     : liturgicalEvents;
   const filteredClasses = useMemo(() => activeParishId
-    ? classes.filter((c:any) => c.parishId === activeParishId)
+    ? classes.filter((c: any) => c.parishId === activeParishId)
     : classes, [classes, activeParishId]);
   const [showForm, setShowForm] = useState(false);
   const [typeFilter, setTypeFilter] = useState('all');
-  const [name, setName] = useState(''); const [desc, setDesc] = useState('');
-  const [eventDate, setEventDate] = useState(''); const [color, setColor] = useState('#6366f1');
+  const [name, setName] = useState('');
+  const [desc, setDesc] = useState('');
+  const [eventDate, setEventDate] = useState('');
+  const [color, setColor] = useState(DEFAULT_COLOR);
   const [eventType, setEventType] = useState('liturgical');
 
   useEffect(() => {
@@ -68,24 +81,30 @@ export default function CalendarPage() {
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
-  const daysInMonth = new Date(year,month+1,0).getDate();
-  const firstDay = (new Date(year,month,1).getDay() + 6) % 7;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDay = (new Date(year, month, 1).getDay() + 6) % 7;
 
-  const filteredEvents = typeFilter==='all'?events:events.filter(e=>e.type===typeFilter);
-  const monthCount = filteredEvents.filter(e=>{const d=typeof e.date==='string'?e.date:new Date(e.date).toISOString();return new Date(d).getMonth()===month;}).length;
+  const filteredEvents = typeFilter === 'all' ? events : events.filter(e => e.type === typeFilter);
+  const monthCount = filteredEvents.filter(e => {
+    const d = typeof e.date === 'string' ? e.date : new Date(e.date).toISOString();
+    return new Date(d).getMonth() === month;
+  }).length;
 
-  const getEventsForDay = (day:number)=>{
-    const ds=`${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-    return filteredEvents.filter(e=>{const d=typeof e.date==='string'?e.date:new Date(e.date).toISOString().slice(0,10);return d.startsWith(ds);});
+  const getEventsForDay = (day: number) => {
+    const ds = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    return filteredEvents.filter(e => {
+      const d = typeof e.date === 'string' ? e.date : new Date(e.date).toISOString().slice(0, 10);
+      return d.startsWith(ds);
+    });
   };
 
-  const handleCreate = async ()=>{
-    if(!name||!eventDate)return;
-    await createLiturgicalEvent({name,date:eventDate,description:desc,color,type:eventType});
-    setName('');setDesc('');setEventDate('');setShowForm(false);
+  const handleCreate = async () => {
+    if (!name || !eventDate) return;
+    await createLiturgicalEvent({ name, date: eventDate, description: desc, color, type: eventType });
+    setName(''); setDesc(''); setEventDate(''); setShowForm(false);
   };
-  const handleDelete = async (id:string)=>{
-    await deleteLiturgicalEvent({id});
+  const handleDelete = async (id: string) => {
+    await deleteLiturgicalEvent({ id });
   };
 
   const handleDayClick = (day: number) => {
@@ -94,7 +113,13 @@ export default function CalendarPage() {
     setMobilePanelOpen(true);
   };
 
-  const dayEvents = selectedDay?getEventsForDay(selectedDay):[];
+  const openNewEventForm = (day?: number) => {
+    const targetDay = day ?? selectedDay ?? 1;
+    setEventDate(`${year}-${String(month + 1).padStart(2, '0')}-${String(targetDay).padStart(2, '0')}`);
+    setShowForm(true);
+  };
+
+  const dayEvents = selectedDay ? getEventsForDay(selectedDay) : [];
 
   const filterOptions = [
     { v: 'all', l: t('filters.all') },
@@ -110,134 +135,171 @@ export default function CalendarPage() {
     class: t('event_types.class'),
   };
 
-  if(loading)return <AppShell><div className="space-y-6 animate-pulse"><div className="h-8 w-48 bg-muted rounded"/><div className="h-80 rounded-xl bg-muted"/></div></AppShell>;
+  const isToday = (day: number) =>
+    day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear();
+
+  if (loading) return (
+    <AppShell>
+      <div className="space-y-6 animate-pulse">
+        <div className="h-8 w-48 bg-muted rounded" />
+        <div className="h-80 rounded-xl bg-muted" />
+      </div>
+    </AppShell>
+  );
+
+  const activeFilterCount = typeFilter !== 'all' ? 1 : 0;
 
   return (
     <AppShell>
       <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-bold">{t('title')}</h1>
-            <p className="text-muted-foreground text-sm">{t('month_events', { month: months[month], year, count: monthCount })}</p>
+        {/* ── Header: 3 camadas ─────────────────────────────────────────────── */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="text-title-md font-bold tracking-tight">{t('title')}</h1>
+            <p className="text-body-sm text-text-secondary mt-0.5">
+              {t('month_events', { month: months[month], year, count: monthCount })}
+            </p>
           </div>
-          <div className="flex items-center gap-1.5">
-            <Button variant="outline" size="icon" className="h-8 w-8" onClick={()=>setCurrentDate(new Date(year,month-1,1))}><ChevronLeft className="h-4 w-4"/></Button>
-            <Button variant="outline" size="sm" className="h-8 text-xs px-3" onClick={()=>setCurrentDate(new Date())}>{t('today')}</Button>
-            <Button variant="outline" size="icon" className="h-8 w-8" onClick={()=>setCurrentDate(new Date(year,month+1,1))}><ChevronRight className="h-4 w-4"/></Button>
-            <Button size="sm" className="h-8 text-xs px-3" onClick={()=>{setShowForm(true);setEventDate(`${year}-${String(month+1).padStart(2,'0')}-${String(selectedDay||1).padStart(2,'0')}`);}}><Plus className="mr-1 h-3.5 w-3.5"/>{t('add_event')}</Button>
+          <div className="flex items-center gap-1.5 shrink-0">
+            {/* Navegação temporal */}
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => setCurrentDate(new Date(year, month - 1, 1))}
+              aria-label="Mês anterior"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 text-xs px-3"
+              onClick={() => setCurrentDate(new Date())}
+            >
+              {t('today')}
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => setCurrentDate(new Date(year, month + 1, 1))}
+              aria-label="Mês seguinte"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            {/* CTA primário */}
+            <Button
+              size="sm"
+              className="h-8 text-xs px-3"
+              onClick={() => openNewEventForm()}
+            >
+              <Plus className="mr-1 h-3.5 w-3.5" />
+              {t('add_event')}
+            </Button>
           </div>
         </div>
 
-        <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
-          {filterOptions.map(f=>(
-            <button key={f.v} onClick={()=>setTypeFilter(f.v)} className={`rounded-full px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-colors flex-shrink-0 ${typeFilter===f.v?'bg-primary text-primary-foreground':'bg-muted text-muted-foreground hover:bg-muted/80'}`}>{f.l}</button>
-          ))}
+        {/* ── Filtros ──────────────────────────────────────────────────────── */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex gap-1 overflow-x-auto pb-1 -mx-1 px-1 flex-1 sm:flex-none">
+            {filterOptions.map(f => (
+              <button
+                key={f.v}
+                onClick={() => setTypeFilter(f.v)}
+                aria-pressed={typeFilter === f.v}
+                className={`rounded-full px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-colors flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${
+                  typeFilter === f.v
+                    ? 'bg-primary text-primary-foreground shadow-elevation-xs'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                }`}
+              >
+                {f.l}
+              </button>
+            ))}
+          </div>
+          {/* Info bar sutil */}
+          {activeFilterCount > 0 && (
+            <span className="text-overline text-text-tertiary hidden sm:inline-flex items-center gap-1 shrink-0 ml-auto">
+              <Calendar className="h-3 w-3" />
+              {t('month_events', { month: months[month], year, count: monthCount })}
+            </span>
+          )}
         </div>
 
+        {/* ── Vista Agenda (mobile) ──────────────────────────────────────── */}
         {viewMode === 'agenda' ? (
-          <div className="space-y-2 max-h-[calc(100vh-280px)] overflow-y-auto">
-            {filteredEvents
-              .filter(e => {
-                const d = typeof e.date === 'string' ? e.date : new Date(e.date).toISOString();
-                return new Date(d).getMonth() === month && new Date(d).getFullYear() === year;
-              })
-              .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-              .map(e => {
-                const eventDate = new Date(typeof e.date === 'string' ? e.date : e.date);
-                const day = eventDate.getDate();
-                return (
-                  <button
-                    key={e.id}
-                    onClick={() => { setSelectedDay(day); setMobilePanelOpen(true); }}
-                    className="w-full rounded-lg border p-3 text-left hover:bg-muted/30 transition-colors flex items-center gap-3"
-                  >
-                    <div className="flex flex-col items-center justify-center w-10 h-10 rounded-lg bg-muted flex-shrink-0">
-                      <span className="text-xs font-bold">{day}</span>
-                      <span className="text-overline text-muted-foreground">{months[month].slice(0,3)}</span>
-                    </div>
-                    <div className="w-1.5 h-8 rounded-full flex-shrink-0" style={{ background: e.color || '#6366f1' }} />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium truncate">
-                        {e.name}
-                        {e.className && <span className="text-overline text-muted-foreground ml-1">({e.className})</span>}
-                      </p>
-                      <p className="text-overline text-muted-foreground">{eventTypeLabels[e.type] || e.type}</p>
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                  </button>
-                );
-              })}
-            {filteredEvents.filter(e => {
-              const d = typeof e.date === 'string' ? e.date : new Date(e.date).toISOString();
-              return new Date(d).getMonth() === month && new Date(d).getFullYear() === year;
-            }).length === 0 && (
-              <div className="text-center py-12 text-muted-foreground">
-                <Calendar className="mx-auto h-8 w-8 mb-2 opacity-30" />
-                <p className="text-sm">{t('no_events_month')}</p>
-              </div>
-            )}
-          </div>
+          <AgendaView
+            events={filteredEvents}
+            month={month}
+            year={year}
+            months={months}
+            eventTypeLabels={eventTypeLabels}
+            selectedDay={selectedDay}
+            setSelectedDay={setSelectedDay}
+            setMobilePanelOpen={setMobilePanelOpen}
+            t={t}
+          />
         ) : (
+          /* ── Vista Mensal + Painel lateral ─────────────────────────────── */
           <div className="lg:grid lg:grid-cols-3 lg:gap-6">
-          <div className="lg:col-span-2 rounded-xl border bg-card overflow-hidden">
-            <div className="grid grid-cols-7 bg-muted/30">
-              {weekdays.map((d,i)=>(
-                <div key={d} className={`p-1.5 sm:p-2 text-center text-overline sm:text-xs font-medium uppercase ${i>=5?'text-red-400':'text-muted-foreground'}`}>{d}</div>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-7">
-              {Array.from({length:firstDay}).map((_,i)=><div key={`e${i}`} className="aspect-square sm:aspect-auto sm:min-h-[80px] border-t border-l bg-muted/10"/>)}
-              {Array.from({length:daysInMonth}).map((_,i)=>{
-                const day=i+1;
-                const dow=(firstDay+day-1)%7;
-                const isWeekend=dow>=5;
-                const isToday=day===new Date().getDate()&&month===new Date().getMonth()&&year===new Date().getFullYear();
-                const de=getEventsForDay(day);
-                const isSelected=selectedDay===day;
-                return(
-                  <button key={day} onClick={()=>handleDayClick(day)} className={`p-1 sm:p-2 border-t border-l text-left transition-colors flex flex-col ${isSelected?'bg-primary/10 ring-1 ring-inset ring-primary':isWeekend?'bg-muted/20 hover:bg-muted/40':'hover:bg-muted/30'}`}>
-                    <span className={`inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full text-overline sm:text-xs font-medium flex-shrink-0 ${isToday?'bg-primary text-primary-foreground':''}`}>{day}</span>
-                    <div className="flex flex-wrap gap-0.5 mt-0.5 sm:mt-1">
-                      {de.slice(0,3).map(e=><div key={e.id} className="h-1.5 w-1.5 sm:hidden rounded-full flex-shrink-0" style={{background:e.color||'#6366f1'}} title={e.name}/>)}
-                      {de.slice(0,2).map(e=><div key={`lbl-${e.id}`} className="hidden sm:block truncate rounded px-1 py-0.5 text-overline font-medium text-white w-full" style={{background:e.color||'#6366f1'}}>{e.name}</div>)}
-                      {de.length>2 && <div className="text-overline text-muted-foreground hidden sm:block">+{de.length-2}</div>}
-                      {de.length>3 && <div className="text-overline text-muted-foreground sm:hidden">+{de.length-3}</div>}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="hidden lg:block space-y-4">
-            <SidePanelContent
-              selectedDay={selectedDay}
-              month={month}
+            <MonthGrid
               year={year}
-              months={months}
-              dayEvents={dayEvents}
-              showForm={showForm}
-              name={name} desc={desc} eventDate={eventDate} color={color} eventType={eventType}
-              setName={setName} setDesc={setDesc} setEventDate={setEventDate} setColor={setColor} setEventType={setEventType}
-              setShowForm={setShowForm}
-              handleCreate={handleCreate}
-              handleDelete={handleDelete}
-              eventTypeLabels={eventTypeLabels}
-              t={t}
-              tc={tc}
+              month={month}
+              daysInMonth={daysInMonth}
+              firstDay={firstDay}
+              weekdays={weekdays}
+              selectedDay={selectedDay}
+              getEventsForDay={getEventsForDay}
+              isToday={isToday}
+              onDayClick={handleDayClick}
             />
+
+            <div className="hidden lg:block space-y-4">
+              <SidePanelContent
+                selectedDay={selectedDay}
+                month={month}
+                year={year}
+                months={months}
+                dayEvents={dayEvents}
+                showForm={showForm}
+                name={name} desc={desc} eventDate={eventDate} color={color} eventType={eventType}
+                setName={setName} setDesc={setDesc} setEventDate={setEventDate}
+                setColor={setColor} setEventType={setEventType}
+                setShowForm={setShowForm}
+                handleCreate={handleCreate}
+                handleDelete={handleDelete}
+                eventTypeLabels={eventTypeLabels}
+                openNewEventForm={openNewEventForm}
+                t={t}
+                tc={tc}
+              />
+            </div>
           </div>
-        </div>
         )}
 
-        {mobilePanelOpen && selectedDay && (
-          <div className="lg:hidden fixed inset-0 z-50 flex items-end">
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={()=>setMobilePanelOpen(false)} />
-            <div className="relative z-10 w-full max-h-[70vh] overflow-y-auto rounded-t-2xl border-t bg-card shadow-2xl animate-in slide-in-from-bottom-5 duration-300">
-              <div className="sticky top-0 flex items-center justify-between p-4 border-b bg-card/95 backdrop-blur rounded-t-2xl">
-                <h3 className="font-semibold text-sm flex items-center gap-2"><Calendar className="h-4 w-4"/>{t('day_title', { day: selectedDay, month: months[month] })}</h3>
-                <button onClick={()=>setMobilePanelOpen(false)} className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-muted"><X className="h-4 w-4"/></button>
+        {/* ── Bottom Sheet Mobile ──────────────────────────────────────── */}
+        {mobilePanelOpen && selectedDay != null && (
+          <div className="lg:hidden fixed inset-0 z-modal flex items-end motion-reduce:transition-none">
+            <div
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
+              onClick={() => setMobilePanelOpen(false)}
+            />
+            <div className="relative z-10 w-full max-h-[75vh] overflow-y-auto rounded-t-2xl border-t bg-card shadow-elevation-modal animate-in slide-in-from-bottom-5 duration-300 motion-reduce:animate-none">
+              <div className="sticky top-0 z-10 flex items-center justify-between p-4 border-b bg-card/95 backdrop-blur-sm rounded-t-2xl">
+                <h3 className="font-semibold text-sm flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  {t('day_title', { day: selectedDay, month: months[month] })}
+                </h3>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => setMobilePanelOpen(false)}
+                  aria-label={tc('close')}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
               <div className="p-4 space-y-4">
                 <SidePanelContent
@@ -248,11 +310,13 @@ export default function CalendarPage() {
                   dayEvents={dayEvents}
                   showForm={showForm}
                   name={name} desc={desc} eventDate={eventDate} color={color} eventType={eventType}
-                  setName={setName} setDesc={setDesc} setEventDate={setEventDate} setColor={setColor} setEventType={setEventType}
+                  setName={setName} setDesc={setDesc} setEventDate={setEventDate}
+                  setColor={setColor} setEventType={setEventType}
                   setShowForm={setShowForm}
                   handleCreate={handleCreate}
                   handleDelete={handleDelete}
                   eventTypeLabels={eventTypeLabels}
+                  openNewEventForm={openNewEventForm}
                   t={t}
                   tc={tc}
                 />
@@ -265,6 +329,209 @@ export default function CalendarPage() {
   );
 }
 
+/* ─── Month Grid ──────────────────────────────────────────────────────────────── */
+
+interface MonthGridProps {
+  year: number;
+  month: number;
+  daysInMonth: number;
+  firstDay: number;
+  weekdays: string[];
+  selectedDay: number | null;
+  getEventsForDay: (day: number) => any[];
+  isToday: (day: number) => boolean;
+  onDayClick: (day: number) => void;
+}
+
+function MonthGrid({
+  year, month, daysInMonth, firstDay, weekdays,
+  selectedDay, getEventsForDay, isToday, onDayClick,
+}: MonthGridProps) {
+  const isWeekend = (dow: number) => dow >= 5;
+
+  return (
+    <div className="lg:col-span-2 rounded-xl border bg-card overflow-hidden shadow-elevation-xs">
+      {/* Weekday headers */}
+      <div className="grid grid-cols-7 bg-muted/40 border-b">
+        {weekdays.map((d, i) => (
+          <div
+            key={d}
+            className={`p-2 text-center text-xs font-semibold uppercase tracking-wide ${
+              isWeekend(i) ? 'text-muted-foreground/60' : 'text-muted-foreground'
+            }`}
+          >
+            {d}
+          </div>
+        ))}
+      </div>
+
+      {/* Day cells */}
+      <div className="grid grid-cols-7">
+        {/* Empty cells before first day */}
+        {Array.from({ length: firstDay }).map((_, i) => (
+          <div key={`e${i}`} className="aspect-square sm:aspect-auto sm:min-h-[90px] border-t border-l bg-muted/5" />
+        ))}
+
+        {/* Actual day cells */}
+        {Array.from({ length: daysInMonth }).map((_, i) => {
+          const day = i + 1;
+          const dow = (firstDay + day - 1) % 7;
+          const today = isToday(day);
+          const events = getEventsForDay(day);
+          const isSelected = selectedDay === day;
+
+          return (
+            <button
+              key={day}
+              onClick={() => onDayClick(day)}
+              aria-label={`${day} ${events.length > 0 ? `, ${events.length} events` : ''}`}
+              aria-current={today ? 'date' : undefined}
+              className={`p-1.5 sm:p-2 border-t border-l text-left transition-colors flex flex-col focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset focus-visible:z-10 ${
+                isSelected
+                  ? 'bg-primary/10 ring-1 ring-inset ring-primary z-[1]'
+                  : isWeekend(dow)
+                    ? 'bg-muted/15 hover:bg-muted/30'
+                    : 'hover:bg-muted/20'
+              }`}
+            >
+              {/* Day number */}
+              <span
+                className={`inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full text-xs sm:text-sm font-medium flex-shrink-0 ${
+                  today
+                    ? 'bg-primary text-primary-foreground'
+                    : isWeekend(dow)
+                      ? 'text-muted-foreground/60'
+                      : ''
+                }`}
+              >
+                {day}
+              </span>
+
+              {/* Events */}
+              <div className="flex flex-wrap gap-0.5 mt-0.5 sm:mt-1 min-w-0">
+                {/* Mobile dots */}
+                {events.slice(0, 3).map(e => (
+                  <div
+                    key={e.id}
+                    className="h-1.5 w-1.5 sm:hidden rounded-full flex-shrink-0"
+                    style={{ background: e.color || DEFAULT_COLOR }}
+                    title={e.name}
+                  />
+                ))}
+                {/* Desktop labels */}
+                {events.slice(0, 2).map(e => (
+                  <div
+                    key={`lbl-${e.id}`}
+                    className="hidden sm:block truncate rounded-sm px-1.5 py-0.5 text-overline font-medium text-white w-full leading-tight"
+                    style={{ background: e.color || DEFAULT_COLOR }}
+                  >
+                    {e.name}
+                  </div>
+                ))}
+                {events.length > 2 && (
+                  <span className="text-overline text-muted-foreground hidden sm:inline-block mt-0.5">
+                    +{events.length - 2}
+                  </span>
+                )}
+                {events.length > 3 && (
+                  <span className="text-overline text-muted-foreground sm:hidden">
+                    +{events.length - 3}
+                  </span>
+                )}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Agenda View ──────────────────────────────────────────────────────────────── */
+
+interface AgendaViewProps {
+  events: any[];
+  month: number;
+  year: number;
+  months: string[];
+  eventTypeLabels: Record<string, string>;
+  selectedDay: number | null;
+  setSelectedDay: (d: number) => void;
+  setMobilePanelOpen: (v: boolean) => void;
+  t: any;
+}
+
+function AgendaView({
+  events, month, year, months, eventTypeLabels,
+  selectedDay, setSelectedDay, setMobilePanelOpen, t,
+}: AgendaViewProps) {
+  const monthEvents = events
+    .filter(e => {
+      const d = typeof e.date === 'string' ? e.date : new Date(e.date).toISOString();
+      return new Date(d).getMonth() === month && new Date(d).getFullYear() === year;
+    })
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  if (monthEvents.length === 0) {
+    return (
+      <EmptyState
+        compact
+        icon={Calendar}
+        title={t('no_events_month')}
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-2 max-h-[calc(100vh-280px)] overflow-y-auto">
+      {monthEvents.map(e => {
+        const eventDate = new Date(typeof e.date === 'string' ? e.date : e.date);
+        const day = eventDate.getDate();
+        return (
+          <button
+            key={e.id}
+            onClick={() => { setSelectedDay(day); setMobilePanelOpen(true); }}
+            className="w-full rounded-xl border bg-card p-3.5 text-left hover:bg-muted/30 transition-colors flex items-center gap-3 shadow-elevation-xs"
+          >
+            {/* Date block */}
+            <div className="flex flex-col items-center justify-center w-11 h-11 rounded-lg bg-muted flex-shrink-0">
+              <span className="text-sm font-bold leading-none">{day}</span>
+              <span className="text-overline text-muted-foreground mt-0.5">
+                {months[month].slice(0, 3)}
+              </span>
+            </div>
+
+            {/* Color bar */}
+            <div
+              className="w-1.5 h-9 rounded-full flex-shrink-0"
+              style={{ background: e.color || DEFAULT_COLOR }}
+            />
+
+            {/* Content */}
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium truncate">
+                {e.name}
+                {e.className && (
+                  <span className="text-overline text-muted-foreground ml-1">
+                    ({e.className})
+                  </span>
+                )}
+              </p>
+              <p className="text-overline text-muted-foreground mt-0.5">
+                {eventTypeLabels[e.type] || e.type}
+              </p>
+            </div>
+
+            <ChevronRight className="h-4 w-4 text-muted-foreground/50 flex-shrink-0" />
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ─── Side Panel ──────────────────────────────────────────────────────────────── */
+
 interface SidePanelProps {
   selectedDay: number | null;
   month: number;
@@ -273,11 +540,14 @@ interface SidePanelProps {
   dayEvents: any[];
   showForm: boolean;
   name: string; desc: string; eventDate: string; color: string; eventType: string;
-  setName: (v:string)=>void; setDesc: (v:string)=>void; setEventDate: (v:string)=>void; setColor: (v:string)=>void; setEventType: (v:string)=>void;
-  setShowForm: (v:boolean)=>void;
-  handleCreate: ()=>void;
-  handleDelete: (id:string)=>void;
+  setName: (v: string) => void; setDesc: (v: string) => void;
+  setEventDate: (v: string) => void; setColor: (v: string) => void;
+  setEventType: (v: string) => void;
+  setShowForm: (v: boolean) => void;
+  handleCreate: () => void;
+  handleDelete: (id: string) => void;
   eventTypeLabels: Record<string, string>;
+  openNewEventForm: (day?: number) => void;
   t: any;
   tc: (key: string) => string;
 }
@@ -286,80 +556,195 @@ function SidePanelContent({
   selectedDay, month, year, months, dayEvents, showForm,
   name, desc, eventDate, color, eventType,
   setName, setDesc, setEventDate, setColor, setEventType,
-  setShowForm, handleCreate, handleDelete, eventTypeLabels, t, tc,
+  setShowForm, handleCreate, handleDelete, eventTypeLabels,
+  openNewEventForm, t, tc,
 }: SidePanelProps) {
-  const formatDay = (day: number) => `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+  /* ── No day selected placeholder ─────────────────────────────────────── */
+  if (!selectedDay) {
+    return (
+      <div className="rounded-xl border bg-card p-8 text-center shadow-elevation-xs">
+        <div className="mx-auto mb-3 rounded-full bg-muted p-3 w-fit">
+          <Calendar className="h-6 w-6 text-muted-foreground/50" />
+        </div>
+        <h3 className="text-sm font-medium text-foreground/70">{t('select_day')}</h3>
+        <p className="text-body-xs text-text-secondary mt-1">
+          {t('no_events')}
+        </p>
+      </div>
+    );
+  }
 
-  const openNewEventForm = () => {
-    if (selectedDay) setEventDate(formatDay(selectedDay));
-    setShowForm(true);
-  };
-
+  /* ── Day selected ────────────────────────────────────────────────────── */
   return (
     <>
-      {selectedDay && (
-        <div className="rounded-xl border bg-card p-4">
-          <h3 className="font-semibold flex items-center gap-2 text-sm"><Calendar className="h-4 w-4"/>{t('day_title', { day: selectedDay, month: months[month] })}</h3>
-          {dayEvents.length===0 ? (
-            <div className="text-center py-6">
-              <p className="text-sm text-muted-foreground">{t('no_events')}</p>
-              <Button variant="outline" size="sm" className="mt-2" onClick={openNewEventForm}><Plus className="mr-1 h-3 w-3"/>{t('add')}</Button>
-            </div>
-          ) : (
-            <div className="mt-3 space-y-2">
-              {dayEvents.map(e=>(
-                <div key={e.id} className="flex items-start justify-between rounded-lg border p-3 hover:bg-muted/30 transition-colors">
-                  <div className="flex items-start gap-2 min-w-0">
-                    <div className="w-2 h-6 rounded-full mt-0.5 flex-shrink-0" style={{background:e.color||'#6366f1'}}/>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium truncate">
-                        {e.name}
-                        {e.className && <span className="text-overline text-muted-foreground ml-1">({e.className})</span>}
-                      </p>
-                      {e.description && <p className="text-xs text-muted-foreground mt-0.5">{e.description}</p>}
-                      <Badge variant="outline" className="mt-1 text-overline">{eventTypeLabels[e.type] || e.type}</Badge>
-                    </div>
-                  </div>
-                  <div className="flex gap-1 flex-shrink-0 ml-2">
-                    <button onClick={()=>exportICS(e)} className="text-muted-foreground hover:text-primary p-1"><Download className="h-3.5 w-3.5"/></button>
-                    {e.type!=='class' && <button onClick={()=>handleDelete(e.id)} className="text-muted-foreground hover:text-destructive p-1"><Trash2 className="h-3.5 w-3.5"/></button>}
-                  </div>
+      {/* Day header card */}
+      <div className="rounded-xl border bg-card p-4 shadow-elevation-xs">
+        <div className="flex items-center justify-between">
+          <h3 className="font-semibold text-sm flex items-center gap-2">
+            <Calendar className="h-4 w-4 text-primary" />
+            {t('day_title', { day: selectedDay, month: months[month] })}
+          </h3>
+          <Badge variant="outline" className="text-overline">
+            {dayEvents.length === 0 ? '0' : String(dayEvents.length)}
+          </Badge>
+        </div>
+      </div>
+
+      {/* Event list */}
+      {dayEvents.length === 0 ? (
+        <div className="rounded-xl border bg-card p-6 text-center shadow-elevation-xs">
+          <p className="text-sm text-muted-foreground">{t('no_events')}</p>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-3"
+            onClick={() => openNewEventForm()}
+          >
+            <Plus className="mr-1 h-3.5 w-3.5" />
+            {t('add')}
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {dayEvents.map(e => (
+            <div
+              key={e.id}
+              className="flex items-start justify-between rounded-xl border bg-card p-3 hover:bg-muted/20 transition-colors shadow-elevation-xs"
+            >
+              <div className="flex items-start gap-2.5 min-w-0">
+                <div
+                  className="w-1.5 h-7 rounded-full mt-1 flex-shrink-0"
+                  style={{ background: e.color || DEFAULT_COLOR }}
+                />
+                <div className="min-w-0">
+                  <p className="text-sm font-medium truncate">
+                    {e.name}
+                    {e.className && (
+                      <span className="text-overline text-muted-foreground ml-1">
+                        ({e.className})
+                      </span>
+                    )}
+                  </p>
+                  {e.description && (
+                    <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+                      {e.description}
+                    </p>
+                  )}
+                  <Badge variant="outline" className="mt-1.5 text-overline">
+                    {eventTypeLabels[e.type] || e.type}
+                  </Badge>
                 </div>
-              ))}
-              <Button variant="ghost" size="sm" className="w-full text-xs" onClick={openNewEventForm}><Plus className="mr-1 h-3 w-3"/>{t('new_event')}</Button>
+              </div>
+              <div className="flex gap-0.5 flex-shrink-0 ml-2">
+                <button
+                  onClick={() => exportICS(e)}
+                  className="text-muted-foreground hover:text-primary p-1.5 rounded-md hover:bg-muted transition-colors"
+                  aria-label="Exportar .ics"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                </button>
+                {e.type !== 'class' && (
+                  <button
+                    onClick={() => handleDelete(e.id)}
+                    className="text-muted-foreground hover:text-destructive p-1.5 rounded-md hover:bg-destructive/10 transition-colors"
+                    aria-label="Excluir evento"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
             </div>
-          )}
+          ))}
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full text-xs font-medium"
+            onClick={() => openNewEventForm()}
+          >
+            <Plus className="mr-1 h-3.5 w-3.5" />
+            {t('new_event')}
+          </Button>
         </div>
       )}
 
-      {!selectedDay && (
-        <div className="rounded-xl border bg-card p-6 text-center">
-          <Calendar className="mx-auto h-8 w-8 text-muted-foreground/40 mb-2"/>
-          <p className="text-sm text-muted-foreground">{t('select_day')}</p>
-        </div>
-      )}
-
+      {/* ── Create event form ───────────────────────────────────────────── */}
       {showForm && (
-        <div className="rounded-xl border bg-card p-4 space-y-3">
+        <div className="rounded-xl border bg-card p-4 space-y-3 shadow-elevation-xs">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-sm"><Plus className="inline h-4 w-4 mr-1"/>{t('new_event')}</h3>
-            <button onClick={()=>setShowForm(false)} className="text-muted-foreground hover:text-foreground p-1"><X className="h-4 w-4"/></button>
+            <h3 className="font-semibold text-sm flex items-center gap-1.5">
+              <Plus className="h-4 w-4 text-primary" />
+              {t('new_event')}
+            </h3>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              onClick={() => setShowForm(false)}
+              aria-label={tc('close')}
+            >
+              <X className="h-4 w-4" />
+            </Button>
           </div>
-          <input placeholder={t('event_name')} value={name} onChange={e=>setName(e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm"/>
-          <input type="date" value={eventDate} onChange={e=>setEventDate(e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm"/>
-          <input placeholder={t('description_optional')} value={desc} onChange={e=>setDesc(e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm"/>
-          <div className="flex gap-2">
-            <select value={eventType} onChange={e=>setEventType(e.target.value)} className="flex h-9 rounded-md border border-input bg-background px-3 py-1 text-sm flex-1">
-              <option value="liturgical">{t('filters.liturgical')}</option>
-              <option value="parish">{t('filters.parish')}</option>
-              <option value="class">{t('filters.class')}</option>
-              <option value="sacramental">{t('filters.sacramental')}</option>
-            </select>
-            <input type="color" value={color} onChange={e=>setColor(e.target.value)} className="h-9 w-12 rounded border cursor-pointer"/>
+
+          <div className="space-y-2.5">
+            <Input
+              placeholder={t('event_name')}
+              value={name}
+              onChange={e => setName(e.target.value)}
+            />
+            <Input
+              type="date"
+              value={eventDate}
+              onChange={e => setEventDate(e.target.value)}
+            />
+            <Input
+              placeholder={t('description_optional')}
+              value={desc}
+              onChange={e => setDesc(e.target.value)}
+            />
           </div>
+
           <div className="flex gap-2">
-            <Button size="sm" onClick={handleCreate} disabled={!name||!eventDate}>{t('create_event')}</Button>
-            <Button size="sm" variant="outline" onClick={()=>setShowForm(false)}>{tc('cancel')}</Button>
+            <Select value={eventType} onValueChange={setEventType}>
+              <SelectTrigger className="flex-1 h-9">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="liturgical">{t('filters.liturgical')}</SelectItem>
+                <SelectItem value="parish">{t('filters.parish')}</SelectItem>
+                <SelectItem value="class">{t('filters.class')}</SelectItem>
+                <SelectItem value="sacramental">{t('filters.sacramental')}</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Color picker */}
+            <div className="relative">
+              <input
+                type="color"
+                value={color}
+                onChange={e => setColor(e.target.value)}
+                className="sr-only"
+                id="event-color-picker"
+              />
+              <label
+                htmlFor="event-color-picker"
+                className="flex items-center justify-center h-9 w-9 rounded-md border border-input cursor-pointer hover:border-primary/50 transition-colors shadow-elevation-xs"
+                style={{ background: color }}
+                aria-label="Cor do evento"
+              >
+                <span className="sr-only">Cor do evento</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="flex gap-2 pt-1">
+            <Button size="sm" onClick={handleCreate} disabled={!name || !eventDate}>
+              {t('create_event')}
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => setShowForm(false)}>
+              {tc('cancel')}
+            </Button>
           </div>
         </div>
       )}
@@ -367,10 +752,27 @@ function SidePanelContent({
   );
 }
 
+/* ─── ICS Export ──────────────────────────────────────────────────────────────── */
+
 function exportICS(event: any) {
-  const start = new Date(event.date).toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
-  const end = event.endDate ? new Date(event.endDate).toISOString().replace(/[-:]/g,'').split('.')[0]+'Z' : start;
-  const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:${start}\nDTEND:${end}\nSUMMARY:${event.name}\nDESCRIPTION:${event.description||''}\nEND:VEVENT\nEND:VCALENDAR`;
-  const blob = new Blob([ics],{type:'text/calendar'});
-  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`${event.name}.ics`; a.click();
+  const start = new Date(event.date).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  const end = event.endDate
+    ? new Date(event.endDate).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
+    : start;
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'BEGIN:VEVENT',
+    `DTSTART:${start}`,
+    `DTEND:${end}`,
+    `SUMMARY:${event.name}`,
+    `DESCRIPTION:${event.description || ''}`,
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\n');
+  const blob = new Blob([ics], { type: 'text/calendar' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${event.name}.ics`;
+  a.click();
 }

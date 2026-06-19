@@ -38,7 +38,7 @@ export function PricingPreviewSection({ ns = 'landing', responsiveCtas = false }
           <button
             type="button"
             onClick={() => setBillingInterval('monthly')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${billingInterval === 'monthly' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${billingInterval === 'monthly' ? 'bg-background text-foreground shadow-elevation-xs' : 'text-muted-foreground hover:text-foreground'}`}
           >
             {t('price_monthly')}
           </button>
@@ -48,7 +48,7 @@ export function PricingPreviewSection({ ns = 'landing', responsiveCtas = false }
             className={cn(
               'px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-1.5',
               responsiveCtas && 'min-w-0 whitespace-normal leading-tight',
-              billingInterval === 'annual' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground',
+              billingInterval === 'annual' ? 'bg-background text-foreground shadow-elevation-xs' : 'text-muted-foreground hover:text-foreground',
             )}
           >
             {t('price_annual')}
@@ -96,7 +96,7 @@ function PricingCard({ planKey, planId, plan, features, delay, billingInterval, 
     <div ref={ref} className={`rounded-2xl border p-6 space-y-4 relative flex flex-col ${highlight ? 'border-primary shadow-lg shadow-primary/10 scale-[1.02]' : 'bg-card'} ${className}`}>
       {highlight && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-          <span className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-0.5 text-xs font-semibold text-primary-foreground shadow-sm"><Star className="h-3 w-3 fill-current" />{t('price_popular')}</span>
+          <span className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-0.5 text-xs font-semibold text-primary-foreground shadow-elevation-xs"><Star className="h-3 w-3 fill-current" />{t('price_popular')}</span>
         </div>
       )}
       <div>

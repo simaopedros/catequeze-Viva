@@ -17,7 +17,7 @@ export function DashboardMock({ ns = 'landing' }: { ns?: string }) {
           { l: t('mockup_dashboard.avg_attendance'), v: '87%', i: TrendingUp, c: 'text-warning bg-warning/10' },
           { l: t('mockup_dashboard.sacraments'), v: '12', i: Cross, c: 'text-secondary-foreground bg-secondary' },
         ].map((k) => (
-          <div key={k.l} className="rounded-lg border bg-card p-2 shadow-sm">
+          <div key={k.l} className="rounded-lg border bg-card p-2 shadow-elevation-xs">
             <div className="flex items-center gap-2">
               <div className={`rounded-md p-1 ${k.c}`}>
                 <k.i className="h-3 w-3" />

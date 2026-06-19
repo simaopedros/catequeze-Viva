@@ -11,7 +11,15 @@ import {
 import { useActiveWorkspace } from '../../../client/hooks/useActiveWorkspace';
 import { useUserContext } from '../../../client/hooks/useUserContext';
 import { SkeletonPage } from '../../../client/components/Skeletons';
+import { PageHeader } from '../../../client/components/PageHeader';
 import { Badge } from '../../../client/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../../client/components/ui/select';
 import { ChartCard } from '../../../client/components/ChartCard';
 import { formatCurrency, formatNumber } from '../../../i18n/format';
 import { useLocale } from '../../../i18n/useLocale';
@@ -333,9 +341,9 @@ export function InstitutionalDashboard() {
               <button
                 key={opt.value}
                 onClick={() => handleScopeChange(opt.value as 'diocese' | 'parish' | 'community')}
-                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${
                   scope === opt.value
-                    ? 'bg-background text-foreground shadow-sm'
+                    ? 'bg-background text-foreground shadow-elevation-xs'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
@@ -344,25 +352,27 @@ export function InstitutionalDashboard() {
             ))}
           </div>
           {/* Period Filter */}
-          <select
-            value={period}
-            onChange={(e) => setPeriod(e.target.value as any)}
-            className="h-9 rounded-lg border bg-background px-3 text-xs font-medium text-muted-foreground"
-          >
-            {periodOptions.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
-          </select>
-          {scope === 'community' && communities.length > 0 && (
-            <select
-              value={selectedCommunityId}
-              onChange={(e) => setSelectedCommunityId(e.target.value)}
-              className="h-9 rounded-lg border bg-background px-3 text-xs font-medium text-muted-foreground max-w-[200px]"
-            >
-              {communities.map((c: any) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
+          <Select value={period} onValueChange={(v) => setPeriod(v as any)}>
+            <SelectTrigger className="h-9 rounded-lg text-xs font-medium min-w-[140px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {periodOptions.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
               ))}
-            </select>
+            </SelectContent>
+          </Select>
+          {scope === 'community' && communities.length > 0 && (
+            <Select value={selectedCommunityId} onValueChange={(v) => setSelectedCommunityId(v)}>
+              <SelectTrigger className="h-9 rounded-lg text-xs font-medium max-w-[200px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {communities.map((c: any) => (
+                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           )}
         </div>
       </div>
@@ -401,26 +411,26 @@ export function InstitutionalDashboard() {
             title={t('domain_content')}
             icon={FileText}
             kpis={overview.content}
-            colorClass="text-indigo-500 bg-indigo-500/10"
+            colorClass="text-info bg-info/10"
           />
           <DomainSection
             title={t('domain_compliance')}
             icon={ShieldCheck}
             kpis={overview.compliance}
-            colorClass="text-red-500 bg-red-500/10"
+            colorClass="text-destructive bg-destructive/10"
           />
           <DomainSection
             title={t('domain_communication')}
             icon={MessageSquare}
             kpis={overview.communication}
-            colorClass="text-cyan-500 bg-cyan-500/10"
+            colorClass="text-secondary-foreground bg-secondary/20"
           />
           {overview.license && overview.license.length > 0 && (
             <DomainSection
               title={t('domain_license')}
               icon={Building2}
               kpis={overview.license}
-              colorClass="text-emerald-500 bg-emerald-500/10"
+              colorClass="text-success bg-success/10"
             />
           )}
         </div>
@@ -490,35 +500,37 @@ export function InstitutionalDashboard() {
 
       {/* Class Comparison Table (only for parish scope) */}
       {comparison && comparison.length > 0 && scope === 'parish' && (
-        <div className="rounded-xl border bg-card p-4 shadow-elevation-sm">
-          <h3 className="font-semibold text-overline uppercase text-text-tertiary mb-4 flex items-center gap-1">
-            <BarChart3 className="h-4 w-4" /> {t('table_class_comparison')}
-          </h3>
+        <div className="rounded-xl border bg-card overflow-hidden shadow-elevation-sm">
+          <div className="p-4 border-b bg-muted/20">
+            <h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground flex items-center gap-1.5">
+              <BarChart3 className="h-4 w-4" /> {t('table_class_comparison')}
+            </h3>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-overline text-text-tertiary uppercase border-b">
-                  <th className="pb-2 pr-3">{t('table_class')}</th>
-                  <th className="pb-2 pr-3">{tcl('stage')}</th>
-                  <th className="pb-2 pr-3 text-center">{tcl('enrolled')}</th>
-                  <th className="pb-2 pr-3 text-center">{t('table_meetings')}</th>
-                  <th className="pb-2 pr-3 text-center">{t('table_attendance')}</th>
-                  <th className="pb-2 text-center">{t('table_risk')}</th>
+                <tr className="text-left text-xs text-muted-foreground uppercase tracking-wide border-b bg-muted/10">
+                  <th className="py-2.5 px-4 font-semibold">{t('table_class')}</th>
+                  <th className="py-2.5 px-4 font-semibold">{tcl('stage')}</th>
+                  <th className="py-2.5 px-4 font-semibold text-center">{tcl('enrolled')}</th>
+                  <th className="py-2.5 px-4 font-semibold text-center">{t('table_meetings')}</th>
+                  <th className="py-2.5 px-4 font-semibold text-center">{t('table_attendance')}</th>
+                  <th className="py-2.5 px-4 font-semibold text-center">{t('table_risk')}</th>
                 </tr>
               </thead>
               <tbody>
                 {comparison.map((c: any) => (
-                  <tr key={c.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors cursor-pointer">
-                    <td className="py-2 pr-3 font-medium">{c.name}</td>
-                    <td className="py-2 pr-3 text-xs text-muted-foreground">{c.stage}</td>
-                    <td className="py-2 pr-3 text-center">{c.enrolled}</td>
-                    <td className="py-2 pr-3 text-center">{c.totalMeetings}</td>
-                    <td className="py-2 pr-3 text-center">
-                      <span className={`font-bold ${c.attendanceRate >= 75 ? 'text-success' : c.attendanceRate >= 50 ? 'text-warning' : 'text-destructive'}`}>
+                  <tr key={c.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
+                    <td className="py-2.5 px-4 font-medium">{c.name}</td>
+                    <td className="py-2.5 px-4 text-xs text-muted-foreground">{c.stage}</td>
+                    <td className="py-2.5 px-4 text-center">{c.enrolled}</td>
+                    <td className="py-2.5 px-4 text-center">{c.totalMeetings}</td>
+                    <td className="py-2.5 px-4 text-center">
+                      <span className={`font-bold text-sm ${c.attendanceRate >= 75 ? 'text-success' : c.attendanceRate >= 50 ? 'text-warning' : 'text-destructive'}`}>
                         {c.attendanceRate}%
                       </span>
                     </td>
-                    <td className="py-2 text-center">
+                    <td className="py-2.5 px-4 text-center">
                       <Badge variant={c.riskLevel === 'BAIXO' ? 'success' : c.riskLevel === 'MÉDIO' ? 'warning' : 'destructive'} size="sm">{getRiskLabel(c.riskLevel, t)}</Badge>
                     </td>
                   </tr>

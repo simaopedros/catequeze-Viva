@@ -3,9 +3,17 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../client/components/ui/select';
 import { Cross, Plus, User, CheckCircle, Clock, Search, Undo2, AlertTriangle, XCircle, Users, FileText, Calendar, Pencil } from 'lucide-react';
 import { AppShell } from '../AppShell';
 import { PageHeader } from '../../client/components/PageHeader';
+import { EmptyState } from '../../client/components/EmptyState';
 import { useQuery, listCatechumens, listSacramentalJourneys, createSacramentalJourney, listJourneyTemplates, updateMilestoneStatus, updateJourney } from 'wasp/client/operations';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
 import { useUserContext } from '../../client/hooks/useUserContext';
@@ -244,24 +252,34 @@ export default function SacramentsPage() {
 
         {showForm && (
           <div className="rounded-xl border bg-card p-4 flex flex-col sm:flex-row gap-3">
-            <select value={selectedCatechumenId} onChange={e => setSelectedCatechumenId(e.target.value)} className="flex h-9 rounded-md border border-input bg-background px-3 text-sm flex-1">
-              <option value="">{t('page.select_catechumen')}</option>
-              {filteredCatechumens.map((c: any) => <option key={c.id} value={c.id}>{c.firstName} {c.lastName}</option>)}
-            </select>
-            <select value={templateName} onChange={e => setTemplateName(e.target.value)} className="flex h-9 rounded-md border border-input bg-background px-3 text-sm">
-              {templates.map((tm: any) => <option key={tm.id}>{tm.name}</option>)}
-            </select>
+            <Select value={selectedCatechumenId || 'none'} onValueChange={(v) => setSelectedCatechumenId(v === 'none' ? '' : v)}>
+              <SelectTrigger className="flex-1 h-9">
+                <SelectValue placeholder={t('page.select_catechumen')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">{t('page.select_catechumen')}</SelectItem>
+                {filteredCatechumens.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.firstName} {c.lastName}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={templateName} onValueChange={setTemplateName}>
+              <SelectTrigger className="h-9 min-w-[200px]">
+                <SelectValue placeholder={t('page.select_template')} />
+              </SelectTrigger>
+              <SelectContent>
+                {templates.map((tm: any) => <SelectItem key={tm.id} value={tm.name}>{tm.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
             <Button size="sm" onClick={handleCreateJourney} disabled={!selectedCatechumenId || saving}>{saving ? t('page.creating') : t('page.start')}</Button>
             <Button size="sm" variant="outline" onClick={() => setShowForm(false)}>{tc('cancel')}</Button>
           </div>
         )}
 
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center">
-            <div className="mb-4 rounded-full bg-primary/10 p-4"><Cross className="h-8 w-8 text-primary" /></div>
-            <h3 className="text-lg font-semibold">{search || activeFilter !== 'all' ? t('page.empty_no_results') : t('page.empty_no_journey')}</h3>
-            <p className="text-sm text-muted-foreground mt-1">{search ? t('page.empty_try_terms') : t('page.empty_start_desc')}</p>
-          </div>
+          <EmptyState
+            icon={Cross}
+            title={search || activeFilter !== 'all' ? t('page.empty_no_results') : t('page.empty_no_journey')}
+            description={search ? t('page.empty_try_terms') : t('page.empty_start_desc')}
+          />
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
             {filtered.map((j: any) => {
@@ -275,7 +293,7 @@ export default function SacramentsPage() {
               const sacramentName = j.template?.sacrament?.name;
 
               return (
-                <div key={j.id} className="block rounded-xl border bg-card p-5 shadow-sm hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate(`/app/sacramental-journeys/${j.id}`)}>
+                <div key={j.id} className="block rounded-xl border bg-card p-5 shadow-elevation-sm hover:shadow-elevation-md transition-shadow cursor-pointer" onClick={() => navigate(`/app/sacramental-journeys/${j.id}`)}>
                   <div className="flex items-center justify-between mb-3">
                     <Link
                       to={`/app/sacramental-journeys/${j.id}`}

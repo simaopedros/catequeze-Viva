@@ -305,7 +305,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
             <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-xl hover:bg-accent/50">
               <Bell className="h-5 w-5" />
               {unreadCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 h-[18px] min-w-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-overline font-bold px-1 animate-in zoom-in-50 shadow-sm">
+                <span className="absolute -top-0.5 -right-0.5 h-[18px] min-w-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-overline font-bold px-1 animate-in zoom-in-50 shadow-elevation-xs">
                   {unreadCount > 99 ? '99+' : unreadCount}
                 </span>
               )}

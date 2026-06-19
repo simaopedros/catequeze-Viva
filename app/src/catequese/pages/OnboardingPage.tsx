@@ -349,7 +349,7 @@ export default function OnboardingPage() {
 
         {saving && (
           <div className="fixed inset-0 bg-background/50 flex items-center justify-center z-50">
-            <div className="bg-card border rounded-xl p-6 shadow-lg text-center">
+            <div className="bg-card border rounded-xl p-6 shadow-elevation-md text-center">
               <p className="text-sm font-medium">{t('configuring')}</p>
             </div>
           </div>

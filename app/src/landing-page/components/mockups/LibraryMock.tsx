@@ -20,7 +20,7 @@ export function LibraryMock({ ns = 'landing' }: { ns?: string }) {
             key={tab.label}
             type="button"
             className={`flex-1 flex items-center justify-center gap-1 rounded-md py-1.5 text-overline font-medium ${
-              tab.active ? 'bg-background shadow-sm text-primary' : 'text-muted-foreground'
+              tab.active ? 'bg-background shadow-elevation-xs text-primary' : 'text-muted-foreground'
             }`}
           >
             <tab.icon className="h-3 w-3" />
