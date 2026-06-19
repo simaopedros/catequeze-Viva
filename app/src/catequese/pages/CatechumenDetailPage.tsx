@@ -47,7 +47,7 @@ export default function CatechumenDetailPage() {
   const navigate = useNavigate();
   const { userRole } = useUserContext();
   const { workspaceId } = useActiveWorkspace();
-  const { data: profile, isLoading: loading, error: queryError } = useQuery(getCatechumenProfile, { id: id! });
+  const { data: profile, isLoading: loading, error: queryError } = useQuery(getCatechumenProfile, { id: id! }, { enabled: !!id });
   const canEdit = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'PERSONAL_OWNER'].includes(userRole);
   const [attendance, setAttendance] = useState<any[]>([]);
   const [report, setReport] = useState<any>(null);

@@ -41,6 +41,7 @@ export default function EditCatechumenPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    if (!id) return;
     (async () => {
       try {
         setLoading(true);

@@ -159,6 +159,20 @@ export default function App() {
     registerServiceWorker();
   }, []);
 
+  // Dynamically inject Plausible Analytics on client side only to avoid hydration mismatches
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const script = document.createElement('script');
+      script.src = 'https://plausible.io/js/script.js';
+      script.defer = true;
+      script.setAttribute('data-domain', 'catechis.app');
+      document.head.appendChild(script);
+      return () => {
+        document.head.removeChild(script);
+      };
+    }
+  }, []);
+
   return (
     <>
       {!isOnline && !offlineDismissed && (

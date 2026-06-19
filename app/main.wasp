@@ -32,7 +32,6 @@ app OpenSaaS {
     "<meta property='og:image:height' content='630' />",
     "<meta name='twitter:card' content='summary_large_image' />",
     "<meta name='twitter:image' content='https://catechis.app/og-image.webp' />",
-    "<script defer data-domain='catechis.app' src='https://plausible.io/js/script.js'></script>",
   ],
 
   // 🔐 Auth out of the box! https://wasp.sh/docs/auth/overview
