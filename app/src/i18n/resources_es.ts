@@ -1930,109 +1930,110 @@ export const family_es = {
 
 export const landing_es = {
     "hero": {
-      "headline_line1": "Prepare encuentros increíbles en minutos",
-      "headline_line2": "con ayuda de la IA",
-      "subheadline": "Cree encuentros, registre asistencia, siga a sus catequizandos y mantenga a las familias informadas — sin planillas, papel ni horas de preparación.",
-      "badge": "Herramientas para el día a día del catequista",
-      "cta_primary": "Probar gratis",
-      "cta_secondary": "Ver cómo funciona",
-      "trust_signals": "Sin tarjeta de crédito • Plan gratuito • Comience en 2 minutos"
+      "headline_line1": "Organiza tu grupo y prepara la catequesis",
+      "headline_line2": "sin depender de papel e improvisación",
+      "subheadline": "Comienza gratis con 1 grupo, 15 catequizandos y 3 créditos iniciales de IA — actualiza a Catequista IA cuando la preparación semanal necesite más apoyo.",
+      "badge": "Hecho para la rutina diaria del catequista",
+      "cta_primary": "Crear cuenta gratis",
+      "cta_secondary": "Ver plan Catequista IA",
+      "trust_signals": "Sin tarjeta de crédito • Plan gratuito • Actualiza cuando tenga sentido",
+      "cta_secondary_href": "#planos"
     },
-    "pain_title": "¿Dedica más tiempo organizando que evangelizando?",
-    "pain_subtitle": "Catequese Viva fue creada para resolver eso.",
+    "pain_title": "La catequesis no tiene que estar dispersa en cuadernos, planillas y mensajes",
+    "pain_subtitle": "Catequese Viva reúne preparación, grupo, asistencia y familias en un mismo flujo.",
     "pains": [
       {
-        "text": "Horas preparando encuentros que podrían automatizarse"
+        "text": "Preparar el encuentro cada semana exige tiempo, referencias y creatividad pastoral"
       },
       {
-        "text": "Asistencias anotadas en papel, fáciles de perder"
+        "text": "La asistencia en papel se pierde y dificulta seguir faltas recurrentes"
       },
       {
-        "text": "Mensajes dispersos en WhatsApp, sin historial"
+        "text": "Las planillas de catequizandos se desactualizan rápidamente"
       },
       {
-        "text": "Dificultad para seguir faltas y justificaciones"
+        "text": "Los avisos a las familias se pierden en conversaciones y grupos distintos"
       },
       {
-        "text": "Padres que no reciben información sobre los encuentros"
+        "text": "Documentos y certificados llegan por demasiados canales"
       },
       {
-        "text": "Material catequético disperso en cuadernos y carpetas"
+        "text": "Es difícil saber qué necesita atención antes del próximo encuentro"
       }
     ],
-    "ai_showcase_title": "Su próximo encuentro listo en menos de 30 segundos",
-    "ai_showcase_subtitle": "La IA teológicamente entrenada genera el guión completo — de la acogida a la oración final.",
-    "ai_showcase_cta": "Pruebe la IA gratis",
-    "features_title": "Todo lo que necesita, en un solo lugar",
-    "features_subtitle": "Menos tiempo con burocracia. Más tiempo formando discípulos.",
+    "ai_showcase_title": "Prueba la IA con los créditos iniciales del plan gratis",
+    "ai_showcase_subtitle": "Crea guiones de encuentro, actividades y mensajes para familias a partir del tema, duración y edad. Revisa todo antes de usarlo.",
+    "ai_showcase_cta": "Crear cuenta gratis",
+    "features_title": "Recursos reales para la rutina del catequista",
+    "features_subtitle": "Empieza con tu propio grupo. Si la parroquia crece después, la estructura ya está lista.",
     "features": {
       "attendance": {
-        "title": "Sepa al instante qué catequizandos están faltando",
-        "desc": "Registre asistencias con un toque en el celular. Sin papel. Informes automáticos para usted e historial para los padres.",
-        "b1": "Pase de lista en segundos: presente, ausente, tarde o justificado",
-        "b2": "Importe su clase por planilla CSV en un clic",
-        "b3": "Informes de frecuencia siempre actualizados"
+        "title": "Pasa lista desde el celular y sigue las faltas con claridad",
+        "desc": "Registra presente, ausente, tarde o justificado durante el encuentro y mantén organizado el historial del grupo.",
+        "b1": "Asistencia digital: presente, ausente, tarde y justificado",
+        "b2": "Importación de catequizandos por CSV",
+        "b3": "Informes de asistencia para seguir el grupo"
       },
       "ai": {
-        "title": "Prepare encuentros en minutos, no en horas",
-        "desc": "La IA genera el guión completo: objetivo, dinámica, lectura bíblica, reflexión, actividad y oración final. Todo alineado con la doctrina católica.",
-        "b1": "Planificación anual automática — la IA arma su calendario",
-        "b2": "Base teológica sólida: Biblia CNBB, Catecismo y Directorio",
-        "b3": "Asistente teológico disponible en toda la plataforma"
+        "title": "Prepara encuentros con apoyo de IA manteniendo la revisión pastoral",
+        "desc": "Usa IA para crear guiones, actividades, planificación anual y mensajes para familias desde el contexto de tu catequesis.",
+        "b1": "Generador de encuentros por IA",
+        "b2": "Planificación anual automática",
+        "b3": "Actividades, cuestionarios y mensajes de WhatsApp"
       },
       "library": {
-        "title": "Todos sus materiales organizados y fáciles de encontrar",
-        "desc": "Biblia, Catecismo y Directorio integrados con búsqueda inteligente. Referencias cruzadas entre los textos.",
-        "b1": "66 libros bíblicos con búsqueda semántica",
-        "b2": "Arme planes de encuentro con referencias automáticas",
-        "b3": "Todo organizado — nunca más pierda un contenido"
+        "title": "Consulta Biblia y Catecismo dentro de la plataforma",
+        "desc": "Usa la biblioteca pastoral integrada para buscar referencias y organizar contenidos de encuentro en un solo lugar.",
+        "b1": "Biblia y Catecismo integrados",
+        "b2": "Búsqueda por textos, temas y contenidos",
+        "b3": "Contenidos guardados para reutilizar e imprimir"
       },
       "family": {
-        "title": "Mantenga a los padres informados sin responder decenas de mensajes",
-        "desc": "Los padres ven asistencias, justifican faltas, reciben avisos y envían documentos por el portal de la familia.",
-        "b1": "Cada padre ve el panel personalizado de su hijo",
-        "b2": "Justificación de faltas directamente por el portal",
-        "b3": "Envío de certificados y documentos en línea"
+        "title": "Da a las familias una forma simple de acompañar la catequesis",
+        "desc": "Los responsables pueden ver información de sus hijos, justificar faltas, recibir avisos y enviar documentos por el portal.",
+        "b1": "Portal familiar por catequizando",
+        "b2": "Justificación de faltas por el portal",
+        "b3": "Carga de documentos por enlace seguro"
       },
       "dashboard": {
-        "title": "Siga su clase de forma completa",
-        "desc": "Visión general de su catequesis: catequizandos, asistencias, próximos encuentros y alertas de lo que necesita su atención.",
-        "b1": "KPIs de su clase siempre a mano",
-        "b2": "Alertas cuando algo necesita su atención",
-        "b3": "Compare el desempeño entre sus clases"
+        "title": "Ve qué necesita atención antes del próximo encuentro",
+        "desc": "El panel reúne grupos, catequizandos, asistencias, próximos encuentros y pendientes en una sola vista.",
+        "b1": "Indicadores de grupos y catequizandos",
+        "b2": "Alertas de faltas y documentos pendientes",
+        "b3": "Comparación entre grupos cuando gestionas más de uno"
       },
       "sacraments": {
-        "title": "Siga la jornada sacramental de cada catequizando",
-        "desc": "Bautismo, Eucaristía, Confirmación, Reconciliación, Matrimonio — cada etapa con hitos visuales y documentos organizados.",
-        "b1": "Etapas con aprobación por catequizando",
+        "title": "Acompaña jornadas sacramentales con documentos e hitos",
+        "desc": "Organiza etapas, aprobaciones y evidencias del camino sacramental de cada catequizando.",
+        "b1": "Hitos por catequizando",
         "b2": "Plantillas reutilizables por parroquia",
-        "b3": "Progreso visible para usted y los padres"
+        "b3": "Progreso visible para coordinación y responsables"
       }
     },
-    "mission_title": "Menos tiempo con burocracia. Más tiempo formando discípulos.",
-    "mission_text": "Catequese Viva nació para ayudar a los catequistas a enfocarse en lo que realmente importa: evangelizar, acoger y transformar vidas. Cada minuto que ahorra en organización es un minuto más dedicado a su misión.",
-    "personas_title": "Hecho para quienes hacen la catequesis",
-    "personas_subtitle": "Del catequista individual al coordinador parroquial — todos encuentran valor.",
+    "mission_title": "Menos administración manual. Más atención a la misión.",
+    "mission_text": "Catequese Viva ayuda a los catequistas a sacar la catequesis de la improvisación: grupo organizado, encuentro preparado, asistencia registrada y familia informada.",
+    "personas_title": "Empieza con el catequista y puede crecer con la parroquia",
+    "personas_subtitle": "La experiencia principal es individual, pero la misma base apoya coordinación, familias y equipo parroquial.",
     "personas": [
       {
         "title": "Catequista",
-        "desc": "Prepare encuentros con IA, pase lista desde el celular y comuníquese con las familias. Todo en un solo lugar."
+        "desc": "Organiza tu grupo, prepara encuentros con IA y pasa lista desde el celular."
       },
       {
         "title": "Coordinador Parroquial",
-        "desc": "Organice su equipo, cree clases, siga informes y el progreso sacramental de toda la parroquia."
+        "desc": "Sigue grupos, catequistas, informes y progreso sacramental."
       },
       {
         "title": "Padres y Responsables",
-        "desc": "Siga la jornada de fe de sus hijos, vea asistencias, justifique faltas y reciba avisos."
+        "desc": "Acompaña asistencia, avisos, documentos y justificaciones desde el portal."
       },
       {
         "title": "Párroco",
-        "desc": "Visión completa de la catequesis parroquial sin pedir informes a nadie."
+        "desc": "Consulta el panorama pastoral cuando la parroquia usa la plataforma."
       },
       {
         "title": "Diócesis",
-        "desc": "Gestión centralizada de múltiples parroquias con análisis consolidado."
+        "desc": "Estructura múltiples parroquias con biblioteca y analíticas consolidadas."
       }
     ],
     "secondary": [
@@ -2042,132 +2043,113 @@ export const landing_es = {
       },
       {
         "title": "Búsqueda global (Ctrl+K)",
-        "desc": "Busque Biblia, Catecismo, catequizandos y clases desde cualquier página."
+        "desc": "Busca Biblia, Catecismo, catequizandos, grupos y contenidos desde cualquier página."
       },
       {
         "title": "Multi-idioma y multi-parroquia",
-        "desc": "Interfaz en portugués, inglés y español. Múltiples parroquias por diócesis."
+        "desc": "Interfaz en portugués, inglés y español. Estructura para múltiples parroquias por diócesis."
       }
     ],
-    "more_features": "Y mucho más",
-    "more_features_sub": "Recursos que marcan la diferencia en el día a día.",
-    "steps_title": "Tres pasos para transformar su catequesis",
-    "steps_subtitle": "Del primer acceso al primer encuentro preparado con IA.",
+    "more_features": "Más recursos para cuando tu catequesis crezca",
+    "more_features_sub": "Herramientas que siguen siendo útiles después del primer grupo.",
+    "steps_title": "Empieza por tu próximo grupo",
+    "steps_subtitle": "El camino inicial es simple: cuenta gratuita, grupo cargado y primer encuentro preparado.",
     "steps": [
       {
-        "title": "Cree su cuenta gratuita",
-        "desc": "En 2 minutos está dentro. Sin tarjeta de crédito, sin burocracia."
+        "title": "Crea la cuenta gratuita",
+        "desc": "Entra sin tarjeta de crédito y usa el plan Catequista Gratis con los límites reales del producto."
       },
       {
-        "title": "Arme su clase",
-        "desc": "Registre sus catequizandos o importe su planilla. La clase está lista en instantes."
+        "title": "Registra o importa tu grupo",
+        "desc": "Agrega catequizandos manualmente o importa la planilla CSV que ya usas."
       },
       {
-        "title": "Prepare su primer encuentro con IA",
-        "desc": "Deje que la IA cree el guión completo. Después solo aplíquelo — o edítelo como quiera."
+        "title": "Prepara y acompaña el encuentro",
+        "desc": "Genera un guion con IA, ajusta el contenido y registra la asistencia en el mismo lugar."
       }
     ],
-    "steps_cta": "Crear cuenta gratuita",
-    "testimonials_title": "Quien usa recomienda",
-    "testimonials_subtitle": "Catequistas que ya transformaron su día a día.",
-    "testimonials": [
-      {
-        "name": "Ana Costa",
-        "role": "Catequista",
-        "text": "¡Preparar los encuentros ahora lleva 5 minutos! La IA entiende lo que necesito y me da todo listo. ¡Pasar lista desde el celular también es muy práctico!"
-      },
-      {
-        "name": "María Silva",
-        "role": "Coordinadora de Catequesis",
-        "text": "Catequese Viva transformó nuestra parroquia. Antes todo era en papel, ahora tenemos control total de asistencias, sacramentos y comunicación con las familias."
-      },
-      {
-        "name": "P. Juan Santos",
-        "role": "Párroco",
-        "text": "Por fin una herramienta que entiende la realidad pastoral. Veo el panorama completo de la catequesis sin pedir informes a nadie."
-      }
-    ],
-    "pricing_title": "Planes para cada realidad",
-    "pricing_subtitle": "Del catequista individual a la diócesis entera. Comience gratis, evolucione cuando quiera.",
+    "steps_cta": "Crear cuenta gratis",
+    "pricing_title": "Empieza gratis. Actualiza a IA cuando prepares encuentros cada semana.",
+    "pricing_subtitle": "El plan gratuito sirve para probar con tu grupo. Catequista IA es la actualización para crear encuentros, actividades y mensajes con más frecuencia.",
     "plans": {
       "free": {
         "name": "Catequista Gratis",
-        "desc": "Para comenzar — 1 clase, 15 catequizandos, asistencias digitales, Biblia y Catecismo integrados.",
+        "desc": "Para empezar con un grupo real, sin tarjeta de crédito.",
         "features": [
-          "1 clase",
-          "15 catecúmenos",
-          "Asistencias digitales",
+          "1 grupo",
+          "15 catequizandos",
+          "Asistencia digital",
           "Biblia y Catecismo",
-          "3 créditos de IA iniciales"
+          "3 créditos iniciales de IA"
         ]
       },
       "ai": {
         "name": "Catequista IA",
-        "desc": "IA ilimitada para crear encuentros, actividades, mensajes y planificación anual automática.",
+        "desc": "Para catequistas que quieren ayuda de IA para preparar encuentros, actividades y comunicaciones.",
         "price": "$9",
         "features": [
-          "Clases y catecúmenos ilimitados",
-          "Generador de encuentros IA",
+          "Grupos y catequizandos ilimitados",
+          "Generador de encuentros por IA",
           "Planificación anual automática",
           "Asistente teológico",
-          "20 créditos IA/mes"
+          "20 créditos de IA/mes"
         ]
       },
       "parish": {
         "name": "Parroquia Completa",
-        "desc": "Para toda la parroquia — catequistas ilimitados, panel del coordinador, documentos, comunicación integrada.",
+        "desc": "Para cuando la coordinación quiera llevar el mismo proceso a toda la parroquia.",
         "price": "$29",
         "features": [
           "Catequistas ilimitados",
           "Panel del coordinador",
           "Documentos y consentimientos LGPD",
           "Comunicación integrada",
-          "50 créditos IA/mes"
+          "50 créditos de IA/mes"
         ]
       }
     },
     "price_free": "Gratis",
-    "price_popular": "Más popular",
+    "price_popular": "Mejor para catequistas",
     "price_monthly": "Mensual",
     "price_annual": "Anual",
-    "price_cta_free": "Comenzar gratis",
-    "price_cta_start": "Comenzar ahora",
+    "price_cta_free": "Crear cuenta gratis",
+    "price_cta_start": "Empezar con este plan",
     "per_month": "/mes",
     "per_year": "/año",
     "annual_discount": "17% de descuento",
-    "compare_plans": "Ver comparación completa de planes →",
-    "faq_title": "Preguntas frecuentes",
-    "faq_subtitle": "Todo lo que necesita saber antes de comenzar.",
+    "compare_plans": "Comparar todos los planes →",
+    "faq_title": "Dudas antes de comenzar",
+    "faq_subtitle": "Respuestas directas para catequistas que quieren probar sin riesgo.",
     "faqs": [
       {
-        "q": "¿Necesito tarjeta de crédito para comenzar?",
-        "a": "No. El plan Catequista Gratis es gratuito para siempre. Solo cree su cuenta."
+        "q": "¿Necesito tarjeta de crédito para usar el plan gratis?",
+        "a": "No. Creas la cuenta y empiezas con Catequista Gratis sin informar tarjeta."
       },
       {
-        "q": "¿La IA es realmente útil para preparar encuentros?",
-        "a": "Sí. Fue entrenada con la Biblia CNBB, el Catecismo y el Directorio para la Catequesis. Genera guiones completos con objetivo, dinámica, lectura, reflexión, actividad y oración — en segundos."
+        "q": "¿Qué puedo probar en el plan gratuito?",
+        "a": "Catequista Gratis incluye 1 grupo, 15 catequizandos, asistencia digital, Biblia y Catecismo integrados y 3 créditos iniciales de IA."
+      },
+      {
+        "q": "¿Cuándo vale la pena contratar Catequista IA?",
+        "a": "Cuando quieres usar IA con frecuencia para encuentros, actividades, planificación anual, mensajes para familias y asistente teológico. El plan incluye 20 créditos de IA por mes."
       },
       {
         "q": "¿Funciona en el celular?",
-        "a": "Perfectamente. Pase lista, prepare encuentros y comuníquese con las familias directamente desde el navegador del celular, sin instalar nada."
+        "a": "Sí. La plataforma funciona en el navegador del celular, incluso para registrar asistencia y acceder a los flujos principales."
       },
       {
-        "q": "¿Puedo importar los catequizandos de mi planilla?",
-        "a": "Sí. Suba su CSV con nombre, apellido y fecha de nacimiento. La importación es instantánea."
+        "q": "¿Puedo importar catequizandos desde mi planilla?",
+        "a": "Sí. La importación CSV permite cargar catequizandos en lote desde la planilla que ya usas."
       },
       {
-        "q": "¿Mis datos están seguros?",
-        "a": "Sí. La plataforma cumple con las leyes de protección de datos. Los consentimientos se registran digitalmente y puede solicitar la exportación o eliminación de datos."
-      },
-      {
-        "q": "¿Puedo tener varias clases o parroquias?",
-        "a": "Sí. El plan Parroquia permite múltiples clases y catequistas. El plan Diócesis gestiona múltiples parroquias con análisis consolidado."
+        "q": "¿Los datos de niños quedan protegidos?",
+        "a": "La plataforma incluye recursos orientados a LGPD, consentimiento digital, control de acceso y solicitudes de exportación o eliminación de datos."
       }
     ],
-    "cta_title": "Comience a transformar su catequesis hoy",
-    "cta_subtitle": "Únase a catequistas que ya preparan mejores encuentros en menos tiempo.",
-    "cta_button": "Crear cuenta gratuita",
-    "cta_badge": "Comience en 2 minutos",
+    "cta_title": "Crea tu cuenta gratis y organiza la próxima catequesis",
+    "cta_subtitle": "Empieza con un grupo, prueba los créditos iniciales de IA y decide después si Catequista IA encaja en tu rutina.",
+    "cta_button": "Crear cuenta gratis",
+    "cta_badge": "Sin tarjeta de crédito",
     "cta_see_plans": "Ver planes",
     "mock": {
       "ai_title": "Generador de Encuentros IA",
@@ -2176,7 +2158,7 @@ export const landing_es = {
       "ai_example": "Encuentro sobre los Sacramentos para niños de 10 años",
       "generate": "Generar encuentro",
       "generated": "Guión generado",
-      "credits": "3 créditos",
+      "credits": "3 créditos iniciales",
       "ai_step1": "Objetivo — Comprender los sacramentos como signos visibles de la gracia",
       "ai_step2": "Dinámica inicial — \"Los siete dones\"",
       "ai_step3": "Lectura bíblica — Mt 28:19-20 (vayan y hagan discípulos)",

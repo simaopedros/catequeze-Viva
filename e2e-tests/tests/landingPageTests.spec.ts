@@ -10,25 +10,25 @@ test.describe('general landing page tests', () => {
   });
 
   test('get started link', async ({ page }) => {
-    await page.getByRole('link', { name: 'Começar gratuitamente' }).click();
+    await page.getByRole('link', { name: 'Criar conta grátis' }).first().click();
     await page.waitForURL('**/signup');
   });
 
   test('headings', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: /Toda a catequese/ })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Perguntas frequentes' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Organize sua turma/ })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Dúvidas antes de começar' })).toBeVisible();
   });
 
   test('feature showcases are visible', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: 'Painel do coordenador' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Turmas e presença digital' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Gerador de encontros por IA' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Prepare encontros com ajuda da IA/ })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Faça a chamada pelo celular/ })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Consulte Bíblia e Catecismo/ })).toBeVisible();
     await expect(page.locator('.aspect-\\[16\\/10\\]').first()).toBeVisible();
   });
 
-  test('recursos anchor navigation', async ({ page }) => {
-    await page.getByRole('link', { name: 'Ver recursos' }).click();
-    await expect(page.locator('#recursos')).toBeInViewport();
+  test('plan anchor navigation', async ({ page }) => {
+    await page.getByRole('link', { name: 'Ver plano Catequista IA' }).click();
+    await expect(page.locator('#planos')).toBeInViewport();
   });
 });
 
@@ -80,3 +80,4 @@ test.describe('cookie consent tests', () => {
     expect(timeElapsed).toBeLessThan(MAX_TIME_MS);
   });
 });
+

@@ -15,11 +15,12 @@ import {
   landingSistema_pt_BR,
   landingIa_pt_BR,
   landingPresenca_pt_BR,
+  onboarding_pt_BR,
 } from './resources_pt_BR';
 
 const CORE_NS = [
   'common', 'navigation', 'auth', 'publicNav', 'public', 'billing',
-  'landing', 'landingSistema', 'landingIa', 'landingPresenca',
+  'landing', 'landingSistema', 'landingIa', 'landingPresenca', 'onboarding',
 ] as const;
 
 const ALL_NS = [
@@ -27,7 +28,7 @@ const ALL_NS = [
   'dashboard', 'classes', 'attendance', 'sacraments',
   'content', 'messages', 'reports', 'settings', 'parishes', 'topbar',
   'account', 'catechism', 'tour', 'bible', 'ai', 'activities', 'meetings',
-  'catecheticalYears', 'onboarding', 'legal', 'family',
+  'catecheticalYears', 'legal', 'family',
   'admin', 'components', 'cookie', 'calendar', 'collaborative',
 ] as const;
 
@@ -42,6 +43,7 @@ const coreResources = {
   landingSistema: landingSistema_pt_BR,
   landingIa: landingIa_pt_BR,
   landingPresenca: landingPresenca_pt_BR,
+  onboarding: onboarding_pt_BR,
 };
 
 i18n

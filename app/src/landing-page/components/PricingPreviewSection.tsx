@@ -25,7 +25,7 @@ export function PricingPreviewSection({ ns = 'landing', responsiveCtas = false }
   ];
 
   return (
-    <section className="max-w-5xl mx-auto px-4 py-20">
+    <section id="planos" className="scroll-mt-20 max-w-5xl mx-auto px-4 py-20">
       <div ref={headerRef} className={`text-center mb-8 space-y-3 ${headerClass}`}>
         <h2 className="text-3xl sm:text-4xl font-bold">{t('pricing_title')}</h2>
         <p className="text-lg text-muted-foreground">{t('pricing_subtitle')}</p>

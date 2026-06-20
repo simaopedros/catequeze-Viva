@@ -12,8 +12,10 @@ export function WelcomeStep({ onPersonal, onManager }: WelcomeStepProps) {
   const { t } = useTranslation('onboarding');
   const { data: user } = useAuth();
   const firstName = user?.firstName || '';
-  const personalFeatures = t('welcome.personal_features', { returnObjects: true }) as string[];
-  const managerFeatures = t('welcome.manager_features', { returnObjects: true }) as string[];
+  const personalFeaturesValue = t('welcome.personal_features', { returnObjects: true });
+  const managerFeaturesValue = t('welcome.manager_features', { returnObjects: true });
+  const personalFeatures = Array.isArray(personalFeaturesValue) ? personalFeaturesValue : [];
+  const managerFeatures = Array.isArray(managerFeaturesValue) ? managerFeaturesValue : [];
 
   return (
     <div className="flex flex-col items-center text-center space-y-6 py-4 animate-in fade-in duration-500">

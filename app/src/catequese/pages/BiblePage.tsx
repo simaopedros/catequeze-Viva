@@ -194,8 +194,11 @@ export default function BiblePage() {
   // Scroll to highlighted verse
   useEffect(() => {
     if (highlightedVerse !== null && verseRefs.current.has(highlightedVerse)) {
-      const el = verseRefs.current.get(highlightedVerse);
-      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const timer = setTimeout(() => {
+        const el = verseRefs.current.get(highlightedVerse);
+        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 50);
+      return () => clearTimeout(timer);
     }
   }, [highlightedVerse, chapterData]);
 

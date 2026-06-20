@@ -18,6 +18,9 @@ export function HeroSection({ ns = 'landing', responsiveCtas = false }: { ns?: s
   const ctaClassName = responsiveCtas
     ? 'h-auto min-h-12 w-full px-6 text-center leading-snug whitespace-normal sm:w-auto sm:px-10'
     : undefined;
+  const subheadline = t('hero.subheadline');
+  const [subheadlineIntro, ...subheadlineEmphasis] = subheadline.split('—');
+  const secondaryCtaHref = t('hero.cta_secondary_href', { defaultValue: '#recursos' });
 
   return (
     <section className="relative overflow-hidden">
@@ -52,8 +55,14 @@ export function HeroSection({ ns = 'landing', responsiveCtas = false }: { ns?: s
             </h1>
 
             <p className="text-body-lg md:text-xl text-text-secondary max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              {t('hero.subheadline').split('—')[0]}—{' '}
-              <span className="font-semibold text-foreground">{t('hero.subheadline').split('—')[1]?.trim() || t('hero.subheadline')}</span>
+              {subheadlineEmphasis.length > 0 ? (
+                <>
+                  {subheadlineIntro.trim()} —{' '}
+                  <span className="font-semibold text-foreground">{subheadlineEmphasis.join('—').trim()}</span>
+                </>
+              ) : (
+                subheadline
+              )}
             </p>
 
             <div
@@ -69,7 +78,7 @@ export function HeroSection({ ns = 'landing', responsiveCtas = false }: { ns?: s
                 </Link>
               </Button>
               <Button size="xl" variant="outline" asChild className={ctaClassName}>
-                <a href="#recursos">
+                <a href={secondaryCtaHref}>
                   {t('hero.cta_secondary')}
                   <ArrowRight className="h-4 w-4 shrink-0" />
                 </a>

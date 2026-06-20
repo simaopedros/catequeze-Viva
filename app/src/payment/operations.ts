@@ -152,9 +152,12 @@ export const generateCheckoutSession: GenerateCheckoutSession<
 
   let session;
   try {
-    // Use client-provided currency if available, otherwise try server detection
-    const currency = inputCurrency
-      || (getClientCountry(context) === 'BR' ? 'BRL' : 'USD');
+    // Prefer country detected on the server when available. The client-provided
+    // currency is a fallback for local/dev or deployments without country headers.
+    const clientCountry = getClientCountry(context);
+    const currency = clientCountry
+      ? clientCountry === 'BR' ? 'BRL' : 'USD'
+      : inputCurrency || 'USD';
 
     const result = await paymentProcessor.createCheckoutSession({
       userId,

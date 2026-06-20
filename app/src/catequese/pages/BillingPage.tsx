@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router';
 import { Button } from '../../client/components/ui/button';
@@ -13,7 +13,7 @@ import { ConfirmDialog } from '../../client/components/ConfirmDialog';
 import { toast } from '../../client/hooks/use-toast';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { useActiveWorkspace } from '../../client/hooks/useActiveWorkspace';
-import { PLANS, type PlanId, isSubscriptionActiveLike, hasPersonalAccess, hasInstitutionalAccess, isBillingActive, getPersonalPlanId, getInstitutionalPlanId } from '../../shared/pricing';
+import { PLANS, type PlanId, hasPersonalAccess, hasInstitutionalAccess, isBillingActive, getInstitutionalPlanId } from '../../shared/pricing';
 import { BuyCreditsButton } from '../components/BuyCreditsButton';
 import { detectCurrency, formatPrice } from '../../shared/currency';
 
@@ -121,6 +121,8 @@ function formatPriceFromCents(cents: number): string {
   return formatPrice(cents);
 }
 
+const AUTO_CHECKOUT_SESSION_KEY = 'cv-auto-checkout-started';
+
 export default function BillingPage() {
   const { t } = useTranslation('billing');
   const { t: tp } = useTranslation('public');
@@ -148,7 +150,13 @@ export default function BillingPage() {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [searchParams] = useSearchParams();
   const requestedPlan = searchParams.get('plan');
-  const requestedIsInstitutional = requestedPlan === 'parish' || requestedPlan === 'diocese';
+  const requestedPlanId = Object.values(PaymentPlanId).includes(requestedPlan as PaymentPlanId)
+    ? requestedPlan as PaymentPlanId
+    : null;
+  const requestedIsInstitutional = requestedPlanId
+    ? [PaymentPlanId.Parish, PaymentPlanId.ParishEssential, PaymentPlanId.ParishComplete, PaymentPlanId.Diocese].includes(requestedPlanId)
+    : false;
+  const autoCheckoutStartedRef = useRef<string | null>(null);
 
   const hasPersonalPlan = hasPersonalAccess(user);
   const userPersonalPlanId = hasPersonalPlan && user?.subscriptionPlan
@@ -197,25 +205,13 @@ export default function BillingPage() {
     return true;
   });
 
-  if (loading || (parishId && loadingParish)) {
-    return (
-        <div className="space-y-6 animate-pulse">
-          <div className="h-8 w-32 bg-muted rounded" />
-          <div className="grid gap-4 md:grid-cols-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-48 rounded-xl bg-muted" />
-            ))}
-          </div>
-        </div>
-    );
-  }
 
   const classesUsed = stats?.activeClasses ?? 0;
   const catechumensUsed = stats?.activeCatechumens ?? 0;
   const maxClasses = effectivePlan.maxClasses ?? Infinity;
   const maxCatechumens = effectivePlan.maxCatechumens ?? Infinity;
 
-  const handleUpgrade = async (planId: PaymentPlanId) => {
+  const startCheckout = useCallback(async (planId: PaymentPlanId) => {
     if (planId === effectivePlanId) return;
     setError(null);
     setUpgradingPlan(planId);
@@ -231,6 +227,15 @@ export default function BillingPage() {
     } catch (err: any) {
       setError(err?.message || t('checkout_error'));
       setUpgradingPlan(null);
+      throw err;
+    }
+  }, [billingInterval, effectivePlanId, t]);
+
+  const handleUpgrade = async (planId: PaymentPlanId) => {
+    try {
+      await startCheckout(planId);
+    } catch {
+      // Error is already shown by startCheckout.
     }
   };
 
@@ -268,7 +273,59 @@ export default function BillingPage() {
     }
   };
 
+  const requestedPlanCard = requestedPlanId
+    ? visiblePlans.find((plan) => plan.planId === requestedPlanId)
+    : null;
+  const requestedPlanLevelMatches = requestedPlanId
+    ? requestedIsInstitutional === !isPersonal
+    : false;
+  const requestedPlanCanCheckout = !!requestedPlanCard
+    && !requestedPlanCard.isFree
+    && requestedPlanCard.planId !== effectivePlanId
+    && requestedPlanLevelMatches
+    && !isParishManaged
+    && !loading
+    && !(parishId && loadingParish);
+
+  useEffect(() => {
+    if (!requestedPlanId || !requestedPlanCanCheckout) return;
+
+    const checkoutKey = `${requestedPlanId}:${billingInterval}`;
+    if (autoCheckoutStartedRef.current === checkoutKey) return;
+
+    try {
+      if (sessionStorage.getItem(AUTO_CHECKOUT_SESSION_KEY) === checkoutKey) return;
+      sessionStorage.setItem(AUTO_CHECKOUT_SESSION_KEY, checkoutKey);
+    } catch {
+      // Ignore storage failures; the ref still prevents duplicate calls in this render tree.
+    }
+
+    autoCheckoutStartedRef.current = checkoutKey;
+
+    startCheckout(requestedPlanId).catch(() => {
+      autoCheckoutStartedRef.current = null;
+      try {
+        sessionStorage.removeItem(AUTO_CHECKOUT_SESSION_KEY);
+      } catch {
+        // Ignore storage failures.
+      }
+    });
+  }, [billingInterval, requestedPlanCanCheckout, requestedPlanId, startCheckout]);
+
   const creditLabel = aiCredits?.creditsLeft === 1 ? t('credit_one') : t('credit_other');
+
+  if (loading || (parishId && loadingParish)) {
+    return (
+        <div className="space-y-6 animate-pulse">
+          <div className="h-8 w-32 bg-muted rounded" />
+          <div className="grid gap-4 md:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-48 rounded-xl bg-muted" />
+            ))}
+          </div>
+        </div>
+    );
+  }
 
   return (
     <>
@@ -293,7 +350,7 @@ export default function BillingPage() {
             {user?.subscriptionStatus === 'cancel_at_period_end' && (
               <p className="text-xs text-muted-foreground mt-1">{t('cancel_scheduled_desc')}</p>
             )}
-            {requestedPlan && requestedIsInstitutional !== !isPersonal && (
+            {requestedPlanId && !requestedPlanLevelMatches && (
               <p className="mt-2 text-xs text-warning">
                 {requestedIsInstitutional ? t('plan_mismatch_institutional') : t('plan_mismatch_personal')}
               </p>
@@ -541,7 +598,7 @@ export default function BillingPage() {
               {visiblePlans.map((plan) => {
                 const isCurrent = plan.planId === effectivePlanId;
                 const isUpgrading = upgradingPlan === plan.planId;
-                const isRequested = !!requestedPlan && plan.planId === requestedPlan && !isCurrent;
+                const isRequested = !!requestedPlanId && plan.planId === requestedPlanId && !isCurrent;
                 const hasAnnual = !!plan.priceCentsAnnual;
 
                 return (
