@@ -1,3 +1,4 @@
+import * as z from 'zod'
 import { defineEnvValidationSchema } from 'wasp/env'
 
 import { authEnvSchema } from './auth/env'
@@ -8,6 +9,19 @@ import { wooviEnvSchema } from './payment/woovi/env'
 import { fileUploadEnvSchema } from './file-upload/env'
 import { plausibleEnvSchema, googleAnalyticsEnvSchema } from './analytics/env'
 import { aiEnvSchema } from './server/ai/env'
+
+// Operational env vars (connection pooling, job worker control).
+// These are consumed at the infrastructure / generated-SDK layer, not by
+// application code directly.
+export const operationalEnvSchema = z.object({
+  RUN_JOBS: z
+    .enum(['true', 'false'])
+    .optional()
+    .default('false'),
+  PG_BOSS_NEW_OPTIONS: z
+    .string()
+    .optional(),
+})
 
 // Wasp merges this schema with its built-in env var validations and uses it
 // to validate `process.env` at server startup. Access the validated env vars
@@ -26,4 +40,5 @@ export const serverEnvValidationSchema = defineEnvValidationSchema(
     .merge(fileUploadEnvSchema)
     .merge(plausibleEnvSchema)
     .merge(googleAnalyticsEnvSchema)
+    .merge(operationalEnvSchema)
 )

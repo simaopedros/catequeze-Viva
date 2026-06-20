@@ -230,7 +230,7 @@ job aiCreditsResetJob {
     fn: import { resetAiCreditsJob } from "@src/server/scripts/aiCreditsResetJob"
   },
   schedule: {
-    cron: "0 3 * * *" // daily at 3am
+    cron: "5 3 * * *" // daily at 03:05 (staggered from hourly dailyStatsJob @ :00)
   },
   entities: [UserAiCredits, User]
 }
@@ -241,7 +241,7 @@ job aiCacheCleanupJob {
     fn: import { cleanupAiCacheJob } from "@src/server/scripts/aiCacheCleanupJob"
   },
   schedule: {
-    cron: "0 4 * * *" // daily at 4am
+    cron: "25 3 * * *" // daily at 03:25 (staggered 20min apart)
   },
   entities: [AiResponseCache]
 }
@@ -252,7 +252,7 @@ job remindersJob {
     fn: import { sendRemindersJob } from "@src/server/scripts/remindersJob"
   },
   schedule: {
-    cron: "0 7 * * *" // daily at 7am
+    cron: "0 7 * * *" // daily at 7am (morning, user-facing)
   },
   entities: [Meeting, Notification, Document, User, CatechesisClass]
 }
@@ -271,7 +271,7 @@ job subscriptionExpirationJob {
     fn: import { expireSubscriptionsJob } from "@src/server/scripts/subscriptionExpirationJob"
   },
   schedule: {
-    cron: "0 4 * * *" // daily at 4am
+    cron: "45 3 * * *" // daily at 03:45 (staggered 20min apart)
   },
   entities: [User, TenantBilling]
 }

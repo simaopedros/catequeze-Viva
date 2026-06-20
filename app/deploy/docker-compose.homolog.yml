@@ -20,6 +20,7 @@ services:
     environment:
       RUN_JOBS: "false"
       BUNNY_STORAGE_HOSTNAME: "storage.bunnycdn.com"
+      PG_BOSS_NEW_OPTIONS: '{"max":1,"application_name":"catechis-homolog-pgboss"}'
     expose:
       - "3001"
 
@@ -30,6 +31,7 @@ services:
     environment:
       RUN_JOBS: "true"
       BUNNY_STORAGE_HOSTNAME: "storage.bunnycdn.com"
+      PG_BOSS_NEW_OPTIONS: '{"max":1,"application_name":"catechis-homolog-pgboss"}'
     depends_on:
       - server
 

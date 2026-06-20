@@ -27,6 +27,9 @@ ENV REACT_APP_STAFF_PORTAL_HOST=${REACT_APP_STAFF_PORTAL_HOST}
 
 RUN wasp build
 
+# Patch generated Wasp SDK for RUN_JOBS + PG_BOSS_NEW_OPTIONS merge
+RUN node scripts/patch-wasp-build.mjs
+
 # Wasp build leaves only migration_lock.toml — copy full migration history for deploy
 RUN mkdir -p .wasp/out/db/migrations && cp -a migrations/. .wasp/out/db/migrations/
 
