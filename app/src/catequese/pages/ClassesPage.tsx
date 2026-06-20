@@ -88,13 +88,17 @@ export default function ClassesPage() {
             {view === 'grid' ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
           </Button>
           {isClassLimitReached ? (
-            <PlanLimitBanner type="class_limit" currentCount={activeClassesCount} userPlan={effectivePlan} isParishManaged={!isPersonal} className="min-w-[280px]" />
+            <PlanLimitBanner type="class_limit" currentCount={activeClassesCount} userPlan={effectivePlan} isParishManaged={!isPersonal} compact />
           ) : canCreateClass ? (
             <Button asChild>
               <Link to="/app/classes/new"><Plus className="mr-2 h-4 w-4" />{t('new_class')}</Link>
             </Button>
           ) : null}
         </PageHeader>
+
+        {isClassLimitReached && (
+          <PlanLimitBanner type="class_limit" currentCount={activeClassesCount} userPlan={effectivePlan} isParishManaged={!isPersonal} />
+        )}
 
         <div className="flex flex-col sm:flex-row gap-3">
           <FilterPills options={filterOptions} value={filter} onChange={setFilter} />
