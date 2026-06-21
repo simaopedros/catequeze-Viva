@@ -312,6 +312,7 @@ export default function CalendarPage() {
                   year={year}
                   months={months}
                   dayEvents={dayEvents}
+                  upcomingEvents={upcomingEvents}
                   showForm={showForm}
                   name={name} desc={desc} eventDate={eventDate} color={color} eventType={eventType}
                   setName={setName} setDesc={setDesc} setEventDate={setEventDate}
