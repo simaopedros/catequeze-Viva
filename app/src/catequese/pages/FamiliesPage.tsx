@@ -63,24 +63,29 @@ export default function FamiliesPage() {
         <PageHeader
           title={tn('families')}
           subtitle={t('families.subtitle_registered', { count: households?.length || 0 })}
+          count={households ? t('families.count_badge', { count: households.length }) : undefined}
+          filters={
+            <div className="flex flex-col sm:flex-row gap-3">
+              <SearchInput
+                placeholder={t('families.search_placeholder')}
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                containerClassName="max-w-none w-48 flex-none"
+              />
+              <Select value={communityFilter || 'all'} onValueChange={(v) => setCommunityFilter(v === 'all' ? '' : v)}>
+                <SelectTrigger className="w-36 h-9">
+                  <SelectValue placeholder={t('families.all_communities')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t('families.all_communities')}</SelectItem>
+                  {communities.map((c: any) => (
+                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          }
         >
-          <SearchInput
-            placeholder={t('search')}
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            containerClassName="max-w-none w-40 flex-none"
-          />
-          <Select value={communityFilter || 'all'} onValueChange={(v) => setCommunityFilter(v === 'all' ? '' : v)}>
-            <SelectTrigger className="w-36 h-9">
-              <SelectValue placeholder={t('families.all_communities')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t('families.all_communities')}</SelectItem>
-              {communities.map((c: any) => (
-                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
           {canCreateFamily && <Button asChild><Link to="/app/families/new"><Plus className="mr-1 h-4 w-4" />{t('new')}</Link></Button>}
         </PageHeader>
 
@@ -101,16 +106,28 @@ export default function FamiliesPage() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((h: any) => (
-              <Link key={h.id} to={`/app/families/${h.id}`} className="rounded-xl border bg-card p-5 shadow-elevation-sm hover:shadow-elevation-md transition-shadow group">
-                <div className="flex items-start justify-between mb-3">
-                  <h3 className="font-semibold group-hover:text-primary">{h.name}</h3>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+              <Link key={h.id} to={`/app/families/${h.id}`} className="rounded-xl border bg-card p-4 shadow-elevation-sm hover:shadow-elevation-md transition-shadow group">
+                <div className="flex items-start justify-between mb-2">
+                  <h3 className="font-semibold text-sm group-hover:text-primary">{h.name}</h3>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                 </div>
-                {h.address && <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1"><MapPin className="h-3 w-3" />{h.address}</p>}
-                {h.phone && <p className="text-xs text-muted-foreground flex items-center gap-1 mb-3"><Phone className="h-3 w-3" />{h.phone}</p>}
-                <div className="flex items-center gap-4 pt-3 border-t text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1"><Users className="h-3.5 w-3.5" />{t('families.catechumens_count', { count: h._count?.catechumens || 0 })}</span>
-                  <span className="flex items-center gap-1"><User className="h-3.5 w-3.5" />{t('families.guardians_count', { count: h.guardians?.length || 0 })}</span>
+                {h.address ? (
+                  <p className="text-overline text-muted-foreground flex items-center gap-1 mb-1"><MapPin className="h-3 w-3" />{h.address}</p>
+                ) : (
+                  <p className="text-overline text-muted-foreground/60 flex items-center gap-1 mb-1"><MapPin className="h-3 w-3" />Sem endereço</p>
+                )}
+                {h.phone ? (
+                  <p className="text-overline text-muted-foreground flex items-center gap-1 mb-2"><Phone className="h-3 w-3" />{h.phone}</p>
+                ) : (
+                  <p className="text-overline text-muted-foreground/60 flex items-center gap-1 mb-2"><Phone className="h-3 w-3" />Sem telefone</p>
+                )}
+                <div className="flex items-center gap-4 pt-2 border-t text-overline">
+                  <span className="flex items-center gap-1 text-muted-foreground"><Users className="h-3 w-3" />{t('families.catechumens_count', { count: h._count?.catechumens || 0 })}</span>
+                  {h.guardians?.length === 0 ? (
+                    <span className="flex items-center gap-1 text-warning"><User className="h-3 w-3" />{t('families.no_guardians')}</span>
+                  ) : (
+                    <span className="flex items-center gap-1 text-muted-foreground"><User className="h-3 w-3" />{t('families.guardians_count', { count: h.guardians?.length || 0 })}</span>
+                  )}
                 </div>
                 {h.catechumens?.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-1">

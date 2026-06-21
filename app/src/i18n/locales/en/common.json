@@ -151,6 +151,7 @@
     "subtitle": "General Directory for Catechesis — Holy See, 1997",
     "searchPlaceholder": "Ex: catechesis, evangelization, pedagogy, 85...",
     "searchButton": "Search",
+    "suggested_searches": "Suggested topics:",
     "paragraphs": "paragraph(s)",
     "noPart": "No entries in this part.",
     "emptyTitle": "Directory for Catechesis",
@@ -370,6 +371,8 @@
   },
   "families": {
     "subtitle_registered": "{{count}} families registered",
+    "count_badge": "{{count}} families",
+    "search_placeholder": "Search family by name, phone or community...",
     "all_communities": "All communities",
     "not_found_search": "No families found",
     "empty_desc": "Register families to link catechumens and guardians.",

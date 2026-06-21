@@ -20,6 +20,10 @@ interface PageHeaderProps {
   compact?: boolean;
   /** Tabs rendered below the header */
   tabs?: ReactNode;
+  /** Entity count badge shown next to title (e.g. "12 turmas") */
+  count?: ReactNode;
+  /** Filters row rendered below header + above children */
+  filters?: ReactNode;
 }
 
 export function PageHeader({
@@ -31,6 +35,8 @@ export function PageHeader({
   breadcrumbs,
   compact,
   tabs,
+  count,
+  filters,
 }: PageHeaderProps) {
   return (
     <div className={cn(className)}>
@@ -64,10 +70,15 @@ export function PageHeader({
               </nav>
             )}
             <h1 className={cn(
-              'font-bold tracking-tight',
+              'font-bold tracking-tight flex items-center gap-2',
               compact ? 'text-title-xsm' : 'text-title-md'
             )}>
               {title}
+              {count !== undefined && (
+                <span className="text-body-sm font-normal text-text-secondary bg-muted/60 rounded-full px-2.5 py-0.5">
+                  {count}
+                </span>
+              )}
             </h1>
           </div>
         </div>
@@ -79,6 +90,7 @@ export function PageHeader({
       {subtitle && compact && (
         <p className="text-body-sm text-text-secondary mt-1">{subtitle}</p>
       )}
+      {filters && <div className="mt-3">{filters}</div>}
       {tabs && <div className="mt-4">{tabs}</div>}
     </div>
   );

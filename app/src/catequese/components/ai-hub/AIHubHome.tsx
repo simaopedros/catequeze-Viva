@@ -1,9 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router';
-import { Sparkles, FilePenLine, ArrowLeft, MessageSquareText, Pencil, Puzzle, Smartphone, Wand2 } from 'lucide-react';
+import { Sparkles, FilePenLine, ArrowLeft, MessageSquareText, Pencil, Puzzle, Smartphone, Wand2, Clock } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { InteractiveCard } from '../../../client/components/InteractiveCard';
+
+const RECENT_FLOWS_KEY = 'cv-aihub-recent';
+
+function loadRecentFlows(): string[] {
+  try {
+    const raw = localStorage.getItem(RECENT_FLOWS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+function saveRecentFlow(flowKey: string) {
+  const flows = loadRecentFlows().filter(f => f !== flowKey);
+  flows.unshift(flowKey);
+  localStorage.setItem(RECENT_FLOWS_KEY, JSON.stringify(flows.slice(0, 5)));
+}
 
 type HubStep = 'menu' | 'existing';
 
@@ -111,13 +126,15 @@ export function AIHubHome() {
     );
   }
 
-  // ── Step 1: main menu (2 cards) ──────────────────────────────────────────
+  // ── Step 1: main menu ──────────────────────────────────────────
+  const recentFlows = loadRecentFlows();
+
   return (
     <div className="flex min-h-[80vh] items-center justify-center px-3 py-6">
       <div className="w-full max-w-2xl space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold sm:text-3xl">{t('hub.title')}</h1>
-          <p className="text-muted-foreground">{t('hub.subtitle')}</p>
+          <p className="text-muted-foreground max-w-md mx-auto">{t('hub.subtitle')}</p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -125,20 +142,56 @@ export function AIHubHome() {
             icon={Sparkles}
             title={t('hub.create_new')}
             description={t('hub.create_new_desc')}
-            onClick={handleCreateNew}
+            onClick={() => { saveRecentFlow('create-meeting'); handleCreateNew(); }}
             showArrow
-          />
+          >
+            <p className="text-xs text-muted-foreground mt-2 italic">
+              "{t('hub.example_create')}"
+            </p>
+          </InteractiveCard>
           <InteractiveCard
             icon={FilePenLine}
             title={t('hub.use_existing')}
             description={t('hub.use_existing_desc')}
             onClick={handleExisting}
             showArrow
-          />
+          >
+            <p className="text-xs text-muted-foreground mt-2 italic">
+              "{t('hub.example_existing')}"
+            </p>
+          </InteractiveCard>
         </div>
 
-        {/* Secondary CTA: Assistente Teológico */}
-        <div className="pt-2 text-center">
+        {/* Recent flows */}
+        {recentFlows.length > 0 && (
+          <div className="pt-2">
+            <p className="text-overline text-muted-foreground mb-2 flex items-center gap-1.5">
+              <Clock className="h-3 w-3" />
+              {t('hub.recent_flows')}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {recentFlows.map(flow => {
+                const label = t(`hub.recent_${flow}`, flow);
+                const mode = flow === 'create-meeting' ? 'create-meeting' : 'improve-content';
+                return (
+                  <button
+                    key={flow}
+                    onClick={() => setSearchParams({ mode })}
+                    className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground hover:bg-muted/80 hover:text-foreground transition-colors"
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Assistente Teológico */}
+        <div className="pt-2 text-center border-t border-border/50">
+          <p className="text-overline text-muted-foreground mb-2">
+            {t('hub.assistant_context')}
+          </p>
           <button
             onClick={handleAskAssistant}
             className="inline-flex items-center gap-2 rounded-lg border border-dashed border-muted-foreground/30 px-4 py-2.5 text-sm text-muted-foreground hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-all"

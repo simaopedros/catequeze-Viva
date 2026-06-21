@@ -35,9 +35,13 @@
   "not_found": "No encontrado.",
   "library": {
     "subtitle": "{{scripts}} guiones · {{activities}} actividades",
+    "count_badge": "{{count}} contenidos",
     "generate_ai": "Generar con IA",
     "diocese": "Diócesis",
     "with_activities": "Con actividades",
+    "search_placeholder": "Buscar contenido por título, tema o autor...",
+    "filter_type": "Tipo",
+    "filter_status": "Estado",
     "ai_generated": "Generado por IA",
     "table_title": "Título",
     "table_status": "Estado",

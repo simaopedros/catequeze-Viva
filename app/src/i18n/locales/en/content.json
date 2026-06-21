@@ -35,9 +35,13 @@
   "not_found": "Not found.",
   "library": {
     "subtitle": "{{scripts}} scripts · {{activities}} activities",
+    "count_badge": "{{count}} items",
     "generate_ai": "Generate with AI",
     "diocese": "Diocese",
     "with_activities": "With activities",
+    "search_placeholder": "Search content by title, theme or author...",
+    "filter_type": "Type",
+    "filter_status": "Status",
     "ai_generated": "AI Generated",
     "table_title": "Title",
     "table_status": "Status",

@@ -150,6 +150,7 @@
     "subtitle": "Directorio General para la Catequesis — Santa Sede, 1997",
     "searchPlaceholder": "Ej: catequesis, evangelización, pedagogía, 85...",
     "searchButton": "Buscar",
+    "suggested_searches": "Temas sugeridos:",
     "paragraphs": "párrafo(s)",
     "noPart": "Ninguna entrada en esta parte.",
     "emptyTitle": "Directorio para la Catequesis",
@@ -369,6 +370,8 @@
   },
   "families": {
     "subtitle_registered": "{{count}} familias registradas",
+    "count_badge": "{{count}} familias",
+    "search_placeholder": "Buscar familia por nombre, teléfono o comunidad...",
     "all_communities": "Todas las comunidades",
     "not_found_search": "Ninguna familia encontrada",
     "empty_desc": "Registre familias para vincular catecúmenos y responsables.",

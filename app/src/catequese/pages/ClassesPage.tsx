@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, listClasses } from 'wasp/client/operations';
 import { Link } from 'react-router';
-import { Plus, Users, BookOpen, ClipboardList, Edit3, LayoutGrid, List, Clock, Search } from 'lucide-react';
+import { Plus, Users, BookOpen, ClipboardList, Edit3, LayoutGrid, List, Clock, Search, User } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { PageHeader } from '../../client/components/PageHeader';
@@ -83,6 +83,13 @@ export default function ClassesPage() {
         <PageHeader
           title={t('title')}
           subtitle={t('subtitle')}
+          count={classes ? t('active_count', { count: activeClassesCount }) : undefined}
+          filters={
+            <div className="flex flex-col sm:flex-row gap-3">
+              <FilterPills options={filterOptions} value={filter} onChange={setFilter} />
+              <SearchInput placeholder={t('search_placeholder')} value={search} onChange={e => setSearch(e.target.value)} />
+            </div>
+          }
         >
           <Button size="sm" variant="outline" onClick={() => setView(v => v === 'grid' ? 'list' : 'grid')} aria-label={view === 'grid' ? t('view_list') : t('view_grid')}>
             {view === 'grid' ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
@@ -95,15 +102,6 @@ export default function ClassesPage() {
             </Button>
           ) : null}
         </PageHeader>
-
-        {isClassLimitReached && (
-          <PlanLimitBanner type="class_limit" currentCount={activeClassesCount} userPlan={effectivePlan} isParishManaged={!isPersonal} />
-        )}
-
-        <div className="flex flex-col sm:flex-row gap-3">
-          <FilterPills options={filterOptions} value={filter} onChange={setFilter} />
-          <SearchInput placeholder={t('search_placeholder')} value={search} onChange={e => setSearch(e.target.value)} />
-        </div>
 
         {filtered.length === 0 && !search ? (
           <EmptyState
@@ -147,32 +145,33 @@ export default function ClassesPage() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((cls: any) => (
-              <div key={cls.id} className="rounded-xl border bg-card p-5 shadow-elevation-sm hover:shadow-elevation-md transition-shadow group">
-                <div className="flex items-start justify-between mb-3">
+              <div key={cls.id} className="rounded-xl border bg-card p-4 shadow-elevation-sm hover:shadow-elevation-md transition-shadow group">
+                <div className="flex items-start justify-between mb-2">
                   <div className="flex-1 min-w-0">
-                    <Link to={`/app/classes/${cls.id}`} className="font-semibold hover:text-primary truncate block">{cls.name}</Link>
-                    <p className="text-xs text-muted-foreground mt-0.5">{cls.parish?.name}{cls.stage && ` · ${cls.stage.name}`}</p>
+                    <Link to={`/app/classes/${cls.id}`} className="font-semibold text-sm hover:text-primary truncate block">{cls.name}</Link>
+                    {cls.stage && <p className="text-overline text-muted-foreground mt-0.5">{cls.stage.name}{cls.parish?.name && ` · ${cls.parish.name}`}</p>}
                   </div>
-                  <Badge variant={classStatusMap[cls.status as keyof typeof classStatusMap]?.variant || 'secondary'} className="text-overline ml-2">{classStatusMap[cls.status as keyof typeof classStatusMap]?.label}</Badge>
+                  <Badge variant={classStatusMap[cls.status as keyof typeof classStatusMap]?.variant || 'secondary'} className="text-overline ml-2 shrink-0">{classStatusMap[cls.status as keyof typeof classStatusMap]?.label}</Badge>
                 </div>
 
-                <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
-                  <span className="flex items-center gap-1"><Users className="h-3.5 w-3.5" />{t('enrolled_count', { count: cls._count?.enrollments || 0 })}</span>
-                  {cls.dayOfWeek != null && cls.dayOfWeek !== '' && <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{formatDay(cls.dayOfWeek)} {cls.startTime}</span>}
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-overline text-muted-foreground mb-2">
+                  <span className="flex items-center gap-1"><Users className="h-3 w-3" />{t('enrolled_count', { count: cls._count?.enrollments || 0 })}</span>
+                  {cls.dayOfWeek != null && cls.dayOfWeek !== '' && <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{formatDay(cls.dayOfWeek)}{cls.startTime && ` ${cls.startTime}`}</span>}
+                  {cls.leadCatechist && <span className="flex items-center gap-1"><User className="h-3 w-3" />{cls.leadCatechist.firstName}</span>}
                 </div>
 
                 {cls.meetings?.[0] && (
-                  <div className={`rounded-lg px-2 py-1 text-overline font-medium mb-3 ${isToday(cls.meetings[0].date) ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                  <div className={`rounded-md px-2 py-1 text-overline font-medium mb-2 ${isToday(cls.meetings[0].date) ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
                     {isToday(cls.meetings[0].date) ? `🔴 ${t('meeting_today')}` : t('next_meeting', { date: formatDate(cls.meetings[0].date, currentLocale, { day: '2-digit', month: '2-digit' }) })}
                   </div>
                 )}
 
                 <div className="flex gap-2 pt-2 border-t lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
-                  <Button size="sm" variant="outline" className="h-8 text-xs flex-1" asChild>
-                    <Link to={`/app/classes/${cls.id}/attendance`}><ClipboardList className="mr-1 h-3.5 w-3.5" />{t('attendance')}</Link>
+                  <Button size="sm" variant="outline" className="h-7 text-xs flex-1" asChild>
+                    <Link to={`/app/classes/${cls.id}/attendance`}><ClipboardList className="mr-1 h-3 w-3" />{t('attendance')}</Link>
                   </Button>
-                  <Button size="sm" variant="outline" className="h-8 text-xs flex-1" asChild>
-                    <Link to={`/app/classes/${cls.id}`}><Edit3 className="mr-1 h-3.5 w-3.5" />{t('details')}</Link>
+                  <Button size="sm" variant="outline" className="h-7 text-xs flex-1" asChild>
+                    <Link to={`/app/classes/${cls.id}`}><Edit3 className="mr-1 h-3 w-3" />{t('details')}</Link>
                   </Button>
                 </div>
               </div>

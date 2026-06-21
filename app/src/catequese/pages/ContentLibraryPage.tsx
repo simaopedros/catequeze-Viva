@@ -103,6 +103,26 @@ export default function ContentLibraryPage() {
         <PageHeader
           title={t('title')}
           subtitle={t('library.subtitle', { scripts: items.length, activities: totalActivities })}
+          count={items.length > 0 ? t('library.count_badge', { count: items.length }) : undefined}
+          filters={
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex gap-1 flex-wrap items-center">
+                <span className="text-overline text-muted-foreground mr-0.5 font-medium">{t('library.filter_type')}</span>
+                <FilterPills
+                  options={activityFilterOptions}
+                  value={onlyAiGenerated ? 'ai' : onlyWithActivities ? 'activities' : 'all'}
+                  onChange={v => {
+                    setOnlyWithActivities(v === 'activities');
+                    setOnlyAiGenerated(v === 'ai');
+                  }}
+                />
+                <span className="w-px h-6 bg-border self-center mx-1" />
+                <span className="text-overline text-muted-foreground mr-0.5 font-medium">{t('library.filter_status')}</span>
+                <FilterPills options={statusFilterOptions} value={filter} onChange={setFilter} />
+              </div>
+              <SearchInput placeholder={t('library.search_placeholder')} value={search} onChange={e => setSearch(e.target.value)} />
+            </div>
+          }
         >
           <Button size="sm" variant="outline" asChild>
             <Link to="/app/ai-hub?mode=create-meeting" className="gap-1"><Sparkles className="h-4 w-4"/>{t('library.generate_ai')}</Link>
@@ -112,22 +132,6 @@ export default function ContentLibraryPage() {
           <Button size="sm" variant={showDiocese ? 'default' : 'outline'} onClick={() => setShowDiocese(d => !d)} className="gap-1"><BookMarked className="h-4 w-4" />{t('library.diocese')}</Button>
           <Button asChild><Link to="/app/content-library/new"><Plus className="mr-1 h-4 w-4"/>{tc('new')}</Link></Button>
         </PageHeader>
-
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex gap-1 flex-wrap items-center">
-            <FilterPills
-              options={activityFilterOptions}
-              value={onlyAiGenerated ? 'ai' : onlyWithActivities ? 'activities' : 'all'}
-              onChange={v => {
-                setOnlyWithActivities(v === 'activities');
-                setOnlyAiGenerated(v === 'ai');
-              }}
-            />
-            <span className="w-px h-6 bg-border self-center mx-1" />
-            <FilterPills options={statusFilterOptions} value={filter} onChange={setFilter} />
-          </div>
-          <SearchInput placeholder={tc('search')} value={search} onChange={e => setSearch(e.target.value)} />
-        </div>
 
         {filtered.length === 0 ? (
           hasFilters ? (

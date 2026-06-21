@@ -35,9 +35,13 @@
   "not_found": "Não encontrado.",
   "library": {
     "subtitle": "{{scripts}} roteiros · {{activities}} atividades",
+    "count_badge": "{{count}} conteúdos",
     "generate_ai": "Gerar com IA",
     "diocese": "Diocese",
     "with_activities": "Com atividades",
+    "search_placeholder": "Buscar conteúdo por título, tema ou autor...",
+    "filter_type": "Tipo",
+    "filter_status": "Status",
     "ai_generated": "Gerado por IA",
     "table_title": "Título",
     "table_status": "Status",

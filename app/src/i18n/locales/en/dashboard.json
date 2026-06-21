@@ -1,6 +1,11 @@
 {
   "title": "Catechesis Dashboard",
   "subtitle": "Track classes, attendance, and pastoral pending items.",
+  "quick_new_class": "Create new class",
+  "quick_new_catechumen": "Register catechumen",
+  "quick_ai": "AI Copilot",
+  "quick_ai_desc": "Create content with AI",
+  "no_meetings_today": "No meetings today.",
   "institutional_title": "Pastoral Management Dashboard",
   "institutional_subtitle": "Consolidated KPIs, trends and alerts.",
   "active_catechumens": "Active catechumens",

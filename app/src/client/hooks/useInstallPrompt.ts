@@ -30,8 +30,8 @@ export function useInstallPrompt() {
     if (stored) {
       try {
         const { timestamp } = JSON.parse(stored);
-        // Re-prompt after 7 days
-        if (Date.now() - timestamp < 7 * 24 * 60 * 60 * 1000) {
+        // Re-prompt after 30 days
+        if (Date.now() - timestamp < 30 * 24 * 60 * 60 * 1000) {
           setDismissed(true);
         }
       } catch {}

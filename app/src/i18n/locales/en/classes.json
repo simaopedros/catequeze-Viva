@@ -1,6 +1,7 @@
 {
   "title": "Classes",
   "subtitle": "Manage classes, catechists, and catechumens.",
+  "active_count": "{{count}} active",
   "create": "Create class",
   "new_class": "New class",
   "name": "Class name",

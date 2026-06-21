@@ -17,6 +17,7 @@
   "load_chapter_error": "Could not load the chapter. Check your connection.",
   "search_error": "Could not perform search. Check your connection.",
   "choose_book": "Choose a book to start reading",
+  "choose_book_hint": "Use the sidebar to browse books or search by keyword.",
   "choose_chapter": "Choose a chapter from {{book}}",
   "open_chapter": "Open chapter",
   "book_filter": "Filter books...",

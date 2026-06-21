@@ -349,12 +349,29 @@ export default function MessagesPage() {
             </>
           ) : (
             /* Empty state */
-            <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
+            <div className="flex-1 flex flex-col items-center justify-center text-center px-6 py-8">
               <div className="h-20 w-20 rounded-3xl bg-gradient-to-br from-primary/20 via-primary/10 to-transparent flex items-center justify-center mb-5 animate-in zoom-in-50 duration-500">
                 <MessageSquareText className="h-9 w-9 text-primary/60" />
               </div>
               <h2 className="text-lg font-semibold mb-1.5">{t('hub_title')}</h2>
               <p className="text-sm text-muted-foreground max-w-sm mb-5">{t('hub_desc')}</p>
+
+              {/* Use case examples */}
+              <div className="grid gap-2 w-full max-w-xs mb-5">
+                <div className="rounded-lg border bg-card/50 p-2.5 text-left text-xs">
+                  <span className="text-primary font-medium">{t('use_case_class')}</span>
+                  <p className="text-muted-foreground mt-0.5">{t('use_case_class_desc')}</p>
+                </div>
+                <div className="rounded-lg border bg-card/50 p-2.5 text-left text-xs">
+                  <span className="text-warning font-medium">{t('use_case_notice')}</span>
+                  <p className="text-muted-foreground mt-0.5">{t('use_case_notice_desc')}</p>
+                </div>
+                <div className="rounded-lg border bg-card/50 p-2.5 text-left text-xs">
+                  <span className="text-info font-medium">{t('use_case_direct')}</span>
+                  <p className="text-muted-foreground mt-0.5">{t('use_case_direct_desc')}</p>
+                </div>
+              </div>
+
               <button
                 onClick={() => setShowNewDialog(true)}
                 className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 shadow-md hover:shadow-lg transition-all active:scale-95"

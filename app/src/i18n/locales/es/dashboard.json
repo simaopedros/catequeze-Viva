@@ -1,6 +1,11 @@
 {
   "title": "Panel de Catequesis",
   "subtitle": "Siga grupos, asistencia y pendientes pastorales.",
+  "quick_new_class": "Crear nueva clase",
+  "quick_new_catechumen": "Registrar catequizando",
+  "quick_ai": "Copiloto IA",
+  "quick_ai_desc": "Crear contenido con IA",
+  "no_meetings_today": "Ningún encuentro hoy.",
   "institutional_title": "Panel de Gestión Pastoral",
   "institutional_subtitle": "KPIs consolidados, tendencias y alertas.",
   "active_catechumens": "Catecúmenos activos",

@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router';
 import { Search, BookOpen, Loader2, ChevronDown, ChevronUp, AlertCircle } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
+import { PageHeader } from '../../client/components/PageHeader';
+import { SearchInput } from '../../client/components/SearchInput';
 import { listDirectoryByPart, searchDirectory, getDirectoryEntry } from 'wasp/client/operations';
 import { useLocale } from '../../i18n/useLocale';
 
@@ -83,13 +85,11 @@ export default function DirectoryPage() {
   const displayEntries = searchResults.length > 0 ? searchResults : entries;
 
   return (
-      <div className="space-y-4">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-          <span>{t('directory.title')}</span>
-        </div>
-        <h1 className="text-2xl font-bold">{t('directory.title')}</h1>
-        <p className="text-sm text-muted-foreground">{t('directory.subtitle')}</p>
-
+      <div className="space-y-6">
+        <PageHeader
+          title={t('directory.title')}
+          subtitle={t('directory.subtitle')}
+        />
         <div className="flex gap-3">
           <input
             value={searchQuery}
@@ -102,6 +102,21 @@ export default function DirectoryPage() {
             <Search className="mr-1 h-4 w-4" />{t('directory.searchButton')}
           </Button>
         </div>
+
+        {searchResults.length === 0 && entries.length === 0 && !part && (
+          <div className="flex flex-wrap gap-2 pb-2">
+            <p className="w-full text-overline text-muted-foreground mb-1">{t('directory.suggested_searches')}</p>
+            {['Sacramentos', 'Vocação', 'Oração', 'Moral', 'Liturgia'].map(topic => (
+              <button
+                key={topic}
+                onClick={() => { setSearchQuery(topic); handleSearch(); }}
+                className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground hover:bg-muted/80 hover:text-foreground transition-colors"
+              >
+                {topic}
+              </button>
+            ))}
+          </div>
+        )}
 
         {searchResults.length === 0 && (
           <div className="flex flex-wrap gap-2">

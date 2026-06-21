@@ -12,7 +12,7 @@ import { useLocale } from '../../../i18n/useLocale';
 import {
   Users, BookOpen, TrendingUp, Cross, AlertCircle,
   Gift, Calendar, Clock, ChevronRight, ArrowUpDown,
-  Search,
+  Search, Sparkles,
 } from 'lucide-react';
 
 interface CoordinatorDashboardProps {
@@ -81,30 +81,65 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
         />
       </div>
 
-      {/* ── Quick tip ────────────────────────────────────────────────── */}
-      <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 flex items-center gap-3">
-        <div className="rounded-lg bg-primary/10 p-2 flex-shrink-0">
-          <Search className="h-5 w-5 text-primary" />
+      {/* ── Quick Actions + Tip ─────────────────────────────────────── */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Link
+          to="/app/classes/new"
+          className="rounded-xl border bg-card p-3 hover:border-primary/30 hover:shadow-elevation-sm transition-all group flex items-center gap-3"
+        >
+          <div className="rounded-lg bg-primary/10 p-2 group-hover:bg-primary/20 transition-colors">
+            <BookOpen className="h-4 w-4 text-primary" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-medium">{t('create_class')}</p>
+            <p className="text-overline text-muted-foreground">{t('quick_new_class')}</p>
+          </div>
+        </Link>
+        <Link
+          to="/app/catechumens/new"
+          className="rounded-xl border bg-card p-3 hover:border-primary/30 hover:shadow-elevation-sm transition-all group flex items-center gap-3"
+        >
+          <div className="rounded-lg bg-success/10 p-2 group-hover:bg-success/20 transition-colors">
+            <Users className="h-4 w-4 text-success" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-medium">{tc('create_catechumen')}</p>
+            <p className="text-overline text-muted-foreground">{t('quick_new_catechumen')}</p>
+          </div>
+        </Link>
+        <Link
+          to="/app/ai-hub"
+          className="rounded-xl border bg-card p-3 hover:border-primary/30 hover:shadow-elevation-sm transition-all group flex items-center gap-3"
+        >
+          <div className="rounded-lg bg-warning/10 p-2 group-hover:bg-warning/20 transition-colors">
+            <Sparkles className="h-4 w-4 text-warning" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-medium">{t('quick_ai')}</p>
+            <p className="text-overline text-muted-foreground">{t('quick_ai_desc')}</p>
+          </div>
+        </Link>
+        <div className="rounded-xl border border-primary/10 bg-primary/[0.02] p-3 flex items-center gap-2">
+          <Search className="h-4 w-4 text-muted-foreground/50 shrink-0" />
+          <div className="min-w-0">
+            <p className="text-xs text-muted-foreground truncate">{tc('quick_tip_search')}</p>
+          </div>
+          <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border bg-muted/50 px-1.5 py-0.5 text-overline font-mono text-muted-foreground/60 shrink-0">
+            <span className="text-[10px]">⌘</span>K
+          </kbd>
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-foreground">{tc('quick_tip')}</p>
-          <p className="text-xs text-muted-foreground">{tc('quick_tip_search')}</p>
-        </div>
-        <kbd className="hidden sm:inline-flex items-center gap-1 rounded-md border bg-muted px-2 py-1 text-overline font-mono text-muted-foreground">
-          <span className="text-xs">⌘</span>K
-        </kbd>
       </div>
 
       {/* ── Two-column operational blocks ───────────────────────────── */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Left column */}
         <div className="space-y-4">
-          {stats?.todayMeetings?.length > 0 && (
-            <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
-              <h3 className="font-semibold text-sm uppercase tracking-wide text-primary flex items-center gap-1.5 mb-3">
-                <Clock className="h-4 w-4" />
-                {tc('today')}
-              </h3>
+          <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
+            <h3 className="font-semibold text-sm uppercase tracking-wide text-primary flex items-center gap-1.5 mb-3">
+              <Clock className="h-4 w-4" />
+              {tc('today')}
+            </h3>
+            {stats?.todayMeetings?.length > 0 ? (
               <div className="divide-y divide-primary/10">
                 {stats.todayMeetings.map((m: any) => (
                   <Link
@@ -124,8 +159,10 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                   </Link>
                 ))}
               </div>
-            </div>
-          )}
+            ) : (
+              <p className="text-xs text-muted-foreground py-2">{t('no_meetings_today')}</p>
+            )}
+          </div>
 
           {stats?.upcomingMeetings?.length > 0 && (
             <div className="rounded-xl border bg-card p-4">

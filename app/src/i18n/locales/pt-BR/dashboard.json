@@ -1,6 +1,11 @@
 {
   "title": "Painel da Catequese",
   "subtitle": "Acompanhe turmas, presença e pendências pastorais.",
+  "quick_new_class": "Criar nova turma",
+  "quick_new_catechumen": "Cadastrar catequizando",
+  "quick_ai": "Copiloto IA",
+  "quick_ai_desc": "Criar conteúdo com IA",
+  "no_meetings_today": "Nenhum encontro hoje.",
   "institutional_title": "Painel de Gestão Pastoral",
   "institutional_subtitle": "KPIs consolidados, tendências e alertas.",
   "active_catechumens": "Catequizandos ativos",

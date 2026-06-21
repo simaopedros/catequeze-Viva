@@ -93,6 +93,21 @@ export default function CatechumensPage() {
         <PageHeader
           title={tn('catechumens')}
           subtitle={t('catechumens.subtitle_registered', { count: catechumens?.length || 0 })}
+          count={catechumens ? t('catechumens.count_short', { count: catechumens.length }) : undefined}
+          filters={
+            <div className="flex flex-col sm:flex-row gap-3">
+              <SearchInput placeholder={t('catechumens.search_by_name')} value={search} onChange={e => setSearch(e.target.value)} />
+              <Select value={classFilter || 'all'} onValueChange={(v) => setClassFilter(v)}>
+                <SelectTrigger className="w-44 h-9">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t('catechumens.all_classes')}</SelectItem>
+                  {classNames.map(n => <SelectItem key={n} value={n}>{n}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          }
         >
           <Button size="sm" variant="outline" onClick={() => setView(v => v === 'cards' ? 'table' : 'cards')}>
             {view === 'cards' ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
@@ -104,19 +119,6 @@ export default function CatechumensPage() {
             </>
           )}
         </PageHeader>
-
-        <div className="flex flex-col sm:flex-row gap-3">
-          <SearchInput placeholder={t('catechumens.search_by_name')} value={search} onChange={e => setSearch(e.target.value)} />
-          <Select value={classFilter || 'all'} onValueChange={(v) => setClassFilter(v)}>
-            <SelectTrigger className="w-44 h-9">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t('catechumens.all_classes')}</SelectItem>
-              {classNames.map(n => <SelectItem key={n} value={n}>{n}</SelectItem>)}
-            </SelectContent>
-          </Select>
-        </div>
 
         {filtered.length === 0 ? (
           hasFilters ? (
@@ -170,7 +172,7 @@ export default function CatechumensPage() {
                   {c.enrollments?.map((e: any) => (
                     <Badge key={e.id} variant="secondary" className="text-overline">{e.class?.name}</Badge>
                   ))}
-                  {(!c.enrollments || c.enrollments.length === 0) && <span className="text-overline text-muted-foreground">{t('catechumens.no_class')}</span>}
+                  {(!c.enrollments || c.enrollments.length === 0) && <Badge variant="warning" className="text-overline">{t('catechumens.no_class')}</Badge>}
                 </div>
                 {c.household?.name && <p className="mt-2 text-overline text-muted-foreground"><Users className="inline h-3 w-3 mr-0.5" />{c.household.name}</p>}
               </Link>

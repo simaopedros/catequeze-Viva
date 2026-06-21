@@ -1,6 +1,7 @@
 {
   "title": "Turmas",
   "subtitle": "Gerencie turmas, catequistas e catequizandos.",
+  "active_count": "{{count}} ativas",
   "create": "Criar turma",
   "new_class": "Nova turma",
   "name": "Nome da turma",

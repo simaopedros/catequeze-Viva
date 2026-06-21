@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { Input } from '../../client/components/ui/input';
+import { PageHeader } from '../../client/components/PageHeader';
+import { FilterPills } from '../../client/components/FilterPills';
 import {
   Select,
   SelectContent,
@@ -20,8 +22,14 @@ const DEFAULT_COLOR = '#6366f1';
 export default function CalendarPage() {
   const { t } = useTranslation('calendar');
   const { t: tc } = useTranslation('common');
-  const months = useMemo(() => t('months', { returnObjects: true }) as string[], [t]);
-  const weekdays = useMemo(() => t('weekdays_short', { returnObjects: true }) as string[], [t]);
+  const months = useMemo(() => {
+    const result = t('months', { returnObjects: true });
+    return Array.isArray(result) ? result as string[] : ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+  }, [t]);
+  const weekdays = useMemo(() => {
+    const result = t('weekdays_short', { returnObjects: true });
+    return Array.isArray(result) ? result as string[] : ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+  }, [t]);
 
   const { activeParishId } = useActiveParish();
   const { data: liturgicalEvents = [], isLoading: loadingLiturgical } = useQuery(listLiturgicalEvents);
@@ -84,6 +92,20 @@ export default function CalendarPage() {
   const firstDay = (new Date(year, month, 1).getDay() + 6) % 7;
 
   const filteredEvents = typeFilter === 'all' ? events : events.filter(e => e.type === typeFilter);
+  const upcomingEvents = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return filteredEvents
+      .filter(e => {
+        const d = typeof e.date === 'string' ? new Date(e.date) : new Date(e.date);
+        return d >= today;
+      })
+      .sort((a, b) => {
+        const da = typeof a.date === 'string' ? new Date(a.date).getTime() : new Date(a.date).getTime();
+        const db = typeof b.date === 'string' ? new Date(b.date).getTime() : new Date(b.date).getTime();
+        return da - db;
+      });
+  }, [filteredEvents]);
   const monthCount = filteredEvents.filter(e => {
     const d = typeof e.date === 'string' ? e.date : new Date(e.date).toISOString();
     return new Date(d).getMonth() === month;
@@ -148,33 +170,29 @@ export default function CalendarPage() {
 
   return (
       <div className="space-y-4">
-        {/* ── Header: 3 camadas ─────────────────────────────────────────────── */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-          <div className="min-w-0">
-            <h1 className="text-title-md font-bold tracking-tight">{t('title')}</h1>
-            <p className="text-body-sm text-text-secondary mt-0.5">
-              {t('month_events', { month: months[month], year, count: monthCount })}
-            </p>
-          </div>
-          <div className="flex items-center gap-1.5 shrink-0">
-            {/* Navegação temporal */}
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => setCurrentDate(new Date(year, month - 1, 1))}
-              aria-label="Mês anterior"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-8 text-xs px-3"
-              onClick={() => setCurrentDate(new Date())}
-            >
-              {t('today')}
-            </Button>
+        {/* ── Header ──────────────────────────────────────────────────── */}
+        <PageHeader
+          title={t('title')}
+          subtitle={t('month_events', { month: months[month], year, count: monthCount })}
+          count={monthCount > 0 ? t('event_count', { count: monthCount }) : undefined}
+        >
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => setCurrentDate(new Date(year, month - 1, 1))}
+            aria-label="Mês anterior"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs px-3"
+            onClick={() => setCurrentDate(new Date())}
+          >
+            {t('today')}
+          </Button>
             <Button
               variant="outline"
               size="icon"
@@ -193,28 +211,17 @@ export default function CalendarPage() {
               <Plus className="mr-1 h-3.5 w-3.5" />
               {t('add_event')}
             </Button>
-          </div>
-        </div>
+        </PageHeader>
 
         {/* ── Filtros ──────────────────────────────────────────────────────── */}
         <div className="flex items-center gap-3 flex-wrap">
-          <div className="flex gap-1 overflow-x-auto pb-1 -mx-1 px-1 flex-1 sm:flex-none">
-            {filterOptions.map(f => (
-              <button
-                key={f.v}
-                onClick={() => setTypeFilter(f.v)}
-                aria-pressed={typeFilter === f.v}
-                className={`rounded-full px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-colors flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${
-                  typeFilter === f.v
-                    ? 'bg-primary text-primary-foreground shadow-elevation-xs'
-                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                }`}
-              >
-                {f.l}
-              </button>
-            ))}
-          </div>
-          {/* Info bar sutil */}
+          <FilterPills
+            options={filterOptions.map(f => ({ value: f.v, label: f.l }))}
+            value={typeFilter}
+            onChange={setTypeFilter}
+            onClear={() => setTypeFilter('all')}
+            clearValue="all"
+          />
           {activeFilterCount > 0 && (
             <span className="text-overline text-text-tertiary hidden sm:inline-flex items-center gap-1 shrink-0 ml-auto">
               <Calendar className="h-3 w-3" />
@@ -258,6 +265,7 @@ export default function CalendarPage() {
                 year={year}
                 months={months}
                 dayEvents={dayEvents}
+                upcomingEvents={upcomingEvents}
                 showForm={showForm}
                 name={name} desc={desc} eventDate={eventDate} color={color} eventType={eventType}
                 setName={setName} setDesc={setDesc} setEventDate={setEventDate}
@@ -533,6 +541,7 @@ interface SidePanelProps {
   year: number;
   months: string[];
   dayEvents: any[];
+  upcomingEvents: any[];
   showForm: boolean;
   name: string; desc: string; eventDate: string; color: string; eventType: string;
   setName: (v: string) => void; setDesc: (v: string) => void;
@@ -548,23 +557,50 @@ interface SidePanelProps {
 }
 
 function SidePanelContent({
-  selectedDay, month, year, months, dayEvents, showForm,
+  selectedDay, month, year, months, dayEvents, upcomingEvents, showForm,
   name, desc, eventDate, color, eventType,
   setName, setDesc, setEventDate, setColor, setEventType,
   setShowForm, handleCreate, handleDelete, eventTypeLabels,
   openNewEventForm, t, tc,
 }: SidePanelProps) {
-  /* ── No day selected placeholder ─────────────────────────────────────── */
+  /* ── No day selected ── show upcoming events ──────────────────────── */
   if (!selectedDay) {
     return (
-      <div className="rounded-xl border bg-card p-8 text-center shadow-elevation-xs">
-        <div className="mx-auto mb-3 rounded-full bg-muted p-3 w-fit">
-          <Calendar className="h-6 w-6 text-muted-foreground/50" />
-        </div>
-        <h3 className="text-sm font-medium text-foreground/70">{t('select_day')}</h3>
-        <p className="text-body-xs text-text-secondary mt-1">
-          {t('no_events')}
-        </p>
+      <div className="rounded-xl border bg-card p-4 shadow-elevation-xs space-y-3">
+        <h3 className="font-semibold text-sm flex items-center gap-2">
+          <Calendar className="h-4 w-4 text-primary" />
+          {t('upcoming_events')}
+        </h3>
+        {upcomingEvents.length === 0 ? (
+          <p className="text-xs text-muted-foreground py-2 text-center">{t('no_events')}</p>
+        ) : (
+          <div className="space-y-1.5">
+            {upcomingEvents.slice(0, 5).map((e: any) => {
+              const eventDate = new Date(typeof e.date === 'string' ? e.date : e.date);
+              return (
+                <div key={e.id} className="flex items-center gap-2.5 rounded-lg p-2 hover:bg-muted/30 transition-colors">
+                  <div className="flex flex-col items-center w-9 shrink-0">
+                    <span className="text-xs font-bold">{eventDate.getDate()}</span>
+                    <span className="text-overline text-muted-foreground">{months[eventDate.getMonth()].slice(0, 3)}</span>
+                  </div>
+                  <div
+                    className="w-1 h-7 rounded-full shrink-0"
+                    style={{ background: e.color || DEFAULT_COLOR }}
+                  />
+                  <div className="min-w-0">
+                    <p className="text-xs font-medium truncate">{e.name}</p>
+                    <p className="text-overline text-muted-foreground">{eventTypeLabels[e.type] || e.type}</p>
+                  </div>
+                </div>
+              );
+            })}
+            {upcomingEvents.length > 5 && (
+              <p className="text-overline text-muted-foreground text-center pt-1">
+                +{upcomingEvents.length - 5} {t('more_events')}
+              </p>
+            )}
+          </div>
+        )}
       </div>
     );
   }

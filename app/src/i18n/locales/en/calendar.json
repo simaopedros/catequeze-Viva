@@ -1,6 +1,7 @@
 {
   "title": "Calendar",
   "month_events": "{{month}} {{year}} · {{count}} events",
+  "event_count": "{{count}} events",
   "today": "Today",
   "add_event": "Event",
   "filters": {
@@ -22,6 +23,8 @@
   "add": "Add",
   "new_event": "New event",
   "select_day": "Select a day to view events.",
+  "upcoming_events": "Upcoming events",
+  "more_events": "more",
   "event_name": "Event name *",
   "description_optional": "Description (optional)",
   "create_event": "Create event",

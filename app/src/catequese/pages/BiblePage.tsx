@@ -792,6 +792,7 @@ export default function BiblePage() {
                 <div className="flex flex-col items-center justify-center py-16 text-center text-muted-foreground gap-4">
                   <BookOpen className="h-12 w-12 opacity-20" />
                   <p className="text-sm font-medium">{t('choose_book')}</p>
+                  <p className="text-xs max-w-xs">{t('choose_book_hint')}</p>
 
                   {/* Continue reading CTA */}
                   {recents.length > 0 && (
@@ -808,6 +809,23 @@ export default function BiblePage() {
                         {t('continue_reading')}: {recents[0].bookName} {recents[0].chapter}
                       </span>
                     </Button>
+                  )}
+
+                  {/* Quick start suggestions */}
+                  {recents.length === 0 && (
+                    <div className="flex flex-wrap justify-center gap-2 pt-2">
+                      {['Gênesis', 'Salmos', 'Mateus', 'João', 'Atos'].map(suggestion => (
+                        <button
+                          key={suggestion}
+                          onClick={() => loadBook(
+                            books.find((b: any) => b.name === suggestion)?.id || ''
+                          )}
+                          className="rounded-full bg-muted px-3 py-1 text-xs hover:bg-muted/80 hover:text-foreground transition-colors"
+                        >
+                          {suggestion}
+                        </button>
+                      ))}
+                    </div>
                   )}
                 </div>
               )}

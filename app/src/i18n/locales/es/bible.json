@@ -17,6 +17,7 @@
   "load_chapter_error": "No se pudo cargar el capítulo. Verifique su conexión.",
   "search_error": "No se pudo realizar la búsqueda. Verifique su conexión.",
   "choose_book": "Elija un libro para comenzar a leer",
+  "choose_book_hint": "Usa la columna lateral para navegar por los libros o busca por palabra clave.",
   "choose_chapter": "Elija un capítulo de {{book}}",
   "open_chapter": "Abrir capítulo",
   "book_filter": "Filtrar libros...",

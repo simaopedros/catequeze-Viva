@@ -1,8 +1,11 @@
 import { cn } from '../utils';
+import { X } from 'lucide-react';
 
 export interface FilterPillOption {
   value: string;
   label: React.ReactNode;
+  /** Optional count badge shown after the label */
+  count?: number;
 }
 
 interface FilterPillsProps {
@@ -10,11 +13,17 @@ interface FilterPillsProps {
   value: string;
   onChange: (value: string) => void;
   className?: string;
+  /** When provided, shows a "Limpar" pill that resets to this value */
+  onClear?: () => void;
+  /** The value that represents "all" (no filter) — used to hide clear when already clear */
+  clearValue?: string;
 }
 
-export function FilterPills({ options, value, onChange, className }: FilterPillsProps) {
+export function FilterPills({ options, value, onChange, className, onClear, clearValue }: FilterPillsProps) {
+  const showClear = onClear && value !== clearValue;
+
   return (
-    <div className={cn('flex gap-1.5 overflow-x-auto no-scrollbar scroll-touch snap-x snap-mandatory -mx-1 px-1', className)}>
+    <div className={cn('flex gap-1.5 overflow-x-auto no-scrollbar scroll-touch snap-x snap-mandatory -mx-1 px-1 items-center', className)}>
       {options.map(opt => (
         <button
           key={opt.value}
@@ -30,8 +39,28 @@ export function FilterPills({ options, value, onChange, className }: FilterPills
           )}
         >
           {opt.label}
+          {opt.count !== undefined && (
+            <span className={cn(
+              'ml-1.5 inline-flex items-center justify-center rounded-full px-1.5 py-0 text-overline font-medium',
+              value === opt.value
+                ? 'bg-primary-foreground/20 text-primary-foreground'
+                : 'bg-muted-foreground/15 text-muted-foreground',
+            )}>
+              {opt.count}
+            </span>
+          )}
         </button>
       ))}
+      {showClear && (
+        <button
+          type="button"
+          onClick={onClear}
+          className="rounded-full px-3 py-1.5 text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-all duration-[var(--motion-duration-fast,150ms)] whitespace-nowrap shrink-0 snap-start flex items-center gap-1"
+        >
+          <X className="h-3 w-3" />
+          Limpar
+        </button>
+      )}
     </div>
   );
 }
