@@ -3,7 +3,7 @@ import { useCallback, useEffect } from 'react';
 import { useAuth } from 'wasp/client/auth';
 import { updateLocalePreference } from 'wasp/client/operations';
 import { resolveIntlLocale } from './format';
-import { loadLanguageBundle } from './config';
+import i18nInstance, { loadLanguageBundle } from './config';
 
 export type SupportedLocale = 'pt-BR' | 'es' | 'en';
 
@@ -17,10 +17,23 @@ const localeLabels: Record<SupportedLocale, string> = {
 };
 
 function parseLocale(value: string | null | undefined): SupportedLocale | null {
-  if (value && VALID_LOCALES.includes(value as SupportedLocale)) {
+  if (!value) return null;
+  if (VALID_LOCALES.includes(value as SupportedLocale)) {
     return value as SupportedLocale;
   }
+  const normalized = value.toLowerCase();
+  if (normalized === 'pt' || normalized === 'pt-br') return 'pt-BR';
+  if (normalized.startsWith('en-')) return 'en';
+  if (normalized.startsWith('es-')) return 'es';
   return null;
+}
+
+async function applyLocaleToI18n(locale: SupportedLocale, i18n = i18nInstance) {
+  if (locale !== 'pt-BR') {
+    await loadLanguageBundle(locale);
+  }
+  await i18n.changeLanguage(locale);
+  document.documentElement.lang = locale;
 }
 
 export function useLocale() {
@@ -33,12 +46,9 @@ export function useLocale() {
   // Sync from stored locale on mount (handles en/es stored before code-split boot)
   useEffect(() => {
     const stored = parseLocale(localStorage.getItem(LOCALE_STORAGE_KEY));
-    if (!stored || stored === 'pt-BR') return;
+    if (!stored) return;
     if (i18n.language !== stored) {
-      loadLanguageBundle(stored).then(() => {
-        i18n.changeLanguage(stored);
-        document.documentElement.lang = stored;
-      });
+      void applyLocaleToI18n(stored, i18n);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -49,15 +59,7 @@ export function useLocale() {
     const stored = parseLocale(localStorage.getItem(LOCALE_STORAGE_KEY));
     const target = stored ?? userLocale;
     if (i18n.language !== target) {
-      if (target !== 'pt-BR') {
-        loadLanguageBundle(target).then(() => {
-          i18n.changeLanguage(target);
-          document.documentElement.lang = target;
-        });
-      } else {
-        i18n.changeLanguage(target);
-        document.documentElement.lang = target;
-      }
+      void applyLocaleToI18n(target, i18n);
     }
   }, [user?.locale, i18n]);
 
@@ -75,19 +77,10 @@ export function useLocale() {
 
   const setLocale = useCallback(
     (locale: SupportedLocale) => {
-      if (locale !== 'pt-BR') {
-        loadLanguageBundle(locale).then(() => {
-          i18n.changeLanguage(locale);
-          localStorage.setItem(LOCALE_STORAGE_KEY, locale);
-          document.documentElement.lang = locale;
-          void persistLocale(locale);
-        });
-      } else {
-        i18n.changeLanguage(locale);
+      applyLocaleToI18n(locale, i18n).then(() => {
         localStorage.setItem(LOCALE_STORAGE_KEY, locale);
-        document.documentElement.lang = locale;
         void persistLocale(locale);
-      }
+      });
     },
     [i18n, persistLocale],
   );
@@ -111,6 +104,6 @@ export function applyStoredLocale() {
   if (typeof localStorage === 'undefined' || typeof document === 'undefined') return;
   const stored = parseLocale(localStorage.getItem(LOCALE_STORAGE_KEY));
   if (stored) {
-    document.documentElement.lang = stored;
+    void applyLocaleToI18n(stored);
   }
 }

@@ -1,4 +1,5 @@
 import { LogOut } from "lucide-react";
+import { useNavigate } from "react-router";
 import { signOut } from "../client/analytics/himetrica";
 import { Link as WaspRouterLink } from "wasp/client/router";
 import { type User } from "wasp/entities";
@@ -11,6 +12,17 @@ export const UserMenuItems = ({
   user?: Partial<User>;
   onItemClick?: () => void;
 }) => {
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    onItemClick?.();
+    try {
+      await signOut();
+    } finally {
+      navigate('/login', { replace: true });
+    }
+  };
+
   return (
     <>
       {userMenuItems.map((item) => {
@@ -32,10 +44,8 @@ export const UserMenuItems = ({
       })}
       <li>
         <button
-          onClick={() => {
-            signOut();
-            onItemClick?.();
-          }}
+          type="button"
+          onClick={handleSignOut}
           className="text-foreground hover:bg-accent hover:text-accent-foreground flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium leading-7 transition-colors"
         >
           <LogOut size="1.1rem" />

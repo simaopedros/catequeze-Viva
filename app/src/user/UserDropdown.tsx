@@ -1,5 +1,6 @@
 import { ChevronDown, LogOut, User } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router";
 import { signOut } from "../client/analytics/himetrica";
 import { Link as WaspRouterLink } from "wasp/client/router";
 import { type User as UserEntity } from "wasp/entities";
@@ -11,7 +12,9 @@ import { useTranslation } from "react-i18next";
 export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
   const { t } = useTranslation('topbar');
   const [open, setOpen] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   const displayName = user.firstName
     ? `${user.firstName} ${user.lastName || ''}`.trim()
@@ -21,6 +24,11 @@ export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
+      const target = e.target as Element | null;
+      if (target?.closest('[data-radix-popper-content-wrapper], [data-slot="dropdown-menu-content"]')) {
+        return;
+      }
+
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setOpen(false);
       }
@@ -28,6 +36,16 @@ export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
+
+  const handleSignOut = async () => {
+    setIsSigningOut(true);
+    setOpen(false);
+    try {
+      await signOut();
+    } finally {
+      navigate('/login', { replace: true });
+    }
+  };
 
   return (
     <div ref={containerRef} className="relative">
@@ -71,7 +89,8 @@ export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
           <div className="border-t my-1" />
           <button
             type="button"
-            onClick={() => signOut()}
+            onClick={handleSignOut}
+            disabled={isSigningOut}
             className="flex w-full items-center gap-3 rounded-sm px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
           >
             <LogOut size="1.1rem" />

@@ -24,14 +24,19 @@ const createMessageCampaignSchema = z.object({
 });
 
 const VALID_LOCALES = ['pt-BR', 'en', 'es'] as const;
-const VALID_TIMEZONES = [
-  'America/Sao_Paulo', 'America/New_York', 'America/Chicago',
-  'America/Los_Angeles', 'Europe/London', 'Europe/Lisbon', 'Europe/Madrid', 'UTC',
-] as const;
+
+function isValidTimeZone(timezone: string): boolean {
+  try {
+    Intl.DateTimeFormat(undefined, { timeZone: timezone });
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 const updateLocalePreferenceSchema = z.object({
   locale: z.enum(VALID_LOCALES),
-  timezone: z.enum(VALID_TIMEZONES),
+  timezone: z.string().trim().min(1).max(100).refine(isValidTimeZone, 'Fuso horário inválido.'),
 });
 
 // ─── Helpers ─────────────────────────────────────────────────────────────
