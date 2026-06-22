@@ -1,12 +1,14 @@
 import { useParams, Link, useNavigate } from 'react-router';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { AppShell } from '../AppShell';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
-import { ArrowLeft, Heart, BookOpen, FileText, CheckCircle, XCircle, Edit3, Gift, MessageCircle, FilePlus, Upload, Download, Link2, Copy, AlertTriangle, Cross, Trash2 } from 'lucide-react';
+import { ArrowLeft, Heart, BookOpen, FileText, CheckCircle, XCircle, Edit3, Gift, MessageCircle, FilePlus, Upload, Download, Link2, Copy, AlertTriangle, Cross, Trash2, BarChart3, Clock, Printer } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { ConfirmDialog } from '../../client/components/ConfirmDialog';
-import { useQuery, getCatechumenProfile, listMeetings, getMeetingAttendance, createConversation, generateCatechumenUploadToken, getCatechumenAttendanceReport, justifyAbsence, deleteCatechumen } from 'wasp/client/operations';
+import { useQuery, getCatechumenProfile, listMeetings, getMeetingAttendance, createConversation, generateCatechumenUploadToken, getCatechumenAttendanceReport, justifyAbsence, deleteCatechumen, getCatechumenPastoralAnalysis } from 'wasp/client/operations';
 import { fetchAuthenticatedDocument, uploadDocumentMultipart } from '../../client/utils/documentUpload';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { useActiveWorkspace } from '../../client/hooks/useActiveWorkspace';
@@ -20,7 +22,7 @@ const AVATAR_COLORS = [
     'bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 dark:border dark:border-amber-900/50',
     'bg-purple-100 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400 dark:border dark:border-purple-900/50',
     'bg-pink-100 text-pink-700 dark:bg-pink-950/40 dark:text-pink-400 dark:border dark:border-pink-900/50'
-  ];
+];
 
 const DOC_TYPE_KEYS: Record<string, string> = {
   BAPTISM_CERTIFICATE: 'BAPTISM_CERTIFICATE',
@@ -40,9 +42,240 @@ const DOC_TYPE_SHORT_KEYS: Record<string, string> = {
   OTHER: 'OTHER_SHORT',
 };
 
+function PastoralAnalysisInline({ catechumenId, classId }: { catechumenId: string; classId: string }) {
+  const { t } = useTranslation('pastoralAnalysis');
+  const { data, isLoading } = useQuery(getCatechumenPastoralAnalysis, { catechumenId, classId }, { enabled: !!catechumenId && !!classId });
+  const portalRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const el = document.createElement('div');
+    el.id = 'pastoral-print-portal';
+    document.body.appendChild(el);
+    portalRef.current = el;
+    return () => { el.remove(); portalRef.current = null; };
+  }, []);
+
+  if (isLoading) return <div className="animate-pulse space-y-3"><div className="h-6 w-32 bg-muted rounded"/><div className="h-40 bg-muted rounded"/></div>;
+  if (!data) return <p className="text-sm text-muted-foreground">{t('noMeetings')}</p>;
+
+  const { catechumen, class: cls, enrollment, alerts } = data;
+  const reportDate = new Date().toLocaleDateString();
+  const formatDate = (value: string | null | undefined) => value ? new Date(value).toLocaleDateString() : '-';
+  const displayTheme = (item: any) => item.theme || item.title || t('meeting');
+  const statusLabels: Record<string, string> = { PRESENT: t('present'), LATE: t('late'), JUSTIFIED: t('justified'), ABSENT: t('absent'), NOT_FILLED: t('notFilled') };
+  const attendedThemes = data.attendedThemes || data.meetingTimeline.filter((m: any) => ['PRESENT', 'LATE'].includes(m.status));
+  const missedThemes = data.missedThemes || [];
+
+  const printContent = portalRef.current && createPortal(
+    <div className="pastoral-print-content" style={{ background: '#fff', color: '#111', fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: 1.5, padding: '16px' }}>
+      <div style={{ border: '1px solid #d4d4d8', borderRadius: '12px', padding: '16px', marginBottom: '16px', breakInside: 'avoid' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'color-mix(in srgb, var(--color-primary, #3b82f6) 10%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 'bold', color: 'var(--color-primary, #3b82f6)' }}>
+              {catechumen.name.split(' ').map((part: string) => part[0]).slice(0, 2).join('')}
+            </div>
+            <div>
+              <p style={{ fontSize: '10px', textTransform: 'uppercase', color: '#6b7280', margin: 0 }}>{t('reportTitle')}</p>
+              <h4 style={{ fontSize: '18px', fontWeight: 'bold', margin: '2px 0', lineHeight: 1.2 }}>{catechumen.name}</h4>
+              <p style={{ fontSize: '12px', color: '#6b7280', margin: 0 }}>{cls.name} {cls.catechists?.length ? `- ${t('catechists')}: ${cls.catechists.join(', ')}` : ''}</p>
+            </div>
+          </div>
+          <span style={{ fontSize: '12px', color: '#6b7280' }}>{t('issuedAt')}: {reportDate}</span>
+        </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '16px', fontSize: '12px' }}>
+          <span style={{ borderRadius: '999px', background: '#f3f4f6', padding: '2px 8px' }}>{t('enrollmentStatus')}: {enrollment.status}</span>
+          {enrollment.origin && <span style={{ borderRadius: '999px', background: '#f3f4f6', padding: '2px 8px' }}>{t('origin')}: {enrollment.origin}</span>}
+          {enrollment.startedAt && <span style={{ borderRadius: '999px', background: '#f3f4f6', padding: '2px 8px' }}>{t('startDate')}: {formatDate(enrollment.startedAt)}</span>}
+          {enrollment.endedAt && <span style={{ borderRadius: '999px', background: '#f3f4f6', padding: '2px 8px' }}>{t('endDate')}: {formatDate(enrollment.endedAt)}</span>}
+        </div>
+      </div>
+
+      {alerts.length > 0 && (
+        <div style={{ border: '1px solid #d4d4d8', borderRadius: '12px', padding: '12px', marginBottom: '16px', breakInside: 'avoid' }}>
+          {alerts.map((a: any, i: number) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', borderRadius: '8px', background: '#fef2f2', padding: '8px', fontSize: '12px', color: '#dc2626', marginBottom: i < alerts.length - 1 ? '4px' : 0 }}>
+              <span style={{ flexShrink: 0 }}>⚠</span>
+              {a.type === 'risk_high' && t('riskHighWarning')}
+              {a.type === 'consecutive_absences' && t('consecutiveAbsencesWarning', { count: data.consecutiveAbsences })}
+              {a.type === 'low_frequency' && t('lowFrequencyWarning')}
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', textAlign: 'center', fontSize: '12px', marginBottom: '16px' }}>
+        <div style={{ border: '1px solid #d4d4d8', borderRadius: '8px', padding: '12px', background: '#f9fafb', breakInside: 'avoid' }}>
+          <p style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--color-primary, #3b82f6)', margin: 0 }}>{data.overallFrequency}%</p>
+          <p style={{ color: '#6b7280', margin: '4px 0 0' }}>{t('overallFrequency')}</p>
+        </div>
+        <div style={{ border: '1px solid #d4d4d8', borderRadius: '8px', padding: '12px', background: '#f9fafb', breakInside: 'avoid' }}>
+          <p style={{ fontSize: '24px', fontWeight: 'bold', margin: 0 }}>{data.rankingPosition}/{data.totalCatechumensInClass}</p>
+          <p style={{ color: '#6b7280', margin: '4px 0 0' }}>{t('rankingPosition')}</p>
+        </div>
+        <div style={{ border: '1px solid #d4d4d8', borderRadius: '8px', padding: '12px', background: '#f9fafb', breakInside: 'avoid' }}>
+          <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#16a34a', margin: 0 }}>{data.presentCount + data.lateCount}</p>
+          <p style={{ color: '#6b7280', margin: '4px 0 0' }}>{t('present')}</p>
+        </div>
+        <div style={{ border: '1px solid #d4d4d8', borderRadius: '8px', padding: '12px', background: '#f9fafb', breakInside: 'avoid' }}>
+          <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#dc2626', margin: 0 }}>{data.justifiedCount + data.absentCount}</p>
+          <p style={{ color: '#6b7280', margin: '4px 0 0' }}>{t('absent')}</p>
+        </div>
+      </div>
+
+      {data.monthlyPresence?.length > 0 && (
+        <div style={{ border: '1px solid #d4d4d8', borderRadius: '12px', padding: '16px', marginBottom: '16px', breakInside: 'avoid' }}>
+          <h4 style={{ fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', color: '#6b7280', margin: '0 0 12px' }}>{t('monthlyPresence')}</h4>
+          <table style={{ width: '100%', fontSize: '12px', borderCollapse: 'collapse', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e5e7eb' }}>
+            <thead>
+              <tr style={{ background: '#f3f4f6' }}>
+                <th style={{ padding: '8px', textAlign: 'left', fontWeight: '500' }}>{t('month')}</th>
+                <th style={{ padding: '8px', textAlign: 'center', fontWeight: '500' }}>{t('present')}</th>
+                <th style={{ padding: '8px', textAlign: 'center', fontWeight: '500' }}>{t('late')}</th>
+                <th style={{ padding: '8px', textAlign: 'center', fontWeight: '500' }}>{t('absent')}</th>
+                <th style={{ padding: '8px', textAlign: 'center', fontWeight: '500' }}>{t('meetings')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.monthlyPresence.map((row: any) => (
+                <tr key={row.month} style={{ borderTop: '1px solid #e5e7eb' }}>
+                  <td style={{ padding: '8px', fontWeight: '500' }}>{row.month}</td>
+                  <td style={{ padding: '8px', textAlign: 'center', color: '#16a34a' }}>{row.present}</td>
+                  <td style={{ padding: '8px', textAlign: 'center', color: '#d97706' }}>{row.late}</td>
+                  <td style={{ padding: '8px', textAlign: 'center', color: '#dc2626' }}>{row.absent + row.justified}</td>
+                  <td style={{ padding: '8px', textAlign: 'center' }}>{row.totalMeetings}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+        <div style={{ border: '1px solid #d4d4d8', borderRadius: '12px', padding: '16px', breakInside: 'avoid' }}>
+          <h4 style={{ fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', color: '#16a34a', margin: '0 0 12px' }}>✓ {t('attendedThemes')} ({attendedThemes.length})</h4>
+          {attendedThemes.length ? (
+            <div>
+              {attendedThemes.map((item: any, i: number) => (
+                <div key={`${item.date}-${i}`} style={{ display: 'grid', gridTemplateColumns: '80px 1fr auto', gap: '8px', borderBottom: '1px solid #e5e7eb', padding: '4px 0', fontSize: '12px' }}>
+                  <span style={{ color: '#6b7280' }}>{formatDate(item.date)}</span>
+                  <span>{displayTheme(item)}</span>
+                  <span style={{ fontSize: '10px', color: '#6b7280' }}>{statusLabels[item.status] || item.status}</span>
+                </div>
+              ))}
+            </div>
+          ) : <p style={{ fontSize: '12px', color: '#6b7280' }}>{t('noAttendedThemes')}</p>}
+        </div>
+        <div style={{ border: '1px solid #d4d4d8', borderRadius: '12px', padding: '16px', breakInside: 'avoid' }}>
+          <h4 style={{ fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', color: '#dc2626', margin: '0 0 12px' }}>✗ {t('missedThemes')} ({missedThemes.length})</h4>
+          {missedThemes.length ? (
+            <div>
+              {missedThemes.map((item: any, i: number) => (
+                <div key={`${item.date}-${i}`} style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '8px', borderBottom: '1px solid #e5e7eb', padding: '4px 0', fontSize: '12px' }}>
+                  <span style={{ color: '#6b7280' }}>{formatDate(item.date)}</span>
+                  <span>{displayTheme(item)}</span>
+                </div>
+              ))}
+            </div>
+          ) : <p style={{ fontSize: '12px', color: '#6b7280' }}>{t('noMissedThemes')}</p>}
+        </div>
+      </div>
+
+      {data.meetingTimeline.length > 0 && (
+        <div style={{ border: '1px solid #d4d4d8', borderRadius: '12px', padding: '16px', marginBottom: '16px', breakInside: 'avoid' }}>
+          <h4 style={{ fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', color: '#6b7280', margin: '0 0 12px' }}>🕐 {t('timeline')}</h4>
+          {data.meetingTimeline.map((m: any) => (
+            <div key={m.id} style={{ display: 'grid', gridTemplateColumns: '80px 1fr 90px', gap: '8px', borderBottom: '1px solid #e5e7eb', padding: '4px 0', fontSize: '12px' }}>
+              <span style={{ color: '#6b7280' }}>{formatDate(m.date)}</span>
+              <span>{displayTheme(m)}</span>
+              <span style={{ textAlign: 'right', color: '#6b7280' }}>{statusLabels[m.status] || m.status}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div style={{ border: '1px solid #d4d4d8', borderRadius: '12px', padding: '16px', breakInside: 'avoid' }}>
+        <h4 style={{ fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', color: '#6b7280', margin: '0 0 4px' }}>{t('pastoralNotes')}</h4>
+        <p style={{ fontSize: '12px', color: '#6b7280', margin: 0 }}>{enrollment.notes || t('noNotes')}</p>
+      </div>
+    </div>,
+    portalRef.current,
+  );
+
+  return (
+    <>
+      <style>{`
+        @media screen {
+          #pastoral-print-portal { display: none !important; }
+        }
+        @media print {
+          body > *:not(#pastoral-print-portal) { display: none !important; }
+          #pastoral-print-portal { display: block !important; }
+          @page { margin: 12mm; }
+        }
+      `}</style>
+      {printContent}
+
+      <div className="pastoral-inline-screen space-y-4 pt-2">
+      <style>{`
+        @media print {
+          .pastoral-inline-screen { display: none !important; }
+          @page { margin: 12mm; }
+        }
+      `}</style>
+
+      <div className="pastoral-print-card rounded-xl border bg-card p-4 shadow-elevation-xs">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-base font-bold text-primary">
+              {catechumen.name.split(' ').map((part: string) => part[0]).slice(0, 2).join('')}
+            </div>
+            <div>
+              <p className="text-overline text-muted-foreground">{t('reportTitle')}</p>
+              <h4 className="text-lg font-bold leading-tight">{catechumen.name}</h4>
+              <p className="text-xs text-muted-foreground">{cls.name} {cls.catechists?.length ? `- ${t('catechists')}: ${cls.catechists.join(', ')}` : ''}</p>
+            </div>
+          </div>
+          <div className="flex flex-col items-end gap-2">
+            <span className="text-xs text-muted-foreground">{t('issuedAt')}: {reportDate}</span>
+            <Button size="sm" variant="outline" onClick={() => window.print()} className="pastoral-no-print"><Printer className="mr-1 h-3 w-3" />{t('print')}</Button>
+          </div>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2 text-xs">
+          <span className="rounded-full bg-muted px-2 py-0.5">{t('enrollmentStatus')}: {enrollment.status}</span>
+          {enrollment.origin && <span className="rounded-full bg-muted px-2 py-0.5">{t('origin')}: {enrollment.origin}</span>}
+          {enrollment.startedAt && <span className="rounded-full bg-muted px-2 py-0.5">{t('startDate')}: {formatDate(enrollment.startedAt)}</span>}
+          {enrollment.endedAt && <span className="rounded-full bg-muted px-2 py-0.5">{t('endDate')}: {formatDate(enrollment.endedAt)}</span>}
+        </div>
+      </div>
+
+      {alerts.length > 0 && <div className="pastoral-print-card space-y-1 rounded-xl border bg-card p-3">{alerts.map((a: any, i: number) => <div key={i} className="flex items-center gap-2 rounded bg-destructive/10 p-2 text-xs text-destructive"><AlertTriangle className="h-3.5 w-3.5 shrink-0" />{a.type === 'risk_high' && t('riskHighWarning')}{a.type === 'consecutive_absences' && t('consecutiveAbsencesWarning', { count: data.consecutiveAbsences })}{a.type === 'low_frequency' && t('lowFrequencyWarning')}</div>)}</div>}
+
+      <div className="grid grid-cols-2 gap-2 text-center text-xs sm:grid-cols-4">
+        <div className="pastoral-print-card rounded-lg border bg-muted/40 p-3"><p className="text-2xl font-bold text-primary">{data.overallFrequency}%</p><p className="text-muted-foreground">{t('overallFrequency')}</p></div>
+        <div className="pastoral-print-card rounded-lg border bg-muted/40 p-3"><p className="text-2xl font-bold">{data.rankingPosition}/{data.totalCatechumensInClass}</p><p className="text-muted-foreground">{t('rankingPosition')}</p></div>
+        <div className="pastoral-print-card rounded-lg border bg-muted/40 p-3"><p className="text-2xl font-bold text-emerald-600">{data.presentCount + data.lateCount}</p><p className="text-muted-foreground">{t('present')}</p></div>
+        <div className="pastoral-print-card rounded-lg border bg-muted/40 p-3"><p className="text-2xl font-bold text-destructive">{data.justifiedCount + data.absentCount}</p><p className="text-muted-foreground">{t('absent')}</p></div>
+      </div>
+
+      {data.monthlyPresence?.length > 0 && <div className="pastoral-print-card rounded-xl border bg-card p-4"><h4 className="mb-3 flex items-center gap-1 text-xs font-semibold uppercase text-muted-foreground"><BarChart3 className="h-3 w-3" />{t('monthlyPresence')}</h4><ResponsiveContainer width="100%" height={220}><BarChart data={data.monthlyPresence} margin={{ top: 5, right: 12, left: 0, bottom: 20 }}><CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" /><XAxis dataKey="month" tick={{ fontSize: 10 }} /><YAxis allowDecimals={false} tick={{ fontSize: 10 }} /><Tooltip /><Bar dataKey="present" stackId="a" fill="#16a34a" name={t('present')} /><Bar dataKey="late" stackId="a" fill="#f59e0b" name={t('late')} /><Bar dataKey="absent" stackId="a" fill="#ef4444" name={t('absent')} /></BarChart></ResponsiveContainer><div className="mt-3 overflow-x-auto rounded-lg border"><table className="w-full text-xs"><thead className="bg-muted/60"><tr><th className="p-2 text-left font-medium">{t('month')}</th><th className="p-2 text-center font-medium">{t('present')}</th><th className="p-2 text-center font-medium">{t('late')}</th><th className="p-2 text-center font-medium">{t('absent')}</th><th className="p-2 text-center font-medium">{t('meetings')}</th></tr></thead><tbody>{data.monthlyPresence.map((row: any) => <tr key={row.month} className="border-t"><td className="p-2 font-medium">{row.month}</td><td className="p-2 text-center text-emerald-700">{row.present}</td><td className="p-2 text-center text-amber-700">{row.late}</td><td className="p-2 text-center text-red-700">{row.absent + row.justified}</td><td className="p-2 text-center">{row.totalMeetings}</td></tr>)}</tbody></table></div></div>}
+
+      <div className="pastoral-print-grid grid gap-4 md:grid-cols-2">
+        <div className="pastoral-print-card rounded-xl border bg-card p-4"><h4 className="mb-3 flex items-center gap-1 text-xs font-semibold uppercase text-emerald-700"><CheckCircle className="h-3 w-3" />{t('attendedThemes')} ({attendedThemes.length})</h4>{attendedThemes.length ? <div className="space-y-1">{attendedThemes.map((item: any, i: number) => <div key={`${item.date}-${i}`} className="grid grid-cols-[80px_1fr_auto] gap-2 border-b py-1 text-xs last:border-b-0"><span className="text-muted-foreground">{formatDate(item.date)}</span><span>{displayTheme(item)}</span><span className="text-[10px] text-muted-foreground">{statusLabels[item.status] || item.status}</span></div>)}</div> : <p className="text-xs text-muted-foreground">{t('noAttendedThemes')}</p>}</div>
+        <div className="pastoral-print-card rounded-xl border bg-card p-4"><h4 className="mb-3 flex items-center gap-1 text-xs font-semibold uppercase text-destructive"><XCircle className="h-3 w-3" />{t('missedThemes')} ({missedThemes.length})</h4>{missedThemes.length ? <div className="space-y-1">{missedThemes.map((item: any, i: number) => <div key={`${item.date}-${i}`} className="grid grid-cols-[80px_1fr] gap-2 border-b py-1 text-xs last:border-b-0"><span className="text-muted-foreground">{formatDate(item.date)}</span><span>{displayTheme(item)}</span></div>)}</div> : <p className="text-xs text-muted-foreground">{t('noMissedThemes')}</p>}</div>
+      </div>
+
+      {data.meetingTimeline.length > 0 && <div className="pastoral-print-card rounded-xl border bg-card p-4"><h4 className="mb-3 flex items-center gap-1 text-xs font-semibold uppercase text-muted-foreground"><Clock className="h-3 w-3" />{t('timeline')}</h4><div className="space-y-1">{data.meetingTimeline.map((m: any) => <div key={m.id} className="grid grid-cols-[80px_1fr_90px] gap-2 border-b py-1 text-xs last:border-b-0"><span className="text-muted-foreground">{formatDate(m.date)}</span><span>{displayTheme(m)}</span><span className="text-right text-muted-foreground">{statusLabels[m.status] || m.status}</span></div>)}</div></div>}
+
+      <div className="pastoral-print-card rounded-xl border bg-card p-4"><h4 className="mb-1 text-xs font-semibold uppercase text-muted-foreground">{t('pastoralNotes')}</h4><p className="text-xs text-muted-foreground">{enrollment.notes || t('noNotes')}</p></div>
+    </div>
+    </>
+  );
+}
+
 export default function CatechumenDetailPage() {
   const { t } = useTranslation('common');
   const { t: tp } = useTranslation('parishes');
+  const { t: tpa } = useTranslation('pastoralAnalysis');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { userRole } = useUserContext();
@@ -63,6 +296,7 @@ export default function CatechumenDetailPage() {
   const [tokenData, setTokenData] = useState<{ token: string; expires: string } | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [selectedAnalysisClassId, setSelectedAnalysisClassId] = useState<string | null>(null);
 
   const docTypeLabels = useMemo(() => {
     const labels: Record<string, string> = {};
@@ -175,6 +409,11 @@ export default function CatechumenDetailPage() {
     })();
   },[profile]);
 
+  useEffect(() => {
+    if (!profile?.enrollments?.length || selectedAnalysisClassId) return;
+    const preferred = profile.enrollments.find((enr: any) => enr.status === 'ENROLLED') || profile.enrollments[0];
+    if (preferred?.classId) setSelectedAnalysisClassId(preferred.classId);
+  }, [profile, selectedAnalysisClassId]);
   if(loading)return <AppShell><div className="space-y-6 max-w-2xl mx-auto animate-pulse"><div className="flex items-center gap-4"><div className="h-16 w-16 rounded-full bg-muted"/><div className="h-8 w-40 bg-muted rounded"/></div><div className="grid gap-4 md:grid-cols-2">{[1,2,3,4].map(i=><div key={i} className="h-32 rounded-xl bg-muted"/>)}</div></div></AppShell>;
   if(queryError) {
     const status = (queryError as any)?.status;
@@ -388,6 +627,30 @@ export default function CatechumenDetailPage() {
               );
             })}
             </div>
+          </div>
+        )}
+
+        {/* Pastoral Analysis Card */}
+        {profile.enrollments?.length > 0 && (
+          <div className="rounded-xl border bg-card p-4">
+            <h3 className="font-semibold text-sm mb-3 flex items-center gap-1">
+              <BarChart3 className="h-4 w-4 text-primary" />{tpa('title')}
+            </h3>
+            {profile.enrollments.length > 1 && (
+              <select
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm mb-3"
+                value={selectedAnalysisClassId || ''}
+                onChange={(e) => setSelectedAnalysisClassId(e.target.value || null)}
+              >
+                <option value="">{tpa('selectClass')}</option>
+                {profile.enrollments.map((enr: any) => (
+                  <option key={enr.id} value={enr.classId}>
+                    {enr.class?.name || enr.classId} {enr.status !== 'ENROLLED' ? `(${enr.status})` : ''}
+                  </option>
+                ))}
+              </select>
+            )}
+            {selectedAnalysisClassId && <PastoralAnalysisInline catechumenId={id!} classId={selectedAnalysisClassId} />}
           </div>
         )}
 
