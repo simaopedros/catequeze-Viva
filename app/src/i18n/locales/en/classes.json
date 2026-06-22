@@ -43,6 +43,7 @@
   "table_schedule": "Schedule",
   "details": "Details",
   "attendance": "Attendance",
+  "indicators": "Indicators",
   "meeting_today": "Meeting today",
   "next_meeting": "Next: {{date}}",
   "found_count": "{{count}} class(es) found",

@@ -1,0 +1,16 @@
+{
+  "title": "Birthdays",
+  "nextDays": "Next {{days}} days",
+  "filterByClass": "Filter by class",
+  "allClasses": "All classes",
+  "name": "Name",
+  "turningAge": "Turning {{age}}",
+  "birthDate": "Birth date",
+  "className": "Class",
+  "giftDelivered": "Gift delivered",
+  "markDelivered": "Mark as delivered",
+  "markUndelivered": "Mark as not delivered",
+  "exportList": "Export list",
+  "noBirthdays": "No birthdays in this period",
+  "in": "on"
+}

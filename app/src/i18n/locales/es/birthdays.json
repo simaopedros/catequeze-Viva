@@ -1,0 +1,16 @@
+{
+  "title": "Cumpleaños",
+  "nextDays": "Próximos {{days}} días",
+  "filterByClass": "Filtrar por clase",
+  "allClasses": "Todas las clases",
+  "name": "Nombre",
+  "turningAge": "Cumple {{age}} años",
+  "birthDate": "Fecha de nacimiento",
+  "className": "Clase",
+  "giftDelivered": "Regalo entregado",
+  "markDelivered": "Marcar como entregado",
+  "markUndelivered": "Marcar como no entregado",
+  "exportList": "Exportar lista",
+  "noBirthdays": "Sin cumpleaños en este período",
+  "in": "el"
+}

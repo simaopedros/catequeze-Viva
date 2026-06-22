@@ -357,6 +357,12 @@ page AppClassDetailPage {
   authRequired: true,
   component: import ClassDetailPage from "@src/catequese/pages/ClassDetailPage"
 }
+
+route AppClassPastoralReportRoute { path: "/app/classes/:id/reports", to: AppClassPastoralReportPage }
+page AppClassPastoralReportPage {
+  authRequired: true,
+  component: import ClassPastoralReportPage from "@src/catequese/pages/ClassPastoralReportPage"
+}
 //#endregion
 
 route AppClassesRoute { path: "/app/classes", to: AppClassesPage }
@@ -481,6 +487,12 @@ route AppReportsRoute { path: "/app/reports", to: AppReportsPage }
 page AppReportsPage {
   authRequired: true,
   component: import ReportsPage from "@src/catequese/pages/ReportsPage"
+}
+
+route AppBirthdaysRoute { path: "/app/birthdays", to: AppBirthdaysPage }
+page AppBirthdaysPage {
+  authRequired: true,
+  component: import BirthdaysPage from "@src/catequese/pages/BirthdaysPage"
 }
 
 route AppSettingsRoute { path: "/app/settings", to: AppSettingsPage }
@@ -984,6 +996,26 @@ action publishTemplate {
 query getReportsOverview {
   fn: import { getReportsOverview } from "@src/server/operations/reportOperations",
   entities: [CatechesisClass, Meeting, AttendanceRecord, Membership]
+}
+
+query getClassPastoralReport {
+  fn: import { getClassPastoralReport } from "@src/server/operations/pastoralReportOperations",
+  entities: [CatechesisClass, ClassEnrollment, CatechumenProfile, Meeting, AttendanceRecord, ClassCatechist, User, Membership, CatechumenBirthdayGift]
+}
+
+query getCatechumenPastoralAnalysis {
+  fn: import { getCatechumenPastoralAnalysis } from "@src/server/operations/pastoralReportOperations",
+  entities: [CatechesisClass, ClassEnrollment, CatechumenProfile, Meeting, AttendanceRecord, ClassCatechist, User]
+}
+
+query listUpcomingBirthdays {
+  fn: import { listUpcomingBirthdays } from "@src/server/operations/pastoralReportOperations",
+  entities: [ClassEnrollment, CatechumenProfile, CatechesisClass, CatechumenBirthdayGift]
+}
+
+action toggleBirthdayGift {
+  fn: import { toggleBirthdayGift } from "@src/server/operations/pastoralReportOperations",
+  entities: [CatechumenBirthdayGift]
 }
 //#endregion
 

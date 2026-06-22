@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { AppShell } from '../AppShell';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
-import { ArrowLeft, UserPlus, Users, MapPin, Clock, ClipboardList, TrendingUp, XCircle, Calendar, MessageCircle, BookOpen, Building2, Pencil, Check, X, Trash2, Cross } from 'lucide-react';
+import { ArrowLeft, UserPlus, Users, MapPin, Clock, ClipboardList, TrendingUp, XCircle, Calendar, MessageCircle, BookOpen, Building2, Pencil, Check, X, Trash2, Cross, BarChart3 } from 'lucide-react';
 import { useQuery, getClassDetails, listCatechumens, enrollCatechumen, updateClass, getOrCreateClassChat, cancelEnrollment, addAssistantCatechist, removeCatechistFromClass, listParishCatechists, getMonthlyPlan } from 'wasp/client/operations';
 import { useAuth } from 'wasp/client/auth';
 import { useUserContext } from '../../client/hooks/useUserContext';
@@ -259,6 +259,7 @@ export default function ClassDetailPage() {
             </Button>
             <Button asChild variant="outline" size="sm"><Link to={`/app/classes/${id}/attendance`}><ClipboardList className="mr-1 h-3 w-3"/>{t('attendance')}</Link></Button>
             <Button asChild variant="outline" size="sm"><Link to={`/app/classes/${id}/meetings`}><Calendar className="mr-1 h-3 w-3"/>{t('detail.tabs.meetings')}</Link></Button>
+            <Button asChild variant="outline" size="sm"><Link to={`/app/classes/${id}/reports`}><BarChart3 className="mr-1 h-3 w-3"/>{t('indicators')}</Link></Button>
             {canManageClass && <SendAnnouncementButton classId={id!} className={cls.name} />}
           </div>
         </div>

@@ -43,6 +43,7 @@
   "table_schedule": "Horário",
   "details": "Detalhes",
   "attendance": "Presença",
+  "indicators": "Indicadores",
   "meeting_today": "Encontro hoje",
   "next_meeting": "Próx: {{date}}",
   "found_count": "{{count}} turma(s) encontrada(s)",

@@ -1,0 +1,16 @@
+{
+  "title": "Aniversários",
+  "nextDays": "Próximos {{days}} dias",
+  "filterByClass": "Filtrar por turma",
+  "allClasses": "Todas as turmas",
+  "name": "Nome",
+  "turningAge": "Completa {{age}} anos",
+  "birthDate": "Data de nascimento",
+  "className": "Turma",
+  "giftDelivered": "Presente entregue",
+  "markDelivered": "Marcar como entregue",
+  "markUndelivered": "Marcar como não entregue",
+  "exportList": "Exportar lista",
+  "noBirthdays": "Nenhum aniversário no período",
+  "in": "em"
+}

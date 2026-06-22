@@ -55,6 +55,7 @@ enum EnrollmentStatus {
   TRANSFERRED
   DROPPED
   COMPLETED
+  MOVED_TO_OTHER_CLASS
 }
 
 enum MeetingStatus {
@@ -62,6 +63,15 @@ enum MeetingStatus {
   IN_PROGRESS
   COMPLETED
   CANCELLED
+}
+
+enum MeetingKind {
+  REGULAR
+  RETREAT
+  CELEBRATION
+  PARENT_MEETING
+  SERVICE
+  OTHER
 }
 
 enum AttendanceStatus {
@@ -567,7 +577,12 @@ model ClassEnrollment {
   catechumenProfileId String?
   catechumenProfile   CatechumenProfile? @relation(fields: [catechumenProfileId], references: [id])
 
-  status EnrollmentStatus @default(ENROLLED)
+  status     EnrollmentStatus @default(ENROLLED)
+  startedAt  DateTime?
+  endedAt    DateTime?
+  exitReason String?
+  origin     String?
+  notes      String?
 
   @@unique([classId, catechumenProfileId])
   @@index([classId])
@@ -649,11 +664,29 @@ model CatechumenProfile {
   uploadToken        String?   @unique
   uploadTokenExpires DateTime?
 
+  birthdayGifts CatechumenBirthdayGift[]
+
   @@index([householdId])
   @@index([userId])
   @@index([parishId])
   @@index([email])
   @@index([parishId, firstName, lastName])
+}
+
+// ─── Birthdays ──────────────────────────────────────────────────────────────────
+
+model CatechumenBirthdayGift {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  catechumenProfileId String
+  catechumenProfile   CatechumenProfile @relation(fields: [catechumenProfileId], references: [id])
+
+  year      Int
+  delivered Boolean @default(false)
+
+  @@unique([catechumenProfileId, year])
+  @@index([catechumenProfileId])
 }
 
 // ─── Meetings & Attendance ────────────────────────────────────────────────────
@@ -663,11 +696,14 @@ model Meeting {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  title  String?
-  theme  String?
-  date   DateTime
-  status MeetingStatus @default(NOT_STARTED)
-  notes  String?
+  title          String?
+  theme          String?
+  date           DateTime
+  status         MeetingStatus @default(NOT_STARTED)
+  notes          String?
+  sequenceNumber Int?
+  kind           MeetingKind @default(REGULAR)
+  details        String?
 
   classId String
   class   CatechesisClass @relation(fields: [classId], references: [id])

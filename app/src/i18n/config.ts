@@ -30,6 +30,9 @@ const ALL_NS = [
   'account', 'catechism', 'tour', 'bible', 'ai', 'activities', 'meetings',
   'catecheticalYears', 'legal', 'family',
   'admin', 'components', 'cookie', 'calendar', 'collaborative',
+  'pastoralReport',
+  'pastoralAnalysis',
+  'birthdays',
 ] as const;
 
 const coreResources = {

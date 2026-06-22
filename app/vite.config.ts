@@ -1,4 +1,4 @@
-import { wasp } from "wasp/client/vite"
+import { wasp } from "wasp/client/vite";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, type Plugin } from "vite";
 
@@ -13,15 +13,70 @@ function gtmPlugin(): Plugin {
   };
 }
 
+function patchWaspUseIsClientPlugin(): Plugin {
+  return {
+    name: "patch-wasp-use-is-client",
+    enforce: "pre",
+    transform(_code, id) {
+      const normalizedId = id.split("?")[0].replace(/\\/g, "/");
+
+      if (
+        !normalizedId.endsWith(
+          "/.wasp/out/sdk/wasp/dist/client/app/hooks/useIsClient.js",
+        )
+      ) {
+        return null;
+      }
+
+      return {
+        code: `import { useEffect, useState } from "react";
+
+export function useIsClient() {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  return isClient;
+}
+`,
+        map: null,
+      };
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [wasp(), tailwindcss(), gtmPlugin()],
+  plugins: [
+    wasp({
+      reactOptions: {
+        exclude: [/\.wasp\/out\/sdk\/wasp\/dist\/client\/app\/.*/],
+      },
+    }),
+    patchWaspUseIsClientPlugin(),
+    tailwindcss(),
+    gtmPlugin(),
+  ],
+  resolve: {
+    dedupe: [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "react/jsx-dev-runtime",
+    ],
+  },
   build: {
     rollupOptions: {
       output: {
         manualChunks(id: string) {
-          if (id.includes('node_modules/')) {
-            if (id.includes('recharts') || id.includes('apexcharts') || id.includes('react-apexcharts')) {
-              return 'charts';
+          if (id.includes("node_modules/")) {
+            if (
+              id.includes("recharts") ||
+              id.includes("apexcharts") ||
+              id.includes("react-apexcharts")
+            ) {
+              return "charts";
             }
           }
         },
@@ -35,8 +90,8 @@ export default defineConfig({
       ".trycloudflare.com",
     ],
     proxy: {
-      '/api': {
-        target: 'http://localhost:3001',
+      "/api": {
+        target: "http://localhost:3001",
         changeOrigin: true,
       },
     },

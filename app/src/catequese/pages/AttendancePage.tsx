@@ -98,7 +98,11 @@ export default function AttendancePage() {
   const { id: classId } = useParams<{ id: string }>();
   const { data: meetings = [], refetch: refetchMeetings } = useQuery(getClassAttendanceMatrix, { classId: classId! });
   const { data: cls } = useQuery(getClassDetails, { id: classId! });
-  const catechumens = cls?.enrollments?.map((e: any) => e.catechumenProfile).filter(Boolean) || [];
+  const catechumens = cls?.enrollments?.map((e: any) => ({
+    ...e.catechumenProfile,
+    enrollmentId: e.id,
+    enrollmentStatus: e.status,
+  })).filter((e: any) => e.id) || [];
   const [matrix, setMatrix] = useState<Record<string, Record<string, string>>>({});
   const lastProcessedRef = useRef('');
   const [showNew, setShowNew] = useState(false);
@@ -106,14 +110,21 @@ export default function AttendancePage() {
   const [newDate, setNewDate] = useState(new Date().toISOString().slice(0, 10));
   const [saving, setSaving] = useState<string | null>(null);
   const [studentFilter, setStudentFilter] = useState('');
+  const [enrollmentStatusFilter, setEnrollmentStatusFilter] = useState('all');
 
   const filteredCatechumens = useMemo(() => {
-    if (!studentFilter.trim()) return catechumens;
-    const q = studentFilter.toLowerCase();
-    return catechumens.filter((cat: any) =>
-      `${cat.firstName} ${cat.lastName}`.toLowerCase().includes(q)
-    );
-  }, [catechumens, studentFilter]);
+    let result = catechumens;
+    if (enrollmentStatusFilter !== 'all') {
+      result = result.filter((cat: any) => cat.enrollmentStatus === enrollmentStatusFilter.toUpperCase());
+    }
+    if (studentFilter.trim()) {
+      const q = studentFilter.toLowerCase();
+      result = result.filter((cat: any) =>
+        `${cat.firstName} ${cat.lastName}`.toLowerCase().includes(q)
+      );
+    }
+    return result;
+  }, [catechumens, studentFilter, enrollmentStatusFilter]);
 
   const statusLabel = (key: string) => {
     if (key === 'PRESENT') return t('present');
@@ -288,8 +299,8 @@ export default function AttendancePage() {
         </div>
 
         {/* Student filter */}
-        {catechumens.length > 10 && (
-          <div className="relative">
+        <div className="flex gap-2 flex-wrap">
+          {catechumens.length > 10 && (
             <input
               type="text"
               placeholder={t('matrix.filter_students') || 'Filtrar alunos...'}
@@ -297,8 +308,18 @@ export default function AttendancePage() {
               onChange={e => setStudentFilter(e.target.value)}
               className="flex h-8 w-full sm:w-64 rounded-md border border-input bg-background px-3 py-1 text-xs"
             />
-          </div>
-        )}
+          )}
+          <select
+            value={enrollmentStatusFilter}
+            onChange={e => setEnrollmentStatusFilter(e.target.value)}
+            className="h-8 rounded-md border border-input bg-background px-2 py-1 text-xs"
+          >
+            <option value="all">{t('matrix.all_statuses') || 'Todos os status'}</option>
+            <option value="enrolled">{t('matrix.active') || 'Ativos'}</option>
+            <option value="dropped">{t('matrix.dropped') || 'Desistentes'}</option>
+            <option value="transferred">{t('matrix.transferred') || 'Transferidos'}</option>
+          </select>
+        </div>
 
         {meetings.length === 0 ? (
           <EmptyState icon={ClipboardList} title={t('matrix.empty')} description={t('matrix.empty_desc')} compact />
