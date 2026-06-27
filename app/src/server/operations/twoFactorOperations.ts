@@ -7,16 +7,45 @@
 import { HttpError } from 'wasp/server';
 import { generateSecret, verifyTotp, getOtpauthUri } from '../auth/totp';
 import { userHasAdminMembership } from '../auth/roles';
+import { getSessionIdFromRequest } from '../auth/sessionIdentity';
+
+function getCurrentSessionId(context: any): string | null {
+  return getSessionIdFromRequest(context?.req);
+}
+
+function isSessionVerified(
+  sessionId: string | null,
+  verifiedSessionIds: string[] | null | undefined,
+): boolean {
+  if (!sessionId) return false;
+  return !!verifiedSessionIds?.includes(sessionId);
+}
+
+function addVerifiedSession(
+  verifiedSessionIds: string[] | null | undefined,
+  sessionId: string,
+): string[] {
+  const next = new Set(verifiedSessionIds ?? []);
+  next.add(sessionId);
+  return Array.from(next);
+}
+
+function removeVerifiedSession(
+  verifiedSessionIds: string[] | null | undefined,
+  sessionId: string,
+): string[] {
+  return (verifiedSessionIds ?? []).filter((verifiedSessionId) => verifiedSessionId !== sessionId);
+}
 
 export async function assertTwoFactorSessionVerified(context: any): Promise<void> {
   if (!context.user) throw new HttpError(401, 'Autenticação necessária.');
 
   const tf = await context.entities.UserTwoFactor.findUnique({
     where: { userId: context.user.id },
-    select: { enabled: true, sessionVerifiedAt: true },
+    select: { enabled: true, sessionVerifiedSessionIds: true },
   });
 
-  if (tf?.enabled && !tf.sessionVerifiedAt) {
+  if (tf?.enabled && !isSessionVerified(getCurrentSessionId(context), tf.sessionVerifiedSessionIds)) {
     throw new HttpError(403, 'Verificação em duas etapas necessária.');
   }
 }
@@ -40,7 +69,7 @@ export const startTwoFactorSetup = async (_args: void, context: any) => {
 
   await context.entities.UserTwoFactor.upsert({
     where: { userId: context.user.id },
-    update: { secret, enabled: false, verified: false, sessionVerifiedAt: null },
+    update: { secret, enabled: false, verified: false, sessionVerifiedAt: null, sessionVerifiedSessionIds: [] },
     create: { userId: context.user.id, secret, enabled: false, verified: false },
   });
 
@@ -97,7 +126,7 @@ export const disableTwoFactor = async (args: { token: string }, context: any) =>
 
 /**
  * Called immediately after password login when 2FA is enabled.
- * Clears the session verification so API access is blocked until TOTP succeeds.
+ * The current session is not trusted until TOTP succeeds.
  */
 export const beginTwoFactorChallenge = async (_args: void, context: any) => {
   if (!context.user) throw new HttpError(401);
@@ -110,11 +139,6 @@ export const beginTwoFactorChallenge = async (_args: void, context: any) => {
   if (!tf?.enabled) {
     return { success: true, required: false };
   }
-
-  await context.entities.UserTwoFactor.update({
-    where: { userId: context.user.id },
-    data: { sessionVerifiedAt: null },
-  });
 
   return { success: true, required: true };
 };
@@ -136,9 +160,17 @@ export const verifyTwoFactorLogin = async (args: { token: string }, context: any
     throw new HttpError(400, 'Código inválido. Verifique se o relógio do seu dispositivo está correto.');
   }
 
+  const sessionId = getCurrentSessionId(context);
+  if (!sessionId) {
+    throw new HttpError(401, 'Sessão de login inválida.');
+  }
+
   await context.entities.UserTwoFactor.update({
     where: { userId: context.user.id },
-    data: { sessionVerifiedAt: new Date() },
+    data: {
+      sessionVerifiedAt: new Date(),
+      sessionVerifiedSessionIds: addVerifiedSession(tf.sessionVerifiedSessionIds, sessionId),
+    },
   });
 
   return { success: true };
@@ -152,7 +184,7 @@ export const getTwoFactorStatus = async (_args: void, context: any) => {
 
   const tf = await context.entities.UserTwoFactor.findUnique({
     where: { userId: context.user.id },
-    select: { enabled: true, sessionVerifiedAt: true },
+    select: { enabled: true, sessionVerifiedSessionIds: true },
   });
 
   const isAdmin = context.user.isAdmin || await userHasAdminMembership(context, context.user.id);
@@ -160,6 +192,6 @@ export const getTwoFactorStatus = async (_args: void, context: any) => {
   return {
     enabled: tf?.enabled ?? false,
     required: isAdmin,
-    sessionVerified: !tf?.enabled || !!tf.sessionVerifiedAt,
+    sessionVerified: !tf?.enabled || isSessionVerified(getCurrentSessionId(context), tf.sessionVerifiedSessionIds),
   };
 };

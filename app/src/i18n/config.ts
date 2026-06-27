@@ -1,30 +1,16 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import { resources_pt_BR } from './resources_pt_BR';
+import { resources_en } from './resources_en';
+import { resources_es } from './resources_es';
 
-// Core namespaces loaded at bootstrap — everything the landing pages, auth, and
-// navigation need. The remaining app namespaces load lazily on first app route.
-import {
-  common_pt_BR,
-  navigation_pt_BR,
-  auth_pt_BR,
-  publicNav_pt_BR,
-  public_pt_BR,
-  billing_pt_BR,
-  landing_pt_BR,
-  landingSistema_pt_BR,
-  landingIa_pt_BR,
-  landingPresenca_pt_BR,
-  onboarding_pt_BR,
-} from './resources_pt_BR';
-
-const CORE_NS = [
-  'common', 'navigation', 'auth', 'publicNav', 'public', 'billing',
-  'landing', 'landingSistema', 'landingIa', 'landingPresenca', 'onboarding',
-] as const;
+const SUPPORTED_LOCALES = ['pt-BR', 'en', 'es'] as const;
+type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
 const ALL_NS = [
-  ...CORE_NS,
+  'common', 'navigation', 'auth', 'publicNav', 'public', 'billing',
+  'landing', 'landingSistema', 'landingIa', 'landingPresenca', 'onboarding',
   'dashboard', 'classes', 'attendance', 'sacraments',
   'content', 'messages', 'reports', 'settings', 'parishes', 'topbar',
   'account', 'catechism', 'tour', 'bible', 'ai', 'activities', 'meetings',
@@ -35,26 +21,55 @@ const ALL_NS = [
   'birthdays',
 ] as const;
 
-const coreResources = {
-  common: common_pt_BR,
-  navigation: navigation_pt_BR,
-  auth: auth_pt_BR,
-  publicNav: publicNav_pt_BR,
-  public: public_pt_BR,
-  billing: billing_pt_BR,
-  landing: landing_pt_BR,
-  landingSistema: landingSistema_pt_BR,
-  landingIa: landingIa_pt_BR,
-  landingPresenca: landingPresenca_pt_BR,
-  onboarding: onboarding_pt_BR,
-};
+function normalizeLocale(value: string | null | undefined): SupportedLocale | null {
+  if (!value) return null;
+  if (SUPPORTED_LOCALES.includes(value as SupportedLocale)) {
+    return value as SupportedLocale;
+  }
+
+  const normalized = value.toLowerCase();
+  if (normalized === 'pt' || normalized === 'pt-br') return 'pt-BR';
+  if (normalized.startsWith('en')) return 'en';
+  if (normalized.startsWith('es')) return 'es';
+  return null;
+}
+
+function resolveInitialLocale(): SupportedLocale {
+  if (typeof window === 'undefined') {
+    return 'pt-BR';
+  }
+
+  const stored = normalizeLocale(window.localStorage.getItem('catequese-viva-locale'));
+  if (stored) return stored;
+
+  const detected =
+    normalizeLocale(window.navigator.language) ??
+    window.navigator.languages.map((lang) => normalizeLocale(lang)).find(Boolean) ??
+    normalizeLocale(document.documentElement.lang);
+
+  return detected ?? 'pt-BR';
+}
+
+function syncDocumentLanguage(locale: string) {
+  if (typeof document !== 'undefined') {
+    document.documentElement.lang = locale;
+  }
+}
+
+const initialLocale = resolveInitialLocale();
 
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    resources: { 'pt-BR': coreResources },
+    resources: {
+      'pt-BR': resources_pt_BR,
+      en: resources_en,
+      es: resources_es,
+    },
+    lng: initialLocale,
     fallbackLng: 'pt-BR',
+    supportedLngs: [...SUPPORTED_LOCALES],
     defaultNS: 'common',
     ns: ALL_NS as unknown as string[],
     interpolation: {
@@ -65,47 +80,21 @@ i18n
       caches: ['localStorage'],
       lookupLocalStorage: 'catequese-viva-locale',
     },
+    react: {
+      useSuspense: false,
+    },
   });
 
-let appNamespacesLoaded = false;
-
-/**
- * Load the remaining app namespaces (everything beyond core).
- * Called on first navigation to an authenticated app route.
- */
 export async function loadAppNamespaces(): Promise<void> {
-  if (appNamespacesLoaded) return;
-  const { resources_pt_BR } = await import('./resources_pt_BR');
-  for (const ns of ALL_NS) {
-    if (!(CORE_NS as readonly string[]).includes(ns) && (resources_pt_BR as any)[ns]) {
-      i18n.addResourceBundle('pt-BR', ns, (resources_pt_BR as any)[ns], true, true);
-    }
-  }
-  appNamespacesLoaded = true;
+  return;
 }
 
-/**
- * Dynamically load a language bundle and register it with i18next.
- * Called when the user switches to a non-default language.
- */
 export async function loadLanguageBundle(lang: 'en' | 'es'): Promise<void> {
-  if (i18n.hasResourceBundle(lang, 'common')) return;
-
-  if (lang === 'en') {
-    const { resources_en } = await import('./resources_en');
-    for (const ns of ALL_NS) {
-      if (resources_en[ns]) {
-        i18n.addResourceBundle('en', ns, resources_en[ns], true, true);
-      }
-    }
-  } else if (lang === 'es') {
-    const { resources_es } = await import('./resources_es');
-    for (const ns of ALL_NS) {
-      if (resources_es[ns]) {
-        i18n.addResourceBundle('es', ns, resources_es[ns], true, true);
-      }
-    }
-  }
+  void lang;
+  return;
 }
+
+i18n.on('languageChanged', syncDocumentLanguage);
+syncDocumentLanguage(initialLocale);
 
 export default i18n;

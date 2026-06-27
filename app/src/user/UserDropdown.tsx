@@ -1,13 +1,13 @@
-import { ChevronDown, LogOut, User } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router";
-import { signOut } from "../client/analytics/himetrica";
-import { Link as WaspRouterLink } from "wasp/client/router";
-import { type User as UserEntity } from "wasp/entities";
-import { userMenuItems } from "./constants";
-import { LanguageSwitcher } from "../i18n/LanguageSwitcher";
-import DarkModeSwitcher from "../client/components/DarkModeSwitcher";
-import { useTranslation } from "react-i18next";
+import { ChevronDown, LogOut, User } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router';
+import { signOut } from '../client/analytics/himetrica';
+import { Link as WaspRouterLink } from 'wasp/client/router';
+import { type User as UserEntity } from 'wasp/entities';
+import { userMenuItems } from './constants';
+import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
+import DarkModeSwitcher from '../client/components/DarkModeSwitcher';
+import { useTranslation } from 'react-i18next';
 
 export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
   const { t } = useTranslation('topbar');
@@ -18,9 +18,8 @@ export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
 
   const displayName = user.firstName
     ? `${user.firstName} ${user.lastName || ''}`.trim()
-    : (user.email || user.username || 'Usuário');
+    : (user.email || user.username || t('current_user'));
 
-  // Close on outside click
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
@@ -66,18 +65,17 @@ export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
             if (item.isAdminOnly && (!user || !user.isAdmin)) return null;
             return (
               <WaspRouterLink
-                key={item.name}
+                key={item.labelKey}
                 to={item.to}
                 onClick={() => setOpen(false)}
                 className="flex w-full items-center gap-3 rounded-sm px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
               >
                 <item.icon size="1.1rem" />
-                {item.name}
+                {t(item.labelKey)}
               </WaspRouterLink>
             );
           })}
           <div className="border-t my-1" />
-          {/* Language and theme inline in the user menu */}
           <div className="flex items-center justify-between px-2 py-1.5">
             <span className="text-xs text-muted-foreground">{t('language')}</span>
             <LanguageSwitcher variant="inline" />
@@ -94,7 +92,7 @@ export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
             className="flex w-full items-center gap-3 rounded-sm px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
           >
             <LogOut size="1.1rem" />
-            Sair
+            {t('sign_out')}
           </button>
         </div>
       )}

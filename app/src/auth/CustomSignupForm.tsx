@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { signup } from 'wasp/client/auth';
 import { googleSignInUrl } from 'wasp/client/auth';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +8,7 @@ import { Label } from '../client/components/ui/label';
 import { Checkbox } from '../client/components/ui/checkbox';
 import { Cross, Loader2, Eye, EyeOff } from 'lucide-react';
 import { isFamilyPortalHost } from '../shared/portal';
+import { rememberPendingInviteToken } from './inviteTokenStorage';
 
 type CustomSignupFormProps = {
   inviteToken?: string | null;
@@ -24,6 +25,12 @@ export default function CustomSignupForm({ inviteToken, defaultEmail }: CustomSi
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    if (inviteToken) {
+      rememberPendingInviteToken(inviteToken);
+    }
+  }, [inviteToken]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,6 +123,7 @@ export default function CustomSignupForm({ inviteToken, defaultEmail }: CustomSi
             onChange={(e) => setEmail(e.target.value)}
             placeholder={t('signup_email_placeholder')}
             autoComplete="email"
+            readOnly={!!defaultEmail}
             disabled={isLoading}
             required
           />
@@ -193,7 +201,7 @@ export default function CustomSignupForm({ inviteToken, defaultEmail }: CustomSi
           <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground">{t('signup_divider')}</span></div>
         </div>
 
-        <a href={googleSignInUrl} className="block w-full rounded-lg border border-input bg-background h-10 px-4 py-2 text-sm font-medium text-center hover:bg-muted/30 transition-colors">
+        <a href={googleSignInUrl} onClick={() => inviteToken && rememberPendingInviteToken(inviteToken)} className="block w-full rounded-lg border border-input bg-background h-10 px-4 py-2 text-sm font-medium text-center hover:bg-muted/30 transition-colors">
           {t('signup_google')}
         </a>
       </form>
@@ -214,3 +222,5 @@ export default function CustomSignupForm({ inviteToken, defaultEmail }: CustomSi
     </div>
   );
 }
+
+

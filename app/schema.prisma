@@ -1352,6 +1352,7 @@ model UserTwoFactor {
   enabled   Boolean  @default(false)
   verified  Boolean  @default(false) // Has the user completed setup with a test code?
   sessionVerifiedAt DateTime? // Set after successful TOTP at login; cleared on new login challenge
+  sessionVerifiedSessionIds String[] @default([]) // Sessions that have completed login 2FA
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -1520,3 +1521,5 @@ model ContactFormMessage {
   isRead    Boolean   @default(false)
   repliedAt DateTime?
 }
+
+

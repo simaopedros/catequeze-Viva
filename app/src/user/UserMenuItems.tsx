@@ -1,9 +1,10 @@
-import { LogOut } from "lucide-react";
-import { useNavigate } from "react-router";
-import { signOut } from "../client/analytics/himetrica";
-import { Link as WaspRouterLink } from "wasp/client/router";
-import { type User } from "wasp/entities";
-import { userMenuItems } from "./constants";
+import { LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
+import { signOut } from '../client/analytics/himetrica';
+import { Link as WaspRouterLink } from 'wasp/client/router';
+import { type User } from 'wasp/entities';
+import { userMenuItems } from './constants';
 
 export const UserMenuItems = ({
   user,
@@ -12,6 +13,7 @@ export const UserMenuItems = ({
   user?: Partial<User>;
   onItemClick?: () => void;
 }) => {
+  const { t } = useTranslation('topbar');
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -30,14 +32,14 @@ export const UserMenuItems = ({
         if (item.isAdminOnly && (!user || !user.isAdmin)) return null;
 
         return (
-          <li key={item.name}>
+          <li key={item.labelKey}>
             <WaspRouterLink
               to={item.to}
               onClick={onItemClick}
               className="text-foreground hover:bg-accent hover:text-accent-foreground flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium leading-7 transition-colors"
             >
               <item.icon size="1.1rem" />
-              {item.name}
+              {t(item.labelKey)}
             </WaspRouterLink>
           </li>
         );
@@ -49,7 +51,7 @@ export const UserMenuItems = ({
           className="text-foreground hover:bg-accent hover:text-accent-foreground flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium leading-7 transition-colors"
         >
           <LogOut size="1.1rem" />
-          Sair
+          {t('sign_out')}
         </button>
       </li>
     </>

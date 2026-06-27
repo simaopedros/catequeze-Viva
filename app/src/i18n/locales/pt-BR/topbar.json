@@ -20,6 +20,11 @@
   "profiles": "Perfis ({{count}})",
   "noParish": "Sem paróquia",
   "requiresPaidPlan": "Requer plano pago",
+  "catechesis_dashboard": "Painel da Catequese",
+  "account_settings": "Configurações da Conta",
+  "admin_panel": "Painel de Administração",
+  "sign_out": "Sair",
+  "current_user": "Usuário",
   "language": "Idioma",
   "theme": "Tema",
   "context": "Espaço e perfil"

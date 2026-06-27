@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { login } from 'wasp/client/auth';
 import { googleSignInUrl } from 'wasp/client/auth';
 import { signOut } from '../client/analytics/himetrica';
@@ -11,6 +11,7 @@ import { Checkbox } from '../client/components/ui/checkbox';
 import { Cross, Loader2, Eye, EyeOff, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { getTwoFactorStatus, verifyTwoFactorLogin, beginTwoFactorChallenge } from 'wasp/client/operations';
 import { isFamilyPortalHost } from '../shared/portal';
+import { rememberPendingInviteToken } from './inviteTokenStorage';
 
 type Step = 'login' | 'twofactor';
 
@@ -33,6 +34,12 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [twoFactorToken, setTwoFactorToken] = useState('');
+
+  useEffect(() => {
+    if (inviteToken) {
+      rememberPendingInviteToken(inviteToken);
+    }
+  }, [inviteToken]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -225,7 +232,7 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
           <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground">{t('login_divider')}</span></div>
         </div>
 
-        <a href={googleSignInUrl} className="block w-full rounded-lg border border-input bg-background h-10 px-4 py-2 text-sm font-medium text-center hover:bg-muted/30 transition-colors">
+        <a href={googleSignInUrl} onClick={() => inviteToken && rememberPendingInviteToken(inviteToken)} className="block w-full rounded-lg border border-input bg-background h-10 px-4 py-2 text-sm font-medium text-center hover:bg-muted/30 transition-colors">
           {t('login_google')}
         </a>
       </form>
@@ -246,3 +253,4 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
     </div>
   );
 }
+

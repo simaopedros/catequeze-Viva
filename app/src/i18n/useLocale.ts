@@ -3,7 +3,7 @@ import { useCallback, useEffect } from 'react';
 import { useAuth } from 'wasp/client/auth';
 import { updateLocalePreference } from 'wasp/client/operations';
 import { resolveIntlLocale } from './format';
-import i18nInstance, { loadLanguageBundle } from './config';
+import i18nInstance from './config';
 
 export type SupportedLocale = 'pt-BR' | 'es' | 'en';
 
@@ -29,9 +29,6 @@ function parseLocale(value: string | null | undefined): SupportedLocale | null {
 }
 
 async function applyLocaleToI18n(locale: SupportedLocale, i18n = i18nInstance) {
-  if (locale !== 'pt-BR') {
-    await loadLanguageBundle(locale);
-  }
   await i18n.changeLanguage(locale);
   document.documentElement.lang = locale;
 }
@@ -43,7 +40,7 @@ export function useLocale() {
   const currentLocale = (parseLocale(i18n.language) ?? 'pt-BR') as SupportedLocale;
   const intlLocale = resolveIntlLocale(currentLocale);
 
-  // Sync from stored locale on mount (handles en/es stored before code-split boot)
+  // Keep localStorage as the source of truth if it changed outside this hook.
   useEffect(() => {
     const stored = parseLocale(localStorage.getItem(LOCALE_STORAGE_KEY));
     if (!stored) return;
@@ -97,13 +94,4 @@ export function useLocale() {
     supportedLocales: VALID_LOCALES,
     localeLabels,
   };
-}
-
-/** Call once at app boot to apply stored locale before first paint when possible. */
-export function applyStoredLocale() {
-  if (typeof localStorage === 'undefined' || typeof document === 'undefined') return;
-  const stored = parseLocale(localStorage.getItem(LOCALE_STORAGE_KEY));
-  if (stored) {
-    void applyLocaleToI18n(stored);
-  }
 }

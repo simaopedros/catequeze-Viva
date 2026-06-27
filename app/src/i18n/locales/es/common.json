@@ -1,6 +1,7 @@
 {
   "app_name": "Catequesis Viva",
   "app_tagline": "Plataforma pastoral de iniciación cristiana",
+  "change_language": "Cambiar idioma",
   "toggle_dark_mode": "Alternar modo oscuro",
   "open_main_menu": "Abrir menú principal",
   "parish": "Parroquia",
@@ -100,6 +101,7 @@
   "not_found_title": "Página no encontrada",
   "not_found_desc": "El contenido que busca puede haber sido movido o eliminado.",
   "go_home": "Ir al inicio",
+  "documentation": "Documentación",
   "now": "Ahora",
   "records": "registros",
   "quick_tip": "Consejo rápido",

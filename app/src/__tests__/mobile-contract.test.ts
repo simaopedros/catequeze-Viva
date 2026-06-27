@@ -128,7 +128,7 @@ describe('mobile auth contract', () => {
       body: { token: generateTotp(secret) },
     });
     const verifyRes = makeRes();
-    const ctx = makeContext('coordSaoJose');
+    const ctx = { ...makeContext('coordSaoJose'), req: { sessionId: loginRes.state.payload.sessionId } };
     (ctx.user as any).email = USERS.coordSaoJose.email;
 
     await mobileAuthTwoFactorVerify(verifyReq, verifyRes, ctx);
@@ -143,7 +143,24 @@ describe('mobile auth contract', () => {
     expect(sessionRes.state.payload.authenticated).toBe(true);
     expect(sessionRes.state.payload.bootstrap).toBeTruthy();
 
+    const secondLoginReq = makeReq({
+      body: { email: USERS.coordSaoJose.email, password: 'Teste@123' },
+    });
+    const secondLoginRes = makeRes();
+    await mobileAuthLogin(secondLoginReq, secondLoginRes, undefined);
+    expect(secondLoginRes.state.payload.requiresTwoFactor).toBe(true);
+
+    const secondSessionReq = makeReq({
+      headers: { authorization: `Bearer ${secondLoginRes.state.payload.sessionId}` },
+    });
+    const secondSessionRes = makeRes();
+    await mobileAuthSession(secondSessionReq, secondSessionRes, undefined);
+    expect(secondSessionRes.state.payload.authenticated).toBe(true);
+    expect(secondSessionRes.state.payload.requiresTwoFactor).toBe(true);
+    expect(secondSessionRes.state.payload.bootstrap).toBeUndefined();
+
     await mobileAuthLogout(sessionReq, makeRes(), undefined);
+    await mobileAuthLogout(secondSessionReq, makeRes(), undefined);
     await prisma.userTwoFactor.deleteMany({ where: { userId: USERS.coordSaoJose.id } });
   });
 
@@ -170,3 +187,4 @@ describe('mobile auth contract', () => {
     await prisma.userTwoFactor.deleteMany({ where: { userId: USERS.coordSaoJose.id } });
   });
 });
+

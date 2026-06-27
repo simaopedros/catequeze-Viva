@@ -1,23 +1,23 @@
-import { LayoutDashboard, Settings, Shield } from "lucide-react";
-import { routes } from "wasp/client/router";
+import { LayoutDashboard, Settings, Shield } from 'lucide-react';
+import { routes } from 'wasp/client/router';
 
 export const userMenuItems = [
   {
-    name: "Painel da Catequese",
+    labelKey: 'catechesis_dashboard',
     to: routes.AppDashboardRoute.to,
     icon: LayoutDashboard,
     isAdminOnly: false,
     isAuthRequired: true,
   },
   {
-    name: "Configurações de Conta",
+    labelKey: 'account_settings',
     to: routes.AccountRoute.to,
     icon: Settings,
     isAuthRequired: false,
     isAdminOnly: false,
   },
   {
-    name: "Painel de Administração",
+    labelKey: 'admin_panel',
     to: routes.AdminRoute.to,
     icon: Shield,
     isAuthRequired: false,

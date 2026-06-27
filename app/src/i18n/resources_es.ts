@@ -1133,6 +1133,7 @@ export const collaborative_es = {
 export const common_es = {
     "app_name": "Catequesis Viva",
     "app_tagline": "Plataforma pastoral de iniciación cristiana",
+    "change_language": "Cambiar idioma",
     "toggle_dark_mode": "Alternar modo oscuro",
     "open_main_menu": "Abrir menú principal",
     "parish": "Parroquia",
@@ -1232,6 +1233,7 @@ export const common_es = {
     "not_found_title": "Página no encontrada",
     "not_found_desc": "El contenido que busca puede haber sido movido o eliminado.",
     "go_home": "Ir al inicio",
+    "documentation": "Documentación",
     "now": "Ahora",
     "records": "registros",
     "quick_tip": "Consejo rápido",
@@ -3243,7 +3245,12 @@ export const pastoralAnalysis_es = {
     "meeting": "Encuentro",
     "endDate": "Fecha de salida",
     "noNotes": "Sin notas registradas",
-    "noMissedThemes": "Sin temas perdidos"
+    "noMissedThemes": "Sin temas perdidos",
+    "noAttendedThemes": "Ningún tema con asistencia registrado",
+    "reportTitle": "Informe individual del catecúmeno",
+    "meetings": "Encuentros",
+    "attendedThemes": "Temas en los que estuvo presente",
+    "issuedAt": "Emitido el"
   } as const;
 
 export const pastoralReport_es = {
@@ -3462,6 +3469,8 @@ export const publicNav_es = {
     "about": "Acerca de",
     "pricing": "Planes",
     "contact": "Contacto",
+    "privacy": "Privacidad",
+    "terms": "Términos",
     "login": "Iniciar sesión",
     "signup": "Crear cuenta",
     "openMenu": "Abrir menú",
@@ -3733,6 +3742,11 @@ export const topbar_es = {
     "profiles": "Perfiles ({{count}})",
     "noParish": "Sin parroquia",
     "requiresPaidPlan": "Requiere plan de pago",
+    "catechesis_dashboard": "Panel de Catequesis",
+    "account_settings": "Configuración de la Cuenta",
+    "admin_panel": "Panel de Administración",
+    "sign_out": "Cerrar sesión",
+    "current_user": "Usuario",
     "language": "Idioma",
     "theme": "Tema",
     "context": "Espacio y perfil"

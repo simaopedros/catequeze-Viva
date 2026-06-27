@@ -32,7 +32,7 @@ export function PublicNavbar() {
             <button
               onClick={() => setLangOpen(!langOpen)}
               className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md"
-              aria-label={tCommon('change_language') || 'Change language'}
+              aria-label={tCommon('change_language')}
             >
               <Globe className="h-3.5 w-3.5" />
               <span className="hidden lg:inline">{getLocaleLabel(currentLocale as SupportedLocale)}</span>

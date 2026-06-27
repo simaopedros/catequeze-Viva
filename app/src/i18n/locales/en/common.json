@@ -1,6 +1,7 @@
 {
   "app_name": "Catequese Viva",
   "app_tagline": "Pastoral platform for Christian initiation",
+  "change_language": "Change language",
   "toggle_dark_mode": "Toggle dark mode",
   "open_main_menu": "Open main menu",
   "parish": "Parish",
@@ -101,6 +102,7 @@
   "not_found_title": "Page not found",
   "not_found_desc": "The content you are looking for may have been moved or removed.",
   "go_home": "Go to home",
+  "documentation": "Documentation",
   "now": "Now",
   "records": "records",
   "quick_tip": "Quick tip",

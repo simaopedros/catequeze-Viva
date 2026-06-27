@@ -1133,6 +1133,7 @@ export const collaborative_en = {
 export const common_en = {
     "app_name": "Catequese Viva",
     "app_tagline": "Pastoral platform for Christian initiation",
+    "change_language": "Change language",
     "toggle_dark_mode": "Toggle dark mode",
     "open_main_menu": "Open main menu",
     "parish": "Parish",
@@ -1311,6 +1312,7 @@ export const common_en = {
     "not_found_title": "Page not found",
     "not_found_desc": "The content you are looking for may have been moved or removed.",
     "go_home": "Go to home",
+    "documentation": "Documentation",
     "now": "Now",
     "records": "records",
     "quick_tip": "Quick tip",
@@ -3243,7 +3245,12 @@ export const pastoralAnalysis_en = {
     "meeting": "Meeting",
     "endDate": "End date",
     "noNotes": "No notes registered",
-    "noMissedThemes": "No themes missed"
+    "noMissedThemes": "No themes missed",
+    "noAttendedThemes": "No attended themes recorded",
+    "reportTitle": "Individual catechumen report",
+    "meetings": "Meetings",
+    "attendedThemes": "Themes attended",
+    "issuedAt": "Issued on"
   } as const;
 
 export const pastoralReport_en = {
@@ -3462,6 +3469,8 @@ export const publicNav_en = {
     "about": "About",
     "pricing": "Pricing",
     "contact": "Contact",
+    "privacy": "Privacy",
+    "terms": "Terms",
     "login": "Log in",
     "signup": "Sign up",
     "openMenu": "Open menu",
@@ -3733,6 +3742,11 @@ export const topbar_en = {
     "profiles": "Profiles ({{count}})",
     "noParish": "No parish",
     "requiresPaidPlan": "Requires paid plan",
+    "catechesis_dashboard": "Catechesis Dashboard",
+    "account_settings": "Account Settings",
+    "admin_panel": "Administration Panel",
+    "sign_out": "Sign out",
+    "current_user": "User",
     "language": "Language",
     "theme": "Theme",
     "context": "Workspace & role"

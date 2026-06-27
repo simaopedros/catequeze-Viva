@@ -5,6 +5,7 @@ import { useQuery, useAction } from 'wasp/client/operations';
 import * as ops from 'wasp/client/operations';
 import { useAuth } from 'wasp/client/auth';
 import { Button } from '../../../client/components/ui/button';
+import { clearPendingInviteToken } from '../../../auth/inviteTokenStorage';
 import { Church, Mail, Clock, AlertTriangle, Check, ArrowRight, Loader2 } from 'lucide-react';
 
 const getInvitationByToken = (ops as any).getInvitationByToken;
@@ -46,6 +47,7 @@ export default function InviteAcceptPage() {
     setError('');
     try {
       await acceptAction({ token });
+      clearPendingInviteToken();
       setAccepted(true);
       setTimeout(() => navigate('/app'), 1500);
     } catch (e: any) {
@@ -185,3 +187,5 @@ export default function InviteAcceptPage() {
     </div>
   );
 }
+
+

@@ -14,17 +14,18 @@ function gtmPlugin(): Plugin {
 }
 
 function patchWaspUseIsClientPlugin(): Plugin {
+  const supportedSuffixes = [
+    "/.wasp/out/sdk/wasp/dist/client/app/hooks/useIsClient.js",
+    "/.wasp/out/sdk/wasp/client/app/hooks/useIsClient.ts",
+  ];
+
   return {
     name: "patch-wasp-use-is-client",
     enforce: "pre",
     transform(_code, id) {
       const normalizedId = id.split("?")[0].replace(/\\/g, "/");
 
-      if (
-        !normalizedId.endsWith(
-          "/.wasp/out/sdk/wasp/dist/client/app/hooks/useIsClient.js",
-        )
-      ) {
+      if (!supportedSuffixes.some((suffix) => normalizedId.endsWith(suffix))) {
         return null;
       }
 

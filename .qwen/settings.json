@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wasp *)",
+      "Bash(sleep *)",
+      "Bash(cat *)",
+      "Bash(which *)",
+      "Bash(pg_isready)",
+      "Bash(docker ps *)",
+      "Bash(docker info)",
+      "Bash(systemctl *)",
+      "Bash(ls *)",
+      "computer_use__launch_app",
+      "Bash(do *)",
+      "Bash(break)",
+      "Bash(done)",
+      "Bash(dpkg *)",
+      "Bash(grep *)",
+      "Bash(sudo *)",
+      "Bash(docker context *)",
+      "Bash(pg_lsclusters)",
+      "Bash(nohup *)",
+      "Bash(apt *)",
+      "Bash(wslpath *)",
+      "Bash(npm ls *)",
+      "Bash(npx *)",
+      "Bash(timeout *)",
+      "Bash(free *)",
+      "Bash(vmstat *)",
+      "Bash(kill *)",
+      "Bash(ps *)",
+      "Bash(pstree *)",
+      "Bash(find *)",
+      "Bash(python3 *)",
+      "Bash(head *)",
+      "Bash(rm *)",
+      "Bash(pkill *)",
+      "Bash(curl *)",
+      "Bash(git add *)"
+    ]
+  },
+  "$version": 4
+}

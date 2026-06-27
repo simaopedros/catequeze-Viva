@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { signOut } from '../../client/analytics/himetrica';
+import { consumePendingInviteToken } from '../../auth/inviteTokenStorage';
 import { getTwoFactorStatus, verifyTwoFactorLogin } from 'wasp/client/operations';
 import { isFamilyPortalHost } from '../../shared/portal';
 import { Button } from '../../client/components/ui/button';
@@ -29,6 +30,15 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
       .catch(() => setNeedsVerification(false))
       .finally(() => setChecking(false));
   }, []);
+
+  useEffect(() => {
+    if (checking || needsVerification) return;
+
+    const pendingToken = consumePendingInviteToken();
+    if (pendingToken) {
+      navigate(`/convite/${encodeURIComponent(pendingToken)}`, { replace: true });
+    }
+  }, [checking, needsVerification, navigate]);
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,3 +124,5 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
 
   return <>{children}</>;
 }
+
+

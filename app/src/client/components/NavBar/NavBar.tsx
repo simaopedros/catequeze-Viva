@@ -1,22 +1,22 @@
-import { LogIn, Menu } from "lucide-react";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Link as ReactRouterLink, useLocation } from "react-router";
-import { useTranslation } from "react-i18next";
-import { useAuth } from "wasp/client/auth";
-import { Link as WaspRouterLink, routes } from "wasp/client/router";
+import { LogIn, Menu } from 'lucide-react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Link as ReactRouterLink, useLocation } from 'react-router';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from 'wasp/client/auth';
+import { Link as WaspRouterLink, routes } from 'wasp/client/router';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "../../../client/components/ui/sheet";
-import { throttleWithTrailingInvocation } from "../../../shared/utils";
-import { UserDropdown } from "../../../user/UserDropdown";
-import { UserMenuItems } from "../../../user/UserMenuItems";
-import { BrandLockup, BrandMark } from "../brand/Brand";
-import { cn } from "../../utils";
-import DarkModeSwitcher from "../DarkModeSwitcher";
+} from '../../../client/components/ui/sheet';
+import { throttleWithTrailingInvocation } from '../../../shared/utils';
+import { UserDropdown } from '../../../user/UserDropdown';
+import { UserMenuItems } from '../../../user/UserMenuItems';
+import { BrandLockup, BrandMark } from '../brand/Brand';
+import { cn } from '../../utils';
+import DarkModeSwitcher from '../DarkModeSwitcher';
 
 export interface NavigationItem {
   name: string;
@@ -35,37 +35,36 @@ export default function NavBar({
       setIsScrolled(window.scrollY > 0);
     }, 50);
 
-    window.addEventListener("scroll", throttledHandler);
+    window.addEventListener('scroll', throttledHandler);
 
     return () => {
-      window.removeEventListener("scroll", throttledHandler);
+      window.removeEventListener('scroll', throttledHandler);
       throttledHandler.cancel();
     };
   }, []);
 
   return (
     <>
-      
       <header
         className={cn(
-          "sticky top-0 z-50 transition-all duration-300",
-          isScrolled && "top-4",
+          'sticky top-0 z-50 transition-all duration-300',
+          isScrolled && 'top-4',
         )}
       >
         <div
-          className={cn("transition-all duration-300", {
-            "bg-background/90 border-border mx-4 rounded-full border pr-2 shadow-lg backdrop-blur-lg md:mx-20 lg:pr-0":
+          className={cn('transition-all duration-300', {
+            'bg-background/90 border-border mx-4 rounded-full border pr-2 shadow-lg backdrop-blur-lg md:mx-20 lg:pr-0':
               isScrolled,
-            "bg-background/80 border-border mx-0 border-b backdrop-blur-lg":
+            'bg-background/80 border-border mx-0 border-b backdrop-blur-lg':
               !isScrolled,
           })}
         >
           <nav
             className={cn(
-              "flex items-center justify-between transition-all duration-300",
+              'flex items-center justify-between transition-all duration-300',
               {
-                "p-3 lg:px-6": isScrolled,
-                "p-6 lg:px-8": !isScrolled,
+                'p-3 lg:px-6': isScrolled,
+                'p-6 lg:px-8': !isScrolled,
               },
             )}
             aria-label="Global"
@@ -96,6 +95,7 @@ export default function NavBar({
 
 function NavBarDesktopUserDropdown({ isScrolled }: { isScrolled: boolean }) {
   const { data: user, isLoading: isUserLoading } = useAuth();
+  const { t } = useTranslation('publicNav');
 
   return (
     <div className="hidden items-center justify-end gap-3 lg:flex lg:flex-1">
@@ -106,20 +106,20 @@ function NavBarDesktopUserDropdown({ isScrolled }: { isScrolled: boolean }) {
         <WaspRouterLink
           to={routes.LoginRoute.to}
           className={cn(
-            "ml-3 leading-6 font-semibold transition-all duration-300",
+            'ml-3 leading-6 font-semibold transition-all duration-300',
             {
-              "text-sm": !isScrolled,
-              "text-xs": isScrolled,
+              'text-sm': !isScrolled,
+              'text-xs': isScrolled,
             },
           )}
         >
           <div className="text-foreground hover:text-primary flex items-center transition-colors duration-300 ease-in-out">
-            Log in{" "}
+            {t('login')}{' '}
             <LogIn
-              size={isScrolled ? "1rem" : "1.1rem"}
-              className={cn("transition-all duration-300", {
-                "mt-[0.1rem] ml-1": !isScrolled,
-                "ml-1": isScrolled,
+              size={isScrolled ? '1rem' : '1.1rem'}
+              className={cn('transition-all duration-300', {
+                'mt-[0.1rem] ml-1': !isScrolled,
+                'ml-1': isScrolled,
               })}
             />
           </div>
@@ -144,6 +144,7 @@ function NavBarMobileMenu({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { t } = useTranslation('common');
+  const { t: tPublicNav } = useTranslation('publicNav');
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -156,14 +157,14 @@ function NavBarMobileMenu({
           <button
             type="button"
             className={cn(
-              "text-muted-foreground hover:text-muted hover:bg-accent inline-flex items-center justify-center rounded-md transition-colors",
+              'text-muted-foreground hover:text-muted hover:bg-accent inline-flex items-center justify-center rounded-md transition-colors',
             )}
           >
             <span className="sr-only">{t('open_main_menu')}</span>
             <Menu
-              className={cn("transition-all duration-300", {
-                "size-8 p-1": !isScrolled,
-                "size-6 p-0.5": isScrolled,
+              className={cn('transition-all duration-300', {
+                'size-8 p-1': !isScrolled,
+                'size-6 p-0.5': isScrolled,
               })}
               aria-hidden="true"
             />
@@ -187,7 +188,7 @@ function NavBarMobileMenu({
                 {isUserLoading ? null : !user ? (
                   <WaspRouterLink to={routes.LoginRoute.to}>
                     <div className="text-foreground hover:text-primary flex items-center justify-end transition-colors duration-300 ease-in-out">
-                      Log in <LogIn size="1.1rem" className="ml-1" />
+                      {tPublicNav('login')} <LogIn size="1.1rem" className="ml-1" />
                     </div>
                   </WaspRouterLink>
                 ) : (
@@ -215,9 +216,9 @@ function renderNavigationItems(
   setMobileMenuOpen?: Dispatch<SetStateAction<boolean>>,
 ) {
   const menuStyles = cn({
-    "block rounded-lg px-3 py-2 text-sm font-medium leading-7 text-foreground hover:bg-accent hover:text-accent-foreground transition-colors":
+    'block rounded-lg px-3 py-2 text-sm font-medium leading-7 text-foreground hover:bg-accent hover:text-accent-foreground transition-colors':
       !!setMobileMenuOpen,
-    "text-sm font-normal leading-6 text-foreground duration-300 ease-in-out hover:text-primary transition-colors":
+    'text-sm font-normal leading-6 text-foreground duration-300 ease-in-out hover:text-primary transition-colors':
       !setMobileMenuOpen,
   });
 
@@ -228,7 +229,7 @@ function renderNavigationItems(
           to={item.to}
           className={menuStyles}
           onClick={setMobileMenuOpen && (() => setMobileMenuOpen(false))}
-          target={item.to.startsWith("http") ? "_blank" : undefined}
+          target={item.to.startsWith('http') ? '_blank' : undefined}
         >
           {item.name}
         </ReactRouterLink>

@@ -1,39 +1,29 @@
-import "./instrument";
-import "./setupApiUrlProxy";
-import { useEffect, useMemo, useState } from "react";
-import { Outlet, useLocation } from "react-router";
-import { useTranslation } from "react-i18next";
-import { routes } from "wasp/client/router";
-import { configureQueryClient } from "wasp/client/operations";
-import { Toaster } from "../client/components/ui/toaster";
-import "./Main.css";
-import NavBar from "./components/NavBar/NavBar";
+import './instrument';
+import './setupApiUrlProxy';
+import { useEffect, useMemo, useState } from 'react';
+import { Outlet, useLocation } from 'react-router';
+import { useTranslation } from 'react-i18next';
+import { routes } from 'wasp/client/router';
+import { configureQueryClient } from 'wasp/client/operations';
+import { Toaster } from '../client/components/ui/toaster';
+import './Main.css';
+import NavBar from './components/NavBar/NavBar';
 import {
-  demoNavigationitems,
-  marketingNavigationItems,
-} from "./components/NavBar/constants";
-import CookieConsentBanner from "./components/cookie-consent/Banner";
-import { ErrorBoundary } from "./components/ErrorBoundary";
-import { useOnlineStatus } from "./hooks/useOnlineStatus";
-import HimetricaScripts from "./analytics/HimetricaScripts";
-import { useHimetricaIdentify } from "./analytics/useHimetricaIdentify";
-import GoogleTagScripts from "./analytics/GoogleTagScripts";
-import { isFamilyPortalHost } from "../shared/portal";
-import FamilyLandingPage from "../catequese/pages/family/FamilyLandingPage";
-import { AppShell } from "../catequese/AppShell";
-import { InstallPrompt } from "./components/InstallPrompt";
+  getDemoNavigationItems,
+  getMarketingNavigationItems,
+} from './components/NavBar/constants';
+import CookieConsentBanner from './components/cookie-consent/Banner';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { useOnlineStatus } from './hooks/useOnlineStatus';
+import HimetricaScripts from './analytics/HimetricaScripts';
+import { useHimetricaIdentify } from './analytics/useHimetricaIdentify';
+import GoogleTagScripts from './analytics/GoogleTagScripts';
+import { isFamilyPortalHost } from '../shared/portal';
+import FamilyLandingPage from '../catequese/pages/family/FamilyLandingPage';
+import { AppShell } from '../catequese/AppShell';
+import { InstallPrompt } from './components/InstallPrompt';
 
-import "../i18n/config";
-import { applyStoredLocale } from "../i18n/useLocale";
-
-// ── Service Worker registration ──────────────────────────────────────
-
-function isStandalone(): boolean {
-  return (
-    window.matchMedia('(display-mode: standalone)').matches ||
-    (window.navigator as any).standalone === true
-  );
-}
+import '../i18n/config';
 
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
@@ -41,13 +31,11 @@ function registerServiceWorker() {
       navigator.serviceWorker.register('/sw.js', { scope: '/' }).then(
         (registration) => {
           console.log('[SW] Registered:', registration.scope);
-          // Listen for updates
           registration.addEventListener('updatefound', () => {
             const newWorker = registration.installing;
             if (!newWorker) return;
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                // New content available — could show a "Update available" banner
                 console.log('[SW] New version available');
               }
             });
@@ -59,15 +47,11 @@ function registerServiceWorker() {
   }
 }
 
-// Configure React Query cache times for optimal performance:
-// - Reference data (Bible/Catechism/Directory) never changes → Infinity
-// - Operational data (classes, catechumens) changes infrequently → 5 min
-// - Volatile data (dashboard stats, notifications) → 30 sec
 configureQueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 min default
-      cacheTime: 30 * 60 * 1000, // 30 min garbage collection
+      staleTime: 5 * 60 * 1000,
+      cacheTime: 30 * 60 * 1000,
       refetchOnWindowFocus: false,
     },
   },
@@ -77,6 +61,8 @@ export default function App() {
   const location = useLocation();
   const isOnline = useOnlineStatus();
   const { t } = useTranslation('common');
+  const { t: tNavigation } = useTranslation('navigation');
+  const { t: tPublicNav } = useTranslation('publicNav');
   const [offlineDismissed, setOfflineDismissed] = useState(false);
   useHimetricaIdentify();
 
@@ -84,25 +70,32 @@ export default function App() {
 
   const isMarketingPage = useMemo(() => {
     if (isFamilyPortal) return false;
-    return (
-      location.pathname === "/" || location.pathname.startsWith("/pricing")
-    );
+    return location.pathname === '/' || location.pathname.startsWith('/pricing');
   }, [location, isFamilyPortal]);
+
+  const marketingNavigationItems = useMemo(
+    () => getMarketingNavigationItems(tPublicNav),
+    [tPublicNav],
+  );
+  const demoNavigationItems = useMemo(
+    () => getDemoNavigationItems(tNavigation, t),
+    [tNavigation, t],
+  );
 
   const navigationItems = isMarketingPage
     ? marketingNavigationItems
-    : demoNavigationitems;
+    : demoNavigationItems;
 
   const shouldDisplayAppNavBar = useMemo(() => {
     if (isFamilyPortal) return false;
     const publicPaths = [
-      "/",
-      "/pricing",
-      "/about",
-      "/privacy",
-      "/terms",
-      "/contact",
-      "/oauth/callback",
+      '/',
+      '/pricing',
+      '/about',
+      '/privacy',
+      '/terms',
+      '/contact',
+      '/oauth/callback',
       routes.LoginRoute.build(),
       routes.SignupRoute.build(),
       routes.RequestPasswordResetRoute.build(),
@@ -115,16 +108,16 @@ export default function App() {
   }, [location, isFamilyPortal]);
 
   const isAdminDashboard = useMemo(() => {
-    return location.pathname.startsWith("/admin");
+    return location.pathname.startsWith('/admin');
   }, [location]);
 
   const isAppRoute = useMemo(() => {
-    return location.pathname.startsWith("/app") || location.pathname === "/account";
+    return location.pathname.startsWith('/app') || location.pathname === '/account';
   }, [location]);
 
   useEffect(() => {
     if (location.hash) {
-      const id = location.hash.replace("#", "");
+      const id = location.hash.replace('#', '');
       const element = document.getElementById(id);
       if (element) {
         element.scrollIntoView();
@@ -136,7 +129,6 @@ export default function App() {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  // Push SPA route changes to dataLayer for Google Tag Manager
   useEffect(() => {
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
@@ -149,17 +141,10 @@ export default function App() {
     });
   }, [location.pathname]);
 
-  // Apply stored locale after hydration to avoid mismatch with SSR
-  useEffect(() => {
-    applyStoredLocale();
-  }, []);
-
-  // Register Service Worker for PWA
   useEffect(() => {
     registerServiceWorker();
   }, []);
 
-  // Dynamically inject Plausible Analytics on client side only to avoid hydration mismatches
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const script = document.createElement('script');
@@ -183,7 +168,6 @@ export default function App() {
           </button>
         </div>
       )}
-      {/* Family portal: root path renders FamilyLandingPage */}
       {isFamilyPortal && location.pathname === '/' ? (
         <div className="bg-background text-foreground min-h-screen">
           <ErrorBoundary>

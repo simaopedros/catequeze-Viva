@@ -8,6 +8,7 @@ import { createPasswordResetLink, isEmailResendAllowed, sendPasswordResetEmail }
 
 import { getPasswordResetEmailContent } from '../../auth/email-and-pass/emails';
 import { getCurrentUserContext } from '../operations/userContext';
+import { getSessionIdFromRequest } from '../auth/sessionIdentity';
 import { listWorkspaces } from '../operations/workspaceOperations';
 import { getUnreadNotificationCount, listNotifications, markAllNotificationsRead, markNotificationRead } from '../operations/notificationOperations';
 import { getDashboardStats } from '../operations/dashboardOperations';
@@ -80,16 +81,20 @@ async function getCurrentMobileUser(userId: string) {
   });
 }
 
-async function getMobileTwoFactorState(userId: string) {
+async function getMobileTwoFactorState(userId: string, sessionId?: string | null) {
   const tf = await prisma.userTwoFactor.findUnique({
     where: { userId },
-    select: { enabled: true, sessionVerifiedAt: true },
+    select: { enabled: true, sessionVerifiedSessionIds: true },
   });
 
   return {
     enabled: tf?.enabled ?? false,
-    sessionVerified: !tf?.enabled || !!tf.sessionVerifiedAt,
+    sessionVerified: !tf?.enabled || (sessionId ? (tf.sessionVerifiedSessionIds ?? []).includes(sessionId) : false),
   };
+}
+
+function removeVerifiedSession(verifiedSessionIds: string[] | null | undefined, sessionId: string): string[] {
+  return (verifiedSessionIds ?? []).filter((verifiedSessionId) => verifiedSessionId !== sessionId);
 }
 
 async function buildMobileBootstrap(context: AuthedContext) {
@@ -114,7 +119,7 @@ async function buildMobileAuthenticatedResponse(context: AuthedContext) {
 
   const [user, twoFactor] = await Promise.all([
     getCurrentMobileUser(context.user.id),
-    getMobileTwoFactorState(context.user.id),
+    getMobileTwoFactorState(context.user.id, getSessionIdFromRequest(context.req)),
   ]);
 
   if (!user) {
@@ -176,7 +181,7 @@ export async function mobileAuthLogin(req: Request, res: Response, _context: any
   }
 
   const session = await createSession(auth.id);
-  const twoFactor = await getMobileTwoFactorState(auth.user.id);
+  const twoFactor = await getMobileTwoFactorState(auth.user.id, session.id);
 
   if (twoFactor.enabled) {
     await prisma.userTwoFactor.update({
@@ -224,6 +229,18 @@ export async function mobileAuthLogout(req: Request, res: Response, _context: an
   const sessionResult = await getSessionAndUserFromBearerToken(req);
   if (sessionResult?.session?.id) {
     await invalidateSession(sessionResult.session.id);
+    const twoFactor = await prisma.userTwoFactor.findUnique({
+      where: { userId: sessionResult.user.id },
+      select: { sessionVerifiedSessionIds: true },
+    });
+    if (twoFactor) {
+      await prisma.userTwoFactor.update({
+        where: { userId: sessionResult.user.id },
+        data: {
+          sessionVerifiedSessionIds: removeVerifiedSession(twoFactor.sessionVerifiedSessionIds, sessionResult.session.id),
+        },
+      });
+    }
   }
   return res.json({ success: true });
 }
@@ -234,7 +251,7 @@ export async function mobileAuthTwoFactorStatus(req: Request, res: Response, _co
     return res.json({ authenticated: false, twoFactor: { enabled: false, sessionVerified: true } });
   }
 
-  const twoFactor = await getMobileTwoFactorState(sessionResult.user.id);
+  const twoFactor = await getMobileTwoFactorState(sessionResult.user.id, sessionResult.session.id);
   return res.json({
     authenticated: true,
     user: await getCurrentMobileUser(sessionResult.user.id),
@@ -248,7 +265,7 @@ export async function mobileAuthTwoFactorStatus(req: Request, res: Response, _co
 }
 
 export async function mobileAuthTwoFactorVerify(req: Request, res: Response, context: any) {
-  const opCtx = toOperationContext(context);
+  const opCtx = toOperationContext({ ...context, req });
   const result = await verifyTwoFactorLogin({ token: req.body?.token }, opCtx);
   return res.json({
     ...result,
@@ -292,7 +309,7 @@ export async function mobileBootstrap(_req: Request, res: Response, context: any
   await requireMobileSessionVerification(opCtx);
   const [user, twoFactor, bootstrap] = await Promise.all([
     getCurrentMobileUser(context.user.id),
-    getMobileTwoFactorState(context.user.id),
+    getMobileTwoFactorState(context.user.id, getSessionIdFromRequest(context.req)),
     buildMobileBootstrap(opCtx),
   ]);
 
@@ -461,3 +478,6 @@ export async function mobileDocuments(req: Request, res: Response, context: any)
 
 export { authenticatedDocumentUpload as mobileDocumentUpload };
 export { serveDocument as mobileServeDocument };
+
+
+
