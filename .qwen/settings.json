@@ -36,7 +36,15 @@
       "Bash(rm *)",
       "Bash(pkill *)",
       "Bash(curl *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git reset *)",
+      "Bash(git restore *)",
+      "Bash(git push *)",
+      "Bash(git tag *)",
+      "Bash(node *)",
+      "Bash(npm *)",
+      "Bash(tail *)",
+      "Bash(psql *)"
     ]
   },
   "$version": 4

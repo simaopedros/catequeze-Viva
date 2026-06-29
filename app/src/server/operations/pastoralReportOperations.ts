@@ -1,5 +1,34 @@
 import { HttpError } from 'wasp/server';
-import { getUserParishRoles, isCoordinatorOrAboveRole } from '../auth/helpers';
+import { assertCanAccessClass, getUserParishRoles, isCatechistOrAboveRole, isCoordinatorOrAboveRole } from '../auth/helpers';
+
+async function canViewSensitiveCatechumenSignals(context: any): Promise<boolean> {
+  if (context.user?.isAdmin) return true;
+  const parishRoles = await getUserParishRoles(context);
+  return parishRoles.some((r: any) => isCatechistOrAboveRole(r.role));
+}
+
+async function getBirthdayScope(context: any): Promise<{ parishIds: string[]; classIds: string[] }> {
+  if (context.user?.isAdmin) {
+    return { parishIds: [], classIds: [] };
+  }
+
+  const parishRoles = await getUserParishRoles(context);
+  const parishIds = parishRoles
+    .filter((r: any) => isCoordinatorOrAboveRole(r.role))
+    .map((r: any) => r.parishId);
+
+  const catechistAssignments = await context.entities.ClassCatechist.findMany({
+    where: { userId: context.user.id },
+    select: { classId: true, class: { select: { parishId: true } } },
+  });
+  const classIds: string[] = catechistAssignments.map((a: any) => a.classId);
+  const assignedParishIds: string[] = catechistAssignments.map((a: any) => a.class?.parishId).filter(Boolean);
+
+  return {
+    parishIds: [...new Set([...parishIds, ...assignedParishIds])],
+    classIds: [...new Set(classIds)],
+  };
+}
 
 export const getClassPastoralReport = async (args: { classId: string }, context: any) => {
   if (!context.user) throw new HttpError(401);
@@ -195,6 +224,11 @@ export const getClassPastoralReport = async (args: { classId: string }, context:
 
 export const getCatechumenPastoralAnalysis = async (args: { catechumenId: string; classId: string }, context: any) => {
   if (!context.user) throw new HttpError(401);
+  await assertCanAccessClass(context, args.classId);
+  void (context.entities.Membership as unknown); // Required by assertCanAccessClass
+  void (context.entities.Parish as unknown); // Required by getUserParishRoles
+
+  const canSeeSensitiveSignals = await canViewSensitiveCatechumenSignals(context);
 
   const enrollment = await context.entities.ClassEnrollment.findFirst({
     where: {
@@ -356,14 +390,24 @@ export const getCatechumenPastoralAnalysis = async (args: { catechumenId: string
   }
 
   const alerts: any[] = [];
-  if (riskLevel === 'ALTO') alerts.push({ type: 'risk_high', message: 'Jovem em risco alto de evasão' });
-  if (maxConsecutive >= 3) alerts.push({ type: 'consecutive_absences', message: `${maxConsecutive} faltas consecutivas` });
-  if (overallFrequency < 50 && totalValidMeetings > 2) alerts.push({ type: 'low_frequency', message: 'Frequência abaixo de 50%' });
-  if (enrollment.status === 'DROPPED') alerts.push({ type: 'dropped', message: 'Jovem desistiu da turma' });
+  if (canSeeSensitiveSignals) {
+    if (riskLevel === 'ALTO') alerts.push({ type: 'risk_high', message: 'Jovem em risco alto de evasão' });
+    if (maxConsecutive >= 3) alerts.push({ type: 'consecutive_absences', message: `${maxConsecutive} faltas consecutivas` });
+    if (overallFrequency < 50 && totalValidMeetings > 2) alerts.push({ type: 'low_frequency', message: 'Frequência abaixo de 50%' });
+    if (enrollment.status === 'DROPPED') alerts.push({ type: 'dropped', message: 'Jovem desistiu da turma' });
+  }
 
   const monthlyPresence = Object.values(monthlyPresenceMap).sort((a: any, b: any) => a.month.localeCompare(b.month));
+  const visibleMeetingTimeline = canSeeSensitiveSignals ? meetingTimeline : [];
+  const visibleAttendedThemes = canSeeSensitiveSignals ? attendedThemes : [];
+  const visibleMissedThemes = canSeeSensitiveSignals ? missedThemes : [];
+  const visibleRankingPosition = canSeeSensitiveSignals ? rankingPosition : null;
+  const visibleRiskLevel = canSeeSensitiveSignals ? riskLevel : null;
+  const visibleConsecutiveAbsences = canSeeSensitiveSignals ? maxConsecutive : null;
+  const visibleTotalCatechumens = canSeeSensitiveSignals ? activeEnrollments.length : null;
 
   return {
+    canSeeSensitiveSignals,
     catechumen: {
       id: profile.id,
       name: `${profile.firstName} ${profile.lastName}`,
@@ -381,21 +425,21 @@ export const getCatechumenPastoralAnalysis = async (args: { catechumenId: string
       startedAt: enrollment.startedAt?.toISOString?.() || null,
       endedAt: enrollment.endedAt?.toISOString?.() || null,
       origin: enrollment.origin || null,
-      notes: enrollment.notes || null,
+      notes: canSeeSensitiveSignals ? (enrollment.notes || null) : null,
     },
     overallFrequency,
     presentCount, absentCount, lateCount, justifiedCount,
-    consecutiveAbsences: maxConsecutive,
-    rankingPosition,
-    totalCatechumensInClass: activeEnrollments.length,
+    consecutiveAbsences: visibleConsecutiveAbsences,
+    rankingPosition: visibleRankingPosition,
+    totalCatechumensInClass: visibleTotalCatechumens,
     totalValidMeetings,
     monthlyPresence,
     statusDistribution: { present: presentCount, absent: absentCount, justified: justifiedCount, late: lateCount },
-    meetingTimeline,
-    attendedThemes,
-    missedThemes,
+    meetingTimeline: visibleMeetingTimeline,
+    attendedThemes: visibleAttendedThemes,
+    missedThemes: visibleMissedThemes,
     alerts,
-    riskLevel,
+    riskLevel: visibleRiskLevel,
   };
 };
 
@@ -407,12 +451,32 @@ export const listUpcomingBirthdays = async (args: { classId?: string; days?: num
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() + days);
 
+  if (args.classId) {
+    await assertCanAccessClass(context, args.classId);
+  }
+  void (context.entities.Membership as unknown); // Required by assertCanAccessClass
+
   const whereClause: any = {
     catechumenProfile: { birthDate: { not: null } },
     status: 'ENROLLED',
   };
 
-  if (args.classId) whereClause.classId = args.classId;
+  if (args.classId) {
+    whereClause.classId = args.classId;
+  } else if (!context.user.isAdmin) {
+    const scope = await getBirthdayScope(context);
+    if (!scope.parishIds.length && !scope.classIds.length) {
+      throw new HttpError(403, 'Sem permissão para consultar aniversários.');
+    }
+
+    whereClause.OR = [];
+    if (scope.parishIds.length) {
+      whereClause.OR.push({ class: { parishId: { in: scope.parishIds } } });
+    }
+    if (scope.classIds.length) {
+      whereClause.OR.push({ classId: { in: scope.classIds } });
+    }
+  }
 
   const enrollments = await context.entities.ClassEnrollment.findMany({
     where: whereClause,
@@ -461,6 +525,30 @@ export const listUpcomingBirthdays = async (args: { classId?: string; days?: num
 
 export const toggleBirthdayGift = async (args: { catechumenId: string; year: number }, context: any) => {
   if (!context.user) throw new HttpError(401);
+
+  if (!context.user.isAdmin) {
+    const scope = await getBirthdayScope(context);
+    const targetEnrollments = await context.entities.ClassEnrollment.findMany({
+      where: {
+        catechumenProfileId: args.catechumenId,
+        status: 'ENROLLED',
+      },
+      select: {
+        classId: true,
+        class: { select: { parishId: true } },
+      },
+    });
+
+    const targetClassIds = targetEnrollments.map((e: any) => e.classId);
+    const targetParishIds = targetEnrollments.map((e: any) => e.class?.parishId).filter(Boolean);
+    const allowed =
+      scope.classIds.some((id) => targetClassIds.includes(id)) ||
+      scope.parishIds.some((id) => targetParishIds.includes(id));
+
+    if (!allowed) {
+      throw new HttpError(403, 'Sem permissão para alterar este presente.');
+    }
+  }
 
   const existing = await context.entities.CatechumenBirthdayGift.findUnique({
     where: { catechumenProfileId_year: { catechumenProfileId: args.catechumenId, year: args.year } },

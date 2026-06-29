@@ -1252,8 +1252,9 @@ api mobileDocumentUpload {
 
 api chatStreamApi {
   fn: import { chatStreamHandler } from "@src/server/operations/chatStream",
+  auth: true,
   httpRoute: (POST, "/api/chat-stream"),
-  entities: [User, UserAiCredits, AiResponseCache, Membership, Parish, TenantBilling, UserTwoFactor, DailyAiUsage]
+  entities: [User, UserAiCredits, AiResponseCache, Membership, Parish, TenantBilling, UserTwoFactor, DailyAiUsage, Conversation, ConversationParticipant, Message]
 }
 
 api healthCheckApi {
@@ -1599,7 +1600,7 @@ action generateAnnualPlanning {
 
 action chatWithAi {
   fn: import { chatWithAi } from "@src/server/operations/aiOperations",
-  entities: [Message, Conversation, UserAiCredits, User, Membership, Parish, TenantBilling, AiResponseCache, DailyAiUsage]
+  entities: [Message, Conversation, ConversationParticipant, UserAiCredits, User, Membership, Parish, TenantBilling, AiResponseCache, DailyAiUsage]
 }
 
 action submitAiFeedback {
@@ -1711,18 +1712,21 @@ action startCollaborativeSession {
 
 api collaborativeChatApi {
   fn: import { collaborativeChatHandler } from "@src/server/api/collaborativeChatStream",
+  auth: true,
   httpRoute: (POST, "/api/collaborative-chat-stream"),
   entities: [CollaborativeSession, SessionMessage, ContentItem, ContextAttachment, ContentVersion, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
 }
 
 api generateBlockApi {
   fn: import { generateBlockHandler } from "@src/server/api/generateBlockStream",
+  auth: true,
   httpRoute: (POST, "/api/generate-block-stream"),
   entities: [CollaborativeSession, ContentItem, SessionMessage, ContentVersion, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
 }
 
 api adjustDepthApi {
   fn: import { adjustDepthHandler } from "@src/server/api/adjustDepthStream",
+  auth: true,
   httpRoute: (POST, "/api/adjust-depth-stream"),
   entities: [CollaborativeSession, ContentItem, SessionMessage, ContentVersion, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
 }

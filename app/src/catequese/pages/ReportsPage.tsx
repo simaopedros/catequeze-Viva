@@ -36,12 +36,30 @@ export default function ReportsPage() {
     return result;
   }, [data, activeParishId, period]);
 
+  const visibleTotals = useMemo(() => ({
+    totalEnrolled: classReports.reduce((s: number, r: any) => s + (r.totalEnrolled || 0), 0),
+    totalMeetings: classReports.reduce((s: number, r: any) => s + (r.totalMeetings || 0), 0),
+    avgAttendance: classReports.length > 0
+      ? Math.round(classReports.reduce((s: number, r: any) => s + (r.attendanceRate || 0), 0) / classReports.length)
+      : 0,
+  }), [classReports]);
+
   const handleExportCSV = () => {
     if(!classReports.length)return;
+    const escapeCsv = (value: unknown) => {
+      const raw = String(value ?? '');
+      const safe = /^[=+\-@]/.test(raw) ? `'${raw}` : raw;
+      return `"${safe.replace(/"/g, '""')}"`;
+    };
     const rows=[[t('csv_headers.class'),t('csv_headers.enrolled'),t('csv_headers.meetings'),t('csv_headers.present'),t('csv_headers.absent'),t('csv_headers.rate')]];
     classReports.forEach((r:any)=>rows.push([r.name,r.totalEnrolled,r.totalMeetings,r.presentCount,r.absentCount,r.attendanceRate+'%']));
-    const blob=new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv'});
-    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='relatorio.csv';a.click();
+    const blob=new Blob(['\uFEFF' + rows.map(r=>r.map(escapeCsv).join(',')).join('\n')],{type:'text/csv;charset=utf-8'});
+    const a=document.createElement('a');
+    const url=URL.createObjectURL(blob);
+    a.href=url;
+    a.download='relatorio.csv';
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   // Chart data for Recharts
@@ -120,7 +138,7 @@ export default function ReportsPage() {
 
         {/* KPIs */}
         <div className="grid gap-4 md:grid-cols-3">
-          {[{l:t('kpis.total_enrolled'),v:data?.totalEnrolled??0,i:Users,c:'text-primary bg-primary/10'},{l:t('kpis.total_meetings'),v:data?.totalMeetings??0,i:Calendar,c:'text-success bg-success/10'},{l:t('kpis.avg_attendance'),v:(data?.avgAttendance??0)+'%',i:TrendingUp,c:'text-warning bg-warning/10'}].map(k=>(
+          {[{l:t('kpis.total_enrolled'),v:visibleTotals.totalEnrolled,i:Users,c:'text-primary bg-primary/10'},{l:t('kpis.total_meetings'),v:visibleTotals.totalMeetings,i:Calendar,c:'text-success bg-success/10'},{l:t('kpis.avg_attendance'),v:visibleTotals.avgAttendance+'%',i:TrendingUp,c:'text-warning bg-warning/10'}].map(k=>(
             <div key={k.l} className="rounded-xl border bg-card p-5 shadow-elevation-sm">
               <div className="flex items-center gap-3"><div className={`rounded-lg p-2 ${k.c}`}><k.i className="h-5 w-5"/></div><div><p className="text-xs text-muted-foreground uppercase">{k.l}</p><p className="text-2xl font-bold">{k.v}</p></div></div>
             </div>

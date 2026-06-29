@@ -63,6 +63,7 @@ function PastoralAnalysisInline({ catechumenId, classId }: { catechumenId: strin
   const formatDate = (value: string | null | undefined) => value ? new Date(value).toLocaleDateString() : '-';
   const displayTheme = (item: any) => item.theme || item.title || t('meeting');
   const statusLabels: Record<string, string> = { PRESENT: t('present'), LATE: t('late'), JUSTIFIED: t('justified'), ABSENT: t('absent'), NOT_FILLED: t('notFilled') };
+  const canSeeSensitiveSignals = Boolean(data.canSeeSensitiveSignals);
   const attendedThemes = data.attendedThemes || data.meetingTimeline.filter((m: any) => ['PRESENT', 'LATE'].includes(m.status));
   const missedThemes = data.missedThemes || [];
 
@@ -90,7 +91,7 @@ function PastoralAnalysisInline({ catechumenId, classId }: { catechumenId: strin
         </div>
       </div>
 
-      {alerts.length > 0 && (
+      {canSeeSensitiveSignals && alerts.length > 0 && (
         <div style={{ border: '1px solid #d4d4d8', borderRadius: '12px', padding: '12px', marginBottom: '16px', breakInside: 'avoid' }}>
           {alerts.map((a: any, i: number) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', borderRadius: '8px', background: '#fef2f2', padding: '8px', fontSize: '12px', color: '#dc2626', marginBottom: i < alerts.length - 1 ? '4px' : 0 }}>
@@ -108,10 +109,12 @@ function PastoralAnalysisInline({ catechumenId, classId }: { catechumenId: strin
           <p style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--color-primary, #3b82f6)', margin: 0 }}>{data.overallFrequency}%</p>
           <p style={{ color: '#6b7280', margin: '4px 0 0' }}>{t('overallFrequency')}</p>
         </div>
-        <div style={{ border: '1px solid #d4d4d8', borderRadius: '8px', padding: '12px', background: '#f9fafb', breakInside: 'avoid' }}>
-          <p style={{ fontSize: '24px', fontWeight: 'bold', margin: 0 }}>{data.rankingPosition}/{data.totalCatechumensInClass}</p>
-          <p style={{ color: '#6b7280', margin: '4px 0 0' }}>{t('rankingPosition')}</p>
-        </div>
+        {canSeeSensitiveSignals && (
+          <div style={{ border: '1px solid #d4d4d8', borderRadius: '8px', padding: '12px', background: '#f9fafb', breakInside: 'avoid' }}>
+            <p style={{ fontSize: '24px', fontWeight: 'bold', margin: 0 }}>{data.rankingPosition}/{data.totalCatechumensInClass}</p>
+            <p style={{ color: '#6b7280', margin: '4px 0 0' }}>{t('rankingPosition')}</p>
+          </div>
+        )}
         <div style={{ border: '1px solid #d4d4d8', borderRadius: '8px', padding: '12px', background: '#f9fafb', breakInside: 'avoid' }}>
           <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#16a34a', margin: 0 }}>{data.presentCount + data.lateCount}</p>
           <p style={{ color: '#6b7280', margin: '4px 0 0' }}>{t('present')}</p>
@@ -248,11 +251,11 @@ function PastoralAnalysisInline({ catechumenId, classId }: { catechumenId: strin
         </div>
       </div>
 
-      {alerts.length > 0 && <div className="pastoral-print-card space-y-1 rounded-xl border bg-card p-3">{alerts.map((a: any, i: number) => <div key={i} className="flex items-center gap-2 rounded bg-destructive/10 p-2 text-xs text-destructive"><AlertTriangle className="h-3.5 w-3.5 shrink-0" />{a.type === 'risk_high' && t('riskHighWarning')}{a.type === 'consecutive_absences' && t('consecutiveAbsencesWarning', { count: data.consecutiveAbsences })}{a.type === 'low_frequency' && t('lowFrequencyWarning')}</div>)}</div>}
+      {canSeeSensitiveSignals && alerts.length > 0 && <div className="pastoral-print-card space-y-1 rounded-xl border bg-card p-3">{alerts.map((a: any, i: number) => <div key={i} className="flex items-center gap-2 rounded bg-destructive/10 p-2 text-xs text-destructive"><AlertTriangle className="h-3.5 w-3.5 shrink-0" />{a.type === 'risk_high' && t('riskHighWarning')}{a.type === 'consecutive_absences' && t('consecutiveAbsencesWarning', { count: data.consecutiveAbsences })}{a.type === 'low_frequency' && t('lowFrequencyWarning')}</div>)}</div>}
 
       <div className="grid grid-cols-2 gap-2 text-center text-xs sm:grid-cols-4">
         <div className="pastoral-print-card rounded-lg border bg-muted/40 p-3"><p className="text-2xl font-bold text-primary">{data.overallFrequency}%</p><p className="text-muted-foreground">{t('overallFrequency')}</p></div>
-        <div className="pastoral-print-card rounded-lg border bg-muted/40 p-3"><p className="text-2xl font-bold">{data.rankingPosition}/{data.totalCatechumensInClass}</p><p className="text-muted-foreground">{t('rankingPosition')}</p></div>
+        {canSeeSensitiveSignals && <div className="pastoral-print-card rounded-lg border bg-muted/40 p-3"><p className="text-2xl font-bold">{data.rankingPosition}/{data.totalCatechumensInClass}</p><p className="text-muted-foreground">{t('rankingPosition')}</p></div>}
         <div className="pastoral-print-card rounded-lg border bg-muted/40 p-3"><p className="text-2xl font-bold text-emerald-600">{data.presentCount + data.lateCount}</p><p className="text-muted-foreground">{t('present')}</p></div>
         <div className="pastoral-print-card rounded-lg border bg-muted/40 p-3"><p className="text-2xl font-bold text-destructive">{data.justifiedCount + data.absentCount}</p><p className="text-muted-foreground">{t('absent')}</p></div>
       </div>
@@ -569,9 +572,15 @@ export default function CatechumenDetailPage() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <h4 className="text-sm font-semibold">{t('catechumens.detail_attendance_report')}</h4>
-                    <Badge variant={report.riskLevel === 'ALTO' ? 'destructive' : report.riskLevel === 'MÉDIO' ? 'secondary' : 'default'} className="text-overline">
-                      {t('catechumens.detail_risk', { level: report.riskLevel })}
-                    </Badge>
+                    {report.canSeeSensitiveSignals ? (
+                      <Badge variant={report.riskLevel === 'ALTO' ? 'destructive' : report.riskLevel === 'MÉDIO' ? 'secondary' : 'default'} className="text-overline">
+                        {t('catechumens.detail_risk', { level: report.riskLevel })}
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-overline">
+                        Resumo restrito
+                      </Badge>
+                    )}
                   </div>
                   <div className="grid grid-cols-3 gap-2 text-center text-xs">
                     <div className="bg-muted rounded-lg p-2">

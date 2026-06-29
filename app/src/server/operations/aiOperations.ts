@@ -21,6 +21,8 @@ function sanitizePrompt(input: string): string {
     .slice(0, 2000); // Limit length
 }
 import { assertAndDeductCredits, getCreditsStatus } from '../ai/credits';
+import { assertCanAccessClass, assertCanAccessParish } from '../auth/helpers';
+import { assertCanAccessContent } from '../auth/contentAccess';
 import { getCachedResponse, setCachedResponse } from '../ai/cache';
 import { AI_CREDITS } from '../../shared/aiCredits';
 import {
@@ -88,6 +90,10 @@ export const generateMeetingWithAi = async (
   context: any,
 ) => {
   if (!context.user) throw new HttpError(401);
+
+  if (args.parishId) {
+    await assertCanAccessParish(context, args.parishId);
+  }
 
   // Deduct credit
   await assertAndDeductCredits(context, AI_CREDITS.COST.generateMeeting);
@@ -239,6 +245,8 @@ export const generateAnnualPlanning = async (
   });
   if (!cls) throw new HttpError(404, 'Turma não encontrada.');
 
+  await assertCanAccessClass(context, args.classId);
+
   // Deduct credits (3 per planning)
   await assertAndDeductCredits(context, AI_CREDITS.COST.generateAnnualPlanning);
   const { client, model } = await getAiClient();
@@ -333,6 +341,19 @@ export const chatWithAi = async (
 
   // If a conversation exists, save the message pair
   if (args.conversationId) {
+    const conversation = await context.entities.Conversation.findUnique({
+      where: { id: args.conversationId },
+      select: { id: true },
+    });
+    if (!conversation) throw new HttpError(404, 'Conversa não encontrada.');
+
+    const participant = await context.entities.ConversationParticipant.findUnique({
+      where: { conversationId_userId: { conversationId: args.conversationId, userId: context.user.id } },
+    });
+    if (!participant && !context.user.isAdmin) {
+      throw new HttpError(403, 'Você não participa desta conversa.');
+    }
+
     await context.entities.Message.create({
       data: {
         conversationId: args.conversationId,
@@ -370,11 +391,13 @@ export const generateActivityForMeeting = async (
   const content = await context.entities.ContentItem.findUnique({
     where: { id: args.contentId },
     select: {
-      id: true, title: true, theme: true, mainContent: true,
+      id: true, parishId: true, createdById: true, title: true, theme: true, mainContent: true,
       pastoralObjective: true, biblicalRef: true,
     },
   });
   if (!content) throw new HttpError(404, 'Conteúdo não encontrado.');
+
+  await assertCanAccessContent(context, content);
 
   const meeting = args.meetingId
     ? await context.entities.Meeting.findUnique({

@@ -54,20 +54,23 @@ export async function authenticatedDocumentUpload(
     const entities = context.entities;
     const user = context.user;
 
+    let accessibleParishIds: string[] = [];
+    let effectiveRole: string | null = null;
+
     if (!user.isAdmin) {
-      const membership = await entities.Membership.findFirst({
+      const memberships = await entities.Membership.findMany({
         where: { userId: user.id, status: 'ACTIVE' },
         select: { role: true, parishId: true },
       });
 
-      const personalWorkspace = !membership
+      const personalWorkspace = memberships.length === 0
         ? await entities.Parish.findFirst({
             where: { ownerId: user.id, type: 'PERSONAL' },
             select: { id: true },
           })
         : null;
 
-      if (!membership && !personalWorkspace) {
+      if (!memberships.length && !personalWorkspace) {
         return res.status(403).json({ error: 'Sem permissão para enviar documentos.' });
       }
 
@@ -75,10 +78,36 @@ export async function authenticatedDocumentUpload(
         'SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR',
         'PERSONAL_OWNER', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST',
       ];
-      const effectiveRole = membership?.role || (personalWorkspace ? 'PERSONAL_OWNER' : null);
+      const primaryRole = memberships[0]?.role || (personalWorkspace ? 'PERSONAL_OWNER' : null);
+      const hasCatechistRole = memberships.some((m: { role: string; parishId: string | null }) => catechistRoles.includes(m.role)) || Boolean(personalWorkspace);
+      effectiveRole = primaryRole;
+      accessibleParishIds = [
+        ...new Set([
+          ...memberships.map((m: { role: string; parishId: string | null }) => m.parishId),
+          ...(personalWorkspace ? [personalWorkspace.id] : []),
+        ]),
+      ].filter((id): id is string => Boolean(id));
 
-      if (effectiveRole && catechistRoles.includes(effectiveRole)) {
-        // allowed
+      if (hasCatechistRole) {
+        if (catechumenProfileId) {
+          const catechumen = await entities.CatechumenProfile.findUnique({
+            where: { id: catechumenProfileId },
+            select: {
+              parishId: true,
+              household: { select: { parishId: true } },
+              enrollments: { select: { class: { select: { parishId: true } } } },
+            },
+          });
+          const targetParishIds = [
+            catechumen?.parishId,
+            catechumen?.household?.parishId,
+            ...(catechumen?.enrollments || []).map((e: any) => e.class?.parishId),
+          ].filter(Boolean);
+          const allowed = targetParishIds.some((id) => accessibleParishIds.includes(id));
+          if (!allowed) {
+            return res.status(403).json({ error: 'Só pode enviar documentos para catequizandos da sua paróquia.' });
+          }
+        }
       } else if (effectiveRole === 'GUARDIAN') {
         if (!catechumenProfileId) {
           return res.status(403).json({ error: 'Responsáveis devem selecionar um catequizando da família.' });
@@ -101,11 +130,19 @@ export async function authenticatedDocumentUpload(
 
     let resolvedParishId = parishId as string | undefined;
     if (!resolvedParishId) {
-      const membership = await entities.Membership.findFirst({
-        where: { userId: user.id, status: 'ACTIVE' },
-        select: { parishId: true },
-      });
-      resolvedParishId = membership?.parishId;
+      if (effectiveRole === 'GUARDIAN' && catechumenProfileId) {
+        const catechumen = await entities.CatechumenProfile.findUnique({
+          where: { id: catechumenProfileId },
+          select: { parishId: true, household: { select: { parishId: true } } },
+        });
+        resolvedParishId = catechumen?.parishId || catechumen?.household?.parishId || undefined;
+      } else {
+        const membership = await entities.Membership.findFirst({
+          where: { userId: user.id, status: 'ACTIVE' },
+          select: { parishId: true },
+        });
+        resolvedParishId = membership?.parishId || accessibleParishIds[0];
+      }
     }
 
     const s3Key = await storeDocumentFile({
@@ -125,7 +162,7 @@ export async function authenticatedDocumentUpload(
       },
     });
 
-    return res.json({ success: true, document: doc });
+    return res.json({ success: true, document: { id: doc.id, name: doc.name, type: doc.type, createdAt: doc.createdAt } });
   } catch (err: any) {
     logger.error('Erro no upload autenticado', { error: err?.message || String(err) });
     if (err?.code === 'LIMIT_FILE_SIZE') {

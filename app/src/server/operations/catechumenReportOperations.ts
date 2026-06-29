@@ -2,13 +2,16 @@
  * Individual catechumen attendance report — percentage, missed classes, risk assessment.
  */
 import { HttpError } from 'wasp/server';
-import { assertCanAccessCatechumenProfile } from '../auth/helpers';
+import { assertCanAccessCatechumenProfile, getUserParishRoles, isCatechistOrAboveRole } from '../auth/helpers';
 import { assertTwoFactorSessionVerified } from './twoFactorOperations';
 
 export const getCatechumenAttendanceReport = async (args: { catechumenId: string }, context: any) => {
   if (!context.user) throw new HttpError(401);
   await assertTwoFactorSessionVerified(context);
   await assertCanAccessCatechumenProfile(context, args.catechumenId);
+
+  const parishRoles = await getUserParishRoles(context);
+  const canSeeSensitiveSignals = context.user?.isAdmin || parishRoles.some((r: any) => isCatechistOrAboveRole(r.role));
 
   const catechumenWithAttendance = await context.entities.CatechumenProfile.findUnique({
     where: { id: args.catechumenId },
@@ -73,8 +76,8 @@ export const getCatechumenAttendanceReport = async (args: { catechumenId: string
     totalLate,
     totalJustified,
     attendanceRate,
-    maxConsecutiveAbsences: maxConsecutive,
-    riskLevel: attendanceRate < 50 ? 'ALTO' : attendanceRate < 75 ? 'MÉDIO' : 'BAIXO',
+    maxConsecutiveAbsences: canSeeSensitiveSignals ? maxConsecutive : null,
+    riskLevel: canSeeSensitiveSignals ? (attendanceRate < 50 ? 'ALTO' : attendanceRate < 75 ? 'MÉDIO' : 'BAIXO') : null,
     records: allAttendance.slice(0, 50),
   };
 };

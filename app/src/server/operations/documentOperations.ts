@@ -229,7 +229,7 @@ export const uploadDocument = async (
     }
   }
 
-  return context.entities.Document.create({
+  const created = await context.entities.Document.create({
     data: {
       name: args.name,
       type: args.type as any,
@@ -239,6 +239,13 @@ export const uploadDocument = async (
       uploadedById: context.user.id,
     },
   });
+
+  return {
+    id: created.id,
+    name: created.name,
+    type: created.type,
+    createdAt: created.createdAt,
+  };
 };
 
 export const verifyDocument = async (args: { id: string }, context: any) => {
@@ -327,6 +334,7 @@ export const rejectDocument = async (args: { id: string; reason?: string }, cont
     select: {
       id: true,
       uploadedById: true,
+      catechumenProfileId: true,
       catechumenProfile: { select: { id: true } },
     },
   });
@@ -335,12 +343,40 @@ export const rejectDocument = async (args: { id: string; reason?: string }, cont
   if (!context.user.isAdmin) {
     const membership = await context.entities.Membership.findFirst({
       where: { userId: context.user.id, status: 'ACTIVE' },
-      select: { role: true },
+      select: { role: true, parishId: true },
     });
 
     const allowedRoles = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'];
     if (!membership || !allowedRoles.includes(membership.role)) {
       throw new HttpError(403, 'Apenas coordenadores podem rejeitar documentos.');
+    }
+
+    if (membership.parishId) {
+      let sameParish = false;
+
+      if (document.uploadedById) {
+        const uploaderMembership = await context.entities.Membership.findFirst({
+          where: { userId: document.uploadedById, parishId: membership.parishId },
+        });
+        if (uploaderMembership) sameParish = true;
+      }
+
+      if (!sameParish && document.catechumenProfileId) {
+        const cat = await context.entities.CatechumenProfile.findUnique({
+          where: { id: document.catechumenProfileId },
+          select: { parishId: true, household: { select: { parishId: true } }, enrollments: { select: { class: { select: { parishId: true } } } } },
+        });
+        const catParishIds = [
+          cat?.parishId,
+          cat?.household?.parishId,
+          ...(cat?.enrollments || []).map((e: any) => e.class?.parishId),
+        ].filter(Boolean);
+        if (catParishIds.includes(membership.parishId)) sameParish = true;
+      }
+
+      if (!sameParish) {
+        throw new HttpError(403, 'Este documento não pertence à sua paróquia.');
+      }
     }
   }
 

@@ -40,10 +40,17 @@ export const getReportsOverview = async (_args: void, context: any) => {
     const absentCount = cls.meetings.reduce((sum: number, m: any) =>
       sum + m.attendance.filter((a: any) => a.status === 'ABSENT').length, 0
     );
+    const lastMeetingDate = cls.meetings.reduce((latest: Date | null, meeting: any) => {
+      if (!meeting?.date) return latest;
+      if (!latest || meeting.date > latest) return meeting.date;
+      return latest;
+    }, null as Date | null);
 
     return {
       id: cls.id,
       name: cls.name,
+      parishId: cls.parishId,
+      lastMeetingDate: lastMeetingDate?.toISOString?.() || null,
       totalEnrolled: cls.enrollments.length,
       totalMeetings,
       totalAttendanceRecords,

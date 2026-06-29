@@ -58,6 +58,23 @@ export async function chatStreamHandler(req: Request, res: Response, context: an
     return;
   }
 
+  if (conversationId) {
+    const conversation = await context.entities.Conversation.findUnique({
+      where: { id: conversationId },
+      select: { id: true },
+    });
+    if (!conversation) {
+      throw new HttpError(404, 'Conversa não encontrada.');
+    }
+
+    const participant = await context.entities.ConversationParticipant.findUnique({
+      where: { conversationId_userId: { conversationId, userId: context.user.id } },
+    });
+    if (!participant && !context.user.isAdmin) {
+      throw new HttpError(403, 'Você não participa desta conversa.');
+    }
+  }
+
   // Check AI access
   const status = await getCreditsStatus(context);
   if (!status.hasAiAccess) {
