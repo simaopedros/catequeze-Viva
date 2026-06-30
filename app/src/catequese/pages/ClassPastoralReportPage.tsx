@@ -24,6 +24,13 @@ const STATUS_COLORS: Record<string, string> = {
   COMPLETED: '#6366f1', MOVED_TO_OTHER_CLASS: '#8b5cf6',
 };
 const ATTENDANCE_COLORS = { present: '#22c55e', late: '#f59e0b', justified: '#8b5cf6', absent: '#ef4444' };
+const STATUS_LABELS: Record<string, string> = {
+  ENROLLED: 'Ativo',
+  DROPPED: 'Desistente',
+  TRANSFERRED: 'Transferido',
+  COMPLETED: 'Concluído',
+  MOVED_TO_OTHER_CLASS: 'Mudou de turma',
+};
 
 export default function ClassPastoralReportPage() {
   const { t } = useTranslation('pastoralReport');
@@ -67,7 +74,7 @@ export default function ClassPastoralReportPage() {
   }, [data]);
 
   const statusPieData = useMemo(() => data?.statusDistribution?.map((s: any) => ({
-    name: s.status,
+    name: STATUS_LABELS[s.status] || s.status,
     value: s.count,
     color: STATUS_COLORS[s.status] || '#94a3b8',
   })) || [], [data]);
@@ -161,7 +168,7 @@ export default function ClassPastoralReportPage() {
                   <XAxis dataKey="month" tick={{ fontSize: 11 }} />
                   <YAxis yAxisId="left" label={{ value: t('meetingsCount'), angle: -90, position: 'insideLeft', style: { fontSize: 10 } }} tick={{ fontSize: 11 }} />
                   <YAxis yAxisId="right" orientation="right" domain={[0, 100]} label={{ value: t('avgAttendanceLine'), angle: 90, position: 'insideRight', style: { fontSize: 10 } }} tick={{ fontSize: 11 }} />
-                  <Tooltip />
+                  <Tooltip formatter={(value: any, name: any) => [value, name]} />
                   <Bar yAxisId="left" dataKey="meetings" fill="#6366f1" name={t('monthlyMeetings')} radius={[4, 4, 0, 0]} />
                   <Line yAxisId="right" type="monotone" dataKey="avgAttendance" stroke="#22c55e" name={t('avgAttendanceLine')} strokeWidth={2} dot={{ r: 4 }} />
                 </ComposedChart>
@@ -181,7 +188,7 @@ export default function ClassPastoralReportPage() {
                     {statusPieData.map((entry: any, i: number) => <Cell key={i} fill={entry.color} />)}
                   </Pie>
                   <Tooltip />
-                  <Legend />
+                  <Legend formatter={(value) => String(value)} />
                 </RPieChart>
               </ResponsiveContainer>
             ) : (

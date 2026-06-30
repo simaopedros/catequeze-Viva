@@ -82,6 +82,7 @@ export function AIHubHome() {
   };
 
   const handleAskAssistant = () => {
+    setSearchParams({ assistant: 'open' });
     window.dispatchEvent(new CustomEvent('open-ai-widget'));
   };
 

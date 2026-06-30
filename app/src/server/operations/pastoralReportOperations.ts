@@ -91,7 +91,6 @@ export const getClassPastoralReport = async (args: { classId: string }, context:
       return {
         catechumenId: e.catechumenProfile.id,
         name: `${e.catechumenProfile.firstName} ${e.catechumenProfile.lastName}`,
-        birthDate: birth.toISOString(),
         age,
         nextBirthday: nextBirthday.toISOString(),
       };

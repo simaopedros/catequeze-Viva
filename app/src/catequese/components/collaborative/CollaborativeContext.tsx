@@ -14,6 +14,7 @@ import {
   getAiCreditsStatus,
   getSessionContentItem,
 } from 'wasp/client/operations';
+import { getSessionId } from 'wasp/client/api';
 
 export interface SessionMessage {
   id: string;
@@ -154,11 +155,13 @@ export function CollaborativeProvider({ children }: { children: ReactNode }) {
     setState(s => ({ ...s, messages: [...s.messages, assistantMsg] }));
 
     try {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      const authSessionId = getSessionId();
+      if (authSessionId) headers['Authorization'] = `Bearer ${authSessionId}`;
       const response = await fetch('/api/collaborative-chat-stream', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ sessionId: state.sessionId, message }),
-        credentials: 'include',
       });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
 

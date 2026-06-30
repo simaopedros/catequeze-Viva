@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 import { Button } from '../../client/components/ui/button';
 import { Textarea } from '../../client/components/ui/textarea';
 import {
@@ -17,6 +17,7 @@ import {
   Coins,
 } from 'lucide-react';
 import { getAiCreditsStatus, submitAiFeedback } from 'wasp/client/operations';
+import { getSessionId } from 'wasp/client/api';
 import { BuyCreditsButton } from './BuyCreditsButton';
 
 interface Message {
@@ -28,6 +29,7 @@ interface Message {
 export function AIHelperWidget() {
   const { t } = useTranslation('common');
   const { t: ta } = useTranslation('ai');
+  const [, setSearchParams] = useSearchParams();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -59,6 +61,16 @@ export function AIHelperWidget() {
     return () => window.removeEventListener('open-ai-widget', handler);
   }, []);
 
+  // Reliable open signal for lazy-loaded mounts and route transitions.
+  useEffect(() => {
+    const shouldOpen = new URLSearchParams(window.location.search).get('assistant') === 'open';
+    if (!shouldOpen) return;
+    setOpen(true);
+    const next = new URLSearchParams(window.location.search);
+    next.delete('assistant');
+    setSearchParams(next, { replace: true });
+  }, [setSearchParams]);
+
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages]);
@@ -71,14 +83,22 @@ export function AIHelperWidget() {
     setLoading(true);
 
     try {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      const sessionId = getSessionId();
+      if (sessionId) headers['Authorization'] = `Bearer ${sessionId}`;
       const response = await fetch('/api/chat-stream', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ message: userMsg }),
       });
 
       if (!response.ok) {
-        throw new Error(ta('widget.error_connect'));
+        let backendError = '';
+        try {
+          const payload = await response.json();
+          backendError = payload?.error || '';
+        } catch {}
+        throw new Error(backendError || `HTTP ${response.status}`);
       }
 
       const reader = response.body?.getReader();
@@ -133,12 +153,20 @@ export function AIHelperWidget() {
       }
     } catch (e: any) {
       const isCreditError = e?.message?.includes('402') || e?.message?.includes('Créditos');
+      const isTwoFactorError = e?.message?.includes('duas etapas') || e?.message?.includes('2FA');
+      const isConfigError = e?.message?.includes('IA não configurado');
       const errorMsg = isCreditError
         ? (creditsLeft != null && creditsLeft <= 0
             ? ta('widget.no_credits')
             : ta('widget.low_credits'))
+        : isTwoFactorError
+          ? e.message
+        : isConfigError
+          ? e.message
         : e?.message?.includes('Plano')
-          ? ta('widget.upgrade_required')
+          ? e.message.includes('/app/billing')
+            ? e.message
+            : ta('widget.upgrade_required')
           : ta('widget.generic_error');
 
       // Show contextual notice instead of raw error
