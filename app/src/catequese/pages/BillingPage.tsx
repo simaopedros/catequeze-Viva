@@ -16,6 +16,7 @@ import { useActiveWorkspace } from '../../client/hooks/useActiveWorkspace';
 import { PLANS, type PlanId, hasPersonalAccess, hasInstitutionalAccess, isBillingActive, getInstitutionalPlanId } from '../../shared/pricing';
 import { BuyCreditsButton } from '../components/BuyCreditsButton';
 import { detectCurrency, formatPrice } from '../../shared/currency';
+import { trackMarketingEvent } from '../../client/analytics/marketingAnalytics';
 
 interface PlanCard {
   planId: PaymentPlanId;
@@ -216,6 +217,12 @@ export default function BillingPage() {
     setError(null);
     setUpgradingPlan(planId);
     try {
+      trackMarketingEvent('checkout_started', {
+        plan: planId,
+        interval: billingInterval,
+        placement: 'billing_page',
+        workspace: isPersonal ? 'personal' : 'institutional',
+      });
       const result = await generateCheckoutSession({
         planId,
         interval: billingInterval,

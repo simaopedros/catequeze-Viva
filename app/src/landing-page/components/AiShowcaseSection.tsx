@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Sparkles, ChevronRight } from 'lucide-react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { cn } from '../../client/utils';
+import { trackMarketingEvent } from '../../client/analytics/marketingAnalytics';
 
 export function AiShowcaseSection({ ns = 'landing', responsiveCtas = false }: { ns?: string; responsiveCtas?: boolean }) {
   const { t } = useTranslation(ns);
@@ -15,18 +16,12 @@ export function AiShowcaseSection({ ns = 'landing', responsiveCtas = false }: { 
         <div ref={ref} className={className}>
           <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/20 px-4 py-1.5 text-sm font-medium text-primary mb-6">
             <Sparkles className="h-4 w-4" />
-            {t('ai_showcase_cta')}
+            {t('ai_showcase_badge')}
           </div>
           <h2 className="text-3xl sm:text-5xl font-bold tracking-tight">{t('ai_showcase_title')}</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mt-4">{t('ai_showcase_subtitle')}</p>
           <div className="mt-8 flex justify-center">
-            <Link
-              to="/signup"
-              className={cn(
-                'inline-flex h-12 items-center justify-center rounded-xl bg-primary text-primary-foreground px-8 text-sm font-semibold hover:bg-primary/90 transition-all hover:shadow-lg hover:shadow-primary/25',
-                responsiveCtas && 'h-auto min-h-12 w-full max-w-sm text-center leading-snug whitespace-normal sm:w-auto',
-              )}
-            >
+            <Link to="/pricing" onClick={() => trackMarketingEvent('primary_cta_clicked', { landing: ns, placement: 'ai_showcase', destination: '/pricing' })} className={cn('inline-flex h-12 items-center justify-center rounded-xl bg-primary text-primary-foreground px-8 text-sm font-semibold hover:bg-primary/90 transition-all hover:shadow-lg hover:shadow-primary/25', responsiveCtas && 'h-auto min-h-12 w-full max-w-sm text-center leading-snug whitespace-normal sm:w-auto')}>
               {t('ai_showcase_cta')}
               <ChevronRight className="ml-2 h-4 w-4 shrink-0" />
             </Link>

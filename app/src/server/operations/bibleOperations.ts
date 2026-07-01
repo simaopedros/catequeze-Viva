@@ -1,4 +1,5 @@
 import { HttpError } from 'wasp/server';
+import { resolveUserLocale } from '../i18n/serverLocale';
 import {
   isCacheReady,
   ensureCacheReady,
@@ -18,7 +19,10 @@ import {
  * locale-dependent, so the UI auto-refetches on language switch.
  */
 function resolveLocale(context: any, explicitLocale?: string | null): string {
-  return explicitLocale || context.user?.locale || 'pt-BR';
+  if (explicitLocale) {
+    return resolveUserLocale({ locale: explicitLocale });
+  }
+  return resolveUserLocale(context.user);
 }
 
 // ─── Bible ──────────────────────────────────────────────────────────────────
@@ -209,3 +213,5 @@ export const getCatechismEntry = async (args: { number: number; locale?: string 
   if (!entry) throw new HttpError(404, 'Entrada não encontrada.');
   return entry;
 };
+
+

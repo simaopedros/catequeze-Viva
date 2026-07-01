@@ -5,6 +5,7 @@ import express from "express";
 import { HttpError, env, type MiddlewareConfigFn } from "wasp/server";
 import { type PaymentsWebhook } from "wasp/server/api";
 import { assertUnreachable } from "../../shared/utils";
+import { trackPricingEvent } from "../pricingEvents";
 import { UnhandledWebhookEventError } from "../errors";
 import { PaymentPlanId, paymentPlans, SubscriptionStatus } from "../plans";
 import { getPaymentProcessorPlanId } from "../paymentProcessorPlans";
@@ -29,10 +30,10 @@ export const lemonSqueezyWebhook: PaymentsWebhook = async (
 
     switch (eventName) {
       case "order_created":
-        await handleOrderCreated(data, userId, prismaUserDelegate);
+        await handleOrderCreated(data, userId, prismaUserDelegate, context);
         break;
       case "subscription_created":
-        await handleSubscriptionCreated(data, userId, prismaUserDelegate);
+        await handleSubscriptionCreated(data, userId, prismaUserDelegate, context);
         break;
       case "subscription_updated":
         await handleSubscriptionUpdated(data, userId, prismaUserDelegate);
@@ -104,6 +105,7 @@ async function handleOrderCreated(
   data: OrderData,
   userId: string,
   prismaUserDelegate: PrismaClient["user"],
+  context: Parameters<PaymentsWebhook>[2],
 ) {
   const { customer_id, status, first_order_item, order_number } =
     data.attributes;
@@ -134,6 +136,15 @@ async function handleOrderCreated(
     prismaUserDelegate,
   );
 
+  if (status === "paid" && plan.effect.kind === "credits") {
+    await trackPricingEvent(context, {
+      userId,
+      event: "purchase_completed",
+      toPlan: planId,
+      processor: "lemonsqueezy",
+    });
+  }
+
   console.log(`Order ${order_number} created for user ${lemonSqueezyId}`);
 }
 
@@ -141,6 +152,7 @@ async function handleSubscriptionCreated(
   data: SubscriptionData,
   userId: string,
   prismaUserDelegate: PrismaClient["user"],
+  context: Parameters<PaymentsWebhook>[2],
 ) {
   const { customer_id, status, variant_id } = data.attributes;
   const lemonSqueezyId = customer_id.toString();
@@ -158,6 +170,12 @@ async function handleSubscriptionCreated(
       },
       prismaUserDelegate,
     );
+    await trackPricingEvent(context, {
+      userId,
+      event: "purchase_completed",
+      toPlan: planId,
+      processor: "lemonsqueezy",
+    });
   } else {
     console.warn(
       `Unexpected status '${status}' for newly created subscription`,

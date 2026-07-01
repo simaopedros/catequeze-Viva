@@ -6,6 +6,7 @@ import * as ops from 'wasp/client/operations';
 import { useAuth } from 'wasp/client/auth';
 import { Button } from '../../../client/components/ui/button';
 import { clearPendingInviteToken } from '../../../auth/inviteTokenStorage';
+import { trackMarketingEvent } from '../../../client/analytics/marketingAnalytics';
 import { Church, Mail, Clock, AlertTriangle, Check, ArrowRight, Loader2 } from 'lucide-react';
 
 const getInvitationByToken = (ops as any).getInvitationByToken;
@@ -48,6 +49,11 @@ export default function InviteAcceptPage() {
     try {
       await acceptAction({ token });
       clearPendingInviteToken();
+      trackMarketingEvent('invite_accepted', {
+        role: invitation?.role,
+        parish_type: invitation?.parishType,
+        has_account: Boolean(authUser),
+      });
       setAccepted(true);
       setTimeout(() => navigate('/app'), 1500);
     } catch (e: any) {

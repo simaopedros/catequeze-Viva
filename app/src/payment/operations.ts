@@ -11,7 +11,8 @@ import { validateOrThrow } from "../server/validation";
 import { paymentProcessor } from "./paymentProcessor";
 import { stripeClient } from "./stripe/stripeClient";
 import { requireStripePriceId } from "./paymentProcessorPlans";
-import { PRICING_VERSION, isSubscriptionActiveLike } from "../shared/pricing";
+import { isSubscriptionActiveLike } from "../shared/pricing";
+import { trackPricingEvent } from "./pricingEvents";
 
 /**
  * Detect the client's country from request headers.
@@ -133,22 +134,6 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     );
   }
 
-  // Track checkout_started event (for abandonment funnel)
-  try {
-    await (context.entities as any).PricingEvent.create({
-      data: {
-        userId,
-        event: 'checkout_started',
-        sessionId: '', // will be updated after session creation
-        toPlan: paymentPlanId,
-        processor: paymentProcessor.id ?? 'stripe',
-        interval,
-        pricingVersion: PRICING_VERSION,
-      },
-    });
-  } catch {
-    // Non-critical — don't block checkout
-  }
 
   let session;
   try {
@@ -182,6 +167,15 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     }
     throw new HttpError(500, message || "Erro ao comunicar com o serviço de pagamento. Tente novamente.");
   }
+
+  await trackPricingEvent(context, {
+    userId,
+    event: "checkout_started",
+    sessionId: session.id,
+    toPlan: paymentPlanId,
+    processor: paymentProcessor.id ?? "stripe",
+    interval,
+  });
 
   return {
     sessionUrl: session.url,

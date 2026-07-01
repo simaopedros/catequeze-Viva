@@ -50,6 +50,7 @@ async function buildBlockPrompt(entities: any, sessionId: string, blockField: st
     prompt += `Referência Bíblica: ${ci.biblicalRef || '(vazio)'}\n`;
     prompt += `Conteúdo Central: ${ci.mainContent || '(vazio)'}\n`;
     prompt += `Dinâmica: ${ci.dynamic || '(vazio)'}\n`;
+    prompt += `Materiais e Recursos: ${ci.materials || '(vazio)'}\n`;
     prompt += `Tarefa Familiar: ${ci.familyTask || '(vazio)'}\n`;
     prompt += `Oração Final: ${ci.closingPrayer || '(vazio)'}\n`;
     prompt += `Tempo Estimado: ${ci.estimatedTime || 60}min\n`;
@@ -79,6 +80,7 @@ async function updateContentItemField(entities: any, contentItemId: string, bloc
     dynamic: 'dynamic',
     closingPrayer: 'closingPrayer',
     familyTask: 'familyTask',
+    materials: 'materials',
     pastoralObjective: 'pastoralObjective',
     biblicalRef: 'biblicalRef',
   };
@@ -107,7 +109,7 @@ async function autoSaveVersion(entities: any, contentItemId: string, userId: str
       title: ci.title, theme: ci.theme, pastoralObjective: ci.pastoralObjective,
       biblicalRef: ci.biblicalRef, catechismRef: ci.catechismRef,
       openingPrayer: ci.openingPrayer, closingPrayer: ci.closingPrayer,
-      dynamic: ci.dynamic, mainContent: ci.mainContent,
+      dynamic: ci.dynamic, materials: ci.materials, mainContent: ci.mainContent,
       activity: ci.activity, familyTask: ci.familyTask, estimatedTime: ci.estimatedTime,
     });
 

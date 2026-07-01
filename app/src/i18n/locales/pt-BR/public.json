@@ -28,8 +28,8 @@
     "error": "Erro ao enviar. Tente novamente."
   },
   "pricing": {
-    "title": "Planos e Preços",
-    "subtitle": "Escolha o nível certo: planos pessoais para catequistas individuais ou planos institucionais para paróquias e dioceses.",
+    "title": "Escolha o caminho certo para começar",
+    "subtitle": "Primeiro escolha se você está entrando como catequista, paróquia ou diocese. Depois mostramos apenas os planos adequados a esse contexto.",
     "payment_card": "Cartão",
     "payment_pix": "PIX",
     "annual_savings": "Economize 17% no anual",
@@ -41,14 +41,14 @@
     "institutional_section": "Para sua instituição",
     "institutional_hint": "— paróquias e dioceses (cobre vários catequistas)",
     "faq_title": "Perguntas frequentes",
-    "free_forever": "para sempre",
+    "free_forever": "incluído",
     "per_month": "/mês",
     "per_year": "/ano",
-    "cta_free": "Começar grátis",
+    "cta_free": "Começar",
     "cta_paid": "Começar agora",
     "most_popular": "Mais Popular",
     "plan_desc": {
-      "catechist_free": "Para um catequista que quer começar a organizar sua turma.",
+      "catechist_free": "Para um catequista em fase inicial de organização da turma.",
       "catechist_pro": "Para catequistas dedicados com múltiplas turmas.",
       "catechist_ai": "Inteligência Artificial para criar encontros, atividades e mensagens em segundos.",
       "parish_essential": "Para paróquias que buscam gestão completa da catequese com time enxuto.",
@@ -56,15 +56,75 @@
       "diocese": "Para gestão diocesana multi-paróquia com IA por paróquia."
     },
     "faq": [
-      { "q": "Posso experimentar antes de pagar?", "a": "Sim! O plano Catequista Grátis é gratuito para sempre, com 1 turma, até 15 catequizandos e 3 créditos de IA iniciais para testar o gerador de encontros." },
-      { "q": "Como funcionam os créditos de IA?", "a": "Cada geração de encontro consome 1 crédito, planejamento anual 3 créditos, e atividade 1 crédito. O plano IA inclui 20 créditos/mês, Paróquia Completa 50 créditos/mês e Diocese 50 créditos/mês por paróquia. Créditos não usados não acumulam — renovam a cada mês." },
-      { "q": "Qual a diferença entre Paróquia Essencial e Completa?", "a": "A Essencial é ideal para paróquias com até 5 catequistas e 200 catequizandos. A Completa remove todos os limites e inclui 50 créditos de IA/mês." },
-      { "q": "Como funciona o pagamento?", "a": "Aceitamos cartão de crédito (à vista ou mensal). No plano anual, o pagamento é único pelos 12 meses. Sem fidelidade — cancele quando quiser." },
-      { "q": "E o reembolso do plano anual?", "a": "Planos anuais não têm reembolso automático. O cancelamento encerra a renovação, mas o acesso continua até o fim do período pago. Reembolso proporcional é avaliado caso a caso via contato@catequeseviva.com.br." },
-      { "q": "Posso migrar entre planos?", "a": "Sim, a qualquer momento. Ao fazer upgrade, seus dados são preservados automaticamente." },
-      { "q": "Os dados ficam seguros?", "a": "Sim. Seguimos a LGPD, com criptografia em trânsito e em repouso. Dados de crianças recebem proteção especial." },
-      { "q": "A IA é teologicamente confiável?", "a": "Sim. A IA é instruída a se basear estritamente na Bíblia (CNBB), Catecismo da Igreja Católica, Compêndio e Diretório Geral para a Catequese. Todo conteúdo gerado inclui referências para você auditar." }
-    ]
+      {
+        "q": "Como conheço a plataforma antes de assinar?",
+        "a": "Você pode começar pelo caminho de catequista, conhecer a estrutura da plataforma e avançar para o plano mais adequado quando decidir preparar encontros com frequência."
+      },
+      {
+        "q": "Como funcionam os créditos de IA?",
+        "a": "Cada geração de encontro consome 1 crédito, planejamento anual 3 créditos, e atividade 1 crédito. O plano IA inclui 20 créditos/mês, Paróquia Completa 50 créditos/mês e Diocese 50 créditos/mês por paróquia. Créditos não usados não acumulam — renovam a cada mês."
+      },
+      {
+        "q": "Qual a diferença entre Paróquia Essencial e Completa?",
+        "a": "A Essencial é ideal para paróquias com até 5 catequistas e 200 catequizandos. A Completa remove todos os limites e inclui 50 créditos de IA/mês."
+      },
+      {
+        "q": "Como funciona o pagamento?",
+        "a": "Aceitamos cartão de crédito (à vista ou mensal). No plano anual, o pagamento é único pelos 12 meses. Sem fidelidade — cancele quando quiser."
+      },
+      {
+        "q": "E o reembolso do plano anual?",
+        "a": "Planos anuais não têm reembolso automático. O cancelamento encerra a renovação, mas o acesso continua até o fim do período pago. Reembolso proporcional é avaliado caso a caso via contato@catequeseviva.com.br."
+      },
+      {
+        "q": "Posso migrar entre planos?",
+        "a": "Sim, a qualquer momento. Ao fazer upgrade, seus dados são preservados automaticamente."
+      },
+      {
+        "q": "Os dados ficam seguros?",
+        "a": "Sim. Seguimos a LGPD, com criptografia em trânsito e em repouso. Dados de crianças recebem proteção especial."
+      },
+      {
+        "q": "A IA é teologicamente confiável?",
+        "a": "Sim. A IA é instruída a se basear estritamente na Bíblia (CNBB), Catecismo da Igreja Católica, Compêndio e Diretório Geral para a Catequese. Todo conteúdo gerado inclui referências para você auditar."
+      }
+    ],
+    "path_selector_title": "Escolha o caminho certo para começar",
+    "path_selector_subtitle": "Primeiro escolha seu perfil. Depois mostramos apenas os planos que fazem sentido para esse contexto.",
+    "path_cards": {
+      "catechist": {
+        "title": "Catequista",
+        "description": "Para organizar sua turma, preparar encontros e usar IA no seu espaço pessoal.",
+        "supporting": "Planos pessoais para organizar a turma e preparar encontros com mais consistência.",
+        "cta": "Ver opções para catequista"
+      },
+      "parish": {
+        "title": "Paróquia",
+        "description": "Para coordenar catequistas, turmas, presença e comunicação pastoral num só lugar.",
+        "supporting": "Planos institucionais para equipas paroquiais.",
+        "cta": "Ver opções para paróquia"
+      },
+      "diocese": {
+        "title": "Diocese",
+        "description": "Para acompanhar várias paróquias com governança, visão consolidada e IA por paróquia.",
+        "supporting": "Licenciamento multi-paróquia com gestão central.",
+        "cta": "Ver opção diocesana"
+      }
+    },
+    "path_details": {
+      "catechist": {
+        "title": "Planos para catequista",
+        "subtitle": "Escolha entre começar com a estrutura essencial, ampliar limites ou acelerar a preparação com IA."
+      },
+      "parish": {
+        "title": "Planos para paróquia",
+        "subtitle": "Compare a estrutura ideal para a sua equipa e o volume da catequese local."
+      },
+      "diocese": {
+        "title": "Plano para diocese",
+        "subtitle": "Uma opção para gestão central de várias paróquias com padronização e escala."
+      }
+    }
   },
   "workspace": {
     "app_name": "Catequese Viva",

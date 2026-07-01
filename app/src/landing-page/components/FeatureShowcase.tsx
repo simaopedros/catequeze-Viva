@@ -51,7 +51,7 @@ export function FeatureShowcase({ showcase, ns = 'landing' }: FeatureShowcasePro
         </div>
 
         <div ref={imageRef} className="parallax-layer w-full flex-1 max-w-xl">
-          <BrowserFrame url={`app.catequese.viva/${showcase.id}`}>
+          <BrowserFrame url={`catechis.app/${showcase.id}`}>
             <FeatureScreenshot id={showcase.id} alt={showcase.title} />
           </BrowserFrame>
         </div>

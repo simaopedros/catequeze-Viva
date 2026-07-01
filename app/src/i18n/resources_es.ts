@@ -1976,13 +1976,13 @@ export const family_es = {
 
 export const landing_es = {
     "hero": {
-      "headline_line1": "Organiza tu grupo y prepara la catequesis",
-      "headline_line2": "sin depender de papel e improvisación",
-      "subheadline": "Comienza gratis con 1 grupo, 15 catequizandos y 3 créditos iniciales de IA — actualiza a Catequista IA cuando la preparación semanal necesite más apoyo.",
-      "badge": "Hecho para la rutina diaria del catequista",
-      "cta_primary": "Crear cuenta gratis",
+      "headline_line1": "Tu próximo encuentro de catequesis",
+      "headline_line2": "preparado sin carrera de última hora",
+      "subheadline": "Organiza el grupo, arma el encuentro y acompaña a las familias en un mismo flujo — para que la semana pastoral no dependa de papel, planillas e improvisación.",
+      "badge": "De la preparación al acompañamiento del grupo",
+      "cta_primary": "Elegir mi camino",
       "cta_secondary": "Ver plan Catequista IA",
-      "trust_signals": "Sin tarjeta de crédito • Plan gratuito • Actualiza cuando tenga sentido",
+      "trust_signals": "Encuentro preparado • Asistencia registrada • Familias acompañando",
       "cta_secondary_href": "#planos"
     },
     "pain_title": "La catequesis no tiene que estar dispersa en cuadernos, planillas y mensajes",
@@ -2007,11 +2007,11 @@ export const landing_es = {
         "text": "Es difícil saber qué necesita atención antes del próximo encuentro"
       }
     ],
-    "ai_showcase_title": "Prueba la IA con los créditos iniciales del plan gratis",
-    "ai_showcase_subtitle": "Crea guiones de encuentro, actividades y mensajes para familias a partir del tema, duración y edad. Revisa todo antes de usarlo.",
-    "ai_showcase_cta": "Crear cuenta gratis",
-    "features_title": "Recursos reales para la rutina del catequista",
-    "features_subtitle": "Empieza con tu propio grupo. Si la parroquia crece después, la estructura ya está lista.",
+    "ai_showcase_title": "Mira cómo un encuentro puede tomar forma en minutos",
+    "ai_showcase_subtitle": "Catequese Viva reúne tema, edad y referencias católicas para montar un primer borrador que revisas antes de usar.",
+    "ai_showcase_cta": "Ver caminos para empezar",
+    "features_title": "Lo esencial para preparar y acompañar tu catequesis",
+    "features_subtitle": "IA, asistencia y familias trabajan juntas para reducir la improvisación y dar más claridad a la rutina pastoral.",
     "features": {
       "attendance": {
         "title": "Pasa lista desde el celular y sigue las faltas con claridad",
@@ -2056,8 +2056,8 @@ export const landing_es = {
         "b3": "Progreso visible para coordinación y responsables"
       }
     },
-    "mission_title": "Menos administración manual. Más atención a la misión.",
-    "mission_text": "Catequese Viva ayuda a los catequistas a sacar la catequesis de la improvisación: grupo organizado, encuentro preparado, asistencia registrada y familia informada.",
+    "mission_title": "Encuentro preparado. Grupo organizado. Familia acompañando.",
+    "mission_text": "Catequese Viva fue creada para dar previsibilidad a la rutina pastoral: menos improvisación en la preparación, menos retrabajo en el seguimiento y más claridad sobre cada grupo.",
     "personas_title": "Empieza con el catequista y puede crecer con la parroquia",
     "personas_subtitle": "La experiencia principal es individual, pero la misma base apoya coordinación, familias y equipo parroquial.",
     "personas": [
@@ -2098,35 +2098,35 @@ export const landing_es = {
     ],
     "more_features": "Más recursos para cuando tu catequesis crezca",
     "more_features_sub": "Herramientas que siguen siendo útiles después del primer grupo.",
-    "steps_title": "Empieza por tu próximo grupo",
-    "steps_subtitle": "El camino inicial es simple: cuenta gratuita, grupo cargado y primer encuentro preparado.",
+    "steps_title": "Cómo empezar sin fricción",
+    "steps_subtitle": "Elige tu perfil, ve el plan adecuado y lleva tu próximo grupo a un flujo más organizado.",
     "steps": [
       {
-        "title": "Crea la cuenta gratuita",
-        "desc": "Entra sin tarjeta de crédito y usa el plan Catequista Gratis con los límites reales del producto."
+        "title": "Elige tu perfil",
+        "desc": "Empieza por el camino de catequista, parroquia o diócesis para ver la oferta adecuada."
       },
       {
-        "title": "Registra o importa tu grupo",
-        "desc": "Agrega catequizandos manualmente o importa la planilla CSV que ya usas."
+        "title": "Organiza tu grupo",
+        "desc": "Registra catequizandos, sigue la asistencia y centraliza lo que hoy está disperso."
       },
       {
-        "title": "Prepara y acompaña el encuentro",
-        "desc": "Genera un guion con IA, ajusta el contenido y registra la asistencia en el mismo lugar."
+        "title": "Prepara el próximo encuentro",
+        "desc": "Usa la IA y la base católica para montar un mejor borrador antes de la próxima semana."
       }
     ],
-    "steps_cta": "Crear cuenta gratis",
-    "pricing_title": "Empieza gratis. Actualiza a IA cuando prepares encuentros cada semana.",
-    "pricing_subtitle": "El plan gratuito sirve para probar con tu grupo. Catequista IA es la actualización para crear encuentros, actividades y mensajes con más frecuencia.",
+    "steps_cta": "Ver caminos y planes",
+    "pricing_title": "Tres caminos para entrar en Catequese Viva",
+    "pricing_subtitle": "Empieza por el perfil correcto. Compara los caminos para catequista, parroquia y diócesis antes de elegir el plan.",
     "plans": {
       "free": {
-        "name": "Catequista Gratis",
-        "desc": "Para empezar con un grupo real, sin tarjeta de crédito.",
+        "name": "Camino Catequista",
+        "desc": "Para organizar tu grupo, preparar encuentros y entender la estructura ideal para tu rutina.",
         "features": [
-          "1 grupo",
-          "15 catequizandos",
-          "Asistencia digital",
-          "Biblia y Catecismo",
-          "3 créditos iniciales de IA"
+          "Organización del grupo",
+          "Asistencia y seguimiento",
+          "Preparación de encuentros",
+          "Base católica integrada",
+          "Opciones con y sin IA"
         ]
       },
       "ai": {
@@ -2154,34 +2154,30 @@ export const landing_es = {
         ]
       }
     },
-    "price_free": "Gratis",
-    "price_popular": "Mejor para catequistas",
+    "price_free": "Desde",
+    "price_popular": "Más elegido por catequistas",
     "price_monthly": "Mensual",
     "price_annual": "Anual",
-    "price_cta_free": "Crear cuenta gratis",
-    "price_cta_start": "Empezar con este plan",
+    "price_cta_free": "Ver caminos",
+    "price_cta_start": "Ver opciones de este camino",
     "per_month": "/mes",
     "per_year": "/año",
     "annual_discount": "17% de descuento",
-    "compare_plans": "Comparar todos los planes →",
-    "faq_title": "Dudas antes de comenzar",
-    "faq_subtitle": "Respuestas directas para catequistas que quieren probar sin riesgo.",
+    "compare_plans": "Comparar caminos y planes completos",
+    "faq_title": "Dudas antes de elegir el camino",
+    "faq_subtitle": "Respuestas directas sobre acceso, IA, móvil y protección de datos.",
     "faqs": [
       {
-        "q": "¿Necesito tarjeta de crédito para usar el plan gratis?",
-        "a": "No. Creas la cuenta y empiezas con Catequista Gratis sin informar tarjeta."
+        "q": "¿Puedo empezar como catequista individual?",
+        "a": "Sí. El camino de catequista muestra las opciones personales para organizar tu grupo, con o sin IA, antes de pasar a una estructura parroquial."
       },
       {
-        "q": "¿Qué puedo probar en el plan gratuito?",
-        "a": "Catequista Gratis incluye 1 grupo, 15 catequizandos, asistencia digital, Biblia y Catecismo integrados y 3 créditos iniciales de IA."
+        "q": "¿Cuándo tiene sentido usar IA?",
+        "a": "Cuando preparas encuentros con frecuencia y quieres ganar velocidad para crear guiones, actividades, planificación anual y mensajes para familias."
       },
       {
-        "q": "¿Cuándo vale la pena contratar Catequista IA?",
-        "a": "Cuando quieres usar IA con frecuencia para encuentros, actividades, planificación anual, mensajes para familias y asistente teológico. El plan incluye 20 créditos de IA por mes."
-      },
-      {
-        "q": "¿Funciona en el celular?",
-        "a": "Sí. La plataforma funciona en el navegador del celular, incluso para registrar asistencia y acceder a los flujos principales."
+        "q": "¿Funciona en el móvil?",
+        "a": "Sí. La plataforma funciona en el navegador del móvil, incluso para registrar asistencia y acceder a los flujos principales."
       },
       {
         "q": "¿Puedo importar catequizandos desde mi planilla?",
@@ -2190,12 +2186,16 @@ export const landing_es = {
       {
         "q": "¿Los datos de niños quedan protegidos?",
         "a": "La plataforma incluye recursos orientados a LGPD, consentimiento digital, control de acceso y solicitudes de exportación o eliminación de datos."
+      },
+      {
+        "q": "¿Existe camino para parroquias y diócesis?",
+        "a": "Sí. La página de precios separa los caminos de catequista, parroquia y diócesis para reducir confusión y mostrar solo las opciones adecuadas a cada contexto."
       }
     ],
-    "cta_title": "Crea tu cuenta gratis y organiza la próxima catequesis",
-    "cta_subtitle": "Empieza con un grupo, prueba los créditos iniciales de IA y decide después si Catequista IA encaja en tu rutina.",
-    "cta_button": "Crear cuenta gratis",
-    "cta_badge": "Sin tarjeta de crédito",
+    "cta_title": "Elige el camino correcto y organiza tu próxima catequesis",
+    "cta_subtitle": "Ve la opción para catequista, parroquia o diócesis y avanza al siguiente paso con claridad.",
+    "cta_button": "Ver caminos y planes",
+    "cta_badge": "Siguiente paso claro",
     "cta_see_plans": "Ver planes",
     "mock": {
       "ai_title": "Generador de Encuentros IA",
@@ -2277,13 +2277,33 @@ export const landing_es = {
       "plan_detail": "Confirmación · 45 min"
     },
     "footer": {
-      "create_account": "Crear cuenta gratuita",
+      "create_account": "Elegir camino",
       "login": "Iniciar sesión",
       "about": "Acerca de",
       "privacy": "Privacidad",
       "terms": "Términos",
       "contact": "Contacto"
-    }
+    },
+    "ai_showcase_badge": "Mira cómo funciona el flujo",
+    "testimonials_title": "Quienes ya lo usan ven más claridad en la rutina pastoral",
+    "testimonials_subtitle": "Comentarios reales sobre preparación, seguimiento del grupo y comunicación con las familias.",
+    "testimonials": [
+      {
+        "name": "Ana Costa",
+        "role": "Catequista — São Paulo, SP",
+        "text": "La preparación de la catequesis quedó más clara. Puedo salir de la improvisación, organizar el grupo y revisar el encuentro antes de que empiece la semana."
+      },
+      {
+        "name": "Maria Silva",
+        "role": "Coordinadora parroquial — Campinas, SP",
+        "text": "Hoy la coordinación acompaña asistencia, documentos y comunicación en un mismo lugar. Eso redujo mucho el trabajo disperso entre papel, planilla y mensajes."
+      },
+      {
+        "name": "P. João Santos",
+        "role": "Párroco — Belo Horizonte, MG",
+        "text": "La plataforma ayuda a ver la catequesis como un proceso pastoral, no solo como administración. La visibilidad del camino del grupo mejoró bastante."
+      }
+    ]
   } as const;
 
 export const landingIa_es = {
@@ -3323,8 +3343,8 @@ export const public_es = {
       "error": "Error al enviar. Intente nuevamente."
     },
     "pricing": {
-      "title": "Planes y Precios",
-      "subtitle": "Elija el nivel correcto: planes personales para catequistas individuales o planes institucionales para parroquias y diócesis.",
+      "title": "Elige el camino correcto para empezar",
+      "subtitle": "Primero elige si entras como catequista, parroquia o diócesis. Después mostramos solo los planes adecuados para ese contexto.",
       "payment_card": "Tarjeta",
       "payment_pix": "PIX",
       "annual_savings": "Ahorre 17% en anual",
@@ -3336,14 +3356,14 @@ export const public_es = {
       "institutional_section": "Para su institución",
       "institutional_hint": "— parroquias y diócesis (cubre varios catequistas)",
       "faq_title": "Preguntas frecuentes",
-      "free_forever": "para siempre",
+      "free_forever": "incluido",
       "per_month": "/mes",
       "per_year": "/año",
-      "cta_free": "Comenzar gratis",
+      "cta_free": "Comenzar",
       "cta_paid": "Comenzar ahora",
       "most_popular": "Más Popular",
       "plan_desc": {
-        "catechist_free": "Para un catequista que quiere empezar a organizar su grupo.",
+        "catechist_free": "Para un catequista en la etapa inicial de organización del grupo.",
         "catechist_pro": "Para catequistas dedicados con múltiples grupos.",
         "catechist_ai": "Inteligencia Artificial para crear encuentros, actividades y mensajes en segundos.",
         "parish_essential": "Para parroquias que buscan gestión completa de la catequesis con equipo reducido.",
@@ -3352,8 +3372,8 @@ export const public_es = {
       },
       "faq": [
         {
-          "q": "¿Puedo probar antes de pagar?",
-          "a": "¡Sí! El plan Catequista Gratis es gratuito para siempre, con 2 grupos, hasta 30 catecúmenos y 10 créditos de IA iniciales para probar el generador de encuentros."
+          "q": "¿Cómo conozco la plataforma antes de suscribirme?",
+          "a": "Puede comenzar por el camino de catequista, conocer la estructura de la plataforma y avanzar al plan más adecuado cuando decida preparar encuentros con más frecuencia."
         },
         {
           "q": "¿Cómo funcionan los créditos de IA?",
@@ -3383,7 +3403,43 @@ export const public_es = {
           "q": "¿La IA es teológicamente confiable?",
           "a": "Sí. La IA está instruida para basarse estrictamente en la Biblia (CNBB), Catecismo de la Iglesia Católica, Compendio y Directorio General para la Catequesis. Todo contenido generado incluye referencias para auditar."
         }
-      ]
+      ],
+      "path_selector_title": "Elija el camino correcto para empezar",
+      "path_selector_subtitle": "Primero elija su perfil. Luego mostramos solo los planes que tienen sentido para ese contexto.",
+      "path_cards": {
+        "catechist": {
+          "title": "Catequista",
+          "description": "Para organizar su grupo, preparar encuentros y usar IA en su espacio personal.",
+          "supporting": "Planes personales para organizar su grupo y preparar encuentros con más consistencia.",
+          "cta": "Ver opciones para catequista"
+        },
+        "parish": {
+          "title": "Parroquia",
+          "description": "Para coordinar catequistas, grupos, asistencia y comunicación pastoral en un solo lugar.",
+          "supporting": "Planes institucionales para equipos parroquiales.",
+          "cta": "Ver opciones para parroquia"
+        },
+        "diocese": {
+          "title": "Diócesis",
+          "description": "Para acompañar varias parroquias con gobernanza, visión consolidada e IA por parroquia.",
+          "supporting": "Licenciamiento multi-parroquia con gestión central.",
+          "cta": "Ver opción diocesana"
+        }
+      },
+      "path_details": {
+        "catechist": {
+          "title": "Planes para catequista",
+          "subtitle": "Elige entre una estructura inicial esencial, ampliar límites o acelerar la preparación con IA."
+        },
+        "parish": {
+          "title": "Planes para parroquia",
+          "subtitle": "Compara la estructura ideal para tu equipo y el volumen de la catequesis local."
+        },
+        "diocese": {
+          "title": "Plan para diócesis",
+          "subtitle": "Una opción para gestión central de varias parroquias con estandarización y escala."
+        }
+      }
     },
     "workspace": {
       "app_name": "Catequesis Viva",
@@ -3472,9 +3528,12 @@ export const publicNav_es = {
     "privacy": "Privacidad",
     "terms": "Términos",
     "login": "Iniciar sesión",
-    "signup": "Crear cuenta",
+    "signup": "Elegir camino",
     "openMenu": "Abrir menú",
-    "closeMenu": "Cerrar menú"
+    "closeMenu": "Cerrar menú",
+    "tagline": "Plataforma pastoral para organizar grupos, encuentros, asistencia y familias en la catequesis católica.",
+    "audience": "catequistas • parroquias • diócesis",
+    "cta": "Elegir camino"
   } as const;
 
 export const reports_es = {

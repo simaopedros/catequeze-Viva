@@ -124,13 +124,13 @@ export default function ContentLibraryPage() {
             </div>
           }
         >
-          <Button size="sm" variant="outline" asChild>
-            <Link to="/app/ai-hub?mode=create-meeting" className="gap-1"><Sparkles className="h-4 w-4"/>{t('library.generate_ai')}</Link>
-          </Button>
           <Button size="sm" variant="outline" onClick={() => setSort(s => s==='recent'?'az':'recent')}><ArrowUpDown className="h-4 w-4" /></Button>
           <Button size="sm" variant="outline" onClick={() => setView(v => v==='grid'?'list':'grid')}>{view==='grid'?<List className="h-4 w-4"/>:<LayoutGrid className="h-4 w-4"/>}</Button>
           <Button size="sm" variant={showDiocese ? 'default' : 'outline'} onClick={() => setShowDiocese(d => !d)} className="gap-1"><BookMarked className="h-4 w-4" />{t('library.diocese')}</Button>
-          <Button asChild><Link to="/app/content-library/new"><Plus className="mr-1 h-4 w-4"/>{tc('new')}</Link></Button>
+          <Button asChild><Link to="/app/content-library/new"><Plus className="mr-1 h-4 w-4"/>Criar manualmente</Link></Button>
+          <Button size="sm" variant="outline" asChild>
+            <Link to="/app/ai-hub?mode=create-meeting" className="gap-1"><Sparkles className="h-4 w-4"/>{t('library.generate_ai')}</Link>
+          </Button>
         </PageHeader>
 
         {filtered.length === 0 ? (

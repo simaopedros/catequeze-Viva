@@ -11,6 +11,7 @@ import { ErrorBoundary } from '../client/components/ErrorBoundary';
 import { ShellBase } from '../client/components/ShellBase';
 import { isFamilyPortalHost, familyPortalUrl } from '../shared/portal';
 import { useAction, acceptInvitation } from 'wasp/client/operations';
+import { trackMarketingEvent } from '../client/analytics/marketingAnalytics';
 
 const AIHelperWidget = lazy(() => import('./components/AIHelperWidget').then(m => ({ default: m.AIHelperWidget })));
 const GuidedTour = lazy(() => import('./components/GuidedTour').then(m => ({ default: m.GuidedTour })));
@@ -56,7 +57,19 @@ export function AppShell({ children }: AppShellProps) {
     const invited = memberships.filter((m: any) => m.status === 'INVITED');
     if (invited.length === 0) return;
     autoAcceptedRef.current = true;
-    Promise.all(invited.map((m: any) => acceptInvitationAction({ membershipId: m.id }).catch(() => {})));
+    Promise.all(
+      invited.map((m: any) =>
+        acceptInvitationAction({ membershipId: m.id })
+          .then(() => {
+            trackMarketingEvent('invite_accepted', {
+              role: m.role,
+              parish_id: m.parishId || null,
+              source: 'app_shell_auto_accept',
+            });
+          })
+          .catch(() => {}),
+      ),
+    );
   }, [isLoading, isFetching, isFamilyOnlyRole, memberships, acceptInvitationAction]);
 
   useEffect(() => {

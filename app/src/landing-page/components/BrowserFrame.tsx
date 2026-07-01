@@ -7,7 +7,7 @@ interface BrowserFrameProps {
   url?: string;
 }
 
-export function BrowserFrame({ children, className, url = 'app.catequese.viva' }: BrowserFrameProps) {
+export function BrowserFrame({ children, className, url = 'catechis.app' }: BrowserFrameProps) {
   return (
     <div
       className={cn(

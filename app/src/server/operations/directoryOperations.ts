@@ -1,6 +1,7 @@
 import { HttpError } from 'wasp/server';
 import { MembershipStatus } from '@prisma/client';
 import { getDioceseParishIds } from '../auth/helpers';
+import { resolveUserLocale } from '../i18n/serverLocale';
 import {
   isCacheReady,
   ensureCacheReady,
@@ -16,7 +17,10 @@ const ALLOWED_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'CO
  * Resolve locale: explicit arg takes precedence, then user session, then pt-BR.
  */
 function resolveLocale(context: any, explicitLocale?: string | null): string {
-  return explicitLocale || context.user?.locale || 'pt-BR';
+  if (explicitLocale) {
+    return resolveUserLocale({ locale: explicitLocale });
+  }
+  return resolveUserLocale(context.user);
 }
 
 async function getParishIds(context: any): Promise<string[]> {
@@ -186,3 +190,5 @@ export const removeDirectoryRef = async (args: { id: string }, context: any) => 
   await context.entities.ContentDirectoryReference.delete({ where: { id: args.id } });
   return { success: true };
 };
+
+

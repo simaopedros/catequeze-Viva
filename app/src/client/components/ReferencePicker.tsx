@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Plus, X, BookOpen, Church, ChevronRight, Check, FileText } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
+import { useLocale } from '../../i18n/useLocale';
 import { listBibleBooks, searchBible, searchCatechism, searchDirectory, getBibleChapter, getBibleBook, listCatechismByCategory, listDirectoryByPart } from 'wasp/client/operations';
 
 interface VerseItem {
@@ -69,6 +70,7 @@ function groupBibleRefs(refs: BibleRef[]): { ids: string[]; label: string; text?
 
 export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAddBible, onRemoveBible, onAddCatechism, onRemoveCatechism, onAddDirectory, onRemoveDirectory }: Props) {
   const { t } = useTranslation('common');
+  const { currentLocale } = useLocale();
   const [tab, setTab] = useState<'bible' | 'catechism' | 'directory'>('bible'); 
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<any[]>([]);
@@ -90,11 +92,11 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
     if (tab === 'bible') {
       (async () => {
         try {
-          setBooks((await listBibleBooks()) || []);
+          setBooks((await listBibleBooks({ locale: currentLocale })) || []);
         } catch (e) { console.error(e); }
       })();
     }
-  }, [tab]);
+  }, [tab, currentLocale]);
 
   // Autocomplete debounce
   const doSearch = useCallback(async (q: string) => {
@@ -102,21 +104,21 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
     setSearching(true);
     try {
       if (tab === 'bible') {
-        const data = (await searchBible({ query: q, limit: 15 })) || [];
+        const data = (await searchBible({ query: q, limit: 15, locale: currentLocale })) || [];
         setResults(data);
         setShowResults(data.length > 0);
       } else if (tab === 'catechism') {
-        const data = (await searchCatechism({ query: q, limit: 15 })) || [];
+        const data = (await searchCatechism({ query: q, limit: 15, locale: currentLocale })) || [];
         setResults(data);
         setShowResults(data.length > 0);
       } else {
-        const data = (await searchDirectory({ query: q, limit: 15 })) || [];
+        const data = (await searchDirectory({ query: q, limit: 15, locale: currentLocale })) || [];
         setResults(data);
         setShowResults(data.length > 0);
       }
     } catch (e) { console.error('Erro na busca:', e); }
     setSearching(false);
-  }, [tab]);
+  }, [tab, currentLocale]);
 
   const handleQueryChange = (value: string) => {
     setQuery(value);
@@ -128,7 +130,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
   const handleBrowseChapter = async (bookId: string, chapterNum: number) => {   
     setSearching(true);
     try {
-      const data = await getBibleChapter({ bookId, chapter: chapterNum });
+      const data = await getBibleChapter({ bookId, chapter: chapterNum, locale: currentLocale });
       if (data?.verses) {
         const verses = data.verses.map((v: any) => ({ ...v, chapter: { id: data.id, number: data.number, book: data.book } }));
         setChapterVerses(verses);
@@ -143,7 +145,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
 
   const loadBook = async (book: any) => {
     try {
-      setBrowseBook(await getBibleBook({ id: book.id }));
+      setBrowseBook(await getBibleBook({ id: book.id, locale: currentLocale }));
     } catch (e) { console.error('Erro ao carregar livro:', e); }
   };
 
@@ -230,7 +232,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
         </div>
 
         {/* Autocomplete dropdown */}
-        {showResults && results.length > 0 && (
+        {tab === 'bible' && showResults && results.length > 0 && (
           <div className="absolute z-50 left-0 right-0 mt-1 max-h-56 overflow-y-auto border rounded-md bg-background shadow-lg">
             {tab === 'bible' && (
               <>
@@ -271,36 +273,6 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
                 ))}
               </>
             )}
-            {(tab === 'catechism' || tab === 'directory') && results.map((e: any) => (
-              tab === 'directory' ? (
-                <div key={e.id} className="flex items-start justify-between gap-2 px-2 py-1.5 hover:bg-muted/50 rounded text-xs"
-                  onClick={() => { if (!directoryRefs.some(r => r.entryId === e.id)) onAddDirectory(e.id, '§'+e.number, e.content); }}>
-                  <div className="flex-1 min-w-0">
-                    <span className="font-medium text-primary">§{e.number}</span>
-                    {e.title && <span className="text-muted-foreground ml-1 truncate">— {e.title}</span>}
-                  </div>
-                  {directoryRefs.some(r => r.entryId === e.id) ? (
-                    <span className="text-green-600 text-overline font-medium flex-shrink-0">✓</span>
-                  ) : (
-                    <Plus className="h-3.5 w-3.5 text-primary flex-shrink-0" /> 
-                  )}
-                </div>
-              ) : null
-            ))}
-            {tab === 'catechism' && results.map((e: CatechismItem) => (
-              <div key={e.id} className="flex items-start justify-between gap-2 px-2 py-1.5 hover:bg-muted/50 rounded text-xs"
-                onClick={() => { if (!isCatechismAdded(e.id)) handleAddCatechismSingle(e); }}>
-                <div className="flex-1 min-w-0">
-                  <span className="font-medium text-primary">§{e.number}</span> 
-                  <span className="text-muted-foreground ml-1 truncate">— {e.question}</span>
-                </div>
-                {isCatechismAdded(e.id) ? (
-                  <span className="text-green-600 text-overline font-medium flex-shrink-0">✓</span>
-                ) : (
-                  <Plus className="h-3.5 w-3.5 text-primary flex-shrink-0" />   
-                )}
-              </div>
-            ))}
           </div>
         )}
       </div>
@@ -359,7 +331,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
               onClick={async () => {
                 setSearching(true); setSearched(true);
                 try {
-                  const data = (await listCatechismByCategory({ category: cat })) || [];
+                  const data = (await listCatechismByCategory({ category: cat, locale: currentLocale })) || [];
                   setResults(data); setShowResults(true);
                 } catch (e) { console.error(e); }
                 setSearching(false);
@@ -379,8 +351,6 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
             { part: 'I' },
             { part: 'II' },
             { part: 'III' },
-            { part: 'IV' },
-            { part: 'V' },
           ].map(({ part }) => {
             const label = t('directory.parts.' + part);
             return (
@@ -388,7 +358,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
               onClick={async () => {
                 setSearching(true); setSearched(true);
                 try {
-                  const data = (await listDirectoryByPart({ part })) || [];
+                  const data = (await listDirectoryByPart({ part, locale: currentLocale })) || [];
                   setResults(data); setShowResults(true);
                 } catch (e) { console.error(e); }
                 setSearching(false);
@@ -401,6 +371,54 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
         </div>
       )}
 
+
+      {(tab === 'catechism' || tab === 'directory') && searched && !searching && results.length > 0 && (
+        <div className="max-h-64 overflow-y-auto rounded-md border bg-background">
+          {tab === 'catechism' && results.map((entry: CatechismItem) => (
+            <button
+              key={entry.id}
+              type="button"
+              onClick={() => { if (!isCatechismAdded(entry.id)) handleAddCatechismSingle(entry); }}
+              className="flex w-full items-start justify-between gap-2 border-b px-3 py-2 text-left text-xs transition-colors last:border-b-0 hover:bg-muted/50"
+            >
+              <div className="min-w-0 flex-1">
+                <div className="font-medium text-primary">§{entry.number}</div>
+                <div className="mt-1 line-clamp-2 text-muted-foreground">{entry.question}</div>
+              </div>
+              {isCatechismAdded(entry.id) ? (
+                <span className="flex-shrink-0 text-green-600">✓</span>
+              ) : (
+                <Plus className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-primary" />
+              )}
+            </button>
+          ))}
+
+          {tab === 'directory' && results.map((entry: any) => (
+            <button
+              key={entry.id}
+              type="button"
+              onClick={() => { if (!directoryRefs.some(r => r.entryId === entry.id)) onAddDirectory(entry.id, '§' + entry.number, entry.content); }}
+              className="flex w-full items-start justify-between gap-2 border-b px-3 py-2 text-left text-xs transition-colors last:border-b-0 hover:bg-muted/50"
+            >
+              <div className="min-w-0 flex-1">
+                <div className="font-medium text-primary">§{entry.number}</div>
+                <div className="mt-1 line-clamp-2 text-muted-foreground">{entry.title || entry.chapter || entry.content}</div>
+              </div>
+              {directoryRefs.some(r => r.entryId === entry.id) ? (
+                <span className="flex-shrink-0 text-green-600">✓</span>
+              ) : (
+                <Plus className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-primary" />
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {(tab === 'catechism' || tab === 'directory') && searched && !searching && results.length === 0 && (
+        <div className="rounded-md border border-dashed px-3 py-4 text-center text-xs text-muted-foreground">
+          Nenhum resultado encontrado.
+        </div>
+      )}
       {/* Selected references */}
       {(bibleRefs.length > 0 || catechismRefs.length > 0 || directoryRefs.length > 0) && (
         <div className="flex flex-wrap gap-1.5 pt-1 border-t">
@@ -453,3 +471,8 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
     </div>
   );
 }
+
+
+
+
+

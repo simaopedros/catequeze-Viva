@@ -211,11 +211,11 @@ export const PRICING_PREVIEW: PricingPlan[] = [
   {
     planId: 'catechist_free',
     level: 'personal',
-    name: 'Catequista Grátis',
-    price: 'Grátis',
+    name: 'Caminho Catequista',
+    price: '$9',
     period: '',
-    desc: 'Pessoal — para um catequista individual',
-    features: ['1 turma', '15 catequizandos', 'Presenças digitais', 'Bíblia e Catecismo', '3 créditos de IA iniciais'],
+    desc: 'Pessoal — organize sua turma e prepare encontros com mais clareza',
+    features: ['Organização da turma', 'Presenças digitais', 'Preparação de encontros', 'Base católica integrada', 'Opções com e sem IA'],
     priceCents: 0,
   },
   {
@@ -275,8 +275,8 @@ export const TESTIMONIALS: Testimonial[] = [
 
 export const FAQ: FaqItem[] = [
   {
-    q: 'Preciso de cartão de crédito para começar?',
-    a: 'Não. O plano Catequista Grátis é gratuito para sempre — basta criar sua conta e começar a usar. Os planos pagos aceitam cartão de crédito.',
+    q: 'Como conheço a plataforma antes de escolher um plano?',
+    a: 'Comece pelo caminho de catequista, entenda a estrutura da plataforma e avance para o plano mais adequado quando quiser preparar encontros com mais frequência.',
   },
   {
     q: 'Meus dados estão seguros? A plataforma segue a LGPD?',

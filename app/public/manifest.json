@@ -1,7 +1,7 @@
 {
   "name": "Catequese Viva",
   "short_name": "Catequese",
-  "description": "Plataforma completa de gestão para catequese católica: turmas, presença, conteúdos, sacramentos e comunicação pastoral.",
+  "description": "Organize turma, prepare encontros e acompanhe famílias no mesmo fluxo pastoral.",
   "start_url": "/app",
   "display": "standalone",
   "display_override": ["window-controls-overlay"],
@@ -41,7 +41,7 @@
   ],
   "screenshots": [
     {
-      "src": "/og-image.webp",
+      "src": "/public-banner.webp",
       "sizes": "1200x630",
       "type": "image/webp",
       "form_factor": "wide"

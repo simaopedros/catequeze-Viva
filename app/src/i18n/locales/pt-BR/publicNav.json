@@ -6,7 +6,10 @@
   "privacy": "Privacidade",
   "terms": "Termos",
   "login": "Entrar",
-  "signup": "Criar conta",
+  "signup": "Escolher caminho",
   "openMenu": "Abrir menu",
-  "closeMenu": "Fechar menu"
+  "closeMenu": "Fechar menu",
+  "tagline": "Plataforma pastoral para organizar turmas, encontros, presença e famílias na catequese católica.",
+  "audience": "catequistas • paróquias • dioceses",
+  "cta": "Escolher caminho"
 }

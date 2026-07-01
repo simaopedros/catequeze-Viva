@@ -17,6 +17,7 @@ import {
   createClass,
   ensurePersonalWorkspace,
 } from 'wasp/client/operations';
+import { trackMarketingEvent } from '../../client/analytics/marketingAnalytics';
 
 type Step = 'welcome' | 'personal_setup' | 'parish' | 'details' | 'completion';
 
@@ -89,6 +90,10 @@ export default function OnboardingPage() {
             { label: t('summary.class'), value: details?.className || t('summary.create_later') },
           ],
         });
+        trackMarketingEvent('activation_completed', {
+          account_type: 'personal',
+          created_class: Boolean(details?.className),
+        });
         setStep('completion');
         return;
       }
@@ -160,6 +165,11 @@ export default function OnboardingPage() {
         ],
       });
 
+      trackMarketingEvent('activation_completed', {
+        account_type: 'manager',
+        created_class: Boolean(details?.className),
+        created_year: Boolean(details?.yearName),
+      });
       setStep('completion');
     } catch (e: any) {
       setError(e.message || t('finish_error'));

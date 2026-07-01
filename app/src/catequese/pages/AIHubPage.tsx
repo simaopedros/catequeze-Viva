@@ -4,6 +4,7 @@ import { CreateMeetingFlow } from '../components/ai-hub/CreateMeetingFlow';
 import { ImproveContentFlow } from '../components/ai-hub/ImproveContentFlow';
 import { GenerateActivityFlow } from '../components/ai-hub/GenerateActivityFlow';
 import { GenerateWhatsappFlow } from '../components/ai-hub/GenerateWhatsappFlow';
+import { ManualContentFlow } from '../components/ai-hub/ManualContentFlow';
 
 function HubContent() {
   const [searchParams] = useSearchParams();
@@ -19,6 +20,9 @@ function HubContent() {
   switch (mode) {
     case 'create-meeting':
       return <CreateMeetingFlow />;
+
+    case 'create-manual':
+      return <ManualContentFlow />;
 
     case 'improve-content':
       return <ImproveContentFlow />;

@@ -755,11 +755,14 @@ model ContentItem {
   openingPrayer     String?
   closingPrayer     String?
   dynamic           String?
+  materials         String?
   mainContent       String
   activity          String?
   familyTask        String?
   estimatedTime     Int?
   tags              String?
+  documentJson      String?
+  documentVersion   Int             @default(1)
   status            ContentStatus   @default(DRAFT)
   visibilityScope   VisibilityScope @default(PARISH)
 

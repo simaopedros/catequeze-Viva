@@ -19,7 +19,7 @@ import {
 } from "../billingCascade";
 import { grantSubscriptionAiCredits } from "../../server/ai/credits";
 import { stripeClient } from "./stripeClient";
-import { PRICING_VERSION } from "../../shared/pricing";
+import { trackPricingEvent } from "../pricingEvents";
 
 /**
  * Stripe requires a raw request to construct events successfully.
@@ -188,9 +188,12 @@ async function processPaidInvoice(
         prismaUserDelegate,
       );
 
-      // Track checkout_completed
-      await trackCheckoutCompleted(context, user.id, paymentPlanId, 'stripe', subscriptionId);
-
+      await trackPricingEvent(context, {
+        userId: user.id,
+        event: 'purchase_completed',
+        toPlan: paymentPlanId,
+        processor: 'stripe',
+      });
       await grantSubscriptionAiCredits(
         context.entities.UserAiCredits,
         user.id,
@@ -398,27 +401,4 @@ function getInvoicePaidAtDate(invoice: Stripe.Invoice): Date {
   }
 
   return new Date(invoice.status_transitions.paid_at * 1000);
-}
-
-async function trackCheckoutCompleted(
-  context: any,
-  userId: string,
-  planId: string,
-  processor: string,
-  subscriptionId?: string | null,
-): Promise<void> {
-  try {
-    await (context.entities as any).PricingEvent.create({
-      data: {
-        userId,
-        event: 'checkout_completed',
-        toPlan: planId,
-        processor,
-        pricingVersion: PRICING_VERSION,
-        subscriptionId,
-      },
-    });
-  } catch {
-    // Non-critical — don't block webhook processing
-  }
 }

@@ -44,7 +44,8 @@
       "Bash(node *)",
       "Bash(npm *)",
       "Bash(tail *)",
-      "Bash(psql *)"
+      "Bash(psql *)",
+      "Agent(Explore)"
     ]
   },
   "$version": 4

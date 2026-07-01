@@ -19,6 +19,7 @@ import { toast } from '../../client/hooks/use-toast';
 import PhoneMaskInput from '../../client/components/PhoneMaskInput';
 import { useViaCep } from '../../client/hooks/useViaCep';
 import { ConfirmDialog } from '../../client/components/ConfirmDialog';
+import { trackMarketingEvent } from '../../client/analytics/marketingAnalytics';
 import {
   Dialog,
   DialogContent,
@@ -279,6 +280,10 @@ export default function FamilyDetailPage() {
   const handleCopyInviteLink = () => {
     const link = `${window.location.origin}/app/families/${id}`;
     navigator.clipboard.writeText(link);
+    trackMarketingEvent('share_clicked', {
+      placement: 'family_detail_page',
+      method: 'copy_link',
+    });
     toast({ title: t('detail_link_copied') || 'Link copiado!' });
   };
 

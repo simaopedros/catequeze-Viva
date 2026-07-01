@@ -10,10 +10,11 @@
  * Version is derived from CACHE_NAME for easy cache busting on deploy.
  */
 
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 const CACHE_NAME = `catequese-viva-${CACHE_VERSION}`;
+const IS_LOCAL_DEV =
+  self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1';
 
-// ── App Shell resources (pre-cached on install) ──────────────────────
 const APP_SHELL = [
   '/',
   '/app',
@@ -23,19 +24,16 @@ const APP_SHELL = [
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
   '/icons/badge-72x72.png',
-  '/og-image.webp',
+  '/public-banner.webp',
 ];
 
-// ── Runtime cache patterns ───────────────────────────────────────────
 const STATIC_MATCH = /\/(icons|images|fonts|brand|locales)\//;
 const API_MATCH = /\/api\//;
 
-// ── Helper: open cache ───────────────────────────────────────────────
 async function openCache() {
   return caches.open(CACHE_NAME);
 }
 
-// ── Helper: fetch and cache ──────────────────────────────────────────
 async function cacheFirst(request) {
   const cache = await openCache();
   const cached = await cache.match(request);
@@ -47,7 +45,6 @@ async function cacheFirst(request) {
     }
     return response;
   } catch {
-    // No network & no cache — return a basic offline response for navigation
     if (request.mode === 'navigate') {
       return cache.match('/offline') || new Response('Offline', { status: 503 });
     }
@@ -64,14 +61,18 @@ async function networkFirst(request) {
     }
     return response;
   } catch (err) {
-    const cached = await openCache().then(c => c.match(request));
+    const cached = await openCache().then((cache) => cache.match(request));
     if (cached) return cached;
     throw err;
   }
 }
 
-// ── Install: pre-cache app shell ─────────────────────────────────────
 self.addEventListener('install', (event) => {
+  if (IS_LOCAL_DEV) {
+    event.waitUntil(self.skipWaiting());
+    return;
+  }
+
   event.waitUntil(
     openCache().then((cache) => {
       return Promise.allSettled(
@@ -88,55 +89,61 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// ── Activate: clean old caches ───────────────────────────────────────
 self.addEventListener('activate', (event) => {
+  if (IS_LOCAL_DEV) {
+    event.waitUntil(
+      caches.keys()
+        .then((keys) => Promise.all(keys.map((key) => caches.delete(key))))
+        .then(() => self.registration.unregister())
+        .then(() => self.clients.matchAll({ type: 'window' }))
+        .then((clients) => Promise.all(clients.map((client) => client.navigate(client.url))))
+        .then(() => self.clients.claim()),
+    );
+    return;
+  }
+
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)),
-      );
-    }).then(() => self.clients.claim()),
+    caches
+      .keys()
+      .then((keys) => {
+        return Promise.all(
+          keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)),
+        );
+      })
+      .then(() => self.clients.claim()),
   );
 });
 
-// ── Fetch: routing strategies ────────────────────────────────────────
 self.addEventListener('fetch', (event) => {
+  if (IS_LOCAL_DEV) return;
+
   const { request } = event;
   const url = new URL(request.url);
 
-  // Only handle same-origin and navigation requests
   if (!url.origin.includes(self.location.origin) && request.mode !== 'navigate') {
     return;
   }
 
-  // Skip non-GET
   if (request.method !== 'GET') return;
 
-  // API calls: Network-First
   if (API_MATCH.test(url.pathname)) {
     event.respondWith(networkFirst(request));
     return;
   }
 
-  // Static assets: Cache-First
   if (STATIC_MATCH.test(url.pathname)) {
     event.respondWith(cacheFirst(request));
     return;
   }
 
-  // Navigation (HTML): Network-First with offline fallback
   if (request.mode === 'navigate') {
-    event.respondWith(
-      networkFirst(request).catch(() => cacheFirst(request)),
-    );
+    event.respondWith(networkFirst(request).catch(() => cacheFirst(request)));
     return;
   }
 
-  // Everything else (JS bundles, CSS): Cache-First with background update
   event.respondWith(cacheFirst(request));
 });
 
-// ── Push notifications ───────────────────────────────────────────────
 self.addEventListener('push', (event) => {
   const data = event.data ? event.data.json() : {};
   const options = {
@@ -176,7 +183,6 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
-// ── Message: handle skipWaiting from client (for update flow) ────────
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();

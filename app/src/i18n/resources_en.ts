@@ -1976,13 +1976,13 @@ export const family_en = {
 
 export const landing_en = {
     "hero": {
-      "headline_line1": "Organize your class and prepare catechesis",
-      "headline_line2": "without paper and last-minute work",
-      "subheadline": "Start free with 1 class, 15 catechumens, and 3 initial AI credits — upgrade to Catechist AI when weekly preparation needs more support.",
-      "badge": "Built for the catechist’s daily routine",
-      "cta_primary": "Create free account",
+      "headline_line1": "Your next catechesis meeting",
+      "headline_line2": "prepared without last-minute rush",
+      "subheadline": "Organize the class, build the meeting, and keep families in the same flow — so the pastoral week does not depend on paper, spreadsheets, and improvisation.",
+      "badge": "From preparation to family follow-up",
+      "cta_primary": "Choose my path",
       "cta_secondary": "See Catechist AI plan",
-      "trust_signals": "No credit card • Free plan • Upgrade when it makes sense",
+      "trust_signals": "Meeting prepared • Attendance recorded • Families informed",
       "cta_secondary_href": "#planos"
     },
     "pain_title": "Catechesis should not be scattered across notebooks, spreadsheets, and messages",
@@ -2007,11 +2007,11 @@ export const landing_en = {
         "text": "It is hard to know what needs attention before the next meeting"
       }
     ],
-    "ai_showcase_title": "Try AI with the free plan’s initial credits",
-    "ai_showcase_subtitle": "Create meeting scripts, activities, and family messages from the theme, duration, and age group. Review everything before using it.",
-    "ai_showcase_cta": "Create free account",
-    "features_title": "Real tools for a catechist’s weekly routine",
-    "features_subtitle": "Start small with your own class. If the parish expands later, the structure is already there.",
+    "ai_showcase_title": "See how a meeting can take shape in minutes",
+    "ai_showcase_subtitle": "Catequese Viva combines theme, age group, and Catholic references to draft a first version that you review before using.",
+    "ai_showcase_cta": "See ways to get started",
+    "features_title": "What matters most to prepare and follow catechesis",
+    "features_subtitle": "AI, attendance, and families work together to reduce improvisation and bring more clarity to the pastoral routine.",
     "features": {
       "attendance": {
         "title": "Take attendance on mobile and track absences clearly",
@@ -2056,8 +2056,8 @@ export const landing_en = {
         "b3": "Progress visible to coordination and guardians"
       }
     },
-    "mission_title": "Less manual administration. More attention to the mission.",
-    "mission_text": "Catequese Viva helps catechists move catechesis out of improvisation: organized class, prepared meeting, recorded attendance, and informed family.",
+    "mission_title": "Meeting prepared. Class organized. Family informed.",
+    "mission_text": "Catequese Viva is built to bring predictability to the pastoral routine: less improvisation in preparation, less rework in follow-up, and more clarity about each class.",
     "personas_title": "Start with the catechist and grow with the parish",
     "personas_subtitle": "The main experience is individual, but the same foundation supports coordination, families, and parish teams.",
     "personas": [
@@ -2098,35 +2098,35 @@ export const landing_en = {
     ],
     "more_features": "More tools for when your catechesis grows",
     "more_features_sub": "Features that remain useful after the first class.",
-    "steps_title": "Start with your next class",
-    "steps_subtitle": "The first path is simple: free account, class set up, first meeting prepared.",
+    "steps_title": "How to get started without friction",
+    "steps_subtitle": "Choose your profile, see the right plan, and move your next class into a more organized flow.",
     "steps": [
       {
-        "title": "Create the free account",
-        "desc": "Join without a credit card and use the Catechist Free plan with the product’s real limits."
+        "title": "Choose your profile",
+        "desc": "Start with the catechist, parish, or diocese path to see the offer that fits."
       },
       {
-        "title": "Register or import your class",
-        "desc": "Add catechumens manually or import the CSV spreadsheet you already use."
+        "title": "Organize your class",
+        "desc": "Register catechumens, track attendance, and centralize what is now scattered."
       },
       {
-        "title": "Prepare and follow the meeting",
-        "desc": "Generate a script with AI, adjust the content, and record attendance in the same place."
+        "title": "Prepare the next meeting",
+        "desc": "Use AI and the Catholic foundation to draft a better first version before next week."
       }
     ],
-    "steps_cta": "Create free account",
-    "pricing_title": "Start free. Upgrade to AI when weekly preparation needs it.",
-    "pricing_subtitle": "The free plan lets you try it with your class. Catechist AI is the upgrade for creating meetings, activities, and messages more often.",
+    "steps_cta": "See paths and plans",
+    "pricing_title": "Three ways into Catequese Viva",
+    "pricing_subtitle": "Start with the right profile. Compare the paths for catechist, parish, and diocese before choosing a plan.",
     "plans": {
       "free": {
-        "name": "Catechist Free",
-        "desc": "To begin with a real class, no credit card required.",
+        "name": "Catechist Path",
+        "desc": "For organizing your class, preparing meetings, and understanding the structure that fits your routine.",
         "features": [
-          "1 class",
-          "15 catechumens",
-          "Digital attendance",
-          "Bible and Catechism",
-          "3 initial AI credits"
+          "Class organization",
+          "Attendance and follow-up",
+          "Meeting preparation",
+          "Integrated Catholic foundation",
+          "Options with and without AI"
         ]
       },
       "ai": {
@@ -2154,30 +2154,26 @@ export const landing_en = {
         ]
       }
     },
-    "price_free": "Free",
-    "price_popular": "Best for catechists",
+    "price_free": "From",
+    "price_popular": "Most chosen by catechists",
     "price_monthly": "Monthly",
     "price_annual": "Annual",
-    "price_cta_free": "Create free account",
-    "price_cta_start": "Start with this plan",
+    "price_cta_free": "See paths",
+    "price_cta_start": "See options in this path",
     "per_month": "/month",
     "per_year": "/year",
     "annual_discount": "17% discount",
-    "compare_plans": "Compare all plans →",
-    "faq_title": "Questions before getting started",
-    "faq_subtitle": "Direct answers for catechists who want to try it without risk.",
+    "compare_plans": "Compare paths and full plans",
+    "faq_title": "Questions before choosing your path",
+    "faq_subtitle": "Direct answers about access, AI, mobile, and data protection.",
     "faqs": [
       {
-        "q": "Do I need a credit card for the free plan?",
-        "a": "No. You create the account and start with Catechist Free without entering a card."
+        "q": "Can I start as an individual catechist?",
+        "a": "Yes. The catechist path shows the personal options to organize your class, with or without AI, before moving to a parish structure."
       },
       {
-        "q": "What can I test on the free plan?",
-        "a": "Catechist Free includes 1 class, 15 catechumens, digital attendance, integrated Bible and Catechism, and 3 initial AI credits."
-      },
-      {
-        "q": "When does Catechist AI make sense?",
-        "a": "When you want to use AI frequently for meetings, activities, annual planning, family messages, and the theological assistant. The plan includes 20 AI credits per month."
+        "q": "When does AI make sense?",
+        "a": "When you prepare meetings often and want more speed to draft scripts, activities, annual planning, and family messages."
       },
       {
         "q": "Does it work on mobile?",
@@ -2190,12 +2186,16 @@ export const landing_en = {
       {
         "q": "Are children’s data protected?",
         "a": "The platform includes LGPD-oriented features, digital consent, access control, and data export or deletion requests."
+      },
+      {
+        "q": "Is there a path for parishes and dioceses?",
+        "a": "Yes. The pricing page separates catechist, parish, and diocese paths to reduce confusion and show only the options that fit each context."
       }
     ],
-    "cta_title": "Create your free account and organize the next catechesis meeting",
-    "cta_subtitle": "Start with one class, test the initial AI credits, and decide later whether Catechist AI fits your routine.",
-    "cta_button": "Create free account",
-    "cta_badge": "No credit card",
+    "cta_title": "Choose the right path and organize your next catechesis meeting",
+    "cta_subtitle": "See the option for catechist, parish, or diocese and move to the next step with clarity.",
+    "cta_button": "See paths and plans",
+    "cta_badge": "Clear next step",
     "cta_see_plans": "See plans",
     "mock": {
       "ai_title": "AI Meeting Generator",
@@ -2277,13 +2277,33 @@ export const landing_en = {
       "plan_detail": "Confirmation · 45 min"
     },
     "footer": {
-      "create_account": "Create free account",
+      "create_account": "Choose path",
       "login": "Login",
       "about": "About",
       "privacy": "Privacy",
       "terms": "Terms",
       "contact": "Contact"
-    }
+    },
+    "ai_showcase_badge": "See how the flow works",
+    "testimonials_title": "Teams using it report more clarity in the pastoral routine",
+    "testimonials_subtitle": "Real feedback about preparation, class follow-up, and communication with families.",
+    "testimonials": [
+      {
+        "name": "Ana Costa",
+        "role": "Catechist — São Paulo, Brazil",
+        "text": "Catechesis preparation became clearer. I can get out of improvisation, organize the class, and review the meeting before the week starts."
+      },
+      {
+        "name": "Maria Silva",
+        "role": "Parish coordinator — Campinas, Brazil",
+        "text": "Today coordination follows attendance, documents, and communication in one place. That reduced a lot of work previously spread across paper, spreadsheets, and messages."
+      },
+      {
+        "name": "Fr. João Santos",
+        "role": "Pastor — Belo Horizonte, Brazil",
+        "text": "The platform helps us see catechesis as a pastoral process, not only administration. Visibility into the class journey improved a lot."
+      }
+    ]
   } as const;
 
 export const landingIa_en = {
@@ -3323,8 +3343,8 @@ export const public_en = {
       "error": "Error sending. Please try again."
     },
     "pricing": {
-      "title": "Plans and Pricing",
-      "subtitle": "Choose the right level: personal plans for individual catechists or institutional plans for parishes and dioceses.",
+      "title": "Choose the right path to get started",
+      "subtitle": "First choose whether you are coming in as a catechist, parish, or diocese. Then we show only the plans that fit that context.",
       "payment_card": "Card",
       "payment_pix": "PIX",
       "annual_savings": "Save 17% on annual",
@@ -3336,14 +3356,14 @@ export const public_en = {
       "institutional_section": "For your institution",
       "institutional_hint": "— parishes and dioceses (covers multiple catechists)",
       "faq_title": "Frequently asked questions",
-      "free_forever": "forever",
+      "free_forever": "included",
       "per_month": "/month",
       "per_year": "/year",
-      "cta_free": "Start free",
+      "cta_free": "Get started",
       "cta_paid": "Start now",
       "most_popular": "Most Popular",
       "plan_desc": {
-        "catechist_free": "For a catechist who wants to start organizing their class.",
+        "catechist_free": "For a catechist in the early stage of organizing a class.",
         "catechist_pro": "For dedicated catechists with multiple classes.",
         "catechist_ai": "Artificial Intelligence to create meetings, activities, and messages in seconds.",
         "parish_essential": "For parishes seeking complete catechesis management with a lean team.",
@@ -3352,8 +3372,8 @@ export const public_en = {
       },
       "faq": [
         {
-          "q": "Can I try before paying?",
-          "a": "Yes! The Catechist Free plan is free forever, with 1 class, up to 15 catechumens, and 3 initial AI credits to test the meeting generator."
+          "q": "How can I evaluate the platform before subscribing?",
+          "a": "You can start on the catechist path, understand the platform structure, and move to the plan that fits you when you decide to prepare meetings more consistently."
         },
         {
           "q": "How do AI credits work?",
@@ -3383,7 +3403,43 @@ export const public_en = {
           "q": "Is the AI theologically reliable?",
           "a": "Yes. The AI is instructed to strictly base itself on the Bible (CNBB), Catechism of the Catholic Church, Compendium, and General Directory for Catechesis. All generated content includes references for you to audit."
         }
-      ]
+      ],
+      "path_selector_title": "Choose the right path to get started",
+      "path_selector_subtitle": "First choose your profile. Then we show only the plans that fit that context.",
+      "path_cards": {
+        "catechist": {
+          "title": "Catechist",
+          "description": "For organizing your class, preparing meetings, and using AI in your personal workspace.",
+          "supporting": "Personal plans to organize your class and prepare meetings with more consistency.",
+          "cta": "See catechist options"
+        },
+        "parish": {
+          "title": "Parish",
+          "description": "For coordinating catechists, classes, attendance, and pastoral communication in one place.",
+          "supporting": "Institutional plans for parish teams.",
+          "cta": "See parish options"
+        },
+        "diocese": {
+          "title": "Diocese",
+          "description": "For overseeing multiple parishes with governance, consolidated visibility, and AI per parish.",
+          "supporting": "Multi-parish licensing with central management.",
+          "cta": "See diocesan option"
+        }
+      },
+      "path_details": {
+        "catechist": {
+          "title": "Plans for catechists",
+          "subtitle": "Choose between an essential starting structure, wider limits, or faster preparation with AI."
+        },
+        "parish": {
+          "title": "Plans for parishes",
+          "subtitle": "Compare the right structure for your team and local catechesis volume."
+        },
+        "diocese": {
+          "title": "Plan for dioceses",
+          "subtitle": "One option for central management across multiple parishes with standardization and scale."
+        }
+      }
     },
     "workspace": {
       "app_name": "Catequese Viva",
@@ -3472,9 +3528,12 @@ export const publicNav_en = {
     "privacy": "Privacy",
     "terms": "Terms",
     "login": "Log in",
-    "signup": "Sign up",
+    "signup": "Choose path",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "tagline": "Pastoral platform to organize classes, meetings, attendance, and families in Catholic catechesis.",
+    "audience": "catechists • parishes • dioceses",
+    "cta": "Choose path"
   } as const;
 
 export const reports_en = {

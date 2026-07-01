@@ -12,6 +12,7 @@ import { ParishCommunitiesTab } from '../components/parish/ParishCommunitiesTab'
 import { ParishMembersTab } from '../components/parish/ParishMembersTab';
 import { ConfirmDialog } from '../../client/components/ConfirmDialog';
 import { toast } from '../../client/hooks/use-toast';
+import { trackMarketingEvent } from '../../client/analytics/marketingAnalytics';
 
 type Tab = 'info' | 'communities' | 'members';
 
@@ -95,6 +96,12 @@ export default function ParishDetailPage() {
   const handleInvite = async (email: string, role: string, communityId: string, householdId: string): Promise<{ msg: string; isError: boolean }> => {
     try {
       await inviteUserToParish({ email, parishId: pid, role, communityId: communityId || undefined, householdId: householdId || undefined });
+      trackMarketingEvent('invite_sent', {
+        role,
+        placement: 'parish_detail_page',
+        has_community: Boolean(communityId),
+        has_household: Boolean(householdId),
+      });
       toast({ title: tp('invite_sent') });
       return { msg: tp('invite_sent'), isError: false };
     } catch (e: any) {

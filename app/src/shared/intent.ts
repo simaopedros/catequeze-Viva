@@ -113,6 +113,7 @@ export interface SessionContext {
   ageGroup: string;
   duration?: number;
   approach?: string;
+  manualCreation?: boolean;
   /** ID of existing content to improve (improve_content) */
   contentId?: string | null;
   /** ID of meeting to generate support for (generate_activity / generate_whatsapp) */

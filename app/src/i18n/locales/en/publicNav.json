@@ -6,7 +6,10 @@
   "privacy": "Privacy",
   "terms": "Terms",
   "login": "Log in",
-  "signup": "Sign up",
+  "signup": "Choose path",
   "openMenu": "Open menu",
-  "closeMenu": "Close menu"
+  "closeMenu": "Close menu",
+  "tagline": "Pastoral platform to organize classes, meetings, attendance, and families in Catholic catechesis.",
+  "audience": "catechists • parishes • dioceses",
+  "cta": "Choose path"
 }

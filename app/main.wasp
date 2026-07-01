@@ -18,20 +18,22 @@ app OpenSaaS {
     "<meta name='apple-mobile-web-app-status-bar-style' content='black-translucent' />",
     "<meta name='apple-mobile-web-app-title' content='Catequese Viva' />",
 
-    "<meta name='description' content='Catequese Viva — Plataforma completa de gestão para catequese católica: turmas, presença, conteúdos, sacramentos e comunicação pastoral.' />",
+    "<meta name='description' content='Organize sua turma, prepare encontros e acompanhe famílias no mesmo fluxo pastoral — sem depender de papel, planilha e improviso.' />",
     "<meta name='author' content='Catequese Viva' />",
     "<meta name='keywords' content='catequese, católica, paróquia, pastoral, crisma, primeira eucaristia, igreja, gestão paroquial' />",
 
     "<meta property='og:type' content='website' />",
-    "<meta property='og:title' content='Catequese Viva — Plataforma Pastoral de Iniciação Cristã' />",
+    "<meta property='og:title' content='Catequese Viva — Sua próxima catequese preparada sem correria' />",
     "<meta property='og:site_name' content='Catequese Viva' />",
     "<meta property='og:url' content='https://catechis.app' />",
-    "<meta property='og:description' content='Conectando dioceses, paróquias, catequistas e famílias em uma jornada de fé integrada.' />",
-    "<meta property='og:image' content='https://catechis.app/og-image.webp' />",
+    "<meta property='og:description' content='Organize turma, prepare encontros e acompanhe famílias com mais clareza pastoral e menos improviso.' />",
+    "<meta property='og:image' content='https://catechis.app/public-banner.webp' />",
     "<meta property='og:image:width' content='1200' />",
     "<meta property='og:image:height' content='630' />",
     "<meta name='twitter:card' content='summary_large_image' />",
-    "<meta name='twitter:image' content='https://catechis.app/og-image.webp' />",
+    "<meta name='twitter:title' content='Catequese Viva — Sua próxima catequese preparada sem correria' />",
+    "<meta name='twitter:description' content='Organize turma, prepare encontros e acompanhe famílias com mais clareza pastoral e menos improviso.' />",
+    "<meta name='twitter:image' content='https://catechis.app/public-banner.webp' />",
   ],
 
   // 🔐 Auth out of the box! https://wasp.sh/docs/auth/overview
@@ -867,7 +869,7 @@ query listContentItems {
 
 query getContentItem {
   fn: import { getContentItem } from "@src/server/operations/contentOperations",
-  entities: [ContentItem, ContentBibleReference, ContentCatechismReference, ContentDirectoryReference, BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, Membership]
+  entities: [ContentItem, ContentVersion, Activity, Meeting, User, ContentBibleReference, ContentCatechismReference, ContentDirectoryReference, BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, Membership]
 }
 
 action createContentItem {
@@ -1091,6 +1093,21 @@ api authenticatedDocumentUpload {
   auth: true,
   httpRoute: (POST, "/api/documents/upload"),
   entities: [Document, Membership, GuardianProfile, CatechumenProfile, Parish]
+}
+
+api uploadContentImage {
+  fn: import { uploadContentImage } from "@src/server/api/contentImageUpload",
+  middlewareConfigFn: import { contentImageUploadMiddleware } from "@src/server/api/contentImageUpload",
+  auth: true,
+  httpRoute: (POST, "/api/content-images/upload"),
+  entities: [ContentItem, Membership, Parish]
+}
+
+api serveContentImage {
+  fn: import { serveContentImage } from "@src/server/api/contentImageServe",
+  auth: true,
+  httpRoute: (GET, "/api/content-images/:contentId"),
+  entities: [ContentItem, Membership, Parish]
 }
 
 //#region Catequese Viva - Mobile API
@@ -1707,7 +1724,7 @@ query listMyAiGenerations {
 
 action startCollaborativeSession {
   fn: import { startCollaborativeSession } from "@src/server/operations/collaborativeOperations",
-  entities: [CollaborativeSession, ContentItem, SessionMessage, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
+  entities: [CollaborativeSession, ContentItem, SessionMessage, ContextAttachment, ContentVersion, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
 }
 
 api collaborativeChatApi {
@@ -1721,14 +1738,14 @@ api generateBlockApi {
   fn: import { generateBlockHandler } from "@src/server/api/generateBlockStream",
   auth: true,
   httpRoute: (POST, "/api/generate-block-stream"),
-  entities: [CollaborativeSession, ContentItem, SessionMessage, ContentVersion, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
+  entities: [CollaborativeSession, ContentItem, SessionMessage, ContextAttachment, ContentVersion, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
 }
 
 api adjustDepthApi {
   fn: import { adjustDepthHandler } from "@src/server/api/adjustDepthStream",
   auth: true,
   httpRoute: (POST, "/api/adjust-depth-stream"),
-  entities: [CollaborativeSession, ContentItem, SessionMessage, ContentVersion, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
+  entities: [CollaborativeSession, ContentItem, SessionMessage, ContextAttachment, ContentVersion, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
 }
 
 query getSessionHistory {
@@ -1845,6 +1862,11 @@ query getPlatformGrowth {
 query getPlatformAlerts {
   fn: import { getPlatformAlerts } from "@src/server/operations/platformOperations",
   entities: [User, Parish, TenantBilling]
+}
+
+query getPricingFunnel {
+  fn: import { getPricingFunnel } from "@src/server/operations/platformOperations",
+  entities: [PricingEvent]
 }
 
 query getParishAdminDetail {

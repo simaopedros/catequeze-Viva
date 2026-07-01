@@ -111,7 +111,7 @@ export const faqs = [
 
 export const footerNavigation = {
   app: [
-    { name: i18n.t('footer.create_account', { ns: 'landing' }), href: "/signup" },
+    { name: i18n.t('footer.create_account', { ns: 'landing' }), href: "/pricing" },
     { name: i18n.t('footer.login', { ns: 'landing' }), href: "/login" },
   ],
   company: [

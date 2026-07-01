@@ -8,6 +8,7 @@ import { useRoleLabels, useMembershipStatusLabels } from '../../i18n/useLabels';
 import { ConfirmDialog } from '../../client/components/ConfirmDialog';
 import { useQuery, listParishMembers, listCommunities, listHouseholds, inviteUserToParish, removeMembership, updateMembershipRole } from 'wasp/client/operations';
 import { useUserContext } from '../../client/hooks/useUserContext';
+import { trackMarketingEvent } from '../../client/analytics/marketingAnalytics';
 
 const INVITE_ROLE_KEYS = [
   'PARISH_COORDINATOR',
@@ -77,6 +78,12 @@ export default function ParishMembersPage() {
         role: inviteRole,
         communityId: inviteCommunityId || undefined,
         householdId: inviteHouseholdId || undefined,
+      });
+      trackMarketingEvent('invite_sent', {
+        role: inviteRole,
+        placement: 'parish_members_page',
+        has_community: Boolean(inviteCommunityId),
+        has_household: Boolean(inviteHouseholdId),
       });
       setInviteMsg(tp('invite_sent'));
       setInviteEmail('');

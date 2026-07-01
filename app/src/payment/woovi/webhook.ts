@@ -10,7 +10,7 @@ import {
   cascadeActivatePlanToTenantBilling,
   getNextPeriodEnd,
 } from "../billingCascade";
-import { PRICING_VERSION } from "../../shared/pricing";
+import { trackPricingEvent } from "../pricingEvents";
 
 /**
  * Woovi requires raw body for HMAC validation.
@@ -132,6 +132,11 @@ async function handleSubscriptionAuthorized(
       planId = lastDash > 0 ? afterUserId.slice(0, lastDash) : afterUserId;
     }
 
+    const user = await context.entities.User.findFirst({
+      where: { wooviCorrelationId: correlationID },
+      select: { id: true },
+    });
+
     await context.entities.User.updateMany({
       where: { wooviCorrelationId: correlationID },
       data: {
@@ -140,6 +145,16 @@ async function handleSubscriptionAuthorized(
         datePaid: new Date(),
       },
     });
+
+    if (user) {
+      await trackPricingEvent(context, {
+        userId: user.id,
+        event: 'purchase_completed',
+        toPlan: planId,
+        processor: 'woovi',
+      });
+    }
+
     // If the plan is Parish or Diocese, cascade to TenantBilling
     await cascadePlanToTenantBilling(correlationID, context);
   } else if (correlationID.startsWith("parish-")) {
@@ -217,13 +232,20 @@ async function handleChargeCompleted(
     });
 
     if (user) {
+      const resolvedPlanId = planId || user.subscriptionPlan || 'catechist_pro';
       await context.entities.User.updateMany({
         where: { wooviCorrelationId: correlationID },
         data: {
           subscriptionStatus: SubscriptionStatus.Active,
-          subscriptionPlan: planId || user.subscriptionPlan || 'catechist_pro',
+          subscriptionPlan: resolvedPlanId,
           datePaid: new Date(),
         },
+      });
+      await trackPricingEvent(context, {
+        userId: user.id,
+        event: 'purchase_completed',
+        toPlan: resolvedPlanId,
+        processor: 'woovi',
       });
     } else {
       // Try to find by subscription correlationID (for PIX charges that reference a subscription)
@@ -287,19 +309,4 @@ async function cascadePlanToTenantBilling(
   if (!billingPlan) return;
 
   await cascadeActivatePlanToTenantBilling(context, user.id, billingPlan as any);
-
-  // Track checkout_completed
-  try {
-    await (context.entities as any).PricingEvent.create({
-      data: {
-        userId: user.id,
-        event: 'checkout_completed',
-        toPlan: user.subscriptionPlan,
-        processor: 'woovi',
-        pricingVersion: PRICING_VERSION,
-      },
-    });
-  } catch {
-    // Non-critical
-  }
 }

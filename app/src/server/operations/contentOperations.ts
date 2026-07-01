@@ -8,6 +8,29 @@ import {
   assertCanAccessContent,
   assertCanModifyContent,
 } from '../auth/contentAccess';
+import {
+  CONTENT_DOCUMENT_VERSION,
+  buildLegacyContentDocument,
+  createEmptyContentDocument,
+  parseContentDocument,
+} from '../../shared/contentDocument';
+
+function normalizeDocumentJson(value: string | null | undefined, fallback?: Record<string, any>): string {
+  if (value === null) {
+    return JSON.stringify(createEmptyContentDocument());
+  }
+
+  const parsed = parseContentDocument(value);
+  if (parsed) {
+    return JSON.stringify(parsed);
+  }
+
+  if (value !== undefined) {
+    throw new HttpError(400, 'Documento inválido.');
+  }
+
+  return JSON.stringify(fallback ? buildLegacyContentDocument(fallback) : createEmptyContentDocument());
+}
 
 export const listContentItems = async (_args: { take?: number; skip?: number } | void, context: any) => {
   const args = _args || {};
@@ -51,6 +74,7 @@ export const getContentItem = async (args: { id: string }, context: any) => {
       reviewedBy: { select: { id: true, firstName: true, lastName: true } },
       versions: { orderBy: { version: 'desc' } },
       activities: true,
+      meetings: true,
       bibleRefs: {
         include: {
           verse: {
@@ -65,13 +89,20 @@ export const getContentItem = async (args: { id: string }, context: any) => {
         include: { entry: true },
         orderBy: { position: 'asc' },
       },
+      ContentDirectoryReference: {
+        include: { entry: true },
+        orderBy: { position: 'asc' },
+      },
     },
   });
   if (!item) throw new HttpError(404, 'Conteúdo não encontrado.');
 
   await assertCanAccessContent(context, item);
 
-  return item;
+  return {
+    ...item,
+    directoryRefs: item.ContentDirectoryReference,
+  };
 };
 
 export const createContentItem = async (args: any, context: any) => {
@@ -79,14 +110,45 @@ export const createContentItem = async (args: any, context: any) => {
   const { role, parishId } = await getUserRoleAndParish(context);
   if (!canCreateContent(role)) throw new HttpError(403, 'Sem permissão para criar conteúdo.');
 
+  const title = String(args.title || 'Novo encontro').trim().slice(0, 200) || 'Novo encontro';
+  const theme = args.theme ? String(args.theme).slice(0, 500) : null;
+  const mainContent = typeof args.mainContent === 'string' ? args.mainContent : '';
+  const fallback = {
+    title,
+    theme,
+    pastoralObjective: args.pastoralObjective,
+    openingPrayer: args.openingPrayer,
+    closingPrayer: args.closingPrayer,
+    mainContent,
+    dynamic: args.dynamic,
+    materials: args.materials,
+    activity: args.activity,
+    familyTask: args.familyTask,
+    estimatedTime: args.estimatedTime,
+    tags: args.tags,
+  };
+
   return context.entities.ContentItem.create({
     data: {
-      title: args.title, theme: args.theme, pastoralObjective: args.pastoralObjective,
-      biblicalRef: args.biblicalRef, catechismRef: args.catechismRef,
-      openingPrayer: args.openingPrayer, dynamic: args.dynamic,
-      mainContent: args.mainContent, activity: args.activity,
-      familyTask: args.familyTask, estimatedTime: args.estimatedTime,
-      tags: args.tags, status: 'DRAFT', locale: resolveUserLocale(context.user), createdById: context.user.id,
+      title,
+      theme,
+      pastoralObjective: args.pastoralObjective ?? null,
+      biblicalRef: args.biblicalRef ?? null,
+      catechismRef: args.catechismRef ?? null,
+      openingPrayer: args.openingPrayer ?? null,
+      dynamic: args.dynamic ?? null,
+      materials: args.materials ?? null,
+      mainContent,
+      activity: args.activity ?? null,
+      familyTask: args.familyTask ?? null,
+      closingPrayer: args.closingPrayer ?? null,
+      estimatedTime: typeof args.estimatedTime === 'number' ? args.estimatedTime : 60,
+      tags: args.tags ?? null,
+      documentJson: normalizeDocumentJson(args.documentJson, fallback),
+      documentVersion: CONTENT_DOCUMENT_VERSION,
+      status: 'DRAFT',
+      locale: resolveUserLocale(context.user),
+      createdById: context.user.id,
       parishId: parishId || null,
     },
   });
@@ -117,23 +179,35 @@ export const updateContentStatus = async (args: { id: string; status: string }, 
 export const updateContentItem = async (args: {
   id: string;
   title?: string;
-  theme?: string;
-  pastoralObjective?: string;
-  openingPrayer?: string;
-  closingPrayer?: string;
+  theme?: string | null;
+  pastoralObjective?: string | null;
+  openingPrayer?: string | null;
+  closingPrayer?: string | null;
   mainContent?: string;
-  dynamic?: string;
-  activity?: string;
-  familyTask?: string;
-  estimatedTime?: number;
-  biblicalRef?: string;
-  catechismRef?: string;
+  dynamic?: string | null;
+  materials?: string | null;
+  activity?: string | null;
+  familyTask?: string | null;
+  estimatedTime?: number | null;
+  biblicalRef?: string | null;
+  catechismRef?: string | null;
+  tags?: string | null;
+  documentJson?: string | null;
+  documentVersion?: number;
 }, context: any) => {
   if (!context.user) throw new HttpError(401);
   const item = await context.entities.ContentItem.findUnique({ where: { id: args.id } });
   if (!item) throw new HttpError(404, 'Conteúdo não encontrado.');
 
   await assertCanModifyContent(context, item);
+
+  if (args.documentVersion !== undefined && args.documentVersion !== CONTENT_DOCUMENT_VERSION) {
+    throw new HttpError(400, 'Versão de documento inválida.');
+  }
+
+  const documentJson = args.documentJson !== undefined
+    ? normalizeDocumentJson(args.documentJson, item)
+    : undefined;
 
   return context.entities.ContentItem.update({
     where: { id: args.id },
@@ -145,16 +219,17 @@ export const updateContentItem = async (args: {
       ...(args.closingPrayer !== undefined ? { closingPrayer: args.closingPrayer } : {}),
       ...(args.mainContent !== undefined ? { mainContent: args.mainContent } : {}),
       ...(args.dynamic !== undefined ? { dynamic: args.dynamic } : {}),
+      ...(args.materials !== undefined ? { materials: args.materials } : {}),
       ...(args.activity !== undefined ? { activity: args.activity } : {}),
       ...(args.familyTask !== undefined ? { familyTask: args.familyTask } : {}),
       ...(args.estimatedTime !== undefined ? { estimatedTime: args.estimatedTime } : {}),
       ...(args.biblicalRef !== undefined ? { biblicalRef: args.biblicalRef } : {}),
       ...(args.catechismRef !== undefined ? { catechismRef: args.catechismRef } : {}),
+      ...(args.tags !== undefined ? { tags: args.tags } : {}),
+      ...(documentJson !== undefined ? { documentJson, documentVersion: CONTENT_DOCUMENT_VERSION } : {}),
     },
   });
 };
-
-// ── Bible & Catechism References ───────────────────────────────────────────
 
 export const addBibleRef = async (args: { contentId: string; verseId: string }, context: any) => {
   if (!context.user) throw new HttpError(401);

@@ -29,22 +29,14 @@ export function PublicNavbar() {
 
         <div className="hidden md:flex items-center gap-3">
           <div className="relative">
-            <button
-              onClick={() => setLangOpen(!langOpen)}
-              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md"
-              aria-label={tCommon('change_language')}
-            >
+            <button onClick={() => setLangOpen(!langOpen)} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md" aria-label={tCommon('change_language')}>
               <Globe className="h-3.5 w-3.5" />
               <span className="hidden lg:inline">{getLocaleLabel(currentLocale as SupportedLocale)}</span>
             </button>
             {langOpen && (
               <div className="absolute right-0 top-full mt-1 rounded-lg border bg-card shadow-lg py-1 z-50 min-w-[130px]">
                 {supportedLocales.map((locale) => (
-                  <button
-                    key={locale}
-                    onClick={() => { setLocale(locale); setLangOpen(false); }}
-                    className={`block w-full text-left px-3 py-1.5 text-xs hover:bg-muted transition-colors ${currentLocale === locale ? 'font-semibold text-primary' : 'text-muted-foreground'}`}
-                  >
+                  <button key={locale} onClick={() => { setLocale(locale); setLangOpen(false); }} className={`block w-full text-left px-3 py-1.5 text-xs hover:bg-muted transition-colors ${currentLocale === locale ? 'font-semibold text-primary' : 'text-muted-foreground'}`}>
                     {getLocaleLabel(locale)}
                     {currentLocale === locale && <span className="ml-2 text-primary">✓</span>}
                   </button>
@@ -56,7 +48,7 @@ export function PublicNavbar() {
             <Link to="/login">{t('login')}</Link>
           </Button>
           <Button size="sm" asChild>
-            <Link to="/signup">{t('signup')}</Link>
+            <Link to="/pricing">{t('cta')}</Link>
           </Button>
         </div>
 
@@ -75,15 +67,7 @@ export function PublicNavbar() {
             <Globe className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
             <div className="flex gap-1.5 overflow-x-auto">
               {supportedLocales.map((locale) => (
-                <button
-                  key={locale}
-                  onClick={() => { setLocale(locale); }}
-                  className={`text-xs px-2 py-1 rounded-md transition-colors ${
-                    currentLocale === locale
-                      ? 'bg-primary/10 text-primary font-semibold'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                  }`}
-                >
+                <button key={locale} onClick={() => { setLocale(locale); }} className={`text-xs px-2 py-1 rounded-md transition-colors ${currentLocale === locale ? 'bg-primary/10 text-primary font-semibold' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}>
                   {getLocaleLabel(locale)}
                 </button>
               ))}
@@ -94,7 +78,7 @@ export function PublicNavbar() {
               <Link to="/login" onClick={() => setOpen(false)}>{t('login')}</Link>
             </Button>
             <Button size="sm" asChild className="flex-1">
-              <Link to="/signup" onClick={() => setOpen(false)}>{t('signup')}</Link>
+              <Link to="/pricing" onClick={() => setOpen(false)}>{t('cta')}</Link>
             </Button>
           </div>
         </div>
