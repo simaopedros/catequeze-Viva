@@ -48,6 +48,7 @@ export function AutoStartPanel({ mode }: { mode: string }) {
           contentId: contentId,
           meetingId: null,
           source: 'content_edit',
+          manualCreation: false,
         };
         await startSession(ctx);
       } catch (e: any) {

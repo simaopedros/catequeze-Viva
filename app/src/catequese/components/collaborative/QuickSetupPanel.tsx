@@ -132,6 +132,7 @@ export function QuickSetupPanel({ mode, applyToOriginal }: { mode: string; apply
       contentId: contentId || null,
       meetingId: meetingId || null,
       applyToOriginal,
+      manualCreation: false,
     };
 
     try {

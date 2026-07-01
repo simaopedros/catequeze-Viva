@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router';
+import { useSearchParams, useNavigate } from 'react-router';
 import { Sparkles, FilePenLine, ArrowLeft, MessageSquareText, Pencil, Puzzle, Smartphone, Wand2, Clock } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { InteractiveCard } from '../../../client/components/InteractiveCard';
@@ -67,10 +67,15 @@ const EXISTING_OPTIONS: SubOption[] = [
 export function AIHubHome() {
   const { t } = useTranslation('ai');
   const [, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [step, setStep] = useState<HubStep>('menu');
 
   const handleCreateNew = () => {
     setSearchParams({ mode: 'create-meeting' });
+  };
+
+  const handleCreateManual = () => {
+    navigate('/app/content-library/new');
   };
 
   const handleExisting = () => {
@@ -100,7 +105,7 @@ export function AIHubHome() {
             <p className="text-muted-foreground">{t('hub.existing_subtitle')}</p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {EXISTING_OPTIONS.map((option) => (
               <InteractiveCard
                 key={option.key}
@@ -138,7 +143,18 @@ export function AIHubHome() {
           <p className="text-muted-foreground max-w-md mx-auto">{t('hub.subtitle')}</p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <InteractiveCard
+            icon={FilePenLine}
+            title="Criar manualmente"
+            description="Monte o encontro no editor visual, adicione referências e recursos, e use IA apenas se quiser."
+            onClick={handleCreateManual}
+            showArrow
+          >
+            <p className="text-xs text-muted-foreground mt-2 italic">
+              "Começar do zero e editar os blocos manualmente"
+            </p>
+          </InteractiveCard>
           <InteractiveCard
             icon={Sparkles}
             title={t('hub.create_new')}

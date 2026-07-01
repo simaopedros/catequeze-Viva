@@ -57,68 +57,76 @@ export const startCollaborativeSession = async (
     contentId?: string;
     meetingId?: string;
     applyToOriginal?: boolean;
+    manualCreation?: boolean;
   },
   context: any,
 ) => {
   if (!context.user) throw new HttpError(401, 'Autenticação necessária.');
   const userId = context.user.id;
 
-  // Sanitize user-controlled inputs before any use
   const theme = sanitizePrompt(args.theme);
   const ageGroup = sanitizePrompt(args.ageGroup);
   const approach = sanitizePrompt(args.approach || '');
+  // Credits are checked per AI operation (chat, suggestions, etc.), not here.
+  // Manual creation from the content library should never require credits.
+  // When the client flag is missing (serialization issue), default to manual.
+  const manualCreation = args.manualCreation !== false && (args as any).manualCreation !== 'false';
 
-  // Validate AI provider before charging credits
-  getAiClientOrThrow();
-
-  const cost = AI_CREDIT_COST.collaborativeSession;
-  await assertAndDeductCredits(context, cost);
+  // ── Credit check: only for AI-powered sessions (explicitly non-manual) ──
+  if (!manualCreation) {
+    getAiClientOrThrow();
+    const cost = AI_CREDIT_COST.collaborativeSession;
+    await assertAndDeductCredits(context, cost);
+  }
 
   const locale = resolveUserLocale(context);
   const intent = args.intent || 'create_meeting';
 
-  // For improve_content with applyToOriginal, use existing ContentItem instead of creating new
   let contentItem: any;
-  if (intent === 'improve_content' && args.applyToOriginal && args.contentId) {
+  if ((intent === 'improve_content' && args.applyToOriginal && args.contentId) || (manualCreation && args.contentId)) {
     const existing = await context.entities.ContentItem.findUnique({
-      where: { id: args.contentId },
+      where: { id: args.contentId! },
     });
     if (!existing) throw new HttpError(404, 'Conteúdo original não encontrado.');
 
-    // Save a version snapshot before modifying
-    try {
-      await context.entities.ContentVersion.create({
-        data: {
-          contentId: existing.id,
-          version: 0, // pre-AI snapshot
-          body: JSON.stringify({
-            title: existing.title || '',
-            theme: existing.theme || '',
-            pastoralObjective: existing.pastoralObjective || '',
-            biblicalRef: existing.biblicalRef || '',
-            catechismRef: existing.catechismRef || '',
-            openingPrayer: existing.openingPrayer || '',
-            closingPrayer: existing.closingPrayer || '',
-            dynamic: existing.dynamic || '',
-            mainContent: existing.mainContent || '',
-            familyTask: existing.familyTask || '',
-            estimatedTime: existing.estimatedTime || 60,
-          }),
-          changedById: userId,
-          changeNotes: 'Versão original antes da melhoria com IA',
-        },
-      });
-    } catch {}
+    await assertCanAccessContent(context, existing);
+
+    if (intent === 'improve_content' && args.applyToOriginal) {
+      try {
+        await context.entities.ContentVersion.create({
+          data: {
+            contentId: existing.id,
+            version: 0,
+            body: JSON.stringify({
+              title: existing.title || '',
+              theme: existing.theme || '',
+              pastoralObjective: existing.pastoralObjective || '',
+              biblicalRef: existing.biblicalRef || '',
+              catechismRef: existing.catechismRef || '',
+              openingPrayer: existing.openingPrayer || '',
+              closingPrayer: existing.closingPrayer || '',
+              dynamic: existing.dynamic || '',
+              materials: existing.materials || '',
+              mainContent: existing.mainContent || '',
+              familyTask: existing.familyTask || '',
+              estimatedTime: existing.estimatedTime || 60,
+            }),
+            changedById: userId,
+            changeNotes: 'Versão original antes da melhoria com IA',
+          },
+        });
+      } catch {}
+    }
 
     contentItem = existing;
   } else {
     contentItem = await context.entities.ContentItem.create({
       data: {
-        title: theme.slice(0, 200),
-        theme: theme.slice(0, 200),
+        title: theme.slice(0, 200) || 'Novo encontro',
+        theme: theme.slice(0, 200) || 'Novo encontro',
         mainContent: '',
-        isAiGenerated: true,
-        aiPrompt: JSON.stringify({ theme, ageGroup, duration: args.duration, approach }),
+        isAiGenerated: !manualCreation,
+        aiPrompt: manualCreation ? null : JSON.stringify({ theme, ageGroup, duration: args.duration, approach }),
         status: 'DRAFT',
         locale,
         createdById: userId,
@@ -128,66 +136,17 @@ export const startCollaborativeSession = async (
     });
   }
 
-  const session = await context.entities.CollaborativeSession.create({
+  const existingSession = await context.entities.CollaborativeSession.findUnique({
+    where: { contentItemId: contentItem.id },
+  });
+
+  const session = existingSession || await context.entities.CollaborativeSession.create({
     data: {
       contentItemId: contentItem.id,
       createdById: userId,
       locale,
     },
   });
-
-  // Load existing content context for improve_content intent
-  let existingContent: any = null;
-  if (intent === 'improve_content' && args.contentId) {
-    existingContent = await context.entities.ContentItem.findUnique({
-      where: { id: args.contentId },
-    });
-
-    // Attach existing content as context sources in the session
-    if (existingContent) {
-      const attachments: Array<{ type: string; title: string; payload: string }> = [];
-
-      if (existingContent.pastoralObjective) {
-        attachments.push({
-          type: 'TEXT',
-          title: 'Objetivo Pastoral (original)',
-          payload: existingContent.pastoralObjective,
-        });
-      }
-      if (existingContent.mainContent) {
-        attachments.push({
-          type: 'TEXT',
-          title: 'Conteúdo Central (original)',
-          payload: existingContent.mainContent.slice(0, 1500),
-        });
-      }
-      if (existingContent.dynamic || existingContent.activity) {
-        attachments.push({
-          type: 'TEXT',
-          title: 'Dinâmica/Atividade (original)',
-          payload: (existingContent.dynamic || '') + '\n' + (existingContent.activity || ''),
-        });
-      }
-      if (existingContent.biblicalRef) {
-        attachments.push({
-          type: 'BIBLE_REF',
-          title: 'Referência Bíblica (original)',
-          payload: existingContent.biblicalRef,
-        });
-      }
-
-      for (const att of attachments) {
-        await context.entities.ContextAttachment.create({
-          data: {
-            sessionId: session.id,
-            type: att.type,
-            title: att.title,
-            payload: att.payload,
-          },
-        });
-      }
-    }
-  }
 
   await context.entities.SessionMessage.create({
     data: {
@@ -202,21 +161,47 @@ export const startCollaborativeSession = async (
         approach: approach || '',
         contentId: args.contentId || null,
         meetingId: args.meetingId || null,
+        manualCreation,
       }),
     },
   });
 
-  // Generate initial content via AI — branch on intent
-  let generated: any = null;
-  try {
-    const { client, model } = getAiClientOrThrow();
+  let existingContent: any = null;
+  if (intent === 'improve_content' && args.contentId) {
+    existingContent = await context.entities.ContentItem.findUnique({
+      where: { id: args.contentId },
+    });
 
-    let systemPrompt: string;
-    let userMessage: string;
+    if (existingContent) {
+      const attachments: Array<{ type: string; title: string; payload: string }> = [];
+      if (existingContent.pastoralObjective) attachments.push({ type: 'TEXT', title: 'Objetivo Pastoral (original)', payload: existingContent.pastoralObjective });
+      if (existingContent.mainContent) attachments.push({ type: 'TEXT', title: 'Conteúdo Central (original)', payload: existingContent.mainContent.slice(0, 1500) });
+      if (existingContent.dynamic || existingContent.activity) attachments.push({ type: 'TEXT', title: 'Dinâmica e Atividades (original)', payload: [existingContent.dynamic, existingContent.activity].filter(Boolean).join('\n\n').slice(0, 1500) });
+      if (existingContent.familyTask) attachments.push({ type: 'TEXT', title: 'Compromisso com a família (original)', payload: existingContent.familyTask });
 
-    if (intent === 'improve_content' && existingContent) {
-      // Improvement flow: use existing content as context
-      systemPrompt = `${MEETING_GENERATOR_PROMPT}
+      for (const attachment of attachments) {
+        const alreadyExists = await context.entities.ContextAttachment.findFirst({
+          where: { sessionId: session.id, title: attachment.title },
+        });
+        if (!alreadyExists) {
+          await context.entities.ContextAttachment.create({
+            data: { sessionId: session.id, ...attachment },
+          });
+        }
+      }
+    }
+  }
+
+  if (!manualCreation) {
+    let generated: any = null;
+    try {
+      const { client, model } = getAiClientOrThrow();
+
+      let systemPrompt: string;
+      let userMessage: string;
+
+      if (intent === 'improve_content' && existingContent) {
+        systemPrompt = `${MEETING_GENERATOR_PROMPT}
 
 IMPORTANTE: O catequista quer MELHORAR um conteúdo existente.
 Conteúdo atual:
@@ -226,114 +211,109 @@ Conteúdo atual:
 - Conteúdo principal: ${existingContent.mainContent || ''}
 - Dinâmica: ${existingContent.dynamic || ''}
 - Atividade: ${existingContent.activity || ''}
+- Materiais: ${existingContent.materials || ''}
 - Tarefa familiar: ${existingContent.familyTask || ''}
 - Tempo estimado: ${existingContent.estimatedTime || args.duration || 60} min
 
 Melhore e expanda este conteúdo mantendo a estrutura original.`;
-      userMessage = `Melhore o conteúdo sobre "${existingContent.title || theme}" para ${ageGroup}. Expanda o conteúdo principal, adicione ou refine a dinâmica, e sugira melhorias.`;
-    } else {
-      // create_meeting: original behavior
-      systemPrompt = `${MEETING_GENERATOR_PROMPT}
+        userMessage = `Melhore o conteúdo sobre "${existingContent.title || theme}" para ${ageGroup}. Expanda o conteúdo principal, adicione ou refine a dinâmica, materiais e sugestões práticas.`;
+      } else {
+        systemPrompt = `${MEETING_GENERATOR_PROMPT}
 
 IMPORTANTE: O catequista definiu:
 - Tema: ${theme}
 - Faixa etária: ${ageGroup}
 - Duração: ${args.duration || 60} minutos
 - Abordagem: ${approach || 'Mista'}`;
-      userMessage = `Gere um roteiro completo de encontro de catequese sobre "${args.theme}" para ${args.ageGroup}.`;
-    }
-
-    const response = await aiCompletion(client, model, {
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userMessage },
-      ],
-      temperature: 0.7,
-      maxTokens: 4096,
-      jsonMode: true,
-    });
-
-    let json = (response.content || '').trim();
-    if (json.startsWith('```json')) json = json.slice(7);
-    if (json.startsWith('```')) json = json.slice(3);
-    if (json.endsWith('```')) json = json.slice(0, -3);
-    generated = JSON.parse(json.trim());
-  } catch (err: any) {
-    console.error('[startCollaborativeSession] AI generation failed:', err.message);
-    generated = null;
-  }
-
-  if (generated) {
-    const updateData: Record<string, any> = {};
-    if (generated.title) updateData.title = generated.title;
-    if (generated.pastoralObjective) updateData.pastoralObjective = generated.pastoralObjective;
-    if (generated.openingPrayer) updateData.openingPrayer = generated.openingPrayer;
-    if (generated.closingPrayer) updateData.closingPrayer = generated.closingPrayer;
-    if (generated.dynamic) updateData.dynamic = generated.dynamic;
-    if (generated.mainContent) updateData.mainContent = generated.mainContent;
-    if (generated.familyTask) updateData.familyTask = generated.familyTask;
-    if (generated.estimatedTime) updateData.estimatedTime = generated.estimatedTime;
-    if (generated.biblicalReading) {
-      updateData.biblicalRef = `${generated.biblicalReading.reference || ''}: ${generated.biblicalReading.text || ''}`;
-    }
-    if (generated.catechismRefs && generated.catechismRefs.length > 0) {
-      updateData.catechismRef = generated.catechismRefs.map((r: any) => `CIC §${r.number}: ${r.summary}`).join(' | ');
-    }
-
-    if (Object.keys(updateData).length > 0) {
-      await context.entities.ContentItem.update({
-        where: { id: contentItem.id },
-        data: updateData,
-      });
-
-      // Save initial version
-      const body = JSON.stringify({
-        title: updateData.title || contentItem.title,
-        theme: contentItem.theme,
-        pastoralObjective: updateData.pastoralObjective || '',
-        biblicalRef: updateData.biblicalRef || '',
-        catechismRef: updateData.catechismRef || '',
-        openingPrayer: updateData.openingPrayer || '',
-        closingPrayer: updateData.closingPrayer || '',
-        dynamic: updateData.dynamic || '',
-        mainContent: updateData.mainContent || '',
-        familyTask: updateData.familyTask || '',
-        estimatedTime: updateData.estimatedTime || 60,
-      });
-
-      try {
-        await context.entities.ContentVersion.create({
-          data: {
-            contentId: contentItem.id,
-            version: 1,
-            body,
-            changedById: userId,
-            changeNotes: 'Geração inicial do encontro pela IA',
-          },
-        });
-      } catch {}
-
-      // Save assistant message with generated content summary (intent-aware)
-      let assistantMsg: string;
-      switch (intent) {
-        case 'improve_content':
-          assistantMsg = `Conteúdo melhorado com sucesso! Revisei e expandi "${generated.title || args.theme}".\n\nUse o chat para refinar partes específicas ou peça ajustes adicionais.`;
-          break;
-        default:
-          assistantMsg = `Encontro gerado com sucesso! Estruturei o roteiro com o tema "${generated.title || args.theme}".\n\nUse o chat para refinar qualquer parte do encontro, ou clique em "Refinar" nos blocos à direita para ajustar seções específicas.`;
+        userMessage = `Gere um roteiro completo de encontro de catequese sobre "${args.theme}" para ${args.ageGroup}.`;
       }
 
-      await context.entities.SessionMessage.create({
-        data: {
-          sessionId: session.id,
-          role: 'assistant',
-          content: assistantMsg,
-        },
+      const response = await aiCompletion(client, model, {
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userMessage },
+        ],
+        temperature: 0.7,
+        maxTokens: 4096,
+        jsonMode: true,
       });
+
+      let json = response.content?.trim() || '';
+      if (json.startsWith('```json')) json = json.slice(7);
+      if (json.startsWith('```')) json = json.slice(3);
+      if (json.endsWith('```')) json = json.slice(0, -3);
+      generated = JSON.parse(json.trim());
+    } catch (err: any) {
+      console.error('[startCollaborativeSession] AI generation failed:', err.message);
+      generated = null;
+    }
+
+    if (generated) {
+      const updateData: Record<string, any> = {};
+      if (generated.title) updateData.title = generated.title;
+      if (generated.pastoralObjective) updateData.pastoralObjective = generated.pastoralObjective;
+      if (generated.openingPrayer) updateData.openingPrayer = generated.openingPrayer;
+      if (generated.closingPrayer) updateData.closingPrayer = generated.closingPrayer;
+      if (generated.dynamic) updateData.dynamic = generated.dynamic;
+      if (generated.materials) updateData.materials = generated.materials;
+      if (generated.mainContent) updateData.mainContent = generated.mainContent;
+      if (generated.familyTask) updateData.familyTask = generated.familyTask;
+      if (generated.estimatedTime) updateData.estimatedTime = generated.estimatedTime;
+      if (generated.biblicalReading) updateData.biblicalRef = `${generated.biblicalReading.reference || ''}: ${generated.biblicalReading.text || ''}`;
+      if (generated.catechismRefs && generated.catechismRefs.length > 0) updateData.catechismRef = generated.catechismRefs.map((r: any) => `CIC §${r.number}: ${r.summary}`).join(' | ');
+
+      if (Object.keys(updateData).length > 0) {
+        await context.entities.ContentItem.update({
+          where: { id: contentItem.id },
+          data: updateData,
+        });
+
+        const body = JSON.stringify({
+          title: updateData.title || contentItem.title,
+          theme: contentItem.theme,
+          pastoralObjective: updateData.pastoralObjective || '',
+          biblicalRef: updateData.biblicalRef || '',
+          catechismRef: updateData.catechismRef || '',
+          openingPrayer: updateData.openingPrayer || '',
+          closingPrayer: updateData.closingPrayer || '',
+          dynamic: updateData.dynamic || '',
+          materials: updateData.materials || '',
+          mainContent: updateData.mainContent || '',
+          familyTask: updateData.familyTask || '',
+          estimatedTime: updateData.estimatedTime || 60,
+        });
+
+        try {
+          await context.entities.ContentVersion.create({
+            data: {
+              contentId: contentItem.id,
+              version: 1,
+              body,
+              changedById: userId,
+              changeNotes: 'Geração inicial do encontro pela IA',
+            },
+          });
+        } catch {}
+
+        const assistantMsg = intent === 'improve_content'
+          ? `Conteúdo melhorado com sucesso! Revisei e expandi "${generated.title || args.theme}".
+
+Use o chat para refinar partes específicas ou peça ajustes adicionais.`
+          : `Encontro gerado com sucesso! Estruturei o roteiro com o tema "${generated.title || args.theme}".
+
+Use o chat para refinar qualquer parte do encontro, ou clique em "Refinar" nos blocos à direita para ajustar seções específicas.`;
+
+        await context.entities.SessionMessage.create({
+          data: {
+            sessionId: session.id,
+            role: 'assistant',
+            content: assistantMsg,
+          },
+        });
+      }
     }
   }
 
-  // Return the updated content item + initial attachments
   const updatedContentItem = await context.entities.ContentItem.findUnique({
     where: { id: contentItem.id },
   });
@@ -417,6 +397,7 @@ export const saveContentVersion = async (
     openingPrayer: contentItem.openingPrayer,
     closingPrayer: contentItem.closingPrayer,
     dynamic: contentItem.dynamic,
+    materials: contentItem.materials,
     mainContent: contentItem.mainContent,
     activity: contentItem.activity,
     familyTask: contentItem.familyTask,
@@ -486,6 +467,7 @@ export const restoreContentVersion = async (
       openingPrayer: parsed.openingPrayer,
       closingPrayer: parsed.closingPrayer,
       dynamic: parsed.dynamic,
+      materials: parsed.materials,
       mainContent: parsed.mainContent,
       activity: parsed.activity,
       familyTask: parsed.familyTask,

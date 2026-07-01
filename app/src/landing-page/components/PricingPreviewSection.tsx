@@ -1,143 +1,61 @@
-import { useState } from 'react';
-import { Link } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import { CheckCircle2, Star, PiggyBank } from 'lucide-react';
-import { useScrollReveal } from '../hooks/useScrollReveal';
-import { setIntendedInterval, setIntendedPlan } from '../../catequese/lib/intendedPlan';
-import type { BillingInterval } from '../../catequese/lib/intendedPlan';
-import { PLANS } from '../../shared/pricing';
-import { formatPrice } from '../../shared/currency';
-import { cn } from '../../client/utils';
+import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
+import { ArrowRight, Building2, Landmark, User } from "lucide-react";
+import { useScrollReveal } from "../hooks/useScrollReveal";
+import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
 
-function fmt(cents: number): string {
-  return formatPrice(cents, 'USD');
-}
+type PricingPath = "catechist" | "parish" | "diocese";
 
-export function PricingPreviewSection({ ns = 'landing', responsiveCtas = false }: { ns?: string; responsiveCtas?: boolean }) {
+export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
   const { t } = useTranslation(ns);
+  const { t: tp } = useTranslation("public");
   const { ref: headerRef, className: headerClass } = useScrollReveal();
-  const [billingInterval, setBillingInterval] = useState<BillingInterval>('monthly');
 
-  const plans = [
-    { planKey: 'free', planId: 'catechist_free', priceCents: PLANS.catechist_free.prices.monthlyCents, highlight: false },
-    { planKey: 'ai', planId: 'catechist_ai', priceCents: PLANS.catechist_ai.prices.monthlyCents, priceCentsAnnual: PLANS.catechist_ai.prices.annualCents, highlight: true },
-    { planKey: 'parish', planId: 'parish_complete', priceCents: PLANS.parish_complete.prices.monthlyCents, priceCentsAnnual: PLANS.parish_complete.prices.annualCents, highlight: false },
+  const cards: { key: PricingPath; icon: typeof User; title: string; description: string; supporting: string; cta: string; }[] = [
+    { key: "catechist", icon: User, title: tp("pricing.path_cards.catechist.title"), description: tp("pricing.path_cards.catechist.description"), supporting: tp("pricing.path_cards.catechist.supporting"), cta: tp("pricing.path_cards.catechist.cta") },
+    { key: "parish", icon: Building2, title: tp("pricing.path_cards.parish.title"), description: tp("pricing.path_cards.parish.description"), supporting: tp("pricing.path_cards.parish.supporting"), cta: tp("pricing.path_cards.parish.cta") },
+    { key: "diocese", icon: Landmark, title: tp("pricing.path_cards.diocese.title"), description: tp("pricing.path_cards.diocese.description"), supporting: tp("pricing.path_cards.diocese.supporting"), cta: tp("pricing.path_cards.diocese.cta") },
   ];
 
   return (
-    <section id="planos" className="scroll-mt-20 max-w-5xl mx-auto px-4 py-20">
-      <div ref={headerRef} className={`text-center mb-8 space-y-3 ${headerClass}`}>
-        <h2 className="text-3xl sm:text-4xl font-bold">{t('pricing_title')}</h2>
-        <p className="text-lg text-muted-foreground">{t('pricing_subtitle')}</p>
-        <div
-          className={cn(
-            'inline-flex items-center rounded-lg border bg-muted p-0.5 mt-3',
-            responsiveCtas && 'max-w-full',
-          )}
-        >
-          <button
-            type="button"
-            onClick={() => setBillingInterval('monthly')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${billingInterval === 'monthly' ? 'bg-background text-foreground shadow-elevation-xs' : 'text-muted-foreground hover:text-foreground'}`}
-          >
-            {t('price_monthly')}
-          </button>
-          <button
-            type="button"
-            onClick={() => setBillingInterval('annual')}
-            className={cn(
-              'px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-1.5',
-              responsiveCtas && 'min-w-0 whitespace-normal leading-tight',
-              billingInterval === 'annual' ? 'bg-background text-foreground shadow-elevation-xs' : 'text-muted-foreground hover:text-foreground',
-            )}
-          >
-            {t('price_annual')}
-            <span className={cn('text-caption text-success font-bold', responsiveCtas && 'leading-tight')}>{t('annual_discount')}</span>
-          </button>
-        </div>
+    <section id="planos" className="scroll-mt-20 max-w-6xl mx-auto px-4 py-20">
+      <div ref={headerRef} className={`text-center mb-10 space-y-3 ${headerClass}`}>
+        <h2 className="text-3xl sm:text-4xl font-bold">{t("pricing_title")}</h2>
+        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">{t("pricing_subtitle")}</p>
       </div>
 
-      <div className="grid gap-6 grid-cols-1 md:grid-cols-3">
-        {plans.map((cfg) => (
-          <PricingCard
-            key={cfg.planKey}
-            planKey={cfg.planKey}
-            planId={cfg.planId}
-            plan={t(`plans.${cfg.planKey}`, { returnObjects: true }) as any}
-            features={t(`plans.${cfg.planKey}.features`, { returnObjects: true }) as string[]}
-            delay={cfg.planKey === 'free' ? 0 : cfg.planKey === 'ai' ? 60 : 120}
-            billingInterval={billingInterval}
-            priceCents={cfg.priceCents}
-            priceCentsAnnual={cfg.priceCentsAnnual}
-            highlight={cfg.highlight}
-            ns={ns}
-            responsiveCtas={responsiveCtas}
-          />
+      <div className="grid gap-6 lg:grid-cols-3">
+        {cards.map((card, index) => (
+          <PricingPathCard key={card.key} keyName={card.key} icon={card.icon} title={card.title} description={card.description} supporting={card.supporting} cta={card.cta} delay={index * 60} ns={ns} />
         ))}
       </div>
 
       <p className="text-center text-sm text-muted-foreground mt-8">
-        <Link to="/pricing" className="underline hover:text-foreground transition-colors">{t('compare_plans')}</Link>
+        <Link to="/pricing" onClick={() => trackMarketingEvent("primary_cta_clicked", { landing: ns, placement: "landing_pricing_footer", destination: "/pricing" })} className="underline hover:text-foreground transition-colors">
+          {t("compare_plans")}
+        </Link>
       </p>
     </section>
   );
 }
 
-function PricingCard({ planKey, planId, plan, features, delay, billingInterval, priceCents, priceCentsAnnual, highlight, ns, responsiveCtas }: {
-  planKey: string; planId: string; plan: any; features: string[]; delay: number; billingInterval: BillingInterval;
-  priceCents: number; priceCentsAnnual?: number; highlight?: boolean; ns: string; responsiveCtas?: boolean;
-}) {
-  const { t } = useTranslation(ns);
+function PricingPathCard({ keyName, icon: Icon, title, description, supporting, cta, delay, ns }: { keyName: PricingPath; icon: typeof User; title: string; description: string; supporting: string; cta: string; delay: number; ns: string; }) {
   const { ref, className } = useScrollReveal({ delay });
-  const hasAnnual = !!priceCentsAnnual && priceCents > 0;
-  const showAnnual = billingInterval === 'annual' && hasAnnual;
 
   return (
-    <div ref={ref} className={`rounded-2xl border p-6 space-y-4 relative flex flex-col ${highlight ? 'border-primary shadow-lg shadow-primary/10 scale-[1.02]' : 'bg-card'} ${className}`}>
-      {highlight && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-          <span className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-0.5 text-xs font-semibold text-primary-foreground shadow-elevation-xs"><Star className="h-3 w-3 fill-current" />{t('price_popular')}</span>
-        </div>
-      )}
-      <div>
-        <h3 className="font-semibold">{plan?.name}</h3>
-        <p className="text-xs text-muted-foreground mt-0.5">{plan?.desc}</p>
+    <Link ref={ref as any} to="/pricing" onClick={() => trackMarketingEvent("primary_cta_clicked", { landing: ns, placement: "landing_pricing_path", destination: "/pricing", path: keyName })} className={`rounded-2xl border bg-card p-6 transition-all hover:-translate-y-1 hover:shadow-lg ${className}`}>
+      <div className="inline-flex rounded-xl bg-muted p-3 text-primary">
+        <Icon className="h-6 w-6" />
       </div>
-      <div>
-        {priceCents === 0 ? (
-          <span className="text-4xl font-bold">{t('price_free')}</span>
-        ) : showAnnual ? (
-          <><span className="text-4xl font-bold">{fmt(priceCentsAnnual!)}</span><span className="text-sm text-muted-foreground">{t('per_year')}</span></>
-        ) : (
-          <><span className="text-4xl font-bold">{fmt(priceCents)}</span><span className="text-sm text-muted-foreground">{t('per_month')}</span></>
-        )}
+      <div className="mt-4 space-y-2">
+        <h3 className="text-xl font-bold">{title}</h3>
+        <p className="text-sm text-muted-foreground">{description}</p>
       </div>
-      {showAnnual ? (
-        <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1"><span>{fmt(priceCents)}{t('per_month')}</span></div>
-      ) : hasAnnual ? (
-        <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1"><PiggyBank className="h-3 w-3" /><span>{fmt(priceCentsAnnual!)}{t('per_year')}</span></div>
-      ) : null}
-      <ul className="mt-5 space-y-2.5 text-sm text-muted-foreground flex-1">
-        {(features || []).map((feature) => (
-          <li key={feature} className="flex items-start gap-2.5"><CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />{feature}</li>
-        ))}
-      </ul>
-      <Link
-        to="/signup"
-        onClick={() => {
-          setIntendedInterval(billingInterval);
-          if (planId !== 'catechist_free') {
-            setIntendedPlan(planId);
-          }
-        }}
-        className={cn(
-          'mt-6 block text-center rounded-xl px-4 py-3 text-sm font-semibold transition-all',
-          responsiveCtas && 'min-h-11 whitespace-normal leading-snug',
-          highlight ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25' : 'bg-muted hover:bg-muted/80',
-        )}
-      >
-        {priceCents === 0 ? t('price_cta_free') : t('price_cta_start')}
-      </Link>
-    </div>
+      <p className="mt-5 text-sm text-muted-foreground">{supporting}</p>
+      <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary">
+        {cta}
+        <ArrowRight className="h-4 w-4" />
+      </div>
+    </Link>
   );
 }

@@ -2,7 +2,6 @@
  * Platform operations — cross-tenant queries for the admin Command Center.
  * All operations require platform admin (isAdmin).
  */
-import { HttpError } from 'wasp/server';
 import { requirePlatformAdmin } from '../auth/helpers';
 import { formatServerDate, resolveUserLocale } from '../i18n/serverLocale';
 import { PLANS } from '../../shared/pricing';
@@ -16,8 +15,51 @@ const PLAN_PRICES: Record<string, number> = {
   DIOCESE: PLANS.diocese.prices.monthlyCents / 100,
 };
 
+const FUNNEL_EVENTS = [
+  'landing_viewed',
+  'pricing_viewed',
+  'plan_selected',
+  'signup_started',
+  'signup_completed',
+  'checkout_started',
+  'purchase_completed',
+  'activation_completed',
+  'invite_sent',
+  'invite_accepted',
+  'share_clicked',
+] as const;
+
+type FunnelEventName = (typeof FUNNEL_EVENTS)[number];
+
+type FunnelCounts = Record<FunnelEventName, number>;
+
 function planPrice(plan: string | null | undefined): number {
   return PLAN_PRICES[plan?.toUpperCase() || 'CATECHIST_FREE'] || 0;
+}
+
+function createEmptyFunnelCounts(): FunnelCounts {
+  return {
+    landing_viewed: 0,
+    pricing_viewed: 0,
+    plan_selected: 0,
+    signup_started: 0,
+    signup_completed: 0,
+    checkout_started: 0,
+    purchase_completed: 0,
+    activation_completed: 0,
+    invite_sent: 0,
+    invite_accepted: 0,
+    share_clicked: 0,
+  };
+}
+
+function isFunnelEventName(value: string): value is FunnelEventName {
+  return (FUNNEL_EVENTS as readonly string[]).includes(value);
+}
+
+function rate(numerator: number, denominator: number): number | null {
+  if (!denominator) return null;
+  return Math.round((numerator / denominator) * 1000) / 10;
 }
 
 export const getPlatformOverview = async (_args: void, context: any) => {
@@ -29,9 +71,18 @@ export const getPlatformOverview = async (_args: void, context: any) => {
   const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
   const [
-    totalUsers, newUsers7d, newUsers30d, totalParishes, activeParishes,
-    archivedParishes, totalClasses, totalCatechumens, payingTenants,
-    activeSubscriptions, trialsExpiring, activeBillings,
+    totalUsers,
+    newUsers7d,
+    newUsers30d,
+    totalParishes,
+    activeParishes,
+    archivedParishes,
+    totalClasses,
+    totalCatechumens,
+    payingTenants,
+    activeSubscriptions,
+    trialsExpiring,
+    activeBillings,
   ] = await Promise.all([
     context.entities.User.count(),
     context.entities.User.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
@@ -55,9 +106,18 @@ export const getPlatformOverview = async (_args: void, context: any) => {
   const mrr = activeBillings.reduce((sum: number, b: { plan: string }) => sum + planPrice(b.plan), 0);
 
   return {
-    totalUsers, newUsers7d, newUsers30d, totalParishes, activeParishes,
-    archivedParishes, totalClasses, totalCatechumens, payingTenants,
-    activeSubscriptions, trialsExpiring, mrr: Math.round(mrr * 100) / 100,
+    totalUsers,
+    newUsers7d,
+    newUsers30d,
+    totalParishes,
+    activeParishes,
+    archivedParishes,
+    totalClasses,
+    totalCatechumens,
+    payingTenants,
+    activeSubscriptions,
+    trialsExpiring,
+    mrr: Math.round(mrr * 100) / 100,
   };
 };
 
@@ -67,13 +127,11 @@ export const getPlatformGrowth = async (_args: void, context: any) => {
   const now = new Date();
   const days = 30;
 
-  // Compute day boundaries
   const dayStarts: Date[] = [];
   for (let i = days - 1; i >= 0; i--) {
     dayStarts.push(new Date(now.getFullYear(), now.getMonth(), now.getDate() - i));
   }
 
-  // Fetch all users and parishes created in the 30-day window in 2 queries
   const thirtyDaysAgo = dayStarts[0];
   const dayEnd = new Date(dayStarts[dayStarts.length - 1]);
   dayEnd.setDate(dayEnd.getDate() + 1);
@@ -85,11 +143,6 @@ export const getPlatformGrowth = async (_args: void, context: any) => {
     context.entities.Parish.count(),
   ]);
 
-  // Compute cumulative counts client-side
-  // Since we can't get cumulative-per-day from a single Prisma query,
-  // we approximate: starting from (totalNow - totalInWindow) as base,
-  // spread the growth evenly across days.
-  // This is a lightweight approximation — exact daily precision would need raw SQL.
   const baseUsers = totalUsersNow - usersInWindow;
   const baseParishes = totalParishesNow - parishesInWindow;
 
@@ -146,4 +199,85 @@ export const getPlatformAlerts = async (_args: void, context: any) => {
   }
 
   return alerts;
+};
+
+export const getPricingFunnel = async (_args: void, context: any) => {
+  requirePlatformAdmin(context.user);
+
+  const now = new Date();
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+  const [events30d, recentPurchases] = await Promise.all([
+    context.entities.PricingEvent.findMany({
+      where: { createdAt: { gte: thirtyDaysAgo } },
+      select: {
+        event: true,
+        toPlan: true,
+        processor: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    }),
+    context.entities.PricingEvent.findMany({
+      where: { event: 'purchase_completed' },
+      select: {
+        createdAt: true,
+        toPlan: true,
+        processor: true,
+        userId: true,
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+    }),
+  ]);
+
+  const counts30d = createEmptyFunnelCounts();
+  const counts7d = createEmptyFunnelCounts();
+  const planCounts = new Map<string, number>();
+  const processorCounts = new Map<string, number>();
+
+  for (const event of events30d) {
+    if (!isFunnelEventName(event.event)) continue;
+
+    counts30d[event.event as FunnelEventName] += 1;
+    if (event.createdAt >= sevenDaysAgo) {
+      counts7d[event.event as FunnelEventName] += 1;
+    }
+
+    if (event.event === 'purchase_completed') {
+      const planKey = event.toPlan || 'unknown';
+      const processorKey = event.processor || 'unknown';
+      planCounts.set(planKey, (planCounts.get(planKey) || 0) + 1);
+      processorCounts.set(processorKey, (processorCounts.get(processorKey) || 0) + 1);
+    }
+  }
+
+  const topPlans = Array.from(planCounts.entries())
+    .map(([plan, count]) => ({ plan, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+
+  const topProcessors = Array.from(processorCounts.entries())
+    .map(([processor, count]) => ({ processor, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+
+  return {
+    windowDays: 30,
+    counts7d,
+    counts30d,
+    conversion30d: {
+      landingToPricing: rate(counts30d.pricing_viewed, counts30d.landing_viewed),
+      pricingToPlan: rate(counts30d.plan_selected, counts30d.pricing_viewed),
+      planToSignup: rate(counts30d.signup_started, counts30d.plan_selected),
+      signupToCheckout: rate(counts30d.checkout_started, counts30d.signup_completed),
+      checkoutToPurchase: rate(counts30d.purchase_completed, counts30d.checkout_started),
+      purchaseToActivation: rate(counts30d.activation_completed, counts30d.purchase_completed),
+      inviteAcceptance: rate(counts30d.invite_accepted, counts30d.invite_sent),
+    },
+    topPlans,
+    topProcessors,
+    recentPurchases,
+  };
 };

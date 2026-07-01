@@ -52,6 +52,7 @@ interface CollaborativeState {
   depth: number;
   setupComplete: boolean;
   intent: AiIntent | null;
+  manualCreation: boolean;
 }
 
 interface CollaborativeContextType extends CollaborativeState {
@@ -88,6 +89,7 @@ export function CollaborativeProvider({ children }: { children: ReactNode }) {
     depth: 3,
     setupComplete: false,
     intent: null,
+    manualCreation: false,
   });
 
   const navigate = useNavigate();
@@ -102,7 +104,7 @@ export function CollaborativeProvider({ children }: { children: ReactNode }) {
   }, [state.contentItemId]);
 
   const startSession = useCallback(async (ctx: SessionContext) => {
-    setState(s => ({ ...s, generating: true, intent: ctx.intent }));
+    setState(s => ({ ...s, generating: true, intent: ctx.intent, manualCreation: !!ctx.manualCreation }));
     try {
       const result = await startCollaborativeSession({
         theme: ctx.theme,
@@ -113,6 +115,7 @@ export function CollaborativeProvider({ children }: { children: ReactNode }) {
         contentId: ctx.contentId ?? undefined,
         meetingId: ctx.meetingId ?? undefined,
         applyToOriginal: ctx.applyToOriginal,
+        manualCreation: ctx.manualCreation,
       } as any);
       const typedResult = result as unknown as { sessionId: string; contentItemId: string; contentItem: ContentItem; attachments?: ContextAttachment[] };
       setState(s => ({
@@ -123,12 +126,17 @@ export function CollaborativeProvider({ children }: { children: ReactNode }) {
         attachments: typedResult.attachments || [],
         setupComplete: true,
         generating: false,
+        manualCreation: !!ctx.manualCreation,
       }));
 
-      try {
-        const credits = await getAiCreditsStatus();
-        setState(s => ({ ...s, creditsLeft: credits.creditsLeft }));
-      } catch {}
+      if (!ctx.manualCreation) {
+        try {
+          const credits = await getAiCreditsStatus();
+          setState(s => ({ ...s, creditsLeft: credits.creditsLeft }));
+        } catch {}
+      } else {
+        setState(s => ({ ...s, creditsLeft: null }));
+      }
     } catch (err: any) {
       setState(s => ({ ...s, generating: false }));
       throw err;

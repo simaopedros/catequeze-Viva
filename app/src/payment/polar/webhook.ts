@@ -15,6 +15,7 @@ import {
 } from "../plans";
 import { getPaymentPlanIdByPaymentProcessorPlanId } from "../paymentProcessorPlans";
 import { updateUserCredits, updateUserSubscription } from "../user";
+import { trackPricingEvent } from "../pricingEvents";
 
 /**
  * Polar requires a raw request to construct events successfully.
@@ -46,7 +47,7 @@ export const polarWebhook: PaymentsWebhook = async (
 
     switch (event.type) {
       case "order.paid":
-        await handleOrderPaid(event, prismaUserDelegate);
+        await handleOrderPaid(event, prismaUserDelegate, context);
         break;
       case "subscription.updated":
         await handleSubscriptionUpdated(event, prismaUserDelegate);
@@ -82,6 +83,7 @@ export const polarWebhook: PaymentsWebhook = async (
 async function handleOrderPaid(
   { data: order }: WebhookOrderPaidPayload,
   userDelegate: PrismaClient["user"],
+  context: Parameters<PaymentsWebhook>[2],
 ): Promise<void> {
   const paymentPlanId = getPaymentPlanIdByPaymentProcessorPlanId(
     order.productId,
@@ -90,8 +92,8 @@ async function handleOrderPaid(
   switch (paymentPlanId) {
     case PaymentPlanId.Credits10:
     case PaymentPlanId.AiCredits20:
-    case PaymentPlanId.AiCredits50:
-      await updateUserCredits(
+    case PaymentPlanId.AiCredits50: {
+      const user = await updateUserCredits(
         {
           paymentProcessorUserId: order.customerId,
           numOfCreditsPurchased: paymentPlans[paymentPlanId].effect.amount,
@@ -99,7 +101,14 @@ async function handleOrderPaid(
         },
         userDelegate,
       );
+      await trackPricingEvent(context, {
+        userId: user.id,
+        event: 'purchase_completed',
+        toPlan: paymentPlanId,
+        processor: 'polar',
+      });
       break;
+    }
     case PaymentPlanId.Hobby:
     case PaymentPlanId.Pro:
     case PaymentPlanId.CatechistFree:
@@ -109,8 +118,8 @@ async function handleOrderPaid(
     case PaymentPlanId.Parish:
     case PaymentPlanId.ParishEssential:
     case PaymentPlanId.ParishComplete:
-    case PaymentPlanId.Diocese:
-      await updateUserSubscription(
+    case PaymentPlanId.Diocese: {
+      const user = await updateUserSubscription(
         {
           paymentProcessorUserId: order.customerId,
           paymentPlanId,
@@ -119,7 +128,14 @@ async function handleOrderPaid(
         },
         userDelegate,
       );
+      await trackPricingEvent(context, {
+        userId: user.id,
+        event: 'purchase_completed',
+        toPlan: paymentPlanId,
+        processor: 'polar',
+      });
       break;
+    }
     default:
       assertUnreachable(paymentPlanId);
   }
