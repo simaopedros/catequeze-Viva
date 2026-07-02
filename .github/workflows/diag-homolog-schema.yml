@@ -1,0 +1,49 @@
+name: Diag Homolog Schema (temp)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Inspect ContentItem columns + _prisma_migrations
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOMOLOG_SSH_HOST }}
+          username: ${{ secrets.HOMOLOG_SSH_USER }}
+          key: ${{ secrets.HOMOLOG_SSH_KEY }}
+          command_timeout: 10m
+          script: |
+            cd /opt/catechis
+            echo "===== ContentItem columns ====="
+            docker compose -f docker-compose.homolog.yml exec -T server node -e "
+              const { PrismaClient } = require('@prisma/client');
+              const p = new PrismaClient();
+              p.\$queryRawUnsafe(\`SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'ContentItem' ORDER BY ordinal_position\`)
+                .then(rows => { console.log(JSON.stringify(rows, null, 2)); process.exit(0); })
+                .catch(e => { console.error('RAW QUERY ERROR:', e.message); process.exit(1); });
+            "
+            echo ""
+            echo "===== UserTwoFactor columns ====="
+            docker compose -f docker-compose.homolog.yml exec -T server node -e "
+              const { PrismaClient } = require('@prisma/client');
+              const p = new PrismaClient();
+              p.\$queryRawUnsafe(\`SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'UserTwoFactor' ORDER BY ordinal_position\`)
+                .then(rows => { console.log(JSON.stringify(rows, null, 2)); process.exit(0); })
+                .catch(e => { console.error('RAW QUERY ERROR:', e.message); process.exit(1); });
+            "
+            echo ""
+            echo "===== _prisma_migrations (last 5) ====="
+            docker compose -f docker-compose.homolog.yml exec -T server node -e "
+              const { PrismaClient } = require('@prisma/client');
+              const p = new PrismaClient();
+              p.\$queryRawUnsafe(\`SELECT migration_name, finished_at, rolled_back_at FROM _prisma_migrations ORDER BY finished_at DESC LIMIT 5\`)
+                .then(rows => { console.log(JSON.stringify(rows, null, 2)); process.exit(0); })
+                .catch(e => { console.error('RAW QUERY ERROR:', e.message); process.exit(1); });
+            "
+            echo ""
+            echo "===== Test create-content-item (the failing operation) ====="
+            docker compose -f docker-compose.homolog.yml logs --tail=30 server 2>&1 | grep -iE "create-content-item|list-content-items|materials|500" | tail -15
