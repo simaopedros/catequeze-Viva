@@ -3,17 +3,81 @@ import { Link, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
-import { PageHeader } from '../../client/components/PageHeader';
 import { FilterPills } from '../../client/components/FilterPills';
 import { SearchInput } from '../../client/components/SearchInput';
 import { EmptyState } from '../../client/components/EmptyState';
 import { SkeletonCard } from '../../client/components/Skeletons';
-import { Plus, BookOpen, Clock, User, Puzzle, LayoutGrid, List, ArrowUpDown, Sparkles, BookMarked, Search, Loader2 } from 'lucide-react';
+import {
+  Plus,
+  Clock,
+  User,
+  Puzzle,
+  LayoutGrid,
+  List,
+  ArrowUpDown,
+  Sparkles,
+  BookMarked,
+  Search,
+  Loader2,
+  ArrowRight,
+  CheckCircle2,
+  FileText,
+} from 'lucide-react';
 import { useQuery, listContentItems, listDioceseSharedContent } from 'wasp/client/operations';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
+import { cn } from '../../client/utils';
+import type { LucideIcon } from 'lucide-react';
+import type { ReactNode } from 'react';
 
 const STATUS_KEYS = ['all', 'DRAFT', 'IN_REVIEW', 'APPROVED', 'PUBLISHED'] as const;
 const PAGE_SIZE = 50;
+
+function SurfaceSection({
+  title,
+  icon: Icon,
+  children,
+  className,
+  tone = 'default',
+}: {
+  title: string;
+  icon: LucideIcon;
+  children: ReactNode;
+  className?: string;
+  tone?: 'default' | 'soft';
+}) {
+  return (
+    <section
+      className={cn(
+        'rounded-3xl border p-5 shadow-sm shadow-slate-200/60',
+        tone === 'soft'
+          ? 'border-primary/15 bg-gradient-to-br from-white via-slate-50 to-primary/[0.04]'
+          : 'border-border/70 bg-white/90',
+        className
+      )}
+    >
+      <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
+        <Icon className="h-4 w-4" />
+        <span>{title}</span>
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function LibraryMetric({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | number;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/60 bg-white/85 px-4 py-3 shadow-sm shadow-slate-200/60 backdrop-blur">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">{label}</p>
+      <p className="mt-1.5 text-2xl font-bold tracking-tight text-slate-950">{value}</p>
+    </div>
+  );
+}
 
 export default function ContentLibraryPage() {
   const { t } = useTranslation('content');
@@ -25,8 +89,8 @@ export default function ContentLibraryPage() {
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<string>('all');
-  const [view, setView] = useState<'grid'|'list'>('grid');
-  const [sort, setSort] = useState<'recent'|'az'>('recent');
+  const [view, setView] = useState<'grid' | 'list'>('grid');
+  const [sort, setSort] = useState<'recent' | 'az'>('recent');
   const [showDiocese, setShowDiocese] = useState(false);
   const [onlyWithActivities, setOnlyWithActivities] = useState(
     searchParams.get('activities') === '1'
@@ -46,7 +110,7 @@ export default function ContentLibraryPage() {
     return map[status] || status;
   };
 
-  const statusVariant: Record<string, 'default'|'secondary'|'outline'|'destructive'> = {
+  const statusVariant: Record<string, 'default' | 'secondary' | 'outline' | 'destructive'> = {
     DRAFT: 'secondary',
     IN_REVIEW: 'outline',
     APPROVED: 'default',
@@ -61,7 +125,7 @@ export default function ContentLibraryPage() {
     }
     if (activeParishId) result = result.filter((i: any) => i.parishId === activeParishId || i.isDioceseShared);
     if (filter !== 'all') result = result.filter((i: any) => i.status === filter);
-    if (search) result = result.filter((i: any) => `${i.title} ${i.theme||''}`.toLowerCase().includes(search.toLowerCase()));
+    if (search) result = result.filter((i: any) => `${i.title} ${i.theme || ''}`.toLowerCase().includes(search.toLowerCase()));
     if (onlyWithActivities) result = result.filter((i: any) => (i._count?.activities || 0) > 0);
     if (onlyAiGenerated) result = result.filter((i: any) => i.isAiGenerated);
     if (sort === 'az') result.sort((a: any, b: any) => a.title.localeCompare(b.title));
@@ -73,115 +137,276 @@ export default function ContentLibraryPage() {
     [items],
   );
 
+  const totalScripts = filtered.length;
+  const aiCount = filtered.filter((i: any) => i.isAiGenerated).length;
+
   const activityFilterOptions = [
     { value: 'all', label: tc('all') },
     { value: 'activities', label: <span className="flex items-center gap-1"><Puzzle className="h-3 w-3" /> {t('library.with_activities')}</span> },
     { value: 'ai', label: <span className="flex items-center gap-1"><Sparkles className="h-3 w-3" /> {t('library.ai_generated')}</span> },
   ];
-  const statusFilterOptions = STATUS_KEYS.map(key => ({
+
+  const statusFilterOptions = STATUS_KEYS.map((key) => ({
     value: key,
     label: key === 'all' ? tc('all') : statusLabel(key),
   }));
 
   const hasFilters = !!(search || filter !== 'all' || onlyWithActivities || onlyAiGenerated);
   const hasMore = items.length === PAGE_SIZE * pages;
-  const loadMore = useCallback(() => setPages(p => p + 1), []);
+  const loadMore = useCallback(() => setPages((p) => p + 1), []);
 
   if (loading) {
     return (
-        <div className="space-y-6">
-          <div className="h-8 w-48 animate-pulse rounded bg-muted" />
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {[1, 2, 3].map(i => <SkeletonCard key={i} />)}
-          </div>
+      <div className="space-y-6">
+        <div className="h-8 w-48 animate-pulse rounded bg-muted" />
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map((i) => <SkeletonCard key={i} />)}
         </div>
+      </div>
     );
   }
 
   return (
-      <div className="space-y-6">
-        <PageHeader
-          title={t('title')}
-          subtitle={t('library.subtitle', { scripts: items.length, activities: totalActivities })}
-          count={items.length > 0 ? t('library.count_badge', { count: items.length }) : undefined}
-          filters={
-            <div className="flex flex-col sm:flex-row gap-3">
-              <div className="flex gap-1 flex-wrap items-center">
-                <span className="text-overline text-muted-foreground mr-0.5 font-medium">{t('library.filter_type')}</span>
-                <FilterPills
-                  options={activityFilterOptions}
-                  value={onlyAiGenerated ? 'ai' : onlyWithActivities ? 'activities' : 'all'}
-                  onChange={v => {
-                    setOnlyWithActivities(v === 'activities');
-                    setOnlyAiGenerated(v === 'ai');
-                  }}
-                />
-                <span className="w-px h-6 bg-border self-center mx-1" />
-                <span className="text-overline text-muted-foreground mr-0.5 font-medium">{t('library.filter_status')}</span>
-                <FilterPills options={statusFilterOptions} value={filter} onChange={setFilter} />
+    <div className="space-y-8">
+      <section className="overflow-hidden rounded-[32px] border border-border/70 bg-[radial-gradient(circle_at_top_left,_rgba(17,60,107,0.10),_transparent_34%),linear-gradient(180deg,_rgba(255,255,255,1),_rgba(248,250,252,0.96))] p-6 shadow-sm shadow-slate-200/70 lg:p-8">
+        <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr] xl:items-start">
+          <div className="space-y-6">
+            <div className="space-y-3">
+              <Badge variant="outline" className="rounded-full border-primary/20 bg-white/80 px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-primary">
+                Curadoria de conteudo
+              </Badge>
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-3">
+                  <h1 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
+                    {t('title')}
+                  </h1>
+                  {items.length > 0 && (
+                    <span className="rounded-full bg-white/80 px-3 py-1 text-sm font-medium text-slate-500 ring-1 ring-slate-200/70">
+                      {t('library.count_badge', { count: items.length })}
+                    </span>
+                  )}
+                </div>
+                <p className="max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
+                  {t('library.subtitle', { scripts: items.length, activities: totalActivities })}
+                </p>
               </div>
-              <SearchInput placeholder={t('library.search_placeholder')} value={search} onChange={e => setSearch(e.target.value)} />
             </div>
-          }
-        >
-          <Button size="sm" variant="outline" onClick={() => setSort(s => s==='recent'?'az':'recent')}><ArrowUpDown className="h-4 w-4" /></Button>
-          <Button size="sm" variant="outline" onClick={() => setView(v => v==='grid'?'list':'grid')}>{view==='grid'?<List className="h-4 w-4"/>:<LayoutGrid className="h-4 w-4"/>}</Button>
-          <Button size="sm" variant={showDiocese ? 'default' : 'outline'} onClick={() => setShowDiocese(d => !d)} className="gap-1"><BookMarked className="h-4 w-4" />{t('library.diocese')}</Button>
-          <Button asChild><Link to="/app/content-library/new"><Plus className="mr-1 h-4 w-4"/>Criar manualmente</Link></Button>
-          <Button size="sm" variant="outline" asChild>
-            <Link to="/app/ai-hub?mode=create-meeting" className="gap-1"><Sparkles className="h-4 w-4"/>{t('library.generate_ai')}</Link>
-          </Button>
-        </PageHeader>
 
-        {filtered.length === 0 ? (
-          hasFilters ? (
+            <div className="grid gap-3 sm:grid-cols-3">
+              <LibraryMetric label="Conteudos visiveis" value={totalScripts} />
+              <LibraryMetric label="Atividades" value={totalActivities} />
+              <LibraryMetric label="Gerados por IA" value={aiCount} />
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <Button asChild size="lg" className="h-11 rounded-xl px-5">
+                <Link to="/app/content-library/new"><Plus className="mr-2 h-4 w-4" />Criar manualmente</Link>
+              </Button>
+              <Button size="lg" variant="outline" className="h-11 rounded-xl px-5 bg-white/80" asChild>
+                <Link to="/app/ai-hub?mode=create-meeting"><Sparkles className="mr-2 h-4 w-4" />{t('library.generate_ai')}</Link>
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="rounded-3xl border border-white/70 bg-white/80 p-4 shadow-sm shadow-slate-200/60 backdrop-blur">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">{t('library.filter_type')}</p>
+                  <FilterPills
+                    options={activityFilterOptions}
+                    value={onlyAiGenerated ? 'ai' : onlyWithActivities ? 'activities' : 'all'}
+                    onChange={(v) => {
+                      setOnlyWithActivities(v === 'activities');
+                      setOnlyAiGenerated(v === 'ai');
+                    }}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">{t('library.filter_status')}</p>
+                  <FilterPills options={statusFilterOptions} value={filter} onChange={setFilter} />
+                </div>
+
+                <SearchInput placeholder={t('library.search_placeholder')} value={search} onChange={(e) => setSearch(e.target.value)} />
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <Button size="lg" variant="outline" className="h-11 rounded-xl px-4 bg-white/80" onClick={() => setSort((s) => s === 'recent' ? 'az' : 'recent')}>
+                <ArrowUpDown className="mr-2 h-4 w-4" />
+                {sort === 'recent' ? 'Recentes' : 'A-Z'}
+              </Button>
+              <Button size="lg" variant="outline" className="h-11 rounded-xl px-4 bg-white/80" onClick={() => setView((v) => v === 'grid' ? 'list' : 'grid')}>
+                {view === 'grid' ? <List className="mr-2 h-4 w-4" /> : <LayoutGrid className="mr-2 h-4 w-4" />}
+                {view === 'grid' ? 'Lista' : 'Cards'}
+              </Button>
+              <Button size="lg" variant={showDiocese ? 'default' : 'outline'} className="h-11 rounded-xl px-4" onClick={() => setShowDiocese((d) => !d)}>
+                <BookMarked className="mr-2 h-4 w-4" />
+                {t('library.diocese')}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {filtered.length === 0 ? (
+        hasFilters ? (
+          <SurfaceSection title="Busca" icon={Search} tone="soft">
             <EmptyState
               compact
               icon={Search}
               title={t('library.empty_no_results')}
               description={onlyWithActivities ? t('library.empty_no_results_activities') : t('library.empty_adjust_filters')}
             />
-          ) : (
-            <EmptyState icon={BookOpen} title={t('library.empty_no_content')} description={t('library.empty_create_desc')}>
-              <Button className="mt-4" asChild><Link to="/app/content-library/new">{t('create')}</Link></Button>
-            </EmptyState>
-          )
-        ) : view === 'list' ? (
-          <div className="rounded-xl border bg-card"><table className="w-full"><thead><tr className="border-b text-left text-xs text-muted-foreground uppercase"><th className="p-3">{t('library.table_title')}</th><th className="p-3 hidden md:table-cell">{t('library.table_status')}</th><th className="p-3 hidden md:table-cell">{t('library.table_activities')}</th><th className="p-3 hidden lg:table-cell">{t('library.table_time')}</th></tr></thead><tbody>{filtered.map((i:any)=>(
-            <tr key={i.id} className="border-b hover:bg-muted/30"><td className="p-3"><Link to={`/app/content-library/${i.id}`} className="font-medium text-sm hover:text-primary">{i.title}</Link><p className="text-overline text-muted-foreground">{i.theme}</p></td><td className="p-3 hidden md:table-cell"><div className="flex items-center gap-1">{i.isAiGenerated && <Badge variant="outline" className="text-overline bg-yellow-50 border-yellow-200 text-yellow-700"><Sparkles className="h-2.5 w-2.5" />IA</Badge>}<Badge variant={statusVariant[i.status]||'secondary'} className="text-overline">{statusLabel(i.status)}</Badge></div></td><td className="p-3 hidden md:table-cell text-sm">{i._count?.activities||0}</td><td className="p-3 hidden lg:table-cell text-sm">{i.estimatedTime ? t('library.minutes', { count: i.estimatedTime }) : '—'}</td></tr>
-          ))}</tbody></table></div>
+          </SurfaceSection>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((item:any)=>(
-              <Link key={item.id} to={`/app/content-library/${item.id}`} className="rounded-xl border bg-card p-5 shadow-elevation-sm hover:shadow-elevation-md transition-shadow group">
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="font-semibold text-sm group-hover:text-primary flex-1 line-clamp-2">{item.title}</h3>
-                  <div className="flex items-center gap-1 ml-2 flex-shrink-0">
-                    {item.isDioceseShared && <Badge variant="outline" className="text-overline gap-0.5"><BookMarked className="h-2.5 w-2.5" />{t('library.diocese')}</Badge>}
-                    {item.isAiGenerated && <Badge variant="outline" className="text-overline gap-0.5 bg-yellow-50 border-yellow-200 text-yellow-700"><Sparkles className="h-2.5 w-2.5" />IA</Badge>}
-                    <Badge variant={statusVariant[item.status]||'secondary'} className="text-overline">{statusLabel(item.status)}</Badge>
+          <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+            <SurfaceSection title="Primeiros conteudos" icon={CheckCircle2} tone="soft" className="p-6 lg:p-8">
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-bold tracking-tight text-slate-950">{t('library.empty_no_content')}</h2>
+                  <p className="max-w-2xl text-base leading-relaxed text-slate-600">{t('library.empty_create_desc')}</p>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <Button className="h-11 rounded-xl px-5" asChild>
+                    <Link to="/app/content-library/new">{t('create')}</Link>
+                  </Button>
+                  <Button variant="outline" className="h-11 rounded-xl px-5 bg-white" asChild>
+                    <Link to="/app/ai-hub?mode=create-meeting">{t('library.generate_ai')}</Link>
+                  </Button>
+                </div>
+              </div>
+            </SurfaceSection>
+
+            <SurfaceSection title="Fluxo sugerido" icon={FileText}>
+              <div className="space-y-3 text-sm leading-relaxed text-slate-600">
+                <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                  Crie roteiros base para organizar temas, tempo estimado e publico.
+                </div>
+                <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                  Adicione atividades para transformar o conteudo em encontro utilizavel.
+                </div>
+                <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                  Combine criacao manual com IA quando precisar acelerar a preparacao.
+                </div>
+              </div>
+            </SurfaceSection>
+          </div>
+        )
+      ) : view === 'list' ? (
+        <section className="overflow-hidden rounded-3xl border border-border/70 bg-white/90 shadow-sm shadow-slate-200/60">
+          <div className="border-b border-border/70 bg-slate-50/80 px-5 py-4">
+            <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">{t('library.table_title')}</h3>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b bg-slate-50/50 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                  <th className="p-4">{t('library.table_title')}</th>
+                  <th className="p-4 hidden md:table-cell">{t('library.table_status')}</th>
+                  <th className="p-4 hidden md:table-cell">{t('library.table_activities')}</th>
+                  <th className="p-4 hidden lg:table-cell">{t('library.table_time')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((i: any) => (
+                  <tr key={i.id} className="border-b border-border/60 last:border-0 hover:bg-slate-50/80 transition-colors">
+                    <td className="p-4">
+                      <Link to={`/app/content-library/${i.id}`} className="font-medium text-sm hover:text-primary">{i.title}</Link>
+                      <p className="text-overline text-muted-foreground">{i.theme}</p>
+                    </td>
+                    <td className="p-4 hidden md:table-cell">
+                      <div className="flex items-center gap-1">
+                        {i.isAiGenerated && (
+                          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200 text-overline">
+                            <Sparkles className="h-2.5 w-2.5" />IA
+                          </Badge>
+                        )}
+                        <Badge variant={statusVariant[i.status] || 'secondary'} className="text-overline">{statusLabel(i.status)}</Badge>
+                      </div>
+                    </td>
+                    <td className="p-4 hidden md:table-cell text-sm">{i._count?.activities || 0}</td>
+                    <td className="p-4 hidden lg:table-cell text-sm">{i.estimatedTime ? t('library.minutes', { count: i.estimatedTime }) : '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      ) : (
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          {filtered.map((item: any) => (
+            <Link
+              key={item.id}
+              to={`/app/content-library/${item.id}`}
+              className="group overflow-hidden rounded-3xl border border-border/70 bg-white/90 p-5 shadow-sm shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-300/40"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-start justify-between gap-3">
+                    <h3 className="line-clamp-2 text-lg font-semibold tracking-tight text-slate-950 group-hover:text-primary">
+                      {item.title}
+                    </h3>
+                    <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-slate-700" />
                   </div>
+                  {item.theme && <p className="mt-1 line-clamp-1 text-sm text-slate-500">{item.theme}</p>}
                 </div>
-                {item.theme&&<p className="text-xs text-muted-foreground mb-2 line-clamp-1">{item.theme}</p>}
-                <div className="flex items-center justify-between text-overline text-muted-foreground pt-3 border-t">
-                  <span className="flex items-center gap-1"><User className="h-3 w-3"/>{item.createdBy?.firstName||'—'}</span>
-                  <span className="flex items-center gap-1"><Clock className="h-3 w-3"/>{item.estimatedTime ? t('library.minutes', { count: item.estimatedTime }) : '—'}</span>
-                  <span className={`flex items-center gap-1 font-medium ${(item._count?.activities||0) > 0 ? 'text-primary' : ''}`}>
-                    <Puzzle className="h-3 w-3"/>{(item._count?.activities||0)}
-                  </span>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                {item.isDioceseShared && (
+                  <Badge variant="outline" className="gap-1 text-overline">
+                    <BookMarked className="h-2.5 w-2.5" />{t('library.diocese')}
+                  </Badge>
+                )}
+                {item.isAiGenerated && (
+                  <Badge variant="outline" className="gap-1 border-yellow-200 bg-yellow-50 text-yellow-700 text-overline">
+                    <Sparkles className="h-2.5 w-2.5" />IA
+                  </Badge>
+                )}
+                <Badge variant={statusVariant[item.status] || 'secondary'} className="text-overline">{statusLabel(item.status)}</Badge>
+              </div>
+
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-slate-500">
+                    <Clock className="h-3.5 w-3.5" />
+                    Duracao
+                  </div>
+                  <p className="mt-1 text-sm font-medium text-slate-900">
+                    {item.estimatedTime ? t('library.minutes', { count: item.estimatedTime }) : '—'}
+                  </p>
                 </div>
-              </Link>
-            ))}
-          </div>
-        )}
-        {hasMore && (
-          <div className="flex justify-center pt-2">
-            <Button variant="outline" size="sm" onClick={loadMore} disabled={loading}>
-              {loading && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
-              {tc('load_more')}
-            </Button>
-          </div>
-        )}
-      </div>
+                <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-slate-500">
+                    <Puzzle className="h-3.5 w-3.5" />
+                    Atividades
+                  </div>
+                  <p className="mt-1 text-sm font-medium text-slate-900">{item._count?.activities || 0}</p>
+                </div>
+              </div>
+
+              <div className="mt-4 border-t border-border/60 pt-4 text-sm text-slate-600">
+                <span className="inline-flex items-center gap-2">
+                  <User className="h-4 w-4 text-slate-400" />
+                  {item.createdBy?.firstName || '—'}
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+
+      {hasMore && (
+        <div className="flex justify-center pt-2">
+          <Button variant="outline" size="sm" className="rounded-xl bg-white" onClick={loadMore} disabled={loading}>
+            {loading && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
+            {tc('load_more')}
+          </Button>
+        </div>
+      )}
+    </div>
   );
 }
+

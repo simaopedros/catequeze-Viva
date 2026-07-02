@@ -44,9 +44,14 @@ export function HeroSection({ ns = "landing", responsiveCtas = false }: { ns?: s
             </p>
             <div className={cn("flex max-w-md mx-auto lg:mx-0 flex-col md:flex-row gap-3 md:gap-4 justify-center lg:justify-start", responsiveCtas && "w-full sm:w-auto sm:max-w-none")}>
               <Button size="xl" variant="brand" asChild className={ctaClassName}>
-                <Link to="/pricing" onClick={() => trackMarketingEvent("primary_cta_clicked", { landing: ns, placement: "hero", destination: "/pricing" })}>
+                <Link to="/signup" onClick={() => trackMarketingEvent("primary_cta_clicked", { landing: ns, placement: "hero", destination: "/signup" })}>
                   {t("hero.cta_primary")}
                   <ArrowRight className="h-4 w-4 shrink-0" />
+                </Link>
+              </Button>
+              <Button size="xl" variant="outline" asChild className={ctaClassName}>
+                <Link to="/#recursos" onClick={() => trackMarketingEvent("secondary_cta_clicked", { landing: ns, placement: "hero", destination: "/#recursos" })}>
+                  {t("hero.cta_secondary")}
                 </Link>
               </Button>
             </div>

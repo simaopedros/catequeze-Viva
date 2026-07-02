@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams, useNavigate } from 'react-router';
 import { Sparkles, FilePenLine, ArrowLeft, MessageSquareText, Pencil, Puzzle, Smartphone, Wand2, Clock } from 'lucide-react';
@@ -98,14 +98,21 @@ export function AIHubHome() {
   // ── Step 2: "Usar um conteúdo já criado" sub-options ──────────────────
   if (step === 'existing') {
     return (
-      <div className="flex min-h-[80vh] items-center justify-center px-3 py-6">
-        <div className="w-full max-w-2xl space-y-6">
-          <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold sm:text-3xl">{t('hub.existing_title')}</h1>
-            <p className="text-muted-foreground">{t('hub.existing_subtitle')}</p>
+      <div className="flex min-h-[80vh] items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
+        <div className="w-full max-w-5xl space-y-8">
+          <div className="space-y-3 text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">
+              Copiloto de Conteudo
+            </p>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+              {t('hub.existing_title')}
+            </h1>
+            <p className="mx-auto max-w-2xl text-base text-muted-foreground sm:text-lg">
+              {t('hub.existing_subtitle')}
+            </p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
             {EXISTING_OPTIONS.map((option) => (
               <InteractiveCard
                 key={option.key}
@@ -114,6 +121,8 @@ export function AIHubHome() {
                 description={t(option.descKey)}
                 onClick={() => handleSubOption(option)}
                 showArrow
+                flat
+                className="h-full rounded-3xl border-border/70 bg-gradient-to-b from-background to-muted/30 p-6 shadow-sm shadow-black/5 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/10"
               />
             ))}
           </div>
@@ -136,22 +145,31 @@ export function AIHubHome() {
   const recentFlows = loadRecentFlows();
 
   return (
-    <div className="flex min-h-[80vh] items-center justify-center px-3 py-6">
-      <div className="w-full max-w-2xl space-y-6">
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold sm:text-3xl">{t('hub.title')}</h1>
-          <p className="text-muted-foreground max-w-md mx-auto">{t('hub.subtitle')}</p>
+    <div className="flex min-h-[80vh] items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
+      <div className="w-full max-w-5xl space-y-8">
+        <div className="space-y-3 text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">
+            Copiloto de Conteudo
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+            {t('hub.title')}
+          </h1>
+          <p className="mx-auto max-w-2xl text-base text-muted-foreground sm:text-lg">
+            {t('hub.subtitle')}
+          </p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-5 lg:grid-cols-3">
           <InteractiveCard
             icon={FilePenLine}
             title="Criar manualmente"
             description="Monte o encontro no editor visual, adicione referências e recursos, e use IA apenas se quiser."
             onClick={handleCreateManual}
             showArrow
+            flat
+            className="h-full rounded-3xl border-border/70 bg-gradient-to-b from-background to-muted/30 p-6 shadow-sm shadow-black/5 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/10"
           >
-            <p className="text-xs text-muted-foreground mt-2 italic">
+            <p className="mt-3 max-w-[28ch] text-sm italic leading-relaxed text-muted-foreground">
               "Começar do zero e editar os blocos manualmente"
             </p>
           </InteractiveCard>
@@ -161,8 +179,10 @@ export function AIHubHome() {
             description={t('hub.create_new_desc')}
             onClick={() => { saveRecentFlow('create-meeting'); handleCreateNew(); }}
             showArrow
+            flat
+            className="h-full rounded-3xl border-primary/20 bg-gradient-to-br from-primary/[0.08] via-background to-amber-50/80 p-6 shadow-sm shadow-primary/10 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/15"
           >
-            <p className="text-xs text-muted-foreground mt-2 italic">
+            <p className="mt-3 max-w-[28ch] text-sm italic leading-relaxed text-muted-foreground">
               "{t('hub.example_create')}"
             </p>
           </InteractiveCard>
@@ -172,8 +192,10 @@ export function AIHubHome() {
             description={t('hub.use_existing_desc')}
             onClick={handleExisting}
             showArrow
+            flat
+            className="h-full rounded-3xl border-border/70 bg-gradient-to-b from-background to-muted/30 p-6 shadow-sm shadow-black/5 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/10"
           >
-            <p className="text-xs text-muted-foreground mt-2 italic">
+            <p className="mt-3 max-w-[28ch] text-sm italic leading-relaxed text-muted-foreground">
               "{t('hub.example_existing')}"
             </p>
           </InteractiveCard>
@@ -221,3 +243,4 @@ export function AIHubHome() {
     </div>
   );
 }
+

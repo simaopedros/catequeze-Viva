@@ -2,10 +2,23 @@ import { useState, useMemo, useCallback } from 'react';
 import { useQuery, listCatechumens } from 'wasp/client/operations';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { GraduationCap, Plus, LayoutGrid, List, Upload, Calendar, Search, Users, Loader2 } from 'lucide-react';
+import {
+  GraduationCap,
+  Plus,
+  LayoutGrid,
+  List,
+  Upload,
+  Calendar,
+  Search,
+  Users,
+  Loader2,
+  ArrowRight,
+  CheckCircle2,
+  School,
+  House,
+} from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
-import { PageHeader } from '../../client/components/PageHeader';
 import { SearchInput } from '../../client/components/SearchInput';
 import { EmptyState } from '../../client/components/EmptyState';
 import { SkeletonCard } from '../../client/components/Skeletons';
@@ -19,6 +32,9 @@ import {
 import { useActiveParish } from '../../client/hooks/useActiveParish';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { formatDateOnly, getAgeFromDate } from '../../i18n/format';
+import { cn } from '../../client/utils';
+import type { LucideIcon } from 'lucide-react';
+import type { ReactNode } from 'react';
 
 const PAGE_SIZE = 50;
 
@@ -33,6 +49,53 @@ const AVATAR_COLORS = [
 
 function getAge(birthDate: string): number | null {
   return getAgeFromDate(birthDate);
+}
+
+function SurfaceSection({
+  title,
+  icon: Icon,
+  children,
+  className,
+  tone = 'default',
+}: {
+  title: string;
+  icon: LucideIcon;
+  children: ReactNode;
+  className?: string;
+  tone?: 'default' | 'soft';
+}) {
+  return (
+    <section
+      className={cn(
+        'rounded-3xl border p-5 shadow-sm shadow-slate-200/60',
+        tone === 'soft'
+          ? 'border-primary/15 bg-gradient-to-br from-white via-slate-50 to-primary/[0.04]'
+          : 'border-border/70 bg-white/90',
+        className
+      )}
+    >
+      <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
+        <Icon className="h-4 w-4" />
+        <span>{title}</span>
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function CatechumenMetric({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | number;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/60 bg-white/85 px-4 py-3 shadow-sm shadow-slate-200/60 backdrop-blur">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">{label}</p>
+      <p className="mt-1.5 text-2xl font-bold tracking-tight text-slate-950">{value}</p>
+    </div>
+  );
 }
 
 export default function CatechumensPage() {
@@ -55,7 +118,7 @@ export default function CatechumensPage() {
     if (!catechumens || catechumens.length === 0) return [];
     const names = new Set<string>();
     catechumens.forEach((c: any) => c.enrollments?.forEach((e: any) => names.add(e.class?.name)));
-    return [...names].sort();
+    return [...names].filter(Boolean).sort();
   }, [catechumens]);
 
   const filtered = useMemo(() => {
@@ -68,126 +131,286 @@ export default function CatechumensPage() {
         (!c.enrollments?.length && !c.household?.parishId)
       );
     }
-    if (classFilter && classFilter !== 'all') result = result.filter((c: any) => c.enrollments?.some((e: any) => e.class?.name === classFilter));
+    if (classFilter && classFilter !== 'all') {
+      result = result.filter((c: any) => c.enrollments?.some((e: any) => e.class?.name === classFilter));
+    }
     return result;
   }, [catechumens, classFilter, activeParishId]);
 
+  const enrolledCount = filtered.filter((c: any) => c.enrollments && c.enrollments.length > 0).length;
+  const noClassCount = filtered.filter((c: any) => !c.enrollments || c.enrollments.length === 0).length;
+
   const hasMore = catechumens.length === PAGE_SIZE * pages;
-  const loadMore = useCallback(() => setPages(p => p + 1), []);
+  const loadMore = useCallback(() => setPages((p) => p + 1), []);
 
   const hasFilters = !!(search || (classFilter && classFilter !== 'all'));
 
   if (isLoading) {
     return (
-        <div className="space-y-6">
-          <div className="h-8 w-44 animate-pulse rounded bg-muted" />
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[1, 2, 3, 4, 5, 6].map(i => <SkeletonCard key={i} />)}
-          </div>
+      <div className="space-y-6">
+        <div className="h-8 w-44 animate-pulse rounded bg-muted" />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3, 4, 5, 6].map((i) => <SkeletonCard key={i} />)}
         </div>
+      </div>
     );
   }
 
   return (
-      <div className="space-y-6">
-        <PageHeader
-          title={tn('catechumens')}
-          subtitle={t('catechumens.subtitle_registered', { count: catechumens?.length || 0 })}
-          count={catechumens ? t('catechumens.count_short', { count: catechumens.length }) : undefined}
-          filters={
-            <div className="flex flex-col sm:flex-row gap-3">
-              <SearchInput placeholder={t('catechumens.search_by_name')} value={search} onChange={e => setSearch(e.target.value)} />
-              <Select value={classFilter || 'all'} onValueChange={(v) => setClassFilter(v)}>
-                <SelectTrigger className="w-44 h-9">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t('catechumens.all_classes')}</SelectItem>
-                  {classNames.map(n => <SelectItem key={n} value={n}>{n}</SelectItem>)}
-                </SelectContent>
-              </Select>
+    <div className="space-y-8">
+      <section className="overflow-hidden rounded-[32px] border border-border/70 bg-[radial-gradient(circle_at_top_left,_rgba(17,60,107,0.10),_transparent_34%),linear-gradient(180deg,_rgba(255,255,255,1),_rgba(248,250,252,0.96))] p-6 shadow-sm shadow-slate-200/70 lg:p-8">
+        <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr] xl:items-start">
+          <div className="space-y-6">
+            <div className="space-y-3">
+              <Badge variant="outline" className="rounded-full border-primary/20 bg-white/80 px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-primary">
+                Acompanhamento pastoral
+              </Badge>
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-3">
+                  <h1 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
+                    {tn('catechumens')}
+                  </h1>
+                  <span className="rounded-full bg-white/80 px-3 py-1 text-sm font-medium text-slate-500 ring-1 ring-slate-200/70">
+                    {t('catechumens.count_short', { count: catechumens.length })}
+                  </span>
+                </div>
+                <p className="max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
+                  {t('catechumens.subtitle_registered', { count: catechumens.length || 0 })}
+                </p>
+              </div>
             </div>
-          }
-        >
-          <Button size="sm" variant="outline" onClick={() => setView(v => v === 'cards' ? 'table' : 'cards')}>
-            {view === 'cards' ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
-          </Button>
-          {canManageCatechumens && (
-            <>
-              <Button size="sm" variant="outline" asChild><Link to="/app/catechumens/import"><Upload className="mr-1 h-4 w-4" />{t('import')}</Link></Button>
-              <Button size="sm" asChild><Link to="/app/catechumens/new"><Plus className="mr-1 h-4 w-4" />{t('new')}</Link></Button>
-            </>
-          )}
-        </PageHeader>
 
-        {filtered.length === 0 ? (
-          hasFilters ? (
-            <EmptyState compact icon={Search} title={t('no_results')} description={t('catechumens.adjust_filters')} />
-          ) : (
-            <EmptyState
-              icon={GraduationCap}
-              title={t('no_catechumens')}
-              description={t('catechumens.empty_desc')}
-            >
+            <div className="grid gap-3 sm:grid-cols-3">
+              <CatechumenMetric label="Cadastros visiveis" value={filtered.length} />
+              <CatechumenMetric label="Em turmas" value={enrolledCount} />
+              <CatechumenMetric label="Sem turma" value={noClassCount} />
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <Button
+                size="lg"
+                variant="outline"
+                className="h-11 rounded-xl px-5 bg-white/80"
+                onClick={() => setView((v) => v === 'cards' ? 'table' : 'cards')}
+              >
+                {view === 'cards' ? <List className="mr-2 h-4 w-4" /> : <LayoutGrid className="mr-2 h-4 w-4" />}
+                {view === 'cards' ? 'Tabela' : 'Cards'}
+              </Button>
               {canManageCatechumens && (
-                <Button className="mt-4" asChild><Link to="/app/catechumens/new">{t('create_catechumen')}</Link></Button>
+                <>
+                  <Button size="lg" variant="outline" className="h-11 rounded-xl px-5 bg-white/80" asChild>
+                    <Link to="/app/catechumens/import"><Upload className="mr-2 h-4 w-4" />{t('import')}</Link>
+                  </Button>
+                  <Button size="lg" className="h-11 rounded-xl px-5" asChild>
+                    <Link to="/app/catechumens/new"><Plus className="mr-2 h-4 w-4" />{t('new')}</Link>
+                  </Button>
+                </>
               )}
-            </EmptyState>
-          )
-        ) : view === 'table' ? (
-          <div className="rounded-xl border bg-card overflow-x-auto">
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="rounded-3xl border border-white/70 bg-white/80 p-4 shadow-sm shadow-slate-200/60 backdrop-blur">
+              <div className="space-y-4">
+                <SearchInput placeholder={t('catechumens.search_by_name')} value={search} onChange={(e) => setSearch(e.target.value)} />
+                <Select value={classFilter || 'all'} onValueChange={(v) => setClassFilter(v)}>
+                  <SelectTrigger className="h-11 rounded-2xl border-border/70 bg-white text-base">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('catechumens.all_classes')}</SelectItem>
+                    {classNames.map((n) => <SelectItem key={n} value={n}>{n}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-dashed border-border/80 bg-white/70 p-4">
+              <div className="flex items-start gap-3">
+                <div className="rounded-2xl bg-slate-100 p-2.5 text-slate-500">
+                  <Search className="h-4 w-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-slate-900">Encontre rapidamente cada catequizando</p>
+                  <p className="mt-1 text-sm leading-relaxed text-slate-600">
+                    Busque por nome, filtre por turma e acompanhe quem ja esta vinculado ou ainda precisa de alocacao.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {filtered.length === 0 ? (
+        hasFilters ? (
+          <SurfaceSection title="Busca" icon={Search} tone="soft">
+            <EmptyState compact icon={Search} title={t('no_results')} description={t('catechumens.adjust_filters')} />
+          </SurfaceSection>
+        ) : (
+          <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+            <SurfaceSection title="Primeiros cadastros" icon={CheckCircle2} tone="soft" className="p-6 lg:p-8">
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-bold tracking-tight text-slate-950">{t('no_catechumens')}</h2>
+                  <p className="max-w-2xl text-base leading-relaxed text-slate-600">{t('catechumens.empty_desc')}</p>
+                </div>
+
+                {canManageCatechumens && (
+                  <div className="flex flex-wrap gap-3">
+                    <Button className="h-11 rounded-xl px-5" asChild>
+                      <Link to="/app/catechumens/new">{t('create_catechumen')}</Link>
+                    </Button>
+                    <Button variant="outline" className="h-11 rounded-xl px-5 bg-white" asChild>
+                      <Link to="/app/catechumens/import">{t('import')}</Link>
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </SurfaceSection>
+
+            <SurfaceSection title="Fluxo sugerido" icon={School}>
+              <div className="space-y-3 text-sm leading-relaxed text-slate-600">
+                <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                  Cadastre nome, data de nascimento e responsaveis para iniciar o acompanhamento.
+                </div>
+                <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                  Vincule o catequizando a uma turma para organizar encontros e presenca.
+                </div>
+                <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                  Mantenha a ficha atualizada para sacramentos, comunicacao e progresso pastoral.
+                </div>
+              </div>
+            </SurfaceSection>
+          </div>
+        )
+      ) : view === 'table' ? (
+        <section className="overflow-hidden rounded-3xl border border-border/70 bg-white/90 shadow-sm shadow-slate-200/60">
+          <div className="border-b border-border/70 bg-slate-50/80 px-5 py-4">
+            <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">{tn('catechumens')}</h3>
+          </div>
+          <div className="overflow-x-auto">
             <table className="w-full">
-              <thead><tr className="border-b text-left text-xs text-muted-foreground uppercase"><th className="p-3 font-medium">{t('first_name')}</th><th className="p-3 font-medium hidden md:table-cell">{t('age')}</th><th className="p-3 font-medium hidden md:table-cell">{t('catechumens.table_family')}</th><th className="p-3 font-medium hidden lg:table-cell">{t('catechumens.table_classes')}</th></tr></thead>
-              <tbody>{filtered.map((c: any) => (
-                <tr key={c.id} className="border-b last:border-0 hover:bg-muted/30">
-                  <td className="p-3">
-                    <Link to={`/app/catechumens/${c.id}`} className="flex items-center gap-3 hover:text-primary">
-                      <div className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold overflow-hidden ${!c.photoUrl ? AVATAR_COLORS[Math.abs(c.firstName?.charCodeAt(0) || 0) % AVATAR_COLORS.length] : ''}`}>
-                        {c.photoUrl ? <img src={c.photoUrl} className="w-full h-full object-cover" alt="" /> : `${c.firstName?.[0]}${c.lastName?.[0]}`}
-                      </div>
-                      <div><p className="font-medium text-sm">{c.firstName} {c.lastName}</p>{c.birthDate && <p className="text-overline text-muted-foreground"><Calendar className="inline h-3 w-3 mr-0.5" />{formatDateOnly(c.birthDate, i18n.language)}</p>}</div>
-                    </Link>
-                  </td>
-                  <td className="p-3 hidden md:table-cell text-sm">{getAge(c.birthDate) ? t('catechumens.years_old', { age: getAge(c.birthDate) }) : '—'}</td>
-                  <td className="p-3 hidden md:table-cell text-sm">{c.household?.name || '—'}</td>
-                  <td className="p-3 hidden lg:table-cell text-sm">{c.enrollments?.map((e: any) => e.class.name).join(', ') || '—'}</td>
+              <thead>
+                <tr className="border-b bg-slate-50/50 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                  <th className="p-4">{t('first_name')}</th>
+                  <th className="p-4 hidden md:table-cell">{t('age')}</th>
+                  <th className="p-4 hidden md:table-cell">{t('catechumens.table_family')}</th>
+                  <th className="p-4 hidden lg:table-cell">{t('catechumens.table_classes')}</th>
                 </tr>
-              ))}</tbody>
+              </thead>
+              <tbody>
+                {filtered.map((c: any) => (
+                  <tr key={c.id} className="border-b border-border/60 last:border-0 hover:bg-slate-50/80 transition-colors">
+                    <td className="p-4">
+                      <Link to={`/app/catechumens/${c.id}`} className="flex items-center gap-3 hover:text-primary">
+                        <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold overflow-hidden ${!c.photoUrl ? AVATAR_COLORS[Math.abs(c.firstName?.charCodeAt(0) || 0) % AVATAR_COLORS.length] : ''}`}>
+                          {c.photoUrl ? <img src={c.photoUrl} className="h-full w-full object-cover" alt="" /> : `${c.firstName?.[0] || ''}${c.lastName?.[0] || ''}`}
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">{c.firstName} {c.lastName}</p>
+                          {c.birthDate && (
+                            <p className="text-overline text-muted-foreground">
+                              <Calendar className="mr-0.5 inline h-3 w-3" />
+                              {formatDateOnly(c.birthDate, i18n.language)}
+                            </p>
+                          )}
+                        </div>
+                      </Link>
+                    </td>
+                    <td className="p-4 hidden md:table-cell text-sm">{getAge(c.birthDate) ? t('catechumens.years_old', { age: getAge(c.birthDate) }) : '—'}</td>
+                    <td className="p-4 hidden md:table-cell text-sm">{c.household?.name || '—'}</td>
+                    <td className="p-4 hidden lg:table-cell text-sm">{c.enrollments?.map((e: any) => e.class.name).join(', ') || '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
           </div>
-        ) : (
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filtered.map((c: any) => (
-              <Link key={c.id} to={`/app/catechumens/${c.id}`} className="rounded-xl border bg-card p-4 shadow-elevation-sm hover:shadow-elevation-md transition-shadow hover:border-primary/30 group">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold overflow-hidden ${!c.photoUrl ? AVATAR_COLORS[Math.abs(c.firstName?.charCodeAt(0) || 0) % AVATAR_COLORS.length] : ''}`}>
-                    {c.photoUrl ? <img src={c.photoUrl} className="w-full h-full object-cover" alt="" /> : `${c.firstName?.[0]}${c.lastName?.[0]}`}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm truncate group-hover:text-primary">{c.firstName} {c.lastName}</p>
-                    <p className="text-caption text-muted-foreground">{getAge(c.birthDate) ? t('catechumens.years_old', { age: getAge(c.birthDate) }) : ''}{c.birthDate && ` · ${formatDateOnly(c.birthDate, i18n.language, { day: '2-digit', month: '2-digit', year: '2-digit' })}`}</p>
+        </section>
+      ) : (
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          {filtered.map((c: any) => (
+            <Link
+              key={c.id}
+              to={`/app/catechumens/${c.id}`}
+              className="group overflow-hidden rounded-3xl border border-border/70 bg-white/90 p-5 shadow-sm shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-300/40"
+            >
+              <div className="flex items-start gap-4">
+                <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-base font-bold overflow-hidden ring-1 ring-slate-200/70 ${!c.photoUrl ? AVATAR_COLORS[Math.abs(c.firstName?.charCodeAt(0) || 0) % AVATAR_COLORS.length] : ''}`}>
+                  {c.photoUrl ? <img src={c.photoUrl} className="h-full w-full object-cover" alt="" /> : `${c.firstName?.[0] || ''}${c.lastName?.[0] || ''}`}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate text-lg font-semibold tracking-tight text-slate-950 group-hover:text-primary">
+                        {c.firstName} {c.lastName}
+                      </p>
+                      <p className="mt-1 text-sm text-slate-500">
+                        {getAge(c.birthDate) ? t('catechumens.years_old', { age: getAge(c.birthDate) }) : ''}
+                        {c.birthDate && `${getAge(c.birthDate) ? ' · ' : ''}${formatDateOnly(c.birthDate, i18n.language, { day: '2-digit', month: '2-digit', year: '2-digit' })}`}
+                      </p>
+                    </div>
+                    <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-slate-700" />
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-1">
-                  {c.enrollments?.map((e: any) => (
-                    <Badge key={e.id} variant="secondary" className="text-overline">{e.class?.name}</Badge>
-                  ))}
-                  {(!c.enrollments || c.enrollments.length === 0) && <Badge variant="warning" className="text-overline">{t('catechumens.no_class')}</Badge>}
+              </div>
+
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-slate-500">
+                    <School className="h-3.5 w-3.5" />
+                    Turmas
+                  </div>
+                  <p className="mt-1 text-sm font-medium text-slate-900">
+                    {c.enrollments?.length ? `${c.enrollments.length} vinculada(s)` : t('catechumens.no_class')}
+                  </p>
                 </div>
-                {c.household?.name && <p className="mt-2 text-overline text-muted-foreground"><Users className="inline h-3 w-3 mr-0.5" />{c.household.name}</p>}
-              </Link>
-            ))}
-          </div>
-        )}
-        <p className="text-xs text-muted-foreground">{t('catechumens.count', { count: filtered.length })}</p>
-        {hasMore && (
-          <div className="flex justify-center pt-2">
-            <Button variant="outline" size="sm" onClick={loadMore} disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
-              {t('load_more')}
-            </Button>
-          </div>
-        )}
-      </div>
+                <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-slate-500">
+                    <House className="h-3.5 w-3.5" />
+                    Familia
+                  </div>
+                  <p className="mt-1 truncate text-sm font-medium text-slate-900">{c.household?.name || 'Nao vinculada'}</p>
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                {c.enrollments?.map((e: any) => (
+                  <Badge key={e.id} variant="secondary" className="text-overline">
+                    {e.class?.name}
+                  </Badge>
+                ))}
+                {(!c.enrollments || c.enrollments.length === 0) && (
+                  <Badge variant="warning" className="text-overline">
+                    {t('catechumens.no_class')}
+                  </Badge>
+                )}
+              </div>
+
+              {c.household?.name && (
+                <div className="mt-4 border-t border-border/60 pt-4 text-sm text-slate-600">
+                  <span className="inline-flex items-center gap-2">
+                    <Users className="h-4 w-4 text-slate-400" />
+                    {c.household.name}
+                  </span>
+                </div>
+              )}
+            </Link>
+          ))}
+        </div>
+      )}
+
+      <p className="text-sm text-slate-500">{t('catechumens.count', { count: filtered.length })}</p>
+
+      {hasMore && (
+        <div className="flex justify-center pt-2">
+          <Button variant="outline" size="sm" className="rounded-xl bg-white" onClick={loadMore} disabled={isLoading}>
+            {isLoading && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
+            {t('load_more')}
+          </Button>
+        </div>
+      )}
+    </div>
   );
 }
+

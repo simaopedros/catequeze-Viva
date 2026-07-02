@@ -877,6 +877,11 @@ action createContentItem {
   entities: [ContentItem, Membership]
 }
 
+action deleteContentItem {
+  fn: import { deleteContentItem } from "@src/server/operations/contentOperations",
+  entities: [ContentItem, Membership, Meeting, Activity, ContentVersion, Parish]
+}
+
 action updateContentStatus {
   fn: import { updateContentStatus } from "@src/server/operations/contentOperations",
   entities: [ContentItem, Membership, Parish]
@@ -1954,3 +1959,5 @@ page PublicUploadDocsPage {
   component: import PublicUploadDocsPage from "@src/catequese/pages/PublicUploadDocsPage"
 }
 //#endregion
+
+

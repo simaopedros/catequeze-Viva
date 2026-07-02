@@ -1466,6 +1466,7 @@ export const common_en = {
     "error": "Error",
     "catechumens": {
       "subtitle_registered": "{{count}} catechumens registered",
+      "count_short": "{{count}} catechumens",
       "search_by_name": "Search by name...",
       "all_classes": "All classes",
       "adjust_filters": "Try adjusting the filters.",
@@ -1980,10 +1981,10 @@ export const landing_en = {
       "headline_line2": "prepared without last-minute rush",
       "subheadline": "Organize the class, build the meeting, and keep families in the same flow — so the pastoral week does not depend on paper, spreadsheets, and improvisation.",
       "badge": "From preparation to family follow-up",
-      "cta_primary": "Choose my path",
-      "cta_secondary": "See Catechist AI plan",
-      "trust_signals": "Meeting prepared • Attendance recorded • Families informed",
-      "cta_secondary_href": "#planos"
+      "cta_primary": "Start free",
+      "cta_secondary": "See how it works",
+      "trust_signals": "No credit card • Free plan • LGPD compliant",
+      "cta_secondary_href": "#recursos"
     },
     "pain_title": "Catechesis should not be scattered across notebooks, spreadsheets, and messages",
     "pain_subtitle": "Catequese Viva brings preparation, class management, attendance, and families into one flow.",
@@ -2285,6 +2286,26 @@ export const landing_en = {
       "contact": "Contact"
     },
     "ai_showcase_badge": "See how the flow works",
+    "trust_title": "Built to handle sensitive data",
+    "trust_subtitle": "Catequese Viva handles data on children and families. Protection is in the structure, not in a promise.",
+    "trust": [
+      {
+        "title": "LGPD compliant",
+        "desc": "Digital consents, role-based access control, and data processing records."
+      },
+      {
+        "title": "Encrypted data",
+        "desc": "Information protected in transit and at rest, with role-restricted access."
+      },
+      {
+        "title": "Start without a card",
+        "desc": "Free plan to organize your first class. No cost to try."
+      },
+      {
+        "title": "You control your data",
+        "desc": "Export or request data deletion at any time, in line with LGPD."
+      }
+    ],
     "testimonials_title": "Teams using it report more clarity in the pastoral routine",
     "testimonials_subtitle": "Real feedback about preparation, class follow-up, and communication with families.",
     "testimonials": [

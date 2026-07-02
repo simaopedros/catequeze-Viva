@@ -1387,6 +1387,7 @@ export const common_es = {
     "error": "Error",
     "catechumens": {
       "subtitle_registered": "{{count}} catecúmenos registrados",
+      "count_short": "{{count}} catecúmenos",
       "search_by_name": "Buscar por nombre...",
       "all_classes": "Todos los grupos",
       "adjust_filters": "Intente ajustar los filtros.",
@@ -1980,10 +1981,10 @@ export const landing_es = {
       "headline_line2": "preparado sin carrera de última hora",
       "subheadline": "Organiza el grupo, arma el encuentro y acompaña a las familias en un mismo flujo — para que la semana pastoral no dependa de papel, planillas e improvisación.",
       "badge": "De la preparación al acompañamiento del grupo",
-      "cta_primary": "Elegir mi camino",
-      "cta_secondary": "Ver plan Catequista IA",
-      "trust_signals": "Encuentro preparado • Asistencia registrada • Familias acompañando",
-      "cta_secondary_href": "#planos"
+      "cta_primary": "Empezar gratis",
+      "cta_secondary": "Ver cómo funciona",
+      "trust_signals": "Sin tarjeta de crédito • Plan gratuito • Conforme a la LGPD",
+      "cta_secondary_href": "#recursos"
     },
     "pain_title": "La catequesis no tiene que estar dispersa en cuadernos, planillas y mensajes",
     "pain_subtitle": "Catequese Viva reúne preparación, grupo, asistencia y familias en un mismo flujo.",
@@ -2285,6 +2286,26 @@ export const landing_es = {
       "contact": "Contacto"
     },
     "ai_showcase_badge": "Mira cómo funciona el flujo",
+    "trust_title": "Hecho para cuidar datos sensibles",
+    "trust_subtitle": "Catequese Viva maneja datos de niños y familias. Por eso la protección está en la estructura, no en una promesa.",
+    "trust": [
+      {
+        "title": "Conforme a la LGPD",
+        "desc": "Consentimientos digitales, control de acceso por rol y registro de tratamiento de datos."
+      },
+      {
+        "title": "Datos cifrados",
+        "desc": "Información protegida en tránsito y en reposo, con acceso restringido por rol."
+      },
+      {
+        "title": "Empieza sin tarjeta",
+        "desc": "Plan gratuito para organizar el primer grupo. Sin costo para probar."
+      },
+      {
+        "title": "Controlas tus datos",
+        "desc": "Exporta o solicita la eliminación de los datos en cualquier momento, conforme a la LGPD."
+      }
+    ],
     "testimonials_title": "Quienes ya lo usan ven más claridad en la rutina pastoral",
     "testimonials_subtitle": "Comentarios reales sobre preparación, seguimiento del grupo y comunicación con las familias.",
     "testimonials": [

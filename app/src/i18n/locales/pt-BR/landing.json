@@ -4,10 +4,10 @@
     "headline_line2": "preparada sem correria de última hora",
     "subheadline": "Organize a turma, monte o encontro e acompanhe as famílias no mesmo fluxo — para a semana pastoral não depender de papel, planilha e improviso.",
     "badge": "Da preparação ao acompanhamento da turma",
-    "cta_primary": "Escolher meu perfil",
-    "cta_secondary": "Ver plano Catequista IA",
-    "trust_signals": "Encontro preparado • Presença registrada • Famílias acompanhando",
-    "cta_secondary_href": "#planos"
+    "cta_primary": "Começar grátis",
+    "cta_secondary": "Ver como funciona",
+    "trust_signals": "Sem cartão de crédito • Plano gratuito • Conforme a LGPD",
+    "cta_secondary_href": "#recursos"
   },
   "pain_title": "A catequese não precisa ficar espalhada em caderno, planilha e mensagens",
   "pain_subtitle": "A Catequese Viva junta preparação, turma, presença e família no mesmo fluxo.",
@@ -309,6 +309,26 @@
     "contact": "Contacto"
   },
   "ai_showcase_badge": "Veja como o fluxo funciona",
+  "trust_title": "Feito para cuidar de dados sensíveis",
+  "trust_subtitle": "A Catequese Viva lida com dados de crianças e famílias. Por isso a proteção está na estrutura, não em promessa.",
+  "trust": [
+    {
+      "title": "Conforme a LGPD",
+      "desc": "Consentimentos digitais, controle de acesso por papel e registro de tratamento de dados."
+    },
+    {
+      "title": "Dados criptografados",
+      "desc": "Informações protegidas em trânsito e em repouso, com acesso restrito por papel."
+    },
+    {
+      "title": "Comece sem cartão",
+      "desc": "Plano gratuito para organizar a primeira turma. Sem custo para testar."
+    },
+    {
+      "title": "Controle dos seus dados",
+      "desc": "Exporte ou solicite a exclusão dos dados a qualquer momento, conforme a LGPD."
+    }
+  ],
   "testimonials_title": "Quem já usa vê mais clareza na rotina pastoral",
   "testimonials_subtitle": "Depoimentos reais sobre preparação, acompanhamento da turma e comunicação com as famílias.",
   "testimonials": [

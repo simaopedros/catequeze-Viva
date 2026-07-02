@@ -255,6 +255,7 @@
   "error": "Erro",
   "catechumens": {
     "subtitle_registered": "{{count}} catequizandos cadastrados",
+    "count_short": "{{count}} catequizandos",
     "search_by_name": "Buscar por nome...",
     "all_classes": "Todas as turmas",
     "adjust_filters": "Tente ajustar os filtros.",
@@ -498,3 +499,4 @@
   "offline_description": "Você está offline. Verifique sua conexão e tente novamente.",
   "try_again": "Tentar novamente"
 }
+

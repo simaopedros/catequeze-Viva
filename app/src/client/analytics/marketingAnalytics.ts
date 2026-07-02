@@ -1,6 +1,7 @@
 export type MarketingEventName =
   | "landing_viewed"
   | "primary_cta_clicked"
+  | "secondary_cta_clicked"
   | "pricing_viewed"
   | "plan_selected"
   | "signup_started"

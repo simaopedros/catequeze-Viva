@@ -255,6 +255,7 @@
   "error": "Error",
   "catechumens": {
     "subtitle_registered": "{{count}} catecúmenos registrados",
+    "count_short": "{{count}} catecúmenos",
     "search_by_name": "Buscar por nombre...",
     "all_classes": "Todos los grupos",
     "adjust_filters": "Intente ajustar los filtros.",
@@ -497,3 +498,4 @@
   "offline_description": "Estás sin conexión. Verifica tu conexión e inténtalo de nuevo.",
   "try_again": "Intentar de nuevo"
 }
+

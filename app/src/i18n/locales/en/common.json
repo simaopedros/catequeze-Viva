@@ -256,6 +256,7 @@
   "error": "Error",
   "catechumens": {
     "subtitle_registered": "{{count}} catechumens registered",
+    "count_short": "{{count}} catechumens",
     "search_by_name": "Search by name...",
     "all_classes": "All classes",
     "adjust_filters": "Try adjusting the filters.",
@@ -498,3 +499,4 @@
   "offline_description": "You are offline. Check your connection and try again.",
   "try_again": "Try again"
 }
+

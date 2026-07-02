@@ -3,6 +3,7 @@ import { PublicFooter } from "../catequese/PublicFooter";
 import { PublicNavbar } from "../catequese/PublicNavbar";
 import { FaqSection } from "./components/FaqSection";
 import { HeroSection } from "./components/HeroSection";
+import { TrustSection } from "./components/TrustSection";
 
 const AiShowcaseSection = lazy(() => import("./components/AiShowcaseSection").then((m) => ({ default: m.AiShowcaseSection })));
 const CtaSection = lazy(() => import("./components/CtaSection").then((m) => ({ default: m.CtaSection })));
@@ -10,7 +11,6 @@ const FeaturesSection = lazy(() => import("./components/FeaturesSection").then((
 const PainPointsSection = lazy(() => import("./components/PainPointsSection").then((m) => ({ default: m.PainPointsSection })));
 const PricingPreviewSection = lazy(() => import("./components/PricingPreviewSection").then((m) => ({ default: m.PricingPreviewSection })));
 const StepsSection = lazy(() => import("./components/StepsSection").then((m) => ({ default: m.StepsSection })));
-const TestimonialsSection = lazy(() => import("./components/TestimonialsSection").then((m) => ({ default: m.TestimonialsSection })));
 
 const SectionFallback = () => (<div className="h-40 animate-pulse bg-muted/20 rounded-lg" />);
 
@@ -23,10 +23,10 @@ export default function LandingPage() {
         <Suspense fallback={<SectionFallback />}>
           <PainPointsSection />
           <AiShowcaseSection responsiveCtas />
-          <TestimonialsSection />
-          <PricingPreviewSection />
-          <StepsSection responsiveCtas />
           <FeaturesSection order={["ai-planner", "attendance", "family-portal"]} />
+          <StepsSection responsiveCtas />
+          <TrustSection />
+          <PricingPreviewSection />
           <FaqSection />
           <CtaSection responsiveCtas />
         </Suspense>
