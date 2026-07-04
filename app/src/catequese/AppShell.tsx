@@ -8,6 +8,7 @@ import { TwoFactorGate } from './components/TwoFactorGate';
 import { SubscriptionGate } from './components/SubscriptionGate';
 import { FamilyAppShell } from './FamilyAppShell';
 import { useUserContext } from '../client/hooks/useUserContext';
+import { useAuth } from 'wasp/client/auth';
 import { ErrorBoundary } from '../client/components/ErrorBoundary';
 import { ShellBase } from '../client/components/ShellBase';
 import { isFamilyPortalHost, familyPortalUrl } from '../shared/portal';
@@ -38,6 +39,14 @@ export function AppShell({ children }: AppShellProps) {
   const hasStaffRole = isFamilyOnlyRole
     ? (allMemberships || []).some((m: any) => !['GUARDIAN', 'CATECHUMEN'].includes(m.role))
     : true;
+
+  // Guard: if the session is gone (e.g. right after logout), render nothing.
+  // The Wasp router will redirect to /login. This prevents the app shell from
+  // briefly rendering the dashboard with stale cached data.
+  const { data: authUser } = useAuth();
+  if (authUser === null) {
+    return null;
+  }
 
   const isMinimalPath = useMemo(() => {
     const path = location.pathname;
