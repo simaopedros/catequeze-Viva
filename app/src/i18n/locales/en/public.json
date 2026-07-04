@@ -28,32 +28,21 @@
     "error": "Error sending. Please try again."
   },
   "pricing": {
-    "title": "Choose the right path to get started",
-    "subtitle": "First choose whether you are coming in as a catechist, parish, or diocese. Then we show only the plans that fit that context.",
+    "title": "Choose the right plan for your pastoral routine",
+    "subtitle": "Two clear plans. Single covers one catechist; Unlimited covers the parish or diocesan operation.",
     "payment_card": "Card",
-    "payment_pix": "PIX",
     "annual_savings": "Save 17% on annual",
     "monthly_tab": "Monthly",
     "annual_tab": "Annual",
     "annual_savings_badge": "17% off",
-    "personal_section": "For you (catechist)",
-    "personal_hint": "— your personal space",
-    "institutional_section": "For your institution",
-    "institutional_hint": "— parishes and dioceses (covers multiple catechists)",
     "faq_title": "Frequently asked questions",
-    "free_forever": "included",
     "per_month": "/month",
     "per_year": "/year",
-    "cta_free": "Get started",
-    "cta_paid": "Start now",
+    "cta_paid": "Choose this plan",
     "most_popular": "Most Popular",
     "plan_desc": {
-      "catechist_free": "For a catechist in the early stage of organizing a class.",
-      "catechist_pro": "For dedicated catechists with multiple classes.",
-      "catechist_ai": "Artificial Intelligence to create meetings, activities, and messages in seconds.",
-      "parish_essential": "For parishes seeking complete catechesis management with a lean team.",
-      "parish_complete": "Complete unlimited management for parishes with large teams.",
-      "diocese": "For multi-parish diocesan management with AI per parish."
+      "single": "For one catechist to run a class with clarity, history, and preparation in one flow.",
+      "unlimited": "For parishes and dioceses to centralize teams, classes, families, and AI in one system."
     },
     "faq": [
       {
@@ -62,11 +51,11 @@
       },
       {
         "q": "How do AI credits work?",
-        "a": "Each meeting generation uses 1 credit, annual planning 3 credits, and activity 1 credit. The AI plan includes 20 credits/month, Parish Complete 50 credits/month, and Diocese 50 credits/month per parish. Unused credits do not roll over — they renew each month."
+        "a": "Single includes 15 AI credits per month. Unlimited includes 50 AI credits per month. A meeting or activity uses 1 credit; annual planning uses 3 credits."
       },
       {
-        "q": "What's the difference between Parish Essential and Complete?",
-        "a": "Essential is ideal for parishes with up to 5 catechists and 200 catechumens. Complete removes all limits and includes 50 AI credits/month."
+        "q": "What is the difference between Single and Unlimited?",
+        "a": "Single covers 1 parish, 1 class, and up to 150 catechumens for one catechist. Unlimited removes the operational limits and is designed for parish and diocesan routines."
       },
       {
         "q": "How does payment work?",
@@ -89,42 +78,9 @@
         "a": "Yes. The AI is instructed to strictly base itself on the Bible (CNBB), Catechism of the Catholic Church, Compendium, and General Directory for Catechesis. All generated content includes references for you to audit."
       }
     ],
-    "path_selector_title": "Choose the right path to get started",
-    "path_selector_subtitle": "First choose your profile. Then we show only the plans that fit that context.",
-    "path_cards": {
-      "catechist": {
-        "title": "Catechist",
-        "description": "For organizing your class, preparing meetings, and using AI in your personal workspace.",
-        "supporting": "Personal plans to organize your class and prepare meetings with more consistency.",
-        "cta": "See catechist options"
-      },
-      "parish": {
-        "title": "Parish",
-        "description": "For coordinating catechists, classes, attendance, and pastoral communication in one place.",
-        "supporting": "Institutional plans for parish teams.",
-        "cta": "See parish options"
-      },
-      "diocese": {
-        "title": "Diocese",
-        "description": "For overseeing multiple parishes with governance, consolidated visibility, and AI per parish.",
-        "supporting": "Multi-parish licensing with central management.",
-        "cta": "See diocesan option"
-      }
-    },
-    "path_details": {
-      "catechist": {
-        "title": "Plans for catechists",
-        "subtitle": "Choose between an essential starting structure, wider limits, or faster preparation with AI."
-      },
-      "parish": {
-        "title": "Plans for parishes",
-        "subtitle": "Compare the right structure for your team and local catechesis volume."
-      },
-      "diocese": {
-        "title": "Plan for dioceses",
-        "subtitle": "One option for central management across multiple parishes with standardization and scale."
-      }
-    }
+    "annual_compare": "on annual, it comes to {{price}}/month",
+    "annual_billed_as": "billed as {{price}}/year",
+    "annual_save_amount": "save {{price}} per year"
   },
   "workspace": {
     "app_name": "Catequese Viva",
@@ -202,5 +158,6 @@
       "PASTORAL_LETTER": "Pastoral Letter",
       "OTHER": "Other"
     }
-  }
+  },
+  "catechist_free": "No subscription"
 }

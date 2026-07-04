@@ -102,16 +102,16 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
     } catch {}
   };
 
-  // Debounce query (400ms — reduces DB hits during fast typing)
+  // Debounce query (600ms — reduces DB hits during fast typing)
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedQuery(query), 400);
+    const timer = setTimeout(() => setDebouncedQuery(query), 600);
     return () => clearTimeout(timer);
   }, [query]);
 
   const { data: results = [], isLoading } = useQuery(
     globalSearch,
     { query: debouncedQuery, locale: currentLocale },
-    { enabled: debouncedQuery.length >= 2 }
+    { enabled: debouncedQuery.length >= 3, refetchOnWindowFocus: false }
   );
 
   // Group results by module
@@ -173,7 +173,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
     }
   };
 
-  const showDropdown = focused && debouncedQuery.length >= 2;
+  const showDropdown = focused && debouncedQuery.length >= 3;
 
   const getModuleLabel = (module: string) => {
     return tNav(`search_module.${module}`, { defaultValue: module });
@@ -226,7 +226,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
             className="flex-1 bg-transparent border-none outline-none text-sm placeholder:text-text-tertiary"
             data-tour="ctrlk"
           />
-          {isLoading && debouncedQuery.length >= 2 && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground shrink-0" />}
+          {isLoading && debouncedQuery.length >= 3 && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground shrink-0" />}
           {!isLoading && query && (
             <button onClick={() => { setQuery(''); setSelectedIndex(0); inputRef.current?.focus(); }} className="text-muted-foreground hover:text-foreground shrink-0">
               <X className="h-4 w-4" />
@@ -373,7 +373,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
         onClose={() => setSearchSheetOpen(false)}
         query={query}
         onQueryChange={(q) => { setQuery(q); setSelectedIndex(0); }}
-        results={debouncedQuery.length >= 2 ? (results || []) : []}
+        results={debouncedQuery.length >= 3 ? (results || []) : []}
         isLoading={isLoading}
         onSelect={handleSelect}
         currentLocale={currentLocale}
@@ -381,3 +381,4 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
     </header>
   );
 });
+

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../../client/components/ui/button';
-import { Church, Check, Search, MapPin } from 'lucide-react';
+import { ArrowRight, Check, CheckCircle2, Church, MapPin, Search } from 'lucide-react';
 import { useQuery, searchParishesForOnboarding, createParish } from 'wasp/client/operations';
 import { useOsmParishes, type OsmParish } from '../../../client/hooks/useOsmParishes';
 import CityStateSelect from '../../../client/components/CityStateSelect';
@@ -21,9 +21,10 @@ interface ParishStepProps {
   selected: ParishSelection | null;
   onSelect: (p: ParishSelection) => void;
   initialState?: string;
+  onContinue: () => void;
 }
 
-export function ParishStep({ diocese, selected, onSelect, initialState }: ParishStepProps) {
+export function ParishStep({ diocese, selected, onSelect, initialState, onContinue }: ParishStepProps) {
   const { t } = useTranslation('onboarding');
   const { t: tc } = useTranslation('common');
   const [searchQuery, setSearchQuery] = useState('');
@@ -36,7 +37,7 @@ export function ParishStep({ diocese, selected, onSelect, initialState }: Parish
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
 
-  const { data: dbParishes = [], isLoading: loadingDb } = useQuery(
+  const { data: dbParishes = [] } = useQuery(
     searchParishesForOnboarding,
     { name: searchQuery, city: searchCity, state: searchState }
   );
@@ -44,6 +45,7 @@ export function ParishStep({ diocese, selected, onSelect, initialState }: Parish
 
   const dbOsmIds = new Set(dbParishes.filter((p: any) => p.osmId).map((p: any) => p.osmId));
   const uniqueOsm = osmParishes.filter((o: any) => !dbOsmIds.has(o.osmId));
+  const shouldShowResults = Boolean(searchCity || searchState || searchQuery.trim().length >= 2);
 
   const duplicateParish = newName.trim().length >= 3
     ? dbParishes.find((p: any) => p.name.toLowerCase().includes(newName.trim().toLowerCase()) || newName.trim().toLowerCase().includes(p.name.toLowerCase()))
@@ -99,16 +101,34 @@ export function ParishStep({ diocese, selected, onSelect, initialState }: Parish
   };
 
   return (
-    <div className="rounded-xl border bg-card p-6 space-y-4">
-      <h2 className="text-lg font-semibold flex items-center gap-2">
-        <Church className="h-5 w-5 text-primary" />{t('parish.title')}
-      </h2>
+    <div className="rounded-xl border bg-card p-6 space-y-5">
+      <div className="space-y-3 rounded-2xl border border-border/70 bg-slate-50/80 p-4">
+        <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+          <span>{t('parish.progress_title')}</span>
+          <span>{t('parish.progress_status')}</span>
+        </div>
+        <div className="h-2 rounded-full bg-slate-200">
+          <div className="h-2 w-[70%] rounded-full bg-primary" />
+        </div>
+        <div className="flex items-start gap-2 text-sm text-slate-600">
+          <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+          <span>{t('parish.progress_copy')}</span>
+        </div>
+      </div>
+
+      <div className="space-y-1">
+        <h2 className="flex items-center gap-2 text-lg font-semibold">
+          <Church className="h-5 w-5 text-primary" />{t('parish.title')}
+        </h2>
+        <p className="text-sm text-muted-foreground">{t('parish.subtitle')}</p>
+      </div>
 
       {diocese && (
-        <div className="text-sm text-muted-foreground bg-muted/30 rounded-lg px-3 py-2 flex items-center gap-2">
-          <BuildingIcon className="h-4 w-4" />
-          {diocese.name}
-          {diocese.state && <> ({diocese.state})</>}
+        <div className="flex items-center gap-3 rounded-2xl border border-primary/20 bg-primary/[0.06] p-4 text-sm">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary/70">{t('parish.diocese_context_label')}</p>
+            <p className="font-semibold text-slate-950">{diocese.name}{diocese.state ? ' (' + diocese.state + ')' : ''}</p>
+          </div>
         </div>
       )}
 
@@ -125,7 +145,7 @@ export function ParishStep({ diocese, selected, onSelect, initialState }: Parish
       </div>
 
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <input
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
@@ -135,52 +155,59 @@ export function ParishStep({ diocese, selected, onSelect, initialState }: Parish
       </div>
 
       <div className="space-y-3 max-h-64 overflow-y-auto">
-        {dbParishes.length > 0 && (
+        {!shouldShowResults && (
+          <div className="rounded-xl border border-dashed border-border/80 bg-white/70 p-4 text-center">
+            <p className="text-sm font-medium text-slate-900">{t('parish.start_hint_title')}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{t('parish.start_hint_body')}</p>
+          </div>
+        )}
+
+        {shouldShowResults && dbParishes.length > 0 && (
           <div>
-            <p className="text-xs font-medium text-muted-foreground uppercase mb-1">{t('parish.platform_section')}</p>
+            <p className="mb-1 text-xs font-medium uppercase text-muted-foreground">{t('parish.platform_section')}</p>
             {dbParishes.map((p: any) => (
               <button
                 key={p.id}
                 onClick={() => handleDbSelect(p)}
-                className={`w-full text-left rounded-lg border px-3 py-2 text-sm transition-colors flex items-center gap-2 mb-1 ${
+                className={`mb-1 flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
                   selectedDbId === p.id ? 'border-primary bg-primary/5' : 'hover:bg-muted/30'
                 }`}
               >
-                <div className="flex-1 min-w-0">
+                <div className="min-w-0 flex-1">
                   <span className="font-medium">{p.name}</span>
-                  {p.city && <span className="text-xs text-muted-foreground ml-1">{p.city}{p.state ? `/${p.state}` : ''}</span>}
+                  {p.city && <span className="ml-1 text-xs text-muted-foreground">{p.city}{p.state ? '/' + p.state : ''}</span>}
                 </div>
-                {selectedDbId === p.id && <Check className="h-4 w-4 text-primary shrink-0" />}
+                {selectedDbId === p.id && <Check className="h-4 w-4 shrink-0 text-primary" />}
               </button>
             ))}
           </div>
         )}
 
-        {searchCity && uniqueOsm.length > 0 && (
+        {shouldShowResults && searchCity && uniqueOsm.length > 0 && (
           <div>
-            <p className="text-xs font-medium text-muted-foreground uppercase mb-1 flex items-center gap-1">
+            <p className="mb-1 flex items-center gap-1 text-xs font-medium uppercase text-muted-foreground">
               <MapPin className="h-3 w-3" />{t('parish.osm_section')}
             </p>
             {uniqueOsm.map((op: any) => (
               <button
                 key={op.osmId}
                 onClick={() => handleOsmSelect(op)}
-                className={`w-full text-left rounded-lg border px-3 py-2 text-sm transition-colors flex items-center gap-2 mb-1 ${
-                  selectedOsm?.osmId === op.osmId ? 'border-primary bg-primary/10' : 'hover:bg-muted/30 border-primary/20'
+                className={`mb-1 flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
+                  selectedOsm?.osmId === op.osmId ? 'border-primary bg-primary/10' : 'border-primary/20 hover:bg-muted/30'
                 }`}
               >
-                <div className="flex-1 min-w-0">
+                <div className="min-w-0 flex-1">
                   <span className="font-medium">{op.name}</span>
-                  {op.address && <span className="text-xs text-muted-foreground ml-1 block">{op.address}</span>}
+                  {op.address && <span className="ml-1 block text-xs text-muted-foreground">{op.address}</span>}
                 </div>
-                <span className="text-xs text-primary shrink-0">OSM</span>
-                {selectedOsm?.osmId === op.osmId && <Check className="h-4 w-4 text-blue-500 shrink-0" />}
+                <span className="shrink-0 text-xs text-primary">OSM</span>
+                {selectedOsm?.osmId === op.osmId && <Check className="h-4 w-4 shrink-0 text-blue-500" />}
               </button>
             ))}
           </div>
         )}
 
-        {searchCity && loadingOsm && (
+        {shouldShowResults && searchCity && loadingOsm && (
           <p className="text-xs text-muted-foreground">{t('parish.searching_map')}</p>
         )}
       </div>
@@ -188,12 +215,12 @@ export function ParishStep({ diocese, selected, onSelect, initialState }: Parish
       {!showCreate ? (
         <button
           onClick={() => { setShowCreate(true); setNewName(searchQuery); }}
-          className="w-full text-left rounded-lg border border-dashed px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors"
+          className="w-full rounded-lg border border-dashed px-3 py-2 text-left text-sm text-muted-foreground transition-colors hover:border-primary/50 hover:text-foreground"
         >
           {t('parish.create_link')}
         </button>
       ) : (
-        <div className="rounded-lg border bg-muted/30 p-3 space-y-2">
+        <div className="space-y-2 rounded-lg border bg-muted/30 p-3">
           <label className="text-sm font-medium">{t('parish.new_name_label')}</label>
           <input
             value={newName}
@@ -202,16 +229,16 @@ export function ParishStep({ diocese, selected, onSelect, initialState }: Parish
             placeholder={t('parish.new_name_placeholder')}
           />
           {duplicateParish && (
-            <div className="rounded-md bg-warning/10 border border-warning/30 p-2 text-xs text-warning">
+            <div className="rounded-md border border-warning/30 bg-warning/10 p-2 text-xs text-warning">
               {t('parish.duplicate_warning')} <strong>{duplicateParish.name}</strong>
-              {duplicateParish.city && <> {t('parish.duplicate_in', { city: `${duplicateParish.city}${duplicateParish.state ? `/${duplicateParish.state}` : ''}` })}</>}.
+              {duplicateParish.city && <> {t('parish.duplicate_in', { city: duplicateParish.city + (duplicateParish.state ? '/' + duplicateParish.state : '') })}</>}.
               <button
                 onClick={() => {
                   handleDbSelect(duplicateParish);
                   setShowCreate(false);
                   setNewName('');
                 }}
-                className="ml-2 underline font-medium hover:text-amber-900 dark:hover:text-amber-300"
+                className="ml-2 font-medium underline hover:text-amber-900 dark:hover:text-amber-300"
               >
                 {t('parish.use_this')}
               </button>
@@ -226,18 +253,23 @@ export function ParishStep({ diocese, selected, onSelect, initialState }: Parish
           </div>
         </div>
       )}
-    </div>
-  );
-}
 
-function BuildingIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
-      <path d="M9 22v-4h6v4" />
-      <path d="M8 6h.01" /><path d="M16 6h.01" /><path d="M12 6h.01" />
-      <path d="M12 10h.01" /><path d="M12 14h.01" /><path d="M16 10h.01" /><path d="M16 14h.01" />
-      <path d="M8 10h.01" /><path d="M8 14h.01" />
-    </svg>
+      <div className="flex flex-col gap-3 border-t pt-3 sm:flex-row sm:items-center sm:justify-between">
+        {selected ? (
+          <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2 text-sm text-primary">
+              <Check className="h-4 w-4" />
+              <span>{t('parish.selection_ready', { name: selected.name })}</span>
+            </div>
+            <Button onClick={onContinue} className="w-full gap-2 sm:w-auto">
+              {t('parish.continue_with_selection')}
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
+        ) : (
+          <span className="text-sm text-muted-foreground">{t('parish.select_hint')}</span>
+        )}
+      </div>
+    </div>
   );
 }

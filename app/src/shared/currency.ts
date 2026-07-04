@@ -1,63 +1,29 @@
-export type Currency = 'BRL' | 'USD';
+/**
+ * Currency helpers.
+ *
+ * The platform is Brazil-only and bills exclusively in BRL via Stripe.
+ * `Currency` is kept as a literal type for backward compatibility with
+ * call sites that pass it around, but it always resolves to 'BRL'.
+ */
+
+export type Currency = 'BRL';
 
 export const CURRENCY_SYMBOLS: Record<Currency, string> = {
-  BRL: '$',
-  USD: '$',
+  BRL: 'R$',
 };
 
-const BRAZIL_TIME_ZONES = new Set([
-  'America/Sao_Paulo',
-  'America/Bahia',
-  'America/Belem',
-  'America/Boa_Vista',
-  'America/Campo_Grande',
-  'America/Cuiaba',
-  'America/Eirunepe',
-  'America/Fortaleza',
-  'America/Maceio',
-  'America/Manaus',
-  'America/Noronha',
-  'America/Porto_Velho',
-  'America/Recife',
-  'America/Rio_Branco',
-  'America/Santarem',
-]);
-
-function localeHasBrazilRegion(locale: string | undefined): boolean {
-  if (!locale) return false;
-  try {
-    const region = new Intl.Locale(locale).region;
-    return region?.toUpperCase() === 'BR';
-  } catch {
-    return /(^|[-_])BR$/i.test(locale);
-  }
-}
-
-function isBrazilTimeZone(): boolean {
-  try {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    return !!tz && BRAZIL_TIME_ZONES.has(tz);
-  } catch {
-    return false;
-  }
-}
-
+/** Always BRL — the platform is Brazil-only. */
 export function detectCurrency(): Currency {
-  if (typeof navigator !== 'undefined') {
-    const locales = navigator.languages?.length ? navigator.languages : [navigator.language];
-    if (locales.some(localeHasBrazilRegion)) {
-      return 'BRL';
-    }
-  }
-
-  if (isBrazilTimeZone()) {
-    return 'BRL';
-  }
-
-  return 'USD';
+  return 'BRL';
 }
 
-export function formatPrice(cents: number, currency?: Currency): string {
-  const symbol = CURRENCY_SYMBOLS[currency || detectCurrency()];
-  return `${symbol}${(cents / 100).toFixed(0)}`;
+/**
+ * Format an amount (given in cents) as a BRL price string, e.g.
+ * `formatPrice(2900)` → `R$ 29`.
+ *
+ * The `currency` argument is accepted for backward compatibility but
+ * ignored — output is always BRL.
+ */
+export function formatPrice(cents: number, _currency?: Currency): string {
+  return `R$ ${(cents / 100).toFixed(0)}`;
 }

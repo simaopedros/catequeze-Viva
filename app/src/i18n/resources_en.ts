@@ -13,7 +13,7 @@ export const account_en = {
     "plan": "Your Plan",
     "credits": "Credits",
     "credits_value": "{{count}} credits",
-    "free_plan": "Free Plan",
+    "free_plan": "No subscription",
     "manage_payment": "Manage Payment",
     "buy_credits": "Buy More Credits",
     "plan_past_due": "Your {{plan}} plan payment is past due. Please update your subscription payment details.",
@@ -459,7 +459,7 @@ export const auth_en = {
     "two_factor_error_required": "Enter the 6-digit code.",
     "two_factor_error_invalid": "Invalid code.",
     "signup_title": "Create account",
-    "signup_subtitle": "Start organizing catechesis for free",
+    "signup_subtitle": "Create your account and start organizing your catechesis",
     "signup_email_label": "Email",
     "signup_email_placeholder": "your@email.com",
     "signup_password_label": "Password",
@@ -471,7 +471,7 @@ export const auth_en = {
     "signup_terms_and": "and",
     "terms_of_use": "Terms of Use",
     "privacy_policy": "Privacy Policy",
-    "signup_button": "Create free account",
+    "signup_button": "Create account",
     "signup_loading": "Creating account...",
     "signup_divider": "or",
     "signup_google": "Sign up with Google",
@@ -571,14 +571,14 @@ export const bible_en = {
 
 export const billing_en = {
     "title": "Billing",
-    "personal_scope": "Personal subscription · covers only your personal space",
-    "institutional_scope": "Institutional subscription · covers {{name}}",
+    "personal_scope": "Personal subscription for your space",
+    "institutional_scope": "Pastoral workspace subscription for {{name}}",
     "this_institution": "this institution",
     "current_plan": "Current plan:",
     "active": "Active",
     "plan_mismatch_institutional": "The selected plan is institutional. Switch to a parish/diocese workspace to subscribe.",
     "plan_mismatch_personal": "The selected plan is personal. Return to your personal space to subscribe.",
-    "corporate_plan": "Corporate Managed Plan",
+    "corporate_plan": "Managed plan",
     "diocese_responsible": "Responsible diocese:",
     "not_informed": "Not informed",
     "diocese_admins": "Diocesan administrator(s):",
@@ -590,14 +590,14 @@ export const billing_en = {
     "classes": "Classes",
     "catechumens": "Catechumens",
     "subscription_active": "Active subscription",
-    "free_plan": "Free plan",
+    "free_plan": "No subscription",
     "awaiting_payment": "Awaiting payment",
-    "active_desc": "Your subscription is active. Enjoy all features.",
-    "upgrade_desc": "Upgrade to access unlimited features.",
-    "payment_desc": "Complete payment to activate your plan.",
+    "active_desc": "Your plan is active. Keep meetings, history, and families in the same flow.",
+    "upgrade_desc": "Choose the plan to continue with meetings, history, and follow-up without interruptions.",
+    "payment_desc": "Complete payment to unlock full access.",
     "cancel_subscription": "Cancel subscription",
     "cancelling": "Cancelling…",
-    "manage_payment": "Manage Payment",
+    "manage_payment": "Manage payment",
     "classes_quota_label": "Classes usage",
     "catechumens_quota_label": "Catechumens usage",
     "ai_credits_quota_label": "AI credits usage",
@@ -618,7 +618,7 @@ export const billing_en = {
     "base_plan_btn": "Base plan",
     "institutional_plan_btn": "Institutional plan",
     "institutional_requires_admin": "Requires parish administrator",
-    "subscribe": "Subscribe",
+    "subscribe": "Go to payment",
     "redirecting": "Redirecting…",
     "selected": "Selected",
     "current": "Current",
@@ -627,93 +627,46 @@ export const billing_en = {
     "payment_history_desc": "Payments are processed securely by Stripe. History will be available after the first charge.",
     "checkout_error": "Error starting payment. Please try again.",
     "cancel_success": "Subscription cancelled.",
-    "cancel_error": "Error cancelling. Contact support.",
+    "cancel_error": "Error cancelling. Please contact support.",
     "cancel_dialog_title": "Cancel subscription",
     "cancel_dialog_desc": "Are you sure you want to cancel your subscription? You will lose access to premium features at the end of the current period.",
     "cancel_confirm": "Yes, cancel",
     "cancel_keep": "Keep subscription",
     "cancel_scheduled": "Cancellation scheduled",
-    "cancel_scheduled_desc": "Your subscription will be cancelled at the end of the current billing period. You can continue using all features until then.",
-    "free": "Free",
+    "cancel_scheduled_desc": "Your subscription will be cancelled at the end of the current period. Until then, you can continue using all features.",
+    "free": "—",
     "monthly": "Monthly",
     "annual": "Annual",
     "annual_savings": "17% off",
     "plans": {
       "catechist_free": {
-        "name": "Catechist Free",
-        "price": "Free",
+        "name": "No subscription",
+        "price": "—",
+        "features": []
+      },
+      "single": {
+        "name": "Single Plan",
+        "price": "R$ 29/month",
+        "annual_price": "R$ 290/year (~R$ 24/month)",
         "features": [
+          "1 parish",
           "1 class",
-          "15 catechumens",
-          "Basic attendance",
-          "Liturgical calendar",
-          "3 initial AI credits"
-        ]
-      },
-      "catechist_pro": {
-        "name": "Catechist Pro",
-        "price": "$5/month",
-        "annual_price": "$50/year ($4.17/month)",
-        "features": [
-          "3 classes",
           "150 catechumens",
-          "Advanced reports",
-          "Priority support",
-          "5 AI credits/month"
+          "Attendance and liturgical calendar",
+          "15 AI credits/month"
         ]
       },
-      "catechist_ai": {
-        "name": "Catechist AI",
-        "price": "$9/month",
-        "annual_price": "$90/year ($7.50/month)",
+      "unlimited": {
+        "name": "Unlimited Plan",
+        "price": "R$ 99/month",
+        "annual_price": "R$ 990/year (~R$ 82/month)",
         "features": [
-          "Everything in Pro",
-          "AI meeting generator",
-          "Automatic annual planning",
-          "Activities and quizzes",
-          "Theological assistant",
-          "WhatsApp messages",
-          "20 credits/month"
-        ]
-      },
-      "parish_essential": {
-        "name": "Parish Essential",
-        "price": "$19/month",
-        "annual_price": "$190/year ($15.83/month)",
-        "features": [
-          "5 catechists",
-          "200 catechumens",
-          "Unlimited classes",
+          "Unlimited parishes and classes",
+          "Unlimited catechumens and catechists",
+          "AI meeting and activity generator",
           "Integrated communication",
           "Documents and certificates",
-          "Coordinator dashboard",
-          "30 AI credits/month"
-        ]
-      },
-      "parish_complete": {
-        "name": "Parish Complete",
-        "price": "$29/month",
-        "annual_price": "$290/year ($24.17/month)",
-        "features": [
-          "Unlimited catechists",
-          "Unlimited catechumens",
-          "Everything in Essential",
-          "Integration API",
-          "Dedicated onboarding",
           "50 AI credits/month"
-        ]
-      },
-      "diocese": {
-        "name": "Diocese",
-        "price": "$99/month",
-        "annual_price": "$990/year ($82.50/month)",
-        "features": [
-          "Up to 10 parishes",
-          "Everything in Complete",
-          "Official library",
-          "Consolidated analytics",
-          "Dedicated onboarding",
-          "50 AI credits per parish/month"
         ]
       }
     },
@@ -731,8 +684,8 @@ export const billing_en = {
     "no_licenses": "No licenses found.",
     "limit_reached_title": "Plan limit reached",
     "limit_reached_label": "{{label}} limit reached",
-    "limit_reached_description": "Your <1>{{currentPlanName}}</1> plan allows up to <2>{{maxAllowed}} {{label}}{{plural}}</2>. You currently have <3>{{currentCount}}</3>.",
-    "limit_reached_contact": "Contact the <1>parish coordinator</1> to expand plan limits.",
+    "limit_reached_description": "Your <1>{{currentPlanName}}</1> plan allows up to <2>{{maxAllowed}} {{label}}{{plural}}</2>. You already have <3>{{currentCount}}</3>. Upgrade now to continue.",
+    "limit_reached_contact": "Talk to the <1>parish coordinator</1> to expand plan limits.",
     "upgrade_to": "Upgrade to {{plan}}",
     "upgrade_btn": "Upgrade",
     "limit_labels": {
@@ -740,7 +693,96 @@ export const billing_en = {
       "class": "class",
       "catechumen": "catechumen",
       "catechist": "catechist"
-    }
+    },
+    "scope_badge_personal": "Personal subscription",
+    "scope_badge_institutional": "Institutional subscription",
+    "pricing_section_subtitle": "Choose the plan that best fits your catechesis.",
+    "unlimited": "unlimited",
+    "limit_caption": "Limit {{limit}}",
+    "conversion_badge": "Subscription",
+    "conversion_payment_title": "Confirm your subscription",
+    "conversion_required_title": "Choose your plan to continue",
+    "conversion_personal_title": "Choose the plan for your personal space",
+    "conversion_institutional_title": "Choose the plan for your pastoral workspace",
+    "conversion_required_desc": "Your signup is ready. Now choose the plan to start using the platform without blocks.",
+    "conversion_selected_desc": "This is the right plan for your space. Confirm the subscription to start using everything already prepared.",
+    "conversion_personal_desc": "Your personal space is ready to receive your class. Now you only need to confirm the subscription.",
+    "conversion_institutional_desc": "Your pastoral workspace is ready to begin. Now you only need to confirm the subscription to unlock classes, team access, and follow-up.",
+    "conversion_checklist_title": "What is already ready",
+    "conversion_step_account_ready": "Your signup has already been created.",
+    "conversion_step_workspace_personal": "Your personal space is already available.",
+    "conversion_step_workspace_institutional": "Your pastoral workspace is already available.",
+    "conversion_step_first_class": "Your first class has already been started.",
+    "conversion_step_next_action": "You can already create your first class.",
+    "conversion_step_unlock": "You only need to confirm the subscription to begin.",
+    "conversion_plans_title": "Choose your plan",
+    "conversion_plans_subtitle": "Select the plan and continue to secure payment.",
+    "recommended_plan": "Recommended for this context",
+    "subscribe_plan": "Subscribe to {{plan}}",
+    "recommended_plan_personal": "To start your first class",
+    "recommended_plan_institutional": "To unlock your team",
+    "plan_mismatch_institutional_cta": "Create parish workspace",
+    "upgrade_supporting_copy": "The upgrade appears exactly when your usage has already proven value. Keep what you built and unlock the next step without rework.",
+    "upgrade_journey_badge": "Plan expansion",
+    "upgrade_plans_title": "Unlock the next step",
+    "upgrade_plans_subtitle": "Choose the subscription that removes this blocker and keeps your catechesis in the same flow.",
+    "upgrade_checklist_title": "What you keep with the upgrade",
+    "upgrade_checklist_workspace_ready": "Your current workspace is already ready to keep growing.",
+    "upgrade_checklist_classes_active": "{{count}} active class stays in the same workspace.",
+    "upgrade_checklist_catechumens_active": "{{count}} catechumens already registered keep their history and follow-up.",
+    "upgrade_checklist_keep_history": "Your history, meetings, and attendance stay in the same place.",
+    "upgrade_journey": {
+      "generic": {
+        "title": "Keep going without blocking your work",
+        "description": "Upgrade to {{plan}} and keep everything you already organized active in the same workspace.",
+        "cta": "Continue without blockers",
+        "checklist": "You unlock the next step without redoing setup or losing history.",
+        "toast_description": "Your usage already proved value. Unlock the next step without interrupting catechesis."
+      },
+      "required": {
+        "title": "Your workspace is ready to begin",
+        "description": "Choose a plan to unlock access and continue the work you just started.",
+        "cta": "Choose plan",
+        "checklist": "Only the subscription confirmation is missing to start without blockers.",
+        "toast_description": "Choose a plan to unlock access without interrupting the start of your catechesis."
+      },
+      "class_limit": {
+        "title": "Your next class needs more room",
+        "description": "You already use {{currentCount}} of {{maxAllowed}} class on {{currentPlanName}}. Upgrade to {{plan}} and open the next class without losing attendance, meetings, or history.",
+        "cta": "Unlock next class",
+        "checklist": "You unlock the next class without splitting attendance, planning, or follow-up.",
+        "toast_description": "Your current class is already active. Unlock the next one without interrupting follow-up."
+      },
+      "catechumen_limit": {
+        "title": "Your catechesis has reached the current limit",
+        "description": "You already registered {{currentCount}} of {{maxAllowed}} catechumens on {{currentPlanName}}. Upgrade to {{plan}} and keep following everyone in one place.",
+        "cta": "Unlock more catechumens",
+        "checklist": "Keep registering people without spreading families, attendance, and history across different places.",
+        "toast_description": "You reached the current catechumen limit. Unlock more capacity without breaking follow-up."
+      },
+      "parish_limit": {
+        "title": "Your next workspace needs to be unlocked",
+        "description": "You already reached the parish limit on {{currentPlanName}}. Upgrade to {{plan}} and add another pastoral workspace under the same control.",
+        "cta": "Unlock another parish",
+        "checklist": "Expand to another workspace without scattering your operation.",
+        "toast_description": "You already reached the current parish limit. Unlock another workspace without splitting operations."
+      },
+      "catechist_limit": {
+        "title": "Your team outgrew the current plan",
+        "description": "You already reached the catechist limit on {{currentPlanName}}. Upgrade to {{plan}} and invite the full team into the same workspace.",
+        "cta": "Unlock full team",
+        "checklist": "Bring in more catechists without moving classes, messages, or history elsewhere.",
+        "toast_description": "Your catechesis now depends on more people. Unlock the full team in the same workspace."
+      }
+    },
+    "switch_annual_title": "Save by switching to the annual plan",
+    "switch_annual_desc": "You pay {{savings}} less per year (~{{equivalent}}/month). The difference is charged now and the cycle becomes annual.",
+    "switch_annual_cta": "Switch to annual",
+    "switch_to_annual_success": "Plan switched to annual!",
+    "switch_to_monthly_success": "Plan switched to monthly!",
+    "switch_to_monthly": "Switch back to monthly",
+    "switch_interval_error": "Failed to change the billing interval. Try again.",
+    "switching": "Switching..."
   } as const;
 
 export const birthdays_en = {
@@ -1981,10 +2023,10 @@ export const landing_en = {
       "headline_line2": "prepared without last-minute rush",
       "subheadline": "Organize the class, build the meeting, and keep families in the same flow — so the pastoral week does not depend on paper, spreadsheets, and improvisation.",
       "badge": "From preparation to family follow-up",
-      "cta_primary": "Start free",
-      "cta_secondary": "See how it works",
-      "trust_signals": "No credit card • Free plan • LGPD compliant",
-      "cta_secondary_href": "#recursos"
+      "cta_primary": "View plans",
+      "cta_secondary": "See the preparation flow",
+      "trust_signals": "Simple plans • Monthly or annual billing • LGPD compliant",
+      "cta_secondary_href": "/#recursos"
     },
     "pain_title": "Catechesis should not be scattered across notebooks, spreadsheets, and messages",
     "pain_subtitle": "Catequese Viva brings preparation, class management, attendance, and families into one flow.",
@@ -2010,7 +2052,7 @@ export const landing_en = {
     ],
     "ai_showcase_title": "See how a meeting can take shape in minutes",
     "ai_showcase_subtitle": "Catequese Viva combines theme, age group, and Catholic references to draft a first version that you review before using.",
-    "ai_showcase_cta": "See ways to get started",
+    "ai_showcase_cta": "View plans for your next class",
     "features_title": "What matters most to prepare and follow catechesis",
     "features_subtitle": "AI, attendance, and families work together to reduce improvisation and bring more clarity to the pastoral routine.",
     "features": {
@@ -2099,78 +2141,65 @@ export const landing_en = {
     ],
     "more_features": "More tools for when your catechesis grows",
     "more_features_sub": "Features that remain useful after the first class.",
-    "steps_title": "How to get started without friction",
-    "steps_subtitle": "Choose your profile, see the right plan, and move your next class into a more organized flow.",
+    "steps_title": "How to start without wasting time",
+    "steps_subtitle": "See the right plan, create your first class, and move into the next meeting with less improvisation.",
     "steps": [
       {
-        "title": "Choose your profile",
-        "desc": "Start with the catechist, parish, or diocese path to see the offer that fits."
+        "title": "Choose the right plan",
+        "desc": "Single is for one catechist. Unlimited is for the parish or diocese to operate without ceilings."
       },
       {
-        "title": "Organize your class",
-        "desc": "Register catechumens, track attendance, and centralize what is now scattered."
+        "title": "Create your first class",
+        "desc": "Enter with the class already named, scheduled, and located so the work starts with context."
       },
       {
         "title": "Prepare the next meeting",
-        "desc": "Use AI and the Catholic foundation to draft a better first version before next week."
+        "desc": "Use AI and the Catholic foundation to leave the blank page behind and reach the first draft faster."
       }
     ],
-    "steps_cta": "See paths and plans",
-    "pricing_title": "Three ways into Catequese Viva",
-    "pricing_subtitle": "Start with the right profile. Compare the paths for catechist, parish, and diocese before choosing a plan.",
+    "steps_cta": "View plans and start",
+    "pricing_title": "Two plans to get into Catequese Viva",
+    "pricing_subtitle": "Choose Single for one catechist, or Unlimited for the parish or diocese to operate without limits.",
     "plans": {
-      "free": {
-        "name": "Catechist Path",
-        "desc": "For organizing your class, preparing meetings, and understanding the structure that fits your routine.",
+      "single": {
+        "name": "Single Plan",
+        "desc": "For one catechist to run a class with clarity, history, and preparation in one flow.",
+        "price": "R$ 29",
         "features": [
-          "Class organization",
-          "Attendance and follow-up",
-          "Meeting preparation",
-          "Integrated Catholic foundation",
-          "Options with and without AI"
+          "1 parish",
+          "1 class and 150 catechumens",
+          "Attendance and liturgical calendar",
+          "15 AI credits/month"
         ]
       },
-      "ai": {
-        "name": "Catechist AI",
-        "desc": "For catechists who want AI help preparing meetings, activities, and communications.",
-        "price": "$9",
+      "unlimited": {
+        "name": "Unlimited Plan",
+        "desc": "For parishes and dioceses to centralize teams, classes, families, and AI in one system.",
+        "price": "R$ 99",
         "features": [
-          "Unlimited classes & catechumens",
+          "Unlimited parishes and classes",
+          "Unlimited catechumens and catechists",
           "AI meeting generator",
-          "Automatic annual planning",
-          "Theological assistant",
-          "20 AI credits/month"
-        ]
-      },
-      "parish": {
-        "name": "Parish Complete",
-        "desc": "For when coordination wants to bring the same process to the whole parish.",
-        "price": "$29",
-        "features": [
-          "Unlimited catechists",
-          "Coordinator dashboard",
-          "Documents & LGPD consent",
-          "Integrated communication",
           "50 AI credits/month"
         ]
       }
     },
     "price_free": "From",
-    "price_popular": "Most chosen by catechists",
+    "price_popular": "Most chosen",
     "price_monthly": "Monthly",
     "price_annual": "Annual",
     "price_cta_free": "See paths",
-    "price_cta_start": "See options in this path",
+    "price_cta_start": "View details and choose",
     "per_month": "/month",
     "per_year": "/year",
     "annual_discount": "17% discount",
-    "compare_plans": "Compare paths and full plans",
+    "compare_plans": "Compare both full plans",
     "faq_title": "Questions before choosing your path",
     "faq_subtitle": "Direct answers about access, AI, mobile, and data protection.",
     "faqs": [
       {
         "q": "Can I start as an individual catechist?",
-        "a": "Yes. The catechist path shows the personal options to organize your class, with or without AI, before moving to a parish structure."
+        "a": "Yes. Single is built for the individual catechist to organize the class, track attendance, and prepare meetings in the same flow."
       },
       {
         "q": "When does AI make sense?",
@@ -2189,13 +2218,13 @@ export const landing_en = {
         "a": "The platform includes LGPD-oriented features, digital consent, access control, and data export or deletion requests."
       },
       {
-        "q": "Is there a path for parishes and dioceses?",
-        "a": "Yes. The pricing page separates catechist, parish, and diocese paths to reduce confusion and show only the options that fit each context."
+        "q": "Which plan fits a parish or diocese?",
+        "a": "Unlimited covers the institutional operation: multiple classes, catechists, families, and ongoing AI usage in the same system."
       }
     ],
-    "cta_title": "Choose the right path and organize your next catechesis meeting",
-    "cta_subtitle": "See the option for catechist, parish, or diocese and move to the next step with clarity.",
-    "cta_button": "See paths and plans",
+    "cta_title": "Choose the right plan and enter with your next class in motion",
+    "cta_subtitle": "See what happens next in each plan and move to the right next step with clarity.",
+    "cta_button": "View plans",
     "cta_badge": "Clear next step",
     "cta_see_plans": "See plans",
     "mock": {
@@ -2298,8 +2327,8 @@ export const landing_en = {
         "desc": "Information protected in transit and at rest, with role-restricted access."
       },
       {
-        "title": "Start without a card",
-        "desc": "Free plan to organize your first class. No cost to try."
+        "title": "Choose the right plan",
+        "desc": "Single covers one catechist. Unlimited covers the team, the parish, or the diocese in one system."
       },
       {
         "title": "You control your data",
@@ -2333,9 +2362,9 @@ export const landingIa_en = {
       "headline_line2": "in minutes with AI",
       "subheadline": "Let AI generate the complete script: objective, activity, Bible reading, reflection, activity and prayer. Based on Catholic doctrine.",
       "badge": "Theologically trained AI",
-      "cta_primary": "Try AI free",
+      "cta_primary": "Try the AI",
       "cta_secondary": "See how it works",
-      "trust_signals": "No credit card • 3 free credits • CNBB theological base"
+      "trust_signals": "Single or Unlimited plan • CNBB theological base • Cancel anytime"
     },
     "features_title": "AI that understands catechesis",
     "features_subtitle": "Trained on the CNBB Bible, the Catechism and the Directory for Catechesis.",
@@ -2349,7 +2378,7 @@ export const landingIa_en = {
     ],
     "ai_showcase_title": "Your next meeting ready in under 30 seconds",
     "ai_showcase_subtitle": "Enter the theme and age group. AI generates the complete meeting — from welcome to closing prayer.",
-    "ai_showcase_cta": "Try AI for free",
+    "ai_showcase_cta": "Try the AI",
     "mission_title": "Less time preparing. More time evangelizing.",
     "mission_text": "Every minute AI saves on preparation is an extra minute for what truly matters: being present for your catechumens.",
     "mockup_dashboard": {
@@ -2424,7 +2453,8 @@ export const landingIa_en = {
       "privacy": "Privacy",
       "terms": "Terms",
       "contact": "Contact"
-    }
+    },
+    "create_account": "Create account"
   } as const;
 
 export const landingPresenca_en = {
@@ -2435,7 +2465,7 @@ export const landingPresenca_en = {
       "badge": "Digital attendance control",
       "cta_primary": "Start now",
       "cta_secondary": "See demo",
-      "trust_signals": "No card • Free plan • Works on mobile"
+      "trust_signals": "Single or Unlimited plan • Works on mobile • Payment via Stripe"
     },
     "features_title": "Complete attendance control",
     "features_subtitle": "From recording to justification — all integrated and real-time.",
@@ -2521,7 +2551,8 @@ export const landingPresenca_en = {
       "privacy": "Privacy",
       "terms": "Terms",
       "contact": "Contact"
-    }
+    },
+    "create_account": "Create account"
   } as const;
 
 export const landingSistema_en = {
@@ -2530,9 +2561,9 @@ export const landingSistema_en = {
       "headline_line2": "in one place",
       "subheadline": "Attendance control, class management, family communication and reports for coordinators. All integrated.",
       "badge": "Complete catechesis management",
-      "cta_primary": "Try it free",
+      "cta_primary": "Get started",
       "cta_secondary": "See features",
-      "trust_signals": "No credit card • Free plan • Start in 2 minutes"
+      "trust_signals": "Single or Unlimited plan • Start in 2 minutes • Cancel anytime"
     },
     "features_title": "Everything to manage your catechesis",
     "features_order": [
@@ -2617,7 +2648,8 @@ export const landingSistema_en = {
       "privacy": "Privacy",
       "terms": "Terms",
       "contact": "Contact"
-    }
+    },
+    "create_account": "Create account"
   } as const;
 
 export const legal_en = {
@@ -2894,18 +2926,18 @@ export const navigation_en = {
 
 export const onboarding_en = {
     "title": "Onboarding",
-    "subtitle_personal": "Let's set up your personal space.",
-    "subtitle_manager": "Let's set up the platform in 2 steps.",
+    "subtitle_personal": "Let's prepare your personal space.",
+    "subtitle_manager": "Let's prepare the parish catechesis to begin.",
     "steps": {
-      "institution": "Parish & Diocese",
-      "details": "Details"
+      "institution": "Parish and diocese",
+      "details": "First class"
     },
     "diocese_selected": "Diocese",
     "back": "← Back",
     "continue_parish": "Continue to Parish →",
     "continue": "Continue →",
     "change_diocese": "← Change diocese",
-    "configuring": "Setting up the platform...",
+    "configuring": "Preparing your account...",
     "finish_error": "Error finishing setup.",
     "personal_workspace_error": "Could not create personal space. Please try again.",
     "parish_not_selected": "Parish not selected.",
@@ -2914,42 +2946,43 @@ export const onboarding_en = {
     "no_parish_selected": "No parish selected.",
     "summary": {
       "type": "Type",
-      "personal_account": "Personal Account",
+      "personal_account": "Personal space",
       "plan": "Plan",
-      "plan_free": "Catechist Free",
-      "plan_pro": "Catechist Pro/AI",
+      "plan_free": "No subscription",
+      "plan_pro": "Single Plan",
       "class": "Class",
       "create_later": "Create later",
       "diocese": "Diocese",
       "parish": "Parish",
-      "year": "Year"
+      "year": "Year",
+      "plan_none": "No subscription",
+      "plan_paid": "Single Plan"
     },
     "welcome": {
       "hello": "Hello, {{name}}!",
       "hello_default": "Welcome!",
-      "question": "How do you want to use Catequese Viva?",
-      "personal_title": "Personal Account",
-      "personal_desc": "For individual catechists · personal plan (Free / Pro / AI)",
+      "question": "How would you like to start?",
+      "personal_title": "I want to organize my class",
+      "personal_desc": "For people managing their own class and wanting to start without depending on the parish.",
       "personal_features": [
         "Isolated personal space",
         "Your classes and catechumens",
         "AI meeting generator"
       ],
-      "manager_title": "Management Account",
-      "manager_desc": "For parishes and dioceses · institutional plan (covers multiple catechists)",
+      "manager_title": "I want to organize parish catechesis",
+      "manager_desc": "For people coordinating parish catechesis and needing to organize team, classes, and calendar.",
       "manager_features": [
         "Multi-catechist",
         "Integrated communication",
         "Complete catechesis management"
-      ]
+      ],
+      "helper": "Choose the path that best matches your reality."
     },
     "personal_setup": {
       "title": "Personal Account",
-      "subtitle": "Your individual catechesis space is almost ready!",
-      "included": "What's included:",
+      "subtitle": "Start with the name of your first class. Schedule and location can wait.",
+      "included": "When you enter, you will already have:",
       "isolated_space": "Isolated personal space",
-      "limits_free": "2 classes and 30 catechumens",
-      "limits_unlimited": "Unlimited classes",
       "ai_generator": "AI meeting generator",
       "liturgical_calendar": "Liturgical calendar",
       "schedule_label": "Schedule (optional)",
@@ -2958,7 +2991,7 @@ export const onboarding_en = {
       "location_placeholder": "Ex: Parish hall",
       "first_class_label": "First class name (optional)",
       "first_class_placeholder": "Ex: 1st Year Catechesis",
-      "first_class_hint": "You can create it later in Classes if you prefer.",
+      "first_class_hint": "If you prefer, enter now and create the class later.",
       "creating": "Creating space...",
       "enter_space": "Enter my space",
       "days": {
@@ -2969,7 +3002,19 @@ export const onboarding_en = {
         "4": "Thu",
         "5": "Fri",
         "6": "Sat"
-      }
+      },
+      "progress_label": "Started progress",
+      "first_value": "Your first class with name, schedule, and location.",
+      "single_plan_scope": "If you need more capacity later, you can upgrade your plan.",
+      "enter_with_class": "Create my space with the first class",
+      "enter_and_create_later": "Enter now and create the class later",
+      "progress_title": "Your start",
+      "progress_status": "Only the first class is missing",
+      "progress_copy": "Your personal space is almost ready. Now name your first class to begin with everything organized.",
+      "value_title": "When you enter you will have",
+      "optional_details_toggle": "Add schedule and location",
+      "optional_details_hide": "Hide schedule and location",
+      "optional_details_hint": "Fill this in now only if it helps you start. You can adjust it later."
     },
     "diocese": {
       "title": "Which diocese are you in?",
@@ -2991,10 +3036,18 @@ export const onboarding_en = {
       "creating": "Creating...",
       "create_btn": "Create diocese",
       "skip": "Skip this step →",
-      "select_hint": "Select a diocese above"
+      "select_hint": "Select a diocese above",
+      "subtitle": "Choose the diocese to find the right parish with less effort.",
+      "progress_title": "Your signup is moving forward",
+      "progress_status": "Step 1 of 2",
+      "progress_copy": "You already decided to organize the parish catechesis. Now choose the diocese to continue.",
+      "start_hint_title": "Start with the state or the name",
+      "start_hint_body": "That makes it easier to find the right diocese.",
+      "selection_ready": "Selected diocese: {{name}}",
+      "continue_with_selection": "Continue with this diocese"
     },
     "parish": {
-      "title": "What is your parish?",
+      "title": "Which parish will receive the first class?",
       "city_state": "City / State",
       "filter_placeholder": "Filter by name...",
       "platform_section": "On Platform",
@@ -3009,7 +3062,17 @@ export const onboarding_en = {
       "creating": "Creating...",
       "create_btn": "Create parish",
       "default_name": "Parish",
-      "duplicate_in": "in {{city}}"
+      "duplicate_in": "in {{city}}",
+      "subtitle": "Now choose the parish where catechesis will begin.",
+      "progress_title": "Your signup is almost ready",
+      "progress_status": "Choose the parish to continue",
+      "progress_copy": "The diocese is already chosen. Now select the parish to move on.",
+      "start_hint_title": "Enter city and state",
+      "start_hint_body": "That makes the search faster and more precise.",
+      "diocese_context_label": "Chosen diocese",
+      "selection_ready": "Selected parish: {{name}}",
+      "continue_with_selection": "Continue with this parish",
+      "select_hint": "Select a parish to move on"
     },
     "coordinator": {
       "year_title": "Catechetical Year",
@@ -3020,7 +3083,7 @@ export const onboarding_en = {
       "date_error": "End date must be after start date.",
       "next": "Next",
       "class_title": "First Class",
-      "class_desc": "Create the first class or skip this step.",
+      "class_desc": "Create the first class so the team starts by seeing catechesis organized.",
       "class_name": "Class name",
       "class_name_placeholder": "Ex: Confirmation Class 2026",
       "day_of_week": "Day of week",
@@ -3038,13 +3101,36 @@ export const onboarding_en = {
         "4": "Thursday",
         "5": "Friday",
         "6": "Saturday"
-      }
+      },
+      "year_desc": "Name the catechetical year to keep calendar and planning organized.",
+      "progress_title": "Progress",
+      "progress_status_class": "Step 1 of 2",
+      "progress_status_year": "Last step",
+      "progress_copy_class": "Creating the first class is the most important step to start with the team.",
+      "progress_copy_year": "Now you only need to name the catechetical year to keep the calendar organized.",
+      "optional_details_toggle": "Add class schedule and location now",
+      "optional_details_hide": "Hide class schedule and location for now",
+      "optional_details_hint": "These details help, but they do not need to block the first class."
     },
     "completion": {
       "title": "All set!",
-      "desc": "Your space is configured. Here is a summary of what was created:",
+      "desc": "Your access is ready. Here is what was configured:",
       "redirecting": "Redirecting in 5 seconds...",
-      "go_dashboard": "Go to Dashboard"
+      "go_dashboard": "Go to Dashboard",
+      "progress_badge": "Signup complete",
+      "next_step_hint": "Now it is time to start using the platform.",
+      "go_billing": "Choose plan",
+      "primary_create_class": "Create my first class",
+      "primary_create_meeting": "Generate my first meeting",
+      "primary_invite_catechist": "Invite first catechist",
+      "personal_ready_title": "Your personal space is ready",
+      "personal_ready_desc": "Now create your first class to start organizing catechesis.",
+      "personal_class_title": "Your first class is already underway",
+      "personal_class_desc": "Now generate the first meeting to use what is already prepared.",
+      "manager_ready_title": "The parish is already configured",
+      "manager_ready_desc": "Now create the first class to start organizing parish catechesis.",
+      "manager_class_title": "The parish's first class is ready",
+      "manager_class_desc": "Now invite the first catechist to begin working as a team."
     },
     "roles": {
       "coordinator": {
@@ -3053,11 +3139,11 @@ export const onboarding_en = {
       },
       "catechist": {
         "title": "Catechist",
-        "desc": "You teach catechesis and accompany your catechumens."
+        "desc": "You teach catechesis and follow your catechumens."
       },
       "guardian": {
         "title": "Guardian (Parent)",
-        "desc": "You accompany your children's faith journey in catechesis."
+        "desc": "You follow your children's journey of faith in catechesis."
       },
       "viewer": {
         "title": "Pastoral Viewer",
@@ -3073,7 +3159,7 @@ export const onboarding_en = {
     },
     "viewer": {
       "title": "Pastoral Leadership",
-      "desc": "You will have view-only access to classes, attendance, and parish reports.",
+      "desc": "You will have view-only access to parish classes, attendance, and reports, without permission to edit.",
       "confirm": "Confirm and enter"
     },
     "guardian": {
@@ -3088,7 +3174,7 @@ export const onboarding_en = {
       "title": "Join a Parish",
       "search_placeholder": "Search parish...",
       "loading": "Loading...",
-      "empty": "No parishes found. You can create an independent one.",
+      "empty": "No parish found. You can create a new one.",
       "next": "Next"
     },
     "error_parish_exists": "This parish already exists and belongs to another coordinator. Ask an administrator for an invitation to join.",
@@ -3099,6 +3185,19 @@ export const onboarding_en = {
       "city_state": "City / State",
       "creating": "Creating...",
       "submit": "Create and continue"
+    },
+    "plan_free": "No subscription",
+    "limits_free": "None — subscribe to a plan to get started",
+    "subtitle_welcome": "Choose the path that gets you to the first result with less effort.",
+    "shell": {
+      "welcome_title": "Let's begin",
+      "welcome_subtitle": "Choose how you will use the platform to follow the right path.",
+      "personal_title": "Set up your first class",
+      "personal_subtitle": "Start with the essentials. You can adjust the rest later.",
+      "manager_parish_title": "Where will catechesis begin?",
+      "manager_parish_subtitle": "Choose the diocese and parish to register the first class in the right place.",
+      "manager_details_title": "Register the first class",
+      "manager_details_subtitle": "Create the first class and keep the catechetical year organized for the team."
     }
   } as const;
 
@@ -3157,9 +3256,9 @@ export const parishes_en = {
     "independent_option": "Independent / under my license",
     "licensed_suffix": "(licensed)",
     "coverage_licensed": "Will be created under the {{name}} license (no additional charge).",
-    "coverage_unlicensed": "Will be linked to {{name}}. The diocese does not have an active license yet — the parish will start on the free plan until the license is activated.",
+    "coverage_unlicensed": "Will be linked to {{name}}. The diocese has no active license yet — the parish will be blocked until the license is activated.",
     "coverage_owner": "Will be created under your {{plan}} license (no additional charge).",
-    "coverage_independent": "Independent parish: will start on the free plan. You can subscribe to an institutional plan later.",
+    "coverage_independent": "Independent parish: no active subscription. Subscribe to an institutional plan to unlock it.",
     "members_count": "{{count}} members",
     "classes_count_label": "{{count}} classes",
     "communities_count_label": "{{count}} communities",
@@ -3167,7 +3266,7 @@ export const parishes_en = {
     "unknown": "Unknown",
     "past_due": "Past due",
     "canceled": "Canceled",
-    "plan_free": "Free",
+    "plan_free": "No subscription",
     "plan_catechist_pro": "Catechist Pro",
     "plan_catechist_ai": "Catechist AI",
     "plan_parish": "Parish",
@@ -3364,32 +3463,21 @@ export const public_en = {
       "error": "Error sending. Please try again."
     },
     "pricing": {
-      "title": "Choose the right path to get started",
-      "subtitle": "First choose whether you are coming in as a catechist, parish, or diocese. Then we show only the plans that fit that context.",
+      "title": "Choose the right plan for your pastoral routine",
+      "subtitle": "Two clear plans. Single covers one catechist; Unlimited covers the parish or diocesan operation.",
       "payment_card": "Card",
-      "payment_pix": "PIX",
       "annual_savings": "Save 17% on annual",
       "monthly_tab": "Monthly",
       "annual_tab": "Annual",
       "annual_savings_badge": "17% off",
-      "personal_section": "For you (catechist)",
-      "personal_hint": "— your personal space",
-      "institutional_section": "For your institution",
-      "institutional_hint": "— parishes and dioceses (covers multiple catechists)",
       "faq_title": "Frequently asked questions",
-      "free_forever": "included",
       "per_month": "/month",
       "per_year": "/year",
-      "cta_free": "Get started",
-      "cta_paid": "Start now",
+      "cta_paid": "Choose this plan",
       "most_popular": "Most Popular",
       "plan_desc": {
-        "catechist_free": "For a catechist in the early stage of organizing a class.",
-        "catechist_pro": "For dedicated catechists with multiple classes.",
-        "catechist_ai": "Artificial Intelligence to create meetings, activities, and messages in seconds.",
-        "parish_essential": "For parishes seeking complete catechesis management with a lean team.",
-        "parish_complete": "Complete unlimited management for parishes with large teams.",
-        "diocese": "For multi-parish diocesan management with AI per parish."
+        "single": "For one catechist to run a class with clarity, history, and preparation in one flow.",
+        "unlimited": "For parishes and dioceses to centralize teams, classes, families, and AI in one system."
       },
       "faq": [
         {
@@ -3398,11 +3486,11 @@ export const public_en = {
         },
         {
           "q": "How do AI credits work?",
-          "a": "Each meeting generation uses 1 credit, annual planning 3 credits, and activity 1 credit. The AI plan includes 20 credits/month, Parish Complete 50 credits/month, and Diocese 50 credits/month per parish. Unused credits do not roll over — they renew each month."
+          "a": "Single includes 15 AI credits per month. Unlimited includes 50 AI credits per month. A meeting or activity uses 1 credit; annual planning uses 3 credits."
         },
         {
-          "q": "What's the difference between Parish Essential and Complete?",
-          "a": "Essential is ideal for parishes with up to 5 catechists and 200 catechumens. Complete removes all limits and includes 50 AI credits/month."
+          "q": "What is the difference between Single and Unlimited?",
+          "a": "Single covers 1 parish, 1 class, and up to 150 catechumens for one catechist. Unlimited removes the operational limits and is designed for parish and diocesan routines."
         },
         {
           "q": "How does payment work?",
@@ -3425,42 +3513,9 @@ export const public_en = {
           "a": "Yes. The AI is instructed to strictly base itself on the Bible (CNBB), Catechism of the Catholic Church, Compendium, and General Directory for Catechesis. All generated content includes references for you to audit."
         }
       ],
-      "path_selector_title": "Choose the right path to get started",
-      "path_selector_subtitle": "First choose your profile. Then we show only the plans that fit that context.",
-      "path_cards": {
-        "catechist": {
-          "title": "Catechist",
-          "description": "For organizing your class, preparing meetings, and using AI in your personal workspace.",
-          "supporting": "Personal plans to organize your class and prepare meetings with more consistency.",
-          "cta": "See catechist options"
-        },
-        "parish": {
-          "title": "Parish",
-          "description": "For coordinating catechists, classes, attendance, and pastoral communication in one place.",
-          "supporting": "Institutional plans for parish teams.",
-          "cta": "See parish options"
-        },
-        "diocese": {
-          "title": "Diocese",
-          "description": "For overseeing multiple parishes with governance, consolidated visibility, and AI per parish.",
-          "supporting": "Multi-parish licensing with central management.",
-          "cta": "See diocesan option"
-        }
-      },
-      "path_details": {
-        "catechist": {
-          "title": "Plans for catechists",
-          "subtitle": "Choose between an essential starting structure, wider limits, or faster preparation with AI."
-        },
-        "parish": {
-          "title": "Plans for parishes",
-          "subtitle": "Compare the right structure for your team and local catechesis volume."
-        },
-        "diocese": {
-          "title": "Plan for dioceses",
-          "subtitle": "One option for central management across multiple parishes with standardization and scale."
-        }
-      }
+      "annual_compare": "on annual, it comes to {{price}}/month",
+      "annual_billed_as": "billed as {{price}}/year",
+      "annual_save_amount": "save {{price}} per year"
     },
     "workspace": {
       "app_name": "Catequese Viva",
@@ -3538,7 +3593,8 @@ export const public_en = {
         "PASTORAL_LETTER": "Pastoral Letter",
         "OTHER": "Other"
       }
-    }
+    },
+    "catechist_free": "No subscription"
   } as const;
 
 export const publicNav_en = {
@@ -3549,12 +3605,15 @@ export const publicNav_en = {
     "privacy": "Privacy",
     "terms": "Terms",
     "login": "Log in",
-    "signup": "Choose path",
+    "signup": "View plans",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "tagline": "Pastoral platform to organize classes, meetings, attendance, and families in Catholic catechesis.",
     "audience": "catechists • parishes • dioceses",
-    "cta": "Choose path"
+    "cta": "View plans",
+    "share": "Share",
+    "share_copied": "Link copied to share",
+    "share_error": "Could not share right now"
   } as const;
 
 export const reports_en = {

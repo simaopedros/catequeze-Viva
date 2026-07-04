@@ -4,9 +4,9 @@
     "headline_line2": "in one place",
     "subheadline": "Attendance control, class management, family communication and reports for coordinators. All integrated.",
     "badge": "Complete catechesis management",
-    "cta_primary": "Try it free",
+    "cta_primary": "Get started",
     "cta_secondary": "See features",
-    "trust_signals": "No credit card • Free plan • Start in 2 minutes"
+    "trust_signals": "Single or Unlimited plan • Start in 2 minutes • Cancel anytime"
   },
   "features_title": "Everything to manage your catechesis",
   "features_order": [
@@ -91,5 +91,6 @@
     "privacy": "Privacy",
     "terms": "Terms",
     "contact": "Contact"
-  }
+  },
+  "create_account": "Create account"
 }

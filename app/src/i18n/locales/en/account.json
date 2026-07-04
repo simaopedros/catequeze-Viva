@@ -8,7 +8,7 @@
   "plan": "Your Plan",
   "credits": "Credits",
   "credits_value": "{{count}} credits",
-  "free_plan": "Free Plan",
+  "free_plan": "No subscription",
   "manage_payment": "Manage Payment",
   "buy_credits": "Buy More Credits",
   "plan_past_due": "Your {{plan}} plan payment is past due. Please update your subscription payment details.",

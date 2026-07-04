@@ -6,10 +6,13 @@
   "privacy": "Privacy",
   "terms": "Terms",
   "login": "Log in",
-  "signup": "Choose path",
+  "signup": "View plans",
   "openMenu": "Open menu",
   "closeMenu": "Close menu",
   "tagline": "Pastoral platform to organize classes, meetings, attendance, and families in Catholic catechesis.",
   "audience": "catechists • parishes • dioceses",
-  "cta": "Choose path"
+  "cta": "View plans",
+  "share": "Share",
+  "share_copied": "Link copied to share",
+  "share_error": "Could not share right now"
 }

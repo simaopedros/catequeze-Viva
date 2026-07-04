@@ -4,62 +4,31 @@
  * Every other file (planLimits.ts, aiCredits.ts, payment plans, enforcement,
  * cascade, webhooks) derives its data from this module.
  *
- * Versioning:
- *   PRICING_VERSION = 2     (current)
- *   PRICING_VERSION = 1     (legacy — grandfathering via pricingVersion field)
- */
-
-// ─── Versioning ───────────────────────────────────────────────────────────
-
-export const PRICING_VERSION = 2;
-export const PRICING_EFFECTIVE_FROM = new Date('2026-06-01T00:00:00-03:00');
-
-// ─── Feature flag ─────────────────────────────────────────────────────────
-
-/**
- * Whether pricing v2 is enabled.
- * Reads ENABLE_PRICING_V2 and optional PRICING_ROLLOUT_PERCENTAGE from
- * process.env (server-side). On the client this always returns true when
- * the flag is enabled globally — granular rollout is a server concern.
+ * Simplified plan structure (BRL only, Stripe only):
+ *   - catechist_free : sentinel "Sem assinatura" (access = zero)
+ *   - single         : Plano Único (1 paróquia, 1 turma, 150 catequizandos)
+ *   - unlimited      : Plano Ilimitado (paróquia/diocese, tudo ilimitado)
  *
- * @param userId Optional — when PRICING_ROLLOUT_PERCENTAGE < 100, used to
- *               deterministically decide if this user sees v2 pricing.
+ * Legacy plan ids (catechist_pro, parish_complete, diocese, ...) are mapped to
+ * the new ids via PLAN_ALIASES so existing data keeps resolving correctly.
  */
-export function isPricingV2Enabled(userId?: string): boolean {
-  try {
-    // Server-side: reads from process.env
-    if (typeof process !== 'undefined' && process.env) {
-      if (!process.env.ENABLE_PRICING_V2) return false;
-      const pct = parseInt(process.env.PRICING_ROLLOUT_PERCENTAGE || '100', 10);
-      if (!userId || pct >= 100) return true;
-      return hashUserId(userId) % 100 < pct;
-    }
-  } catch {
-    // process not available — client-side, default to enabled
-  }
-  // Client-side: v2 is always enabled (server guards the actual enforcement)
-  return true;
-}
 
-function hashUserId(userId: string): number {
-  let hash = 0;
-  for (let i = 0; i < userId.length; i++) {
-    const char = userId.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash |= 0;
-  }
-  return Math.abs(hash);
-}
+// ─── Pricing version (for audit/grandfathering) ───────────────────────────
+//
+// Stored on PricingEvent, User and TenantBilling as `pricingVersion`.
+//   1 = pre-2026 legacy plans
+//   2 = 6-plan v2 structure
+//   3 = simplified 2-plan structure (this refactor)
+// Kept as a simple constant — no longer drives any feature flag.
+
+export const PRICING_VERSION = 3;
 
 // ─── Plan IDs (vendable) ───────────────────────────────────────────────
 
 export const PLAN_IDS = [
   'catechist_free',
-  'catechist_pro',
-  'catechist_ai',
-  'parish_essential',
-  'parish_complete',
-  'diocese',
+  'single',
+  'unlimited',
 ] as const;
 
 export type PlanId = (typeof PLAN_IDS)[number];
@@ -70,13 +39,31 @@ export function getAllPlanIds(): readonly PlanId[] {
 }
 
 // ─── Legacy aliases (NOT vendable, NOT in PLANS) ─────────────────────────
+//
+// Maps pre-simplification plan ids to the new canonical ids so that data
+// created before the refactor keeps resolving to the right entitlements:
+//   - catechist_pro / catechist_ai / parish_essential → single
+//   - parish / parish_complete / diocese             → unlimited
 
 export const PLAN_ALIASES = {
-  parish: 'parish_complete',
-  PARISH: 'parish_complete',
+  catechist_pro: 'single',
+  catechist_ai: 'single',
+  parish_essential: 'single',
+  parish: 'unlimited',
+  parish_complete: 'unlimited',
+  diocese: 'unlimited',
 } as const satisfies Record<string, PlanId>;
 
 export type LegacyPlanId = keyof typeof PLAN_ALIASES;
+
+const ALIAS_LOOKUP: Record<string, PlanId> = (() => {
+  const map: Record<string, PlanId> = {};
+  for (const [alias, canonical] of Object.entries(PLAN_ALIASES)) {
+    map[alias.toLowerCase()] = canonical;
+    map[alias.toUpperCase()] = canonical;
+  }
+  return map;
+})();
 
 /**
  * Resolve any plan identifier (active or legacy) to a canonical PlanId.
@@ -87,15 +74,7 @@ export function resolvePlanId(raw: string): PlanId | null {
   if ((PLAN_IDS as readonly string[]).includes(lower)) {
     return lower as PlanId;
   }
-  if (lower in PLAN_ALIASES) {
-    return PLAN_ALIASES[lower as keyof typeof PLAN_ALIASES];
-  }
-  // Case-insensitive alias lookup
-  const upper = raw.toUpperCase();
-  if (upper in PLAN_ALIASES) {
-    return PLAN_ALIASES[upper as keyof typeof PLAN_ALIASES];
-  }
-  return null;
+  return ALIAS_LOOKUP[lower] ?? ALIAS_LOOKUP[raw.toUpperCase()] ?? null;
 }
 
 /**
@@ -135,123 +114,66 @@ export interface PlanDefinition {
 }
 
 // ─── Plan definitions (single source of truth) ───────────────────────────
+//
+// Prices are stored in BRL cents (2900 = R$ 29,00).
 
 export const PLANS: Record<PlanId, PlanDefinition> = {
+  // Sentinel: represents "no active subscription". Zero access everywhere.
+  // Kept as the DB default so existing rows keep a valid value, but the
+  // enforcement layer treats its limits (all 0) as a hard block.
   catechist_free: {
-    name: 'Catequista Grátis',
+    name: 'Sem assinatura',
     level: 'personal',
     prices: { monthlyCents: 0 },
     limits: {
-      maxClasses: 1,
-      maxCatechumens: 15,
-      maxCatechists: 1,
-      maxParishes: 1,
+      maxClasses: 0,
+      maxCatechumens: 0,
+      maxCatechists: 0,
+      maxParishes: 0,
     },
     ai: {
-      initialCredits: 3,
       monthlyCredits: 0,
-      dailyLimit: 3,
+      dailyLimit: 0,
       scope: 'user',
     },
-    features: [
-      '1 turma',
-      '15 catequizandos',
-      '1 paróquia pessoal',
-      'Presença básica',
-      'Calendário litúrgico',
-      '3 créditos de IA iniciais',
-    ],
+    features: [],
     highlight: false,
   },
 
-  catechist_pro: {
-    name: 'Catequista Pro',
+  single: {
+    name: 'Plano Único',
     level: 'personal',
-    prices: { monthlyCents: 500, annualCents: 5000 },
+    prices: { monthlyCents: 2900, annualCents: 29000 },
     limits: {
-      maxClasses: 3,
+      maxClasses: 1,
       maxCatechumens: 150,
       maxCatechists: 1,
       maxParishes: 1,
     },
     ai: {
-      monthlyCredits: 5,
-      dailyLimit: 2,
+      monthlyCredits: 15,
+      dailyLimit: 5,
       scope: 'user',
     },
     features: [
-      '3 turmas',
+      '1 paróquia',
+      '1 turma',
       '150 catequizandos',
-      'Relatórios avançados',
-      'Suporte prioritário',
-      '5 créditos de IA/mês (amostra)',
+      'Presença e calendário litúrgico',
+      '15 créditos de IA/mês',
     ],
     highlight: false,
   },
 
-  catechist_ai: {
-    name: 'Catequista IA',
-    level: 'personal',
-    prices: { monthlyCents: 900, annualCents: 9000 },
-    limits: {
-      maxClasses: null,
-      maxCatechumens: null,
-      maxCatechists: 1,
-      maxParishes: 1,
-    },
-    ai: {
-      monthlyCredits: 20,
-      dailyLimit: 10,
-      scope: 'user',
-    },
-    features: [
-      'Tudo do plano Pro',
-      'Gerador de encontros por IA',
-      'Planejamento anual automático',
-      'Gerador de atividades e quizzes',
-      'Assistente teológico',
-      'Mensagens WhatsApp para pais',
-      '20 créditos de IA/mês',
-    ],
-    highlight: true,
-  },
-
-  parish_essential: {
-    name: 'Paróquia Essencial',
+  unlimited: {
+    name: 'Plano Ilimitado',
     level: 'institutional',
-    prices: { monthlyCents: 1900, annualCents: 19000 },
-    limits: {
-      maxClasses: null,
-      maxCatechumens: 200,
-      maxCatechists: 5,
-      maxParishes: 1,
-    },
-    ai: {
-      monthlyCredits: 30,
-      dailyLimit: 20,
-      scope: 'user',
-    },
-    features: [
-      '5 catequistas',
-      '200 catequizandos',
-      'Turmas ilimitadas',
-      'Comunicação integrada',
-      'Documentos e certidões',
-      'Painel do coordenador',
-      '30 créditos de IA/mês',
-    ],
-    highlight: false,
-  },
-
-  parish_complete: {
-    name: 'Paróquia Completa',
-    level: 'institutional',
-    prices: { monthlyCents: 2900, annualCents: 29000 },
+    prices: { monthlyCents: 9900, annualCents: 99000 },
     limits: {
       maxClasses: null,
       maxCatechumens: null,
       maxCatechists: null,
-      maxParishes: 1,
+      maxParishes: null,
     },
     ai: {
       monthlyCredits: 50,
@@ -259,40 +181,14 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
       scope: 'user',
     },
     features: [
-      'Catequistas ilimitados',
-      'Catequizandos ilimitados',
-      'Tudo da Essencial',
-      'API de integração',
-      'Onboarding dedicado',
+      'Paróquias e turmas ilimitadas',
+      'Catequizandos e catequistas ilimitados',
+      'Gerador de encontros e atividades por IA',
+      'Comunicação integrada (pais/catequizandos)',
+      'Documentos e certidões',
       '50 créditos de IA/mês',
     ],
     highlight: true,
-  },
-
-  diocese: {
-    name: 'Diocese',
-    level: 'institutional',
-    prices: { monthlyCents: 9900, annualCents: 99000 },
-    limits: {
-      maxClasses: null,
-      maxCatechumens: null,
-      maxCatechists: null,
-      maxParishes: 10,
-    },
-    ai: {
-      monthlyCredits: 50, // per parish (scope: per_parish)
-      dailyLimit: 20,
-      scope: 'per_parish',
-    },
-    features: [
-      'Até 10 paróquias',
-      'Tudo da Paróquia Completa',
-      'Biblioteca oficial diocesana',
-      'Analytics consolidado',
-      'Onboarding dedicado',
-      '50 créditos de IA por paróquia/mês',
-    ],
-    highlight: false,
   },
 };
 
@@ -302,9 +198,11 @@ export const PLAN_NAMES: Record<string, string> = Object.fromEntries(
   Object.entries(PLANS).map(([id, def]) => [id, def.name]),
 ) as Record<string, string>;
 
-// Also register legacy alias display names
-PLAN_NAMES['parish'] = PLANS.parish_complete.name;
-PLAN_NAMES['PARISH'] = PLANS.parish_complete.name;
+// Register legacy alias display names (resolve to the new plan's name).
+for (const [alias, canonical] of Object.entries(PLAN_ALIASES)) {
+  PLAN_NAMES[alias.toLowerCase()] = PLANS[canonical].name;
+  PLAN_NAMES[alias.toUpperCase()] = PLANS[canonical].name;
+}
 
 // ─── Limit labels ─────────────────────────────────────────────────────────
 
@@ -338,7 +236,7 @@ export function getPlanLimits(plan: string | null | undefined): PlanLimits {
  */
 export function planName(plan: string | null): string {
   if (!plan) return PLANS.catechist_free.name;
-  return PLAN_NAMES[plan.toLowerCase()] ?? PLANS.catechist_free.name;
+  return PLAN_NAMES[plan.toLowerCase()] ?? PLAN_NAMES[plan.toUpperCase()] ?? PLANS.catechist_free.name;
 }
 
 // ─── AI credit helpers ────────────────────────────────────────────────────
@@ -387,7 +285,7 @@ export const AI_CREDIT_COST = {
 } as const;
 
 /** One-time free credits for trial. */
-export const FREE_TRIAL_CREDITS = 3;
+export const FREE_TRIAL_CREDITS = 0;
 
 /**
  * Legacy AI_CREDITS object for backward compatibility.
@@ -421,7 +319,7 @@ export const AI_CREDITS = {
 
 /**
  * Get the price in cents for a plan and interval.
- * Returns 0 for free plans.
+ * Returns 0 for the free sentinel.
  */
 export function getPlanPriceCents(planId: PlanId, interval: 'monthly' | 'annual'): number {
   const def = PLANS[planId];
@@ -433,23 +331,31 @@ export function getPlanPriceCents(planId: PlanId, interval: 'monthly' | 'annual'
 
 // ─── Institutional plan detection ─────────────────────────────────────────
 
-const INSTITUTIONAL_PLAN_IDS: PlanId[] = ['parish_essential', 'parish_complete', 'diocese'];
+const INSTITUTIONAL_PLAN_IDS: PlanId[] = ['unlimited'];
 
-/** Plan IDs for institutional plans (parish/diocese). Used by enforcement. */
+/**
+ * Strings (including legacy aliases) that resolve to an institutional plan.
+ * Used by enforcement to recognise umbrella/institutional entitlements.
+ */
 export const INSTITUTIONAL_PLANS = [
-  'PARISH_ESSENTIAL', 'PARISH_COMPLETE', 'DIOCESE',
-  'parish_essential', 'parish_complete', 'diocese',
+  'UNLIMITED', 'unlimited',
+  'PARISH_COMPLETE', 'parish_complete',
+  'PARISH_ESSENTIAL', 'parish_essential',
+  'DIOCESE', 'diocese',
   'PARISH', 'parish', // legacy
 ] as const;
 
 export function isInstitutionalPlan(plan: string | null | undefined): boolean {
   if (!plan) return false;
+  const resolved = resolvePlanId(plan);
+  if (resolved) return (INSTITUTIONAL_PLAN_IDS as readonly string[]).includes(resolved);
+  // Defensive: also accept raw legacy strings just in case.
   return (INSTITUTIONAL_PLANS as readonly string[]).includes(plan.toUpperCase()) ||
          (INSTITUTIONAL_PLANS as readonly string[]).includes(plan.toLowerCase());
 }
 
 /** Personal-level plan IDs. Everything not institutional. */
-const PERSONAL_PLAN_IDS: PlanId[] = ['catechist_free', 'catechist_pro', 'catechist_ai'];
+const PERSONAL_PLAN_IDS: PlanId[] = ['catechist_free', 'single'];
 
 // ─── Entitlement helpers (single source of truth) ─────────────────────────
 
@@ -488,7 +394,7 @@ export function getPersonalPlanId(
   return 'catechist_free';
 }
 
-/** Whether the user has paid personal access (Pro/IA, even cancel_at_period_end). */
+/** Whether the user has paid personal access (Single, even cancel_at_period_end). */
 export function hasPersonalAccess(
   user: { subscriptionStatus?: string | null; subscriptionPlan?: string | null } | null | undefined,
 ): boolean {
@@ -523,21 +429,24 @@ export function isBillingActive(billing: BillingInfo | null | undefined): boolea
 export function getEffectiveBillingPlan(billing: BillingInfo | null | undefined): string {
   if (!billing) return 'CATECHIST_FREE';
   if (!isBillingActive(billing)) return 'CATECHIST_FREE';
-  return billing.plan.toUpperCase() || 'CATECHIST_FREE';
+  // Normalise legacy plan values to the new canonical ids (uppercase, as
+  // stored in the TenantBilling.plan enum column).
+  const resolved = resolvePlanId(billing.plan);
+  if (!resolved || resolved === 'catechist_free') return 'CATECHIST_FREE';
+  return resolved.toUpperCase();
 }
 
 /** Whether an institutional workspace has paid access via TenantBilling. */
 export function hasInstitutionalAccess(billing: BillingInfo | null | undefined): boolean {
   if (!isBillingActive(billing)) return false;
-  const plan = billing?.plan?.toUpperCase() || '';
-  return plan !== 'CATECHIST_FREE';
+  const resolved = resolvePlanId(billing?.plan ?? '');
+  return resolved === 'unlimited';
 }
 
 /** Resolve the institutional plan from TenantBilling (or null if free). */
 export function getInstitutionalPlanId(billing: BillingInfo | null | undefined): PlanId | null {
   if (!isBillingActive(billing)) return null;
-  const plan = billing?.plan?.toUpperCase() || '';
-  const resolved = resolvePlanId(plan);
+  const resolved = resolvePlanId(billing?.plan ?? '');
   if (resolved && (INSTITUTIONAL_PLAN_IDS as readonly string[]).includes(resolved)) {
     return resolved;
   }
@@ -548,7 +457,7 @@ export function getInstitutionalPlanId(billing: BillingInfo | null | undefined):
 
 export interface WorkspaceEffectivePlan {
   plan: PlanId;
-  source: 'personal' | 'institutional' | 'diocese_umbrella' | 'trial' | 'free';
+  source: 'personal' | 'institutional' | 'trial' | 'free';
   billingInfo?: BillingInfo | null;
 }
 
@@ -585,12 +494,15 @@ export function getWorkspaceEffectivePlan(opts: {
   }
 
   // 2. Diocese umbrella (fallback when parish has no billing)
-  if (dioceseBilling && isBillingActive(dioceseBilling) && dioceseBilling.plan?.toUpperCase() === 'DIOCESE') {
-    return {
-      plan: 'diocese',
-      source: 'diocese_umbrella',
-      billingInfo: dioceseBilling,
-    };
+  if (dioceseBilling && isBillingActive(dioceseBilling)) {
+    const resolved = resolvePlanId(dioceseBilling.plan ?? '');
+    if (resolved === 'unlimited') {
+      return {
+        plan: 'unlimited',
+        source: 'institutional',
+        billingInfo: dioceseBilling,
+      };
+    }
   }
 
   // 3. If billing exists but is TRIAL and not expired
@@ -603,7 +515,7 @@ export function getWorkspaceEffectivePlan(opts: {
     }
   }
 
-  // 4. Free fallback
+  // 4. Free fallback (no subscription — blocked)
   return { plan: 'catechist_free', source: 'free' };
 }
 
@@ -613,6 +525,6 @@ export const AI_CREDIT_PACK_IDS = ['ai_credits_20', 'ai_credits_50'] as const;
 export type AiCreditPackId = (typeof AI_CREDIT_PACK_IDS)[number];
 
 export const AI_CREDIT_PACKS: Record<AiCreditPackId, { credits: number; priceCents: number }> = {
-  ai_credits_20: { credits: 20, priceCents: 500 },
-  ai_credits_50: { credits: 50, priceCents: 900 },
+  ai_credits_20: { credits: 20, priceCents: 2500 },
+  ai_credits_50: { credits: 50, priceCents: 4500 },
 };

@@ -24,16 +24,21 @@ export {
   type WorkspaceEffectivePlan,
 } from './pricing';
 
-// PLAN_LIMITS is derived from pricing.ts for backward compatibility
-import { PLANS, resolvePlanIdOrFree } from './pricing';
+// PLAN_LIMITS is derived from pricing.ts for backward compatibility.
+// Includes lowercase + UPPERCASE keys for current and legacy plan ids.
+import { PLANS, PLAN_ALIASES } from './pricing';
 import type { PlanLimits } from './pricing';
 
-/** Legacy PLAN_LIMITS map (all lowercase + UPPERCASE keys). */
+/** Legacy PLAN_LIMITS map (all lowercase + UPPERCASE keys, incl. legacy aliases). */
 export const PLAN_LIMITS: Record<string, PlanLimits> = {};
 for (const [id, def] of Object.entries(PLANS)) {
   const limits = def.limits;
   PLAN_LIMITS[id] = limits;
   PLAN_LIMITS[id.toUpperCase()] = limits;
 }
-PLAN_LIMITS['parish'] = PLANS.parish_complete.limits;
-PLAN_LIMITS['PARISH'] = PLANS.parish_complete.limits;
+// Legacy aliases resolve to their canonical plan's limits.
+for (const [alias, canonical] of Object.entries(PLAN_ALIASES)) {
+  const limits = PLANS[canonical].limits;
+  PLAN_LIMITS[alias.toLowerCase()] = limits;
+  PLAN_LIMITS[alias.toUpperCase()] = limits;
+}

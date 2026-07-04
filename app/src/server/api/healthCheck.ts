@@ -1,6 +1,7 @@
 /**
- * Health check API endpoint — GET /health
- * Returns DB, storage, process role, and AI provider status.
+ * Health check API endpoint — GET /health and GET /readyz
+ * /health is a cheap liveness probe that avoids waking the database.
+ * /readyz performs dependency checks and is cached briefly to avoid bursts.
  */
 import type { Request, Response } from 'express';
 import { getDocumentStorageStatus } from '../storage/documentStorage';
@@ -8,6 +9,16 @@ import { isJobWorkerProcess } from '../jobs/jobGuard';
 import { detectProvider, createAiClient } from '../ai/providers';
 
 let aiStatus: string = 'unknown';
+
+const READINESS_CACHE_TTL_MS = 30000;
+
+let readinessCache:
+  | {
+      expiresAt: number;
+      payload: Record<string, unknown>;
+      httpStatus: number;
+    }
+  | null = null;
 
 /**
  * Probe AI provider connectivity at startup.
@@ -41,7 +52,12 @@ export function getAiStatus(): string {
   return aiStatus;
 }
 
-export async function healthCheckHandler(_req: Request, res: Response, context: any) {
+function shouldRunDeepCheck(req: Request): boolean {
+  const deep = req.query.deep;
+  return req.path === '/readyz' || deep === '1' || deep === 'true';
+}
+
+async function runReadinessCheck(context: any): Promise<{ payload: Record<string, unknown>; httpStatus: number }> {
   let dbStatus: 'ok' | 'error' = 'ok';
   try {
     await context.entities.User.count();
@@ -50,21 +66,59 @@ export async function healthCheckHandler(_req: Request, res: Response, context: 
   }
 
   const storage = await getDocumentStorageStatus();
+  const status = dbStatus === 'ok' && storage.healthy ? 'ok' : 'degraded';
 
-  const checks: Record<string, unknown> = {
-    status: dbStatus === 'ok' && storage.healthy ? 'ok' : 'degraded',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    database: dbStatus,
-    storage: {
-      backend: storage.backend,
-      healthy: storage.healthy,
+  return {
+    payload: {
+      status,
+      mode: 'ready',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      database: dbStatus,
+      storage: {
+        backend: storage.backend,
+        healthy: storage.healthy,
+      },
+      jobs: isJobWorkerProcess() ? 'worker' : 'api-only',
+      ai: aiStatus,
+      memory: process.memoryUsage(),
     },
-    jobs: isJobWorkerProcess() ? 'worker' : 'api-only',
-    ai: aiStatus,
-    memory: process.memoryUsage(),
+    httpStatus: status === 'ok' ? 200 : 503,
+  };
+}
+
+export async function healthCheckHandler(req: Request, res: Response, context: any) {
+  if (!shouldRunDeepCheck(req)) {
+    res.status(200).json({
+      status: 'ok',
+      mode: 'live',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      database: 'skipped',
+      storage: {
+        backend: 'unchecked',
+        healthy: 'unchecked',
+      },
+      jobs: isJobWorkerProcess() ? 'worker' : 'api-only',
+      ai: aiStatus,
+      memory: process.memoryUsage(),
+    });
+    return;
+  }
+
+  const now = Date.now();
+  if (readinessCache && readinessCache.expiresAt > now) {
+    res.status(readinessCache.httpStatus).json(readinessCache.payload);
+    return;
+  }
+
+  const readiness = await runReadinessCheck(context);
+  readinessCache = {
+    expiresAt: now + READINESS_CACHE_TTL_MS,
+    payload: readiness.payload,
+    httpStatus: readiness.httpStatus,
   };
 
-  const httpStatus = checks.status === 'ok' ? 200 : 503;
-  res.status(httpStatus).json(checks);
+  res.status(readiness.httpStatus).json(readiness.payload);
 }
+

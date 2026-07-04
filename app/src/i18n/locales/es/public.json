@@ -28,32 +28,21 @@
     "error": "Error al enviar. Intente nuevamente."
   },
   "pricing": {
-    "title": "Elige el camino correcto para empezar",
-    "subtitle": "Primero elige si entras como catequista, parroquia o diócesis. Después mostramos solo los planes adecuados para ese contexto.",
+    "title": "Elige el plan correcto para tu rutina pastoral",
+    "subtitle": "Dos planes claros. El Plan Único cubre al catequista; el Plan Ilimitado cubre la operación parroquial o diocesana.",
     "payment_card": "Tarjeta",
-    "payment_pix": "PIX",
     "annual_savings": "Ahorre 17% en anual",
     "monthly_tab": "Mensual",
     "annual_tab": "Anual",
     "annual_savings_badge": "17% dto.",
-    "personal_section": "Para usted (catequista)",
-    "personal_hint": "— su espacio personal",
-    "institutional_section": "Para su institución",
-    "institutional_hint": "— parroquias y diócesis (cubre varios catequistas)",
     "faq_title": "Preguntas frecuentes",
-    "free_forever": "incluido",
     "per_month": "/mes",
     "per_year": "/año",
-    "cta_free": "Comenzar",
-    "cta_paid": "Comenzar ahora",
+    "cta_paid": "Elegir este plan",
     "most_popular": "Más Popular",
     "plan_desc": {
-      "catechist_free": "Para un catequista en la etapa inicial de organización del grupo.",
-      "catechist_pro": "Para catequistas dedicados con múltiples grupos.",
-      "catechist_ai": "Inteligencia Artificial para crear encuentros, actividades y mensajes en segundos.",
-      "parish_essential": "Para parroquias que buscan gestión completa de la catequesis con equipo reducido.",
-      "parish_complete": "Gestión completa e ilimitada para parroquias con grandes equipos.",
-      "diocese": "Para gestión diocesana multi-parroquia con IA por parroquia."
+      "single": "Para que un catequista organice un grupo con claridad, historial y preparación en un solo flujo.",
+      "unlimited": "Para que parroquias y diócesis centralicen equipos, grupos, familias e IA en el mismo sistema."
     },
     "faq": [
       {
@@ -62,11 +51,11 @@
       },
       {
         "q": "¿Cómo funcionan los créditos de IA?",
-        "a": "Cada generación de encuentro consume 1 crédito, planificación anual 3 créditos, y actividad 1 crédito. El plan IA incluye 20 créditos/mes, Parroquia Completa 50 créditos/mes y Diócesis 50 créditos/mes por parroquia. Los créditos no usados no acumulan — se renuevan cada mes."
+        "a": "El Plan Único incluye 15 créditos de IA por mes. El Plan Ilimitado incluye 50 créditos de IA por mes. Un encuentro o actividad consume 1 crédito; la planificación anual consume 3 créditos."
       },
       {
-        "q": "¿Cuál es la diferencia entre Parroquia Esencial y Completa?",
-        "a": "La Esencial es ideal para parroquias con hasta 5 catequistas y 200 catecúmenos. La Completa elimina todos los límites e incluye 50 créditos de IA/mes."
+        "q": "¿Cuál es la diferencia entre el Plan Único y el Plan Ilimitado?",
+        "a": "El Plan Único cubre 1 parroquia, 1 grupo y hasta 150 catecúmenos para un catequista. El Plan Ilimitado elimina los límites operativos y fue pensado para la rutina parroquial o diocesana."
       },
       {
         "q": "¿Cómo funciona el pago?",
@@ -89,42 +78,9 @@
         "a": "Sí. La IA está instruida para basarse estrictamente en la Biblia (CNBB), Catecismo de la Iglesia Católica, Compendio y Directorio General para la Catequesis. Todo contenido generado incluye referencias para auditar."
       }
     ],
-    "path_selector_title": "Elija el camino correcto para empezar",
-    "path_selector_subtitle": "Primero elija su perfil. Luego mostramos solo los planes que tienen sentido para ese contexto.",
-    "path_cards": {
-      "catechist": {
-        "title": "Catequista",
-        "description": "Para organizar su grupo, preparar encuentros y usar IA en su espacio personal.",
-        "supporting": "Planes personales para organizar su grupo y preparar encuentros con más consistencia.",
-        "cta": "Ver opciones para catequista"
-      },
-      "parish": {
-        "title": "Parroquia",
-        "description": "Para coordinar catequistas, grupos, asistencia y comunicación pastoral en un solo lugar.",
-        "supporting": "Planes institucionales para equipos parroquiales.",
-        "cta": "Ver opciones para parroquia"
-      },
-      "diocese": {
-        "title": "Diócesis",
-        "description": "Para acompañar varias parroquias con gobernanza, visión consolidada e IA por parroquia.",
-        "supporting": "Licenciamiento multi-parroquia con gestión central.",
-        "cta": "Ver opción diocesana"
-      }
-    },
-    "path_details": {
-      "catechist": {
-        "title": "Planes para catequista",
-        "subtitle": "Elige entre una estructura inicial esencial, ampliar límites o acelerar la preparación con IA."
-      },
-      "parish": {
-        "title": "Planes para parroquia",
-        "subtitle": "Compara la estructura ideal para tu equipo y el volumen de la catequesis local."
-      },
-      "diocese": {
-        "title": "Plan para diócesis",
-        "subtitle": "Una opción para gestión central de varias parroquias con estandarización y escala."
-      }
-    }
+    "annual_compare": "en anual, queda en {{price}}/mes",
+    "annual_billed_as": "cobrado como {{price}}/año",
+    "annual_save_amount": "ahorra {{price}} por año"
   },
   "workspace": {
     "app_name": "Catequesis Viva",
@@ -202,5 +158,6 @@
       "PASTORAL_LETTER": "Carta Pastoral",
       "OTHER": "Otro"
     }
-  }
+  },
+  "catechist_free": "Sin suscripción"
 }

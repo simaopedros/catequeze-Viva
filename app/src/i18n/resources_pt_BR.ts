@@ -13,7 +13,7 @@ export const account_pt_BR = {
     "plan": "Seu Plano",
     "credits": "Créditos",
     "credits_value": "{{count}} créditos",
-    "free_plan": "Plano Gratuito",
+    "free_plan": "Sem assinatura",
     "manage_payment": "Gerenciar Pagamento",
     "buy_credits": "Comprar Mais Créditos",
     "plan_past_due": "O pagamento do seu plano {{plan}} está em atraso. Atualize as informações de pagamento da sua assinatura.",
@@ -459,7 +459,7 @@ export const auth_pt_BR = {
     "two_factor_error_required": "Digite o código de 6 dígitos.",
     "two_factor_error_invalid": "Código inválido.",
     "signup_title": "Criar conta",
-    "signup_subtitle": "Crie sua conta para montar a turma e gerar seu primeiro encontro grátis",
+    "signup_subtitle": "Crie sua conta e comece a organizar sua catequese",
     "signup_email_label": "Email",
     "signup_email_placeholder": "seu@email.com",
     "signup_password_label": "Senha",
@@ -471,7 +471,7 @@ export const auth_pt_BR = {
     "signup_terms_and": "e a",
     "terms_of_use": "Termos de Uso",
     "privacy_policy": "Política de Privacidade",
-    "signup_button": "Criar conta gratuita",
+    "signup_button": "Criar conta",
     "signup_loading": "Criando conta...",
     "signup_divider": "ou",
     "signup_google": "Criar conta com Google",
@@ -571,14 +571,14 @@ export const bible_pt_BR = {
 
 export const billing_pt_BR = {
     "title": "Assinatura",
-    "personal_scope": "Assinatura pessoal · cobre apenas o seu espaço pessoal",
-    "institutional_scope": "Assinatura institucional · cobre {{name}}",
+    "personal_scope": "Assinatura pessoal para o seu espaço",
+    "institutional_scope": "Assinatura do espaço pastoral de {{name}}",
     "this_institution": "esta instituição",
     "current_plan": "Plano atual:",
     "active": "Ativo",
     "plan_mismatch_institutional": "O plano selecionado é institucional. Entre em um workspace de paróquia/diocese para contratá-lo.",
     "plan_mismatch_personal": "O plano selecionado é pessoal. Volte ao seu espaço pessoal para contratá-lo.",
-    "corporate_plan": "Plano Gerenciado Corporativo",
+    "corporate_plan": "Plano gerenciado",
     "diocese_responsible": "Diocese responsável:",
     "not_informed": "Não informada",
     "diocese_admins": "Administrador(es) diocesano(s):",
@@ -590,14 +590,14 @@ export const billing_pt_BR = {
     "classes": "Turmas",
     "catechumens": "Catequizandos",
     "subscription_active": "Assinatura ativa",
-    "free_plan": "Plano gratuito",
+    "free_plan": "Sem assinatura",
     "awaiting_payment": "Aguardando pagamento",
-    "active_desc": "A sua subscrição está ativa. Aproveite todos os recursos.",
-    "upgrade_desc": "Atualize para acessar recursos ilimitados.",
-    "payment_desc": "Complete o pagamento para ativar seu plano.",
+    "active_desc": "Seu plano está ativo. Continue com encontros, histórico e famílias no mesmo fluxo.",
+    "upgrade_desc": "Escolha o plano para continuar com encontros, histórico e acompanhamento sem interrupções.",
+    "payment_desc": "Conclua o pagamento para liberar seu acesso completo.",
     "cancel_subscription": "Cancelar assinatura",
     "cancelling": "Cancelando…",
-    "manage_payment": "Gerenciar Pagamento",
+    "manage_payment": "Gerenciar pagamento",
     "classes_quota_label": "Uso de turmas",
     "catechumens_quota_label": "Uso de catequizandos",
     "ai_credits_quota_label": "Uso de créditos de IA",
@@ -618,7 +618,7 @@ export const billing_pt_BR = {
     "base_plan_btn": "Plano base",
     "institutional_plan_btn": "Plano institucional",
     "institutional_requires_admin": "Requer administrador da paróquia",
-    "subscribe": "Assinar",
+    "subscribe": "Ir para o pagamento",
     "redirecting": "Redirecionando…",
     "selected": "Selecionado",
     "current": "Atual",
@@ -627,93 +627,46 @@ export const billing_pt_BR = {
     "payment_history_desc": "Os pagamentos são processados de forma segura pela Stripe. O histórico estará disponível após a primeira cobrança.",
     "checkout_error": "Erro ao iniciar pagamento. Tente novamente.",
     "cancel_success": "Assinatura cancelada.",
-    "cancel_error": "Erro ao cancelar. Contacte o suporte.",
+    "cancel_error": "Erro ao cancelar. Entre em contato com o suporte.",
     "cancel_dialog_title": "Cancelar assinatura",
     "cancel_dialog_desc": "Tem certeza que deseja cancelar a sua assinatura?",
     "cancel_confirm": "Sim, cancelar",
     "cancel_keep": "Manter assinatura",
     "cancel_scheduled": "Cancelamento agendado",
-    "cancel_scheduled_desc": "A sua assinatura será cancelada no fim do período de cobrança atual. Pode continuar a usar todos os recursos até lá.",
-    "free": "Grátis",
+    "cancel_scheduled_desc": "Sua assinatura será cancelada ao final do período atual. Até lá, você pode continuar usando todos os recursos.",
+    "free": "—",
     "monthly": "Mensal",
     "annual": "Anual",
     "annual_savings": "17% de desconto",
     "plans": {
       "catechist_free": {
-        "name": "Catequista Grátis",
-        "price": "Grátis",
+        "name": "Sem assinatura",
+        "price": "—",
+        "features": []
+      },
+      "single": {
+        "name": "Plano Único",
+        "price": "R$ 29/mês",
+        "annual_price": "R$ 290/ano (~R$ 24/mês)",
         "features": [
+          "1 paróquia",
           "1 turma",
-          "15 catequizandos",
-          "Presença básica",
-          "Calendário litúrgico",
-          "3 créditos IA iniciais"
-        ]
-      },
-      "catechist_pro": {
-        "name": "Catequista Pro",
-        "price": "$5/mês",
-        "annual_price": "$50/ano ($4,17/mês)",
-        "features": [
-          "3 turmas",
           "150 catequizandos",
-          "Relatórios avançados",
-          "Suporte prioritário",
-          "5 créditos IA/mês"
+          "Presença e calendário litúrgico",
+          "15 créditos de IA/mês"
         ]
       },
-      "catechist_ai": {
-        "name": "Catequista IA",
-        "price": "$9/mês",
-        "annual_price": "$90/ano ($7,50/mês)",
+      "unlimited": {
+        "name": "Plano Ilimitado",
+        "price": "R$ 99/mês",
+        "annual_price": "R$ 990/ano (~R$ 82/mês)",
         "features": [
-          "Tudo do Pro",
-          "Gerador de encontros por IA",
-          "Planejamento anual automático",
-          "Atividades e quizzes",
-          "Assistente teológico",
-          "Mensagens WhatsApp",
-          "20 créditos/mês"
-        ]
-      },
-      "parish_essential": {
-        "name": "Paróquia Essencial",
-        "price": "$19/mês",
-        "annual_price": "$190/ano ($15,83/mês)",
-        "features": [
-          "5 catequistas",
-          "200 catequizandos",
-          "Turmas ilimitadas",
+          "Paróquias e turmas ilimitadas",
+          "Catequizandos e catequistas ilimitados",
+          "Gerador de encontros e atividades por IA",
           "Comunicação integrada",
           "Documentos e certidões",
-          "Painel do coordenador",
-          "30 créditos IA/mês"
-        ]
-      },
-      "parish_complete": {
-        "name": "Paróquia Completa",
-        "price": "$29/mês",
-        "annual_price": "$290/ano ($24,17/mês)",
-        "features": [
-          "Catequistas ilimitados",
-          "Catequizandos ilimitados",
-          "Tudo da Essencial",
-          "API de integração",
-          "Onboarding dedicado",
-          "50 créditos IA/mês"
-        ]
-      },
-      "diocese": {
-        "name": "Diocese",
-        "price": "$99/mês",
-        "annual_price": "$990/ano ($82,50/mês)",
-        "features": [
-          "Até 10 paróquias",
-          "Tudo da Completa",
-          "Biblioteca oficial",
-          "Analytics consolidado",
-          "Onboarding dedicado",
-          "50 créditos IA por paróquia/mês"
+          "50 créditos de IA/mês"
         ]
       }
     },
@@ -731,8 +684,8 @@ export const billing_pt_BR = {
     "no_licenses": "Nenhuma licença encontrada.",
     "limit_reached_title": "Limite do plano atingido",
     "limit_reached_label": "Limite de {{label}}s atingido",
-    "limit_reached_description": "O teu plano <1>{{currentPlanName}}</1> permite até <2>{{maxAllowed}} {{label}}{{plural}}</2>. Já tens <3>{{currentCount}}</3>.",
-    "limit_reached_contact": "Contacta o <1>coordenador da paróquia</1> para expandir os limites do plano.",
+    "limit_reached_description": "Seu plano <1>{{currentPlanName}}</1> permite até <2>{{maxAllowed}} {{label}}{{plural}}</2>. Você já tem <3>{{currentCount}}</3>. Faça upgrade agora para continuar.",
+    "limit_reached_contact": "Fale com o <1>coordenador da paróquia</1> para ampliar os limites do plano.",
     "upgrade_to": "Fazer Upgrade para {{plan}}",
     "upgrade_btn": "Fazer Upgrade",
     "limit_labels": {
@@ -740,7 +693,96 @@ export const billing_pt_BR = {
       "class": "turma",
       "catechumen": "catequizando",
       "catechist": "catequista"
-    }
+    },
+    "scope_badge_personal": "Assinatura pessoal",
+    "scope_badge_institutional": "Assinatura institucional",
+    "pricing_section_subtitle": "Escolha o plano que melhor atende a sua catequese.",
+    "unlimited": "ilimitado",
+    "limit_caption": "Limite {{limit}}",
+    "conversion_badge": "Assinatura",
+    "conversion_payment_title": "Confirme sua assinatura",
+    "conversion_required_title": "Escolha seu plano para continuar",
+    "conversion_personal_title": "Escolha o plano do seu espaço pessoal",
+    "conversion_institutional_title": "Escolha o plano do seu espaço pastoral",
+    "conversion_required_desc": "Seu cadastro já está pronto. Agora escolha o plano para começar a usar a plataforma sem bloqueios.",
+    "conversion_selected_desc": "Este é o plano indicado para o seu espaço. Confirme a assinatura para começar a usar tudo o que já foi preparado.",
+    "conversion_personal_desc": "Seu espaço pessoal já está pronto para receber sua turma. Agora basta confirmar a assinatura.",
+    "conversion_institutional_desc": "Seu espaço pastoral já está pronto para começar. Agora basta confirmar a assinatura para liberar turmas, equipe e acompanhamento.",
+    "conversion_checklist_title": "O que já está pronto",
+    "conversion_step_account_ready": "Seu cadastro já foi criado.",
+    "conversion_step_workspace_personal": "Seu espaço pessoal já está disponível.",
+    "conversion_step_workspace_institutional": "Seu espaço pastoral já está disponível.",
+    "conversion_step_first_class": "Sua primeira turma já foi iniciada.",
+    "conversion_step_next_action": "Você já pode criar sua primeira turma.",
+    "conversion_step_unlock": "Falta apenas confirmar a assinatura para começar.",
+    "conversion_plans_title": "Escolha seu plano",
+    "conversion_plans_subtitle": "Selecione o plano e siga para o pagamento seguro.",
+    "recommended_plan": "Recomendado para este contexto",
+    "subscribe_plan": "Assinar {{plan}}",
+    "recommended_plan_personal": "Para começar sua primeira turma",
+    "recommended_plan_institutional": "Para liberar sua equipe",
+    "plan_mismatch_institutional_cta": "Criar espaço pastoral",
+    "upgrade_supporting_copy": "O upgrade entra no ponto em que seu uso já provou valor. Você mantém o que já construiu e libera o próximo passo sem retrabalho.",
+    "upgrade_journey_badge": "Ampliação do plano",
+    "upgrade_plans_title": "Libere o próximo passo",
+    "upgrade_plans_subtitle": "Escolha a assinatura que remove este bloqueio e mantém sua catequese no mesmo fluxo.",
+    "upgrade_checklist_title": "O que você preserva com o upgrade",
+    "upgrade_checklist_workspace_ready": "Seu espaço atual já está pronto para continuar crescendo.",
+    "upgrade_checklist_classes_active": "{{count}} turma ativa continua no mesmo espaço.",
+    "upgrade_checklist_catechumens_active": "{{count}} catequizandos já cadastrados continuam com histórico e acompanhamento.",
+    "upgrade_checklist_keep_history": "Seu histórico, encontros e presença continuam no mesmo lugar.",
+    "upgrade_journey": {
+      "generic": {
+        "title": "Continue sem travar seu trabalho",
+        "description": "Faça upgrade para o {{plan}} e mantenha o que você já organizou ativo no mesmo espaço.",
+        "cta": "Continuar sem bloqueios",
+        "checklist": "Você libera o próximo passo sem refazer cadastro nem perder histórico.",
+        "toast_description": "Seu uso já provou valor. Libere o próximo passo sem interromper a catequese."
+      },
+      "required": {
+        "title": "Seu espaço já está pronto para começar",
+        "description": "Escolha o plano para liberar o acesso e continuar com o trabalho que você acabou de iniciar.",
+        "cta": "Escolher plano",
+        "checklist": "Falta apenas confirmar a assinatura para começar sem bloqueios.",
+        "toast_description": "Escolha o plano para liberar o acesso sem interromper o começo da sua catequese."
+      },
+      "class_limit": {
+        "title": "Sua próxima turma precisa de espaço",
+        "description": "Você já ocupou {{currentCount}} de {{maxAllowed}} turma no {{currentPlanName}}. Faça upgrade para o {{plan}} e abra a próxima turma sem perder presença, encontros e histórico.",
+        "cta": "Liberar próxima turma",
+        "checklist": "Você libera a próxima turma sem separar acompanhamento, presença e planejamento.",
+        "toast_description": "Sua turma atual já está ativa. Libere a próxima sem interromper o acompanhamento."
+      },
+      "catechumen_limit": {
+        "title": "Sua catequese já chegou ao limite atual",
+        "description": "Você já cadastrou {{currentCount}} de {{maxAllowed}} catequizandos no {{currentPlanName}}. Faça upgrade para o {{plan}} e continue acompanhando todos no mesmo lugar.",
+        "cta": "Liberar mais catequizandos",
+        "checklist": "Você continua cadastrando sem espalhar famílias, presença e histórico em vários lugares.",
+        "toast_description": "Você chegou ao limite atual de catequizandos. Libere mais vagas sem quebrar o acompanhamento."
+      },
+      "parish_limit": {
+        "title": "Seu próximo espaço precisa de liberação",
+        "description": "Você já atingiu o limite de paróquias do {{currentPlanName}}. Faça upgrade para o {{plan}} e adicione outra frente pastoral no mesmo controle.",
+        "cta": "Liberar outra paróquia",
+        "checklist": "Você expande para outro espaço sem pulverizar sua operação.",
+        "toast_description": "Você já atingiu o limite atual de paróquias. Libere outro espaço sem separar sua operação."
+      },
+      "catechist_limit": {
+        "title": "Sua equipe cresceu além do plano atual",
+        "description": "Você já atingiu o limite de catequistas do {{currentPlanName}}. Faça upgrade para o {{plan}} e convide a equipe completa para o mesmo espaço.",
+        "cta": "Liberar equipe completa",
+        "checklist": "Você integra mais catequistas sem tirar turmas, mensagens e histórico do lugar.",
+        "toast_description": "Sua catequese já depende de mais gente. Libere a equipe completa no mesmo espaço."
+      }
+    },
+    "switch_annual_title": "Economize trocando para o plano anual",
+    "switch_annual_desc": "Você paga {{savings}} a menos por ano (~{{equivalent}}/mês). A diferença é cobrada na hora e o ciclo vira anual.",
+    "switch_annual_cta": "Trocar para anual",
+    "switch_to_annual_success": "Plano alterado para anual!",
+    "switch_to_monthly_success": "Plano alterado para mensal!",
+    "switch_to_monthly": "Voltar para mensal",
+    "switch_interval_error": "Erro ao alterar a periodicidade. Tente novamente.",
+    "switching": "Alterando..."
   } as const;
 
 export const birthdays_pt_BR = {
@@ -1981,10 +2023,10 @@ export const landing_pt_BR = {
       "headline_line2": "preparada sem correria de última hora",
       "subheadline": "Organize a turma, monte o encontro e acompanhe as famílias no mesmo fluxo — para a semana pastoral não depender de papel, planilha e improviso.",
       "badge": "Da preparação ao acompanhamento da turma",
-      "cta_primary": "Começar grátis",
-      "cta_secondary": "Ver como funciona",
-      "trust_signals": "Sem cartão de crédito • Plano gratuito • Conforme a LGPD",
-      "cta_secondary_href": "#recursos"
+      "cta_primary": "Ver planos",
+      "cta_secondary": "Ver como a preparação acontece",
+      "trust_signals": "Planos simples • Cobrança mensal ou anual • Conforme a LGPD",
+      "cta_secondary_href": "/#recursos"
     },
     "pain_title": "A catequese não precisa ficar espalhada em caderno, planilha e mensagens",
     "pain_subtitle": "A Catequese Viva junta preparação, turma, presença e família no mesmo fluxo.",
@@ -2010,7 +2052,7 @@ export const landing_pt_BR = {
     ],
     "ai_showcase_title": "Veja como um encontro pode nascer em minutos",
     "ai_showcase_subtitle": "A Catequese Viva reúne tema, faixa etária e referências católicas para montar um primeiro rascunho que você revisa antes de usar.",
-    "ai_showcase_cta": "Ver caminhos para começar",
+    "ai_showcase_cta": "Ver planos para preparar a próxima turma",
     "features_title": "O essencial para preparar e acompanhar sua catequese",
     "features_subtitle": "IA, presença e famílias trabalham juntas para reduzir improviso e dar mais clareza à rotina pastoral.",
     "features": {
@@ -2099,78 +2141,65 @@ export const landing_pt_BR = {
     ],
     "more_features": "Mais recursos para quando sua catequese crescer",
     "more_features_sub": "Ferramentas que continuam úteis depois da primeira turma.",
-    "steps_title": "Como começar sem complicar",
-    "steps_subtitle": "Escolha seu perfil, veja o plano adequado e leve sua próxima turma para um fluxo mais organizado.",
+    "steps_title": "Como entrar sem perder tempo",
+    "steps_subtitle": "Veja o plano certo, crie sua primeira turma e avance para o próximo encontro com menos improviso.",
     "steps": [
       {
-        "title": "Escolha seu perfil",
-        "desc": "Comece pelo caminho de catequista, paróquia ou diocese para ver a oferta certa."
+        "title": "Escolha o plano certo",
+        "desc": "Plano Único para o catequista. Plano Ilimitado para a paróquia ou diocese operar sem teto."
       },
       {
-        "title": "Organize sua turma",
-        "desc": "Cadastre catequizandos, acompanhe presença e centralize o que hoje fica espalhado."
+        "title": "Crie sua primeira turma",
+        "desc": "Entre com a turma já nomeada, horário e local definidos para começar com contexto."
       },
       {
         "title": "Prepare o próximo encontro",
-        "desc": "Use a IA e a base católica para montar um rascunho melhor antes da próxima semana."
+        "desc": "Use a IA e a base católica para sair do papel e chegar ao primeiro rascunho com rapidez."
       }
     ],
-    "steps_cta": "Ver caminhos e planos",
-    "pricing_title": "Três caminhos para entrar na Catequese Viva",
-    "pricing_subtitle": "Comece pelo perfil certo. Compare os caminhos para catequista, paróquia e diocese antes de escolher o plano.",
+    "steps_cta": "Ver planos e começar",
+    "pricing_title": "Dois planos para entrar na Catequese Viva",
+    "pricing_subtitle": "Escolha entre o Plano Único para o catequista e o Plano Ilimitado para a operação paroquial ou diocesana.",
     "plans": {
-      "free": {
-        "name": "Caminho Catequista",
-        "desc": "Para organizar sua turma, preparar encontros e entender a estrutura ideal para a sua rotina.",
+      "single": {
+        "name": "Plano Único",
+        "desc": "Para o catequista organizar uma turma com clareza, histórico e preparação em um só fluxo.",
+        "price": "R$ 29",
         "features": [
-          "Organização da turma",
-          "Presença e acompanhamento",
-          "Preparação de encontros",
-          "Base católica integrada",
-          "Opções com e sem IA"
+          "1 paróquia",
+          "1 turma e 150 catequizandos",
+          "Presença e calendário litúrgico",
+          "15 créditos de IA/mês"
         ]
       },
-      "ai": {
-        "name": "Catequista IA",
-        "desc": "Para catequistas que querem preparar encontros, atividades e comunicados com ajuda da IA.",
-        "price": "$9",
+      "unlimited": {
+        "name": "Plano Ilimitado",
+        "desc": "Para paróquias e dioceses centralizarem equipes, turmas, famílias e IA no mesmo sistema.",
+        "price": "R$ 99",
         "features": [
-          "Turmas e catequizandos ilimitados",
+          "Paróquias e turmas ilimitadas",
+          "Catequizandos e catequistas ilimitados",
           "Gerador de encontros por IA",
-          "Planejamento anual automático",
-          "Assistente teológico",
-          "20 créditos de IA/mês"
-        ]
-      },
-      "parish": {
-        "name": "Paróquia Completa",
-        "desc": "Para quando a coordenação quiser levar o processo para a paróquia inteira.",
-        "price": "$29",
-        "features": [
-          "Catequistas ilimitados",
-          "Painel do coordenador",
-          "Documentos e consentimentos LGPD",
-          "Comunicação integrada",
           "50 créditos de IA/mês"
         ]
       }
     },
     "price_free": "Desde",
-    "price_popular": "Mais procurado por catequistas",
+    "price_popular": "Mais escolhido",
     "price_monthly": "Mensal",
     "price_annual": "Anual",
     "price_cta_free": "Ver caminhos",
-    "price_cta_start": "Ver opções deste caminho",
+    "price_cta_start": "Ver detalhes e escolher",
     "per_month": "/mês",
     "per_year": "/ano",
     "annual_discount": "17% de desconto",
-    "compare_plans": "Comparar caminhos e planos completos",
+    "compare_plans": "Comparar os dois planos completos",
     "faq_title": "Dúvidas antes de escolher o caminho",
     "faq_subtitle": "Respostas diretas sobre acesso, IA, mobile e proteção de dados.",
     "faqs": [
       {
         "q": "Posso começar como catequista individual?",
-        "a": "Sim. O caminho de catequista mostra as opções pessoais para organizar sua turma, com ou sem IA, antes de avançar para uma estrutura paroquial."
+        "a": "Sim. O Plano Único foi pensado para o catequista individual organizar a turma, acompanhar presença e preparar encontros no mesmo fluxo."
       },
       {
         "q": "Quando faz sentido usar IA?",
@@ -2189,13 +2218,13 @@ export const landing_pt_BR = {
         "a": "A plataforma foi construída com recursos de LGPD, consentimentos digitais, controle de acesso e solicitação de exportação ou exclusão de dados."
       },
       {
-        "q": "Existe caminho para paróquias e dioceses?",
-        "a": "Sim. A página de planos separa os caminhos para catequista, paróquia e diocese para reduzir confusão e mostrar apenas as opções adequadas a cada contexto."
+        "q": "Qual plano faz sentido para paróquia ou diocese?",
+        "a": "O Plano Ilimitado cobre a operação institucional: múltiplas turmas, catequistas, famílias e uso contínuo de IA no mesmo sistema."
       }
     ],
-    "cta_title": "Escolha o caminho certo e organize sua próxima catequese",
-    "cta_subtitle": "Veja a opção para catequista, paróquia ou diocese e siga para o próximo passo com clareza.",
-    "cta_button": "Ver caminhos e planos",
+    "cta_title": "Escolha o plano certo e entre com a próxima turma em movimento",
+    "cta_subtitle": "Veja o que acontece depois em cada plano e siga para o próximo passo com clareza.",
+    "cta_button": "Ver planos",
     "cta_badge": "Próximo passo claro",
     "cta_see_plans": "Ver planos",
     "mock": {
@@ -2298,8 +2327,8 @@ export const landing_pt_BR = {
         "desc": "Informações protegidas em trânsito e em repouso, com acesso restrito por papel."
       },
       {
-        "title": "Comece sem cartão",
-        "desc": "Plano gratuito para organizar a primeira turma. Sem custo para testar."
+        "title": "Escolha o plano certo",
+        "desc": "Plano Único para começar sozinho. Plano Ilimitado para cobrir equipe, paróquia ou diocese no mesmo sistema."
       },
       {
         "title": "Controle dos seus dados",
@@ -2333,9 +2362,9 @@ export const landingIa_pt_BR = {
       "headline_line2": "em minutos com IA",
       "subheadline": "Deixe a IA gerar o roteiro completo: objetivo, dinâmica, leitura bíblica, reflexão, atividade e oração. Baseado na doutrina católica.",
       "badge": "IA teologicamente treinada",
-      "cta_primary": "Testar IA grátis",
+      "cta_primary": "Experimentar a IA",
       "cta_secondary": "Ver como funciona",
-      "trust_signals": "Sem cartão de crédito • 3 créditos grátis • Base teológica CNBB"
+      "trust_signals": "Plano Único ou Ilimitado • Base teológica CNBB • Cancele quando quiser"
     },
     "features_title": "IA que entende de catequese",
     "features_subtitle": "Treinada com a Bíblia CNBB, o Catecismo e o Diretório para a Catequese.",
@@ -2349,7 +2378,7 @@ export const landingIa_pt_BR = {
     ],
     "ai_showcase_title": "Seu próximo encontro pronto em menos de 30 segundos",
     "ai_showcase_subtitle": "Digite o tema e a faixa etária. A IA gera o encontro completo — da acolhida à oração final.",
-    "ai_showcase_cta": "Experimente a IA gratuitamente",
+    "ai_showcase_cta": "Experimentar a IA",
     "mission_title": "Menos tempo preparando. Mais tempo evangelizando.",
     "mission_text": "Cada minuto que a IA economiza na preparação é um minuto a mais para o que realmente importa: estar presente para seus catequizandos.",
     "mockup_dashboard": {
@@ -2424,7 +2453,8 @@ export const landingIa_pt_BR = {
       "privacy": "Privacidade",
       "terms": "Termos",
       "contact": "Contacto"
-    }
+    },
+    "create_account": "Criar conta"
   } as const;
 
 export const landingPresenca_pt_BR = {
@@ -2435,7 +2465,7 @@ export const landingPresenca_pt_BR = {
       "badge": "Controle de presença digital",
       "cta_primary": "Começar agora",
       "cta_secondary": "Ver demonstração",
-      "trust_signals": "Sem cartão • Plano gratuito • Funciona no celular"
+      "trust_signals": "Plano Único ou Ilimitado • Funciona no celular • Pagamento via Stripe"
     },
     "features_title": "Controle total de presenças",
     "features_subtitle": "Do registro à justificativa — tudo integrado e em tempo real.",
@@ -2521,7 +2551,8 @@ export const landingPresenca_pt_BR = {
       "privacy": "Privacidade",
       "terms": "Termos",
       "contact": "Contacto"
-    }
+    },
+    "create_account": "Criar conta"
   } as const;
 
 export const landingSistema_pt_BR = {
@@ -2530,9 +2561,9 @@ export const landingSistema_pt_BR = {
       "headline_line2": "em um só lugar",
       "subheadline": "Controle de presença, gestão de turmas, comunicação com famílias e relatórios para coordenadores. Tudo integrado.",
       "badge": "Gestão completa para catequese",
-      "cta_primary": "Experimentar gratuitamente",
+      "cta_primary": "Começar agora",
       "cta_secondary": "Ver recursos",
-      "trust_signals": "Sem cartão de crédito • Plano gratuito • Comece em 2 minutos"
+      "trust_signals": "Plano Único ou Ilimitado • Comece em 2 minutos • Cancele quando quiser"
     },
     "features_title": "Tudo para gerir sua catequese",
     "features_order": [
@@ -2617,7 +2648,8 @@ export const landingSistema_pt_BR = {
       "privacy": "Privacidade",
       "terms": "Termos",
       "contact": "Contacto"
-    }
+    },
+    "create_account": "Criar conta"
   } as const;
 
 export const legal_pt_BR = {
@@ -2894,62 +2926,63 @@ export const navigation_pt_BR = {
 
 export const onboarding_pt_BR = {
     "title": "Configuração Inicial",
-    "subtitle_personal": "Vamos configurar o teu espaço pessoal.",
-    "subtitle_manager": "Vamos configurar a plataforma em 2 passos.",
+    "subtitle_personal": "Vamos preparar seu espaço pessoal.",
+    "subtitle_manager": "Vamos preparar a catequese da paróquia para começar.",
     "steps": {
-      "institution": "Paróquia & Diocese",
-      "details": "Detalhes"
+      "institution": "Paróquia e diocese",
+      "details": "Primeira turma"
     },
     "diocese_selected": "Diocese",
     "back": "← Voltar",
     "continue_parish": "Continuar para Paróquia →",
     "continue": "Continuar →",
     "change_diocese": "← Alterar diocese",
-    "configuring": "A configurar a plataforma...",
+    "configuring": "Preparando sua conta...",
     "finish_error": "Erro ao finalizar configuração.",
     "personal_workspace_error": "Não foi possível criar o espaço pessoal. Tente novamente.",
     "parish_not_selected": "Paróquia não selecionada.",
-    "osm_error": "Erro ao registar paróquia do OpenStreetMap.",
+    "osm_error": "Erro ao registrar a paróquia do OpenStreetMap.",
     "create_parish_error": "Erro ao criar paróquia.",
     "no_parish_selected": "Nenhuma paróquia selecionada.",
     "summary": {
       "type": "Tipo",
-      "personal_account": "Conta Pessoal",
+      "personal_account": "Espaço pessoal",
       "plan": "Plano",
-      "plan_free": "Catequista Grátis",
-      "plan_pro": "Catequista Pro/IA",
+      "plan_free": "Sem assinatura",
+      "plan_pro": "Plano Único",
       "class": "Turma",
       "create_later": "Criar depois",
       "diocese": "Diocese",
       "parish": "Paróquia",
-      "year": "Ano"
+      "year": "Ano",
+      "plan_none": "Sem assinatura",
+      "plan_paid": "Plano Único"
     },
     "welcome": {
       "hello": "Olá, {{name}}!",
       "hello_default": "Bem-vindo(a)!",
-      "question": "Como deseja usar o Catequese Viva?",
-      "personal_title": "Conta Pessoal",
-      "personal_desc": "Para catequistas individuais · plano pessoal (Grátis / Pro / IA)",
+      "question": "Como você quer começar?",
+      "personal_title": "Quero organizar minha turma",
+      "personal_desc": "Para quem organiza a própria turma e quer começar sem depender da paróquia.",
       "personal_features": [
         "Espaço pessoal isolado",
         "Suas turmas e catequizandos",
         "Gerador de encontros com IA"
       ],
-      "manager_title": "Conta de Gestão",
-      "manager_desc": "Para paróquias e dioceses · plano institucional (cobre vários catequistas)",
+      "manager_title": "Quero organizar a catequese da paróquia",
+      "manager_desc": "Para quem coordena a catequese da paróquia e precisa organizar equipe, turmas e calendário.",
       "manager_features": [
         "Multi-catequista",
         "Comunicação integrada",
         "Gestão completa da catequese"
-      ]
+      ],
+      "helper": "Escolha o caminho que mais combina com a sua realidade."
     },
     "personal_setup": {
       "title": "Conta Pessoal",
-      "subtitle": "O teu espaço individual de catequese está quase pronto!",
-      "included": "O que está incluído:",
+      "subtitle": "Comece pelo nome da primeira turma. Horário e local podem ficar para depois.",
+      "included": "Ao entrar, você já terá:",
       "isolated_space": "Espaço pessoal isolado",
-      "limits_free": "2 turmas e 30 catequizandos",
-      "limits_unlimited": "Turmas ilimitadas",
       "ai_generator": "Gerador de encontros com IA",
       "liturgical_calendar": "Calendário litúrgico",
       "schedule_label": "Horário (opcional)",
@@ -2958,7 +2991,7 @@ export const onboarding_pt_BR = {
       "location_placeholder": "Ex: Salão paroquial",
       "first_class_label": "Nome da primeira turma (opcional)",
       "first_class_placeholder": "Ex: Catequese 1º Ano",
-      "first_class_hint": "Pode criar depois em Turmas.",
+      "first_class_hint": "Se preferir, entre agora e crie a turma depois.",
       "creating": "Criando espaço...",
       "enter_space": "Entrar no meu espaço",
       "days": {
@@ -2969,7 +3002,19 @@ export const onboarding_pt_BR = {
         "4": "Qui",
         "5": "Sex",
         "6": "Sáb"
-      }
+      },
+      "progress_label": "Progresso iniciado",
+      "first_value": "Sua primeira turma com nome, horário e local.",
+      "single_plan_scope": "Se precisar de mais capacidade depois, você poderá ampliar seu plano.",
+      "enter_with_class": "Criar meu espaço com a primeira turma",
+      "enter_and_create_later": "Entrar agora e criar a turma depois",
+      "progress_title": "Seu começo",
+      "progress_status": "Falta só a primeira turma",
+      "progress_copy": "Seu espaço pessoal já está quase pronto. Agora dê nome à sua primeira turma para começar com tudo organizado.",
+      "value_title": "Ao entrar você terá",
+      "optional_details_toggle": "Adicionar horário e local",
+      "optional_details_hide": "Ocultar horário e local",
+      "optional_details_hint": "Preencha agora apenas se isso ajudar seu começo. Você poderá ajustar depois."
     },
     "diocese": {
       "title": "Em que diocese você está?",
@@ -2980,7 +3025,7 @@ export const onboarding_pt_BR = {
       "platform_section": "Na Plataforma",
       "parishes_count": "{{count}} paróquias",
       "empty_search": "Nenhuma diocese encontrada.",
-      "empty_hint": "Seleciona um estado ou busca pelo nome.",
+      "empty_hint": "Selecione um estado ou busque pelo nome.",
       "create_link": "+ Não encontrou? Criar nova diocese",
       "new_name_label": "Nome da nova diocese",
       "new_name_placeholder": "Ex: Diocese de São José dos Campos",
@@ -2991,10 +3036,18 @@ export const onboarding_pt_BR = {
       "creating": "Criando...",
       "create_btn": "Criar diocese",
       "skip": "Pular esta etapa →",
-      "select_hint": "Seleciona uma diocese acima"
+      "select_hint": "Selecione uma diocese acima",
+      "subtitle": "Escolha a diocese para encontrar a paróquia certa com menos esforço.",
+      "progress_title": "Seu cadastro está andando",
+      "progress_status": "Etapa 1 de 2",
+      "progress_copy": "Você já decidiu organizar a catequese da paróquia. Agora escolha a diocese para continuar.",
+      "start_hint_title": "Comece pelo estado ou pelo nome",
+      "start_hint_body": "Assim fica mais fácil encontrar a diocese certa.",
+      "selection_ready": "Diocese selecionada: {{name}}",
+      "continue_with_selection": "Continuar com esta diocese"
     },
     "parish": {
-      "title": "Qual a tua paróquia?",
+      "title": "Qual paróquia vai receber a primeira turma?",
       "city_state": "Cidade / Estado",
       "filter_placeholder": "Filtrar por nome...",
       "platform_section": "Na Plataforma",
@@ -3009,7 +3062,17 @@ export const onboarding_pt_BR = {
       "creating": "Criando...",
       "create_btn": "Criar paróquia",
       "default_name": "Paróquia",
-      "duplicate_in": "em {{city}}"
+      "duplicate_in": "em {{city}}",
+      "subtitle": "Agora escolha a paróquia onde a catequese vai começar.",
+      "progress_title": "Seu cadastro está quase pronto",
+      "progress_status": "Falta escolher a paróquia",
+      "progress_copy": "A diocese já foi escolhida. Agora selecione a paróquia para seguir.",
+      "start_hint_title": "Informe cidade e estado",
+      "start_hint_body": "Com isso, a busca fica mais rápida e precisa.",
+      "diocese_context_label": "Diocese escolhida",
+      "selection_ready": "Paróquia selecionada: {{name}}",
+      "continue_with_selection": "Continuar com esta paróquia",
+      "select_hint": "Selecione uma paróquia para seguir"
     },
     "coordinator": {
       "year_title": "Ano Catequético",
@@ -3020,7 +3083,7 @@ export const onboarding_pt_BR = {
       "date_error": "A data de término deve ser posterior à de início.",
       "next": "Próximo",
       "class_title": "Primeira Turma",
-      "class_desc": "Cria a primeira turma ou pula esta etapa.",
+      "class_desc": "Crie a primeira turma para a equipe começar vendo a catequese organizada.",
       "class_name": "Nome da turma",
       "class_name_placeholder": "Ex: Turma de Crisma 2026",
       "day_of_week": "Dia da semana",
@@ -3038,42 +3101,65 @@ export const onboarding_pt_BR = {
         "4": "Quinta-feira",
         "5": "Sexta-feira",
         "6": "Sábado"
-      }
+      },
+      "year_desc": "Dê nome ao ano catequético para deixar calendário e planejamento organizados.",
+      "progress_title": "Andamento",
+      "progress_status_class": "Passo 1 de 2",
+      "progress_status_year": "Último passo",
+      "progress_copy_class": "Criar a primeira turma é o passo mais importante para começar com a equipe.",
+      "progress_copy_year": "Agora só falta nomear o ano catequético para deixar o calendário organizado.",
+      "optional_details_toggle": "Adicionar horário e local da turma agora",
+      "optional_details_hide": "Ocultar horário e local por enquanto",
+      "optional_details_hint": "Esses detalhes ajudam, mas não precisam bloquear a criação da primeira turma."
     },
     "completion": {
       "title": "Tudo pronto!",
-      "desc": "O teu espaço está configurado. Aqui está um resumo do que foi criado:",
+      "desc": "Seu acesso já está pronto. Veja o que foi configurado:",
       "redirecting": "Redirecionando em 5 segundos...",
-      "go_dashboard": "Ir para o Dashboard"
+      "go_dashboard": "Ir para o Dashboard",
+      "progress_badge": "Cadastro concluído",
+      "next_step_hint": "Agora é hora de começar a usar a plataforma.",
+      "go_billing": "Escolher plano",
+      "primary_create_class": "Criar minha primeira turma",
+      "primary_create_meeting": "Gerar meu primeiro encontro",
+      "primary_invite_catechist": "Convidar primeiro catequista",
+      "personal_ready_title": "Seu espaço pessoal está pronto",
+      "personal_ready_desc": "Agora crie sua primeira turma para começar a organizar a catequese.",
+      "personal_class_title": "Sua primeira turma já está encaminhada",
+      "personal_class_desc": "Agora gere o primeiro encontro para aproveitar o que já foi preparado.",
+      "manager_ready_title": "A paróquia já está configurada",
+      "manager_ready_desc": "Agora crie a primeira turma para começar a organizar a catequese da paróquia.",
+      "manager_class_title": "A primeira turma da paróquia já está pronta",
+      "manager_class_desc": "Agora convide o primeiro catequista para começar o trabalho em equipe."
     },
     "roles": {
       "coordinator": {
         "title": "Coordenador(a) Paroquial",
-        "desc": "Geres a catequese da paróquia: turmas, catequistas, sacramentos e relatórios."
+        "desc": "Você gerencia a catequese da paróquia: turmas, catequistas, sacramentos e relatórios."
       },
       "catechist": {
         "title": "Catequista",
-        "desc": "Dás aulas de catequese e acompanhas os teus catequizandos."
+        "desc": "Você dá aulas de catequese e acompanha seus catequizandos."
       },
       "guardian": {
         "title": "Responsável (Pai / Mãe)",
-        "desc": "Acompanhas a jornada de fé dos teus filhos na catequese."
+        "desc": "Você acompanha a caminhada de fé dos seus filhos na catequese."
       },
       "viewer": {
         "title": "Visitante Pastoral",
-        "desc": "Consultas dados pastorais sem editar."
+        "desc": "Você consulta os dados pastorais sem editar."
       }
     },
     "role_step": {
-      "title": "Qual o teu papel na paróquia?",
-      "subtitle": "Escolhe o perfil que melhor descreve a tua atuação."
+      "title": "Qual é o seu papel na paróquia?",
+      "subtitle": "Escolha o perfil que melhor descreve sua atuação."
     },
     "catechist": {
-      "class_title": "A tua Turma"
+      "class_title": "Sua turma"
     },
     "viewer": {
       "title": "Liderança Pastoral",
-      "desc": "Terás acesso de visualização às turmas, presenças e relatórios da paróquia, sem permissão para editar.",
+      "desc": "Você terá acesso de visualização às turmas, presenças e relatórios da paróquia, sem permissão para editar.",
       "confirm": "Confirmar e entrar"
     },
     "guardian": {
@@ -3085,10 +3171,10 @@ export const onboarding_pt_BR = {
       "default_household": "Família"
     },
     "parish_search": {
-      "title": "Juntar-se a uma Paróquia",
+      "title": "Entrar em uma paróquia",
       "search_placeholder": "Buscar paróquia...",
       "loading": "Carregando...",
-      "empty": "Nenhuma paróquia. Podes criar uma independente.",
+      "empty": "Nenhuma paróquia encontrada. Você pode criar uma nova.",
       "next": "Próximo"
     },
     "error_parish_exists": "Esta paróquia já existe e pertence a outro coordenador. Solicite um convite a um administrador para participar.",
@@ -3099,6 +3185,19 @@ export const onboarding_pt_BR = {
       "city_state": "Cidade / Estado",
       "creating": "Criando...",
       "submit": "Criar e continuar"
+    },
+    "plan_free": "Sem assinatura",
+    "limits_free": "Nenhum — assine um plano para começar",
+    "subtitle_welcome": "Escolha o caminho que leva você ao primeiro resultado com menos esforço.",
+    "shell": {
+      "welcome_title": "Vamos começar",
+      "welcome_subtitle": "Escolha como você vai usar a plataforma para seguir pelo caminho certo.",
+      "personal_title": "Monte sua primeira turma",
+      "personal_subtitle": "Comece pelo essencial. O resto você ajusta depois.",
+      "manager_parish_title": "Onde a catequese vai começar?",
+      "manager_parish_subtitle": "Escolha a diocese e a paróquia para cadastrar a primeira turma no lugar certo.",
+      "manager_details_title": "Cadastre a primeira turma",
+      "manager_details_subtitle": "Crie a primeira turma e deixe o ano catequético organizado para a equipe."
     }
   } as const;
 
@@ -3157,9 +3256,9 @@ export const parishes_pt_BR = {
     "independent_option": "Independente / sob minha licença",
     "licensed_suffix": "(licenciada)",
     "coverage_licensed": "Será criada sob a licença da {{name}} (sem cobrança adicional).",
-    "coverage_unlicensed": "Será vinculada à {{name}}. A diocese ainda não tem licença ativa — a paróquia começará no plano gratuito até a licença ser ativada.",
+    "coverage_unlicensed": "Será vinculada a {{name}}. A diocese ainda não tem licença ativa — a paróquia ficará bloqueada até a licença ser ativada.",
     "coverage_owner": "Será criada sob a sua licença {{plan}} (sem cobrança adicional).",
-    "coverage_independent": "Paróquia independente: começará no plano gratuito. Você pode assinar um plano institucional depois.",
+    "coverage_independent": "Paróquia independente: sem assinatura ativa. Assine um plano institucional para liberá-la.",
     "members_count": "{{count}} membros",
     "classes_count_label": "{{count}} turmas",
     "communities_count_label": "{{count}} comunidades",
@@ -3167,7 +3266,7 @@ export const parishes_pt_BR = {
     "unknown": "Desconhecido",
     "past_due": "Em atraso",
     "canceled": "Cancelada",
-    "plan_free": "Gratuito",
+    "plan_free": "Sem assinatura",
     "plan_catechist_pro": "Catequista Pro",
     "plan_catechist_ai": "Catequista IA",
     "plan_parish": "Paróquia",
@@ -3364,32 +3463,21 @@ export const public_pt_BR = {
       "error": "Erro ao enviar. Tente novamente."
     },
     "pricing": {
-      "title": "Escolha o caminho certo para começar",
-      "subtitle": "Primeiro escolha se você está entrando como catequista, paróquia ou diocese. Depois mostramos apenas os planos adequados a esse contexto.",
+      "title": "Escolha o plano certo para a sua rotina pastoral",
+      "subtitle": "Dois planos claros. O Plano Único cobre o catequista; o Plano Ilimitado cobre a operação paroquial ou diocesana.",
       "payment_card": "Cartão",
-      "payment_pix": "PIX",
       "annual_savings": "Economize 17% no anual",
       "monthly_tab": "Mensal",
       "annual_tab": "Anual",
       "annual_savings_badge": "17% off",
-      "personal_section": "Para você (catequista)",
-      "personal_hint": "— seu espaço pessoal",
-      "institutional_section": "Para sua instituição",
-      "institutional_hint": "— paróquias e dioceses (cobre vários catequistas)",
       "faq_title": "Perguntas frequentes",
-      "free_forever": "incluído",
       "per_month": "/mês",
       "per_year": "/ano",
-      "cta_free": "Começar",
-      "cta_paid": "Começar agora",
+      "cta_paid": "Escolher este plano",
       "most_popular": "Mais Popular",
       "plan_desc": {
-        "catechist_free": "Para um catequista em fase inicial de organização da turma.",
-        "catechist_pro": "Para catequistas dedicados com múltiplas turmas.",
-        "catechist_ai": "Inteligência Artificial para criar encontros, atividades e mensagens em segundos.",
-        "parish_essential": "Para paróquias que buscam gestão completa da catequese com time enxuto.",
-        "parish_complete": "Gestão completa e ilimitada para paróquias com grandes equipes.",
-        "diocese": "Para gestão diocesana multi-paróquia com IA por paróquia."
+        "single": "Para um catequista organizar uma turma com clareza, histórico e preparação em um só fluxo.",
+        "unlimited": "Para paróquias e dioceses centralizarem equipes, turmas, famílias e IA no mesmo sistema."
       },
       "faq": [
         {
@@ -3398,11 +3486,11 @@ export const public_pt_BR = {
         },
         {
           "q": "Como funcionam os créditos de IA?",
-          "a": "Cada geração de encontro consome 1 crédito, planejamento anual 3 créditos, e atividade 1 crédito. O plano IA inclui 20 créditos/mês, Paróquia Completa 50 créditos/mês e Diocese 50 créditos/mês por paróquia. Créditos não usados não acumulam — renovam a cada mês."
+          "a": "No Plano Único, você recebe 15 créditos de IA por mês. No Plano Ilimitado, recebe 50 créditos de IA por mês. Encontro e atividade consomem 1 crédito; planejamento anual consome 3 créditos."
         },
         {
-          "q": "Qual a diferença entre Paróquia Essencial e Completa?",
-          "a": "A Essencial é ideal para paróquias com até 5 catequistas e 200 catequizandos. A Completa remove todos os limites e inclui 50 créditos de IA/mês."
+          "q": "Qual a diferença entre o Plano Único e o Plano Ilimitado?",
+          "a": "O Plano Único cobre 1 paróquia, 1 turma e até 150 catequizandos para um catequista. O Plano Ilimitado remove os limites operacionais e foi pensado para a rotina de paróquias e dioceses."
         },
         {
           "q": "Como funciona o pagamento?",
@@ -3425,42 +3513,9 @@ export const public_pt_BR = {
           "a": "Sim. A IA é instruída a se basear estritamente na Bíblia (CNBB), Catecismo da Igreja Católica, Compêndio e Diretório Geral para a Catequese. Todo conteúdo gerado inclui referências para você auditar."
         }
       ],
-      "path_selector_title": "Escolha o caminho certo para começar",
-      "path_selector_subtitle": "Primeiro escolha seu perfil. Depois mostramos apenas os planos que fazem sentido para esse contexto.",
-      "path_cards": {
-        "catechist": {
-          "title": "Catequista",
-          "description": "Para organizar sua turma, preparar encontros e usar IA no seu espaço pessoal.",
-          "supporting": "Planos pessoais para organizar a turma e preparar encontros com mais consistência.",
-          "cta": "Ver opções para catequista"
-        },
-        "parish": {
-          "title": "Paróquia",
-          "description": "Para coordenar catequistas, turmas, presença e comunicação pastoral num só lugar.",
-          "supporting": "Planos institucionais para equipas paroquiais.",
-          "cta": "Ver opções para paróquia"
-        },
-        "diocese": {
-          "title": "Diocese",
-          "description": "Para acompanhar várias paróquias com governança, visão consolidada e IA por paróquia.",
-          "supporting": "Licenciamento multi-paróquia com gestão central.",
-          "cta": "Ver opção diocesana"
-        }
-      },
-      "path_details": {
-        "catechist": {
-          "title": "Planos para catequista",
-          "subtitle": "Escolha entre começar com a estrutura essencial, ampliar limites ou acelerar a preparação com IA."
-        },
-        "parish": {
-          "title": "Planos para paróquia",
-          "subtitle": "Compare a estrutura ideal para a sua equipa e o volume da catequese local."
-        },
-        "diocese": {
-          "title": "Plano para diocese",
-          "subtitle": "Uma opção para gestão central de várias paróquias com padronização e escala."
-        }
-      }
+      "annual_compare": "no anual, sai por {{price}}/mês",
+      "annual_billed_as": "cobrado como {{price}}/ano",
+      "annual_save_amount": "economize {{price}} por ano"
     },
     "workspace": {
       "app_name": "Catequese Viva",
@@ -3538,7 +3593,8 @@ export const public_pt_BR = {
         "PASTORAL_LETTER": "Carta Pastoral",
         "OTHER": "Outro"
       }
-    }
+    },
+    "catechist_free": "Sem assinatura"
   } as const;
 
 export const publicNav_pt_BR = {
@@ -3549,12 +3605,15 @@ export const publicNav_pt_BR = {
     "privacy": "Privacidade",
     "terms": "Termos",
     "login": "Entrar",
-    "signup": "Escolher caminho",
+    "signup": "Ver planos",
     "openMenu": "Abrir menu",
     "closeMenu": "Fechar menu",
     "tagline": "Plataforma pastoral para organizar turmas, encontros, presença e famílias na catequese católica.",
     "audience": "catequistas • paróquias • dioceses",
-    "cta": "Escolher caminho"
+    "cta": "Ver planos",
+    "share": "Compartilhar",
+    "share_copied": "Link copiado para compartilhar",
+    "share_error": "Não foi possível compartilhar agora"
   } as const;
 
 export const reports_pt_BR = {

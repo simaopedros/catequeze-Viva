@@ -1,65 +1,59 @@
 /**
- * billing-enforcement.test.ts — Verify plan limits enforcement (v2).
+ * billing-enforcement.test.ts — Verify plan limits enforcement (simplified plans).
  */
 import { describe, it, expect } from 'vitest';
 import { prisma, PARISH_SAO_JOSE, PARISH_SANTA_MARIA } from './setup';
 import { getPlanLimits } from '../shared/planLimits';
 
-describe('Plan Limits Configuration (v2)', () => {
+describe('Plan Limits Configuration (simplified plans)', () => {
 
-  it('CATECHIST_FREE has limits', () => {
+  it('CATECHIST_FREE sentinel has zero limits (blocked)', () => {
     const limits = getPlanLimits('catechist_free');
+    expect(limits.maxClasses).toBe(0);
+    expect(limits.maxCatechumens).toBe(0);
+    expect(limits.maxParishes).toBe(0);
+    expect(limits.maxCatechists).toBe(0);
+  });
+
+  it('SINGLE has capped limits (1 class, 150 catechumens, 1 parish)', () => {
+    const limits = getPlanLimits('single');
     expect(limits.maxClasses).toBe(1);
-    expect(limits.maxCatechumens).toBe(15);
+    expect(limits.maxCatechumens).toBe(150);
     expect(limits.maxParishes).toBe(1);
     expect(limits.maxCatechists).toBe(1);
   });
 
-  it('PARISH_COMPLETE has no limits (except maxParishes=1 per license)', () => {
-    const limits = getPlanLimits('parish_complete');
+  it('UNLIMITED has null (unlimited) limits', () => {
+    const limits = getPlanLimits('unlimited');
     expect(limits.maxClasses).toBeNull();
     expect(limits.maxCatechumens).toBeNull();
-    expect(limits.maxParishes).toBe(1); // one parish per license
+    expect(limits.maxCatechists).toBeNull();
+    expect(limits.maxParishes).toBeNull();
   });
 
-  it('PARISH_ESSENTIAL has capped limits', () => {
-    const limits = getPlanLimits('parish_essential');
-    expect(limits.maxCatechumens).toBe(200);
-    expect(limits.maxCatechists).toBe(5);
-    expect(limits.maxParishes).toBe(1);
+  it('legacy aliases resolve to their canonical plan limits', () => {
+    // pro/ai/essential → single
+    expect(getPlanLimits('catechist_pro').maxClasses).toBe(1);
+    expect(getPlanLimits('parish_essential').maxCatechumens).toBe(150);
+    // parish/complete/diocese → unlimited
+    expect(getPlanLimits('parish_complete').maxClasses).toBeNull();
+    expect(getPlanLimits('diocese').maxParishes).toBeNull();
+    expect(getPlanLimits('parish').maxCatechumens).toBeNull();
   });
 
-  it('CATECHIST_PRO has capped limits (3 classes, 150 catechumens)', () => {
-    const limits = getPlanLimits('catechist_pro');
-    expect(limits.maxClasses).toBe(3);
-    expect(limits.maxCatechumens).toBe(150);
-  });
-
-  it('DIOCESE has maxParishes=10', () => {
-    const limits = getPlanLimits('diocese');
-    expect(limits.maxClasses).toBeNull();
-    expect(limits.maxParishes).toBe(10);
-  });
-
-  it('legacy "parish" resolves to parish_complete (unlimited)', () => {
-    const limits = getPlanLimits('parish');
-    expect(limits.maxCatechumens).toBeNull();
-  });
-
-  it('unknown plan falls back to catechist_free', () => {
+  it('unknown plan falls back to catechist_free (sentinel)', () => {
     const limits = getPlanLimits('nonexistent');
-    expect(limits.maxClasses).toBe(1);
+    expect(limits.maxClasses).toBe(0);
   });
 });
 
 describe('Parish Billing Records', () => {
 
-  it('São José has PARISH plan active (legacy)', async () => {
+  it('São José has an active institutional billing record', async () => {
     const billing = await prisma.tenantBilling.findUnique({
       where: { parishId: PARISH_SAO_JOSE },
     });
     expect(billing).toBeTruthy();
-    expect(billing!.plan).toBe('PARISH');
     expect(billing!.status).toBe('ACTIVE');
   });
 
@@ -69,24 +63,6 @@ describe('Parish Billing Records', () => {
     });
     expect(billing).toBeTruthy();
     expect(billing!.plan).toBe('CATECHIST_FREE');
-  });
-
-});
-
-describe('Class Limits — Santa Maria (free plan)', () => {
-
-  it('has exactly 1 class in Santa Maria', async () => {
-    const classes = await prisma.catechesisClass.count({
-      where: { parishId: PARISH_SANTA_MARIA },
-    });
-    expect(classes).toBe(1);
-  });
-
-  it('has fewer catechumens than max limit (15)', async () => {
-    const count = await prisma.catechumenProfile.count({
-      where: { parishId: PARISH_SANTA_MARIA },
-    });
-    expect(count).toBeLessThan(15);
   });
 
 });
@@ -101,3 +77,4 @@ describe('Class Limits — São José (paid plan)', () => {
   });
 
 });
+

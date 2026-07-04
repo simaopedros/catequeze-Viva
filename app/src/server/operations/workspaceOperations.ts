@@ -268,7 +268,9 @@ export const getInstitutionalManageContext = async (_args: void, context: any) =
       where: { dioceseId },
       select: { plan: true, status: true, trialEndsAt: true },
     });
-    const licensed = !!dioceseBilling && isBillingActive(dioceseBilling) && dioceseBilling.plan === 'DIOCESE';
+    // Unlimited covers diocese; DIOCESE kept for pre-migration data.
+    const licensed = !!dioceseBilling && isBillingActive(dioceseBilling)
+      && (dioceseBilling.plan === 'UNLIMITED' || dioceseBilling.plan === 'DIOCESE');
     dioceses.push({ id: diocese.id, name: diocese.name, licensed });
   }
 
@@ -280,7 +282,8 @@ export const getInstitutionalManageContext = async (_args: void, context: any) =
 
   const ownerActive = isSubscriptionActiveLike(freshUser?.subscriptionStatus);
   const ownerPlanRaw = (freshUser?.subscriptionPlan || '').toLowerCase();
-  const canCreateUnderOwnerPlan = ownerActive && (ownerPlanRaw === 'parish' || ownerPlanRaw === 'diocese');
+  // Unlimited (institutional) covers creating parishes under the owner's plan.
+  const canCreateUnderOwnerPlan = ownerActive && ownerPlanRaw === 'unlimited';
 
   return {
     dioceses,

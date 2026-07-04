@@ -14,10 +14,8 @@ import CityStateSelect from '../../client/components/CityStateSelect';
 
 const PLAN_KEYS: Record<string, string> = {
   CATECHIST_FREE: 'plan_free',
-  CATECHIST_PRO: 'plan_catechist_pro',
-  CATECHIST_AI: 'plan_catechist_ai',
-  PARISH: 'plan_parish',
-  DIOCESE: 'plan_diocese',
+  SINGLE: 'plan_single',
+  UNLIMITED: 'plan_unlimited',
 };
 
 const STATUS_KEYS: Record<string, { key: string; color: string }> = {
@@ -99,7 +97,10 @@ export default function ParishesPage() {
       setNewDioceseId('');
       setShowCreate(false);
     } catch (e: any) {
-      if (handlePlanLimitError(e.message || e)) return;
+      if (handlePlanLimitError(e.message || e, { currentPlan: ownerPlan, isPersonalWorkspace: true })) {
+        setCreating(false);
+        return;
+      }
       setError(e.message || tp('create_error'));
     }
     setCreating(false);

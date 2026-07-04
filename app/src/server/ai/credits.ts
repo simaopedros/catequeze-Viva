@@ -36,13 +36,6 @@ const DIOCESE_PER_PARISH_ALLOWANCE = 50;
 
 export function resolveUserAiAllowance(personalPlan: string | null, effectivePlan: string | null): number {
   if (!effectivePlan) return 0;
-  const planId = resolvePlanIdOrFree(effectivePlan);
-
-  // Diocese: per-parish model — allowance resolved per-parish, not per user.
-  if (planId === 'diocese') {
-    return DIOCESE_PER_PARISH_ALLOWANCE;
-  }
-
   return getMonthlyAllowance(effectivePlan);
 }
 
@@ -79,7 +72,8 @@ export async function resolveUserEffectivePlanAndStatus(
                 { status: 'ACTIVE' },
                 { status: 'TRIAL', trialEndsAt: { gte: new Date() } },
               ],
-              plan: 'DIOCESE',
+              // Unlimited covers diocese; DIOCESE kept for pre-migration data.
+              plan: { in: ['UNLIMITED', 'DIOCESE'] },
             },
             select: { pricingVersion: true },
           });
@@ -104,7 +98,8 @@ export async function resolveUserEffectivePlanAndStatus(
         }
       }
 
-      // If no diocese umbrella, check direct parish billing
+      // If no diocese umbrella, check direct parish billing.
+      // Unlimited covers parishes; legacy plan ids kept for pre-migration data.
       if (effectivePlan === personalPlan || isFreePlan) {
         const paidBilling = await context.entities.TenantBilling.findFirst({
           where: {
@@ -113,7 +108,7 @@ export async function resolveUserEffectivePlanAndStatus(
               { status: 'ACTIVE' },
               { status: 'TRIAL', trialEndsAt: { gte: new Date() } },
             ],
-            plan: { in: ['PARISH', 'PARISH_ESSENTIAL', 'PARISH_COMPLETE', 'CATECHIST_PRO', 'CATECHIST_AI'] },
+            plan: { in: ['UNLIMITED', 'SINGLE', 'PARISH', 'PARISH_ESSENTIAL', 'PARISH_COMPLETE'] },
           },
           orderBy: { plan: 'asc' },
         });
@@ -422,10 +417,11 @@ export async function resetAllAiCredits(entities: any): Promise<number> {
         memberships: {
           some: {
             status: 'ACTIVE',
-            parish: {
+                parish: {
               diocese: {
                 billing: {
-                  plan: 'DIOCESE',
+                  // Unlimited covers diocese; DIOCESE kept for pre-migration data.
+                  plan: { in: ['UNLIMITED', 'DIOCESE'] },
                   status: 'ACTIVE',
                   pricingVersion: { gte: 2 },
                 },

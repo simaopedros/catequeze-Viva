@@ -70,7 +70,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
               <div><p className="text-xs text-muted-foreground">Plano</p><p className="font-medium">{u.subscriptionPlan || '—'}</p></div>
               <div><p className="text-xs text-muted-foreground">Status</p><p className="font-medium">{u.subscriptionStatus || '—'}</p></div>
               <div><p className="text-xs text-muted-foreground">Créditos IA</p><p className="font-medium">{u.credits}</p></div>
-              <div><p className="text-xs text-muted-foreground">Woovi ID</p><p className="text-xs">{u.wooviCorrelationId || '—'}</p></div>
+              <div><p className="text-xs text-muted-foreground">Stripe ID</p><p className="text-xs">{u.paymentProcessorUserId || '—'}</p></div>
             </div>
           </div>
         </div>

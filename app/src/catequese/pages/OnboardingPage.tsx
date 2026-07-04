@@ -18,18 +18,59 @@ import {
   ensurePersonalWorkspace,
 } from 'wasp/client/operations';
 import { trackMarketingEvent } from '../../client/analytics/marketingAnalytics';
+import { cn } from '../../client/utils';
+import { CheckCircle2, ChevronLeft, Church } from 'lucide-react';
 
 type Step = 'welcome' | 'personal_setup' | 'parish' | 'details' | 'completion';
 
 interface CompletionSummary {
   role: string;
+  title: string;
+  description: string;
   items: { label: string; value: string }[];
+  primaryActionLabel: string;
+  primaryActionTo: string;
 }
 
 function OnboardingLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-muted/30 py-8 px-4">
-      <div className="w-full max-w-2xl mx-auto">{children}</div>
+    <div className="min-h-screen bg-[linear-gradient(180deg,_rgba(255,255,255,1),_rgba(248,250,252,0.96))] px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-3xl">{children}</div>
+    </div>
+  );
+}
+
+function StepShell({
+  title,
+  subtitle,
+  children,
+  backLabel,
+  onBack,
+}: {
+  title: string;
+  subtitle: string;
+  children: ReactNode;
+  backLabel?: string;
+  onBack?: () => void;
+}) {
+  return (
+    <div className="space-y-6">
+      <section className="space-y-3 text-center sm:text-left">
+        {onBack && backLabel && (
+          <button
+            onClick={onBack}
+            className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition-colors hover:text-slate-950"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            {backLabel}
+          </button>
+        )}
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">{title}</h1>
+          <p className="text-base text-slate-600 sm:text-lg">{subtitle}</p>
+        </div>
+      </section>
+      {children}
     </div>
   );
 }
@@ -46,6 +87,30 @@ export default function OnboardingPage() {
   const [completionData, setCompletionData] = useState<CompletionSummary | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+
+  const getDeferredTarget = (): string | null => {
+    const intended = getIntendedPlan();
+    if (!intended) return null;
+
+    const institutional = isInstitutionalPlanId(intended);
+    const levelMatchesAccount = institutional
+      ? accountType === 'manager'
+      : accountType === 'personal';
+
+    if (!levelMatchesAccount) return null;
+    return `/app/billing?plan=${intended}`;
+  };
+
+  const handleSecondaryCompletionAction = () => {
+    const deferredTarget = getDeferredTarget();
+    if (deferredTarget) {
+      clearIntendedPlan();
+      navigate(deferredTarget);
+      return;
+    }
+
+    navigate('/app');
+  };
 
   const handleComplete = async (details?: {
     yearName?: string;
@@ -71,8 +136,15 @@ export default function OnboardingPage() {
           throw new Error(t('personal_workspace_error'));
         }
 
+        trackMarketingEvent('onboarding_step_completed', {
+          account_type: 'personal',
+          step: 'personal_setup_submitted',
+          created_class: Boolean(details?.className),
+        });
+
+        let createdClass: { id: string } | null = null;
         if (details?.className) {
-          await createClass({
+          createdClass = await createClass({
             name: details.className.trim(),
             parishId: personalParish.id,
             dayOfWeek: details.dayOfWeek || '',
@@ -80,19 +152,34 @@ export default function OnboardingPage() {
             endTime: details.endTime || '',
             location: details.location || personalParish.name,
           });
+
+          trackMarketingEvent('first_class_created', {
+            account_type: 'personal',
+            workspace: 'personal',
+            source: 'onboarding',
+          });
+          trackMarketingEvent('activation_completed', {
+            account_type: 'personal',
+            activation_type: 'first_class_created',
+          });
         }
 
         setCompletionData({
           role: 'catechist',
+          title: createdClass ? t('completion.personal_class_title') : t('completion.personal_ready_title'),
+          description: createdClass ? t('completion.personal_class_desc') : t('completion.personal_ready_desc'),
           items: [
             { label: t('summary.type'), value: t('summary.personal_account') },
-            { label: t('summary.plan'), value: (authUser?.subscriptionPlan || 'catechist_free') === 'catechist_free' ? t('summary.plan_free') : t('summary.plan_pro') },
+            {
+              label: t('summary.plan'),
+              value: (authUser?.subscriptionPlan || 'catechist_free') === 'single'
+                ? t('summary.plan_paid')
+                : t('summary.plan_none'),
+            },
             { label: t('summary.class'), value: details?.className || t('summary.create_later') },
           ],
-        });
-        trackMarketingEvent('activation_completed', {
-          account_type: 'personal',
-          created_class: Boolean(details?.className),
+          primaryActionLabel: createdClass ? t('completion.primary_create_meeting') : t('completion.primary_create_class'),
+          primaryActionTo: createdClass ? '/app/ai-hub?mode=create-meeting' : '/app/classes/new',
         });
         setStep('completion');
         return;
@@ -128,6 +215,12 @@ export default function OnboardingPage() {
       localStorage.setItem('catequese-viva-active-workspace', parishId);
       window.dispatchEvent(new CustomEvent('workspace-changed', { detail: parishId }));
 
+      trackMarketingEvent('onboarding_step_completed', {
+        account_type: 'manager',
+        step: 'institution_selected',
+        has_diocese: Boolean(diocese?.id),
+      });
+
       if (details?.yearName && details?.yearStart && details?.yearEnd) {
         const result = await completeCoordinatorOnboarding({
           parishName: parish.name,
@@ -149,218 +242,238 @@ export default function OnboardingPage() {
               endTime: details.endTime,
               location: details.location,
             });
-          } catch (_) { /* non-critical */ }
+          } catch (_) {
+            /* non-critical */
+          }
         }
       } else {
         await joinParish({ parishId, role: 'PARISH_COORDINATOR' });
       }
 
+      trackMarketingEvent('onboarding_step_completed', {
+        account_type: 'manager',
+        step: 'details_submitted',
+        created_class: Boolean(details?.className),
+        created_year: Boolean(details?.yearName),
+      });
+
+      if (details?.className) {
+        trackMarketingEvent('first_class_created', {
+          account_type: 'manager',
+          workspace: 'institutional',
+          source: 'onboarding',
+        });
+        trackMarketingEvent('activation_completed', {
+          account_type: 'manager',
+          activation_type: 'first_class_created',
+        });
+      }
+
       setCompletionData({
         role: 'coordinator',
+        title: details?.className ? t('completion.manager_class_title') : t('completion.manager_ready_title'),
+        description: details?.className ? t('completion.manager_class_desc') : t('completion.manager_ready_desc'),
         items: [
           { label: t('summary.diocese'), value: diocese?.name || '—' },
           { label: t('summary.parish'), value: parish.name },
           { label: t('summary.year'), value: details?.yearName || '—' },
           { label: t('summary.class'), value: details?.className || t('summary.create_later') },
         ],
-      });
-
-      trackMarketingEvent('activation_completed', {
-        account_type: 'manager',
-        created_class: Boolean(details?.className),
-        created_year: Boolean(details?.yearName),
+        primaryActionLabel: details?.className ? t('completion.primary_invite_catechist') : t('completion.primary_create_class'),
+        primaryActionTo: details?.className ? `/app/parishes/${parishId}/members` : '/app/classes/new',
       });
       setStep('completion');
-    } catch (e: any) {
-      setError(e.message || t('finish_error'));
+    } catch (e) {
+      const message = e instanceof Error ? e.message : t('finish_error');
+      setError(message || t('finish_error'));
     } finally {
       setSaving(false);
     }
   };
 
-  const resolveFinishTarget = (): string => {
-    const intended = getIntendedPlan();
-    if (intended) {
-      const institutional = isInstitutionalPlanId(intended);
-      const levelMatchesAccount = institutional ? accountType === 'manager' : accountType === 'personal';
-      if (levelMatchesAccount) {
-        clearIntendedPlan();
-        return `/app/billing?plan=${intended}`;
-      }
-    }
-    // Personal: go directly to dashboard (skip workspace selector, it's redundant)
-    return '/app';
-  };
-
   const stepLabels = [
-    { key: 'parish', label: t('steps.institution') },
-    { key: 'details', label: t('steps.details') },
+    { key: 'parish', label: t('steps.institution'), icon: Church },
+    { key: 'details', label: t('steps.details'), icon: CheckCircle2 },
   ];
 
   if (completionData) {
     return (
       <OnboardingLayout>
-        <CompletionStep summary={completionData} onFinish={() => navigate(resolveFinishTarget())} />
+        <CompletionStep
+          summary={{
+            ...completionData,
+            secondaryActionLabel: getDeferredTarget() ? t('completion.go_billing') : t('completion.go_dashboard'),
+          }}
+          onPrimaryAction={() => navigate(completionData.primaryActionTo)}
+          onSecondaryAction={handleSecondaryCompletionAction}
+        />
       </OnboardingLayout>
     );
   }
 
+  const shellCopy =
+    step === 'welcome'
+      ? { title: t('shell.welcome_title'), subtitle: t('shell.welcome_subtitle') }
+      : accountType === 'personal'
+        ? { title: t('shell.personal_title'), subtitle: t('shell.personal_subtitle') }
+        : step === 'parish'
+          ? { title: t('shell.manager_parish_title'), subtitle: t('shell.manager_parish_subtitle') }
+          : { title: t('shell.manager_details_title'), subtitle: t('shell.manager_details_subtitle') };
+
   return (
     <OnboardingLayout>
       <div className="space-y-8">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
-          <p className="text-muted-foreground mt-1">
-            {accountType === 'personal' ? t('subtitle_personal') : t('subtitle_manager')}
-          </p>
-        </div>
-
-        {step !== 'welcome' && step !== 'completion' && step !== 'personal_setup' && (
-          <div className="space-y-4">
-            <div className="flex items-center gap-1">
+        <StepShell
+          title={shellCopy.title}
+          subtitle={shellCopy.subtitle}
+          backLabel={step !== 'welcome' ? t('back').replace('← ', '') : undefined}
+          onBack={
+            step === 'personal_setup'
+              ? () => {
+                  setStep('welcome');
+                  setAccountType(null);
+                }
+              : step === 'parish'
+                ? () => {
+                    setStep('welcome');
+                    setAccountType(null);
+                    setDiocese(null);
+                    setDioceseStepDone(false);
+                    setParish(null);
+                  }
+                : step === 'details'
+                  ? () => setStep('parish')
+                  : undefined
+          }
+        >
+          {step !== 'welcome' && step !== 'completion' && step !== 'personal_setup' && (
+            <div className="grid gap-3 sm:grid-cols-2">
               {stepLabels.map((s, i) => {
                 const stepKeys = ['parish', 'details'];
                 const currentIdx = stepKeys.indexOf(step);
                 const isDone = i < currentIdx;
                 const isCurrent = i === currentIdx;
                 return (
-                  <div key={s.key} className="flex-1 flex items-center gap-1">
-                    {i > 0 && (
-                      <div className={`h-0.5 flex-1 rounded ${isDone || isCurrent ? 'bg-primary' : 'bg-muted'}`} />
+                  <div
+                    key={s.key}
+                    className={cn(
+                      'rounded-2xl border px-4 py-3 text-sm font-medium transition-all',
+                      isDone ? 'border-primary/20 bg-primary/[0.06] text-primary' : isCurrent ? 'border-primary/25 bg-white text-slate-950 shadow-sm' : 'border-border/70 bg-slate-50/70 text-slate-500'
                     )}
-                    <div className={`
-                      flex items-center justify-center w-7 h-7 rounded-full border-2 text-xs font-bold shrink-0 transition-all
-                      ${isDone ? 'bg-primary border-primary text-primary-foreground' : ''}
-                      ${isCurrent ? 'border-primary text-primary bg-primary/10' : ''}
-                      ${!isDone && !isCurrent ? 'border-muted-foreground/30 text-muted-foreground' : ''}
-                    `}>
-                      {isDone ? '✓' : i + 1}
+                  >
+                    <span className="text-xs uppercase tracking-[0.18em] text-slate-400">Etapa {i + 1}</span>
+                    <p className="mt-1">{s.label}</p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {error && (
+            <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+              {error}
+            </div>
+          )}
+
+          {step === 'welcome' && (
+            <WelcomeStep
+              onPersonal={() => {
+                trackMarketingEvent('onboarding_started', {
+                  account_type: 'personal',
+                  intent: 'organize_my_class',
+                });
+                setAccountType('personal');
+                setStep('personal_setup');
+              }}
+              onManager={() => {
+                trackMarketingEvent('onboarding_started', {
+                  account_type: 'manager',
+                  intent: 'organize_parish_catechesis',
+                });
+                setAccountType('manager');
+                setStep('parish');
+              }}
+            />
+          )}
+
+          {step === 'personal_setup' && (
+            <div className="rounded-3xl border border-border/70 bg-white/90 p-6 shadow-sm shadow-slate-200/60">
+              <PersonalSetup
+                onComplete={(details) => handleComplete(details)}
+                loading={saving}
+              />
+            </div>
+          )}
+
+          {step === 'parish' && (
+            <div className="space-y-4 rounded-3xl border border-border/70 bg-white/90 p-6 shadow-sm shadow-slate-200/60">
+              {!dioceseStepDone && (
+                <>
+                  <DioceseStep
+                    selected={diocese}
+                    onSelect={(d) => setDiocese(d)}
+                    onSkip={() => setDioceseStepDone(true)}
+                    onContinue={() => {
+                      trackMarketingEvent('onboarding_step_completed', {
+                        account_type: 'manager',
+                        step: 'diocese_selected',
+                        has_diocese: true,
+                      });
+                      setDioceseStepDone(true);
+                    }}
+                  />
+                </>
+              )}
+
+              {dioceseStepDone && (
+                <>
+                  {diocese && (
+                    <div className="flex items-center gap-3 rounded-2xl border border-primary/20 bg-primary/[0.06] p-4">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary/70">{t('diocese_selected')}</p>
+                        <p className="text-sm font-semibold text-slate-950">{diocese.name}</p>
+                      </div>
+                      <button onClick={() => { setDiocese(null); setDioceseStepDone(false); }} className="ml-auto text-xs text-muted-foreground hover:text-foreground">
+                        {t('change_diocese')}
+                      </button>
                     </div>
-                  </div>
-                );
-              })}
+                  )}
+                  <ParishStep
+                    diocese={diocese}
+                    selected={parish}
+                    initialState={diocese?.state}
+                    onSelect={(p) => {
+                      setParish(p);
+                    }}
+                    onContinue={() => {
+                      trackMarketingEvent('onboarding_step_completed', {
+                        account_type: 'manager',
+                        step: 'parish_selected',
+                        parish_source: parish?.isNew ? 'manual' : parish?.osmId ? 'osm' : 'existing',
+                      });
+                      setStep('details');
+                    }}
+                  />
+                </>
+              )}
             </div>
-            <div className="flex items-center justify-between">
-              {stepLabels.map((s, i) => {
-                const stepKeys = ['parish', 'details'];
-                const currentIdx = stepKeys.indexOf(step);
-                const isDone = i < currentIdx;
-                const isCurrent = i === currentIdx;
-                return (
-                  <span key={s.key} className={`text-xs ${isCurrent ? 'font-semibold text-foreground' : isDone ? 'text-primary' : 'text-muted-foreground'}`}>
-                    {s.label}
-                  </span>
-                );
-              })}
+          )}
+
+
+          {step === 'details' && (
+            <div className="rounded-3xl border border-border/70 bg-white/90 p-6 shadow-sm shadow-slate-200/60">
+              <CoordinatorDetails
+                parishName={parish?.name || t('parish.default_name')}
+                onComplete={handleComplete}
+              />
             </div>
-          </div>
-        )}
-
-        {error && (
-          <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
-        )}
-
-        {step === 'welcome' && (
-          <WelcomeStep
-            onPersonal={() => { setAccountType('personal'); setStep('personal_setup'); }}
-            onManager={() => { setAccountType('manager'); setStep('parish'); }}
-          />
-        )}
-        {step === 'personal_setup' && (
-          <>
-            <button
-              onClick={() => { setStep('welcome'); setAccountType(null); }}
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              {t('back')}
-            </button>
-            <PersonalSetup
-              onComplete={(details) => handleComplete(details)}
-              loading={saving}
-            />
-          </>
-        )}
-
-        {step === 'parish' && (
-          <>
-            {!dioceseStepDone && (
-              <>
-                <button
-                  onClick={() => { setStep('welcome'); setAccountType(null); }}
-                  className="text-sm text-muted-foreground hover:text-foreground mb-2"
-                >
-                  {t('back')}
-                </button>
-                <DioceseStep
-                  selected={diocese}
-                  onSelect={(d) => setDiocese(d)}
-                  onSkip={() => setDioceseStepDone(true)}
-                />
-                {diocese && (
-                  <div className="flex justify-between mt-4">
-                    <button onClick={() => setDiocese(null)} className="text-sm text-muted-foreground hover:text-foreground">
-                      {t('change_diocese')}
-                    </button>
-                    <button
-                      onClick={() => setDioceseStepDone(true)}
-                      className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground h-10 px-4 py-2 text-sm font-medium"
-                    >
-                      {t('continue')}
-                    </button>
-                  </div>
-                )}
-              </>
-            )}
-            {dioceseStepDone && (
-              <>
-                {diocese && (
-                  <div className="rounded-lg bg-secondary/10 border border-secondary/20 p-3 mb-4 flex items-center gap-2">
-                    <span className="text-xs font-medium text-secondary">{t('diocese_selected')}: {diocese.name}</span>
-                    <button onClick={() => { setDiocese(null); setDioceseStepDone(false); }} className="text-xs text-muted-foreground hover:text-foreground ml-auto">
-                      {t('change_diocese')}
-                    </button>
-                  </div>
-                )}
-                <ParishStep
-                  diocese={diocese}
-                  selected={parish}
-                  initialState={diocese?.state}
-                  onSelect={(p) => { setParish(p); }}
-                />
-              </>
-            )}
-          </>
-        )}
-        {step === 'parish' && parish && (
-          <div className="flex justify-between">
-            <button onClick={() => setParish(null)} className="text-sm text-muted-foreground hover:text-foreground">
-              {t('back')}
-            </button>
-            <button
-              onClick={() => setStep('details')}
-              className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground h-10 px-4 py-2 text-sm font-medium"
-            >
-              {t('continue')}
-            </button>
-          </div>
-        )}
-
-        {step === 'details' && (
-          <div>
-            <button onClick={() => setStep('parish')} className="text-sm text-muted-foreground hover:text-foreground mb-4 block">
-              {t('back')}
-            </button>
-            <CoordinatorDetails
-              parishName={parish?.name || t('parish.default_name')}
-              onComplete={handleComplete}
-            />
-          </div>
-        )}
+          )}
+        </StepShell>
 
         {saving && (
-          <div className="fixed inset-0 bg-background/50 flex items-center justify-center z-50">
-            <div className="bg-card border rounded-xl p-6 shadow-elevation-md text-center">
-              <p className="text-sm font-medium">{t('configuring')}</p>
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/55 backdrop-blur-sm">
+            <div className="rounded-3xl border border-border/70 bg-white px-8 py-6 text-center shadow-lg shadow-slate-300/30">
+              <p className="text-lg font-semibold text-slate-950">{t('configuring')}</p>
             </div>
           </div>
         )}
@@ -368,3 +481,4 @@ export default function OnboardingPage() {
     </OnboardingLayout>
   );
 }
+

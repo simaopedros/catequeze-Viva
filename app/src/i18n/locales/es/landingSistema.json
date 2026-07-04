@@ -4,9 +4,9 @@
     "headline_line2": "en un solo lugar",
     "subheadline": "Control de asistencia, gestión de clases, comunicación con familias e informes para coordinadores. Todo integrado.",
     "badge": "Gestión completa para catequesis",
-    "cta_primary": "Probar gratis",
+    "cta_primary": "Empezar ahora",
     "cta_secondary": "Ver recursos",
-    "trust_signals": "Sin tarjeta • Plan gratuito • Comience en 2 minutos"
+    "trust_signals": "Plan Único o Ilimitado • Empieza en 2 minutos • Cancela cuando quieras"
   },
   "features_title": "Todo para gestionar su catequesis",
   "features_order": [
@@ -91,5 +91,6 @@
     "privacy": "Privacidad",
     "terms": "Términos",
     "contact": "Contacto"
-  }
+  },
+  "create_account": "Crear cuenta"
 }

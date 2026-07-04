@@ -4,7 +4,6 @@ import { Button } from '../../client/components/ui/button';
 import { generateCheckoutSession } from 'wasp/client/operations';
 import { PaymentPlanId } from '../../payment/plans';
 import { cn } from '../../client/utils';
-import { detectCurrency } from '../../shared/currency';
 import { trackMarketingEvent } from '../../client/analytics/marketingAnalytics';
 
 interface BuyCreditsButtonProps {
@@ -40,7 +39,7 @@ export function BuyCreditsButton({ size = 'sm', variant = 'default', pack, label
         interval: 'monthly',
         placement: 'buy_credits_button',
       });
-      const result = await generateCheckoutSession({ planId, interval: 'monthly', currency: detectCurrency() });
+      const result = await generateCheckoutSession({ planId, interval: 'monthly' });
       if (result.sessionUrl) {
         window.location.href = result.sessionUrl;
       }

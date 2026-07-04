@@ -4,9 +4,9 @@
     "headline_line2": "in minutes with AI",
     "subheadline": "Let AI generate the complete script: objective, activity, Bible reading, reflection, activity and prayer. Based on Catholic doctrine.",
     "badge": "Theologically trained AI",
-    "cta_primary": "Try AI free",
+    "cta_primary": "Try the AI",
     "cta_secondary": "See how it works",
-    "trust_signals": "No credit card • 3 free credits • CNBB theological base"
+    "trust_signals": "Single or Unlimited plan • CNBB theological base • Cancel anytime"
   },
   "features_title": "AI that understands catechesis",
   "features_subtitle": "Trained on the CNBB Bible, the Catechism and the Directory for Catechesis.",
@@ -20,7 +20,7 @@
   ],
   "ai_showcase_title": "Your next meeting ready in under 30 seconds",
   "ai_showcase_subtitle": "Enter the theme and age group. AI generates the complete meeting — from welcome to closing prayer.",
-  "ai_showcase_cta": "Try AI for free",
+  "ai_showcase_cta": "Try the AI",
   "mission_title": "Less time preparing. More time evangelizing.",
   "mission_text": "Every minute AI saves on preparation is an extra minute for what truly matters: being present for your catechumens.",
   "mockup_dashboard": {
@@ -95,5 +95,6 @@
     "privacy": "Privacy",
     "terms": "Terms",
     "contact": "Contact"
-  }
+  },
+  "create_account": "Create account"
 }

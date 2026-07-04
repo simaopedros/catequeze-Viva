@@ -36,7 +36,9 @@ interface TenantBillingStub {
 }
 
 // Institutional plans that can act as an "umbrella" license.
-const INSTITUTIONAL_PLANS = ['PARISH_ESSENTIAL', 'PARISH_COMPLETE', 'DIOCESE', 'PARISH'];
+// In the simplified structure, UNLIMITED is the only institutional plan, but
+// legacy values are kept so pre-migration data still resolves correctly.
+const INSTITUTIONAL_PLANS = ['UNLIMITED', 'PARISH_COMPLETE', 'PARISH_ESSENTIAL', 'DIOCESE', 'PARISH'];
 
 function isInstPlan(plan: string | null | undefined): boolean {
   return !!plan && INSTITUTIONAL_PLANS.includes(plan.toUpperCase());
@@ -107,9 +109,9 @@ export async function resolveEffectiveBilling(
       },
     });
 
-    if (dioceseBilling && isBillingActive(dioceseBilling) && dioceseBilling.plan === 'DIOCESE') {
+    if (dioceseBilling && isBillingActive(dioceseBilling) && (dioceseBilling.plan === 'UNLIMITED' || dioceseBilling.plan === 'DIOCESE')) {
       return {
-        plan: 'DIOCESE',
+        plan: dioceseBilling.plan,
         status: dioceseBilling.status,
         trialEndsAt: dioceseBilling.trialEndsAt,
         maxClasses: dioceseBilling.maxClasses,
@@ -196,8 +198,8 @@ export async function resolveAllEffectiveBilling(
     // 1. Diocese umbrella
     if (parish.dioceseId && dioceseBillingMap.has(parish.dioceseId)) {
       const db: any = dioceseBillingMap.get(parish.dioceseId);
-      if (isBillingActive(db) && db.plan === 'DIOCESE') {
-        result.set(parish.id, { plan: 'DIOCESE' as any, status: db.status, trialEndsAt: db.trialEndsAt, maxClasses: db.maxClasses, maxCatechumens: db.maxCatechumens, maxCatechists: db.maxCatechists, maxParishes: db.maxParishes });
+      if (isBillingActive(db) && (db.plan === 'UNLIMITED' || db.plan === 'DIOCESE')) {
+        result.set(parish.id, { plan: db.plan as any, status: db.status, trialEndsAt: db.trialEndsAt, maxClasses: db.maxClasses, maxCatechumens: db.maxCatechumens, maxCatechists: db.maxCatechists, maxParishes: db.maxParishes });
         continue;
       }
     }
@@ -259,7 +261,7 @@ export async function resolveNewParishBilling(
       where: { dioceseId: opts.dioceseId },
       select: { plan: true, status: true, trialEndsAt: true },
     });
-    if (dioceseBilling && isBillingActive(dioceseBilling) && dioceseBilling.plan === 'DIOCESE') {
+    if (dioceseBilling && isBillingActive(dioceseBilling) && (dioceseBilling.plan === 'UNLIMITED' || dioceseBilling.plan === 'DIOCESE')) {
       return { skip: true };
     }
   }
@@ -290,10 +292,9 @@ export async function resolveNewParishBilling(
 
 function requiredPlan(currentPlan: string | null): string {
   const p = resolvePlanIdOrFree(currentPlan);
-  if (p === 'catechist_free') return 'Catequista Pro';
-  if (p === 'catechist_pro') return 'Catequista IA';
-  if (p === 'parish_essential') return 'Paróquia Completa';
-  return 'Diocese';
+  if (p === 'unlimited') return 'Ilimitado';
+  // catechist_free (no subscription) or single → suggest upgrading to Unlimited.
+  return 'Ilimitado';
 }
 
 function buildLimitMessage(
@@ -440,7 +441,7 @@ export async function assertCanCreateClass(
   if (maxClasses === null) return;
 
   let activeCount: number;
-  if (!billing && (effectivePlan === 'CATECHIST_FREE' || effectivePlan === 'CATECHIST_PRO')) {
+  if (!billing && (effectivePlan === 'CATECHIST_FREE' || effectivePlan === 'SINGLE')) {
     const myClassLinks = await context.entities.ClassCatechist.findMany({
       where: { userId: context.user.id },
       select: { classId: true },
@@ -500,7 +501,7 @@ export async function assertCanEnrollCatechumen(
   if (maxCatechumens === null) return;
 
   let enrolledCount: number;
-  if (!billing && (effectivePlan === 'CATECHIST_FREE' || effectivePlan === 'CATECHIST_PRO')) {
+  if (!billing && (effectivePlan === 'CATECHIST_FREE' || effectivePlan === 'SINGLE')) {
     const myClassLinks = await context.entities.ClassCatechist.findMany({
       where: { userId: context.user.id },
       select: { classId: true },

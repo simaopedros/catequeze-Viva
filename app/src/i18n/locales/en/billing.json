@@ -1,13 +1,13 @@
 {
   "title": "Billing",
-  "personal_scope": "Personal subscription · covers only your personal space",
-  "institutional_scope": "Institutional subscription · covers {{name}}",
+  "personal_scope": "Personal subscription for your space",
+  "institutional_scope": "Pastoral workspace subscription for {{name}}",
   "this_institution": "this institution",
   "current_plan": "Current plan:",
   "active": "Active",
   "plan_mismatch_institutional": "The selected plan is institutional. Switch to a parish/diocese workspace to subscribe.",
   "plan_mismatch_personal": "The selected plan is personal. Return to your personal space to subscribe.",
-  "corporate_plan": "Corporate Managed Plan",
+  "corporate_plan": "Managed plan",
   "diocese_responsible": "Responsible diocese:",
   "not_informed": "Not informed",
   "diocese_admins": "Diocesan administrator(s):",
@@ -19,14 +19,14 @@
   "classes": "Classes",
   "catechumens": "Catechumens",
   "subscription_active": "Active subscription",
-  "free_plan": "Free plan",
+  "free_plan": "No subscription",
   "awaiting_payment": "Awaiting payment",
-  "active_desc": "Your subscription is active. Enjoy all features.",
-  "upgrade_desc": "Upgrade to access unlimited features.",
-  "payment_desc": "Complete payment to activate your plan.",
+  "active_desc": "Your plan is active. Keep meetings, history, and families in the same flow.",
+  "upgrade_desc": "Choose the plan to continue with meetings, history, and follow-up without interruptions.",
+  "payment_desc": "Complete payment to unlock full access.",
   "cancel_subscription": "Cancel subscription",
   "cancelling": "Cancelling…",
-  "manage_payment": "Manage Payment",
+  "manage_payment": "Manage payment",
   "classes_quota_label": "Classes usage",
   "catechumens_quota_label": "Catechumens usage",
   "ai_credits_quota_label": "AI credits usage",
@@ -47,7 +47,7 @@
   "base_plan_btn": "Base plan",
   "institutional_plan_btn": "Institutional plan",
   "institutional_requires_admin": "Requires parish administrator",
-  "subscribe": "Subscribe",
+  "subscribe": "Go to payment",
   "redirecting": "Redirecting…",
   "selected": "Selected",
   "current": "Current",
@@ -56,52 +56,47 @@
   "payment_history_desc": "Payments are processed securely by Stripe. History will be available after the first charge.",
   "checkout_error": "Error starting payment. Please try again.",
   "cancel_success": "Subscription cancelled.",
-  "cancel_error": "Error cancelling. Contact support.",
+  "cancel_error": "Error cancelling. Please contact support.",
   "cancel_dialog_title": "Cancel subscription",
   "cancel_dialog_desc": "Are you sure you want to cancel your subscription? You will lose access to premium features at the end of the current period.",
   "cancel_confirm": "Yes, cancel",
   "cancel_keep": "Keep subscription",
   "cancel_scheduled": "Cancellation scheduled",
-  "cancel_scheduled_desc": "Your subscription will be cancelled at the end of the current billing period. You can continue using all features until then.",
-  "free": "Free",
+  "cancel_scheduled_desc": "Your subscription will be cancelled at the end of the current period. Until then, you can continue using all features.",
+  "free": "—",
   "monthly": "Monthly",
   "annual": "Annual",
   "annual_savings": "17% off",
   "plans": {
     "catechist_free": {
-      "name": "Catechist Free",
-      "price": "Free",
-      "features": ["1 class", "15 catechumens", "Basic attendance", "Liturgical calendar", "3 initial AI credits"]
+      "name": "No subscription",
+      "price": "—",
+      "features": []
     },
-    "catechist_pro": {
-      "name": "Catechist Pro",
-      "price": "$5/month",
-      "annual_price": "$50/year ($4.17/month)",
-      "features": ["3 classes", "150 catechumens", "Advanced reports", "Priority support", "5 AI credits/month"]
+    "single": {
+      "name": "Single Plan",
+      "price": "R$ 29/month",
+      "annual_price": "R$ 290/year (~R$ 24/month)",
+      "features": [
+        "1 parish",
+        "1 class",
+        "150 catechumens",
+        "Attendance and liturgical calendar",
+        "15 AI credits/month"
+      ]
     },
-    "catechist_ai": {
-      "name": "Catechist AI",
-      "price": "$9/month",
-      "annual_price": "$90/year ($7.50/month)",
-      "features": ["Everything in Pro", "AI meeting generator", "Automatic annual planning", "Activities and quizzes", "Theological assistant", "WhatsApp messages", "20 credits/month"]
-    },
-    "parish_essential": {
-      "name": "Parish Essential",
-      "price": "$19/month",
-      "annual_price": "$190/year ($15.83/month)",
-      "features": ["5 catechists", "200 catechumens", "Unlimited classes", "Integrated communication", "Documents and certificates", "Coordinator dashboard", "30 AI credits/month"]
-    },
-    "parish_complete": {
-      "name": "Parish Complete",
-      "price": "$29/month",
-      "annual_price": "$290/year ($24.17/month)",
-      "features": ["Unlimited catechists", "Unlimited catechumens", "Everything in Essential", "Integration API", "Dedicated onboarding", "50 AI credits/month"]
-    },
-    "diocese": {
-      "name": "Diocese",
-      "price": "$99/month",
-      "annual_price": "$990/year ($82.50/month)",
-      "features": ["Up to 10 parishes", "Everything in Complete", "Official library", "Consolidated analytics", "Dedicated onboarding", "50 AI credits per parish/month"]
+    "unlimited": {
+      "name": "Unlimited Plan",
+      "price": "R$ 99/month",
+      "annual_price": "R$ 990/year (~R$ 82/month)",
+      "features": [
+        "Unlimited parishes and classes",
+        "Unlimited catechumens and catechists",
+        "AI meeting and activity generator",
+        "Integrated communication",
+        "Documents and certificates",
+        "50 AI credits/month"
+      ]
     }
   },
   "checkout_success": "🥳 Payment Successful!",
@@ -118,8 +113,8 @@
   "no_licenses": "No licenses found.",
   "limit_reached_title": "Plan limit reached",
   "limit_reached_label": "{{label}} limit reached",
-  "limit_reached_description": "Your <1>{{currentPlanName}}</1> plan allows up to <2>{{maxAllowed}} {{label}}{{plural}}</2>. You currently have <3>{{currentCount}}</3>.",
-  "limit_reached_contact": "Contact the <1>parish coordinator</1> to expand plan limits.",
+  "limit_reached_description": "Your <1>{{currentPlanName}}</1> plan allows up to <2>{{maxAllowed}} {{label}}{{plural}}</2>. You already have <3>{{currentCount}}</3>. Upgrade now to continue.",
+  "limit_reached_contact": "Talk to the <1>parish coordinator</1> to expand plan limits.",
   "upgrade_to": "Upgrade to {{plan}}",
   "upgrade_btn": "Upgrade",
   "limit_labels": {
@@ -127,5 +122,94 @@
     "class": "class",
     "catechumen": "catechumen",
     "catechist": "catechist"
-  }
+  },
+  "scope_badge_personal": "Personal subscription",
+  "scope_badge_institutional": "Institutional subscription",
+  "pricing_section_subtitle": "Choose the plan that best fits your catechesis.",
+  "unlimited": "unlimited",
+  "limit_caption": "Limit {{limit}}",
+  "conversion_badge": "Subscription",
+  "conversion_payment_title": "Confirm your subscription",
+  "conversion_required_title": "Choose your plan to continue",
+  "conversion_personal_title": "Choose the plan for your personal space",
+  "conversion_institutional_title": "Choose the plan for your pastoral workspace",
+  "conversion_required_desc": "Your signup is ready. Now choose the plan to start using the platform without blocks.",
+  "conversion_selected_desc": "This is the right plan for your space. Confirm the subscription to start using everything already prepared.",
+  "conversion_personal_desc": "Your personal space is ready to receive your class. Now you only need to confirm the subscription.",
+  "conversion_institutional_desc": "Your pastoral workspace is ready to begin. Now you only need to confirm the subscription to unlock classes, team access, and follow-up.",
+  "conversion_checklist_title": "What is already ready",
+  "conversion_step_account_ready": "Your signup has already been created.",
+  "conversion_step_workspace_personal": "Your personal space is already available.",
+  "conversion_step_workspace_institutional": "Your pastoral workspace is already available.",
+  "conversion_step_first_class": "Your first class has already been started.",
+  "conversion_step_next_action": "You can already create your first class.",
+  "conversion_step_unlock": "You only need to confirm the subscription to begin.",
+  "conversion_plans_title": "Choose your plan",
+  "conversion_plans_subtitle": "Select the plan and continue to secure payment.",
+  "recommended_plan": "Recommended for this context",
+  "subscribe_plan": "Subscribe to {{plan}}",
+  "recommended_plan_personal": "To start your first class",
+  "recommended_plan_institutional": "To unlock your team",
+  "plan_mismatch_institutional_cta": "Create parish workspace",
+  "upgrade_supporting_copy": "The upgrade appears exactly when your usage has already proven value. Keep what you built and unlock the next step without rework.",
+  "upgrade_journey_badge": "Plan expansion",
+  "upgrade_plans_title": "Unlock the next step",
+  "upgrade_plans_subtitle": "Choose the subscription that removes this blocker and keeps your catechesis in the same flow.",
+  "upgrade_checklist_title": "What you keep with the upgrade",
+  "upgrade_checklist_workspace_ready": "Your current workspace is already ready to keep growing.",
+  "upgrade_checklist_classes_active": "{{count}} active class stays in the same workspace.",
+  "upgrade_checklist_catechumens_active": "{{count}} catechumens already registered keep their history and follow-up.",
+  "upgrade_checklist_keep_history": "Your history, meetings, and attendance stay in the same place.",
+  "upgrade_journey": {
+    "generic": {
+      "title": "Keep going without blocking your work",
+      "description": "Upgrade to {{plan}} and keep everything you already organized active in the same workspace.",
+      "cta": "Continue without blockers",
+      "checklist": "You unlock the next step without redoing setup or losing history.",
+      "toast_description": "Your usage already proved value. Unlock the next step without interrupting catechesis."
+    },
+    "required": {
+      "title": "Your workspace is ready to begin",
+      "description": "Choose a plan to unlock access and continue the work you just started.",
+      "cta": "Choose plan",
+      "checklist": "Only the subscription confirmation is missing to start without blockers.",
+      "toast_description": "Choose a plan to unlock access without interrupting the start of your catechesis."
+    },
+    "class_limit": {
+      "title": "Your next class needs more room",
+      "description": "You already use {{currentCount}} of {{maxAllowed}} class on {{currentPlanName}}. Upgrade to {{plan}} and open the next class without losing attendance, meetings, or history.",
+      "cta": "Unlock next class",
+      "checklist": "You unlock the next class without splitting attendance, planning, or follow-up.",
+      "toast_description": "Your current class is already active. Unlock the next one without interrupting follow-up."
+    },
+    "catechumen_limit": {
+      "title": "Your catechesis has reached the current limit",
+      "description": "You already registered {{currentCount}} of {{maxAllowed}} catechumens on {{currentPlanName}}. Upgrade to {{plan}} and keep following everyone in one place.",
+      "cta": "Unlock more catechumens",
+      "checklist": "Keep registering people without spreading families, attendance, and history across different places.",
+      "toast_description": "You reached the current catechumen limit. Unlock more capacity without breaking follow-up."
+    },
+    "parish_limit": {
+      "title": "Your next workspace needs to be unlocked",
+      "description": "You already reached the parish limit on {{currentPlanName}}. Upgrade to {{plan}} and add another pastoral workspace under the same control.",
+      "cta": "Unlock another parish",
+      "checklist": "Expand to another workspace without scattering your operation.",
+      "toast_description": "You already reached the current parish limit. Unlock another workspace without splitting operations."
+    },
+    "catechist_limit": {
+      "title": "Your team outgrew the current plan",
+      "description": "You already reached the catechist limit on {{currentPlanName}}. Upgrade to {{plan}} and invite the full team into the same workspace.",
+      "cta": "Unlock full team",
+      "checklist": "Bring in more catechists without moving classes, messages, or history elsewhere.",
+      "toast_description": "Your catechesis now depends on more people. Unlock the full team in the same workspace."
+    }
+  },
+  "switch_annual_title": "Save by switching to the annual plan",
+  "switch_annual_desc": "You pay {{savings}} less per year (~{{equivalent}}/month). The difference is charged now and the cycle becomes annual.",
+  "switch_annual_cta": "Switch to annual",
+  "switch_to_annual_success": "Plan switched to annual!",
+  "switch_to_monthly_success": "Plan switched to monthly!",
+  "switch_to_monthly": "Switch back to monthly",
+  "switch_interval_error": "Failed to change the billing interval. Try again.",
+  "switching": "Switching..."
 }

@@ -11,13 +11,20 @@ import { CoordinatorDashboard } from '../components/dashboard/CoordinatorDashboa
 import { InstitutionalDashboard } from '../components/dashboard/InstitutionalDashboard';
 import { SkeletonPage } from '../../client/components/Skeletons';
 
-const INSTITUTIONAL_PLANS = ['parish', 'parish_essential', 'parish_complete', 'diocese'];
+const INSTITUTIONAL_PLANS = ['unlimited', 'parish', 'parish_essential', 'parish_complete', 'diocese'];
 const INSTITUTIONAL_TYPES = ['PARISH', 'DIOCESE'];
 const STAFF_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'];
 
 export default function DashboardPage() {
   const { activeParishId } = useActiveParish();
-  const { data: stats, isLoading: loading } = useQuery(getDashboardStats, { parishId: activeParishId || undefined });
+  const { data: stats, isLoading: loading } = useQuery(
+    getDashboardStats,
+    { parishId: activeParishId || undefined },
+    {
+      staleTime: 60000,
+      refetchOnWindowFocus: false,
+    }
+  );
   const { userRole, isLoading: loadingCtx } = useUserContext();
   const { workspaceType, workspacePlan } = useActiveWorkspace();
 
@@ -51,3 +58,4 @@ export default function DashboardPage() {
       <DashboardComponent stats={stats} />
   );
 }
+

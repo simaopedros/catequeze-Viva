@@ -1,46 +1,92 @@
 /**
- * Grandfathering script — marks all pre-v2 subscribers with pricingVersion: 1
- * so they keep their legacy entitlements (e.g., Diocese 50 credits/user).
+ * One-off migration: collapse pre-simplification plans onto the new
+ * 2-plan structure.
  *
- * Run this ONCE before enabling ENABLE_PRICING_V2 in production.
+ * Mapping:
+ *   TenantBilling (ACTIVE/PAST_DUE/TRIAL not expired):
+ *     PARISH_COMPLETE, PARISH, DIOCESE  → UNLIMITED
+ *     PARISH_ESSENTIAL, CATECHIST_PRO, CATECHIST_AI → SINGLE
+ *     CATECHIST_FREE                    → unchanged (blocked sentinel)
+ *   User (subscriptionStatus active-like):
+ *     parish_complete, parish, diocese  → unlimited
+ *     parish_essential, catechist_pro, catechist_ai → single
+ *     catechist_free                    → unchanged
+ *   Inactive/expired records            → catechist_free (blocked)
  *
- * Usage (via Wasp db seed or manual):
+ * Run ONCE in homolog after deploying this refactor (then in production):
  *   wasp db seed   # if registered as a seed
  *   or import and call from a custom script/operation.
+ *
+ * Safe to re-run — idempotent (only updates records still on legacy ids).
  */
 import type { PrismaClient } from '@prisma/client';
 
+// Legacy TenantBilling.plan values → new canonical (uppercase) value.
+// Typed as plain string[] but constrained to valid enum values; the Prisma
+// `in` filter accepts the enum-typed arrays built from these in the queries.
+const TENANT_TO_UNLIMITED = ['PARISH_COMPLETE', 'PARISH', 'DIOCESE'];
+const TENANT_TO_SINGLE = ['PARISH_ESSENTIAL', 'CATECHIST_PRO', 'CATECHIST_AI'];
+
+// Legacy User.subscriptionPlan values → new canonical (lowercase) value.
+const USER_TO_UNLIMITED = ['parish_complete', 'parish', 'diocese'];
+const USER_TO_SINGLE = ['parish_essential', 'catechist_pro', 'catechist_ai'];
+
 export async function migrateLegacyPlans(prisma: PrismaClient): Promise<{
-  usersMarked: number;
-  tenantBillingsMarked: number;
+  tenantToUnlimited: number;
+  tenantToSingle: number;
+  usersToUnlimited: number;
+  usersToSingle: number;
+  usersBlocked: number;
 }> {
-  // Mark all existing users with an active paid subscription as v1
-  const userResult = await prisma.user.updateMany({
-    where: {
-      subscriptionStatus: 'active',
-      subscriptionPlan: { not: null },
-      pricingVersion: null, // only untouched records
-    },
-    data: { pricingVersion: 1 },
+  // ── TenantBilling ────────────────────────────────────────────────────
+  // Only migrate billings that still grant access; leave CANCELED ones as-is.
+  // `as any` on the `in` filters: the string literals are valid BillingPlan /
+  // BillingStatus enum values, but TS can't narrow string[] to the enum union.
+  const activeBillingStatuses = ['ACTIVE', 'PAST_DUE', 'TRIAL'];
+
+  const tenantUnlimited = await prisma.tenantBilling.updateMany({
+    where: { plan: { in: TENANT_TO_UNLIMITED as any }, status: { in: activeBillingStatuses as any } },
+    data: { plan: 'UNLIMITED', pricingVersion: 3 },
   });
 
-  // Mark all existing TenantBilling records with a paid plan as v1
-  const billingResult = await prisma.tenantBilling.updateMany({
+  const tenantSingle = await prisma.tenantBilling.updateMany({
+    where: { plan: { in: TENANT_TO_SINGLE as any }, status: { in: activeBillingStatuses as any } },
+    data: { plan: 'SINGLE', pricingVersion: 3 },
+  });
+
+  // ── User ─────────────────────────────────────────────────────────────
+  const activeLikeStatuses = ['active', 'cancel_at_period_end', 'past_due'];
+
+  const usersUnlimited = await prisma.user.updateMany({
+    where: { subscriptionPlan: { in: USER_TO_UNLIMITED }, subscriptionStatus: { in: activeLikeStatuses } },
+    data: { subscriptionPlan: 'unlimited', pricingVersion: 3 },
+  });
+
+  const usersSingle = await prisma.user.updateMany({
+    where: { subscriptionPlan: { in: USER_TO_SINGLE }, subscriptionStatus: { in: activeLikeStatuses } },
+    data: { subscriptionPlan: 'single', pricingVersion: 3 },
+  });
+
+  // Users whose subscription is no longer active-like → block (sentinel).
+  // Only touch those still on a legacy plan to avoid overwriting fresh data.
+  const usersBlocked = await prisma.user.updateMany({
     where: {
-      plan: { notIn: ['CATECHIST_FREE'] },
-      status: { in: ['ACTIVE', 'TRIAL'] },
-      pricingVersion: null,
+      subscriptionPlan: { in: [...USER_TO_UNLIMITED, ...USER_TO_SINGLE] },
+      subscriptionStatus: { notIn: activeLikeStatuses },
     },
-    data: { pricingVersion: 1 },
+    data: { subscriptionPlan: 'catechist_free', pricingVersion: 3 },
   });
 
   console.log(
-    `[migrateLegacyPlans] Grandfathered ${userResult.count} users and ` +
-    `${billingResult.count} tenant billing records to pricingVersion: 1.`,
+    `[migrateLegacyPlans] TenantBilling: ${tenantUnlimited.count} → UNLIMITED, ${tenantSingle.count} → SINGLE. ` +
+    `Users: ${usersUnlimited.count} → unlimited, ${usersSingle.count} → single, ${usersBlocked.count} blocked.`,
   );
 
   return {
-    usersMarked: userResult.count,
-    tenantBillingsMarked: billingResult.count,
+    tenantToUnlimited: tenantUnlimited.count,
+    tenantToSingle: tenantSingle.count,
+    usersToUnlimited: usersUnlimited.count,
+    usersToSingle: usersSingle.count,
+    usersBlocked: usersBlocked.count,
   };
 }

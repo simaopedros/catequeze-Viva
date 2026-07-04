@@ -8,7 +8,7 @@
   "plan": "Seu Plano",
   "credits": "Créditos",
   "credits_value": "{{count}} créditos",
-  "free_plan": "Plano Gratuito",
+  "free_plan": "Sem assinatura",
   "manage_payment": "Gerenciar Pagamento",
   "buy_credits": "Comprar Mais Créditos",
   "plan_past_due": "O pagamento do seu plano {{plan}} está em atraso. Atualize as informações de pagamento da sua assinatura.",

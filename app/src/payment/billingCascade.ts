@@ -1,6 +1,6 @@
 /**
  * Shared billing-cascade helpers used by both the in-app cancellation action
- * (payment/operations.ts) and webhooks (stripe, woovi).
+ * (payment/operations.ts) and the Stripe webhook.
  *
  * All plan IDs are resolved through pricing.ts (single source of truth).
  */
@@ -70,51 +70,57 @@ export async function cascadeCancelToTenantBilling(context: any, userId: string)
 }
 
 type BillingPlanValue =
-  | 'CATECHIST_FREE' | 'CATECHIST_PRO' | 'CATECHIST_AI'
-  | 'PARISH' | 'PARISH_ESSENTIAL' | 'PARISH_COMPLETE' | 'DIOCESE';
+  | 'CATECHIST_FREE' | 'SINGLE' | 'UNLIMITED';
 
 /**
  * Activate the given paid plan for every tenant billed through this user.
  * Sets pricingVersion to the current PRICING_VERSION.
+ *
+ * In the simplified plan structure, `UNLIMITED` is the only institutional plan
+ * and covers both parish and diocese workspaces. `SINGLE` is personal and is
+ * not cascaded to TenantBilling (it's tracked on User.subscription*).
  */
 export async function cascadeActivatePlanToTenantBilling(
   context: any,
   userId: string,
   billingPlan: BillingPlanValue,
 ): Promise<void> {
-  if (billingPlan === 'DIOCESE') {
-    const dioceseIds = await getUserDioceseIds(context, userId);
-    for (const dioceseId of dioceseIds) {
-      const existing = await context.entities.TenantBilling.findUnique({
-        where: { dioceseId },
-      });
-      if (existing) {
-        await context.entities.TenantBilling.update({
-          where: { id: existing.id },
-          data: {
-            plan: 'DIOCESE', status: 'ACTIVE', currentPeriodEnd: getNextPeriodEnd(),
-            pricingVersion: PRICING_VERSION,
-          },
-        });
-      } else {
-        await context.entities.TenantBilling.create({
-          data: {
-            dioceseId, plan: 'DIOCESE', status: 'ACTIVE', currentPeriodEnd: getNextPeriodEnd(),
-            pricingVersion: PRICING_VERSION,
-          },
-        });
-      }
-    }
+  if (billingPlan !== 'UNLIMITED') {
+    // Only the Unlimited plan cascades to TenantBilling.
     return;
   }
 
-  // Institutional plans: activate every institutional parish the user owns.
   const planLimits = getDefaultLimitsForPlan(billingPlan);
 
+  // 1. Activate every diocese the user is responsible for.
+  const dioceseIds = await getUserDioceseIds(context, userId);
+  for (const dioceseId of dioceseIds) {
+    const existing = await context.entities.TenantBilling.findUnique({
+      where: { dioceseId },
+    });
+    if (existing) {
+      await context.entities.TenantBilling.update({
+        where: { id: existing.id },
+        data: {
+          plan: 'UNLIMITED', status: 'ACTIVE', currentPeriodEnd: getNextPeriodEnd(),
+          pricingVersion: PRICING_VERSION,
+        },
+      });
+    } else {
+      await context.entities.TenantBilling.create({
+        data: {
+          dioceseId, plan: 'UNLIMITED', status: 'ACTIVE', currentPeriodEnd: getNextPeriodEnd(),
+          pricingVersion: PRICING_VERSION,
+        },
+      });
+    }
+  }
+
+  // 2. Activate every institutional parish the user owns.
   await context.entities.TenantBilling.updateMany({
     where: { parish: { ownerId: userId, type: { not: 'PERSONAL' } } },
     data: {
-      plan: billingPlan,
+      plan: 'UNLIMITED',
       status: 'ACTIVE',
       maxClasses: planLimits.maxClasses,
       maxCatechumens: planLimits.maxCatechumens,

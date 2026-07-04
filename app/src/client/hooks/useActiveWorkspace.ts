@@ -61,7 +61,10 @@ function createWorkspaceStore() {
 const workspaceStore = createWorkspaceStore();
 
 export function useActiveWorkspace(): UseActiveWorkspaceReturn {
-  const { data: workspacesRaw = [], isLoading } = useQuery(listWorkspaces);
+  const { data: workspacesRaw = [], isLoading } = useQuery(listWorkspaces, undefined, {
+    staleTime: 120000,
+    refetchOnWindowFocus: false,
+  });
   const workspaces = workspacesRaw as Workspace[];
   const { data: authUser } = useAuth();
 
@@ -127,3 +130,4 @@ export function useActiveWorkspace(): UseActiveWorkspaceReturn {
     switchWorkspace,
   };
 }
+

@@ -18,12 +18,14 @@ import { useAuth } from 'wasp/client/auth';
 import { cn } from '../../client/utils';
 import { toast } from '../../client/hooks/use-toast';
 import { useActiveWorkspace } from '../../client/hooks/useActiveWorkspace';
+import { usePageVisibility } from '../../client/hooks/usePageVisibility';
 
 export default function MessagesPage() {
   const { t } = useTranslation('messages');
   const { t: tc } = useTranslation('common');
   const { data: user } = useAuth();
   const { workspaceId } = useActiveWorkspace();
+  const isVisible = usePageVisibility();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeConversationId, setActiveConversationId] = useState<string | null>(
     searchParams.get('c') || null
@@ -36,7 +38,12 @@ export default function MessagesPage() {
   const { data: conversations, isLoading: loadingConvs, refetch: refetchConvs } = useQuery(
     listConversations,
     workspaceId ? ({ workspaceId } as any) : undefined,
-    { enabled: !!workspaceId, refetchInterval: 8000 }
+    {
+      enabled: !!workspaceId && isVisible,
+      refetchInterval: isVisible ? 30000 : false,
+      staleTime: 15000,
+      refetchOnWindowFocus: false,
+    }
   );
 
   // Active conversation
@@ -119,12 +126,12 @@ export default function MessagesPage() {
 
   // Polling for new messages in active conversation
   useEffect(() => {
-    if (!activeConversationId) return;
+    if (!activeConversationId || !isVisible) return;
     const interval = setInterval(() => {
       loadConversationRef.current(activeConversationId);
-    }, 5000);
+    }, 15000);
     return () => clearInterval(interval);
-  }, [activeConversationId]);
+  }, [activeConversationId, isVisible]);
 
   const handleSelectConversation = (id: string) => {
     setActiveConversationId(id);
@@ -392,3 +399,4 @@ export default function MessagesPage() {
     </>
   );
 }
+

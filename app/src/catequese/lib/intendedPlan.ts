@@ -53,7 +53,8 @@ export function getIntendedInterval(): BillingInterval {
 
 export function isInstitutionalPlanId(planId: string | null | undefined): boolean {
   if (!planId) return false;
-  const institutional = ['parish', 'parish_essential', 'parish_complete', 'diocese'];
+  // Unlimited is the only institutional plan; legacy ids kept for safety.
+  const institutional = ['unlimited', 'parish', 'parish_essential', 'parish_complete', 'diocese'];
   return institutional.includes(planId.toLowerCase());
 }
 

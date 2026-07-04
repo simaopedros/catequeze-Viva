@@ -51,7 +51,6 @@ function generateMockUserData(): MockUserData {
     locale: "pt-BR",
     timezone: "America/Sao_Paulo",
     subscriptionStatus,
-    lemonSqueezyCustomerPortalUrl: null,
     paymentProcessorUserId: hasUserPaidOnStripe
       ? `cus_test_${faker.string.uuid()}`
       : null,
@@ -61,7 +60,6 @@ function generateMockUserData(): MockUserData {
     subscriptionPlan: subscriptionStatus
       ? faker.helpers.arrayElement(getSubscriptionPaymentPlanIds())
       : null,
-    wooviCorrelationId: null,
-    pricingVersion: 2,
+    pricingVersion: 3,
   };
 }

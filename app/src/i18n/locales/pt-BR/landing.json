@@ -4,10 +4,10 @@
     "headline_line2": "preparada sem correria de última hora",
     "subheadline": "Organize a turma, monte o encontro e acompanhe as famílias no mesmo fluxo — para a semana pastoral não depender de papel, planilha e improviso.",
     "badge": "Da preparação ao acompanhamento da turma",
-    "cta_primary": "Começar grátis",
-    "cta_secondary": "Ver como funciona",
-    "trust_signals": "Sem cartão de crédito • Plano gratuito • Conforme a LGPD",
-    "cta_secondary_href": "#recursos"
+    "cta_primary": "Ver planos",
+    "cta_secondary": "Ver como a preparação acontece",
+    "trust_signals": "Planos simples • Cobrança mensal ou anual • Conforme a LGPD",
+    "cta_secondary_href": "/#recursos"
   },
   "pain_title": "A catequese não precisa ficar espalhada em caderno, planilha e mensagens",
   "pain_subtitle": "A Catequese Viva junta preparação, turma, presença e família no mesmo fluxo.",
@@ -33,7 +33,7 @@
   ],
   "ai_showcase_title": "Veja como um encontro pode nascer em minutos",
   "ai_showcase_subtitle": "A Catequese Viva reúne tema, faixa etária e referências católicas para montar um primeiro rascunho que você revisa antes de usar.",
-  "ai_showcase_cta": "Ver caminhos para começar",
+  "ai_showcase_cta": "Ver planos para preparar a próxima turma",
   "features_title": "O essencial para preparar e acompanhar sua catequese",
   "features_subtitle": "IA, presença e famílias trabalham juntas para reduzir improviso e dar mais clareza à rotina pastoral.",
   "features": {
@@ -122,78 +122,65 @@
   ],
   "more_features": "Mais recursos para quando sua catequese crescer",
   "more_features_sub": "Ferramentas que continuam úteis depois da primeira turma.",
-  "steps_title": "Como começar sem complicar",
-  "steps_subtitle": "Escolha seu perfil, veja o plano adequado e leve sua próxima turma para um fluxo mais organizado.",
+  "steps_title": "Como entrar sem perder tempo",
+  "steps_subtitle": "Veja o plano certo, crie sua primeira turma e avance para o próximo encontro com menos improviso.",
   "steps": [
     {
-      "title": "Escolha seu perfil",
-      "desc": "Comece pelo caminho de catequista, paróquia ou diocese para ver a oferta certa."
+      "title": "Escolha o plano certo",
+      "desc": "Plano Único para o catequista. Plano Ilimitado para a paróquia ou diocese operar sem teto."
     },
     {
-      "title": "Organize sua turma",
-      "desc": "Cadastre catequizandos, acompanhe presença e centralize o que hoje fica espalhado."
+      "title": "Crie sua primeira turma",
+      "desc": "Entre com a turma já nomeada, horário e local definidos para começar com contexto."
     },
     {
       "title": "Prepare o próximo encontro",
-      "desc": "Use a IA e a base católica para montar um rascunho melhor antes da próxima semana."
+      "desc": "Use a IA e a base católica para sair do papel e chegar ao primeiro rascunho com rapidez."
     }
   ],
-  "steps_cta": "Ver caminhos e planos",
-  "pricing_title": "Três caminhos para entrar na Catequese Viva",
-  "pricing_subtitle": "Comece pelo perfil certo. Compare os caminhos para catequista, paróquia e diocese antes de escolher o plano.",
+  "steps_cta": "Ver planos e começar",
+  "pricing_title": "Dois planos para entrar na Catequese Viva",
+  "pricing_subtitle": "Escolha entre o Plano Único para o catequista e o Plano Ilimitado para a operação paroquial ou diocesana.",
   "plans": {
-    "free": {
-      "name": "Caminho Catequista",
-      "desc": "Para organizar sua turma, preparar encontros e entender a estrutura ideal para a sua rotina.",
+    "single": {
+      "name": "Plano Único",
+      "desc": "Para o catequista organizar uma turma com clareza, histórico e preparação em um só fluxo.",
+      "price": "R$ 29",
       "features": [
-        "Organização da turma",
-        "Presença e acompanhamento",
-        "Preparação de encontros",
-        "Base católica integrada",
-        "Opções com e sem IA"
+        "1 paróquia",
+        "1 turma e 150 catequizandos",
+        "Presença e calendário litúrgico",
+        "15 créditos de IA/mês"
       ]
     },
-    "ai": {
-      "name": "Catequista IA",
-      "desc": "Para catequistas que querem preparar encontros, atividades e comunicados com ajuda da IA.",
-      "price": "$9",
+    "unlimited": {
+      "name": "Plano Ilimitado",
+      "desc": "Para paróquias e dioceses centralizarem equipes, turmas, famílias e IA no mesmo sistema.",
+      "price": "R$ 99",
       "features": [
-        "Turmas e catequizandos ilimitados",
+        "Paróquias e turmas ilimitadas",
+        "Catequizandos e catequistas ilimitados",
         "Gerador de encontros por IA",
-        "Planejamento anual automático",
-        "Assistente teológico",
-        "20 créditos de IA/mês"
-      ]
-    },
-    "parish": {
-      "name": "Paróquia Completa",
-      "desc": "Para quando a coordenação quiser levar o processo para a paróquia inteira.",
-      "price": "$29",
-      "features": [
-        "Catequistas ilimitados",
-        "Painel do coordenador",
-        "Documentos e consentimentos LGPD",
-        "Comunicação integrada",
         "50 créditos de IA/mês"
       ]
     }
   },
   "price_free": "Desde",
-  "price_popular": "Mais procurado por catequistas",
+  "price_popular": "Mais escolhido",
   "price_monthly": "Mensal",
   "price_annual": "Anual",
   "price_cta_free": "Ver caminhos",
-  "price_cta_start": "Ver opções deste caminho",
+  "price_cta_start": "Ver detalhes e escolher",
   "per_month": "/mês",
   "per_year": "/ano",
   "annual_discount": "17% de desconto",
-  "compare_plans": "Comparar caminhos e planos completos",
+  "compare_plans": "Comparar os dois planos completos",
   "faq_title": "Dúvidas antes de escolher o caminho",
   "faq_subtitle": "Respostas diretas sobre acesso, IA, mobile e proteção de dados.",
   "faqs": [
     {
       "q": "Posso começar como catequista individual?",
-      "a": "Sim. O caminho de catequista mostra as opções pessoais para organizar sua turma, com ou sem IA, antes de avançar para uma estrutura paroquial."
+      "a": "Sim. O Plano Único foi pensado para o catequista individual organizar a turma, acompanhar presença e preparar encontros no mesmo fluxo."
     },
     {
       "q": "Quando faz sentido usar IA?",
@@ -212,13 +199,13 @@
       "a": "A plataforma foi construída com recursos de LGPD, consentimentos digitais, controle de acesso e solicitação de exportação ou exclusão de dados."
     },
     {
-      "q": "Existe caminho para paróquias e dioceses?",
-      "a": "Sim. A página de planos separa os caminhos para catequista, paróquia e diocese para reduzir confusão e mostrar apenas as opções adequadas a cada contexto."
+      "q": "Qual plano faz sentido para paróquia ou diocese?",
+      "a": "O Plano Ilimitado cobre a operação institucional: múltiplas turmas, catequistas, famílias e uso contínuo de IA no mesmo sistema."
     }
   ],
-  "cta_title": "Escolha o caminho certo e organize sua próxima catequese",
-  "cta_subtitle": "Veja a opção para catequista, paróquia ou diocese e siga para o próximo passo com clareza.",
-  "cta_button": "Ver caminhos e planos",
+  "cta_title": "Escolha o plano certo e entre com a próxima turma em movimento",
+  "cta_subtitle": "Veja o que acontece depois em cada plano e siga para o próximo passo com clareza.",
+  "cta_button": "Ver planos",
   "cta_badge": "Próximo passo claro",
   "cta_see_plans": "Ver planos",
   "mock": {
@@ -321,8 +308,8 @@
       "desc": "Informações protegidas em trânsito e em repouso, com acesso restrito por papel."
     },
     {
-      "title": "Comece sem cartão",
-      "desc": "Plano gratuito para organizar a primeira turma. Sem custo para testar."
+      "title": "Escolha o plano certo",
+      "desc": "Plano Único para começar sozinho. Plano Ilimitado para cobrir equipe, paróquia ou diocese no mesmo sistema."
     },
     {
       "title": "Controle dos seus dados",

@@ -1,5 +1,6 @@
 import { useQuery, getUnreadNotificationCount } from 'wasp/client/operations';
 import { useUserContext } from './useUserContext';
+import { usePageVisibility } from './usePageVisibility';
 
 /**
  * Shared hook for unread notification count.
@@ -8,9 +9,13 @@ import { useUserContext } from './useUserContext';
  */
 export function useUnreadNotificationCount() {
   const { userRole, isAdmin } = useUserContext();
+  const isVisible = usePageVisibility();
   const { data } = useQuery(getUnreadNotificationCount, undefined, {
-    enabled: !!userRole || isAdmin,
-    refetchInterval: 30000,
+    enabled: (!!userRole || isAdmin) && isVisible,
+    refetchInterval: isVisible ? 120000 : false,
+    staleTime: 60000,
+    refetchOnWindowFocus: false,
   });
   return data?.count || 0;
 }
+

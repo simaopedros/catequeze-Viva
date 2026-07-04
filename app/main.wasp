@@ -184,6 +184,11 @@ query getCustomerPortalUrl {
   entities: [User]
 }
 
+query getSubscriptionDetails {
+  fn: import { getSubscriptionDetails } from "@src/payment/operations",
+  entities: [User]
+}
+
 action generateCheckoutSession {
   fn: import { generateCheckoutSession } from "@src/payment/operations",
   entities: [User, Parish, Membership, PricingEvent]
@@ -1285,6 +1290,12 @@ api healthCheckApi {
   entities: [User]
 }
 
+api readinessCheckApi {
+  fn: import { healthCheckHandler } from "@src/server/api/healthCheck",
+  httpRoute: (GET, "/readyz"),
+  entities: [User]
+}
+
 action generateCatechumenUploadToken {
   fn: import { generateCatechumenUploadToken } from "@src/server/operations/uploadTokenOperations",
   entities: [CatechumenProfile, Membership]
@@ -1959,5 +1970,4 @@ page PublicUploadDocsPage {
   component: import PublicUploadDocsPage from "@src/catequese/pages/PublicUploadDocsPage"
 }
 //#endregion
-
 

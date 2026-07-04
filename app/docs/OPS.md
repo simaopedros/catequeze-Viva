@@ -185,7 +185,8 @@ gunzip -c backup.sql.gz | psql "$DATABASE_URL"
 ### Health check
 
 ```
-GET https://api.catechis.app/health
+GET https://api.catechis.app/health   # liveness barato (sem DB)
+GET https://api.catechis.app/readyz   # readiness profunda (DB + storage)
 ```
 
 ```json
@@ -202,7 +203,7 @@ GET https://api.catechis.app/health
 
 ### Uptime monitoring
 
-Monitor externo (UptimeRobot/Better Stack) em `https://api.catechis.app/health`.
+Monitor externo (UptimeRobot/Better Stack) em `https://api.catechis.app/health` para não acordar o Neon à toa. Use `https://api.catechis.app/readyz` apenas para deploy/diagnóstico.
 Alertar quando HTTP ≠ 200 ou `status` ≠ `ok`.
 
 ### Sentry
@@ -308,3 +309,4 @@ docker stats --no-stream
 | [`CLOUDFLARE_ACCESS.md`](CLOUDFLARE_ACCESS.md) | Cloudflare Access homolog |
 | [`CLOUDFLARE_SSL.md`](CLOUDFLARE_SSL.md) | Configuração SSL Cloudflare |
 | [`plans/pendencias_go-live.md`](plans/pendencias_go-live.md) | Plano go-live completo |
+

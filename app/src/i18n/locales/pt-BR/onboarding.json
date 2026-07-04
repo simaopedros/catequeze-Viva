@@ -1,61 +1,62 @@
 {
   "title": "Configuração Inicial",
-  "subtitle_personal": "Vamos configurar o teu espaço pessoal.",
-  "subtitle_manager": "Vamos configurar a plataforma em 2 passos.",
+  "subtitle_personal": "Vamos preparar seu espaço pessoal.",
+  "subtitle_manager": "Vamos preparar a catequese da paróquia para começar.",
   "steps": {
-    "institution": "Paróquia & Diocese",
-    "details": "Detalhes"
+    "institution": "Paróquia e diocese",
+    "details": "Primeira turma"
   },
   "diocese_selected": "Diocese",
   "back": "← Voltar",
   "continue_parish": "Continuar para Paróquia →",
   "continue": "Continuar →",
   "change_diocese": "← Alterar diocese",
-  "configuring": "A configurar a plataforma...",
+  "configuring": "Preparando sua conta...",
   "finish_error": "Erro ao finalizar configuração.",
   "personal_workspace_error": "Não foi possível criar o espaço pessoal. Tente novamente.",
   "parish_not_selected": "Paróquia não selecionada.",
-  "osm_error": "Erro ao registar paróquia do OpenStreetMap.",
+  "osm_error": "Erro ao registrar a paróquia do OpenStreetMap.",
   "create_parish_error": "Erro ao criar paróquia.",
   "no_parish_selected": "Nenhuma paróquia selecionada.",
   "summary": {
     "type": "Tipo",
-    "personal_account": "Conta Pessoal",
+    "personal_account": "Espaço pessoal",
     "plan": "Plano",
-    "plan_free": "Catequista Grátis",
-    "plan_pro": "Catequista Pro/IA",
+    "plan_free": "Sem assinatura",
+    "plan_pro": "Plano Único",
     "class": "Turma",
     "create_later": "Criar depois",
     "diocese": "Diocese",
     "parish": "Paróquia",
-    "year": "Ano"
+    "year": "Ano",
+    "plan_none": "Sem assinatura",
+    "plan_paid": "Plano Único"
   },
   "welcome": {
     "hello": "Olá, {{name}}!",
     "hello_default": "Bem-vindo(a)!",
-    "question": "Como deseja usar o Catequese Viva?",
-    "personal_title": "Conta Pessoal",
-    "personal_desc": "Para catequistas individuais · plano pessoal (Grátis / Pro / IA)",
+    "question": "Como você quer começar?",
+    "personal_title": "Quero organizar minha turma",
+    "personal_desc": "Para quem organiza a própria turma e quer começar sem depender da paróquia.",
     "personal_features": [
       "Espaço pessoal isolado",
       "Suas turmas e catequizandos",
       "Gerador de encontros com IA"
     ],
-    "manager_title": "Conta de Gestão",
-    "manager_desc": "Para paróquias e dioceses · plano institucional (cobre vários catequistas)",
+    "manager_title": "Quero organizar a catequese da paróquia",
+    "manager_desc": "Para quem coordena a catequese da paróquia e precisa organizar equipe, turmas e calendário.",
     "manager_features": [
       "Multi-catequista",
       "Comunicação integrada",
       "Gestão completa da catequese"
-    ]
+    ],
+    "helper": "Escolha o caminho que mais combina com a sua realidade."
   },
   "personal_setup": {
     "title": "Conta Pessoal",
-    "subtitle": "O teu espaço individual de catequese está quase pronto!",
-    "included": "O que está incluído:",
+    "subtitle": "Comece pelo nome da primeira turma. Horário e local podem ficar para depois.",
+    "included": "Ao entrar, você já terá:",
     "isolated_space": "Espaço pessoal isolado",
-    "limits_free": "2 turmas e 30 catequizandos",
-    "limits_unlimited": "Turmas ilimitadas",
     "ai_generator": "Gerador de encontros com IA",
     "liturgical_calendar": "Calendário litúrgico",
     "schedule_label": "Horário (opcional)",
@@ -64,7 +65,7 @@
     "location_placeholder": "Ex: Salão paroquial",
     "first_class_label": "Nome da primeira turma (opcional)",
     "first_class_placeholder": "Ex: Catequese 1º Ano",
-    "first_class_hint": "Pode criar depois em Turmas.",
+    "first_class_hint": "Se preferir, entre agora e crie a turma depois.",
     "creating": "Criando espaço...",
     "enter_space": "Entrar no meu espaço",
     "days": {
@@ -75,7 +76,19 @@
       "4": "Qui",
       "5": "Sex",
       "6": "Sáb"
-    }
+    },
+    "progress_label": "Progresso iniciado",
+    "first_value": "Sua primeira turma com nome, horário e local.",
+    "single_plan_scope": "Se precisar de mais capacidade depois, você poderá ampliar seu plano.",
+    "enter_with_class": "Criar meu espaço com a primeira turma",
+    "enter_and_create_later": "Entrar agora e criar a turma depois",
+    "progress_title": "Seu começo",
+    "progress_status": "Falta só a primeira turma",
+    "progress_copy": "Seu espaço pessoal já está quase pronto. Agora dê nome à sua primeira turma para começar com tudo organizado.",
+    "value_title": "Ao entrar você terá",
+    "optional_details_toggle": "Adicionar horário e local",
+    "optional_details_hide": "Ocultar horário e local",
+    "optional_details_hint": "Preencha agora apenas se isso ajudar seu começo. Você poderá ajustar depois."
   },
   "diocese": {
     "title": "Em que diocese você está?",
@@ -86,7 +99,7 @@
     "platform_section": "Na Plataforma",
     "parishes_count": "{{count}} paróquias",
     "empty_search": "Nenhuma diocese encontrada.",
-    "empty_hint": "Seleciona um estado ou busca pelo nome.",
+    "empty_hint": "Selecione um estado ou busque pelo nome.",
     "create_link": "+ Não encontrou? Criar nova diocese",
     "new_name_label": "Nome da nova diocese",
     "new_name_placeholder": "Ex: Diocese de São José dos Campos",
@@ -97,10 +110,18 @@
     "creating": "Criando...",
     "create_btn": "Criar diocese",
     "skip": "Pular esta etapa →",
-    "select_hint": "Seleciona uma diocese acima"
+    "select_hint": "Selecione uma diocese acima",
+    "subtitle": "Escolha a diocese para encontrar a paróquia certa com menos esforço.",
+    "progress_title": "Seu cadastro está andando",
+    "progress_status": "Etapa 1 de 2",
+    "progress_copy": "Você já decidiu organizar a catequese da paróquia. Agora escolha a diocese para continuar.",
+    "start_hint_title": "Comece pelo estado ou pelo nome",
+    "start_hint_body": "Assim fica mais fácil encontrar a diocese certa.",
+    "selection_ready": "Diocese selecionada: {{name}}",
+    "continue_with_selection": "Continuar com esta diocese"
   },
   "parish": {
-    "title": "Qual a tua paróquia?",
+    "title": "Qual paróquia vai receber a primeira turma?",
     "city_state": "Cidade / Estado",
     "filter_placeholder": "Filtrar por nome...",
     "platform_section": "Na Plataforma",
@@ -115,7 +136,17 @@
     "creating": "Criando...",
     "create_btn": "Criar paróquia",
     "default_name": "Paróquia",
-    "duplicate_in": "em {{city}}"
+    "duplicate_in": "em {{city}}",
+    "subtitle": "Agora escolha a paróquia onde a catequese vai começar.",
+    "progress_title": "Seu cadastro está quase pronto",
+    "progress_status": "Falta escolher a paróquia",
+    "progress_copy": "A diocese já foi escolhida. Agora selecione a paróquia para seguir.",
+    "start_hint_title": "Informe cidade e estado",
+    "start_hint_body": "Com isso, a busca fica mais rápida e precisa.",
+    "diocese_context_label": "Diocese escolhida",
+    "selection_ready": "Paróquia selecionada: {{name}}",
+    "continue_with_selection": "Continuar com esta paróquia",
+    "select_hint": "Selecione uma paróquia para seguir"
   },
   "coordinator": {
     "year_title": "Ano Catequético",
@@ -126,7 +157,7 @@
     "date_error": "A data de término deve ser posterior à de início.",
     "next": "Próximo",
     "class_title": "Primeira Turma",
-    "class_desc": "Cria a primeira turma ou pula esta etapa.",
+    "class_desc": "Crie a primeira turma para a equipe começar vendo a catequese organizada.",
     "class_name": "Nome da turma",
     "class_name_placeholder": "Ex: Turma de Crisma 2026",
     "day_of_week": "Dia da semana",
@@ -144,42 +175,65 @@
       "4": "Quinta-feira",
       "5": "Sexta-feira",
       "6": "Sábado"
-    }
+    },
+    "year_desc": "Dê nome ao ano catequético para deixar calendário e planejamento organizados.",
+    "progress_title": "Andamento",
+    "progress_status_class": "Passo 1 de 2",
+    "progress_status_year": "Último passo",
+    "progress_copy_class": "Criar a primeira turma é o passo mais importante para começar com a equipe.",
+    "progress_copy_year": "Agora só falta nomear o ano catequético para deixar o calendário organizado.",
+    "optional_details_toggle": "Adicionar horário e local da turma agora",
+    "optional_details_hide": "Ocultar horário e local por enquanto",
+    "optional_details_hint": "Esses detalhes ajudam, mas não precisam bloquear a criação da primeira turma."
   },
   "completion": {
     "title": "Tudo pronto!",
-    "desc": "O teu espaço está configurado. Aqui está um resumo do que foi criado:",
+    "desc": "Seu acesso já está pronto. Veja o que foi configurado:",
     "redirecting": "Redirecionando em 5 segundos...",
-    "go_dashboard": "Ir para o Dashboard"
+    "go_dashboard": "Ir para o Dashboard",
+    "progress_badge": "Cadastro concluído",
+    "next_step_hint": "Agora é hora de começar a usar a plataforma.",
+    "go_billing": "Escolher plano",
+    "primary_create_class": "Criar minha primeira turma",
+    "primary_create_meeting": "Gerar meu primeiro encontro",
+    "primary_invite_catechist": "Convidar primeiro catequista",
+    "personal_ready_title": "Seu espaço pessoal está pronto",
+    "personal_ready_desc": "Agora crie sua primeira turma para começar a organizar a catequese.",
+    "personal_class_title": "Sua primeira turma já está encaminhada",
+    "personal_class_desc": "Agora gere o primeiro encontro para aproveitar o que já foi preparado.",
+    "manager_ready_title": "A paróquia já está configurada",
+    "manager_ready_desc": "Agora crie a primeira turma para começar a organizar a catequese da paróquia.",
+    "manager_class_title": "A primeira turma da paróquia já está pronta",
+    "manager_class_desc": "Agora convide o primeiro catequista para começar o trabalho em equipe."
   },
   "roles": {
     "coordinator": {
       "title": "Coordenador(a) Paroquial",
-      "desc": "Geres a catequese da paróquia: turmas, catequistas, sacramentos e relatórios."
+      "desc": "Você gerencia a catequese da paróquia: turmas, catequistas, sacramentos e relatórios."
     },
     "catechist": {
       "title": "Catequista",
-      "desc": "Dás aulas de catequese e acompanhas os teus catequizandos."
+      "desc": "Você dá aulas de catequese e acompanha seus catequizandos."
     },
     "guardian": {
       "title": "Responsável (Pai / Mãe)",
-      "desc": "Acompanhas a jornada de fé dos teus filhos na catequese."
+      "desc": "Você acompanha a caminhada de fé dos seus filhos na catequese."
     },
     "viewer": {
       "title": "Visitante Pastoral",
-      "desc": "Consultas dados pastorais sem editar."
+      "desc": "Você consulta os dados pastorais sem editar."
     }
   },
   "role_step": {
-    "title": "Qual o teu papel na paróquia?",
-    "subtitle": "Escolhe o perfil que melhor descreve a tua atuação."
+    "title": "Qual é o seu papel na paróquia?",
+    "subtitle": "Escolha o perfil que melhor descreve sua atuação."
   },
   "catechist": {
-    "class_title": "A tua Turma"
+    "class_title": "Sua turma"
   },
   "viewer": {
     "title": "Liderança Pastoral",
-    "desc": "Terás acesso de visualização às turmas, presenças e relatórios da paróquia, sem permissão para editar.",
+    "desc": "Você terá acesso de visualização às turmas, presenças e relatórios da paróquia, sem permissão para editar.",
     "confirm": "Confirmar e entrar"
   },
   "guardian": {
@@ -191,10 +245,10 @@
     "default_household": "Família"
   },
   "parish_search": {
-    "title": "Juntar-se a uma Paróquia",
+    "title": "Entrar em uma paróquia",
     "search_placeholder": "Buscar paróquia...",
     "loading": "Carregando...",
-    "empty": "Nenhuma paróquia. Podes criar uma independente.",
+    "empty": "Nenhuma paróquia encontrada. Você pode criar uma nova.",
     "next": "Próximo"
   },
   "error_parish_exists": "Esta paróquia já existe e pertence a outro coordenador. Solicite um convite a um administrador para participar.",
@@ -205,5 +259,18 @@
     "city_state": "Cidade / Estado",
     "creating": "Criando...",
     "submit": "Criar e continuar"
+  },
+  "plan_free": "Sem assinatura",
+  "limits_free": "Nenhum — assine um plano para começar",
+  "subtitle_welcome": "Escolha o caminho que leva você ao primeiro resultado com menos esforço.",
+  "shell": {
+    "welcome_title": "Vamos começar",
+    "welcome_subtitle": "Escolha como você vai usar a plataforma para seguir pelo caminho certo.",
+    "personal_title": "Monte sua primeira turma",
+    "personal_subtitle": "Comece pelo essencial. O resto você ajusta depois.",
+    "manager_parish_title": "Onde a catequese vai começar?",
+    "manager_parish_subtitle": "Escolha a diocese e a paróquia para cadastrar a primeira turma no lugar certo.",
+    "manager_details_title": "Cadastre a primeira turma",
+    "manager_details_subtitle": "Crie a primeira turma e deixe o ano catequético organizado para a equipe."
   }
 }

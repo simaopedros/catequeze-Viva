@@ -60,7 +60,10 @@ function getActiveWorkspaceId(): string | null {
 }
 
 export function useUserContext(): UseUserContextReturn {
-  const { data, isLoading, isFetching, error } = useQuery(getCurrentUserContext);
+  const { data, isLoading, isFetching, error } = useQuery(getCurrentUserContext, undefined, {
+    staleTime: 60000,
+    refetchOnWindowFocus: false,
+  });
 
   // Wasp auto-generates the query type from the server return type.
   // Use Record<string,any> so new server fields work before type regeneration.
@@ -115,3 +118,4 @@ export function useUserContext(): UseUserContextReturn {
     error: error as Error | null,
   };
 }
+

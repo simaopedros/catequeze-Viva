@@ -1,13 +1,13 @@
 {
   "title": "Suscripción",
-  "personal_scope": "Suscripción personal · cubre solo su espacio personal",
-  "institutional_scope": "Suscripción institucional · cubre {{name}}",
+  "personal_scope": "Suscripcion personal para tu espacio",
+  "institutional_scope": "Suscripción del espacio pastoral de {{name}}",
   "this_institution": "esta institución",
   "current_plan": "Plan actual:",
   "active": "Activo",
   "plan_mismatch_institutional": "El plan seleccionado es institucional. Entre en un workspace de parroquia/diócesis para contratarlo.",
   "plan_mismatch_personal": "El plan seleccionado es personal. Vuelva a su espacio personal para contratarlo.",
-  "corporate_plan": "Plan Gestionado Corporativo",
+  "corporate_plan": "Plan gestionado",
   "diocese_responsible": "Diócesis responsable:",
   "not_informed": "No informada",
   "diocese_admins": "Administrador(es) diocesano(s):",
@@ -19,14 +19,14 @@
   "classes": "Grupos",
   "catechumens": "Catecúmenos",
   "subscription_active": "Suscripción activa",
-  "free_plan": "Plan gratuito",
+  "free_plan": "Sin suscripción",
   "awaiting_payment": "Esperando pago",
-  "active_desc": "Su suscripción está activa. Disfrute de todos los recursos.",
-  "upgrade_desc": "Actualice para acceder a recursos ilimitados.",
-  "payment_desc": "Complete el pago para activar su plan.",
+  "active_desc": "Tu plan está activo. Mantén encuentros, historial y familias dentro del mismo flujo.",
+  "upgrade_desc": "Elige el plan para seguir con encuentros, historial y acompañamiento sin interrupciones.",
+  "payment_desc": "Completa el pago para liberar el acceso completo.",
   "cancel_subscription": "Cancelar suscripción",
   "cancelling": "Cancelando…",
-  "manage_payment": "Gestionar Pago",
+  "manage_payment": "Gestionar pago",
   "classes_quota_label": "Uso de grupos",
   "catechumens_quota_label": "Uso de catecúmenos",
   "ai_credits_quota_label": "Uso de créditos de IA",
@@ -47,7 +47,7 @@
   "base_plan_btn": "Plan base",
   "institutional_plan_btn": "Plan institucional",
   "institutional_requires_admin": "Requiere administrador de la parroquia",
-  "subscribe": "Suscribirse",
+  "subscribe": "Ir al pago",
   "redirecting": "Redirigiendo…",
   "selected": "Seleccionado",
   "current": "Actual",
@@ -56,52 +56,47 @@
   "payment_history_desc": "Los pagos se procesan de forma segura por Stripe. El historial estará disponible después del primer cobro.",
   "checkout_error": "Error al iniciar pago. Intente nuevamente.",
   "cancel_success": "Suscripción cancelada.",
-  "cancel_error": "Error al cancelar. Contacte soporte.",
+  "cancel_error": "Error al cancelar. Ponte en contacto con soporte.",
   "cancel_dialog_title": "Cancelar suscripción",
   "cancel_dialog_desc": "¿Está seguro de que desea cancelar su suscripción? Perderá el acceso a recursos premium al final del período actual.",
   "cancel_confirm": "Sí, cancelar",
   "cancel_keep": "Mantener suscripción",
   "cancel_scheduled": "Cancelación programada",
-  "cancel_scheduled_desc": "Tu suscripción se cancelará al final del período de facturación actual. Puedes seguir usando todas las funciones hasta entonces.",
-  "free": "Gratis",
+  "cancel_scheduled_desc": "Tu suscripción se cancelará al final del periodo actual. Hasta entonces, podrás seguir usando todos los recursos.",
+  "free": "—",
   "monthly": "Mensual",
   "annual": "Anual",
   "annual_savings": "17% dto.",
   "plans": {
     "catechist_free": {
-      "name": "Catequista Gratis",
-      "price": "Gratis",
-      "features": ["1 grupo", "15 catecúmenos", "Asistencia básica", "Calendario litúrgico", "3 créditos IA iniciales"]
+      "name": "Sin suscripción",
+      "price": "—",
+      "features": []
     },
-    "catechist_pro": {
-      "name": "Catequista Pro",
-      "price": "$5/mes",
-      "annual_price": "$50/año ($4.17/mes)",
-      "features": ["3 grupos", "150 catecúmenos", "Informes avanzados", "Soporte prioritario", "5 créditos IA/mes"]
+    "single": {
+      "name": "Plan Único",
+      "price": "R$ 29/mes",
+      "annual_price": "R$ 290/año (~R$ 24/mes)",
+      "features": [
+        "1 parroquia",
+        "1 grupo",
+        "150 catecúmenos",
+        "Asistencia y calendario litúrgico",
+        "15 créditos de IA/mes"
+      ]
     },
-    "catechist_ai": {
-      "name": "Catequista IA",
-      "price": "$9/mes",
-      "annual_price": "$90/año ($7.50/mes)",
-      "features": ["Todo del Pro", "Generador de encuentros por IA", "Planificación anual automática", "Actividades y quizzes", "Asistente teológico", "Mensajes WhatsApp", "20 créditos/mes"]
-    },
-    "parish_essential": {
-      "name": "Parroquia Esencial",
-      "price": "$19/mes",
-      "annual_price": "$190/año ($15.83/mes)",
-      "features": ["5 catequistas", "200 catecúmenos", "Grupos ilimitados", "Comunicación integrada", "Documentos y certificados", "Panel del coordinador", "30 créditos IA/mes"]
-    },
-    "parish_complete": {
-      "name": "Parroquia Completa",
-      "price": "$29/mes",
-      "annual_price": "$290/año ($24.17/mes)",
-      "features": ["Catequistas ilimitados", "Catecúmenos ilimitados", "Todo de la Esencial", "API de integración", "Onboarding dedicado", "50 créditos IA/mes"]
-    },
-    "diocese": {
-      "name": "Diócesis",
-      "price": "$99/mes",
-      "annual_price": "$990/año ($82.50/mes)",
-      "features": ["Hasta 10 parroquias", "Todo de la Completa", "Biblioteca oficial", "Analytics consolidado", "Onboarding dedicado", "50 créditos IA por parroquia/mes"]
+    "unlimited": {
+      "name": "Plan Ilimitado",
+      "price": "R$ 99/mes",
+      "annual_price": "R$ 990/año (~R$ 82/mes)",
+      "features": [
+        "Parroquias y grupos ilimitados",
+        "Catecúmenos y catequistas ilimitados",
+        "Generador de encuentros y actividades por IA",
+        "Comunicación integrada",
+        "Documentos y certificados",
+        "50 créditos de IA/mes"
+      ]
     }
   },
   "checkout_success": "🥳 ¡Pago confirmado!",
@@ -118,8 +113,8 @@
   "no_licenses": "No se encontraron licencias.",
   "limit_reached_title": "Límite del plan alcanzado",
   "limit_reached_label": "Límite de {{label}} alcanzado",
-  "limit_reached_description": "Tu plan <1>{{currentPlanName}}</1> permite hasta <2>{{maxAllowed}} {{label}}{{plural}}</2>. Actualmente tienes <3>{{currentCount}}</3>.",
-  "limit_reached_contact": "Contacta al <1>coordinador de la parroquia</1> para ampliar los límites del plan.",
+  "limit_reached_description": "Tu plan <1>{{currentPlanName}}</1> permite hasta <2>{{maxAllowed}} {{label}}{{plural}}</2>. Ya tienes <3>{{currentCount}}</3>. Haz upgrade ahora para continuar.",
+  "limit_reached_contact": "Habla con el <1>coordinador de la parroquia</1> para ampliar los límites del plan.",
   "upgrade_to": "Mejorar a {{plan}}",
   "upgrade_btn": "Mejorar",
   "limit_labels": {
@@ -127,5 +122,94 @@
     "class": "grupo",
     "catechumen": "catecúmeno",
     "catechist": "catequista"
-  }
+  },
+  "scope_badge_personal": "Suscripción personal",
+  "scope_badge_institutional": "Suscripción institucional",
+  "pricing_section_subtitle": "Elige el plan que mejor se adapta a tu catequesis.",
+  "unlimited": "ilimitado",
+  "limit_caption": "Límite {{limit}}",
+  "conversion_badge": "Suscripcion",
+  "conversion_payment_title": "Confirma tu suscripción",
+  "conversion_required_title": "Elige tu plan para continuar",
+  "conversion_personal_title": "Elige el plan de tu espacio personal",
+  "conversion_institutional_title": "Elige el plan de tu espacio pastoral",
+  "conversion_required_desc": "Tu registro ya está listo. Ahora elige el plan para empezar a usar la plataforma sin bloqueos.",
+  "conversion_selected_desc": "Este es el plan indicado para tu espacio. Confirma la suscripción para empezar a usar todo lo que ya fue preparado.",
+  "conversion_personal_desc": "Tu espacio personal ya está listo para recibir tu grupo. Ahora solo falta confirmar la suscripción.",
+  "conversion_institutional_desc": "Tu espacio pastoral ya está listo para empezar. Ahora solo falta confirmar la suscripción para liberar grupos, equipo y acompañamiento.",
+  "conversion_checklist_title": "Lo que ya está listo",
+  "conversion_step_account_ready": "Tu registro ya fue creado.",
+  "conversion_step_workspace_personal": "Tu espacio personal ya está disponible.",
+  "conversion_step_workspace_institutional": "Tu espacio pastoral ya está disponible.",
+  "conversion_step_first_class": "Tu primer grupo ya fue iniciado.",
+  "conversion_step_next_action": "Ya puedes crear tu primer grupo.",
+  "conversion_step_unlock": "Solo falta confirmar la suscripción para empezar.",
+  "conversion_plans_title": "Elige tu plan",
+  "conversion_plans_subtitle": "Selecciona el plan y sigue al pago seguro.",
+  "recommended_plan": "Recomendado para este contexto",
+  "subscribe_plan": "Suscribirse a {{plan}}",
+  "recommended_plan_personal": "Para iniciar tu primera turma",
+  "recommended_plan_institutional": "Para liberar tu equipo",
+  "plan_mismatch_institutional_cta": "Crear espacio parroquial",
+  "upgrade_supporting_copy": "La mejora aparece justo cuando tu uso ya probó valor. Conservas lo que construiste y desbloqueas el siguiente paso sin rehacer trabajo.",
+  "upgrade_journey_badge": "Ampliación del plan",
+  "upgrade_plans_title": "Desbloquea el siguiente paso",
+  "upgrade_plans_subtitle": "Elige la suscripción que elimina este bloqueo y mantiene tu catequesis en el mismo flujo.",
+  "upgrade_checklist_title": "Lo que conservas con la mejora",
+  "upgrade_checklist_workspace_ready": "Tu espacio actual ya está listo para seguir creciendo.",
+  "upgrade_checklist_classes_active": "{{count}} turma activa permanece en el mismo espacio.",
+  "upgrade_checklist_catechumens_active": "{{count}} catequizandos ya registrados conservan su historial y seguimiento.",
+  "upgrade_checklist_keep_history": "Tu historial, encuentros y asistencia permanecen en el mismo lugar.",
+  "upgrade_journey": {
+    "generic": {
+      "title": "Sigue sin bloquear tu trabajo",
+      "description": "Haz upgrade a {{plan}} y mantén activo en el mismo espacio todo lo que ya organizaste.",
+      "cta": "Seguir sin bloqueos",
+      "checklist": "Desbloqueas el siguiente paso sin rehacer el registro ni perder historial.",
+      "toast_description": "Tu uso ya probó valor. Desbloquea el siguiente paso sin interrumpir la catequesis."
+    },
+    "required": {
+      "title": "Tu espacio ya está listo para comenzar",
+      "description": "Elige un plan para liberar el acceso y continuar el trabajo que acabas de iniciar.",
+      "cta": "Elegir plan",
+      "checklist": "Solo falta confirmar la suscripción para comenzar sin bloqueos.",
+      "toast_description": "Elige un plan para liberar el acceso sin interrumpir el inicio de tu catequesis."
+    },
+    "class_limit": {
+      "title": "Tu próxima turma necesita más espacio",
+      "description": "Ya usas {{currentCount}} de {{maxAllowed}} turma en {{currentPlanName}}. Haz upgrade a {{plan}} y abre la próxima turma sin perder asistencia, encuentros ni historial.",
+      "cta": "Liberar próxima turma",
+      "checklist": "Liberas la próxima turma sin separar asistencia, planificación ni seguimiento.",
+      "toast_description": "Tu turma actual ya está activa. Libera la próxima sin interrumpir el seguimiento."
+    },
+    "catechumen_limit": {
+      "title": "Tu catequesis ya llegó al límite actual",
+      "description": "Ya registraste {{currentCount}} de {{maxAllowed}} catequizandos en {{currentPlanName}}. Haz upgrade a {{plan}} y sigue acompañando a todos en un solo lugar.",
+      "cta": "Liberar más catequizandos",
+      "checklist": "Sigue registrando personas sin dispersar familias, asistencia e historial en varios lugares.",
+      "toast_description": "Llegaste al límite actual de catequizandos. Libera más capacidad sin romper el seguimiento."
+    },
+    "parish_limit": {
+      "title": "Tu próximo espacio necesita liberación",
+      "description": "Ya alcanzaste el límite de parroquias en {{currentPlanName}}. Haz upgrade a {{plan}} y agrega otro espacio pastoral bajo el mismo control.",
+      "cta": "Liberar otra parroquia",
+      "checklist": "Te expandes a otro espacio sin dispersar la operación.",
+      "toast_description": "Ya alcanzaste el límite actual de parroquias. Libera otro espacio sin separar la operación."
+    },
+    "catechist_limit": {
+      "title": "Tu equipo superó el plan actual",
+      "description": "Ya alcanzaste el límite de catequistas en {{currentPlanName}}. Haz upgrade a {{plan}} y suma al equipo completo en el mismo espacio.",
+      "cta": "Liberar equipo completo",
+      "checklist": "Integras más catequistas sin mover turmas, mensajes ni historial a otro lugar.",
+      "toast_description": "Tu catequesis ya depende de más personas. Libera el equipo completo en el mismo espacio."
+    }
+  },
+  "switch_annual_title": "Ahorra cambiando al plan anual",
+  "switch_annual_desc": "Pagas {{savings}} menos al año (~{{equivalent}}/mes). La diferencia se cobra ahora y el ciclo pasa a anual.",
+  "switch_annual_cta": "Cambiar a anual",
+  "switch_to_annual_success": "Plan cambiado a anual!",
+  "switch_to_monthly_success": "Plan cambiado a mensual!",
+  "switch_to_monthly": "Volver a mensual",
+  "switch_interval_error": "Error al cambiar la periodicidad. Inténtalo de nuevo.",
+  "switching": "Cambiando..."
 }

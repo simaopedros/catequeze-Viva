@@ -4,9 +4,9 @@
     "headline_line2": "em um só lugar",
     "subheadline": "Controle de presença, gestão de turmas, comunicação com famílias e relatórios para coordenadores. Tudo integrado.",
     "badge": "Gestão completa para catequese",
-    "cta_primary": "Experimentar gratuitamente",
+    "cta_primary": "Começar agora",
     "cta_secondary": "Ver recursos",
-    "trust_signals": "Sem cartão de crédito • Plano gratuito • Comece em 2 minutos"
+    "trust_signals": "Plano Único ou Ilimitado • Comece em 2 minutos • Cancele quando quiser"
   },
   "features_title": "Tudo para gerir sua catequese",
   "features_order": [
@@ -91,5 +91,6 @@
     "privacy": "Privacidade",
     "terms": "Termos",
     "contact": "Contacto"
-  }
+  },
+  "create_account": "Criar conta"
 }

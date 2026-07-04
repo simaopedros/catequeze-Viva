@@ -115,7 +115,7 @@ export default function ClassDetailPage() {
 
   const handleEnroll=async(cid:string)=>{
     try{await enrollCatechumen({classId:id!,catechumenProfileId:cid});toast({title:t('detail.enrolled_success')});refetchClass();}catch(e:any){
-      if (handlePlanLimitError(e.message || e)) return;
+      if (handlePlanLimitError(e.message || e, { currentPlan: effectivePlan, isPersonalWorkspace: isPersonal })) return;
       toast({title:t('detail.enroll_error'), description: (e as any).message || tc('try_again'), variant:'destructive'});
     }
   };
@@ -127,7 +127,7 @@ export default function ClassDetailPage() {
     const enrollmentId = unenrollConfirm;
     setUnenrollConfirm(null);
     try{await cancelEnrollment({enrollmentId});toast({title:t('detail.unenrolled_success')});refetchClass();}catch(e:any){
-      if(handlePlanLimitError(e.message||e))return;
+      if(handlePlanLimitError(e.message||e, { currentPlan: effectivePlan, isPersonalWorkspace: isPersonal }))return;
       toast({title:t('detail.unenroll_error'),description:(e as any).message||tc('try_again'),variant:'destructive'});
     }
   };
@@ -382,7 +382,7 @@ export default function ClassDetailPage() {
               )})}</div>}
             {isCatechumenLimitReached ? (
               <div className="mt-6">
-                <PlanLimitBanner type="catechumen_limit" currentCount={enrolled.length} userPlan={effectivePlan} isParishManaged={isParishManaged} />
+                <PlanLimitBanner type="catechumen_limit" currentCount={enrolled.length} userPlan={effectivePlan} isParishManaged={isParishManaged} isPersonalWorkspace={isPersonal} />
               </div>
             ) : available.length > 0 && canEnroll && (
               <div className="mt-6">

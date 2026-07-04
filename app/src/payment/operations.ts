@@ -2,6 +2,7 @@ import { HttpError } from "wasp/server";
 import type {
   GenerateCheckoutSession,
   GetCustomerPortalUrl,
+  GetSubscriptionDetails,
   CancelSubscription,
   ChangeSubscriptionPlan,
 } from "wasp/server/operations";
@@ -11,35 +12,8 @@ import { validateOrThrow } from "../server/validation";
 import { paymentProcessor } from "./paymentProcessor";
 import { stripeClient } from "./stripe/stripeClient";
 import { requireStripePriceId } from "./paymentProcessorPlans";
-import { isSubscriptionActiveLike } from "../shared/pricing";
+import { isSubscriptionActiveLike, resolvePlanIdOrFree, type PlanId } from "../shared/pricing";
 import { trackPricingEvent } from "./pricingEvents";
-
-/**
- * Detect the client's country from request headers.
- * Uses Cloudflare's `cf-ipcountry` header when behind Cloudflare proxy,
- * falls back to `Accept-Language` header parsing.
- */
-function getClientCountry(context: any): string | undefined {
-  // Wasp operations use context.req (Express request), not context.request
-  const req = context?.req || context?.request;
-  const headers = req?.headers;
-  if (!headers) return undefined;
-
-  // Cloudflare IP country header (most reliable)
-  const cfCountry = headers['cf-ipcountry'];
-  if (typeof cfCountry === 'string' && cfCountry.length === 2) {
-    return cfCountry.toUpperCase();
-  }
-
-  // Fallback: parse Accept-Language (e.g. "pt-BR,pt;q=0.9,en;q=0.8")
-  const acceptLang = headers['accept-language'];
-  if (typeof acceptLang === 'string') {
-    const match = acceptLang.match(/[a-z]{2}-([A-Z]{2})/);
-    if (match) return match[1];
-  }
-
-  return undefined;
-}
 
 export type CheckoutSession = {
   sessionUrl: string | null;
@@ -49,13 +23,13 @@ export type CheckoutSession = {
 const generateCheckoutSessionSchema = z.object({
   planId: z.nativeEnum(PaymentPlanId),
   interval: z.enum(['monthly', 'annual']).optional().default('monthly'),
-  currency: z.enum(['BRL', 'USD']).optional(),
 });
 
 type GenerateCheckoutSessionInput = z.infer<typeof generateCheckoutSessionSchema>;
 
-// Institutional plan IDs (including legacy "parish")
-const INSTITUTIONAL_PLAN_IDS: string[] = ['parish', 'parish_essential', 'parish_complete', 'diocese'];
+// Institutional plan IDs. The simplified structure has a single institutional
+// plan (`unlimited`) which covers both parish and diocese workspaces.
+const INSTITUTIONAL_PLAN_IDS: PaymentPlanId[] = [PaymentPlanId.Unlimited];
 
 export const generateCheckoutSession: GenerateCheckoutSession<
   GenerateCheckoutSessionInput,
@@ -65,7 +39,7 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     throw new HttpError(401, "Only authenticated users are allowed to perform this operation");
   }
 
-  const { planId: paymentPlanId, interval, currency: inputCurrency } = validateOrThrow(
+  const { planId: paymentPlanId, interval } = validateOrThrow(
     generateCheckoutSessionSchema,
     rawInput,
   );
@@ -77,45 +51,33 @@ export const generateCheckoutSession: GenerateCheckoutSession<
 
   const paymentPlan = paymentPlans[paymentPlanId];
 
-  // CatechistFree cannot be purchased
+  // CatechistFree (sentinel) cannot be purchased
   if (paymentPlanId === PaymentPlanId.CatechistFree) {
-    throw new HttpError(400, 'O plano Catequista Grátis não requer pagamento.');
+    throw new HttpError(400, 'O plano "Sem assinatura" não requer pagamento. Escolha um plano pago.');
   }
 
-  // Institutional plans require a parish (or diocese admin for diocese plan)
+  // The Unlimited plan is institutional: requires the user to own or coordinate
+  // an institutional (non-PERSONAL) parish, or to be a diocese admin.
   if (INSTITUTIONAL_PLAN_IDS.includes(paymentPlanId) && !context.user.isAdmin) {
-    if (paymentPlanId === 'diocese') {
-      const dioceseAdmin = await (context.entities as any).Membership.findFirst({
-        where: { userId: context.user.id, role: 'DIOCESE_ADMIN', status: 'ACTIVE' },
-      });
-      if (!dioceseAdmin) {
-        throw new HttpError(
-          403,
-          'O plano Diocese requer que você seja administrador de uma diocese. Peça ao administrador da plataforma para atribuir essa função.',
-        );
-      }
-    } else {
-      // Accept parish owner OR coordinator+ membership on an institutional parish
-      const ownedParish = await context.entities.Parish.findFirst({
-        where: { ownerId: context.user.id, type: { not: "PERSONAL" } },
-      });
-      const coordinatorMembership = !ownedParish
-        ? await context.entities.Membership.findFirst({
-            where: {
-              userId: context.user.id,
-              status: 'ACTIVE',
-              role: { in: ['PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'DIOCESE_ADMIN'] },
-              parish: { type: { not: 'PERSONAL' } },
-            },
-            select: { id: true },
-          })
-        : null;
-      if (!ownedParish && !coordinatorMembership) {
-        throw new HttpError(
-          403,
-          'O plano institucional requer que você crie ou seja administrador de uma paróquia antes de contratá-lo. Planos pessoais (Catequista Pro/IA) cobrem apenas o seu espaço pessoal.',
-        );
-      }
+    const ownedParish = await context.entities.Parish.findFirst({
+      where: { ownerId: context.user.id, type: { not: "PERSONAL" } },
+    });
+    const coordinatorMembership = !ownedParish
+      ? await context.entities.Membership.findFirst({
+          where: {
+            userId: context.user.id,
+            status: 'ACTIVE',
+            role: { in: ['PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'DIOCESE_ADMIN'] },
+            parish: { type: { not: 'PERSONAL' } },
+          },
+          select: { id: true },
+        })
+      : null;
+    if (!ownedParish && !coordinatorMembership) {
+      throw new HttpError(
+        403,
+        'O plano Ilimitado requer que você crie ou seja administrador de uma paróquia ou diocese antes de contratá-lo. O Plano Único cobre o seu espaço pessoal.',
+      );
     }
   }
 
@@ -137,19 +99,11 @@ export const generateCheckoutSession: GenerateCheckoutSession<
 
   let session;
   try {
-    // Prefer country detected on the server when available. The client-provided
-    // currency is a fallback for local/dev or deployments without country headers.
-    const clientCountry = getClientCountry(context);
-    const currency = clientCountry
-      ? clientCountry === 'BR' ? 'BRL' : 'USD'
-      : inputCurrency || 'USD';
-
     const result = await paymentProcessor.createCheckoutSession({
       userId,
       userEmail,
       paymentPlan,
       interval,
-      currency,
       prismaUserDelegate: context.entities.User,
     });
     session = result.session;
@@ -194,6 +148,53 @@ export const getCustomerPortalUrl: GetCustomerPortalUrl<
     userId: context.user.id,
     prismaUserDelegate: context.entities.User,
   });
+};
+
+/**
+ * Resolve the user's current subscription interval ('month' | 'year' | null)
+ * and effective plan by reading the active subscription from Stripe at runtime.
+ * Falls back gracefully (interval = null) when there is no Stripe customer,
+ * no active subscription, or the Stripe API is unreachable.
+ */
+export const getSubscriptionDetails: GetSubscriptionDetails<
+  void,
+  { interval: 'month' | 'year' | null; planId: PlanId; status: string | null }
+> = async (_args, context) => {
+  if (!context.user) {
+    throw new HttpError(401, "Only authenticated users are allowed to perform this operation");
+  }
+
+  const user = await context.entities.User.findUnique({
+    where: { id: context.user.id },
+    select: { paymentProcessorUserId: true, subscriptionStatus: true, subscriptionPlan: true },
+  });
+
+  const fallback = {
+    interval: null as 'month' | 'year' | null,
+    planId: resolvePlanIdOrFree(user?.subscriptionPlan),
+    status: user?.subscriptionStatus ?? null,
+  };
+
+  if (!user?.paymentProcessorUserId) return fallback;
+
+  try {
+    const subscriptions = await stripeClient.subscriptions.list({
+      customer: user.paymentProcessorUserId,
+      status: 'active',
+      limit: 1,
+    });
+    const sub = subscriptions.data[0];
+    if (!sub) return fallback;
+
+    const rawInterval = sub.items.data[0]?.plan?.interval ?? null;
+    const interval: 'month' | 'year' | null =
+      rawInterval === 'month' || rawInterval === 'year' ? rawInterval : null;
+
+    return { interval, planId: resolvePlanIdOrFree(user.subscriptionPlan), status: user.subscriptionStatus };
+  } catch {
+    // Stripe unavailable — degrade gracefully so the billing page still renders.
+    return fallback;
+  }
 };
 
 export const cancelSubscription: CancelSubscription<

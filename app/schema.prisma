@@ -175,10 +175,14 @@ enum VisibilityScope {
 }
 
 enum BillingPlan {
-  CATECHIST_FREE
+  CATECHIST_FREE        // sentinel — "no subscription" (access = zero)
+  SINGLE                // Plano Único (personal: 1 paróquia, 1 turma, 150 catequizandos)
+  UNLIMITED             // Plano Ilimitado (institutional: paróquia/diocese, ilimitado)
+  // Legacy values retained for migration compatibility (mapped to SINGLE/UNLIMITED
+  // via pricing.ts PLAN_ALIASES). Do not assign to new rows.
   CATECHIST_PRO
   CATECHIST_AI
-  PARISH                // legacy — aliased to PARISH_COMPLETE via pricing.ts
+  PARISH
   PARISH_ESSENTIAL
   PARISH_COMPLETE
   DIOCESE
@@ -258,14 +262,12 @@ model User {
   locale    String  @default("pt-BR")
   timezone  String  @default("America/Sao_Paulo")
 
-  // Payment (from OpenSaaS)
+  // Payment (Stripe only, BRL)
   paymentProcessorUserId        String?   @unique
-  lemonSqueezyCustomerPortalUrl String?
   subscriptionStatus            String?
   subscriptionPlan              String?  @default("catechist_free")
   datePaid                      DateTime?
   credits                       Int       @default(3)
-  wooviCorrelationId            String?   @unique
 
   // Pricing version (grandfathering)
   pricingVersion      Int?          @default(2)
@@ -1285,7 +1287,6 @@ model TenantBilling {
   maxCatechists       Int?
   maxParishes         Int?
   pricingVersion      Int?          @default(2)
-  wooviCorrelationId  String?       @unique
 }
 
 // ─── AI Credits ────────────────────────────────────────────────────────────────

@@ -4,9 +4,9 @@
     "headline_line2": "en minutos con IA",
     "subheadline": "Deje que la IA genere el guión completo: objetivo, dinámica, lectura bíblica, reflexión, actividad y oración. Basado en la doctrina católica.",
     "badge": "IA teológicamente entrenada",
-    "cta_primary": "Probar IA gratis",
+    "cta_primary": "Probar la IA",
     "cta_secondary": "Ver cómo funciona",
-    "trust_signals": "Sin tarjeta • 3 créditos gratis • Base teológica CNBB"
+    "trust_signals": "Plan Único o Ilimitado • Base teológica CNBB • Cancela cuando quieras"
   },
   "features_title": "IA que entiende de catequesis",
   "features_subtitle": "Entrenada con la Biblia CNBB, el Catecismo y el Directorio para la Catequesis.",
@@ -20,7 +20,7 @@
   ],
   "ai_showcase_title": "Su próximo encuentro listo en menos de 30 segundos",
   "ai_showcase_subtitle": "Ingrese el tema y la edad. La IA genera el encuentro completo — de la acogida a la oración final.",
-  "ai_showcase_cta": "Pruebe la IA gratis",
+  "ai_showcase_cta": "Probar la IA",
   "mission_title": "Menos tiempo preparando. Más tiempo evangelizando.",
   "mission_text": "Cada minuto que la IA ahorra en preparación es un minuto más para lo que realmente importa: estar presente para sus catequizandos.",
   "mockup_dashboard": {
@@ -95,5 +95,6 @@
     "privacy": "Privacidad",
     "terms": "Términos",
     "contact": "Contacto"
-  }
+  },
+  "create_account": "Crear cuenta"
 }

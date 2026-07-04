@@ -6,7 +6,7 @@
     "badge": "Digital attendance control",
     "cta_primary": "Start now",
     "cta_secondary": "See demo",
-    "trust_signals": "No card • Free plan • Works on mobile"
+    "trust_signals": "Single or Unlimited plan • Works on mobile • Payment via Stripe"
   },
   "features_title": "Complete attendance control",
   "features_subtitle": "From recording to justification — all integrated and real-time.",
@@ -92,5 +92,6 @@
     "privacy": "Privacy",
     "terms": "Terms",
     "contact": "Contact"
-  }
+  },
+  "create_account": "Create account"
 }

@@ -1,40 +1,25 @@
 import * as z from "zod";
-import { paymentPlansSchema } from "../env";
 
-export const stripeEnvSchema = paymentPlansSchema.extend({
+/**
+ * Stripe env vars — Brazil-only (BRL).
+ *
+ * All Price IDs must be created in the Stripe Dashboard with currency BRL:
+ *   - Plano Único (single): monthly + annual
+ *   - Plano Ilimitado (unlimited): monthly + annual
+ *   - AI credit packs: +20, +50 (one-time)
+ */
+export const stripeEnvSchema = z.object({
   STRIPE_API_KEY: z.string({ error: "STRIPE_API_KEY is required" }),
   STRIPE_WEBHOOK_SECRET: z.string({
     error: "STRIPE_WEBHOOK_SECRET is required",
   }),
-  STRIPE_CATECHIST_PRO_PLAN_ID: z.string().default(''),
-  STRIPE_CATECHIST_AI_PLAN_ID: z.string().default(''),
-  STRIPE_PARISH_PLAN_ID: z.string().default(''),
-  STRIPE_PARISH_ESSENTIAL_PLAN_ID: z.string().default(''),
-  STRIPE_PARISH_COMPLETE_PLAN_ID: z.string().default(''),
-  STRIPE_DIOCESE_PLAN_ID: z.string().default(''),
+  // Plano Único
+  STRIPE_SINGLE_PLAN_ID: z.string().default(''),
+  STRIPE_SINGLE_ANNUAL_PLAN_ID: z.string().default(''),
+  // Plano Ilimitado
+  STRIPE_UNLIMITED_PLAN_ID: z.string().default(''),
+  STRIPE_UNLIMITED_ANNUAL_PLAN_ID: z.string().default(''),
+  // AI credit packs (one-time)
   STRIPE_AI_CREDITS_20_PLAN_ID: z.string().default(''),
   STRIPE_AI_CREDITS_50_PLAN_ID: z.string().default(''),
-  // Annual billing
-  STRIPE_CATECHIST_PRO_ANNUAL_PLAN_ID: z.string().default(''),
-  STRIPE_CATECHIST_AI_ANNUAL_PLAN_ID: z.string().default(''),
-  STRIPE_PARISH_ANNUAL_PLAN_ID: z.string().default(''),
-  STRIPE_PARISH_ESSENTIAL_ANNUAL_PLAN_ID: z.string().default(''),
-  STRIPE_PARISH_COMPLETE_ANNUAL_PLAN_ID: z.string().default(''),
-  STRIPE_DIOCESE_ANNUAL_PLAN_ID: z.string().default(''),
-  // BRL (Brazilian Real) Price IDs
-  STRIPE_CATECHIST_PRO_BRL_PLAN_ID: z.string().default(''),
-  STRIPE_CATECHIST_AI_BRL_PLAN_ID: z.string().default(''),
-  STRIPE_PARISH_ESSENTIAL_BRL_PLAN_ID: z.string().default(''),
-  STRIPE_PARISH_COMPLETE_BRL_PLAN_ID: z.string().default(''),
-  STRIPE_DIOCESE_BRL_PLAN_ID: z.string().default(''),
-  STRIPE_AI_CREDITS_20_BRL_PLAN_ID: z.string().default(''),
-  STRIPE_AI_CREDITS_50_BRL_PLAN_ID: z.string().default(''),
-  // Annual BRL
-  STRIPE_CATECHIST_PRO_ANNUAL_BRL_PLAN_ID: z.string().default(''),
-  STRIPE_CATECHIST_AI_ANNUAL_BRL_PLAN_ID: z.string().default(''),
-  STRIPE_PARISH_ESSENTIAL_ANNUAL_BRL_PLAN_ID: z.string().default(''),
-  STRIPE_PARISH_COMPLETE_ANNUAL_BRL_PLAN_ID: z.string().default(''),
-  STRIPE_DIOCESE_ANNUAL_BRL_PLAN_ID: z.string().default(''),
-  ENABLE_PRICING_V2: z.string().optional(),
-  PRICING_ROLLOUT_PERCENTAGE: z.string().optional(),
 });

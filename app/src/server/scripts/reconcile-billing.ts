@@ -132,7 +132,9 @@ async function reconcilePersonal(
     }
 
     // 3. Institutional plan stored on User
-    if (plan && ['parish', 'parish_essential', 'parish_complete', 'diocese',
+    //    (Unlimited covers parishes/dioceses; legacy ids kept for pre-migration data)
+    if (plan && ['unlimited', 'UNLIMITED',
+      'parish', 'parish_essential', 'parish_complete', 'diocese',
       'PARISH', 'PARISH_ESSENTIAL', 'PARISH_COMPLETE', 'DIOCESE'].includes(plan)) {
       // Check if there's a corresponding TenantBilling
       const hasInstitutionalBilling = await checkInstitutionalBillingExists(prisma, user.id);

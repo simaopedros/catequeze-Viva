@@ -22,7 +22,7 @@ export const getUserAdminDetail = async (args: { id: string }, context: any) => 
       subscriptionStatus: true,
       subscriptionPlan: true,
       credits: true,
-      wooviCorrelationId: true,
+      paymentProcessorUserId: true,
     },
   });
 

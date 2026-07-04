@@ -203,7 +203,7 @@ export default function ClassesPage() {
             </div>
 
             {isClassLimitReached ? (
-              <PlanLimitBanner type="class_limit" currentCount={activeClassesCount} userPlan={effectivePlan} isParishManaged={!isPersonal} compact />
+              <PlanLimitBanner type="class_limit" currentCount={activeClassesCount} userPlan={effectivePlan} isParishManaged={!isPersonal} isPersonalWorkspace={isPersonal} compact />
             ) : (
               <div className="rounded-3xl border border-dashed border-border/80 bg-white/70 p-4">
                 <div className="flex items-start gap-3">
@@ -245,7 +245,7 @@ export default function ClassesPage() {
               </div>
 
               {isClassLimitReached ? (
-                <PlanLimitBanner type="class_limit" currentCount={activeClassesCount} userPlan={effectivePlan} isParishManaged={!isPersonal} />
+                <PlanLimitBanner type="class_limit" currentCount={activeClassesCount} userPlan={effectivePlan} isParishManaged={!isPersonal} isPersonalWorkspace={isPersonal} />
               ) : canCreateClass ? (
                 <div className="flex flex-wrap gap-3">
                   <Button className="h-11 rounded-xl px-5" asChild>

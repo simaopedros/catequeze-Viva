@@ -5,20 +5,21 @@ export enum SubscriptionStatus {
   Deleted = "deleted",
 }
 
+/**
+ * Payment plan identifiers.
+ *
+ * Simplified structure (Stripe only, BRL only):
+ *   - CatechistFree : sentinel "no subscription", cannot be purchased
+ *   - Single        : Plano Único (1 paróquia, 1 turma, 150 catequizandos)
+ *   - Unlimited     : Plano Ilimitado (paróquia/diocese, tudo ilimitado)
+ *   - AiCredits20/50: one-time AI credit top-up packs
+ */
 export enum PaymentPlanId {
-  Hobby = "hobby",
-  Pro = "pro",
-  Credits10 = "credits10",
   CatechistFree = "catechist_free",
-  CatechistPro = "catechist_pro",
-  CatechistAi = "catechist_ai",
-  CatechistAiAddon = "catechist_ai_addon",
+  Single = "single",
+  Unlimited = "unlimited",
   AiCredits20 = "ai_credits_20",
   AiCredits50 = "ai_credits_50",
-  Parish = "parish",               // legacy alias → parish_complete
-  ParishEssential = "parish_essential",
-  ParishComplete = "parish_complete",
-  Diocese = "diocese",
 }
 
 export interface PaymentPlan {
@@ -31,32 +32,16 @@ export type PaymentPlanEffect =
   | { kind: "credits"; amount: number };
 
 export const paymentPlans = {
-  [PaymentPlanId.Hobby]: {
-    id: PaymentPlanId.Hobby,
-    effect: { kind: "subscription" },
-  },
-  [PaymentPlanId.Pro]: {
-    id: PaymentPlanId.Pro,
-    effect: { kind: "subscription" },
-  },
-  [PaymentPlanId.Credits10]: {
-    id: PaymentPlanId.Credits10,
-    effect: { kind: "credits", amount: 10 },
-  },
   [PaymentPlanId.CatechistFree]: {
     id: PaymentPlanId.CatechistFree,
     effect: { kind: "subscription" },
   },
-  [PaymentPlanId.CatechistPro]: {
-    id: PaymentPlanId.CatechistPro,
+  [PaymentPlanId.Single]: {
+    id: PaymentPlanId.Single,
     effect: { kind: "subscription" },
   },
-  [PaymentPlanId.CatechistAi]: {
-    id: PaymentPlanId.CatechistAi,
-    effect: { kind: "subscription" },
-  },
-  [PaymentPlanId.CatechistAiAddon]: {
-    id: PaymentPlanId.CatechistAiAddon,
+  [PaymentPlanId.Unlimited]: {
+    id: PaymentPlanId.Unlimited,
     effect: { kind: "subscription" },
   },
   [PaymentPlanId.AiCredits20]: {
@@ -67,39 +52,15 @@ export const paymentPlans = {
     id: PaymentPlanId.AiCredits50,
     effect: { kind: "credits", amount: 50 },
   },
-  [PaymentPlanId.Parish]: {
-    id: PaymentPlanId.Parish,
-    effect: { kind: "subscription" },
-  },
-  [PaymentPlanId.ParishEssential]: {
-    id: PaymentPlanId.ParishEssential,
-    effect: { kind: "subscription" },
-  },
-  [PaymentPlanId.ParishComplete]: {
-    id: PaymentPlanId.ParishComplete,
-    effect: { kind: "subscription" },
-  },
-  [PaymentPlanId.Diocese]: {
-    id: PaymentPlanId.Diocese,
-    effect: { kind: "subscription" },
-  },
 } as const satisfies Record<PaymentPlanId, PaymentPlan>;
 
 export function prettyPaymentPlanName(planId: PaymentPlanId): string {
   const planToName: Record<PaymentPlanId, string> = {
-    [PaymentPlanId.Hobby]: "Hobby",
-    [PaymentPlanId.Pro]: "Pro",
-    [PaymentPlanId.Credits10]: "10 Credits",
-    [PaymentPlanId.CatechistFree]: "Catequista Grátis",
-    [PaymentPlanId.CatechistPro]: "Catequista Pro",
-    [PaymentPlanId.CatechistAi]: "Catequista IA",
-    [PaymentPlanId.CatechistAiAddon]: "Add-on IA",
+    [PaymentPlanId.CatechistFree]: "Sem assinatura",
+    [PaymentPlanId.Single]: "Plano Único",
+    [PaymentPlanId.Unlimited]: "Plano Ilimitado",
     [PaymentPlanId.AiCredits20]: "+20 Créditos IA",
     [PaymentPlanId.AiCredits50]: "+50 Créditos IA",
-    [PaymentPlanId.Parish]: "Paróquia",
-    [PaymentPlanId.ParishEssential]: "Paróquia Essencial",
-    [PaymentPlanId.ParishComplete]: "Paróquia Completa",
-    [PaymentPlanId.Diocese]: "Diocese",
   };
   return planToName[planId];
 }

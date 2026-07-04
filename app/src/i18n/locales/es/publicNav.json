@@ -6,10 +6,13 @@
   "privacy": "Privacidad",
   "terms": "Términos",
   "login": "Iniciar sesión",
-  "signup": "Elegir camino",
+  "signup": "Ver planes",
   "openMenu": "Abrir menú",
   "closeMenu": "Cerrar menú",
   "tagline": "Plataforma pastoral para organizar grupos, encuentros, asistencia y familias en la catequesis católica.",
   "audience": "catequistas • parroquias • diócesis",
-  "cta": "Elegir camino"
+  "cta": "Ver planes",
+  "share": "Compartir",
+  "share_copied": "Enlace copiado para compartir",
+  "share_error": "No fue posible compartir ahora"
 }

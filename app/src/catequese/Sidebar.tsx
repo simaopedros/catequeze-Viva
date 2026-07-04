@@ -13,6 +13,7 @@ import { useUserContext } from '../client/hooks/useUserContext';
 import { NAV_SECTIONS, filterByRole, type NavItemConfig } from '../shared/navigation';
 import { useQuery, getUnreadMessagesCount } from 'wasp/client/operations';
 import { useActiveWorkspace } from '../client/hooks/useActiveWorkspace';
+import { usePageVisibility } from '../client/hooks/usePageVisibility';
 import { BrandLockup, BrandMark } from '../client/components/brand/Brand';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '../client/components/ui/tooltip';
 
@@ -123,11 +124,14 @@ export function Sidebar() {
   );
   const { userRole, isAdmin } = useUserContext();
   const { isPersonal } = useActiveWorkspace();
+  const isVisible = usePageVisibility();
 
   // Fetch unread count for messages — lightweight count query instead of full conversation list
   const { data: unreadMessages } = useQuery(getUnreadMessagesCount, undefined, {
-    enabled: !!userRole || isAdmin,
-    refetchInterval: 30000,
+    enabled: (!!userRole || isAdmin) && isVisible,
+    refetchInterval: isVisible ? 120000 : false,
+    staleTime: 60000,
+    refetchOnWindowFocus: false,
   });
 
   const unreadMessagesCount = unreadMessages?.count || 0;
@@ -254,3 +258,4 @@ export function Sidebar() {
     </aside>
   );
 }
+

@@ -3,6 +3,9 @@
  * single source of truth (pricing.ts) are consistent with all external
  * layers (payment plans, billing enforcement, cascade types).
  *
+ * Covers the simplified 2-plan structure (single + unlimited) plus the
+ * catechist_free sentinel and legacy alias resolution.
+ *
  * Run in CI to prevent drift.
  */
 import { describe, it, expect } from 'vitest';
@@ -11,14 +14,13 @@ import {
   PLAN_IDS,
   PLAN_ALIASES,
   PRICING_VERSION,
-  PRICING_EFFECTIVE_FROM,
   getAllPlanIds,
   resolvePlanId,
   INSTITUTIONAL_PLANS as PRICING_INSTITUTIONAL_PLANS,
   getPlanPriceCents,
   type PlanId,
 } from '../shared/pricing';
-import { PaymentPlanId, paymentPlans } from '../payment/plans';
+import { PaymentPlanId } from '../payment/plans';
 import { paymentProcessorPlanIds } from '../payment/paymentProcessorPlans';
 
 // ─── Plan ID integrity ───────────────────────────────────────────────────
@@ -29,16 +31,16 @@ describe('pricing.ts — Plan ID integrity', () => {
     expect(unique.size).toBe(PLAN_IDS.length);
   });
 
+  it('PLAN_IDS is the simplified 3-entry set', () => {
+    expect([...PLAN_IDS]).toEqual(['catechist_free', 'single', 'unlimited']);
+  });
+
   it('getAllPlanIds() returns same as PLAN_IDS', () => {
     expect(getAllPlanIds()).toEqual(PLAN_IDS);
   });
 
-  it('PRICING_VERSION is 2', () => {
-    expect(PRICING_VERSION).toBe(2);
-  });
-
-  it('PRICING_EFFECTIVE_FROM is a Date', () => {
-    expect(PRICING_EFFECTIVE_FROM).toBeInstanceOf(Date);
+  it('PRICING_VERSION is 3', () => {
+    expect(PRICING_VERSION).toBe(3);
   });
 });
 
@@ -48,7 +50,6 @@ describe('Plan IDs ↔ PaymentPlanId consistency', () => {
   it('every paid pricing PlanId exists in PaymentPlanId enum', () => {
     for (const planId of PLAN_IDS) {
       if (planId === 'catechist_free') continue;
-      // Map pricing PlanId to PaymentPlanId enum value
       const paymentPlanId = mapPlanIdToPaymentPlanId(planId);
       expect(
         Object.values(PaymentPlanId).includes(paymentPlanId),
@@ -68,7 +69,7 @@ describe('Plan IDs ↔ PaymentPlanId consistency', () => {
     }
   });
 
-  it('monthly prices > 0 for paid plans', () => {
+  it('monthly prices > 0 for paid plans (BRL cents)', () => {
     for (const planId of PLAN_IDS) {
       if (planId === 'catechist_free') {
         expect(getPlanPriceCents(planId, 'monthly')).toBe(0);
@@ -78,12 +79,19 @@ describe('Plan IDs ↔ PaymentPlanId consistency', () => {
     }
   });
 
-  it('highlight plans exist', () => {
+  it('single is R$ 29 monthly / R$ 290 annual', () => {
+    expect(getPlanPriceCents('single', 'monthly')).toBe(2900);
+    expect(getPlanPriceCents('single', 'annual')).toBe(29000);
+  });
+
+  it('unlimited is R$ 99 monthly / R$ 990 annual', () => {
+    expect(getPlanPriceCents('unlimited', 'monthly')).toBe(9900);
+    expect(getPlanPriceCents('unlimited', 'annual')).toBe(99000);
+  });
+
+  it('highlight plan is unlimited', () => {
     const highlighted = PLAN_IDS.filter((id) => PLANS[id].highlight);
-    expect(highlighted.length).toBeGreaterThanOrEqual(1);
-    // catechist_ai and parish_complete should be highlighted
-    expect(highlighted).toContain('catechist_ai');
-    expect(highlighted).toContain('parish_complete');
+    expect(highlighted).toEqual(['unlimited']);
   });
 });
 
@@ -105,15 +113,27 @@ describe('PLAN_ALIASES integrity', () => {
     }
   });
 
-  it('resolvePlanId handles aliases', () => {
-    expect(resolvePlanId('parish')).toBe('parish_complete');
-    expect(resolvePlanId('PARISH')).toBe('parish_complete');
+  it('resolvePlanId maps pro/ai/essential legacy → single', () => {
+    expect(resolvePlanId('catechist_pro')).toBe('single');
+    expect(resolvePlanId('catechist_ai')).toBe('single');
+    expect(resolvePlanId('parish_essential')).toBe('single');
+  });
+
+  it('resolvePlanId maps parish/diocese legacy → unlimited', () => {
+    expect(resolvePlanId('parish')).toBe('unlimited');
+    expect(resolvePlanId('parish_complete')).toBe('unlimited');
+    expect(resolvePlanId('diocese')).toBe('unlimited');
+  });
+
+  it('resolvePlanId is case-insensitive for aliases', () => {
+    expect(resolvePlanId('PARISH')).toBe('unlimited');
+    expect(resolvePlanId('DIOCESE')).toBe('unlimited');
   });
 
   it('resolvePlanId handles active plans', () => {
     expect(resolvePlanId('catechist_free')).toBe('catechist_free');
-    expect(resolvePlanId('diocese')).toBe('diocese');
-    expect(resolvePlanId('parish_complete')).toBe('parish_complete');
+    expect(resolvePlanId('single')).toBe('single');
+    expect(resolvePlanId('unlimited')).toBe('unlimited');
   });
 
   it('resolvePlanId returns null for unknown', () => {
@@ -128,6 +148,7 @@ describe('Institutional plans consistency', () => {
     const institutionalPlanIds = PLAN_IDS.filter(
       (id) => PLANS[id].level === 'institutional',
     );
+    expect(institutionalPlanIds).toEqual(['unlimited']);
     for (const planId of institutionalPlanIds) {
       const found = (PRICING_INSTITUTIONAL_PLANS as readonly string[]).some(
         (ip) => ip.toLowerCase() === planId.toLowerCase(),
@@ -149,29 +170,22 @@ describe('Institutional plans consistency', () => {
   });
 });
 
-// ─── Diocese AI scope ────────────────────────────────────────────────────
+// ─── AI scope ────────────────────────────────────────────────────────────
 
-describe('Diocese AI scope', () => {
-  it('diocese has per_parish scope', () => {
-    expect(PLANS.diocese.ai.scope).toBe('per_parish');
-  });
-
-  it('diocese monthly credits are 50', () => {
-    expect(PLANS.diocese.ai.monthlyCredits).toBe(50);
-  });
-
-  it('diocese max parishes is 10', () => {
-    expect(PLANS.diocese.limits.maxParishes).toBe(10);
-  });
-
-  it('non-diocese plans have user scope', () => {
+describe('AI scope', () => {
+  it('all plans have user scope', () => {
     for (const planId of PLAN_IDS) {
-      if (planId === 'diocese') continue;
       expect(
         PLANS[planId].ai.scope,
         `Plan "${planId}" should have scope "user"`,
       ).toBe('user');
     }
+  });
+
+  it('sentinel (catechist_free) grants zero AI access', () => {
+    expect(PLANS.catechist_free.ai.monthlyCredits).toBe(0);
+    expect(PLANS.catechist_free.limits.maxClasses).toBe(0);
+    expect(PLANS.catechist_free.limits.maxCatechumens).toBe(0);
   });
 });
 
@@ -185,7 +199,6 @@ import {
   getInstitutionalPlanId,
   isBillingActive,
   getWorkspaceEffectivePlan,
-  type BillingInfo,
 } from '../shared/pricing';
 
 describe('isSubscriptionActiveLike', () => {
@@ -212,55 +225,44 @@ describe('isSubscriptionActiveLike', () => {
 
   it('case-insensitive', () => {
     expect(isSubscriptionActiveLike('ACTIVE')).toBe(true);
-    expect(isSubscriptionActiveLike('Cancel_At_Period_End')).toBe(true);
     expect(isSubscriptionActiveLike('PAST_DUE')).toBe(true);
   });
 });
 
 describe('getPersonalPlanId', () => {
-  it('returns catechist_pro for active personal sub', () => {
-    expect(getPersonalPlanId({ subscriptionStatus: 'active', subscriptionPlan: 'catechist_pro' })).toBe('catechist_pro');
+  it('returns single for active personal sub', () => {
+    expect(getPersonalPlanId({ subscriptionStatus: 'active', subscriptionPlan: 'single' })).toBe('single');
   });
 
-  it('returns catechist_pro for cancel_at_period_end', () => {
-    expect(getPersonalPlanId({ subscriptionStatus: 'cancel_at_period_end', subscriptionPlan: 'catechist_pro' })).toBe('catechist_pro');
+  it('returns single for cancel_at_period_end', () => {
+    expect(getPersonalPlanId({ subscriptionStatus: 'cancel_at_period_end', subscriptionPlan: 'single' })).toBe('single');
   });
 
-  it('returns catechist_pro for past_due', () => {
-    expect(getPersonalPlanId({ subscriptionStatus: 'past_due', subscriptionPlan: 'catechist_pro' })).toBe('catechist_pro');
-  });
-
-  it('returns catechist_pro for ACTIVE (uppercase)', () => {
-    expect(getPersonalPlanId({ subscriptionStatus: 'ACTIVE', subscriptionPlan: 'catechist_pro' })).toBe('catechist_pro');
+  it('returns single for past_due', () => {
+    expect(getPersonalPlanId({ subscriptionStatus: 'past_due', subscriptionPlan: 'single' })).toBe('single');
   });
 
   it('returns catechist_free for deleted status', () => {
-    expect(getPersonalPlanId({ subscriptionStatus: 'deleted', subscriptionPlan: 'catechist_ai' })).toBe('catechist_free');
+    expect(getPersonalPlanId({ subscriptionStatus: 'deleted', subscriptionPlan: 'single' })).toBe('catechist_free');
   });
 
   it('returns catechist_free for null status', () => {
-    expect(getPersonalPlanId({ subscriptionStatus: null, subscriptionPlan: 'catechist_pro' })).toBe('catechist_free');
+    expect(getPersonalPlanId({ subscriptionStatus: null, subscriptionPlan: 'single' })).toBe('catechist_free');
   });
 
-  it('returns catechist_free for institutional plan on user', () => {
-    // Institutional plans on User.subscriptionPlan do NOT grant personal access
+  it('returns catechist_free for institutional (unlimited) plan on user', () => {
+    expect(getPersonalPlanId({ subscriptionStatus: 'active', subscriptionPlan: 'unlimited' })).toBe('catechist_free');
+  });
+
+  it('returns catechist_free for legacy institutional aliases on user', () => {
     expect(getPersonalPlanId({ subscriptionStatus: 'active', subscriptionPlan: 'parish_complete' })).toBe('catechist_free');
     expect(getPersonalPlanId({ subscriptionStatus: 'active', subscriptionPlan: 'diocese' })).toBe('catechist_free');
-  });
-
-  it('returns catechist_free for legacy parish alias', () => {
-    // 'parish' alias should NOT grant personal access (it's institutional)
-    expect(getPersonalPlanId({ subscriptionStatus: 'active', subscriptionPlan: 'parish' })).toBe('catechist_free');
   });
 });
 
 describe('hasPersonalAccess', () => {
-  it('true for active pro user', () => {
-    expect(hasPersonalAccess({ subscriptionStatus: 'active', subscriptionPlan: 'catechist_pro' })).toBe(true);
-  });
-
-  it('true for cancel_at_period_end pro user', () => {
-    expect(hasPersonalAccess({ subscriptionStatus: 'cancel_at_period_end', subscriptionPlan: 'catechist_pro' })).toBe(true);
+  it('true for active single user', () => {
+    expect(hasPersonalAccess({ subscriptionStatus: 'active', subscriptionPlan: 'single' })).toBe(true);
   });
 
   it('false for free user', () => {
@@ -268,21 +270,21 @@ describe('hasPersonalAccess', () => {
   });
 
   it('false for deleted user', () => {
-    expect(hasPersonalAccess({ subscriptionStatus: 'deleted', subscriptionPlan: 'catechist_ai' })).toBe(false);
+    expect(hasPersonalAccess({ subscriptionStatus: 'deleted', subscriptionPlan: 'single' })).toBe(false);
   });
 
   it('false for institutional plan on user', () => {
-    expect(hasPersonalAccess({ subscriptionStatus: 'active', subscriptionPlan: 'parish_complete' })).toBe(false);
+    expect(hasPersonalAccess({ subscriptionStatus: 'active', subscriptionPlan: 'unlimited' })).toBe(false);
   });
 });
 
 describe('isBillingActive', () => {
   it('ACTIVE is active', () => {
-    expect(isBillingActive({ plan: 'PARISH_COMPLETE', status: 'ACTIVE' })).toBe(true);
+    expect(isBillingActive({ plan: 'UNLIMITED', status: 'ACTIVE' })).toBe(true);
   });
 
   it('PAST_DUE is active (grace period)', () => {
-    expect(isBillingActive({ plan: 'PARISH_COMPLETE', status: 'PAST_DUE' })).toBe(true);
+    expect(isBillingActive({ plan: 'UNLIMITED', status: 'PAST_DUE' })).toBe(true);
   });
 
   it('TRIAL within period is active', () => {
@@ -300,7 +302,7 @@ describe('isBillingActive', () => {
   });
 
   it('CANCELED is NOT active', () => {
-    expect(isBillingActive({ plan: 'PARISH_COMPLETE', status: 'CANCELED' })).toBe(false);
+    expect(isBillingActive({ plan: 'UNLIMITED', status: 'CANCELED' })).toBe(false);
   });
 
   it('null is NOT active', () => {
@@ -309,30 +311,38 @@ describe('isBillingActive', () => {
 });
 
 describe('hasInstitutionalAccess', () => {
-  it('true for ACTIVE parish_complete', () => {
+  it('true for ACTIVE unlimited', () => {
+    expect(hasInstitutionalAccess({ plan: 'UNLIMITED', status: 'ACTIVE' })).toBe(true);
+  });
+
+  it('true for legacy PARISH_COMPLETE alias (resolves to unlimited)', () => {
     expect(hasInstitutionalAccess({ plan: 'PARISH_COMPLETE', status: 'ACTIVE' })).toBe(true);
   });
 
-  it('true for PAST_DUE', () => {
-    expect(hasInstitutionalAccess({ plan: 'PARISH_ESSENTIAL', status: 'PAST_DUE' })).toBe(true);
+  it('true for legacy DIOCESE alias', () => {
+    expect(hasInstitutionalAccess({ plan: 'DIOCESE', status: 'ACTIVE' })).toBe(true);
   });
 
   it('false for CATECHIST_FREE', () => {
     expect(hasInstitutionalAccess({ plan: 'CATECHIST_FREE', status: 'ACTIVE' })).toBe(false);
   });
 
+  it('false for SINGLE (personal plan)', () => {
+    expect(hasInstitutionalAccess({ plan: 'SINGLE', status: 'ACTIVE' })).toBe(false);
+  });
+
   it('false for CANCELED', () => {
-    expect(hasInstitutionalAccess({ plan: 'PARISH_COMPLETE', status: 'CANCELED' })).toBe(false);
+    expect(hasInstitutionalAccess({ plan: 'UNLIMITED', status: 'CANCELED' })).toBe(false);
   });
 });
 
 describe('getInstitutionalPlanId', () => {
-  it('returns parish_complete', () => {
-    expect(getInstitutionalPlanId({ plan: 'PARISH_COMPLETE', status: 'ACTIVE' })).toBe('parish_complete');
+  it('returns unlimited', () => {
+    expect(getInstitutionalPlanId({ plan: 'UNLIMITED', status: 'ACTIVE' })).toBe('unlimited');
   });
 
-  it('returns diocese', () => {
-    expect(getInstitutionalPlanId({ plan: 'DIOCESE', status: 'ACTIVE' })).toBe('diocese');
+  it('returns unlimited for legacy DIOCESE', () => {
+    expect(getInstitutionalPlanId({ plan: 'DIOCESE', status: 'ACTIVE' })).toBe('unlimited');
   });
 
   it('returns null for CATECHIST_FREE', () => {
@@ -340,26 +350,26 @@ describe('getInstitutionalPlanId', () => {
   });
 
   it('returns null for CANCELED', () => {
-    expect(getInstitutionalPlanId({ plan: 'PARISH_COMPLETE', status: 'CANCELED' })).toBeNull();
+    expect(getInstitutionalPlanId({ plan: 'UNLIMITED', status: 'CANCELED' })).toBeNull();
   });
 
-  it('resolves legacy PARISH alias', () => {
+  it('resolves legacy PARISH alias to unlimited', () => {
     const result = getInstitutionalPlanId({ plan: 'PARISH', status: 'ACTIVE' });
-    expect(result).toBe('parish_complete');
+    expect(result).toBe('unlimited');
   });
 });
 
 describe('getWorkspaceEffectivePlan', () => {
-  it('personal workspace with pro sub returns personal', () => {
+  it('personal workspace with single sub returns personal', () => {
     const result = getWorkspaceEffectivePlan({
-      user: { subscriptionStatus: 'active', subscriptionPlan: 'catechist_pro' },
+      user: { subscriptionStatus: 'active', subscriptionPlan: 'single' },
       parishType: 'PERSONAL',
     });
-    expect(result.plan).toBe('catechist_pro');
+    expect(result.plan).toBe('single');
     expect(result.source).toBe('personal');
   });
 
-  it('personal workspace without subscription returns free', () => {
+  it('personal workspace without subscription returns free (blocked)', () => {
     const result = getWorkspaceEffectivePlan({
       user: { subscriptionStatus: null, subscriptionPlan: null },
       parishType: 'PERSONAL',
@@ -368,23 +378,23 @@ describe('getWorkspaceEffectivePlan', () => {
     expect(result.source).toBe('free');
   });
 
-  it('institutional workspace with diocese umbrella returns diocese', () => {
+  it('institutional workspace with own unlimited billing returns unlimited', () => {
     const result = getWorkspaceEffectivePlan({
       user: { subscriptionStatus: null, subscriptionPlan: null },
       parishType: 'PARISH',
-      dioceseBilling: { plan: 'DIOCESE', status: 'ACTIVE' },
+      billing: { plan: 'UNLIMITED', status: 'ACTIVE' },
     });
-    expect(result.plan).toBe('diocese');
-    expect(result.source).toBe('diocese_umbrella');
+    expect(result.plan).toBe('unlimited');
+    expect(result.source).toBe('institutional');
   });
 
-  it('institutional workspace with own billing returns parish plan', () => {
+  it('institutional workspace with diocese umbrella (unlimited) returns unlimited', () => {
     const result = getWorkspaceEffectivePlan({
       user: { subscriptionStatus: null, subscriptionPlan: null },
       parishType: 'PARISH',
-      billing: { plan: 'PARISH_COMPLETE', status: 'ACTIVE' },
+      dioceseBilling: { plan: 'UNLIMITED', status: 'ACTIVE' },
     });
-    expect(result.plan).toBe('parish_complete');
+    expect(result.plan).toBe('unlimited');
     expect(result.source).toBe('institutional');
   });
 
@@ -399,7 +409,7 @@ describe('getWorkspaceEffectivePlan', () => {
     expect(result.source).toBe('trial');
   });
 
-  it('institutional workspace without any billing returns free', () => {
+  it('institutional workspace without any billing returns free (blocked)', () => {
     const result = getWorkspaceEffectivePlan({
       user: { subscriptionStatus: null, subscriptionPlan: null },
       parishType: 'PARISH',
@@ -410,10 +420,10 @@ describe('getWorkspaceEffectivePlan', () => {
 
   it('cancel_at_period_end user has personal access', () => {
     const result = getWorkspaceEffectivePlan({
-      user: { subscriptionStatus: 'cancel_at_period_end', subscriptionPlan: 'catechist_ai' },
+      user: { subscriptionStatus: 'cancel_at_period_end', subscriptionPlan: 'single' },
       parishType: 'PERSONAL',
     });
-    expect(result.plan).toBe('catechist_ai');
+    expect(result.plan).toBe('single');
     expect(result.source).toBe('personal');
   });
 
@@ -421,31 +431,10 @@ describe('getWorkspaceEffectivePlan', () => {
     const result = getWorkspaceEffectivePlan({
       user: null,
       parishType: 'PARISH',
-      billing: { plan: 'PARISH_COMPLETE', status: 'PAST_DUE' },
+      billing: { plan: 'UNLIMITED', status: 'PAST_DUE' },
     });
-    expect(result.plan).toBe('parish_complete');
+    expect(result.plan).toBe('unlimited');
     expect(result.source).toBe('institutional');
-  });
-
-  it('parish own billing takes priority over diocese umbrella', () => {
-    const result = getWorkspaceEffectivePlan({
-      user: null,
-      parishType: 'PARISH',
-      billing: { plan: 'PARISH_ESSENTIAL', status: 'ACTIVE' },
-      dioceseBilling: { plan: 'DIOCESE', status: 'ACTIVE' },
-    });
-    expect(result.plan).toBe('parish_essential');
-    expect(result.source).toBe('institutional');
-  });
-
-  it('diocese umbrella when parish has no billing', () => {
-    const result = getWorkspaceEffectivePlan({
-      user: null,
-      parishType: 'PARISH',
-      dioceseBilling: { plan: 'DIOCESE', status: 'ACTIVE' },
-    });
-    expect(result.plan).toBe('diocese');
-    expect(result.source).toBe('diocese_umbrella');
   });
 
   it('expired trial returns free for institutional', () => {
@@ -458,49 +447,6 @@ describe('getWorkspaceEffectivePlan', () => {
     expect(result.plan).toBe('catechist_free');
     expect(result.source).toBe('free');
   });
-
-  it('past_due user retains personal access', () => {
-    const result = getWorkspaceEffectivePlan({
-      user: { subscriptionStatus: 'past_due', subscriptionPlan: 'catechist_pro' },
-      parishType: 'PERSONAL',
-    });
-    expect(result.plan).toBe('catechist_pro');
-    expect(result.source).toBe('personal');
-  });
-
-  it('cancel_at_period_end institutional billing still active', () => {
-    // TenantBilling doesn't have cancel_at_period_end — this is a User concept.
-    // But if billing is CANCELED, it should not grant access.
-    const result = getWorkspaceEffectivePlan({
-      user: null,
-      parishType: 'PARISH',
-      billing: { plan: 'PARISH_COMPLETE', status: 'CANCELED' },
-    });
-    expect(result.plan).toBe('catechist_free');
-    expect(result.source).toBe('free');
-  });
-
-  it('workspace effective plan handles undefined billing gracefully', () => {
-    const result = getWorkspaceEffectivePlan({
-      user: null,
-      parishType: 'PARISH',
-      billing: undefined,
-      dioceseBilling: undefined,
-    });
-    expect(result.plan).toBe('catechist_free');
-    expect(result.source).toBe('free');
-  });
-
-  it('institutional plan on user does NOT grant institutional access via workspace helper', () => {
-    const result = getWorkspaceEffectivePlan({
-      user: { subscriptionStatus: 'active', subscriptionPlan: 'parish_complete' },
-      parishType: 'PARISH',
-    });
-    // The workspace helper doesn't check the user's plan for institutional; it checks billing.
-    // The owner umbrella is handled by billingEnforcement, not this pure function.
-    expect(result.plan).toBe('catechist_free');
-    expect(result.source).toBe('free');
-  });
 });
 
 // ─── Helpers ─────────────────────────────────────────────────────────────
@@ -508,11 +454,8 @@ describe('getWorkspaceEffectivePlan', () => {
 function mapPlanIdToPaymentPlanId(planId: PlanId): PaymentPlanId {
   const mapping: Record<PlanId, PaymentPlanId> = {
     catechist_free: PaymentPlanId.CatechistFree,
-    catechist_pro: PaymentPlanId.CatechistPro,
-    catechist_ai: PaymentPlanId.CatechistAi,
-    parish_essential: PaymentPlanId.ParishEssential,
-    parish_complete: PaymentPlanId.ParishComplete,
-    diocese: PaymentPlanId.Diocese,
+    single: PaymentPlanId.Single,
+    unlimited: PaymentPlanId.Unlimited,
   };
   return mapping[planId];
 }

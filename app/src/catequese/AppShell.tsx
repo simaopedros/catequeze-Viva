@@ -5,6 +5,7 @@ import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { BottomNav } from './BottomNav';
 import { TwoFactorGate } from './components/TwoFactorGate';
+import { SubscriptionGate } from './components/SubscriptionGate';
 import { FamilyAppShell } from './FamilyAppShell';
 import { useUserContext } from '../client/hooks/useUserContext';
 import { ErrorBoundary } from '../client/components/ErrorBoundary';
@@ -130,7 +131,7 @@ export function AppShell({ children }: AppShellProps) {
             <TopBar onMenuToggle={handleMenuToggle} />
           </ErrorBoundary>
           <main id="main-content" ref={mainRef} className="flex-1 overflow-y-auto bg-background p-4 md:p-6 no-overscroll scroll-touch" style={{ paddingBottom: 'calc(4rem + env(safe-area-inset-bottom, 0px))' }}>
-            <div key={location.pathname} className="content-transition">{children}</div>
+            <div key={location.pathname} className="content-transition"><SubscriptionGate>{children}</SubscriptionGate></div>
           </main>
         </div>
         <BottomNav />

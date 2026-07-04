@@ -20,23 +20,25 @@ describe('detectCurrency', () => {
     vi.unstubAllGlobals();
   });
 
-  it('uses BRL for Brazil locales', () => {
+  // The platform is Brazil-only and bills exclusively in BRL, so
+  // detectCurrency() always returns 'BRL' regardless of locale/timezone.
+  it('always returns BRL for Brazil locales', () => {
     mockNavigatorLanguages(['pt-BR', 'pt']);
+    mockTimeZone('America/Sao_Paulo');
+
+    expect(detectCurrency()).toBe('BRL');
+  });
+
+  it('returns BRL even for non-Brazil locales (platform is BR-only)', () => {
+    mockNavigatorLanguages(['pt-PT', 'pt']);
     mockTimeZone('Europe/Lisbon');
 
     expect(detectCurrency()).toBe('BRL');
   });
 
-  it('does not treat every Portuguese locale as Brazil', () => {
-    mockNavigatorLanguages(['pt-PT', 'pt']);
-    mockTimeZone('Europe/Lisbon');
-
-    expect(detectCurrency()).toBe('USD');
-  });
-
-  it('uses BRL for Brazilian time zones even with a non-Brazil locale', () => {
+  it('returns BRL for any locale/timezone combination', () => {
     mockNavigatorLanguages(['en-US']);
-    mockTimeZone('America/Sao_Paulo');
+    mockTimeZone('America/New_York');
 
     expect(detectCurrency()).toBe('BRL');
   });

@@ -163,8 +163,8 @@ test.describe('Personal Workspace — Onboarding UI (personal account)', () => {
     await page.goto('/app/onboarding');
     await page.waitForLoadState('networkidle');
 
-    // Step 1: Welcome screen — click "Conta Pessoal"
-    const personalBtn = page.locator('button:has-text("Conta Pessoal")');
+    // Step 1: Welcome screen — click the personal path
+    const personalBtn = page.locator('button:has-text("Quero organizar minha turma")');
     await expect(personalBtn).toBeVisible({ timeout: 10000 });
     await personalBtn.click();
 
@@ -173,8 +173,8 @@ test.describe('Personal Workspace — Onboarding UI (personal account)', () => {
     await expect(page.locator('text=Diocese').first()).not.toBeVisible({ timeout: 5000 });
     await expect(page.locator('text=Paróquia').first()).not.toBeVisible({ timeout: 5000 });
 
-    // Verify the header says "espaço pessoal" instead of "4 passos"
-    await expect(page.locator('text=espaço pessoal').first()).toBeVisible({ timeout: 5000 });
+    // Verify the page now frames the first practical result, not generic setup
+    await expect(page.locator('text=Sua primeira turma começa aqui').first()).toBeVisible({ timeout: 5000 });
 
     // Verify the personal setup form is shown with class name field
     const classNameInput = page.locator('input[placeholder*="Catequese 1"]');
@@ -184,14 +184,35 @@ test.describe('Personal Workspace — Onboarding UI (personal account)', () => {
     await expect(page.locator('h2:has-text("Conta Pessoal")')).toBeVisible({ timeout: 5000 });
   });
 
-  test('Completing personal onboarding redirects to workspace selector', async ({ page }) => {
+  test('Selecting parish path shows the guided institutional context flow', async ({ page }) => {
     await login(page, USERS.viewer.email);
 
     await page.goto('/app/onboarding');
     await page.waitForLoadState('networkidle');
 
-    // Click "Conta Pessoal"
-    const personalBtn = page.locator('button:has-text("Conta Pessoal")');
+    const managerBtn = page.locator('button:has-text("Quero organizar a catequese da paróquia")');
+    await expect(managerBtn).toBeVisible({ timeout: 10000 });
+    await managerBtn.click();
+
+    await expect(page.locator('text=Defina o contexto da catequese').first()).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('text=Comece filtrando por estado ou nome').first()).toBeVisible({ timeout: 5000 });
+
+    const skipBtn = page.locator('button:has-text("Pular esta etapa")');
+    await expect(skipBtn).toBeVisible({ timeout: 5000 });
+    await skipBtn.click();
+
+    await expect(page.locator('text=Qual paróquia vai receber a primeira turma?').first()).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('text=Defina cidade e estado para acelerar').first()).toBeVisible({ timeout: 5000 });
+  });
+
+  test('Completing personal onboarding leads to the activation next step', async ({ page }) => {
+    await login(page, USERS.viewer.email);
+
+    await page.goto('/app/onboarding');
+    await page.waitForLoadState('networkidle');
+
+    // Click the personal path
+    const personalBtn = page.locator('button:has-text("Quero organizar minha turma")');
     await expect(personalBtn).toBeVisible({ timeout: 10000 });
     await personalBtn.click();
 
@@ -201,12 +222,12 @@ test.describe('Personal Workspace — Onboarding UI (personal account)', () => {
     await classNameInput.fill(`E2E Onboarding ${Date.now()}`);
 
     // Submit
-    const submitBtn = page.locator('button:has-text("Entrar no meu espaço")');
+    const submitBtn = page.locator('button:has-text("Criar meu espaço"), button:has-text("Entrar agora")').first();
     await expect(submitBtn).toBeVisible({ timeout: 5000 });
     await submitBtn.click();
 
-    // Should redirect to workspace selector after completion
-    await page.waitForURL(/\/app\/select-workspace/, { timeout: 20000 });
+    // Should land on the completion state with a concrete activation next step
+    await expect(page.locator('button:has-text("Gerar meu primeiro encontro")')).toBeVisible({ timeout: 20000 });
   });
 });
 

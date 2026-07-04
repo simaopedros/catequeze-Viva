@@ -5,10 +5,8 @@ import CityStateSelect from '../../../client/components/CityStateSelect';
 
 const PLAN_KEYS: Record<string, string> = {
   CATECHIST_FREE: 'plan_free',
-  CATECHIST_PRO: 'plan_catechist_pro',
-  CATECHIST_AI: 'plan_catechist_ai',
-  PARISH: 'plan_parish',
-  DIOCESE: 'plan_diocese',
+  SINGLE: 'plan_single',
+  UNLIMITED: 'plan_unlimited',
 };
 
 const STATUS_KEYS: Record<string, { key: string; color: string }> = {

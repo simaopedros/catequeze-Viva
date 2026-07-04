@@ -6,7 +6,7 @@
     "badge": "Controle de presença digital",
     "cta_primary": "Começar agora",
     "cta_secondary": "Ver demonstração",
-    "trust_signals": "Sem cartão • Plano gratuito • Funciona no celular"
+    "trust_signals": "Plano Único ou Ilimitado • Funciona no celular • Pagamento via Stripe"
   },
   "features_title": "Controle total de presenças",
   "features_subtitle": "Do registro à justificativa — tudo integrado e em tempo real.",
@@ -92,5 +92,6 @@
     "privacy": "Privacidade",
     "terms": "Termos",
     "contact": "Contacto"
-  }
+  },
+  "create_account": "Criar conta"
 }

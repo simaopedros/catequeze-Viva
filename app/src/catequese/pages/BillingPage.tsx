@@ -3,20 +3,56 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
-import { CheckCircle, TrendingUp, Clock, ArrowUpRight, History, AlertCircle, Loader2, XCircle, User as UserIcon, Building2, PiggyBank, Coins } from 'lucide-react';
+import {
+  CheckCircle,
+  TrendingUp,
+  Clock,
+  ArrowUpRight,
+  History,
+  AlertCircle,
+  Loader2,
+  XCircle,
+  User as UserIcon,
+  Building2,
+  PiggyBank,
+  Coins,
+  Sparkles,
+  ShieldCheck,
+  CreditCard,
+} from 'lucide-react';
 import type { BillingInterval } from '../lib/intendedPlan';
 import { getIntendedInterval } from '../lib/intendedPlan';
-import { useQuery, getDashboardStats, getAiCreditsStatus, generateCheckoutSession, cancelSubscription, getParishById, getCustomerPortalUrl } from 'wasp/client/operations';
+import {
+  useQuery,
+  getDashboardStats,
+  getAiCreditsStatus,
+  generateCheckoutSession,
+  cancelSubscription,
+  changeSubscriptionPlan,
+  getParishById,
+  getCustomerPortalUrl,
+  getSubscriptionDetails,
+} from 'wasp/client/operations';
 import { useAuth } from 'wasp/client/auth';
 import { PaymentPlanId } from '../../payment/plans';
 import { ConfirmDialog } from '../../client/components/ConfirmDialog';
 import { toast } from '../../client/hooks/use-toast';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { useActiveWorkspace } from '../../client/hooks/useActiveWorkspace';
-import { PLANS, type PlanId, hasPersonalAccess, hasInstitutionalAccess, isBillingActive, getInstitutionalPlanId } from '../../shared/pricing';
+import {
+  PLANS,
+  type PlanId,
+  hasPersonalAccess,
+  hasInstitutionalAccess,
+  isBillingActive,
+  getInstitutionalPlanId,
+} from '../../shared/pricing';
 import { BuyCreditsButton } from '../components/BuyCreditsButton';
-import { detectCurrency, formatPrice } from '../../shared/currency';
+import { formatPrice } from '../../shared/currency';
 import { trackMarketingEvent } from '../../client/analytics/marketingAnalytics';
+import { cn } from '../../client/utils';
+import type { ReactNode } from 'react';
+import { parseUpgradeJourneyReason } from '../lib/upgradeJourney';
 
 interface PlanCard {
   planId: PaymentPlanId;
@@ -36,93 +72,116 @@ interface PlanCard {
 
 const PLAN_STRUCTURE: Omit<PlanCard, 'name' | 'price' | 'annualPrice' | 'features'>[] = [
   {
-    planId: PaymentPlanId.CatechistFree,
-    planKey: 'catechist_free',
-    priceCents: PLANS.catechist_free.prices.monthlyCents,
-    priceCentsAnnual: PLANS.catechist_free.prices.annualCents,
-    maxClasses: 1,
-    maxCatechumens: 15,
-    color: 'border-border',
-    highlight: false,
-    isFree: true,
-  },
-  {
-    planId: PaymentPlanId.CatechistPro,
-    planKey: 'catechist_pro',
-    priceCents: PLANS.catechist_pro.prices.monthlyCents,
-    priceCentsAnnual: PLANS.catechist_pro.prices.annualCents,
-    maxClasses: 3,
-    maxCatechumens: 150,
+    planId: PaymentPlanId.Single,
+    planKey: 'single',
+    priceCents: PLANS.single.prices.monthlyCents,
+    priceCentsAnnual: PLANS.single.prices.annualCents,
+    maxClasses: PLANS.single.limits.maxClasses,
+    maxCatechumens: PLANS.single.limits.maxCatechumens,
     color: 'border-border',
     highlight: false,
     isFree: false,
   },
   {
-    planId: PaymentPlanId.CatechistAi,
-    planKey: 'catechist_ai',
-    priceCents: PLANS.catechist_ai.prices.monthlyCents,
-    priceCentsAnnual: PLANS.catechist_ai.prices.annualCents,
-    maxClasses: null,
-    maxCatechumens: null,
+    planId: PaymentPlanId.Unlimited,
+    planKey: 'unlimited',
+    priceCents: PLANS.unlimited.prices.monthlyCents,
+    priceCentsAnnual: PLANS.unlimited.prices.annualCents,
+    maxClasses: PLANS.unlimited.limits.maxClasses,
+    maxCatechumens: PLANS.unlimited.limits.maxCatechumens,
     color: 'border-primary',
     highlight: true,
-    isFree: false,
-  },
-  {
-    planId: PaymentPlanId.ParishEssential,
-    planKey: 'parish_essential',
-    priceCents: PLANS.parish_essential.prices.monthlyCents,
-    priceCentsAnnual: PLANS.parish_essential.prices.annualCents,
-    maxClasses: null,
-    maxCatechumens: 200,
-    color: 'border-border',
-    highlight: false,
-    isFree: false,
-  },
-  {
-    planId: PaymentPlanId.ParishComplete,
-    planKey: 'parish_complete',
-    priceCents: PLANS.parish_complete.prices.monthlyCents,
-    priceCentsAnnual: PLANS.parish_complete.prices.annualCents,
-    maxClasses: null,
-    maxCatechumens: null,
-    color: 'border-primary',
-    highlight: true,
-    isFree: false,
-  },
-  {
-    planId: PaymentPlanId.Diocese,
-    planKey: 'diocese',
-    priceCents: PLANS.diocese.prices.monthlyCents,
-    priceCentsAnnual: PLANS.diocese.prices.annualCents,
-    maxClasses: null,
-    maxCatechumens: null,
-    color: 'border-border',
-    highlight: false,
     isFree: false,
   },
 ];
 
 function buildPlanCards(t: any): PlanCard[] {
-  return PLAN_STRUCTURE.map((meta) => ({
-    ...meta,
-    name: t(`plans.${meta.planKey}.name`),
-    price: t(`plans.${meta.planKey}.price`),
-    annualPrice: meta.priceCentsAnnual ? t(`plans.${meta.planKey}.annual_price`) : undefined,
-    features: (t as any)(`plans.${meta.planKey}.features`, { returnObjects: true }) as string[],
-  }));
-}
-
-/** Moeda detectada do cliente */
-function getCurrency(): 'BRL' | 'USD' {
-  return detectCurrency();
+  return PLAN_STRUCTURE.map((meta) => {
+    const featuresRaw = (t as any)(`plans.${meta.planKey}.features`, { returnObjects: true });
+    const features: string[] = Array.isArray(featuresRaw)
+      ? (featuresRaw as string[])
+      : (PLANS[meta.planKey].features ?? []);
+    return {
+      ...meta,
+      name: t(`plans.${meta.planKey}.name`),
+      price: t(`plans.${meta.planKey}.price`),
+      annualPrice: meta.priceCentsAnnual ? t(`plans.${meta.planKey}.annual_price`) : undefined,
+      features,
+    };
+  });
 }
 
 function formatPriceFromCents(cents: number): string {
   return formatPrice(cents);
 }
 
+function getEquivalentMonthlyPrice(annualCents: number): string {
+  return formatPriceFromCents(Math.round(annualCents / 12));
+}
+
+function getAnnualSavings(monthlyCents: number, annualCents: number): string {
+  return formatPriceFromCents(monthlyCents * 12 - annualCents);
+}
+
 const AUTO_CHECKOUT_SESSION_KEY = 'cv-auto-checkout-started';
+
+function SurfaceSection({
+  title,
+  icon: Icon,
+  children,
+  className,
+}: {
+  title: string;
+  icon: any;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <section className={cn('rounded-3xl border border-border/70 bg-white/90 p-5 shadow-sm shadow-slate-200/60', className)}>
+      <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
+        <Icon className="h-4 w-4" />
+        <span>{title}</span>
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function UsageRow({
+  label,
+  used,
+  limit,
+  accent,
+  ariaLabel,
+}: {
+  label: string;
+  used: number;
+  limit: number;
+  accent: string;
+  ariaLabel: string;
+}) {
+  const width = limit === Infinity ? 0 : Math.min((used / limit) * 100, 100);
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between text-sm">
+        <span className="font-medium text-slate-700">{label}</span>
+        <span className="font-semibold text-slate-950">{used}/{limit === Infinity ? '∞' : limit}</span>
+      </div>
+      <div className="h-2.5 w-full rounded-full bg-slate-100">
+        <div
+          className={cn('h-2.5 rounded-full', accent)}
+          role="progressbar"
+          aria-label={ariaLabel}
+          aria-valuenow={used}
+          aria-valuemin={0}
+          aria-valuemax={limit === Infinity ? 0 : limit}
+          style={{ width: `${width}%` }}
+        />
+      </div>
+    </div>
+  );
+}
 
 export default function BillingPage() {
   const { t } = useTranslation('billing');
@@ -134,6 +193,7 @@ export default function BillingPage() {
 
   const { data: stats, isLoading: loading, refetch: refetchStats } = useQuery(getDashboardStats);
   const { data: aiCredits, refetch: refetchCredits } = useQuery(getAiCreditsStatus);
+  const { data: subscriptionDetails, refetch: refetchSubscription } = useQuery(getSubscriptionDetails);
   const { data: user } = useAuth();
   const { parishId } = useUserContext();
   const { isPersonal } = useActiveWorkspace();
@@ -149,15 +209,21 @@ export default function BillingPage() {
   const [cancelling, setCancelling] = useState(false);
   const [managePaymentLoading, setManagePaymentLoading] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [switchingInterval, setSwitchingInterval] = useState(false);
   const [searchParams] = useSearchParams();
   const requestedPlan = searchParams.get('plan');
+  const gateRequired = searchParams.get('required') === '1';
+  const journeySource = searchParams.get('source') ?? 'billing_page';
+  const journeyReason = parseUpgradeJourneyReason(searchParams.get('reason'))
+    ?? (gateRequired ? 'required' : requestedPlan === PaymentPlanId.Unlimited ? 'generic' : null);
   const requestedPlanId = Object.values(PaymentPlanId).includes(requestedPlan as PaymentPlanId)
     ? requestedPlan as PaymentPlanId
     : null;
   const requestedIsInstitutional = requestedPlanId
-    ? [PaymentPlanId.Parish, PaymentPlanId.ParishEssential, PaymentPlanId.ParishComplete, PaymentPlanId.Diocese].includes(requestedPlanId)
+    ? requestedPlanId === PaymentPlanId.Unlimited
     : false;
   const autoCheckoutStartedRef = useRef<string | null>(null);
+  const pricingViewedRef = useRef(false);
 
   const hasPersonalPlan = hasPersonalAccess(user);
   const userPersonalPlanId = hasPersonalPlan && user?.subscriptionPlan
@@ -168,8 +234,6 @@ export default function BillingPage() {
   let isActive = false;
   let isParishManaged = false;
 
-  // When in an institutional workspace, the institutional billing is primary.
-  // The user's personal plan is shown separately (if applicable).
   if (!isPersonal && parish?.billing) {
     const pBilling = parish.billing;
     const billingIsActive = isBillingActive(pBilling);
@@ -178,12 +242,8 @@ export default function BillingPage() {
       const instPlan = getInstitutionalPlanId(pBilling);
       isActive = true;
       isParishManaged = true;
-      if (instPlan === 'parish_complete') {
-        effectivePlanId = PaymentPlanId.ParishComplete;
-      } else if (instPlan === 'parish_essential') {
-        effectivePlanId = PaymentPlanId.ParishEssential;
-      } else if (instPlan === 'diocese') {
-        effectivePlanId = PaymentPlanId.Diocese;
+      if (instPlan === 'unlimited') {
+        effectivePlanId = PaymentPlanId.Unlimited;
       }
     }
   } else if (hasPersonalPlan && user?.subscriptionPlan) {
@@ -191,21 +251,53 @@ export default function BillingPage() {
     isActive = true;
   }
 
-  const effectivePlan = getPlanDef(effectivePlanId);
+  const effectivePlan: PlanCard = effectivePlanId === PaymentPlanId.CatechistFree
+    ? {
+        planId: PaymentPlanId.CatechistFree,
+        planKey: 'catechist_free',
+        name: t('plans.catechist_free.name'),
+        price: t('plans.catechist_free.price'),
+        maxClasses: 0,
+        maxCatechumens: 0,
+        features: [],
+        color: 'border-border',
+        highlight: false,
+        isFree: true,
+      }
+    : getPlanDef(effectivePlanId);
 
   const isPlanManager =
     user?.isAdmin ||
     (!isParishManaged) ||
-    ((effectivePlanId === PaymentPlanId.Parish || effectivePlanId === PaymentPlanId.ParishEssential || effectivePlanId === PaymentPlanId.ParishComplete) && parish?.ownerId === user?.id) ||
-    (effectivePlanId === PaymentPlanId.Diocese && parish?.dioceseAdmins?.some((da: any) => da.user?.id === user?.id));
+    (effectivePlanId === PaymentPlanId.Unlimited && (parish?.ownerId === user?.id || parish?.dioceseAdmins?.some((da: any) => da.user?.id === user?.id)));
+
+  // Current billing interval, resolved from Stripe at runtime (null = unknown/no subscription).
+  const currentInterval = subscriptionDetails?.interval ?? null;
+  const isMonthly = currentInterval === 'month';
+  const isAnnual = currentInterval === 'year';
+  const canSwitchInterval =
+    isActive &&
+    effectivePlanId !== PaymentPlanId.CatechistFree &&
+    (isMonthly || isAnnual) &&
+    isPlanManager &&
+    !isParishManaged;
+
+  // Annual savings computed from the current plan's monthly/annual prices.
+  const monthlyEquivalentAnnual =
+    effectivePlan.priceCents && effectivePlan.priceCentsAnnual
+      ? Math.round(effectivePlan.priceCentsAnnual / 12)
+      : null;
+  const annualSavingsAmount =
+    effectivePlan.priceCents && effectivePlan.priceCentsAnnual
+      ? effectivePlan.priceCents * 12 - effectivePlan.priceCentsAnnual
+      : null;
 
   const visiblePlans = allPlans.filter((plan) => {
     if (isPersonal || (!parishId && !parish)) {
-      return [PaymentPlanId.CatechistFree, PaymentPlanId.CatechistPro, PaymentPlanId.CatechistAi].includes(plan.planId);
+      return plan.planId === PaymentPlanId.Single;
     }
-    return true;
+    return plan.planId === PaymentPlanId.Unlimited;
   });
-
 
   const classesUsed = stats?.activeClasses ?? 0;
   const catechumensUsed = stats?.activeCatechumens ?? 0;
@@ -222,11 +314,13 @@ export default function BillingPage() {
         interval: billingInterval,
         placement: 'billing_page',
         workspace: isPersonal ? 'personal' : 'institutional',
+        source: journeySource,
+        reason: journeyReason,
+        current_plan: effectivePlanId,
       });
       const result = await generateCheckoutSession({
         planId,
         interval: billingInterval,
-        currency: getCurrency(),
       });
       if (result.sessionUrl) {
         window.location.href = result.sessionUrl;
@@ -236,13 +330,24 @@ export default function BillingPage() {
       setUpgradingPlan(null);
       throw err;
     }
-  }, [billingInterval, effectivePlanId, t]);
+  }, [billingInterval, effectivePlanId, isPersonal, journeyReason, journeySource, t]);
 
   const handleUpgrade = async (planId: PaymentPlanId) => {
+    trackMarketingEvent('plan_selected', {
+      plan: planId,
+      level: planId === PaymentPlanId.Unlimited ? 'institutional' : 'personal',
+      interval: billingInterval,
+      placement: 'billing_page',
+      workspace: isPersonal ? 'personal' : 'institutional',
+      source: journeySource,
+      reason: journeyReason,
+      current_plan: effectivePlanId,
+    });
+
     try {
       await startCheckout(planId);
     } catch {
-      // Error is already shown by startCheckout.
+      // handled upstream
     }
   };
 
@@ -258,7 +363,7 @@ export default function BillingPage() {
         window.open(result, '_blank', 'noopener,noreferrer');
       }
     } catch {
-      // silently fail - portal might not be available for this processor
+      // portal may not be available
     } finally {
       setManagePaymentLoading(false);
     }
@@ -280,6 +385,24 @@ export default function BillingPage() {
     }
   };
 
+  // Switch billing interval for the current plan (monthly ↔ annual) via Stripe
+  // proration. Only available for the plan manager with an active subscription.
+  const handleSwitchInterval = async () => {
+    if (!effectivePlanId || effectivePlanId === PaymentPlanId.CatechistFree) return;
+    const targetInterval: 'monthly' | 'annual' = isMonthly ? 'annual' : 'monthly';
+    setSwitchingInterval(true);
+    setError(null);
+    try {
+      await changeSubscriptionPlan({ planId: effectivePlanId, interval: targetInterval });
+      toast({ title: isMonthly ? t('switch_to_annual_success') : t('switch_to_monthly_success') });
+      refetchSubscription();
+    } catch (err: any) {
+      setError(err?.message || t('switch_interval_error'));
+    } finally {
+      setSwitchingInterval(false);
+    }
+  };
+
   const requestedPlanCard = requestedPlanId
     ? visiblePlans.find((plan) => plan.planId === requestedPlanId)
     : null;
@@ -293,9 +416,25 @@ export default function BillingPage() {
     && !isParishManaged
     && !loading
     && !(parishId && loadingParish);
+  const allowAutoCheckout = requestedPlanCanCheckout && !journeyReason && !gateRequired;
 
   useEffect(() => {
-    if (!requestedPlanId || !requestedPlanCanCheckout) return;
+    if (pricingViewedRef.current) return;
+    if (loading || (parishId && loadingParish)) return;
+    if (isParishManaged) return;
+
+    pricingViewedRef.current = true;
+    trackMarketingEvent('pricing_viewed', {
+      placement: 'billing_page',
+      workspace: isPersonal ? 'personal' : 'institutional',
+      source: journeySource,
+      reason: journeyReason,
+      current_plan: effectivePlanId,
+    });
+  }, [effectivePlanId, isParishManaged, isPersonal, journeyReason, journeySource, loading, loadingParish, parishId]);
+
+  useEffect(() => {
+    if (!requestedPlanId || !allowAutoCheckout) return;
 
     const checkoutKey = `${requestedPlanId}:${billingInterval}`;
     if (autoCheckoutStartedRef.current === checkoutKey) return;
@@ -304,7 +443,7 @@ export default function BillingPage() {
       if (sessionStorage.getItem(AUTO_CHECKOUT_SESSION_KEY) === checkoutKey) return;
       sessionStorage.setItem(AUTO_CHECKOUT_SESSION_KEY, checkoutKey);
     } catch {
-      // Ignore storage failures; the ref still prevents duplicate calls in this render tree.
+      // ignore storage failures
     }
 
     autoCheckoutStartedRef.current = checkoutKey;
@@ -314,368 +453,561 @@ export default function BillingPage() {
       try {
         sessionStorage.removeItem(AUTO_CHECKOUT_SESSION_KEY);
       } catch {
-        // Ignore storage failures.
+        // ignore storage failures
       }
     });
-  }, [billingInterval, requestedPlanCanCheckout, requestedPlanId, startCheckout]);
+  }, [allowAutoCheckout, billingInterval, requestedPlanId, startCheckout]);
 
   const creditLabel = aiCredits?.creditsLeft === 1 ? t('credit_one') : t('credit_other');
+  const isConversionMode = !isParishManaged && !isActive;
+  const recommendedPlanCard = requestedPlanCard && requestedPlanLevelMatches
+    ? requestedPlanCard
+    : visiblePlans[0] ?? null;
+  const upgradePlanCard = !isConversionMode && journeyReason
+    ? (requestedPlanCard && requestedPlanLevelMatches ? requestedPlanCard : recommendedPlanCard)
+    : null;
+  const isUpgradeJourney = !isConversionMode
+    && !!journeyReason
+    && !!upgradePlanCard
+    && upgradePlanCard.planId !== effectivePlanId
+    && !isParishManaged;
+  const primaryPlanCard = isUpgradeJourney ? upgradePlanCard : recommendedPlanCard;
+  const primaryCtaLabel = isUpgradeJourney
+    ? t(`upgrade_journey.${journeyReason}.cta`, { defaultValue: t('upgrade_journey.generic.cta') })
+    : (primaryPlanCard ? t('subscribe_plan', { plan: primaryPlanCard.name }) : null);
+  const journeyCurrentCount = journeyReason === 'catechumen_limit'
+    ? catechumensUsed
+    : journeyReason === 'class_limit'
+      ? classesUsed
+      : null;
+  const journeyMaxAllowed = journeyReason === 'catechumen_limit'
+    ? maxCatechumens
+    : journeyReason === 'class_limit'
+      ? maxClasses
+      : null;
+  const heroTitle = isUpgradeJourney
+    ? t(`upgrade_journey.${journeyReason}.title`, { defaultValue: t('upgrade_journey.generic.title') })
+    : isConversionMode
+      ? !effectivePlan.isFree
+        ? t('conversion_payment_title')
+        : gateRequired
+          ? t('conversion_required_title')
+          : isPersonal
+            ? t('conversion_personal_title')
+            : t('conversion_institutional_title')
+      : t('title');
+  const heroSubtitle = isUpgradeJourney
+    ? t(`upgrade_journey.${journeyReason}.description`, {
+        defaultValue: t('upgrade_journey.generic.description', { plan: upgradePlanCard?.name || t('plans.unlimited.name') }),
+        currentPlanName: effectivePlan.name,
+        currentCount: journeyCurrentCount,
+        maxAllowed: journeyMaxAllowed === Infinity ? '∞' : journeyMaxAllowed,
+        plan: upgradePlanCard?.name || t('plans.unlimited.name'),
+      })
+    : isConversionMode
+      ? !effectivePlan.isFree
+        ? t('payment_desc')
+        : gateRequired
+          ? t('conversion_required_desc')
+          : requestedPlanCard && requestedPlanLevelMatches
+            ? t('conversion_selected_desc', { plan: requestedPlanCard.name })
+            : isPersonal
+              ? t('conversion_personal_desc')
+              : t('conversion_institutional_desc', { name: parish?.name || t('this_institution') })
+      : (isPersonal
+        ? t('personal_scope')
+        : t('institutional_scope', { name: parish?.name || t('this_institution') }));
+  const supportingCopy = isUpgradeJourney
+    ? t('upgrade_supporting_copy')
+    : (!isConversionMode
+      ? (isActive
+        ? t('active_desc')
+        : effectivePlan.isFree
+          ? t('upgrade_desc')
+          : t('payment_desc'))
+      : null);
+  const conversionChecklist = [
+    t('conversion_step_account_ready'),
+    isPersonal
+      ? t('conversion_step_workspace_personal')
+      : t('conversion_step_workspace_institutional', { name: parish?.name || t('this_institution') }),
+    classesUsed > 0
+      ? t('conversion_step_first_class')
+      : t('conversion_step_next_action'),
+    t('conversion_step_unlock'),
+  ];
+  const upgradeChecklist = [
+    classesUsed > 0
+      ? t('upgrade_checklist_classes_active', { count: classesUsed })
+      : t('upgrade_checklist_workspace_ready'),
+    catechumensUsed > 0
+      ? t('upgrade_checklist_catechumens_active', { count: catechumensUsed })
+      : t('upgrade_checklist_keep_history'),
+    t(`upgrade_journey.${journeyReason || 'generic'}.checklist`, {
+      defaultValue: t('upgrade_journey.generic.checklist'),
+    }),
+  ];
 
   if (loading || (parishId && loadingParish)) {
     return (
-        <div className="space-y-6 animate-pulse">
-          <div className="h-8 w-32 bg-muted rounded" />
-          <div className="grid gap-4 md:grid-cols-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-48 rounded-xl bg-muted" />
-            ))}
-          </div>
+      <div className="space-y-6 animate-pulse">
+        <div className="h-8 w-32 rounded bg-muted" />
+        <div className="grid gap-4 md:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-48 rounded-xl bg-muted" />
+          ))}
         </div>
+      </div>
     );
   }
 
+  const scopeBadgeClass = isPersonal
+    ? 'border-primary/20 bg-white/85 text-primary'
+    : 'border-amber-200 bg-amber-50/90 text-amber-800';
+
   return (
     <>
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">{t('title')}</h1>
-            <div className={`mt-1 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${isPersonal ? 'bg-primary/10 text-primary' : 'bg-secondary/10 text-secondary'}`}>
-              {isPersonal ? <UserIcon className="h-3.5 w-3.5" /> : <Building2 className="h-3.5 w-3.5" />}
-              {isPersonal
-                ? t('personal_scope')
-                : t('institutional_scope', { name: parish?.name || t('this_institution') })}
-            </div>
-            <p className="text-muted-foreground text-sm flex items-center gap-2 mt-2">
-              {t('current_plan')} <Badge>{effectivePlan.name}</Badge>
-              {isActive && user?.subscriptionStatus === 'cancel_at_period_end' ? (
-                <Badge variant="outline" className="bg-warning/10 text-warning text-xs">{t('cancel_scheduled')}</Badge>
-              ) : isActive ? (
-                <Badge variant="default" className="bg-success/10 text-success text-xs">{t('active')}</Badge>
-              ) : null}
-            </p>
-            {user?.subscriptionStatus === 'cancel_at_period_end' && (
-              <p className="text-xs text-muted-foreground mt-1">{t('cancel_scheduled_desc')}</p>
-            )}
-            {requestedPlanId && !requestedPlanLevelMatches && (
-              <p className="mt-2 text-xs text-warning">
-                {requestedIsInstitutional ? t('plan_mismatch_institutional') : t('plan_mismatch_personal')}
-              </p>
-            )}
-            {isParishManaged && (
-              <div className="mt-2 rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-2 text-sm">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 flex-shrink-0 text-primary" />
-                  <span className="font-semibold">{t('corporate_plan')}</span>
-                </div>
-                <div className="pl-6 space-y-1 text-xs text-muted-foreground">
-                  {effectivePlanId === PaymentPlanId.Diocese && (
-                    <>
-                      <p>{t('diocese_responsible')} <strong>{parish?.diocese?.name || t('not_informed')}</strong></p>
-                      {parish?.dioceseAdmins && parish.dioceseAdmins.length > 0 && (
-                        <p>{t('diocese_admins')} <strong>{parish.dioceseAdmins.map((da: any) => `${da.user.firstName} ${da.user.lastName} (${da.user.email})`).join(', ')}</strong></p>
-                      )}
-                    </>
+      <div className="mx-auto max-w-6xl space-y-8">
+        <section className="overflow-hidden rounded-[32px] border border-border/70 bg-[radial-gradient(circle_at_top_left,_rgba(17,60,107,0.10),_transparent_34%),linear-gradient(180deg,_rgba(255,255,255,1),_rgba(248,250,252,0.96))] p-6 shadow-sm shadow-slate-200/70 lg:p-8">
+          <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr] xl:items-start">
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <Badge variant="outline" className={cn('rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.22em]', scopeBadgeClass)}>
+                  {isPersonal ? <UserIcon className="mr-1 h-3.5 w-3.5" /> : <Building2 className="mr-1 h-3.5 w-3.5" />}
+                  {isUpgradeJourney
+                    ? t('upgrade_journey_badge')
+                    : isConversionMode
+                      ? t('conversion_badge')
+                      : isPersonal
+                        ? t('scope_badge_personal')
+                        : t('scope_badge_institutional')}
+                </Badge>
+
+                <div className="space-y-2">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <h1 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
+                      {heroTitle}
+                    </h1>
+                    {!isConversionMode && (
+                      <span className="rounded-full bg-white/80 px-3 py-1 text-sm font-medium text-slate-500 ring-1 ring-slate-200/70">
+                        {effectivePlan.name}
+                      </span>
+                    )}
+                    {!isConversionMode && (isActive && user?.subscriptionStatus === 'cancel_at_period_end' ? (
+                      <Badge variant="outline" className="bg-warning/10 text-warning text-xs">{t('cancel_scheduled')}</Badge>
+                    ) : isActive ? (
+                      <Badge className="bg-emerald-100 text-emerald-700 text-xs">{t('active')}</Badge>
+                    ) : null)}
+                  </div>
+
+                  <p className="max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
+                    {heroSubtitle}
+                  </p>
+
+                  {supportingCopy && (
+                    <p className="text-sm text-slate-500">{supportingCopy}</p>
                   )}
-                  {effectivePlanId === PaymentPlanId.Parish && (
-                    <>
-                      <p>{t('parish_responsible')} <strong>{parish?.name || t('not_informed')}</strong></p>
-                      {parish?.owner && (
-                        <p>{t('coordinator_responsible')} <strong>{parish.owner.firstName} {parish.owner.lastName} ({parish.owner.email})</strong></p>
-                      )}
-                    </>
-                  )}
-                  <p className="mt-1.5 text-muted-foreground">{t('contact_manager')}</p>
                 </div>
               </div>
-            )}
-            {/* Show personal plan when in institutional workspace and user has one */}
-            {!isPersonal && userPersonalPlanId && (
-              <div className="mt-2 rounded-lg border border-muted bg-muted/30 p-3 text-sm">
-                <div className="flex items-center gap-2">
-                  <UserIcon className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-                  <span className="text-muted-foreground">{t('your_personal_plan')}:</span>
-                  <Badge variant="outline" className="text-xs">
-                    {getPlanDef(userPersonalPlanId).name}
-                  </Badge>
+
+              <div className="flex flex-wrap gap-3">
+                {primaryPlanCard && (isConversionMode || isUpgradeJourney) && (!requestedPlanId || requestedPlanLevelMatches) && (
+                  <Button
+                    size="lg"
+                    className="h-11 rounded-xl px-5"
+                    onClick={() => handleUpgrade(primaryPlanCard.planId)}
+                    disabled={upgradingPlan === primaryPlanCard.planId}
+                  >
+                    {upgradingPlan === primaryPlanCard.planId ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {t('redirecting')}
+                      </>
+                    ) : (
+                      <>
+                        {primaryCtaLabel}
+                        <ArrowUpRight className="ml-2 h-4 w-4" />
+                      </>
+                    )}
+                  </Button>
+                )}
+
+                {!isUpgradeJourney && !isConversionMode && isActive && !effectivePlan.isFree && isPlanManager && (
+                  <>
+                    <Button variant="outline" size="lg" className="h-11 rounded-xl px-5 bg-white/80" onClick={handleManagePayment} disabled={managePaymentLoading}>
+                      {managePaymentLoading ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <CreditCard className="mr-2 h-4 w-4" />
+                      )}
+                      {managePaymentLoading ? t('redirecting') : t('manage_payment')}
+                    </Button>
+                    <Button variant="outline" size="lg" className="h-11 rounded-xl px-5 text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={handleCancel} disabled={cancelling}>
+                      <XCircle className="mr-2 h-4 w-4" />
+                      {cancelling ? t('cancelling') : t('cancel_subscription')}
+                    </Button>
+                    {canSwitchInterval && isAnnual && (
+                      <Button variant="ghost" size="sm" className="text-xs" onClick={handleSwitchInterval} disabled={switchingInterval}>
+                        {switchingInterval ? t('switching') : t('switch_to_monthly')}
+                      </Button>
+                    )}
+                  </>
+                )}
+              </div>
+
+              {requestedPlanId && !requestedPlanLevelMatches && (
+                <div className="rounded-2xl border border-amber-200 bg-amber-50/90 px-4 py-3 text-sm text-amber-800">
+                  <p>{requestedIsInstitutional ? t('plan_mismatch_institutional') : t('plan_mismatch_personal')}</p>
+                  {requestedIsInstitutional && isPersonal && (
+                    <Button asChild size="sm" variant="outline" className="mt-3 bg-white">
+                      <a href="/app/parishes?new=true">{t('plan_mismatch_institutional_cta')}</a>
+                    </Button>
+                  )}
+                </div>
+              )}
+
+              {isParishManaged && (
+                <div className="rounded-3xl border border-primary/15 bg-white/85 p-5 shadow-sm shadow-slate-200/60">
+                  <div className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
+                    <ShieldCheck className="h-4 w-4" />
+                    <span>{t('corporate_plan')}</span>
+                  </div>
+                  <div className="space-y-2 text-sm text-slate-600">
+                    {effectivePlanId === PaymentPlanId.Unlimited && parish?.diocese ? (
+                      <>
+                        <p>{t('diocese_responsible')} <strong>{parish?.diocese?.name || t('not_informed')}</strong></p>
+                        {parish?.dioceseAdmins && parish.dioceseAdmins.length > 0 && (
+                          <p>{t('diocese_admins')} <strong>{parish.dioceseAdmins.map((da: any) => `${da.user.firstName} ${da.user.lastName} (${da.user.email})`).join(', ')}</strong></p>
+                        )}
+                      </>
+                    ) : effectivePlanId === PaymentPlanId.Unlimited && !parish?.diocese ? (
+                      <>
+                        <p>{t('parish_responsible')} <strong>{parish?.name || t('not_informed')}</strong></p>
+                        {parish?.owner && (
+                          <p>{t('coordinator_responsible')} <strong>{parish.owner.firstName} {parish.owner.lastName} ({parish.owner.email})</strong></p>
+                        )}
+                      </>
+                    ) : null}
+                    <p className="pt-1 text-xs text-slate-500">{t('contact_manager')}</p>
+                  </div>
+                </div>
+              )}
+
+              {!isPersonal && userPersonalPlanId && (
+                <div className="rounded-2xl border border-border/70 bg-white/75 px-4 py-3 text-sm text-slate-600">
+                  <span className="inline-flex items-center gap-2">
+                    <UserIcon className="h-4 w-4 text-slate-400" />
+                    {t('your_personal_plan')}:
+                    <Badge variant="outline" className="text-xs">{getPlanDef(userPersonalPlanId).name}</Badge>
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {isConversionMode ? (
+              <div className="rounded-3xl border border-white/70 bg-white/88 p-5 shadow-sm shadow-slate-200/60 backdrop-blur">
+                <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
+                  <CheckCircle className="h-4 w-4" />
+                  <span>{t('conversion_checklist_title')}</span>
+                </div>
+                <div className="space-y-3">
+                  {conversionChecklist.map((item) => (
+                    <div key={item} className="flex items-start gap-3 text-sm text-slate-600">
+                      <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : isUpgradeJourney ? (
+              <div className="rounded-3xl border border-primary/15 bg-white/88 p-5 shadow-sm shadow-slate-200/60 backdrop-blur">
+                <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
+                  <CheckCircle className="h-4 w-4" />
+                  <span>{t('upgrade_checklist_title')}</span>
+                </div>
+                <div className="space-y-3">
+                  {upgradeChecklist.map((item) => (
+                    <div key={item} className="flex items-start gap-3 text-sm text-slate-600">
+                      <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
+                <div className="rounded-3xl border border-white/70 bg-white/85 p-5 shadow-sm shadow-slate-200/60 backdrop-blur">
+                  <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
+                    <TrendingUp className="h-4 w-4" />
+                    <span>{t('usage_title')}</span>
+                  </div>
+                  <div className="space-y-4">
+                    <UsageRow label={t('classes')} used={classesUsed} limit={maxClasses} accent="bg-primary" ariaLabel={t('classes_quota_label')} />
+                    <UsageRow label={t('catechumens')} used={catechumensUsed} limit={maxCatechumens} accent="bg-primary" ariaLabel={t('catechumens_quota_label')} />
+                  </div>
+                </div>
+
+                <div className="rounded-3xl border border-white/70 bg-white/85 p-5 shadow-sm shadow-slate-200/60 backdrop-blur">
+                  <div className="flex items-start gap-4">
+                    <div className={cn('rounded-2xl p-3', isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700')}>
+                      <Clock className="h-6 w-6" />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-2xl font-bold tracking-tight text-slate-950">
+                        {isActive ? t('subscription_active') : effectivePlan.isFree ? t('free_plan') : t('awaiting_payment')}
+                      </p>
+                      <p className="text-sm leading-relaxed text-slate-600">
+                        {isActive ? t('active_desc') : effectivePlan.isFree ? t('upgrade_desc') : t('payment_desc')}
+                      </p>
+                      {user?.subscriptionStatus === 'cancel_at_period_end' && (
+                        <p className="text-xs text-slate-500">{t('cancel_scheduled_desc')}</p>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
           </div>
-        </div>
+        </section>
 
         {error && (
-          <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 flex items-center gap-3 text-destructive text-sm">
+          <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive flex items-center gap-3">
             <AlertCircle className="h-5 w-5 flex-shrink-0" />
             {error}
           </div>
         )}
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-xl border bg-card p-5">
-            <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
-              <TrendingUp className="h-4 w-4" />
-              {t('usage_title')}
-            </h3>
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between text-xs mb-1">
-                  <span>{t('classes')}</span>
-                  <span className="font-bold">
-                    {classesUsed}/{maxClasses === Infinity ? '∞' : maxClasses}
-                  </span>
-                </div>
-                <div className="w-full bg-muted rounded-full h-2.5">
-                  <div
-                    className="bg-primary h-2.5 rounded-full"
-                    role="progressbar"
-                    aria-label={t('classes_quota_label')}
-                    aria-valuenow={classesUsed}
-                    aria-valuemin={0}
-                    aria-valuemax={maxClasses === Infinity ? 0 : maxClasses}
-                    style={{ width: `${maxClasses === Infinity ? 0 : Math.min((classesUsed / maxClasses) * 100, 100)}%` }}
-                  />
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between text-xs mb-1">
-                  <span>{t('catechumens')}</span>
-                  <span className="font-bold">
-                    {catechumensUsed}/{maxCatechumens === Infinity ? '∞' : maxCatechumens}
-                  </span>
-                </div>
-                <div className="w-full bg-muted rounded-full h-2.5">
-                  <div
-                    className="bg-primary h-2.5 rounded-full"
-                    role="progressbar"
-                    aria-label={t('catechumens_quota_label')}
-                    aria-valuenow={catechumensUsed}
-                    aria-valuemin={0}
-                    aria-valuemax={maxCatechumens === Infinity ? 0 : maxCatechumens}
-                    style={{ width: `${maxCatechumens === Infinity ? 0 : Math.min((catechumensUsed / maxCatechumens) * 100, 100)}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="rounded-xl border bg-card p-5 flex items-center gap-4">
-            <div className={`rounded-lg p-3 ${isActive ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'}`}>
-              <Clock className="h-6 w-6" />
-            </div>
-            <div className="flex-1">
-              <p className="font-semibold">
-                {isActive ? t('subscription_active') : effectivePlan.isFree ? t('free_plan') : t('awaiting_payment')}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {isActive
-                  ? t('active_desc')
-                  : effectivePlan.isFree
-                    ? t('upgrade_desc')
-                    : t('payment_desc')}
-              </p>
-              {isActive && !effectivePlan.isFree && isPlanManager && (
-                <div className="flex items-center gap-2 mt-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
-                    onClick={handleCancel}
-                    disabled={cancelling}
-                  >
-                    <XCircle className="mr-1 h-3.5 w-3.5" />
-                    {cancelling ? t('cancelling') : t('cancel_subscription')}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-xs"
-                    onClick={handleManagePayment}
-                    disabled={managePaymentLoading}
-                  >
-                    {managePaymentLoading ? (
-                      <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+        {!isConversionMode && (
+          <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+            {aiCredits && aiCredits.monthlyAllowance > 0 ? (
+              <SurfaceSection title={t('ai_credits')} icon={Sparkles}>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    {aiCredits.hasAiAccess ? (
+                      <Badge className="bg-violet-100 text-violet-700 text-overline">{t('monthly_badge')}</Badge>
                     ) : (
-                      <ArrowUpRight className="mr-1 h-3.5 w-3.5" />
+                      <Badge className="bg-slate-100 text-slate-600 text-overline">{t('trial_badge')}</Badge>
                     )}
-                    {managePaymentLoading ? t('redirecting') : t('manage_payment')}
-                  </Button>
+                  </div>
+                  <UsageRow
+                    label={aiCredits.hasAiAccess ? t('credits_used_month') : t('credits_used_trial')}
+                    used={aiCredits.monthlyAllowance - aiCredits.creditsLeft}
+                    limit={aiCredits.monthlyAllowance}
+                    accent={aiCredits.hasAiAccess ? 'bg-violet-500' : 'bg-slate-500'}
+                    ariaLabel={t('ai_credits_quota_label')}
+                  />
+                  <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                    <span className="text-sm text-slate-500">{t('remaining')}</span>
+                    <span className="text-sm font-semibold text-slate-950">{aiCredits.creditsLeft} {creditLabel}</span>
+                  </div>
+                  {aiCredits.creditsLeft <= 10 && (
+                    <div className="space-y-3 rounded-2xl border border-border/70 bg-slate-50/80 p-4">
+                      <p className="text-sm leading-relaxed text-slate-600">{t('buy_credits_desc')}</p>
+                      <div className="flex gap-3">
+                        <BuyCreditsButton pack="20" size="sm" variant="outline" label={t('buy_credits_20')} />
+                        <BuyCreditsButton pack="50" size="sm" variant="outline" label={t('buy_credits_50')} />
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </SurfaceSection>
+            ) : (
+              <SurfaceSection title={t('buy_credits_title')} icon={Coins}>
+                <div className="space-y-3">
+                  <p className="text-sm leading-relaxed text-slate-600">{t('buy_credits_desc')}</p>
+                  <div className="flex gap-3">
+                    <BuyCreditsButton pack="20" size="sm" variant="outline" label={t('buy_credits_20')} />
+                    <BuyCreditsButton pack="50" size="sm" variant="outline" label={t('buy_credits_50')} />
+                  </div>
+                </div>
+              </SurfaceSection>
+            )}
           </div>
-
-          {aiCredits && aiCredits.monthlyAllowance > 0 && (
-            <div className="rounded-xl border bg-card p-5">
-              <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
-                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 2a4 4 0 0 1 4 4v1h2a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h2V6a4 4 0 0 1 4-4z" />
-                  <circle cx="12" cy="13" r="2" />
-                </svg>
-                {t('ai_credits')}
-                {aiCredits.hasAiAccess ? (
-                  <Badge className="bg-violet-100 text-violet-700 text-overline ml-1">{t('monthly_badge')}</Badge>
-                ) : (
-                  <Badge className="bg-gray-100 text-gray-600 text-overline ml-1">{t('trial_badge')}</Badge>
-                )}
-              </h3>
-              <div className="space-y-3">
-                <div>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span>{aiCredits.hasAiAccess ? t('credits_used_month') : t('credits_used_trial')}</span>
-                    <span className="font-bold">
-                      {aiCredits.monthlyAllowance - aiCredits.creditsLeft}/{aiCredits.monthlyAllowance}
-                    </span>
-                  </div>
-                  <div className="w-full bg-muted rounded-full h-2.5">
-                    <div
-                      className={`h-2.5 rounded-full ${aiCredits.hasAiAccess ? 'bg-violet-500' : 'bg-gray-500'}`}
-                      role="progressbar"
-                      aria-label={t('ai_credits_quota_label')}
-                      aria-valuenow={aiCredits.monthlyAllowance - aiCredits.creditsLeft}
-                      aria-valuemin={0}
-                      aria-valuemax={aiCredits.monthlyAllowance}
-                      style={{ width: `${Math.min(((aiCredits.monthlyAllowance - aiCredits.creditsLeft) / aiCredits.monthlyAllowance) * 100, 100)}%` }}
-                    />
-                  </div>
-                </div>
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>{t('remaining')}</span>
-                  <span className="font-bold text-foreground">{aiCredits.creditsLeft} {creditLabel}</span>
-                </div>
-              </div>
-            </div>
-          )}
-          {/* AI Credit purchase packs */}
-          {aiCredits && aiCredits.creditsLeft <= 10 && (
-            <div className="rounded-xl border bg-card p-5 space-y-3">
-              <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Coins className="h-4 w-4" />
-                {t('buy_credits_title')}
-              </h3>
-              <p className="text-xs text-muted-foreground">{t('buy_credits_desc')}</p>
-              <div className="flex gap-3">
-                <BuyCreditsButton
-                  pack="20"
-                  size="sm"
-                  variant="outline"
-                  label={t('buy_credits_20')}
-                />
-                <BuyCreditsButton
-                  pack="50"
-                  size="sm"
-                  variant="outline"
-                  label={t('buy_credits_50')}
-                />
-              </div>
-            </div>
-          )}
-        </div>
+        )}
 
         {!isParishManaged && (
-          <>
-            <div className="flex items-center justify-between mt-8">
-              <h2 className="text-lg font-semibold">{t('available_plans')}</h2>
-              <div className="inline-flex items-center rounded-lg border bg-muted p-0.5">
+          <section className="space-y-6">
+            {/* Savings CTA: switch from monthly to annual */}
+            {canSwitchInterval && isMonthly && annualSavingsAmount ? (
+              <div className="rounded-2xl border-2 border-emerald-300/70 bg-emerald-50 dark:bg-emerald-950/30 p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+                <div className="flex-1">
+                  <p className="font-semibold text-emerald-900 dark:text-emerald-100 flex items-center gap-2">
+                    <PiggyBank className="h-4 w-4" /> {t('switch_annual_title')}
+                  </p>
+                  <p className="text-sm text-emerald-800/80 dark:text-emerald-200/80 mt-1">
+                    {t('switch_annual_desc', {
+                      savings: formatPriceFromCents(annualSavingsAmount),
+                      equivalent: monthlyEquivalentAnnual ? formatPriceFromCents(monthlyEquivalentAnnual) : null,
+                    })}
+                  </p>
+                </div>
+                <Button
+                  onClick={handleSwitchInterval}
+                  disabled={switchingInterval}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  {switchingInterval ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-1" /> {t('switching')}
+                    </>
+                  ) : (
+                    t('switch_annual_cta')
+                  )}
+                </Button>
+              </div>
+            ) : null}
+
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <h2 className="text-2xl font-bold tracking-tight text-slate-950">
+                  {isConversionMode ? t('conversion_plans_title') : isUpgradeJourney ? t('upgrade_plans_title') : t('available_plans')}
+                </h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  {isConversionMode ? t('conversion_plans_subtitle') : isUpgradeJourney ? t('upgrade_plans_subtitle') : t('pricing_section_subtitle')}
+                </p>
+              </div>
+              <div className="inline-flex items-center rounded-2xl border border-border/70 bg-white/90 p-1 shadow-sm shadow-slate-200/60">
                 <button
                   type="button"
                   onClick={() => setBillingInterval('monthly')}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
-                    billingInterval === 'monthly'
-                      ? 'bg-background text-foreground shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
+                  className={cn(
+                    'rounded-xl px-4 py-2 text-sm font-medium transition-all',
+                    billingInterval === 'monthly' ? 'bg-slate-950 text-white' : 'text-slate-500 hover:text-slate-900'
+                  )}
                 >
                   {t('monthly')}
                 </button>
                 <button
                   type="button"
                   onClick={() => setBillingInterval('annual')}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all flex items-center gap-1.5 ${
-                    billingInterval === 'annual'
-                      ? 'bg-background text-foreground shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
+                  className={cn(
+                    'rounded-xl px-4 py-2 text-sm font-medium transition-all flex items-center gap-2',
+                    billingInterval === 'annual' ? 'bg-slate-950 text-white' : 'text-slate-500 hover:text-slate-900'
+                  )}
                 >
                   {t('annual')}
-                  <span className="text-overline text-success font-bold">{t('annual_savings')}</span>
+                  <span className={cn('rounded-full px-2 py-0.5 text-[11px] font-semibold', billingInterval === 'annual' ? 'bg-white/15 text-emerald-200' : 'bg-emerald-100 text-emerald-700')}>
+                    {t('annual_savings')}
+                  </span>
                 </button>
               </div>
             </div>
-            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+
+            <div className={cn('grid gap-5', visiblePlans.length === 1 ? 'max-w-md' : 'md:grid-cols-2')}>
               {visiblePlans.map((plan) => {
                 const isCurrent = plan.planId === effectivePlanId;
                 const isUpgrading = upgradingPlan === plan.planId;
                 const isRequested = !!requestedPlanId && plan.planId === requestedPlanId && !isCurrent;
                 const hasAnnual = !!plan.priceCentsAnnual;
+                const isRecommended = recommendedPlanCard?.planId === plan.planId;
 
                 return (
                   <div
                     key={plan.planId}
-                    className={`rounded-xl border-2 p-5 bg-card transition-all hover:-translate-y-0.5 hover:shadow-md flex flex-col ${
-                      isCurrent ? 'border-primary' : plan.highlight ? 'border-primary ring-2 ring-primary/20 shadow-sm' : 'border-border'
-                    } ${isRequested ? 'ring-2 ring-accent shadow-lg' : ''}`}
+                    className={cn(
+                      'flex flex-col rounded-3xl border bg-white/90 p-5 shadow-sm shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg',
+                      isCurrent
+                        ? 'border-slate-950 ring-1 ring-slate-950/10'
+                        : (isConversionMode || isUpgradeJourney ? isRecommended : plan.highlight)
+                          ? 'border-primary ring-2 ring-primary/15'
+                          : 'border-border/70',
+                      isRequested && 'ring-2 ring-accent shadow-lg'
+                    )}
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-bold text-sm">{plan.name}</h3>
+                    <div className="mb-4 flex items-start justify-between gap-3">
+                      <div>
+                        <h3 className="text-lg font-semibold tracking-tight text-slate-950">{plan.name}</h3>
+                        {((isConversionMode && isRecommended) || (isUpgradeJourney && isRecommended) || (!isConversionMode && !isUpgradeJourney && plan.highlight)) && !isCurrent && (
+                          <p className="mt-1 text-sm text-primary">
+                            {isUpgradeJourney
+                              ? t('upgrade_journey_badge')
+                              : isConversionMode
+                                ? (isPersonal ? t('recommended_plan_personal') : t('recommended_plan_institutional'))
+                                : t('most_popular')}
+                          </p>
+                        )}
+                      </div>
                       {isCurrent && <Badge>{t('current')}</Badge>}
                       {isRequested && <Badge className="bg-accent/15 text-accent">{t('selected')}</Badge>}
                     </div>
+
                     {billingInterval === 'monthly' || !hasAnnual ? (
                       <>
-                        <p className="text-xl font-bold mb-1">{plan.price}</p>
-                        {plan.annualPrice && (
-                          <p className="text-xs text-muted-foreground font-medium mb-2">
-                            <PiggyBank className="inline h-3 w-3 mr-0.5" />
-                            {plan.annualPrice}
-                          </p>
+                        <p className="text-3xl font-bold tracking-tight text-slate-950">{plan.price}</p>
+                        {plan.priceCentsAnnual && (
+                          <div className="mt-2 space-y-1 text-xs font-medium text-slate-500">
+                            <p className="flex items-center gap-1">
+                              <PiggyBank className="h-3 w-3" />
+                              {tp('pricing.annual_compare', {
+                                price: getEquivalentMonthlyPrice(plan.priceCentsAnnual),
+                              })}
+                            </p>
+                            <p>
+                              {tp('pricing.annual_billed_as', {
+                                price: formatPriceFromCents(plan.priceCentsAnnual),
+                              })}
+                            </p>
+                          </div>
                         )}
                       </>
                     ) : (
                       <>
-                        <p className="text-xl font-bold mb-1">
-                          {formatPriceFromCents(plan.priceCentsAnnual!)}<span className="text-base font-normal text-muted-foreground">{tp('per_year')}</span>
+                        <p className="text-3xl font-bold tracking-tight text-slate-950">
+                          {getEquivalentMonthlyPrice(plan.priceCentsAnnual!)}
+                          <span className="text-base font-normal text-slate-500">{tp('pricing.per_month')}</span>
                         </p>
-                        <p className="text-xs text-muted-foreground font-medium mb-2">
-                          {formatPriceFromCents(plan.priceCents!)}{tp('per_month')}
-                        </p>
+                        <div className="mt-2 space-y-1 text-xs font-medium text-slate-500">
+                          <p>
+                            {tp('pricing.annual_billed_as', {
+                              price: formatPriceFromCents(plan.priceCentsAnnual!),
+                            })}
+                          </p>
+                          <p>
+                            {tp('pricing.annual_save_amount', {
+                              price: getAnnualSavings(plan.priceCents!, plan.priceCentsAnnual!),
+                            })}
+                          </p>
+                        </div>
                       </>
                     )}
-                    <ul className="space-y-1.5 text-xs mb-4 flex-1">
+
+                    <ul className="mt-5 space-y-2 text-sm text-slate-600 flex-1">
                       {plan.features.map((f) => (
-                        <li key={f} className="flex items-center gap-1.5 text-muted-foreground">
-                          <CheckCircle className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-                          {f}
+                        <li key={f} className="flex items-start gap-2">
+                          <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+                          <span>{f}</span>
                         </li>
                       ))}
                     </ul>
+
                     {isCurrent ? (
-                      <Button variant="outline" className="w-full text-xs" disabled>
+                      <Button variant="outline" className="mt-5 w-full rounded-xl text-sm" disabled>
                         {t('current_plan_btn')}
                       </Button>
                     ) : plan.isFree ? (
-                      <Button variant="outline" className="w-full text-xs" disabled>
+                      <Button variant="outline" className="mt-5 w-full rounded-xl text-sm" disabled>
                         {t('base_plan_btn')}
                       </Button>
-                    ) : [PaymentPlanId.Parish, PaymentPlanId.ParishEssential, PaymentPlanId.ParishComplete, PaymentPlanId.Diocese].includes(plan.planId) && !user?.isAdmin && parish?.ownerId !== user?.id && !(plan.planId === PaymentPlanId.Diocese && parish?.dioceseAdmins?.some((da: any) => da.user?.id === user?.id)) ? (
-                      <Button variant="outline" className="w-full text-xs" disabled title={t('institutional_requires_admin')}>
+                    ) : plan.planId === PaymentPlanId.Unlimited && !user?.isAdmin && parish?.ownerId !== user?.id && !parish?.dioceseAdmins?.some((da: any) => da.user?.id === user?.id) ? (
+                      <Button variant="outline" className="mt-5 w-full rounded-xl text-sm" disabled title={t('institutional_requires_admin')}>
                         {t('institutional_plan_btn')}
                       </Button>
                     ) : (
                       <Button
-                        className="w-full text-xs"
-                        variant={plan.highlight ? 'default' : 'outline'}
+                        className="mt-5 w-full rounded-xl text-sm"
+                        variant={(isConversionMode || isUpgradeJourney ? isRecommended : plan.highlight) ? 'default' : 'outline'}
                         onClick={() => handleUpgrade(plan.planId)}
                         disabled={isUpgrading}
                       >
                         {isUpgrading ? (
                           <>
-                            <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             {t('redirecting')}
                           </>
                         ) : (
                           <>
-                            {t('subscribe')}
-                            <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
+                            {isUpgradeJourney && isRecommended ? primaryCtaLabel : t('subscribe_plan', { plan: plan.name })}
+                            <ArrowUpRight className="ml-2 h-4 w-4" />
                           </>
                         )}
                       </Button>
@@ -684,19 +1016,16 @@ export default function BillingPage() {
                 );
               })}
             </div>
-          </>
+          </section>
         )}
 
-        <div className="rounded-xl border bg-card p-4">
-          <h3 className="font-semibold text-sm flex items-center gap-2 mb-3">
-            <History className="h-4 w-4" />
-            {t('payment_history')}
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            {t('payment_history_desc')}
-          </p>
-        </div>
+        {!isConversionMode && (
+          <SurfaceSection title={t('payment_history')} icon={History}>
+            <p className="text-sm leading-relaxed text-slate-600">{t('payment_history_desc')}</p>
+          </SurfaceSection>
+        )}
       </div>
+
       <ConfirmDialog
         open={showCancelConfirm}
         onOpenChange={setShowCancelConfirm}

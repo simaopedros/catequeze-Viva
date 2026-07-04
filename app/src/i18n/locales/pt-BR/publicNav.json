@@ -6,10 +6,13 @@
   "privacy": "Privacidade",
   "terms": "Termos",
   "login": "Entrar",
-  "signup": "Escolher caminho",
+  "signup": "Ver planos",
   "openMenu": "Abrir menu",
   "closeMenu": "Fechar menu",
   "tagline": "Plataforma pastoral para organizar turmas, encontros, presença e famílias na catequese católica.",
   "audience": "catequistas • paróquias • dioceses",
-  "cta": "Escolher caminho"
+  "cta": "Ver planos",
+  "share": "Compartilhar",
+  "share_copied": "Link copiado para compartilhar",
+  "share_error": "Não foi possível compartilhar agora"
 }

@@ -10,7 +10,6 @@ export interface CreateCheckoutSessionArgs {
   userEmail: NonNullable<User["email"]>;
   paymentPlan: PaymentPlan;
   interval?: 'monthly' | 'annual';
-  currency?: 'BRL' | 'USD';
   prismaUserDelegate: PrismaClient["user"];
 }
 
@@ -20,7 +19,7 @@ export interface FetchCustomerPortalUrlArgs {
 }
 
 export interface PaymentProcessor {
-  id: "stripe" | "lemonsqueezy" | "polar" | "woovi";
+  id: "stripe";
   createCheckoutSession: (
     args: CreateCheckoutSessionArgs,
   ) => Promise<{ session: { id: string; url: string } }>;
@@ -33,7 +32,6 @@ export interface PaymentProcessor {
 }
 
 /**
- * Choose which payment processor you'd like to use, then delete the
- * other payment processor code that you're not using  from `/src/payment`
+ * Stripe is the sole payment processor. Billing is Brazil-only (BRL).
  */
 export const paymentProcessor: PaymentProcessor = stripePaymentProcessor;

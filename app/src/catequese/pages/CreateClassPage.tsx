@@ -23,7 +23,7 @@ export default function CreateClassPage() {
   const { t } = useTranslation('classes');
   const { t: tc } = useTranslation('common');
   const navigate = useNavigate();
-  const { workspaceId } = useActiveWorkspace();
+  const { workspaceId, workspacePlan, isPersonal } = useActiveWorkspace();
 
   const form = useForm<CreateClassValues>({
     resolver: zodResolver(createClassSchema) as any,
@@ -46,7 +46,7 @@ export default function CreateClassPage() {
       toast({ title: t('created_success') });
       navigate('/app/classes');
     } catch (err: any) {
-      if (handlePlanLimitError(err.message || err)) return;
+      if (handlePlanLimitError(err.message || err, { currentPlan: workspacePlan, isPersonalWorkspace: isPersonal })) return;
       form.setError('root', { message: err.message || t('create_error') });
     }
   };

@@ -3,9 +3,6 @@ import { defineEnvValidationSchema } from 'wasp/env'
 
 import { authEnvSchema } from './auth/env'
 import { stripeEnvSchema } from './payment/stripe/env'
-import { lemonSqueezyEnvSchema } from './payment/lemonSqueezy/env'
-import { polarEnvSchema } from './payment/polar/env'
-import { wooviEnvSchema } from './payment/woovi/env'
 import { fileUploadEnvSchema } from './file-upload/env'
 import { plausibleEnvSchema, googleAnalyticsEnvSchema } from './analytics/env'
 import { aiEnvSchema } from './server/ai/env'
@@ -33,9 +30,6 @@ export const operationalEnvSchema = z.object({
 export const serverEnvValidationSchema = defineEnvValidationSchema(
   authEnvSchema
     .merge(stripeEnvSchema)
-    .merge(lemonSqueezyEnvSchema)
-    .merge(polarEnvSchema)
-    .merge(wooviEnvSchema)
     .merge(aiEnvSchema)
     .merge(fileUploadEnvSchema)
     .merge(plausibleEnvSchema)

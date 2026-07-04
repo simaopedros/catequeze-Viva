@@ -156,7 +156,6 @@ async function processPaidInvoice(
   console.info(`[Stripe] processPaidInvoice customer=${customerId} subscription=${subscriptionId} plan=${paymentPlanId}`);
 
   switch (paymentPlanId) {
-    case PaymentPlanId.Credits10:
     case PaymentPlanId.AiCredits20:
     case PaymentPlanId.AiCredits50:
       await updateUserCredits(
@@ -168,16 +167,8 @@ async function processPaidInvoice(
         prismaUserDelegate,
       );
       break;
-    case PaymentPlanId.Pro:
-    case PaymentPlanId.Hobby:
-    case PaymentPlanId.CatechistFree:
-    case PaymentPlanId.CatechistPro:
-    case PaymentPlanId.CatechistAi:
-    case PaymentPlanId.CatechistAiAddon:
-    case PaymentPlanId.Parish:
-    case PaymentPlanId.ParishEssential:
-    case PaymentPlanId.ParishComplete:
-    case PaymentPlanId.Diocese: {
+    case PaymentPlanId.Single:
+    case PaymentPlanId.Unlimited: {
       const user = await updateUserSubscription(
         {
           paymentProcessorUserId: customerId,
@@ -200,18 +191,16 @@ async function processPaidInvoice(
         paymentPlanId,
       );
 
-      // Cascade institutional plans to TenantBilling
-      if (paymentPlanId === PaymentPlanId.Parish) {
-        await cascadeActivatePlanToTenantBilling(context, user.id, "PARISH");
-      } else if (paymentPlanId === PaymentPlanId.ParishEssential) {
-        await cascadeActivatePlanToTenantBilling(context, user.id, "PARISH_ESSENTIAL");
-      } else if (paymentPlanId === PaymentPlanId.ParishComplete) {
-        await cascadeActivatePlanToTenantBilling(context, user.id, "PARISH_COMPLETE");
-      } else if (paymentPlanId === PaymentPlanId.Diocese) {
-        await cascadeActivatePlanToTenantBilling(context, user.id, "DIOCESE");
+      // Cascade the institutional Unlimited plan to TenantBilling.
+      // (Single is a personal plan — no TenantBilling cascade.)
+      if (paymentPlanId === PaymentPlanId.Unlimited) {
+        await cascadeActivatePlanToTenantBilling(context, user.id, "UNLIMITED");
       }
       break;
     }
+    case PaymentPlanId.CatechistFree:
+      // The free sentinel is not purchasable — an invoice for it is unexpected.
+      throw new Error(`Unexpected invoice for non-purchasable plan "${paymentPlanId}"`);
     default:
       assertUnreachable(paymentPlanId);
   }

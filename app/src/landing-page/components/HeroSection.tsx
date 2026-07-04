@@ -18,6 +18,7 @@ export function HeroSection({ ns = "landing", responsiveCtas = false }: { ns?: s
   const mockupRef = useParallax<HTMLDivElement>({ factor: 0.06 });
   const ctaClassName = responsiveCtas ? "h-auto min-h-12 w-full px-6 text-center leading-snug whitespace-normal sm:w-auto sm:px-10" : undefined;
   const subheadline = t("hero.subheadline");
+  const ctaSecondaryHref = t("hero.cta_secondary_href");
   const [subheadlineIntro, ...subheadlineEmphasis] = subheadline.split("—");
 
   return (
@@ -42,20 +43,25 @@ export function HeroSection({ ns = "landing", responsiveCtas = false }: { ns?: s
             <p className="text-body-lg md:text-xl text-text-secondary max-w-xl mx-auto lg:mx-0 leading-relaxed">
               {subheadlineEmphasis.length > 0 ? <>{subheadlineIntro.trim()} — <span className="font-semibold text-foreground">{subheadlineEmphasis.join("—").trim()}</span></> : subheadline}
             </p>
-            <div className={cn("flex max-w-md mx-auto lg:mx-0 flex-col md:flex-row gap-3 md:gap-4 justify-center lg:justify-start", responsiveCtas && "w-full sm:w-auto sm:max-w-none")}>
+            <div className={cn("flex max-w-md mx-auto lg:mx-0 flex-col gap-3 justify-center lg:justify-start", responsiveCtas && "w-full sm:w-auto sm:max-w-none")}>
               <Button size="xl" variant="brand" asChild className={ctaClassName}>
-                <Link to="/signup" onClick={() => trackMarketingEvent("primary_cta_clicked", { landing: ns, placement: "hero", destination: "/signup" })}>
+                <Link to="/pricing" onClick={() => trackMarketingEvent("primary_cta_clicked", { landing: ns, placement: "hero", destination: "/pricing" })}>
                   {t("hero.cta_primary")}
                   <ArrowRight className="h-4 w-4 shrink-0" />
                 </Link>
               </Button>
-              <Button size="xl" variant="outline" asChild className={ctaClassName}>
-                <Link to="/#recursos" onClick={() => trackMarketingEvent("secondary_cta_clicked", { landing: ns, placement: "hero", destination: "/#recursos" })}>
-                  {t("hero.cta_secondary")}
-                </Link>
-              </Button>
             </div>
-            <p className="text-body-xs text-text-secondary">{t("hero.trust_signals")}</p>
+            <div className="space-y-2">
+              <p className="text-body-xs text-text-secondary">{t("hero.trust_signals")}</p>
+              <Link
+                to={ctaSecondaryHref}
+                onClick={() => trackMarketingEvent("secondary_cta_clicked", { landing: ns, placement: "hero_contextual", destination: ctaSecondaryHref })}
+                className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80"
+              >
+                {t("hero.cta_secondary")}
+                <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+              </Link>
+            </div>
           </div>
           <div ref={mockupRef} className="parallax-layer relative mx-auto w-full max-w-md md:max-w-xl lg:max-w-none">
             <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-primary/10 to-accent/10 blur-2xl opacity-60" />

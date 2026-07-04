@@ -8,11 +8,15 @@ import { PLANS } from '../../shared/pricing';
 
 const PLAN_PRICES: Record<string, number> = {
   CATECHIST_FREE: 0,
-  CATECHIST_PRO: PLANS.catechist_pro.prices.monthlyCents / 100,
-  CATECHIST_AI: PLANS.catechist_ai.prices.monthlyCents / 100,
-  PARISH_ESSENTIAL: PLANS.parish_essential.prices.monthlyCents / 100,
-  PARISH: PLANS.parish_complete.prices.monthlyCents / 100,
-  DIOCESE: PLANS.diocese.prices.monthlyCents / 100,
+  SINGLE: PLANS.single.prices.monthlyCents / 100,
+  UNLIMITED: PLANS.unlimited.prices.monthlyCents / 100,
+  // Legacy plan ids (pre-migration) map to the new prices for MRR continuity.
+  CATECHIST_PRO: PLANS.single.prices.monthlyCents / 100,
+  CATECHIST_AI: PLANS.single.prices.monthlyCents / 100,
+  PARISH_ESSENTIAL: PLANS.single.prices.monthlyCents / 100,
+  PARISH: PLANS.unlimited.prices.monthlyCents / 100,
+  PARISH_COMPLETE: PLANS.unlimited.prices.monthlyCents / 100,
+  DIOCESE: PLANS.unlimited.prices.monthlyCents / 100,
 };
 
 const FUNNEL_EVENTS = [

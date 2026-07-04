@@ -27,7 +27,7 @@ export const serverSetup: ServerSetupFn = async ({ app, server }) => {
   // ── JSON body parsing (standard Express, replaces manual chunking) ──
   // Wasp's default body parser is configured before route handlers.
   // We add our own with a size limit. Payment webhooks use raw middleware
-  // configured per-route via middlewareConfigFn (Stripe, Woovi, etc.).
+  // configured per-route via middlewareConfigFn (Stripe).
   app.use(express.json({ limit: MAX_BODY }));
 
   // ── Cookie domain for cross-subdomain sessions ──────────────────────

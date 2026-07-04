@@ -1,13 +1,3 @@
-import * as z from "zod";
-
-export const paymentPlansSchema = z.object({
-  PAYMENTS_HOBBY_SUBSCRIPTION_PLAN_ID: z.string({
-    error: "PAYMENTS_HOBBY_SUBSCRIPTION_PLAN_ID is required",
-  }),
-  PAYMENTS_PRO_SUBSCRIPTION_PLAN_ID: z.string({
-    error: "PAYMENTS_PRO_SUBSCRIPTION_PLAN_ID is required",
-  }),
-  PAYMENTS_CREDITS_10_PLAN_ID: z.string({
-    error: "PAYMENTS_CREDITS_10_PLAN_ID is required",
-  }),
-});
+// Previously held the OpenSaaS legacy Hobby/Pro/Credits10 env requirements.
+// Those plans have been removed — Stripe env vars are defined directly in
+// ./stripe/env.ts. This file is kept (empty) to avoid churn in imports.

@@ -1,17 +1,17 @@
 {
   "title": "Onboarding",
-  "subtitle_personal": "Let's set up your personal space.",
-  "subtitle_manager": "Let's set up the platform in 2 steps.",
+  "subtitle_personal": "Let's prepare your personal space.",
+  "subtitle_manager": "Let's prepare the parish catechesis to begin.",
   "steps": {
-    "institution": "Parish & Diocese",
-    "details": "Details"
+    "institution": "Parish and diocese",
+    "details": "First class"
   },
   "diocese_selected": "Diocese",
   "back": "← Back",
   "continue_parish": "Continue to Parish →",
   "continue": "Continue →",
   "change_diocese": "← Change diocese",
-  "configuring": "Setting up the platform...",
+  "configuring": "Preparing your account...",
   "finish_error": "Error finishing setup.",
   "personal_workspace_error": "Could not create personal space. Please try again.",
   "parish_not_selected": "Parish not selected.",
@@ -20,34 +20,43 @@
   "no_parish_selected": "No parish selected.",
   "summary": {
     "type": "Type",
-    "personal_account": "Personal Account",
+    "personal_account": "Personal space",
     "plan": "Plan",
-    "plan_free": "Catechist Free",
-    "plan_pro": "Catechist Pro/AI",
+    "plan_free": "No subscription",
+    "plan_pro": "Single Plan",
     "class": "Class",
     "create_later": "Create later",
     "diocese": "Diocese",
     "parish": "Parish",
-    "year": "Year"
+    "year": "Year",
+    "plan_none": "No subscription",
+    "plan_paid": "Single Plan"
   },
   "welcome": {
     "hello": "Hello, {{name}}!",
     "hello_default": "Welcome!",
-    "question": "How do you want to use Catequese Viva?",
-    "personal_title": "Personal Account",
-    "personal_desc": "For individual catechists · personal plan (Free / Pro / AI)",
-    "personal_features": ["Isolated personal space", "Your classes and catechumens", "AI meeting generator"],
-    "manager_title": "Management Account",
-    "manager_desc": "For parishes and dioceses · institutional plan (covers multiple catechists)",
-    "manager_features": ["Multi-catechist", "Integrated communication", "Complete catechesis management"]
+    "question": "How would you like to start?",
+    "personal_title": "I want to organize my class",
+    "personal_desc": "For people managing their own class and wanting to start without depending on the parish.",
+    "personal_features": [
+      "Isolated personal space",
+      "Your classes and catechumens",
+      "AI meeting generator"
+    ],
+    "manager_title": "I want to organize parish catechesis",
+    "manager_desc": "For people coordinating parish catechesis and needing to organize team, classes, and calendar.",
+    "manager_features": [
+      "Multi-catechist",
+      "Integrated communication",
+      "Complete catechesis management"
+    ],
+    "helper": "Choose the path that best matches your reality."
   },
   "personal_setup": {
     "title": "Personal Account",
-    "subtitle": "Your individual catechesis space is almost ready!",
-    "included": "What's included:",
+    "subtitle": "Start with the name of your first class. Schedule and location can wait.",
+    "included": "When you enter, you will already have:",
     "isolated_space": "Isolated personal space",
-    "limits_free": "2 classes and 30 catechumens",
-    "limits_unlimited": "Unlimited classes",
     "ai_generator": "AI meeting generator",
     "liturgical_calendar": "Liturgical calendar",
     "schedule_label": "Schedule (optional)",
@@ -56,7 +65,7 @@
     "location_placeholder": "Ex: Parish hall",
     "first_class_label": "First class name (optional)",
     "first_class_placeholder": "Ex: 1st Year Catechesis",
-    "first_class_hint": "You can create it later in Classes if you prefer.",
+    "first_class_hint": "If you prefer, enter now and create the class later.",
     "creating": "Creating space...",
     "enter_space": "Enter my space",
     "days": {
@@ -67,7 +76,19 @@
       "4": "Thu",
       "5": "Fri",
       "6": "Sat"
-    }
+    },
+    "progress_label": "Started progress",
+    "first_value": "Your first class with name, schedule, and location.",
+    "single_plan_scope": "If you need more capacity later, you can upgrade your plan.",
+    "enter_with_class": "Create my space with the first class",
+    "enter_and_create_later": "Enter now and create the class later",
+    "progress_title": "Your start",
+    "progress_status": "Only the first class is missing",
+    "progress_copy": "Your personal space is almost ready. Now name your first class to begin with everything organized.",
+    "value_title": "When you enter you will have",
+    "optional_details_toggle": "Add schedule and location",
+    "optional_details_hide": "Hide schedule and location",
+    "optional_details_hint": "Fill this in now only if it helps you start. You can adjust it later."
   },
   "diocese": {
     "title": "Which diocese are you in?",
@@ -89,10 +110,18 @@
     "creating": "Creating...",
     "create_btn": "Create diocese",
     "skip": "Skip this step →",
-    "select_hint": "Select a diocese above"
+    "select_hint": "Select a diocese above",
+    "subtitle": "Choose the diocese to find the right parish with less effort.",
+    "progress_title": "Your signup is moving forward",
+    "progress_status": "Step 1 of 2",
+    "progress_copy": "You already decided to organize the parish catechesis. Now choose the diocese to continue.",
+    "start_hint_title": "Start with the state or the name",
+    "start_hint_body": "That makes it easier to find the right diocese.",
+    "selection_ready": "Selected diocese: {{name}}",
+    "continue_with_selection": "Continue with this diocese"
   },
   "parish": {
-    "title": "What is your parish?",
+    "title": "Which parish will receive the first class?",
     "city_state": "City / State",
     "filter_placeholder": "Filter by name...",
     "platform_section": "On Platform",
@@ -107,7 +136,17 @@
     "creating": "Creating...",
     "create_btn": "Create parish",
     "default_name": "Parish",
-    "duplicate_in": "in {{city}}"
+    "duplicate_in": "in {{city}}",
+    "subtitle": "Now choose the parish where catechesis will begin.",
+    "progress_title": "Your signup is almost ready",
+    "progress_status": "Choose the parish to continue",
+    "progress_copy": "The diocese is already chosen. Now select the parish to move on.",
+    "start_hint_title": "Enter city and state",
+    "start_hint_body": "That makes the search faster and more precise.",
+    "diocese_context_label": "Chosen diocese",
+    "selection_ready": "Selected parish: {{name}}",
+    "continue_with_selection": "Continue with this parish",
+    "select_hint": "Select a parish to move on"
   },
   "coordinator": {
     "year_title": "Catechetical Year",
@@ -118,7 +157,7 @@
     "date_error": "End date must be after start date.",
     "next": "Next",
     "class_title": "First Class",
-    "class_desc": "Create the first class or skip this step.",
+    "class_desc": "Create the first class so the team starts by seeing catechesis organized.",
     "class_name": "Class name",
     "class_name_placeholder": "Ex: Confirmation Class 2026",
     "day_of_week": "Day of week",
@@ -136,19 +175,54 @@
       "4": "Thursday",
       "5": "Friday",
       "6": "Saturday"
-    }
+    },
+    "year_desc": "Name the catechetical year to keep calendar and planning organized.",
+    "progress_title": "Progress",
+    "progress_status_class": "Step 1 of 2",
+    "progress_status_year": "Last step",
+    "progress_copy_class": "Creating the first class is the most important step to start with the team.",
+    "progress_copy_year": "Now you only need to name the catechetical year to keep the calendar organized.",
+    "optional_details_toggle": "Add class schedule and location now",
+    "optional_details_hide": "Hide class schedule and location for now",
+    "optional_details_hint": "These details help, but they do not need to block the first class."
   },
   "completion": {
     "title": "All set!",
-    "desc": "Your space is configured. Here is a summary of what was created:",
+    "desc": "Your access is ready. Here is what was configured:",
     "redirecting": "Redirecting in 5 seconds...",
-    "go_dashboard": "Go to Dashboard"
+    "go_dashboard": "Go to Dashboard",
+    "progress_badge": "Signup complete",
+    "next_step_hint": "Now it is time to start using the platform.",
+    "go_billing": "Choose plan",
+    "primary_create_class": "Create my first class",
+    "primary_create_meeting": "Generate my first meeting",
+    "primary_invite_catechist": "Invite first catechist",
+    "personal_ready_title": "Your personal space is ready",
+    "personal_ready_desc": "Now create your first class to start organizing catechesis.",
+    "personal_class_title": "Your first class is already underway",
+    "personal_class_desc": "Now generate the first meeting to use what is already prepared.",
+    "manager_ready_title": "The parish is already configured",
+    "manager_ready_desc": "Now create the first class to start organizing parish catechesis.",
+    "manager_class_title": "The parish's first class is ready",
+    "manager_class_desc": "Now invite the first catechist to begin working as a team."
   },
   "roles": {
-    "coordinator": { "title": "Parish Coordinator", "desc": "You manage parish catechesis: classes, catechists, sacraments, and reports." },
-    "catechist": { "title": "Catechist", "desc": "You teach catechesis and accompany your catechumens." },
-    "guardian": { "title": "Guardian (Parent)", "desc": "You accompany your children's faith journey in catechesis." },
-    "viewer": { "title": "Pastoral Viewer", "desc": "You view pastoral data without editing." }
+    "coordinator": {
+      "title": "Parish Coordinator",
+      "desc": "You manage parish catechesis: classes, catechists, sacraments, and reports."
+    },
+    "catechist": {
+      "title": "Catechist",
+      "desc": "You teach catechesis and follow your catechumens."
+    },
+    "guardian": {
+      "title": "Guardian (Parent)",
+      "desc": "You follow your children's journey of faith in catechesis."
+    },
+    "viewer": {
+      "title": "Pastoral Viewer",
+      "desc": "You view pastoral data without editing."
+    }
   },
   "role_step": {
     "title": "What is your role in the parish?",
@@ -159,7 +233,7 @@
   },
   "viewer": {
     "title": "Pastoral Leadership",
-    "desc": "You will have view-only access to classes, attendance, and parish reports.",
+    "desc": "You will have view-only access to parish classes, attendance, and reports, without permission to edit.",
     "confirm": "Confirm and enter"
   },
   "guardian": {
@@ -174,7 +248,7 @@
     "title": "Join a Parish",
     "search_placeholder": "Search parish...",
     "loading": "Loading...",
-    "empty": "No parishes found. You can create an independent one.",
+    "empty": "No parish found. You can create a new one.",
     "next": "Next"
   },
   "error_parish_exists": "This parish already exists and belongs to another coordinator. Ask an administrator for an invitation to join.",
@@ -185,5 +259,18 @@
     "city_state": "City / State",
     "creating": "Creating...",
     "submit": "Create and continue"
+  },
+  "plan_free": "No subscription",
+  "limits_free": "None — subscribe to a plan to get started",
+  "subtitle_welcome": "Choose the path that gets you to the first result with less effort.",
+  "shell": {
+    "welcome_title": "Let's begin",
+    "welcome_subtitle": "Choose how you will use the platform to follow the right path.",
+    "personal_title": "Set up your first class",
+    "personal_subtitle": "Start with the essentials. You can adjust the rest later.",
+    "manager_parish_title": "Where will catechesis begin?",
+    "manager_parish_subtitle": "Choose the diocese and parish to register the first class in the right place.",
+    "manager_details_title": "Register the first class",
+    "manager_details_subtitle": "Create the first class and keep the catechetical year organized for the team."
   }
 }

@@ -3,7 +3,8 @@ import { Link } from 'react-router';
 import { useTranslation, Trans } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { cn } from '../../client/utils';
-import { getPlanLimits, planName, resolvePlanIdOrFree, type PlanLimits } from '../../shared/planLimits';
+import { getPlanLimits, resolvePlanIdOrFree, type PlanLimits } from '../../shared/planLimits';
+import { buildBillingJourneyHrefFromContext, type UpgradeJourneyReason } from '../lib/upgradeJourney';
 
 export type PlanLimitVariant = 'limit_reached' | 'limit_near' | 'managed_workspace_notice' | 'credits_exhausted';
 
@@ -19,6 +20,7 @@ interface PlanLimitBannerProps {
   variant?: PlanLimitVariant;
   /** Compact inline pill for headers and dense toolbars. */
   compact?: boolean;
+  isPersonalWorkspace?: boolean;
 }
 
 const LIMIT_LABEL_MAP: Record<string, string> = {
@@ -38,6 +40,7 @@ export function PlanLimitBanner({
   isParishManaged,
   variant: variantOverride,
   compact,
+  isPersonalWorkspace,
 }: PlanLimitBannerProps) {
   const { t } = useTranslation('billing');
   const plan = userPlan || 'catechist_free';
@@ -53,8 +56,17 @@ export function PlanLimitBanner({
           : null);
 
   const normalizedPlan = resolvePlanIdOrFree(plan);
-  const currentPlanName = planName(plan);
-  const upgradePlan = normalizedPlan === 'catechist_free' ? 'Catequista Pro' : 'Paróquia';
+  const currentPlanName = t(`plans.${normalizedPlan}.name`);
+  const defaultUpgradePlanKey = normalizedPlan === 'single' ? 'unlimited' : 'single';
+  const defaultUpgradePlan = t(`plans.${defaultUpgradePlanKey}.name`);
+  const defaultUpgradePrice = t(`plans.${defaultUpgradePlanKey}.price`);
+  const journeyReason: UpgradeJourneyReason = type === 'ai_credits' ? 'generic' : type;
+  const upgradeHref = buildBillingJourneyHrefFromContext({
+    currentPlan: plan,
+    isPersonalWorkspace,
+    source: 'limit_banner',
+    reason: journeyReason,
+  });
 
   const variant: PlanLimitVariant =
     variantOverride ||
@@ -64,17 +76,30 @@ export function PlanLimitBanner({
         ? 'credits_exhausted'
         : 'limit_reached');
 
-  // Backward-compat: only render when limit is reached unless variant is explicit
   if (!variantOverride && maxAllowed !== null && currentCount < maxAllowed) return null;
 
   const labelKey = LIMIT_LABEL_MAP[type] || type;
   const label = t(`limit_labels.${labelKey}`, { defaultValue: labelKey });
   const plural = maxAllowed !== null && maxAllowed > 1 ? 's' : '';
+  const contextualTitle = t(`upgrade_journey.${journeyReason}.title`, {
+    defaultValue: t('upgrade_journey.generic.title'),
+  });
+  const contextualDescription = t(`upgrade_journey.${journeyReason}.description`, {
+    defaultValue: t('upgrade_journey.generic.description', { plan: defaultUpgradePlan }),
+    currentPlanName,
+    currentCount,
+    maxAllowed,
+    label,
+    plural,
+    plan: defaultUpgradePlan,
+  });
+  const contextualCta = t(`upgrade_journey.${journeyReason}.cta`, {
+    defaultValue: t('upgrade_journey.generic.cta'),
+  });
 
   const showAction = !isParishManaged && variant !== 'managed_workspace_notice';
   const Icon = variant === 'managed_workspace_notice' ? Building2 : Info;
 
-  // ---- Compact ------------------------------------------------------------------
   if (compact) {
     return (
       <div
@@ -90,9 +115,9 @@ export function PlanLimitBanner({
         </span>
         {showAction && (
           <Button asChild variant="subtle" size="xs" className="shrink-0 gap-1 ml-auto">
-            <Link to="/app/billing">
+            <Link to={upgradeHref}>
               <Sparkles className="h-3 w-3" />
-              {t('upgrade_btn')}
+              {contextualCta}
             </Link>
           </Button>
         )}
@@ -100,7 +125,6 @@ export function PlanLimitBanner({
     );
   }
 
-  // ---- Full banner --------------------------------------------------------------
   return (
     <div
       className={cn(
@@ -111,15 +135,14 @@ export function PlanLimitBanner({
       <div className="flex items-start gap-3">
         <Icon className="h-4 w-4 text-primary/50 shrink-0 mt-0.5" />
         <div className="space-y-1 min-w-0">
-          {/* Eyebrow */}
           <p className="text-xs font-medium text-primary/70 uppercase tracking-wide">
             {t('limit_reached_title')}
           </p>
-          {/* Headline */}
           <p className="text-sm font-semibold text-foreground">
-            {t('limit_reached_label', { label })}
+            {variant === 'managed_workspace_notice'
+              ? t('limit_reached_label', { label })
+              : contextualTitle}
           </p>
-          {/* Description */}
           {variant === 'managed_workspace_notice' ? (
             <p className="text-sm text-muted-foreground leading-relaxed">
               <Trans
@@ -129,30 +152,22 @@ export function PlanLimitBanner({
               />
             </p>
           ) : (
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              <Trans
-                i18nKey="limit_reached_description"
-                ns="billing"
-                values={{ currentPlanName, maxAllowed, label, plural, currentCount }}
-                components={[<span key="0" />, <strong key="1" />, <strong key="2" />, <strong key="3" />]}
-              />
-            </p>
+            <p className="text-sm text-muted-foreground leading-relaxed">{contextualDescription}</p>
           )}
         </div>
       </div>
 
-      {/* Action row */}
       {showAction && (
         <div className="flex items-center gap-3 pl-7">
           <Button asChild variant="subtle" size="sm" className="gap-1.5">
-            <Link to="/app/billing">
+            <Link to={upgradeHref}>
               <Sparkles className="h-3.5 w-3.5" />
-              {t('upgrade_to', { plan: upgradePlan })}
+              {contextualCta}
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </Button>
           <span className="text-xs text-muted-foreground/70">
-            {t('plans.catechist_pro.price')}
+            {defaultUpgradePrice}
           </span>
         </div>
       )}
