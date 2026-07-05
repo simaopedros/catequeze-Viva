@@ -20,8 +20,14 @@ type EventProperties = Record<
   string | number | boolean | null | undefined
 >;
 
+type HimetricaClient = {
+  track?: (event: string, properties?: EventProperties) => void;
+};
+
 declare global {
   interface Window {
+    dataLayer?: Array<Record<string, unknown>>;
+    himetrica?: HimetricaClient;
     plausible?: (event: string, options?: { props?: EventProperties }) => void;
   }
 }
