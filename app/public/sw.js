@@ -10,7 +10,7 @@
  * Version is derived from CACHE_NAME for easy cache busting on deploy.
  */
 
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 const CACHE_NAME = `catequese-viva-${CACHE_VERSION}`;
 const IS_LOCAL_DEV =
   self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1';
@@ -28,7 +28,9 @@ const APP_SHELL = [
 ];
 
 const STATIC_MATCH = /\/(icons|images|fonts|brand|locales)\//;
-const API_MATCH = /\/api\//;
+const AUTH_MATCH = /^\/auth(?:\/|$)/;
+const OPERATIONS_MATCH = /^\/operations(?:\/|$)/;
+const API_MATCH = /^\/api(?:\/|$)/;
 
 async function openCache() {
   return caches.open(CACHE_NAME);
@@ -65,6 +67,10 @@ async function networkFirst(request) {
     if (cached) return cached;
     throw err;
   }
+}
+
+async function networkOnly(request) {
+  return fetch(request);
 }
 
 self.addEventListener('install', (event) => {
@@ -125,6 +131,11 @@ self.addEventListener('fetch', (event) => {
   }
 
   if (request.method !== 'GET') return;
+
+  if (AUTH_MATCH.test(url.pathname) || OPERATIONS_MATCH.test(url.pathname)) {
+    event.respondWith(networkOnly(request));
+    return;
+  }
 
   if (API_MATCH.test(url.pathname)) {
     event.respondWith(networkFirst(request));
