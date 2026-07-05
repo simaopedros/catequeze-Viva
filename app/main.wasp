@@ -1017,7 +1017,7 @@ query getClassPastoralReport {
 
 query getCatechumenPastoralAnalysis {
   fn: import { getCatechumenPastoralAnalysis } from "@src/server/operations/pastoralReportOperations",
-  entities: [CatechesisClass, ClassEnrollment, CatechumenProfile, Meeting, AttendanceRecord, ClassCatechist, User]
+  entities: [CatechesisClass, ClassEnrollment, CatechumenProfile, Meeting, AttendanceRecord, ClassCatechist, User, Membership]
 }
 
 query listUpcomingBirthdays {
