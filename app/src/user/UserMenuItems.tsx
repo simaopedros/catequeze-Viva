@@ -1,10 +1,10 @@
 import { LogOut } from 'lucide-react';
-import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { signOut } from '../client/analytics/himetrica';
 import { Link as WaspRouterLink } from 'wasp/client/router';
 import { type User } from 'wasp/entities';
 import { userMenuItems } from './constants';
+import { isFamilyPortalHost } from '../shared/portal';
 
 export const UserMenuItems = ({
   user,
@@ -14,14 +14,13 @@ export const UserMenuItems = ({
   onItemClick?: () => void;
 }) => {
   const { t } = useTranslation('topbar');
-  const navigate = useNavigate();
 
   const handleSignOut = async () => {
     onItemClick?.();
     try {
       await signOut();
     } finally {
-      navigate('/login', { replace: true });
+      window.location.replace(isFamilyPortalHost() ? '/entrar' : '/login');
     }
   };
 

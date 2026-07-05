@@ -61,7 +61,7 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
     } catch {
       // ignore
     }
-    navigate(isFamilyPortalHost() ? '/entrar' : '/login');
+    window.location.replace(isFamilyPortalHost() ? '/entrar' : '/login');
   };
 
   if (checking) {

@@ -1,6 +1,5 @@
 import { ChevronDown, LogOut, User } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router';
 import { signOut } from '../client/analytics/himetrica';
 import { Link as WaspRouterLink } from 'wasp/client/router';
 import { type User as UserEntity } from 'wasp/entities';
@@ -8,13 +7,13 @@ import { userMenuItems } from './constants';
 import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
 import DarkModeSwitcher from '../client/components/DarkModeSwitcher';
 import { useTranslation } from 'react-i18next';
+import { isFamilyPortalHost } from '../shared/portal';
 
 export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
   const { t } = useTranslation('topbar');
   const [open, setOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
 
   const displayName = user.firstName
     ? `${user.firstName} ${user.lastName || ''}`.trim()
@@ -42,7 +41,7 @@ export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
     try {
       await signOut();
     } finally {
-      navigate('/login', { replace: true });
+      window.location.replace(isFamilyPortalHost() ? '/entrar' : '/login');
     }
   };
 

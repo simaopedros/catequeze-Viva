@@ -40,10 +40,8 @@ export function AppShell({ children }: AppShellProps) {
     ? (allMemberships || []).some((m: any) => !['GUARDIAN', 'CATECHUMEN'].includes(m.role))
     : true;
 
-  // Auth guard: if the session is gone (e.g. right after logout), we render
-  // nothing (see the early return after all hooks below). The Wasp router
-  // then redirects to /login, preventing the app shell from briefly rendering
-  // the dashboard with stale cached data.
+  // Track the auth session inside the shell so we can actively redirect when
+  // it disappears instead of depending on the protected page wrapper mounting.
   const { data: authUser } = useAuth();
 
   const isMinimalPath = useMemo(() => {
@@ -101,12 +99,14 @@ export function AppShell({ children }: AppShellProps) {
     mainRef.current?.scrollTo(0, 0);
   }, [location.pathname]);
 
-  // Auth guard: render nothing when the session is gone (e.g. right after
-  // logout). The Wasp router redirects to /login; this prevents the app shell
-  // from briefly rendering the dashboard with stale cached data. Placed after
-  // all hooks to respect the rules of hooks.
+  useEffect(() => {
+    if (authUser !== null) return;
+    window.location.replace(isFamily ? '/entrar' : '/login');
+  }, [authUser, isFamily]);
+  // Prevent the stale shell from rendering while the hard redirect to the auth
+  // entrypoint is in flight.
   if (authUser === null) {
-    return null;
+    return <div className="min-h-screen bg-background" />;
   }
 
   if (isFamily) {
