@@ -7,8 +7,10 @@ type Options = {
   redirectTo?: string;
 };
 
+const LOGOUT_REDIRECT_GUARD_KEY = "catequese-viva-just-logged-out";
+
 export function useRedirectIfLoggedIn(options: Options = {}) {
-  const { data: user } = useAuth();
+  const { data: user, isLoading } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
@@ -16,7 +18,19 @@ export function useRedirectIfLoggedIn(options: Options = {}) {
   const redirectTo = options.redirectTo ?? defaultRedirect;
 
   useEffect(() => {
-    if (!user) return;
+    const justLoggedOut = typeof window !== "undefined"
+      ? window.sessionStorage.getItem(LOGOUT_REDIRECT_GUARD_KEY) === "1"
+      : false;
+
+    if (justLoggedOut) {
+      if (isLoading) return;
+      if (!user && typeof window !== "undefined") {
+        window.sessionStorage.removeItem(LOGOUT_REDIRECT_GUARD_KEY);
+      }
+      return;
+    }
+
+    if (isLoading || !user) return;
 
     if (token) {
       navigate(`/convite/${encodeURIComponent(token)}`, { replace: true });
@@ -24,5 +38,5 @@ export function useRedirectIfLoggedIn(options: Options = {}) {
     }
 
     navigate(redirectTo, { replace: true });
-  }, [user, navigate, redirectTo, token]);
+  }, [user, isLoading, navigate, redirectTo, token]);
 }

@@ -15,8 +15,6 @@ import {
 import CookieConsentBanner from "./components/cookie-consent/Banner";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
-import HimetricaScripts from "./analytics/HimetricaScripts";
-import { useHimetricaIdentify } from "./analytics/useHimetricaIdentify";
 import GoogleTagScripts from "./analytics/GoogleTagScripts";
 import { isFamilyPortalHost } from "../shared/portal";
 import FamilyLandingPage from "../catequese/pages/family/FamilyLandingPage";
@@ -95,7 +93,6 @@ export default function App() {
   const { t: tNavigation } = useTranslation("navigation");
   const { t: tPublicNav } = useTranslation("publicNav");
   const [offlineDismissed, setOfflineDismissed] = useState(false);
-  useHimetricaIdentify();
 
   const isFamilyPortal = useMemo(() => isFamilyPortalHost(), []);
 
@@ -252,7 +249,6 @@ export default function App() {
       <Toaster position="top-right" />
       <CookieConsentBanner />
       <InstallPrompt />
-      <HimetricaScripts />
       <GoogleTagScripts />
     </>
   );
