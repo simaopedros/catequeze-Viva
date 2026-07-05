@@ -26,7 +26,7 @@ type HimetricaClient = {
 
 declare global {
   interface Window {
-    dataLayer?: Array<Record<string, unknown>>;
+    dataLayer: unknown[];
     himetrica?: HimetricaClient;
     plausible?: (event: string, options?: { props?: EventProperties }) => void;
   }

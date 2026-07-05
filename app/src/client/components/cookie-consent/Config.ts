@@ -3,7 +3,7 @@ import i18n from "../../../i18n/config";
 
 declare global {
   interface Window {
-    dataLayer: any;
+    dataLayer: unknown[];
   }
 }
 
@@ -82,7 +82,7 @@ const getConfig = () => {
                 }
                 window.dataLayer = window.dataLayer || [];
                 function gtag(..._args: unknown[]) {
-                  (window.dataLayer as Array<any>).push(arguments);
+                  window.dataLayer.push(arguments);
                 }
                 gtag("js", new Date());
                 gtag("config", GA_ANALYTICS_ID);
