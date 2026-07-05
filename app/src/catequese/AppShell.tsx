@@ -40,13 +40,11 @@ export function AppShell({ children }: AppShellProps) {
     ? (allMemberships || []).some((m: any) => !['GUARDIAN', 'CATECHUMEN'].includes(m.role))
     : true;
 
-  // Guard: if the session is gone (e.g. right after logout), render nothing.
-  // The Wasp router will redirect to /login. This prevents the app shell from
-  // briefly rendering the dashboard with stale cached data.
+  // Auth guard: if the session is gone (e.g. right after logout), we render
+  // nothing (see the early return after all hooks below). The Wasp router
+  // then redirects to /login, preventing the app shell from briefly rendering
+  // the dashboard with stale cached data.
   const { data: authUser } = useAuth();
-  if (authUser === null) {
-    return null;
-  }
 
   const isMinimalPath = useMemo(() => {
     const path = location.pathname;
@@ -102,6 +100,14 @@ export function AppShell({ children }: AppShellProps) {
     setMobileMenuOpen(false);
     mainRef.current?.scrollTo(0, 0);
   }, [location.pathname]);
+
+  // Auth guard: render nothing when the session is gone (e.g. right after
+  // logout). The Wasp router redirects to /login; this prevents the app shell
+  // from briefly rendering the dashboard with stale cached data. Placed after
+  // all hooks to respect the rules of hooks.
+  if (authUser === null) {
+    return null;
+  }
 
   if (isFamily) {
     return <FamilyAppShell>{children}</FamilyAppShell>;
