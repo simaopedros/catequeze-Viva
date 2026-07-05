@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import {
@@ -211,6 +211,7 @@ export default function BillingPage() {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [switchingInterval, setSwitchingInterval] = useState(false);
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const requestedPlan = searchParams.get('plan');
   const gateRequired = searchParams.get('required') === '1';
   const journeySource = searchParams.get('source') ?? 'billing_page';
@@ -457,6 +458,29 @@ export default function BillingPage() {
       }
     });
   }, [allowAutoCheckout, billingInterval, requestedPlanId, startCheckout]);
+
+  // Handle Stripe checkout redirect: when returning with ?status=success, the
+  // subscription may not yet be reflected (webhook can lag). Refetch everything
+  // and surface a confirmation so the user does not stare at a blank screen.
+  const checkoutStatus = searchParams.get('status');
+  const successToastShownRef = useRef(false);
+  useEffect(() => {
+    if (checkoutStatus !== 'success' && checkoutStatus !== 'canceled') return;
+    if (successToastShownRef.current) return;
+    successToastShownRef.current = true;
+    if (checkoutStatus === 'success') {
+      refetchStats();
+      refetchCredits();
+      refetchSubscription();
+      toast({ title: t('checkout_success') });
+    } else if (checkoutStatus === 'canceled') {
+      toast({ title: t('checkout_canceled'), variant: 'destructive' });
+    }
+    // Clean the query param so it does not retrigger on refresh/navigation.
+    const next = new URLSearchParams(searchParams);
+    next.delete('status');
+    navigate({ search: next.toString().length ? `?${next.toString()}` : '' }, { replace: true });
+  }, [checkoutStatus, navigate, refetchCredits, refetchStats, refetchSubscription, searchParams, t]);
 
   const creditLabel = aiCredits?.creditsLeft === 1 ? t('credit_one') : t('credit_other');
   const isConversionMode = !isParishManaged && !isActive;
