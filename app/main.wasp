@@ -1012,12 +1012,12 @@ query getReportsOverview {
 
 query getClassPastoralReport {
   fn: import { getClassPastoralReport } from "@src/server/operations/pastoralReportOperations",
-  entities: [CatechesisClass, ClassEnrollment, CatechumenProfile, Meeting, AttendanceRecord, ClassCatechist, User, Membership, CatechumenBirthdayGift]
+  entities: [CatechesisClass, ClassEnrollment, CatechumenProfile, Meeting, AttendanceRecord, ClassCatechist, User, Membership, Parish, GuardianProfile, CatechumenBirthdayGift, AuditLog]
 }
 
 query getCatechumenPastoralAnalysis {
   fn: import { getCatechumenPastoralAnalysis } from "@src/server/operations/pastoralReportOperations",
-  entities: [CatechesisClass, ClassEnrollment, CatechumenProfile, Meeting, AttendanceRecord, ClassCatechist, User, Membership]
+  entities: [CatechesisClass, ClassEnrollment, CatechumenProfile, Meeting, AttendanceRecord, ClassCatechist, User, Membership, Parish, GuardianProfile, CatechumenBirthdayGift, AuditLog]
 }
 
 query listUpcomingBirthdays {
