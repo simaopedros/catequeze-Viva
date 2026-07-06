@@ -28,9 +28,9 @@ function useLandingCopy(ns: string) {
 
   const trObjects = <T,>(key: string, fallback: T): T => {
     const value = t(key, { returnObjects: true });
-    if (value && typeof value === "object" && value !== key) return value as T;
+    if (value && typeof value === "object") return value as T;
     const fallbackValue = tLanding(key, { returnObjects: true });
-    if (fallbackValue && typeof fallbackValue === "object" && fallbackValue !== key) return fallbackValue as T;
+    if (fallbackValue && typeof fallbackValue === "object") return fallbackValue as T;
     return fallback;
   };
 

@@ -10,9 +10,9 @@ function useLandingCopy(ns: string) {
 
   const trObjects = <T,>(key: string, fallback: T): T => {
     const value = t(key, { returnObjects: true });
-    if (value && typeof value === "object" && value !== key) return value as T;
+    if (value && typeof value === "object") return value as T;
     const fallbackValue = tLanding(key, { returnObjects: true });
-    if (fallbackValue && typeof fallbackValue === "object" && fallbackValue !== key) return fallbackValue as T;
+    if (fallbackValue && typeof fallbackValue === "object") return fallbackValue as T;
     return fallback;
   };
 
@@ -47,7 +47,7 @@ const DEFAULT_PROOF = {
     role: "Coordenadora paroquial — Campinas, SP",
   },
   chips: ["Chamada no celular", "Importacao por planilha", "Mensagens para familias", "Portal da familia"],
-} as const;
+};
 
 export function ProofSection({ ns = "landing" }: { ns?: string }) {
   const { trObjects } = useLandingCopy(ns);
