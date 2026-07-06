@@ -6,7 +6,7 @@ export function getMarketingNavigationItems(
   tPublicNav: TFunction<'publicNav'>,
 ): NavigationItem[] {
   return [
-    { name: tPublicNav('resources'), to: '/#features' },
+    { name: tPublicNav('resources'), to: '/#recursos' },
     { name: tPublicNav('pricing'), to: '/pricing' },
     { name: tPublicNav('about'), to: '/about' },
     { name: tPublicNav('contact'), to: '/contact' },

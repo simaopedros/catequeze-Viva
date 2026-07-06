@@ -1,6 +1,6 @@
 import "./instrument";
 import "./setupApiUrlProxy";
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Outlet, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import { routes } from "wasp/client/router";
@@ -12,7 +12,6 @@ import {
   getDemoNavigationItems,
   getMarketingNavigationItems,
 } from "./components/NavBar/constants";
-import CookieConsentBanner from "./components/cookie-consent/Banner";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
 import GoogleTagScripts from "./analytics/GoogleTagScripts";
@@ -26,6 +25,8 @@ import {
 } from "./analytics/marketingAnalytics";
 
 import "../i18n/config";
+
+const CookieConsentBanner = lazy(() => import("./components/cookie-consent/Banner"));
 
 function isLocalDevHost() {
   if (typeof window === "undefined") return false;
@@ -57,8 +58,6 @@ function registerServiceWorker() {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("/sw.js", { scope: "/" }).then(
       (registration) => {
-        // Some browsers/states (e.g. SW being torn down, privacy modes) resolve
-        // with undefined — guard before touching the registration.
         if (!registration) {
           console.warn("[SW] Registration resolved with no value");
           return;
@@ -105,9 +104,10 @@ export default function App() {
   const isMarketingPage = useMemo(() => {
     if (isFamilyPortal) return false;
     return (
-      location.pathname === "/" || location.pathname.startsWith("/pricing")
+      marketingLandingFromPath(location.pathname) !== null ||
+      location.pathname.startsWith("/pricing")
     );
-  }, [location, isFamilyPortal]);
+  }, [location.pathname, isFamilyPortal]);
 
   const marketingNavigationItems = useMemo(
     () => getMarketingNavigationItems(tPublicNav),
@@ -126,6 +126,9 @@ export default function App() {
     if (isFamilyPortal) return false;
     const publicPaths = [
       "/",
+      "/ia",
+      "/presenca",
+      "/sistema",
       "/pricing",
       "/about",
       "/privacy",
@@ -141,17 +144,17 @@ export default function App() {
     if (publicPaths.includes(location.pathname)) return false;
     if (location.pathname.startsWith("/upload-docs/")) return false;
     return true;
-  }, [location, isFamilyPortal]);
+  }, [location.pathname, isFamilyPortal]);
 
   const isAdminDashboard = useMemo(() => {
     return location.pathname.startsWith("/admin");
-  }, [location]);
+  }, [location.pathname]);
 
   const isAppRoute = useMemo(() => {
     return (
       location.pathname.startsWith("/app") || location.pathname === "/account"
     );
-  }, [location]);
+  }, [location.pathname]);
 
   useEffect(() => {
     if (location.hash) {
@@ -253,7 +256,9 @@ export default function App() {
         </div>
       )}
       <Toaster position="top-right" />
-      <CookieConsentBanner />
+      <Suspense fallback={null}>
+        <CookieConsentBanner />
+      </Suspense>
       <InstallPrompt />
       <GoogleTagScripts />
     </>

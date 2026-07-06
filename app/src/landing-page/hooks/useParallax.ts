@@ -14,7 +14,10 @@ export function useParallax<T extends HTMLElement = HTMLDivElement>(
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
-    if (reducedMotion || !enabled) return;
+    const isDesktopViewport =
+      typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches;
+
+    if (reducedMotion || !enabled || !isDesktopViewport) return;
 
     const element = ref.current;
     if (!element) return;

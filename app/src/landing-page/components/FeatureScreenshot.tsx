@@ -1,4 +1,4 @@
-import type { ComponentType, ReactNode } from 'react';
+import type { ComponentType } from 'react';
 import { useEffect, useState } from 'react';
 import type { ShowcaseId } from '../content/landingContent';
 import { AiPlannerMock } from './mockups/AiPlannerMock';
@@ -17,73 +17,90 @@ const MOCK_COMPONENTS: Record<ShowcaseId, ComponentType<{ ns?: string }>> = {
   'family-portal': FamilyPortalMock,
 };
 
+const screenshotCache = new Map<string, string | null>();
+
 function getScreenshotPath(id: ShowcaseId, theme: 'light' | 'dark'): string {
   return `/landing/${id}-${theme}.webp`;
 }
 
-async function checkScreenshotExists(src: string): Promise<boolean> {
-  try {
-    const response = await fetch(src, { method: 'GET', cache: 'no-store' });
-    if (!response.ok) return false;
-    const contentType = response.headers.get('content-type') ?? '';
-    return contentType.startsWith('image/');
-  } catch {
-    return false;
+function getPreferredTheme(): 'light' | 'dark' {
+  if (typeof document !== 'undefined' && document.documentElement.classList.contains('dark')) {
+    return 'dark';
   }
+
+  if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
+    return 'dark';
+  }
+
+  return 'light';
+}
+
+function loadScreenshot(src: string): Promise<string | null> {
+  if (screenshotCache.has(src)) {
+    return Promise.resolve(screenshotCache.get(src) ?? null);
+  }
+
+  return new Promise((resolve) => {
+    const image = new Image();
+    image.onload = () => {
+      screenshotCache.set(src, src);
+      resolve(src);
+    };
+    image.onerror = () => {
+      screenshotCache.set(src, null);
+      resolve(null);
+    };
+    image.src = src;
+  });
 }
 
 interface FeatureScreenshotProps {
   id: ShowcaseId;
   alt: string;
   className?: string;
+  loading?: 'eager' | 'lazy';
+  fetchPriority?: 'high' | 'low' | 'auto';
 }
 
-export function FeatureScreenshot({ id, alt, className }: FeatureScreenshotProps) {
-  const [lightSrc, setLightSrc] = useState<string | null>(null);
-  const [darkSrc, setDarkSrc] = useState<string | null>(null);
+export function FeatureScreenshot({ id, alt, className, loading = 'lazy', fetchPriority = 'auto' }: FeatureScreenshotProps) {
+  const [resolvedSrc, setResolvedSrc] = useState<string | null>(null);
   const Mock = MOCK_COMPONENTS[id];
 
   useEffect(() => {
     let cancelled = false;
 
-    async function resolveSources() {
-      const light = getScreenshotPath(id, 'light');
-      const dark = getScreenshotPath(id, 'dark');
-      const [lightExists, darkExists] = await Promise.all([
-        checkScreenshotExists(light),
-        checkScreenshotExists(dark),
-      ]);
+    async function resolveSource() {
+      const preferredTheme = getPreferredTheme();
+      const fallbackTheme = preferredTheme === 'light' ? 'dark' : 'light';
+      const preferredSrc = await loadScreenshot(getScreenshotPath(id, preferredTheme));
 
       if (cancelled) return;
-      setLightSrc(lightExists ? light : null);
-      setDarkSrc(darkExists ? dark : null);
+      if (preferredSrc) {
+        setResolvedSrc(preferredSrc);
+        return;
+      }
+
+      const fallbackSrc = await loadScreenshot(getScreenshotPath(id, fallbackTheme));
+      if (cancelled) return;
+      setResolvedSrc(fallbackSrc);
     }
 
-    resolveSources();
+    void resolveSource();
     return () => {
       cancelled = true;
     };
   }, [id]);
 
-  if (lightSrc || darkSrc) {
-    const fallbackSrc = lightSrc ?? darkSrc!;
-    const darkFallbackSrc = darkSrc ?? lightSrc!;
-
+  if (resolvedSrc) {
     return (
-      <>
-        <img
-          src={lightSrc ?? fallbackSrc}
-          alt={alt}
-          loading="lazy"
-          className={`h-full w-full object-cover object-top dark:hidden ${className ?? ''}`}
-        />
-        <img
-          src={darkFallbackSrc}
-          alt={alt}
-          loading="lazy"
-          className={`h-full w-full object-cover object-top hidden dark:block ${className ?? ''}`}
-        />
-      </>
+      <img
+        src={resolvedSrc}
+        alt={alt}
+        loading={loading}
+        fetchPriority={fetchPriority}
+        decoding="async"
+        className={`h-full w-full object-cover object-top ${className ?? ''}`}
+      />
     );
   }
 

@@ -1,13 +1,41 @@
 {
   "hero": {
-    "headline_line1": "Tu próximo encuentro de catequesis",
-    "headline_line2": "preparado sin carrera de última hora",
-    "subheadline": "Organiza el grupo, arma el encuentro y acompaña a las familias en un mismo flujo — para que la semana pastoral no dependa de papel, planillas e improvisación.",
+    "headline_line1": "Deja de preparar la catequesis con prisa",
+    "headline_line2": "y acompaña tu grupo desde el celular",
+    "subheadline": "Mantén asistencia, preparación del encuentro y familias en un mismo lugar — para que la semana pastoral no dependa de papel, planillas e improvisación.",
     "badge": "De la preparación al acompañamiento del grupo",
-    "cta_primary": "Ver planes",
-    "cta_secondary": "Ver cómo ocurre la preparación",
-    "trust_signals": "Planes simples • Cobro mensual o anual • Conforme a la LGPD",
-    "cta_secondary_href": "/#recursos"
+    "cta_primary": "Ver los 2 planes",
+    "cta_secondary": "Ver el sistema en 1 minuto",
+    "trust_signals": "Funciona en celular • Importación CSV • Conforme a la LGPD",
+    "cta_secondary_href": "/#planos",
+    "highlights": [
+      "Asistencia y seguimiento desde el celular",
+      "Importación de catequizandos por CSV",
+      "IA para encuentros y mensajes a familias",
+      "Portal familiar en el mismo sistema"
+    ],
+    "cta_helper": "Mira los 2 planes y descubre en menos de 1 minuto si te conviene catequista o parroquia.",
+    "audience_label": "Elige tu camino",
+    "audiences": [
+      {
+        "id": "catequista",
+        "title": "Soy catequista",
+        "desc": "Quiero organizar un grupo, pasar lista desde el celular y preparar encuentros con más rapidez.",
+        "href": "/#planos",
+        "cta": "Ver plan para catequista",
+        "pill": "1 grupo, 1 catequista",
+        "micro": "Organiza tu grupo, asistencia y encuentros sin planillas."
+      },
+      {
+        "id": "parroquia",
+        "title": "Soy parroquia o diócesis",
+        "desc": "Quiero centralizar catequistas, familias, grupos y seguimiento pastoral en el mismo sistema.",
+        "href": "/#planos",
+        "cta": "Ver plan institucional",
+        "pill": "Equipo, familias y grupos",
+        "micro": "Centraliza la operacion pastoral en el mismo sistema."
+      }
+    ]
   },
   "pain_title": "La catequesis no tiene que estar dispersa en cuadernos, planillas y mensajes",
   "pain_subtitle": "Catequese Viva reúne preparación, grupo, asistencia y familias en un mismo flujo.",
@@ -123,7 +151,7 @@
   "more_features": "Más recursos para cuando tu catequesis crezca",
   "more_features_sub": "Herramientas que siguen siendo útiles después del primer grupo.",
   "steps_title": "Cómo entrar sin perder tiempo",
-  "steps_subtitle": "Mira el plan correcto, crea tu primer grupo y avanza al próximo encuentro con menos improvisación.",
+  "steps_subtitle": "Mira el plan correcto, entra con tu grupo y avanza al próximo encuentro sin volver al papel y la planilla.",
   "steps": [
     {
       "title": "Elige el plan correcto",
@@ -144,6 +172,7 @@
   "plans": {
     "single": {
       "name": "Plan Único",
+      "audience": "Para catequista individual",
       "desc": "Para que un catequista organice un grupo con claridad, historial y preparación en un solo flujo.",
       "price": "R$ 29",
       "features": [
@@ -155,6 +184,7 @@
     },
     "unlimited": {
       "name": "Plan Ilimitado",
+      "audience": "Para parroquia o diócesis",
       "desc": "Para que parroquias y diócesis centralicen equipos, grupos, familias e IA en el mismo sistema.",
       "price": "R$ 99",
       "features": [
@@ -203,9 +233,9 @@
       "a": "El Plan Ilimitado cubre la operación institucional: múltiples grupos, catequistas, familias y uso continuo de IA dentro del mismo sistema."
     }
   ],
-  "cta_title": "Elige el plan correcto y entra con el próximo grupo en movimiento",
-  "cta_subtitle": "Mira qué pasa después en cada plan y avanza al siguiente paso con claridad.",
-  "cta_button": "Ver planes",
+  "cta_title": "Elige el plan correcto antes del próximo encuentro",
+  "cta_subtitle": "Compara catequista y parroquia en un mismo lugar y mira qué camino encaja ahora.",
+  "cta_button": "Ver los 2 planes",
   "cta_badge": "Siguiente paso claro",
   "cta_see_plans": "Ver planes",
   "mock": {
@@ -334,5 +364,41 @@
       "role": "Párroco — Belo Horizonte, MG",
       "text": "La plataforma ayuda a ver la catequesis como un proceso pastoral, no solo como administración. La visibilidad del camino del grupo mejoró bastante."
     }
-  ]
+  ],
+  "cta_helper": "Sin formulario primero. Compara los planes y elige el siguiente paso con claridad.",
+  "mobile_cta": {
+    "title": "Ver los 2 planes",
+    "subtitle": "Catequista o parroquia: elige en menos de 1 minuto.",
+    "button": "Abrir planes"
+  },
+  "proof": {
+    "badge": "Prueba antes del precio",
+    "title": "Mira rápido si Catequese Viva encaja en tu caso",
+    "subtitle": "En lugar de esconder el camino, la página separa el uso individual de la operación parroquial y muestra las capacidades que más pesan en la rutina.",
+    "stats": [
+      {
+        "title": "2 caminos claros",
+        "desc": "Un plan para el catequista. Otro para la operación de la parroquia o diócesis."
+      },
+      {
+        "title": "Celular en el centro",
+        "desc": "Asistencia, seguimiento y consulta rápida sin depender del escritorio."
+      },
+      {
+        "title": "3 idiomas",
+        "desc": "Portugués, inglés y español en la misma base de producto."
+      }
+    ],
+    "featured": {
+      "quote": "Hoy la coordinación acompaña asistencia, documentos y comunicación en un mismo lugar. Eso redujo mucho el trabajo disperso entre papel, planilla y mensajes.",
+      "name": "Maria Silva",
+      "role": "Coordinadora parroquial — Campinas, SP"
+    },
+    "chips": [
+      "Asistencia móvil",
+      "Importación CSV",
+      "Portal familiar",
+      "IA para encuentros"
+    ]
+  }
 }

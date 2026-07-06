@@ -65,6 +65,11 @@ function PricingPreviewCard({
     const v = tb(`plans.${plan.planId}.name`);
     return typeof v === "string" && v !== `plans.${plan.planId}.name` ? v : plan.name;
   })();
+  const audience = (() => {
+    const v = t(`plans.${plan.planId}.audience`);
+    if (typeof v === "string" && v !== `plans.${plan.planId}.audience`) return v;
+    return plan.planId === "single" ? "Para catequista individual" : "Para paroquia e diocese";
+  })();
   const desc = (() => {
     const v = t(`plans.${plan.planId}.desc`);
     return typeof v === "string" && v !== `plans.${plan.planId}.desc` ? v : plan.desc;
@@ -83,15 +88,18 @@ function PricingPreviewCard({
       ref={ref as any}
       to="/pricing"
       onClick={() => trackMarketingEvent("primary_cta_clicked", { landing: ns, placement: "landing_pricing_plan", destination: "/pricing", plan: plan.planId })}
-      className={`rounded-2xl border-2 bg-card p-6 transition-all hover:-translate-y-1 hover:shadow-lg relative flex flex-col ${className} ${
-        plan.highlight ? "border-primary ring-2 ring-primary/20 shadow-lg shadow-primary/10" : "border-border"
+      className={`rounded-2xl border bg-card p-6 transition-colors relative flex flex-col ${className} ${
+        plan.highlight ? "border-primary/40 bg-primary/[0.03]" : "border-border/70"
       }`}
     >
       {plan.highlight && (
-        <div className="inline-flex items-center gap-1 rounded-full bg-primary text-primary-foreground text-caption font-bold px-3 py-1 mb-3 self-start">
+        <div className="inline-flex items-center gap-1 rounded-full bg-primary/10 text-primary text-caption font-bold px-3 py-1 mb-3 self-start">
           <Star className="h-3 w-3" /> {t("price_popular")}
         </div>
       )}
+      <div className="mb-3 inline-flex self-start rounded-full bg-muted/70 px-3 py-1 text-[11px] font-medium text-muted-foreground">
+        {audience}
+      </div>
       <h3 className="text-xl font-bold">{name}</h3>
       <div className="mt-3 flex items-baseline gap-1">
         <span className="text-3xl font-bold">{price}</span>
@@ -113,4 +121,3 @@ function PricingPreviewCard({
     </Link>
   );
 }
-

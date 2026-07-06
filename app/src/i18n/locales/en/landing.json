@@ -1,13 +1,41 @@
 {
   "hero": {
-    "headline_line1": "Your next catechesis meeting",
-    "headline_line2": "prepared without last-minute rush",
-    "subheadline": "Organize the class, build the meeting, and keep families in the same flow — so the pastoral week does not depend on paper, spreadsheets, and improvisation.",
+    "headline_line1": "Stop preparing catechesis in a rush",
+    "headline_line2": "and follow your class on mobile",
+    "subheadline": "Keep attendance, meeting prep, and families in one place — so the pastoral week does not depend on paper, spreadsheets, and improvisation.",
     "badge": "From preparation to family follow-up",
-    "cta_primary": "View plans",
-    "cta_secondary": "See the preparation flow",
-    "trust_signals": "Simple plans • Monthly or annual billing • LGPD compliant",
-    "cta_secondary_href": "/#recursos"
+    "cta_primary": "View both plans",
+    "cta_secondary": "See the system in 1 minute",
+    "trust_signals": "Works on mobile • CSV import • LGPD-oriented",
+    "cta_secondary_href": "/#planos",
+    "highlights": [
+      "Attendance and follow-up on mobile",
+      "Catechumen import by CSV",
+      "AI for meetings and family messages",
+      "Family portal in the same system"
+    ],
+    "cta_helper": "View both plans and see in under a minute whether catechist or parish fits your case.",
+    "audience_label": "Choose your path",
+    "audiences": [
+      {
+        "id": "catechist",
+        "title": "I am a catechist",
+        "desc": "I want to organize one class, take attendance on mobile, and prepare meetings faster.",
+        "href": "/#planos",
+        "cta": "See the catechist plan",
+        "pill": "1 class, 1 catechist",
+        "micro": "Run your class, attendance, and meetings without spreadsheets."
+      },
+      {
+        "id": "parish",
+        "title": "I am a parish or diocese",
+        "desc": "I want to centralize catechists, families, classes, and pastoral follow-up in one system.",
+        "href": "/#planos",
+        "cta": "See the institutional plan",
+        "pill": "Teams, families, classes",
+        "micro": "Centralize the pastoral operation in one system."
+      }
+    ]
   },
   "pain_title": "Catechesis should not be scattered across notebooks, spreadsheets, and messages",
   "pain_subtitle": "Catequese Viva brings preparation, class management, attendance, and families into one flow.",
@@ -123,7 +151,7 @@
   "more_features": "More tools for when your catechesis grows",
   "more_features_sub": "Features that remain useful after the first class.",
   "steps_title": "How to start without wasting time",
-  "steps_subtitle": "See the right plan, create your first class, and move into the next meeting with less improvisation.",
+  "steps_subtitle": "See the right plan, bring in your class, and move into the next meeting without going back to paper and spreadsheets.",
   "steps": [
     {
       "title": "Choose the right plan",
@@ -144,6 +172,7 @@
   "plans": {
     "single": {
       "name": "Single Plan",
+      "audience": "For individual catechists",
       "desc": "For one catechist to run a class with clarity, history, and preparation in one flow.",
       "price": "R$ 29",
       "features": [
@@ -155,6 +184,7 @@
     },
     "unlimited": {
       "name": "Unlimited Plan",
+      "audience": "For parish or diocese teams",
       "desc": "For parishes and dioceses to centralize teams, classes, families, and AI in one system.",
       "price": "R$ 99",
       "features": [
@@ -203,9 +233,9 @@
       "a": "Unlimited covers the institutional operation: multiple classes, catechists, families, and ongoing AI usage in the same system."
     }
   ],
-  "cta_title": "Choose the right plan and enter with your next class in motion",
-  "cta_subtitle": "See what happens next in each plan and move to the right next step with clarity.",
-  "cta_button": "View plans",
+  "cta_title": "Choose the right plan before the next meeting",
+  "cta_subtitle": "Compare the catechist and parish paths in one place and see what fits right now.",
+  "cta_button": "View both plans",
   "cta_badge": "Clear next step",
   "cta_see_plans": "See plans",
   "mock": {
@@ -334,5 +364,41 @@
       "role": "Pastor — Belo Horizonte, Brazil",
       "text": "The platform helps us see catechesis as a pastoral process, not only administration. Visibility into the class journey improved a lot."
     }
-  ]
+  ],
+  "cta_helper": "No form first. Compare plans and choose the next step with clarity.",
+  "mobile_cta": {
+    "title": "View both plans",
+    "subtitle": "Catechist or parish: choose in under a minute.",
+    "button": "Open plans"
+  },
+  "proof": {
+    "badge": "Proof before pricing",
+    "title": "See quickly whether Catequese Viva fits your case",
+    "subtitle": "Instead of hiding the path, the page separates individual use from parish operation and shows the capabilities that matter most in the routine.",
+    "stats": [
+      {
+        "title": "2 clear paths",
+        "desc": "One plan for the catechist. Another for the parish or diocese operation."
+      },
+      {
+        "title": "Mobile at the center",
+        "desc": "Attendance, follow-up, and quick consultation without depending on desktop."
+      },
+      {
+        "title": "3 languages",
+        "desc": "Portuguese, English, and Spanish in the same product base."
+      }
+    ],
+    "featured": {
+      "quote": "Today coordination follows attendance, documents, and communication in one place. That reduced a lot of work previously spread across paper, spreadsheets, and messages.",
+      "name": "Maria Silva",
+      "role": "Parish coordinator — Campinas, Brazil"
+    },
+    "chips": [
+      "Mobile attendance",
+      "CSV import",
+      "Family portal",
+      "AI for meetings"
+    ]
+  }
 }

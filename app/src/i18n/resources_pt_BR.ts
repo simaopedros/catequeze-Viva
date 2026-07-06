@@ -2019,14 +2019,42 @@ export const family_pt_BR = {
 
 export const landing_pt_BR = {
     "hero": {
-      "headline_line1": "Sua próxima catequese",
-      "headline_line2": "preparada sem correria de última hora",
-      "subheadline": "Organize a turma, monte o encontro e acompanhe as famílias no mesmo fluxo — para a semana pastoral não depender de papel, planilha e improviso.",
-      "badge": "Da preparação ao acompanhamento da turma",
+      "headline_line1": "Pare de preparar a catequese na correria",
+      "headline_line2": "e acompanhe sua turma pelo celular",
+      "subheadline": "Planeje encontros, registre presenca e fale com as familias no mesmo lugar — menos papel, menos planilha e mais clareza na rotina da catequese.",
+      "badge": "Catequese organizada do encontro a presenca",
       "cta_primary": "Ver planos",
-      "cta_secondary": "Ver como a preparação acontece",
-      "trust_signals": "Planos simples • Cobrança mensal ou anual • Conforme a LGPD",
-      "cta_secondary_href": "/#recursos"
+      "cta_secondary": "Ver como funciona",
+      "trust_signals": "Funciona no celular • Importacao por planilha • Dados protegidos",
+      "cta_secondary_href": "/#planos",
+      "highlights": [
+        "Chamada e acompanhamento pelo celular",
+        "Importacao de catequizandos por planilha",
+        "IA para preparar encontros e avisos",
+        "Familias acompanham pelo portal"
+      ],
+      "cta_helper": "Compare os planos e veja qual faz sentido para a sua realidade.",
+      "audience_label": "Qual e a sua realidade hoje?",
+      "audiences": [
+        {
+          "id": "catequista",
+          "title": "Sou catequista",
+          "desc": "Quero organizar minha turma, fazer a chamada no celular e preparar encontros com mais tranquilidade.",
+          "href": "/#planos",
+          "cta": "Ver plano para catequista",
+          "pill": "Para quem cuida de 1 turma",
+          "micro": "Organize sua turma e prepare encontros com mais tranquilidade."
+        },
+        {
+          "id": "paroquia",
+          "title": "Sou paroquia ou diocese",
+          "desc": "Quero centralizar turmas, catequistas, familias e acompanhamento pastoral no mesmo sistema.",
+          "href": "/#planos",
+          "cta": "Ver plano institucional",
+          "pill": "Para coordenacao e equipe",
+          "micro": "Centralize turmas, familias e catequistas em um so lugar."
+        }
+      ]
     },
     "pain_title": "A catequese não precisa ficar espalhada em caderno, planilha e mensagens",
     "pain_subtitle": "A Catequese Viva junta preparação, turma, presença e família no mesmo fluxo.",
@@ -2053,22 +2081,22 @@ export const landing_pt_BR = {
     "ai_showcase_title": "Veja como um encontro pode nascer em minutos",
     "ai_showcase_subtitle": "A Catequese Viva reúne tema, faixa etária e referências católicas para montar um primeiro rascunho que você revisa antes de usar.",
     "ai_showcase_cta": "Ver planos para preparar a próxima turma",
-    "features_title": "O essencial para preparar e acompanhar sua catequese",
-    "features_subtitle": "IA, presença e famílias trabalham juntas para reduzir improviso e dar mais clareza à rotina pastoral.",
+    "features_title": "O essencial para organizar a catequese sem improviso",
+    "features_subtitle": "Tudo o que mais pesa na rotina do catequista e da coordenacao, no mesmo sistema.",
     "features": {
       "attendance": {
-        "title": "Faça a chamada pelo celular e acompanhe faltas com clareza",
-        "desc": "Registre presença, falta, atraso ou justificativa no encontro e mantenha o histórico da turma organizado.",
-        "b1": "Chamada digital com presente, ausente, atrasado e justificado",
-        "b2": "Importação de catequizandos por CSV",
-        "b3": "Relatórios de frequência para acompanhar a turma"
+        "title": "Faca a chamada pelo celular e acompanhe faltas sem se perder",
+        "desc": "Marque presenca, atraso e justificativa no encontro e veja o historico da turma sem papel ou planilha.",
+        "b1": "Chamada rapida no celular",
+        "b2": "Importacao de catequizandos por planilha",
+        "b3": "Historico e relatorios de frequencia"
       },
       "ai": {
-        "title": "Prepare encontros com ajuda da IA, sem abrir mão da revisão pastoral",
-        "desc": "Use a IA para criar roteiros, atividades, planejamento anual e mensagens para famílias a partir do contexto da sua catequese.",
-        "b1": "Gerador de encontros por IA",
-        "b2": "Planejamento anual automático",
-        "b3": "Atividades, quizzes e mensagens para WhatsApp"
+        "title": "Prepare encontros com ajuda da IA e revise tudo antes de usar",
+        "desc": "Crie roteiros, atividades e mensagens para as familias a partir do tema do encontro, sem abrir mao da revisao pastoral.",
+        "b1": "Roteiros de encontro com IA",
+        "b2": "Atividades e quizzes para adaptar",
+        "b3": "Mensagens para enviar as familias"
       },
       "library": {
         "title": "Consulte Bíblia e Catecismo dentro da plataforma",
@@ -2078,11 +2106,11 @@ export const landing_pt_BR = {
         "b3": "Conteúdos salvos para reutilizar e imprimir"
       },
       "family": {
-        "title": "Dê às famílias um caminho simples para acompanhar a catequese",
-        "desc": "Responsáveis podem ver informações dos filhos, justificar faltas, receber avisos e enviar documentos pelo portal.",
-        "b1": "Portal da família por catequizando",
-        "b2": "Justificativa de faltas pelo portal",
-        "b3": "Upload de documentos por link seguro"
+        "title": "De as familias um jeito simples de acompanhar a caminhada",
+        "desc": "Responsaveis podem ver avisos, justificar faltas e enviar documentos sem depender de recado perdido.",
+        "b1": "Portal da familia por catequizando",
+        "b2": "Justificativa de faltas online",
+        "b3": "Envio de documentos por link seguro"
       },
       "dashboard": {
         "title": "Veja o que precisa de atenção antes do próximo encontro",
@@ -2142,7 +2170,7 @@ export const landing_pt_BR = {
     "more_features": "Mais recursos para quando sua catequese crescer",
     "more_features_sub": "Ferramentas que continuam úteis depois da primeira turma.",
     "steps_title": "Como entrar sem perder tempo",
-    "steps_subtitle": "Veja o plano certo, crie sua primeira turma e avance para o próximo encontro com menos improviso.",
+    "steps_subtitle": "Veja o plano certo, entre com sua turma e avance para o próximo encontro sem voltar para papel e planilha.",
     "steps": [
       {
         "title": "Escolha o plano certo",
@@ -2158,29 +2186,31 @@ export const landing_pt_BR = {
       }
     ],
     "steps_cta": "Ver planos e começar",
-    "pricing_title": "Dois planos para entrar na Catequese Viva",
-    "pricing_subtitle": "Escolha entre o Plano Único para o catequista e o Plano Ilimitado para a operação paroquial ou diocesana.",
+    "pricing_title": "Escolha o plano que combina com a sua realidade",
+    "pricing_subtitle": "Um plano para o catequista individual. Outro para a paroquia ou diocese organizar toda a operacao.",
     "plans": {
       "single": {
         "name": "Plano Único",
-        "desc": "Para o catequista organizar uma turma com clareza, histórico e preparação em um só fluxo.",
+        "audience": "Para catequista individual",
+        "desc": "Para quem quer organizar a propria turma, fazer a chamada no celular e preparar encontros com mais clareza.",
         "price": "R$ 29",
         "features": [
-          "1 paróquia",
-          "1 turma e 150 catequizandos",
-          "Presença e calendário litúrgico",
-          "15 créditos de IA/mês"
+          "1 turma com ate 150 catequizandos",
+          "Chamada e historico de presenca",
+          "Calendario e organizacao da turma",
+          "15 creditos de IA por mes"
         ]
       },
       "unlimited": {
         "name": "Plano Ilimitado",
-        "desc": "Para paróquias e dioceses centralizarem equipes, turmas, famílias e IA no mesmo sistema.",
+        "audience": "Para paroquia e diocese",
+        "desc": "Para coordenar turmas, catequistas, familias e presenca no mesmo sistema, sem limite operacional.",
         "price": "R$ 99",
         "features": [
-          "Paróquias e turmas ilimitadas",
-          "Catequizandos e catequistas ilimitados",
-          "Gerador de encontros por IA",
-          "50 créditos de IA/mês"
+          "Turmas e catequistas ilimitados",
+          "Catequizandos ilimitados",
+          "IA para preparar encontros",
+          "Comunicacao e acompanhamento no mesmo sistema"
         ]
       }
     },
@@ -2189,43 +2219,43 @@ export const landing_pt_BR = {
     "price_monthly": "Mensal",
     "price_annual": "Anual",
     "price_cta_free": "Ver caminhos",
-    "price_cta_start": "Ver detalhes e escolher",
+    "price_cta_start": "Ver detalhes do plano",
     "per_month": "/mês",
     "per_year": "/ano",
     "annual_discount": "17% de desconto",
-    "compare_plans": "Comparar os dois planos completos",
-    "faq_title": "Dúvidas antes de escolher o caminho",
-    "faq_subtitle": "Respostas diretas sobre acesso, IA, mobile e proteção de dados.",
+    "compare_plans": "Comparar todos os detalhes dos planos",
+    "faq_title": "Duvidas comuns antes de comecar",
+    "faq_subtitle": "Respostas diretas para quem quer sair do papel e organizar a catequese com mais clareza.",
     "faqs": [
       {
-        "q": "Posso começar como catequista individual?",
-        "a": "Sim. O Plano Único foi pensado para o catequista individual organizar a turma, acompanhar presença e preparar encontros no mesmo fluxo."
-      },
-      {
-        "q": "Quando faz sentido usar IA?",
-        "a": "Quando você prepara encontros com frequência e quer ganhar velocidade para rascunhar roteiros, atividades, planejamento anual e mensagens para famílias."
+        "q": "Posso comecar sozinho, como catequista?",
+        "a": "Sim. O plano para catequista foi pensado para organizar uma turma, fazer a chamada no celular e preparar encontros sem depender de papel ou planilha."
       },
       {
         "q": "Funciona no celular?",
-        "a": "Sim. A plataforma roda no navegador do celular, inclusive para registrar presença e acessar os principais fluxos."
+        "a": "Sim. Voce consegue registrar presenca, consultar a turma e acessar os principais fluxos pelo navegador do celular."
       },
       {
-        "q": "Posso importar os catequizandos da minha planilha?",
-        "a": "Sim. A importação por CSV permite cadastrar catequizandos em lote a partir da planilha que você já usa."
+        "q": "Consigo importar a planilha que ja uso?",
+        "a": "Sim. Voce pode importar os catequizandos em lote por planilha e evitar cadastro manual do zero."
       },
       {
-        "q": "Meus dados e os dados das crianças ficam protegidos?",
-        "a": "A plataforma foi construída com recursos de LGPD, consentimentos digitais, controle de acesso e solicitação de exportação ou exclusão de dados."
+        "q": "A IA substitui a revisao do catequista?",
+        "a": "Nao. Ela ajuda a montar o primeiro rascunho do encontro, das atividades e dos avisos. A revisao final continua com voce."
       },
       {
-        "q": "Qual plano faz sentido para paróquia ou diocese?",
-        "a": "O Plano Ilimitado cobre a operação institucional: múltiplas turmas, catequistas, famílias e uso contínuo de IA no mesmo sistema."
+        "q": "Os dados das criancas ficam protegidos?",
+        "a": "Sim. A plataforma tem controle de acesso, consentimentos e recursos alinhados a LGPD para cuidar dos dados da catequese."
+      },
+      {
+        "q": "Quando vale ir para o plano institucional?",
+        "a": "Quando a paroquia ou diocese precisa centralizar varias turmas, catequistas, familias e presenca no mesmo sistema."
       }
     ],
-    "cta_title": "Escolha o plano certo e entre com a próxima turma em movimento",
-    "cta_subtitle": "Veja o que acontece depois em cada plano e siga para o próximo passo com clareza.",
+    "cta_title": "Veja qual plano faz sentido para a sua realidade",
+    "cta_subtitle": "Compare catequista e paroquia no mesmo lugar e escolha com calma antes do proximo encontro.",
     "cta_button": "Ver planos",
-    "cta_badge": "Próximo passo claro",
+    "cta_badge": "Proximo passo",
     "cta_see_plans": "Ver planos",
     "mock": {
       "ai_title": "Gerador de Encontros IA",
@@ -2353,7 +2383,43 @@ export const landing_pt_BR = {
         "role": "Pároco — Belo Horizonte, MG",
         "text": "A plataforma ajuda a enxergar a catequese como processo pastoral, não só como administração. A visibilidade da caminhada da turma melhorou bastante."
       }
-    ]
+    ],
+    "cta_helper": "Sem formulario antes. Primeiro voce entende o plano, depois decide.",
+    "mobile_cta": {
+      "title": "Ver planos",
+      "subtitle": "Catequista ou paroquia: compare em menos de 1 minuto.",
+      "button": "Abrir planos"
+    },
+    "proof": {
+      "badge": "Antes de escolher, entenda se serve para voce",
+      "title": "A Catequese Viva faz sentido para catequista? Faz. Para a paroquia tambem.",
+      "subtitle": "Voce entra pelo caminho que combina com a sua realidade de hoje: organizar uma turma ou coordenar varias ao mesmo tempo.",
+      "stats": [
+        {
+          "title": "Para quem cuida de 1 turma",
+          "desc": "O plano para catequista resolve preparacao, chamada e acompanhamento no dia a dia."
+        },
+        {
+          "title": "Para quem coordena equipes",
+          "desc": "O plano institucional centraliza turmas, catequistas, familias e presenca."
+        },
+        {
+          "title": "Funciona no celular",
+          "desc": "A chamada e o acompanhamento da turma podem ser feitos no navegador do proprio celular."
+        }
+      ],
+      "featured": {
+        "quote": "Hoje a coordenacao acompanha presenca, documentos e comunicacao no mesmo lugar. Isso reduziu muito o trabalho espalhado entre papel, planilha e mensagens.",
+        "name": "Maria Silva",
+        "role": "Coordenadora paroquial — Campinas, SP"
+      },
+      "chips": [
+        "Chamada no celular",
+        "Importacao por planilha",
+        "Mensagens para familias",
+        "Portal da familia"
+      ]
+    }
   } as const;
 
 export const landingIa_pt_BR = {
