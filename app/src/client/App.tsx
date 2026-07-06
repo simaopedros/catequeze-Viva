@@ -57,6 +57,12 @@ function registerServiceWorker() {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("/sw.js", { scope: "/" }).then(
       (registration) => {
+        // Some browsers/states (e.g. SW being torn down, privacy modes) resolve
+        // with undefined — guard before touching the registration.
+        if (!registration) {
+          console.warn("[SW] Registration resolved with no value");
+          return;
+        }
         console.log("[SW] Registered:", registration.scope);
         registration.addEventListener("updatefound", () => {
           const newWorker = registration.installing;
