@@ -6,10 +6,11 @@ import { Button } from "../client/components/ui/button";
 import { Input } from "../client/components/ui/input";
 import { Label } from "../client/components/ui/label";
 import { Checkbox } from "../client/components/ui/checkbox";
-import { Cross, Loader2, Eye, EyeOff } from "lucide-react";
+import { Cross, Loader2, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { isFamilyPortalHost } from "../shared/portal";
 import { rememberPendingInviteToken } from "./inviteTokenStorage";
 import { trackMarketingEvent } from "../client/analytics/marketingAnalytics";
+import { GoogleLogo } from "../client/icons/GoogleLogo";
 
 type CustomSignupFormProps = {
   inviteToken?: string | null;
@@ -30,6 +31,8 @@ export default function CustomSignupForm({
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [hasTrackedStart, setHasTrackedStart] = useState(false);
+  // When invited via family portal (defaultEmail preset), the email form is already meaningful, so show it expanded.
+  const [showEmailForm, setShowEmailForm] = useState(!!defaultEmail);
 
   const trackSignupStart = () => {
     if (hasTrackedStart) return;
@@ -142,151 +145,152 @@ export default function CustomSignupForm({
         </p>
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        onFocusCapture={trackSignupStart}
-        className="space-y-4"
+      <a
+        href={googleSignInUrl}
+        onClick={() => {
+          trackMarketingEvent("signup_started", {
+            method: "google",
+            invite: Boolean(inviteToken),
+          });
+          if (inviteToken) rememberPendingInviteToken(inviteToken);
+        }}
+        className="flex items-center justify-center gap-3 w-full rounded-lg border border-input bg-background h-11 px-4 py-2 text-sm font-medium text-center shadow-elevation-xs hover:bg-muted/30 hover:border-accent-foreground/20 transition-all"
       >
-        {error && (
-          <div className="rounded-lg bg-destructive/10 p-3 text-body-sm text-destructive">
-            {error}
-          </div>
-        )}
+        <GoogleLogo className="h-5 w-5" />
+        {t("signup_google")}
+      </a>
 
-        <div className="space-y-2">
-          <Label htmlFor="email">{t("signup_email_label")}</Label>
-          <Input
-            id="email"
-            variant="filled"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder={t("signup_email_placeholder")}
-            autoComplete="email"
-            readOnly={!!defaultEmail}
-            disabled={isLoading}
-            required
-          />
-        </div>
+      <button
+        type="button"
+        onClick={() => setShowEmailForm(true)}
+        className="w-full text-center text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center gap-1"
+      >
+        {t("signup_continue_with_email")} <ArrowRight className="h-3 w-3" />
+      </button>
 
-        <div className="space-y-2">
-          <Label htmlFor="password">{t("signup_password_label")}</Label>
-          <div className="relative">
+      {showEmailForm && (
+        <form
+          onSubmit={handleSubmit}
+          onFocusCapture={trackSignupStart}
+          className="space-y-4"
+        >
+          {error && (
+            <div className="rounded-lg bg-destructive/10 p-3 text-body-sm text-destructive">
+              {error}
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label htmlFor="email">{t("signup_email_label")}</Label>
             <Input
-              id="password"
-              type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder={t("signup_password_placeholder")}
+              id="email"
+              variant="filled"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={t("signup_email_placeholder")}
+              autoComplete="email"
+              readOnly={!!defaultEmail}
+              disabled={isLoading}
+              required
+              autoFocus={!defaultEmail}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="password">{t("signup_password_label")}</Label>
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={t("signup_password_placeholder")}
+                autoComplete="new-password"
+                disabled={isLoading}
+                required
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                tabIndex={-1}
+                aria-label={
+                  showPassword ? t("aria_hide_password") : t("aria_show_password")
+                }
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
+            <p className="text-caption text-muted-foreground">
+              {t("signup_password_help")}
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">{t("signup_confirm_label")}</Label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder={t("signup_confirm_placeholder")}
               autoComplete="new-password"
               disabled={isLoading}
               required
-              className="pr-10"
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              tabIndex={-1}
-              aria-label={
-                showPassword ? t("aria_hide_password") : t("aria_show_password")
-              }
-            >
-              {showPassword ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
-                <Eye className="h-4 w-4" />
-              )}
-            </button>
           </div>
-          <p className="text-caption text-muted-foreground">
-            {t("signup_password_help")}
-          </p>
-        </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="confirmPassword">{t("signup_confirm_label")}</Label>
-          <Input
-            id="confirmPassword"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder={t("signup_confirm_placeholder")}
-            autoComplete="new-password"
-            disabled={isLoading}
-            required
-          />
-        </div>
-
-        <div className="flex items-start gap-2">
-          <Checkbox
-            id="acceptTerms"
-            checked={acceptTerms}
-            onCheckedChange={(v) => setAcceptTerms(!!v)}
-            disabled={isLoading}
-            className="mt-1"
-          />
-          <Label
-            htmlFor="acceptTerms"
-            className="text-xs cursor-pointer leading-relaxed"
-          >
-            {t("signup_terms_prefix")}{" "}
-            <a
-              href="/terms"
-              target="_blank"
-              className="text-primary hover:underline"
-              rel="noreferrer"
+          <div className="flex items-start gap-2">
+            <Checkbox
+              id="acceptTerms"
+              checked={acceptTerms}
+              onCheckedChange={(v) => setAcceptTerms(!!v)}
+              disabled={isLoading}
+              className="mt-1"
+            />
+            <Label
+              htmlFor="acceptTerms"
+              className="text-xs cursor-pointer leading-relaxed"
             >
-              {t("terms_of_use")}
-            </a>{" "}
-            {t("signup_terms_and")}{" "}
-            <a
-              href="/privacy"
-              target="_blank"
-              className="text-primary hover:underline"
-              rel="noreferrer"
-            >
-              {t("privacy_policy")}
-            </a>
-          </Label>
-        </div>
-
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
-              {t("signup_loading")}
-            </>
-          ) : (
-            t("signup_button")
-          )}
-        </Button>
-
-        <div className="relative my-4">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
+              {t("signup_terms_prefix")}{" "}
+              <a
+                href="/terms"
+                target="_blank"
+                className="text-primary hover:underline"
+                rel="noreferrer"
+              >
+                {t("terms_of_use")}
+              </a>{" "}
+              {t("signup_terms_and")}{" "}
+              <a
+                href="/privacy"
+                target="_blank"
+                className="text-primary hover:underline"
+                rel="noreferrer"
+              >
+                {t("privacy_policy")}
+              </a>
+            </Label>
           </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-              {t("signup_divider")}
-            </span>
-          </div>
-        </div>
 
-        <a
-          href={googleSignInUrl}
-          onClick={() => {
-            trackMarketingEvent("signup_started", {
-              method: "google",
-              invite: Boolean(inviteToken),
-            });
-            if (inviteToken) rememberPendingInviteToken(inviteToken);
-          }}
-          className="block w-full rounded-lg border border-input bg-background h-10 px-4 py-2 text-sm font-medium text-center hover:bg-muted/30 transition-colors"
-        >
-          {t("signup_google")}
-        </a>
-      </form>
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
+                {t("signup_loading")}
+              </>
+            ) : (
+              t("signup_button")
+            )}
+          </Button>
+        </form>
+      )}
 
       <p className="text-center text-sm text-muted-foreground">
         {t("signup_has_account")}{" "}

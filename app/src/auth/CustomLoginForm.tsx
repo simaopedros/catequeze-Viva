@@ -8,10 +8,11 @@ import { Button } from '../client/components/ui/button';
 import { Input } from '../client/components/ui/input';
 import { Label } from '../client/components/ui/label';
 import { Checkbox } from '../client/components/ui/checkbox';
-import { Cross, Loader2, Eye, EyeOff, ShieldCheck, ArrowLeft } from 'lucide-react';
+import { Cross, Loader2, Eye, EyeOff, ShieldCheck, ArrowLeft, ArrowRight } from 'lucide-react';
 import { getTwoFactorStatus, verifyTwoFactorLogin, beginTwoFactorChallenge } from 'wasp/client/operations';
 import { isFamilyPortalHost } from '../shared/portal';
 import { rememberPendingInviteToken } from './inviteTokenStorage';
+import { GoogleLogo } from '../client/icons/GoogleLogo';
 
 type Step = 'login' | 'twofactor';
 
@@ -31,6 +32,7 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showEmailForm, setShowEmailForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [twoFactorToken, setTwoFactorToken] = useState('');
@@ -167,75 +169,86 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
         <p className="text-sm text-muted-foreground">{t('login_subtitle')}</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
-            {error}
-          </div>
-        )}
+      <a
+        href={googleSignInUrl}
+        onClick={() => inviteToken && rememberPendingInviteToken(inviteToken)}
+        className="flex items-center justify-center gap-3 w-full rounded-lg border border-input bg-background h-11 px-4 py-2 text-sm font-medium text-center shadow-elevation-xs hover:bg-muted/30 hover:border-accent-foreground/20 transition-all"
+      >
+        <GoogleLogo className="h-5 w-5" />
+        {t('login_google')}
+      </a>
 
-        <div className="space-y-2">
-          <Label htmlFor="email">{t('login_email_label')}</Label>
-          <Input variant="filled"
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder={t('login_email_placeholder')}
-            autoComplete="email"
-            disabled={isLoading}
-            required
-          />
-        </div>
+      <button
+        type="button"
+        onClick={() => setShowEmailForm(true)}
+        className="w-full text-center text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center gap-1"
+      >
+        {t('login_continue_with_email')} <ArrowRight className="h-3 w-3" />
+      </button>
 
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="password">{t('login_password_label')}</Label>
-            <a href="/request-password-reset" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-              {t('login_forgot_password')}
-            </a>
-          </div>
-          <div className="relative">
+      {showEmailForm && (
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+              {error}
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label htmlFor="email">{t('login_email_label')}</Label>
             <Input variant="filled"
-              id="password"
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder={t('login_password_placeholder')}
-              autoComplete="current-password"
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={t('login_email_placeholder')}
+              autoComplete="email"
               disabled={isLoading}
               required
-              className="pr-10"
+              autoFocus
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              tabIndex={-1}
-              aria-label={showPassword ? t('aria_hide_password') : t('aria_show_password')}
-            >
-              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-            </button>
           </div>
-        </div>
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? (
-            <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('login_loading')}</>
-          ) : (
-            t('login_button')
-          )}
-        </Button>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password">{t('login_password_label')}</Label>
+              <a href="/request-password-reset" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                {t('login_forgot_password')}
+              </a>
+            </div>
+            <div className="relative">
+              <Input variant="filled"
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={t('login_password_placeholder')}
+                autoComplete="current-password"
+                disabled={isLoading}
+                required
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                tabIndex={-1}
+                aria-label={showPassword ? t('aria_hide_password') : t('aria_show_password')}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+          </div>
 
-        <div className="relative my-4">
-          <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
-          <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground">{t('login_divider')}</span></div>
-        </div>
-
-        <a href={googleSignInUrl} onClick={() => inviteToken && rememberPendingInviteToken(inviteToken)} className="block w-full rounded-lg border border-input bg-background h-10 px-4 py-2 text-sm font-medium text-center hover:bg-muted/30 transition-colors">
-          {t('login_google')}
-        </a>
-      </form>
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? (
+              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('login_loading')}</>
+            ) : (
+              t('login_button')
+            )}
+          </Button>
+        </form>
+      )}
 
       <p className="text-center text-sm text-muted-foreground">
         {t('login_no_account')}{' '}

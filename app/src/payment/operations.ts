@@ -30,6 +30,19 @@ type GenerateCheckoutSessionInput = z.infer<typeof generateCheckoutSessionSchema
 // Institutional plan IDs. The simplified structure has a single institutional
 // plan (`unlimited`) which covers both parish and diocese workspaces.
 const INSTITUTIONAL_PLAN_IDS: PaymentPlanId[] = [PaymentPlanId.Unlimited];
+const MANAGEABLE_SUBSCRIPTION_STATUSES = new Set(['trialing', 'active', 'past_due']);
+
+async function listManageableSubscriptions(customerId: string) {
+  const subscriptions = await stripeClient.subscriptions.list({
+    customer: customerId,
+    status: 'all',
+    limit: 10,
+  });
+
+  return subscriptions.data.filter((subscription) =>
+    MANAGEABLE_SUBSCRIPTION_STATUSES.has(subscription.status),
+  );
+}
 
 export const generateCheckoutSession: GenerateCheckoutSession<
   GenerateCheckoutSessionInput,
@@ -178,15 +191,13 @@ export const getSubscriptionDetails: GetSubscriptionDetails<
   if (!user?.paymentProcessorUserId) return fallback;
 
   try {
-    const subscriptions = await stripeClient.subscriptions.list({
-      customer: user.paymentProcessorUserId,
-      status: 'active',
-      limit: 1,
-    });
-    const sub = subscriptions.data[0];
+    const sub = (await listManageableSubscriptions(user.paymentProcessorUserId))[0];
     if (!sub) return fallback;
 
-    const rawInterval = sub.items.data[0]?.plan?.interval ?? null;
+    const rawInterval =
+      sub.items.data[0]?.price?.recurring?.interval ??
+      sub.items.data[0]?.plan?.interval ??
+      null;
     const interval: 'month' | 'year' | null =
       rawInterval === 'month' || rawInterval === 'year' ? rawInterval : null;
 
@@ -214,14 +225,15 @@ export const cancelSubscription: CancelSubscription<
     throw new HttpError(400, "Nenhuma assinatura ativa encontrada.");
   }
 
+  const subscriptions = await listManageableSubscriptions(user.paymentProcessorUserId);
+  if (subscriptions.length === 0) {
+    throw new HttpError(400, "Nenhuma assinatura ativa encontrada.");
+  }
+
   try {
-    // Schedule cancellation at period end — do NOT cancel immediately.
-    // Access is preserved until the current period expires.
-    const subscriptions = await stripeClient.subscriptions.list({
-      customer: user.paymentProcessorUserId,
-      status: "active",
-    });
-    for (const subscription of subscriptions.data) {
+    // Schedule cancellation at period end for active or trialing subscriptions.
+    // Access is preserved until the current period or trial expires.
+    for (const subscription of subscriptions) {
       await stripeClient.subscriptions.update(subscription.id, {
         cancel_at_period_end: true,
       });
@@ -270,13 +282,8 @@ export const changeSubscriptionPlan: ChangeSubscriptionPlan<
   try {
     const priceId = requireStripePriceId(paymentPlan, interval || 'monthly');
 
-    // Find the active subscription via Stripe customer ID
-    const subscriptions = await stripeClient.subscriptions.list({
-      customer: user.paymentProcessorUserId,
-      status: 'active',
-      limit: 1,
-    });
-    const stripeSubscriptionId = subscriptions.data[0]?.id;
+    // Find the current active/trialing subscription via Stripe customer ID
+    const stripeSubscriptionId = (await listManageableSubscriptions(user.paymentProcessorUserId))[0]?.id;
     if (!stripeSubscriptionId) {
       throw new HttpError(400, "Nenhuma assinatura ativa encontrada para alterar.");
     }

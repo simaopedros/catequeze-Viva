@@ -18,6 +18,7 @@ export {
   getInstitutionalPlanId,
   getWorkspaceEffectivePlan,
   PLANS,
+  SUBSCRIPTION_TRIAL_DAYS,
   type PlanId,
   type PlanLimits,
   type BillingInfo,

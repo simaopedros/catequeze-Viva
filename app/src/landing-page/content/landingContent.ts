@@ -264,8 +264,8 @@ export const TESTIMONIALS: Testimonial[] = [
 
 export const FAQ: FaqItem[] = [
   {
-    q: 'Como conheço a plataforma antes de escolher um plano?',
-    a: 'Comece pelo caminho de catequista, entenda a estrutura da plataforma e avance para o plano mais adequado quando quiser preparar encontros com mais frequência.',
+    q: 'Os 7 dias grátis são realmente grátis?',
+    a: 'Sim. Você cria a conta sem cartão de crédito e tem 7 dias para usar a plataforma. Se não fizer sentido, não precisa fazer nada — a conta simplesmente expira.',
   },
   {
     q: 'Meus dados estão seguros? A plataforma segue a LGPD?',
@@ -281,13 +281,14 @@ export const FAQ: FaqItem[] = [
   },
   {
     q: 'Posso ter várias paróquias na mesma conta?',
-    a: 'Sim. O plano Diocese permite gerir múltiplas paróquias com analytics consolidado. No plano Paróquia, você pode ter múltiplas comunidades dentro da mesma paróquia.',
+    a: 'Sim. O Plano Ilimitado permite gerir múltiplas paróquias, turmas e catequistas sem teto. É feito para a operação institucional.',
   },
   {
     q: 'Que tipo de suporte vocês oferecem?',
-    a: 'Todos os planos têm suporte comunitário. Planos pagos têm suporte prioritário. O plano Diocese inclui onboarding dedicado para sua equipe.',
+    a: 'Todos os planos têm suporte comunitário. Planos pagos têm suporte prioritário.',
   },
 ];
+
 
 export const HERO_BADGE = {
   icon: GraduationCap,

@@ -442,6 +442,7 @@ export const auth_pt_BR = {
     "login_loading": "Entrando...",
     "login_divider": "ou",
     "login_google": "Entrar com Google",
+    "login_continue_with_email": "Continuar com email",
     "login_no_account": "Ainda não tem uma conta?",
     "login_create_account": "Criar conta",
     "login_error_fill_all": "Preencha todos os campos.",
@@ -475,6 +476,7 @@ export const auth_pt_BR = {
     "signup_loading": "Criando conta...",
     "signup_divider": "ou",
     "signup_google": "Criar conta com Google",
+    "signup_continue_with_email": "Continuar com email",
     "signup_has_account": "Já tem uma conta?",
     "signup_login_link": "Entrar",
     "signup_success_title": "Conta criada!",
@@ -2025,7 +2027,7 @@ export const landing_pt_BR = {
       "badge": "Catequese organizada do encontro a presenca",
       "cta_primary": "Ver planos",
       "cta_secondary": "Ver como funciona",
-      "trust_signals": "Funciona no celular • Importacao por planilha • Dados protegidos",
+      "trust_signals": "7 dias sem cartao • Funciona no celular • Cancele quando quiser",
       "cta_secondary_href": "/#planos",
       "highlights": [
         "Chamada e acompanhamento pelo celular",
@@ -2531,7 +2533,7 @@ export const landingPresenca_pt_BR = {
       "badge": "Controle de presença digital",
       "cta_primary": "Começar agora",
       "cta_secondary": "Ver demonstração",
-      "trust_signals": "Plano Único ou Ilimitado • Funciona no celular • Pagamento via Stripe"
+      "trust_signals": "7 dias sem cartao • Funciona no celular • Cancele quando quiser"
     },
     "features_title": "Controle total de presenças",
     "features_subtitle": "Do registro à justificativa — tudo integrado e em tempo real.",
@@ -2629,7 +2631,7 @@ export const landingSistema_pt_BR = {
       "badge": "Gestão completa para catequese",
       "cta_primary": "Começar agora",
       "cta_secondary": "Ver recursos",
-      "trust_signals": "Plano Único ou Ilimitado • Comece em 2 minutos • Cancele quando quiser"
+      "trust_signals": "7 dias sem cartao • Comece em 2 minutos • Cancele quando quiser"
     },
     "features_title": "Tudo para gerir sua catequese",
     "features_order": [
@@ -3548,7 +3550,7 @@ export const public_pt_BR = {
       "faq": [
         {
           "q": "Como conheço a plataforma antes de assinar?",
-          "a": "Você pode começar pelo caminho de catequista, conhecer a estrutura da plataforma e avançar para o plano mais adequado quando decidir preparar encontros com frequência."
+          "a": "Você pode testar a plataforma por 7 dias sem cartão de crédito, conhecer a rotina completa e só decidir pelo plano quando fizer sentido continuar."
         },
         {
           "q": "Como funcionam os créditos de IA?",
@@ -3560,7 +3562,7 @@ export const public_pt_BR = {
         },
         {
           "q": "Como funciona o pagamento?",
-          "a": "Aceitamos cartão de crédito (à vista ou mensal). No plano anual, o pagamento é único pelos 12 meses. Sem fidelidade — cancele quando quiser."
+          "a": "Você começa com 7 dias de trial sem cartão de crédito. Se decidir continuar, pode pagar no cartão no mensal ou no anual. Sem fidelidade — cancele quando quiser."
         },
         {
           "q": "E o reembolso do plano anual?",

@@ -2,6 +2,7 @@ import Stripe from "stripe";
 import { User } from "wasp/entities";
 import { config } from "wasp/server";
 import { stripeClient } from "./stripeClient";
+import { getCheckoutTrialConfig } from "./trialConfig";
 
 /**
  * Returns a Stripe customer for the given User email, creating a customer if none exist.
@@ -45,6 +46,7 @@ export function createStripeCheckoutSession({
     mode,
     success_url: `${config.frontendUrl}/app/billing?status=success`,
     cancel_url: `${config.frontendUrl}/app/billing?status=canceled`,
+    ...getCheckoutTrialConfig(mode),
     // `automatic_tax` requires Stripe Tax to be configured in the Dashboard and
     // a customer address. It is left disabled by default; enable it (together
     // with `customer_update: { address: "auto" }`) once Stripe Tax is set up.

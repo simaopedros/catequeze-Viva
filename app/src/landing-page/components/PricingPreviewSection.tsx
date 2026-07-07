@@ -33,7 +33,8 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        {PRICING_PREVIEW.map((plan, index) => (
+        {/* RCD Anchor: show premium plan first so cheaper plan feels like a deal */}
+        {[...PRICING_PREVIEW].reverse().map((plan, index) => (
           <PricingPreviewCard key={plan.planId} plan={plan} delay={index * 60} ns={ns} t={t} tb={tb} />
         ))}
       </div>

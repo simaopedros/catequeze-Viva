@@ -16,6 +16,7 @@ import {
   resolvePlanIdOrFree,
   isSubscriptionActiveLike,
   PLANS,
+  SUBSCRIPTION_TRIAL_DAYS,
   type PlanLimits,
 } from "../../shared/planLimits";
 
@@ -284,7 +285,7 @@ export async function resolveNewParishBilling(
     skip: false,
     plan: 'CATECHIST_FREE',
     status: 'TRIAL',
-    trialEndsAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    trialEndsAt: new Date(Date.now() + SUBSCRIPTION_TRIAL_DAYS * 24 * 60 * 60 * 1000),
   };
 }
 

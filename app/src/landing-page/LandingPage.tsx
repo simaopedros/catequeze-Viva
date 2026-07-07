@@ -1,36 +1,33 @@
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 import { PublicFooter } from "../catequese/PublicFooter";
 import { PublicNavbar } from "../catequese/PublicNavbar";
 import { FaqSection } from "./components/FaqSection";
 import { HeroSection } from "./components/HeroSection";
-import { LazySection } from "./components/LazySection";
-import { MobileStickyCta } from "./components/MobileStickyCta";
-import { PricingPreviewSection } from "./components/PricingPreviewSection";
-import { ProofSection } from "./components/ProofSection";
 
+const PainPointsSection = lazy(() => import("./components/PainPointsSection").then((m) => ({ default: m.PainPointsSection })));
+const SimpleFeaturesSection = lazy(() => import("./components/SimpleFeaturesSection").then((m) => ({ default: m.SimpleFeaturesSection })));
+const PricingPreviewSection = lazy(() => import("./components/PricingPreviewSection").then((m) => ({ default: m.PricingPreviewSection })));
+const StepsSection = lazy(() => import("./components/StepsSection").then((m) => ({ default: m.StepsSection })));
 const CtaSection = lazy(() => import("./components/CtaSection").then((m) => ({ default: m.CtaSection })));
-const FeaturesSection = lazy(() => import("./components/FeaturesSection").then((m) => ({ default: m.FeaturesSection })));
+
+const SectionFallback = () => (<div className="h-40 animate-pulse bg-muted/20 rounded-lg" />);
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <PublicNavbar />
-      <main className="flex-1 pb-24 md:pb-0">
+      <main className="flex-1">
         <HeroSection responsiveCtas />
-        <ProofSection />
-        <PricingPreviewSection />
-        <LazySection>
-          <FeaturesSection order={["attendance", "ai-planner", "family-portal"]} showSecondaryGrid={false} />
-        </LazySection>
-        <LazySection>
+        <Suspense fallback={<SectionFallback />}>
+          <PainPointsSection />
+          <SimpleFeaturesSection />
+          <PricingPreviewSection />
+          <StepsSection responsiveCtas />
           <FaqSection />
-        </LazySection>
-        <LazySection>
           <CtaSection responsiveCtas />
-        </LazySection>
+        </Suspense>
       </main>
       <PublicFooter />
-      <MobileStickyCta />
     </div>
   );
 }

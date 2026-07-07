@@ -22,6 +22,7 @@
 // Kept as a simple constant — no longer drives any feature flag.
 
 export const PRICING_VERSION = 3;
+export const SUBSCRIPTION_TRIAL_DAYS = 7;
 
 // ─── Plan IDs (vendable) ───────────────────────────────────────────────
 
