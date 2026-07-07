@@ -32,7 +32,7 @@ export function CtaSection({ ns = "landing", responsiveCtas = false }: { ns?: st
           <p className="mx-auto max-w-lg text-text-secondary">{tr("cta_subtitle")}</p>
           <div className="flex flex-col gap-2 pt-2">
             <Button size="xl" variant="brand" asChild className={ctaClassName}>
-              <Link to="/pricing" onClick={() => trackMarketingEvent("primary_cta_clicked", { landing: ns, placement: "closing_cta", destination: "/pricing" })}>
+              <Link to="/signup" onClick={() => trackMarketingEvent("primary_cta_clicked", { landing: ns, placement: "closing_cta", destination: "/signup" })}>
                 {tr("cta_button")}
                 <ArrowRight className="h-4 w-4 shrink-0" />
               </Link>

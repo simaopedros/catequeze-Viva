@@ -2023,9 +2023,11 @@ export const landing_es = {
     "hero": {
       "headline_line1": "Deja de preparar la catequesis con prisa",
       "headline_line2": "y acompaña tu grupo desde el celular",
-      "subheadline": "Mantén asistencia, preparación del encuentro y familias en un mismo lugar — para que la semana pastoral no dependa de papel, planillas e improvisación.",
-      "badge": "De la preparación al acompañamiento del grupo",
-      "cta_primary": "Ver los 2 planes",
+      "subheadline": "Prepara encuentros, pasa lista y conecta con las familias — todo en un lugar, desde el celular.",
+      "badge": "7 días gratis para probar",
+      "cta_primary": "Empezar gratis por 7 días",
+      "click_trigger": "Sin tarjeta de crédito · Cancela cuando quieras",
+      "image_alt": "Catequese Viva en el celular — asistencia, encuentros y familias",
       "cta_secondary": "Ver el sistema en 1 minuto",
       "trust_signals": "Funciona en celular • Importación CSV • Conforme a la LGPD",
       "cta_secondary_href": "/#planos",
@@ -2083,6 +2085,31 @@ export const landing_es = {
     "ai_showcase_title": "Mira cómo un encuentro puede tomar forma en minutos",
     "ai_showcase_subtitle": "Catequese Viva reúne tema, edad y referencias católicas para montar un primer borrador que revisas antes de usar.",
     "ai_showcase_cta": "Ver planes para tu próximo grupo",
+    "simple_features": {
+      "title": "Todo lo que un catequista necesita, sin complicaciones",
+      "subtitle": "Prepara encuentros, registra asistencia y conecta familias — desde el celular, sin papel.",
+      "attendance": {
+        "title": "Asistencia digital desde el celular",
+        "desc": "Registra la asistencia con un toque durante el encuentro. Sin papel, sin planillas.",
+        "b1": "Marca presente, ausente, tarde o justificado",
+        "b2": "Importa catequizandos por planilla CSV",
+        "b3": "Reportes de asistencia automáticos"
+      },
+      "ai": {
+        "title": "IA que prepara el encuentro para que lo revises",
+        "desc": "Crea guiones, actividades y mensajes para familias en minutos — con base teológica católica.",
+        "b1": "Guiones con Biblia, Catecismo y Directorio",
+        "b2": "Actividades y cuestionarios adaptables",
+        "b3": "Mensajes listos para enviar a las familias"
+      },
+      "family": {
+        "title": "Las familias acompañan por el portal",
+        "desc": "Padres y responsables ven asistencia, justifican faltas y reciben avisos — sin necesidad de llamar.",
+        "b1": "Portal personalizado por hijo",
+        "b2": "Justificación de faltas en línea",
+        "b3": "Envío de documentos por enlace seguro"
+      }
+    },
     "features_title": "Lo esencial para preparar y acompañar tu catequesis",
     "features_subtitle": "IA, asistencia y familias trabajan juntas para reducir la improvisación y dar más claridad a la rutina pastoral.",
     "features": {
@@ -2171,23 +2198,25 @@ export const landing_es = {
     ],
     "more_features": "Más recursos para cuando tu catequesis crezca",
     "more_features_sub": "Herramientas que siguen siendo útiles después del primer grupo.",
-    "steps_title": "Cómo entrar sin perder tiempo",
-    "steps_subtitle": "Mira el plan correcto, entra con tu grupo y avanza al próximo encuentro sin volver al papel y la planilla.",
+    "steps_title": "Empieza en minutos, no en horas",
+    "steps_subtitle": "Tan simple que ya empezaste.",
+    "steps_endowed_title": "Ya estás aquí",
+    "steps_endowed_desc": "Conociendo la plataforma",
     "steps": [
       {
-        "title": "Elige el plan correcto",
-        "desc": "Plan Único para un catequista. Plan Ilimitado para que la parroquia o diócesis opere sin techo."
+        "title": "Crea tu cuenta",
+        "desc": "Lleva menos de 2 minutos. Sin tarjeta de crédito."
       },
       {
-        "title": "Crea tu primer grupo",
-        "desc": "Entra con el grupo ya nombrado, horario y lugar definidos para empezar con contexto."
+        "title": "Arma tu grupo",
+        "desc": "Agrega catequizandos o importa desde una planilla."
       },
       {
         "title": "Prepara el próximo encuentro",
-        "desc": "Usa la IA y la base católica para salir de la página en blanco y llegar más rápido al primer borrador."
+        "desc": "Usa la IA para salir de la página en blanco."
       }
     ],
-    "steps_cta": "Ver planes y empezar",
+    "steps_cta": "Crear cuenta gratis",
     "pricing_title": "Dos planes para entrar en Catequese Viva",
     "pricing_subtitle": "Elige el Plan Único para el catequista o el Plan Ilimitado para la operación parroquial o diocesana.",
     "plans": {
@@ -2230,6 +2259,10 @@ export const landing_es = {
     "faq_subtitle": "Respuestas directas sobre acceso, IA, móvil y protección de datos.",
     "faqs": [
       {
+        "q": "¿Los 7 días gratis son realmente gratis?",
+        "a": "Sí. Creas la cuenta sin tarjeta de crédito y tienes 7 días para usar la plataforma. Si no te funciona, no necesitas hacer nada — la cuenta simplemente expira."
+      },
+      {
         "q": "¿Puedo empezar como catequista individual?",
         "a": "Sí. El Plan Único fue pensado para que el catequista individual organice el grupo, siga la asistencia y prepare encuentros en el mismo flujo."
       },
@@ -2254,10 +2287,10 @@ export const landing_es = {
         "a": "El Plan Ilimitado cubre la operación institucional: múltiples grupos, catequistas, familias y uso continuo de IA dentro del mismo sistema."
       }
     ],
-    "cta_title": "Elige el plan correcto antes del próximo encuentro",
-    "cta_subtitle": "Compara catequista y parroquia en un mismo lugar y mira qué camino encaja ahora.",
-    "cta_button": "Ver los 2 planes",
-    "cta_badge": "Siguiente paso claro",
+    "cta_title": "No dejes que el próximo encuentro dependa de la improvisación",
+    "cta_subtitle": "Cada semana sin organización es un grupo que pierde claridad. Empieza ahora — los primeros 7 días son gratis.",
+    "cta_button": "Empezar gratis por 7 días",
+    "cta_badge": "Sin compromiso",
     "cta_see_plans": "Ver planes",
     "mock": {
       "ai_title": "Generador de Encuentros IA",

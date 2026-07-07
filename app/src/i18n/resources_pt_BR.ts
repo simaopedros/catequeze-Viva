@@ -2023,11 +2023,13 @@ export const landing_pt_BR = {
     "hero": {
       "headline_line1": "Pare de preparar a catequese na correria",
       "headline_line2": "e acompanhe sua turma pelo celular",
-      "subheadline": "Planeje encontros, registre presenca e fale com as familias no mesmo lugar — menos papel, menos planilha e mais clareza na rotina da catequese.",
-      "badge": "Catequese organizada do encontro a presenca",
-      "cta_primary": "Ver planos",
+      "subheadline": "Prepare o encontro, faça a chamada e fale com as famílias — tudo num só lugar, direto do celular.",
+      "badge": "7 dias grátis para experimentar",
+      "cta_primary": "Começar grátis por 7 dias",
+      "click_trigger": "Sem cartão de crédito · Cancele quando quiser",
+      "image_alt": "Catequese Viva no celular — chamada, encontros e famílias",
       "cta_secondary": "Ver como funciona",
-      "trust_signals": "7 dias sem cartao • Funciona no celular • Cancele quando quiser",
+      "trust_signals": "Funciona no celular • Importacao por planilha • Dados protegidos",
       "cta_secondary_href": "/#planos",
       "highlights": [
         "Chamada e acompanhamento pelo celular",
@@ -2083,6 +2085,31 @@ export const landing_pt_BR = {
     "ai_showcase_title": "Veja como um encontro pode nascer em minutos",
     "ai_showcase_subtitle": "A Catequese Viva reúne tema, faixa etária e referências católicas para montar um primeiro rascunho que você revisa antes de usar.",
     "ai_showcase_cta": "Ver planos para preparar a próxima turma",
+    "simple_features": {
+      "title": "Tudo que o catequista precisa, sem complicação",
+      "subtitle": "Prepare encontros, registre presença e conecte as famílias — pelo celular, sem papel.",
+      "attendance": {
+        "title": "Chamada digital pelo celular",
+        "desc": "Registre presença com um toque durante o encontro. Sem papel, sem planilha.",
+        "b1": "Marque presente, falta, atraso ou justificada",
+        "b2": "Importe catequizandos por planilha CSV",
+        "b3": "Relatórios de frequência automáticos"
+      },
+      "ai": {
+        "title": "IA que prepara o encontro para você revisar",
+        "desc": "Crie roteiros, atividades e mensagens para as famílias em minutos — com base teológica católica.",
+        "b1": "Roteiros com Bíblia, Catecismo e Diretório",
+        "b2": "Atividades e quizzes adaptáveis",
+        "b3": "Mensagens prontas para enviar às famílias"
+      },
+      "family": {
+        "title": "Famílias acompanham pelo portal",
+        "desc": "Pais e responsáveis veem presenças, justificam faltas e recebem avisos — sem precisar ligar.",
+        "b1": "Portal personalizado por filho",
+        "b2": "Justificativa de faltas online",
+        "b3": "Envio de documentos por link seguro"
+      }
+    },
     "features_title": "O essencial para organizar a catequese sem improviso",
     "features_subtitle": "Tudo o que mais pesa na rotina do catequista e da coordenacao, no mesmo sistema.",
     "features": {
@@ -2171,23 +2198,25 @@ export const landing_pt_BR = {
     ],
     "more_features": "Mais recursos para quando sua catequese crescer",
     "more_features_sub": "Ferramentas que continuam úteis depois da primeira turma.",
-    "steps_title": "Como entrar sem perder tempo",
-    "steps_subtitle": "Veja o plano certo, entre com sua turma e avance para o próximo encontro sem voltar para papel e planilha.",
+    "steps_title": "Comece em minutos, não em horas",
+    "steps_subtitle": "Tão simples que você já começou.",
+    "steps_endowed_title": "Você já está aqui",
+    "steps_endowed_desc": "Conhecendo a plataforma",
     "steps": [
       {
-        "title": "Escolha o plano certo",
-        "desc": "Plano Único para o catequista. Plano Ilimitado para a paróquia ou diocese operar sem teto."
+        "title": "Crie sua conta",
+        "desc": "Leva menos de 2 minutos. Sem cartão de crédito."
       },
       {
-        "title": "Crie sua primeira turma",
-        "desc": "Entre com a turma já nomeada, horário e local definidos para começar com contexto."
+        "title": "Monte sua turma",
+        "desc": "Cadastre catequizandos ou importe por planilha."
       },
       {
         "title": "Prepare o próximo encontro",
-        "desc": "Use a IA e a base católica para sair do papel e chegar ao primeiro rascunho com rapidez."
+        "desc": "Use a IA para sair da página em branco."
       }
     ],
-    "steps_cta": "Ver planos e começar",
+    "steps_cta": "Criar conta grátis",
     "pricing_title": "Escolha o plano que combina com a sua realidade",
     "pricing_subtitle": "Um plano para o catequista individual. Outro para a paroquia ou diocese organizar toda a operacao.",
     "plans": {
@@ -2230,6 +2259,10 @@ export const landing_pt_BR = {
     "faq_subtitle": "Respostas diretas para quem quer sair do papel e organizar a catequese com mais clareza.",
     "faqs": [
       {
+        "q": "Os 7 dias grátis são realmente grátis?",
+        "a": "Sim. Você cria a conta sem cartão de crédito e tem 7 dias para usar a plataforma. Se não fizer sentido, não precisa fazer nada — a conta simplesmente expira."
+      },
+      {
         "q": "Posso comecar sozinho, como catequista?",
         "a": "Sim. O plano para catequista foi pensado para organizar uma turma, fazer a chamada no celular e preparar encontros sem depender de papel ou planilha."
       },
@@ -2254,10 +2287,10 @@ export const landing_pt_BR = {
         "a": "Quando a paroquia ou diocese precisa centralizar varias turmas, catequistas, familias e presenca no mesmo sistema."
       }
     ],
-    "cta_title": "Veja qual plano faz sentido para a sua realidade",
-    "cta_subtitle": "Compare catequista e paroquia no mesmo lugar e escolha com calma antes do proximo encontro.",
-    "cta_button": "Ver planos",
-    "cta_badge": "Proximo passo",
+    "cta_title": "Não deixe o próximo encontro depender de improviso",
+    "cta_subtitle": "Cada semana sem organização é uma turma que perde clareza. Comece agora — os primeiros 7 dias são grátis.",
+    "cta_button": "Começar grátis por 7 dias",
+    "cta_badge": "Sem compromisso",
     "cta_see_plans": "Ver planos",
     "mock": {
       "ai_title": "Gerador de Encontros IA",

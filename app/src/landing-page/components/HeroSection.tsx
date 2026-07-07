@@ -51,13 +51,17 @@ export function HeroSection({ ns = "landing", responsiveCtas = false }: { ns?: s
             <p className="text-sm text-muted-foreground">{t("hero.click_trigger")}</p>
           </div>
 
-          {/* Placeholder para imagem real do produto */}
-          <div className="mt-8 mx-auto max-w-2xl">
-            <div className="rounded-2xl border-2 border-dashed border-primary/20 bg-muted/30 aspect-[16/9] flex items-center justify-center">
-              <p className="text-sm text-muted-foreground text-center px-4">
-                {/* Será substituído por imagem real — ver lista de imagens necessárias */}
-                📸 Imagem real: catequista usando a plataforma no celular
-              </p>
+          {/* Imagem real do produto */}
+          <div className="mt-8 mx-auto max-w-3xl">
+            <div className="overflow-hidden rounded-2xl border border-border/60 shadow-elevation-md bg-muted/20">
+              <img
+                src="/landing/hero-mobile-light.png"
+                alt={t("hero.image_alt")}
+                className="w-full h-auto block"
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+              />
             </div>
           </div>
         </div>
