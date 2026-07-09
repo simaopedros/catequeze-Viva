@@ -113,7 +113,7 @@ export function GenerateActivityFlow() {
           )}
 
           {error && (
-            <div className="bg-destructive/10 text-destructive rounded-lg px-4 py-3 text-sm">{error}</div>
+            <div className="bg-destructive/10 text-destructive rounded-sm px-4 py-3 text-sm">{error}</div>
           )}
 
           <div className="space-y-3">

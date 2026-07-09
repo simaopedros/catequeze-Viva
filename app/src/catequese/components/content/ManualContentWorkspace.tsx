@@ -84,7 +84,7 @@ function ReferenceSection({
     <div className="rounded-sm border border-border bg-background p-4">
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="flex items-start gap-2">
-          <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-lg bg-muted text-foreground">
+          <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-sm bg-muted text-foreground">
             <Icon className="h-4 w-4" />
           </div>
           <div>

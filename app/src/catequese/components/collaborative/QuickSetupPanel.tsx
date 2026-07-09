@@ -210,7 +210,7 @@ export function QuickSetupPanel({ mode, applyToOriginal }: { mode: string; apply
         </div>
 
         {error && (
-          <div className="bg-destructive/10 text-destructive rounded-lg px-4 py-3 text-sm">{error}</div>
+          <div className="bg-destructive/10 text-destructive rounded-sm px-4 py-3 text-sm">{error}</div>
         )}
 
         <Card className="p-4 space-y-6 sm:p-6">

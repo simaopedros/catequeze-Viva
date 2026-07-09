@@ -57,7 +57,7 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
               <button
                 key={item.to}
                 onClick={() => navigate(item.to)}
-                className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg transition-colors ${
+                className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-sm transition-colors ${
      isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
     }`}
               >

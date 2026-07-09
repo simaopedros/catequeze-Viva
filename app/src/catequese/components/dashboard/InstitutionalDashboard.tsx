@@ -160,15 +160,15 @@ function AlertBanner({ alerts }: { alerts?: any[] }) {
 
   const severityColors: Record<string, string> = {
     critical: 'border-destructive/40 bg-destructive/5 text-destructive',
-    high: 'border-orange-500/40 bg-orange-50 dark:bg-orange-950/20 text-orange-700 dark:text-orange-300',
-    medium: 'border-yellow-500/40 bg-yellow-50 dark:bg-yellow-950/20 text-yellow-700 dark:text-yellow-300',
-    low: 'border-blue-500/40 bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-300',
+    high: 'border-border/70 bg-muted/30 text-foreground',
+    medium: 'border-border/70 bg-muted/20 text-foreground',
+    low: 'border-border/70 bg-white text-muted-foreground',
   };
 
   return (
     <div className="space-y-2">
       {alerts.slice(0, 5).map((a: any, i: number) => (
-        <div key={i} className={`rounded-lg border p-3 flex items-center gap-3 ${severityColors[a.severity] || severityColors.medium}`}>
+        <div key={i} className={`flex items-center gap-3 rounded-sm border p-3 ${severityColors[a.severity] || severityColors.medium}`}>
           <AlertTriangle className="h-4 w-4 flex-shrink-0" />
           <div className="flex-1 min-w-0">
             <span className="text-sm">{a.message}</span>

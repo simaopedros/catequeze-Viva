@@ -73,7 +73,7 @@ export function SaintStoryInjector() {
 
       {story && (
         <div className="space-y-2">
-          <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+          <div className="bg-muted/50 rounded-sm p-3 space-y-2">
             <div className="flex items-center gap-2">
               <Badge variant="secondary" className="text-xs">{story.saintName}</Badge>
               <span className="text-xs text-muted-foreground">{story.feastDay}</span>

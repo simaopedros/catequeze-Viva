@@ -183,7 +183,7 @@ export function ActivityForm({
             {quizQuestions.map((q, qi) => (
               <div key={q.id} className="rounded-sm border border-border/70 bg-white p-4 space-y-3 bg-muted/20">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-muted-foreground">#{qi + 1}</span>
+                  <span className="text-xs font-semibold text-muted-foreground">#{qi + 1}</span>
                   <Input
                     placeholder={t('form.question_text')}
                     value={q.question}
@@ -304,7 +304,7 @@ export function ActivityForm({
               <Button size="sm" variant="outline" onClick={addDynamicStep}><Plus className="h-3 w-3 mr-1"/> {t('form.add_step')}</Button>
             </div>
             {dynamicSteps.map((step, i) => (
-              <div key={step.id} className="rounded-lg border p-3 space-y-2">
+              <div key={step.id} className="space-y-2 rounded-sm border border-border/70 bg-white p-3">
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="text-overline">{t('form.step', { number: i + 1 })}</Badge>
                   <Button size="icon" variant="ghost" className="text-destructive ml-auto" onClick={() => setDynamicSteps(prev => prev.filter(s => s.id !== step.id))}>
@@ -414,7 +414,7 @@ export function ActivityForm({
         return (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">{t('form.task_hint')}</p>
-            <label className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer hover:bg-muted/30">
+            <label className="flex cursor-pointer items-center gap-3 rounded-sm border border-border/70 p-3 transition-colors hover:bg-muted/20">
               <input
                 type="checkbox"
                 checked={taskRequiresUpload}

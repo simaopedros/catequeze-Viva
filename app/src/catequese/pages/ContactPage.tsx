@@ -80,7 +80,7 @@ export default function ContactPage() {
 
             {feedback && (
               <div className={cn(
-                'flex items-center gap-2 text-sm p-3 rounded-lg',
+                'flex items-center gap-2 text-sm p-3 rounded-sm',
                 feedback.type === 'success' ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive',
               )}>
                 {feedback.type === 'success' ? <CheckCircle className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}

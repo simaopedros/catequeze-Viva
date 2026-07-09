@@ -287,7 +287,7 @@ export default function CatechumensPage() {
               className="group overflow-hidden rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-primary/30"
             >
               <div className="flex items-start gap-4">
-                <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-sm text-base font-bold overflow-hidden ring-1 ring-border/70 ${!c.photoUrl ? AVATAR_COLORS[Math.abs(c.firstName?.charCodeAt(0) || 0) % AVATAR_COLORS.length] : ''}`}>
+                <div className={`flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-sm text-base font-semibold ring-1 ring-border/70 ${!c.photoUrl ? AVATAR_COLORS[Math.abs(c.firstName?.charCodeAt(0) || 0) % AVATAR_COLORS.length] : ''}`}>
                   {c.photoUrl ? <img src={c.photoUrl} className="h-full w-full object-cover" alt="" /> : `${c.firstName?.[0] || ''}${c.lastName?.[0] || ''}`}
                 </div>
                 <div className="min-w-0 flex-1">

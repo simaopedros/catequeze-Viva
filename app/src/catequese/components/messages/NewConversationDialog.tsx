@@ -138,7 +138,7 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
           <h3 className="font-semibold">
             {step === 'type' ? t('new_dialog.title_type') : t('new_dialog.title_contacts')}
           </h3>
-          <button onClick={onClose} className="h-7 w-7 flex items-center justify-center rounded-lg hover:bg-muted transition-colors">
+          <button onClick={onClose} className="h-7 w-7 flex items-center justify-center rounded-sm hover:bg-muted transition-colors">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -178,7 +178,7 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
                   onChange={e => setTitle(e.target.value)}
                   placeholder={t('new_dialog.group_name_placeholder')}
                   maxLength={200}
-                  className="w-full h-9 rounded-lg border border-input bg-background px-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+                  className="h-9 w-full rounded-sm border border-input bg-background px-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
                 />
               )}
 
@@ -188,7 +188,7 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   placeholder={t('new_dialog.search_contacts')}
-                  className="w-full h-9 pl-8 pr-3 rounded-lg border border-input bg-background text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+                  className="h-9 w-full rounded-sm border border-input bg-background pl-8 pr-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
                 />
               </div>
 
@@ -267,7 +267,7 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
                 onClick={handleCreate}
                 disabled={creating || selected.size === 0}
                 className={cn(
-                  'px-4 py-2 rounded-lg text-sm font-medium transition-all',
+                  'px-4 py-2 rounded-sm text-sm font-medium transition-all',
                   selected.size > 0
                     ? 'bg-[#071A2D] text-white hover:bg-[#0a2540]'
                     : 'bg-muted text-muted-foreground'

@@ -92,7 +92,7 @@ export default function CreateHouseholdModal({ isOpen, onClose, onCreated }: Cre
           <h3 className="font-semibold">{t('families.create_title')}</h3>
           <button
             onClick={onClose}
-            className="h-7 w-7 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
+            className="h-7 w-7 flex items-center justify-center rounded-sm hover:bg-muted transition-colors"
           >
             <X className="h-4 w-4" />
           </button>

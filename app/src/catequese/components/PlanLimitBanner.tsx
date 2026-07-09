@@ -104,7 +104,7 @@ export function PlanLimitBanner({
     return (
       <div
         className={cn(
-          'flex items-center gap-2.5 rounded-lg border border-border/60 bg-muted/20 px-3 py-1.5 text-sm',
+          'flex items-center gap-2.5 rounded-sm border border-border/70 bg-muted/20 px-3 py-1.5 text-sm',
           className,
         )}
       >

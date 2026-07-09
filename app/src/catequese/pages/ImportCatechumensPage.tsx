@@ -164,7 +164,7 @@ export default function ImportCatechumensPage() {
             <p className="text-sm text-muted-foreground">
               {t('catechumens.import_format_desc')}
             </p>
-            <pre className="mt-2 rounded-lg bg-muted p-3 text-xs">
+            <pre className="mt-2 rounded-sm bg-muted p-3 text-xs">
 {`nome,sobrenome,nascimento,familia
 João,Silva,2015-03-15,Silva Santos
 Maria,Santos,2014-07-22,Silva Santos`}
@@ -193,7 +193,7 @@ Maria,Santos,2014-07-22,Silva Santos`}
               onDragLeave={() => setDragOver(false)}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
-              className={`mt-1 flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors cursor-pointer ${
+              className={`mt-1 flex cursor-pointer flex-col items-center justify-center rounded-sm border border-dashed border-border/70 p-6 transition-colors ${
     dragOver
      ? 'border-[#071A2D] bg-muted/30'
      : 'border-muted-foreground/25 hover:border-muted-foreground/50 bg-muted/20'
@@ -220,7 +220,7 @@ Maria,Santos,2014-07-22,Silva Santos`}
           </div>
 
           {previewRows.length > 0 && (
-            <div className="border rounded-lg p-4 bg-muted/30 space-y-3">
+            <div className="border rounded-sm p-4 bg-muted/30 space-y-3">
               <div className="flex items-center justify-between">
                 <h4 className="font-medium text-sm flex items-center gap-1.5">
                   <Eye className="h-4 w-4 text-primary" />
@@ -278,17 +278,17 @@ Maria,Santos,2014-07-22,Silva Santos`}
               {t('catechumens.import_result_title')}
             </h3>
             <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-lg bg-green-500/10 p-4 text-center">
+              <div className="rounded-sm border border-border/70 bg-muted/30 p-4 text-center">
                 <p className="text-2xl font-semibold tracking-tight tabular-nums text-foreground">{results.created}</p>
                 <p className="text-sm text-green-600">{t('catechumens.import_created')}</p>
               </div>
-              <div className="rounded-lg bg-destructive/10 p-4 text-center">
+              <div className="rounded-sm border border-destructive/20 bg-destructive/10 p-4 text-center">
                 <p className="text-2xl font-semibold tracking-tight tabular-nums text-destructive">{results.errors}</p>
                 <p className="text-sm text-destructive">{t('catechumens.import_errors')}</p>
               </div>
             </div>
             {results.details?.length > 0 && (
-              <div className="text-xs text-muted-foreground space-y-1 max-h-40 overflow-y-auto border p-2 rounded-lg bg-muted/10 font-mono">
+              <div className="text-xs text-muted-foreground space-y-1 max-h-40 overflow-y-auto border p-2 rounded-sm bg-muted/10 font-mono">
                 {results.details.map((d: string, i: number) => (
                   <p key={i}>{d}</p>
                 ))}

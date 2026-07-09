@@ -479,7 +479,7 @@ function SelectionActionBubble({
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             autoFocus
-            className="h-9 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none"
+            className="h-9 w-full rounded-sm border border-input bg-background px-3 text-sm outline-none"
             placeholder={
               mode === "bible"
                 ? "Buscar passagem"
@@ -502,7 +502,7 @@ function SelectionActionBubble({
               Nenhuma referência encontrada.
             </div>
           ) : (
-            <div className="max-h-56 overflow-y-auto rounded-lg border border-border/40 bg-background">
+            <div className="max-h-56 overflow-y-auto rounded-sm border border-border/70 bg-white">
               {results.map((item) => {
                 const result = renderResultLabel(item);
                 return (

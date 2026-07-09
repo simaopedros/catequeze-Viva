@@ -340,7 +340,7 @@ export default function ContentPrintPage() {
                         </div>
                       ))}
                     {activity.type === "FAMILY_ACTIVITY" && data.task && (
-                      <p className="rounded bg-purple-50 p-3 text-sm">
+                      <p className="rounded-sm border border-border/70 bg-muted/30 p-3 text-sm">
                         {data.task}
                       </p>
                     )}

@@ -104,7 +104,7 @@ export default function TwoFactorSetup() {
       </h3>
 
       {status.required && !status.enabled && (
-        <div className="rounded-lg bg-warning/10 border border-warning/30 p-3 text-sm text-warning">
+        <div className="rounded-sm bg-warning/10 border border-warning/30 p-3 text-sm text-warning">
           {t('two_factor_setup_admin_required')}
         </div>
       )}
@@ -136,7 +136,7 @@ export default function TwoFactorSetup() {
             <QRCodeSVG
               value={uri}
               size={180}
-              className="rounded-lg border p-2 bg-white"
+              className="rounded-sm border border-border/70 bg-white p-2"
             />
           </div>
           <details className="text-xs text-muted-foreground">

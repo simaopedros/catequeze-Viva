@@ -59,7 +59,7 @@ export function ParishSearchForm({
             <button
               key={p.id}
               onClick={() => setSelectedId(p.id)}
-              className={`w-full text-left rounded-lg border px-4 py-3 text-sm transition-colors flex items-center gap-2 ${
+              className={`flex w-full items-center gap-2 rounded-sm border border-border/70 px-4 py-3 text-left text-sm transition-colors ${
     selectedId === p.id ? 'border-[#071A2D] bg-muted/30' : 'hover:bg-muted/30'
     }`}
             >
