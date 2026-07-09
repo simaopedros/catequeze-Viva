@@ -227,7 +227,7 @@ const RevenueAndProfitChart = ({ weeklyStats, isLoading }: DailyStatsProps) => {
           </div>
         </div>
         <div className="max-w-45 flex w-full justify-end">
-          <div className="bg-muted inline-flex items-center rounded-md p-1.5">
+          <div className="bg-muted inline-flex items-center rounded-sm p-1.5">
             <button className="bg-background text-foreground hover:bg-background rounded px-3 py-1 text-xs font-medium">
               Day
             </button>

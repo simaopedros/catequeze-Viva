@@ -11,10 +11,10 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
 
   const statusIcon = (status: string) => {
     switch (status) {
-      case 'ACTIVE': return <BadgeCheck className="h-3.5 w-3.5 text-green-600" />;
-      case 'TRIAL': return <CircleDot className="h-3.5 w-3.5 text-blue-600" />;
-      case 'PAST_DUE': return <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />;
-      case 'CANCELED': return <AlertTriangle className="h-3.5 w-3.5 text-red-500" />;
+      case 'ACTIVE': return <BadgeCheck className="h-3.5 w-3.5 text-[#071A2D]" />;
+      case 'TRIAL': return <CircleDot className="h-3.5 w-3.5 text-[#071A2D]" />;
+      case 'PAST_DUE': return <AlertTriangle className="h-3.5 w-3.5 text-[#8A6418]" />;
+      case 'CANCELED': return <AlertTriangle className="h-3.5 w-3.5 text-destructive" />;
       default: return null;
     }
   };
@@ -53,7 +53,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold">{parish.name}</h1>
               {!parish.active && (
-                <span className="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded">Arquivada</span>
+                <span className="text-xs bg-[#D39A2B]/15 text-[#8A6418] px-2 py-0.5 rounded">Arquivada</span>
               )}
             </div>
             <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
@@ -66,7 +66,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
           </div>
           <NavLink
             to={`/app`}
-            className="text-xs inline-flex items-center gap-1 px-3 py-1.5 rounded-md bg-[#071A2D] text-white hover:bg-[#0a2540]"
+            className="text-xs inline-flex items-center gap-1 px-3 py-1.5 rounded-sm bg-[#071A2D] text-white hover:bg-[#0a2540]"
           >
             Abrir no App →
           </NavLink>

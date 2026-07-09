@@ -56,7 +56,7 @@ const UsersTable = () => {
           />
           <Label className="text-muted-foreground text-sm ml-4">{t('admin')}:</Label>
           <select
-            className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+            className="h-9 rounded-sm border border-input bg-background px-3 text-sm"
             onChange={(e) => {
               const v = e.target.value;
               setIsAdminFilter(v === 'both' ? undefined : v === 'true');

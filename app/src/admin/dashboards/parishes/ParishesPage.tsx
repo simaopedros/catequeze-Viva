@@ -9,10 +9,10 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
 
   const statusIcon = (status: string) => {
     switch (status) {
-      case 'ACTIVE': return <BadgeCheck className="h-3.5 w-3.5 text-green-600" />;
-      case 'TRIAL': return <CircleDot className="h-3.5 w-3.5 text-blue-600" />;
-      case 'PAST_DUE': return <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />;
-      case 'CANCELED': return <AlertTriangle className="h-3.5 w-3.5 text-red-500" />;
+      case 'ACTIVE': return <BadgeCheck className="h-3.5 w-3.5 text-[#071A2D]" />;
+      case 'TRIAL': return <CircleDot className="h-3.5 w-3.5 text-[#071A2D]" />;
+      case 'PAST_DUE': return <AlertTriangle className="h-3.5 w-3.5 text-[#8A6418]" />;
+      case 'CANCELED': return <AlertTriangle className="h-3.5 w-3.5 text-destructive" />;
       default: return null;
     }
   };
@@ -57,7 +57,7 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
                         <div>
                           <span className="font-medium hover:underline">{p.name}</span>
                           {!p.active && (
-                            <span className="ml-2 text-xs bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">Arquivada</span>
+                            <span className="ml-2 text-xs bg-[#D39A2B]/15 text-[#8A6418] px-1.5 py-0.5 rounded">Arquivada</span>
                           )}
                         </div>
                       </div>

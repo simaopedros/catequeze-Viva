@@ -24,21 +24,21 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div className="rounded-sm border border-border/70 bg-white p-5">
                 <div className="flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-amber-500" />
+                  <Zap className="h-4 w-4 text-[#D39A2B]" />
                   <h3 className="text-sm font-medium">Créditos IA (mês)</h3>
                 </div>
                 <p className="text-2xl font-bold mt-2">{health?.totalAiCreditsThisMonth || 0}</p>
               </div>
               <div className="rounded-sm border border-border/70 bg-white p-5">
                 <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-blue-500" />
+                  <Users className="h-4 w-4 text-[#071A2D]" />
                   <h3 className="text-sm font-medium">Users com Créditos</h3>
                 </div>
                 <p className="text-2xl font-bold mt-2">{health?.usersWithCredits || 0}</p>
               </div>
               <div className="rounded-sm border border-border/70 bg-white p-5">
                 <div className="flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4 text-red-500" />
+                  <AlertTriangle className="h-4 w-4 text-destructive" />
                   <h3 className="text-sm font-medium">Erros Recentes</h3>
                 </div>
                 <p className="text-2xl font-bold mt-2">{health?.recentErrors?.length || 0}</p>
@@ -49,7 +49,7 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
             {health?.recentErrors && health.recentErrors.length > 0 && (
               <div className="rounded-sm border border-border/70 bg-white p-5">
                 <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
-                  <AlertTriangle className="h-4 w-4 text-red-500" />
+                  <AlertTriangle className="h-4 w-4 text-destructive" />
                   Erros de Jobs ({health.recentErrors.length})
                 </h2>
                 <div className="divide-y -mx-5">
@@ -67,7 +67,7 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
             {health?.recentDailyStats && health.recentDailyStats.length > 0 && (
               <div className="rounded-sm border border-border/70 bg-white p-5">
                 <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
-                  <TrendingUp className="h-4 w-4 text-green-500" />
+                  <TrendingUp className="h-4 w-4 text-[#071A2D]" />
                   Daily Stats (7d)
                 </h2>
                 <div className="overflow-x-auto">
@@ -109,8 +109,8 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
                   { name: 'subscriptionExpirationJob', schedule: '04:00', desc: 'Expiração de trials' },
                   { name: 'remindersJob', schedule: '07:00', desc: 'Lembretes de encontros' },
                 ].map((job) => (
-                  <div key={job.name} className="flex items-start gap-2 p-3 rounded-md bg-muted/40">
-                    <Activity className="h-3.5 w-3.5 text-green-500 mt-0.5 shrink-0" />
+                  <div key={job.name} className="flex items-start gap-2 p-3 rounded-sm bg-muted/40">
+                    <Activity className="h-3.5 w-3.5 text-[#071A2D] mt-0.5 shrink-0" />
                     <div>
                       <p className="font-medium text-xs">{job.name}</p>
                       <p className="text-xs text-muted-foreground">{job.schedule} — {job.desc}</p>

@@ -74,7 +74,7 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
         {alerts.length > 0 && (
           <div className="rounded-sm border border-border/70 bg-white p-5">
             <h2 className="font-medium text-sm flex items-center gap-2 mb-3">
-              <AlertTriangle className="h-4 w-4 text-amber-500" />
+              <AlertTriangle className="h-4 w-4 text-[#D39A2B]" />
               Requer Atenção
             </h2>
             <div className="space-y-2">

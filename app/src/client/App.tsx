@@ -217,7 +217,7 @@ export default function App() {
     <>
       {!isOnline && !offlineDismissed && (
         <div
-          className="fixed top-0 left-0 right-0 z-[100] bg-amber-500 text-white text-center py-1.5 text-sm font-medium flex items-center justify-center gap-3"
+          className="fixed left-0 right-0 top-0 z-[100] flex items-center justify-center gap-3 bg-[#071A2D] py-1.5 text-center text-sm font-medium text-white"
           role="alert"
           aria-live="assertive"
         >

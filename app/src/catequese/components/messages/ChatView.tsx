@@ -396,7 +396,7 @@ export function ChatView({
 
       {/* Reply indicator */}
       {replyTo && (
-        <div className="mx-4 mb-0 px-3 py-2 bg-muted/50 rounded-t-lg border border-b-0 flex items-center gap-2 animate-in slide-in-from-bottom-2">
+        <div className="mx-4 mb-0 flex items-center gap-2 rounded-t-sm border border-b-0 border-border/70 bg-muted/50 px-3 py-2">
           <Reply className="h-3.5 w-3.5 text-[#071A2D] flex-shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-overline font-semibold text-[#071A2D]">

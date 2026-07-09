@@ -41,7 +41,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold">{u.firstName ? `${u.firstName} ${u.lastName || ''}` : u.email}</h1>
-            {u.isAdmin && <span className="text-xs bg-purple-100 text-purple-800 px-2 py-0.5 rounded">Admin</span>}
+            {u.isAdmin && <span className="text-xs bg-[#071A2D]/08 text-[#071A2D] px-2 py-0.5 rounded">Admin</span>}
           </div>
           <p className="text-sm text-muted-foreground mt-1">{u.email}</p>
         </div>

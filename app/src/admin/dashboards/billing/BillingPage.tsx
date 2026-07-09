@@ -12,10 +12,10 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
 
   const statusIcon = (status: string) => {
     switch (status) {
-      case 'ACTIVE': return <BadgeCheck className="h-3.5 w-3.5 text-green-600" />;
-      case 'TRIAL': return <CircleDot className="h-3.5 w-3.5 text-blue-600" />;
-      case 'PAST_DUE': return <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />;
-      case 'CANCELED': return <AlertTriangle className="h-3.5 w-3.5 text-red-500" />;
+      case 'ACTIVE': return <BadgeCheck className="h-3.5 w-3.5 text-[#071A2D]" />;
+      case 'TRIAL': return <CircleDot className="h-3.5 w-3.5 text-[#071A2D]" />;
+      case 'PAST_DUE': return <AlertTriangle className="h-3.5 w-3.5 text-[#8A6418]" />;
+      case 'CANCELED': return <AlertTriangle className="h-3.5 w-3.5 text-destructive" />;
       default: return null;
     }
   };
