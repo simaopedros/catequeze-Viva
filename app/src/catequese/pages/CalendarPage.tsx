@@ -32,7 +32,7 @@ import {
 } from "wasp/client/operations";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
 
-const DEFAULT_COLOR = "#6366f1";
+const DEFAULT_COLOR = "#071A2D";
 
 export default function CalendarPage() {
   const { t } = useTranslation("calendar");

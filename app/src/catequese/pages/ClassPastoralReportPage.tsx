@@ -40,16 +40,16 @@ import { useLocale } from "../../i18n/useLocale";
 const RISK_COLORS = { ALTO: "#b91c1c", MÉDIO: "#D39A2B", BAIXO: "#071A2D" };
 const STATUS_COLORS: Record<string, string> = {
   ENROLLED: "#071A2D",
-  DROPPED: "#ef4444",
-  TRANSFERRED: "#f59e0b",
+  DROPPED: "#b91c1c",
+  TRANSFERRED: "#D39A2B",
   COMPLETED: "#071A2D",
-  MOVED_TO_OTHER_CLASS: "#8b5cf6",
+  MOVED_TO_OTHER_CLASS: "#071A2D",
 };
 const ATTENDANCE_COLORS = {
   present: "#071A2D",
-  late: "#f59e0b",
-  justified: "#8b5cf6",
-  absent: "#ef4444",
+  late: "#D39A2B",
+  justified: "#071A2D",
+  absent: "#b91c1c",
 };
 const STATUS_LABELS: Record<string, string> = {
   ENROLLED: "Ativo",

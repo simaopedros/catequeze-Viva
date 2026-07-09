@@ -173,13 +173,13 @@ function PastoralAnalysisInline({
                   height: "48px",
                   borderRadius: "50%",
                   background:
-                    "color-mix(in srgb, var(--color-primary, #3b82f6) 10%, transparent)",
+                    "color-mix(in srgb, var(--color-primary, #071A2D) 10%, transparent)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   fontSize: "16px",
                   fontWeight: "bold",
-                  color: "var(--color-primary, #3b82f6)",
+                  color: "var(--color-primary, #071A2D)",
                 }}
               >
                 {catechumen.name
@@ -335,7 +335,7 @@ function PastoralAnalysisInline({
               style={{
                 fontSize: "24px",
                 fontWeight: "bold",
-                color: "var(--color-primary, #3b82f6)",
+                color: "var(--color-primary, #071A2D)",
                 margin: 0,
               }}
             >
@@ -376,7 +376,7 @@ function PastoralAnalysisInline({
               style={{
                 fontSize: "24px",
                 fontWeight: "bold",
-                color: "#16a34a",
+                color: "#071A2D",
                 margin: 0,
               }}
             >
@@ -502,7 +502,7 @@ function PastoralAnalysisInline({
                       style={{
                         padding: "8px",
                         textAlign: "center",
-                        color: "#16a34a",
+                        color: "#071A2D",
                       }}
                     >
                       {row.present}
@@ -556,7 +556,7 @@ function PastoralAnalysisInline({
                 fontSize: "12px",
                 fontWeight: "600",
                 textTransform: "uppercase",
-                color: "#16a34a",
+                color: "#071A2D",
                 margin: "0 0 12px",
               }}
             >

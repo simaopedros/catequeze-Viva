@@ -347,7 +347,7 @@ export function InstitutionalDashboard() {
       {
         name: t("funnel_active_journeys"),
         value: overview.sacraments[0]?.value || 0,
-        fill: "#8b5cf6",
+        fill: "#071A2D",
       },
       {
         name: t("funnel_completed_milestones"),
@@ -563,7 +563,7 @@ export function InstitutionalDashboard() {
                 <Line
                   type="monotone"
                   dataKey={dropoutsKey}
-                  stroke="#ef4444"
+                  stroke="#b91c1c"
                   strokeWidth={2}
                   dot={false}
                 />
@@ -593,7 +593,7 @@ export function InstitutionalDashboard() {
                 <Line
                   type="monotone"
                   dataKey={attendanceKey}
-                  stroke="#22c55e"
+                  stroke="#071A2D"
                   strokeWidth={2}
                   dot={false}
                 />
