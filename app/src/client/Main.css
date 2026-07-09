@@ -300,45 +300,47 @@
 
 @layer base {
   :root {
+    /* Institutional brand: ink #071A2D · gold #D39A2B · paper #F7F4EE */
     /* Surface */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --background: 40 36% 95%;
+    --foreground: 210 73% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 210 73% 10%;
     --card-accent: 0 0% 100%;
-    --card-accent-foreground: 0 0% 3.9%;
-    --card-subtle: 31 57% 96%;
-    --card-subtle-foreground: 0 0% 9%;
+    --card-accent-foreground: 210 73% 10%;
+    --card-subtle: 40 30% 96%;
+    --card-subtle-foreground: 210 73% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
+    --popover-foreground: 210 73% 10%;
+    --muted: 40 20% 94%;
+    --muted-foreground: 210 12% 40%;
 
     /* Brand */
-    --primary: 210 100% 13%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 32 100% 37%;
-    --secondary-foreground: 0 0% 9%;
-    --secondary-muted: 32 75% 78%;
-    --secondary-muted-foreground: 0 0% 3.9%;
-    --accent: 33 74% 62%;
-    --accent-foreground: 0 0% 98%;
+    --primary: 210 73% 10%;
+    --primary-foreground: 40 36% 97%;
+    /* Soft gold-tinted surfaces; pure gold remains via explicit #D39A2B */
+    --secondary: 40 30% 92%;
+    --secondary-foreground: 210 73% 10%;
+    --secondary-muted: 40 45% 82%;
+    --secondary-muted-foreground: 210 73% 10%;
+    --accent: 40 30% 92%;
+    --accent-foreground: 210 73% 10%;
 
     /* Feedback */
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --success: 141 71% 48%;
     --success-foreground: 0 0% 98%;
-    --warning: 36 100% 50%;
-    --warning-foreground: 0 0% 98%;
+    --warning: 40 66% 50%;
+    --warning-foreground: 210 73% 10%;
 
     /* Borders & inputs */
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
+    --border: 40 12% 88%;
+    --input: 40 12% 88%;
+    --ring: 210 73% 10%;
 
-    /* Radius */
-    --radius: 0.5rem;
+    /* Radius — institutional rounded-sm */
+    --radius: 0.25rem;
 
     /* ── Motion ──────────────────────────────────────────────────────── */
     --motion-duration-fast: 150ms;

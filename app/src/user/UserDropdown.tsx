@@ -70,7 +70,7 @@ export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
                 key={item.labelKey}
                 to={item.to}
                 onClick={() => setOpen(false)}
-                className="flex w-full items-center gap-3 rounded-sm px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+                className="flex w-full items-center gap-3 rounded-sm px-2 py-1.5 text-sm text-[#071A2D] hover:bg-muted/40 hover:text-[#0a2540]"
               >
                 <item.icon size="1.1rem" />
                 {t(item.labelKey)}
@@ -91,7 +91,7 @@ export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
             type="button"
             onClick={handleSignOut}
             disabled={isSigningOut}
-            className="flex w-full items-center gap-3 rounded-sm px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+            className="flex w-full items-center gap-3 rounded-sm px-2 py-1.5 text-sm text-[#071A2D] hover:bg-muted/40 hover:text-[#0a2540]"
           >
             <LogOut size="1.1rem" />
             {t('sign_out')}
