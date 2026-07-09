@@ -51,11 +51,6 @@ import {
   Trash2,
 } from "lucide-react";
 import {
-  AppGoldRule,
-  AppEyebrow,
-  AppDisplayTitle,
-} from "../../../client/components/brand/AppChrome";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -837,40 +832,42 @@ export function ContentDocumentWorkspace({
     : null;
 
   return (
-    <div className="mx-auto max-w-[1660px] space-y-5 px-4 pb-10 pt-4">
-      <div className="sticky top-0 z-30 -mx-4 space-y-4 border-b border-border/60 bg-[#F7F4EE]/95 px-4 py-4 backdrop-blur-md">
-        <div className="rounded-sm border border-border/70 bg-white px-5 py-4 sm:px-6">
-          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-            <div className="space-y-2">
-              <Link
-                to="/app/content-library"
-                className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-[#071A2D]"
-              >
-                <ArrowLeft className="h-4 w-4" /> Voltar para a biblioteca
-              </Link>
-              <AppEyebrow>Roteiro</AppEyebrow>
-              <AppDisplayTitle className="text-2xl sm:text-[1.75rem]">
-                Editor do encontro
-              </AppDisplayTitle>
-              <AppGoldRule />
-            </div>
+    <div className="mx-auto max-w-[1660px] space-y-3 px-3 pb-8 pt-2 sm:px-4">
+      <div className="sticky top-0 z-30 -mx-3 border-b border-border/60 bg-[#F7F4EE]/95 px-3 py-2 backdrop-blur-md sm:-mx-4 sm:px-4">
+        <div className="rounded-sm border border-border/70 bg-white px-3 py-2 sm:px-4">
+          {/* Row 1: navigation + actions */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link
+              to="/app/content-library"
+              className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-sm px-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/40 hover:text-[#071A2D]"
+              title="Voltar para a biblioteca"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Biblioteca</span>
+            </Link>
+            <div className="hidden h-4 w-px shrink-0 bg-border/70 sm:block" />
+            <p
+              className="min-w-0 truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
+              Editor do encontro
+            </p>
+            <Badge
+              variant="secondary"
+              className={cn(
+                "ml-auto hidden shrink-0 rounded-sm border px-2 py-0.5 text-[10px] font-medium sm:inline-flex",
+                saveBadge.className,
+              )}
+            >
+              {saveBadge.label}
+            </Badge>
 
-            <div className="flex flex-wrap items-center gap-2 xl:justify-end">
-              <Badge
-                variant="secondary"
-                className={cn(
-                  "rounded-sm border px-3 py-1 text-xs font-medium",
-                  saveBadge.className,
-                )}
-              >
-                {saveBadge.label}
-              </Badge>
-
+            <div className="flex shrink-0 items-center gap-1.5 sm:ml-0">
               {saveState === "error" && (
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-10 rounded-sm"
+                  className="h-8 rounded-sm px-2 text-xs"
                   onClick={() => void saveNow()}
                 >
                   Tentar de novo
@@ -879,24 +876,33 @@ export function ContentDocumentWorkspace({
 
               <Button
                 variant="outline"
-                className="h-10 gap-2 rounded-sm border-border/60"
+                size="sm"
+                className="h-8 gap-1.5 rounded-sm border-border/60 px-2.5 text-xs"
                 onClick={() => void saveNow()}
               >
-                <Save className="h-4 w-4" /> Salvar
+                <Save className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Salvar</span>
               </Button>
 
               {contentId ? (
-                <Button className="h-10 gap-2 rounded-sm shadow-none" asChild>
+                <Button
+                  size="sm"
+                  className="h-8 gap-1.5 rounded-sm px-2.5 text-xs shadow-none"
+                  asChild
+                >
                   <Link to={`/app/content-library/${contentId}`}>
-                    <Eye className="h-4 w-4" /> Concluir / visualizar
+                    <Eye className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Visualizar</span>
                   </Link>
                 </Button>
               ) : (
                 <Button
-                  className="h-10 gap-2 rounded-sm shadow-none"
+                  size="sm"
+                  className="h-8 gap-1.5 rounded-sm px-2.5 text-xs shadow-none"
                   onClick={() => void saveNow()}
                 >
-                  <Save className="h-4 w-4" /> Salvar rascunho
+                  <Save className="h-3.5 w-3.5" />
+                  <span className="hidden xs:inline sm:inline">Salvar</span>
                 </Button>
               )}
 
@@ -905,10 +911,10 @@ export function ContentDocumentWorkspace({
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-10 w-10 rounded-sm"
+                    className="h-8 w-8 rounded-sm"
                     aria-label="Mais ações"
                   >
-                    <MoreHorizontal className="h-4 w-4" />
+                    <MoreHorizontal className="h-3.5 w-3.5" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
@@ -940,60 +946,56 @@ export function ContentDocumentWorkspace({
             </div>
           </div>
 
-          <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,2fr)_minmax(0,1.15fr)_minmax(0,0.75fr)_minmax(0,1.2fr)]">
-            <div className="rounded-sm border border-border/50 bg-white/75 p-3">
-              <label className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                Título
-              </label>
+          {/* Row 2: compact meta fields */}
+          <div className="mt-2 grid grid-cols-2 gap-1.5 sm:grid-cols-4 sm:gap-2">
+            <Input
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              className="h-8 rounded-sm border-border/60 bg-muted/20 px-2.5 text-sm font-semibold tracking-tight text-[#071A2D] shadow-none focus-visible:ring-1"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+              placeholder="Título do encontro"
+              aria-label="Título"
+            />
+            <Input
+              value={theme}
+              onChange={(event) => setTheme(event.target.value)}
+              className="h-8 rounded-sm border-border/60 bg-muted/20 px-2.5 text-sm shadow-none focus-visible:ring-1"
+              placeholder="Tema"
+              aria-label="Tema"
+            />
+            <div className="relative">
+              <Clock3 className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
               <Input
-                value={title}
-                onChange={(event) => setTitle(event.target.value)}
-                className="mt-2 h-11 rounded-sm border-0 bg-transparent px-0 text-xl font-semibold tracking-tight text-[#071A2D] shadow-none focus-visible:ring-0"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-                placeholder="Nome do encontro"
+                value={estimatedTime}
+                onChange={(event) =>
+                  setEstimatedTime(event.target.value.replace(/[^0-9]/g, ""))
+                }
+                className="h-8 rounded-sm border-border/60 bg-muted/20 pl-7 pr-2 text-sm shadow-none focus-visible:ring-1"
+                placeholder="min"
+                aria-label="Duração em minutos"
               />
             </div>
-            <div className="rounded-sm border border-border/50 bg-white/75 p-3">
-              <label className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                Tema
-              </label>
+            <div className="relative">
+              <Tags className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
               <Input
-                value={theme}
-                onChange={(event) => setTheme(event.target.value)}
-                className="mt-2 h-11 rounded-sm border-0 bg-transparent px-0 text-base shadow-none focus-visible:ring-0"
-                placeholder="Tema central"
+                value={tags}
+                onChange={(event) => setTags(event.target.value)}
+                className="h-8 rounded-sm border-border/60 bg-muted/20 pl-7 pr-2 text-sm shadow-none focus-visible:ring-1"
+                placeholder="Tags"
+                aria-label="Tags"
               />
             </div>
-            <div className="rounded-sm border border-border/50 bg-white/75 p-3">
-              <label className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                Duração (min)
-              </label>
-              <div className="relative mt-2">
-                <Clock3 className="pointer-events-none absolute left-0 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  value={estimatedTime}
-                  onChange={(event) =>
-                    setEstimatedTime(event.target.value.replace(/[^0-9]/g, ""))
-                  }
-                  className="h-11 rounded-sm border-0 bg-transparent pl-7 pr-0 text-base shadow-none focus-visible:ring-0"
-                  placeholder="60"
-                />
-              </div>
-            </div>
-            <div className="rounded-sm border border-border/50 bg-white/75 p-3">
-              <label className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                Tags
-              </label>
-              <div className="relative mt-2">
-                <Tags className="pointer-events-none absolute left-0 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  value={tags}
-                  onChange={(event) => setTags(event.target.value)}
-                  className="h-11 rounded-sm border-0 bg-transparent pl-7 pr-0 text-base shadow-none focus-visible:ring-0"
-                  placeholder="fé, família, sacramentos"
-                />
-              </div>
-            </div>
+          </div>
+          <div className="mt-1.5 sm:hidden">
+            <Badge
+              variant="secondary"
+              className={cn(
+                "rounded-sm border px-2 py-0.5 text-[10px] font-medium",
+                saveBadge.className,
+              )}
+            >
+              {saveBadge.label}
+            </Badge>
           </div>
         </div>
       </div>
@@ -1021,7 +1023,7 @@ export function ContentDocumentWorkspace({
           />
         </div>
 
-        <div className="xl:sticky xl:top-36">
+        <div className="xl:sticky xl:top-28">
           <ReferencesSidebar
             contentId={contentId}
             ensurePersisted={ensurePersisted}

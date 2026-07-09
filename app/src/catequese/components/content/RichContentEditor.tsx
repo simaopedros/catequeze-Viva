@@ -158,7 +158,7 @@ function ToolbarButton({
       variant={active ? "default" : "outline"}
       size="sm"
       className={cn(
-        "h-9 rounded-sm border-border/60 px-3 shadow-none",
+        "h-8 shrink-0 rounded-sm border-border/60 px-2 shadow-none",
         !active &&
           "bg-background/80 text-muted-foreground hover:bg-background hover:text-[#071A2D]",
       )}
@@ -750,34 +750,22 @@ export function RichContentEditor({
 
   return (
     <div className="overflow-visible rounded-sm border border-border/70 bg-white">
-      <div className="sticky top-[8.5rem] z-20 border-b border-border/50 bg-white/95 px-3 py-3 backdrop-blur-md sm:px-4">
-        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <p
-              className="text-sm font-semibold tracking-tight text-[#071A2D]"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
-              Roteiro do encontro
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Selecione um trecho para vincular Bíblia, Catecismo ou Diretório.
-              Atalhos: Ctrl/Cmd+B negrito · Ctrl/Cmd+I itálico.
-            </p>
-          </div>
+      <div className="sticky top-[4.75rem] z-20 border-b border-border/50 bg-white/95 px-2 py-1.5 backdrop-blur-md sm:top-[5.25rem] sm:px-3">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-9 gap-1.5 rounded-sm"
+                className="h-8 shrink-0 gap-1 rounded-sm px-2 text-xs"
               >
-                <LayoutList className="h-4 w-4" />
-                Inserir seção
-                <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+                <LayoutList className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Seção</span>
+                <ChevronDown className="h-3 w-3 opacity-60" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent align="start" className="w-56">
               {MEETING_SECTION_TITLES.map((section) => (
                 <DropdownMenuItem
                   key={section}
@@ -788,15 +776,13 @@ export function RichContentEditor({
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
-
-        <div className="flex gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
+          <span className="hidden h-5 w-px shrink-0 bg-border/70 sm:inline-block" />
           <ToolbarButton
             title="Parágrafo"
             onClick={() => editor?.chain().focus().setParagraph().run()}
             active={editor?.isActive("paragraph")}
           >
-            <Pilcrow className="h-4 w-4" />
+            <Pilcrow className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarButton
             title="Título 1"
@@ -805,7 +791,7 @@ export function RichContentEditor({
             }
             active={editor?.isActive("heading", { level: 1 })}
           >
-            <Heading1 className="h-4 w-4" />
+            <Heading1 className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarButton
             title="Título 2"
@@ -814,7 +800,7 @@ export function RichContentEditor({
             }
             active={editor?.isActive("heading", { level: 2 })}
           >
-            <Heading2 className="h-4 w-4" />
+            <Heading2 className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarButton
             title="Título 3"
@@ -823,7 +809,7 @@ export function RichContentEditor({
             }
             active={editor?.isActive("heading", { level: 3 })}
           >
-            <Heading3 className="h-4 w-4" />
+            <Heading3 className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarDivider />
           <ToolbarButton
@@ -831,21 +817,21 @@ export function RichContentEditor({
             onClick={() => editor?.chain().focus().toggleBold().run()}
             active={editor?.isActive("bold")}
           >
-            <Bold className="h-4 w-4" />
+            <Bold className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarButton
             title="Itálico (Ctrl/Cmd+I)"
             onClick={() => editor?.chain().focus().toggleItalic().run()}
             active={editor?.isActive("italic")}
           >
-            <Italic className="h-4 w-4" />
+            <Italic className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarButton
             title="Sublinhado"
             onClick={() => editor?.chain().focus().toggleUnderline().run()}
             active={editor?.isActive("underline")}
           >
-            <UnderlineIcon className="h-4 w-4" />
+            <UnderlineIcon className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarDivider />
           <ToolbarButton
@@ -853,27 +839,27 @@ export function RichContentEditor({
             onClick={() => editor?.chain().focus().toggleBulletList().run()}
             active={editor?.isActive("bulletList")}
           >
-            <List className="h-4 w-4" />
+            <List className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarButton
             title="Lista numerada"
             onClick={() => editor?.chain().focus().toggleOrderedList().run()}
             active={editor?.isActive("orderedList")}
           >
-            <ListOrdered className="h-4 w-4" />
+            <ListOrdered className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarButton
             title="Citação"
             onClick={() => editor?.chain().focus().toggleBlockquote().run()}
             active={editor?.isActive("blockquote")}
           >
-            <Quote className="h-4 w-4" />
+            <Quote className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarButton
             title="Separador"
             onClick={() => editor?.chain().focus().setHorizontalRule().run()}
           >
-            <Minus className="h-4 w-4" />
+            <Minus className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarDivider />
           <ToolbarButton
@@ -881,7 +867,7 @@ export function RichContentEditor({
             onClick={openLinkDialog}
             active={editor?.isActive("link")}
           >
-            <LinkIcon className="h-4 w-4" />
+            <LinkIcon className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarButton
             title="Tabela"
@@ -894,26 +880,26 @@ export function RichContentEditor({
             }
             active={editor?.isActive("table")}
           >
-            <Table2 className="h-4 w-4" />
+            <Table2 className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarButton
             title="Imagem"
             onClick={() => fileInputRef.current?.click()}
           >
-            <ImageIcon className="h-4 w-4" />
+            <ImageIcon className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarDivider />
           <ToolbarButton
             title="Desfazer"
             onClick={() => editor?.chain().focus().undo().run()}
           >
-            <Undo2 className="h-4 w-4" />
+            <Undo2 className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarButton
             title="Refazer"
             onClick={() => editor?.chain().focus().redo().run()}
           >
-            <Redo2 className="h-4 w-4" />
+            <Redo2 className="h-3.5 w-3.5" />
           </ToolbarButton>
         </div>
       </div>
