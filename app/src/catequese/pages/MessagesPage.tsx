@@ -404,9 +404,12 @@ export default function MessagesPage() {
                 {/* Details sidebar */}
                 {showDetails && activeConv?.type !== "DIRECT" && (
                   <div className="hidden w-64 overflow-y-auto border-l border-border/70 bg-white p-4 animate-in slide-in-from-right-2 duration-200 lg:block">
-                    <h3 className="font-semibold text-sm mb-3">
-                      {t("participants")}
-                    </h3>
+                    <div className="mb-3 space-y-1.5">
+                      <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                        {t("participants")}
+                      </h3>
+                      <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                    </div>
                     <div className="space-y-2">
                       {activeConv.participants.map((p: any) => (
                         <div key={p.id} className="flex items-center gap-2.5">

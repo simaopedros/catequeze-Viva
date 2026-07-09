@@ -191,10 +191,13 @@ export default function ClassPastoralReportPage() {
 
       {/* Upcoming Birthdays */}
       <div className="rounded-sm border border-border/70 bg-white p-5">
-        <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
-          <Gift className="h-4 w-4 text-warning" />
-          {t("upcomingBirthdays")}
-        </h3>
+        <div className="mb-3 space-y-1.5">
+          <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            <Gift className="h-4 w-4 text-warning" />
+            {t("upcomingBirthdays")}
+          </h3>
+          <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+        </div>
         {!data.upcomingBirthdays.length ? (
           <p className="text-sm text-muted-foreground">
             {t("noUpcomingBirthdays")}
@@ -225,10 +228,13 @@ export default function ClassPastoralReportPage() {
         <>
           {/* Presences per Meeting Chart */}
           <div className="rounded-sm border border-border/70 bg-white p-6">
-            <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              {t("presencesPerMeeting")}
-            </h3>
+            <div className="mb-4 space-y-1.5">
+              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <BarChart3 className="h-4 w-4" />
+                {t("presencesPerMeeting")}
+              </h3>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            </div>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart
                 data={meetingsBarData}
@@ -270,10 +276,13 @@ export default function ClassPastoralReportPage() {
 
           {/* Meetings per Month + Avg Attendance */}
           <div className="rounded-sm border border-border/70 bg-white p-6">
-            <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              {t("meetingsPerMonth")}
-            </h3>
+            <div className="mb-4 space-y-1.5">
+              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <BarChart3 className="h-4 w-4" />
+                {t("meetingsPerMonth")}
+              </h3>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            </div>
             {monthlyData.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
                 <ComposedChart
@@ -332,10 +341,13 @@ export default function ClassPastoralReportPage() {
 
           {/* Status Pie */}
           <div className="rounded-sm border border-border/70 bg-white p-6">
-            <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
-              <PieChart className="h-4 w-4" />
-              {t("classStatus")}
-            </h3>
+            <div className="mb-4 space-y-1.5">
+              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <PieChart className="h-4 w-4" />
+                {t("classStatus")}
+              </h3>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            </div>
             {statusPieData.length > 0 ? (
               <ResponsiveContainer width="100%" height={280}>
                 <RPieChart>

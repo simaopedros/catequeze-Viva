@@ -1476,9 +1476,12 @@ export default function CatechumenDetailPage() {
 
         {attendance.length > 0 && (
           <div className="rounded-sm border border-border/70 bg-white p-4">
-            <h3 className="font-semibold text-sm mb-3">
-              {t("catechumens.detail_attendance_history")}
-            </h3>
+            <div className="mb-3 space-y-1.5">
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                {t("catechumens.detail_attendance_history")}
+              </h3>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            </div>
             <div className="space-y-1">
               {attendance.map((a: any) => (
                 <div
@@ -1653,10 +1656,13 @@ export default function CatechumenDetailPage() {
 
         {profile.sacramentalJourneys?.length > 0 && (
           <div className="rounded-sm border border-border/70 bg-white p-4">
-            <h3 className="font-semibold text-sm mb-3 flex items-center gap-1">
-              <Cross className="h-4 w-4 text-[#071A2D]" />
-              {t("catechumens.detail_sacramental_journeys")}
-            </h3>
+            <div className="mb-3 space-y-1.5">
+              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <Cross className="h-4 w-4 text-[#071A2D]" />
+                {t("catechumens.detail_sacramental_journeys")}
+              </h3>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            </div>
             <div className="space-y-2">
               {profile.sacramentalJourneys.map((j: any) => {
                 const total = j.milestones?.length || 0;
@@ -1731,10 +1737,13 @@ export default function CatechumenDetailPage() {
         {/* Pastoral Analysis Card */}
         {profile.enrollments?.length > 0 && (
           <div className="rounded-sm border border-border/70 bg-white p-4">
-            <h3 className="font-semibold text-sm mb-3 flex items-center gap-1">
-              <BarChart3 className="h-4 w-4 text-[#071A2D]" />
-              {tpa("title")}
-            </h3>
+            <div className="mb-3 space-y-1.5">
+              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <BarChart3 className="h-4 w-4 text-[#071A2D]" />
+                {tpa("title")}
+              </h3>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            </div>
             {profile.enrollments.length > 1 && (
               <select
                 className="w-full rounded-sm border border-border/70 bg-white px-3 py-2 text-sm mb-3"
@@ -1763,12 +1772,15 @@ export default function CatechumenDetailPage() {
 
         {profile.documents?.length > 0 && (
           <div className="rounded-sm border border-border/70 bg-white p-4">
-            <h3 className="font-semibold text-sm mb-3 flex items-center gap-1">
-              <FileText className="h-4 w-4" />
-              {t("catechumens.detail_documents_count", {
-                count: profile.documents.length,
-              })}
-            </h3>
+            <div className="mb-3 space-y-1.5">
+              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <FileText className="h-4 w-4" />
+                {t("catechumens.detail_documents_count", {
+                  count: profile.documents.length,
+                })}
+              </h3>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            </div>
             <div className="space-y-1">
               {profile.documents.map((d: any) => (
                 <div
@@ -1797,10 +1809,13 @@ export default function CatechumenDetailPage() {
         )}
 
         <div className="rounded-sm border border-border/70 bg-white p-4">
-          <h3 className="font-semibold text-sm mb-3 flex items-center gap-1">
-            <FilePlus className="h-4 w-4" />
-            {t("documents.title")}
-          </h3>
+          <div className="mb-3 space-y-1.5">
+            <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              <FilePlus className="h-4 w-4" />
+              {t("documents.title")}
+            </h3>
+            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          </div>
           {!showDocUpload ? (
             <Button
               size="sm"
@@ -1866,10 +1881,13 @@ export default function CatechumenDetailPage() {
 
         {canEdit && (
           <div className="rounded-sm border border-border/70 bg-white p-4">
-            <h3 className="font-semibold text-sm mb-3 flex items-center gap-1">
-              <Link2 className="h-4 w-4" />
-              {t("catechumens.detail_upload_link_title")}
-            </h3>
+            <div className="mb-3 space-y-1.5">
+              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <Link2 className="h-4 w-4" />
+                {t("catechumens.detail_upload_link_title")}
+              </h3>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            </div>
             {!tokenData ? (
               <div>
                 <p className="text-xs text-muted-foreground mb-3">
@@ -1911,7 +1929,7 @@ export default function CatechumenDetailPage() {
 
         {canEdit && (
           <div className="rounded-sm border border-destructive/30 bg-destructive/5 p-4">
-            <h3 className="font-semibold text-sm text-destructive mb-2">
+            <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-destructive">
               {t("catechumens.delete_title")}
             </h3>
             <p className="text-sm text-muted-foreground mb-4">

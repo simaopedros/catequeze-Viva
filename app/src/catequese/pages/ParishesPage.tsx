@@ -199,7 +199,12 @@ export default function ParishesPage() {
 
       {showCreate && (
         <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3 animate-in fade-in slide-in-from-top-2">
-          <h3 className="font-medium text-sm">{tp("new_parish")}</h3>
+          <div className="space-y-1.5">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              {tp("new_parish")}
+            </h3>
+            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          </div>
           <div className="flex flex-wrap gap-3 items-end">
             <Input
               value={newName}
@@ -288,7 +293,10 @@ export default function ParishesPage() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <h3 className="font-semibold truncate group-hover:text-[#071A2D] transition-colors">
+                      <h3
+                        className="truncate font-semibold tracking-tight text-foreground transition-colors group-hover:text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
                         {p.name}
                       </h3>
                       {!isActive && (

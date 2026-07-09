@@ -102,7 +102,12 @@ export default function CatecheticalYearsPage() {
 
       {showForm && (
         <AppPanel className="space-y-4">
-          <h3 className="font-semibold text-[#071A2D]">{t("form_title")}</h3>
+          <div className="space-y-1.5">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              {t("form_title")}
+            </h3>
+            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          </div>
           <div className="grid gap-4 sm:grid-cols-3">
             <div>
               <label className="text-sm font-medium">{t("name")} *</label>

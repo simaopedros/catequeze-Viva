@@ -793,11 +793,14 @@ export default function ClassDetailPage() {
               available.length > 0 &&
               canEnroll && (
                 <div className="mt-6">
-                  <h3 className="font-semibold text-sm mb-2">
-                    {t("detail.available_to_enroll", {
-                      count: available.length,
-                    })}
-                  </h3>
+                  <div className="mb-2 space-y-1.5">
+                    <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      {t("detail.available_to_enroll", {
+                        count: available.length,
+                      })}
+                    </h3>
+                    <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                  </div>
                   <div className="grid gap-2">
                     {available.map((c: any) => (
                       <div
@@ -1043,7 +1046,10 @@ export default function ClassDetailPage() {
                     <Calendar className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-sm">
+                    <h3
+                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
                       {formatDate(
                         new Date(monthlyPlan.year, monthlyPlan.month),
                         currentLocale,

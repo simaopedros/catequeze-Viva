@@ -227,7 +227,12 @@ export default function JourneyTemplatesPage() {
 
       {showCreate && (
         <AppPanel className="space-y-3">
-          <h3 className="font-semibold text-sm">{t("templates.create_new")}</h3>
+          <div className="space-y-1.5">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              {t("templates.create_new")}
+            </h3>
+            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          </div>
           <input
             placeholder={t("templates.name_placeholder")}
             value={newName}
@@ -327,7 +332,12 @@ export default function JourneyTemplatesPage() {
                     ) : (
                       <>
                         <div className="flex items-center gap-2">
-                          <h3 className="font-semibold">{tmpl.name}</h3>
+                          <h3
+                            className="font-semibold tracking-tight text-[#071A2D]"
+                            style={{ fontFamily: "var(--font-brand-display)" }}
+                          >
+                            {tmpl.name}
+                          </h3>
                           <Badge variant="outline" className="text-overline">
                             {scopeLabel}
                           </Badge>

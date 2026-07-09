@@ -78,7 +78,12 @@ export default function ConsentPage() {
             className="flex items-center justify-between gap-4"
           >
             <div>
-              <h3 className="font-semibold text-[#071A2D]">{ct.label}</h3>
+              <h3
+                className="font-semibold tracking-tight text-[#071A2D]"
+                style={{ fontFamily: "var(--font-brand-display)" }}
+              >
+                {ct.label}
+              </h3>
               <p className="text-sm text-muted-foreground">{ct.desc}</p>
             </div>
             <div className="flex shrink-0 gap-2">

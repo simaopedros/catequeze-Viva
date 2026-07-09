@@ -644,7 +644,12 @@ export default function BiblePage() {
             <ChevronLeft className="h-4 w-4" />
             {t("books")}
           </Button>
-          <h2 className="font-semibold text-sm">{selectedBook.name}</h2>
+          <h2
+            className="text-sm font-semibold tracking-tight text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
+            {selectedBook.name}
+          </h2>
           <div className="grid grid-cols-5 sm:grid-cols-6 gap-1.5">
             {selectedBook.chapters?.map((ch: any) => (
               <button
@@ -666,7 +671,10 @@ export default function BiblePage() {
             <ChevronLeft className="h-4 w-4" />
             {t("chapters")}
           </Button>
-          <h2 className="font-semibold text-sm">
+          <h2
+            className="text-sm font-semibold tracking-tight text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
             {chapterData?.book?.name || selectedBook.name}
           </h2>
           <div className="grid grid-cols-5 sm:grid-cols-6 gap-1.5">

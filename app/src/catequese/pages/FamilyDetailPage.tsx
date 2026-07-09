@@ -602,10 +602,13 @@ export default function FamilyDetailPage() {
         {/* Guardians */}
         <div className="rounded-sm border border-border/70 bg-white p-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-sm flex items-center gap-1">
-              <User className="h-4 w-4" />
-              {t("families.guardians_title")}
-            </h3>
+            <div className="space-y-1.5">
+              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <User className="h-3.5 w-3.5" />
+                {t("families.guardians_title")}
+              </h3>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            </div>
             <Button size="sm" variant="outline" onClick={openAddGuardianDialog}>
               <Plus className="mr-1 h-3 w-3" />
               {t("families.add")}
@@ -684,10 +687,13 @@ export default function FamilyDetailPage() {
         {/* Catechumens */}
         <div className="rounded-sm border border-border/70 bg-white p-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-sm flex items-center gap-1">
-              <GraduationCap className="h-4 w-4" />
-              {t("families.catechumens_title")}
-            </h3>
+            <div className="space-y-1.5">
+              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <GraduationCap className="h-3.5 w-3.5" />
+                {t("families.catechumens_title")}
+              </h3>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            </div>
             <Button
               variant="outline"
               size="sm"
@@ -754,10 +760,13 @@ export default function FamilyDetailPage() {
 
         {/* Consents */}
         <div className="rounded-sm border border-border/70 bg-white p-4">
-          <h3 className="font-semibold text-sm mb-3 flex items-center gap-1">
-            <Shield className="h-4 w-4" />
-            {t("families.consents_title")}
-          </h3>
+          <div className="mb-3 space-y-1.5">
+            <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              <Shield className="h-4 w-4" />
+              {t("families.consents_title")}
+            </h3>
+            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          </div>
           {household.consents?.length > 0 ? (
             <div className="space-y-3">
               {household.consents.map((c: any) => (

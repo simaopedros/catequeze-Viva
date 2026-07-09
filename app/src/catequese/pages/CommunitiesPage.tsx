@@ -208,9 +208,12 @@ export default function CommunitiesPage() {
               isEditing={editingId === c.id}
               editForm={
                 <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3">
-                  <h3 className="font-semibold text-sm">
-                    {tp("edit_community")}
-                  </h3>
+                  <div className="space-y-1.5">
+                    <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      {tp("edit_community")}
+                    </h3>
+                    <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                  </div>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div className="sm:col-span-2">
                       <label className="text-xs font-medium text-muted-foreground">

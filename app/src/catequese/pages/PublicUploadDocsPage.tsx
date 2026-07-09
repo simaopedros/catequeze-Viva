@@ -110,9 +110,12 @@ export default function PublicUploadDocsPage() {
 
         {catechumen.documents?.length > 0 && (
           <div className="rounded-sm border border-border/70 bg-white p-5">
-            <h2 className="font-semibold text-sm mb-3">
-              {t("upload_docs.existing_title")}
-            </h2>
+            <div className="mb-3 space-y-1.5">
+              <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                {t("upload_docs.existing_title")}
+              </h2>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            </div>
             <div className="space-y-2">
               {catechumen.documents.map((d: any) => (
                 <div
@@ -152,9 +155,12 @@ export default function PublicUploadDocsPage() {
         )}
 
         <div className="rounded-sm border border-border/70 bg-white p-5 space-y-4">
-          <h2 className="font-semibold text-sm">
-            {t("upload_docs.new_title")}
-          </h2>
+          <div className="space-y-1.5">
+            <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              {t("upload_docs.new_title")}
+            </h2>
+            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          </div>
 
           {sent && (
             <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-sm text-foreground flex items-center gap-2">
