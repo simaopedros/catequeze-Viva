@@ -82,12 +82,12 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
                 <div
                   key={i}
                   className={`flex items-center gap-2 rounded-sm border border-border/70 px-3 py-2 text-sm ${
-                    alert.type === 'warning'
-                      ? 'bg-muted/40 text-foreground'
-                      : alert.type === 'error'
-                      ? 'border-destructive/30 bg-destructive/5 text-destructive'
-                      : 'bg-muted/30 text-foreground'
-                  }`}
+ alert.type === 'warning'
+ ? 'bg-muted/40 text-foreground'
+ : alert.type === 'error'
+ ? 'border-destructive/30 bg-destructive/5 text-destructive'
+ : 'bg-muted/30 text-foreground'
+ }`}
                 >
                   <CircleDot className="h-3 w-3 shrink-0" />
                   {alert.message}

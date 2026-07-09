@@ -13,7 +13,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
     return (
       <DefaultLayout user={user}>
         <div className="flex justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
         </div>
       </DefaultLayout>
     );
@@ -50,7 +50,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
           <div className="rounded-sm border border-border/70 bg-white p-5">
             <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
-              <Users className="h-4 w-4 text-primary" />
+              <Users className="h-4 w-4 text-[#071A2D]" />
               Perfil
             </h2>
             <div className="grid grid-cols-2 gap-3 text-sm">
@@ -63,7 +63,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
 
           <div className="rounded-sm border border-border/70 bg-white p-5">
             <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
-              <CreditCard className="h-4 w-4 text-primary" />
+              <CreditCard className="h-4 w-4 text-[#071A2D]" />
               Billing
             </h2>
             <div className="grid grid-cols-2 gap-3 text-sm">
@@ -78,7 +78,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
         {/* Memberships */}
         <div className="rounded-sm border border-border/70 bg-white p-5">
           <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
-            <Building2 className="h-4 w-4 text-primary" />
+            <Building2 className="h-4 w-4 text-[#071A2D]" />
             Paróquias ({u.memberships?.length || 0})
           </h2>
           <div className="divide-y -mx-5">
@@ -106,7 +106,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
         {/* Audit Log */}
         <div className="rounded-sm border border-border/70 bg-white p-5">
           <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
-            <History className="h-4 w-4 text-primary" />
+            <History className="h-4 w-4 text-[#071A2D]" />
             Histórico de Acções
           </h2>
           <div className="divide-y -mx-5">
@@ -137,7 +137,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
         {u.aiUsage && u.aiUsage.length > 0 && (
           <div className="rounded-sm border border-border/70 bg-white p-5">
             <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
-              <BarChart3 className="h-4 w-4 text-primary" />
+              <BarChart3 className="h-4 w-4 text-[#071A2D]" />
               Uso de IA (30d)
             </h2>
             <div className="divide-y -mx-5">

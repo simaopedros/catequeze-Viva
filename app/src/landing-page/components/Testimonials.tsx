@@ -70,7 +70,7 @@ export default function Testimonials({
         <div className="mt-8 flex justify-center md:hidden">
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-primary bg-primary/10 hover:bg-primary/20 rounded-lg px-6 py-3 text-sm font-medium transition-colors duration-200"
+            className="text-[#071A2D] bg-[#071A2D]/08 hover:bg-[#071A2D]/20 rounded-sm px-6 py-3 text-sm font-medium transition-colors duration-200"
           >
             {isExpanded
               ? "Show Less"

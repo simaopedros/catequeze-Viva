@@ -14,7 +14,7 @@ const cardVariants = cva(
         bento:
           "bg-card-subtle text-card-subtle-foreground border-none shadow-none",
         interactive:
-          "cursor-pointer border-border/70 bg-white text-foreground transition-colors hover:border-primary/30",
+          "cursor-pointer border-border/70 bg-white text-foreground transition-colors hover:border-[#071A2D]/30",
         flat:
           "bg-muted/50 border-0 shadow-none",
       },

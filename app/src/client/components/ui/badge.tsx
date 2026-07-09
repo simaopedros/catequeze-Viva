@@ -28,12 +28,12 @@ const badgeVariants = cva(
 
 function dotColor(variant: string | null | undefined): string {
   switch (variant) {
-    case 'dot': return 'bg-primary';
+    case 'dot': return 'bg-[#071A2D]';
     case 'success': return 'bg-success';
     case 'warning': return 'bg-warning';
     case 'destructive': return 'bg-destructive';
     case 'info': return 'bg-info';
-    default: return 'bg-primary';
+    default: return 'bg-[#071A2D]';
   }
 }
 

@@ -29,7 +29,7 @@ export function CtaSection({ ns = "landing", responsiveCtas = false }: { ns?: st
             >
               {tr("cta_title")}
             </h2>
-            <p className="text-primary-foreground/80 leading-relaxed text-base sm:text-lg">
+            <p className="text-white/80 leading-relaxed text-base sm:text-lg">
               {tr("cta_subtitle")}
             </p>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center pt-1">
@@ -52,7 +52,7 @@ export function CtaSection({ ns = "landing", responsiveCtas = false }: { ns?: st
                   <ArrowRight className="h-4 w-4 shrink-0" />
                 </Link>
               </Button>
-              <p className="text-sm text-primary-foreground/65">{tr("cta_helper")}</p>
+              <p className="text-sm text-white/65">{tr("cta_helper")}</p>
             </div>
           </div>
         </div>

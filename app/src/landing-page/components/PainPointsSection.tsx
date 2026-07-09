@@ -27,7 +27,7 @@ export function PainPointsSection({ ns = 'landing' }: { ns?: string }) {
 function PainCard({ text, delay }: { text: string; delay: number }) {
   const { ref, className } = useScrollReveal({ delay });
   return (
-    <div ref={ref} className={`flex items-start gap-3 rounded-xl border bg-card/50 p-4 ${className}`}>
+    <div ref={ref} className={`flex items-start gap-3 rounded-sm border bg-card/50 p-4 ${className}`}>
       <AlertCircle className="h-5 w-5 text-destructive/60 flex-shrink-0 mt-0.5" />
       <p className="text-sm text-muted-foreground">{text}</p>
     </div>

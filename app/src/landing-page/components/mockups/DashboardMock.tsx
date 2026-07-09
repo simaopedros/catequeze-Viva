@@ -11,13 +11,13 @@ export function DashboardMock({ ns = 'landing' }: { ns?: string }) {
       </div>
 
       <div className="grid grid-cols-2 gap-2">
-        {[
-          { l: t('mockup_dashboard.catechumens'), v: '142', i: Users, c: 'text-[#071A2D] bg-[#071A2D]/08' },
-          { l: t('mockup_dashboard.active_classes'), v: '8', i: BookOpen, c: 'text-[#071A2D] bg-muted/40' },
-          { l: t('mockup_dashboard.avg_attendance'), v: '87%', i: TrendingUp, c: 'text-[#071A2D] bg-muted/40' },
-          { l: t('mockup_dashboard.sacraments'), v: '12', i: Cross, c: 'text-[#071A2D] bg-muted/40' },
-        ].map((k) => (
-          <div key={k.l} className="rounded-sm border border-border/70 bg-white p-2">
+ {[
+ { l: t('mockup_dashboard.catechumens'), v: '142', i: Users, c: 'text-[#071A2D] bg-[#071A2D]/08' },
+ { l: t('mockup_dashboard.active_classes'), v: '8', i: BookOpen, c: 'text-[#071A2D] bg-muted/40' },
+ { l: t('mockup_dashboard.avg_attendance'), v: '87%', i: TrendingUp, c: 'text-[#071A2D] bg-muted/40' },
+ { l: t('mockup_dashboard.sacraments'), v: '12', i: Cross, c: 'text-[#071A2D] bg-muted/40' },
+ ].map((k) => (
+ <div key={k.l} className="rounded-sm border border-border/70 bg-white p-2">
             <div className="flex items-center gap-2">
               <div className={`rounded-sm p-1 ${k.c}`}>
                 <k.i className="h-3 w-3" />

@@ -22,8 +22,8 @@ export function AiShowcaseSection({ ns = 'landing', responsiveCtas = false }: { 
           <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">{t('ai_showcase_subtitle')}</p>
           <div className="mt-8 flex justify-center">
             <Link to="/pricing" onClick={() => trackMarketingEvent('primary_cta_clicked', { landing: ns, placement: 'ai_showcase', destination: '/pricing' })} className={cn('inline-flex h-12 items-center justify-center rounded-sm bg-[#071A2D] px-8 text-sm font-semibold text-white transition-colors hover:bg-[#0a2540]', responsiveCtas && 'h-auto min-h-12 w-full max-w-sm text-center leading-snug whitespace-normal sm:w-auto')}>
-              {t('ai_showcase_cta')}
-              <ChevronRight className="ml-2 h-4 w-4 shrink-0" />
+ {t('ai_showcase_cta')}
+ <ChevronRight className="ml-2 h-4 w-4 shrink-0" />
             </Link>
           </div>
         </div>

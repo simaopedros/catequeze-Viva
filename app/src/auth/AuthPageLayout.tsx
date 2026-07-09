@@ -122,7 +122,7 @@ export function AuthPageLayout({ children, panel }: AuthPageLayoutProps) {
                       className={cn(
                         "rounded-sm px-0.5 py-0.5 transition-colors",
                         currentLocale === locale
-                          ? "font-semibold text-primary"
+                          ? "font-semibold text-[#071A2D]"
                           : "hover:text-foreground"
                       )}
                       aria-current={currentLocale === locale ? "true" : undefined}

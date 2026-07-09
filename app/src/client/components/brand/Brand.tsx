@@ -87,7 +87,7 @@ export function BrandLockup({
           subline: 'text-[#f6d08a]',
         }
       : {
-          name: 'text-primary',
+          name: 'text-[#071A2D]',
           badge: 'border-secondary/20 bg-secondary/10 text-secondary',
           subline: 'text-secondary',
         };

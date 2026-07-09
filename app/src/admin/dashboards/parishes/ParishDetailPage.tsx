@@ -23,7 +23,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
     return (
       <DefaultLayout user={user}>
         <div className="flex justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
         </div>
       </DefaultLayout>
     );
@@ -66,7 +66,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
           </div>
           <NavLink
             to={`/app`}
-            className="text-xs inline-flex items-center gap-1 px-3 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
+            className="text-xs inline-flex items-center gap-1 px-3 py-1.5 rounded-md bg-[#071A2D] text-white hover:bg-[#0a2540]"
           >
             Abrir no App →
           </NavLink>
@@ -99,7 +99,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
         {/* Billing */}
         <div className="rounded-sm border border-border/70 bg-white p-5">
           <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
-            <CircleDot className="h-4 w-4 text-primary" />
+            <CircleDot className="h-4 w-4 text-[#071A2D]" />
             Licença
           </h2>
           {parish.billing ? (
@@ -129,7 +129,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
         {/* Members */}
         <div className="rounded-sm border border-border/70 bg-white p-5">
           <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
-            <Users className="h-4 w-4 text-primary" />
+            <Users className="h-4 w-4 text-[#071A2D]" />
             Membros ({parish.members?.length || 0})
           </h2>
           <div className="divide-y -mx-5">
@@ -152,7 +152,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
         {/* Audit */}
         <div className="rounded-sm border border-border/70 bg-white p-5">
           <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
-            <History className="h-4 w-4 text-primary" />
+            <History className="h-4 w-4 text-[#071A2D]" />
             Actividade Recente
           </h2>
           <div className="divide-y -mx-5">

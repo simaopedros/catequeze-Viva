@@ -143,7 +143,7 @@ export function HeroSection({
     >
       {isEditorial && (
         <div
-          className="pointer-events-none absolute -inset-3 -z-10 rounded-2xl bg-primary/[0.03] sm:-inset-4"
+          className="pointer-events-none absolute -inset-3 -z-10 rounded-sm bg-[#071A2D]/[0.03] sm:-inset-4"
           aria-hidden
         />
       )}

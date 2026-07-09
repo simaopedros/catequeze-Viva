@@ -54,7 +54,7 @@ export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
       <div ref={headerRef} className={`text-center mb-8 space-y-2 ${headerClass}`}>
         <h2 className="text-2xl sm:text-3xl font-bold">{tr("pricing_title")}</h2>
         <p className="text-muted-foreground max-w-xl mx-auto">{tr("pricing_subtitle")}</p>
-        <p className="text-sm font-medium text-primary">{tr("price_trial_note")}</p>
+        <p className="text-sm font-medium text-[#071A2D]">{tr("price_trial_note")}</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -139,12 +139,12 @@ function PlanCard({
   return (
     <div
       ref={ref as any}
-      className={`rounded-2xl border p-5 flex flex-col ${className} ${
-        highlight ? "border-primary/40 bg-primary/[0.03]" : "border-border/70 bg-card"
-      }`}
+      className={`rounded-sm border p-5 flex flex-col ${className} ${
+ highlight ? "border-[#071A2D]/40 bg-[#071A2D]/[0.03]" : "border-border/70 bg-card"
+ }`}
     >
       {highlight && (
-        <span className="self-start text-[11px] font-bold uppercase tracking-wide text-primary mb-2">
+        <span className="self-start text-[11px] font-bold uppercase tracking-wide text-[#071A2D] mb-2">
           {popularLabel}
         </span>
       )}
@@ -157,7 +157,7 @@ function PlanCard({
       <ul className="mt-4 space-y-2 text-sm flex-1">
         {features.slice(0, 4).map((f) => (
           <li key={f} className="flex items-start gap-2">
-            <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+            <Check className="h-4 w-4 text-[#071A2D] shrink-0 mt-0.5" />
             <span>{f}</span>
           </li>
         ))}

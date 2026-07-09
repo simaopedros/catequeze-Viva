@@ -16,7 +16,7 @@ export function AuthHeader({ mobileOnly = false }: { mobileOnly?: boolean }) {
       <div className="mx-auto flex h-14 max-w-6xl items-center px-4 sm:px-6">
         <Link
           to="/"
-          className="rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
+          className="rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-[#071A2D]/30 focus-visible:ring-offset-2"
         >
           <BrandLockup compact hideBadge />
         </Link>

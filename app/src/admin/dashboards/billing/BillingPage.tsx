@@ -30,7 +30,7 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
 
         {isLoading ? (
           <div className="flex justify-center py-12">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
           </div>
         ) : (
           <div className="rounded-sm border border-border/70 bg-white overflow-hidden">

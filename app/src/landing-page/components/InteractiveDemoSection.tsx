@@ -76,11 +76,11 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
 
   return (
     <section id="demo" className="scroll-mt-20 relative overflow-hidden border-y">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-background to-accent/5" />
+      <div className="absolute inset-0 bg-[#F7F4EE]/70" />
       <div className="relative mx-auto max-w-5xl px-4 py-16 md:py-20">
         <div ref={ref} className={cn("grid gap-10 lg:grid-cols-2 lg:items-center", className)}>
           <div className="space-y-5 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/20 px-3 py-1 text-sm font-medium text-primary">
+            <div className="inline-flex items-center gap-2 rounded-full bg-[#071A2D]/08 border border-[#071A2D]/20 px-3 py-1 text-sm font-medium text-[#071A2D]">
               <Sparkles className="h-3.5 w-3.5" />
               {tr("demo.badge")}
             </div>
@@ -103,8 +103,8 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                   className={cn(
                     "rounded-full border px-3 py-1.5 text-sm font-medium transition-colors",
                     selectedId === topic.id
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                      ? "border-[#071A2D] bg-[#071A2D] text-white"
+                      : "border-border bg-card text-muted-foreground hover:border-[#071A2D]/40 hover:text-foreground"
                   )}
                 >
                   {topic.label}
@@ -113,7 +113,7 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-border/70 bg-card shadow-elevation-md overflow-hidden">
+          <div className="rounded-sm border border-border/70 bg-card overflow-hidden">
             <div className="flex items-center gap-2 border-b bg-muted/40 px-4 py-2.5">
               <div className="flex gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full bg-destructive/60" />
@@ -127,8 +127,8 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
 
             <div className="p-4 sm:p-5 space-y-4">
               <div className="flex items-center gap-2">
-                <div className="rounded-lg bg-primary/10 p-2">
-                  <Sparkles className="h-4 w-4 text-primary" />
+                <div className="rounded-sm bg-[#071A2D]/08 p-2">
+                  <Sparkles className="h-4 w-4 text-[#071A2D]" />
                 </div>
                 <div>
                   <p className="font-bold text-sm">{tr("demo.panel_title")}</p>
@@ -136,7 +136,7 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                 </div>
               </div>
 
-              <div className="rounded-xl border bg-muted/30 p-3 space-y-2">
+              <div className="rounded-sm border bg-muted/30 p-3 space-y-2">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                   {tr("demo.prompt_label")}
                 </p>
@@ -165,8 +165,8 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
 
               <div
                 className={cn(
-                  "rounded-xl border p-3 min-h-[160px] transition-colors",
-                  status === "idle" ? "border-dashed bg-muted/10" : "border-primary/20 bg-primary/5"
+                  "rounded-sm border p-3 min-h-[160px] transition-colors",
+                  status === "idle" ? "border-dashed bg-muted/10" : "border-[#071A2D]/20 bg-[#071A2D]/5"
                 )}
               >
                 {status === "idle" && (
@@ -175,8 +175,8 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                 {(status === "generating" || status === "done") && (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between gap-2 mb-2">
-                      <p className="text-sm font-semibold text-primary">{tr("demo.result_title")}</p>
-                      <span className="rounded-full bg-primary/10 text-primary px-2 py-0.5 text-[11px] font-medium">
+                      <p className="text-sm font-semibold text-[#071A2D]">{tr("demo.result_title")}</p>
+                      <span className="rounded-full bg-[#071A2D]/08 text-[#071A2D] px-2 py-0.5 text-[11px] font-medium">
                         {tr("demo.result_badge")}
                       </span>
                     </div>
@@ -185,7 +185,7 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                         key={`${selected.id}-${index}`}
                         className="flex gap-2 text-sm animate-in fade-in slide-in-from-bottom-1 duration-300"
                       >
-                        <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary text-[11px] font-bold">
+                        <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#071A2D]/15 text-[#071A2D] text-[11px] font-bold">
                           {index + 1}
                         </span>
                         <span className="leading-snug">{step}</span>

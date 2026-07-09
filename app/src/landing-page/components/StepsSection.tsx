@@ -64,7 +64,7 @@ export function StepsSection({
           {list.map((step: any, index: number) => (
             <li key={step.title} className="relative space-y-3">
               <span
-                className="text-[2.5rem] font-semibold text-primary/[0.12] tabular-nums leading-none"
+                className="text-[2.5rem] font-semibold text-[#071A2D]/[0.12] tabular-nums leading-none"
                 style={{ fontFamily: "var(--font-brand-display)" }}
                 aria-hidden
               >

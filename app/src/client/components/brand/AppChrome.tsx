@@ -145,7 +145,7 @@ export function AppListLink({
       )}
     >
       <span className="min-w-0 space-y-0.5">
-        <span className="block text-sm font-semibold text-foreground group-hover:text-primary">
+        <span className="block text-sm font-semibold text-foreground group-hover:text-[#071A2D]">
           {title}
         </span>
         {description && (

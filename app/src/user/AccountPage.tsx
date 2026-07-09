@@ -174,7 +174,7 @@ function UserCurrentSubscriptionPlan({
     <div className="flex items-center justify-between gap-3">
       <span className="text-sm">{message}</span>
       {onTrial ? (
-        <a href="/app/billing" className="text-sm font-medium text-primary hover:underline">
+        <a href="/app/billing" className="text-sm font-medium text-[#071A2D] hover:underline">
           {tb('trial_banner_cta')}
         </a>
       ) : (
@@ -243,7 +243,7 @@ function BuyMoreButton({
   return (
     <WaspRouterLink
       to={routes.PricingPageRoute.to}
-      className="text-primary hover:text-primary/80 text-sm font-medium transition-colors duration-200"
+      className="text-[#071A2D] hover:text-[#0a2540] text-sm font-medium transition-colors duration-200"
     >
       <Button variant="link">{t('buy_credits')}</Button>
     </WaspRouterLink>

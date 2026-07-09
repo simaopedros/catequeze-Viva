@@ -26,7 +26,7 @@ export function PublicNavbar({ hidePricing = false }: { hidePricing?: boolean })
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-6 px-4 sm:px-6">
         <Link
           to="/"
-          className="min-w-0 shrink-0 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
+          className="min-w-0 shrink-0 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-[#071A2D]/30 focus-visible:ring-offset-2"
           onClick={() => setOpen(false)}
         >
           <BrandLockup compact hideBadge />

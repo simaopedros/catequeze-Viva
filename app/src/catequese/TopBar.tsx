@@ -236,7 +236,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
         )}
 
         {/* Expanded: full input (always on desktop, conditionally on mobile) */}
-        <div className={`flex items-center gap-2 rounded-sm border border-input bg-background px-3 h-9 transition-colors focus-within:border-[#071A2D]/50 focus-within:ring-1 focus-within:ring-primary/20 ${searchExpanded ? 'flex' : 'hidden sm:flex'}`}>
+        <div className={`flex h-9 items-center gap-2 rounded-sm border border-input bg-background px-3 transition-colors focus-within:border-[#071A2D]/50 focus-within:ring-1 focus-within:ring-[#071A2D]/20 ${searchExpanded ? 'flex' : 'hidden sm:flex'}`}>
           <Search className="h-4 w-4 text-muted-foreground shrink-0" />
           <input
             ref={inputRef}

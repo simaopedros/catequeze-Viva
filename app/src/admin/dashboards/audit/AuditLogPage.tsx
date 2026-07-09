@@ -51,7 +51,7 @@ const AuditLogPage = ({ user }: { user: AuthUser }) => {
 
         {isLoading ? (
           <div className="flex justify-center py-12">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
           </div>
         ) : (!data?.logs || data.logs.length === 0) ? (
           <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">

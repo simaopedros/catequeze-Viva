@@ -204,11 +204,11 @@ const RevenueAndProfitChart = ({ weeklyStats, isLoading }: DailyStatsProps) => {
       <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
         <div className="flex w-full flex-wrap gap-3 sm:gap-5">
           <div className="min-w-47.5 flex">
-            <span className="border-primary mr-2 mt-1 flex h-4 w-full max-w-4 items-center justify-center rounded-full border">
-              <span className="bg-primary block h-2.5 w-full max-w-2.5 rounded-full"></span>
+            <span className="border-[#071A2D] mr-2 mt-1 flex h-4 w-full max-w-4 items-center justify-center rounded-full border">
+              <span className="bg-[#071A2D] block h-2.5 w-full max-w-2.5 rounded-full"></span>
             </span>
             <div className="w-full">
-              <p className="text-primary font-semibold">Total Profit</p>
+              <p className="text-[#071A2D] font-semibold">Total Profit</p>
               <p className="text-muted-foreground text-sm font-medium">
                 Last 7 Days
               </p>
@@ -228,13 +228,13 @@ const RevenueAndProfitChart = ({ weeklyStats, isLoading }: DailyStatsProps) => {
         </div>
         <div className="max-w-45 flex w-full justify-end">
           <div className="bg-muted inline-flex items-center rounded-md p-1.5">
-            <button className="bg-background text-foreground shadow-card hover:bg-background hover:shadow-card rounded px-3 py-1 text-xs font-medium">
+            <button className="bg-background text-foreground hover:bg-background rounded px-3 py-1 text-xs font-medium">
               Day
             </button>
-            <button className="text-muted-foreground hover:bg-background hover:shadow-card rounded px-3 py-1 text-xs font-medium">
+            <button className="text-muted-foreground hover:bg-background rounded px-3 py-1 text-xs font-medium">
               Week
             </button>
-            <button className="text-muted-foreground hover:bg-background hover:shadow-card rounded px-3 py-1 text-xs font-medium">
+            <button className="text-muted-foreground hover:bg-background rounded px-3 py-1 text-xs font-medium">
               Month
             </button>
           </div>

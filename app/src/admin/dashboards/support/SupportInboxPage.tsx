@@ -30,7 +30,7 @@ const SupportInboxPage = ({ user }: { user: AuthUser }) => {
 
         {isLoading ? (
           <div className="flex justify-center py-12">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
           </div>
         ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
@@ -46,8 +46,8 @@ const SupportInboxPage = ({ user }: { user: AuthUser }) => {
               <div
                 key={msg.id}
                 className={`rounded-sm border border-border/70 p-5 ${
-                  !msg.isRead ? 'border-[#071A2D]/20 bg-muted/30' : 'bg-white'
-                }`}
+ !msg.isRead ? 'border-[#071A2D]/20 bg-muted/30' : 'bg-white'
+ }`}
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">

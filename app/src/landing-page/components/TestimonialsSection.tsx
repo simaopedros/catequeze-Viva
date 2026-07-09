@@ -62,11 +62,11 @@ function TestimonialCard({ testimonial, delay }: { testimonial: Testimonial; del
             <Star key={star} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
           ))}
         </div>
-        <Quote className="h-4 w-4 text-primary/30 shrink-0" aria-hidden />
+        <Quote className="h-4 w-4 text-[#071A2D]/30 shrink-0" aria-hidden />
       </div>
 
       {testimonial.highlight && (
-        <p className="text-xs font-semibold text-primary">{testimonial.highlight}</p>
+        <p className="text-xs font-semibold text-[#071A2D]">{testimonial.highlight}</p>
       )}
 
       <p className="text-sm text-muted-foreground leading-relaxed flex-1">
@@ -75,7 +75,7 @@ function TestimonialCard({ testimonial, delay }: { testimonial: Testimonial; del
 
       <div className="flex items-center gap-3 pt-2 border-t border-border/60">
         <div
-          className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm shrink-0"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-[#071A2D]/08 text-[#071A2D] font-bold text-sm shrink-0"
           aria-hidden
         >
           {initials}

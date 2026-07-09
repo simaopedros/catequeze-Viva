@@ -50,9 +50,9 @@ export function ProofSection({ ns = "landing" }: { ns?: string }) {
                 return (
                   <div
                     key={stat.title}
-                    className="space-y-2 rounded-2xl border border-border/60 bg-background p-4"
+                    className="space-y-2 rounded-sm border border-border/60 bg-background p-4"
                   >
-                    <div className="inline-flex rounded-xl bg-muted p-2 text-primary">
+                    <div className="inline-flex rounded-sm bg-muted p-2 text-[#071A2D]">
                       <Icon className="h-4 w-4" />
                     </div>
                     <p className="text-sm font-semibold text-foreground">{stat.title}</p>
@@ -78,10 +78,10 @@ export function ProofSection({ ns = "landing" }: { ns?: string }) {
 
           <Card
             variant="flat"
-            className="rounded-2xl border-primary/20 bg-primary/[0.03] p-6 shadow-none flex flex-col justify-between gap-5"
+            className="rounded-sm border-[#071A2D]/20 bg-[#071A2D]/[0.03] p-6 shadow-none flex flex-col justify-between gap-5"
           >
             <div className="space-y-4">
-              <div className="inline-flex rounded-xl bg-primary/10 p-2.5 text-primary">
+              <div className="inline-flex rounded-sm bg-[#071A2D]/08 p-2.5 text-[#071A2D]">
                 <ShieldCheck className="h-5 w-5" />
               </div>
               <div className="space-y-2">
@@ -92,7 +92,7 @@ export function ProofSection({ ns = "landing" }: { ns?: string }) {
                 <ul className="space-y-2">
                   {promiseList.map((item) => (
                     <li key={item} className="flex items-start gap-2 text-sm text-foreground">
-                      <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
+                      <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#071A2D] shrink-0" />
                       <span>{item}</span>
                     </li>
                   ))}

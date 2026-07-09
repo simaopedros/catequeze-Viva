@@ -80,7 +80,7 @@ function FeaturesGridItem({
   const gridFeatureCard = (
     <Card
       className={cn(
-        "h-full min-h-[140px] cursor-pointer transition-all duration-300 hover:shadow-lg",
+        "h-full min-h-[140px] cursor-pointer transition-all duration-300 ",
         gridFeatureSizeToClasses[size],
       )}
       variant="bento"
@@ -104,7 +104,7 @@ function FeaturesGridItem({
                 : "justify-start",
             )}
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg">
+            <div className="flex h-10 w-10 items-center justify-center rounded-sm">
               {icon ? (
                 icon
               ) : emoji ? (

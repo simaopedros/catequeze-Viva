@@ -108,7 +108,7 @@ export function GuidedTour({ onComplete }: GuidedTourProps) {
 
       {targetRect && (
         <div
-          className="fixed z-[101] rounded-sm ring-4 ring-primary ring-offset-2 transition-all duration-300 pointer-events-none"
+          className="pointer-events-none fixed z-[101] rounded-sm ring-4 ring-[#071A2D] ring-offset-2 transition-all duration-300"
           style={overlayStyle}
         />
       )}

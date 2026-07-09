@@ -30,7 +30,7 @@ export function ComparisonSection({ ns = "landing" }: { ns?: string }) {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{tr("comparison.subtitle")}</p>
         </div>
 
-        <div className="overflow-x-auto rounded-2xl border bg-card shadow-sm">
+        <div className="overflow-x-auto rounded-sm border bg-card shadow-sm">
           <table className="w-full min-w-[560px] text-left text-sm">
             <thead>
               <tr className="border-b bg-muted/40">
@@ -40,7 +40,7 @@ export function ComparisonSection({ ns = "landing" }: { ns?: string }) {
                 <th className="px-4 py-3 font-semibold text-muted-foreground w-[36%]">
                   {tr("comparison.col_old")}
                 </th>
-                <th className="px-4 py-3 font-semibold text-primary w-[36%]">
+                <th className="px-4 py-3 font-semibold text-[#071A2D] w-[36%]">
                   {tr("comparison.col_next")}
                 </th>
               </tr>
@@ -89,7 +89,7 @@ function ComparisonRowItem({ row, delay }: { row: ComparisonRow; delay: number }
       </td>
       <td className="px-4 py-3.5 align-top">
         <span className="inline-flex items-start gap-2">
-          <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" aria-hidden />
+          <Check className="h-4 w-4 text-[#071A2D] shrink-0 mt-0.5" aria-hidden />
           <span>{row.next}</span>
         </span>
       </td>

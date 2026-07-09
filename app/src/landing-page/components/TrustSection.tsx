@@ -41,8 +41,8 @@ function TrustCard({ icon: Icon, title, desc, delay }: { icon: typeof ShieldChec
   const { ref, className } = useScrollReveal({ delay });
   return (
     <Card ref={ref} variant="flat" className={`p-6 space-y-3 text-center ${className}`}>
-      <div className="inline-flex rounded-xl bg-primary/10 p-2.5">
-        <Icon className="h-5 w-5 text-primary" />
+      <div className="inline-flex rounded-sm bg-[#071A2D]/08 p-2.5">
+        <Icon className="h-5 w-5 text-[#071A2D]" />
       </div>
       <h3 className="font-semibold text-body-sm">{title}</h3>
       <p className="text-body-xs text-text-secondary leading-relaxed">{desc}</p>

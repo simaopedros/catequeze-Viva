@@ -23,7 +23,7 @@ export default function Features({ features }: { features: Feature[] }) {
           {features.map((feature) => (
             <div key={feature.name} className="relative pl-16">
               <dt className="text-foreground text-base font-semibold leading-7">
-                <div className="border-accent bg-accent/30 absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg border">
+                <div className="border-accent bg-accent/30 absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-sm border">
                   <div className="text-2xl">{feature.icon}</div>
                 </div>
                 {feature.name}

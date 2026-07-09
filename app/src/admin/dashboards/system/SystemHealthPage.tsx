@@ -16,7 +16,7 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
 
         {isLoading ? (
           <div className="flex justify-center py-12">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
           </div>
         ) : (
           <>
@@ -98,7 +98,7 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
             {/* Jobs Status */}
             <div className="rounded-sm border border-border/70 bg-white p-5">
               <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
-                <Activity className="h-4 w-4 text-primary" />
+                <Activity className="h-4 w-4 text-[#071A2D]" />
                 Jobs Agendados
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">

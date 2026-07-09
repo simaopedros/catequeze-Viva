@@ -49,7 +49,7 @@ export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
     <div ref={containerRef} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="text-foreground hover:text-primary flex items-center h-9 w-9 lg:w-auto justify-center lg:justify-start transition-colors duration-300 ease-in-out rounded-sm lg:rounded-none hover:bg-accent/50 lg:hover:bg-transparent"
+        className="text-foreground hover:text-[#071A2D] flex items-center h-9 w-9 lg:w-auto justify-center lg:justify-start transition-colors duration-300 ease-in-out rounded-sm lg:rounded-none hover:bg-accent/50 lg:hover:bg-transparent"
       >
         <span className="text-foreground mr-2 hidden text-right text-sm font-medium lg:block">
           {displayName}
@@ -58,7 +58,7 @@ export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
         <ChevronDown className="size-4 hidden lg:block shrink-0" />
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-64 rounded-md border bg-popover p-1 shadow-md z-50">
+        <div className="absolute right-0 top-full z-50 mt-2 w-64 rounded-sm border border-border/70 bg-white p-1">
           {userMenuItems.map((item) => {
             if (item.isAuthRequired && !user) return null;
             if (item.isAdminOnly && (!user || !user.isAdmin)) return null;

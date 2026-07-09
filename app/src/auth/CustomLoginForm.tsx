@@ -305,7 +305,7 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
 
       <p className="text-center text-sm text-muted-foreground">
         {t("login_no_account")}{" "}
-        <a href={signupHref} className="font-medium text-primary hover:underline">
+        <a href={signupHref} className="font-medium text-[#071A2D] hover:underline">
           {t("login_create_account")}
         </a>
       </p>
@@ -316,7 +316,7 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
           : []
         ).map((point) => (
           <li key={point} className="flex gap-2 text-xs leading-snug text-muted-foreground">
-            <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary/70" />
+            <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#071A2D]/70" />
             <span>{point}</span>
           </li>
         ))}

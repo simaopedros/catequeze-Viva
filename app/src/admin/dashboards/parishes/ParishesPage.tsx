@@ -27,7 +27,7 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
 
         {isLoading ? (
           <div className="flex justify-center py-12">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
           </div>
         ) : parishes.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
@@ -53,7 +53,7 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
                   <tr key={p.id} className="border-b last:border-0 hover:bg-muted/30 cursor-pointer" onClick={() => window.location.href = `/admin/parishes/${p.id}`}>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <Church className="h-4 w-4 text-primary shrink-0" />
+                        <Church className="h-4 w-4 text-[#071A2D] shrink-0" />
                         <div>
                           <span className="font-medium hover:underline">{p.name}</span>
                           {!p.active && (

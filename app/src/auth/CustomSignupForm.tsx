@@ -146,7 +146,7 @@ export default function CustomSignupForm({
           {inviteToken && (
             <p className="text-sm leading-relaxed text-muted-foreground">
               {t("signup_success_invite_hint")}{" "}
-              <a href={loginHref} className="font-medium text-primary underline-offset-2 hover:underline">
+              <a href={loginHref} className="font-medium text-[#071A2D] underline-offset-2 hover:underline">
                 {t("signup_success_invite_link")}
               </a>
               .
@@ -314,11 +314,11 @@ export default function CustomSignupForm({
               />
               <Label htmlFor="acceptTerms" className="text-xs cursor-pointer leading-relaxed font-normal text-muted-foreground">
                 {t("signup_terms_prefix")}{" "}
-                <a href="/terms" target="_blank" rel="noreferrer" className="font-medium text-primary hover:underline">
+                <a href="/terms" target="_blank" rel="noreferrer" className="font-medium text-[#071A2D] hover:underline">
                   {t("terms_of_use")}
                 </a>{" "}
                 {t("signup_terms_and")}{" "}
-                <a href="/privacy" target="_blank" rel="noreferrer" className="font-medium text-primary hover:underline">
+                <a href="/privacy" target="_blank" rel="noreferrer" className="font-medium text-[#071A2D] hover:underline">
                   {t("privacy_policy")}
                 </a>
               </Label>
@@ -347,7 +347,7 @@ export default function CustomSignupForm({
 
       <p className="text-center text-sm text-muted-foreground">
         {t("signup_has_account")}{" "}
-        <a href={loginHref} className="font-medium text-primary hover:underline">
+        <a href={loginHref} className="font-medium text-[#071A2D] hover:underline">
           {t("signup_login_link")}
         </a>
       </p>
@@ -358,7 +358,7 @@ export default function CustomSignupForm({
           : []
         ).map((point) => (
           <li key={point} className="flex gap-2 text-xs leading-snug text-muted-foreground">
-            <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary/70" />
+            <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#071A2D]/70" />
             <span>{point}</span>
           </li>
         ))}

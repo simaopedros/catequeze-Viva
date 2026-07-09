@@ -175,8 +175,8 @@ function PricingPreviewCard({
       ref={ref as any}
       id={`planos-${plan.planId}`}
       className={`relative flex scroll-mt-24 flex-col rounded-sm border bg-white p-6 transition-colors ${className} ${
-        plan.highlight ? "border-[#071A2D]/30 ring-1 ring-[#071A2D]/10" : "border-border/70"
-      }`}
+ plan.highlight ? "border-[#071A2D]/30 ring-1 ring-[#071A2D]/10" : "border-border/70"
+ }`}
     >
       {plan.highlight && (
         <div className="mb-3 inline-flex items-center gap-1 self-start rounded-sm bg-[#071A2D] px-3 py-1 text-caption font-semibold text-white">
