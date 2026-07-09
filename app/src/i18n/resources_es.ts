@@ -1788,7 +1788,7 @@ export const content_es = {
       "search_placeholder": "Buscar contenido por título, tema o autor...",
       "filter_type": "Tipo",
       "filter_status": "Estado",
-      "ai_generated": "Generado por IA",
+      "ai_generated": "Generado con asistencia editorial",
       "table_title": "Título",
       "table_status": "Estado",
       "table_activities": "Actividades",
@@ -1829,11 +1829,11 @@ export const content_es = {
       "tags_placeholder": "Ej: bautismo, liturgia, infantil",
       "enhance_ai": "Mejorar con asistencia",
       "enhancing": "Mejorando...",
-      "enhance_hint": "La IA expandirá y mejorará su borrador, sugerirá referencias bíblicas y del Catecismo, y completará campos vacíos.",
-      "ai_suggestions": "Sugerencias de la IA",
+      "enhance_hint": "La asistencia editorial expandirá y mejorará su borrador, sugerirá referencias bíblicas y del Catecismo, y completará campos vacíos.",
+      "ai_suggestions": "Sugerencias editoriales",
       "create_content": "Crear contenido",
       "open_copilot": "Abrir asistencia editorial",
-      "error_title_required": "Complete al menos el título antes de usar la IA.",
+      "error_title_required": "Complete al menos el título antes de usar la asistencia editorial.",
       "error_required_fields": "Título y contenido principal son obligatorios.",
       "error_enhance": "Error al mejorar el contenido.",
       "error_create": "Error al crear contenido.",
@@ -1854,8 +1854,8 @@ export const content_es = {
       "duration_minutes": "Duración estimada (minutos)",
       "enhancing": "Mejorando...",
       "enhance_ai": "Mejorar con asistencia",
-      "ai_suggestions": "Sugerencias de la IA",
-      "success_enhanced": "¡Contenido mejorado por la IA!",
+      "ai_suggestions": "Sugerencias editoriales",
+      "success_enhanced": "¡Contenido mejorado con asistencia editorial!",
       "error_enhance": "Error al mejorar el contenido.",
       "success_saved": "Contenido guardado.",
       "error_load": "Error al cargar contenido.",
@@ -2264,7 +2264,7 @@ export const landing_es = {
           "Hasta 3 grupos con 150 catequizandos en total",
           "Asistencia e historial en el celular",
           "Calendario del grupo",
-          "15 créditos de IA al mes"
+          "15 créditos editoriales al mes"
         ]
       },
       "unlimited": {
@@ -3829,8 +3829,8 @@ export const public_es = {
           "a": "Puede comenzar por el camino de catequista, conocer la estructura de la plataforma y avanzar al plan más adecuado cuando decida preparar encuentros con más frecuencia."
         },
         {
-          "q": "¿Cómo funcionan los créditos de IA?",
-          "a": "El Plan Único incluye 15 créditos de IA por mes. El Plan Ilimitado incluye 50 créditos de IA por mes. Un encuentro o actividad consume 1 crédito; la planificación anual consume 3 créditos."
+          "q": "¿Cómo funcionan los créditos editoriales?",
+          "a": "El Plan Único incluye 15 créditos editoriales por mes. El Plan Ilimitado incluye 50 créditos editoriales por mes. Un encuentro o actividad consume 1 crédito; la planificación anual consume 3 créditos."
         },
         {
           "q": "¿Cuál es la diferencia entre el Plan Único y el Plan Ilimitado?",
@@ -3853,8 +3853,8 @@ export const public_es = {
           "a": "Sí. Seguimos la LGPD, con cifrado en tránsito y en reposo. Los datos de menores reciben protección especial."
         },
         {
-          "q": "¿La IA es teológicamente confiable?",
-          "a": "Sí. La IA está instruida para basarse estrictamente en la Biblia (CNBB), Catecismo de la Iglesia Católica, Compendio y Directorio General para la Catequesis. Todo contenido generado incluye referencias para auditar."
+          "q": "¿La asistencia editorial es teológicamente confiable?",
+          "a": "Sí. La asistencia editorial está instruida para basarse estrictamente en la Biblia (CNBB), Catecismo de la Iglesia Católica, Compendio y Directorio General para la Catequesis. Todo contenido generado incluye referencias para auditar."
         }
       ],
       "annual_compare": "en anual, queda en {{price}}/mes",

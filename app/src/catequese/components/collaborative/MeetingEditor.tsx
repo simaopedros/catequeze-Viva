@@ -215,7 +215,7 @@ function MeetingBlockComponent({
           <div className="flex items-start justify-between gap-3">
             <div>
               <h3
-                className="text-[28px] leading-none font-semibold tracking-tight text-foreground sm:text-[30px]"
+                className="text-[28px] leading-none font-semibold tracking-tight text-[#071A2D] sm:text-[30px]"
                 style={{ fontFamily: "var(--font-brand-display)" }}
               >
                 {label}

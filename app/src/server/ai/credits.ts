@@ -283,7 +283,7 @@ export async function assertAndDeductCredits(
     if (!planHasAiAccess(effectivePlan)) {
       throw new HttpError(
         402,
-        'PLAN_NO_AI: Plano sem acesso à IA. Faça upgrade para um plano com IA em /app/billing.',
+        'PLAN_NO_AI: Plano sem acesso à assistência editorial. Faça upgrade para um plano com assistência em /app/billing.',
       );
     }
 

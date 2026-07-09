@@ -75,7 +75,7 @@
       "b3": "Attendance reports to follow your class"
     },
     "ai": {
-      "title": "Prepare meetings with AI support while keeping pastoral review",
+      "title": "Prepare meetings with editorial assistance while keeping pastoral review",
       "desc": "Use AI to create scripts, activities, annual planning, and family messages from your catechesis context.",
       "b1": "AI meeting generator",
       "b2": "Automatic annual planning",
@@ -117,7 +117,7 @@
   "personas": [
     {
       "title": "Catechist",
-      "desc": "Organize your class, prepare meetings with AI, and take attendance on mobile."
+      "desc": "Organize your class, prepare meetings with editorial assistance, and take attendance on mobile."
     },
     {
       "title": "Parish Coordinator",
@@ -181,7 +181,7 @@
         "Up to 3 classes, 150 catechumens in total",
         "Attendance history on mobile",
         "Class calendar",
-        "15 AI credits per month"
+        "15 editorial credits per month"
       ]
     },
     "unlimited": {
@@ -537,7 +537,7 @@
       },
       {
         "title": "Next meeting ready",
-        "desc": "Prep the outline (with AI help if you want) and review before using it."
+        "desc": "Prep the outline (with editorial assistance if you want) and review before using it."
       }
     ],
     "eyebrow": "In practice"

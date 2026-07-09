@@ -50,8 +50,8 @@
         "a": "You can start on the catechist path, understand the platform structure, and move to the plan that fits you when you decide to prepare meetings more consistently."
       },
       {
-        "q": "How do AI credits work?",
-        "a": "Single includes 15 AI credits per month. Unlimited includes 50 AI credits per month. A meeting or activity uses 1 credit; annual planning uses 3 credits."
+        "q": "How do editorial credits work?",
+        "a": "Single includes 15 editorial credits per month. Unlimited includes 50 editorial credits per month. A meeting or activity uses 1 credit; annual planning uses 3 credits."
       },
       {
         "q": "What is the difference between Single and Unlimited?",
@@ -74,8 +74,8 @@
         "a": "Yes. We follow LGPD with encryption in transit and at rest. Children's data receives special protection."
       },
       {
-        "q": "Is the AI theologically reliable?",
-        "a": "Yes. The AI is instructed to strictly base itself on the Bible (CNBB), Catechism of the Catholic Church, Compendium, and General Directory for Catechesis. All generated content includes references for you to audit."
+        "q": "Is editorial assistance theologically reliable?",
+        "a": "Yes. Editorial assistance is instructed to strictly base itself on the Bible (CNBB), Catechism of the Catholic Church, Compendium, and General Directory for Catechesis. All generated content includes references for you to audit."
       }
     ],
     "annual_compare": "on annual, it comes to {{price}}/month",

@@ -75,9 +75,9 @@
       "b3": "Historico e relatorios de frequencia"
     },
     "ai": {
-      "title": "Prepare encontros com ajuda da IA e revise tudo antes de usar",
+      "title": "Prepare encontros com assistência editorial e revise tudo antes de usar",
       "desc": "Crie roteiros, atividades e mensagens para as familias a partir do tema do encontro, sem abrir mao da revisao pastoral.",
-      "b1": "Roteiros de encontro com IA",
+      "b1": "Roteiros de encontro com assistência editorial",
       "b2": "Atividades e quizzes para adaptar",
       "b3": "Mensagens para enviar as familias"
     },
@@ -117,7 +117,7 @@
   "personas": [
     {
       "title": "Catequista",
-      "desc": "Organize sua turma, prepare encontros com IA e registre presença pelo celular."
+      "desc": "Organize sua turma, prepare encontros com assistência editorial e registre presença pelo celular."
     },
     {
       "title": "Coordenador Paroquial",
@@ -181,7 +181,7 @@
         "Até 3 turmas com 150 catequizandos no total",
         "Chamada e histórico no celular",
         "Calendário da turma",
-        "15 créditos de IA por mês"
+        "15 créditos editoriais por mês"
       ]
     },
     "unlimited": {
@@ -237,7 +237,7 @@
   "cta_badge": "Trial",
   "cta_see_plans": "Ver planos",
   "mock": {
-    "ai_title": "Gerador de Encontros IA",
+    "ai_title": "Assistência para encontros",
     "ai_subtitle": "Base teológica CNBB · Catecismo · Diretório",
     "prompt": "Prompt",
     "ai_example": "Encontro sobre os Sacramentos para crianças de 10 anos",
@@ -430,7 +430,7 @@
       {
         "criterion": "Preparar o encontro",
         "old": "Copiar de pastas, buscas soltas e improviso de última hora",
-        "next": "Roteiro com IA + Bíblia e Catecismo no mesmo lugar, para você revisar"
+        "next": "Roteiro com assistência editorial + Bíblia e Catecismo no mesmo lugar, para você revisar"
       },
       {
         "criterion": "Chamada e faltas",
@@ -537,7 +537,7 @@
       },
       {
         "title": "Próximo encontro pronto",
-        "desc": "Prepare o roteiro (com ajuda da IA, se quiser) e revise antes de usar."
+        "desc": "Prepare o roteiro (com assistência editorial, se quiser) e revise antes de usar."
       }
     ],
     "eyebrow": "Na prática"

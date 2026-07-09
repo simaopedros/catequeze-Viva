@@ -146,7 +146,7 @@ export function ContextShelf() {
             >
               {searchType === "bible" ? (
                 <>
-                  <span className="font-semibold">
+                  <span className="font-semibold tracking-tight text-[#071A2D]">
                     {r.book?.name} {r.chapter?.number}:{r.number}
                   </span>{" "}
                   —{" "}
@@ -156,7 +156,10 @@ export function ContextShelf() {
                 </>
               ) : (
                 <>
-                  <span className="font-semibold">CIC §{r.number}</span> —{" "}
+                  <span className="font-semibold tracking-tight text-[#071A2D]">
+                    CIC §{r.number}
+                  </span>{" "}
+                  —{" "}
                   <span className="text-muted-foreground line-clamp-2">
                     {r.question?.slice(0, 120)}
                   </span>
@@ -188,7 +191,12 @@ export function ContextShelf() {
                       {t(config.labelKey)}
                     </Badge>
                   </div>
-                  <p className="font-semibold text-xs truncate">{att.title}</p>
+                  <p
+                    className="truncate text-xs font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
+                    {att.title}
+                  </p>
                   <p className="text-xs text-muted-foreground mt-0.5 line-clamp-3 whitespace-pre-wrap">
                     {att.payload?.slice(0, 200)}
                   </p>

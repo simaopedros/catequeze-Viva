@@ -50,8 +50,8 @@
         "a": "Puede comenzar por el camino de catequista, conocer la estructura de la plataforma y avanzar al plan más adecuado cuando decida preparar encuentros con más frecuencia."
       },
       {
-        "q": "¿Cómo funcionan los créditos de IA?",
-        "a": "El Plan Único incluye 15 créditos de IA por mes. El Plan Ilimitado incluye 50 créditos de IA por mes. Un encuentro o actividad consume 1 crédito; la planificación anual consume 3 créditos."
+        "q": "¿Cómo funcionan los créditos editoriales?",
+        "a": "El Plan Único incluye 15 créditos editoriales por mes. El Plan Ilimitado incluye 50 créditos editoriales por mes. Un encuentro o actividad consume 1 crédito; la planificación anual consume 3 créditos."
       },
       {
         "q": "¿Cuál es la diferencia entre el Plan Único y el Plan Ilimitado?",
@@ -74,8 +74,8 @@
         "a": "Sí. Seguimos la LGPD, con cifrado en tránsito y en reposo. Los datos de menores reciben protección especial."
       },
       {
-        "q": "¿La IA es teológicamente confiable?",
-        "a": "Sí. La IA está instruida para basarse estrictamente en la Biblia (CNBB), Catecismo de la Iglesia Católica, Compendio y Directorio General para la Catequesis. Todo contenido generado incluye referencias para auditar."
+        "q": "¿La asistencia editorial es teológicamente confiable?",
+        "a": "Sí. La asistencia editorial está instruida para basarse estrictamente en la Biblia (CNBB), Catecismo de la Iglesia Católica, Compendio y Directorio General para la Catequesis. Todo contenido generado incluye referencias para auditar."
       }
     ],
     "annual_compare": "en anual, queda en {{price}}/mes",

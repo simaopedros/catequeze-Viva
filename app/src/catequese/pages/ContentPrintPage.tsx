@@ -337,7 +337,7 @@ export default function ContentPrintPage() {
                                     key={optionIndex}
                                     className="flex items-center gap-2 text-sm"
                                   >
-                                    <span className="flex h-5 w-5 items-center justify-center rounded-full border text-xs">
+                                    <span className="flex h-5 w-5 items-center justify-center rounded-sm border border-border/70 text-xs font-semibold text-[#071A2D]">
                                       {["A", "B", "C", "D"][optionIndex]}
                                     </span>
                                     <span>{option}</span>

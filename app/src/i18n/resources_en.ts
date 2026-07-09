@@ -1833,7 +1833,7 @@ export const content_en = {
       "ai_suggestions": "AI suggestions",
       "create_content": "Create content",
       "open_copilot": "Open editorial assistance",
-      "error_title_required": "Fill in at least the title before using AI.",
+      "error_title_required": "Fill in at least the title before using editorial assistance.",
       "error_required_fields": "Title and main content are required.",
       "error_enhance": "Error enhancing content.",
       "error_create": "Error creating content.",
@@ -1855,7 +1855,7 @@ export const content_en = {
       "enhancing": "Enhancing...",
       "enhance_ai": "Enhance with assistance",
       "ai_suggestions": "AI suggestions",
-      "success_enhanced": "Content enhanced by AI!",
+      "success_enhanced": "Content enhanced with editorial assistance!",
       "error_enhance": "Error enhancing content.",
       "success_saved": "Content saved.",
       "error_load": "Error loading content.",
@@ -2015,7 +2015,7 @@ export const dashboard_en = {
     "kpi_overdue_milestones": "Overdue milestones",
     "kpi_in_review": "In review",
     "kpi_published_in_period": "Published in period",
-    "kpi_ai_content_pct": "AI content %",
+    "kpi_ai_content_pct": "Editorial content %",
     "kpi_total_documents": "Total documents",
     "kpi_missing_consents": "Missing consents",
     "kpi_expiring_consents": "Expiring consents",
@@ -2158,7 +2158,7 @@ export const landing_en = {
         "b3": "Attendance reports to follow your class"
       },
       "ai": {
-        "title": "Prepare meetings with AI support while keeping pastoral review",
+        "title": "Prepare meetings with editorial assistance while keeping pastoral review",
         "desc": "Use AI to create scripts, activities, annual planning, and family messages from your catechesis context.",
         "b1": "AI meeting generator",
         "b2": "Automatic annual planning",
@@ -2200,7 +2200,7 @@ export const landing_en = {
     "personas": [
       {
         "title": "Catechist",
-        "desc": "Organize your class, prepare meetings with AI, and take attendance on mobile."
+        "desc": "Organize your class, prepare meetings with editorial assistance, and take attendance on mobile."
       },
       {
         "title": "Parish Coordinator",
@@ -2264,7 +2264,7 @@ export const landing_en = {
           "Up to 3 classes, 150 catechumens in total",
           "Attendance history on mobile",
           "Class calendar",
-          "15 AI credits per month"
+          "15 editorial credits per month"
         ]
       },
       "unlimited": {
@@ -2620,7 +2620,7 @@ export const landing_en = {
         },
         {
           "title": "Next meeting ready",
-          "desc": "Prep the outline (with AI help if you want) and review before using it."
+          "desc": "Prep the outline (with editorial assistance if you want) and review before using it."
         }
       ],
       "eyebrow": "In practice"
@@ -2632,14 +2632,14 @@ export const landing_en = {
 export const landingIa_en = {
     "hero": {
       "headline_line1": "Prepare incredible meetings",
-      "headline_line2": "in minutes with AI",
-      "subheadline": "Let AI generate the complete script: objective, activity, Bible reading, reflection, activity and prayer. Based on Catholic doctrine.",
+      "headline_line2": "in minutes with editorial assistance",
+      "subheadline": "Let editorial assistance generate the complete script: objective, activity, Bible reading, reflection, activity and prayer. Based on Catholic doctrine.",
       "badge": "Theologically trained AI",
       "cta_primary": "Try the AI",
       "cta_secondary": "See how it works",
       "trust_signals": "Single or Unlimited plan • CNBB theological base • Cancel anytime"
     },
-    "features_title": "AI that understands catechesis",
+    "features_title": "Assistance that understands catechesis",
     "features_subtitle": "Trained on the CNBB Bible, the Catechism and the Directory for Catechesis.",
     "features_order": [
       "ai-planner",
@@ -2650,10 +2650,10 @@ export const landingIa_en = {
       "sacraments"
     ],
     "ai_showcase_title": "Your next meeting ready in under 30 seconds",
-    "ai_showcase_subtitle": "Enter the theme and age group. AI generates the complete meeting — from welcome to closing prayer.",
+    "ai_showcase_subtitle": "Enter the theme and age group. Editorial assistance generates the complete meeting — from welcome to closing prayer.",
     "ai_showcase_cta": "Try the AI",
     "mission_title": "Less time preparing. More time evangelizing.",
-    "mission_text": "Every minute AI saves on preparation is an extra minute for what truly matters: being present for your catechumens.",
+    "mission_text": "Every minute editorial assistance saves on preparation is an extra minute for what truly matters: being present for your catechumens.",
     "mockup_dashboard": {
       "title": "Dashboard",
       "subtitle": "Catechesis overview",
@@ -3829,8 +3829,8 @@ export const public_en = {
           "a": "You can start on the catechist path, understand the platform structure, and move to the plan that fits you when you decide to prepare meetings more consistently."
         },
         {
-          "q": "How do AI credits work?",
-          "a": "Single includes 15 AI credits per month. Unlimited includes 50 AI credits per month. A meeting or activity uses 1 credit; annual planning uses 3 credits."
+          "q": "How do editorial credits work?",
+          "a": "Single includes 15 editorial credits per month. Unlimited includes 50 editorial credits per month. A meeting or activity uses 1 credit; annual planning uses 3 credits."
         },
         {
           "q": "What is the difference between Single and Unlimited?",
@@ -3853,8 +3853,8 @@ export const public_en = {
           "a": "Yes. We follow LGPD with encryption in transit and at rest. Children's data receives special protection."
         },
         {
-          "q": "Is the AI theologically reliable?",
-          "a": "Yes. The AI is instructed to strictly base itself on the Bible (CNBB), Catechism of the Catholic Church, Compendium, and General Directory for Catechesis. All generated content includes references for you to audit."
+          "q": "Is editorial assistance theologically reliable?",
+          "a": "Yes. Editorial assistance is instructed to strictly base itself on the Bible (CNBB), Catechism of the Catholic Church, Compendium, and General Directory for Catechesis. All generated content includes references for you to audit."
         }
       ],
       "annual_compare": "on annual, it comes to {{price}}/month",

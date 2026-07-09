@@ -42,7 +42,7 @@
     "most_popular": "Mais Popular",
     "plan_desc": {
       "single": "Para um catequista organizar uma turma com clareza, histórico e preparação em um só fluxo.",
-      "unlimited": "Para paróquias e dioceses centralizarem equipes, turmas, famílias e IA no mesmo sistema."
+      "unlimited": "Para paróquias e dioceses centralizarem equipes, turmas, famílias e assistência editorial no mesmo sistema."
     },
     "faq": [
       {
@@ -50,8 +50,8 @@
         "a": "Você pode testar a plataforma por 7 dias sem cartão de crédito, conhecer a rotina completa e só decidir pelo plano quando fizer sentido continuar."
       },
       {
-        "q": "Como funcionam os créditos de IA?",
-        "a": "No Plano Único, você recebe 15 créditos de IA por mês. No Plano Ilimitado, recebe 50 créditos de IA por mês. Encontro e atividade consomem 1 crédito; planejamento anual consome 3 créditos."
+        "q": "Como funcionam os créditos editoriais?",
+        "a": "No Plano Único, você recebe 15 créditos editoriais por mês. No Plano Ilimitado, recebe 50 créditos editoriais por mês. Encontro e atividade consomem 1 crédito; planejamento anual consome 3 créditos."
       },
       {
         "q": "Qual a diferença entre o Plano Único e o Plano Ilimitado?",
@@ -74,8 +74,8 @@
         "a": "Sim. Seguimos a LGPD, com criptografia em trânsito e em repouso. Dados de crianças recebem proteção especial."
       },
       {
-        "q": "A IA é teologicamente confiável?",
-        "a": "Sim. A IA é instruída a se basear estritamente na Bíblia (CNBB), Catecismo da Igreja Católica, Compêndio e Diretório Geral para a Catequese. Todo conteúdo gerado inclui referências para você auditar."
+        "q": "A assistência editorial é teologicamente confiável?",
+        "a": "Sim. A assistência editorial é instruída a se basear estritamente na Bíblia (CNBB), Catecismo da Igreja Católica, Compêndio e Diretório Geral para a Catequese. Todo conteúdo gerado inclui referências para você auditar."
       }
     ],
     "annual_compare": "no anual, sai por {{price}}/mês",

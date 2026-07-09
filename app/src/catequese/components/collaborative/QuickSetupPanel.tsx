@@ -320,12 +320,15 @@ export function QuickSetupPanel({
                   )}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     {contentId
                       ? t("planner.selected_content")
                       : t("planner.selected_meeting")}
                   </p>
-                  <p className="truncate text-sm font-semibold">
+                  <p
+                    className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
                     {selectedSourceTitle || t("planner.untitled")}
                   </p>
                   {selectedSourceTheme && (
@@ -450,7 +453,10 @@ export function QuickSetupPanel({
                           : "border-border hover:border-[#071A2D]/40"
                       }`}
                     >
-                      <p className="text-sm font-semibold">
+                      <p
+                        className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
                         {t(option.labelKey)}
                       </p>
                       <p className="mt-1 text-xs leading-snug text-muted-foreground">

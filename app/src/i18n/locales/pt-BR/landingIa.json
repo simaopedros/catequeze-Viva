@@ -1,14 +1,14 @@
 {
   "hero": {
     "headline_line1": "Prepare encontros incríveis",
-    "headline_line2": "em minutos com IA",
-    "subheadline": "Deixe a IA gerar o roteiro completo: objetivo, dinâmica, leitura bíblica, reflexão, atividade e oração. Baseado na doutrina católica.",
-    "badge": "IA teologicamente treinada",
-    "cta_primary": "Experimentar a IA",
+    "headline_line2": "em minutos com assistência editorial",
+    "subheadline": "Deixe a assistência editorial gerar o roteiro completo: objetivo, dinâmica, leitura bíblica, reflexão, atividade e oração. Baseado na doutrina católica.",
+    "badge": "Assistência teologicamente treinada",
+    "cta_primary": "Experimentar a assistência editorial",
     "cta_secondary": "Ver como funciona",
     "trust_signals": "Plano Único ou Ilimitado • Base teológica CNBB • Cancele quando quiser"
   },
-  "features_title": "IA que entende de catequese",
+  "features_title": "Assistência que entende de catequese",
   "features_subtitle": "Treinada com a Bíblia CNBB, o Catecismo e o Diretório para a Catequese.",
   "features_order": [
     "ai-planner",
@@ -19,10 +19,10 @@
     "sacraments"
   ],
   "ai_showcase_title": "Seu próximo encontro pronto em menos de 30 segundos",
-  "ai_showcase_subtitle": "Digite o tema e a faixa etária. A IA gera o encontro completo — da acolhida à oração final.",
-  "ai_showcase_cta": "Experimentar a IA",
+  "ai_showcase_subtitle": "Digite o tema e a faixa etária. A assistência editorial gera o encontro completo — da acolhida à oração final.",
+  "ai_showcase_cta": "Experimentar a assistência editorial",
   "mission_title": "Menos tempo preparando. Mais tempo evangelizando.",
-  "mission_text": "Cada minuto que a IA economiza na preparação é um minuto a mais para o que realmente importa: estar presente para seus catequizandos.",
+  "mission_text": "Cada minuto que a assistência editorial economiza na preparação é um minuto a mais para o que realmente importa: estar presente para seus catequizandos.",
   "mockup_dashboard": {
     "title": "Painel",
     "subtitle": "Visão geral da catequese",

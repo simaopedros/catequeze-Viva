@@ -1,14 +1,14 @@
 {
   "hero": {
     "headline_line1": "Prepare incredible meetings",
-    "headline_line2": "in minutes with AI",
-    "subheadline": "Let AI generate the complete script: objective, activity, Bible reading, reflection, activity and prayer. Based on Catholic doctrine.",
+    "headline_line2": "in minutes with editorial assistance",
+    "subheadline": "Let editorial assistance generate the complete script: objective, activity, Bible reading, reflection, activity and prayer. Based on Catholic doctrine.",
     "badge": "Theologically trained AI",
     "cta_primary": "Try the AI",
     "cta_secondary": "See how it works",
     "trust_signals": "Single or Unlimited plan • CNBB theological base • Cancel anytime"
   },
-  "features_title": "AI that understands catechesis",
+  "features_title": "Assistance that understands catechesis",
   "features_subtitle": "Trained on the CNBB Bible, the Catechism and the Directory for Catechesis.",
   "features_order": [
     "ai-planner",
@@ -19,10 +19,10 @@
     "sacraments"
   ],
   "ai_showcase_title": "Your next meeting ready in under 30 seconds",
-  "ai_showcase_subtitle": "Enter the theme and age group. AI generates the complete meeting — from welcome to closing prayer.",
+  "ai_showcase_subtitle": "Enter the theme and age group. Editorial assistance generates the complete meeting — from welcome to closing prayer.",
   "ai_showcase_cta": "Try the AI",
   "mission_title": "Less time preparing. More time evangelizing.",
-  "mission_text": "Every minute AI saves on preparation is an extra minute for what truly matters: being present for your catechumens.",
+  "mission_text": "Every minute editorial assistance saves on preparation is an extra minute for what truly matters: being present for your catechumens.",
   "mockup_dashboard": {
     "title": "Dashboard",
     "subtitle": "Catechesis overview",

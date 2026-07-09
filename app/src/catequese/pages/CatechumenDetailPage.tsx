@@ -888,15 +888,19 @@ function PastoralAnalysisInline({
               <table className="w-full text-xs">
                 <thead className="bg-muted/60">
                   <tr>
-                    <th className="p-2 text-left font-medium">{t("month")}</th>
-                    <th className="p-2 text-center font-medium">
+                    <th className="p-2 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      {t("month")}
+                    </th>
+                    <th className="p-2 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       {t("present")}
                     </th>
-                    <th className="p-2 text-center font-medium">{t("late")}</th>
-                    <th className="p-2 text-center font-medium">
+                    <th className="p-2 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      {t("late")}
+                    </th>
+                    <th className="p-2 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       {t("absent")}
                     </th>
-                    <th className="p-2 text-center font-medium">
+                    <th className="p-2 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       {t("meetings")}
                     </th>
                   </tr>
@@ -904,7 +908,12 @@ function PastoralAnalysisInline({
                 <tbody>
                   {data.monthlyPresence.map((row: any) => (
                     <tr key={row.month} className="border-t">
-                      <td className="p-2 font-medium">{row.month}</td>
+                      <td
+                        className="p-2 font-semibold tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
+                        {row.month}
+                      </td>
                       <td className="p-2 text-center text-[#071A2D]">
                         {row.present}
                       </td>
@@ -1502,7 +1511,10 @@ export default function CatechumenDetailPage() {
                     <span className="text-xs text-muted-foreground">
                       {new Date(a.meetingDate).toLocaleDateString()}
                     </span>{" "}
-                    <span className="font-semibold tracking-tight text-foreground">
+                    <span
+                      className="font-semibold tracking-tight text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
                       {a.meetingTitle || t("catechumens.detail_meeting")}
                     </span>
                     <span className="text-overline text-muted-foreground ml-1">

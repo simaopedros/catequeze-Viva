@@ -116,8 +116,8 @@ export const SHOWCASES: FeatureShowcaseItem[] = [
   },
   {
     id: 'ai-planner',
-    title: 'Encontros preparados por IA',
-    desc: 'IA teologicamente orientada para criar roteiros, atividades, quizzes e mensagens para as famílias em segundos.',
+    title: 'Encontros com assistência editorial',
+    desc: 'Assistência editorial teologicamente orientada para criar roteiros, atividades, quizzes e mensagens para as famílias em segundos.',
     bullets: [
       'Planejamento anual automático de encontros',
       'Base teológica: Bíblia CNBB, Catecismo e Diretório',
@@ -198,7 +198,7 @@ export const STEPS: Step[] = [
   {
     number: '2',
     title: 'Acompanhe os encontros',
-    desc: 'Faça a chamada pelo celular, prepare roteiros com a biblioteca pastoral e a IA integrada. Tudo ao alcance de um toque.',
+    desc: 'Faça a chamada pelo celular, prepare roteiros com a biblioteca pastoral e a assistência editorial. Tudo ao alcance de um toque.',
   },
   {
     number: '3',
@@ -219,7 +219,7 @@ export const PRICING_PREVIEW: PricingPlan[] = [
       '1 paróquia',
       'Até 3 turmas e 150 catequizandos no total',
       'Presenças e calendário litúrgico',
-      '15 créditos de IA/mês',
+      '15 créditos editoriais/mês',
     ],
     priceCents: PLANS.single.prices.monthlyCents,
     priceCentsAnnual: PLANS.single.prices.annualCents,
@@ -234,9 +234,9 @@ export const PRICING_PREVIEW: PricingPlan[] = [
     features: [
       'Paróquias e turmas ilimitadas',
       'Catequizandos e catequistas ilimitados',
-      'Gerador de encontros e atividades por IA',
+      'Gerador de encontros e atividades com assistência editorial',
       'Comunicação integrada',
-      '50 créditos de IA/mês',
+      '50 créditos editoriais/mês',
     ],
     highlight: true,
     priceCents: PLANS.unlimited.prices.monthlyCents,

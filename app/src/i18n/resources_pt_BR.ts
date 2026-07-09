@@ -1830,7 +1830,7 @@ export const content_pt_BR = {
       "enhance_ai": "Melhorar com assistência",
       "enhancing": "Melhorando...",
       "enhance_hint": "Expande e melhora o rascunho, sugere referências bíblicas e do Catecismo, e completa campos vazios.",
-      "ai_suggestions": "Sugestões da IA",
+      "ai_suggestions": "Sugestões editoriais",
       "create_content": "Criar conteúdo",
       "open_copilot": "Abrir assistência editorial",
       "error_title_required": "Preencha ao menos o título antes de usar a assistência editorial.",
@@ -1854,7 +1854,7 @@ export const content_pt_BR = {
       "duration_minutes": "Duração estimada (minutos)",
       "enhancing": "Melhorando...",
       "enhance_ai": "Melhorar com assistência",
-      "ai_suggestions": "Sugestões da IA",
+      "ai_suggestions": "Sugestões editoriais",
       "success_enhanced": "Conteúdo melhorado com assistência editorial.",
       "error_enhance": "Erro ao melhorar o conteúdo.",
       "success_saved": "Conteúdo salvo.",
@@ -2015,7 +2015,7 @@ export const dashboard_pt_BR = {
     "kpi_overdue_milestones": "Marcos atrasados",
     "kpi_in_review": "Em revisão",
     "kpi_published_in_period": "Publicados no período",
-    "kpi_ai_content_pct": "% Conteúdo IA",
+    "kpi_ai_content_pct": "% Conteúdo editorial",
     "kpi_total_documents": "Documentos totais",
     "kpi_missing_consents": "Consentimentos ausentes",
     "kpi_expiring_consents": "Consentimentos expirando",
@@ -2158,9 +2158,9 @@ export const landing_pt_BR = {
         "b3": "Historico e relatorios de frequencia"
       },
       "ai": {
-        "title": "Prepare encontros com ajuda da IA e revise tudo antes de usar",
+        "title": "Prepare encontros com assistência editorial e revise tudo antes de usar",
         "desc": "Crie roteiros, atividades e mensagens para as familias a partir do tema do encontro, sem abrir mao da revisao pastoral.",
-        "b1": "Roteiros de encontro com IA",
+        "b1": "Roteiros de encontro com assistência editorial",
         "b2": "Atividades e quizzes para adaptar",
         "b3": "Mensagens para enviar as familias"
       },
@@ -2200,7 +2200,7 @@ export const landing_pt_BR = {
     "personas": [
       {
         "title": "Catequista",
-        "desc": "Organize sua turma, prepare encontros com IA e registre presença pelo celular."
+        "desc": "Organize sua turma, prepare encontros com assistência editorial e registre presença pelo celular."
       },
       {
         "title": "Coordenador Paroquial",
@@ -2264,7 +2264,7 @@ export const landing_pt_BR = {
           "Até 3 turmas com 150 catequizandos no total",
           "Chamada e histórico no celular",
           "Calendário da turma",
-          "15 créditos de IA por mês"
+          "15 créditos editoriais por mês"
         ]
       },
       "unlimited": {
@@ -2320,7 +2320,7 @@ export const landing_pt_BR = {
     "cta_badge": "Trial",
     "cta_see_plans": "Ver planos",
     "mock": {
-      "ai_title": "Gerador de Encontros IA",
+      "ai_title": "Assistência para encontros",
       "ai_subtitle": "Base teológica CNBB · Catecismo · Diretório",
       "prompt": "Prompt",
       "ai_example": "Encontro sobre os Sacramentos para crianças de 10 anos",
@@ -2513,7 +2513,7 @@ export const landing_pt_BR = {
         {
           "criterion": "Preparar o encontro",
           "old": "Copiar de pastas, buscas soltas e improviso de última hora",
-          "next": "Roteiro com IA + Bíblia e Catecismo no mesmo lugar, para você revisar"
+          "next": "Roteiro com assistência editorial + Bíblia e Catecismo no mesmo lugar, para você revisar"
         },
         {
           "criterion": "Chamada e faltas",
@@ -2620,7 +2620,7 @@ export const landing_pt_BR = {
         },
         {
           "title": "Próximo encontro pronto",
-          "desc": "Prepare o roteiro (com ajuda da IA, se quiser) e revise antes de usar."
+          "desc": "Prepare o roteiro (com assistência editorial, se quiser) e revise antes de usar."
         }
       ],
       "eyebrow": "Na prática"
@@ -2632,14 +2632,14 @@ export const landing_pt_BR = {
 export const landingIa_pt_BR = {
     "hero": {
       "headline_line1": "Prepare encontros incríveis",
-      "headline_line2": "em minutos com IA",
-      "subheadline": "Deixe a IA gerar o roteiro completo: objetivo, dinâmica, leitura bíblica, reflexão, atividade e oração. Baseado na doutrina católica.",
-      "badge": "IA teologicamente treinada",
-      "cta_primary": "Experimentar a IA",
+      "headline_line2": "em minutos com assistência editorial",
+      "subheadline": "Deixe a assistência editorial gerar o roteiro completo: objetivo, dinâmica, leitura bíblica, reflexão, atividade e oração. Baseado na doutrina católica.",
+      "badge": "Assistência teologicamente treinada",
+      "cta_primary": "Experimentar a assistência editorial",
       "cta_secondary": "Ver como funciona",
       "trust_signals": "Plano Único ou Ilimitado • Base teológica CNBB • Cancele quando quiser"
     },
-    "features_title": "IA que entende de catequese",
+    "features_title": "Assistência que entende de catequese",
     "features_subtitle": "Treinada com a Bíblia CNBB, o Catecismo e o Diretório para a Catequese.",
     "features_order": [
       "ai-planner",
@@ -2650,10 +2650,10 @@ export const landingIa_pt_BR = {
       "sacraments"
     ],
     "ai_showcase_title": "Seu próximo encontro pronto em menos de 30 segundos",
-    "ai_showcase_subtitle": "Digite o tema e a faixa etária. A IA gera o encontro completo — da acolhida à oração final.",
-    "ai_showcase_cta": "Experimentar a IA",
+    "ai_showcase_subtitle": "Digite o tema e a faixa etária. A assistência editorial gera o encontro completo — da acolhida à oração final.",
+    "ai_showcase_cta": "Experimentar a assistência editorial",
     "mission_title": "Menos tempo preparando. Mais tempo evangelizando.",
-    "mission_text": "Cada minuto que a IA economiza na preparação é um minuto a mais para o que realmente importa: estar presente para seus catequizandos.",
+    "mission_text": "Cada minuto que a assistência editorial economiza na preparação é um minuto a mais para o que realmente importa: estar presente para seus catequizandos.",
     "mockup_dashboard": {
       "title": "Painel",
       "subtitle": "Visão geral da catequese",
@@ -2847,8 +2847,8 @@ export const landingSistema_pt_BR = {
       "library",
       "ai-planner"
     ],
-    "ai_showcase_title": "E também: preparação de encontros com IA",
-    "ai_showcase_subtitle": "Além da gestão, a plataforma inclui IA para criar roteiros de encontros em segundos.",
+    "ai_showcase_title": "E também: preparação de encontros com assistência editorial",
+    "ai_showcase_subtitle": "Além da gestão, a plataforma inclui assistência editorial para criar roteiros de encontros em segundos.",
     "mockup_dashboard": {
       "title": "Painel",
       "subtitle": "Visão geral da catequese",
@@ -3250,7 +3250,7 @@ export const onboarding_pt_BR = {
       "subtitle": "Comece pelo nome da primeira turma. Horário e local podem ficar para depois.",
       "included": "Ao entrar, você já terá:",
       "isolated_space": "Espaço pessoal isolado",
-      "ai_generator": "Gerador de encontros com IA",
+      "ai_generator": "Assistência para encontros",
       "liturgical_calendar": "Calendário litúrgico",
       "schedule_label": "Horário (opcional)",
       "day": "Dia da semana",
@@ -3821,7 +3821,7 @@ export const public_pt_BR = {
       "most_popular": "Mais Popular",
       "plan_desc": {
         "single": "Para um catequista organizar uma turma com clareza, histórico e preparação em um só fluxo.",
-        "unlimited": "Para paróquias e dioceses centralizarem equipes, turmas, famílias e IA no mesmo sistema."
+        "unlimited": "Para paróquias e dioceses centralizarem equipes, turmas, famílias e assistência editorial no mesmo sistema."
       },
       "faq": [
         {
@@ -3829,8 +3829,8 @@ export const public_pt_BR = {
           "a": "Você pode testar a plataforma por 7 dias sem cartão de crédito, conhecer a rotina completa e só decidir pelo plano quando fizer sentido continuar."
         },
         {
-          "q": "Como funcionam os créditos de IA?",
-          "a": "No Plano Único, você recebe 15 créditos de IA por mês. No Plano Ilimitado, recebe 50 créditos de IA por mês. Encontro e atividade consomem 1 crédito; planejamento anual consome 3 créditos."
+          "q": "Como funcionam os créditos editoriais?",
+          "a": "No Plano Único, você recebe 15 créditos editoriais por mês. No Plano Ilimitado, recebe 50 créditos editoriais por mês. Encontro e atividade consomem 1 crédito; planejamento anual consome 3 créditos."
         },
         {
           "q": "Qual a diferença entre o Plano Único e o Plano Ilimitado?",
@@ -3853,8 +3853,8 @@ export const public_pt_BR = {
           "a": "Sim. Seguimos a LGPD, com criptografia em trânsito e em repouso. Dados de crianças recebem proteção especial."
         },
         {
-          "q": "A IA é teologicamente confiável?",
-          "a": "Sim. A IA é instruída a se basear estritamente na Bíblia (CNBB), Catecismo da Igreja Católica, Compêndio e Diretório Geral para a Catequese. Todo conteúdo gerado inclui referências para você auditar."
+          "q": "A assistência editorial é teologicamente confiável?",
+          "a": "Sim. A assistência editorial é instruída a se basear estritamente na Bíblia (CNBB), Catecismo da Igreja Católica, Compêndio e Diretório Geral para a Catequese. Todo conteúdo gerado inclui referências para você auditar."
         }
       ],
       "annual_compare": "no anual, sai por {{price}}/mês",
@@ -4259,7 +4259,7 @@ export const tour_pt_BR = {
         "description": "Gerencie suas turmas, catequistas e encontros. Cada turma tem seu próprio calendário e registo de presenças."
       },
       "ai": {
-        "title": "Gerador IA",
+        "title": "Assistência editorial",
         "description": "Crie encontros completos de catequese com inteligência artificial — orações, dinâmicas, referências bíblicas e do Catecismo."
       },
       "messages": {
