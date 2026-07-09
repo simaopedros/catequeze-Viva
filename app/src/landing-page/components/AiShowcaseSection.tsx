@@ -10,18 +10,18 @@ export function AiShowcaseSection({ ns = 'landing', responsiveCtas = false }: { 
   const { ref, className } = useScrollReveal();
 
   return (
-    <section className="relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/5" />
-      <div className="relative max-w-4xl mx-auto px-4 py-20 text-center space-y-6">
+    <section className="relative overflow-hidden border-y border-border/70 bg-[#F7F4EE]">
+      <div className="relative mx-auto max-w-4xl space-y-6 px-4 py-20 text-center">
         <div ref={ref} className={className}>
-          <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/20 px-4 py-1.5 text-sm font-medium text-primary mb-6">
-            <Sparkles className="h-4 w-4" />
+          <div className="mb-6 inline-flex items-center gap-2 rounded-sm border border-border/70 bg-white px-4 py-1.5 text-sm font-medium text-[#071A2D]">
+            <Sparkles className="h-4 w-4 text-[#D39A2B]" />
             {t('ai_showcase_badge')}
           </div>
-          <h2 className="text-3xl sm:text-5xl font-bold tracking-tight">{t('ai_showcase_title')}</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mt-4">{t('ai_showcase_subtitle')}</p>
+          <div className="mx-auto mb-4 h-px w-10 bg-[#D39A2B]" aria-hidden />
+          <h2 className="text-3xl font-semibold tracking-tight text-[#071A2D] sm:text-5xl" style={{ fontFamily: 'var(--font-brand-display)' }}>{t('ai_showcase_title')}</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">{t('ai_showcase_subtitle')}</p>
           <div className="mt-8 flex justify-center">
-            <Link to="/pricing" onClick={() => trackMarketingEvent('primary_cta_clicked', { landing: ns, placement: 'ai_showcase', destination: '/pricing' })} className={cn('inline-flex h-12 items-center justify-center rounded-xl bg-primary text-primary-foreground px-8 text-sm font-semibold hover:bg-primary/90 transition-all hover:shadow-lg hover:shadow-primary/25', responsiveCtas && 'h-auto min-h-12 w-full max-w-sm text-center leading-snug whitespace-normal sm:w-auto')}>
+            <Link to="/pricing" onClick={() => trackMarketingEvent('primary_cta_clicked', { landing: ns, placement: 'ai_showcase', destination: '/pricing' })} className={cn('inline-flex h-12 items-center justify-center rounded-sm bg-[#071A2D] px-8 text-sm font-semibold text-white transition-colors hover:bg-[#0a2540]', responsiveCtas && 'h-auto min-h-12 w-full max-w-sm text-center leading-snug whitespace-normal sm:w-auto')}>
               {t('ai_showcase_cta')}
               <ChevronRight className="ml-2 h-4 w-4 shrink-0" />
             </Link>

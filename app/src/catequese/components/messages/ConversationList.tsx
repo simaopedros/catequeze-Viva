@@ -186,7 +186,7 @@ export function ConversationList({ conversations, activeId, onSelect, onNewConve
                 className={cn(
                   'w-full flex items-center gap-3 px-3 py-2.5 text-left transition-all',
                   isActive
-                    ? 'bg-primary/8 border-l-2 border-l-primary'
+                    ? 'border-l-2 border-l-[#071A2D] bg-[#071A2D]/05'
                     : 'hover:bg-muted/40 border-l-2 border-l-transparent'
                 )}
               >

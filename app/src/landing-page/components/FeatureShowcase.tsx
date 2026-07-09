@@ -35,15 +35,16 @@ export function FeatureShowcase({ showcase, ns = 'landing' }: FeatureShowcasePro
         )}
       >
         <div className="flex-1 space-y-5">
-          <div className="inline-flex rounded-xl bg-primary/10 p-3">
-            <Icon className="h-6 w-6 text-primary" />
+          <div className="inline-flex h-11 w-11 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
+            <Icon className="h-5 w-5" />
           </div>
-          <h3 className="text-2xl sm:text-3xl font-bold">{title}</h3>
-          <p className="text-muted-foreground leading-relaxed">{desc}</p>
+          <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+          <h3 className="text-2xl font-semibold tracking-tight text-[#071A2D] sm:text-3xl" style={{ fontFamily: 'var(--font-brand-display)' }}>{title}</h3>
+          <p className="leading-relaxed text-muted-foreground">{desc}</p>
           <ul className="space-y-2.5">
             {bullets.map((bullet: string) => (
               <li key={bullet} className="flex items-start gap-2.5 text-sm">
-                <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#071A2D]" />
                 <span>{bullet}</span>
               </li>
             ))}

@@ -65,18 +65,19 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
 
   return (
     <section id="planos" className="scroll-mt-20 max-w-5xl mx-auto px-4 py-20">
-      <div ref={headerRef} className={`text-center mb-10 space-y-3 ${headerClass}`}>
-        <h2 className="text-3xl sm:text-4xl font-bold">{tr("pricing_title")}</h2>
-        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">{tr("pricing_subtitle")}</p>
-        <p className="text-sm font-medium text-primary">{tr("price_trial_note")}</p>
+      <div ref={headerRef} className={`mb-10 space-y-3 text-center ${headerClass}`}>
+        <div className="mx-auto h-px w-10 bg-[#D39A2B]" aria-hidden />
+        <h2 className="text-3xl font-semibold tracking-tight text-[#071A2D] sm:text-4xl" style={{ fontFamily: "var(--font-brand-display)" }}>{tr("pricing_title")}</h2>
+        <p className="mx-auto max-w-3xl text-lg text-muted-foreground">{tr("pricing_subtitle")}</p>
+        <p className="text-sm font-medium text-[#071A2D]">{tr("price_trial_note")}</p>
 
-        <div className="inline-flex items-center rounded-full border bg-muted/40 p-1 mt-2">
+        <div className="mt-2 inline-flex items-center rounded-sm border border-border/70 bg-muted/40 p-1">
           <button
             type="button"
             onClick={() => setInterval("monthly")}
             className={cn(
-              "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
-              interval === "monthly" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              "rounded-sm px-4 py-1.5 text-sm font-medium transition-colors",
+              interval === "monthly" ? "bg-white text-foreground" : "text-muted-foreground hover:text-foreground"
             )}
           >
             {tr("price_monthly")}
@@ -85,12 +86,12 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
             type="button"
             onClick={() => setInterval("annual")}
             className={cn(
-              "rounded-full px-4 py-1.5 text-sm font-medium transition-colors inline-flex items-center gap-1.5",
-              interval === "annual" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              "inline-flex items-center gap-1.5 rounded-sm px-4 py-1.5 text-sm font-medium transition-colors",
+              interval === "annual" ? "bg-white text-foreground" : "text-muted-foreground hover:text-foreground"
             )}
           >
             {tr("price_annual")}
-            <span className="rounded-full bg-primary/10 text-primary text-[10px] font-bold px-1.5 py-0.5">
+            <span className="rounded-sm bg-[#071A2D]/08 px-1.5 py-0.5 text-[10px] font-bold text-[#071A2D]">
               {tr("annual_discount")}
             </span>
           </button>
@@ -173,34 +174,34 @@ function PricingPreviewCard({
     <div
       ref={ref as any}
       id={`planos-${plan.planId}`}
-      className={`rounded-2xl border bg-card p-6 transition-colors relative flex flex-col scroll-mt-24 ${className} ${
-        plan.highlight ? "border-primary/40 bg-primary/[0.03] shadow-elevation-sm" : "border-border/70"
+      className={`relative flex scroll-mt-24 flex-col rounded-sm border bg-white p-6 transition-colors ${className} ${
+        plan.highlight ? "border-[#071A2D]/30 ring-1 ring-[#071A2D]/10" : "border-border/70"
       }`}
     >
       {plan.highlight && (
-        <div className="inline-flex items-center gap-1 rounded-full bg-primary/10 text-primary text-caption font-bold px-3 py-1 mb-3 self-start">
+        <div className="mb-3 inline-flex items-center gap-1 self-start rounded-sm bg-[#071A2D] px-3 py-1 text-caption font-semibold text-white">
           <Star className="h-3 w-3" /> {tr("price_popular")}
         </div>
       )}
-      <div className="mb-3 inline-flex self-start rounded-full bg-muted/70 px-3 py-1 text-[11px] font-medium text-muted-foreground">
+      <div className="mb-3 inline-flex self-start rounded-sm bg-muted/70 px-3 py-1 text-[11px] font-medium text-muted-foreground">
         {audience}
       </div>
-      <h3 className="text-xl font-bold">{name}</h3>
-      <div className="mt-3 flex items-baseline gap-1 flex-wrap">
-        <span className="text-3xl font-bold">{priced.display}</span>
+      <h3 className="text-xl font-semibold tracking-tight text-[#071A2D]">{name}</h3>
+      <div className="mt-3 flex flex-wrap items-baseline gap-1">
+        <span className="text-3xl font-semibold tracking-tight text-[#071A2D]">{priced.display}</span>
         <span className="text-sm text-muted-foreground">{tr(priced.periodKey)}</span>
       </div>
       {priced.monthlyEquivalent && (
-        <p className="text-xs text-muted-foreground mt-1">
+        <p className="mt-1 text-xs text-muted-foreground">
           {tr("price_annual_equivalent", { price: priced.monthlyEquivalent })}
         </p>
       )}
-      <p className="text-xs text-primary font-medium mt-1">{tr("price_trial_badge")}</p>
-      <p className="text-sm text-muted-foreground mt-2">{desc}</p>
-      <ul className="mt-4 space-y-2 text-sm flex-1">
+      <p className="mt-1 text-xs font-medium text-[#071A2D]">{tr("price_trial_badge")}</p>
+      <p className="mt-2 text-sm text-muted-foreground">{desc}</p>
+      <ul className="mt-4 flex-1 space-y-2 text-sm">
         {features.map((f) => (
           <li key={f} className="flex items-start gap-2">
-            <Check className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+            <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#071A2D]" />
             <span>{f}</span>
           </li>
         ))}

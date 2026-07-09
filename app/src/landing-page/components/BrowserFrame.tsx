@@ -20,7 +20,7 @@ export function BrowserFrame({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-xl border border-primary/15 bg-card shadow-[0_24px_60px_-20px_rgba(7,26,45,0.35)] ring-1 ring-black/[0.04]",
+        "overflow-hidden rounded-sm border border-border/70 bg-white shadow-[0_16px_40px_-20px_rgba(7,26,45,0.28)] ring-1 ring-black/[0.03]",
         className
       )}
     >
@@ -30,7 +30,7 @@ export function BrowserFrame({
           <span className="h-2.5 w-2.5 rounded-full bg-[#D0D0D0]" />
           <span className="h-2.5 w-2.5 rounded-full bg-[#D0D0D0]" />
         </div>
-        <div className="mx-auto flex-1 max-w-[220px] rounded-md bg-white/90 px-3 py-1 text-center text-[11px] text-muted-foreground truncate border border-border/50">
+        <div className="mx-auto max-w-[220px] flex-1 truncate rounded-sm border border-border/50 bg-white/90 px-3 py-1 text-center text-[11px] text-muted-foreground">
           {url}
         </div>
         <div className="w-10" aria-hidden />

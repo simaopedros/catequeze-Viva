@@ -7,11 +7,12 @@ export function MissionSection({ ns = 'landing' }: { ns?: string }) {
   const { ref, className } = useScrollReveal();
 
   return (
-    <section className="bg-gradient-to-br from-primary/5 via-background to-accent/5 border-y">
-      <div ref={ref} className={`max-w-3xl mx-auto px-4 py-20 text-center space-y-4 ${className}`}>
+    <section className="border-y border-border/70 bg-white">
+      <div ref={ref} className={`mx-auto max-w-3xl space-y-4 px-4 py-20 text-center ${className}`}>
         <BrandMedallion className="mb-2" />
-        <h2 className="text-3xl sm:text-4xl font-bold">{t('mission_title')}</h2>
-        <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">{t('mission_text')}</p>
+        <div className="mx-auto h-px w-10 bg-[#D39A2B]" aria-hidden />
+        <h2 className="text-3xl font-semibold tracking-tight text-[#071A2D] sm:text-4xl" style={{ fontFamily: 'var(--font-brand-display)' }}>{t('mission_title')}</h2>
+        <p className="mx-auto max-w-2xl text-lg leading-relaxed text-muted-foreground">{t('mission_text')}</p>
       </div>
     </section>
   );

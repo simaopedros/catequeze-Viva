@@ -17,10 +17,11 @@ export function PersonasSection({ ns = 'landing' }: { ns?: string }) {
   }));
 
   return (
-    <section className="border-y bg-card/50 backdrop-blur-sm">
+    <section className="border-y border-border/70 bg-[#F7F4EE]">
       <div className="max-w-6xl mx-auto px-4 py-16">
         <div ref={headerRef} className={`text-center mb-10 space-y-3 ${headerClass}`}>
-          <h2 className="text-3xl sm:text-4xl font-bold">{t('personas_title')}</h2>
+          <div className="mx-auto h-px w-10 bg-[#D39A2B]" aria-hidden />
+          <h2 className="text-3xl font-semibold tracking-tight text-[#071A2D] sm:text-4xl" style={{ fontFamily: 'var(--font-brand-display)' }}>{t('personas_title')}</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             {t('personas_subtitle')}
           </p>
@@ -40,12 +41,12 @@ function PersonaCard({ persona, delay, icon: Icon }: { persona: any; delay: numb
   const { ref, className } = useScrollReveal({ delay });
 
   return (
-    <div ref={ref} className={`rounded-xl border bg-card p-5 space-y-3 hover:shadow-md hover:border-primary/20 transition-all ${className}`}>
-      <div className="inline-flex rounded-lg bg-primary/10 p-2">
-        <Icon className="h-5 w-5 text-primary" />
+    <div ref={ref} className={`space-y-3 rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-[#071A2D]/25 ${className}`}>
+      <div className="inline-flex h-9 w-9 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
+        <Icon className="h-4 w-4" />
       </div>
-      <h3 className="font-semibold text-sm">{persona.title}</h3>
-      <p className="text-xs text-muted-foreground leading-relaxed">{persona.desc}</p>
+      <h3 className="text-sm font-semibold text-[#071A2D]">{persona.title}</h3>
+      <p className="text-xs leading-relaxed text-muted-foreground">{persona.desc}</p>
     </div>
   );
 }

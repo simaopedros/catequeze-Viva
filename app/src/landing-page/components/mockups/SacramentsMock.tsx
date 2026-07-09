@@ -15,14 +15,14 @@ export function SacramentsMock({ ns = 'landing' }: { ns?: string }) {
   return (
     <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-overline sm:text-xs">
       <div>
-        <p className="font-bold text-sm">{t('mockup_sacraments.title')}</p>
+        <p className="font-semibold text-sm">{t('mockup_sacraments.title')}</p>
         <p className="text-muted-foreground">{t('mockup_sacraments.subtitle')}</p>
       </div>
 
-      <div className="rounded-lg border bg-card p-3">
+      <div className="rounded-sm border border-border/70 bg-white p-3">
         <div className="flex items-center gap-2 mb-3">
-          <div className="rounded-full bg-primary/10 p-1.5">
-            <Cross className="h-4 w-4 text-primary" />
+          <div className="rounded-sm border border-border/70 bg-muted/30 p-1.5">
+            <Cross className="h-4 w-4 text-[#071A2D]" />
           </div>
           <div>
             <p className="font-semibold">Maria Oliveira</p>
@@ -35,11 +35,11 @@ export function SacramentsMock({ ns = 'landing' }: { ns?: string }) {
           {MILESTONES.map((m) => (
             <div key={m.label} className="relative flex flex-col items-center gap-1 z-10">
               {m.done ? (
-                <CheckCircle2 className="h-5 w-5 text-primary bg-background" />
+                <CheckCircle2 className="h-5 w-5 text-[#071A2D] bg-background" />
               ) : (
                 <Circle className="h-5 w-5 text-muted-foreground bg-background" />
               )}
-              <span className={`text-overline text-center max-w-[48px] ${m.done ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
+              <span className={`text-overline text-center max-w-[48px] ${m.done ? 'text-[#071A2D] font-medium' : 'text-muted-foreground'}`}>
                 {m.label}
               </span>
             </div>
@@ -54,13 +54,13 @@ export function SacramentsMock({ ns = 'landing' }: { ns?: string }) {
           { name: 'Lucas M.', progress: '2/5', pct: 40 },
           { name: 'Beatriz L.', progress: '3/5', pct: 60 },
         ].map((c) => (
-          <div key={c.name} className="rounded-lg border bg-card p-2">
+          <div key={c.name} className="rounded-sm border border-border/70 bg-white p-2">
             <div className="flex justify-between mb-1">
               <span className="font-medium">{c.name}</span>
               <span className="text-muted-foreground">{c.progress}</span>
             </div>
-            <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-              <div className="h-full rounded-full bg-primary" style={{ width: `${c.pct}%` }} />
+            <div className="h-1.5 overflow-hidden rounded-sm bg-muted">
+              <div className="h-full rounded-sm bg-[#071A2D]" style={{ width: `${c.pct}%` }} />
             </div>
           </div>
         ))}

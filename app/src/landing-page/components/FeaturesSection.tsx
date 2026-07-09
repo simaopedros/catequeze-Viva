@@ -20,7 +20,8 @@ export function FeaturesSection({
     <section id="recursos" className="scroll-mt-20">
       <div className="max-w-6xl mx-auto px-4 pt-20 pb-6">
         <div ref={headerRef} className={`text-center space-y-3 ${headerClass}`}>
-          <h2 className="text-title-xl font-bold">{t('features_title')}</h2>
+          <div className="mx-auto h-px w-10 bg-[#D39A2B]" aria-hidden />
+          <h2 className="text-title-xl font-semibold tracking-tight text-[#071A2D]" style={{ fontFamily: 'var(--font-brand-display)' }}>{t('features_title')}</h2>
           <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">{t('features_subtitle')}</p>
         </div>
       </div>
@@ -70,12 +71,12 @@ function SecondaryFeatureCard({ feature, delay }: { feature: any; delay: number 
   const { ref, className } = useScrollReveal({ delay });
 
   return (
-    <Card ref={ref} variant="interactive" className={`p-6 space-y-3 ${className}`}>
-      <div className="inline-flex rounded-xl bg-primary/10 p-2.5">
-        <feature.icon className="h-5 w-5 text-primary" />
+    <Card ref={ref} variant="interactive" className={`space-y-3 rounded-sm border-border/70 bg-white p-6 ${className}`}>
+      <div className="inline-flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
+        <feature.icon className="h-5 w-5" />
       </div>
-      <h4 className="font-semibold">{feature.title}</h4>
-      <p className="text-body-sm text-text-secondary leading-relaxed">{feature.desc}</p>
+      <h4 className="font-semibold text-[#071A2D]">{feature.title}</h4>
+      <p className="text-body-sm leading-relaxed text-text-secondary">{feature.desc}</p>
     </Card>
   );
 }

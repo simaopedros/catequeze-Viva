@@ -15,12 +15,12 @@ export function AttendanceMock({ ns = 'landing' }: { ns?: string }) {
     <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-overline sm:text-xs">
       <div className="flex items-center justify-between">
         <div>
-          <p className="font-bold text-sm">{t('mockup_attendance.title')}</p>
+          <p className="font-semibold text-sm">{t('mockup_attendance.title')}</p>
           <p className="text-muted-foreground flex items-center gap-1">
             <Clock className="h-3 w-3" /> {t('mockup_attendance.meeting')}
           </p>
         </div>
-        <div className="rounded-full bg-primary/10 px-2 py-0.5 text-primary font-medium flex items-center gap-1">
+        <div className="rounded-sm bg-[#071A2D]/08 px-2 py-0.5 text-[#071A2D] font-medium flex items-center gap-1">
           <Users className="h-3 w-3" /> 18
         </div>
       </div>
@@ -32,33 +32,33 @@ export function AttendanceMock({ ns = 'landing' }: { ns?: string }) {
           { l: t('mockup_attendance.late'), v: '1', c: 'bg-warning/10 text-warning' },
           { l: t('mockup_attendance.justified'), v: '1', c: 'bg-muted text-muted-foreground' },
         ].map((s) => (
-          <div key={s.l} className={`rounded-lg p-2 text-center ${s.c}`}>
-            <p className="font-bold text-sm">{s.v}</p>
+          <div key={s.l} className={`rounded-sm p-2 text-center ${s.c}`}>
+            <p className="font-semibold text-sm">{s.v}</p>
             <p className="text-overline">{s.l}</p>
           </div>
         ))}
       </div>
 
-      <div className="rounded-lg border bg-card divide-y">
+      <div className="rounded-sm border border-border/70 bg-white divide-y">
         {STUDENTS.map((s) => (
           <div key={s.name} className="flex items-center justify-between px-3 py-2">
             <span className="font-medium">{s.name}</span>
             <div className="flex gap-1">
               <button
                 type="button"
-                className={`rounded-md p-1 ${s.status === 'present' ? 'bg-success/20 text-success' : 'bg-muted text-muted-foreground'}`}
+                className={`rounded-sm p-1 ${s.status === 'present' ? 'bg-success/20 text-success' : 'bg-muted text-muted-foreground'}`}
               >
                 <CheckCircle2 className="h-3.5 w-3.5" />
               </button>
               <button
                 type="button"
-                className={`rounded-md p-1 ${s.status === 'absent' ? 'bg-destructive/20 text-destructive' : 'bg-muted text-muted-foreground'}`}
+                className={`rounded-sm p-1 ${s.status === 'absent' ? 'bg-destructive/20 text-destructive' : 'bg-muted text-muted-foreground'}`}
               >
                 <XCircle className="h-3.5 w-3.5" />
               </button>
               <button
                 type="button"
-                className={`rounded-md p-1 ${s.status === 'late' ? 'bg-warning/20 text-warning' : 'bg-muted text-muted-foreground'}`}
+                className={`rounded-sm p-1 ${s.status === 'late' ? 'bg-warning/20 text-warning' : 'bg-muted text-muted-foreground'}`}
               >
                 <Clock className="h-3.5 w-3.5" />
               </button>

@@ -129,7 +129,7 @@ export default function CustomSignupForm({
     return (
       <div className="space-y-6">
         <div className="space-y-3">
-          <div className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-primary/8 text-primary">
+          <div className="inline-flex h-11 w-11 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
             <Mail className="h-5 w-5" strokeWidth={1.75} />
           </div>
           <h1

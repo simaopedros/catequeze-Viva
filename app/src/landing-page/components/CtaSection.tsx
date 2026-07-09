@@ -12,7 +12,7 @@ export function CtaSection({ ns = "landing", responsiveCtas = false }: { ns?: st
 
   return (
     <section className="px-4 pb-28 pt-4 md:pb-20">
-      <div className="mx-auto max-w-6xl overflow-hidden rounded-2xl bg-primary text-primary-foreground">
+      <div className="mx-auto max-w-6xl overflow-hidden rounded-sm bg-[#071A2D] text-white">
         <div className="relative px-6 py-12 sm:px-12 sm:py-14 md:px-16">
           <div
             className="pointer-events-none absolute inset-0 opacity-[0.07]"
@@ -36,7 +36,7 @@ export function CtaSection({ ns = "landing", responsiveCtas = false }: { ns?: st
               <Button
                 size="xl"
                 asChild
-                className={`rounded-md bg-[#FFF7E7] text-primary shadow-none hover:bg-white hover:text-primary ${ctaClassName ?? ""}`}
+                className={`rounded-sm bg-[#FFF7E7] text-[#071A2D] shadow-none hover:bg-white hover:text-[#071A2D] ${ctaClassName ?? ""}`}
               >
                 <Link
                   to="/signup"
