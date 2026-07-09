@@ -2,7 +2,10 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { CalendarDays, Plus, Check } from "lucide-react";
 import { Button } from "../../client/components/ui/button";
-import { AppPageHeader } from "../../client/components/brand/AppChrome";
+import {
+  AppPageHeader,
+  AppPanel,
+} from "../../client/components/brand/AppChrome";
 import { Badge } from "../../client/components/ui/badge";
 import { EmptyState } from "../../client/components/EmptyState";
 import {
@@ -76,7 +79,7 @@ export default function CatecheticalYearsPage() {
   return (
     <div className="space-y-8">
       <AppPageHeader
-        eyebrow={t("title")}
+        eyebrow={t("eyebrow", { defaultValue: "Pastoral" })}
         title={t("title")}
         subtitle={t("subtitle")}
         actions={
@@ -98,8 +101,8 @@ export default function CatecheticalYearsPage() {
       )}
 
       {showForm && (
-        <div className="rounded-sm border border-border/70 bg-white p-6 space-y-4">
-          <h3 className="font-semibold">{t("form_title")}</h3>
+        <AppPanel className="space-y-4">
+          <h3 className="font-semibold text-[#071A2D]">{t("form_title")}</h3>
           <div className="grid gap-4 sm:grid-cols-3">
             <div>
               <label className="text-sm font-medium">{t("name")} *</label>
@@ -141,12 +144,13 @@ export default function CatecheticalYearsPage() {
             <Button
               size="sm"
               variant="outline"
+              className="rounded-sm"
               onClick={() => setShowForm(false)}
             >
               {tc("cancel")}
             </Button>
           </div>
-        </div>
+        </AppPanel>
       )}
 
       {filteredYears.length === 0 ? (
@@ -162,17 +166,19 @@ export default function CatecheticalYearsPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filteredYears.map((year: any) => (
-            <div
+            <AppPanel
               key={year.id}
-              className="rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-[#071A2D]/30"
+              className="transition-colors hover:border-[#071A2D]/30"
             >
-              <div className="flex items-start justify-between mb-3">
+              <div className="mb-3 flex items-start justify-between">
                 <div className="flex items-center gap-2">
                   <div className="rounded-sm border border-border/70 bg-muted/30 p-2">
                     <CalendarDays className="h-5 w-5 text-[#071A2D]" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-sm">{year.name}</h3>
+                    <h3 className="text-sm font-semibold text-[#071A2D]">
+                      {year.name}
+                    </h3>
                     {year.parish?.name && (
                       <p className="text-xs text-muted-foreground">
                         {year.parish.name}
@@ -180,11 +186,14 @@ export default function CatecheticalYearsPage() {
                     )}
                   </div>
                 </div>
-                <Badge variant={isActive(year) ? "default" : "secondary"}>
+                <Badge
+                  variant={isActive(year) ? "default" : "secondary"}
+                  className="rounded-sm"
+                >
                   {isActive(year) ? t("status_active") : t("status_concluded")}
                 </Badge>
               </div>
-              <div className="text-xs text-muted-foreground space-y-1">
+              <div className="space-y-1 text-xs text-muted-foreground">
                 <p>
                   {t("start_label", {
                     date: formatDate(year.startDate, currentLocale),
@@ -196,7 +205,7 @@ export default function CatecheticalYearsPage() {
                   })}
                 </p>
               </div>
-            </div>
+            </AppPanel>
           ))}
         </div>
       )}

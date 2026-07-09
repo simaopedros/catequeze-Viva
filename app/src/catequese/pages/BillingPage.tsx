@@ -4,6 +4,10 @@ import { useNavigate, useSearchParams } from "react-router";
 import { Button } from "../../client/components/ui/button";
 import { Badge } from "../../client/components/ui/badge";
 import {
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../client/components/brand/AppChrome";
+import {
   CheckCircle,
   TrendingUp,
   Clock,
@@ -824,14 +828,9 @@ export default function BillingPage() {
                         : t("scope_badge_institutional")}
                 </Badge>
 
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   <div className="flex flex-wrap items-center gap-3">
-                    <h1
-                      className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
-                      {heroTitle}
-                    </h1>
+                    <AppDisplayTitle>{heroTitle}</AppDisplayTitle>
                     {!isConversionMode && (
                       <span className="rounded-sm border border-border/70 bg-white px-3 py-1 text-sm font-medium text-muted-foreground">
                         {effectivePlan.name}
@@ -846,18 +845,18 @@ export default function BillingPage() {
                         user?.subscriptionStatus === "cancel_at_period_end" ? (
                         <Badge
                           variant="outline"
-                          className="bg-warning/10 text-warning text-xs"
+                          className="rounded-sm border-[#D39A2B]/40 bg-[#D39A2B]/10 text-xs text-[#8A6418]"
                         >
                           {t("cancel_scheduled")}
                         </Badge>
                       ) : isPaidActive ? (
-                        <Badge className="rounded-sm border border-border/70 bg-muted/30 text-xs text-foreground">
+                        <Badge className="rounded-sm border border-border/70 bg-[#071A2D]/08 text-xs text-[#071A2D]">
                           {t("active")}
                         </Badge>
                       ) : null)}
                   </div>
 
-                  <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+                  <AppGoldRule />
                   <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-[0.95rem]">
                     {isTrialAccess
                       ? trialDaysLeft === 1

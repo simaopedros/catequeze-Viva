@@ -23,6 +23,11 @@ import {
   Settings,
   History,
 } from "lucide-react";
+import {
+  AppEyebrow,
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../client/components/brand/AppChrome";
 
 interface Workspace {
   id: string;
@@ -61,8 +66,8 @@ function workspaceIcon(type: Workspace["type"]) {
   if (type === "DIOCESE")
     return <Building2 className="h-6 w-6 text-[#071A2D]" />;
   if (type === "COMMUNITY")
-    return <Building2 className="h-6 w-6 text-success" />;
-  return <Church className="h-6 w-6 text-accent" />;
+    return <Building2 className="h-6 w-6 text-[#071A2D]" />;
+  return <Church className="h-6 w-6 text-[#071A2D]" />;
 }
 
 export default function WorkspaceSelectorPage() {
@@ -191,31 +196,15 @@ export default function WorkspaceSelectorPage() {
       className="group w-full cursor-pointer rounded-sm border border-border/70 bg-white p-5 text-left transition-colors hover:border-[#071A2D]/30"
     >
       <div className="flex items-start gap-4">
-        <div
-          className={`rounded-sm p-3 group-hover:bg-opacity-80 transition-colors ${
-            ws.type === "DIOCESE"
-              ? "bg-[#071A2D]/08"
-              : ws.type === "COMMUNITY"
-                ? "bg-success/10"
-                : "bg-accent/10"
-          }`}
-        >
+        <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-[#071A2D] transition-colors">
           {workspaceIcon(ws.type)}
         </div>
-        <div className="flex-1 min-w-0">
-          <h2 className="text-lg font-semibold tracking-tight text-foreground">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-lg font-semibold tracking-tight text-[#071A2D]">
             {ws.name}
           </h2>
-          <div className="flex flex-wrap items-center gap-2 mt-1">
-            <span
-              className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                ws.type === "DIOCESE"
-                  ? "bg-[#071A2D]/08 text-[#071A2D]"
-                  : ws.type === "COMMUNITY"
-                    ? "bg-success/10 text-success"
-                    : "bg-accent/10 text-accent"
-              }`}
-            >
+          <div className="mt-1 flex flex-wrap items-center gap-2">
+            <span className="rounded-sm bg-[#071A2D]/08 px-2 py-0.5 text-xs font-medium text-[#071A2D]">
               {planLabel(ws.plan, t)}
             </span>
             {opts?.showRole && (
@@ -273,16 +262,13 @@ export default function WorkspaceSelectorPage() {
           <>
             {/* Header */}
             <div className="space-y-2.5 text-center">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              <AppEyebrow className="text-center">
                 {t("workspace.app_name")}
-              </p>
-              <h1
-                className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              </AppEyebrow>
+              <AppDisplayTitle className="text-center">
                 {t("workspace.title")}
-              </h1>
-              <div className="mx-auto h-px w-10 bg-[#D39A2B]" aria-hidden />
+              </AppDisplayTitle>
+              <AppGoldRule className="mx-auto" />
               <p className="text-sm text-muted-foreground">
                 {t("workspace.subtitle")}
               </p>

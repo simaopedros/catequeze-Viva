@@ -5,6 +5,12 @@ import * as ops from "wasp/client/operations";
 import CustomSignupForm from "../../../auth/CustomSignupForm";
 import { useRedirectIfLoggedIn } from "../../../auth/hooks/useRedirectIfLoggedIn";
 import { Church, AlertTriangle, Clock, Loader2 } from "lucide-react";
+import {
+  AppEyebrow,
+  AppDisplayTitle,
+  AppGoldRule,
+  AppPanel,
+} from "../../../client/components/brand/AppChrome";
 
 const getInvitationByToken = (ops as any).getInvitationByToken;
 
@@ -32,16 +38,11 @@ export default function FamilySignupPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F7F4EE] p-4">
         <div className="w-full max-w-md space-y-8 text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            {t("portal_badge")}
-          </p>
-          <h1
-            className="text-2xl font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <AppEyebrow className="text-center">{t("portal_badge")}</AppEyebrow>
+          <AppDisplayTitle className="text-center">
             {t("signup.title")}
-          </h1>
-          <div className="mx-auto h-px w-10 bg-[#D39A2B]" aria-hidden />
+          </AppDisplayTitle>
+          <AppGoldRule className="mx-auto" />
           <p className="text-sm text-muted-foreground">
             {t("signup.requires_invite")}
           </p>
@@ -100,16 +101,11 @@ export default function FamilySignupPage() {
     <div className="min-h-screen flex items-center justify-center bg-[#F7F4EE] p-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center space-y-2">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            {t("portal_badge")}
-          </p>
-          <h1
-            className="text-2xl font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <AppEyebrow className="text-center">{t("portal_badge")}</AppEyebrow>
+          <AppDisplayTitle className="text-center">
             {t("signup.title")}
-          </h1>
-          <div className="mx-auto h-px w-10 bg-[#D39A2B]" aria-hidden />
+          </AppDisplayTitle>
+          <AppGoldRule className="mx-auto" />
           <p className="text-sm text-muted-foreground">
             {t("signup.invited_to", {
               parish: (invitation as any).parishName,

@@ -2,6 +2,12 @@ import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router";
 import CustomLoginForm from "../../../auth/CustomLoginForm";
 import { useRedirectIfLoggedIn } from "../../../auth/hooks/useRedirectIfLoggedIn";
+import {
+  AppEyebrow,
+  AppDisplayTitle,
+  AppGoldRule,
+  AppPanel,
+} from "../../../client/components/brand/AppChrome";
 
 export default function FamilyLoginPage() {
   const { t } = useTranslation("family");
@@ -13,22 +19,17 @@ export default function FamilyLoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-[#F7F4EE] p-4">
       <div className="w-full max-w-md space-y-8">
         <div className="space-y-2.5 text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            {t("portal_badge")}
-          </p>
-          <h1
-            className="text-2xl font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <AppEyebrow className="text-center">{t("portal_badge")}</AppEyebrow>
+          <AppDisplayTitle className="text-center">
             {t("login.title")}
-          </h1>
-          <div className="mx-auto h-px w-10 bg-[#D39A2B]" aria-hidden />
+          </AppDisplayTitle>
+          <AppGoldRule className="mx-auto" />
           <p className="text-sm text-muted-foreground">{t("login.subtitle")}</p>
         </div>
 
-        <div className="rounded-sm border border-border/70 bg-white p-6">
+        <AppPanel className="p-6">
           <CustomLoginForm inviteToken={token} />
-        </div>
+        </AppPanel>
 
         <div className="text-center space-y-2">
           <p className="text-sm text-muted-foreground">

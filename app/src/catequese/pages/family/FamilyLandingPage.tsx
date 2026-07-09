@@ -2,6 +2,12 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { Church } from "lucide-react";
 import { staffPortalUrl } from "../../../shared/portal";
+import {
+  AppEyebrow,
+  AppDisplayTitle,
+  AppGoldRule,
+  AppPanel,
+} from "../../../client/components/brand/AppChrome";
 
 export default function FamilyLandingPage() {
   const { t } = useTranslation("family");
@@ -9,24 +15,19 @@ export default function FamilyLandingPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F7F4EE] p-4">
       <div className="w-full max-w-md text-center space-y-8">
-        <div className="space-y-4">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            {t("portal_badge")}
-          </p>
-          <h1
-            className="text-3xl font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+        <div className="space-y-2.5">
+          <AppEyebrow className="text-center">{t("portal_badge")}</AppEyebrow>
+          <AppDisplayTitle className="text-center text-3xl sm:text-[2rem]">
             {t("app_name")}
-          </h1>
-          <div className="mx-auto h-px w-10 bg-[#D39A2B]" aria-hidden />
-          <p className="text-muted-foreground text-base leading-relaxed">
+          </AppDisplayTitle>
+          <AppGoldRule className="mx-auto" />
+          <p className="text-base leading-relaxed text-muted-foreground">
             {t("landing.tagline")}
           </p>
         </div>
 
-        <div className="rounded-sm border border-border/70 bg-white p-8 space-y-6">
-          <Church className="h-12 w-12 text-[#071A2D] mx-auto" />
+        <AppPanel className="space-y-6 p-8">
+          <Church className="mx-auto h-12 w-12 text-[#071A2D]" />
           <div className="space-y-2">
             <h2 className="text-xl font-semibold text-[#071A2D]">
               {t("landing.invite_title")}
@@ -53,13 +54,13 @@ export default function FamilyLandingPage() {
               </Link>
             </p>
           </div>
-        </div>
+        </AppPanel>
 
         <p className="text-xs text-muted-foreground">
           {t("landing.staff_hint")}{" "}
           <a
             href={staffPortalUrl("/")}
-            className="text-[#071A2D] underline underline-offset-2"
+            className="font-medium text-[#071A2D] underline underline-offset-2"
           >
             {t("landing.main_portal")}
           </a>
