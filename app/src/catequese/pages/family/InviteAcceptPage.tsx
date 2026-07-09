@@ -16,6 +16,11 @@ import {
   ArrowRight,
   Loader2,
 } from "lucide-react";
+import {
+  AppDisplayTitle,
+  AppGoldRule,
+  AppEyebrow,
+} from "../../../client/components/brand/AppChrome";
 
 const getInvitationByToken = (ops as any).getInvitationByToken;
 const acceptInvitationByTokenAction = (ops as any).acceptInvitationByToken;
@@ -95,12 +100,13 @@ export default function InviteAcceptPage() {
               <AlertTriangle className="h-8 w-8 text-destructive" />
             )}
           </div>
-          <div className="space-y-2">
-            <h1 className="text-2xl font-semibold tracking-tight text-[#071A2D]">
+          <div className="space-y-2.5">
+            <AppDisplayTitle className="text-center">
               {isExpired
                 ? t("invite.expired_title")
                 : t("invite.not_found_title")}
-            </h1>
+            </AppDisplayTitle>
+            <AppGoldRule className="mx-auto" />
             <p className="text-muted-foreground">
               {isExpired
                 ? t("invite.expired_desc_accept")
@@ -125,10 +131,11 @@ export default function InviteAcceptPage() {
           <div className="inline-flex h-16 w-16 items-center justify-center rounded-sm border border-border/70 bg-muted/30">
             <Check className="h-8 w-8 text-success" />
           </div>
-          <div className="space-y-2">
-            <h1 className="text-2xl font-semibold tracking-tight text-[#071A2D]">
+          <div className="space-y-2.5">
+            <AppDisplayTitle className="text-center">
               {t("invite.accepted_title")}
-            </h1>
+            </AppDisplayTitle>
+            <AppGoldRule className="mx-auto" />
             <p className="text-muted-foreground">
               {t("invite.accepted_desc", {
                 parish: invitation.parishName,
@@ -158,12 +165,14 @@ export default function InviteAcceptPage() {
             <Mail className="h-4 w-4" />
             {t("invite.badge")}
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight text-[#071A2D]">
+          <AppEyebrow className="text-center">{t("portal_badge")}</AppEyebrow>
+          <AppDisplayTitle className="text-center">
             {t("invite.title")}
-          </h1>
+          </AppDisplayTitle>
+          <AppGoldRule className="mx-auto" />
         </div>
 
-        <div className="rounded-sm border border-border/70 bg-white p-6 space-y-4">
+        <div className="space-y-4 rounded-sm border border-border/70 bg-white p-6">
           <div className="flex items-center gap-4">
             <div className="rounded-sm border border-border/70 bg-muted/30 p-3">
               <Church className="h-6 w-6 text-[#071A2D]" />

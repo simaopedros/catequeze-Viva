@@ -5,6 +5,12 @@ import { Button } from "../../../client/components/ui/button";
 import { Input } from "../../../client/components/ui/input";
 import { Label } from "../../../client/components/ui/label";
 import { Mail } from "lucide-react";
+import {
+  AppEyebrow,
+  AppDisplayTitle,
+  AppGoldRule,
+  AppPanel,
+} from "../../../client/components/brand/AppChrome";
 
 export default function FamilyInviteCodePage() {
   const { t } = useTranslation("family");
@@ -21,22 +27,22 @@ export default function FamilyInviteCodePage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F7F4EE] p-4">
       <div className="w-full max-w-md space-y-8">
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-sm border border-border/70 bg-muted/30">
+        <div className="space-y-2.5 text-center">
+          <div className="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-sm border border-border/70 bg-muted/30">
             <Mail className="h-6 w-6 text-[#071A2D]" />
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight text-[#071A2D]">
+          <AppEyebrow className="text-center">{t("portal_badge")}</AppEyebrow>
+          <AppDisplayTitle className="text-center">
             {t("landing.insert_code")}
-          </h1>
+          </AppDisplayTitle>
+          <AppGoldRule className="mx-auto" />
           <p className="text-sm text-muted-foreground">
             {t("signup.requires_invite")}
           </p>
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="rounded-sm border border-border/70 bg-white p-6 space-y-4"
-        >
+        <form onSubmit={handleSubmit}>
+          <AppPanel className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="invite-code">{t("landing.insert_code")}</Label>
             <Input
@@ -48,9 +54,14 @@ export default function FamilyInviteCodePage() {
               required
             />
           </div>
-          <Button type="submit" className="w-full" disabled={!code.trim()}>
+          <Button
+            type="submit"
+            className="h-10 w-full rounded-sm"
+            disabled={!code.trim()}
+          >
             {t("invite.accept")}
           </Button>
+          </AppPanel>
         </form>
       </div>
     </div>
