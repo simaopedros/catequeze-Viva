@@ -398,6 +398,7 @@ export function ContentDocumentWorkspace({
   const [directoryRefs, setDirectoryRefs] = useState<any[]>([]);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const baselineRef = useRef("");
   const readyRef = useRef(!existingContentId);
   const creatingRef = useRef(false);
@@ -875,18 +876,15 @@ export function ContentDocumentWorkspace({
               </Button>
             )}
 
-            {contentId ? (
-              <Button
-                size="sm"
-                className="h-8 gap-1.5 rounded-sm px-2.5 text-xs shadow-none"
-                asChild
-              >
-                <Link to={`/app/content-library/${contentId}`}>
-                  <Eye className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Visualizar</span>
-                </Link>
-              </Button>
-            ) : null}
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 gap-1.5 rounded-sm px-2.5 text-xs"
+              onClick={() => setPreviewOpen(true)}
+            >
+              <Eye className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Visualizar</span>
+            </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -998,6 +996,7 @@ export function ContentDocumentWorkspace({
                   : "Salvar"
             }
             saveDisabled={saveState === "saving"}
+            onPreview={() => setPreviewOpen(true)}
           />
         </div>
 
@@ -1014,6 +1013,105 @@ export function ContentDocumentWorkspace({
           />
         </div>
       </div>
+
+      <Sheet open={previewOpen} onOpenChange={setPreviewOpen}>
+        <SheetContent
+          side="right"
+          className="flex w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-xl"
+        >
+          <SheetHeader className="shrink-0 border-b border-border/60 px-5 py-4 text-left">
+            <SheetTitle>Pré-visualização</SheetTitle>
+            <SheetDescription>
+              Como o encontro aparece para leitura — edições atuais, mesmo
+              antes de salvar.
+            </SheetDescription>
+          </SheetHeader>
+          <div className="min-h-0 flex-1 overflow-y-auto bg-[#F7F4EE]/40 px-5 py-5">
+            <article className="rounded-sm border border-border/70 bg-white px-5 py-6 sm:px-7 sm:py-8">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                Encontro
+              </p>
+              <h1
+                className="mt-1 text-2xl font-semibold tracking-tight text-[#071A2D]"
+                style={{ fontFamily: "var(--font-brand-display)" }}
+              >
+                {title.trim() || DEFAULT_TITLE}
+              </h1>
+              {(theme.trim() || estimatedTime) && (
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {[
+                    theme.trim() || null,
+                    estimatedTime
+                      ? `${estimatedTime} min`
+                      : null,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </p>
+              )}
+              <div className="mt-3 h-px w-10 bg-[#D39A2B]" aria-hidden />
+              <div className="mt-6">
+                <ContentDocumentRenderer
+                  document={
+                    parseContentDocument(documentJson) ||
+                    createMeetingSkeletonDocument()
+                  }
+                />
+              </div>
+              {(bibleRefs.length > 0 ||
+                catechismRefs.length > 0 ||
+                directoryRefs.length > 0) && (
+                <div className="mt-8 border-t border-border/60 pt-5">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    Referências pastorais
+                  </p>
+                  <ul className="mt-3 space-y-1.5 text-sm text-[#071A2D]">
+                    {bibleRefs.map((ref) => (
+                      <li key={ref.id || ref.verseId}>· {ref.label}</li>
+                    ))}
+                    {catechismRefs.map((ref) => (
+                      <li key={ref.id || ref.entryId}>· {ref.label}</li>
+                    ))}
+                    {directoryRefs.map((ref) => (
+                      <li key={ref.id || ref.entryId}>· {ref.label}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </article>
+          </div>
+          <div className="flex shrink-0 items-center justify-between gap-2 border-t border-border/60 bg-white px-4 py-3">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-9 rounded-sm"
+              onClick={() => setPreviewOpen(false)}
+            >
+              Voltar à edição
+            </Button>
+            {contentId ? (
+              <Button size="sm" className="h-9 gap-1.5 rounded-sm shadow-none" asChild>
+                <Link to={`/app/content-library/${contentId}`}>
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  Abrir página completa
+                </Link>
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                className="h-9 gap-1.5 rounded-sm shadow-none"
+                onClick={() => {
+                  setPreviewOpen(false);
+                  void saveNow();
+                }}
+              >
+                <Save className="h-3.5 w-3.5" />
+                Salvar rascunho
+              </Button>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
 
       <ConfirmDialog
         open={deleteOpen}

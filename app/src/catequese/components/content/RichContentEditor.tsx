@@ -68,6 +68,7 @@ import {
   LayoutList,
   ChevronDown,
   Save,
+  Eye,
 } from "lucide-react";
 
 type ReferenceKind = "bible" | "catechism" | "directory";
@@ -914,20 +915,34 @@ export function RichContentEditor({
             <Redo2 className="h-3.5 w-3.5" />
           </ToolbarButton>
         </div>
-        {onSave ? (
-          <div className="flex shrink-0 items-center border-l border-border/60 bg-white px-2 py-1.5 sm:px-3">
-            <Button
-              type="button"
-              size="sm"
-              className="h-8 shrink-0 gap-1.5 rounded-sm px-2.5 text-xs shadow-none"
-              onClick={onSave}
-              disabled={saveDisabled}
-            >
-              <Save className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{saveLabel}</span>
-            </Button>
+        {(onPreview || onSave) && (
+          <div className="flex shrink-0 items-center gap-1.5 border-l border-border/60 bg-white px-2 py-1.5 sm:px-3">
+            {onPreview ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 shrink-0 gap-1.5 rounded-sm px-2.5 text-xs"
+                onClick={onPreview}
+              >
+                <Eye className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Visualizar</span>
+              </Button>
+            ) : null}
+            {onSave ? (
+              <Button
+                type="button"
+                size="sm"
+                className="h-8 shrink-0 gap-1.5 rounded-sm px-2.5 text-xs shadow-none"
+                onClick={onSave}
+                disabled={saveDisabled}
+              >
+                <Save className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">{saveLabel}</span>
+              </Button>
+            ) : null}
           </div>
-        ) : null}
+        )}
       </div>
 
       <input
