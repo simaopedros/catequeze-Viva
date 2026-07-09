@@ -606,7 +606,9 @@ function HeaderSection({ backTo }: { backTo: string }) {
             <div className="flex items-start gap-3">
               <Plus className="mt-1 h-4 w-4" />
               <div>
-                <div className="text-sm font-semibold">Criar manualmente</div>
+                <div className="text-sm font-semibold tracking-tight">
+                  Criar manualmente
+                </div>
                 <div className="text-xs text-white/90">
                   Construa seu encontro do zero
                 </div>

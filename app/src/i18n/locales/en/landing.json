@@ -11,7 +11,7 @@
     "highlights": [
       "Attendance and follow-up on mobile",
       "Catechumen import by CSV",
-      "AI for meetings and family messages",
+      "Editorial assistance for meetings and family messages",
       "Family portal in the same system"
     ],
     "cta_helper": "Start in minutes",
@@ -76,8 +76,8 @@
     },
     "ai": {
       "title": "Prepare meetings with editorial assistance while keeping pastoral review",
-      "desc": "Use AI to create scripts, activities, annual planning, and family messages from your catechesis context.",
-      "b1": "AI meeting generator",
+      "desc": "Use editorial assistance to create scripts, activities, annual planning, and family messages from your catechesis context.",
+      "b1": "Editorial meeting generator",
       "b2": "Automatic annual planning",
       "b3": "Activities, quizzes, and WhatsApp messages"
     },
@@ -192,7 +192,7 @@
       "features": [
         "Unlimited classes and catechists",
         "Families and messaging in-app",
-        "AI meeting prep",
+        "Editorial meeting prep",
         "Institutional operation, no caps"
       ]
     }
@@ -237,7 +237,7 @@
   "cta_badge": "Trial",
   "cta_see_plans": "See plans",
   "mock": {
-    "ai_title": "AI Meeting Generator",
+    "ai_title": "Editorial meeting assistance",
     "ai_subtitle": "CNBB theological base · Catechism · Directory",
     "prompt": "Prompt",
     "ai_example": "Meeting on the Sacraments for 10-year-old children",
@@ -382,7 +382,7 @@
     "launch_text": "Create an account, set up your class, and prepare the next meeting. You have 7 days to see if it fits — no credit card.",
     "promises": [
       "7 free days, no credit card",
-      "You review everything AI drafts",
+      "You review everything editorial assistance drafts",
       "Children’s data handled with care and LGPD",
       "Cancel anytime"
     ],
@@ -400,7 +400,7 @@
       "b3": "Automatic attendance reports"
     },
     "ai": {
-      "title": "AI that drafts the meeting for you to review",
+      "title": "Editorial assistance that drafts the meeting for you to review",
       "desc": "Create scripts, activities, and family messages in minutes — with a Catholic theological base.",
       "b1": "Scripts with Bible, Catechism, and Directory",
       "b2": "Activities and quizzes to adapt",
@@ -430,7 +430,7 @@
       {
         "criterion": "Prepare the meeting",
         "old": "Copying folders, scattered searches, and last-minute improvisation",
-        "next": "AI draft + Bible and Catechism in one place, for you to review"
+        "next": "Editorial draft + Bible and Catechism in one place, for you to review"
       },
       {
         "criterion": "Attendance and absences",
@@ -468,7 +468,7 @@
     "badge": "Try without creating an account",
     "title": "Watch a meeting draft appear in seconds",
     "subtitle": "Pick a theme, generate the outline, and see the flow — no signup and no card.",
-    "helper": "Local demo example. In the product, AI uses a Catholic base and you always review before using.",
+    "helper": "Local demo example. In the product, editorial assistance uses a Catholic base and you always review before using.",
     "panel_title": "Meeting generator",
     "panel_subtitle": "Interactive demo · no account",
     "prompt_label": "Meeting theme",

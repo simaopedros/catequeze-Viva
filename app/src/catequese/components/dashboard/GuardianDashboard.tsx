@@ -50,7 +50,7 @@ export function GuardianDashboard({ stats }: GuardianDashboardProps) {
                 </div>
                 <div className="min-w-0">
                   <p
-                    className="truncate font-semibold tracking-tight text-foreground transition-colors group-hover:text-[#071A2D]"
+                    className="truncate font-semibold tracking-tight text-[#071A2D] transition-colors group-hover:text-[#0a2540]"
                     style={{ fontFamily: "var(--font-brand-display)" }}
                   >
                     {d.firstName} {d.lastName}

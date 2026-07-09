@@ -11,7 +11,7 @@
     "highlights": [
       "Asistencia y seguimiento desde el celular",
       "Importación de catequizandos por CSV",
-      "IA para encuentros y mensajes a familias",
+      "Asistencia editorial para encuentros y mensajes a familias",
       "Portal familiar en el mismo sistema"
     ],
     "cta_helper": "Empieza en minutos",
@@ -65,7 +65,7 @@
   "ai_showcase_subtitle": "Catequese Viva reúne tema, edad y referencias católicas para montar un primer borrador que revisas antes de usar.",
   "ai_showcase_cta": "Ver planes para tu próximo grupo",
   "features_title": "Lo esencial para preparar y acompañar tu catequesis",
-  "features_subtitle": "IA, asistencia y familias trabajan juntas para reducir la improvisación y dar más claridad a la rutina pastoral.",
+  "features_subtitle": "Asistencia editorial y familias trabajan juntas para reducir la improvisación y dar más claridad a la rutina pastoral.",
   "features": {
     "attendance": {
       "title": "Pasa lista desde el celular y sigue las faltas con claridad",
@@ -75,9 +75,9 @@
       "b3": "Informes de asistencia para seguir el grupo"
     },
     "ai": {
-      "title": "Prepara encuentros con apoyo de IA manteniendo la revisión pastoral",
-      "desc": "Usa IA para crear guiones, actividades, planificación anual y mensajes para familias desde el contexto de tu catequesis.",
-      "b1": "Generador de encuentros por IA",
+      "title": "Prepara encuentros con asistencia editorial manteniendo la revisión pastoral",
+      "desc": "Usa asistencia editorial para crear guiones, actividades, planificación anual y mensajes para familias desde el contexto de tu catequesis.",
+      "b1": "Generador de encuentros con asistencia editorial",
       "b2": "Planificación anual automática",
       "b3": "Actividades, cuestionarios y mensajes de WhatsApp"
     },
@@ -117,7 +117,7 @@
   "personas": [
     {
       "title": "Catequista",
-      "desc": "Organiza tu grupo, prepara encuentros con IA y pasa lista desde el celular."
+      "desc": "Organiza tu grupo, prepara encuentros con asistencia editorial y pasa lista desde el celular."
     },
     {
       "title": "Coordinador Parroquial",
@@ -192,7 +192,7 @@
       "features": [
         "Grupos y catequistas ilimitados",
         "Familias y comunicación en el sistema",
-        "IA para preparar encuentros",
+        "Asistencia editorial para preparar encuentros",
         "Operación institucional sin techo"
       ]
     }
@@ -237,7 +237,7 @@
   "cta_badge": "Trial",
   "cta_see_plans": "Ver planes",
   "mock": {
-    "ai_title": "Generador de Encuentros IA",
+    "ai_title": "Asistencia para encuentros",
     "ai_subtitle": "Base teológica CNBB · Catecismo · Directorio",
     "prompt": "Prompt",
     "ai_example": "Encuentro sobre los Sacramentos para niños de 10 años",
@@ -382,7 +382,7 @@
     "launch_text": "Crea la cuenta, arma el grupo y prepara el próximo encuentro. Tienes 7 días para ver si encaja — sin tarjeta de crédito.",
     "promises": [
       "7 días gratis, sin tarjeta de crédito",
-      "Tú revisas todo lo que genere la IA",
+      "Tú revisas todo lo que genere la asistencia editorial",
       "Datos de niños con cuidado y LGPD",
       "Cancela cuando quieras"
     ],
@@ -400,7 +400,7 @@
       "b3": "Informes de asistencia automáticos"
     },
     "ai": {
-      "title": "IA que prepara el encuentro para que lo revises",
+      "title": "Asistencia editorial que prepara el encuentro para que lo revises",
       "desc": "Crea guiones, actividades y mensajes para familias en minutos — con base teológica católica.",
       "b1": "Guiones con Biblia, Catecismo y Directorio",
       "b2": "Actividades y quizzes adaptables",
@@ -430,7 +430,7 @@
       {
         "criterion": "Preparar el encuentro",
         "old": "Copiar carpetas, búsquedas sueltas e improvisar a última hora",
-        "next": "Borrador con IA + Biblia y Catecismo en el mismo lugar, para que lo revises"
+        "next": "Borrador con asistencia editorial + Biblia y Catecismo en el mismo lugar, para que lo revises"
       },
       {
         "criterion": "Asistencia y faltas",
@@ -468,7 +468,7 @@
     "badge": "Prueba sin crear cuenta",
     "title": "Mira cómo nace un encuentro en segundos",
     "subtitle": "Elige un tema, genera el borrador y entiende el flujo — sin registro y sin tarjeta.",
-    "helper": "Demo local de ejemplo. En el producto, la IA usa base católica y tú revisas antes de usar.",
+    "helper": "Demo local de ejemplo. En el producto, la asistencia editorial usa base católica y tú revisas antes de usar.",
     "panel_title": "Generador de encuentros",
     "panel_subtitle": "Demo interactiva · sin cuenta",
     "prompt_label": "Tema del encuentro",
@@ -537,7 +537,7 @@
       },
       {
         "title": "Próximo encuentro listo",
-        "desc": "Prepara el guion (con IA si quieres) y revísalo antes de usarlo."
+        "desc": "Prepara el guion (con asistencia editorial si quieres) y revísalo antes de usarlo."
       }
     ],
     "eyebrow": "En la práctica"

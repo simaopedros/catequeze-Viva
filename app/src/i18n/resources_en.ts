@@ -1788,7 +1788,7 @@ export const content_en = {
       "search_placeholder": "Search content by title, theme or author...",
       "filter_type": "Type",
       "filter_status": "Status",
-      "ai_generated": "AI Generated",
+      "ai_generated": "Editorial",
       "table_title": "Title",
       "table_status": "Status",
       "table_activities": "Activities",
@@ -1829,8 +1829,8 @@ export const content_en = {
       "tags_placeholder": "E.g.: baptism, liturgy, children",
       "enhance_ai": "Enhance with assistance",
       "enhancing": "Enhancing...",
-      "enhance_hint": "AI will expand and improve your draft, suggest biblical and Catechism references, and fill empty fields.",
-      "ai_suggestions": "AI suggestions",
+      "enhance_hint": "Editorial assistance will expand and improve your draft, suggest biblical and Catechism references, and fill empty fields.",
+      "ai_suggestions": "Editorial suggestions",
       "create_content": "Create content",
       "open_copilot": "Open editorial assistance",
       "error_title_required": "Fill in at least the title before using editorial assistance.",
@@ -1854,7 +1854,7 @@ export const content_en = {
       "duration_minutes": "Estimated duration (minutes)",
       "enhancing": "Enhancing...",
       "enhance_ai": "Enhance with assistance",
-      "ai_suggestions": "AI suggestions",
+      "ai_suggestions": "Editorial suggestions",
       "success_enhanced": "Content enhanced with editorial assistance!",
       "error_enhance": "Error enhancing content.",
       "success_saved": "Content saved.",
@@ -1929,7 +1929,7 @@ export const dashboard_en = {
       "step_attendance_title": "Record first attendance",
       "step_attendance_desc": "Mark who came and keep the class history.",
       "step_meeting_title": "Prepare a session",
-      "step_meeting_desc": "Use the AI hub or library for the next meeting."
+      "step_meeting_desc": "Use the editorial hub or library for the next meeting."
     },
     "quick_new_class": "Create new class",
     "quick_new_catechumen": "Register catechumen",
@@ -2094,7 +2094,7 @@ export const landing_en = {
       "highlights": [
         "Attendance and follow-up on mobile",
         "Catechumen import by CSV",
-        "AI for meetings and family messages",
+        "Editorial assistance for meetings and family messages",
         "Family portal in the same system"
       ],
       "cta_helper": "Start in minutes",
@@ -2159,8 +2159,8 @@ export const landing_en = {
       },
       "ai": {
         "title": "Prepare meetings with editorial assistance while keeping pastoral review",
-        "desc": "Use AI to create scripts, activities, annual planning, and family messages from your catechesis context.",
-        "b1": "AI meeting generator",
+        "desc": "Use editorial assistance to create scripts, activities, annual planning, and family messages from your catechesis context.",
+        "b1": "Editorial meeting generator",
         "b2": "Automatic annual planning",
         "b3": "Activities, quizzes, and WhatsApp messages"
       },
@@ -2275,7 +2275,7 @@ export const landing_en = {
         "features": [
           "Unlimited classes and catechists",
           "Families and messaging in-app",
-          "AI meeting prep",
+          "Editorial meeting prep",
           "Institutional operation, no caps"
         ]
       }
@@ -2320,7 +2320,7 @@ export const landing_en = {
     "cta_badge": "Trial",
     "cta_see_plans": "See plans",
     "mock": {
-      "ai_title": "AI Meeting Generator",
+      "ai_title": "Editorial meeting assistance",
       "ai_subtitle": "CNBB theological base · Catechism · Directory",
       "prompt": "Prompt",
       "ai_example": "Meeting on the Sacraments for 10-year-old children",
@@ -2465,7 +2465,7 @@ export const landing_en = {
       "launch_text": "Create an account, set up your class, and prepare the next meeting. You have 7 days to see if it fits — no credit card.",
       "promises": [
         "7 free days, no credit card",
-        "You review everything AI drafts",
+        "You review everything editorial assistance drafts",
         "Children’s data handled with care and LGPD",
         "Cancel anytime"
       ],
@@ -2483,7 +2483,7 @@ export const landing_en = {
         "b3": "Automatic attendance reports"
       },
       "ai": {
-        "title": "AI that drafts the meeting for you to review",
+        "title": "Editorial assistance that drafts the meeting for you to review",
         "desc": "Create scripts, activities, and family messages in minutes — with a Catholic theological base.",
         "b1": "Scripts with Bible, Catechism, and Directory",
         "b2": "Activities and quizzes to adapt",
@@ -2513,7 +2513,7 @@ export const landing_en = {
         {
           "criterion": "Prepare the meeting",
           "old": "Copying folders, scattered searches, and last-minute improvisation",
-          "next": "AI draft + Bible and Catechism in one place, for you to review"
+          "next": "Editorial draft + Bible and Catechism in one place, for you to review"
         },
         {
           "criterion": "Attendance and absences",
@@ -2551,7 +2551,7 @@ export const landing_en = {
       "badge": "Try without creating an account",
       "title": "Watch a meeting draft appear in seconds",
       "subtitle": "Pick a theme, generate the outline, and see the flow — no signup and no card.",
-      "helper": "Local demo example. In the product, AI uses a Catholic base and you always review before using.",
+      "helper": "Local demo example. In the product, editorial assistance uses a Catholic base and you always review before using.",
       "panel_title": "Meeting generator",
       "panel_subtitle": "Interactive demo · no account",
       "prompt_label": "Meeting theme",
@@ -2848,7 +2848,7 @@ export const landingSistema_en = {
       "ai-planner"
     ],
     "ai_showcase_title": "And also: AI-powered meeting preparation",
-    "ai_showcase_subtitle": "Beyond management, the platform includes AI to create meeting scripts in seconds.",
+    "ai_showcase_subtitle": "Beyond management, the platform includes editorial assistance to create meeting scripts in seconds.",
     "mockup_dashboard": {
       "title": "Dashboard",
       "subtitle": "Catechesis overview",
@@ -3250,7 +3250,7 @@ export const onboarding_en = {
       "subtitle": "Start with the name of your first class. Schedule and location can wait.",
       "included": "When you enter, you will already have:",
       "isolated_space": "Isolated personal space",
-      "ai_generator": "AI meeting generator",
+      "ai_generator": "Editorial meeting assistance",
       "liturgical_calendar": "Liturgical calendar",
       "schedule_label": "Schedule (optional)",
       "day": "Day of the week",
@@ -3821,7 +3821,7 @@ export const public_en = {
       "most_popular": "Most Popular",
       "plan_desc": {
         "single": "For one catechist to run a class with clarity, history, and preparation in one flow.",
-        "unlimited": "For parishes and dioceses to centralize teams, classes, families, and AI in one system."
+        "unlimited": "For parishes and dioceses to centralize teams, classes, families, and editorial assistance in one system."
       },
       "faq": [
         {
@@ -4259,7 +4259,7 @@ export const tour_en = {
         "description": "Manage your classes, catechists, and meetings. Each class has its own calendar and attendance records."
       },
       "ai": {
-        "title": "AI Generator",
+        "title": "Editorial assistance",
         "description": "Create complete catechesis meetings with artificial intelligence — prayers, activities, biblical and Catechism references."
       },
       "messages": {

@@ -444,7 +444,7 @@ export default function CatechumensPage() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p
-                        className="truncate text-lg font-semibold tracking-tight text-foreground group-hover:text-[#071A2D]"
+                        className="truncate text-lg font-semibold tracking-tight text-[#071A2D] group-hover:text-[#0a2540]"
                         style={{ fontFamily: "var(--font-brand-display)" }}
                       >
                         {c.firstName} {c.lastName}

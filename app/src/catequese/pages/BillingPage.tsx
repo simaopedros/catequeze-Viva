@@ -1152,7 +1152,10 @@ export default function BillingPage() {
                       <Clock className="h-6 w-6" />
                     </div>
                     <div className="space-y-1">
-                      <p className="text-2xl font-semibold tracking-tight text-foreground">
+                      <p
+                        className="text-2xl font-semibold tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
                         {isTrialAccess
                           ? t("trial_status_title")
                           : isPaidActive
@@ -1454,7 +1457,10 @@ export default function BillingPage() {
 
                     {billingInterval === "monthly" || !hasAnnual ? (
                       <>
-                        <p className="text-3xl font-semibold tracking-tight text-foreground">
+                        <p
+                          className="text-3xl font-semibold tracking-tight text-[#071A2D]"
+                          style={{ fontFamily: "var(--font-brand-display)" }}
+                        >
                           {plan.price}
                         </p>
                         {plan.priceCentsAnnual && (
@@ -1479,7 +1485,10 @@ export default function BillingPage() {
                       </>
                     ) : (
                       <>
-                        <p className="text-3xl font-semibold tracking-tight text-foreground">
+                        <p
+                          className="text-3xl font-semibold tracking-tight text-[#071A2D]"
+                          style={{ fontFamily: "var(--font-brand-display)" }}
+                        >
                           {getEquivalentMonthlyPrice(plan.priceCentsAnnual!)}
                           <span className="text-base font-normal text-muted-foreground">
                             {tp("pricing.per_month")}

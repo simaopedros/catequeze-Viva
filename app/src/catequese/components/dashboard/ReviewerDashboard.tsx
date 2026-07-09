@@ -42,7 +42,7 @@ export function ReviewerDashboard({ stats }: ReviewerDashboardProps) {
             >
               <div className="min-w-0 flex-1 mr-3">
                 <p
-                  className="truncate font-semibold tracking-tight text-foreground transition-colors group-hover:text-[#071A2D]"
+                  className="truncate font-semibold tracking-tight text-[#071A2D] transition-colors group-hover:text-[#0a2540]"
                   style={{ fontFamily: "var(--font-brand-display)" }}
                 >
                   {c.title}

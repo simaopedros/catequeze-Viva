@@ -500,7 +500,7 @@ export default function ContentLibraryPage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-3">
                     <h3
-                      className="line-clamp-2 text-lg font-semibold tracking-tight text-foreground group-hover:text-[#071A2D]"
+                      className="line-clamp-2 text-lg font-semibold tracking-tight text-[#071A2D] group-hover:text-[#0a2540]"
                       style={{ fontFamily: "var(--font-brand-display)" }}
                     >
                       {item.title}

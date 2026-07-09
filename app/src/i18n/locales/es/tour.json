@@ -13,7 +13,7 @@
       "description": "Gestione sus grupos, catequistas y encuentros. Cada grupo tiene su propio calendario y registro de asistencia."
     },
     "ai": {
-      "title": "Generador IA",
+      "title": "Asistencia editorial",
       "description": "Cree encuentros completos de catequesis con inteligencia artificial — oraciones, dinámicas, referencias bíblicas y del Catecismo."
     },
     "messages": {

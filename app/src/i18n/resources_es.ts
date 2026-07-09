@@ -2015,7 +2015,7 @@ export const dashboard_es = {
     "kpi_overdue_milestones": "Hitos atrasados",
     "kpi_in_review": "En revisión",
     "kpi_published_in_period": "Publicados en el período",
-    "kpi_ai_content_pct": "% Contenido IA",
+    "kpi_ai_content_pct": "% Contenido editorial",
     "kpi_total_documents": "Documentos totales",
     "kpi_missing_consents": "Consentimientos ausentes",
     "kpi_expiring_consents": "Consentimientos por vencer",
@@ -2094,7 +2094,7 @@ export const landing_es = {
       "highlights": [
         "Asistencia y seguimiento desde el celular",
         "Importación de catequizandos por CSV",
-        "IA para encuentros y mensajes a familias",
+        "Asistencia editorial para encuentros y mensajes a familias",
         "Portal familiar en el mismo sistema"
       ],
       "cta_helper": "Empieza en minutos",
@@ -2148,7 +2148,7 @@ export const landing_es = {
     "ai_showcase_subtitle": "Catequese Viva reúne tema, edad y referencias católicas para montar un primer borrador que revisas antes de usar.",
     "ai_showcase_cta": "Ver planes para tu próximo grupo",
     "features_title": "Lo esencial para preparar y acompañar tu catequesis",
-    "features_subtitle": "IA, asistencia y familias trabajan juntas para reducir la improvisación y dar más claridad a la rutina pastoral.",
+    "features_subtitle": "Asistencia editorial y familias trabajan juntas para reducir la improvisación y dar más claridad a la rutina pastoral.",
     "features": {
       "attendance": {
         "title": "Pasa lista desde el celular y sigue las faltas con claridad",
@@ -2158,9 +2158,9 @@ export const landing_es = {
         "b3": "Informes de asistencia para seguir el grupo"
       },
       "ai": {
-        "title": "Prepara encuentros con apoyo de IA manteniendo la revisión pastoral",
-        "desc": "Usa IA para crear guiones, actividades, planificación anual y mensajes para familias desde el contexto de tu catequesis.",
-        "b1": "Generador de encuentros por IA",
+        "title": "Prepara encuentros con asistencia editorial manteniendo la revisión pastoral",
+        "desc": "Usa asistencia editorial para crear guiones, actividades, planificación anual y mensajes para familias desde el contexto de tu catequesis.",
+        "b1": "Generador de encuentros con asistencia editorial",
         "b2": "Planificación anual automática",
         "b3": "Actividades, cuestionarios y mensajes de WhatsApp"
       },
@@ -2200,7 +2200,7 @@ export const landing_es = {
     "personas": [
       {
         "title": "Catequista",
-        "desc": "Organiza tu grupo, prepara encuentros con IA y pasa lista desde el celular."
+        "desc": "Organiza tu grupo, prepara encuentros con asistencia editorial y pasa lista desde el celular."
       },
       {
         "title": "Coordinador Parroquial",
@@ -2275,7 +2275,7 @@ export const landing_es = {
         "features": [
           "Grupos y catequistas ilimitados",
           "Familias y comunicación en el sistema",
-          "IA para preparar encuentros",
+          "Asistencia editorial para preparar encuentros",
           "Operación institucional sin techo"
         ]
       }
@@ -2320,7 +2320,7 @@ export const landing_es = {
     "cta_badge": "Trial",
     "cta_see_plans": "Ver planes",
     "mock": {
-      "ai_title": "Generador de Encuentros IA",
+      "ai_title": "Asistencia para encuentros",
       "ai_subtitle": "Base teológica CNBB · Catecismo · Directorio",
       "prompt": "Prompt",
       "ai_example": "Encuentro sobre los Sacramentos para niños de 10 años",
@@ -2465,7 +2465,7 @@ export const landing_es = {
       "launch_text": "Crea la cuenta, arma el grupo y prepara el próximo encuentro. Tienes 7 días para ver si encaja — sin tarjeta de crédito.",
       "promises": [
         "7 días gratis, sin tarjeta de crédito",
-        "Tú revisas todo lo que genere la IA",
+        "Tú revisas todo lo que genere la asistencia editorial",
         "Datos de niños con cuidado y LGPD",
         "Cancela cuando quieras"
       ],
@@ -2483,7 +2483,7 @@ export const landing_es = {
         "b3": "Informes de asistencia automáticos"
       },
       "ai": {
-        "title": "IA que prepara el encuentro para que lo revises",
+        "title": "Asistencia editorial que prepara el encuentro para que lo revises",
         "desc": "Crea guiones, actividades y mensajes para familias en minutos — con base teológica católica.",
         "b1": "Guiones con Biblia, Catecismo y Directorio",
         "b2": "Actividades y quizzes adaptables",
@@ -2513,7 +2513,7 @@ export const landing_es = {
         {
           "criterion": "Preparar el encuentro",
           "old": "Copiar carpetas, búsquedas sueltas e improvisar a última hora",
-          "next": "Borrador con IA + Biblia y Catecismo en el mismo lugar, para que lo revises"
+          "next": "Borrador con asistencia editorial + Biblia y Catecismo en el mismo lugar, para que lo revises"
         },
         {
           "criterion": "Asistencia y faltas",
@@ -2551,7 +2551,7 @@ export const landing_es = {
       "badge": "Prueba sin crear cuenta",
       "title": "Mira cómo nace un encuentro en segundos",
       "subtitle": "Elige un tema, genera el borrador y entiende el flujo — sin registro y sin tarjeta.",
-      "helper": "Demo local de ejemplo. En el producto, la IA usa base católica y tú revisas antes de usar.",
+      "helper": "Demo local de ejemplo. En el producto, la asistencia editorial usa base católica y tú revisas antes de usar.",
       "panel_title": "Generador de encuentros",
       "panel_subtitle": "Demo interactiva · sin cuenta",
       "prompt_label": "Tema del encuentro",
@@ -2620,7 +2620,7 @@ export const landing_es = {
         },
         {
           "title": "Próximo encuentro listo",
-          "desc": "Prepara el guion (con IA si quieres) y revísalo antes de usarlo."
+          "desc": "Prepara el guion (con asistencia editorial si quieres) y revísalo antes de usarlo."
         }
       ],
       "eyebrow": "En la práctica"
@@ -2632,14 +2632,14 @@ export const landing_es = {
 export const landingIa_es = {
     "hero": {
       "headline_line1": "Prepare encuentros increíbles",
-      "headline_line2": "en minutos con IA",
-      "subheadline": "Deje que la IA genere el guión completo: objetivo, dinámica, lectura bíblica, reflexión, actividad y oración. Basado en la doctrina católica.",
-      "badge": "IA teológicamente entrenada",
-      "cta_primary": "Probar la IA",
+      "headline_line2": "en minutos con asistencia editorial",
+      "subheadline": "Deje que la asistencia editorial genere el guión completo: objetivo, dinámica, lectura bíblica, reflexión, actividad y oración. Basado en la doctrina católica.",
+      "badge": "Asistencia teológicamente entrenada",
+      "cta_primary": "Probar la asistencia editorial",
       "cta_secondary": "Ver cómo funciona",
       "trust_signals": "Plan Único o Ilimitado • Base teológica CNBB • Cancela cuando quieras"
     },
-    "features_title": "IA que entiende de catequesis",
+    "features_title": "Asistencia que entiende de catequesis",
     "features_subtitle": "Entrenada con la Biblia CNBB, el Catecismo y el Directorio para la Catequesis.",
     "features_order": [
       "ai-planner",
@@ -2650,10 +2650,10 @@ export const landingIa_es = {
       "sacraments"
     ],
     "ai_showcase_title": "Su próximo encuentro listo en menos de 30 segundos",
-    "ai_showcase_subtitle": "Ingrese el tema y la edad. La IA genera el encuentro completo — de la acogida a la oración final.",
-    "ai_showcase_cta": "Probar la IA",
+    "ai_showcase_subtitle": "Ingrese el tema y la edad. La asistencia editorial genera el encuentro completo — de la acogida a la oración final.",
+    "ai_showcase_cta": "Probar la asistencia editorial",
     "mission_title": "Menos tiempo preparando. Más tiempo evangelizando.",
-    "mission_text": "Cada minuto que la IA ahorra en preparación es un minuto más para lo que realmente importa: estar presente para sus catequizandos.",
+    "mission_text": "Cada minuto que la asistencia editorial ahorra en preparación es un minuto más para lo que realmente importa: estar presente para sus catequizandos.",
     "mockup_dashboard": {
       "title": "Panel",
       "subtitle": "Visión general de la catequesis",
@@ -2847,8 +2847,8 @@ export const landingSistema_es = {
       "library",
       "ai-planner"
     ],
-    "ai_showcase_title": "Y también: preparación de encuentros con IA",
-    "ai_showcase_subtitle": "Además de la gestión, la plataforma incluye IA para crear guiones de encuentros en segundos.",
+    "ai_showcase_title": "Y también: preparación de encuentros con asistencia editorial",
+    "ai_showcase_subtitle": "Además de la gestión, la plataforma incluye asistencia editorial para crear guiones de encuentros en segundos.",
     "mockup_dashboard": {
       "title": "Panel",
       "subtitle": "Visión general de la catequesis",
@@ -3250,7 +3250,7 @@ export const onboarding_es = {
       "subtitle": "Empieza por el nombre de tu primer grupo. El horario y el lugar pueden quedar para después.",
       "included": "Al entrar ya tendrás:",
       "isolated_space": "Espacio personal aislado",
-      "ai_generator": "Generador de encuentros con IA",
+      "ai_generator": "Asistencia para encuentros",
       "liturgical_calendar": "Calendario litúrgico",
       "schedule_label": "Horario (opcional)",
       "day": "Día de la semana",
@@ -3612,7 +3612,7 @@ export const parishes_es = {
     "canceled": "Cancelada",
     "plan_free": "Sin suscripción",
     "plan_catechist_pro": "Catequista Pro",
-    "plan_catechist_ai": "Catequista IA",
+    "plan_catechist_ai": "Catequista editorial",
     "plan_parish": "Parroquia",
     "plan_diocese": "Diócesis",
     "breadcrumb_details": "Detalles",
@@ -3821,7 +3821,7 @@ export const public_es = {
       "most_popular": "Más Popular",
       "plan_desc": {
         "single": "Para que un catequista organice un grupo con claridad, historial y preparación en un solo flujo.",
-        "unlimited": "Para que parroquias y diócesis centralicen equipos, grupos, familias e IA en el mismo sistema."
+        "unlimited": "Para que parroquias y diócesis centralicen equipos, grupos, familias y asistencia editorial en el mismo sistema."
       },
       "faq": [
         {
@@ -3893,7 +3893,7 @@ export const public_es = {
       "plans": {
         "catechist_free": "Catequista Gratis",
         "catechist_pro": "Catequista Pro",
-        "catechist_ai": "Catequista IA",
+        "catechist_ai": "Catequista editorial",
         "parish": "Parroquia",
         "diocese": "Diócesis",
         "community": "Comunidad"
@@ -4259,7 +4259,7 @@ export const tour_es = {
         "description": "Gestione sus grupos, catequistas y encuentros. Cada grupo tiene su propio calendario y registro de asistencia."
       },
       "ai": {
-        "title": "Generador IA",
+        "title": "Asistencia editorial",
         "description": "Cree encuentros completos de catequesis con inteligencia artificial — oraciones, dinámicas, referencias bíblicas y del Catecismo."
       },
       "messages": {

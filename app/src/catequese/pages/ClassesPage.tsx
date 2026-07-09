@@ -79,7 +79,10 @@ function ClassMetric({
       <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
         {label}
       </p>
-      <p className="mt-1.5 text-2xl font-semibold tracking-tight text-foreground tabular-nums">
+      <p
+        className="mt-1.5 text-2xl font-semibold tracking-tight tabular-nums text-[#071A2D]"
+        style={{ fontFamily: "var(--font-brand-display)" }}
+      >
         {value}
       </p>
     </div>
@@ -413,7 +416,7 @@ export default function ClassesPage() {
                   <div className="flex items-start justify-between gap-3">
                     <Link
                       to={`/app/classes/${cls.id}`}
-                      className="block truncate text-lg font-semibold tracking-tight text-foreground hover:text-[#071A2D]"
+                      className="block truncate text-lg font-semibold tracking-tight text-[#071A2D] hover:text-[#0a2540]"
                       style={{ fontFamily: "var(--font-brand-display)" }}
                     >
                       {cls.name}

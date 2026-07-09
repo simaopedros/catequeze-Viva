@@ -42,7 +42,7 @@
     "most_popular": "Más Popular",
     "plan_desc": {
       "single": "Para que un catequista organice un grupo con claridad, historial y preparación en un solo flujo.",
-      "unlimited": "Para que parroquias y diócesis centralicen equipos, grupos, familias e IA en el mismo sistema."
+      "unlimited": "Para que parroquias y diócesis centralicen equipos, grupos, familias y asistencia editorial en el mismo sistema."
     },
     "faq": [
       {
@@ -114,7 +114,7 @@
     "plans": {
       "catechist_free": "Catequista Gratis",
       "catechist_pro": "Catequista Pro",
-      "catechist_ai": "Catequista IA",
+      "catechist_ai": "Catequista editorial",
       "parish": "Parroquia",
       "diocese": "Diócesis",
       "community": "Comunidad"

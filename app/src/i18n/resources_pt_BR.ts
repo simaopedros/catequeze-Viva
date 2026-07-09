@@ -2094,7 +2094,7 @@ export const landing_pt_BR = {
       "highlights": [
         "Chamada e acompanhamento pelo celular",
         "Importação de catequizandos por planilha",
-        "IA para preparar encontros e avisos",
+        "Assistência editorial para preparar encontros e avisos",
         "Famílias acompanham pelo portal"
       ],
       "cta_helper": "Comece em minutos",
@@ -2275,7 +2275,7 @@ export const landing_pt_BR = {
         "features": [
           "Turmas e catequistas ilimitados",
           "Famílias e comunicação no sistema",
-          "IA para preparar encontros",
+          "Assistência editorial para preparar encontros",
           "Operação institucional sem teto"
         ]
       }
@@ -2465,7 +2465,7 @@ export const landing_pt_BR = {
       "launch_text": "Crie a conta, monte a turma e prepare o próximo encontro. Você tem 7 dias para ver se faz sentido — sem cartão de crédito.",
       "promises": [
         "7 dias grátis, sem cartão de crédito",
-        "Você revisa tudo que a IA gerar",
+        "Você revisa tudo que a assistência editorial gerar",
         "Dados de crianças com cuidado e LGPD",
         "Cancele quando quiser"
       ],
@@ -2483,7 +2483,7 @@ export const landing_pt_BR = {
         "b3": "Relatórios de frequência automáticos"
       },
       "ai": {
-        "title": "IA que prepara o encontro para você revisar",
+        "title": "Assistência editorial que prepara o encontro para você revisar",
         "desc": "Crie roteiros, atividades e mensagens para as famílias em minutos — com base teológica católica.",
         "b1": "Roteiros com Bíblia, Catecismo e Diretório",
         "b2": "Atividades e quizzes adaptáveis",
@@ -2551,7 +2551,7 @@ export const landing_pt_BR = {
       "badge": "Experimente sem criar conta",
       "title": "Veja um encontro nascer em segundos",
       "subtitle": "Escolha um tema, gere o rascunho e entenda o fluxo — sem cadastro e sem cartão.",
-      "helper": "Demonstração local de exemplo. No produto, a IA usa base católica e você revisa antes de usar.",
+      "helper": "Demonstração local de exemplo. No produto, a assistência editorial usa base católica e você revisa antes de usar.",
       "panel_title": "Gerador de encontros",
       "panel_subtitle": "Demo interativa · sem conta",
       "prompt_label": "Tema do encontro",
@@ -3612,7 +3612,7 @@ export const parishes_pt_BR = {
     "canceled": "Cancelada",
     "plan_free": "Sem assinatura",
     "plan_catechist_pro": "Catequista Pro",
-    "plan_catechist_ai": "Catequista IA",
+    "plan_catechist_ai": "Catequista editorial",
     "plan_parish": "Paróquia",
     "plan_diocese": "Diocese",
     "breadcrumb_details": "Detalhes",
@@ -3893,7 +3893,7 @@ export const public_pt_BR = {
       "plans": {
         "catechist_free": "Catequista Grátis",
         "catechist_pro": "Catequista Pro",
-        "catechist_ai": "Catequista IA",
+        "catechist_ai": "Catequista editorial",
         "parish": "Paróquia",
         "diocese": "Diocese",
         "community": "Comunidade"
