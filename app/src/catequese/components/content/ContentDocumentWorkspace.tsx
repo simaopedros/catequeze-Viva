@@ -36,11 +36,13 @@ import {
   parseContentDocument,
 } from "../../../shared/contentDocument";
 import { uploadContentImage } from "../../../client/utils/contentImageUpload";
+import { ContentDocumentRenderer } from "./ContentDocumentRenderer";
 import { RichContentEditor } from "./RichContentEditor";
 import {
   BookMarked,
   Clock3,
   Eye,
+  ExternalLink,
   FileText,
   Loader2,
   MessageSquareShare,

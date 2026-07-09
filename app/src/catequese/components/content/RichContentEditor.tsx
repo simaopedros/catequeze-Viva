@@ -565,6 +565,7 @@ export function RichContentEditor({
   onSave,
   saveLabel = "Salvar",
   saveDisabled = false,
+  onPreview,
 }: {
   value: string;
   onChange: (next: string) => void;
@@ -589,6 +590,8 @@ export function RichContentEditor({
   onSave?: () => void;
   saveLabel?: string;
   saveDisabled?: boolean;
+  /** Live preview of the current document without leaving the editor */
+  onPreview?: () => void;
 }) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const syncRef = useRef(false);
