@@ -66,7 +66,7 @@ export function ParishCommunitiesTab({ communities, onCreate, onUpdate }: Parish
 
   return (
     <div className="space-y-4">
-      <div className="rounded-xl border bg-card p-4 space-y-3">
+      <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3">
         <div className="flex gap-3">
           <input placeholder={`${tp('community_name')} *`} value={newCommName} onChange={e => setNewCommName(e.target.value)} className="flex h-9 flex-1 rounded-md border border-input bg-background px-3 py-1 text-sm" />
           <select value={newCommType} onChange={e => setNewCommType(e.target.value)} className="h-9 w-40 rounded-md border border-input bg-background px-3 text-sm">

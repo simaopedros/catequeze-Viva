@@ -84,7 +84,7 @@ export function ParishMembersTab({ members, communities, households, onInvite, o
       </div>
 
       {showInvite && (
-        <div className="rounded-xl border bg-card p-4 space-y-3">
+        <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3">
           <h3 className="font-medium text-sm">{tp('invite_member')}</h3>
           <div className="flex flex-wrap gap-3">
             <input value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} className="flex-1 min-w-[200px] h-9 rounded-md border border-input bg-background px-3 text-sm" placeholder={t('families.email_placeholder')} type="email" />
@@ -118,13 +118,13 @@ export function ParishMembersTab({ members, communities, households, onInvite, o
       )}
 
       {members.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center">
+        <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
           <div className="mb-4 rounded-full bg-primary/10 p-3"><Users className="h-8 w-8 text-primary" /></div>
           <h3 className="text-lg font-semibold">{tp('no_members')}</h3>
           <p className="text-sm text-muted-foreground">{tp('no_members_desc')}</p>
         </div>
       ) : (
-        <div className="rounded-xl border bg-card overflow-hidden">
+        <div className="rounded-sm border border-border/70 bg-white overflow-hidden">
           <table className="w-full text-sm">
             <thead className="bg-muted/50 border-b">
               <tr>

@@ -243,7 +243,7 @@ export default function CatechumensPage() {
           </div>
         )
       ) : view === 'table' ? (
-        <section className="overflow-hidden rounded-sm border border-border/70 bg-white/90 shadow-sm shadow-slate-200/60">
+        <section className="overflow-hidden rounded-sm border border-border/70 bg-white/90  ">
           <div className="border-b border-border/70 bg-slate-50/80 px-5 py-4">
             <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">{tn('catechumens')}</h3>
           </div>
@@ -291,7 +291,7 @@ export default function CatechumensPage() {
             <Link
               key={c.id}
               to={`/app/catechumens/${c.id}`}
-              className="group overflow-hidden rounded-sm border border-border/70 bg-white/90 p-5 shadow-sm shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-300/40"
+              className="group overflow-hidden rounded-sm border border-border/70 bg-white/90 p-5   transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-300/40"
             >
               <div className="flex items-start gap-4">
                 <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-sm text-base font-bold overflow-hidden ring-1 ring-slate-200/70 ${!c.photoUrl ? AVATAR_COLORS[Math.abs(c.firstName?.charCodeAt(0) || 0) % AVATAR_COLORS.length] : ''}`}>

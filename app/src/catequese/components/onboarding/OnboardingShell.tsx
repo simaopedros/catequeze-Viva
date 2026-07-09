@@ -136,7 +136,7 @@ export function OnboardingShell({
       </div>
 
       {saving && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#071A2D]/40 backdrop-blur-[2px]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#071A2D]/40 -[2px]">
           <div className="rounded-sm border border-white/10 bg-white px-8 py-6 text-center shadow-xl">
             <p className="text-sm font-medium text-foreground">{savingLabel || "…"}</p>
           </div>

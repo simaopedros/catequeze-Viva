@@ -131,9 +131,9 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/40 -sm" onClick={onClose} />
 
-      <div className="relative w-full max-w-md mx-4 bg-card rounded-2xl shadow-elevation-modal border overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-md mx-4 bg-card rounded-sm shadow-elevation-modal border overflow-hidden animate-in zoom-in-95 duration-200">
         <div className="flex items-center justify-between p-4 border-b">
           <h3 className="font-semibold">
             {step === 'type' ? t('new_dialog.title_type') : t('new_dialog.title_contacts')}
@@ -152,7 +152,7 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
                   key={ct.value}
                   onClick={() => { setType(ct.value); setStep('contacts'); }}
                   className={cn(
-                    'w-full flex items-center gap-3 rounded-xl border p-3 text-left transition-all hover:border-primary/50 hover:bg-primary/5',
+                    'w-full flex items-center gap-3 rounded-sm border p-3 text-left transition-all hover:border-primary/50 hover:bg-primary/5',
                     type === ct.value && 'border-primary bg-primary/5'
                   )}
                 >

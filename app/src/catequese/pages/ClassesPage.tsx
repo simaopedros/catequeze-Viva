@@ -243,7 +243,7 @@ export default function ClassesPage() {
           <EmptyState compact icon={Search} title={t('no_filter_results')} description={t('no_filter_desc')} />
         </SurfaceSection>
       ) : view === 'list' ? (
-        <section className="overflow-hidden rounded-sm border border-border/70 bg-white/90 shadow-sm shadow-slate-200/60">
+        <section className="overflow-hidden rounded-sm border border-border/70 bg-white/90  ">
           <div className="border-b border-border/70 bg-slate-50/80 px-5 py-4">
             <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">{t('table_class')}</h3>
           </div>
@@ -290,7 +290,7 @@ export default function ClassesPage() {
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {filtered.map((cls: any) => (
-            <div key={cls.id} className="group overflow-hidden rounded-sm border border-border/70 bg-white/90 p-5 shadow-sm shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-300/40">
+            <div key={cls.id} className="group overflow-hidden rounded-sm border border-border/70 bg-white/90 p-5   transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-300/40">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-3">

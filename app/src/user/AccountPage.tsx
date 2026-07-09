@@ -3,7 +3,7 @@ import { useAuth } from 'wasp/client/auth';
 import { Link as WaspRouterLink, routes } from 'wasp/client/router';
 import type { User } from 'wasp/entities';
 import { getCustomerPortalUrl, useQuery } from 'wasp/client/operations';
-import { PageHeader } from '../client/components/PageHeader';
+import { AppPageHeader, AppPanel } from '../client/components/brand/AppChrome';
 import { useUserContext } from '../client/hooks/useUserContext';
 import { Button } from '../client/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../client/components/ui/card';
@@ -30,22 +30,24 @@ export default function AccountPage() {
 
   return (
       <div className="max-w-2xl mx-auto space-y-6">
-        <PageHeader
+        <AppPageHeader
+          eyebrow={t('title')}
           title={t('title')}
           subtitle={user.email || ''}
         />
 
-        {/* Parish info */}
         {ctxParishName && (
-          <div className="rounded-xl border bg-card p-4 flex items-center gap-3">
-            <div className="rounded-lg bg-primary/10 p-2 text-primary">
+          <AppPanel className="flex items-center gap-3">
+            <div className="rounded-sm border border-border/70 bg-muted/30 p-2 text-foreground">
               <Church className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground uppercase">{t('linked_parish')}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                {t('linked_parish')}
+              </p>
               <p className="font-medium">{ctxParishName}</p>
             </div>
-          </div>
+          </AppPanel>
         )}
 
         {/* Account info */}

@@ -399,7 +399,7 @@ function SelectionActionBubble({
 
   const bubbleNode = (
     <div
-      className="fixed z-[2147483000] w-[340px] max-w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-[calc(100%+12px)] rounded-2xl border border-border/60 bg-background/95 p-3 shadow-[0_18px_50px_rgba(15,23,42,0.18)] backdrop-blur"
+      className="fixed z-[2147483000] w-[340px] max-w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-[calc(100%+12px)] rounded-sm border border-border/60 bg-background/95 p-3 shadow-[0_18px_50px_rgba(15,23,42,0.18)] "
       style={{ left: bubble.left, top: bubble.top }}
       onMouseDown={(event) => event.preventDefault()}
     >
@@ -701,7 +701,7 @@ export function RichContentEditor({
 
   return (
     <div className="overflow-visible rounded-[30px] border border-border/60 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(248,244,237,0.9))] shadow-[0_24px_60px_rgba(15,23,42,0.05)]">
-      <div className="border-b border-border/50 bg-background/55 px-4 py-3 backdrop-blur">
+      <div className="border-b border-border/50 bg-background/55 px-4 py-3 ">
         <div className="mb-3 flex items-center justify-between gap-3">
           <div>
             <p className="text-sm font-medium text-foreground">Documento</p>

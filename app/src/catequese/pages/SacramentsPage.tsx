@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from '../../client/components/ui/select';
 import { Cross, Plus, User, CheckCircle, Clock, Search, Undo2, AlertTriangle, XCircle, Users, FileText, Calendar, Pencil } from 'lucide-react';
-import { PageHeader } from '../../client/components/PageHeader';
+import { AppPageHeader, AppMetric } from '../../client/components/brand/AppChrome';
 import { EmptyState } from '../../client/components/EmptyState';
 import { useQuery, listCatechumens, listSacramentalJourneys, createSacramentalJourney, listJourneyTemplates, updateMilestoneStatus, updateJourney } from 'wasp/client/operations';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
@@ -195,40 +195,35 @@ export default function SacramentsPage() {
     };
   }, [journeys, activeParishId]);
 
-  if (loading) return <AppShell><div className="space-y-6 animate-pulse"><div className="h-8 w-56 bg-muted rounded"/><div className="grid gap-4 md:grid-cols-2">{[1,2].map(i => <div key={i} className="h-48 rounded-xl bg-muted"/>)}</div></div></AppShell>;
+  if (loading) return <AppShell><div className="space-y-6 animate-pulse"><div className="h-8 w-56 bg-muted rounded"/><div className="grid gap-4 md:grid-cols-2">{[1,2].map(i => <div key={i} className="h-48 rounded-sm bg-muted"/>)}</div></div></AppShell>;
 
   return (
       <div className="space-y-6">
-        <PageHeader
+        <AppPageHeader
+          eyebrow={t('page.title')}
           title={t('page.title')}
           subtitle={isCatechist ? t('page.subtitle_catechist', { count: filtered.length }) : t('page.subtitle_default', { count: filtered.length })}
-        >
-          <div className="flex gap-2">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <input placeholder={tc('search')} value={search} onChange={e => setSearch(e.target.value)} className="flex h-9 w-40 rounded-md border border-input bg-background pl-9 pr-3 text-sm" />
+          actions={
+            <div className="flex gap-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <input placeholder={tc('search')} value={search} onChange={e => setSearch(e.target.value)} className="flex h-9 w-40 rounded-sm border border-input bg-background pl-9 pr-3 text-sm" />
+              </div>
+              {canManage && (
+                <Button className="h-10 rounded-sm shadow-none" onClick={openForm}>
+                  <Plus className="mr-1 h-4 w-4" />
+                  {t('page.new_journey')}
+                </Button>
+              )}
             </div>
-            {canManage && <Button onClick={openForm}><Plus className="mr-1 h-4 w-4" />{t('page.new_journey')}</Button>}
-          </div>
-        </PageHeader>
+          }
+        />
 
-        <div className="grid gap-3 grid-cols-4">
-          <div className="rounded-lg border bg-card p-3 text-center">
-            <p className="text-2xl font-bold">{statusCounts.total}</p>
-            <p className="text-overline text-muted-foreground">{t('page.total')}</p>
-          </div>
-          <div className="rounded-lg border bg-card p-3 text-center">
-            <p className="text-2xl font-bold text-emerald-600">{statusCounts.ready}</p>
-            <p className="text-overline text-muted-foreground">{t('page.ready')}</p>
-          </div>
-          <div className="rounded-lg border bg-card p-3 text-center">
-            <p className="text-2xl font-bold text-amber-600">{statusCounts.waitingApproval}</p>
-            <p className="text-overline text-muted-foreground">{t('page.waiting')}</p>
-          </div>
-          <div className="rounded-lg border bg-card p-3 text-center">
-            <p className="text-2xl font-bold text-red-600">{statusCounts.blocked}</p>
-            <p className="text-overline text-muted-foreground">{t('page.blocked')}</p>
-          </div>
+        <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
+          <AppMetric label={t('page.total')} value={statusCounts.total} />
+          <AppMetric label={t('page.ready')} value={statusCounts.ready} />
+          <AppMetric label={t('page.waiting')} value={statusCounts.waitingApproval} />
+          <AppMetric label={t('page.blocked')} value={statusCounts.blocked} />
         </div>
 
         <div className="flex gap-1 flex-wrap">
@@ -292,7 +287,7 @@ export default function SacramentsPage() {
               const sacramentName = j.template?.sacrament?.name;
 
               return (
-                <div key={j.id} className="block rounded-sm border border-border/70 bg-white p-5 shadow-elevation-sm hover:shadow-elevation-md transition-shadow cursor-pointer" onClick={() => navigate(`/app/sacramental-journeys/${j.id}`)}>
+                <div key={j.id} className="block rounded-sm border border-border/70 bg-white p-5  hover: transition-shadow cursor-pointer" onClick={() => navigate(`/app/sacramental-journeys/${j.id}`)}>
                   <div className="flex items-center justify-between mb-3">
                     <Link
                       to={`/app/sacramental-journeys/${j.id}`}

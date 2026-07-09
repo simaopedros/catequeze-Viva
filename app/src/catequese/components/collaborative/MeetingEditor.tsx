@@ -127,7 +127,7 @@ function MeetingBlockComponent({
   }
 
   return (
-    <Card className="overflow-hidden rounded-2xl border-border/70 shadow-none">
+    <Card className="overflow-hidden rounded-sm border-border/70 shadow-none">
       <div className="flex gap-4 p-4">
         <div className="flex shrink-0 items-start gap-3">
           <div className="pt-1 text-sm font-semibold text-muted-foreground">{index}.</div>
@@ -276,7 +276,7 @@ export function MeetingEditor() {
             />
           ))}
 
-          <Button variant="outline" className="h-12 w-full rounded-2xl border-dashed text-sm">
+          <Button variant="outline" className="h-12 w-full rounded-sm border-dashed text-sm">
             <Plus className="mr-2 h-4 w-4" /> Adicionar bloco
           </Button>
         </div>
@@ -347,7 +347,7 @@ function VersionHistoryPanel({ onClose }: { onClose: () => void }) {
 
       <div className="space-y-2">
         {versions.map(v => (
-          <Card key={v.id} className="rounded-2xl p-3">
+          <Card key={v.id} className="rounded-sm p-3">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <div className="text-xs font-semibold">{t('editor.version')} {v.version}</div>

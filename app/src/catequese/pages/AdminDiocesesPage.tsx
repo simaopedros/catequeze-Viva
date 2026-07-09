@@ -5,7 +5,7 @@ import { Button } from '../../client/components/ui/button';
 import { Input } from '../../client/components/ui/input';
 import { Plus, Church, Edit, Save, X } from 'lucide-react';
 import DefaultLayout from '../../admin/layout/DefaultLayout';
-import { PageHeader } from '../../client/components/PageHeader';
+import { AppPageHeader, AppPanel } from '../../client/components/brand/AppChrome';
 import { EmptyState } from '../../client/components/EmptyState';
 import { useQuery, listDioceses, createDiocese, updateDiocese } from 'wasp/client/operations';
 
@@ -56,18 +56,24 @@ export default function AdminDiocesesPage({ user }: { user: AuthUser }) {
   return (
     <DefaultLayout user={user}>
       <div className="space-y-6">
-        <PageHeader title={t('title')} subtitle={t('subtitle')}>
-          <Button size="sm" onClick={() => setShowForm(!showForm)}>
-            <Plus className="mr-1 h-4 w-4" />{t('new_diocese')}
-          </Button>
-        </PageHeader>
+        <AppPageHeader
+          eyebrow={t('title')}
+          title={t('title')}
+          subtitle={t('subtitle')}
+          actions={
+            <Button size="sm" className="h-10 rounded-sm shadow-none" onClick={() => setShowForm(!showForm)}>
+              <Plus className="mr-1 h-4 w-4" />
+              {t('new_diocese')}
+            </Button>
+          }
+        />
 
         {error && (
-          <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
+          <div className="rounded-sm bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
         )}
 
         {showForm && (
-          <div className="rounded-xl border bg-card p-4 space-y-3">
+          <AppPanel className="space-y-3">
             <div className="flex gap-3">
               <Input value={name} onChange={e => setName(e.target.value)}
                 className="flex-1 h-9"
@@ -81,12 +87,12 @@ export default function AdminDiocesesPage({ user }: { user: AuthUser }) {
               <Button size="sm" onClick={handleCreate} disabled={saving || !name}>
                 <Save className="mr-1 h-3 w-3" />{saving ? t('creating') : t('create')}
               </Button>
-              <Button size="sm" variant="outline" onClick={() => setShowForm(false)}>{tc('cancel')}</Button>
+              <Button size="sm" variant="outline" className="rounded-sm" onClick={() => setShowForm(false)}>{tc('cancel')}</Button>
             </div>
-          </div>
+          </AppPanel>
         )}
 
-        <div className="rounded-xl border bg-card overflow-hidden">
+        <div className="rounded-sm border border-border/70 bg-white overflow-hidden">
           {dioceses.length === 0 ? (
             <EmptyState icon={Church} title={t('empty_title')} description={t('empty_desc')} />
           ) : (

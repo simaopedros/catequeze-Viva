@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Church, Users, BookOpen, Building2, Plus, MapPin, BadgeCheck, ArrowRight, Loader2, ShieldCheck, Search } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { Input } from '../../client/components/ui/input';
-import { PageHeader } from '../../client/components/PageHeader';
+import { AppPageHeader } from '../../client/components/brand/AppChrome';
 import { SearchInput } from '../../client/components/SearchInput';
 import { EmptyState } from '../../client/components/EmptyState';
 import { SkeletonCard } from '../../client/components/Skeletons';
@@ -129,14 +129,16 @@ export default function ParishesPage() {
 
   return (
       <div className="space-y-6">
-        <PageHeader
+        <AppPageHeader
+          eyebrow={tp('parishes_title')}
           title={tp('parishes_title')}
           subtitle={tp('parish_count', { count: parishes.length })}
-        >
-          <Button size="sm" onClick={() => setShowCreate(!showCreate)}>
-            <Plus className="mr-1 h-4 w-4" />{tp('new_parish_btn')}
-          </Button>
-        </PageHeader>
+          actions={
+            <Button size="sm" className="h-10 rounded-sm shadow-none" onClick={() => setShowCreate(!showCreate)}>
+              <Plus className="mr-1 h-4 w-4" />{tp('new_parish_btn')}
+            </Button>
+          }
+        />
 
         <div className="flex flex-col sm:flex-row gap-3">
           <SearchInput placeholder={tp('search_parishes')} value={search} onChange={e => setSearch(e.target.value)} />
@@ -200,7 +202,7 @@ export default function ParishesPage() {
               const isActive = p.active !== false;
               return (
                 <div key={p.id} onClick={() => navigate('/app/parishes/' + p.id)}
-                  className="group rounded-sm border border-border/70 bg-white p-5 cursor-pointer transition-all hover:border-primary/40 hover:shadow-elevation-md hover:-translate-y-0.5">
+                  className="group rounded-sm border border-border/70 bg-white p-5 cursor-pointer transition-all hover:border-primary/40 hover: hover:-translate-y-0.5">
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">

@@ -2,9 +2,9 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
-import { BarChart3, Users, Calendar, TrendingUp, Download, Trophy, AlertTriangle, FileText, PieChart, Activity } from 'lucide-react';
+import { BarChart3, Download, Trophy, AlertTriangle, FileText, PieChart, Activity } from 'lucide-react';
 import { FilterPills } from '../../client/components/FilterPills';
-import { PageHeader } from '../../client/components/PageHeader';
+import { AppPageHeader, AppMetric } from '../../client/components/brand/AppChrome';
 import { EmptyState } from '../../client/components/EmptyState';
 import { useQuery, getReportsOverview } from 'wasp/client/operations';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
@@ -101,19 +101,29 @@ export default function ReportsPage() {
   if(loading)return(
       <div className="space-y-6 animate-pulse">
         <div className="h-8 w-40 bg-muted rounded"/>
-        <div className="grid gap-4 md:grid-cols-3">{[1,2,3].map(i=><div key={i} className="h-24 rounded-xl bg-muted"/>)}</div>
-        <div className="h-64 rounded-xl bg-muted"/>
+        <div className="grid gap-4 md:grid-cols-3">{[1,2,3].map(i=><div key={i} className="h-24 rounded-sm bg-muted"/>)}</div>
+        <div className="h-64 rounded-sm bg-muted"/>
       </div>
   );
 
   return(
       <div className="space-y-6">
-        <PageHeader title={t('title')}>
-          <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={handleExportCSV}><Download className="mr-1 h-3 w-3"/>{t('export_csv')}</Button>
-            <Button size="sm" variant="outline" disabled title={t('pdf_soon')}><FileText className="mr-1 h-3 w-3"/>{t('export_pdf')}</Button>
-          </div>
-        </PageHeader>
+        <AppPageHeader
+          eyebrow={t('title')}
+          title={t('title')}
+          actions={
+            <div className="flex gap-2">
+              <Button size="sm" variant="outline" className="h-10 rounded-sm" onClick={handleExportCSV}>
+                <Download className="mr-1 h-3 w-3" />
+                {t('export_csv')}
+              </Button>
+              <Button size="sm" variant="outline" className="h-10 rounded-sm" disabled title={t('pdf_soon')}>
+                <FileText className="mr-1 h-3 w-3" />
+                {t('export_pdf')}
+              </Button>
+            </div>
+          }
+        />
         <FilterPills
           className="mt-0"
           options={[
@@ -136,20 +146,17 @@ export default function ReportsPage() {
           onChange={setPeriod}
         />
 
-        {/* KPIs */}
-        <div className="grid gap-4 md:grid-cols-3">
-          {[{l:t('kpis.total_enrolled'),v:visibleTotals.totalEnrolled,i:Users,c:'text-primary bg-primary/10'},{l:t('kpis.total_meetings'),v:visibleTotals.totalMeetings,i:Calendar,c:'text-success bg-success/10'},{l:t('kpis.avg_attendance'),v:visibleTotals.avgAttendance+'%',i:TrendingUp,c:'text-warning bg-warning/10'}].map(k=>(
-            <div key={k.l} className="rounded-sm border border-border/70 bg-white p-5 shadow-elevation-sm">
-              <div className="flex items-center gap-3"><div className={`rounded-lg p-2 ${k.c}`}><k.i className="h-5 w-5"/></div><div><p className="text-xs text-muted-foreground uppercase">{k.l}</p><p className="text-2xl font-bold">{k.v}</p></div></div>
-            </div>
-          ))}
+        <div className="grid gap-3 md:grid-cols-3">
+          <AppMetric label={t('kpis.total_enrolled')} value={visibleTotals.totalEnrolled} />
+          <AppMetric label={t('kpis.total_meetings')} value={visibleTotals.totalMeetings} />
+          <AppMetric label={t('kpis.avg_attendance')} value={`${visibleTotals.avgAttendance}%`} />
         </div>
 
         {tab==='presenca'&&(
           <>
             {/* Risk alert */}
             {riskClasses.length>0&&(
-              <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4">
+              <div className="rounded-sm border border-destructive/30 bg-destructive/10 p-4">
                 <h3 className="font-semibold text-sm text-destructive flex items-center gap-2 mb-2"><AlertTriangle className="h-4 w-4"/>{t('dropout_title')}</h3>
                 <p className="text-xs text-destructive/90 mb-2">{t('dropout_desc')}</p>
                 <div className="flex flex-wrap gap-2">

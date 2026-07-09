@@ -43,7 +43,7 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
       </div>
 
       <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">
-        <div className="space-y-3 rounded-2xl border border-border/70 bg-slate-50/80 p-4 text-left">
+        <div className="space-y-3 rounded-sm border border-border/70 bg-slate-50/80 p-4 text-left">
           <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
             <span>{t('personal_setup.progress_title')}</span>
             <span>{t('personal_setup.progress_status')}</span>

@@ -133,7 +133,7 @@ export default function PricingPage() {
     return (
       <div
         key={plan.planId}
-        className={`rounded-2xl border-2 p-6 bg-card transition-all hover:-translate-y-1 hover:shadow-lg relative flex flex-col ${
+        className={`rounded-sm border-2 p-6 bg-card transition-all hover:-translate-y-1 hover:shadow-lg relative flex flex-col ${
           plan.highlight
             ? "border-primary ring-2 ring-primary/20 sm:scale-[1.02] shadow-lg shadow-primary/10"
             : "border-border"

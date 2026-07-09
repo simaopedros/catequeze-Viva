@@ -50,7 +50,7 @@ export function ParishInfoTab({
 
   if (editing) {
     return (
-      <div className="rounded-xl border bg-card p-5 space-y-4">
+      <div className="rounded-sm border border-border/70 bg-white p-5 space-y-4">
         <h3 className="font-semibold">{tp('edit_parish_title')}</h3>
         <div className="grid gap-3 sm:grid-cols-2">
           <div><label className="text-xs font-medium text-muted-foreground">{tp('name')}</label><input value={editName} onChange={e => setEditName(e.target.value)} className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm mt-1" /></div>
@@ -70,7 +70,7 @@ export function ParishInfoTab({
   }
 
   return (
-    <div className="rounded-xl border bg-card p-5 space-y-3">
+    <div className="rounded-sm border border-border/70 bg-white p-5 space-y-3">
       <div className="flex items-center justify-between">
         <h3 className="font-semibold">{tp('parish_data')}</h3>
         <Button variant="ghost" size="sm" onClick={onStartEdit}>{tp('edit')}</Button>

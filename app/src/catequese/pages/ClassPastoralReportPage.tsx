@@ -3,12 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { useParams, Link } from 'react-router';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
-import { PageHeader } from '../../client/components/PageHeader';
+import { AppPageHeader, AppMetric } from '../../client/components/brand/AppChrome';
 import { EmptyState } from '../../client/components/EmptyState';
 import { FilterPills } from '../../client/components/FilterPills';
 import { useQuery, getClassPastoralReport } from 'wasp/client/operations';
 import {
-  Users, Calendar, TrendingUp, AlertTriangle, Trophy,
+  AlertTriangle, Trophy,
   BarChart3, PieChart, ArrowLeft, Gift, Star
 } from 'lucide-react';
 import {
@@ -82,8 +82,8 @@ export default function ClassPastoralReportPage() {
   if (loading) return (
     <div className="space-y-6 animate-pulse">
       <div className="h-8 w-40 bg-muted rounded" />
-      <div className="grid gap-4 md:grid-cols-4">{[1,2,3,4].map(i=><div key={i} className="h-24 rounded-xl bg-muted"/>)}</div>
-      <div className="h-64 rounded-xl bg-muted" />
+      <div className="grid gap-4 md:grid-cols-4">{[1,2,3,4].map(i=><div key={i} className="h-24 rounded-sm bg-muted"/>)}</div>
+      <div className="h-64 rounded-sm bg-muted" />
     </div>
   );
 
@@ -91,37 +91,29 @@ export default function ClassPastoralReportPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
+      <AppPageHeader
+        eyebrow={t('title')}
         title={t('title')}
         subtitle={`${data.className} · ${data.catechistNames.slice(0, 3).join(', ')}${data.catechistNames.length > 3 ? '...' : ''}`}
-      >
-        <Button asChild variant="outline" size="sm">
-          <Link to={`/app/classes/${id}`}><ArrowLeft className="mr-1 h-3 w-3" />{tc('back')}</Link>
-        </Button>
-      </PageHeader>
+        actions={
+          <Button asChild variant="outline" size="sm" className="h-10 rounded-sm">
+            <Link to={`/app/classes/${id}`}>
+              <ArrowLeft className="mr-1 h-3 w-3" />
+              {tc('back')}
+            </Link>
+          </Button>
+        }
+      />
 
-      {/* KPIs */}
-      <div className="grid gap-4 md:grid-cols-4">
-        {[
-          { l: t('activeCatechumens'), v: data.totalActiveCatechumens, i: Users, c: 'text-primary bg-primary/10' },
-          { l: t('totalMeetings'), v: data.totalMeetings, i: Calendar, c: 'text-success bg-success/10' },
-          { l: t('avgAttendance'), v: data.avgAttendance + '%', i: TrendingUp, c: 'text-warning bg-warning/10' },
-          { l: t('atRisk'), v: data.atRiskCount, i: AlertTriangle, c: 'text-destructive bg-destructive/10' },
-        ].map(k => (
-          <div key={k.l} className="rounded-xl border bg-card p-5 shadow-elevation-sm">
-            <div className="flex items-center gap-3">
-              <div className={`rounded-lg p-2 ${k.c}`}><k.i className="h-5 w-5" /></div>
-              <div>
-                <p className="text-xs text-muted-foreground uppercase">{k.l}</p>
-                <p className="text-2xl font-bold">{k.v}</p>
-              </div>
-            </div>
-          </div>
-        ))}
+      <div className="grid gap-3 md:grid-cols-4">
+        <AppMetric label={t('activeCatechumens')} value={data.totalActiveCatechumens} />
+        <AppMetric label={t('totalMeetings')} value={data.totalMeetings} />
+        <AppMetric label={t('avgAttendance')} value={`${data.avgAttendance}%`} />
+        <AppMetric label={t('atRisk')} value={data.atRiskCount} />
       </div>
 
       {/* Upcoming Birthdays */}
-      <div className="rounded-xl border bg-card p-5">
+      <div className="rounded-sm border border-border/70 bg-white p-5">
         <h3 className="font-semibold text-sm mb-3 flex items-center gap-2"><Gift className="h-4 w-4 text-warning" />{t('upcomingBirthdays')}</h3>
         {!data.upcomingBirthdays.length ? (
           <p className="text-sm text-muted-foreground">{t('noUpcomingBirthdays')}</p>
@@ -142,7 +134,7 @@ export default function ClassPastoralReportPage() {
       ) : (
         <>
           {/* Presences per Meeting Chart */}
-          <div className="rounded-xl border bg-card p-6">
+          <div className="rounded-sm border border-border/70 bg-white p-6">
             <h3 className="font-semibold text-sm mb-4 flex items-center gap-2"><BarChart3 className="h-4 w-4" />{t('presencesPerMeeting')}</h3>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={meetingsBarData} margin={{ top: 5, right: 20, left: 0, bottom: 60 }}>
@@ -159,7 +151,7 @@ export default function ClassPastoralReportPage() {
           </div>
 
           {/* Meetings per Month + Avg Attendance */}
-          <div className="rounded-xl border bg-card p-6">
+          <div className="rounded-sm border border-border/70 bg-white p-6">
             <h3 className="font-semibold text-sm mb-4 flex items-center gap-2"><BarChart3 className="h-4 w-4" />{t('meetingsPerMonth')}</h3>
             {monthlyData.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
@@ -179,7 +171,7 @@ export default function ClassPastoralReportPage() {
           </div>
 
           {/* Status Pie */}
-          <div className="rounded-xl border bg-card p-6">
+          <div className="rounded-sm border border-border/70 bg-white p-6">
             <h3 className="font-semibold text-sm mb-4 flex items-center gap-2"><PieChart className="h-4 w-4" />{t('classStatus')}</h3>
             {statusPieData.length > 0 ? (
               <ResponsiveContainer width="100%" height={280}>
@@ -197,7 +189,7 @@ export default function ClassPastoralReportPage() {
           </div>
 
           {/* Ranking Table */}
-          <div className="rounded-xl border bg-card">
+          <div className="rounded-sm border border-border/70 bg-white">
             <div className="p-4 border-b font-medium flex items-center justify-between flex-wrap gap-2">
               <span className="flex items-center gap-2"><Trophy className="h-4 w-4 text-warning" />{t('ranking')}</span>
               <FilterPills

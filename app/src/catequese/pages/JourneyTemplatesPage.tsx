@@ -4,7 +4,7 @@ import { AppShell } from '../AppShell';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { Plus, Pencil, Trash2, Copy, Send, ClipboardList, ChevronRight, GripVertical, Save, X } from 'lucide-react';
-import { PageHeader } from '../../client/components/PageHeader';
+import { AppPageHeader, AppPanel } from '../../client/components/brand/AppChrome';
 import { useQuery, listJourneyTemplates, createTemplate, updateTemplate, updateMilestoneTemplate, deleteMilestoneTemplate } from 'wasp/client/operations';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { toast } from '../../client/hooks/use-toast';
@@ -122,16 +122,22 @@ export default function JourneyTemplatesPage() {
 
   return (
       <div className="space-y-6">
-        <PageHeader title={t('templates.title')} subtitle={t('templates.subtitle', { count: templates.length })}>
-          {canManage && (
-            <Button onClick={() => setShowCreate(true)}>
-              <Plus className="mr-1 h-4 w-4" />{t('templates.new_template')}
-            </Button>
-          )}
-        </PageHeader>
+        <AppPageHeader
+          eyebrow={t('templates.title')}
+          title={t('templates.title')}
+          subtitle={t('templates.subtitle', { count: templates.length })}
+          actions={
+            canManage ? (
+              <Button className="h-10 rounded-sm shadow-none" onClick={() => setShowCreate(true)}>
+                <Plus className="mr-1 h-4 w-4" />
+                {t('templates.new_template')}
+              </Button>
+            ) : undefined
+          }
+        />
 
         {showCreate && (
-          <div className="rounded-xl border bg-card p-4 space-y-3">
+          <AppPanel className="space-y-3">
             <h3 className="font-semibold text-sm">{t('templates.create_new')}</h3>
             <input
               placeholder={t('templates.name_placeholder')}
@@ -150,13 +156,13 @@ export default function JourneyTemplatesPage() {
               <Button size="sm" onClick={handleCreate} disabled={!newName.trim() || saving}>
                 {saving ? t('templates.creating') : tc('create')}
               </Button>
-              <Button size="sm" variant="outline" onClick={() => setShowCreate(false)}>{tc('cancel')}</Button>
+              <Button size="sm" variant="outline" className="rounded-sm" onClick={() => setShowCreate(false)}>{tc('cancel')}</Button>
             </div>
-          </div>
+          </AppPanel>
         )}
 
         {templates.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center">
+          <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
             <ClipboardList className="h-10 w-10 text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold">{t('templates.empty_title')}</h3>
             <p className="text-sm text-muted-foreground mt-1">{t('templates.empty_desc')}</p>

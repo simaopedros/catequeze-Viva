@@ -1,11 +1,15 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { Button } from '../../../client/components/ui/button';
-import { PageHeader } from '../../../client/components/PageHeader';
-import { StatCard } from '../../../client/components/StatCard';
+import {
+  AppPageHeader,
+  AppPanel,
+  AppMetric,
+  AppEyebrow,
+} from '../../../client/components/brand/AppChrome';
 import { formatDate } from '../../../i18n/format';
 import { useLocale } from '../../../i18n/useLocale';
-import { Clock, GraduationCap, FileText, TrendingUp } from 'lucide-react';
+import { GraduationCap, FileText } from 'lucide-react';
 
 interface CatechumenDashboardProps {
   stats: any;
@@ -19,65 +23,45 @@ export function CatechumenDashboard({ stats }: CatechumenDashboardProps) {
   const dateOpts = { weekday: 'short' as const, day: 'numeric' as const, month: 'short' as const };
 
   return (
-    <div className="space-y-6">
-      <PageHeader
+    <div className="space-y-8">
+      <AppPageHeader
+        eyebrow={t('catechumen_journey')}
         title={t('catechumen_journey')}
         subtitle={t('catechumen_subtitle')}
-        compact
       />
 
-      {/* KPIs */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <StatCard
-          icon={Clock}
-          label={td('pending_milestones')}
-          value={stats?.pendingSacraments || 0}
-          color="warning"
-        />
-        <StatCard
-          icon={GraduationCap}
-          label={t('upcoming_meetings')}
-          value={stats?.upcomingMeetings?.length || 0}
-          color="primary"
-        />
-        <StatCard
-          icon={TrendingUp}
-          label={td('attendance_label')}
-          value={`${stats?.avgAttendance || 0}%`}
-          color="success"
-        />
+      <div className="grid gap-3 md:grid-cols-3">
+        <AppMetric label={td('pending_milestones')} value={stats?.pendingSacraments || 0} />
+        <AppMetric label={t('upcoming_meetings')} value={stats?.upcomingMeetings?.length || 0} />
+        <AppMetric label={td('attendance_label')} value={`${stats?.avgAttendance || 0}%`} />
       </div>
 
-      {/* Upcoming meetings */}
       {stats?.upcomingMeetings?.length > 0 && (
-        <div className="rounded-xl border bg-card p-4">
-          <h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground mb-3">
-            {t('upcoming_meetings')}
-          </h3>
-          <div className="divide-y">
+        <AppPanel>
+          <AppEyebrow className="mb-3">{t('upcoming_meetings')}</AppEyebrow>
+          <div className="divide-y divide-border/70">
             {stats.upcomingMeetings.map((m: any) => (
-              <div key={m.id} className="flex items-center justify-between py-2 text-sm">
-                <span className="font-medium truncate mr-2">
+              <div key={m.id} className="flex items-center justify-between py-2.5 text-sm">
+                <span className="mr-2 truncate font-medium">
                   {m.class?.name || td('meeting_default')}
                 </span>
-                <span className="text-xs text-muted-foreground flex-shrink-0">
+                <span className="shrink-0 text-xs text-muted-foreground">
                   {formatDate(m.date, currentLocale, dateOpts)}
                 </span>
               </div>
             ))}
           </div>
-        </div>
+        </AppPanel>
       )}
 
-      {/* Actions */}
-      <div className="flex flex-wrap gap-3">
-        <Button asChild variant="outline">
+      <div className="flex flex-wrap gap-2">
+        <Button asChild variant="outline" className="h-10 rounded-sm">
           <Link to="/app/sacramental-journeys">
             <GraduationCap className="mr-2 h-4 w-4" />
             {td('my_sacramental_journey')}
           </Link>
         </Button>
-        <Button asChild variant="outline">
+        <Button asChild variant="outline" className="h-10 rounded-sm">
           <Link to="/app/documents">
             <FileText className="mr-2 h-4 w-4" />
             {td('my_documents')}

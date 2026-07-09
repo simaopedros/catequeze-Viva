@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
 import { Input } from '../../client/components/ui/input';
-import { PageHeader } from '../../client/components/PageHeader';
+import { AppPageHeader } from '../../client/components/brand/AppChrome';
 import { FilterPills } from '../../client/components/FilterPills';
 import {
   Select,
@@ -171,47 +171,49 @@ export default function CalendarPage() {
   return (
       <div className="space-y-4">
         {/* ── Header ──────────────────────────────────────────────────── */}
-        <PageHeader
+        <AppPageHeader
+          eyebrow={t('title')}
           title={t('title')}
           subtitle={t('month_events', { month: months[month], year, count: monthCount })}
-          count={monthCount > 0 ? t('event_count', { count: monthCount }) : undefined}
-        >
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() => setCurrentDate(new Date(year, month - 1, 1))}
-            aria-label="Mês anterior"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 text-xs px-3"
-            onClick={() => setCurrentDate(new Date())}
-          >
-            {t('today')}
-          </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => setCurrentDate(new Date(year, month + 1, 1))}
-              aria-label="Mês seguinte"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            {/* CTA primário */}
-            <Button
-              size="sm"
-              className="h-8 text-xs px-3"
-              onClick={() => openNewEventForm()}
-            >
-              <Plus className="mr-1 h-3.5 w-3.5" />
-              {t('add_event')}
-            </Button>
-        </PageHeader>
+          actions={
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-10 w-10 rounded-sm"
+                onClick={() => setCurrentDate(new Date(year, month - 1, 1))}
+                aria-label="Mês anterior"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-10 rounded-sm text-xs px-3"
+                onClick={() => setCurrentDate(new Date())}
+              >
+                {t('today')}
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-10 w-10 rounded-sm"
+                onClick={() => setCurrentDate(new Date(year, month + 1, 1))}
+                aria-label="Mês seguinte"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+              <Button
+                size="sm"
+                className="h-10 rounded-sm text-xs px-3 shadow-none"
+                onClick={() => openNewEventForm()}
+              >
+                <Plus className="mr-1 h-3.5 w-3.5" />
+                {t('add_event')}
+              </Button>
+            </div>
+          }
+        />
 
         {/* ── Filtros ──────────────────────────────────────────────────────── */}
         <div className="flex items-center gap-3 flex-wrap">
@@ -286,11 +288,11 @@ export default function CalendarPage() {
         {mobilePanelOpen && selectedDay != null && (
           <div className="lg:hidden fixed inset-0 z-modal flex items-end motion-reduce:transition-none">
             <div
-              className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
+              className="absolute inset-0 bg-black/40 -sm transition-opacity"
               onClick={() => setMobilePanelOpen(false)}
             />
             <div className="relative z-10 w-full max-h-[75vh] overflow-y-auto rounded-t-2xl border-t bg-card shadow-elevation-modal animate-in slide-in-from-bottom-5 duration-300 motion-reduce:animate-none">
-              <div className="sticky top-0 z-10 flex items-center justify-between p-4 border-b bg-card/95 backdrop-blur-sm rounded-t-2xl">
+              <div className="sticky top-0 z-10 flex items-center justify-between p-4 border-b bg-card/95 -sm rounded-t-2xl">
                 <h3 className="font-semibold text-sm flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
                   {t('day_title', { day: selectedDay, month: months[month] })}

@@ -197,7 +197,7 @@ export default function ContentPrintPage() {
                   {bibleRefs.map((ref: any) => (
                     <div
                       key={ref.id}
-                      className="print-reference-card rounded-2xl border border-amber-200 bg-amber-50/60 p-4"
+                      className="print-reference-card rounded-sm border border-amber-200 bg-amber-50/60 p-4"
                     >
                       <div className="mb-2 text-sm font-semibold text-amber-900">
                         {ref.label}
@@ -221,7 +221,7 @@ export default function ContentPrintPage() {
                   {catechismRefs.map((ref: any) => (
                     <div
                       key={ref.id}
-                      className="print-reference-card rounded-2xl border border-sky-200 bg-sky-50/60 p-4"
+                      className="print-reference-card rounded-sm border border-sky-200 bg-sky-50/60 p-4"
                     >
                       <div className="mb-2 text-sm font-semibold text-sky-900">
                         {ref.label}
@@ -255,7 +255,7 @@ export default function ContentPrintPage() {
                   {directoryRefs.map((ref: any) => (
                     <div
                       key={ref.id}
-                      className="print-reference-card rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4"
+                      className="print-reference-card rounded-sm border border-emerald-200 bg-emerald-50/60 p-4"
                     >
                       <div className="mb-2 text-sm font-semibold text-emerald-900">
                         {ref.label}

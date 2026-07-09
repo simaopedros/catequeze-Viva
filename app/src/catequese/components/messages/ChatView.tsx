@@ -148,7 +148,7 @@ export function ChatView({
         {/* Empty state */}
         {messages.length === 0 && !isLoading && (
           <div className="flex flex-col items-center justify-center h-full text-center py-16">
-            <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
+            <div className="h-16 w-16 rounded-sm bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
               <Send className="h-7 w-7 text-primary/60" />
             </div>
             <h3 className="font-semibold text-sm mb-1">{t('chat_start_title')}</h3>
@@ -172,7 +172,7 @@ export function ChatView({
                   <div className="w-8 flex-shrink-0" />
                 )}
                 <div
-                  className={`rounded-2xl px-3.5 py-2 animate-pulse ${
+                  className={`rounded-sm px-3.5 py-2 animate-pulse ${
                     i % 2 === 0
                       ? 'bg-primary/20 rounded-br-md'
                       : 'bg-muted rounded-bl-md'
@@ -262,7 +262,7 @@ export function ChatView({
                     {/* Message body */}
                     <div
                       className={cn(
-                        'rounded-2xl px-3.5 py-2 text-sm relative shadow-sm',
+                        'rounded-sm px-3.5 py-2 text-sm relative shadow-sm',
                         isMe
                           ? 'bg-primary text-primary-foreground rounded-br-md'
                           : 'bg-card border rounded-bl-md',
@@ -345,7 +345,7 @@ export function ChatView({
       )}
 
       {/* Input area */}
-      <div className={cn('p-3 border-t bg-card/80 backdrop-blur-sm', replyTo && 'pt-0')}>
+      <div className={cn('p-3 border-t bg-white -sm', replyTo && 'pt-0')}>
         <div className="flex items-end gap-2">
           <div className="flex-1 relative">
             <textarea
@@ -355,14 +355,14 @@ export function ChatView({
               onKeyDown={handleKeyDown}
               placeholder={t('message_placeholder')}
               rows={1}
-              className="w-full resize-none rounded-xl border border-input bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-shadow min-h-[40px] max-h-[120px]"
+              className="w-full resize-none rounded-sm border border-input bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-shadow min-h-[40px] max-h-[120px]"
             />
           </div>
           <button
             onClick={handleSend}
             disabled={!input.trim() || isSending}
             className={cn(
-              'h-10 w-10 rounded-xl flex items-center justify-center transition-all flex-shrink-0',
+              'h-10 w-10 rounded-sm flex items-center justify-center transition-all flex-shrink-0',
               input.trim()
                 ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg active:scale-95'
                 : 'bg-muted text-muted-foreground'

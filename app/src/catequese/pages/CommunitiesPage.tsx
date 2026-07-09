@@ -11,7 +11,7 @@ import { toast } from '../../client/hooks/use-toast';
 import { CommunityCreateForm } from '../components/community/CommunityCreateForm';
 import { CommunityCard } from '../components/community/CommunityCard';
 import PhoneMaskInput from '../../client/components/PhoneMaskInput';
-import { PageHeader } from '../../client/components/PageHeader';
+import { AppPageHeader } from '../../client/components/brand/AppChrome';
 import { SearchInput } from '../../client/components/SearchInput';
 import { EmptyState } from '../../client/components/EmptyState';
 import { SkeletonCard } from '../../client/components/Skeletons';
@@ -96,11 +96,16 @@ export default function CommunitiesPage() {
 
   return (
       <div className="space-y-6">
-        <PageHeader title={tn('communities')} subtitle={tp('communities_page_subtitle')}>
-          <Button size="sm" onClick={() => setShowCreate(!showCreate)}>
-            <Plus className="mr-1 h-4 w-4" />{tp('new_community_btn')}
-          </Button>
-        </PageHeader>
+        <AppPageHeader
+          eyebrow={tn('communities')}
+          title={tn('communities')}
+          subtitle={tp('communities_page_subtitle')}
+          actions={
+            <Button size="sm" className="h-10 rounded-sm shadow-none" onClick={() => setShowCreate(!showCreate)}>
+              <Plus className="mr-1 h-4 w-4" />{tp('new_community_btn')}
+            </Button>
+          }
+        />
 
         {showCreate && activeParishId && (
           <CommunityCreateForm

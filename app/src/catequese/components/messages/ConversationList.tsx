@@ -109,7 +109,7 @@ export function ConversationList({ conversations, activeId, onSelect, onNewConve
   });
 
   return (
-    <div className="flex flex-col h-full border-r bg-card/50 backdrop-blur-sm">
+    <div className="flex flex-col h-full border-r bg-card/50 -sm">
       {/* Header */}
       <div className="p-3 border-b space-y-2">
         <div className="flex items-center justify-between">

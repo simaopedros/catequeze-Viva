@@ -29,7 +29,7 @@ export default function FamilyInviteCodePage() {
           <p className="text-sm text-muted-foreground">{t('signup.requires_invite')}</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="rounded-2xl border bg-card p-6 shadow-elevation-xs space-y-4">
+        <form onSubmit={handleSubmit} className="rounded-sm border bg-card p-6 shadow-elevation-xs space-y-4">
           <div className="space-y-2">
             <Label htmlFor="invite-code">{t('landing.insert_code')}</Label>
             <Input

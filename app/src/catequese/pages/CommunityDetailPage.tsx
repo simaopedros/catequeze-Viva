@@ -53,7 +53,7 @@ export default function CommunityDetailPage() {
   if (loading) {
     return <AppShell><div className="max-w-4xl mx-auto py-6 space-y-6 animate-pulse">
       <div className="h-8 w-48 bg-muted rounded" />
-      <div className="grid gap-4 md:grid-cols-3">{[1,2,3].map(i => <div key={i} className="h-24 rounded-xl bg-muted" />)}</div>
+      <div className="grid gap-4 md:grid-cols-3">{[1,2,3].map(i => <div key={i} className="h-24 rounded-sm bg-muted" />)}</div>
     </div></AppShell>;
   }
   if (!community) return <AppShell><div className="p-6 text-destructive">{tp('community_not_found')}</div></AppShell>;
@@ -69,7 +69,7 @@ export default function CommunityDetailPage() {
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild><Link to="/app/communities"><ArrowLeft className="h-5 w-5" /></Link></Button>
           <div className="flex-1">
-            <h1 className="text-2xl font-bold">{community.name}</h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]" style={{ fontFamily: 'var(--font-brand-display)' }}>{community.name}</h1>
             <div className="flex items-center gap-2 mt-1">
               <Badge variant="outline">{typeLabels[community.type as keyof typeof typeLabels] || community.type}</Badge>
               {community.coordinatorName && (
@@ -84,27 +84,27 @@ export default function CommunityDetailPage() {
 
         <div className="grid gap-4 md:grid-cols-3">
           {community.street && (
-            <div className="rounded-xl border bg-card p-4">
+            <div className="rounded-sm border border-border/70 bg-white p-4">
               <h3 className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-1 mb-1"><MapPin className="h-3 w-3" />{t('address')}</h3>
               <p className="text-sm">{community.street}{community.number ? `, ${community.number}` : ''}</p>
               <p className="text-xs text-muted-foreground">{community.neighborhood} {community.city}/{community.state}</p>
             </div>
           )}
           {community.phone && (
-            <div className="rounded-xl border bg-card p-4">
+            <div className="rounded-sm border border-border/70 bg-white p-4">
               <h3 className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-1 mb-1"><Phone className="h-3 w-3" />{tp('contact')}</h3>
               <p className="text-sm">{community.phone}</p>
               {community.email && <p className="text-xs text-muted-foreground">{community.email}</p>}
             </div>
           )}
-          <div className="rounded-xl border bg-card p-4">
+          <div className="rounded-sm border border-border/70 bg-white p-4">
             <h3 className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-1 mb-1"><Building2 className="h-3 w-3" />{tp('summary')}</h3>
             <p className="text-sm">{tp('summary_counts', { classes: classes.length, families: households.length, catechists: uniqueCatechists.length })}</p>
           </div>
         </div>
 
         {community.description && (
-          <div className="rounded-xl border bg-card p-4">
+          <div className="rounded-sm border border-border/70 bg-white p-4">
             <p className="text-sm text-muted-foreground">{community.description}</p>
           </div>
         )}

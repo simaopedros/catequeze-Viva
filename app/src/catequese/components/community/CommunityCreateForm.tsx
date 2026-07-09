@@ -63,7 +63,7 @@ export function CommunityCreateForm({ parishId, onCreate, onCancel }: CommunityC
   const inputClass = "w-full h-9 rounded-md border border-input bg-background px-3 text-sm mt-1";
 
   return (
-    <div className="rounded-xl border bg-card p-5 space-y-4 animate-in fade-in slide-in-from-top-2">
+    <div className="rounded-sm border border-border/70 bg-white p-5 space-y-4 animate-in fade-in slide-in-from-top-2">
       <h3 className="font-semibold text-sm">{t('new_community')}</h3>
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="sm:col-span-2">

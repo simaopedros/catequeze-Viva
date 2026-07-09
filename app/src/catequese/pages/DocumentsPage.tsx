@@ -15,10 +15,9 @@ import {
 } from '../../client/components/ui/dialog';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../../client/components/ui/tooltip';
 import { Avatar, AvatarFallback } from '../../client/components/ui/avatar';
-import { PageHeader } from '../../client/components/PageHeader';
+import { AppPageHeader, AppMetric } from '../../client/components/brand/AppChrome';
 import { EmptyState } from '../../client/components/EmptyState';
 import { SkeletonTable } from '../../client/components/Skeletons';
-import { StatCard } from '../../client/components/StatCard';
 import { ConfirmDialog } from '../../client/components/ConfirmDialog';
 import { useQuery, listDocuments, listCatechumens, verifyDocument, rejectDocument, deleteDocument } from 'wasp/client/operations';
 import { uploadDocumentMultipart } from '../../client/utils/documentUpload';
@@ -123,35 +122,18 @@ export default function DocumentsPage() {
 
   return (
       <div className="space-y-6">
-        <PageHeader title={tc('documents.title')} subtitle={tc('documents.page_subtitle')} />
+        <AppPageHeader
+          eyebrow={tc('documents.title')}
+          title={tc('documents.title')}
+          subtitle={tc('documents.page_subtitle')}
+        />
 
-        {/* Metrics row */}
         {catechumens.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <StatCard
-              icon={CheckCircle}
-              label={tc('documents.verified')}
-              value={metrics.verified}
-              color="success"
-            />
-            <StatCard
-              icon={Clock}
-              label={tc('documents.pending')}
-              value={metrics.pending}
-              color="warning"
-            />
-            <StatCard
-              icon={XCircle}
-              label={tc('documents.status_rejected')}
-              value={metrics.rejected}
-              color="destructive"
-            />
-            <StatCard
-              icon={AlertTriangle}
-              label={tc('documents.status_missing')}
-              value={metrics.missing}
-              color="info"
-            />
+            <AppMetric label={tc('documents.verified')} value={metrics.verified} />
+            <AppMetric label={tc('documents.pending')} value={metrics.pending} />
+            <AppMetric label={tc('documents.status_rejected')} value={metrics.rejected} />
+            <AppMetric label={tc('documents.status_missing')} value={metrics.missing} />
           </div>
         )}
 

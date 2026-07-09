@@ -57,7 +57,7 @@ export default function PublicUploadDocsPage() {
   if (error || !data) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 p-6">
-        <div className="max-w-md w-full rounded-2xl border bg-card p-8 text-center space-y-4 shadow-lg">
+        <div className="max-w-md w-full rounded-sm border bg-card p-8 text-center space-y-4 shadow-lg">
           <div className="rounded-full bg-destructive/10 p-4 w-fit mx-auto">
             <Clock className="h-8 w-8 text-destructive" />
           </div>

@@ -64,7 +64,7 @@ export function CollaborativeChat() {
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[88%] rounded-2xl px-3 py-2.5 text-sm whitespace-pre-wrap shadow-sm ${
+              className={`max-w-[88%] rounded-sm px-3 py-2.5 text-sm whitespace-pre-wrap shadow-sm ${
                 msg.role === 'user'
                   ? 'bg-primary text-primary-foreground'
                   : 'border bg-card text-foreground'

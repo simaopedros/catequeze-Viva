@@ -205,7 +205,7 @@ export function AIHelperWidget() {
 
       {/* Chat panel */}
       {open && (
-        <div className="fixed inset-0 z-modal lg:inset-auto lg:bottom-6 lg:right-6 lg:w-96 lg:h-[500px] bg-card border lg:rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+        <div className="fixed inset-0 z-modal lg:inset-auto lg:bottom-6 lg:right-6 lg:w-96 lg:h-[500px] bg-card border lg:rounded-sm shadow-2xl flex flex-col overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b bg-primary/5" style={{ paddingTop: 'calc(1rem + env(safe-area-inset-top, 0px))' }}>
             <div className="flex items-center gap-2">

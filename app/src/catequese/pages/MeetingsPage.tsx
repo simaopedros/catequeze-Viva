@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '../../client/components/ui/select';
 import { Plus, Calendar, BookOpen, Sparkles, MessageCircle, Trash2 } from 'lucide-react';
-import { PageHeader } from '../../client/components/PageHeader';
+import { AppPageHeader, AppPanel } from '../../client/components/brand/AppChrome';
 import { SkeletonPage } from '../../client/components/Skeletons';
 import { EmptyState } from '../../client/components/EmptyState';
 import { ConfirmDialog } from '../../client/components/ConfirmDialog';
@@ -84,16 +84,27 @@ export default function MeetingsPage() {
 
   return (
       <div className="space-y-6">
-        <PageHeader
+        <AppPageHeader
+          eyebrow={t('title')}
           title={t('title')}
           subtitle={t('subtitle')}
-          backTo={`/app/classes/${classId}`}
-        >
-          {canManageMeetings && <Button onClick={() => setShowForm(!showForm)}><Plus className="mr-2 h-4 w-4" />{t('new')}</Button>}
-        </PageHeader>
+          actions={
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" asChild className="h-10 rounded-sm">
+                <Link to={`/app/classes/${classId}`}>{tc('back')}</Link>
+              </Button>
+              {canManageMeetings && (
+                <Button className="h-10 rounded-sm shadow-none" onClick={() => setShowForm(!showForm)}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  {t('new')}
+                </Button>
+              )}
+            </div>
+          }
+        />
 
         {showForm && (
-          <div className="rounded-xl border bg-card p-4 space-y-3">
+          <AppPanel className="space-y-3">
             <div className="flex gap-3">
               <div className="flex-1 space-y-1.5"><Label htmlFor="meetingTitle">{t('meeting_title')}</Label><Input id="meetingTitle" placeholder={t('meeting_title')} value={title} onChange={e => setTitle(e.target.value)} /></div>
               <div className="space-y-1.5"><Label htmlFor="meetingDate">{t('date')}</Label><Input id="meetingDate" type="date" value={date} onChange={e => setDate(e.target.value)} /></div>
@@ -125,9 +136,9 @@ export default function MeetingsPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <Button onClick={handleCreate} disabled={!title && !selectedContentId}>{t('create')}</Button>
+              <Button className="h-10 rounded-sm" onClick={handleCreate} disabled={!title && !selectedContentId}>{t('create')}</Button>
             </div>
-          </div>
+          </AppPanel>
         )}
 
         {meetings.length === 0 ? (

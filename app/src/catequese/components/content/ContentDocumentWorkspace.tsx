@@ -108,7 +108,7 @@ function ReferencesSidebar({
 
   return (
     <div className="space-y-4">
-      <Card className="rounded-[28px] border-border/60 bg-white/85 p-5 shadow-[0_18px_45px_rgba(15,23,42,0.05)] backdrop-blur">
+      <Card className="rounded-[28px] border-border/60 bg-white/85 p-5 shadow-[0_18px_45px_rgba(15,23,42,0.05)] ">
         <div className="mb-4 flex items-start justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
@@ -207,7 +207,7 @@ function ReferencesSidebar({
       </Card>
 
       {pickerOpen && (
-        <Card className="rounded-[28px] border-border/60 bg-white/85 p-2 shadow-[0_18px_45px_rgba(15,23,42,0.05)] backdrop-blur">
+        <Card className="rounded-[28px] border-border/60 bg-white/85 p-2 shadow-[0_18px_45px_rgba(15,23,42,0.05)] ">
           <ReferencePicker
             bibleRefs={bibleRefs}
             catechismRefs={catechismRefs}
@@ -541,7 +541,7 @@ export function ContentDocumentWorkspace({
 
   return (
     <div className="mx-auto max-w-[1660px] space-y-6 px-4 pb-10 pt-6">
-      <div className="rounded-[32px] border border-border/50 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,244,237,0.92))] px-6 py-5 shadow-[0_24px_60px_rgba(15,23,42,0.06)]">
+      <div className="rounded-sm border border-border/50 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,244,237,0.92))] px-6 py-5 shadow-[0_24px_60px_rgba(15,23,42,0.06)]">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="space-y-3">
             <Link

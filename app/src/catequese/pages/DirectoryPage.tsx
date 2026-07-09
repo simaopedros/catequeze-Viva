@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router';
 import { Search, BookOpen, Loader2, ChevronDown, ChevronUp, AlertCircle } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
-import { PageHeader } from '../../client/components/PageHeader';
+import { AppPageHeader } from '../../client/components/brand/AppChrome';
 import { SearchInput } from '../../client/components/SearchInput';
 import { listDirectoryByPart, searchDirectory, getDirectoryEntry } from 'wasp/client/operations';
 import { useLocale } from '../../i18n/useLocale';
@@ -86,7 +86,8 @@ export default function DirectoryPage() {
 
   return (
       <div className="space-y-6">
-        <PageHeader
+        <AppPageHeader
+          eyebrow={t('directory.title')}
           title={t('directory.title')}
           subtitle={t('directory.subtitle')}
         />

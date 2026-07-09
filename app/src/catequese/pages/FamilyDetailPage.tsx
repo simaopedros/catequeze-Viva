@@ -333,7 +333,7 @@ export default function FamilyDetailPage() {
           <div className="h-8 w-40 bg-muted rounded" />
           <div className="grid gap-4 md:grid-cols-2">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-28 rounded-xl bg-muted" />
+              <div key={i} className="h-28 rounded-sm bg-muted" />
             ))}
           </div>
         </div>
@@ -362,7 +362,7 @@ export default function FamilyDetailPage() {
               />
             ) : (
               <>
-                <h1 className="text-2xl font-bold">{household.name}</h1>
+                <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]" style={{ fontFamily: 'var(--font-brand-display)' }}>{household.name}</h1>
                 <p className="text-sm text-muted-foreground">
                   {t('families.summary', { catechumens: household._count?.catechumens || 0, guardians: household.guardians?.length || 0 })}
                 </p>
@@ -394,7 +394,7 @@ export default function FamilyDetailPage() {
 
         {/* Contact info */}
         {editing ? (
-          <div className="rounded-xl border bg-card p-4 space-y-3">
+          <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3">
             <h3 className="text-xs font-medium text-muted-foreground uppercase">{t('families.edit_address_phone')}</h3>
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground">{t('families.cep')}</label>
@@ -435,7 +435,7 @@ export default function FamilyDetailPage() {
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
             {household.address && (
-              <div className="rounded-xl border bg-card p-4">
+              <div className="rounded-sm border border-border/70 bg-white p-4">
                 <h3 className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-1 mb-1">
                   <MapPin className="h-3 w-3" />
                   {t('address')}
@@ -444,7 +444,7 @@ export default function FamilyDetailPage() {
               </div>
             )}
             {household.phone && (
-              <div className="rounded-xl border bg-card p-4">
+              <div className="rounded-sm border border-border/70 bg-white p-4">
                 <h3 className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-1 mb-1">
                   <Phone className="h-3 w-3" />
                   {t('phone')}
@@ -453,7 +453,7 @@ export default function FamilyDetailPage() {
               </div>
             )}
             {household.community && (
-              <div className="rounded-xl border bg-card p-4">
+              <div className="rounded-sm border border-border/70 bg-white p-4">
                 <h3 className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-1 mb-1">
                   <Building2 className="h-3 w-3" />
                   {t('families.community')}
@@ -467,7 +467,7 @@ export default function FamilyDetailPage() {
         )}
 
         {/* Guardians */}
-        <div className="rounded-xl border bg-card p-4">
+        <div className="rounded-sm border border-border/70 bg-white p-4">
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-semibold text-sm flex items-center gap-1">
               <User className="h-4 w-4" />
@@ -542,7 +542,7 @@ export default function FamilyDetailPage() {
         </div>
 
         {/* Catechumens */}
-        <div className="rounded-xl border bg-card p-4">
+        <div className="rounded-sm border border-border/70 bg-white p-4">
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-semibold text-sm flex items-center gap-1">
               <GraduationCap className="h-4 w-4" />
@@ -611,7 +611,7 @@ export default function FamilyDetailPage() {
         </div>
 
         {/* Consents */}
-        <div className="rounded-xl border bg-card p-4">
+        <div className="rounded-sm border border-border/70 bg-white p-4">
           <h3 className="font-semibold text-sm mb-3 flex items-center gap-1">
             <Shield className="h-4 w-4" />
             {t('families.consents_title')}

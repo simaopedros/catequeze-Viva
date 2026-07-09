@@ -154,7 +154,7 @@ export default function ParishDetailPage() {
           <div className="flex items-center gap-3">
             <div className="rounded-full bg-primary/10 p-3"><Church className="h-6 w-6 text-primary" /></div>
             <div>
-              <h1 className="text-2xl font-bold">{parish?.name}</h1>
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]" style={{ fontFamily: 'var(--font-brand-display)' }}>{parish?.name}</h1>
               {(parish?.city || parish?.state) && (
                 <p className="text-muted-foreground text-sm flex items-center gap-1"><MapPin className="h-3 w-3" />{[parish.city, parish.state].filter(Boolean).join(', ')}</p>
               )}
@@ -193,7 +193,7 @@ export default function ParishDetailPage() {
             />
 
             {parish?.type !== 'PERSONAL' && (
-              <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-5 space-y-3">
+              <div className="rounded-sm border border-destructive/30 bg-destructive/5 p-5 space-y-3">
                 <div className="flex items-center gap-2">
                   <AlertCircle className="h-4 w-4 text-destructive" />
                   <h3 className="font-semibold text-destructive">{tp('danger_zone')}</h3>

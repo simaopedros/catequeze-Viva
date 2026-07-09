@@ -11,7 +11,10 @@ import {
 import { useActiveWorkspace } from '../../../client/hooks/useActiveWorkspace';
 import { useUserContext } from '../../../client/hooks/useUserContext';
 import { SkeletonPage } from '../../../client/components/Skeletons';
-import { PageHeader } from '../../../client/components/PageHeader';
+import {
+  AppPageHeader,
+  AppPanel,
+} from '../../../client/components/brand/AppChrome';
 import { Badge } from '../../../client/components/ui/badge';
 import {
   Select,
@@ -26,7 +29,7 @@ import { useLocale } from '../../../i18n/useLocale';
 import {
   Users, BookOpen, TrendingUp, Cross, FileText, ShieldCheck,
   MessageSquare, Building2, AlertTriangle,
-  Activity, CheckCircle, BarChart3,
+  CheckCircle, BarChart3,
   ArrowUp, ArrowDown, Minus,
 } from 'lucide-react';
 import {
@@ -82,7 +85,7 @@ function translateKpiLabel(label: string, t: (key: string) => string): string {
 
 // ─── KPI Card ─────────────────────────────────────────────────────────────────
 
-function KpiCard({ kpi, icon: Icon, colorClass }: { kpi: KpiBlock; icon: any; colorClass: string }) {
+function KpiCard({ kpi }: { kpi: KpiBlock }) {
   const { t } = useTranslation('dashboard');
   const { currentLocale } = useLocale();
 
@@ -96,25 +99,32 @@ function KpiCard({ kpi, icon: Icon, colorClass }: { kpi: KpiBlock; icon: any; co
   }, [kpi, t, currentLocale]);
 
   return (
-    <div className="rounded-xl border bg-card p-4 shadow-elevation-sm hover:shadow-elevation-md transition-shadow">
-      <div className="flex items-center gap-3">
-        <div className={`rounded-lg p-2 ${colorClass}`}>
-          <Icon className="h-4 w-4" aria-hidden="true" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-overline text-text-tertiary uppercase truncate">{translateKpiLabel(kpi.label, t)}</p>
-          <div className="flex items-baseline gap-2 mt-0.5">
-            <p className="text-xl font-bold">{formatted}</p>
-            {kpi.delta !== null && kpi.delta !== undefined && (
-              <span className={`text-xs font-medium flex items-center gap-0.5 ${
-                kpi.delta > 0 ? 'text-success' : kpi.delta < 0 ? 'text-destructive' : 'text-muted-foreground'
-              }`}>
-                {kpi.delta > 0 ? <ArrowUp className="h-3 w-3" /> : kpi.delta < 0 ? <ArrowDown className="h-3 w-3" /> : <Minus className="h-3 w-3" />}
-                {kpi.deltaLabel || `${kpi.delta}%`}
-              </span>
+    <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground truncate">
+        {translateKpiLabel(kpi.label, t)}
+      </p>
+      <div className="mt-1.5 flex items-baseline gap-2">
+        <p className="text-2xl font-semibold tracking-tight tabular-nums text-foreground">{formatted}</p>
+        {kpi.delta !== null && kpi.delta !== undefined && (
+          <span
+            className={`flex items-center gap-0.5 text-xs font-medium ${
+              kpi.delta > 0
+                ? 'text-success'
+                : kpi.delta < 0
+                  ? 'text-destructive'
+                  : 'text-muted-foreground'
+            }`}
+          >
+            {kpi.delta > 0 ? (
+              <ArrowUp className="h-3 w-3" />
+            ) : kpi.delta < 0 ? (
+              <ArrowDown className="h-3 w-3" />
+            ) : (
+              <Minus className="h-3 w-3" />
             )}
-          </div>
-        </div>
+            {kpi.deltaLabel || `${kpi.delta}%`}
+          </span>
+        )}
       </div>
     </div>
   );
@@ -122,21 +132,21 @@ function KpiCard({ kpi, icon: Icon, colorClass }: { kpi: KpiBlock; icon: any; co
 
 // ─── Domain Section ──────────────────────────────────────────────────────────
 
-function DomainSection({ title, icon: Icon, kpis, colorClass }: {
+function DomainSection({ title, icon: Icon, kpis }: {
   title: string;
   icon: any;
   kpis: KpiBlock[];
-  colorClass: string;
+  colorClass?: string;
 }) {
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-semibold uppercase text-muted-foreground flex items-center gap-2">
-        <Icon className="h-4 w-4" />
+      <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-2">
+        <Icon className="h-3.5 w-3.5" />
         {title}
       </h3>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {kpis.map((kpi) => (
-          <KpiCard key={kpi.label} kpi={kpi} icon={Activity} colorClass={colorClass} />
+          <KpiCard key={kpi.label} kpi={kpi} />
         ))}
       </div>
     </div>
@@ -302,9 +312,9 @@ export function InstitutionalDashboard() {
 
   if (scope === 'community' && !loadingCommunities && communities.length === 0) {
     return (
-      <div className="rounded-xl border bg-card p-8 text-center text-muted-foreground">
+      <AppPanel className="text-center text-muted-foreground">
         {t('no_communities_scope')}
-      </div>
+      </AppPanel>
     );
   }
 
@@ -318,32 +328,28 @@ export function InstitutionalDashboard() {
 
   if (overviewError) {
     return (
-      <div className="rounded-xl border border-destructive/40 bg-destructive/5 p-6 text-destructive">
+      <div className="rounded-sm border border-destructive/40 bg-destructive/5 p-6 text-destructive">
         {t('load_dashboard_error')}: {overviewError.message}
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-title-md font-bold">{t('institutional_title')}</h1>
-          <p className="text-text-secondary text-body-sm">
-            {t(`period_label_${period}`)}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          {/* Scope Selector */}
-          <div className="flex rounded-lg border bg-muted/30 p-0.5">
+    <div className="space-y-8">
+      <AppPageHeader
+        eyebrow={t('institutional_title')}
+        title={t('institutional_title')}
+        subtitle={t(`period_label_${period}`)}
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex rounded-sm border border-border/70 bg-muted/30 p-0.5">
             {scopeOptions.map((opt) => (
               <button
                 key={opt.value}
                 onClick={() => handleScopeChange(opt.value as 'diocese' | 'parish' | 'community')}
-                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${
+                className={`px-3 py-1.5 text-xs font-medium rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${
                   scope === opt.value
-                    ? 'bg-background text-foreground shadow-elevation-xs'
+                    ? 'bg-background text-foreground'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
@@ -351,9 +357,8 @@ export function InstitutionalDashboard() {
               </button>
             ))}
           </div>
-          {/* Period Filter */}
           <Select value={period} onValueChange={(v) => setPeriod(v as any)}>
-            <SelectTrigger className="h-9 rounded-lg text-xs font-medium min-w-[140px]">
+            <SelectTrigger className="h-9 rounded-sm text-xs font-medium min-w-[140px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -364,7 +369,7 @@ export function InstitutionalDashboard() {
           </Select>
           {scope === 'community' && communities.length > 0 && (
             <Select value={selectedCommunityId} onValueChange={(v) => setSelectedCommunityId(v)}>
-              <SelectTrigger className="h-9 rounded-lg text-xs font-medium max-w-[200px]">
+              <SelectTrigger className="h-9 rounded-sm text-xs font-medium max-w-[200px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -374,10 +379,10 @@ export function InstitutionalDashboard() {
               </SelectContent>
             </Select>
           )}
-        </div>
-      </div>
+          </div>
+        }
+      />
 
-      {/* Alerts */}
       <AlertBanner alerts={alerts} />
 
       {/* KPI Grid by Domain */}
@@ -500,10 +505,10 @@ export function InstitutionalDashboard() {
 
       {/* Class Comparison Table (only for parish scope) */}
       {comparison && comparison.length > 0 && scope === 'parish' && (
-        <div className="rounded-xl border bg-card overflow-hidden shadow-elevation-sm">
-          <div className="p-4 border-b bg-muted/20">
-            <h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground flex items-center gap-1.5">
-              <BarChart3 className="h-4 w-4" /> {t('table_class_comparison')}
+        <AppPanel padded={false} className="overflow-hidden">
+          <div className="border-b border-border/70 px-5 py-3">
+            <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              <BarChart3 className="h-3.5 w-3.5" /> {t('table_class_comparison')}
             </h3>
           </div>
           <div className="overflow-x-auto">
@@ -538,7 +543,7 @@ export function InstitutionalDashboard() {
               </tbody>
             </table>
           </div>
-        </div>
+        </AppPanel>
       )}
     </div>
   );

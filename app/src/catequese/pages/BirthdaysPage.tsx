@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
 import { Badge } from '../../client/components/ui/badge';
-import { PageHeader } from '../../client/components/PageHeader';
+import { AppPageHeader } from '../../client/components/brand/AppChrome';
 import { EmptyState } from '../../client/components/EmptyState';
 import { FilterPills } from '../../client/components/FilterPills';
 import { useQuery, listUpcomingBirthdays, toggleBirthdayGift, listClasses } from 'wasp/client/operations';
@@ -51,11 +51,16 @@ export default function BirthdaysPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={t('title')}>
-        <Button size="sm" variant="outline" onClick={handleExportCSV}>
-          <Download className="mr-1 h-3 w-3" />{t('exportList')}
-        </Button>
-      </PageHeader>
+      <AppPageHeader
+        eyebrow={t('title')}
+        title={t('title')}
+        actions={
+          <Button size="sm" variant="outline" className="h-10 rounded-sm" onClick={handleExportCSV}>
+            <Download className="mr-1 h-3 w-3" />
+            {t('exportList')}
+          </Button>
+        }
+      />
 
       <FilterPills
         options={[
