@@ -177,7 +177,7 @@ Maria,Santos,2014-07-22,Silva Santos`}
               <select
                 value={selectedParishId}
                 onChange={(e) => setSelectedParishId(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
+                className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1"
               >
                 {parishes.map((p: any) => (
                   <option key={p.id} value={p.id}>{p.name}</option>
@@ -214,7 +214,7 @@ Maria,Santos,2014-07-22,Silva Santos`}
             <Textarea
               value={csvData}
               onChange={e => setCsvData(e.target.value)}
-              className="flex min-h-[200px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-2 font-mono"
+              className="flex min-h-[200px] w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-2 font-mono"
               placeholder={t('catechumens.import_csv_placeholder')}
             />
           </div>

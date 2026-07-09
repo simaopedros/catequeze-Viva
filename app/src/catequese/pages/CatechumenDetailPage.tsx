@@ -694,7 +694,7 @@ export default function CatechumenDetailPage() {
             <div className="space-y-3">
               <div className="flex gap-2">
                 <select value={docType} onChange={e => setDocType(e.target.value)}
-                  className="h-9 rounded-md border border-input bg-background px-3 text-sm flex-1">
+                  className="h-9 rounded-sm border border-input bg-background px-3 text-sm flex-1">
                   {Object.entries(DOC_TYPE_SHORT_KEYS).map(([value, i18nKey]) => (
                     <option key={value} value={value}>{t(`catechumens.doc_types.${i18nKey}`)}</option>
                   ))}
@@ -732,7 +732,7 @@ export default function CatechumenDetailPage() {
           ) : (
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <input value={getUploadLink()} readOnly className="flex-1 h-9 rounded-md border border-input bg-muted/30 px-3 text-xs" />
+                <input value={getUploadLink()} readOnly className="flex-1 h-9 rounded-sm border border-input bg-muted/30 px-3 text-xs" />
                 <Button size="sm" variant="outline" onClick={handleCopyLink}><Copy className="mr-1 h-3 w-3" />{t('catechumens.detail_copy')}</Button>
               </div>
               <p className="text-xs text-muted-foreground">{t('catechumens.detail_link_valid_until', { date: tokenData.expires })}</p>

@@ -693,7 +693,7 @@ export default function BillingPage() {
 
   const scopeBadgeClass = isPersonal
     ? 'border-primary/20 bg-white/85 text-primary'
-    : 'border-amber-200 bg-amber-50/90 text-amber-800';
+    : 'border-border/70 bg-muted/30 text-foreground';
 
   return (
     <>
@@ -724,7 +724,7 @@ export default function BillingPage() {
                       </span>
                     )}
                     {!isConversionMode && (isTrialAccess ? (
-                      <Badge className="bg-amber-100 text-amber-900 text-xs">{t('trial_status_badge')}</Badge>
+                      <Badge className="rounded-sm border border-border/70 bg-muted/30 text-xs text-foreground">{t('trial_status_badge')}</Badge>
                     ) : isActive && user?.subscriptionStatus === 'cancel_at_period_end' ? (
                       <Badge variant="outline" className="bg-warning/10 text-warning text-xs">{t('cancel_scheduled')}</Badge>
                     ) : isPaidActive ? (
@@ -816,7 +816,7 @@ export default function BillingPage() {
               </div>
 
               {requestedPlanId && !requestedPlanLevelMatches && (
-                <div className="rounded-sm border border-amber-200 bg-amber-50/90 px-4 py-3 text-sm text-amber-800">
+                <div className="rounded-sm border border-border/70 bg-muted/30 px-4 py-3 text-sm text-foreground">
                   <p>{requestedIsInstitutional ? t('plan_mismatch_institutional') : t('plan_mismatch_personal')}</p>
                   {requestedIsInstitutional && isPersonal && (
                     <Button asChild size="sm" variant="outline" className="mt-3 bg-white">
@@ -913,10 +913,10 @@ export default function BillingPage() {
                       className={cn(
                         'rounded-sm p-3',
                         isTrialAccess
-                          ? 'bg-amber-100 text-amber-800'
+                          ? 'border border-border/70 bg-muted/30 text-foreground'
                           : isPaidActive
-                            ? 'bg-emerald-100 text-emerald-700'
-                            : 'bg-amber-100 text-amber-700'
+                            ? 'border border-border/70 bg-muted/30 text-foreground'
+                            : 'border border-border/70 bg-muted/30 text-muted-foreground'
                       )}
                     >
                       <Clock className="h-6 w-6" />
@@ -1019,7 +1019,7 @@ export default function BillingPage() {
           <section className="space-y-6">
             {/* Savings CTA: switch from monthly to annual */}
             {canSwitchInterval && isMonthly && annualSavingsAmount ? (
-              <div className="rounded-sm border-2 border-emerald-300/70 bg-emerald-50 dark:bg-emerald-950/30 p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="flex flex-col gap-4 rounded-sm border border-border/70 bg-white p-5 sm:flex-row sm:items-center">
                 <div className="flex-1">
                   <p className="font-semibold text-emerald-900 dark:text-emerald-100 flex items-center gap-2">
                     <PiggyBank className="h-4 w-4" /> {t('switch_annual_title')}
@@ -1118,7 +1118,7 @@ export default function BillingPage() {
                         )}
                       </div>
                       {isCurrent && isTrialAccess && (
-                        <Badge className="bg-amber-100 text-amber-900">{t('trial_plan_badge')}</Badge>
+                        <Badge className="rounded-sm border border-border/70 bg-muted/30 text-foreground">{t('trial_plan_badge')}</Badge>
                       )}
                       {isCurrent && !isTrialAccess && <Badge>{t('current')}</Badge>}
                       {isRequested && <Badge className="bg-accent/15 text-accent">{t('selected')}</Badge>}

@@ -117,7 +117,7 @@ export default function CreateClassPage() {
                     <FormControl>
                       <select
                         {...field}
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm"
                       >
                         <option value="">{tc('select_option')}</option>
                         {[0, 1, 2, 3, 4, 5, 6].map(i => (

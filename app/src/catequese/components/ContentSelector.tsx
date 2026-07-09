@@ -46,7 +46,7 @@ export function ContentSelector({
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-1 text-sm text-left"
+        className="flex h-9 w-full items-center justify-between rounded-sm border border-input bg-background px-3 py-1 text-sm text-left"
       >
         <span className={selected ? '' : 'text-muted-foreground'}>
           {selected ? selected.title : placeholder}

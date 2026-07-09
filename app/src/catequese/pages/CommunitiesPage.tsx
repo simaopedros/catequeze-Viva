@@ -92,7 +92,7 @@ export default function CommunitiesPage() {
 
   const hasFilters = !!search;
 
-  const inputClass = "w-full h-9 rounded-md border border-input bg-background px-3 text-sm mt-1";
+  const inputClass = "w-full h-9 rounded-sm border border-input bg-background px-3 text-sm mt-1";
 
   return (
       <div className="space-y-6">
@@ -159,7 +159,7 @@ export default function CommunitiesPage() {
                       <div><label className="text-xs font-medium text-muted-foreground">{tp('coordinator')}</label><input value={editFields.coordinatorName} onChange={e => updateEditField('coordinatorName', e.target.value)} className={inputClass} /></div>
                       <div className="sm:col-span-2"><label className="text-xs font-medium text-muted-foreground">{tp('coordinator_phone')}</label><PhoneMaskInput value={editFields.coordinatorPhone} onChange={v => updateEditField('coordinatorPhone', v)} className={inputClass} /></div>
                     </div>
-                    <div><label className="text-xs font-medium text-muted-foreground">{tp('description')}</label><Textarea value={editFields.description} onChange={e => updateEditField('description', e.target.value)} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" rows={2} /></div>
+                    <div><label className="text-xs font-medium text-muted-foreground">{tp('description')}</label><Textarea value={editFields.description} onChange={e => updateEditField('description', e.target.value)} className="w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1" rows={2} /></div>
                     <div className="flex gap-2">
                       <Button size="sm" onClick={handleUpdate} disabled={saving || !editFields.name?.trim()}>{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Check className="mr-1 h-4 w-4" />{tp('save')}</>}</Button>
                       <Button size="sm" variant="ghost" onClick={cancelEdit}><X className="mr-1 h-4 w-4" />{tp('cancel')}</Button>

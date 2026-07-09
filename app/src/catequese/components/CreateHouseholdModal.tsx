@@ -144,7 +144,7 @@ export default function CreateHouseholdModal({ isOpen, onClose, onCreated }: Cre
               value={phone}
               onChange={setPhone}
               placeholder={t('phone_placeholder')}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm"
             />
           </div>
         </div>

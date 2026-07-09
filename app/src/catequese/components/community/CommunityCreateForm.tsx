@@ -60,7 +60,7 @@ export function CommunityCreateForm({ parishId, onCreate, onCancel }: CommunityC
     }
   };
 
-  const inputClass = "w-full h-9 rounded-md border border-input bg-background px-3 text-sm mt-1";
+  const inputClass = "w-full h-9 rounded-sm border border-input bg-background px-3 text-sm mt-1";
 
   return (
     <div className="rounded-sm border border-border/70 bg-white p-5 space-y-4 animate-in fade-in slide-in-from-top-2">
@@ -101,7 +101,7 @@ export function CommunityCreateForm({ parishId, onCreate, onCancel }: CommunityC
 
       <div className="border-t pt-3">
         <label className="text-xs font-medium text-muted-foreground">{t('desc_observations')}</label>
-        <Textarea value={description} onChange={e => setDescription(e.target.value)} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" rows={2} placeholder={t('desc_placeholder')} />
+        <Textarea value={description} onChange={e => setDescription(e.target.value)} className="w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1" rows={2} placeholder={t('desc_placeholder')} />
       </div>
 
       <div className="flex gap-2">

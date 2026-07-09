@@ -122,15 +122,17 @@ export default function ContentPrintPage() {
         }
       `}</style>
       <div className="no-print mx-auto flex max-w-4xl items-center justify-between px-4 pt-4">
-        <Button variant="ghost" size="sm" asChild>
+        <Button variant="outline" size="sm" className="h-10 rounded-sm" asChild>
           <Link to={`/app/content-library/${id}`}>
             <ArrowLeft className="mr-1 h-4 w-4" />
             {t("print_page.back")}
           </Link>
         </Button>
         <div className="flex gap-2">
-          <Badge variant="secondary">{statusLabel(item.status)}</Badge>
-          <Button onClick={() => window.print()} className="gap-2">
+          <Badge variant="secondary" className="rounded-sm border border-border/70">
+            {statusLabel(item.status)}
+          </Badge>
+          <Button onClick={() => window.print()} className="h-10 gap-2 rounded-sm bg-[#071A2D] shadow-none hover:bg-[#0a2540]">
             <Printer className="h-4 w-4" />
             {t("print_page.print_pdf")}
           </Button>
@@ -141,11 +143,12 @@ export default function ContentPrintPage() {
         id="print-content"
         className="mx-auto max-w-4xl bg-white px-6 py-8 text-gray-900"
       >
-        <div className="print-section mb-8 border-b-2 border-gray-300 pb-6 text-center">
-          <p className="mb-4 text-xs uppercase tracking-widest text-gray-400">
+        <div className="print-section mb-8 border-b border-gray-300 pb-6 text-center">
+          <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-500">
             {t("print_page.header_badge")}
           </p>
-          <h1 className="mb-2 text-2xl font-semibold tracking-tight">{item.title}</h1>
+          <h1 className="mb-2 text-2xl font-semibold tracking-tight text-gray-900" style={{ fontFamily: 'var(--font-brand-display)' }}>{item.title}</h1>
+          <div className="mx-auto mb-3 h-px w-10 bg-[#D39A2B]" aria-hidden />
           {item.theme && (
             <p className="mb-3 text-lg italic text-gray-600">{item.theme}</p>
           )}

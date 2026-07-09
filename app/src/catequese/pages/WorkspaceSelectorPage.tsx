@@ -453,7 +453,7 @@ export default function WorkspaceSelectorPage() {
               </button>
               <button
                 onClick={() => navigate('/app/parishes?new=true')}
-                className="inline-flex items-center justify-center rounded-md border border-input bg-background h-9 px-4 text-sm font-medium"
+                className="inline-flex items-center justify-center rounded-sm border border-input bg-background h-9 px-4 text-sm font-medium"
               >
                 {t('workspace.create_parish')}
               </button>

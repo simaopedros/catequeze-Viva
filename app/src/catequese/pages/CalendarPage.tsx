@@ -763,7 +763,7 @@ function SidePanelContent({
               />
               <label
                 htmlFor="event-color-picker"
-                className="flex items-center justify-center h-9 w-9 rounded-md border border-input cursor-pointer hover:border-primary/50 transition-colors "
+                className="flex items-center justify-center h-9 w-9 rounded-sm border border-input cursor-pointer hover:border-primary/50 transition-colors "
                 style={{ background: color }}
                 aria-label="Cor do evento"
               >

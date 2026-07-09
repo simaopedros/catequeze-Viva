@@ -505,7 +505,7 @@ export default function BiblePage() {
               value={bookFilter}
               onChange={(e) => setBookFilter(e.target.value)}
               placeholder={t('book_filter')}
-              className="w-full h-8 rounded-md border border-input bg-background pl-8 pr-3 text-xs"
+              className="w-full h-8 rounded-sm border border-input bg-background pl-8 pr-3 text-xs"
             />
           </div>
         </div>
@@ -528,7 +528,7 @@ export default function BiblePage() {
                 value={bookFilter}
                 onChange={(e) => setBookFilter(e.target.value)}
                 placeholder={t('book_filter')}
-                className="w-full h-8 rounded-md border border-input bg-background pl-8 pr-3 text-xs"
+                className="w-full h-8 rounded-sm border border-input bg-background pl-8 pr-3 text-xs"
               />
             </div>
           )}

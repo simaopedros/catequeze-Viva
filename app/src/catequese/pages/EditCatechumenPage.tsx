@@ -121,10 +121,10 @@ export default function EditCatechumenPage() {
 
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
-            <div><label className="text-xs font-medium">{t('first_name')}</label><input value={firstName} onChange={e => setFirstName(e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1" /></div>
-            <div><label className="text-xs font-medium">{t('last_name')}</label><input value={lastName} onChange={e => setLastName(e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1" /></div>
+            <div><label className="text-xs font-medium">{t('first_name')}</label><input value={firstName} onChange={e => setFirstName(e.target.value)} className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1" /></div>
+            <div><label className="text-xs font-medium">{t('last_name')}</label><input value={lastName} onChange={e => setLastName(e.target.value)} className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1" /></div>
           </div>
-          <div><label className="text-xs font-medium">{t('catechumens.birth_short')}</label><input type="date" value={birthDate} onChange={e => setBirthDate(e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1" /></div>
+          <div><label className="text-xs font-medium">{t('catechumens.birth_short')}</label><input type="date" value={birthDate} onChange={e => setBirthDate(e.target.value)} className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1" /></div>
           <div className="flex gap-3">
             <Button onClick={handleSave} disabled={saving}><Save className="mr-1 h-4 w-4" />{saving ? t('saving') : t('save')}</Button>
             <Button variant="outline" asChild><Link to={`/app/catechumens/${id}`}>{t('cancel')}</Link></Button>

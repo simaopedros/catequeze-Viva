@@ -39,7 +39,7 @@ export function CatechistDetails({ parishName, onComplete }: CatechistDetailsPro
       <div>
         <label className="text-sm font-medium">{t('coordinator.class_name')}</label>
         <input value={className} onChange={e => setClassName(e.target.value)}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
+          className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1"
           placeholder={t('coordinator.class_name_placeholder')} disabled={skipClass} />
       </div>
 
@@ -48,19 +48,19 @@ export function CatechistDetails({ parishName, onComplete }: CatechistDetailsPro
           <div>
             <label className="text-sm font-medium">{t('coordinator.day_of_week')}</label>
             <select value={dayOfWeek} onChange={e => setDayOfWeek(e.target.value)}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1">
+              className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1">
               {DAY_VALUES.map(d => <option key={d} value={d}>{t(`coordinator.days.${d}`)}</option>)}
             </select>
           </div>
           <div>
             <label className="text-sm font-medium">{t('coordinator.start_time')}</label>
             <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" />
+              className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1" />
           </div>
           <div>
             <label className="text-sm font-medium">{t('coordinator.end_time')}</label>
             <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1" />
+              className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1" />
           </div>
         </div>
       )}
@@ -69,7 +69,7 @@ export function CatechistDetails({ parishName, onComplete }: CatechistDetailsPro
         <div>
           <label className="text-sm font-medium">{t('coordinator.location')}</label>
           <input value={location} onChange={e => setLocation(e.target.value)}
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
+            className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1"
             placeholder={parishName} />
         </div>
       )}

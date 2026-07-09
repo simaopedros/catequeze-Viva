@@ -132,20 +132,20 @@ export default function ParishMembersPage() {
           <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3">
             <h3 className="font-medium text-sm">{tp('invite_member')}</h3>
             <div className="flex flex-wrap gap-3">
-              <input value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} className="flex-1 min-w-[200px] h-9 rounded-md border border-input bg-background px-3 text-sm" placeholder={t('families.email_placeholder')} type="email" />
-              <select value={inviteRole} onChange={e => setInviteRole(e.target.value)} className="h-9 rounded-md border border-input bg-background px-3 text-sm">
+              <input value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} className="flex-1 min-w-[200px] h-9 rounded-sm border border-input bg-background px-3 text-sm" placeholder={t('families.email_placeholder')} type="email" />
+              <select value={inviteRole} onChange={e => setInviteRole(e.target.value)} className="h-9 rounded-sm border border-input bg-background px-3 text-sm">
                 {inviteRoles.filter(r => allowedInviteRoles.includes(r.value)).map(r => (
                   <option key={r.value} value={r.value}>{r.label}</option>
                 ))}
               </select>
-              <select value={inviteCommunityId} onChange={e => setInviteCommunityId(e.target.value)} className="h-9 rounded-md border border-input bg-background px-3 text-sm">
+              <select value={inviteCommunityId} onChange={e => setInviteCommunityId(e.target.value)} className="h-9 rounded-sm border border-input bg-background px-3 text-sm">
                 <option value="">{tp('all_parish')}</option>
                 {communities.map((c: any) => (
                   <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
               {(inviteRole === 'GUARDIAN' || inviteRole === 'CATECHUMEN') && (
-                <select value={inviteHouseholdId} onChange={e => setInviteHouseholdId(e.target.value)} className="h-9 rounded-md border border-input bg-background px-3 text-sm min-w-[180px]">
+                <select value={inviteHouseholdId} onChange={e => setInviteHouseholdId(e.target.value)} className="h-9 rounded-sm border border-input bg-background px-3 text-sm min-w-[180px]">
                   <option value="">{tp('no_family_later')}</option>
                   {households.map((h: any) => (
                     <option key={h.id} value={h.id}>{h.name}</option>
@@ -199,7 +199,7 @@ export default function ParishMembersPage() {
                               try { await updateMembershipRole({ membershipId: m.id, role: e.target.value }); }
                               catch (err: any) { setError(err.message || tp('error_update')); }
                             }}
-                            className="h-8 rounded-md border border-input bg-background px-2 text-xs"
+                            className="h-8 rounded-sm border border-input bg-background px-2 text-xs"
                           >
                             {Object.entries(roleLabels)
                               .filter(([key]) => assignable.includes(key) || key === m.role)

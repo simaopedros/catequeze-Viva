@@ -74,7 +74,7 @@ export default function SendAnnouncementButton({ classId, className }: Props) {
           placeholder={t('announcement.message_placeholder')}
           rows={4}
           disabled={sending}
-          className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1 resize-y min-h-[80px]"
+          className="flex w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1 resize-y min-h-[80px]"
         />
       </div>
       {error && <p className="text-xs text-destructive">{error}</p>}

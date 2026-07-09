@@ -22,13 +22,13 @@ export function GuardianDetails({ onComplete }: GuardianDetailsProps) {
         <div>
           <label className="text-sm font-medium">{t('guardian.household_name')}</label>
           <input value={householdName} onChange={e => setHouseholdName(e.target.value)}
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
+            className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1"
             placeholder={t('guardian.household_placeholder')} />
         </div>
         <div>
           <label className="text-sm font-medium">{t('guardian.phone')}</label>
           <PhoneMaskInput value={phone} onChange={setPhone}
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
+            className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1"
             placeholder={t('guardian.phone_placeholder')} />
         </div>
       </div>

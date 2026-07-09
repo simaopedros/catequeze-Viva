@@ -323,7 +323,7 @@ export default function SacramentsPage() {
                           type="date"
                           value={editingTargetDate[j.id] || ''}
                           onChange={e => setEditingTargetDate(prev => ({ ...prev, [j.id]: e.target.value }))}
-                          className="flex h-7 rounded-md border border-input bg-background px-2 text-xs flex-1"
+                          className="flex h-7 rounded-sm border border-input bg-background px-2 text-xs flex-1"
                         />
                         <Button size="sm" className="h-6 text-overline" onClick={(e) => handleSaveTargetDate(j.id, e)}>✓</Button>
                       </div>

@@ -75,7 +75,7 @@ export function DocumentUploadModal({
             placeholder={t('documents.name_placeholder')}
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="mt-1 flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm"
+            className="mt-1 flex h-9 w-full rounded-sm border border-input bg-background px-3 py-1 text-sm"
             autoFocus
           />
         </div>
@@ -85,7 +85,7 @@ export function DocumentUploadModal({
           <select
             value={type}
             onChange={(e) => setType(e.target.value)}
-            className="mt-1 flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm"
+            className="mt-1 flex h-9 w-full rounded-sm border border-input bg-background px-3 py-1 text-sm"
           >
             {DOC_TYPES.map((dt) => (
               <option key={dt} value={dt}>{t('catechumens.doc_types.' + dt)}</option>
@@ -99,7 +99,7 @@ export function DocumentUploadModal({
             type="file"
             accept=".jpg,.jpeg,.png,.webp,.pdf"
             onChange={(e) => setFile(e.target.files?.[0] || null)}
-            className="mt-1 flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm"
+            className="mt-1 flex h-9 w-full rounded-sm border border-input bg-background px-3 py-1 text-sm"
           />
         </div>
 

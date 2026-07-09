@@ -403,7 +403,7 @@ export default function FamilyDetailPage() {
                 <input
                   value={editCep}
                   onChange={(e) => setEditCep(e.target.value)}
-                  className="flex h-9 w-40 rounded-md border border-input bg-background px-3 text-sm"
+                  className="flex h-9 w-40 rounded-sm border border-input bg-background px-3 text-sm"
                   placeholder={t('cep_placeholder')}
                 />
                 {cepLoading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
@@ -419,7 +419,7 @@ export default function FamilyDetailPage() {
               <input
                 value={editAddress}
                 onChange={(e) => setEditAddress(e.target.value)}
-                className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1"
+                className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
                 placeholder={t('families.address_placeholder')}
               />
             </div>
@@ -428,7 +428,7 @@ export default function FamilyDetailPage() {
               <PhoneMaskInput
                 value={editPhone}
                 onChange={setEditPhone}
-                className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1"
+                className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
                 placeholder={t('phone_placeholder')}
               />
             </div>
@@ -669,7 +669,7 @@ export default function FamilyDetailPage() {
               <input
                 value={guardianFirstName}
                 onChange={(e) => setGuardianFirstName(e.target.value)}
-                className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+                className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm"
                 placeholder={t('first_name')}
                 autoFocus
               />
@@ -681,7 +681,7 @@ export default function FamilyDetailPage() {
               <input
                 value={guardianLastName}
                 onChange={(e) => setGuardianLastName(e.target.value)}
-                className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+                className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm"
                 placeholder={t('last_name')}
               />
             </div>
@@ -693,7 +693,7 @@ export default function FamilyDetailPage() {
                 type="email"
                 value={guardianEmail}
                 onChange={(e) => setGuardianEmail(e.target.value)}
-                className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+                className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm"
                 placeholder={t('families.email_placeholder')}
               />
               <p className="text-xs text-muted-foreground">{t('families.email_hint')}</p>
@@ -722,7 +722,7 @@ export default function FamilyDetailPage() {
               <PhoneMaskInput
                 value={guardianPhone}
                 onChange={setGuardianPhone}
-                className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+                className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm"
                 placeholder={t('phone_placeholder')}
               />
             </div>
@@ -757,7 +757,7 @@ export default function FamilyDetailPage() {
                   <input
                     value={editGuardianFirstName}
                     onChange={(e) => setEditGuardianFirstName(e.target.value)}
-                    className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+                    className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm"
                     placeholder={t('first_name')}
                   />
                 </div>
@@ -766,7 +766,7 @@ export default function FamilyDetailPage() {
                   <input
                     value={editGuardianLastName}
                     onChange={(e) => setEditGuardianLastName(e.target.value)}
-                    className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+                    className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm"
                     placeholder={t('last_name')}
                   />
                 </div>
@@ -796,7 +796,7 @@ export default function FamilyDetailPage() {
               <PhoneMaskInput
                 value={editGuardianPhone}
                 onChange={setEditGuardianPhone}
-                className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+                className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm"
                 placeholder={t('phone_placeholder')}
               />
             </div>

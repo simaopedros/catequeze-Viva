@@ -148,7 +148,7 @@ export default function SacramentalJourneyDetailPage() {
                   type="date"
                   value={targetDateInput}
                   onChange={e => setTargetDateInput(e.target.value)}
-                  className="flex h-8 rounded-md border border-input bg-background px-3 text-sm"
+                  className="flex h-8 rounded-sm border border-input bg-background px-3 text-sm"
                 />
                 <Button size="sm" onClick={handleSaveTargetDate}><Save className="mr-1 h-3 w-3" />{tc('save')}</Button>
                 <Button size="sm" variant="ghost" onClick={() => setEditingTargetDate(false)}><X className="h-4 w-4" /></Button>
@@ -234,7 +234,7 @@ export default function SacramentalJourneyDetailPage() {
                               <textarea
                                 value={editingNotes[m.id] || ''}
                                 onChange={e => setEditingNotes(prev => ({ ...prev, [m.id]: e.target.value }))}
-                                className="w-full text-xs rounded-md border border-input bg-background px-2 py-1 min-h-[40px]"
+                                className="w-full text-xs rounded-sm border border-input bg-background px-2 py-1 min-h-[40px]"
                                 placeholder={t('detail.add_notes')}
                                 rows={2}
                               />

@@ -97,7 +97,7 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
               <div>
                 <label htmlFor="ps-day" className="flex items-center gap-1 text-sm font-medium"><Clock className="h-3 w-3" /> {t('personal_setup.schedule_label')}</label>
                 <div className="mt-1 grid grid-cols-3 gap-2">
-                  <select id="ps-day" value={dayOfWeek} onChange={e => setDayOfWeek(e.target.value)} className="h-9 rounded-md border border-input bg-background px-2 text-sm">
+                  <select id="ps-day" value={dayOfWeek} onChange={e => setDayOfWeek(e.target.value)} className="h-9 rounded-sm border border-input bg-background px-2 text-sm">
                     <option value="">{t('personal_setup.day')}</option>
                     {DAY_KEYS.map(d => <option key={d} value={d}>{t(`personal_setup.days.${d}`)}</option>)}
                   </select>

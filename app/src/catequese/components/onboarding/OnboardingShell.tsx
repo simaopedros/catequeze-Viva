@@ -45,7 +45,7 @@ export function OnboardingShell({
         </div>
         <div className="h-0.5 w-full bg-border/60">
           <div
-            className="h-full bg-primary transition-all duration-300"
+            className="h-full bg-[#D39A2B] transition-all duration-300"
             style={{ width: `${((currentIdx + 1) / Math.max(steps.length, 1)) * 100}%` }}
           />
         </div>

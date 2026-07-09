@@ -454,7 +454,7 @@ export function ActivityForm({
         <select
           value={type}
           onChange={e => setType(e.target.value as ActivityType)}
-          className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm mt-1"
+          className="flex h-9 w-full rounded-sm border border-input bg-background px-3 py-1 text-sm mt-1"
         >
           {activityTypes.map(at => (
             <option key={at.value} value={at.value}>{at.label}</option>

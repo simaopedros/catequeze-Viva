@@ -143,13 +143,13 @@ export default function JourneyTemplatesPage() {
               placeholder={t('templates.name_placeholder')}
               value={newName}
               onChange={e => setNewName(e.target.value)}
-              className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+              className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm"
             />
             <textarea
               placeholder={t('templates.description_placeholder')}
               value={newDescription}
               onChange={e => setNewDescription(e.target.value)}
-              className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[60px]"
+              className="flex w-full rounded-sm border border-input bg-background px-3 py-2 text-sm min-h-[60px]"
               rows={2}
             />
             <div className="flex gap-2">
@@ -188,12 +188,12 @@ export default function JourneyTemplatesPage() {
                           <input
                             value={editName}
                             onChange={e => setEditName(e.target.value)}
-                            className="flex h-8 w-full rounded-md border border-input bg-background px-2 text-sm font-medium"
+                            className="flex h-8 w-full rounded-sm border border-input bg-background px-2 text-sm font-medium"
                           />
                           <textarea
                             value={editDescription}
                             onChange={e => setEditDescription(e.target.value)}
-                            className="flex w-full rounded-md border border-input bg-background px-2 py-1 text-xs min-h-[40px]"
+                            className="flex w-full rounded-sm border border-input bg-background px-2 py-1 text-xs min-h-[40px]"
                             rows={2}
                           />
                           <div className="flex gap-1">
@@ -281,13 +281,13 @@ export default function JourneyTemplatesPage() {
                                     <input
                                       value={milestoneEdit.name}
                                       onChange={e => setMilestoneEdit(prev => ({ ...prev, name: e.target.value }))}
-                                      className="flex h-7 w-full rounded-md border border-input bg-background px-2 text-xs"
+                                      className="flex h-7 w-full rounded-sm border border-input bg-background px-2 text-xs"
                                       placeholder={t('templates.milestone_name')}
                                     />
                                     <textarea
                                       value={milestoneEdit.description}
                                       onChange={e => setMilestoneEdit(prev => ({ ...prev, description: e.target.value }))}
-                                      className="flex w-full rounded-md border border-input bg-background px-2 py-1 text-xs min-h-[32px]"
+                                      className="flex w-full rounded-sm border border-input bg-background px-2 py-1 text-xs min-h-[32px]"
                                       rows={1}
                                       placeholder={t('templates.description')}
                                     />
@@ -306,7 +306,7 @@ export default function JourneyTemplatesPage() {
                                           type="number"
                                           value={milestoneEdit.daysBeforeSacrament}
                                           onChange={e => setMilestoneEdit(prev => ({ ...prev, daysBeforeSacrament: e.target.value }))}
-                                          className="w-16 h-6 rounded-md border border-input bg-background px-1 text-xs"
+                                          className="w-16 h-6 rounded-sm border border-input bg-background px-1 text-xs"
                                           min="0"
                                         />
                                       </label>

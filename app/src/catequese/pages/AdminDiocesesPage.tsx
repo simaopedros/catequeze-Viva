@@ -79,7 +79,7 @@ export default function AdminDiocesesPage({ user }: { user: AuthUser }) {
                 className="flex-1 h-9"
                 placeholder={t('name_placeholder')} />
               <select value={country} onChange={e => setCountry(e.target.value)}
-                className="h-9 rounded-md border border-input bg-background px-3 text-sm">
+                className="h-9 rounded-sm border border-input bg-background px-3 text-sm">
                 {(['BR', 'PT', 'AO', 'MZ'] as const).map(c => (
                   <option key={c} value={c}>{t(`countries.${c}`)}</option>
                 ))}

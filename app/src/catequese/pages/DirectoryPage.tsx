@@ -96,7 +96,7 @@ export default function DirectoryPage() {
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleSearch()}
-            className="flex-1 h-9 rounded-md border border-input bg-background px-3 text-sm"
+            className="flex-1 h-9 rounded-sm border border-input bg-background px-3 text-sm"
             placeholder={t('directory.searchPlaceholder')}
           />
           <Button size="sm" onClick={handleSearch} disabled={loading || searchQuery.length < 2}>

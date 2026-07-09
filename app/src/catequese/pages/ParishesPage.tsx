@@ -162,7 +162,7 @@ export default function ParishesPage() {
                   <select
                     value={newDioceseId}
                     onChange={e => setNewDioceseId(e.target.value)}
-                    className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+                    className="h-9 rounded-sm border border-input bg-background px-3 text-sm"
                   >
                     <option value="">{tp('independent_option')}</option>
                     {manageDioceses.map(d => (

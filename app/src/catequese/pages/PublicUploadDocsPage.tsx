@@ -130,7 +130,7 @@ export default function PublicUploadDocsPage() {
             <select
               value={docType}
               onChange={e => setDocType(e.target.value)}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
+              className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1"
             >
               {DOC_TYPES.map((k) => (
                 <option key={k} value={k}>{t(`upload_docs.types.${k}`)}</option>
@@ -144,7 +144,7 @@ export default function PublicUploadDocsPage() {
               type="file"
               accept=".jpg,.jpeg,.png,.pdf"
               onChange={e => setDocFile(e.target.files?.[0] || null)}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-sm file:bg-muted file:text-foreground"
+              className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-sm file:bg-muted file:text-foreground"
             />
             <p className="text-overline text-muted-foreground mt-1">{t('upload_docs.file_hint')}</p>
           </div>

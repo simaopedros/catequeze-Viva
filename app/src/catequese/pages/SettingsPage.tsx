@@ -218,7 +218,7 @@ export default function SettingsPage() {
                 id="source-parish"
                 value={sourceParishId}
                 onChange={e => setSourceParishId(e.target.value)}
-                className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1"
+                className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
               >
                 <option value="">{t('select_parish')}</option>
                 {userParishes

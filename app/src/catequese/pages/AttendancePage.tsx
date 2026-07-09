@@ -308,13 +308,13 @@ export default function AttendancePage() {
               placeholder={t('matrix.filter_students') || 'Filtrar alunos...'}
               value={studentFilter}
               onChange={e => setStudentFilter(e.target.value)}
-              className="flex h-8 w-full sm:w-64 rounded-md border border-input bg-background px-3 py-1 text-xs"
+              className="flex h-8 w-full sm:w-64 rounded-sm border border-input bg-background px-3 py-1 text-xs"
             />
           )}
           <select
             value={enrollmentStatusFilter}
             onChange={e => setEnrollmentStatusFilter(e.target.value)}
-            className="h-8 rounded-md border border-input bg-background px-2 py-1 text-xs"
+            className="h-8 rounded-sm border border-input bg-background px-2 py-1 text-xs"
           >
             <option value="all">{t('matrix.all_statuses') || 'Todos os status'}</option>
             <option value="enrolled">{t('matrix.active') || 'Ativos'}</option>
@@ -334,7 +334,7 @@ export default function AttendancePage() {
                   <span className="text-muted-foreground truncate max-w-[120px]">{formatDate(m.date, currentLocale, { day: '2-digit', month: '2-digit' })}</span>
                   <button
                     onClick={() => triggerBulkAction(m.id, m.title || formatDate(m.date, currentLocale, { day: '2-digit', month: '2-digit' }), 'PRESENT')}
-                    className="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400"
+                    className="rounded-sm border border-emerald-300 bg-emerald-100 px-1.5 py-0.5 text-emerald-700 hover:bg-emerald-200 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400"
                     title={t('matrix.mark_all_present')}
                   >✓{t('matrix.present_letter')}</button>
                   <button
