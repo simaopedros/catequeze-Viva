@@ -27,6 +27,11 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { toast } from "../../../client/hooks/use-toast";
+import {
+  AppEyebrow,
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
 
 const AGE_GROUPS = [
   {
@@ -279,16 +284,13 @@ export function QuickSetupPanel({
     <div className="flex min-h-[80vh] items-center justify-center px-3 py-6">
       <div className="w-full max-w-4xl space-y-6">
         <div className="space-y-2.5 text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          <AppEyebrow className="text-center">
             {t("hub.eyebrow", { defaultValue: "Copiloto" })}
-          </p>
-          <h1
-            className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          </AppEyebrow>
+          <AppDisplayTitle className="text-center">
             {t(modeLabelKey)}
-          </h1>
-          <div className="mx-auto h-px w-10 bg-[#D39A2B]" aria-hidden />
+          </AppDisplayTitle>
+          <AppGoldRule className="mx-auto" />
           <p className="text-sm text-muted-foreground">
             {t("planner.subtitle")}
           </p>

@@ -38,6 +38,10 @@ import {
 } from "recharts";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
 import {
+  AppPageHeader,
+  AppMetric,
+} from "../../client/components/brand/AppChrome";
+import {
   useQuery,
   getCatechumenProfile,
   listMeetings,
@@ -1303,17 +1307,29 @@ export default function CatechumenDetailPage() {
     }
   };
 
+  const detailSubtitle = [
+    age ? t("catechumens.years_old", { age }) : null,
+    profile.birthDate ? formatDateOnly(profile.birthDate, "pt-BR") : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
   return (
     <>
-      <div className="max-w-2xl mx-auto space-y-6">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
+      <div className="mx-auto max-w-2xl space-y-6">
+        <div className="flex items-start gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="mt-1 shrink-0 rounded-sm"
+            asChild
+          >
             <Link to="/app/catechumens">
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>
           <div
-            className={`flex h-14 w-14 items-center justify-center rounded-sm text-xl font-semibold overflow-hidden ${
+            className={`mt-0.5 flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-sm text-xl font-semibold ${
               !profile.photoUrl
                 ? AVATAR_COLORS[
                     Math.abs(profile.firstName?.charCodeAt(0) || 0) %
@@ -1326,70 +1342,51 @@ export default function CatechumenDetailPage() {
               <img
                 src={profile.photoUrl}
                 alt={profile.firstName}
-                className="w-full h-full object-cover"
+                className="h-full w-full object-cover"
               />
             ) : (
               `${profile.firstName?.[0] || ""}${profile.lastName?.[0] || ""}`
             )}
           </div>
-          <div className="min-w-0 flex-1 space-y-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              {t("catechumens.detail", { defaultValue: "Catequizando" })}
-            </p>
-            <h1
-              className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
-              {profile.firstName} {profile.lastName}
-            </h1>
-            <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
-            <p className="text-sm text-muted-foreground">
-              {age && t("catechumens.years_old", { age })}
-              {profile.birthDate &&
-                ` · ${formatDateOnly(profile.birthDate, "pt-BR")}`}
-            </p>
-          </div>
-          {canEdit && (
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-10 rounded-sm"
-              asChild
-            >
-              <Link to={`/app/catechumens/${id}/edit`}>
-                <Edit3 className="mr-1 h-3 w-3" />
-                {t("edit")}
-              </Link>
-            </Button>
-          )}
+          <AppPageHeader
+            className="min-w-0 flex-1 border-0 pb-0"
+            eyebrow={t("catechumens.detail", {
+              defaultValue: "Catequizando",
+            })}
+            title={`${profile.firstName} ${profile.lastName}`}
+            subtitle={detailSubtitle || undefined}
+            actions={
+              canEdit ? (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-10 rounded-sm"
+                  asChild
+                >
+                  <Link to={`/app/catechumens/${id}/edit`}>
+                    <Edit3 className="mr-1 h-3 w-3" />
+                    {t("edit")}
+                  </Link>
+                </Button>
+              ) : undefined
+            }
+          />
         </div>
 
         {attendancePct !== null && (
           <div className="grid grid-cols-3 gap-3">
-            <div className="rounded-sm border border-border/70 bg-white px-4 py-3 text-center">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                {t("catechumens.detail_presence")}
-              </p>
-              <p className="mt-1.5 text-2xl font-semibold tracking-tight tabular-nums text-foreground">
-                {attendancePct}%
-              </p>
-            </div>
-            <div className="rounded-sm border border-border/70 bg-white px-4 py-3 text-center">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                {tp("classes")}
-              </p>
-              <p className="mt-1.5 text-2xl font-semibold tracking-tight tabular-nums text-foreground">
-                {profile.enrollments?.length || 0}
-              </p>
-            </div>
-            <div className="rounded-sm border border-border/70 bg-white px-4 py-3 text-center">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                {t("catechumens.detail_journeys")}
-              </p>
-              <p className="mt-1.5 text-2xl font-semibold tracking-tight tabular-nums text-foreground">
-                {profile.sacramentalJourneys?.length || 0}
-              </p>
-            </div>
+            <AppMetric
+              label={t("catechumens.detail_presence")}
+              value={`${attendancePct}%`}
+            />
+            <AppMetric
+              label={tp("classes")}
+              value={profile.enrollments?.length || 0}
+            />
+            <AppMetric
+              label={t("catechumens.detail_journeys")}
+              value={profile.sacramentalJourneys?.length || 0}
+            />
           </div>
         )}
 

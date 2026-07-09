@@ -28,6 +28,7 @@ import {
 } from "wasp/client/operations";
 import { ParishInfoTab } from "../components/parish/ParishInfoTab";
 import { ParishCommunitiesTab } from "../components/parish/ParishCommunitiesTab";
+import { AppPageHeader } from "../../client/components/brand/AppChrome";
 import { ParishMembersTab } from "../components/parish/ParishMembersTab";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
 import { toast } from "../../client/hooks/use-toast";
@@ -237,35 +238,31 @@ export default function ParishDetailPage() {
           </span>
         </div>
 
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="rounded-sm border border-border/70 bg-muted/30 p-3">
-              <Church className="h-6 w-6 text-foreground" />
-            </div>
-            <div>
-              <h1
-                className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
-                {parish?.name}
-              </h1>
-              <div className="mt-2 h-px w-10 bg-[#D39A2B]" aria-hidden />
-              {(parish?.city || parish?.state) && (
-                <p className="text-muted-foreground text-sm flex items-center gap-1">
-                  <MapPin className="h-3 w-3" />
-                  {[parish.city, parish.state].filter(Boolean).join(", ")}
-                </p>
-              )}
-            </div>
+        <div className="flex items-start gap-3">
+          <div className="mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
+            <Church className="h-5 w-5" />
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate("/app/parishes")}
-          >
-            <ArrowLeft className="mr-1 h-4 w-4" />
-            {tp("back")}
-          </Button>
+          <AppPageHeader
+            className="min-w-0 flex-1 border-0 pb-0"
+            eyebrow={tn("parishes")}
+            title={parish?.name || ""}
+            subtitle={
+              parish?.city || parish?.state
+                ? [parish.city, parish.state].filter(Boolean).join(", ")
+                : undefined
+            }
+            actions={
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-10 rounded-sm"
+                onClick={() => navigate("/app/parishes")}
+              >
+                <ArrowLeft className="mr-1 h-4 w-4" />
+                {tp("back")}
+              </Button>
+            }
+          />
         </div>
 
         {error && (

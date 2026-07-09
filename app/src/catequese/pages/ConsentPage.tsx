@@ -1,7 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../client/components/ui/button";
-import { AppPageHeader } from "../../client/components/brand/AppChrome";
+import {
+  AppPageHeader,
+  AppPanel,
+} from "../../client/components/brand/AppChrome";
 import { Shield, CheckCircle, XCircle } from "lucide-react";
 import { listConsents, saveConsent } from "wasp/client/operations";
 import { toast } from "../../client/hooks/use-toast";
@@ -70,15 +73,15 @@ export default function ConsentPage() {
       />
       <div className="space-y-3">
         {consentTypes.map((ct) => (
-          <div
+          <AppPanel
             key={ct.key}
-            className="rounded-sm border border-border/70 bg-white p-5 flex items-center justify-between"
+            className="flex items-center justify-between gap-4"
           >
             <div>
-              <h3 className="font-semibold">{ct.label}</h3>
+              <h3 className="font-semibold text-[#071A2D]">{ct.label}</h3>
               <p className="text-sm text-muted-foreground">{ct.desc}</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex shrink-0 gap-2">
               <Button
                 size="sm"
                 className="rounded-sm"
@@ -98,7 +101,7 @@ export default function ConsentPage() {
                 {t("consent_page.deny")}
               </Button>
             </div>
-          </div>
+          </AppPanel>
         ))}
       </div>
     </div>

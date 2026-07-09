@@ -2,7 +2,10 @@ import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../client/components/ui/button";
 import { Badge } from "../../client/components/ui/badge";
-import { AppPageHeader } from "../../client/components/brand/AppChrome";
+import {
+  AppPageHeader,
+  AppPanel,
+} from "../../client/components/brand/AppChrome";
 import { EmptyState } from "../../client/components/EmptyState";
 import { FilterPills } from "../../client/components/FilterPills";
 import {
@@ -68,8 +71,11 @@ export default function BirthdaysPage() {
   return (
     <div className="space-y-6">
       <AppPageHeader
-        eyebrow={t("title")}
+        eyebrow={t("eyebrow", { defaultValue: "Pastoral" })}
         title={t("title")}
+        subtitle={t("subtitle", {
+          defaultValue: "Acompanhe aniversários e brindes da catequese.",
+        })}
         actions={
           <Button
             size="sm"
@@ -117,23 +123,26 @@ export default function BirthdaysPage() {
       ) : !birthdays?.length ? (
         <EmptyState icon={Cake} title={t("noBirthdays")} compact />
       ) : (
-        <div className="rounded-sm border border-border/70 bg-white">
-          <div className="divide-y">
+        <AppPanel padded={false} className="overflow-hidden">
+          <div className="divide-y divide-border/70">
             {birthdays.map((b: any) => (
               <div
                 key={b.catechumenId}
-                className="p-3 flex items-center justify-between"
+                className="flex items-center justify-between p-4"
               >
                 <div className="flex items-center gap-3">
-                  <div className="text-2xl">
-                    <Cake className="h-5 w-5 text-warning" />
+                  <div className="flex h-9 w-9 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#D39A2B]">
+                    <Cake className="h-4 w-4" />
                   </div>
                   <div>
-                    <p className="font-medium text-sm">{b.name}</p>
+                    <p className="text-sm font-medium text-[#071A2D]">{b.name}</p>
                     <p className="text-xs text-muted-foreground">
                       {t("turningAge", { age: b.age })} ·{" "}
                       {formatDate(b.nextBirthday, currentLocale)} ·{" "}
-                      <Badge variant="outline" className="text-[10px] px-1">
+                      <Badge
+                        variant="outline"
+                        className="rounded-sm px-1 text-[10px]"
+                      >
                         {b.className}
                       </Badge>
                     </p>
@@ -141,6 +150,7 @@ export default function BirthdaysPage() {
                 </div>
                 <Button
                   size="sm"
+                  className="h-9 rounded-sm"
                   variant={b.giftDelivered ? "default" : "outline"}
                   onClick={() => handleToggleGift(b.catechumenId)}
                 >
@@ -150,7 +160,7 @@ export default function BirthdaysPage() {
               </div>
             ))}
           </div>
-        </div>
+        </AppPanel>
       )}
     </div>
   );
