@@ -112,7 +112,7 @@ function ReferencesSidebar({
         <div className="mb-4 flex items-start justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
-              <BookMarked className="h-4 w-4 text-primary/80" />
+              <BookMarked className="h-4 w-4 text-[#071A2D]/80" />
               <h3 className="text-base font-semibold text-foreground">
                 Referências do encontro
               </h3>

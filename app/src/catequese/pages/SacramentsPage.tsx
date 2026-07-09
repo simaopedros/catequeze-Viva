@@ -292,9 +292,9 @@ export default function SacramentsPage() {
                     <Link
                       to={`/app/sacramental-journeys/${j.id}`}
                       onClick={e => e.stopPropagation()}
-                      className="flex items-center gap-2 hover:text-primary transition-colors"
+                      className="flex items-center gap-2 hover:text-[#071A2D] transition-colors"
                     >
-                      <User className="h-4 w-4 text-primary" />
+                      <User className="h-4 w-4 text-[#071A2D]" />
                       <span className="font-semibold">{j.catechumenProfile?.firstName} {j.catechumenProfile?.lastName}</span>
                     </Link>
                     <Badge variant={pct === 100 ? 'default' : 'outline'}>
@@ -307,9 +307,9 @@ export default function SacramentsPage() {
                       <span>{t('page.milestones_count', { done, total })}</span>
                       <span className="font-bold">{pct}%</span>
                     </div>
-                    <div className="w-full bg-muted rounded-full h-2">
+                    <div className="h-2 w-full rounded-sm bg-muted">
                       <div
-                        className={`h-2 rounded-full transition-all ${pct === 100 ? 'bg-emerald-500' : pct >= 50 ? 'bg-amber-500' : 'bg-primary'}`}
+                        className={`h-2 rounded-sm transition-all ${pct === 100 ? 'bg-[#071A2D]' : pct >= 50 ? 'bg-[#D39A2B]' : 'bg-muted-foreground/40'}`}
                         style={{ width: `${pct}%` }}
                       />
                     </div>
@@ -335,7 +335,7 @@ export default function SacramentsPage() {
                           : t('page.no_date')}
                         {canManage && (
                           <button onClick={e => { e.stopPropagation(); setEditingTargetDate(prev => ({ ...prev, [j.id]: j.targetDate ? new Date(j.targetDate).toISOString().slice(0,10) : '' })); }}>
-                            <Pencil className="h-3 w-3 hover:text-primary" />
+                            <Pencil className="h-3 w-3 hover:text-[#071A2D]" />
                           </button>
                         )}
                       </div>

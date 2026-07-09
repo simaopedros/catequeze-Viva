@@ -118,7 +118,7 @@ export function ParishCommunitiesTab({ communities, onCreate, onUpdate }: Parish
               );
             }
             return (
-              <div key={c.id} className="rounded-sm border border-border/70 bg-white p-4 hover:border-primary/30 transition-colors">
+              <div key={c.id} className="rounded-sm border border-border/70 bg-white p-4 hover:border-[#071A2D]/30 transition-colors">
                 <div className="flex justify-between items-start">
                   <div>
                     <div className="flex items-center gap-2">

@@ -49,7 +49,7 @@ export function BottomNav() {
               prefetch="intent"
               className={({ isActive }) => cn(
                 'flex flex-col items-center justify-center gap-0.5 h-full text-overline font-medium transition-colors',
-                isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+                isActive ? 'text-[#071A2D]' : 'text-muted-foreground hover:text-foreground'
               )}
             >
               <item.Icon className="h-5 w-5" />

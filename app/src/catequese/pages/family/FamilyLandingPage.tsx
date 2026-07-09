@@ -39,7 +39,7 @@ export default function FamilyLandingPage() {
             </Link>
             <p className="text-xs text-muted-foreground">
               {t('landing.have_invite')}{' '}
-              <Link to="/convite" className="text-primary underline underline-offset-2">
+              <Link to="/convite" className="text-[#071A2D] underline underline-offset-2">
                 {t('landing.insert_code')}
               </Link>
             </p>
@@ -48,7 +48,7 @@ export default function FamilyLandingPage() {
 
         <p className="text-xs text-muted-foreground">
           {t('landing.staff_hint')}{' '}
-          <a href={staffPortalUrl('/')} className="text-primary underline underline-offset-2">
+          <a href={staffPortalUrl('/')} className="text-[#071A2D] underline underline-offset-2">
             {t('landing.main_portal')}
           </a>
         </p>

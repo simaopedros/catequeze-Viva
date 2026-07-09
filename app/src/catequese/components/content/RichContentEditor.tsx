@@ -393,7 +393,7 @@ function SelectionActionBubble({
     cn(
       "inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition-colors",
       active
-        ? "border-primary bg-primary text-primary-foreground"
+        ? "border-[#071A2D] bg-[#071A2D] text-white"
         : "border-border/60 bg-background/90 text-muted-foreground hover:text-foreground",
     );
 

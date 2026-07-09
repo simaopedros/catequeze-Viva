@@ -462,7 +462,7 @@ export default function BiblePage() {
                 }}
                 className="w-full text-left px-2 py-1 text-sm rounded hover:bg-muted transition-colors flex items-center gap-2"
               >
-                <BookOpenCheck className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                <BookOpenCheck className="h-3.5 w-3.5 text-[#071A2D] flex-shrink-0" />
                 <span className="truncate">
                   {r.bookName} {r.chapter}
                 </span>
@@ -598,7 +598,7 @@ export default function BiblePage() {
               <button
                 key={ch.id}
                 onClick={() => loadChapter(selectedBook.id, ch.number)}
-                className="rounded-sm border border-border/70 px-2 py-2 text-center text-sm transition-colors hover:border-primary/30 hover:bg-muted/20"
+                className="rounded-sm border border-border/70 px-2 py-2 text-center text-sm transition-colors hover:border-[#071A2D]/30 hover:bg-muted/20"
               >
                 {ch.number}
               </button>
@@ -623,7 +623,7 @@ export default function BiblePage() {
                 className={`px-2 py-2 text-sm rounded-md border transition-colors text-center ${
                   ch.number === selectedChapter
                     ? 'border-[#071A2D] bg-muted/30 font-medium'
-                    : 'hover:border-primary/30 hover:bg-muted/20'
+                    : 'hover:border-[#071A2D]/30 hover:bg-muted/20'
                 }`}
               >
                 {ch.number}
@@ -718,7 +718,7 @@ export default function BiblePage() {
                       setSearchQuery(s);
                       handleSearch(s);
                     }}
-                    className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground"
+                    className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-[#071A2D]/30 hover:text-foreground"
                   >
                     {s}
                   </button>
@@ -746,9 +746,9 @@ export default function BiblePage() {
                     key={v.id}
                     type="button"
                     onClick={() => openSearchResult(v)}
-                    className="group w-full rounded-sm border border-border/70 p-3 text-left text-sm transition-colors hover:border-primary/30 hover:bg-muted/20"
+                    className="group w-full rounded-sm border border-border/70 p-3 text-left text-sm transition-colors hover:border-[#071A2D]/30 hover:bg-muted/20"
                   >
-                    <p className="font-medium text-xs text-primary mb-1 group-hover:underline">
+                    <p className="font-medium text-xs text-[#071A2D] mb-1 group-hover:underline">
                       {v.chapter?.book?.name} {v.chapter?.number}:{v.number}
                     </p>
                     <p className="line-clamp-3">{v.text}</p>
@@ -821,7 +821,7 @@ export default function BiblePage() {
                           onClick={() => loadBook(
                             books.find((b: any) => b.name === suggestion)?.id || ''
                           )}
-                          className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs transition-colors hover:border-primary/30 hover:text-foreground"
+                          className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs transition-colors hover:border-[#071A2D]/30 hover:text-foreground"
                         >
                           {suggestion}
                         </button>
@@ -844,7 +844,7 @@ export default function BiblePage() {
               {/* Chapter loading */}
               {selectedChapter !== null && loading && (
                 <div className="flex justify-center py-16">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  <Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" />
                 </div>
               )}
 
@@ -884,7 +884,7 @@ export default function BiblePage() {
                               : ''
                           }`}
                         >
-                          <span className="text-primary font-medium text-xs w-6 text-right flex-shrink-0 mt-0.5">
+                          <span className="text-[#071A2D] font-medium text-xs w-6 text-right flex-shrink-0 mt-0.5">
                             {v.number}
                           </span>
                           <p className={`flex-1 ${FONT_SIZE_CLASS[fontSize]}`}>{v.text}</p>

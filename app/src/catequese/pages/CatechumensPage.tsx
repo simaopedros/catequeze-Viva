@@ -284,7 +284,7 @@ export default function CatechumensPage() {
             <Link
               key={c.id}
               to={`/app/catechumens/${c.id}`}
-              className="group overflow-hidden rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-primary/30"
+              className="group overflow-hidden rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-[#071A2D]/30"
             >
               <div className="flex items-start gap-4">
                 <div className={`flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-sm text-base font-semibold ring-1 ring-border/70 ${!c.photoUrl ? AVATAR_COLORS[Math.abs(c.firstName?.charCodeAt(0) || 0) % AVATAR_COLORS.length] : ''}`}>

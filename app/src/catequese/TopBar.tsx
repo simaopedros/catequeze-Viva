@@ -236,7 +236,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
         )}
 
         {/* Expanded: full input (always on desktop, conditionally on mobile) */}
-        <div className={`flex items-center gap-2 rounded-sm border border-input bg-background px-3 h-9 transition-colors focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20 ${searchExpanded ? 'flex' : 'hidden sm:flex'}`}>
+        <div className={`flex items-center gap-2 rounded-sm border border-input bg-background px-3 h-9 transition-colors focus-within:border-[#071A2D]/50 focus-within:ring-1 focus-within:ring-primary/20 ${searchExpanded ? 'flex' : 'hidden sm:flex'}`}>
           <Search className="h-4 w-4 text-muted-foreground shrink-0" />
           <input
             ref={inputRef}
@@ -351,7 +351,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
             <div className="flex items-center justify-between px-3 py-2 border-b">
               <span className="text-xs font-semibold text-muted-foreground">{tTop('notifications')}</span>
               {unreadCount > 0 && (
-                <button onClick={handleMarkAllRead} className="text-overline text-primary hover:underline">
+                <button onClick={handleMarkAllRead} className="text-overline text-[#071A2D] hover:underline">
                   {tTop('markAllRead')}
                 </button>
               )}

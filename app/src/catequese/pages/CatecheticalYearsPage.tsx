@@ -60,7 +60,7 @@ export default function CatecheticalYearsPage() {
   if (loading) {
     return (
         <div className="flex items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#071A2D]"></div>
         </div>
     );
   }
@@ -123,11 +123,11 @@ export default function CatecheticalYearsPage() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filteredYears.map((year: any) => (
-              <div key={year.id} className="rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-primary/30">
+              <div key={year.id} className="rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-[#071A2D]/30">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <div className="rounded-sm border border-border/70 bg-muted/30 p-2">
-                      <CalendarDays className="h-5 w-5 text-primary" />
+                      <CalendarDays className="h-5 w-5 text-[#071A2D]" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-sm">{year.name}</h3>

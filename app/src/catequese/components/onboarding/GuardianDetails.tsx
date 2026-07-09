@@ -16,7 +16,7 @@ export function GuardianDetails({ onComplete }: GuardianDetailsProps) {
   return (
     <div className="rounded-sm border border-border/70 bg-white p-6 space-y-4">
       <h2 className="text-lg font-semibold flex items-center gap-2">
-        <Heart className="h-5 w-5 text-primary" />{t('guardian.title')}
+        <Heart className="h-5 w-5 text-[#071A2D]" />{t('guardian.title')}
       </h2>
       <div className="space-y-3">
         <div>

@@ -530,7 +530,7 @@ export default function CatechumenDetailPage() {
             {profile.household?.guardians?.map((g:any)=>(
               <div key={g.id} className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground">{g.user?.firstName} {g.user?.lastName} {g.relationship&&`(${g.relationship})`}</p>
-                <button onClick={() => handleDmGuardian(g.user?.id)} className="text-primary hover:text-primary/70 p-1" title={t('catechumens.detail_send_message')}>
+                <button onClick={() => handleDmGuardian(g.user?.id)} className="text-[#071A2D] hover:text-[#0a2540] p-1" title={t('catechumens.detail_send_message')}>
                   <MessageCircle className="h-3.5 w-3.5" />
                 </button>
               </div>
@@ -538,7 +538,7 @@ export default function CatechumenDetailPage() {
           </div>
           <div className="rounded-sm border border-border/70 bg-white p-4">
             <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-1 mb-2"><BookOpen className="h-4 w-4"/>{tp('classes')}</h3>
-            {profile.enrollments?.map((e:any)=><Link key={e.id} to={`/app/classes/${e.class?.id}`} className="block text-sm text-primary hover:underline py-0.5">{e.class?.name} {e.class?.stage?.name&&`· ${e.class.stage.name}`}</Link>)||<p className="text-sm text-muted-foreground">{t('catechumens.detail_none')}</p>}
+            {profile.enrollments?.map((e:any)=><Link key={e.id} to={`/app/classes/${e.class?.id}`} className="block text-sm text-[#071A2D] hover:underline py-0.5">{e.class?.name} {e.class?.stage?.name&&`· ${e.class.stage.name}`}</Link>)||<p className="text-sm text-muted-foreground">{t('catechumens.detail_none')}</p>}
           </div>
         </div>
 
@@ -559,7 +559,7 @@ export default function CatechumenDetailPage() {
                           <button type="button" onClick={() => setJustifyingId(null)} className="text-xs text-muted-foreground">✕</button>
                         </form>
                       ) : (
-                        <Button size="sm" variant="ghost" className="h-7 text-xs text-muted-foreground hover:text-primary" onClick={() => { setJustifyingId(a.id); setJustifyNote(''); }}>
+                        <Button size="sm" variant="ghost" className="h-7 text-xs text-muted-foreground hover:text-[#071A2D]" onClick={() => { setJustifyingId(a.id); setJustifyNote(''); }}>
                           {t('catechumens.detail_justify')}
                         </Button>
                       )
@@ -614,7 +614,7 @@ export default function CatechumenDetailPage() {
         {profile.sacramentalJourneys?.length>0&&(
           <div className="rounded-sm border border-border/70 bg-white p-4">
             <h3 className="font-semibold text-sm mb-3 flex items-center gap-1">
-              <Cross className="h-4 w-4 text-primary" />{t('catechumens.detail_sacramental_journeys')}
+              <Cross className="h-4 w-4 text-[#071A2D]" />{t('catechumens.detail_sacramental_journeys')}
             </h3>
             <div className="space-y-2">
             {profile.sacramentalJourneys.map((j:any)=>{
@@ -648,7 +648,7 @@ export default function CatechumenDetailPage() {
         {profile.enrollments?.length > 0 && (
           <div className="rounded-sm border border-border/70 bg-white p-4">
             <h3 className="font-semibold text-sm mb-3 flex items-center gap-1">
-              <BarChart3 className="h-4 w-4 text-primary" />{tpa('title')}
+              <BarChart3 className="h-4 w-4 text-[#071A2D]" />{tpa('title')}
             </h3>
             {profile.enrollments.length > 1 && (
               <select
@@ -674,7 +674,7 @@ export default function CatechumenDetailPage() {
             <div className="space-y-1">
               {profile.documents.map((d:any)=>(
                 <div key={d.id} className="flex items-center justify-between text-sm py-1">
-                  <button onClick={() => handleDownloadDocument(d.id, d.name)} className="text-primary hover:underline flex items-center gap-1 text-left">
+                  <button onClick={() => handleDownloadDocument(d.id, d.name)} className="text-[#071A2D] hover:underline flex items-center gap-1 text-left">
                     <Download className="h-3 w-3" />{d.name}
                   </button>
                   <Badge variant={d.verifiedAt?'default':'secondary'} className="text-overline">{d.verifiedAt?t('catechumens.detail_verified'):t('pending')}</Badge>

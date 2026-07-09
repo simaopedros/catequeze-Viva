@@ -195,7 +195,7 @@ export function ParishStep({ diocese, selected, onSelect, initialState, onContin
                     </span>
                   )}
                 </div>
-                {selectedDbId === p.id && <Check className="h-4 w-4 shrink-0 text-primary" />}
+                {selectedDbId === p.id && <Check className="h-4 w-4 shrink-0 text-[#071A2D]" />}
               </button>
             ))}
           </div>
@@ -224,7 +224,7 @@ export function ParishStep({ diocese, selected, onSelect, initialState, onContin
                     <span className="mt-0.5 block text-xs text-muted-foreground">{op.address}</span>
                   )}
                 </div>
-                {selectedOsm?.osmId === op.osmId && <Check className="h-4 w-4 shrink-0 text-primary" />}
+                {selectedOsm?.osmId === op.osmId && <Check className="h-4 w-4 shrink-0 text-[#071A2D]" />}
               </button>
             ))}
           </div>
@@ -242,7 +242,7 @@ export function ParishStep({ diocese, selected, onSelect, initialState, onContin
             setShowCreate(true);
             setNewName(searchQuery);
           }}
-          className="w-full border border-dashed border-border/80 px-3 py-2.5 text-left text-sm text-muted-foreground transition-colors rounded-sm hover:border-primary/40 hover:text-foreground"
+          className="w-full border border-dashed border-border/80 px-3 py-2.5 text-left text-sm text-muted-foreground transition-colors rounded-sm hover:border-[#071A2D]/40 hover:text-foreground"
         >
           {t('parish.create_link')}
         </button>

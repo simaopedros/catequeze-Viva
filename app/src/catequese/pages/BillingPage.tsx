@@ -100,7 +100,7 @@ const PLAN_STRUCTURE: Omit<PlanCard, 'name' | 'price' | 'annualPrice' | 'feature
     priceCentsAnnual: PLANS.unlimited.prices.annualCents,
     maxClasses: PLANS.unlimited.limits.maxClasses,
     maxCatechumens: PLANS.unlimited.limits.maxCatechumens,
-    color: 'border-primary',
+    color: 'border-[#071A2D]',
     highlight: true,
     isFree: false,
   },
@@ -827,7 +827,7 @@ export default function BillingPage() {
               )}
 
               {isParishManaged && (
-                <div className="rounded-sm border border-primary/15 bg-white/85 p-5 ">
+                <div className="rounded-sm border border-[#071A2D]/15 bg-white/85 p-5 ">
                   <div className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                     <ShieldCheck className="h-4 w-4" />
                     <span>{t('corporate_plan')}</span>
@@ -880,7 +880,7 @@ export default function BillingPage() {
                 </div>
               </div>
             ) : isUpgradeJourney ? (
-              <div className="rounded-sm border border-primary/15 bg-white/88 p-5 ">
+              <div className="rounded-sm border border-[#071A2D]/15 bg-white/88 p-5 ">
                 <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                   <CheckCircle className="h-4 w-4" />
                   <span>{t('upgrade_checklist_title')}</span>
@@ -1095,7 +1095,7 @@ export default function BillingPage() {
                   <div
                     key={plan.planId}
                     className={cn(
-                      'flex flex-col rounded-sm border bg-white/90 p-5   transition-all duration-200 hover:border-primary/30',
+                      'flex flex-col rounded-sm border bg-white/90 p-5   transition-all duration-200 hover:border-[#071A2D]/30',
                       isCurrent
                         ? 'border-[#071A2D] ring-1 ring-[#071A2D]/10'
                         : (isConversionMode || isUpgradeJourney ? isRecommended : plan.highlight)

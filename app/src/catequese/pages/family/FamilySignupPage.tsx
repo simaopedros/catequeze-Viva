@@ -34,12 +34,12 @@ export default function FamilySignupPage() {
           <h1 className="text-2xl font-semibold tracking-tight text-[#071A2D]" style={{ fontFamily: 'var(--font-brand-display)' }}>{t('signup.title')}</h1>
           <div className="mx-auto h-px w-10 bg-[#D39A2B]" aria-hidden />
           <p className="text-sm text-muted-foreground">{t('signup.requires_invite')}</p>
-          <Link to="/convite" className="inline-block text-primary underline underline-offset-2 text-sm font-medium">
+          <Link to="/convite" className="inline-block text-[#071A2D] underline underline-offset-2 text-sm font-medium">
             {t('signup.have_code')}
           </Link>
           <p className="text-sm text-muted-foreground pt-4">
             {t('signup.already_have')}{' '}
-            <Link to="/entrar" className="text-primary underline underline-offset-2 font-medium">{t('signup.login')}</Link>
+            <Link to="/entrar" className="text-[#071A2D] underline underline-offset-2 font-medium">{t('signup.login')}</Link>
           </p>
         </div>
       </div>
@@ -49,7 +49,7 @@ export default function FamilySignupPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" />
       </div>
     );
   }
@@ -92,7 +92,7 @@ export default function FamilySignupPage() {
         <div className="text-center">
           <p className="text-sm text-muted-foreground">
             {t('signup.already_have')}{' '}
-            <Link to={`/entrar?token=${token}`} className="text-primary underline underline-offset-2 font-medium">{t('signup.login')}</Link>
+            <Link to={`/entrar?token=${token}`} className="text-[#071A2D] underline underline-offset-2 font-medium">{t('signup.login')}</Link>
           </p>
         </div>
       </div>

@@ -138,7 +138,7 @@ export function ChatView({
             <button
               onClick={onLoadMore}
               disabled={isLoading}
-              className="text-xs text-primary hover:underline disabled:opacity-50"
+              className="text-xs text-[#071A2D] hover:underline disabled:opacity-50"
             >
               {isLoading ? t('new_dialog.loading_contacts') : t('load_older')}
             </button>
@@ -244,7 +244,7 @@ export function ChatView({
                     {/* Reply context */}
                     {msg.parent && (
                       <div className={cn(
-                        'flex items-center gap-1.5 mb-1 ml-1 px-2 py-1 rounded-md text-overline border-l-2',
+                        'mb-1 ml-1 flex items-center gap-1.5 rounded-sm border-l-2 px-2 py-1 text-overline',
                         isMe
                           ? 'border-l-[#071A2D]/40 bg-muted/30 text-muted-foreground'
                           : 'bg-muted/40 border-l-muted-foreground/30 text-muted-foreground'
@@ -260,7 +260,7 @@ export function ChatView({
                       className={cn(
                         'relative rounded-sm px-3.5 py-2 text-sm',
                         isMe
-                          ? 'bg-primary text-primary-foreground rounded-br-md'
+                          ? 'rounded-br-sm bg-[#071A2D] text-white'
                           : 'rounded-bl-md border border-border/70 bg-white',
                         'animate-in slide-in-from-bottom-1 duration-200'
                       )}
@@ -268,7 +268,7 @@ export function ChatView({
                       <p className="whitespace-pre-wrap break-words leading-relaxed">{msg.content}</p>
                       <span className={cn(
                         'text-overline float-right mt-1 ml-2 flex items-center gap-0.5',
-                        isMe ? 'text-primary-foreground/60' : 'text-muted-foreground/60'
+                        isMe ? 'text-white/60' : 'text-muted-foreground/60'
                       )}>
                         {formatMessageTime(msg.createdAt, i18n.language)}
                       </span>
@@ -281,7 +281,7 @@ export function ChatView({
                     )}>
                       <button
                         onClick={() => setReplyTo(msg)}
-                        className="text-overline text-muted-foreground hover:text-primary flex items-center gap-0.5"
+                        className="text-overline text-muted-foreground hover:text-[#071A2D] flex items-center gap-0.5"
                       >
                         <Reply className="h-3 w-3" />
                         {t('reply')}
@@ -329,9 +329,9 @@ export function ChatView({
       {/* Reply indicator */}
       {replyTo && (
         <div className="mx-4 mb-0 px-3 py-2 bg-muted/50 rounded-t-lg border border-b-0 flex items-center gap-2 animate-in slide-in-from-bottom-2">
-          <Reply className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+          <Reply className="h-3.5 w-3.5 text-[#071A2D] flex-shrink-0" />
           <div className="flex-1 min-w-0">
-            <p className="text-overline font-semibold text-primary">
+            <p className="text-overline font-semibold text-[#071A2D]">
               {[replyTo.sender.firstName, replyTo.sender.lastName].filter(Boolean).join(' ')}
             </p>
             <p className="text-xs text-muted-foreground truncate">{replyTo.content}</p>

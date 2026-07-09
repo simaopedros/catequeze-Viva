@@ -32,7 +32,7 @@ export function RoleStep({ selected, onSelect }: RoleStepProps) {
             className={`flex items-start gap-4 rounded-sm border p-4 text-left transition-colors ${
               selected === role.id
                 ? 'border-[#071A2D] bg-muted/30'
-                : 'border-border/70 hover:border-primary/30 hover:bg-muted/20'
+                : 'border-border/70 hover:border-[#071A2D]/30 hover:bg-muted/20'
             }`}
           >
             <div className="shrink-0 rounded-sm border border-border/70 bg-muted/30 p-3 text-foreground">

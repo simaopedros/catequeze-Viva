@@ -66,12 +66,12 @@ function ActionCard({
       className="group flex items-start justify-between gap-3 border-b border-border/70 py-3.5 last:border-0 transition-colors hover:bg-muted/20"
     >
       <span className="min-w-0 space-y-0.5">
-        <span className="block text-sm font-semibold text-foreground group-hover:text-primary">
+        <span className="block text-sm font-semibold text-foreground group-hover:text-[#071A2D]">
           {title}
         </span>
         <span className="block text-xs leading-relaxed text-muted-foreground">{description}</span>
       </span>
-      <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
+      <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-[#071A2D]" />
     </Link>
   );
 }
@@ -230,10 +230,10 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                       className="group flex items-center justify-between rounded-sm border border-border/70 bg-white px-4 py-3 transition-colors hover:bg-muted/20"
                     >
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-foreground group-hover:text-primary">{m.class?.name}</p>
+                        <p className="text-sm font-semibold text-foreground group-hover:text-[#071A2D]">{m.class?.name}</p>
                         <p className="mt-1 text-xs text-muted-foreground">{m._count?.attendance || 0} {tc('records')}</p>
                       </div>
-                      <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-primary" />
+                      <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-[#071A2D]" />
                     </Link>
                   ))}
                 </div>
@@ -281,7 +281,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                       {comparison.map((c: any) => (
                         <tr key={c.id} className="border-b border-border/60 last:border-0 hover:bg-muted/30 transition-colors">
                           <td className="px-5 py-3 font-medium">
-                            <Link to={`/app/classes/${c.id}`} className="hover:text-primary transition-colors">{c.name}</Link>
+                            <Link to={`/app/classes/${c.id}`} className="hover:text-[#071A2D] transition-colors">{c.name}</Link>
                           </td>
                           <td className="px-5 py-3 text-xs text-muted-foreground">{c.stage}</td>
                           <td className="px-5 py-3 text-center">{c.enrolled}</td>

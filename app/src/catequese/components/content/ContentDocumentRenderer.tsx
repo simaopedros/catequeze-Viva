@@ -43,7 +43,7 @@ function renderMarkedText(text: string, marks?: ContentDocMark[]) {
             href={String(mark.attrs?.href || "#")}
             target="_blank"
             rel="noreferrer"
-            className="text-primary underline underline-offset-2"
+            className="text-[#071A2D] underline underline-offset-2"
           >
             {output}
           </a>

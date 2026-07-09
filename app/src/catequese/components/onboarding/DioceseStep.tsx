@@ -172,7 +172,7 @@ export function DioceseStep({ selected, onSelect, onSkip, onContinue }: DioceseS
                   {d.state && <span className="ml-1 text-xs text-muted-foreground">({d.state})</span>}
                 </div>
                 {selected?.wikidataId === d.wikidataId && (
-                  <Check className="h-4 w-4 shrink-0 text-primary" />
+                  <Check className="h-4 w-4 shrink-0 text-[#071A2D]" />
                 )}
               </button>
             ))}
@@ -205,7 +205,7 @@ export function DioceseStep({ selected, onSelect, onSkip, onContinue }: DioceseS
                     {t('diocese.parishes_count', { count: d._count.parishes })}
                   </span>
                 )}
-                {selected?.id === d.id && <Check className="h-4 w-4 shrink-0 text-primary" />}
+                {selected?.id === d.id && <Check className="h-4 w-4 shrink-0 text-[#071A2D]" />}
               </button>
             ))}
           </div>
@@ -225,7 +225,7 @@ export function DioceseStep({ selected, onSelect, onSkip, onContinue }: DioceseS
             setShowCreate(true);
             setNewName(searchQuery);
           }}
-          className="w-full border border-dashed border-border/80 px-3 py-2.5 text-left text-sm text-muted-foreground transition-colors rounded-sm hover:border-primary/40 hover:text-foreground"
+          className="w-full border border-dashed border-border/80 px-3 py-2.5 text-left text-sm text-muted-foreground transition-colors rounded-sm hover:border-[#071A2D]/40 hover:text-foreground"
         >
           {t('diocese.create_link')}
         </button>

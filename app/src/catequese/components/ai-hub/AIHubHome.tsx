@@ -217,7 +217,7 @@ export function AIHubHome() {
         </p>
         <button
           onClick={handleAskAssistant}
-          className="inline-flex items-center gap-2 rounded-sm border border-dashed border-border/80 px-4 py-2.5 text-sm text-muted-foreground transition-colors hover:border-primary/40 hover:bg-muted/20 hover:text-foreground"
+          className="inline-flex items-center gap-2 rounded-sm border border-dashed border-border/80 px-4 py-2.5 text-sm text-muted-foreground transition-colors hover:border-[#071A2D]/40 hover:bg-muted/20 hover:text-foreground"
         >
           <MessageSquareText className="h-4 w-4" />
           <span>{t('hub.ask_cta')}</span>

@@ -85,7 +85,7 @@ export function SearchSheet({
       <div className="fixed inset-x-0 top-0 z-50 max-h-[85vh] overflow-y-auto rounded-b-sm border-b border-border/70 bg-white transition-transform duration-300 lg:hidden">
         {/* Search input */}
         <div className="sticky top-0 border-b border-border/70 bg-white pt-3 pb-2 px-4 border-b">
-          <div className="flex items-center gap-2 rounded-sm border border-input bg-background px-3 h-10 focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20">
+          <div className="flex items-center gap-2 rounded-sm border border-input bg-background px-3 h-10 focus-within:border-[#071A2D]/50 focus-within:ring-1 focus-within:ring-primary/20">
             <Search className="h-4 w-4 text-muted-foreground shrink-0" />
             <input
               ref={inputRef}

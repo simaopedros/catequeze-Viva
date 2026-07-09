@@ -59,7 +59,7 @@ function ImproveWorkspace() {
                   next.set('apply', 'copy');
                   return next;
                 })}
-                className="group flex flex-col items-start gap-3 rounded-sm border border-border/70 bg-white p-5 text-left transition-colors hover:border-primary/40"
+                className="group flex flex-col items-start gap-3 rounded-sm border border-border/70 bg-white p-5 text-left transition-colors hover:border-[#071A2D]/40"
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-foreground">
                   <Copy className="h-5 w-5" />

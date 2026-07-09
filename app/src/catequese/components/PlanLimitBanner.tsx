@@ -133,9 +133,9 @@ export function PlanLimitBanner({
       )}
     >
       <div className="flex items-start gap-3">
-        <Icon className="h-4 w-4 text-primary/50 shrink-0 mt-0.5" />
+        <Icon className="h-4 w-4 text-[#071A2D]/50 shrink-0 mt-0.5" />
         <div className="space-y-1 min-w-0">
-          <p className="text-xs font-medium text-primary/70 uppercase tracking-wide">
+          <p className="text-xs font-medium text-[#071A2D]/70 uppercase tracking-wide">
             {t('limit_reached_title')}
           </p>
           <p className="text-sm font-semibold text-foreground">

@@ -37,7 +37,7 @@ export function GuardianDashboard({ stats }: GuardianDashboardProps) {
             <Link
               key={d.id}
               to={`/app/catechumens/${d.id}`}
-              className="group rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-primary/30"
+              className="group rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-[#071A2D]/30"
             >
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-sm font-semibold text-foreground">
@@ -45,7 +45,7 @@ export function GuardianDashboard({ stats }: GuardianDashboardProps) {
                   {d.lastName?.[0]}
                 </div>
                 <div className="min-w-0">
-                  <p className="font-semibold truncate group-hover:text-primary transition-colors">
+                  <p className="font-semibold truncate group-hover:text-[#071A2D] transition-colors">
                     {d.firstName} {d.lastName}
                   </p>
                   <p className="mt-0.5 truncate text-xs text-muted-foreground">

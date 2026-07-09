@@ -228,7 +228,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
             className="h-8 flex-1 rounded-sm border border-input bg-background px-2 text-xs"
             placeholder={tab === 'bible' ? t('bible.searchPlaceholder') : tab === 'catechism' ? t('catechism.searchPlaceholder') : t('directory.searchPlaceholder')}
           />
-          {searching && <div className="absolute right-10 top-1.5"><div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div>}
+          {searching && <div className="absolute right-10 top-1.5"><div className="h-4 w-4 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" /></div>}
         </div>
 
         {/* Autocomplete dropdown */}
@@ -238,7 +238,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
               <>
                 {chapterVerses.length > 0 && (
                   <div className="flex items-center justify-between px-2 py-1 bg-muted/30 border-b">
-                    <button onClick={selectAllVerses} className="text-overline text-primary hover:underline">
+                    <button onClick={selectAllVerses} className="text-overline text-[#071A2D] hover:underline">
                       {selectedVerses.size === chapterVerses.length ? t('references.deselect_all') : t('references.select_all')}
                     </button>
                     {hasSelected && (
@@ -256,17 +256,17 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
                       else if (!isBibleAdded(v.id)) handleAddBibleSingle(v);    
                     }}>
                     {chapterVerses.length > 0 && (
-                      <div className={'mt-0.5 w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center ' + (selectedVerses.has(v.id) ? 'bg-primary border-primary' : 'border-input')}
+                      <div className={'mt-0.5 w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center ' + (selectedVerses.has(v.id) ? 'bg-[#071A2D] border-[#071A2D]' : 'border-input')}
                         onClick={e => { e.stopPropagation(); toggleVerseSelection(v.id); }}>
                         {selectedVerses.has(v.id) && <Check className="h-3 w-3 text-white" />}
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <span className="font-medium text-primary">{v.chapter?.book?.abbreviation || v.chapter?.book?.name} {v.chapter?.number}:{v.number}</span> 
+                      <span className="font-medium text-[#071A2D]">{v.chapter?.book?.abbreviation || v.chapter?.book?.name} {v.chapter?.number}:{v.number}</span> 
                       <span className="text-muted-foreground ml-1 line-clamp-1 break-all">— {v.text}</span>
                     </div>
                     {chapterVerses.length === 0 && !isBibleAdded(v.id) && (     
-                      <Plus className="h-3.5 w-3.5 text-primary flex-shrink-0 mt-0.5" />
+                      <Plus className="h-3.5 w-3.5 text-[#071A2D] flex-shrink-0 mt-0.5" />
                     )}
                     {isBibleAdded(v.id) && <span className="text-green-600 text-overline flex-shrink-0 mt-0.5">✓</span>}
                   </div>
@@ -303,7 +303,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
       {/* Bible chapter picker */}
       {tab === 'bible' && browseBook && !searched && (
         <div className="max-h-48 overflow-y-auto">
-          <button onClick={() => setBrowseBook(null)} className="text-xs text-primary hover:underline mb-1">{t('bible.back_to_books')}</button>
+          <button onClick={() => setBrowseBook(null)} className="text-xs text-[#071A2D] hover:underline mb-1">{t('bible.back_to_books')}</button>
           <p className="text-overline font-semibold text-muted-foreground">{browseBook.name} — {t('bible.chapters')}</p>
           <div className="flex flex-wrap gap-1 mt-1">
             {browseBook.chapters?.map((ch: any) => (
@@ -382,13 +382,13 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
               className="flex w-full items-start justify-between gap-2 border-b px-3 py-2 text-left text-xs transition-colors last:border-b-0 hover:bg-muted/50"
             >
               <div className="min-w-0 flex-1">
-                <div className="font-medium text-primary">§{entry.number}</div>
+                <div className="font-medium text-[#071A2D]">§{entry.number}</div>
                 <div className="mt-1 line-clamp-2 text-muted-foreground">{entry.question}</div>
               </div>
               {isCatechismAdded(entry.id) ? (
                 <span className="flex-shrink-0 text-green-600">✓</span>
               ) : (
-                <Plus className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-primary" />
+                <Plus className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-[#071A2D]" />
               )}
             </button>
           ))}
@@ -401,13 +401,13 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
               className="flex w-full items-start justify-between gap-2 border-b px-3 py-2 text-left text-xs transition-colors last:border-b-0 hover:bg-muted/50"
             >
               <div className="min-w-0 flex-1">
-                <div className="font-medium text-primary">§{entry.number}</div>
+                <div className="font-medium text-[#071A2D]">§{entry.number}</div>
                 <div className="mt-1 line-clamp-2 text-muted-foreground">{entry.title || entry.chapter || entry.content}</div>
               </div>
               {directoryRefs.some(r => r.entryId === entry.id) ? (
                 <span className="flex-shrink-0 text-green-600">✓</span>
               ) : (
-                <Plus className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-primary" />
+                <Plus className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-[#071A2D]" />
               )}
             </button>
           ))}

@@ -18,7 +18,7 @@ export function SectionCard({ title, description, icon: Icon, action, children, 
         <div className="flex items-center gap-3 min-w-0">
           {Icon && (
             <div className="shrink-0 rounded-sm border border-border/70 bg-muted/30 p-2">
-              <Icon className="h-5 w-5 text-primary/80" />
+              <Icon className="h-5 w-5 text-[#071A2D]/80" />
             </div>
           )}
           <div className="min-w-0">

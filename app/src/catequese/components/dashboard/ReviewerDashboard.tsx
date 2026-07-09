@@ -38,7 +38,7 @@ export function ReviewerDashboard({ stats }: ReviewerDashboardProps) {
               className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-muted/20 group"
             >
               <div className="min-w-0 flex-1 mr-3">
-                <p className="truncate font-medium group-hover:text-primary transition-colors">
+                <p className="truncate font-medium group-hover:text-[#071A2D] transition-colors">
                   {c.title}
                 </p>
                 <p className="mt-0.5 text-xs text-muted-foreground">

@@ -243,7 +243,7 @@ export default function JourneyTemplatesPage() {
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                className="h-7 text-overline text-primary"
+                                className="h-7 text-overline text-[#071A2D]"
                                 onClick={() => handlePublish(tmpl.id)}
                                 disabled={publishingId === tmpl.id}
                               >

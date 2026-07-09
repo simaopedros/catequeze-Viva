@@ -49,7 +49,7 @@ export default function PublicUploadDocsPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" />
       </div>
     );
   }
@@ -82,7 +82,7 @@ export default function PublicUploadDocsPage() {
           </div>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             {t('upload_docs.greeting')}{' '}
-            <span className="text-primary">{catechumen.firstName} {catechumen.lastName}</span>
+            <span className="text-[#071A2D]">{catechumen.firstName} {catechumen.lastName}</span>
           </h1>
           <p className="text-sm text-muted-foreground">
             {t('upload_docs.subtitle')}

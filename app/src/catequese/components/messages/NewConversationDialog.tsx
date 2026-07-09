@@ -152,7 +152,7 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
                   key={ct.value}
                   onClick={() => { setType(ct.value); setStep('contacts'); }}
                   className={cn(
-                    'w-full flex items-center gap-3 rounded-sm border border-border/70 p-3 text-left transition-colors hover:border-primary/30 hover:bg-muted/20',
+                    'w-full flex items-center gap-3 rounded-sm border border-border/70 p-3 text-left transition-colors hover:border-[#071A2D]/30 hover:bg-muted/20',
                     type === ct.value && 'border-[#071A2D] bg-muted/30'
                   )}
                 >
@@ -245,7 +245,7 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
                       <div className={cn(
                         'h-5 w-5 rounded-full border-2 flex items-center justify-center transition-colors',
                         isSelected
-                          ? 'bg-primary border-primary text-primary-foreground'
+                          ? 'bg-[#071A2D] border-[#071A2D] text-white'
                           : 'border-muted-foreground/30'
                       )}>
                         {isSelected && <Check className="h-3 w-3" />}

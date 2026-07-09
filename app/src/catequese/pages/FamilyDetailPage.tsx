@@ -459,7 +459,7 @@ export default function FamilyDetailPage() {
                   <Building2 className="h-3 w-3" />
                   {t('families.community')}
                 </h3>
-                <Link to={`/app/communities/${household.community.id}`} className="text-sm text-primary hover:underline">
+                <Link to={`/app/communities/${household.community.id}`} className="text-sm text-[#071A2D] hover:underline">
                   {household.community.name}
                 </Link>
               </div>

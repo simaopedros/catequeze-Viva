@@ -73,7 +73,7 @@ export function ContentSourcePicker({ mode, onSelect }: ContentSourcePickerProps
                 onClick={() => onSelect(item.id, item.title || '', item.theme || '')}
                 className="w-full text-left"
               >
-                <Card className="cursor-pointer rounded-sm border-border/70 p-4 transition-colors hover:border-primary/30 hover:bg-muted/20">
+                <Card className="cursor-pointer rounded-sm border-border/70 p-4 transition-colors hover:border-[#071A2D]/30 hover:bg-muted/20">
                   <div className="flex items-start gap-3">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-foreground">
                       <FileText className="h-4 w-4" />

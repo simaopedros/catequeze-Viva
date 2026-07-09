@@ -167,7 +167,7 @@ export function ConversationList({ conversations, activeId, onSelect, onNewConve
             {!search && (
               <button
                 onClick={onNewConversation}
-                className="mt-2 text-xs text-primary hover:underline"
+                className="mt-2 text-xs text-[#071A2D] hover:underline"
               >
                 {t('start_conversation')}
               </button>

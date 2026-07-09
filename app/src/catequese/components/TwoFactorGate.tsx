@@ -67,7 +67,7 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
   if (checking) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" />
       </div>
     );
   }
@@ -78,7 +78,7 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
         <div className="w-full max-w-md space-y-6 rounded-sm border border-border/70 bg-white p-6">
           <div className="text-center space-y-2">
             <div className="inline-flex rounded-sm border border-border/70 bg-muted/30 p-3">
-              <ShieldCheck className="h-6 w-6 text-primary" />
+              <ShieldCheck className="h-6 w-6 text-[#071A2D]" />
             </div>
             <h1 className="text-xl font-semibold tracking-tight">{t('two_factor_gate_title')}</h1>
             <p className="text-sm text-muted-foreground">

@@ -244,7 +244,7 @@ export function QuickSetupPanel({ mode, applyToOriginal }: { mode: string; apply
                     className={`rounded-sm border p-4 text-center transition-colors ${
       ageGroup === g.value
       ? 'border-[#071A2D] bg-muted/30'
-      : 'border-border hover:border-primary/50'
+      : 'border-border hover:border-[#071A2D]/40'
      }`}
                   >
                     <g.icon className="mx-auto mb-2 h-8 w-8 text-[#071A2D]" />

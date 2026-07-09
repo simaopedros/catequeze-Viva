@@ -126,7 +126,7 @@ export function GenerateActivityFlow() {
                   className={`rounded-sm border px-3 py-2.5 text-sm font-medium transition-colors ${
                     activityType === at.value
                       ? 'border-[#071A2D] bg-muted/30 text-foreground'
-                      : 'border-border/70 hover:border-primary/30'
+                      : 'border-border/70 hover:border-[#071A2D]/30'
                   }`}
                 >
                   {t(at.labelKey)}

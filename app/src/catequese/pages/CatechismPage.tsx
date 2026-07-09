@@ -116,7 +116,7 @@ export default function CatechismPage() {
               <button
                 key={key}
                 onClick={() => loadCategory(key)}
-                className={'px-3 py-1.5 text-sm rounded-md transition-colors ' + (category === key ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/70')}
+                className={'px-3 py-1.5 text-sm rounded-md transition-colors ' + (category === key ? 'bg-[#071A2D] text-white' : 'bg-muted hover:bg-muted/70')}
               >
                 {t(`categories.${key}`)}
               </button>
@@ -133,7 +133,7 @@ export default function CatechismPage() {
         )}
 
         {!error && loading ? (
-          <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+          <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" /></div>
         ) : searchResults.length > 0 ? (
           <div className="space-y-2">
             <p className="text-sm text-muted-foreground">{t('resultsCount', { count: searchResults.length })}</p>

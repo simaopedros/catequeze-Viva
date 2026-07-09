@@ -66,7 +66,7 @@ export default function InviteAcceptPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" />
       </div>
     );
   }
@@ -87,7 +87,7 @@ export default function InviteAcceptPage() {
               {isExpired ? t('invite.expired_desc_accept') : t('invite.not_found_desc')}
             </p>
           </div>
-          <Link to="/" className="text-primary underline underline-offset-2 text-sm">
+          <Link to="/" className="text-[#071A2D] underline underline-offset-2 text-sm">
             {t('invite.back_portal')}
           </Link>
         </div>
@@ -130,7 +130,7 @@ export default function InviteAcceptPage() {
         <div className="rounded-sm border border-border/70 bg-white p-6 space-y-4">
           <div className="flex items-center gap-4">
             <div className="rounded-sm border border-border/70 bg-muted/30 p-3">
-              <Church className="h-6 w-6 text-primary" />
+              <Church className="h-6 w-6 text-[#071A2D]" />
             </div>
             <div>
               <h2 className="text-lg font-semibold tracking-tight text-foreground">{invitation.parishName}</h2>

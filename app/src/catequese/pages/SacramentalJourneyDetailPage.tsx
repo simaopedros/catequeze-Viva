@@ -174,9 +174,9 @@ export default function SacramentalJourneyDetailPage() {
               <span className="text-sm font-medium">{t('detail.progress')}</span>
               <span className="text-sm font-semibold tabular-nums">{t('detail.progress_count', { done, total, pct })}</span>
             </div>
-            <div className="w-full bg-muted rounded-full h-3">
+            <div className="h-3 w-full rounded-sm bg-muted">
               <div
-                className={`h-3 rounded-full transition-all ${pct === 100 ? 'bg-emerald-500' : pct >= 50 ? 'bg-amber-500' : 'bg-primary'}`}
+                className={`h-3 rounded-sm transition-all ${pct === 100 ? 'bg-[#071A2D]' : pct >= 50 ? 'bg-[#D39A2B]' : 'bg-muted-foreground/40'}`}
                 style={{ width: `${pct}%` }}
               />
             </div>
@@ -262,18 +262,18 @@ export default function SacramentalJourneyDetailPage() {
                             <div className="mt-2">
                               {m.evidenceUrl ? (
                                 <div className="flex items-center gap-2">
-                                  <a href={m.evidenceUrl} className="text-xs text-primary hover:underline flex items-center gap-1" target="_blank" rel="noreferrer">
+                                  <a href={m.evidenceUrl} className="text-xs text-[#071A2D] hover:underline flex items-center gap-1" target="_blank" rel="noreferrer">
                                     <FileText className="h-3 w-3" />{t('detail.view_evidence')}
                                   </a>
                                   {canManage && (
-                                    <label className="cursor-pointer text-xs text-muted-foreground hover:text-primary">
+                                    <label className="cursor-pointer text-xs text-muted-foreground hover:text-[#071A2D]">
                                       <Upload className="h-3 w-3 inline mr-0.5" />{t('detail.replace')}
                                       <input type="file" className="sr-only" onChange={e => { const f = e.target.files?.[0]; if (f) handleFileUpload(m.id, f); }} />
                                     </label>
                                   )}
                                 </div>
                               ) : (
-                                <label className={`cursor-pointer text-xs flex items-center gap-1 ${uploadingFor === m.id ? 'text-muted-foreground' : 'text-primary hover:underline'}`}>
+                                <label className={`cursor-pointer text-xs flex items-center gap-1 ${uploadingFor === m.id ? 'text-muted-foreground' : 'text-[#071A2D] hover:underline'}`}>
                                   {uploadingFor === m.id ? (
                                     <><Clock className="h-3 w-3 animate-spin" />{t('detail.uploading')}</>
                                   ) : (

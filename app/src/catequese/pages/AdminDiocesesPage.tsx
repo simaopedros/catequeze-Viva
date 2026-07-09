@@ -47,7 +47,7 @@ export default function AdminDiocesesPage({ user }: { user: AuthUser }) {
     return (
       <DefaultLayout user={user}>
         <div className="flex justify-center py-20">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#071A2D]" />
         </div>
       </DefaultLayout>
     );

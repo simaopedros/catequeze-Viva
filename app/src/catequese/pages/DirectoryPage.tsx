@@ -111,7 +111,7 @@ export default function DirectoryPage() {
               <button
                 key={topic}
                 onClick={() => { setSearchQuery(topic); handleSearch(); }}
-                className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground"
+                className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-[#071A2D]/30 hover:text-foreground"
               >
                 {topic}
               </button>
@@ -123,7 +123,7 @@ export default function DirectoryPage() {
           <div className="flex flex-wrap gap-2">
             {PART_KEYS.map((key) => (
               <button key={key} onClick={() => loadPart(key)}
-                className={'px-3 py-1.5 text-sm rounded-md transition-colors ' + (part === key ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/70')}>
+                className={'px-3 py-1.5 text-sm rounded-sm transition-colors ' + (part === key ? 'bg-[#071A2D] text-white' : 'bg-muted hover:bg-muted/70')}>
                 {t(`directory.parts.${key}`)}
               </button>
             ))}
@@ -139,7 +139,7 @@ export default function DirectoryPage() {
         )}
 
         {!error && loading ? (
-          <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+          <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" /></div>
         ) : displayEntries.length > 0 ? (
           <div className="space-y-2">
             <p className="text-sm text-muted-foreground">{displayEntries.length} {t('directory.paragraphs')}</p>

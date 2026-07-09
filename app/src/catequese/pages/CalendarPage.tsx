@@ -404,7 +404,7 @@ function MonthGrid({
               <span
                 className={`inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full text-xs sm:text-sm font-medium flex-shrink-0 ${
      today
-     ? 'bg-primary text-primary-foreground'
+     ? 'bg-[#071A2D] text-white'
      : isWeekend(dow)
       ? 'text-muted-foreground/60'
       : ''
@@ -571,7 +571,7 @@ function SidePanelContent({
     return (
       <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3">
         <h3 className="font-semibold text-sm flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-primary" />
+          <Calendar className="h-4 w-4 text-[#071A2D]" />
           {t('upcoming_events')}
         </h3>
         {upcomingEvents.length === 0 ? (
@@ -615,7 +615,7 @@ function SidePanelContent({
       <div className="rounded-sm border border-border/70 bg-white p-4 ">
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-sm flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-primary" />
+            <Calendar className="h-4 w-4 text-[#071A2D]" />
             {t('day_title', { day: selectedDay, month: months[month] })}
           </h3>
           <Badge variant="outline" className="text-overline">
@@ -672,7 +672,7 @@ function SidePanelContent({
               <div className="flex gap-0.5 flex-shrink-0 ml-2">
                 <button
                   onClick={() => exportICS(e)}
-                  className="text-muted-foreground hover:text-primary p-1.5 rounded-md hover:bg-muted transition-colors"
+                  className="text-muted-foreground hover:text-[#071A2D] p-1.5 rounded-md hover:bg-muted transition-colors"
                   aria-label="Exportar .ics"
                 >
                   <Download className="h-3.5 w-3.5" />
@@ -707,7 +707,7 @@ function SidePanelContent({
         <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3 ">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-sm flex items-center gap-1.5">
-              <Plus className="h-4 w-4 text-primary" />
+              <Plus className="h-4 w-4 text-[#071A2D]" />
               {t('new_event')}
             </h3>
             <Button
@@ -763,7 +763,7 @@ function SidePanelContent({
               />
               <label
                 htmlFor="event-color-picker"
-                className="flex items-center justify-center h-9 w-9 rounded-sm border border-input cursor-pointer hover:border-primary/50 transition-colors "
+                className="flex items-center justify-center h-9 w-9 rounded-sm border border-input cursor-pointer hover:border-[#071A2D]/40 transition-colors "
                 style={{ background: color }}
                 aria-label="Cor do evento"
               >

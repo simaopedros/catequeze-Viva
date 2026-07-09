@@ -47,7 +47,7 @@ export function SuggestionCards() {
             onClick={() => handleClick(suggestion.action)}
             className="w-full text-left"
           >
-            <Card className="p-3 hover:border-primary/50 hover:bg-muted/50 transition-colors cursor-pointer">
+            <Card className="p-3 hover:border-[#071A2D]/40 hover:bg-muted/50 transition-colors cursor-pointer">
               <div className="flex items-start gap-2">
                 <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[#071A2D]" />
                 <span className="text-xs leading-relaxed">{suggestion.label}</span>

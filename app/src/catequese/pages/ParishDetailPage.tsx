@@ -121,7 +121,7 @@ export default function ParishDetailPage() {
 
   if (loading) {
     return (
-        <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+        <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" /></div>
     );
   }
 
@@ -172,7 +172,7 @@ export default function ParishDetailPage() {
           {tabs.map(tabItem => (
             <button key={tabItem.id} onClick={() => setTab(tabItem.id)}
               className={'flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ' +
-                (tab === tabItem.id ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground')}
+                (tab === tabItem.id ? 'border-[#071A2D] text-[#071A2D]' : 'border-transparent text-muted-foreground hover:text-foreground')}
             >
               <tabItem.icon className="h-4 w-4" />{tabItem.label}
             </button>

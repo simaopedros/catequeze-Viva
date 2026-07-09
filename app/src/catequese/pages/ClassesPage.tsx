@@ -262,7 +262,7 @@ export default function ClassesPage() {
                 {filtered.map((cls: any) => (
                   <tr key={cls.id} className="border-b border-border/60 last:border-0 hover:bg-muted/30 transition-colors">
                     <td className="p-4">
-                      <Link to={`/app/classes/${cls.id}`} className="font-medium text-sm hover:text-primary">{cls.name}</Link>
+                      <Link to={`/app/classes/${cls.id}`} className="font-medium text-sm hover:text-[#071A2D]">{cls.name}</Link>
                     </td>
                     <td className="p-4">
                       <Badge variant={classStatusMap[cls.status as keyof typeof classStatusMap]?.variant || 'secondary'} className="text-overline">
@@ -290,11 +290,11 @@ export default function ClassesPage() {
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {filtered.map((cls: any) => (
-            <div key={cls.id} className="group overflow-hidden rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-primary/30">
+            <div key={cls.id} className="group overflow-hidden rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-[#071A2D]/30">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-3">
-                    <Link to={`/app/classes/${cls.id}`} className="block truncate text-lg font-semibold tracking-tight text-foreground hover:text-primary">
+                    <Link to={`/app/classes/${cls.id}`} className="block truncate text-lg font-semibold tracking-tight text-foreground hover:text-[#071A2D]">
                       {cls.name}
                     </Link>
                     <Badge variant={classStatusMap[cls.status as keyof typeof classStatusMap]?.variant || 'secondary'} className="ml-2 shrink-0 text-overline">

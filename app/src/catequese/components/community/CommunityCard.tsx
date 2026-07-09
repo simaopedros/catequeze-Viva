@@ -23,7 +23,7 @@ export function CommunityCard({ community, onEdit, isEditing, editForm }: Commun
   const address = [c.street, c.number, c.neighborhood, c.city, c.state].filter(Boolean).join(', ') || null;
 
   return (
-    <div className="rounded-sm border border-border/70 bg-white hover:border-primary/30 transition-colors">
+    <div className="rounded-sm border border-border/70 bg-white hover:border-[#071A2D]/30 transition-colors">
       <div className="p-4 cursor-pointer flex items-start justify-between" onClick={() => setExpanded(!expanded)}>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">

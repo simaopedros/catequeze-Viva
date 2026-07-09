@@ -143,7 +143,7 @@ export default function WorkspaceSelectorPage() {
       data-testid={`workspace-card-${ws.id}`}
       onClick={() => handleEnter(ws.id)}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleEnter(ws.id); } }}
-      className="group w-full cursor-pointer rounded-sm border border-border/70 bg-white p-5 text-left transition-colors hover:border-primary/30"
+      className="group w-full cursor-pointer rounded-sm border border-border/70 bg-white p-5 text-left transition-colors hover:border-[#071A2D]/30"
     >
       <div className="flex items-start gap-4">
         <div
@@ -277,7 +277,7 @@ export default function WorkspaceSelectorPage() {
               data-testid="workspace-card-personal"
               onClick={() => handleEnter(personal.id)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleEnter(personal.id); } }}
-              className="group w-full cursor-pointer rounded-sm border border-border/70 bg-white p-5 text-left transition-colors hover:border-primary/30"
+              className="group w-full cursor-pointer rounded-sm border border-border/70 bg-white p-5 text-left transition-colors hover:border-[#071A2D]/30"
             >
               <div className="flex items-start gap-4">
                 <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-foreground">
@@ -416,7 +416,7 @@ export default function WorkspaceSelectorPage() {
             {canCreateUnderOwnerPlan && (
               <button
                 onClick={() => navigate('/app/parishes?new=true')}
-                className="w-full rounded-sm border border-dashed border-border/70 hover:border-primary/30 hover:bg-muted/20 transition-colors p-4 text-center text-muted-foreground flex items-center justify-center gap-2"
+                className="w-full rounded-sm border border-dashed border-border/70 hover:border-[#071A2D]/30 hover:bg-muted/20 transition-colors p-4 text-center text-muted-foreground flex items-center justify-center gap-2"
               >
                 <Plus className="h-4 w-4" />
                 <span className="text-sm font-medium">
@@ -464,7 +464,7 @@ export default function WorkspaceSelectorPage() {
         {/* Create an independent parish (new institutional workspace) */}
         <button
           onClick={() => navigate('/app/parishes?new=true')}
-          className="w-full rounded-sm border border-dashed border-border/70 hover:border-primary/30 hover:bg-muted/20 transition-colors p-4 text-center text-muted-foreground hover:text-foreground flex items-center justify-center gap-2"
+          className="w-full rounded-sm border border-dashed border-border/70 hover:border-[#071A2D]/30 hover:bg-muted/20 transition-colors p-4 text-center text-muted-foreground hover:text-foreground flex items-center justify-center gap-2"
         >
           <Plus className="h-4 w-4" />
           <span className="text-sm font-medium">{t('workspace.create_independent')}</span>

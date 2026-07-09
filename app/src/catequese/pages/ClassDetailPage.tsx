@@ -620,7 +620,7 @@ export default function ClassDetailPage() {
                     </h4>
                     <div className="flex flex-wrap gap-1">
                       {monthlyPlan.availableContent.slice(0, 8).map((c: any) => (
-                        <Link key={c.id} to={`/app/content-library/${c.id}`} className="rounded-sm border border-border/70 bg-muted/30 px-2 py-1 text-xs transition-colors hover:border-primary/30">
+                        <Link key={c.id} to={`/app/content-library/${c.id}`} className="rounded-sm border border-border/70 bg-muted/30 px-2 py-1 text-xs transition-colors hover:border-[#071A2D]/30">
                           {c.title}
                         </Link>
                       ))}

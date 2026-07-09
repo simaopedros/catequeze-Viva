@@ -269,7 +269,7 @@ export default function MessagesPage() {
                     className="flex h-8 w-8 items-center justify-center rounded-sm transition-colors hover:bg-muted"
                     title={myParticipant?.mutedAt ? t('unmute') : t('mute')}
                   >
-                    <BellOff className={cn('h-4 w-4', myParticipant?.mutedAt && 'text-primary')} />
+                    <BellOff className={cn('h-4 w-4', myParticipant?.mutedAt && 'text-[#071A2D]')} />
                   </button>
                   {activeConv?.type !== 'DIRECT' && (
                     <button

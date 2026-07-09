@@ -68,12 +68,12 @@ function PathOption({
       )}
     >
       <span className="min-w-0 space-y-1.5">
-        <span className="block text-[0.95rem] font-semibold text-foreground group-hover:text-primary">
+        <span className="block text-[0.95rem] font-semibold text-foreground group-hover:text-[#071A2D]">
           {label}
         </span>
         <span className="block text-sm leading-relaxed text-muted-foreground">{description}</span>
       </span>
-      <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
+      <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-[#071A2D]" />
     </button>
   );
 }

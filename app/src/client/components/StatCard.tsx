@@ -57,7 +57,7 @@ export function StatCard({ variant = 'default', href, className, label, value, d
 
   if (href) {
     return (
-      <Link to={href} className="block transition-colors hover:border-primary/30">
+      <Link to={href} className="block transition-colors hover:border-[#071A2D]/30">
         {body}
       </Link>
     );

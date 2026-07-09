@@ -322,7 +322,7 @@ export default function ContentLibraryPage() {
             <Link
               key={item.id}
               to={`/app/content-library/${item.id}`}
-              className="group overflow-hidden rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-primary/30"
+              className="group overflow-hidden rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-[#071A2D]/30"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">

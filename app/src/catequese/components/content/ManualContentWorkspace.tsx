@@ -92,7 +92,7 @@ function ReferenceSection({
             <div className="text-xs text-muted-foreground">{count} selecionadas</div>
           </div>
         </div>
-        <button type="button" onClick={onOpen} className="text-xs font-medium text-primary">
+        <button type="button" onClick={onOpen} className="text-xs font-medium text-[#071A2D]">
           Selecionar
         </button>
       </div>
@@ -171,7 +171,7 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
         <div className="mb-4 flex items-start justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
-              <BookMarked className="h-4 w-4 text-primary" />
+              <BookMarked className="h-4 w-4 text-[#071A2D]" />
               <h3 className="text-lg font-semibold text-foreground">Referências para o encontro</h3>
             </div>
             <p className="mt-1 text-sm text-muted-foreground">Selecione e organize referências.</p>
@@ -310,7 +310,7 @@ function ContentLibrarySidebar() {
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs font-medium uppercase tracking-wide text-muted-foreground">
             <span>Filtros</span>
-            <button type="button" className="text-primary">Limpar</button>
+            <button type="button" className="text-[#071A2D]">Limpar</button>
           </div>
           {['Tipo de conteúdo', 'Faixa etária', 'Temas', 'Tempo de encontro', 'Dificuldade'].map(label => (
             <button key={label} type="button" className="flex w-full items-center justify-between rounded-sm border border-border bg-background px-3 py-2.5 text-sm text-foreground">

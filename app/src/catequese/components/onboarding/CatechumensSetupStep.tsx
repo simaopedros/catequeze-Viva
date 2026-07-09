@@ -182,7 +182,7 @@ export function CatechumensSetupStep({
             className={cn(
               "flex-1 rounded-sm py-2 text-xs font-medium transition-colors",
               mode === id
-                ? "bg-primary text-primary-foreground"
+                ? "bg-[#071A2D] text-white"
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
@@ -266,7 +266,7 @@ export function CatechumensSetupStep({
             accept=".csv,.txt,.tsv,text/csv,text/plain"
             disabled={loading}
             onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
-            className="block w-full text-sm text-muted-foreground file:mr-3 file:rounded-sm file:border-0 file:bg-primary file:px-3 file:py-2 file:text-xs file:font-medium file:text-primary-foreground"
+            className="block w-full text-sm text-muted-foreground file:mr-3 file:rounded-sm file:border-0 file:bg-[#071A2D] file:px-3 file:py-2 file:text-xs file:font-medium file:text-white"
           />
           <p className="text-xs text-muted-foreground">{t("catechumens_setup.file_hint")}</p>
           {loading && (

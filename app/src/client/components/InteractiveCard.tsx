@@ -39,7 +39,7 @@ export function InteractiveCard({
     <div
       className={cn(
         'group flex items-start gap-3 rounded-sm border border-border/70 bg-white p-5 text-left transition-colors duration-200',
-        isInteractive && 'cursor-pointer hover:border-primary/30 hover:bg-muted/20',
+        isInteractive && 'cursor-pointer hover:border-[#071A2D]/30 hover:bg-muted/20',
         compact && 'gap-2.5 p-4',
         className
       )}
