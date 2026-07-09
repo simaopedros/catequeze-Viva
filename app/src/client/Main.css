@@ -493,6 +493,39 @@
   }
 }
 
+/* ── Print: unclip app shell so multipage content is not cut ───────── */
+
+@media print {
+  html,
+  body {
+    height: auto !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+
+  /* AppShell uses overflow-hidden / overflow-y-auto — these clip absolute/tall print content */
+  body,
+  #root,
+  #root > div,
+  #main-content {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    position: static !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  /* Fixed chrome (sidebar overlay, bottom nav, AI widget, etc.) */
+  .fixed,
+  [class*="z-999"],
+  [class*="z-[999"] {
+    display: none !important;
+  }
+}
+
 /* ── OAuth Callback page ───────────────────────────────────────────── */
 
 .wasp-oauth-callback-wrapper {

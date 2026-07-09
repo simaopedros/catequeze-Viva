@@ -185,48 +185,54 @@ export function AppShell({ children }: AppShellProps) {
         >
           {t("skip_to_content")}
         </a>
-        <div className="hidden lg:block flex-shrink-0">
+        <div className="no-print hidden flex-shrink-0 lg:block">
           <Sidebar />
         </div>
 
         {mobileMenuOpen && (
           <>
             <div
-              className="fixed inset-0 z-modal bg-black/50 backdrop-blur-sm lg:hidden"
+              className="no-print fixed inset-0 z-modal bg-black/50 backdrop-blur-sm lg:hidden"
               onClick={() => setMobileMenuOpen(false)}
             />
-            <nav className="fixed inset-y-0 left-0 z-[501] w-64 overflow-y-auto border-r border-border/70 bg-white lg:hidden animate-in slide-in-from-left-5 duration-200">
+            <nav className="no-print fixed inset-y-0 left-0 z-[501] w-64 overflow-y-auto border-r border-border/70 bg-white lg:hidden animate-in slide-in-from-left-5 duration-200">
               <Sidebar />
             </nav>
           </>
         )}
 
-        <div className="flex flex-1 flex-col overflow-hidden">
-          <ErrorBoundary
-            fallback={
-              <div className="flex h-14 items-center border-b border-border/70 bg-white px-4" />
-            }
-          >
-            <TopBar onMenuToggle={handleMenuToggle} />
-          </ErrorBoundary>
-          <ProductTrialBanner />
+        <div className="flex flex-1 flex-col overflow-hidden print:overflow-visible">
+          <div className="no-print">
+            <ErrorBoundary
+              fallback={
+                <div className="flex h-14 items-center border-b border-border/70 bg-white px-4" />
+              }
+            >
+              <TopBar onMenuToggle={handleMenuToggle} />
+            </ErrorBoundary>
+            <ProductTrialBanner />
+          </div>
           <main
             id="main-content"
             ref={mainRef}
-            className="no-overscroll scroll-touch flex-1 overflow-y-auto bg-[#F7F4EE] p-4 md:p-6"
+            className="no-overscroll scroll-touch flex-1 overflow-y-auto bg-[#F7F4EE] p-4 print:overflow-visible print:bg-white print:p-0 md:p-6"
             style={{
               paddingBottom: "calc(4rem + env(safe-area-inset-bottom, 0px))",
             }}
           >
-            <div key={location.pathname} className="content-transition">
+            <div key={location.pathname} className="content-transition print:contents">
               <SubscriptionGate>{children}</SubscriptionGate>
             </div>
           </main>
         </div>
-        <BottomNav />
-        <Suspense fallback={null}>
-          <AIHelperWidget />
-        </Suspense>
+        <div className="no-print">
+          <BottomNav />
+        </div>
+        <div className="no-print">
+          <Suspense fallback={null}>
+            <AIHelperWidget />
+          </Suspense>
+        </div>
         {showTour && (
           <Suspense fallback={null}>
             <GuidedTour onComplete={completeTour} />

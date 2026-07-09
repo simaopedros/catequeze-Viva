@@ -1089,26 +1089,44 @@ export function ContentDocumentWorkspace({
             >
               Voltar à edição
             </Button>
-            {contentId ? (
-              <Button size="sm" className="h-9 gap-1.5 rounded-sm shadow-none" asChild>
-                <Link to={`/app/content-library/${contentId}`}>
-                  <ExternalLink className="h-3.5 w-3.5" />
-                  Abrir página completa
-                </Link>
-              </Button>
-            ) : (
-              <Button
-                size="sm"
-                className="h-9 gap-1.5 rounded-sm shadow-none"
-                onClick={() => {
-                  setPreviewOpen(false);
-                  void saveNow();
-                }}
-              >
-                <Save className="h-3.5 w-3.5" />
-                Salvar rascunho
-              </Button>
-            )}
+            <div className="flex flex-wrap items-center gap-2">
+              {contentId ? (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-9 gap-1.5 rounded-sm"
+                    asChild
+                  >
+                    <Link to={`/app/content-library/${contentId}/print`}>
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      Pré-impressão
+                    </Link>
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="h-9 gap-1.5 rounded-sm shadow-none"
+                    asChild
+                  >
+                    <Link to={`/app/content-library/${contentId}`}>
+                      Página completa
+                    </Link>
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  size="sm"
+                  className="h-9 gap-1.5 rounded-sm shadow-none"
+                  onClick={() => {
+                    setPreviewOpen(false);
+                    void saveNow();
+                  }}
+                >
+                  <Save className="h-3.5 w-3.5" />
+                  Salvar rascunho
+                </Button>
+              )}
+            </div>
           </div>
         </SheetContent>
       </Sheet>

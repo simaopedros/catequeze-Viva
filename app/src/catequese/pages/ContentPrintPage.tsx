@@ -106,38 +106,158 @@ export default function ContentPrintPage() {
 
   return (
     <>
+      {/*
+        Print rules live here + Main.css.
+        Avoid visibility:hidden + position:absolute (clips multipage content
+        inside AppShell overflow containers).
+      */}
       <style>{`
         @media print {
-          @page { size: A4; margin: 1.6cm; }
-          body * { visibility: hidden; }
-          #print-content, #print-content * { visibility: visible; }
-          #print-content { position: absolute; left: 0; top: 0; width: 100%; }
-          .no-print { display: none !important; }
-          .print-section { break-inside: avoid; }
-          .print-reference-card { break-inside: avoid; }
-          #print-content h1 { font-size: 20pt; }
-          #print-content h2 { font-size: 14pt; }
-          #print-content p, #print-content li, #print-content td, #print-content th { font-size: 11pt; line-height: 1.7; }
-          #print-content img { max-width: 100% !important; max-height: 320px !important; object-fit: contain !important; }
+          @page {
+            size: A4;
+            margin: 14mm 16mm;
+          }
+
+          html, body {
+            height: auto !important;
+            overflow: visible !important;
+            background: #fff !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+
+          /* Unclip AppShell / scroll ancestors */
+          body, #root, #root > div, #main-content,
+          .overflow-hidden, .overflow-y-auto, .overflow-y-scroll {
+            overflow: visible !important;
+            height: auto !important;
+            max-height: none !important;
+            position: static !important;
+          }
+
+          .no-print,
+          aside,
+          header,
+          nav,
+          [data-print-hide="true"] {
+            display: none !important;
+          }
+
+          #print-root {
+            display: block !important;
+            background: #fff !important;
+            padding: 0 !important;
+            margin: 0 !important;
+          }
+
+          #print-paper {
+            box-shadow: none !important;
+            border: none !important;
+            border-radius: 0 !important;
+            max-width: none !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #fff !important;
+          }
+
+          #print-content {
+            position: static !important;
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            color: #071A2D !important;
+            background: #fff !important;
+          }
+
+          /* Small cards can stay together; large blocks may paginate */
+          .print-keep {
+            break-inside: avoid;
+            page-break-inside: avoid;
+          }
+
+          .print-section-title {
+            break-after: avoid;
+            page-break-after: avoid;
+          }
+
+          #print-content h1 {
+            font-size: 18pt;
+            line-height: 1.25;
+          }
+          #print-content h2 {
+            font-size: 13pt;
+            line-height: 1.3;
+            margin-top: 1.1em;
+          }
+          #print-content h3 {
+            font-size: 12pt;
+          }
+          #print-content p,
+          #print-content li,
+          #print-content td,
+          #print-content th {
+            font-size: 10.5pt;
+            line-height: 1.55;
+          }
+          #print-content img {
+            max-width: 100% !important;
+            max-height: 240px !important;
+            height: auto !important;
+            object-fit: contain !important;
+            break-inside: avoid;
+            page-break-inside: avoid;
+          }
+          #print-content table {
+            width: 100% !important;
+            break-inside: auto;
+          }
+          #print-content tr {
+            break-inside: avoid;
+            page-break-inside: avoid;
+          }
+          #print-content a {
+            color: inherit !important;
+            text-decoration: none !important;
+          }
         }
       `}</style>
-      <div className="no-print mx-auto flex max-w-4xl items-center justify-between px-4 pt-4">
-        <Button variant="outline" size="sm" className="h-10 rounded-sm" asChild>
-          <Link to={`/app/content-library/${id}`}>
-            <ArrowLeft className="mr-1 h-4 w-4" />
-            {t("print_page.back")}
-          </Link>
-        </Button>
-        <div className="flex gap-2">
+
+      {/* On-screen toolbar */}
+      <div className="no-print mx-auto mb-4 flex max-w-[210mm] flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-1">
+          <Button variant="outline" size="sm" className="h-9 rounded-sm" asChild>
+            <Link to={`/app/content-library/${id}`}>
+              <ArrowLeft className="mr-1 h-4 w-4" />
+              {t("print_page.back")}
+            </Link>
+          </Button>
+          <p className="text-xs text-muted-foreground">
+            {t("print_page.preview_hint", {
+              defaultValue:
+                "Pré-visualização em formato A4. Confira se o texto não está cortado antes de imprimir.",
+            })}
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
           <Badge
             variant="secondary"
             className="rounded-sm border border-border/70"
           >
             {statusLabel(item.status)}
           </Badge>
+          <Badge
+            variant="outline"
+            className="rounded-sm border-[#D39A2B]/40 text-[10px] font-semibold uppercase tracking-wide text-[#8A6418]"
+          >
+            {t("print_page.preview_badge", {
+              defaultValue: "Pré-impressão A4",
+            })}
+          </Badge>
           <Button
             onClick={() => window.print()}
-            className="h-10 gap-2 rounded-sm bg-[#071A2D] shadow-none hover:bg-[#0a2540]"
+            className="h-9 gap-2 rounded-sm bg-[#071A2D] shadow-none hover:bg-[#0a2540]"
           >
             <Printer className="h-4 w-4" />
             {t("print_page.print_pdf")}
@@ -145,235 +265,261 @@ export default function ContentPrintPage() {
         </div>
       </div>
 
-      <div
-        id="print-content"
-        className="mx-auto max-w-4xl bg-white px-6 py-8 text-[#071A2D]"
-      >
-        <div className="print-section mb-8 border-b border-[#071A2D]/20 pb-6 text-center">
-          <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#6b7c8a]">
-            {t("print_page.header_badge")}
-          </p>
-          <h1
-            className="mb-2 text-2xl font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
+      {/* Screen: paper frame. Print: unframed full flow. */}
+      <div id="print-root" className="mx-auto max-w-[210mm]">
+        <div
+          id="print-paper"
+          className="rounded-sm border border-border/70 bg-white shadow-[0_8px_30px_rgba(7,26,45,0.08)]"
+        >
+          <div
+            id="print-content"
+            className="px-6 py-8 text-[#071A2D] sm:px-10 sm:py-10"
           >
-            {item.title}
-          </h1>
-          <div className="mx-auto mb-3 h-px w-10 bg-[#D39A2B]" aria-hidden />
-          {item.theme && (
-            <p className="mb-3 text-lg italic text-[#4a5d6e]">{item.theme}</p>
-          )}
-          <div className="flex justify-center gap-4 text-sm text-[#6b7c8a]">
-            {item.estimatedTime && (
-              <span>
-                <Clock className="inline h-4 w-4" />{" "}
-                {t("print_page.minutes", { count: item.estimatedTime })}
-              </span>
-            )}
-            {item.createdBy && (
-              <span>
-                {t("print_page.prepared_by", {
-                  name: `${item.createdBy.firstName} ${item.createdBy.lastName}`,
-                })}
-              </span>
-            )}
-          </div>
-        </div>
-
-        <div className="print-section rounded-sm border border-[#071A2D]/12 bg-white p-8">
-          <ContentDocumentRenderer
-            document={document}
-            className="prose-neutral prose-img:max-h-[320px]"
-          />
-        </div>
-
-        {hasReferences && (
-          <div className="print-section mt-8 space-y-5">
-            <div className="border-b border-[#071A2D]/12 pb-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8a96a0]">
-                Apoio pastoral
+            <header className="print-keep mb-8 border-b border-[#071A2D]/15 pb-6 text-center">
+              <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#6b7c8a]">
+                {t("print_page.header_badge")}
               </p>
-              <h2
-                className="mt-1 text-xl font-semibold tracking-tight text-[#071A2D]"
+              <h1
+                className="mb-2 text-2xl font-semibold tracking-tight text-[#071A2D] sm:text-[1.75rem]"
                 style={{ fontFamily: "var(--font-brand-display)" }}
               >
-                Referências vinculadas
-              </h2>
-              <div className="mt-2 h-px w-10 bg-[#D39A2B]" aria-hidden />
-              <p className="mt-1 text-sm text-[#6b7c8a]">
-                Passagens e textos de apoio usados neste encontro.
-              </p>
-            </div>
-
-            {bibleRefs.length > 0 && (
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-[#8A6418]">
-                  <BookOpen className="h-4 w-4" />
-                  {referenceSectionTitle("Bíblia", bibleRefs.length)}
-                </div>
-                <div className="space-y-3">
-                  {bibleRefs.map((ref: any) => (
-                    <div
-                      key={ref.id}
-                      className="print-reference-card rounded-sm border border-[#D39A2B]/30 bg-[#D39A2B]/10 p-4"
-                    >
-                      <div className="mb-2 text-sm font-semibold text-[#8A6418]">
-                        {ref.label}
-                      </div>
-                      <p className="text-[15px] leading-7 text-[#1a2f42]">
-                        {ref.text}
-                      </p>
-                    </div>
-                  ))}
-                </div>
+                {item.title}
+              </h1>
+              <div
+                className="mx-auto mb-3 h-px w-10 bg-[#D39A2B]"
+                aria-hidden
+              />
+              {item.theme && (
+                <p className="mb-3 text-base italic text-[#4a5d6e] sm:text-lg">
+                  {item.theme}
+                </p>
+              )}
+              <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm text-[#6b7c8a]">
+                {item.estimatedTime && (
+                  <span className="inline-flex items-center gap-1">
+                    <Clock className="h-3.5 w-3.5" />
+                    {t("print_page.minutes", { count: item.estimatedTime })}
+                  </span>
+                )}
+                {item.createdBy && (
+                  <span>
+                    {t("print_page.prepared_by", {
+                      name: `${item.createdBy.firstName} ${item.createdBy.lastName}`,
+                    })}
+                  </span>
+                )}
               </div>
-            )}
+            </header>
 
-            {catechismRefs.length > 0 && (
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-[#071A2D]">
-                  <Church className="h-4 w-4" />
-                  {referenceSectionTitle("Catecismo", catechismRefs.length)}
-                </div>
-                <div className="space-y-3">
-                  {catechismRefs.map((ref: any) => (
-                    <div
-                      key={ref.id}
-                      className="print-reference-card rounded-sm border border-border/70 bg-muted/30 p-4"
-                    >
-                      <div className="mb-2 text-sm font-semibold text-[#071A2D]">
-                        {ref.label}
-                      </div>
-                      {ref.title && (
-                        <p className="mb-2 text-sm font-semibold tracking-tight text-[#071A2D]">
-                          {ref.title}
-                        </p>
-                      )}
-                      {ref.text && (
-                        <p className="text-[15px] leading-7 text-[#1a2f42]">
-                          {ref.text}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* Main body — allow page breaks inside long prose */}
+            <section className="print-body">
+              <ContentDocumentRenderer
+                document={document}
+                className="prose-neutral prose-img:max-h-[280px]"
+              />
+            </section>
 
-            {directoryRefs.length > 0 && (
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-[#071A2D]">
-                  <FileText className="h-4 w-4" />
-                  {referenceSectionTitle(
-                    "Diretório para a Catequese",
-                    directoryRefs.length,
-                  )}
-                </div>
-                <div className="space-y-3">
-                  {directoryRefs.map((ref: any) => (
-                    <div
-                      key={ref.id}
-                      className="print-reference-card rounded-sm border border-[#071A2D]/20 bg-[#071A2D]/05 p-4"
-                    >
-                      <div className="mb-2 text-sm font-semibold text-[#071A2D]">
-                        {ref.label}
-                      </div>
-                      {ref.title && (
-                        <p className="mb-2 text-sm font-semibold tracking-tight text-[#071A2D]">
-                          {ref.title}
-                        </p>
-                      )}
-                      {ref.text && (
-                        <p className="text-[15px] leading-7 text-[#1a2f42]">
-                          {ref.text}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {activities.length > 0 && (
-          <div className="print-section mt-8">
-            <h2 className="mb-3 border-b pb-2 text-sm font-semibold uppercase tracking-[0.12em] text-[#24394d]">
-              {t("print_page.activities_title", { count: activities.length })}
-            </h2>
-            <div className="space-y-6">
-              {activities.map((activity: any, index: number) => {
-                const data = parseData(activity.data);
-                const typeLabel =
-                  activityTypes.find((type) => type.value === activity.type)
-                    ?.label || activity.type;
-                return (
-                  <div
-                    key={activity.id}
-                    className="rounded-sm border border-border/70 bg-white p-4"
+            {hasReferences && (
+              <section className="mt-10 space-y-5">
+                <div className="print-section-title border-b border-[#071A2D]/12 pb-3">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8a96a0]">
+                    {t("print_page.pastoral_support", {
+                      defaultValue: "Apoio pastoral",
+                    })}
+                  </p>
+                  <h2
+                    className="mt-1 text-xl font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
                   >
-                    <h3
-                      className="mb-1 font-semibold tracking-tight text-[#071A2D]"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
-                      {index + 1}. {activity.title} — {typeLabel}
-                    </h3>
-                    {activity.description && (
-                      <p className="mb-3 text-sm italic text-[#6b7c8a]">
-                        {activity.description}
-                      </p>
-                    )}
-                    {activity.type === "QUIZ" &&
-                      data.questions?.map(
-                        (question: any, questionIndex: number) => (
-                          <div
-                            key={question.id || questionIndex}
-                            className="mb-3 rounded-sm border border-border/70 bg-[#F7F4EE] p-3"
-                          >
-                            <p className="mb-2 text-sm font-semibold tracking-tight text-[#071A2D]">
-                              {questionIndex + 1}. {question.question}
-                            </p>
-                            <div className="ml-4 grid grid-cols-2 gap-1">
-                              {question.options?.map(
-                                (option: string, optionIndex: number) => (
-                                  <div
-                                    key={optionIndex}
-                                    className="flex items-center gap-2 text-sm"
-                                  >
-                                    <span className="flex h-5 w-5 items-center justify-center rounded-sm border border-border/70 text-xs font-semibold text-[#071A2D]">
-                                      {["A", "B", "C", "D"][optionIndex]}
-                                    </span>
-                                    <span>{option}</span>
-                                  </div>
-                                ),
-                              )}
-                            </div>
-                          </div>
-                        ),
-                      )}
-                    {activity.type === "GROUP_DYNAMIC" &&
-                      data.steps?.map((step: any, stepIndex: number) => (
+                    {t("print_page.linked_references", {
+                      defaultValue: "Referências vinculadas",
+                    })}
+                  </h2>
+                  <div className="mt-2 h-px w-10 bg-[#D39A2B]" aria-hidden />
+                </div>
+
+                {bibleRefs.length > 0 && (
+                  <div className="space-y-3">
+                    <div className="print-section-title flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-[#8A6418]">
+                      <BookOpen className="h-4 w-4" />
+                      {referenceSectionTitle("Bíblia", bibleRefs.length)}
+                    </div>
+                    <div className="space-y-3">
+                      {bibleRefs.map((ref: any) => (
                         <div
-                          key={step.id || stepIndex}
-                          className="mb-2 rounded-sm border border-border/70 bg-[#F7F4EE] p-3 text-sm"
+                          key={ref.id}
+                          className="print-keep rounded-sm border border-[#D39A2B]/30 bg-[#D39A2B]/10 p-4"
                         >
-                          <p className="font-semibold tracking-tight text-[#071A2D]">
-                            {t("print_page.step", { num: stepIndex + 1 })}{" "}
-                            {step.instruction}
-                          </p>
+                          <div className="mb-2 text-sm font-semibold text-[#8A6418]">
+                            {ref.label}
+                          </div>
+                          {ref.text ? (
+                            <p className="text-[15px] leading-7 text-[#1a2f42]">
+                              {ref.text}
+                            </p>
+                          ) : null}
                         </div>
                       ))}
-                    {activity.type === "FAMILY_ACTIVITY" && data.task && (
-                      <p className="rounded-sm border border-border/70 bg-muted/30 p-3 text-sm">
-                        {data.task}
-                      </p>
-                    )}
+                    </div>
                   </div>
-                );
-              })}
-            </div>
+                )}
+
+                {catechismRefs.length > 0 && (
+                  <div className="space-y-3">
+                    <div className="print-section-title flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-[#071A2D]">
+                      <Church className="h-4 w-4" />
+                      {referenceSectionTitle(
+                        "Catecismo",
+                        catechismRefs.length,
+                      )}
+                    </div>
+                    <div className="space-y-3">
+                      {catechismRefs.map((ref: any) => (
+                        <div
+                          key={ref.id}
+                          className="print-keep rounded-sm border border-border/70 bg-muted/30 p-4"
+                        >
+                          <div className="mb-2 text-sm font-semibold text-[#071A2D]">
+                            {ref.label}
+                          </div>
+                          {ref.title && (
+                            <p className="mb-2 text-sm font-semibold tracking-tight text-[#071A2D]">
+                              {ref.title}
+                            </p>
+                          )}
+                          {ref.text && (
+                            <p className="text-[15px] leading-7 text-[#1a2f42]">
+                              {ref.text}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {directoryRefs.length > 0 && (
+                  <div className="space-y-3">
+                    <div className="print-section-title flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-[#071A2D]">
+                      <FileText className="h-4 w-4" />
+                      {referenceSectionTitle(
+                        "Diretório para a Catequese",
+                        directoryRefs.length,
+                      )}
+                    </div>
+                    <div className="space-y-3">
+                      {directoryRefs.map((ref: any) => (
+                        <div
+                          key={ref.id}
+                          className="print-keep rounded-sm border border-[#071A2D]/20 bg-[#071A2D]/05 p-4"
+                        >
+                          <div className="mb-2 text-sm font-semibold text-[#071A2D]">
+                            {ref.label}
+                          </div>
+                          {ref.title && (
+                            <p className="mb-2 text-sm font-semibold tracking-tight text-[#071A2D]">
+                              {ref.title}
+                            </p>
+                          )}
+                          {ref.text && (
+                            <p className="text-[15px] leading-7 text-[#1a2f42]">
+                              {ref.text}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </section>
+            )}
+
+            {activities.length > 0 && (
+              <section className="mt-10">
+                <h2 className="print-section-title mb-3 border-b border-[#071A2D]/12 pb-2 text-sm font-semibold uppercase tracking-[0.12em] text-[#24394d]">
+                  {t("print_page.activities_title", {
+                    count: activities.length,
+                  })}
+                </h2>
+                <div className="space-y-5">
+                  {activities.map((activity: any, index: number) => {
+                    const data = parseData(activity.data);
+                    const typeLabel =
+                      activityTypes.find((type) => type.value === activity.type)
+                        ?.label || activity.type;
+                    return (
+                      <div
+                        key={activity.id}
+                        className="print-keep rounded-sm border border-border/70 bg-white p-4"
+                      >
+                        <h3
+                          className="mb-1 font-semibold tracking-tight text-[#071A2D]"
+                          style={{ fontFamily: "var(--font-brand-display)" }}
+                        >
+                          {index + 1}. {activity.title} — {typeLabel}
+                        </h3>
+                        {activity.description && (
+                          <p className="mb-3 text-sm italic text-[#6b7c8a]">
+                            {activity.description}
+                          </p>
+                        )}
+                        {activity.type === "QUIZ" &&
+                          data.questions?.map(
+                            (question: any, questionIndex: number) => (
+                              <div
+                                key={question.id || questionIndex}
+                                className="mb-3 rounded-sm border border-border/70 bg-[#F7F4EE] p-3"
+                              >
+                                <p className="mb-2 text-sm font-semibold tracking-tight text-[#071A2D]">
+                                  {questionIndex + 1}. {question.question}
+                                </p>
+                                <div className="ml-2 grid gap-1 sm:ml-4 sm:grid-cols-2">
+                                  {question.options?.map(
+                                    (option: string, optionIndex: number) => (
+                                      <div
+                                        key={optionIndex}
+                                        className="flex items-center gap-2 text-sm"
+                                      >
+                                        <span className="flex h-5 w-5 items-center justify-center rounded-sm border border-border/70 text-xs font-semibold text-[#071A2D]">
+                                          {["A", "B", "C", "D"][optionIndex]}
+                                        </span>
+                                        <span>{option}</span>
+                                      </div>
+                                    ),
+                                  )}
+                                </div>
+                              </div>
+                            ),
+                          )}
+                        {activity.type === "GROUP_DYNAMIC" &&
+                          data.steps?.map((step: any, stepIndex: number) => (
+                            <div
+                              key={step.id || stepIndex}
+                              className="mb-2 rounded-sm border border-border/70 bg-[#F7F4EE] p-3 text-sm"
+                            >
+                              <p className="font-semibold tracking-tight text-[#071A2D]">
+                                {t("print_page.step", { num: stepIndex + 1 })}{" "}
+                                {step.instruction}
+                              </p>
+                            </div>
+                          ))}
+                        {activity.type === "FAMILY_ACTIVITY" && data.task && (
+                          <p className="rounded-sm border border-border/70 bg-muted/30 p-3 text-sm">
+                            {data.task}
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
+
+            <footer className="print-keep mt-10 border-t border-[#071A2D]/10 pt-4 text-center text-xs text-[#8a96a0]">
+              {t("print_page.footer")}
+            </footer>
           </div>
-        )}
+        </div>
       </div>
     </>
   );
