@@ -76,11 +76,11 @@ export default function PublicUploadDocsPage() {
     <div className="min-h-screen bg-[#F7F4EE] flex items-center justify-center p-4">
       <div className="max-w-lg w-full space-y-6">
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary text-sm font-medium px-4 py-1.5 mb-2">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground mb-2">
             <FileText className="h-4 w-4" />
             {t('workspace.app_name')}
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             {t('upload_docs.greeting')}{' '}
             <span className="text-primary">{catechumen.firstName} {catechumen.lastName}</span>
           </h1>

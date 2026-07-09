@@ -165,8 +165,8 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
           <SectionCard title="Primeiros passos" icon={CheckCircle2} tone="soft" className="p-6 lg:p-8">
             <div className="space-y-6">
               <div className="space-y-2">
-                <h2 className="text-2xl font-bold tracking-tight text-slate-950">{t('no_classes_yet')}</h2>
-                <p className="max-w-2xl text-base leading-relaxed text-slate-600">{t('no_classes_description')}</p>
+                <h2 className="text-2xl font-semibold tracking-tight text-foreground">{t('no_classes_yet')}</h2>
+                <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">{t('no_classes_description')}</p>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2">
@@ -203,7 +203,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
             )}
 
             <SectionCard title="Como comecar" icon={ArrowRight}>
-              <div className="space-y-3 text-sm leading-relaxed text-slate-600">
+              <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
                 <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
                   1. Crie a turma com etapa, dias de encontro e responsaveis.
                 </div>
@@ -230,15 +230,15 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                       className="group flex items-center justify-between rounded-sm border border-primary/10 bg-white/80 px-4 py-3 transition-colors hover:bg-primary/5"
                     >
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-slate-900 group-hover:text-primary">{m.class?.name}</p>
-                        <p className="mt-1 text-xs text-slate-500">{m._count?.attendance || 0} {tc('records')}</p>
+                        <p className="text-sm font-semibold text-foreground group-hover:text-primary">{m.class?.name}</p>
+                        <p className="mt-1 text-xs text-muted-foreground">{m._count?.attendance || 0} {tc('records')}</p>
                       </div>
                       <ChevronRight className="h-4 w-4 shrink-0 text-slate-400 group-hover:text-primary" />
                     </Link>
                   ))}
                 </div>
               ) : (
-                <div className="rounded-sm border border-dashed border-border/80 bg-white/70 px-4 py-5 text-sm text-slate-500">
+                <div className="rounded-sm border border-dashed border-border/80 bg-white/70 px-4 py-5 text-sm text-muted-foreground">
                   {t('no_meetings_today')}
                 </div>
               )}
@@ -260,7 +260,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
             {comparison && comparison.length > 1 && (
               <section className="overflow-hidden rounded-sm border border-border/70 bg-white/90 ">
                 <div className="border-b border-border/70 bg-slate-50/80 px-5 py-4">
-                  <h3 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
+                  <h3 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                     <ArrowUpDown className="h-4 w-4" />
                     {t('table_class_comparison')}
                   </h3>
@@ -268,7 +268,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b bg-slate-50/50 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                      <tr className="border-b bg-slate-50/50 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                         <th className="px-5 py-3">{t('table_class')}</th>
                         <th className="px-5 py-3">{tcl('stage')}</th>
                         <th className="px-5 py-3 text-center">{tcl('enrolled')}</th>
@@ -283,7 +283,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                           <td className="px-5 py-3 font-medium">
                             <Link to={`/app/classes/${c.id}`} className="hover:text-primary transition-colors">{c.name}</Link>
                           </td>
-                          <td className="px-5 py-3 text-xs text-slate-500">{c.stage}</td>
+                          <td className="px-5 py-3 text-xs text-muted-foreground">{c.stage}</td>
                           <td className="px-5 py-3 text-center">{c.enrolled}</td>
                           <td className="px-5 py-3 text-center">{c.totalMeetings}</td>
                           <td className="px-5 py-3 text-center">
@@ -315,8 +315,8 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                 <div className="space-y-2">
                   {stats.upcomingMeetings.map((m: any) => (
                     <div key={m.id} className="flex items-center justify-between rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
-                      <span className="mr-3 truncate text-sm font-medium text-slate-900">{m.class?.name}</span>
-                      <span className="shrink-0 text-xs font-medium text-slate-500">
+                      <span className="mr-3 truncate text-sm font-medium text-foreground">{m.class?.name}</span>
+                      <span className="shrink-0 text-xs font-medium text-muted-foreground">
                         {formatDate(m.date, currentLocale, dateOpts)}
                       </span>
                     </div>
@@ -334,8 +334,8 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                       to={`/app/classes/${c.id}`}
                       className="flex items-center justify-between rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70 transition-colors hover:bg-slate-100"
                     >
-                      <span className="mr-3 truncate text-sm font-medium text-slate-900">{c.name}</span>
-                      <span className="shrink-0 text-xs font-medium text-slate-500">{c._count?.enrollments || 0} {tc('enrolled')}</span>
+                      <span className="mr-3 truncate text-sm font-medium text-foreground">{c.name}</span>
+                      <span className="shrink-0 text-xs font-medium text-muted-foreground">{c._count?.enrollments || 0} {tc('enrolled')}</span>
                     </Link>
                   ))}
                 </div>

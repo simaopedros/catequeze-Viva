@@ -29,11 +29,11 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
     <TwoFactorGate>
     <div className="min-h-screen bg-background flex flex-col">
       {/* Top bar */}
-      <header className="sticky top-0 z-sticky border-b bg-background shadow-elevation-sticky" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+      <header className="sticky top-0 z-sticky border-b border-border/70 bg-white" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <div className="flex h-14 items-center justify-between px-4">
           <div className="flex items-center gap-3">
             <BrandLockup compact hideBadge />
-            <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
+            <span className="text-[11px] px-2 py-0.5 rounded-sm border border-border/70 bg-muted/30 text-muted-foreground font-semibold uppercase tracking-[0.12em]">
               {t('family_label')}
             </span>
           </div>
@@ -49,7 +49,7 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
       </main>
 
       {/* Bottom nav (mobile) */}
-      <nav className="fixed bottom-0 left-0 right-0 z-sticky border-t bg-background shadow-elevation-sticky md:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+      <nav className="fixed bottom-0 left-0 right-0 z-sticky border-t border-border/70 bg-white md:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
         <div className="flex items-center justify-around" style={{ height: 'calc(4rem + env(safe-area-inset-bottom, 0px))' }}>
           {navItems.map((item) => {
             const isActive = location.pathname === item.to || (item.to !== '/app' && location.pathname.startsWith(item.to));

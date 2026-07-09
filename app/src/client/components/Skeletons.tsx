@@ -86,12 +86,12 @@ export function SkeletonPage({ className }: SkeletonProps) {
       <Skeleton className="h-8 w-48" />
       <div className="grid gap-4 md:grid-cols-4">
         {[1, 2, 3, 4].map(i => (
-          <Skeleton key={i} className="h-24 rounded-xl" />
+          <Skeleton key={i} className="h-24 rounded-sm" />
         ))}
       </div>
       <div className="grid gap-4 md:grid-cols-2">
-        <Skeleton className="h-40 rounded-xl" />
-        <Skeleton className="h-40 rounded-xl" />
+        <Skeleton className="h-40 rounded-sm" />
+        <Skeleton className="h-40 rounded-sm" />
       </div>
     </div>
   );

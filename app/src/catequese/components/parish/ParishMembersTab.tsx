@@ -119,7 +119,7 @@ export function ParishMembersTab({ members, communities, households, onInvite, o
 
       {members.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
-          <div className="mb-4 rounded-full bg-primary/10 p-3"><Users className="h-8 w-8 text-primary" /></div>
+          <div className="mb-4 rounded-sm border border-border/70 bg-muted/30 p-3"><Users className="h-8 w-8 text-foreground" /></div>
           <h3 className="text-lg font-semibold">{tp('no_members')}</h3>
           <p className="text-sm text-muted-foreground">{tp('no_members_desc')}</p>
         </div>

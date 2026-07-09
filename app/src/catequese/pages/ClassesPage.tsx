@@ -196,19 +196,19 @@ export default function ClassesPage() {
           <SurfaceSection title="Primeiras turmas" icon={CheckCircle2} tone="soft" className="p-6 lg:p-8">
             <div className="space-y-6">
               <div className="space-y-2">
-                <h2 className="text-2xl font-bold tracking-tight text-slate-950">{t('no_classes')}</h2>
-                <p className="max-w-2xl text-base leading-relaxed text-slate-600">{t('no_classes_desc')}</p>
+                <h2 className="text-2xl font-semibold tracking-tight text-foreground">{t('no_classes')}</h2>
+                <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">{t('no_classes_desc')}</p>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-sm bg-white/80 px-4 py-4 ring-1 ring-slate-200/70">
-                  <p className="text-sm font-semibold text-slate-900">1. {t('empty_step1')}</p>
+                <div className="rounded-sm border border-border/70 bg-white px-4 py-4">
+                  <p className="text-sm font-semibold text-foreground">1. {t('empty_step1')}</p>
                 </div>
-                <div className="rounded-sm bg-white/80 px-4 py-4 ring-1 ring-slate-200/70">
-                  <p className="text-sm font-semibold text-slate-900">2. {t('empty_step2')}</p>
+                <div className="rounded-sm border border-border/70 bg-white px-4 py-4">
+                  <p className="text-sm font-semibold text-foreground">2. {t('empty_step2')}</p>
                 </div>
-                <div className="rounded-sm bg-white/80 px-4 py-4 ring-1 ring-slate-200/70">
-                  <p className="text-sm font-semibold text-slate-900">3. {t('empty_step3')}</p>
+                <div className="rounded-sm border border-border/70 bg-white px-4 py-4">
+                  <p className="text-sm font-semibold text-foreground">3. {t('empty_step3')}</p>
                 </div>
               </div>
 
@@ -225,7 +225,7 @@ export default function ClassesPage() {
           </SurfaceSection>
 
           <SurfaceSection title="Estrutura sugerida" icon={BookOpen}>
-            <div className="space-y-3 text-sm leading-relaxed text-slate-600">
+            <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
               <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
                 Defina etapa, horario e catequista principal para cada turma.
               </div>
@@ -245,12 +245,12 @@ export default function ClassesPage() {
       ) : view === 'list' ? (
         <section className="overflow-hidden rounded-sm border border-border/70 bg-white/90 ">
           <div className="border-b border-border/70 bg-slate-50/80 px-5 py-4">
-            <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">{t('table_class')}</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">{t('table_class')}</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b bg-slate-50/50 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                <tr className="border-b bg-slate-50/50 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                   <th className="p-4">{t('table_class')}</th>
                   <th className="p-4">{t('status')}</th>
                   <th className="p-4 hidden md:table-cell">{t('enrolled')}</th>
@@ -294,7 +294,7 @@ export default function ClassesPage() {
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-3">
-                    <Link to={`/app/classes/${cls.id}`} className="block truncate text-lg font-semibold tracking-tight text-slate-950 hover:text-primary">
+                    <Link to={`/app/classes/${cls.id}`} className="block truncate text-lg font-semibold tracking-tight text-foreground hover:text-primary">
                       {cls.name}
                     </Link>
                     <Badge variant={classStatusMap[cls.status as keyof typeof classStatusMap]?.variant || 'secondary'} className="ml-2 shrink-0 text-overline">
@@ -302,7 +302,7 @@ export default function ClassesPage() {
                     </Badge>
                   </div>
                   {cls.stage && (
-                    <p className="mt-1 text-sm text-slate-500">
+                    <p className="mt-1 text-sm text-muted-foreground">
                       {cls.stage.name}{cls.parish?.name && ` · ${cls.parish.name}`}
                     </p>
                   )}
@@ -311,25 +311,25 @@ export default function ClassesPage() {
 
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
-                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-slate-500">
+                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-muted-foreground">
                     <Users className="h-3.5 w-3.5" />
                     {t('enrolled')}
                   </div>
-                  <p className="mt-1 text-lg font-semibold text-slate-900">{cls._count?.enrollments || 0}</p>
+                  <p className="mt-1 text-lg font-semibold text-foreground">{cls._count?.enrollments || 0}</p>
                 </div>
                 <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
-                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-slate-500">
+                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-muted-foreground">
                     <Clock className="h-3.5 w-3.5" />
                     {t('table_schedule')}
                   </div>
-                  <p className="mt-1 text-sm font-medium text-slate-900">
+                  <p className="mt-1 text-sm font-medium text-foreground">
                     {cls.dayOfWeek != null && cls.dayOfWeek !== '' ? `${formatDay(cls.dayOfWeek)}${cls.startTime ? ` ${cls.startTime}` : ''}` : 'Sem horario'}
                   </p>
                 </div>
               </div>
 
               {cls.leadCatechist && (
-                <div className="mt-3 flex items-center gap-2 text-sm text-slate-600">
+                <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
                   <User className="h-4 w-4 text-slate-400" />
                   <span>{cls.leadCatechist.firstName}</span>
                 </div>
@@ -340,7 +340,7 @@ export default function ClassesPage() {
                   'mt-4 rounded-sm px-4 py-3 text-sm font-medium',
                   isToday(cls.meetings[0].date)
                     ? 'bg-primary/10 text-primary ring-1 ring-primary/15'
-                    : 'bg-slate-50 text-slate-600 ring-1 ring-slate-200/70'
+                    : 'bg-slate-50 text-muted-foreground ring-1 ring-slate-200/70'
                 )}>
                   {isToday(cls.meetings[0].date)
                     ? t('meeting_today')
@@ -366,7 +366,7 @@ export default function ClassesPage() {
         </div>
       )}
 
-      <p className="text-sm text-slate-500">{t('found_count', { count: filtered.length })}</p>
+      <p className="text-sm text-muted-foreground">{t('found_count', { count: filtered.length })}</p>
     </div>
   );
 }

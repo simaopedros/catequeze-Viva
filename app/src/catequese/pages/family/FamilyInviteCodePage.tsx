@@ -25,7 +25,7 @@ export default function FamilyInviteCodePage() {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-sm border border-border/70 bg-muted/30">
             <Mail className="h-6 w-6 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold">{t('landing.insert_code')}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-[#071A2D]">{t('landing.insert_code')}</h1>
           <p className="text-sm text-muted-foreground">{t('signup.requires_invite')}</p>
         </div>
 

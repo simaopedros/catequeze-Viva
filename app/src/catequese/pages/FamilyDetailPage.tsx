@@ -363,6 +363,7 @@ export default function FamilyDetailPage() {
             ) : (
               <>
                 <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]" style={{ fontFamily: 'var(--font-brand-display)' }}>{household.name}</h1>
+                <div className="mt-2 h-px w-10 bg-[#D39A2B]" aria-hidden />
                 <p className="text-sm text-muted-foreground">
                   {t('families.summary', { catechumens: household._count?.catechumens || 0, guardians: household.guardians?.length || 0 })}
                 </p>

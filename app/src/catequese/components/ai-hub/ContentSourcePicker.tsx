@@ -6,6 +6,7 @@ import { Button } from '../../../client/components/ui/button';
 import { Input } from '../../../client/components/ui/input';
 import { Sparkles, Search, FileText, Calendar, Loader2 } from 'lucide-react';
 import { Link } from 'react-router';
+import { AppPageHeader } from '../../../client/components/brand/AppChrome';
 
 interface ContentSourcePickerProps {
   mode: string;
@@ -31,11 +32,12 @@ export function ContentSourcePicker({ mode, onSelect }: ContentSourcePickerProps
 
   return (
     <div className="flex items-center justify-center px-3 py-6">
-      <div className="w-full max-w-2xl space-y-6">
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold sm:text-3xl">{t(modeLabelKey)}</h1>
-          <p className="text-muted-foreground">{t('hub.pick_content')}</p>
-        </div>
+      <div className="w-full max-w-2xl space-y-8">
+        <AppPageHeader
+          eyebrow={t('hub.eyebrow', { defaultValue: 'Copiloto' })}
+          title={t(modeLabelKey)}
+          subtitle={t('hub.pick_content')}
+        />
 
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -43,7 +45,7 @@ export function ContentSourcePicker({ mode, onSelect }: ContentSourcePickerProps
             placeholder={t('hub.search_content_placeholder')}
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="pl-10"
+            className="h-10 rounded-sm pl-10"
             autoFocus
           />
         </div>
@@ -71,9 +73,9 @@ export function ContentSourcePicker({ mode, onSelect }: ContentSourcePickerProps
                 onClick={() => onSelect(item.id, item.title || '', item.theme || '')}
                 className="w-full text-left"
               >
-                <Card className="p-4 transition-all hover:border-primary/50 hover:bg-primary/5 cursor-pointer">
+                <Card className="cursor-pointer rounded-sm border-border/70 p-4 transition-colors hover:border-primary/30 hover:bg-muted/20">
                   <div className="flex items-start gap-3">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-foreground">
                       <FileText className="h-4 w-4" />
                     </div>
                     <div className="min-w-0 flex-1">

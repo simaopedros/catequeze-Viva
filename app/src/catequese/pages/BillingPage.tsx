@@ -157,7 +157,7 @@ function SurfaceSection({
 }) {
   return (
     <section className={cn('rounded-sm border border-border/70 bg-white/90 p-5  ', className)}>
-      <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
+      <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
         <Icon className="h-4 w-4" />
         <span>{title}</span>
       </div>
@@ -185,7 +185,7 @@ function UsageRow({
     <div className="space-y-2">
       <div className="flex items-center justify-between text-sm">
         <span className="font-medium text-slate-700">{label}</span>
-        <span className="font-semibold text-slate-950">{used}/{limit === Infinity ? '∞' : limit}</span>
+        <span className="font-semibold text-foreground">{used}/{limit === Infinity ? '∞' : limit}</span>
       </div>
       <div className="h-2.5 w-full rounded-full bg-slate-100">
         <div
@@ -719,7 +719,7 @@ export default function BillingPage() {
                       {heroTitle}
                     </h1>
                     {!isConversionMode && (
-                      <span className="rounded-full bg-white/80 px-3 py-1 text-sm font-medium text-slate-500 ring-1 ring-slate-200/70">
+                      <span className="rounded-full bg-white/80 px-3 py-1 text-sm font-medium text-muted-foreground ring-1 ring-slate-200/70">
                         {effectivePlan.name}
                       </span>
                     )}
@@ -828,11 +828,11 @@ export default function BillingPage() {
 
               {isParishManaged && (
                 <div className="rounded-sm border border-primary/15 bg-white/85 p-5 ">
-                  <div className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
+                  <div className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                     <ShieldCheck className="h-4 w-4" />
                     <span>{t('corporate_plan')}</span>
                   </div>
-                  <div className="space-y-2 text-sm text-slate-600">
+                  <div className="space-y-2 text-sm text-muted-foreground">
                     {effectivePlanId === PaymentPlanId.Unlimited && parish?.diocese ? (
                       <>
                         <p>{t('diocese_responsible')} <strong>{parish?.diocese?.name || t('not_informed')}</strong></p>
@@ -848,13 +848,13 @@ export default function BillingPage() {
                         )}
                       </>
                     ) : null}
-                    <p className="pt-1 text-xs text-slate-500">{t('contact_manager')}</p>
+                    <p className="pt-1 text-xs text-muted-foreground">{t('contact_manager')}</p>
                   </div>
                 </div>
               )}
 
               {!isPersonal && userPersonalPlanId && (
-                <div className="rounded-sm border border-border/70 bg-white/75 px-4 py-3 text-sm text-slate-600">
+                <div className="rounded-sm border border-border/70 bg-white/75 px-4 py-3 text-sm text-muted-foreground">
                   <span className="inline-flex items-center gap-2">
                     <UserIcon className="h-4 w-4 text-slate-400" />
                     {t('your_personal_plan')}:
@@ -866,13 +866,13 @@ export default function BillingPage() {
 
             {isConversionMode ? (
               <div className="rounded-sm border border-white/70 bg-white/88 p-5 ">
-                <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
+                <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                   <CheckCircle className="h-4 w-4" />
                   <span>{t('conversion_checklist_title')}</span>
                 </div>
                 <div className="space-y-3">
                   {conversionChecklist.map((item) => (
-                    <div key={item} className="flex items-start gap-3 text-sm text-slate-600">
+                    <div key={item} className="flex items-start gap-3 text-sm text-muted-foreground">
                       <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
                       <span>{item}</span>
                     </div>
@@ -881,13 +881,13 @@ export default function BillingPage() {
               </div>
             ) : isUpgradeJourney ? (
               <div className="rounded-sm border border-primary/15 bg-white/88 p-5 ">
-                <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
+                <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                   <CheckCircle className="h-4 w-4" />
                   <span>{t('upgrade_checklist_title')}</span>
                 </div>
                 <div className="space-y-3">
                   {upgradeChecklist.map((item) => (
-                    <div key={item} className="flex items-start gap-3 text-sm text-slate-600">
+                    <div key={item} className="flex items-start gap-3 text-sm text-muted-foreground">
                       <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
                       <span>{item}</span>
                     </div>
@@ -897,7 +897,7 @@ export default function BillingPage() {
             ) : (
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
                 <div className="rounded-sm border border-white/70 bg-white/85 p-5 ">
-                  <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
+                  <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                     <TrendingUp className="h-4 w-4" />
                     <span>{t('usage_title')}</span>
                   </div>
@@ -922,7 +922,7 @@ export default function BillingPage() {
                       <Clock className="h-6 w-6" />
                     </div>
                     <div className="space-y-1">
-                      <p className="text-2xl font-bold tracking-tight text-slate-950">
+                      <p className="text-2xl font-semibold tracking-tight text-foreground">
                         {isTrialAccess
                           ? t('trial_status_title')
                           : isPaidActive
@@ -931,7 +931,7 @@ export default function BillingPage() {
                               ? t('free_plan')
                               : t('awaiting_payment')}
                       </p>
-                      <p className="text-sm leading-relaxed text-slate-600">
+                      <p className="text-sm leading-relaxed text-muted-foreground">
                         {isTrialAccess
                           ? (trialDaysLeft === 1
                               ? t('trial_status_desc_one')
@@ -950,7 +950,7 @@ export default function BillingPage() {
                         </p>
                       )}
                       {isPaidActive && user?.subscriptionStatus === 'cancel_at_period_end' && (
-                        <p className="text-xs text-slate-500">{t('cancel_scheduled_desc')}</p>
+                        <p className="text-xs text-muted-foreground">{t('cancel_scheduled_desc')}</p>
                       )}
                     </div>
                   </div>
@@ -976,7 +976,7 @@ export default function BillingPage() {
                     {aiCredits.hasAiAccess ? (
                       <Badge className="bg-violet-100 text-violet-700 text-overline">{t('monthly_badge')}</Badge>
                     ) : (
-                      <Badge className="bg-slate-100 text-slate-600 text-overline">{t('trial_badge')}</Badge>
+                      <Badge className="bg-slate-100 text-muted-foreground text-overline">{t('trial_badge')}</Badge>
                     )}
                   </div>
                   <UsageRow
@@ -987,12 +987,12 @@ export default function BillingPage() {
                     ariaLabel={t('ai_credits_quota_label')}
                   />
                   <div className="flex items-center justify-between rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
-                    <span className="text-sm text-slate-500">{t('remaining')}</span>
-                    <span className="text-sm font-semibold text-slate-950">{aiCredits.creditsLeft} {creditLabel}</span>
+                    <span className="text-sm text-muted-foreground">{t('remaining')}</span>
+                    <span className="text-sm font-semibold text-foreground">{aiCredits.creditsLeft} {creditLabel}</span>
                   </div>
                   {aiCredits.creditsLeft <= 10 && (
                     <div className="space-y-3 rounded-sm border border-border/70 bg-slate-50/80 p-4">
-                      <p className="text-sm leading-relaxed text-slate-600">{t('buy_credits_desc')}</p>
+                      <p className="text-sm leading-relaxed text-muted-foreground">{t('buy_credits_desc')}</p>
                       <div className="flex gap-3">
                         <BuyCreditsButton pack="20" size="sm" variant="outline" label={t('buy_credits_20')} />
                         <BuyCreditsButton pack="50" size="sm" variant="outline" label={t('buy_credits_50')} />
@@ -1004,7 +1004,7 @@ export default function BillingPage() {
             ) : (
               <SurfaceSection title={t('buy_credits_title')} icon={Coins}>
                 <div className="space-y-3">
-                  <p className="text-sm leading-relaxed text-slate-600">{t('buy_credits_desc')}</p>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{t('buy_credits_desc')}</p>
                   <div className="flex gap-3">
                     <BuyCreditsButton pack="20" size="sm" variant="outline" label={t('buy_credits_20')} />
                     <BuyCreditsButton pack="50" size="sm" variant="outline" label={t('buy_credits_50')} />
@@ -1049,10 +1049,10 @@ export default function BillingPage() {
 
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <h2 className="text-2xl font-bold tracking-tight text-slate-950">
+                <h2 className="text-2xl font-semibold tracking-tight text-foreground">
                   {isConversionMode ? t('conversion_plans_title') : isUpgradeJourney ? t('upgrade_plans_title') : t('available_plans')}
                 </h2>
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm text-muted-foreground">
                   {isConversionMode ? t('conversion_plans_subtitle') : isUpgradeJourney ? t('upgrade_plans_subtitle') : t('pricing_section_subtitle')}
                 </p>
               </div>
@@ -1062,7 +1062,7 @@ export default function BillingPage() {
                   onClick={() => setBillingInterval('monthly')}
                   className={cn(
                     'rounded-sm px-4 py-2 text-sm font-medium transition-all',
-                    billingInterval === 'monthly' ? 'bg-slate-950 text-white' : 'text-slate-500 hover:text-slate-900'
+                    billingInterval === 'monthly' ? 'bg-slate-950 text-white' : 'text-muted-foreground hover:text-slate-900'
                   )}
                 >
                   {t('monthly')}
@@ -1072,7 +1072,7 @@ export default function BillingPage() {
                   onClick={() => setBillingInterval('annual')}
                   className={cn(
                     'rounded-sm px-4 py-2 text-sm font-medium transition-all flex items-center gap-2',
-                    billingInterval === 'annual' ? 'bg-slate-950 text-white' : 'text-slate-500 hover:text-slate-900'
+                    billingInterval === 'annual' ? 'bg-slate-950 text-white' : 'text-muted-foreground hover:text-slate-900'
                   )}
                 >
                   {t('annual')}
@@ -1106,7 +1106,7 @@ export default function BillingPage() {
                   >
                     <div className="mb-4 flex items-start justify-between gap-3">
                       <div>
-                        <h3 className="text-lg font-semibold tracking-tight text-slate-950">{plan.name}</h3>
+                        <h3 className="text-lg font-semibold tracking-tight text-foreground">{plan.name}</h3>
                         {((isConversionMode && isRecommended) || (isUpgradeJourney && isRecommended) || (!isConversionMode && !isUpgradeJourney && plan.highlight)) && !isCurrent && (
                           <p className="mt-1 text-sm text-primary">
                             {isUpgradeJourney
@@ -1126,9 +1126,9 @@ export default function BillingPage() {
 
                     {billingInterval === 'monthly' || !hasAnnual ? (
                       <>
-                        <p className="text-3xl font-bold tracking-tight text-slate-950">{plan.price}</p>
+                        <p className="text-3xl font-semibold tracking-tight text-foreground">{plan.price}</p>
                         {plan.priceCentsAnnual && (
-                          <div className="mt-2 space-y-1 text-xs font-medium text-slate-500">
+                          <div className="mt-2 space-y-1 text-xs font-medium text-muted-foreground">
                             <p className="flex items-center gap-1">
                               <PiggyBank className="h-3 w-3" />
                               {tp('pricing.annual_compare', {
@@ -1145,11 +1145,11 @@ export default function BillingPage() {
                       </>
                     ) : (
                       <>
-                        <p className="text-3xl font-bold tracking-tight text-slate-950">
+                        <p className="text-3xl font-semibold tracking-tight text-foreground">
                           {getEquivalentMonthlyPrice(plan.priceCentsAnnual!)}
-                          <span className="text-base font-normal text-slate-500">{tp('pricing.per_month')}</span>
+                          <span className="text-base font-normal text-muted-foreground">{tp('pricing.per_month')}</span>
                         </p>
-                        <div className="mt-2 space-y-1 text-xs font-medium text-slate-500">
+                        <div className="mt-2 space-y-1 text-xs font-medium text-muted-foreground">
                           <p>
                             {tp('pricing.annual_billed_as', {
                               price: formatPriceFromCents(plan.priceCentsAnnual!),
@@ -1164,7 +1164,7 @@ export default function BillingPage() {
                       </>
                     )}
 
-                    <ul className="mt-5 space-y-2 text-sm text-slate-600 flex-1">
+                    <ul className="mt-5 space-y-2 text-sm text-muted-foreground flex-1">
                       {plan.features.map((f) => (
                         <li key={f} className="flex items-start gap-2">
                           <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
@@ -1237,7 +1237,7 @@ export default function BillingPage() {
 
         {!isConversionMode && (
           <SurfaceSection title={t('payment_history')} icon={History}>
-            <p className="text-sm leading-relaxed text-slate-600">{t('payment_history_desc')}</p>
+            <p className="text-sm leading-relaxed text-muted-foreground">{t('payment_history_desc')}</p>
           </SurfaceSection>
         )}
       </div>

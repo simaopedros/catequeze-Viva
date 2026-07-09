@@ -49,7 +49,7 @@ interface ShellHeaderProps {
 /** Standard header bar — h-14, border-b, elevation */
 export function ShellHeader({ children, className }: ShellHeaderProps) {
   return (
-    <header className={cn('flex h-14 items-center gap-3 border-b bg-card shadow-elevation-sticky px-4', className)}>
+    <header className={cn('flex h-14 items-center gap-3 border-b border-border/70 bg-white px-4', className)}>
       {children}
     </header>
   );

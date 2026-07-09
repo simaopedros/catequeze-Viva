@@ -109,42 +109,42 @@ export function ConversationList({ conversations, activeId, onSelect, onNewConve
   });
 
   return (
-    <div className="flex flex-col h-full border-r bg-card/50 -sm">
-      {/* Header */}
-      <div className="p-3 border-b space-y-2">
+    <div className="flex h-full flex-col border-r border-border/70 bg-white">
+      <div className="space-y-2 border-b border-border/70 p-3">
         <div className="flex items-center justify-between">
-          <h2 className="font-semibold text-sm">{t('conversations')}</h2>
+          <div className="space-y-1">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{t('conversations')}</p>
+            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          </div>
           <button
             onClick={onNewConversation}
-            className="h-7 w-7 flex items-center justify-center rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all hover:scale-105 active:scale-95"
+            className="flex h-8 w-8 items-center justify-center rounded-sm bg-[#071A2D] text-white transition-colors hover:bg-[#0a2540]"
             title={t('new_conversation')}
           >
             <span className="text-lg leading-none">+</span>
           </button>
         </div>
 
-        {/* Search */}
         <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder={t('search_conversations')}
-            className="w-full h-8 pl-8 pr-3 rounded-lg border border-input bg-background text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+            className="h-9 w-full rounded-sm border border-input bg-background pl-8 pr-3 text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
           />
         </div>
 
-        {/* Filters */}
         <div className="flex gap-1 overflow-x-auto pb-0.5 scrollbar-none">
           {FILTER_OPTIONS.map(opt => (
             <button
               key={opt.value}
               onClick={() => setFilter(opt.value)}
               className={cn(
-                'px-2.5 py-1 rounded-full text-overline font-medium whitespace-nowrap transition-all',
+                'whitespace-nowrap rounded-sm px-2.5 py-1 text-overline font-medium transition-colors',
                 filter === opt.value
-                  ? 'bg-primary text-primary-foreground '
+                  ? 'bg-[#071A2D] text-white'
                   : 'bg-muted/50 text-muted-foreground hover:bg-muted'
               )}
             >

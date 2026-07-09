@@ -411,7 +411,7 @@ function SelectionActionBubble({
         </div>
         <div className="flex items-center gap-2">
           {bubble.refLabel ? (
-            <span className="rounded-full bg-primary/10 px-2 py-1 text-[11px] font-medium text-primary">
+            <span className="rounded-sm border border-border/70 bg-muted/30 px-2 py-1 text-[11px] font-medium text-foreground">
               {bubble.refLabel}
             </span>
           ) : null}

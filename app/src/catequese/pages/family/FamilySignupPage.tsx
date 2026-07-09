@@ -62,7 +62,7 @@ export default function FamilySignupPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-destructive/10">
             {isExpired ? <Clock className="h-8 w-8 text-destructive" /> : <AlertTriangle className="h-8 w-8 text-destructive" />}
           </div>
-          <h1 className="text-2xl font-bold">{isExpired ? t('signup.expired_title') : t('signup.invalid_title')}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-[#071A2D]">{isExpired ? t('signup.expired_title') : t('signup.invalid_title')}</h1>
           <p className="text-sm text-muted-foreground">
             {isExpired ? t('signup.expired_desc') : t('signup.invalid_desc')}
           </p>

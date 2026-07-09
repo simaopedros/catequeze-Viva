@@ -247,8 +247,8 @@ export default function ContentLibraryPage() {
             <SurfaceSection title="Primeiros conteudos" icon={CheckCircle2} tone="soft" className="p-6 lg:p-8">
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <h2 className="text-2xl font-bold tracking-tight text-slate-950">{t('library.empty_no_content')}</h2>
-                  <p className="max-w-2xl text-base leading-relaxed text-slate-600">{t('library.empty_create_desc')}</p>
+                  <h2 className="text-2xl font-semibold tracking-tight text-foreground">{t('library.empty_no_content')}</h2>
+                  <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">{t('library.empty_create_desc')}</p>
                 </div>
                 <div className="flex flex-wrap gap-3">
                   <Button className="h-11 rounded-sm px-5" asChild>
@@ -262,7 +262,7 @@ export default function ContentLibraryPage() {
             </SurfaceSection>
 
             <SurfaceSection title="Fluxo sugerido" icon={FileText}>
-              <div className="space-y-3 text-sm leading-relaxed text-slate-600">
+              <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
                 <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
                   Crie roteiros base para organizar temas, tempo estimado e publico.
                 </div>
@@ -279,12 +279,12 @@ export default function ContentLibraryPage() {
       ) : view === 'list' ? (
         <section className="overflow-hidden rounded-sm border border-border/70 bg-white/90 ">
           <div className="border-b border-border/70 bg-slate-50/80 px-5 py-4">
-            <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">{t('library.table_title')}</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">{t('library.table_title')}</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b bg-slate-50/50 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                <tr className="border-b bg-slate-50/50 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                   <th className="p-4">{t('library.table_title')}</th>
                   <th className="p-4 hidden md:table-cell">{t('library.table_status')}</th>
                   <th className="p-4 hidden md:table-cell">{t('library.table_activities')}</th>
@@ -327,12 +327,12 @@ export default function ContentLibraryPage() {
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="line-clamp-2 text-lg font-semibold tracking-tight text-slate-950 group-hover:text-primary">
+                    <h3 className="line-clamp-2 text-lg font-semibold tracking-tight text-foreground group-hover:text-primary">
                       {item.title}
                     </h3>
                     <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-slate-700" />
                   </div>
-                  {item.theme && <p className="mt-1 line-clamp-1 text-sm text-slate-500">{item.theme}</p>}
+                  {item.theme && <p className="mt-1 line-clamp-1 text-sm text-muted-foreground">{item.theme}</p>}
                 </div>
               </div>
 
@@ -352,24 +352,24 @@ export default function ContentLibraryPage() {
 
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
-                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-slate-500">
+                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-muted-foreground">
                     <Clock className="h-3.5 w-3.5" />
                     Duracao
                   </div>
-                  <p className="mt-1 text-sm font-medium text-slate-900">
+                  <p className="mt-1 text-sm font-medium text-foreground">
                     {item.estimatedTime ? t('library.minutes', { count: item.estimatedTime }) : '—'}
                   </p>
                 </div>
                 <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
-                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-slate-500">
+                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-muted-foreground">
                     <Puzzle className="h-3.5 w-3.5" />
                     Atividades
                   </div>
-                  <p className="mt-1 text-sm font-medium text-slate-900">{item._count?.activities || 0}</p>
+                  <p className="mt-1 text-sm font-medium text-foreground">{item._count?.activities || 0}</p>
                 </div>
               </div>
 
-              <div className="mt-4 border-t border-border/60 pt-4 text-sm text-slate-600">
+              <div className="mt-4 border-t border-border/60 pt-4 text-sm text-muted-foreground">
                 <span className="inline-flex items-center gap-2">
                   <User className="h-4 w-4 text-slate-400" />
                   {item.createdBy?.firstName || '—'}

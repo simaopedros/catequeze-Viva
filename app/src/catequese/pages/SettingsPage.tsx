@@ -152,7 +152,7 @@ export default function SettingsPage() {
 
         {/* Password */}
         <div className="rounded-sm border border-border/70 bg-white p-5 space-y-4">
-          <h3 className="font-semibold flex items-center gap-2"><Key className="h-4 w-4"/>{t('change_password')}</h3>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{t('change_password')}</p>
           {passwordForm.formState.errors.root && (
             <p className={`text-xs flex items-center gap-1 ${passwordForm.formState.errors.root.message === t('password_changed') ? 'text-success' : 'text-destructive'}`}>
               {passwordForm.formState.errors.root.message === t('password_changed') ? <CheckCircle className="h-3 w-3"/> : <AlertCircle className="h-3 w-3"/>}

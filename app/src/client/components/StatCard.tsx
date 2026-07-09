@@ -20,85 +20,48 @@ const trendIcon = {
   neutral: '→',
 };
 
-const colorMap = {
-  primary: 'bg-primary/10 text-primary',
-  secondary: 'bg-secondary/10 text-secondary',
-  success: 'bg-success/10 text-success',
-  warning: 'bg-warning/10 text-warning',
-  destructive: 'bg-destructive/10 text-destructive',
-  info: 'bg-info/10 text-info',
-} as const;
-
 const trendColor = {
   up: 'text-success',
   down: 'text-destructive',
   neutral: 'text-muted-foreground',
 };
 
-function StatCardContent({
-  icon: Icon,
-  label,
-  value,
-  delta,
-  trend = 'neutral',
-  color = 'primary',
-}: Omit<StatCardProps, 'href' | 'variant' | 'className'>) {
-  return (
-    <>
-      {Icon && (
-        <div className={cn('rounded-lg p-2 w-fit', colorMap[color])}>
-          <Icon className="h-5 w-5" />
-        </div>
-      )}
-      {!Icon && <div className={cn('rounded-lg p-2 w-fit', colorMap[color])} />}
-      <div>
-        <p className="text-body-xs text-text-secondary uppercase tracking-wider">{label}</p>
-        <p className="text-2xl font-bold mt-0.5">{value}</p>
-        {delta && (
-          <p className={cn('text-xs font-medium mt-1', trendColor[trend])}>
-            {trendIcon[trend]} {delta}
-          </p>
-        )}
-      </div>
-    </>
-  );
-}
-
-export function StatCard({ variant = 'default', href, className, ...props }: StatCardProps) {
-  const content = <>{variant !== 'minimal' && <StatCardContent {...props} />}</>;
-
-  if (variant === 'minimal') {
-    return (
-      <div className={cn('flex flex-col', className)}>
-        <p className="text-body-xs text-text-secondary uppercase tracking-wider">{props.label}</p>
-        <p className="text-2xl font-bold mt-0.5">{props.value}</p>
-        {props.delta && (
-          <p className={cn('text-xs font-medium mt-1', trendColor[props.trend || 'neutral'])}>
-            {trendIcon[props.trend || 'neutral']} {props.delta}
-          </p>
-        )}
-      </div>
-    );
-  }
-
-  const card = (
+/** Editorial metric card — matches AppMetric (no SaaS icon pills). */
+export function StatCard({ variant = 'default', href, className, label, value, delta, trend = 'neutral', icon: _icon, color: _color }: StatCardProps) {
+  const body = (
     <div
       className={cn(
-        'rounded-sm border border-border/70 bg-white ',
-        variant === 'centered'
-          ? 'p-5 flex flex-col items-center text-center gap-3'
-          : 'p-5 flex items-start gap-4',
-        href && 'hover: transition-all duration-200 cursor-pointer active:scale-[0.98] motion-reduce:transition-none motion-reduce:active:scale-100',
-        className
+        'rounded-sm border border-border/70 bg-white px-4 py-3',
+        variant === 'centered' && 'text-center',
+        className,
       )}
     >
-      <StatCardContent {...props} />
+      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground truncate">
+        {label}
+      </p>
+      <p
+        className={cn(
+          'mt-1.5 font-semibold tracking-tight text-foreground tabular-nums',
+          variant === 'minimal' ? 'text-xl' : 'text-2xl',
+        )}
+      >
+        {value}
+      </p>
+      {delta && (
+        <p className={cn('mt-1 text-xs font-medium', trendColor[trend])}>
+          {trendIcon[trend]} {delta}
+        </p>
+      )}
     </div>
   );
 
   if (href) {
-    return <Link to={href} className="block">{card}</Link>;
+    return (
+      <Link to={href} className="block transition-colors hover:border-primary/30">
+        {body}
+      </Link>
+    );
   }
 
-  return card;
+  return body;
 }

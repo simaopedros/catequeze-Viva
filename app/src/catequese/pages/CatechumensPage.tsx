@@ -210,8 +210,8 @@ export default function CatechumensPage() {
             <SurfaceSection title="Primeiros cadastros" icon={CheckCircle2} tone="soft" className="p-6 lg:p-8">
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <h2 className="text-2xl font-bold tracking-tight text-slate-950">{t('no_catechumens')}</h2>
-                  <p className="max-w-2xl text-base leading-relaxed text-slate-600">{t('catechumens.empty_desc')}</p>
+                  <h2 className="text-2xl font-semibold tracking-tight text-foreground">{t('no_catechumens')}</h2>
+                  <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">{t('catechumens.empty_desc')}</p>
                 </div>
 
                 {canManageCatechumens && (
@@ -228,7 +228,7 @@ export default function CatechumensPage() {
             </SurfaceSection>
 
             <SurfaceSection title="Fluxo sugerido" icon={School}>
-              <div className="space-y-3 text-sm leading-relaxed text-slate-600">
+              <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
                 <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
                   Cadastre nome, data de nascimento e responsaveis para iniciar o acompanhamento.
                 </div>
@@ -245,12 +245,12 @@ export default function CatechumensPage() {
       ) : view === 'table' ? (
         <section className="overflow-hidden rounded-sm border border-border/70 bg-white/90 ">
           <div className="border-b border-border/70 bg-slate-50/80 px-5 py-4">
-            <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">{tn('catechumens')}</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">{tn('catechumens')}</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b bg-slate-50/50 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                <tr className="border-b bg-slate-50/50 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                   <th className="p-4">{t('first_name')}</th>
                   <th className="p-4 hidden md:table-cell">{t('age')}</th>
                   <th className="p-4 hidden md:table-cell">{t('catechumens.table_family')}</th>
@@ -300,10 +300,10 @@ export default function CatechumensPage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="truncate text-lg font-semibold tracking-tight text-slate-950 group-hover:text-primary">
+                      <p className="truncate text-lg font-semibold tracking-tight text-foreground group-hover:text-primary">
                         {c.firstName} {c.lastName}
                       </p>
-                      <p className="mt-1 text-sm text-slate-500">
+                      <p className="mt-1 text-sm text-muted-foreground">
                         {getAge(c.birthDate) ? t('catechumens.years_old', { age: getAge(c.birthDate) }) : ''}
                         {c.birthDate && `${getAge(c.birthDate) ? ' · ' : ''}${formatDateOnly(c.birthDate, i18n.language, { day: '2-digit', month: '2-digit', year: '2-digit' })}`}
                       </p>
@@ -315,20 +315,20 @@ export default function CatechumensPage() {
 
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
-                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-slate-500">
+                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-muted-foreground">
                     <School className="h-3.5 w-3.5" />
                     Turmas
                   </div>
-                  <p className="mt-1 text-sm font-medium text-slate-900">
+                  <p className="mt-1 text-sm font-medium text-foreground">
                     {c.enrollments?.length ? `${c.enrollments.length} vinculada(s)` : t('catechumens.no_class')}
                   </p>
                 </div>
                 <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
-                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-slate-500">
+                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-muted-foreground">
                     <House className="h-3.5 w-3.5" />
                     Familia
                   </div>
-                  <p className="mt-1 truncate text-sm font-medium text-slate-900">{c.household?.name || 'Nao vinculada'}</p>
+                  <p className="mt-1 truncate text-sm font-medium text-foreground">{c.household?.name || 'Nao vinculada'}</p>
                 </div>
               </div>
 
@@ -346,7 +346,7 @@ export default function CatechumensPage() {
               </div>
 
               {c.household?.name && (
-                <div className="mt-4 border-t border-border/60 pt-4 text-sm text-slate-600">
+                <div className="mt-4 border-t border-border/60 pt-4 text-sm text-muted-foreground">
                   <span className="inline-flex items-center gap-2">
                     <Users className="h-4 w-4 text-slate-400" />
                     {c.household.name}
@@ -358,7 +358,7 @@ export default function CatechumensPage() {
         </div>
       )}
 
-      <p className="text-sm text-slate-500">{t('catechumens.count', { count: filtered.length })}</p>
+      <p className="text-sm text-muted-foreground">{t('catechumens.count', { count: filtered.length })}</p>
 
       {hasMore && (
         <div className="flex justify-center pt-2">

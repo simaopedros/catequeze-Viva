@@ -39,7 +39,7 @@ export function BottomNav() {
 
   return (
     <>
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-sticky border-t bg-background shadow-elevation-sticky" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-sticky border-t border-border/70 bg-white" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
         <div className="grid items-center" style={{ gridTemplateColumns: `repeat(${visible.length + 1}, 1fr)`, height: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))' }}>
           {visible.map(item => (
             <NavLink

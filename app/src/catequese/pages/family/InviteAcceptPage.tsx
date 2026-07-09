@@ -80,7 +80,7 @@ export default function InviteAcceptPage() {
             {isExpired ? <Clock className="h-8 w-8 text-destructive" /> : <AlertTriangle className="h-8 w-8 text-destructive" />}
           </div>
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold">
+            <h1 className="text-2xl font-semibold tracking-tight text-[#071A2D]">
               {isExpired ? t('invite.expired_title') : t('invite.not_found_title')}
             </h1>
             <p className="text-muted-foreground">
@@ -103,7 +103,7 @@ export default function InviteAcceptPage() {
             <Check className="h-8 w-8 text-success" />
           </div>
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold">{t('invite.accepted_title')}</h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-[#071A2D]">{t('invite.accepted_title')}</h1>
             <p className="text-muted-foreground">
               {t('invite.accepted_desc', { parish: invitation.parishName, role: invitation.roleLabel })}
             </p>
@@ -124,7 +124,7 @@ export default function InviteAcceptPage() {
             <Mail className="h-4 w-4" />
             {t('invite.badge')}
           </div>
-          <h1 className="text-2xl font-bold">{t('invite.title')}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-[#071A2D]">{t('invite.title')}</h1>
         </div>
 
         <div className="rounded-sm border border-border/70 bg-white p-6 space-y-4">

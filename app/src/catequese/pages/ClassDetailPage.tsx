@@ -406,7 +406,7 @@ export default function ClassDetailPage() {
                 <div key={e.id} className="flex items-center justify-between rounded-lg border p-3">
                   <div className="flex items-center gap-3 min-w-0">
                     <Link to={`/app/catechumens/${e.catechumenProfile?.id}`} className="flex items-center gap-3 hover:text-primary min-w-0">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold flex-shrink-0">{e.catechumenProfile?.firstName?.[0]}{e.catechumenProfile?.lastName?.[0]}</div>
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-foreground">{e.catechumenProfile?.firstName?.[0]}{e.catechumenProfile?.lastName?.[0]}</div>
                       <span className="text-sm font-medium truncate">{e.catechumenProfile?.firstName} {e.catechumenProfile?.lastName}</span>
                     </Link>
                     {relevantJourney ? (

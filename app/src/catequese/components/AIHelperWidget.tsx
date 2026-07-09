@@ -196,7 +196,7 @@ export function AIHelperWidget() {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-6 max-lg:bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] right-4 lg:right-6 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center justify-center"
+          className="fixed bottom-6 max-lg:bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] right-4 lg:right-6 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-none transition-colors flex items-center justify-center"
           title={t("ai_helper_title")}
         >
           <Sparkles className="h-6 w-6" />
@@ -209,7 +209,7 @@ export function AIHelperWidget() {
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b bg-primary/5" style={{ paddingTop: 'calc(1rem + env(safe-area-inset-top, 0px))' }}>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-sm border border-border/70 bg-muted/30 flex items-center justify-center">
                 <Bot className="h-4 w-4 text-primary" />
               </div>
               <div>
@@ -238,7 +238,7 @@ export function AIHelperWidget() {
                 className={`flex gap-2 ${m.role === 'user' ? 'justify-end' : ''}`}
               >
                 {m.role === 'assistant' && (
-                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1">
+                  <div className="w-6 h-6 rounded-sm border border-border/70 bg-muted/30 flex items-center justify-center flex-shrink-0 mt-1">
                     <Bot className="h-3 w-3 text-primary" />
                   </div>
                 )}
@@ -295,7 +295,7 @@ export function AIHelperWidget() {
             ))}
             {loading && (
               <div className="flex gap-2">
-                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1">
+                <div className="w-6 h-6 rounded-sm border border-border/70 bg-muted/30 flex items-center justify-center flex-shrink-0 mt-1">
                   <Bot className="h-3 w-3 text-primary" />
                 </div>
                 <div className="bg-muted rounded-sm px-3 py-2">

@@ -229,7 +229,7 @@ function PastoralAnalysisInline({ catechumenId, classId }: { catechumenId: strin
       <div className="pastoral-print-card rounded-sm border border-border/70 bg-white p-4 ">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-base font-bold text-primary">
+            <div className="flex h-12 w-12 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-base font-semibold text-foreground">
               {catechumen.name.split(' ').map((part: string) => part[0]).slice(0, 2).join('')}
             </div>
             <div>
@@ -254,10 +254,10 @@ function PastoralAnalysisInline({ catechumenId, classId }: { catechumenId: strin
       {canSeeSensitiveSignals && alerts.length > 0 && <div className="pastoral-print-card space-y-1 rounded-sm border border-border/70 bg-white p-3">{alerts.map((a: any, i: number) => <div key={i} className="flex items-center gap-2 rounded bg-destructive/10 p-2 text-xs text-destructive"><AlertTriangle className="h-3.5 w-3.5 shrink-0" />{a.type === 'risk_high' && t('riskHighWarning')}{a.type === 'consecutive_absences' && t('consecutiveAbsencesWarning', { count: data.consecutiveAbsences })}{a.type === 'low_frequency' && t('lowFrequencyWarning')}</div>)}</div>}
 
       <div className="grid grid-cols-2 gap-2 text-center text-xs sm:grid-cols-4">
-        <div className="pastoral-print-card rounded-lg border bg-muted/40 p-3"><p className="text-2xl font-bold text-primary">{data.overallFrequency}%</p><p className="text-muted-foreground">{t('overallFrequency')}</p></div>
-        {canSeeSensitiveSignals && <div className="pastoral-print-card rounded-lg border bg-muted/40 p-3"><p className="text-2xl font-bold">{data.rankingPosition}/{data.totalCatechumensInClass}</p><p className="text-muted-foreground">{t('rankingPosition')}</p></div>}
-        <div className="pastoral-print-card rounded-lg border bg-muted/40 p-3"><p className="text-2xl font-bold text-emerald-600">{data.presentCount + data.lateCount}</p><p className="text-muted-foreground">{t('present')}</p></div>
-        <div className="pastoral-print-card rounded-lg border bg-muted/40 p-3"><p className="text-2xl font-bold text-destructive">{data.justifiedCount + data.absentCount}</p><p className="text-muted-foreground">{t('absent')}</p></div>
+        <div className="pastoral-print-card rounded-lg border bg-muted/40 p-3"><p className="text-2xl font-semibold tracking-tight tabular-nums text-foreground">{data.overallFrequency}%</p><p className="text-muted-foreground">{t('overallFrequency')}</p></div>
+        {canSeeSensitiveSignals && <div className="pastoral-print-card rounded-lg border bg-muted/40 p-3"><p className="text-2xl font-semibold tracking-tight tabular-nums text-foreground">{data.rankingPosition}/{data.totalCatechumensInClass}</p><p className="text-muted-foreground">{t('rankingPosition')}</p></div>}
+        <div className="pastoral-print-card rounded-lg border bg-muted/40 p-3"><p className="text-2xl font-semibold tracking-tight tabular-nums text-foreground">{data.presentCount + data.lateCount}</p><p className="text-muted-foreground">{t('present')}</p></div>
+        <div className="pastoral-print-card rounded-lg border bg-muted/40 p-3"><p className="text-2xl font-semibold tracking-tight tabular-nums text-destructive">{data.justifiedCount + data.absentCount}</p><p className="text-muted-foreground">{t('absent')}</p></div>
       </div>
 
       {data.monthlyPresence?.length > 0 && <div className="pastoral-print-card rounded-sm border border-border/70 bg-white p-4"><h4 className="mb-3 flex items-center gap-1 text-xs font-semibold uppercase text-muted-foreground"><BarChart3 className="h-3 w-3" />{t('monthlyPresence')}</h4><ResponsiveContainer width="100%" height={220}><BarChart data={data.monthlyPresence} margin={{ top: 5, right: 12, left: 0, bottom: 20 }}><CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" /><XAxis dataKey="month" tick={{ fontSize: 10 }} /><YAxis allowDecimals={false} tick={{ fontSize: 10 }} /><Tooltip /><Bar dataKey="present" stackId="a" fill="#16a34a" name={t('present')} /><Bar dataKey="late" stackId="a" fill="#f59e0b" name={t('late')} /><Bar dataKey="absent" stackId="a" fill="#ef4444" name={t('absent')} /></BarChart></ResponsiveContainer><div className="mt-3 overflow-x-auto rounded-lg border"><table className="w-full text-xs"><thead className="bg-muted/60"><tr><th className="p-2 text-left font-medium">{t('month')}</th><th className="p-2 text-center font-medium">{t('present')}</th><th className="p-2 text-center font-medium">{t('late')}</th><th className="p-2 text-center font-medium">{t('absent')}</th><th className="p-2 text-center font-medium">{t('meetings')}</th></tr></thead><tbody>{data.monthlyPresence.map((row: any) => <tr key={row.month} className="border-t"><td className="p-2 font-medium">{row.month}</td><td className="p-2 text-center text-emerald-700">{row.present}</td><td className="p-2 text-center text-amber-700">{row.late}</td><td className="p-2 text-center text-red-700">{row.absent + row.justified}</td><td className="p-2 text-center">{row.totalMeetings}</td></tr>)}</tbody></table></div></div>}
@@ -477,25 +477,36 @@ export default function CatechumenDetailPage() {
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild><Link to="/app/catechumens"><ArrowLeft className="h-5 w-5"/></Link></Button>
-          <div className={`flex h-14 w-14 items-center justify-center rounded-full text-xl font-bold overflow-hidden ${!profile.photoUrl ? AVATAR_COLORS[Math.abs(profile.firstName?.charCodeAt(0)||0)%AVATAR_COLORS.length] : ''}`}>
+          <div className={`flex h-14 w-14 items-center justify-center rounded-sm text-xl font-semibold overflow-hidden ${!profile.photoUrl ? AVATAR_COLORS[Math.abs(profile.firstName?.charCodeAt(0)||0)%AVATAR_COLORS.length] : 'border border-border/70'}`}>
             {profile.photoUrl ? (
               <img src={profile.photoUrl} alt={profile.firstName} className="w-full h-full object-cover" />
             ) : (
               `${profile.firstName?.[0] || ''}${profile.lastName?.[0] || ''}`
             )}
           </div>
-          <div className="flex-1">
+          <div className="min-w-0 flex-1 space-y-2">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{t('catechumens.detail', { defaultValue: 'Catequizando' })}</p>
             <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]" style={{ fontFamily: 'var(--font-brand-display)' }}>{profile.firstName} {profile.lastName}</h1>
+            <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
             <p className="text-sm text-muted-foreground">{age && t('catechumens.years_old', { age })}{profile.birthDate && ` · ${formatDateOnly(profile.birthDate, 'pt-BR')}`}</p>
           </div>
-          {canEdit && <Button size="sm" variant="outline" asChild><Link to={`/app/catechumens/${id}/edit`}><Edit3 className="mr-1 h-3 w-3"/>{t('edit')}</Link></Button>}
+          {canEdit && <Button size="sm" variant="outline" className="h-10 rounded-sm" asChild><Link to={`/app/catechumens/${id}/edit`}><Edit3 className="mr-1 h-3 w-3"/>{t('edit')}</Link></Button>}
         </div>
 
         {attendancePct!==null&&(
-          <div className="rounded-sm border border-border/70 bg-white p-4 flex items-center gap-4">
-            <div className="text-center flex-1"><p className="text-2xl font-bold">{attendancePct}%</p><p className="text-xs text-muted-foreground">{t('catechumens.detail_presence')}</p></div>
-            <div className="text-center flex-1"><p className="text-2xl font-bold">{profile.enrollments?.length||0}</p><p className="text-xs text-muted-foreground">{tp('classes')}</p></div>
-            <div className="text-center flex-1"><p className="text-2xl font-bold">{profile.sacramentalJourneys?.length||0}</p><p className="text-xs text-muted-foreground">{t('catechumens.detail_journeys')}</p></div>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="rounded-sm border border-border/70 bg-white px-4 py-3 text-center">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{t('catechumens.detail_presence')}</p>
+              <p className="mt-1.5 text-2xl font-semibold tracking-tight tabular-nums text-foreground">{attendancePct}%</p>
+            </div>
+            <div className="rounded-sm border border-border/70 bg-white px-4 py-3 text-center">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{tp('classes')}</p>
+              <p className="mt-1.5 text-2xl font-semibold tracking-tight tabular-nums text-foreground">{profile.enrollments?.length||0}</p>
+            </div>
+            <div className="rounded-sm border border-border/70 bg-white px-4 py-3 text-center">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{t('catechumens.detail_journeys')}</p>
+              <p className="mt-1.5 text-2xl font-semibold tracking-tight tabular-nums text-foreground">{profile.sacramentalJourneys?.length||0}</p>
+            </div>
           </div>
         )}
 
@@ -504,9 +515,9 @@ export default function CatechumenDetailPage() {
           const points = calculatePoints({ totalPresent: present, totalMeetings: attendance.length, quizzesCompleted: 0, quizzesPerfect: 0 });
           return (
             <div className="rounded-sm border border-border/70 bg-white p-4">
-              <h3 className="font-semibold text-sm flex items-center gap-2 mb-2"><Gift className="h-4 w-4 text-amber-500"/>{t('catechumens.detail_progress')}</h3>
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{t('catechumens.detail_progress')}</p>
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-2xl font-bold text-amber-500">{points}</span>
+                <span className="text-2xl font-semibold tracking-tight tabular-nums text-foreground">{points}</span>
                 <span className="text-xs text-muted-foreground">{t('catechumens.detail_points')}</span>
               </div>
               {attendancePct !== null && attendancePct >= 90 && (
