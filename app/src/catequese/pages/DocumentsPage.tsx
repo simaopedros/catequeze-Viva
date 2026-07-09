@@ -251,7 +251,10 @@ export default function DocumentsPage() {
             <div className="flex items-center justify-center gap-3 rounded-sm border border-dashed border-border/70 p-6 transition-colors hover:bg-muted/20">
               <label className="flex flex-col items-center gap-2 cursor-pointer">
                 <FileUp className="h-8 w-8 text-muted-foreground" />
-                <span className="text-sm font-medium">
+                <span
+                  className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
                   {tc("documents.select_file")}
                 </span>
                 <span className="text-xs text-muted-foreground">

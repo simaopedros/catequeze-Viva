@@ -16,7 +16,7 @@
   "attendance_link": "Asistencia",
   "unlink": "Desvincular",
   "link_content": "Vincular contenido...",
-  "generate_ai_activity": "Generar Actividad IA",
+  "generate_ai_activity": "Generar actividad con asistencia",
   "generate_whatsapp": "Generar WhatsApp",
   "delete_confirm_title": "¿Eliminar encuentro?",
   "delete_confirm_desc": "Esta acción no se puede deshacer. Los registros de asistencia se eliminarán.",

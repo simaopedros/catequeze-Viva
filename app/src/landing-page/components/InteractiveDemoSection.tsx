@@ -186,7 +186,7 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between gap-2 mb-2">
                       <p className="text-sm font-semibold text-[#071A2D]">{tr("demo.result_title")}</p>
-                      <span className="rounded-full bg-[#071A2D]/08 text-[#071A2D] px-2 py-0.5 text-[11px] font-medium">
+                      <span className="rounded-sm bg-[#071A2D]/08 px-2 py-0.5 text-[11px] font-medium text-[#071A2D]">
                         {tr("demo.result_badge")}
                       </span>
                     </div>
@@ -195,7 +195,7 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                         key={`${selected.id}-${index}`}
                         className="flex gap-2 text-sm animate-in fade-in slide-in-from-bottom-1 duration-300"
                       >
-                        <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#071A2D]/15 text-[#071A2D] text-[11px] font-bold">
+                        <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-sm bg-[#071A2D]/15 text-[11px] font-bold text-[#071A2D]">
                           {index + 1}
                         </span>
                         <span className="leading-snug">{step}</span>

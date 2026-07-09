@@ -15,7 +15,10 @@ interface FAQ {
 export default function FAQ({ faqs }: { faqs: FAQ[] }) {
   return (
     <div className="mx-auto mt-32 max-w-4xl px-6 pb-8 sm:pb-24 sm:pt-12 lg:max-w-7xl lg:px-8 lg:py-32">
-      <h2 className="text-foreground mb-12 text-center text-2xl font-bold leading-10 tracking-tight">
+      <h2
+        className="mb-12 text-center text-2xl font-semibold leading-10 tracking-tight text-[#071A2D]"
+        style={{ fontFamily: "var(--font-brand-display)" }}
+      >
         Frequently asked questions
       </h2>
 

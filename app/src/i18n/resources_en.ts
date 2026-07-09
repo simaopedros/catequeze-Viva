@@ -163,8 +163,8 @@ export const ai_en = {
     "planner": {
       "title": "Editorial assistance",
       "subtitle": "Create, improve and adapt catechesis meetings",
-      "credits_left": "{{count}} AI credits remaining",
-      "credits_remaining": "{{count}} AI credits remaining",
+      "credits_left": "{{count}} editorial credits remaining",
+      "credits_remaining": "{{count}} editorial credits remaining",
       "upgrade": "Upgrade",
       "class_meeting_theme": "Class meeting",
       "step_age": "Which age group?",
@@ -213,13 +213,13 @@ export const ai_en = {
       "linked": "Linked to Meeting",
       "link_to_meeting": "Link to Meeting",
       "improve_hint": "The fields below will be used as context to improve the content.",
-      "adapt_hint": "Set the age group and the desired adjustment so AI can adapt language and methodology.",
-      "activity_hint": "AI will generate a supplementary activity suited to your group.",
-      "whatsapp_hint": "AI will generate a ready-to-send message for families.",
+      "adapt_hint": "Set the age group and the desired adjustment so editorial assistance can adapt language and methodology.",
+      "activity_hint": "Editorial assistance will generate a supplementary activity suited to your group.",
+      "whatsapp_hint": "Editorial assistance will generate a ready-to-send message for families.",
       "adapt_field_hint": "E.g.: simplify for ages 9-11, make it more pastoral, add more group participation.",
       "step_improve_goal": "What do you want to improve?",
       "improve_goal_placeholder": "E.g.: Clarity of writing, theological depth, meeting pacing, class engagement...",
-      "improve_goal_hint": "Describe the adjustment needed. The AI will use this as a guide to revise the script.",
+      "improve_goal_hint": "Describe the adjustment needed. Editorial assistance will use this as a guide to revise the script.",
       "step_context": "Which content?",
       "step_context_additional": "What adjustment do you want to make to this content?",
       "step_adaptation_request": "How do you want to adapt this content?",
@@ -347,7 +347,7 @@ export const ai_en = {
     },
     "improve": {
       "decision_subtitle": "How do you want to apply the improvements?",
-      "choice_prompt": "Choose how AI should generate the result:",
+      "choice_prompt": "Choose how editorial assistance should generate the result:",
       "create_copy": "Create an improved copy",
       "create_copy_desc": "Generates new content with improvements, keeping the original intact.",
       "apply_original": "Apply to original",
@@ -361,16 +361,16 @@ export const ai_en = {
     },
     "widget": {
       "greeting": "Hello! I'm the Theological Assistant. Ask me about faith, doctrine, sacraments, and pastoral care. To create or adapt meeting scripts, use Editorial assistance in the sidebar.",
-      "error_connect": "Error connecting to AI.",
+      "error_connect": "Error connecting to editorial assistance.",
       "error_streaming": "Streaming not supported.",
-      "upgrade_required": "You need the Catechist AI or Parish plan to use the theological assistant. Go to /app/billing to upgrade.",
-      "no_credits": "You're out of AI credits.",
-      "low_credits": "Your AI credits are running low.",
-      "credits_cta": "Buy extra credits to keep using AI without changing your plan.",
+      "upgrade_required": "You need the Catechist or Parish plan to use the theological assistant. Go to /app/billing to upgrade.",
+      "no_credits": "You're out of editorial credits.",
+      "low_credits": "Your editorial credits are running low.",
+      "credits_cta": "Buy extra credits to keep using editorial assistance without changing your plan.",
       "generic_error": "Sorry, an error occurred. Please try again later.",
       "theological_assistant": "Theological Assistant",
-      "catholic_ai": "Catholic AI • Catequese Viva",
-      "empty_response": "Empty AI response.",
+      "catholic_ai": "Catholic editorial assistance • Catequese Viva",
+      "empty_response": "Empty editorial assistance response.",
       "view_history": "View chat history",
       "open_copilot": "Open editorial assistance"
     }
@@ -629,7 +629,7 @@ export const billing_en = {
     "trial_subscribe_plan": "Subscribe to {{plan}}",
     "trial_banner_title_one": "1 day left on your trial",
     "trial_banner_title_other": "{{count}} days left on your trial",
-    "trial_banner_subtitle": "Subscribe to keep classes, attendance, and AI without interruption.",
+    "trial_banner_subtitle": "Subscribe to keep classes, attendance, and editorial assistance without interruption.",
     "trial_banner_ends": "Ends on {{date}}.",
     "trial_banner_cta": "View billing",
     "trial_topbar_one": "1 trial day left",
@@ -639,8 +639,8 @@ export const billing_en = {
     "manage_payment": "Manage payment",
     "classes_quota_label": "Classes usage",
     "catechumens_quota_label": "Catechumens usage",
-    "ai_credits_quota_label": "AI credits usage",
-    "ai_credits": "AI Credits",
+    "ai_credits_quota_label": "Editorial credits usage",
+    "ai_credits": "Editorial credits",
     "monthly_badge": "Monthly",
     "trial_badge": "Trial",
     "credits_used_month": "Credits used this month",
@@ -692,7 +692,7 @@ export const billing_en = {
           "Up to 3 classes",
           "150 catechumens in total",
           "Attendance and liturgical calendar",
-          "15 AI credits/month"
+          "15 Editorial credits/month"
         ]
       },
       "unlimited": {
@@ -702,10 +702,10 @@ export const billing_en = {
         "features": [
           "Unlimited parishes and classes",
           "Unlimited catechumens and catechists",
-          "AI meeting and activity generator",
+          "Meeting and activity generator with editorial assistance",
           "Integrated communication",
           "Documents and certificates",
-          "50 AI credits/month"
+          "50 Editorial credits/month"
         ]
       }
     },
@@ -1105,15 +1105,15 @@ export const classes_en = {
   } as const;
 
 export const collaborative_en = {
-    "title": "Collaborative Co-Creation",
-    "subtitle": "Interactive workspace — AI + Catechist",
+    "title": "Pastoral co-creation",
+    "subtitle": "Interactive workspace — editorial assistance + catechist",
     "workspace": {
-      "subtitle": "Realtime collaborative co-creation — AI + Catechist",
+      "subtitle": "Realtime co-creation — editorial assistance + catechist",
       "live_status": "Live session",
-      "presence": "You + AI",
-      "copilot": "Pastoral co-pilot",
+      "presence": "You + assistance",
+      "copilot": "Editorial assistance",
       "awaiting_theme": "Preparing the meeting",
-      "ai_ready": "AI ready",
+      "ai_ready": "Assistance ready",
       "messages": "messages",
       "sources": "sources",
       "ideas": "ideas"
@@ -1127,10 +1127,10 @@ export const collaborative_en = {
     "chat": {
       "tab": "Chat",
       "you": "You",
-      "ai": "AI",
-      "placeholder": "Chat with the AI co-pilot...",
+      "ai": "Assistance",
+      "placeholder": "Chat with editorial assistance...",
       "thinking": "Thinking...",
-      "empty": "Chat with the AI to build the meeting together. You can ask to refine specific sections, add references, or suggest dynamics.",
+      "empty": "Chat with editorial assistance to build the meeting together. You can ask to refine specific sections, add references, or suggest dynamics.",
       "tips": "Tips:",
       "tip_refine": "Say what you want to improve in the script on the right",
       "tip_catechism": "Ask for Catechism or Bible references",
@@ -1148,7 +1148,7 @@ export const collaborative_en = {
       "text": "Text"
     },
     "suggestions": {
-      "title": "AI Suggestions",
+      "title": "Editorial suggestions",
       "empty": "No suggestions available. Start a chat conversation to receive suggestions.",
       "refresh": "Refresh"
     },
@@ -3022,7 +3022,7 @@ export const meetings_en = {
     "attendance_link": "Attendance",
     "unlink": "Unlink",
     "link_content": "Link content...",
-    "generate_ai_activity": "Generate AI Activity",
+    "generate_ai_activity": "Generate activity with assistance",
     "generate_whatsapp": "Generate WhatsApp",
     "delete_confirm_title": "Remove meeting?",
     "delete_confirm_desc": "This action cannot be undone. Attendance records will be removed.",

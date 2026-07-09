@@ -1,13 +1,13 @@
 {
-  "title": "Co-Criação Colaborativa",
-  "subtitle": "Espaço de trabalho interativo — IA + Catequista",
+  "title": "Co-criação pastoral",
+  "subtitle": "Espaço de trabalho interativo — assistência editorial + catequista",
   "workspace": {
-    "subtitle": "Co-criação colaborativa em tempo real — IA + Catequista",
+    "subtitle": "Co-criação em tempo real — assistência editorial + catequista",
     "live_status": "Sessão ao vivo",
-    "presence": "Você + IA",
-    "copilot": "Co-piloto pastoral",
+    "presence": "Você + assistência",
+    "copilot": "Assistência editorial",
     "awaiting_theme": "Preparando o encontro",
-    "ai_ready": "IA pronta",
+    "ai_ready": "Assistência pronta",
     "messages": "mensagens",
     "sources": "fontes",
     "ideas": "ideias"
@@ -21,10 +21,10 @@
   "chat": {
     "tab": "Chat",
     "you": "Você",
-    "ai": "IA",
-    "placeholder": "Converse com o co-piloto IA...",
+    "ai": "Assistência",
+    "placeholder": "Converse com a assistência editorial...",
     "thinking": "Pensando...",
-    "empty": "Converse com a IA para construir o encontro juntos. Você pode pedir para refinar seções específicas, adicionar referências, ou sugerir dinâmicas.",
+    "empty": "Converse com a assistência editorial para construir o encontro juntos. Você pode pedir para refinar seções específicas, adicionar referências ou sugerir dinâmicas.",
     "tips": "Dicas:",
     "tip_refine": "Diga o que quer melhorar no roteiro à direita",
     "tip_catechism": "Peça referências do Catecismo ou Bíblia",
@@ -42,7 +42,7 @@
     "text": "Texto"
   },
   "suggestions": {
-    "title": "Sugestões da IA",
+    "title": "Sugestões editoriais",
     "empty": "Nenhuma sugestão disponível. Inicie uma conversa no chat para receber sugestões.",
     "refresh": "Atualizar"
   },

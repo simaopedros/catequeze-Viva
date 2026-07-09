@@ -36,7 +36,7 @@
   "trial_subscribe_plan": "Subscribe to {{plan}}",
   "trial_banner_title_one": "1 day left on your trial",
   "trial_banner_title_other": "{{count}} days left on your trial",
-  "trial_banner_subtitle": "Subscribe to keep classes, attendance, and AI without interruption.",
+  "trial_banner_subtitle": "Subscribe to keep classes, attendance, and editorial assistance without interruption.",
   "trial_banner_ends": "Ends on {{date}}.",
   "trial_banner_cta": "View billing",
   "trial_topbar_one": "1 trial day left",
@@ -46,8 +46,8 @@
   "manage_payment": "Manage payment",
   "classes_quota_label": "Classes usage",
   "catechumens_quota_label": "Catechumens usage",
-  "ai_credits_quota_label": "AI credits usage",
-  "ai_credits": "AI Credits",
+  "ai_credits_quota_label": "Editorial credits usage",
+  "ai_credits": "Editorial credits",
   "monthly_badge": "Monthly",
   "trial_badge": "Trial",
   "credits_used_month": "Credits used this month",
@@ -99,7 +99,7 @@
         "Up to 3 classes",
         "150 catechumens in total",
         "Attendance and liturgical calendar",
-        "15 AI credits/month"
+        "15 Editorial credits/month"
       ]
     },
     "unlimited": {
@@ -109,10 +109,10 @@
       "features": [
         "Unlimited parishes and classes",
         "Unlimited catechumens and catechists",
-        "AI meeting and activity generator",
+        "Meeting and activity generator with editorial assistance",
         "Integrated communication",
         "Documents and certificates",
-        "50 AI credits/month"
+        "50 Editorial credits/month"
       ]
     }
   },

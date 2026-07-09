@@ -16,7 +16,7 @@
   "attendance_link": "Attendance",
   "unlink": "Unlink",
   "link_content": "Link content...",
-  "generate_ai_activity": "Generate AI Activity",
+  "generate_ai_activity": "Generate activity with assistance",
   "generate_whatsapp": "Generate WhatsApp",
   "delete_confirm_title": "Remove meeting?",
   "delete_confirm_desc": "This action cannot be undone. Attendance records will be removed.",

@@ -163,14 +163,14 @@ export const ai_es = {
     "planner": {
       "title": "Asistencia editorial",
       "subtitle": "Cree, mejore y adapte encuentros de catequesis",
-      "credits_left": "{{count}} créditos de IA restantes",
-      "credits_remaining": "{{count}} créditos de IA restantes",
+      "credits_left": "{{count}} créditos editoriales restantes",
+      "credits_remaining": "{{count}} créditos editoriales restantes",
       "upgrade": "Actualizar",
       "class_meeting_theme": "Encuentro del grupo",
       "step_age": "¿Para qué grupo de edad?",
       "step_theme": "¿Cuál es el tema del encuentro?",
       "theme_placeholder": "Ej: El Sacramento de la Eucaristía, La Oración del Padrenuestro...",
-      "theme_hint": "Sea específico. La IA usa el tema para armar todo el guion.",
+      "theme_hint": "Sea específico. La asistencia editorial usa el tema para armar todo el guion.",
       "step_duration": "Duración del encuentro",
       "step_approach": "Enfoque pastoral",
       "continue": "Continuar",
@@ -213,13 +213,13 @@ export const ai_es = {
       "linked": "Vinculado al Encuentro",
       "link_to_meeting": "Vincular al Encuentro",
       "improve_hint": "Los campos de abajo se usarán como contexto para mejorar el contenido.",
-      "adapt_hint": "Defina el grupo de edad y el ajuste deseado para que la IA adapte el lenguaje y la metodología.",
-      "activity_hint": "La IA generará una actividad complementaria adecuada para su grupo.",
-      "whatsapp_hint": "La IA generará un mensaje listo para enviar a las familias.",
+      "adapt_hint": "Defina el grupo de edad y el ajuste deseado para que la asistencia editorial adapte el lenguaje y la metodología.",
+      "activity_hint": "La asistencia editorial generará una actividad complementaria adecuada para su grupo.",
+      "whatsapp_hint": "La asistencia editorial generará un mensaje listo para enviar a las familias.",
       "adapt_field_hint": "Ej.: simplificar para 9-11 años, hacerlo más pastoral, incluir más participación del grupo.",
       "step_improve_goal": "¿Qué quieres mejorar?",
       "improve_goal_placeholder": "Ej.: Claridad de redacción, profundidad teológica, ritmo del encuentro, participación del grupo...",
-      "improve_goal_hint": "Describe el ajuste deseado. La IA lo usará como guía para revisar el guion.",
+      "improve_goal_hint": "Describe el ajuste deseado. La asistencia editorial lo usará como guía para revisar el guion.",
       "step_context": "¿Qué contenido?",
       "step_context_additional": "¿Qué ajuste quieres hacer en este contenido?",
       "step_adaptation_request": "¿Cómo quieres adaptar este contenido?",
@@ -261,7 +261,7 @@ export const ai_es = {
       "title": "¿Qué quieres hacer hoy?",
       "subtitle": "Elige cómo la asistencia editorial puede ayudar",
       "create_new": "Crear un encuentro desde cero",
-      "create_new_desc": "Planifica un guion completo desde el inicio con ayuda de la IA",
+      "create_new_desc": "Planifica un guion completo desde el inicio con asistencia editorial",
       "work_on_existing": "Usar un contenido ya creado",
       "work_on_existing_desc": "Mejora, crea actividades o genera mensajes a partir de un contenido existente",
       "use_existing": "Usar un contenido ya creado",
@@ -284,7 +284,7 @@ export const ai_es = {
       "recent_flows": "Flujos recientes",
       "recent_create-meeting": "Nuevo encuentro",
       "create_meeting": "Crear un encuentro desde cero",
-      "create_meeting_desc": "Planifica un guion completo de catequesis con ayuda de la IA",
+      "create_meeting_desc": "Planifica un guion completo de catequesis con asistencia editorial",
       "improve_content": "Mejorar un contenido existente",
       "improve_content_desc": "Revisa y enriquece un guion que ya tienes",
       "generate_activity": "Generar actividad complementaria",
@@ -347,7 +347,7 @@ export const ai_es = {
     },
     "improve": {
       "decision_subtitle": "¿Cómo quieres aplicar las mejoras?",
-      "choice_prompt": "Elige cómo la IA debe generar el resultado:",
+      "choice_prompt": "Elige cómo la asistencia editorial debe generar el resultado:",
       "create_copy": "Crear una copia mejorada",
       "create_copy_desc": "Genera un nuevo contenido con las mejoras, manteniendo el original intacto.",
       "apply_original": "Aplicar al original",
@@ -361,16 +361,16 @@ export const ai_es = {
     },
     "widget": {
       "greeting": "¡Hola! Soy el Asistente Teológico. Pregúntame sobre fe, doctrina, sacramentos y pastoral. Para crear o adaptar guiones de encuentro, usa la Asistencia editorial en el menú lateral.",
-      "error_connect": "Error al conectar con la IA.",
+      "error_connect": "Error al conectar con la asistencia editorial.",
       "error_streaming": "Streaming no soportado.",
-      "upgrade_required": "Necesita el plan Catequista IA o Parroquia para usar el asistente teológico. Vaya a /app/billing para actualizar.",
-      "no_credits": "No tienes créditos de IA.",
-      "low_credits": "Tus créditos de IA se están agotando.",
-      "credits_cta": "Compra créditos extra para seguir usando IA sin cambiar tu plan.",
+      "upgrade_required": "Necesita el plan Catequista o Parroquia para usar el asistente teológico. Vaya a /app/billing para actualizar.",
+      "no_credits": "No tienes créditos editoriales.",
+      "low_credits": "Tus créditos editoriales se están agotando.",
+      "credits_cta": "Compra créditos extra para seguir usando la asistencia editorial sin cambiar tu plan.",
       "generic_error": "Lo siento, ocurrió un error. Intente nuevamente más tarde.",
       "theological_assistant": "Asistente Teológico",
-      "catholic_ai": "IA Católica • Catequese Viva",
-      "empty_response": "Respuesta vacía de la IA.",
+      "catholic_ai": "Asistencia católica • Catequese Viva",
+      "empty_response": "Respuesta vacía de la asistencia editorial.",
       "view_history": "Ver historial de conversas",
       "open_copilot": "Abrir asistencia editorial"
     }
@@ -629,7 +629,7 @@ export const billing_es = {
     "trial_subscribe_plan": "Suscribirse a {{plan}}",
     "trial_banner_title_one": "Queda 1 día de tu periodo de prueba",
     "trial_banner_title_other": "Quedan {{count}} días de tu periodo de prueba",
-    "trial_banner_subtitle": "Suscríbete para mantener grupos, asistencia e IA sin interrupción.",
+    "trial_banner_subtitle": "Suscríbete para mantener grupos, asistencia y asistencia editorial sin interrupción.",
     "trial_banner_ends": "Termina el {{date}}.",
     "trial_banner_cta": "Ver suscripción",
     "trial_topbar_one": "1 día de prueba",
@@ -639,8 +639,8 @@ export const billing_es = {
     "manage_payment": "Gestionar pago",
     "classes_quota_label": "Uso de grupos",
     "catechumens_quota_label": "Uso de catecúmenos",
-    "ai_credits_quota_label": "Uso de créditos de IA",
-    "ai_credits": "Créditos de IA",
+    "ai_credits_quota_label": "Uso de créditos editoriales",
+    "ai_credits": "Créditos editoriales",
     "monthly_badge": "Mensual",
     "trial_badge": "Prueba",
     "credits_used_month": "Créditos usados este mes",
@@ -692,7 +692,7 @@ export const billing_es = {
           "Hasta 3 grupos",
           "150 catecúmenos en total",
           "Asistencia y calendario litúrgico",
-          "15 créditos de IA/mes"
+          "15 créditos editoriales/mes"
         ]
       },
       "unlimited": {
@@ -702,10 +702,10 @@ export const billing_es = {
         "features": [
           "Parroquias y grupos ilimitados",
           "Catecúmenos y catequistas ilimitados",
-          "Generador de encuentros y actividades por IA",
+          "Generador de encuentros y actividades con asistencia editorial",
           "Comunicación integrada",
           "Documentos y certificados",
-          "50 créditos de IA/mes"
+          "50 créditos editoriales/mes"
         ]
       }
     },
@@ -1105,15 +1105,15 @@ export const classes_es = {
   } as const;
 
 export const collaborative_es = {
-    "title": "Co-Creación Colaborativa",
-    "subtitle": "Espacio de trabajo interactivo — IA + Catequista",
+    "title": "Co-creación pastoral",
+    "subtitle": "Espacio de trabajo interactivo — asistencia editorial + catequista",
     "workspace": {
-      "subtitle": "Co-creación colaborativa en tiempo real — IA + Catequista",
+      "subtitle": "Co-creación en tiempo real — asistencia editorial + catequista",
       "live_status": "Sesión en vivo",
-      "presence": "Tú + IA",
-      "copilot": "Co-piloto pastoral",
+      "presence": "Tú + asistencia",
+      "copilot": "Asistencia editorial",
       "awaiting_theme": "Preparando el encuentro",
-      "ai_ready": "IA lista",
+      "ai_ready": "Asistencia lista",
       "messages": "mensajes",
       "sources": "fuentes",
       "ideas": "ideas"
@@ -1127,10 +1127,10 @@ export const collaborative_es = {
     "chat": {
       "tab": "Chat",
       "you": "Tú",
-      "ai": "IA",
-      "placeholder": "Conversa con el co-piloto IA...",
+      "ai": "Asistencia",
+      "placeholder": "Conversa con la asistencia editorial...",
       "thinking": "Pensando...",
-      "empty": "Conversa con la IA para construir el encuentro juntos. Puedes pedir refinar secciones específicas, añadir referencias o sugerir dinámicas.",
+      "empty": "Conversa con la asistencia editorial para construir el encuentro juntos. Puedes pedir refinar secciones específicas, añadir referencias o sugerir dinámicas.",
       "tips": "Consejos:",
       "tip_refine": "Di lo que quieres mejorar en el guion de la derecha",
       "tip_catechism": "Pide referencias del Catecismo o de la Biblia",
@@ -1148,7 +1148,7 @@ export const collaborative_es = {
       "text": "Texto"
     },
     "suggestions": {
-      "title": "Sugerencias de la IA",
+      "title": "Sugerencias editoriales",
       "empty": "Sin sugerencias. Inicia una conversación en el chat para recibir sugerencias.",
       "refresh": "Actualizar"
     },
@@ -3022,7 +3022,7 @@ export const meetings_es = {
     "attendance_link": "Asistencia",
     "unlink": "Desvincular",
     "link_content": "Vincular contenido...",
-    "generate_ai_activity": "Generar Actividad IA",
+    "generate_ai_activity": "Generar actividad con asistencia",
     "generate_whatsapp": "Generar WhatsApp",
     "delete_confirm_title": "¿Eliminar encuentro?",
     "delete_confirm_desc": "Esta acción no se puede deshacer. Los registros de asistencia se eliminarán.",

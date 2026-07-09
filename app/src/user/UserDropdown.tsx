@@ -51,7 +51,10 @@ export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
         onClick={() => setOpen(!open)}
         className="text-foreground hover:text-[#071A2D] flex items-center h-9 w-9 lg:w-auto justify-center lg:justify-start transition-colors duration-300 ease-in-out rounded-sm lg:rounded-none hover:bg-accent/50 lg:hover:bg-transparent"
       >
-        <span className="text-foreground mr-2 hidden text-right text-sm font-medium lg:block">
+        <span
+          className="mr-2 hidden text-right text-sm font-semibold tracking-tight text-[#071A2D] lg:block"
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
           {displayName}
         </span>
         <User className="size-5 shrink-0" />

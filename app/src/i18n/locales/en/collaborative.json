@@ -1,13 +1,13 @@
 {
-  "title": "Collaborative Co-Creation",
-  "subtitle": "Interactive workspace — AI + Catechist",
+  "title": "Pastoral co-creation",
+  "subtitle": "Interactive workspace — editorial assistance + catechist",
   "workspace": {
-    "subtitle": "Realtime collaborative co-creation — AI + Catechist",
+    "subtitle": "Realtime co-creation — editorial assistance + catechist",
     "live_status": "Live session",
-    "presence": "You + AI",
-    "copilot": "Pastoral co-pilot",
+    "presence": "You + assistance",
+    "copilot": "Editorial assistance",
     "awaiting_theme": "Preparing the meeting",
-    "ai_ready": "AI ready",
+    "ai_ready": "Assistance ready",
     "messages": "messages",
     "sources": "sources",
     "ideas": "ideas"
@@ -21,10 +21,10 @@
   "chat": {
     "tab": "Chat",
     "you": "You",
-    "ai": "AI",
-    "placeholder": "Chat with the AI co-pilot...",
+    "ai": "Assistance",
+    "placeholder": "Chat with editorial assistance...",
     "thinking": "Thinking...",
-    "empty": "Chat with the AI to build the meeting together. You can ask to refine specific sections, add references, or suggest dynamics.",
+    "empty": "Chat with editorial assistance to build the meeting together. You can ask to refine specific sections, add references, or suggest dynamics.",
     "tips": "Tips:",
     "tip_refine": "Say what you want to improve in the script on the right",
     "tip_catechism": "Ask for Catechism or Bible references",
@@ -42,7 +42,7 @@
     "text": "Text"
   },
   "suggestions": {
-    "title": "AI Suggestions",
+    "title": "Editorial suggestions",
     "empty": "No suggestions available. Start a chat conversation to receive suggestions.",
     "refresh": "Refresh"
   },

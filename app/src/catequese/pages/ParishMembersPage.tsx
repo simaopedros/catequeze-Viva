@@ -304,22 +304,22 @@ export default function ParishMembersPage() {
             <table className="w-full text-sm">
               <thead className="bg-muted/50 border-b">
                 <tr>
-                  <th className="text-left px-4 py-3 font-medium">
+                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     {tp("name")}
                   </th>
-                  <th className="text-left px-4 py-3 font-medium">
+                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     {tp("email")}
                   </th>
-                  <th className="text-left px-4 py-3 font-medium">
+                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     {tp("communities")}
                   </th>
-                  <th className="text-left px-4 py-3 font-medium">
+                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     {tp("role")}
                   </th>
-                  <th className="text-left px-4 py-3 font-medium">
+                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     {tp("status")}
                   </th>
-                  <th className="text-right px-4 py-3 font-medium">
+                  <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     {tp("actions")}
                   </th>
                 </tr>
@@ -334,7 +334,10 @@ export default function ParishMembersPage() {
                       key={m.id}
                       className="border-b last:border-0 hover:bg-muted/30"
                     >
-                      <td className="px-4 py-3">
+                      <td
+                        className="px-4 py-3 font-semibold tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
                         {m.user?.firstName ||
                           m.user?.email?.split("@")[0] ||
                           "—"}

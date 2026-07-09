@@ -36,7 +36,7 @@
   "trial_subscribe_plan": "Assinar {{plan}}",
   "trial_banner_title_one": "Resta 1 dia do seu período de teste",
   "trial_banner_title_other": "Restam {{count}} dias do seu período de teste",
-  "trial_banner_subtitle": "Assine para manter turmas, presença e IA sem interrupção.",
+  "trial_banner_subtitle": "Assine para manter turmas, presença e assistência editorial sem interrupção.",
   "trial_banner_ends": "Termina em {{date}}.",
   "trial_banner_cta": "Ver assinatura",
   "trial_topbar_one": "1 dia de teste",
@@ -46,8 +46,8 @@
   "manage_payment": "Gerenciar pagamento",
   "classes_quota_label": "Uso de turmas",
   "catechumens_quota_label": "Uso de catequizandos",
-  "ai_credits_quota_label": "Uso de créditos de IA",
-  "ai_credits": "Créditos de IA",
+  "ai_credits_quota_label": "Uso de créditos editoriais",
+  "ai_credits": "Créditos editoriais",
   "monthly_badge": "Mensal",
   "trial_badge": "Teste",
   "credits_used_month": "Créditos usados este mês",
@@ -99,7 +99,7 @@
         "Até 3 turmas",
         "150 catequizandos no total",
         "Presença e calendário litúrgico",
-        "15 créditos de IA/mês"
+        "15 créditos editoriais/mês"
       ]
     },
     "unlimited": {
@@ -109,10 +109,10 @@
       "features": [
         "Paróquias e turmas ilimitadas",
         "Catequizandos e catequistas ilimitados",
-        "Gerador de encontros e atividades por IA",
+        "Gerador de encontros e atividades com assistência editorial",
         "Comunicação integrada",
         "Documentos e certidões",
-        "50 créditos de IA/mês"
+        "50 créditos editoriais/mês"
       ]
     }
   },

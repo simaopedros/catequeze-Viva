@@ -20,7 +20,7 @@ export function OutcomesSection({ ns = "landing" }: { ns?: string }) {
             {tr("outcomes.eyebrow")}
           </p>
           <h2
-            className="text-3xl sm:text-4xl font-semibold tracking-tight text-foreground"
+            className="text-3xl font-semibold tracking-tight text-[#071A2D] sm:text-4xl"
             style={{ fontFamily: "var(--font-brand-display)" }}
           >
             {tr("outcomes.title")}
