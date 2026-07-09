@@ -51,7 +51,7 @@ export function FaqSection({ ns = "landing", showCta = true }: { ns?: string; sh
           <div className="divide-y divide-border/70 border-y border-border/70">
             {list.map((item: any) => (
               <details key={item.q} className="group py-1">
-                <summary className="flex cursor-pointer list-none items-start justify-between gap-4 py-5 text-left font-medium text-foreground marker:content-none [&::-webkit-details-marker]:hidden">
+                <summary className="flex cursor-pointer list-none items-start justify-between gap-4 py-5 text-left font-semibold tracking-tight text-[#071A2D] marker:content-none [&::-webkit-details-marker]:hidden" style={{ fontFamily: "var(--font-brand-display)" }}>
                   <span className="text-[15px] leading-snug pr-2">{item.q}</span>
                   <Plus className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-45" />
                 </summary>

@@ -27,7 +27,7 @@ const Header = (props: {
               <span className="du-block absolute right-0 h-full w-full">
                 <span
                   className={cn(
-                    "bg-foreground relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm delay-0 duration-200 ease-in-out",
+                    "relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-[#071A2D] delay-0 duration-200 ease-in-out",
                     {
                       "w-full! delay-300": !props.sidebarOpen,
                     },
@@ -35,7 +35,7 @@ const Header = (props: {
                 ></span>
                 <span
                   className={cn(
-                    "bg-foreground relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm delay-150 duration-200 ease-in-out",
+                    "bg-[#071A2D] relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm delay-150 duration-200 ease-in-out",
                     {
                       "delay-400 w-full!": !props.sidebarOpen,
                     },
@@ -43,7 +43,7 @@ const Header = (props: {
                 ></span>
                 <span
                   className={cn(
-                    "bg-foreground relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm delay-200 duration-200 ease-in-out",
+                    "bg-[#071A2D] relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm delay-200 duration-200 ease-in-out",
                     {
                       "w-full! delay-500": !props.sidebarOpen,
                     },
@@ -53,7 +53,7 @@ const Header = (props: {
               <span className="absolute right-0 h-full w-full rotate-45">
                 <span
                   className={cn(
-                    "bg-foreground absolute left-2.5 top-0 block h-full w-0.5 rounded-sm delay-300 duration-200 ease-in-out",
+                    "bg-[#071A2D] absolute left-2.5 top-0 block h-full w-0.5 rounded-sm delay-300 duration-200 ease-in-out",
                     {
                       "h-0! delay-0!": !props.sidebarOpen,
                     },
@@ -61,7 +61,7 @@ const Header = (props: {
                 ></span>
                 <span
                   className={cn(
-                    "delay-400 bg-foreground absolute left-0 top-2.5 block h-0.5 w-full rounded-sm duration-200 ease-in-out",
+                    "delay-400 bg-[#071A2D] absolute left-0 top-2.5 block h-0.5 w-full rounded-sm duration-200 ease-in-out",
                     {
                       "h-0! delay-200!": !props.sidebarOpen,
                     },

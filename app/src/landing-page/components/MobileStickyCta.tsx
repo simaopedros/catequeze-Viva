@@ -29,7 +29,7 @@ export function MobileStickyCta({ ns = "landing" }: { ns?: string }) {
   return (
     <div
       className={cn(
-        "fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/95 p-3 backdrop-blur-md md:hidden transition-transform duration-300",
+        "fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-[#F7F4EE]/95 p-3 backdrop-blur-md transition-transform duration-300 md:hidden",
         shouldShow ? "translate-y-0" : "translate-y-full pointer-events-none"
       )}
       aria-hidden={!shouldShow}

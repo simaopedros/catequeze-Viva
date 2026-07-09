@@ -70,7 +70,7 @@ export function DashboardMock({ ns = 'landing' }: { ns?: string }) {
           <p className="text-muted-foreground">{t('mockup_dashboard.today_detail')}</p>
         </div>
         <div className="rounded-sm border border-border/70 bg-white p-2">
-          <p className="font-semibold text-muted-foreground flex items-center gap-1 mb-1">
+          <p className="font-semibold text-[#071A2D] flex items-center gap-1 mb-1">
             <Calendar className="h-3 w-3" /> {t('mockup_dashboard.upcoming')}
           </p>
           <p className="font-semibold tracking-tight text-[#071A2D]">{t('mockup_dashboard.upcoming_class')}</p>
@@ -87,7 +87,7 @@ export function DashboardMock({ ns = 'landing' }: { ns?: string }) {
       </div>
 
       <div className="rounded-sm border border-border/70 bg-white p-2">
-        <p className="font-semibold text-muted-foreground flex items-center gap-1 mb-1">
+        <p className="font-semibold text-[#071A2D] flex items-center gap-1 mb-1">
           <Gift className="h-3 w-3 text-[#D39A2B]" /> {t('mockup_dashboard.birthdays')}
         </p>
         <p>{t('mockup_dashboard.birthdays_list')}</p>

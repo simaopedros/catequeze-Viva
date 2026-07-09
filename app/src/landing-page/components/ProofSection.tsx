@@ -106,7 +106,7 @@ export function ProofSection({ ns = "landing" }: { ns?: string }) {
               {promiseList.length > 0 && (
                 <ul className="space-y-2">
                   {promiseList.map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-sm text-foreground">
+                    <li key={item} className="flex items-start gap-2 text-sm text-[#071A2D]">
                       <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-sm bg-[#071A2D]" />
                       <span>{item}</span>
                     </li>

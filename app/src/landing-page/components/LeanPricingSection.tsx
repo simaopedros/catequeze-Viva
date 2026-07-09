@@ -96,7 +96,7 @@ export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
       <p className="text-center text-sm text-muted-foreground mt-6">
         <Link
           to="/pricing"
-          className="underline hover:text-foreground"
+          className="font-medium text-[#071A2D] underline underline-offset-2 hover:text-[#0a2540]"
           onClick={() =>
             trackMarketingEvent("primary_cta_clicked", {
               landing: ns,

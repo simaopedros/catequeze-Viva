@@ -109,7 +109,7 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                     "rounded-sm border px-3 py-1.5 text-sm font-medium transition-colors",
                     selectedId === topic.id
                       ? "border-[#071A2D] bg-[#071A2D] text-white"
-                      : "border-border bg-card text-muted-foreground hover:border-[#071A2D]/40 hover:text-foreground"
+                      : "border-border bg-card text-muted-foreground hover:border-[#071A2D]/40 hover:text-[#071A2D]"
                   )}
                 >
                   {topic.label}

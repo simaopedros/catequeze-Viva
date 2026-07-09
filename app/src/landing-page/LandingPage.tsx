@@ -25,7 +25,7 @@ const SectionFallback = () => (
  */
 export default function LandingPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-[#F7F4EE] text-[#071A2D]">
       <PublicNavbar hidePricing />
       <main className="flex-1">
         <HeroSection responsiveCtas variant="editorial" />

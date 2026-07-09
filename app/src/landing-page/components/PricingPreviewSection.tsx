@@ -77,7 +77,7 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
             onClick={() => setInterval("monthly")}
             className={cn(
               "rounded-sm px-4 py-1.5 text-sm font-medium transition-colors",
-              interval === "monthly" ? "bg-white text-foreground" : "text-muted-foreground hover:text-foreground"
+              interval === "monthly" ? "bg-white font-semibold tracking-tight text-[#071A2D]" : "text-muted-foreground hover:text-[#071A2D]"
             )}
           >
             {tr("price_monthly")}
@@ -87,7 +87,7 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
             onClick={() => setInterval("annual")}
             className={cn(
               "inline-flex items-center gap-1.5 rounded-sm px-4 py-1.5 text-sm font-medium transition-colors",
-              interval === "annual" ? "bg-white text-foreground" : "text-muted-foreground hover:text-foreground"
+              interval === "annual" ? "bg-white font-semibold tracking-tight text-[#071A2D]" : "text-muted-foreground hover:text-[#071A2D]"
             )}
           >
             {tr("price_annual")}
@@ -123,7 +123,7 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
               destination: "/pricing",
             })
           }
-          className="underline hover:text-foreground transition-colors"
+          className="font-medium text-[#071A2D] underline underline-offset-2 transition-colors hover:text-[#0a2540]"
         >
           {tr("compare_plans")}
         </Link>
