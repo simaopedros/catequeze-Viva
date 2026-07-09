@@ -2,6 +2,7 @@ import { type AuthUser } from "wasp/auth";
 import { useTranslation } from "react-i18next";
 import { useQuery, listParishes } from "wasp/client/operations";
 import DefaultLayout from "../../layout/DefaultLayout";
+import { AppPageHeader } from "../../../client/components/brand/AppChrome";
 import { Activity, Church, Building2, CircleDot, BadgeCheck, AlertTriangle } from 'lucide-react';
 
 const BillingPage = ({ user }: { user: AuthUser }) => {
@@ -23,10 +24,11 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
   return (
     <DefaultLayout user={user}>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold">{t('admin_title')}</h1>
-          <p className="text-muted-foreground text-sm mt-1">{t('admin_subtitle')}</p>
-        </div>
+        <AppPageHeader
+          eyebrow="Admin"
+          title={t('admin_title')}
+          subtitle={t('admin_subtitle')}
+        />
 
         {isLoading ? (
           <div className="flex justify-center py-12">

@@ -9,6 +9,10 @@ import { SaintStoryInjector } from "./SaintStoryInjector";
 import { PedagogicalHooksPanel } from "./PedagogicalHooksPanel";
 import { Button } from "../../../client/components/ui/button";
 import {
+  AppEyebrow,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
+import {
   MessageSquare,
   FileText,
   SlidersHorizontal,
@@ -32,15 +36,19 @@ export function CoPilotPanel() {
       {/* Header */}
       <div className="border-b border-border/70 bg-white-subtle/60 px-3 py-2 shrink-0">
         <div className="mb-2 flex items-center justify-between gap-2">
-          <div className="min-w-0">
-            <p className="truncate text-xs font-semibold text-foreground">
+          <div className="min-w-0 space-y-1">
+            <AppEyebrow className="truncate">
               {intent
                 ? ta(`hub.${intent}` as any, t("workspace.copilot"))
                 : t("workspace.copilot")}
-            </p>
-            <p className="truncate text-caption text-muted-foreground">
+            </AppEyebrow>
+            <p
+              className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
               {contentItem?.theme || t("workspace.awaiting_theme")}
             </p>
+            <AppGoldRule className="w-6" />
           </div>
           <div className="flex items-center gap-1">
             <span className="inline-flex items-center gap-1.5 rounded-sm border border-border/70 bg-white px-2 py-1 text-overline font-medium text-muted-foreground">

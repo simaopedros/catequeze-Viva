@@ -2,6 +2,7 @@ import { type AuthUser } from "wasp/auth";
 import { useQuery, getUserAdminDetail } from "wasp/client/operations";
 import { useParams } from "react-router";
 import DefaultLayout from "../../layout/DefaultLayout";
+import { AppPageHeader } from "../../../client/components/brand/AppChrome";
 import { Users, Shield, CreditCard, History, BarChart3, Building2 } from 'lucide-react';
 import { NavLink } from "react-router";
 
@@ -37,14 +38,13 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
           <span className="text-foreground font-medium">{u.email}</span>
         </div>
 
-        {/* Header */}
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold">{u.firstName ? `${u.firstName} ${u.lastName || ''}` : u.email}</h1>
-            {u.isAdmin && <span className="text-xs bg-[#071A2D]/08 text-[#071A2D] px-2 py-0.5 rounded">Admin</span>}
-          </div>
-          <p className="text-sm text-muted-foreground mt-1">{u.email}</p>
-        </div>
+        <AppPageHeader
+          eyebrow="Admin · Utilizadores"
+          title={u.firstName ? `${u.firstName} ${u.lastName || ""}` : u.email}
+          subtitle={
+            u.isAdmin ? `${u.email} · Admin` : u.email
+          }
+        />
 
         {/* Profile + Billing */}
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">

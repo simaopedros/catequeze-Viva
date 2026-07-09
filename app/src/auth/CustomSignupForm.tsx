@@ -15,6 +15,10 @@ import {
   trackLead,
 } from "../client/analytics/metaTracking";
 import { GoogleLogo } from "../client/icons/GoogleLogo";
+import {
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../client/components/brand/AppChrome";
 
 type CustomSignupFormProps = {
   inviteToken?: string | null;
@@ -132,13 +136,10 @@ export default function CustomSignupForm({
           <div className="inline-flex h-11 w-11 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
             <Mail className="h-5 w-5" strokeWidth={1.75} />
           </div>
-          <h1
-            className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <AppDisplayTitle className="text-2xl sm:text-[1.75rem]">
             {t("signup_success_title")}
-          </h1>
-          <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+          </AppDisplayTitle>
+          <AppGoldRule />
           <p className="text-sm leading-relaxed text-muted-foreground">
             <span>{t("signup_success_sent_to", { email })}</span>{" "}
             {t("signup_success_check_email")}
@@ -175,13 +176,10 @@ export default function CustomSignupForm({
         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground lg:hidden">
           {t("signup_panel_eyebrow")}
         </p>
-        <h1
-          className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.85rem]"
-          style={{ fontFamily: "var(--font-brand-display)" }}
-        >
+        <AppDisplayTitle className="text-2xl sm:text-[1.85rem]">
           {t("signup_title")}
-        </h1>
-        <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+        </AppDisplayTitle>
+        <AppGoldRule />
         <p className="text-sm leading-relaxed text-muted-foreground">{t("signup_subtitle")}</p>
       </div>
 

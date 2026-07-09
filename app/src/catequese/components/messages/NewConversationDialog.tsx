@@ -10,6 +10,10 @@ import {
 } from "lucide-react";
 import { cn } from "../../../client/utils";
 import {
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
+import {
   getContactsForConversation,
   createConversation,
 } from "wasp/client/operations";
@@ -161,15 +165,18 @@ export function NewConversationDialog({
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
 
       <div className="relative mx-4 w-full max-w-md overflow-hidden rounded-sm border border-border/70 bg-white">
-        <div className="flex items-center justify-between p-4 border-b">
-          <h3 className="font-semibold">
-            {step === "type"
-              ? t("new_dialog.title_type")
-              : t("new_dialog.title_contacts")}
-          </h3>
+        <div className="flex items-start justify-between gap-3 border-b border-border/70 p-4">
+          <div className="min-w-0 space-y-1.5">
+            <AppDisplayTitle as="h3" className="text-base sm:text-base">
+              {step === "type"
+                ? t("new_dialog.title_type")
+                : t("new_dialog.title_contacts")}
+            </AppDisplayTitle>
+            <AppGoldRule className="w-8" />
+          </div>
           <button
             onClick={onClose}
-            className="h-7 w-7 flex items-center justify-center rounded-sm hover:bg-muted transition-colors"
+            className="flex h-7 w-7 items-center justify-center rounded-sm transition-colors hover:bg-muted"
           >
             <X className="h-4 w-4" />
           </button>

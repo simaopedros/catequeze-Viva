@@ -1,6 +1,10 @@
 import { type AuthUser } from "wasp/auth";
 import { useQuery, getSystemHealth } from "wasp/client/operations";
 import DefaultLayout from "../../layout/DefaultLayout";
+import {
+  AppMetric,
+  AppPageHeader,
+} from "../../../client/components/brand/AppChrome";
 import { Settings, Activity, AlertTriangle, Zap, BarChart3, Users, TrendingUp } from 'lucide-react';
 
 const SystemHealthPage = ({ user }: { user: AuthUser }) => {
@@ -9,10 +13,11 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
   return (
     <DefaultLayout user={user}>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold">Sistema</h1>
-          <p className="text-muted-foreground text-sm mt-1">Monitoramento de jobs, IA e saúde da plataforma.</p>
-        </div>
+        <AppPageHeader
+          eyebrow="Admin"
+          title="Sistema"
+          subtitle="Monitoramento de jobs, assistência editorial e saúde da plataforma."
+        />
 
         {isLoading ? (
           <div className="flex justify-center py-12">
@@ -22,27 +27,21 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
           <>
             {/* KPIs */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <div className="rounded-sm border border-border/70 bg-white p-5">
-                <div className="flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-[#D39A2B]" />
-                  <h3 className="text-sm font-medium">Créditos IA (mês)</h3>
-                </div>
-                <p className="text-2xl font-bold mt-2">{health?.totalAiCreditsThisMonth || 0}</p>
-              </div>
-              <div className="rounded-sm border border-border/70 bg-white p-5">
-                <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-[#071A2D]" />
-                  <h3 className="text-sm font-medium">Users com Créditos</h3>
-                </div>
-                <p className="text-2xl font-bold mt-2">{health?.usersWithCredits || 0}</p>
-              </div>
-              <div className="rounded-sm border border-border/70 bg-white p-5">
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4 text-destructive" />
-                  <h3 className="text-sm font-medium">Erros Recentes</h3>
-                </div>
-                <p className="text-2xl font-bold mt-2">{health?.recentErrors?.length || 0}</p>
-              </div>
+              <AppMetric
+                label="Créditos editoriais (mês)"
+                value={health?.totalAiCreditsThisMonth || 0}
+                className="bg-white"
+              />
+              <AppMetric
+                label="Users com créditos"
+                value={health?.usersWithCredits || 0}
+                className="bg-white"
+              />
+              <AppMetric
+                label="Erros recentes"
+                value={health?.recentErrors?.length || 0}
+                className="bg-white"
+              />
             </div>
 
             {/* Job Errors */}

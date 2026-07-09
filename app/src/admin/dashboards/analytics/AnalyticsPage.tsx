@@ -2,6 +2,10 @@ import { type AuthUser } from "wasp/auth";
 import { useQuery, getPricingFunnel } from "wasp/client/operations";
 import DefaultLayout from "../../layout/DefaultLayout";
 import {
+  AppMetric,
+  AppPageHeader,
+} from "../../../client/components/brand/AppChrome";
+import {
   BarChart3,
   MousePointerClick,
   CreditCard,
@@ -111,12 +115,11 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
   return (
     <DefaultLayout user={user}>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold">Pricing Funnel</h1>
-          <p className="text-muted-foreground text-sm mt-1">
-            Conversão comercial baseada em PricingEvent dos últimos {data?.windowDays ?? 30} dias.
-          </p>
-        </div>
+        <AppPageHeader
+          eyebrow="Admin"
+          title="Pricing Funnel"
+          subtitle={`Conversão comercial baseada em PricingEvent dos últimos ${data?.windowDays ?? 30} dias.`}
+        />
 
         {isLoading ? (
           <div className="flex justify-center py-12">
@@ -126,15 +129,15 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
           <>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
               {topCards.map((card) => (
-                <div key={card.label} className="rounded-sm border border-border/70 bg-white p-5">
-                  <div className="inline-flex h-9 w-9 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
-                    <card.icon className="h-4 w-4" />
-                  </div>
-                  <div className="mt-3">
-                    <p className="text-2xl font-semibold tracking-tight text-[#071A2D]">{card.value}</p>
-                    <p className="text-xs font-medium text-muted-foreground">{card.label}</p>
-                    <p className="text-caption text-muted-foreground/70 mt-0.5">{card.subtitle}</p>
-                  </div>
+                <div key={card.label} className="space-y-1">
+                  <AppMetric
+                    label={card.label}
+                    value={card.value}
+                    className="bg-white"
+                  />
+                  <p className="px-1 text-caption text-muted-foreground/70">
+                    {card.subtitle}
+                  </p>
                 </div>
               ))}
             </div>

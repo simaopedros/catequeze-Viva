@@ -2,6 +2,10 @@ import { useEffect, useMemo } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "../client/components/ui/button";
+import {
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../client/components/brand/AppChrome";
 import { trackStartTrialBrowser } from "../client/analytics/metaTracking";
 import { SUBSCRIPTION_TRIAL_DAYS } from "../shared/pricing";
 
@@ -49,8 +53,10 @@ export default function CheckoutResultPage() {
   return (
     <div className="mt-10 flex flex-col items-stretch sm:mx-6 sm:items-center">
       <div className="flex flex-col gap-4 rounded-sm border border-border/70 bg-white px-4 py-8 text-center sm:max-w-md sm:px-10">
-        <div className="mx-auto h-px w-10 bg-[#D39A2B]" aria-hidden />
-        <h1 className="text-xl font-semibold tracking-tight text-[#071A2D]">{t("trial_started_title")}</h1>
+        <AppDisplayTitle className="text-xl text-[#071A2D] sm:text-xl">
+          {t("trial_started_title")}
+        </AppDisplayTitle>
+        <AppGoldRule className="mx-auto" />
         <span className="text-sm text-muted-foreground">{t("trial_started_description")}</span>
         <span className="text-sm text-muted-foreground">
           {t("trial_started_redirect", {

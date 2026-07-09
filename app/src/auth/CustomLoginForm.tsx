@@ -12,6 +12,10 @@ import { getTwoFactorStatus, verifyTwoFactorLogin, beginTwoFactorChallenge } fro
 import { isFamilyPortalHost } from "../shared/portal";
 import { rememberPendingInviteToken } from "./inviteTokenStorage";
 import { GoogleLogo } from "../client/icons/GoogleLogo";
+import {
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../client/components/brand/AppChrome";
 
 type Step = "login" | "twofactor";
 
@@ -115,13 +119,10 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
           <div className="inline-flex h-11 w-11 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
             <ShieldCheck className="h-5 w-5" strokeWidth={1.75} />
           </div>
-          <h1
-            className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.85rem]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <AppDisplayTitle className="text-2xl sm:text-[1.85rem]">
             {t("two_factor_title")}
-          </h1>
-          <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+          </AppDisplayTitle>
+          <AppGoldRule />
           <p className="text-sm leading-relaxed text-muted-foreground">{t("two_factor_instruction")}</p>
         </div>
 
@@ -186,13 +187,10 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground lg:hidden">
           {t("login_panel_eyebrow")}
         </p>
-        <h1
-          className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.85rem]"
-          style={{ fontFamily: "var(--font-brand-display)" }}
-        >
+        <AppDisplayTitle className="text-2xl sm:text-[1.85rem]">
           {t("login_title")}
-        </h1>
-        <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+        </AppDisplayTitle>
+        <AppGoldRule />
         <p className="text-sm leading-relaxed text-muted-foreground">{t("login_subtitle")}</p>
       </div>
 

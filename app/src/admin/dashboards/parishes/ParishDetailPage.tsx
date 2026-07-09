@@ -2,6 +2,10 @@ import { type AuthUser } from "wasp/auth";
 import { useQuery, getParishAdminDetail } from "wasp/client/operations";
 import { useParams } from "react-router";
 import DefaultLayout from "../../layout/DefaultLayout";
+import {
+  AppMetric,
+  AppPageHeader,
+} from "../../../client/components/brand/AppChrome";
 import { Church, Building2, Users, GraduationCap, MapPin, BadgeCheck, CircleDot, AlertTriangle, History, ArrowLeft, Crown } from 'lucide-react';
 import { NavLink } from "react-router";
 
@@ -47,53 +51,34 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
           <span className="text-foreground font-medium">{parish.name}</span>
         </div>
 
-        {/* Header */}
-        <div className="flex items-start justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold">{parish.name}</h1>
-              {!parish.active && (
-                <span className="text-xs bg-[#D39A2B]/15 text-[#8A6418] px-2 py-0.5 rounded">Arquivada</span>
-              )}
-            </div>
-            <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
-              {parish.city && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{parish.city}</span>}
-              {parish.diocese && (
-                <span className="flex items-center gap-1"><Building2 className="h-3 w-3" />{parish.diocese.name}</span>
-              )}
-              <span className="flex items-center gap-1"><Crown className="h-3 w-3" />{parish.owner?.email || '—'}</span>
-            </div>
-          </div>
-          <NavLink
-            to={`/app`}
-            className="text-xs inline-flex items-center gap-1 px-3 py-1.5 rounded-sm bg-[#071A2D] text-white hover:bg-[#0a2540]"
-          >
-            Abrir no App →
-          </NavLink>
-        </div>
+        <AppPageHeader
+          eyebrow="Admin · Paróquias"
+          title={parish.name}
+          subtitle={[
+            !parish.active ? "Arquivada" : null,
+            parish.city,
+            parish.diocese?.name,
+            parish.owner?.email,
+          ]
+            .filter(Boolean)
+            .join(" · ")}
+          actions={
+            <NavLink
+              to={`/app`}
+              className="inline-flex h-10 items-center gap-1 rounded-sm bg-[#071A2D] px-3 text-xs text-white hover:bg-[#0a2540]"
+            >
+              Abrir no App →
+            </NavLink>
+          }
+        />
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-          <div className="rounded-sm border border-border/70 bg-white p-4">
-            <p className="text-2xl font-bold">{parish._count?.classes || 0}</p>
-            <p className="text-xs text-muted-foreground">Turmas</p>
-          </div>
-          <div className="rounded-sm border border-border/70 bg-white p-4">
-            <p className="text-2xl font-bold">{parish._count?.catechumens || 0}</p>
-            <p className="text-xs text-muted-foreground">Catequizandos</p>
-          </div>
-          <div className="rounded-sm border border-border/70 bg-white p-4">
-            <p className="text-2xl font-bold">{parish._count?.memberships || 0}</p>
-            <p className="text-xs text-muted-foreground">Membros</p>
-          </div>
-          <div className="rounded-sm border border-border/70 bg-white p-4">
-            <p className="text-2xl font-bold">{parish._count?.communities || 0}</p>
-            <p className="text-xs text-muted-foreground">Comunidades</p>
-          </div>
-          <div className="rounded-sm border border-border/70 bg-white p-4">
-            <p className="text-2xl font-bold">{parish._count?.messageCampaigns || 0}</p>
-            <p className="text-xs text-muted-foreground">Campanhas</p>
-          </div>
+          <AppMetric label="Turmas" value={parish._count?.classes || 0} className="bg-white" />
+          <AppMetric label="Catequizandos" value={parish._count?.catechumens || 0} className="bg-white" />
+          <AppMetric label="Membros" value={parish._count?.memberships || 0} className="bg-white" />
+          <AppMetric label="Comunidades" value={parish._count?.communities || 0} className="bg-white" />
+          <AppMetric label="Campanhas" value={parish._count?.messageCampaigns || 0} className="bg-white" />
         </div>
 
         {/* Billing */}

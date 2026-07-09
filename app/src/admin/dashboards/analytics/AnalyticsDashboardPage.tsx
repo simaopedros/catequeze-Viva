@@ -1,6 +1,10 @@
 import { type AuthUser } from "wasp/auth";
 import { useQuery, getPlatformOverview, getPlatformAlerts } from "wasp/client/operations";
 import DefaultLayout from "../../layout/DefaultLayout";
+import {
+  AppMetric,
+  AppPageHeader,
+} from "../../../client/components/brand/AppChrome";
 import { Users, Church, GraduationCap, CreditCard, TrendingUp, AlertTriangle, CircleDot, DollarSign } from 'lucide-react';
 
 const Dashboard = ({ user }: { user: AuthUser }) => {
@@ -43,29 +47,26 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
   return (
     <DefaultLayout user={user}>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold">Centro de Comando</h1>
-          <p className="text-muted-foreground text-sm mt-1">Visão executiva da plataforma Catequese Viva.</p>
-        </div>
+        <AppPageHeader
+          eyebrow="Admin"
+          title="Centro de Comando"
+          subtitle="Visão executiva da plataforma Catequese Viva."
+        />
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
           {kpiCards.map((card) => (
-            <div key={card.label} className="rounded-sm border border-border/70 bg-white p-5">
-              <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
-                  <card.icon className="h-4 w-4" />
-                </div>
-              </div>
-              <div className="mt-3">
-                <p className="text-2xl font-semibold tracking-tight text-[#071A2D]">
-                  {isLoading ? '—' : (card.value ?? '—')}
+            <div key={card.label} className="space-y-1">
+              <AppMetric
+                label={card.label}
+                value={isLoading ? "—" : (card.value ?? "—")}
+                className="bg-white"
+              />
+              {card.subtitle && (
+                <p className="px-1 text-caption text-muted-foreground/70">
+                  {card.subtitle}
                 </p>
-                <p className="text-xs font-medium text-muted-foreground">{card.label}</p>
-                {card.subtitle && (
-                  <p className="text-caption text-muted-foreground/70 mt-0.5">{card.subtitle}</p>
-                )}
-              </div>
+              )}
             </div>
           ))}
         </div>

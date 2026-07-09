@@ -47,7 +47,12 @@ export function CommunityCard({
       >
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <p className="font-medium truncate">{c.name}</p>
+            <p
+              className="truncate font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
+              {c.name}
+            </p>
             {c.type && (
               <Badge variant="outline" className="text-overline">
                 {COMMUNITY_TYPE_LABELS[c.type] || c.type}

@@ -8,7 +8,6 @@ import {
   X,
   Send,
   Loader2,
-  Bot,
   User,
   ThumbsUp,
   ThumbsDown,
@@ -19,6 +18,10 @@ import {
 import { getAiCreditsStatus, submitAiFeedback } from "wasp/client/operations";
 import { getSessionId } from "wasp/client/api";
 import { BuyCreditsButton } from "./BuyCreditsButton";
+import {
+  AppEyebrow,
+  AppGoldRule,
+} from "../../client/components/brand/AppChrome";
 
 interface Message {
   role: "user" | "assistant";
@@ -229,16 +232,18 @@ export function AIHelperWidget() {
             style={{ paddingTop: "calc(1rem + env(safe-area-inset-top, 0px))" }}
           >
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-sm border border-border/70 bg-muted/30 flex items-center justify-center">
-                <Bot className="h-4 w-4 text-[#071A2D]" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 bg-muted/30">
+                <Feather className="h-4 w-4 text-[#071A2D]" />
               </div>
-              <div>
-                <h3 className="font-semibold text-sm">
+              <div className="space-y-1">
+                <AppEyebrow>{ta("widget.catholic_ai")}</AppEyebrow>
+                <h3
+                  className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
                   {ta("widget.theological_assistant")}
                 </h3>
-                <p className="text-xs text-muted-foreground">
-                  {ta("widget.catholic_ai")}
-                </p>
+                <AppGoldRule className="w-6" />
               </div>
             </div>
             <div className="flex items-center gap-1">
@@ -277,7 +282,7 @@ export function AIHelperWidget() {
               >
                 {m.role === "assistant" && (
                   <div className="w-6 h-6 rounded-sm border border-border/70 bg-muted/30 flex items-center justify-center flex-shrink-0 mt-1">
-                    <Bot className="h-3 w-3 text-[#071A2D]" />
+                    <Feather className="h-3 w-3 text-[#071A2D]" />
                   </div>
                 )}
                 <div
