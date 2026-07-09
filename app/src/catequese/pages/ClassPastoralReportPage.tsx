@@ -37,16 +37,16 @@ import {
 import { formatDate } from "../../i18n/format";
 import { useLocale } from "../../i18n/useLocale";
 
-const RISK_COLORS = { ALTO: "#ef4444", MÉDIO: "#f59e0b", BAIXO: "#22c55e" };
+const RISK_COLORS = { ALTO: "#b91c1c", MÉDIO: "#D39A2B", BAIXO: "#071A2D" };
 const STATUS_COLORS: Record<string, string> = {
-  ENROLLED: "#22c55e",
+  ENROLLED: "#071A2D",
   DROPPED: "#ef4444",
   TRANSFERRED: "#f59e0b",
-  COMPLETED: "#6366f1",
+  COMPLETED: "#071A2D",
   MOVED_TO_OTHER_CLASS: "#8b5cf6",
 };
 const ATTENDANCE_COLORS = {
-  present: "#22c55e",
+  present: "#071A2D",
   late: "#f59e0b",
   justified: "#8b5cf6",
   absent: "#ef4444",
@@ -310,7 +310,7 @@ export default function ClassPastoralReportPage() {
                   <Bar
                     yAxisId="left"
                     dataKey="meetings"
-                    fill="#6366f1"
+                    fill="#071A2D"
                     name={t("monthlyMeetings")}
                     radius={[4, 4, 0, 0]}
                   />
@@ -318,7 +318,7 @@ export default function ClassPastoralReportPage() {
                     yAxisId="right"
                     type="monotone"
                     dataKey="avgAttendance"
-                    stroke="#22c55e"
+                    stroke="#071A2D"
                     name={t("avgAttendanceLine")}
                     strokeWidth={2}
                     dot={{ r: 4 }}

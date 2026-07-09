@@ -44,7 +44,7 @@ const STATUS_KEYS: Record<string, { key: string; color: string }> = {
   },
   CANCELED: {
     key: "canceled",
-    color: "bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-zinc-400",
+    color: "bg-muted text-muted-foreground",
   },
 };
 
@@ -276,7 +276,7 @@ export default function ParishesPage() {
             const billing = p.billing;
             const statusInfo = STATUS_KEYS[billing?.status] || {
               key: "",
-              color: "bg-gray-100 text-gray-600",
+              color: "bg-muted text-muted-foreground",
             };
             const isActive = p.active !== false;
             return (

@@ -161,8 +161,8 @@ export default function ReportsPage() {
       0,
     );
     return [
-      { name: t("present"), value: present, color: "#22c55e" },
-      { name: t("absent"), value: absent, color: "#ef4444" },
+      { name: t("present"), value: present, color: "#071A2D" },
+      { name: t("absent"), value: absent, color: "#b91c1c" },
     ];
   }, [classReports, t]);
 
@@ -472,12 +472,12 @@ export default function ReportsPage() {
                   />
                   <Bar
                     dataKey={presentKey}
-                    fill="#6366f1"
+                    fill="#071A2D"
                     radius={[4, 4, 0, 0]}
                   />
                   <Bar
                     dataKey={absentKey}
-                    fill="#f97316"
+                    fill="#D39A2B"
                     radius={[4, 4, 0, 0]}
                   />
                 </BarChart>

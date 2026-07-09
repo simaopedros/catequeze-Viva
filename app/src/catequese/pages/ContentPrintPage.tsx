@@ -147,23 +147,23 @@ export default function ContentPrintPage() {
 
       <div
         id="print-content"
-        className="mx-auto max-w-4xl bg-white px-6 py-8 text-gray-900"
+        className="mx-auto max-w-4xl bg-white px-6 py-8 text-[#071A2D]"
       >
-        <div className="print-section mb-8 border-b border-gray-300 pb-6 text-center">
-          <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-500">
+        <div className="print-section mb-8 border-b border-[#071A2D]/20 pb-6 text-center">
+          <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#6b7c8a]">
             {t("print_page.header_badge")}
           </p>
           <h1
-            className="mb-2 text-2xl font-semibold tracking-tight text-gray-900"
+            className="mb-2 text-2xl font-semibold tracking-tight text-[#071A2D]"
             style={{ fontFamily: "var(--font-brand-display)" }}
           >
             {item.title}
           </h1>
           <div className="mx-auto mb-3 h-px w-10 bg-[#D39A2B]" aria-hidden />
           {item.theme && (
-            <p className="mb-3 text-lg italic text-gray-600">{item.theme}</p>
+            <p className="mb-3 text-lg italic text-[#4a5d6e]">{item.theme}</p>
           )}
-          <div className="flex justify-center gap-4 text-sm text-gray-500">
+          <div className="flex justify-center gap-4 text-sm text-[#6b7c8a]">
             {item.estimatedTime && (
               <span>
                 <Clock className="inline h-4 w-4" />{" "}
@@ -180,7 +180,7 @@ export default function ContentPrintPage() {
           </div>
         </div>
 
-        <div className="print-section rounded-sm border border-gray-200 bg-white p-8">
+        <div className="print-section rounded-sm border border-[#071A2D]/12 bg-white p-8">
           <ContentDocumentRenderer
             document={document}
             className="prose-neutral prose-img:max-h-[320px]"
@@ -189,14 +189,14 @@ export default function ContentPrintPage() {
 
         {hasReferences && (
           <div className="print-section mt-8 space-y-5">
-            <div className="border-b border-gray-200 pb-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+            <div className="border-b border-[#071A2D]/12 pb-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8a96a0]">
                 Apoio pastoral
               </p>
-              <h2 className="mt-1 text-xl font-semibold tracking-tight text-gray-900">
+              <h2 className="mt-1 text-xl font-semibold tracking-tight text-[#071A2D]">
                 Referências vinculadas
               </h2>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-[#6b7c8a]">
                 Passagens e textos de apoio usados neste encontro.
               </p>
             </div>
@@ -216,7 +216,7 @@ export default function ContentPrintPage() {
                       <div className="mb-2 text-sm font-semibold text-[#8A6418]">
                         {ref.label}
                       </div>
-                      <p className="text-[15px] leading-7 text-gray-800">
+                      <p className="text-[15px] leading-7 text-[#1a2f42]">
                         {ref.text}
                       </p>
                     </div>
@@ -241,12 +241,12 @@ export default function ContentPrintPage() {
                         {ref.label}
                       </div>
                       {ref.title && (
-                        <p className="mb-2 text-sm font-medium text-gray-900">
+                        <p className="mb-2 text-sm font-medium text-[#071A2D]">
                           {ref.title}
                         </p>
                       )}
                       {ref.text && (
-                        <p className="text-[15px] leading-7 text-gray-800">
+                        <p className="text-[15px] leading-7 text-[#1a2f42]">
                           {ref.text}
                         </p>
                       )}
@@ -275,12 +275,12 @@ export default function ContentPrintPage() {
                         {ref.label}
                       </div>
                       {ref.title && (
-                        <p className="mb-2 text-sm font-medium text-gray-900">
+                        <p className="mb-2 text-sm font-medium text-[#071A2D]">
                           {ref.title}
                         </p>
                       )}
                       {ref.text && (
-                        <p className="text-[15px] leading-7 text-gray-800">
+                        <p className="text-[15px] leading-7 text-[#1a2f42]">
                           {ref.text}
                         </p>
                       )}
@@ -294,7 +294,7 @@ export default function ContentPrintPage() {
 
         {activities.length > 0 && (
           <div className="print-section mt-8">
-            <h2 className="mb-3 border-b pb-2 text-sm font-semibold uppercase tracking-[0.12em] text-gray-700">
+            <h2 className="mb-3 border-b pb-2 text-sm font-semibold uppercase tracking-[0.12em] text-[#24394d]">
               {t("print_page.activities_title", { count: activities.length })}
             </h2>
             <div className="space-y-6">
@@ -312,7 +312,7 @@ export default function ContentPrintPage() {
                       {index + 1}. {activity.title} — {typeLabel}
                     </h3>
                     {activity.description && (
-                      <p className="mb-3 text-sm italic text-gray-500">
+                      <p className="mb-3 text-sm italic text-[#6b7c8a]">
                         {activity.description}
                       </p>
                     )}
@@ -321,7 +321,7 @@ export default function ContentPrintPage() {
                         (question: any, questionIndex: number) => (
                           <div
                             key={question.id || questionIndex}
-                            className="mb-3 rounded bg-gray-50 p-3"
+                            className="mb-3 rounded bg-[#F7F4EE] p-3"
                           >
                             <p className="mb-2 text-sm font-semibold">
                               {questionIndex + 1}. {question.question}
@@ -348,7 +348,7 @@ export default function ContentPrintPage() {
                       data.steps?.map((step: any, stepIndex: number) => (
                         <div
                           key={step.id || stepIndex}
-                          className="mb-2 rounded bg-gray-50 p-3 text-sm"
+                          className="mb-2 rounded bg-[#F7F4EE] p-3 text-sm"
                         >
                           <p className="font-semibold">
                             {t("print_page.step", { num: stepIndex + 1 })}{" "}

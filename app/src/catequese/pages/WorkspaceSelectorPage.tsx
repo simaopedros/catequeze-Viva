@@ -59,7 +59,7 @@ function roleLabel(role: string | undefined, t: any) {
 
 function workspaceIcon(type: Workspace["type"]) {
   if (type === "DIOCESE")
-    return <Building2 className="h-6 w-6 text-secondary" />;
+    return <Building2 className="h-6 w-6 text-[#071A2D]" />;
   if (type === "COMMUNITY")
     return <Building2 className="h-6 w-6 text-success" />;
   return <Church className="h-6 w-6 text-accent" />;
@@ -194,7 +194,7 @@ export default function WorkspaceSelectorPage() {
         <div
           className={`rounded-sm p-3 group-hover:bg-opacity-80 transition-colors ${
             ws.type === "DIOCESE"
-              ? "bg-secondary/10"
+              ? "bg-[#071A2D]/08"
               : ws.type === "COMMUNITY"
                 ? "bg-success/10"
                 : "bg-accent/10"
@@ -210,7 +210,7 @@ export default function WorkspaceSelectorPage() {
             <span
               className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                 ws.type === "DIOCESE"
-                  ? "bg-secondary/10 text-secondary"
+                  ? "bg-[#071A2D]/08 text-[#071A2D]"
                   : ws.type === "COMMUNITY"
                     ? "bg-success/10 text-success"
                     : "bg-accent/10 text-accent"
@@ -459,17 +459,17 @@ export default function WorkspaceSelectorPage() {
                   return (
                     <div
                       key={dioceseId}
-                      className="space-y-2 rounded-sm border border-secondary/30 bg-secondary/5 p-3"
+                      className="space-y-2 rounded-sm border border-[#071A2D]/25 bg-[#071A2D]/05 p-3"
                     >
                       <div className="flex items-center justify-between gap-2 px-1">
-                        <div className="flex items-center gap-1.5 text-sm font-semibold text-secondary">
+                        <div className="flex items-center gap-1.5 text-sm font-semibold text-[#071A2D]">
                           <Building2 className="h-4 w-4" />
                           {group.name}
                         </div>
                         <span
                           className={`text-overline px-2 py-0.5 rounded-full font-medium ${
                             licensed
-                              ? "bg-secondary/15 text-secondary"
+                              ? "bg-[#071A2D]/10 text-[#071A2D]"
                               : "bg-muted text-muted-foreground"
                           }`}
                         >
@@ -503,17 +503,17 @@ export default function WorkspaceSelectorPage() {
                   .map((d) => (
                     <div
                       key={d.id}
-                      className="space-y-2 rounded-sm border border-secondary/30 bg-secondary/5 p-3"
+                      className="space-y-2 rounded-sm border border-[#071A2D]/25 bg-[#071A2D]/05 p-3"
                     >
                       <div className="flex items-center justify-between gap-2 px-1">
-                        <div className="flex items-center gap-1.5 text-sm font-semibold text-secondary">
+                        <div className="flex items-center gap-1.5 text-sm font-semibold text-[#071A2D]">
                           <Building2 className="h-4 w-4" />
                           {d.name}
                         </div>
                         <span
                           className={`text-overline px-2 py-0.5 rounded-full font-medium ${
                             d.licensed
-                              ? "bg-secondary/15 text-secondary"
+                              ? "bg-[#071A2D]/10 text-[#071A2D]"
                               : "bg-muted text-muted-foreground"
                           }`}
                         >

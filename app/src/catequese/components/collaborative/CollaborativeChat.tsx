@@ -50,7 +50,7 @@ export function CollaborativeChat() {
         {visibleMessages.length === 0 && (
           <div className="rounded-sm border border-dashed border-border/70 bg-muted/20 px-4 py-5 text-sm text-muted-foreground">
             <div className="mb-3 flex items-center gap-2 text-foreground">
-              <Feather className="h-4 w-4 text-secondary" />
+              <Feather className="h-4 w-4 text-[#071A2D]" />
               <p className="font-semibold">{t("title")}</p>
             </div>
             <p className="leading-relaxed">{t("chat.empty")}</p>

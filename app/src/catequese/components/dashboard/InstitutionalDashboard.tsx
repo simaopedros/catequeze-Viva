@@ -489,25 +489,25 @@ export function InstitutionalDashboard() {
             title={t("domain_classes")}
             icon={BookOpen}
             kpis={overview.classes}
-            colorClass="text-success bg-success/10"
+            colorClass="text-[#071A2D] bg-[#071A2D]/08"
           />
           <DomainSection
             title={t("domain_attendance")}
             icon={TrendingUp}
             kpis={overview.attendance}
-            colorClass="text-warning bg-warning/10"
+            colorClass="text-[#8A6418] bg-[#D39A2B]/12"
           />
           <DomainSection
             title={t("domain_sacraments")}
             icon={Cross}
             kpis={overview.sacraments}
-            colorClass="text-secondary-foreground bg-secondary"
+            colorClass="text-[#071A2D] bg-[#071A2D]/08"
           />
           <DomainSection
             title={t("domain_content")}
             icon={FileText}
             kpis={overview.content}
-            colorClass="text-info bg-info/10"
+            colorClass="text-[#071A2D] bg-muted/50"
           />
           <DomainSection
             title={t("domain_compliance")}
@@ -519,14 +519,14 @@ export function InstitutionalDashboard() {
             title={t("domain_communication")}
             icon={MessageSquare}
             kpis={overview.communication}
-            colorClass="text-secondary-foreground bg-secondary/20"
+            colorClass="text-[#071A2D] bg-[#071A2D]/08"
           />
           {overview.license && overview.license.length > 0 && (
             <DomainSection
               title={t("domain_license")}
               icon={Building2}
               kpis={overview.license}
-              colorClass="text-success bg-success/10"
+              colorClass="text-[#071A2D] bg-[#071A2D]/08"
             />
           )}
         </div>
