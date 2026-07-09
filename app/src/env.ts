@@ -2,6 +2,7 @@ import * as z from 'zod'
 import { defineEnvValidationSchema } from 'wasp/env'
 
 import { authEnvSchema } from './auth/env'
+import { metaEnvSchema } from './payment/meta/env'
 import { stripeEnvSchema } from './payment/stripe/env'
 import { fileUploadEnvSchema } from './file-upload/env'
 import { plausibleEnvSchema, googleAnalyticsEnvSchema } from './analytics/env'
@@ -29,6 +30,7 @@ export const operationalEnvSchema = z.object({
 // to also remove its env schema import and `.merge(...)` call below.
 export const serverEnvValidationSchema = defineEnvValidationSchema(
   authEnvSchema
+    .merge(metaEnvSchema)
     .merge(stripeEnvSchema)
     .merge(aiEnvSchema)
     .merge(fileUploadEnvSchema)
@@ -36,3 +38,4 @@ export const serverEnvValidationSchema = defineEnvValidationSchema(
     .merge(googleAnalyticsEnvSchema)
     .merge(operationalEnvSchema)
 )
+

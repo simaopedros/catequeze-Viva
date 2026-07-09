@@ -27,6 +27,7 @@ export const stripePaymentProcessor: PaymentProcessor = {
     paymentPlan,
     interval,
     prismaUserDelegate,
+    tracking,
   }: CreateCheckoutSessionArgs) => {
     const customer = await ensureStripeCustomer(userEmail);
 
@@ -35,10 +36,16 @@ export const stripePaymentProcessor: PaymentProcessor = {
       prismaUserDelegate,
     );
 
+    const priceId = requireStripePriceId(paymentPlan, interval);
     const checkoutSession = await createStripeCheckoutSession({
       customerId: customer.id,
-      priceId: requireStripePriceId(paymentPlan, interval),
+      userId,
+      priceId,
       mode: paymentPlanEffectToStripeCheckoutSessionMode(paymentPlan.effect),
+      tracking: {
+        ...tracking,
+        priceId: tracking?.priceId ?? priceId,
+      },
     });
 
     if (!checkoutSession.url) {
@@ -101,7 +108,6 @@ export const stripePaymentProcessor: PaymentProcessor = {
       }
     }
 
-    // Revenue is in cents so we convert to dollars (or your main currency unit)
     return totalRevenue / 100;
   },
 };

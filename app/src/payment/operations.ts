@@ -7,13 +7,24 @@ import type {
   ChangeSubscriptionPlan,
 } from "wasp/server/operations";
 import * as z from "zod";
-import { PaymentPlanId, paymentPlans, SubscriptionStatus } from "../payment/plans";
+import {
+  PaymentPlanId,
+  paymentPlans,
+  SubscriptionStatus,
+  prettyPaymentPlanName,
+} from "../payment/plans";
 import { validateOrThrow } from "../server/validation";
 import { paymentProcessor } from "./paymentProcessor";
 import { stripeClient } from "./stripe/stripeClient";
 import { requireStripePriceId } from "./paymentProcessorPlans";
-import { isSubscriptionActiveLike, resolvePlanIdOrFree, type PlanId } from "../shared/pricing";
+import {
+  isSubscriptionActiveLike,
+  resolvePlanIdOrFree,
+  type PlanId,
+  PLANS,
+} from "../shared/pricing";
 import { trackPricingEvent } from "./pricingEvents";
+import { detectCurrency } from "../shared/currency";
 
 export type CheckoutSession = {
   sessionUrl: string | null;
@@ -22,26 +33,58 @@ export type CheckoutSession = {
 
 const generateCheckoutSessionSchema = z.object({
   planId: z.nativeEnum(PaymentPlanId),
-  interval: z.enum(['monthly', 'annual']).optional().default('monthly'),
+  interval: z.enum(["monthly", "annual"]).optional().default("monthly"),
+  priceId: z.string().optional(),
+  planName: z.string().optional(),
+  value: z.number().nonnegative().optional(),
+  currency: z.string().optional(),
+  initiate_checkout_event_id: z.string().optional(),
+  fbp: z.string().optional(),
+  fbc: z.string().optional(),
+  fbclid: z.string().optional(),
+  client_user_agent: z.string().optional(),
+  event_source_url: z.string().optional(),
+  landing_page_url: z.string().optional(),
+  referrer: z.string().optional(),
+  utm_source: z.string().optional(),
+  utm_medium: z.string().optional(),
+  utm_campaign: z.string().optional(),
+  utm_content: z.string().optional(),
+  utm_term: z.string().optional(),
 });
 
 type GenerateCheckoutSessionInput = z.infer<typeof generateCheckoutSessionSchema>;
 
-// Institutional plan IDs. The simplified structure has a single institutional
-// plan (`unlimited`) which covers both parish and diocese workspaces.
 const INSTITUTIONAL_PLAN_IDS: PaymentPlanId[] = [PaymentPlanId.Unlimited];
-const MANAGEABLE_SUBSCRIPTION_STATUSES = new Set(['trialing', 'active', 'past_due']);
+const MANAGEABLE_SUBSCRIPTION_STATUSES = new Set(["trialing", "active", "past_due"]);
 
 async function listManageableSubscriptions(customerId: string) {
   const subscriptions = await stripeClient.subscriptions.list({
     customer: customerId,
-    status: 'all',
+    status: "all",
     limit: 10,
   });
 
   return subscriptions.data.filter((subscription) =>
     MANAGEABLE_SUBSCRIPTION_STATUSES.has(subscription.status),
   );
+}
+
+function getCheckoutValue(
+  paymentPlanId: PaymentPlanId,
+  interval: "monthly" | "annual",
+): number | undefined {
+  if (paymentPlanId === PaymentPlanId.Single) {
+    const cents = interval === "annual" ? PLANS.single.prices.annualCents ?? PLANS.single.prices.monthlyCents : PLANS.single.prices.monthlyCents;
+    return Number((cents / 100).toFixed(2));
+  }
+
+  if (paymentPlanId === PaymentPlanId.Unlimited) {
+    const cents = interval === "annual" ? PLANS.unlimited.prices.annualCents ?? PLANS.unlimited.prices.monthlyCents : PLANS.unlimited.prices.monthlyCents;
+    return Number((cents / 100).toFixed(2));
+  }
+
+  return undefined;
 }
 
 export const generateCheckoutSession: GenerateCheckoutSession<
@@ -52,10 +95,8 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     throw new HttpError(401, "Only authenticated users are allowed to perform this operation");
   }
 
-  const { planId: paymentPlanId, interval } = validateOrThrow(
-    generateCheckoutSessionSchema,
-    rawInput,
-  );
+  const input = validateOrThrow(generateCheckoutSessionSchema, rawInput);
+  const { planId: paymentPlanId, interval } = input;
   const userId = context.user.id;
   const userEmail = context.user.email;
   if (!userEmail) {
@@ -64,13 +105,10 @@ export const generateCheckoutSession: GenerateCheckoutSession<
 
   const paymentPlan = paymentPlans[paymentPlanId];
 
-  // CatechistFree (sentinel) cannot be purchased
   if (paymentPlanId === PaymentPlanId.CatechistFree) {
     throw new HttpError(400, 'O plano "Sem assinatura" não requer pagamento. Escolha um plano pago.');
   }
 
-  // The Unlimited plan is institutional: requires the user to own or coordinate
-  // an institutional (non-PERSONAL) parish, or to be a diocese admin.
   if (INSTITUTIONAL_PLAN_IDS.includes(paymentPlanId) && !context.user.isAdmin) {
     const ownedParish = await context.entities.Parish.findFirst({
       where: { ownerId: context.user.id, type: { not: "PERSONAL" } },
@@ -79,9 +117,9 @@ export const generateCheckoutSession: GenerateCheckoutSession<
       ? await context.entities.Membership.findFirst({
           where: {
             userId: context.user.id,
-            status: 'ACTIVE',
-            role: { in: ['PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'DIOCESE_ADMIN'] },
-            parish: { type: { not: 'PERSONAL' } },
+            status: "ACTIVE",
+            role: { in: ["PARISH_COORDINATOR", "COMMUNITY_COORDINATOR", "DIOCESE_ADMIN"] },
+            parish: { type: { not: "PERSONAL" } },
           },
           select: { id: true },
         })
@@ -89,13 +127,11 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     if (!ownedParish && !coordinatorMembership) {
       throw new HttpError(
         403,
-        'O plano Ilimitado requer que você crie ou seja administrador de uma paróquia ou diocese antes de contratá-lo. O Plano Único cobre o seu espaço pessoal.',
+        "O plano Ilimitado requer que você crie ou seja administrador de uma paróquia ou diocese antes de contratá-lo. O Plano Único cobre o seu espaço pessoal.",
       );
     }
   }
 
-  // Prevent duplicate subscriptions: if the user already has an active-like
-  // subscription for this scope, they should use changeSubscriptionPlan instead.
   const isInstitutionalPlan = INSTITUTIONAL_PLAN_IDS.includes(paymentPlanId);
   const freshUser = await context.entities.User.findUnique({
     where: { id: userId },
@@ -105,10 +141,9 @@ export const generateCheckoutSession: GenerateCheckoutSession<
   if (hasActiveSub && !isInstitutionalPlan) {
     throw new HttpError(
       409,
-      'Você já possui uma assinatura ativa. Para trocar de plano, use a opção de alterar plano no portal de pagamento.',
+      "Você já possui uma assinatura ativa. Para trocar de plano, use a opção de alterar plano no portal de pagamento.",
     );
   }
-
 
   let session;
   try {
@@ -118,11 +153,31 @@ export const generateCheckoutSession: GenerateCheckoutSession<
       paymentPlan,
       interval,
       prismaUserDelegate: context.entities.User,
+      tracking: {
+        priceId: input.priceId,
+        planId: paymentPlanId,
+        planName: input.planName ?? prettyPaymentPlanName(paymentPlanId),
+        value: input.value ?? getCheckoutValue(paymentPlanId, interval),
+        currency: input.currency ?? detectCurrency(),
+        initiateCheckoutEventId: input.initiate_checkout_event_id,
+        fbp: input.fbp,
+        fbc: input.fbc,
+        fbclid: input.fbclid,
+        clientUserAgent: input.client_user_agent,
+        eventSourceUrl: input.event_source_url,
+        landingPageUrl: input.landing_page_url,
+        referrer: input.referrer,
+        utmSource: input.utm_source,
+        utmMedium: input.utm_medium,
+        utmCampaign: input.utm_campaign,
+        utmContent: input.utm_content,
+        utmTerm: input.utm_term,
+      },
     });
     session = result.session;
   } catch (err: any) {
-    const message = err?.message || '';
-    if (message.includes('Stripe Price ID não configurado')) {
+    const message = err?.message || "";
+    if (message.includes("Stripe Price ID não configurado")) {
       throw new HttpError(503, message);
     }
     const status = err?.response?.status ?? err?.statusCode;
@@ -163,12 +218,6 @@ export const getCustomerPortalUrl: GetCustomerPortalUrl<
   });
 };
 
-/**
- * Resolve the user's current subscription interval ('month' | 'year' | null)
- * and effective plan by reading the active subscription from Stripe at runtime.
- * Falls back gracefully (interval = null) when there is no Stripe customer,
- * no active subscription, or the Stripe API is unreachable.
- */
 export const getSubscriptionDetails: GetSubscriptionDetails<
   void,
   { interval: 'month' | 'year' | null; planId: PlanId; status: string | null }
@@ -203,7 +252,6 @@ export const getSubscriptionDetails: GetSubscriptionDetails<
 
     return { interval, planId: resolvePlanIdOrFree(user.subscriptionPlan), status: user.subscriptionStatus };
   } catch {
-    // Stripe unavailable — degrade gracefully so the billing page still renders.
     return fallback;
   }
 };
@@ -231,8 +279,6 @@ export const cancelSubscription: CancelSubscription<
   }
 
   try {
-    // Schedule cancellation at period end for active or trialing subscriptions.
-    // Access is preserved until the current period or trial expires.
     for (const subscription of subscriptions) {
       await stripeClient.subscriptions.update(subscription.id, {
         cancel_at_period_end: true,
@@ -242,8 +288,6 @@ export const cancelSubscription: CancelSubscription<
     console.error("Failed to schedule Stripe subscription cancellation:", err?.message || err);
   }
 
-  // Set cancel_at_period_end — access continues until webhook fires subscription.deleted.
-  // Do NOT zero out subscriptionPlan or cascade cancel yet.
   await context.entities.User.update({
     where: { id: context.user.id },
     data: {
@@ -281,8 +325,6 @@ export const changeSubscriptionPlan: ChangeSubscriptionPlan<
 
   try {
     const priceId = requireStripePriceId(paymentPlan, interval || 'monthly');
-
-    // Find the current active/trialing subscription via Stripe customer ID
     const stripeSubscriptionId = (await listManageableSubscriptions(user.paymentProcessorUserId))[0]?.id;
     if (!stripeSubscriptionId) {
       throw new HttpError(400, "Nenhuma assinatura ativa encontrada para alterar.");

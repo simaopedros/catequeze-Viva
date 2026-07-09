@@ -1,15 +1,16 @@
 import Stripe from "stripe";
-import { User } from "wasp/entities";
 import { config } from "wasp/server";
+import type { CreateCheckoutSessionTrackingArgs } from "../paymentProcessor";
 import { stripeClient } from "./stripeClient";
 import { getCheckoutTrialConfig } from "./trialConfig";
+import { SUBSCRIPTION_TRIAL_DAYS } from "../../shared/pricing";
 
 /**
  * Returns a Stripe customer for the given User email, creating a customer if none exist.
  * Implements email uniqueness logic since Stripe doesn't enforce unique emails.
  */
 export async function ensureStripeCustomer(
-  userEmail: NonNullable<User["email"]>,
+  userEmail: NonNullable<import("wasp/entities").User["email"]>,
 ): Promise<Stripe.Customer> {
   const customers = await stripeClient.customers.list({
     email: userEmail,
@@ -19,24 +20,69 @@ export async function ensureStripeCustomer(
     return stripeClient.customers.create({
       email: userEmail,
     });
-  } else {
-    return customers.data[0];
   }
+
+  return customers.data[0];
 }
 
 interface CreateStripeCheckoutSessionParams {
   priceId: Stripe.Price["id"];
   customerId: Stripe.Customer["id"];
+  userId: string;
   mode: Stripe.Checkout.Session.Mode;
+  tracking?: CreateCheckoutSessionTrackingArgs;
+}
+
+function cleanObject<T extends Record<string, unknown>>(value: T): T {
+  return Object.fromEntries(
+    Object.entries(value).filter(([, entryValue]) => entryValue !== undefined && entryValue !== null && entryValue !== ""),
+  ) as T;
+}
+
+function toStripeMetadata(tracking?: CreateCheckoutSessionTrackingArgs): Stripe.MetadataParam | undefined {
+  if (!tracking) return undefined;
+
+  const metadata = cleanObject({
+    initiate_checkout_event_id: tracking.initiateCheckoutEventId,
+    fbp: tracking.fbp,
+    fbc: tracking.fbc,
+    fbclid: tracking.fbclid,
+    client_user_agent: tracking.clientUserAgent,
+    event_source_url: tracking.eventSourceUrl,
+    landing_page_url: tracking.landingPageUrl,
+    referrer: tracking.referrer,
+    utm_source: tracking.utmSource,
+    utm_medium: tracking.utmMedium,
+    utm_campaign: tracking.utmCampaign,
+    utm_content: tracking.utmContent,
+    utm_term: tracking.utmTerm,
+    plan_id: tracking.planId,
+    plan_name: tracking.planName,
+    price_id: tracking.priceId,
+    value: tracking.value,
+    currency: tracking.currency,
+    trial_days: SUBSCRIPTION_TRIAL_DAYS,
+  });
+
+  const entries = Object.entries(metadata).map(([key, value]) => [key, String(value).slice(0, 500)]);
+  return entries.length > 0 ? Object.fromEntries(entries) : undefined;
 }
 
 export function createStripeCheckoutSession({
   priceId,
   customerId,
+  userId,
   mode,
+  tracking,
 }: CreateStripeCheckoutSessionParams): Promise<Stripe.Checkout.Session> {
+  const metadata = toStripeMetadata({
+    ...tracking,
+    priceId: tracking?.priceId ?? priceId,
+  });
+
   return stripeClient.checkout.sessions.create({
     customer: customerId,
+    client_reference_id: userId,
     line_items: [
       {
         price: priceId,
@@ -44,12 +90,10 @@ export function createStripeCheckoutSession({
       },
     ],
     mode,
-    success_url: `${config.frontendUrl}/app/billing?status=success`,
+    success_url: `${config.frontendUrl}/obrigado?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${config.frontendUrl}/app/billing?status=canceled`,
-    ...getCheckoutTrialConfig(mode),
-    // `automatic_tax` requires Stripe Tax to be configured in the Dashboard and
-    // a customer address. It is left disabled by default; enable it (together
-    // with `customer_update: { address: "auto" }`) once Stripe Tax is set up.
+    metadata,
+    ...getCheckoutTrialConfig(mode, metadata),
     allow_promotion_codes: true,
     invoice_creation: getInvoiceCreationConfig(mode),
   });

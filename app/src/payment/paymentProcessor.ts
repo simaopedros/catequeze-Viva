@@ -5,12 +5,34 @@ import type { PaymentsWebhook } from "wasp/server/api";
 import type { PaymentPlan } from "./plans";
 import { stripePaymentProcessor } from "./stripe/paymentProcessor";
 
+export interface CreateCheckoutSessionTrackingArgs {
+  priceId?: string;
+  planId?: string;
+  planName?: string;
+  value?: number;
+  currency?: string;
+  initiateCheckoutEventId?: string;
+  fbp?: string;
+  fbc?: string;
+  fbclid?: string;
+  clientUserAgent?: string;
+  eventSourceUrl?: string;
+  landingPageUrl?: string;
+  referrer?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  utmContent?: string;
+  utmTerm?: string;
+}
+
 export interface CreateCheckoutSessionArgs {
   userId: User["id"];
   userEmail: NonNullable<User["email"]>;
   paymentPlan: PaymentPlan;
   interval?: 'monthly' | 'annual';
   prismaUserDelegate: PrismaClient["user"];
+  tracking?: CreateCheckoutSessionTrackingArgs;
 }
 
 export interface FetchCustomerPortalUrlArgs {

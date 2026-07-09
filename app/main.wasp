@@ -111,6 +111,11 @@ page LandingPage {
   component: import LandingPage from "@src/landing-page/LandingPage"
 }
 
+route CheckoutThankYouRoute { path: "/obrigado", to: CheckoutThankYouPage }
+page CheckoutThankYouPage {
+  component: import CheckoutResultPage from "@src/payment/CheckoutResultPage"
+}
+
 // Google Ads landing pages
 route IaLandingPageRoute { path: "/ia", to: IaLandingPage }
 page IaLandingPage {
@@ -206,7 +211,7 @@ action changeSubscriptionPlan {
 
 api paymentsWebhook {
   fn: import { paymentsWebhook } from "@src/payment/webhook",
-  entities: [User, UserAiCredits, TenantBilling, Diocese, Parish, Membership, PricingEvent],
+  entities: [User, UserAiCredits, TenantBilling, Diocese, Parish, Membership, PricingEvent, TrackedEvent],
   middlewareConfigFn: import { paymentsMiddlewareConfigFn } from "@src/payment/webhook",
   httpRoute: (POST, "/payments-webhook")
 }
@@ -1970,4 +1975,7 @@ page PublicUploadDocsPage {
   component: import PublicUploadDocsPage from "@src/catequese/pages/PublicUploadDocsPage"
 }
 //#endregion
+
+
+
 
