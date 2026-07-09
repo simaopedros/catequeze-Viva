@@ -5,7 +5,6 @@ import { Button } from "../../../client/components/ui/button";
 import { Card } from "../../../client/components/ui/card";
 import { Textarea } from "../../../client/components/ui/textarea";
 import {
-  Sparkles,
   RotateCcw,
   ArrowLeft,
   Copy,

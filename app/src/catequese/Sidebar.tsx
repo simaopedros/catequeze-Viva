@@ -27,7 +27,7 @@ import {
   FileCheck,
   CalendarRange,
   Shield,
-  Sparkles,
+  BookOpen,
   ClipboardList,
 } from "lucide-react";
 import { useUserContext } from "../client/hooks/useUserContext";
@@ -56,7 +56,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   catechumens: GraduationCap,
   families: Heart,
   content_library: Library,
-  ai_hub: Sparkles,
+  ai_hub: BookOpen,
   activities: Puzzle,
   calendar: Calendar,
   bible: BookMarked,

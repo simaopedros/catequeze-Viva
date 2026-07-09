@@ -8,7 +8,7 @@ import { ActivityResultPanel } from "./ActivityResultPanel";
 import { Button } from "../../../client/components/ui/button";
 import { Card } from "../../../client/components/ui/card";
 import { Label } from "../../../client/components/ui/label";
-import { Sparkles, Loader2, FileText } from "lucide-react";
+import { Feather, Loader2, FileText } from "lucide-react";
 import { toast } from "../../../client/hooks/use-toast";
 
 const ACTIVITY_TYPES = [
@@ -167,7 +167,7 @@ export function GenerateActivityFlow() {
               </>
             ) : (
               <>
-                <Sparkles className="h-5 w-5" /> {t("activity.generate")}
+                <Feather className="h-5 w-5" /> {t("activity.generate")}
               </>
             )}
           </Button>

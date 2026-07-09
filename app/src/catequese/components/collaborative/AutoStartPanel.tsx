@@ -5,7 +5,7 @@ import { useCollaborative } from "./CollaborativeContext";
 import { QuickSetupPanel } from "./QuickSetupPanel";
 import { getContentItem } from "wasp/client/operations";
 import { modeToIntent, type SessionContext } from "../../../shared/intent";
-import { Loader2, Sparkles, AlertTriangle } from "lucide-react";
+import { Loader2, Feather, AlertTriangle } from "lucide-react";
 
 export function AutoStartPanel({ mode }: { mode: string }) {
   const { t } = useTranslation("ai");
@@ -99,7 +99,7 @@ export function AutoStartPanel({ mode }: { mode: string }) {
       <div className="text-center space-y-4">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-sm border border-border/70 bg-muted/30">
           {status === "starting" ? (
-            <Sparkles className="h-8 w-8 animate-pulse text-[#D39A2B]" />
+            <Feather className="h-8 w-8 animate-pulse text-[#D39A2B]" />
           ) : (
             <Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" />
           )}

@@ -2,14 +2,14 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams, useNavigate } from "react-router";
 import {
-  Sparkles,
+  Feather,
   FilePenLine,
   ArrowLeft,
   MessageSquareText,
   Pencil,
   Puzzle,
   Smartphone,
-  Wand2,
+  RefreshCw,
   Clock,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -71,7 +71,7 @@ const EXISTING_OPTIONS: SubOption[] = [
     key: "adapt",
     titleKey: "hub.existing_adapt",
     descKey: "hub.existing_adapt_desc",
-    icon: Wand2,
+    icon: RefreshCw,
     mode: "improve-content",
     intent: "adapt",
   },
@@ -176,7 +176,7 @@ export function AIHubHome() {
           </p>
         </InteractiveCard>
         <InteractiveCard
-          icon={Sparkles}
+          icon={Feather}
           title={t("hub.create_new")}
           description={t("hub.create_new_desc")}
           onClick={() => {

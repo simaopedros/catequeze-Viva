@@ -18,7 +18,7 @@ import {
   Calendar,
   FileText,
   Trash2,
-  Sparkles,
+  Feather,
   Printer,
   MessageCircle,
 } from "lucide-react";
@@ -429,7 +429,7 @@ export default function ContentDetailPage() {
                     item.title || "",
                   )}&contentTheme=${encodeURIComponent(item.theme || "")}`}
                 >
-                  <Sparkles className="h-4 w-4" />
+                  <Feather className="h-4 w-4" />
                   {t("detail.open_copilot")
                     ? t("detail.open_copilot")
                     : t("detail.generate_ai")}

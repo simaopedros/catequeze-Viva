@@ -15,7 +15,7 @@ import {
   LayoutGrid,
   List,
   ArrowUpDown,
-  Sparkles,
+  Feather,
   BookMarked,
   Search,
   Loader2,
@@ -186,7 +186,7 @@ export default function ContentLibraryPage() {
       value: "ai",
       label: (
         <span className="flex items-center gap-1">
-          <Sparkles className="h-3 w-3" /> {t("library.ai_generated")}
+          <Feather className="h-3 w-3" /> {t("library.ai_generated")}
         </span>
       ),
     },
@@ -238,7 +238,7 @@ export default function ContentLibraryPage() {
             </Button>
             <Button variant="outline" className="h-10 rounded-sm" asChild>
               <Link to="/app/ai-hub?mode=create-meeting">
-                <Sparkles className="mr-2 h-4 w-4" />
+                <Feather className="mr-2 h-4 w-4" />
                 {t("library.generate_ai")}
               </Link>
             </Button>
@@ -445,9 +445,9 @@ export default function ContentLibraryPage() {
                         {i.isAiGenerated && (
                           <Badge
                             variant="outline"
-                            className="bg-yellow-50 text-yellow-700 border-yellow-200 text-overline"
+                            className="border-[#071A2D]/20 bg-[#071A2D]/08 text-[#071A2D] text-overline"
                           >
-                            <Sparkles className="h-2.5 w-2.5" />
+                            <Feather className="h-2.5 w-2.5" />
                             IA
                           </Badge>
                         )}
@@ -507,9 +507,9 @@ export default function ContentLibraryPage() {
                 {item.isAiGenerated && (
                   <Badge
                     variant="outline"
-                    className="gap-1 border-yellow-200 bg-yellow-50 text-yellow-700 text-overline"
+                    className="gap-1 border-[#071A2D]/20 bg-[#071A2D]/08 text-[#071A2D] text-overline"
                   >
-                    <Sparkles className="h-2.5 w-2.5" />
+                    <Feather className="h-2.5 w-2.5" />
                     IA
                   </Badge>
                 )}

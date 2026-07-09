@@ -1,4 +1,4 @@
-import { Sparkles } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import i18n from "../../i18n/config";
 import { toast } from "../../client/hooks/use-toast";
 import { ToastAction } from "../../client/components/ui/toast";
@@ -59,7 +59,7 @@ export function handlePlanLimitError(
           }}
         >
           <span className="flex items-center gap-1">
-            <Sparkles className="h-3.5 w-3.5" />
+            <ArrowUpRight className="h-3.5 w-3.5" />
             {t(`upgrade_journey.${reason}.cta`, {
               defaultValue: t("upgrade_journey.generic.cta"),
             })}
@@ -90,7 +90,7 @@ export function handlePlanLimitError(
           }}
         >
           <span className="flex items-center gap-1">
-            <Sparkles className="h-3.5 w-3.5" />
+            <ArrowUpRight className="h-3.5 w-3.5" />
             {t(`upgrade_journey.${reason}.cta`, {
               defaultValue: t("upgrade_journey.generic.cta"),
             })}
@@ -120,7 +120,7 @@ export function handlePlanLimitError(
           }}
         >
           <span className="flex items-center gap-1">
-            <Sparkles className="h-3.5 w-3.5" />
+            <ArrowUpRight className="h-3.5 w-3.5" />
             Comprar créditos
           </span>
         </ToastAction>

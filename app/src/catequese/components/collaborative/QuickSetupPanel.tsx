@@ -13,7 +13,7 @@ import { Input } from "../../../client/components/ui/input";
 import { Label } from "../../../client/components/ui/label";
 import { Textarea } from "../../../client/components/ui/textarea";
 import {
-  Sparkles,
+  Feather,
   Loader2,
   Sprout,
   Wheat,
@@ -470,7 +470,7 @@ export function QuickSetupPanel({
               </>
             ) : (
               <>
-                <Sparkles className="h-5 w-5" /> {t(buttonLabelKey)}
+                <Feather className="h-5 w-5" /> {t(buttonLabelKey)}
               </>
             )}
           </Button>

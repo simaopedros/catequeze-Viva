@@ -29,7 +29,7 @@ import {
   useQuery,
 } from "wasp/client/operations";
 import {
-  Sparkles,
+  Feather,
   BookOpen,
   Loader2,
   Search,
@@ -431,7 +431,7 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
             variant="outline"
             className="w-full justify-start rounded-sm gap-2"
           >
-            <Sparkles className="h-4 w-4" /> Abrir no copiloto de IA
+            <Feather className="h-4 w-4" /> Abrir no copiloto de IA
           </Button>
         </div>
       </Card>
@@ -604,7 +604,7 @@ function HeaderSection({ backTo }: { backTo: string }) {
             className="h-auto rounded-sm border-[#d8b27b] px-6 py-4 text-left"
           >
             <div className="flex items-start gap-3">
-              <Sparkles className="mt-1 h-4 w-4 text-foreground" />
+              <Feather className="mt-1 h-4 w-4 text-foreground" />
               <div>
                 <div className="text-lg font-semibold">Gerar com IA</div>
                 <div className="text-sm text-muted-foreground">

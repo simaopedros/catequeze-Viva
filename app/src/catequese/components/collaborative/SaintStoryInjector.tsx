@@ -4,7 +4,7 @@ import { useCollaborative } from "./CollaborativeContext";
 import { Button } from "../../../client/components/ui/button";
 import { Card } from "../../../client/components/ui/card";
 import { Badge } from "../../../client/components/ui/badge";
-import { Church, Loader2, Sparkles } from "lucide-react";
+import { Church, Loader2, Feather } from "lucide-react";
 import { getSaintStory } from "wasp/client/operations";
 
 export function SaintStoryInjector() {
@@ -64,7 +64,7 @@ export function SaintStoryInjector() {
           className="w-full text-xs"
           onClick={handleFetch}
         >
-          <Sparkles className="h-3.5 w-3.5 mr-1" /> {t("tools.saint.search")}
+          <Feather className="h-3.5 w-3.5 mr-1" /> {t("tools.saint.search")}
         </Button>
       )}
 
@@ -106,7 +106,7 @@ export function SaintStoryInjector() {
             className="w-full text-xs"
             onClick={handleInsert}
           >
-            <Sparkles className="h-3.5 w-3.5 mr-1" /> {t("tools.saint.insert")}
+            <Feather className="h-3.5 w-3.5 mr-1" /> {t("tools.saint.insert")}
           </Button>
         </div>
       )}

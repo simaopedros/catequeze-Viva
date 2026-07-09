@@ -15,7 +15,7 @@ import {
   Building2,
   Plus,
   ArrowRight,
-  Sparkles,
+  Loader2,
   Mail,
   Check,
   ShieldCheck,
@@ -265,7 +265,7 @@ export default function WorkspaceSelectorPage() {
         {loadingWorkspaces || loadingContext ? (
           <div className="text-center py-16 space-y-4">
             <div className="inline-flex rounded-sm border border-border/70 border border-border/70 bg-muted/30 p-4">
-              <Sparkles className="h-8 w-8 text-muted-foreground animate-pulse" />
+              <Loader2 className="h-8 w-8 text-muted-foreground animate-pulse" />
             </div>
             <p className="text-muted-foreground text-sm">{t("loading")}</p>
           </div>

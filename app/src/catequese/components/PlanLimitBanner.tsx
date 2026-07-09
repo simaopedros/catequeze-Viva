@@ -1,4 +1,4 @@
-import { Info, ArrowRight, Sparkles, Building2 } from "lucide-react";
+import { Info, ArrowRight, ArrowUpRight, Building2 } from "lucide-react";
 import { Link } from "react-router";
 import { useTranslation, Trans } from "react-i18next";
 import { Button } from "../../client/components/ui/button";
@@ -140,7 +140,7 @@ export function PlanLimitBanner({
             className="shrink-0 gap-1 ml-auto"
           >
             <Link to={upgradeHref}>
-              <Sparkles className="h-3 w-3" />
+              <ArrowUpRight className="h-3 w-3" />
               {contextualCta}
             </Link>
           </Button>
@@ -187,7 +187,7 @@ export function PlanLimitBanner({
         <div className="flex items-center gap-3 pl-7">
           <Button asChild variant="subtle" size="sm" className="gap-1.5">
             <Link to={upgradeHref}>
-              <Sparkles className="h-3.5 w-3.5" />
+              <ArrowUpRight className="h-3.5 w-3.5" />
               {contextualCta}
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>

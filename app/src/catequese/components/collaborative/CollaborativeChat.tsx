@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useCollaborative } from "./CollaborativeContext";
 import { Button } from "../../../client/components/ui/button";
 import { Textarea } from "../../../client/components/ui/textarea";
-import { Send, Loader2, Sparkles, UserRound } from "lucide-react";
+import { Send, Loader2, Feather, UserRound } from "lucide-react";
 
 export function CollaborativeChat() {
   const { t } = useTranslation("collaborative");
@@ -50,7 +50,7 @@ export function CollaborativeChat() {
         {visibleMessages.length === 0 && (
           <div className="rounded-sm border border-dashed border-border/70 bg-muted/20 px-4 py-5 text-sm text-muted-foreground">
             <div className="mb-3 flex items-center gap-2 text-foreground">
-              <Sparkles className="h-4 w-4 text-secondary" />
+              <Feather className="h-4 w-4 text-secondary" />
               <p className="font-semibold">{t("title")}</p>
             </div>
             <p className="leading-relaxed">{t("chat.empty")}</p>
@@ -87,7 +87,7 @@ export function CollaborativeChat() {
                 {msg.role === "user" ? (
                   <UserRound className="h-3 w-3" />
                 ) : (
-                  <Sparkles className="h-3 w-3" />
+                  <Feather className="h-3 w-3" />
                 )}
                 {msg.role === "user" ? t("chat.you") : t("chat.ai")}
               </div>

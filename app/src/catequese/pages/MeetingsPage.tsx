@@ -17,7 +17,7 @@ import {
   Plus,
   Calendar,
   BookOpen,
-  Sparkles,
+  Feather,
   MessageCircle,
   Trash2,
 } from "lucide-react";
@@ -331,7 +331,7 @@ export default function MeetingsPage() {
                     )
                   }
                 >
-                  <Sparkles className="mr-1 h-3 w-3" />
+                  <Feather className="mr-1 h-3 w-3" />
                   {t("generate_ai_activity")}
                 </Button>
                 <Button

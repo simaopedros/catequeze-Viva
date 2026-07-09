@@ -4,7 +4,7 @@ import { Link, useSearchParams } from "react-router";
 import { Button } from "../../client/components/ui/button";
 import { Textarea } from "../../client/components/ui/textarea";
 import {
-  Sparkles,
+  Feather,
   X,
   Send,
   Loader2,
@@ -216,7 +216,7 @@ export function AIHelperWidget() {
           className="fixed bottom-6 max-lg:bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] right-4 lg:right-6 z-50 flex h-12 w-12 items-center justify-center rounded-sm bg-[#071A2D] text-white transition-colors hover:bg-[#0a2540]"
           title={t("ai_helper_title")}
         >
-          <Sparkles className="h-6 w-6" />
+          <Feather className="h-6 w-6" />
         </button>
       )}
 

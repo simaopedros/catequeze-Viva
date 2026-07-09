@@ -4,7 +4,7 @@ import { useCollaborative } from "./CollaborativeContext";
 import { Button } from "../../../client/components/ui/button";
 import { Card } from "../../../client/components/ui/card";
 import { Badge } from "../../../client/components/ui/badge";
-import { Lightbulb, Loader2, Sparkles, Check } from "lucide-react";
+import { Lightbulb, Loader2, Feather, Check } from "lucide-react";
 import { getPedagogicalHooks } from "wasp/client/operations";
 
 export function PedagogicalHooksPanel() {
@@ -48,7 +48,7 @@ export function PedagogicalHooksPanel() {
     <Card className="p-4 space-y-3">
       <div>
         <div className="flex items-center gap-1.5 mb-0.5">
-          <Lightbulb className="h-4 w-4 text-yellow-500" />
+          <Lightbulb className="h-4 w-4 text-[#D39A2B]" />
           <h3 className="text-sm font-semibold">{t("tools.hooks.title")}</h3>
         </div>
         <p className="text-xs text-muted-foreground">
@@ -63,7 +63,7 @@ export function PedagogicalHooksPanel() {
           className="w-full text-xs"
           onClick={handleFetch}
         >
-          <Sparkles className="h-3.5 w-3.5 mr-1" /> {t("tools.hooks.generate")}
+          <Feather className="h-3.5 w-3.5 mr-1" /> {t("tools.hooks.generate")}
         </Button>
       )}
 

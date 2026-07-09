@@ -6,7 +6,7 @@ import { Card } from "../../../client/components/ui/card";
 import {
   Lightbulb,
   RefreshCw,
-  Sparkles,
+  Feather,
   Users,
   Heart,
   Home,
@@ -40,7 +40,7 @@ export function SuggestionCards() {
     <div className="p-3 space-y-3 overflow-y-auto h-full">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5 text-sm font-semibold">
-          <Lightbulb className="h-4 w-4 text-yellow-500" />
+          <Lightbulb className="h-4 w-4 text-[#D39A2B]" />
           {t("suggestions.title")}
         </div>
         <Button
@@ -60,7 +60,7 @@ export function SuggestionCards() {
       )}
 
       {suggestions.map((suggestion) => {
-        const Icon = ICON_MAP[suggestion.icon] || Sparkles;
+        const Icon = ICON_MAP[suggestion.icon] || Feather;
         return (
           <button
             key={suggestion.id}

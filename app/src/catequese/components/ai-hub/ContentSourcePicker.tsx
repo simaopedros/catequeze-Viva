@@ -4,7 +4,7 @@ import { useQuery, listContentItems } from "wasp/client/operations";
 import { Card } from "../../../client/components/ui/card";
 import { Button } from "../../../client/components/ui/button";
 import { Input } from "../../../client/components/ui/input";
-import { Sparkles, Search, FileText, Calendar, Loader2 } from "lucide-react";
+import { Feather, Search, FileText, Calendar, Loader2 } from "lucide-react";
 import { Link } from "react-router";
 import { AppPageHeader } from "../../../client/components/brand/AppChrome";
 
@@ -70,7 +70,7 @@ export function ContentSourcePicker({
             <p className="text-sm">{t("hub.no_content_found")}</p>
             <Button variant="outline" size="sm" asChild className="mt-3 gap-2">
               <Link to="/app/ai-hub?mode=create-meeting">
-                <Sparkles className="h-4 w-4" />
+                <Feather className="h-4 w-4" />
                 {t("hub.create_new")}
               </Link>
             </Button>
@@ -107,8 +107,8 @@ export function ContentSourcePicker({
                           </span>
                         )}
                         {item.isAiGenerated && (
-                          <span className="inline-flex items-center gap-1 text-yellow-600">
-                            <Sparkles className="h-3 w-3" /> IA
+                          <span className="inline-flex items-center gap-1 text-[#071A2D]">
+                            <Feather className="h-3 w-3" /> IA
                           </span>
                         )}
                       </div>

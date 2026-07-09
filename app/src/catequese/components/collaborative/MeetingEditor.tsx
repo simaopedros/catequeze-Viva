@@ -13,7 +13,7 @@ import {
   Home,
   Clock,
   ScrollText,
-  Sparkles,
+  Feather,
   Loader2,
   History,
   ArrowLeftRight,
@@ -50,7 +50,7 @@ const BLOCKS: Array<{
     field: "theme",
     label: "Tema",
     helper: "Qual é o tema central deste encontro?",
-    icon: Sparkles,
+    icon: Feather,
     type: "input",
   },
   {

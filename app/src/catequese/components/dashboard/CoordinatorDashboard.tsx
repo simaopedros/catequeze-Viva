@@ -28,7 +28,6 @@ import {
   ChevronRight,
   ArrowUpDown,
   Search,
-  Sparkles,
   ArrowRight,
   CheckCircle2,
 } from "lucide-react";
