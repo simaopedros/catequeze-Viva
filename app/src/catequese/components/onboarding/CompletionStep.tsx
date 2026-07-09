@@ -1,14 +1,15 @@
-import { useTranslation } from 'react-i18next';
-import { ArrowRight, Check, Sparkles } from 'lucide-react';
-import { Button } from '../../../client/components/ui/button';
+import { useTranslation } from "react-i18next";
+import { Button } from "../../../client/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
-interface CompletionSummary {
+export interface CompletionSummary {
   role: string;
   title: string;
   description: string;
   items: { label: string; value: string }[];
   primaryActionLabel: string;
-  secondaryActionLabel: string;
+  primaryActionTo: string;
+  secondaryActionLabel?: string;
 }
 
 interface CompletionStepProps {
@@ -17,48 +18,52 @@ interface CompletionStepProps {
   onSecondaryAction: () => void;
 }
 
-export function CompletionStep({
-  summary,
-  onPrimaryAction,
-  onSecondaryAction,
-}: CompletionStepProps) {
-  const { t } = useTranslation('onboarding');
+export function CompletionStep({ summary, onPrimaryAction, onSecondaryAction }: CompletionStepProps) {
+  const { t } = useTranslation("onboarding");
 
   return (
-    <div className="flex flex-col items-center text-center space-y-6 py-8 animate-in fade-in zoom-in-95 duration-500">
-      <div className="rounded-full bg-success/10 p-4 animate-in zoom-in duration-300 ring-8 ring-success/5">
-        <Check className="h-10 w-10 text-success" />
+    <div className="space-y-8">
+      <div className="space-y-3">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          {t("completion.progress_badge")}
+        </p>
+        <h2
+          className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.85rem]"
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
+          {summary.title}
+        </h2>
+        <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+        <p className="text-sm leading-relaxed text-muted-foreground">{summary.description}</p>
       </div>
 
-      <div className="space-y-2 max-w-md">
-        <div className="inline-flex items-center gap-2 rounded-full border border-success/15 bg-success/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-success">
-          <Sparkles className="h-3.5 w-3.5" />
-          {t('completion.progress_badge')}
-        </div>
-        <h2 className="text-2xl font-bold tracking-tight">{summary.title}</h2>
-        <p className="text-muted-foreground">{summary.description}</p>
-      </div>
-
-      <div className="w-full max-w-sm rounded-xl border bg-card p-4 text-left space-y-2">
-        {summary.items.map((item, i) => (
-          <div key={i} className="flex justify-between gap-4 text-sm">
-            <span className="text-muted-foreground">{item.label}</span>
-            <span className="text-right font-medium">{item.value}</span>
+      <dl className="divide-y divide-border/70 border-y border-border/70">
+        {summary.items.map((item) => (
+          <div key={item.label} className="flex items-baseline justify-between gap-4 py-3">
+            <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              {item.label}
+            </dt>
+            <dd className="text-sm font-medium text-foreground text-right">{item.value}</dd>
           </div>
         ))}
-      </div>
+      </dl>
 
-      <div className="w-full max-w-sm space-y-3">
-        <Button onClick={onPrimaryAction} size="lg" className="w-full gap-2">
+      <p className="text-sm text-muted-foreground">{t("completion.next_step_hint")}</p>
+
+      <div className="flex flex-col gap-2.5">
+        <Button onClick={onPrimaryAction} className="h-11 w-full rounded-sm shadow-none">
           {summary.primaryActionLabel}
-          <ArrowRight className="h-4 w-4" />
+          <ArrowRight className="ml-1 h-4 w-4" />
         </Button>
-        <Button onClick={onSecondaryAction} variant="outline" size="lg" className="w-full gap-2">
-          {summary.secondaryActionLabel}
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onSecondaryAction}
+          className="h-11 w-full rounded-sm"
+        >
+          {summary.secondaryActionLabel || t("completion.go_dashboard")}
         </Button>
       </div>
-
-      <p className="text-xs text-muted-foreground">{t('completion.next_step_hint')}</p>
     </div>
   );
 }

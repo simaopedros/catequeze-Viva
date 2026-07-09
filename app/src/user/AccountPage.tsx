@@ -15,6 +15,11 @@ import {
   parsePaymentPlanId,
   prettyPaymentPlanName,
 } from '../payment/plans';
+import {
+  isOnProductTrial,
+  getProductTrialDaysLeft,
+  getProductTrialEndsAt,
+} from '../shared/pricing';
 
 export default function AccountPage() {
   const { t } = useTranslation('account');
@@ -97,6 +102,7 @@ export default function AccountPage() {
               subscriptionPlan={user.subscriptionPlan}
               subscriptionStatus={user.subscriptionStatus}
               datePaid={user.datePaid}
+              createdAt={user.createdAt}
             />
           </CardContent>
         </Card>
@@ -126,11 +132,30 @@ function UserCurrentSubscriptionPlan({
   subscriptionPlan,
   subscriptionStatus,
   datePaid,
-}: Pick<User, 'subscriptionPlan' | 'subscriptionStatus' | 'datePaid'>) {
-  const { t } = useTranslation('account');
+  createdAt,
+}: Pick<User, 'subscriptionPlan' | 'subscriptionStatus' | 'datePaid' | 'createdAt'>) {
+  const { t, i18n } = useTranslation('account');
+  const { t: tb } = useTranslation('billing');
+
+  const trialUser = { subscriptionStatus, subscriptionPlan, createdAt };
+  const onTrial = isOnProductTrial(trialUser);
 
   let message = t('free_plan');
-  if (
+  if (onTrial) {
+    const ends = getProductTrialEndsAt(createdAt);
+    const daysLeft = getProductTrialDaysLeft(trialUser) ?? 0;
+    const endsLabel = ends
+      ? ends.toLocaleDateString(i18n.language || 'pt-BR', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+        })
+      : '';
+    message =
+      daysLeft === 1
+        ? t('plan_trial_one', { date: endsLabel })
+        : t('plan_trial_other', { count: daysLeft, date: endsLabel });
+  } else if (
     subscriptionPlan !== null &&
     subscriptionStatus !== null &&
     datePaid !== null
@@ -144,9 +169,15 @@ function UserCurrentSubscriptionPlan({
   }
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between gap-3">
       <span className="text-sm">{message}</span>
-      <CustomerPortalButton />
+      {onTrial ? (
+        <a href="/app/billing" className="text-sm font-medium text-primary hover:underline">
+          {tb('trial_banner_cta')}
+        </a>
+      ) : (
+        <CustomerPortalButton />
+      )}
     </div>
   );
 }

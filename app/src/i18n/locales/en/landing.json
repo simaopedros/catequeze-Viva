@@ -1,21 +1,21 @@
 {
   "hero": {
-    "headline_line1": "Stop preparing catechesis in a rush",
-    "headline_line2": "and follow your class on mobile",
-    "subheadline": "Keep attendance, meeting prep, and families in one place — so the pastoral week does not depend on paper, spreadsheets, and improvisation.",
-    "badge": "From preparation to family follow-up",
-    "cta_primary": "View both plans",
-    "cta_secondary": "See the system in 1 minute",
-    "trust_signals": "Works on mobile • CSV import • LGPD-oriented",
-    "cta_secondary_href": "/#planos",
+    "headline_line1": "Catechesis without lost notebooks, spreadsheets, and WhatsApp threads",
+    "headline_line2": "",
+    "subheadline": "In 7 days put your class, attendance, and next meeting in one place. Try it in your real routine.",
+    "badge": "Try 7 days",
+    "cta_primary": "Start your 7 days",
+    "cta_secondary": "How it works",
+    "trust_signals": "Works on mobile • Spreadsheet import • Data protected",
+    "cta_secondary_href": "/#como",
     "highlights": [
       "Attendance and follow-up on mobile",
       "Catechumen import by CSV",
       "AI for meetings and family messages",
       "Family portal in the same system"
     ],
-    "cta_helper": "View both plans and see in under a minute whether catechist or parish fits your case.",
-    "audience_label": "Choose your path",
+    "cta_helper": "Start in minutes",
+    "audience_label": "What is your situation today?",
     "audiences": [
       {
         "id": "catechist",
@@ -23,7 +23,7 @@
         "desc": "I want to organize one class, take attendance on mobile, and prepare meetings faster.",
         "href": "/#planos",
         "cta": "See the catechist plan",
-        "pill": "1 class, 1 catechist",
+        "pill": "For one class",
         "micro": "Run your class, attendance, and meetings without spreadsheets."
       },
       {
@@ -32,10 +32,12 @@
         "desc": "I want to centralize catechists, families, classes, and pastoral follow-up in one system.",
         "href": "/#planos",
         "cta": "See the institutional plan",
-        "pill": "Teams, families, classes",
+        "pill": "For teams and coordination",
         "micro": "Centralize the pastoral operation in one system."
       }
-    ]
+    ],
+    "click_trigger": "Works on mobile · Built for catechesis routines",
+    "image_alt": "Catequese Viva on mobile — attendance and class organized"
   },
   "pain_title": "Catechesis should not be scattered across notebooks, spreadsheets, and messages",
   "pain_subtitle": "Catequese Viva brings preparation, class management, attendance, and families into one flow.",
@@ -150,93 +152,89 @@
   ],
   "more_features": "More tools for when your catechesis grows",
   "more_features_sub": "Features that remain useful after the first class.",
-  "steps_title": "How to start without wasting time",
-  "steps_subtitle": "See the right plan, bring in your class, and move into the next meeting without going back to paper and spreadsheets.",
+  "steps_title": "Simple to begin",
+  "steps_subtitle": "Three steps until you use it with your class.",
   "steps": [
     {
-      "title": "Choose the right plan",
-      "desc": "Single is for one catechist. Unlimited is for the parish or diocese to operate without ceilings."
+      "title": "Create your account",
+      "desc": "Name, email, and password. Quick."
     },
     {
-      "title": "Create your first class",
-      "desc": "Enter with the class already named, scheduled, and located so the work starts with context."
+      "title": "Start the 7-day trial",
+      "desc": "Sign in and start using it right away."
     },
     {
-      "title": "Prepare the next meeting",
-      "desc": "Use AI and the Catholic foundation to leave the blank page behind and reach the first draft faster."
+      "title": "Use it with your class",
+      "desc": "Set up the class, take attendance, prepare the meeting."
     }
   ],
-  "steps_cta": "View plans and start",
-  "pricing_title": "Two plans to get into Catequese Viva",
-  "pricing_subtitle": "Choose Single for one catechist, or Unlimited for the parish or diocese to operate without limits.",
+  "steps_cta": "Start your 7 days",
+  "pricing_title": "After the trial, pick a plan",
+  "pricing_subtitle": "R$ 29 for a catechist. R$ 99 for parish or diocese. First 7 days with no charge.",
   "plans": {
     "single": {
       "name": "Single Plan",
-      "audience": "For individual catechists",
-      "desc": "For one catechist to run a class with clarity, history, and preparation in one flow.",
+      "audience": "Catechist · up to 3 classes",
+      "desc": "Run your class and prepare meetings.",
       "price": "R$ 29",
       "features": [
-        "1 parish",
-        "1 class and 150 catechumens",
-        "Attendance and liturgical calendar",
-        "15 AI credits/month"
+        "Up to 3 classes, 150 catechumens in total",
+        "Attendance history on mobile",
+        "Class calendar",
+        "15 AI credits per month"
       ]
     },
     "unlimited": {
       "name": "Unlimited Plan",
-      "audience": "For parish or diocese teams",
-      "desc": "For parishes and dioceses to centralize teams, classes, families, and AI in one system.",
+      "audience": "Parish or diocese",
+      "desc": "Multiple classes and team in one system.",
       "price": "R$ 99",
       "features": [
-        "Unlimited parishes and classes",
-        "Unlimited catechumens and catechists",
-        "AI meeting generator",
-        "50 AI credits/month"
+        "Unlimited classes and catechists",
+        "Families and messaging in-app",
+        "AI meeting prep",
+        "Institutional operation, no caps"
       ]
     }
   },
   "price_free": "From",
-  "price_popular": "Most chosen",
+  "price_popular": "For teams",
   "price_monthly": "Monthly",
   "price_annual": "Annual",
   "price_cta_free": "See paths",
-  "price_cta_start": "View details and choose",
+  "price_cta_start": "Start 7-day trial",
   "per_month": "/month",
   "per_year": "/year",
-  "annual_discount": "17% discount",
-  "compare_plans": "Compare both full plans",
-  "faq_title": "Questions before choosing your path",
-  "faq_subtitle": "Direct answers about access, AI, mobile, and data protection.",
+  "annual_discount": "2 months free",
+  "compare_plans": "See full plan details",
+  "faq_title": "Before you begin",
+  "faq_subtitle": "Clear answers for catechists and coordinators.",
   "faqs": [
     {
-      "q": "Can I start as an individual catechist?",
-      "a": "Yes. Single is built for the individual catechist to organize the class, track attendance, and prepare meetings in the same flow."
+      "q": "What can I do in the 7-day trial?",
+      "a": "Organize the class, take attendance on mobile, and prepare the next meeting — the real catechesis workflow."
     },
     {
-      "q": "When does AI make sense?",
-      "a": "When you prepare meetings often and want more speed to draft scripts, activities, annual planning, and family messages."
+      "q": "Can I start alone as a catechist?",
+      "a": "Yes. The trial works for one class and also for people who coordinate several."
     },
     {
       "q": "Does it work on mobile?",
-      "a": "Yes. The platform runs in the mobile browser, including attendance and the main workflows."
+      "a": "Yes, in the mobile browser — nothing to install. Attendance is built for use during the meeting."
     },
     {
-      "q": "Can I import catechumens from my spreadsheet?",
-      "a": "Yes. CSV import lets you add catechumens in bulk from the spreadsheet you already use."
+      "q": "Can I import my class spreadsheet?",
+      "a": "Yes. You can import catechumens in bulk and skip starting from zero."
     },
     {
-      "q": "Are children’s data protected?",
-      "a": "The platform includes LGPD-oriented features, digital consent, access control, and data export or deletion requests."
-    },
-    {
-      "q": "Which plan fits a parish or diocese?",
-      "a": "Unlimited covers the institutional operation: multiple classes, catechists, families, and ongoing AI usage in the same system."
+      "q": "Are children's data protected?",
+      "a": "Yes. Access control, consent flows, and LGPD-oriented features are built in."
     }
   ],
-  "cta_title": "Choose the right plan before the next meeting",
-  "cta_subtitle": "Compare the catechist and parish paths in one place and see what fits right now.",
-  "cta_button": "View both plans",
-  "cta_badge": "Clear next step",
+  "cta_title": "Organize catechesis with clarity",
+  "cta_subtitle": "Stop scattering the week across notebooks, spreadsheets, and chats. Try 7 days with your class.",
+  "cta_button": "Start your 7 days",
+  "cta_badge": "Trial",
   "cta_see_plans": "See plans",
   "mock": {
     "ai_title": "AI Meeting Generator",
@@ -330,75 +328,220 @@
   "trust_subtitle": "Catequese Viva handles data on children and families. Protection is in the structure, not in a promise.",
   "trust": [
     {
-      "title": "LGPD compliant",
-      "desc": "Digital consents, role-based access control, and data processing records."
+      "title": "LGPD-aligned",
+      "desc": "Digital consent, role-based access control, and processing records."
     },
     {
       "title": "Encrypted data",
-      "desc": "Information protected in transit and at rest, with role-restricted access."
+      "desc": "Information protected in transit and at rest, with restricted access by role."
     },
     {
-      "title": "Choose the right plan",
-      "desc": "Single covers one catechist. Unlimited covers the team, the parish, or the diocese in one system."
+      "title": "7 days without a card",
+      "desc": "Try with no commitment. Cancel anytime if it is not a fit."
     },
     {
-      "title": "You control your data",
-      "desc": "Export or request data deletion at any time, in line with LGPD."
+      "title": "Control of your data",
+      "desc": "Export or request deletion at any time, in line with LGPD."
     }
   ],
-  "testimonials_title": "Teams using it report more clarity in the pastoral routine",
-  "testimonials_subtitle": "Real feedback about preparation, class follow-up, and communication with families.",
-  "testimonials": [
-    {
-      "name": "Ana Costa",
-      "role": "Catechist — São Paulo, Brazil",
-      "text": "Catechesis preparation became clearer. I can get out of improvisation, organize the class, and review the meeting before the week starts."
-    },
-    {
-      "name": "Maria Silva",
-      "role": "Parish coordinator — Campinas, Brazil",
-      "text": "Today coordination follows attendance, documents, and communication in one place. That reduced a lot of work previously spread across paper, spreadsheets, and messages."
-    },
-    {
-      "name": "Fr. João Santos",
-      "role": "Pastor — Belo Horizonte, Brazil",
-      "text": "The platform helps us see catechesis as a pastoral process, not only administration. Visibility into the class journey improved a lot."
-    }
-  ],
-  "cta_helper": "No form first. Compare plans and choose the next step with clarity.",
+  "testimonials_title": "Testimonials",
+  "testimonials_subtitle": "When we have authorized quotes from catechists and parishes, they will appear here.",
+  "testimonials": [],
+  "cta_helper": "Built for catechists and parishes",
   "mobile_cta": {
-    "title": "View both plans",
-    "subtitle": "Catechist or parish: choose in under a minute.",
-    "button": "Open plans"
+    "title": "7-day trial",
+    "subtitle": "Organize your class on mobile",
+    "button": "Start your 7 days"
   },
   "proof": {
-    "badge": "Proof before pricing",
-    "title": "See quickly whether Catequese Viva fits your case",
-    "subtitle": "Instead of hiding the path, the page separates individual use from parish operation and shows the capabilities that matter most in the routine.",
+    "badge": "Start with confidence",
+    "title": "Built for real catechesis routines",
+    "subtitle": "Whether you run one class or coordinate a parish, the flow is the same: prepare, follow up, and reach families in one place.",
     "stats": [
       {
-        "title": "2 clear paths",
-        "desc": "One plan for the catechist. Another for the parish or diocese operation."
+        "title": "For the catechist",
+        "desc": "One class, mobile attendance, and meeting prep in the same flow."
       },
       {
-        "title": "Mobile at the center",
-        "desc": "Attendance, follow-up, and quick consultation without depending on desktop."
+        "title": "For the parish",
+        "desc": "Multiple classes, catechists, and families when coordination needs one place."
       },
       {
-        "title": "3 languages",
-        "desc": "Portuguese, English, and Spanish in the same product base."
+        "title": "On mobile",
+        "desc": "Attendance and follow-up in the browser — nothing to install."
       }
     ],
-    "featured": {
-      "quote": "Today coordination follows attendance, documents, and communication in one place. That reduced a lot of work previously spread across paper, spreadsheets, and messages.",
-      "name": "Maria Silva",
-      "role": "Parish coordinator — Campinas, Brazil"
-    },
     "chips": [
-      "Mobile attendance",
-      "CSV import",
-      "Family portal",
-      "AI for meetings"
+      "7 free days",
+      "No card to start",
+      "LGPD-oriented",
+      "Demo without account",
+      "Easy cancel"
+    ],
+    "launch_title": "Try it in your context",
+    "launch_text": "Create an account, set up your class, and prepare the next meeting. You have 7 days to see if it fits — no credit card.",
+    "promises": [
+      "7 free days, no credit card",
+      "You review everything AI drafts",
+      "Children’s data handled with care and LGPD",
+      "Cancel anytime"
+    ],
+    "launch_cta": "Start free for 7 days",
+    "launch_helper": "No credit card · Works on mobile · Cancel anytime"
+  },
+  "simple_features": {
+    "title": "Everything a catechist needs, without the clutter",
+    "subtitle": "Prepare meetings, take attendance, and connect families — on mobile, without paper.",
+    "attendance": {
+      "title": "Digital attendance on mobile",
+      "desc": "Mark attendance with one tap during the meeting. No paper, no spreadsheet.",
+      "b1": "Present, absent, late, or justified",
+      "b2": "Import catechumens from CSV",
+      "b3": "Automatic attendance reports"
+    },
+    "ai": {
+      "title": "AI that drafts the meeting for you to review",
+      "desc": "Create scripts, activities, and family messages in minutes — with a Catholic theological base.",
+      "b1": "Scripts with Bible, Catechism, and Directory",
+      "b2": "Activities and quizzes to adapt",
+      "b3": "Ready-to-send family messages"
+    },
+    "family": {
+      "title": "Families follow along in the portal",
+      "desc": "Parents see attendance, justify absences, and get notices — without calling the parish.",
+      "b1": "Portal per child",
+      "b2": "Online absence justification",
+      "b3": "Secure document upload links"
+    }
+  },
+  "steps_endowed_title": "You're already here",
+  "steps_endowed_desc": "Getting to know the platform",
+  "price_trial_badge": "7 free days · No credit card",
+  "price_trial_note": "The trial requires a card (Stripe). No charge for 7 days; cancel before and you pay nothing.",
+  "comparison": {
+    "title": "Stop scattering catechesis across paper, spreadsheets, and WhatsApp",
+    "subtitle": "Compare the usual workflow with Catequese Viva on the criteria that matter week to week.",
+    "col_criterion": "What you need",
+    "col_old": "Paper + spreadsheet + WhatsApp",
+    "col_next": "Catequese Viva",
+    "cta": "Start free for 7 days",
+    "helper": "No credit card. Cancel anytime.",
+    "rows": [
+      {
+        "criterion": "Prepare the meeting",
+        "old": "Copying folders, scattered searches, and last-minute improvisation",
+        "next": "AI draft + Bible and Catechism in one place, for you to review"
+      },
+      {
+        "criterion": "Attendance and absences",
+        "old": "Paper lists that get lost and rarely become history",
+        "next": "Mobile attendance with history and absence alerts"
+      },
+      {
+        "criterion": "Catechumen list",
+        "old": "Outdated spreadsheets and different versions per catechist",
+        "next": "Single roster with spreadsheet import"
+      },
+      {
+        "criterion": "Family notices",
+        "old": "Messages lost across groups and side chats",
+        "next": "Family portal and communication in the same system"
+      },
+      {
+        "criterion": "Documents and certificates",
+        "old": "Photos on WhatsApp, email, and uncontrolled folders",
+        "next": "Secure upload links with pending status"
+      },
+      {
+        "criterion": "Class visibility",
+        "old": "You only notice problems at the next meeting",
+        "next": "A dashboard of what needs attention before class"
+      }
     ]
-  }
+  },
+  "faq_cta": "Start your 7 days",
+  "faq_cta_helper": "Use it with your class this week",
+  "price_cta_single": "Try Single plan",
+  "price_cta_unlimited": "Try Unlimited plan",
+  "price_annual_equivalent": "Equals {{price}}/month",
+  "demo": {
+    "badge": "Try without creating an account",
+    "title": "Watch a meeting draft appear in seconds",
+    "subtitle": "Pick a theme, generate the outline, and see the flow — no signup and no card.",
+    "helper": "Local demo example. In the product, AI uses a Catholic base and you always review before using.",
+    "panel_title": "Meeting generator",
+    "panel_subtitle": "Interactive demo · no account",
+    "prompt_label": "Meeting theme",
+    "generate": "Generate draft",
+    "regenerate": "Generate again",
+    "generating": "Building the outline…",
+    "empty": "Click “Generate draft” to see a sample meeting.",
+    "result_title": "Sample outline",
+    "result_badge": "Demo",
+    "done_note": "Like the flow? Create an account and prepare your real next meeting.",
+    "cta": "Start free for 7 days",
+    "topics": [
+      {
+        "id": "eucharist",
+        "label": "Eucharist",
+        "prompt": "Meeting on the Eucharist for ages 9–10, 60 minutes, simple language.",
+        "steps": [
+          "Welcome and opening prayer (5 min)",
+          "Activity: “Bread that unites”",
+          "Reading: Lk 22:14-20",
+          "Simple explanation with the Catechism (CCC §1322-1327)",
+          "Group activity + family take-home",
+          "Closing prayer and send-off"
+        ]
+      },
+      {
+        "id": "confirmation",
+        "label": "Confirmation",
+        "prompt": "Meeting on the Holy Spirit in Confirmation for teens, 75 minutes.",
+        "steps": [
+          "Icebreaker: “Which gift do I need today?”",
+          "Reading: Acts 2:1-4 (Pentecost)",
+          "Dialogue: gifts of the Spirit in real life",
+          "Directory reference and parish life",
+          "Quick quiz in pairs",
+          "Sending prayer and weekly commitment"
+        ]
+      },
+      {
+        "id": "family",
+        "label": "Family",
+        "prompt": "Meeting on the family as domestic Church, First Eucharist, 50 minutes.",
+        "steps": [
+          "Welcome with song and a peace gesture",
+          "Bible story: the Holy Family",
+          "Conversation: how faith shows up at home",
+          "Activity for parents",
+          "Ready message for the family portal",
+          "Joint closing prayer"
+        ]
+      }
+    ]
+  },
+  "testimonials_note": "Launch phase: we do not publish testimonials without authorization.",
+  "outcomes": {
+    "title": "Catechesis essentials, together",
+    "subtitle": "Three changes you feel in the first week.",
+    "items": [
+      {
+        "title": "Class organized",
+        "desc": "Catechumens, schedule, and history in one place — no outdated spreadsheet."
+      },
+      {
+        "title": "Attendance on mobile",
+        "desc": "Mark presence during the meeting without paper that gets lost."
+      },
+      {
+        "title": "Next meeting ready",
+        "desc": "Prep the outline (with AI help if you want) and review before using it."
+      }
+    ],
+    "eyebrow": "In practice"
+  },
+  "steps_eyebrow": "Get started",
+  "faq_eyebrow": "Questions"
 }

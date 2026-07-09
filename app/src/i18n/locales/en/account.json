@@ -9,6 +9,8 @@
   "credits": "Credits",
   "credits_value": "{{count}} credits",
   "free_plan": "No subscription",
+  "plan_trial_one": "Trial period — 1 day left (until {{date}})",
+  "plan_trial_other": "Trial period — {{count}} days left (until {{date}})",
   "manage_payment": "Manage Payment",
   "buy_credits": "Buy More Credits",
   "plan_past_due": "Your {{plan}} plan payment is past due. Please update your subscription payment details.",

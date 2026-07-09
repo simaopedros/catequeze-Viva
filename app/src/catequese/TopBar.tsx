@@ -3,10 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { useQuery, globalSearch } from 'wasp/client/operations';
 import { listNotifications, markNotificationRead, markAllNotificationsRead } from 'wasp/client/operations';
-import { Search, Bell, Menu, X, Loader2, Users, GraduationCap, ScrollText, BookMarked, FileText, Library, FolderOpen, MessageSquareText, CalendarDays, Home, Church, Building2, Shield } from 'lucide-react';
+import { Search, Bell, Menu, X, Loader2, Users, GraduationCap, ScrollText, BookMarked, FileText, Library, FolderOpen, MessageSquareText, CalendarDays, Home, Church, Building2, Shield, Clock } from 'lucide-react';
 import { useAuth } from 'wasp/client/auth';
 import { UserDropdown } from '../user/UserDropdown';
-import { useUserContext } from '../client/hooks/useUserContext';
 import { useUnreadNotificationCount } from '../client/hooks/useUnreadNotificationCount';
 import { formatRelativeTime } from '../i18n/format';
 import { useLocale } from '../i18n/useLocale';
@@ -19,6 +18,14 @@ import {
 import { cn } from '../client/utils';
 import { ContextSelector } from './components/ContextSelector';
 import { SearchSheet } from './components/SearchSheet';
+import {
+  isOnProductTrial,
+  getProductTrialDaysLeft,
+  isOnInstitutionalTrial,
+  getInstitutionalTrialDaysLeft,
+} from '../shared/pricing';
+import { useActiveWorkspace } from '../client/hooks/useActiveWorkspace';
+import { Link } from 'react-router';
 
 const MODULE_ICONS: Record<string, React.ComponentType<any>> = {
   catechumen: Users,
@@ -51,9 +58,26 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
   const { t } = useTranslation('common');
   const { t: tTop } = useTranslation('topbar');
   const { t: tNav } = useTranslation('navigation');
+  const { t: tBilling } = useTranslation('billing');
   const { currentLocale } = useLocale();
   const { data: user } = useAuth();
+  const { isPersonal, workspace } = useActiveWorkspace();
   const navigate = useNavigate();
+
+  const personalTrial = isPersonal && isOnProductTrial(user);
+  const instBilling =
+    !isPersonal && workspace?.billingStatus
+      ? {
+          plan: workspace.plan || 'SINGLE',
+          status: workspace.billingStatus,
+          trialEndsAt: (workspace as { trialEndsAt?: string | Date | null }).trialEndsAt ?? null,
+        }
+      : null;
+  const institutionalTrial = Boolean(instBilling && isOnInstitutionalTrial(instBilling));
+  const onTrial = personalTrial || institutionalTrial;
+  const trialDaysLeft = personalTrial
+    ? getProductTrialDaysLeft(user)
+    : getInstitutionalTrialDaysLeft(instBilling);
 
   // Search state
   const [query, setQuery] = useState('');
@@ -296,6 +320,18 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
       {/* Right section — hidden when search expanded on mobile */}
       {!searchExpanded && (
       <div className="ml-auto flex items-center gap-1.5 sm:gap-2 min-w-0">
+        {onTrial && (
+          <Link
+            to="/app/billing"
+            className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-950 transition-colors hover:bg-amber-100"
+            title={tBilling('trial_status_title')}
+          >
+            <Clock className="h-3 w-3 shrink-0" aria-hidden />
+            {trialDaysLeft === 1
+              ? tBilling('trial_topbar_one')
+              : tBilling('trial_topbar_other', { count: trialDaysLeft ?? 0 })}
+          </Link>
+        )}
         {/* Unified context selector: workspace + role */}
         <ContextSelector />
 

@@ -24,6 +24,23 @@
   "active_desc": "Tu plan está activo. Mantén encuentros, historial y familias dentro del mismo flujo.",
   "upgrade_desc": "Elige el plan para seguir con encuentros, historial y acompañamiento sin interrupciones.",
   "payment_desc": "Completa el pago para liberar el acceso completo.",
+  "trial_status_badge": "Periodo de prueba",
+  "trial_plan_badge": "En prueba",
+  "trial_status_title": "Periodo de prueba",
+  "trial_status_desc_one": "Queda 1 día de tu prueba gratuita. Suscríbete para mantener el acceso sin interrupción.",
+  "trial_status_desc_other": "Quedan {{count}} días de tu prueba gratuita. Ya usas los límites del plan Único.",
+  "trial_hero_subtitle_one": "Último día del periodo de prueba. Suscríbete cuando quieras mantener todo funcionando.",
+  "trial_hero_subtitle_other": "Estás en periodo de prueba ({{count}} días restantes). Explora la plataforma sin cobro por ahora.",
+  "trial_ends_on": "La prueba termina el {{date}}.",
+  "trial_subscribe_cta": "Suscribirse ahora",
+  "trial_subscribe_plan": "Suscribirse a {{plan}}",
+  "trial_banner_title_one": "Queda 1 día de tu periodo de prueba",
+  "trial_banner_title_other": "Quedan {{count}} días de tu periodo de prueba",
+  "trial_banner_subtitle": "Suscríbete para mantener grupos, asistencia e IA sin interrupción.",
+  "trial_banner_ends": "Termina el {{date}}.",
+  "trial_banner_cta": "Ver suscripción",
+  "trial_topbar_one": "1 día de prueba",
+  "trial_topbar_other": "{{count}} días de prueba",
   "cancel_subscription": "Cancelar suscripción",
   "cancelling": "Cancelando…",
   "manage_payment": "Gestionar pago",
@@ -79,8 +96,8 @@
       "annual_price": "R$ 290/año (~R$ 24/mes)",
       "features": [
         "1 parroquia",
-        "1 grupo",
-        "150 catecúmenos",
+        "Hasta 3 grupos",
+        "150 catecúmenos en total",
         "Asistencia y calendario litúrgico",
         "15 créditos de IA/mes"
       ]
@@ -129,6 +146,7 @@
   "unlimited": "ilimitado",
   "limit_caption": "Límite {{limit}}",
   "conversion_badge": "Suscripcion",
+  "conversion_trial_cta": "Probar por 7 días",
   "conversion_payment_title": "Confirma tu suscripción",
   "conversion_required_title": "Elige tu plan para continuar",
   "conversion_personal_title": "Elige el plan de tu espacio personal",
@@ -213,3 +231,4 @@
   "switch_interval_error": "Error al cambiar la periodicidad. Inténtalo de nuevo.",
   "switching": "Cambiando..."
 }
+

@@ -1,86 +1,127 @@
-import { useState } from 'react';
-import { Link } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import { Copy, Share2 } from 'lucide-react';
-import { BrandLockup } from '../client/components/brand/Brand';
-import { toast } from '../client/hooks/use-toast';
-import { trackMarketingEvent } from '../client/analytics/marketingAnalytics';
+import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
+import { BrandLockup } from "../client/components/brand/Brand";
+import { trackMarketingEvent } from "../client/analytics/marketingAnalytics";
+import { useLocale, SupportedLocale } from "../i18n/useLocale";
+import { cn } from "../client/utils";
 
-export function PublicFooter() {
-  const { t } = useTranslation('publicNav');
-  const [sharing, setSharing] = useState(false);
+const LOCALE_SHORT: Record<SupportedLocale, string> = {
+  "pt-BR": "PT",
+  en: "EN",
+  es: "ES",
+};
 
-  const handleShare = async () => {
-    if (typeof window === 'undefined') return;
-
-    const shareUrl = `${window.location.origin}/`;
-    const shareData = {
-      title: 'Catequese Viva',
-      text: t('tagline'),
-      url: shareUrl,
-    };
-
-    setSharing(true);
-    try {
-      if (navigator.share) {
-        trackMarketingEvent('share_clicked', {
-          placement: 'public_footer',
-          channel: 'native_share',
-        });
-        await navigator.share(shareData);
-      } else if (navigator.clipboard?.writeText) {
-        trackMarketingEvent('share_clicked', {
-          placement: 'public_footer',
-          channel: 'clipboard',
-        });
-        await navigator.clipboard.writeText(shareUrl);
-        toast({ title: t('share_copied') });
-      } else {
-        throw new Error('clipboard_unavailable');
-      }
-    } catch (error) {
-      if ((error as Error)?.name === 'AbortError') {
-        return;
-      }
-      toast({
-        title: t('share_error'),
-        variant: 'destructive',
-      });
-    } finally {
-      setSharing(false);
-    }
-  };
+export function PublicFooter({ hidePricing = false }: { hidePricing?: boolean }) {
+  const { t } = useTranslation("publicNav");
+  const { currentLocale, setLocale, supportedLocales } = useLocale();
 
   return (
-    <footer className="border-t bg-muted/30">
-      <div className="max-w-6xl mx-auto px-4 py-8 md:py-10">
-        <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-          <div className="space-y-2 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2 text-foreground">
-              <BrandLockup compact hideBadge />
-              <span>&copy; {new Date().getFullYear()}</span>
-            </div>
-            <p className="max-w-md leading-relaxed">{t('tagline')}</p>
-            <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground/80">{t('audience')}</p>
+    <footer className="bg-[#071A2D] text-[#E8EEF5]">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="grid gap-10 py-14 sm:py-16 md:grid-cols-12 md:gap-8">
+          <div className="md:col-span-5 space-y-4">
+            <BrandLockup compact hideBadge tone="inverse" />
+            <p className="max-w-xs text-sm leading-relaxed text-[#A8B8C9]">{t("tagline")}</p>
+            <div className="h-px w-10 bg-[#D39A2B]/80" aria-hidden />
           </div>
 
-          <nav className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground md:justify-end">
-            <Link to="/pricing" className="hover:text-foreground transition-colors">{t('pricing')}</Link>
-            <Link to="/about" className="hover:text-foreground transition-colors">{t('about')}</Link>
-            <Link to="/contact" className="hover:text-foreground transition-colors">{t('contact')}</Link>
-            <Link to="/privacy" className="hover:text-foreground transition-colors">{t('privacy')}</Link>
-            <Link to="/terms" className="hover:text-foreground transition-colors">{t('terms')}</Link>
-            <button
-              type="button"
-              onClick={handleShare}
-              disabled={sharing}
-              className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors disabled:opacity-60"
+          <div className="md:col-span-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#D39A2B]/90">
+              {t("footer_explore")}
+            </p>
+            <ul className="mt-4 space-y-2.5 text-sm text-[#C5D0DC]">
+              <li>
+                <a href="/#recursos" className="transition-colors hover:text-white">
+                  {t("resources")}
+                </a>
+              </li>
+              <li>
+                <a href="/#como" className="transition-colors hover:text-white">
+                  {t("how_it_works")}
+                </a>
+              </li>
+              {!hidePricing && (
+                <li>
+                  <Link to="/pricing" className="transition-colors hover:text-white">
+                    {t("pricing")}
+                  </Link>
+                </li>
+              )}
+              <li>
+                <Link to="/contact" className="transition-colors hover:text-white">
+                  {t("contact")}
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="transition-colors hover:text-white">
+                  {t("about")}
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="md:col-span-4 md:text-right">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#D39A2B]/90">
+              {t("footer_start")}
+            </p>
+            <p className="mt-4 text-sm leading-relaxed text-[#A8B8C9] md:ml-auto md:max-w-[16rem]">
+              {t("footer_start_desc")}
+            </p>
+            <Link
+              to="/signup"
+              className="mt-5 inline-flex h-10 items-center justify-center rounded-sm bg-[#FFF7E7] px-5 text-sm font-semibold text-[#071A2D] transition-colors hover:bg-white"
+              onClick={() =>
+                trackMarketingEvent("primary_cta_clicked", {
+                  landing: "public_footer",
+                  placement: "footer_cta",
+                  destination: "/signup",
+                })
+              }
             >
-              {typeof navigator !== 'undefined' && typeof navigator.share === 'function' ? <Share2 className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-              {t('share')}
-            </button>
-            <Link to="/pricing" className="font-medium text-primary hover:text-primary/80 transition-colors">{t('signup')}</Link>
-          </nav>
+              {t("cta")}
+            </Link>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-4 border-t border-white/10 py-5 text-xs text-[#8A9AAB] sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} Catequese Viva</p>
+
+          <div
+            className="flex items-center gap-1 text-[11px] font-medium tracking-wide"
+            role="group"
+            aria-label={t("language")}
+          >
+            {supportedLocales.map((locale, i) => (
+              <span key={locale} className="inline-flex items-center">
+                {i > 0 && <span className="mx-1.5 text-white/20 select-none">·</span>}
+                <button
+                  type="button"
+                  onClick={() => setLocale(locale)}
+                  className={cn(
+                    "rounded-sm px-0.5 py-0.5 transition-colors",
+                    currentLocale === locale
+                      ? "font-semibold text-[#F4CF7A]"
+                      : "text-[#8A9AAB] hover:text-[#E8EEF5]"
+                  )}
+                  aria-current={currentLocale === locale ? "true" : undefined}
+                >
+                  {LOCALE_SHORT[locale]}
+                </button>
+              </span>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap gap-x-5 gap-y-2">
+            <Link to="/privacy" className="transition-colors hover:text-[#E8EEF5]">
+              {t("privacy")}
+            </Link>
+            <Link to="/terms" className="transition-colors hover:text-[#E8EEF5]">
+              {t("terms")}
+            </Link>
+            <Link to="/login" className="transition-colors hover:text-[#E8EEF5]">
+              {t("login")}
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

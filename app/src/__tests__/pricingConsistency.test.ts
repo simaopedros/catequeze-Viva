@@ -230,6 +230,9 @@ describe('isSubscriptionActiveLike', () => {
 });
 
 describe('getPersonalPlanId', () => {
+  const recentSignup = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000); // 2 days ago
+  const oldSignup = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // 30 days ago
+
   it('returns single for active personal sub', () => {
     expect(getPersonalPlanId({ subscriptionStatus: 'active', subscriptionPlan: 'single' })).toBe('single');
   });
@@ -240,6 +243,36 @@ describe('getPersonalPlanId', () => {
 
   it('returns single for past_due', () => {
     expect(getPersonalPlanId({ subscriptionStatus: 'past_due', subscriptionPlan: 'single' })).toBe('single');
+  });
+
+  it('returns single during product trial (trialing within window)', () => {
+    expect(
+      getPersonalPlanId({
+        subscriptionStatus: 'trialing',
+        subscriptionPlan: 'single',
+        createdAt: recentSignup,
+      }),
+    ).toBe('single');
+  });
+
+  it('defaults product trial plan to single when plan is free sentinel', () => {
+    expect(
+      getPersonalPlanId({
+        subscriptionStatus: 'trialing',
+        subscriptionPlan: 'catechist_free',
+        createdAt: recentSignup,
+      }),
+    ).toBe('single');
+  });
+
+  it('returns catechist_free when product trial window expired', () => {
+    expect(
+      getPersonalPlanId({
+        subscriptionStatus: 'trialing',
+        subscriptionPlan: 'single',
+        createdAt: oldSignup,
+      }),
+    ).toBe('catechist_free');
   });
 
   it('returns catechist_free for deleted status', () => {
@@ -398,14 +431,28 @@ describe('getWorkspaceEffectivePlan', () => {
     expect(result.source).toBe('institutional');
   });
 
-  it('institutional workspace with active trial returns trial source', () => {
+  it('institutional workspace with active trial returns single entitlements', () => {
     const future = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
     const result = getWorkspaceEffectivePlan({
       user: { subscriptionStatus: null, subscriptionPlan: null },
       parishType: 'PARISH',
       billing: { plan: 'CATECHIST_FREE', status: 'TRIAL', trialEndsAt: future },
     });
-    expect(result.plan).toBe('catechist_free');
+    expect(result.plan).toBe('single');
+    expect(result.source).toBe('trial');
+  });
+
+  it('personal product trial returns single with trial source', () => {
+    const recentSignup = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000);
+    const result = getWorkspaceEffectivePlan({
+      user: {
+        subscriptionStatus: 'trialing',
+        subscriptionPlan: 'single',
+        createdAt: recentSignup,
+      },
+      parishType: 'PERSONAL',
+    });
+    expect(result.plan).toBe('single');
     expect(result.source).toBe('trial');
   });
 

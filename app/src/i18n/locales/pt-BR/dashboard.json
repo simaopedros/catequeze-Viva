@@ -1,6 +1,20 @@
 {
   "title": "Painel da Catequese",
   "subtitle": "Acompanhe turmas, presença e pendências pastorais.",
+  "activation": {
+    "eyebrow": "Primeiros passos",
+    "title": "Deixe sua catequese pronta para o dia a dia",
+    "progress": "{{done}} de {{total}} concluídos",
+    "dismiss": "Dispensar checklist",
+    "step_class_title": "Ter uma turma",
+    "step_class_desc": "A turma é o centro da chamada e do acompanhamento.",
+    "step_people_title": "Incluir catequizandos",
+    "step_people_desc": "Sem nomes, a presença e os relatórios ficam vazios.",
+    "step_attendance_title": "Registrar a primeira presença",
+    "step_attendance_desc": "Marque quem veio e mantenha o histórico da turma.",
+    "step_meeting_title": "Preparar um encontro",
+    "step_meeting_desc": "Use o hub de IA ou a biblioteca para o próximo encontro."
+  },
   "quick_new_class": "Criar nova turma",
   "quick_new_catechumen": "Cadastrar catequizando",
   "quick_ai": "Copiloto IA",

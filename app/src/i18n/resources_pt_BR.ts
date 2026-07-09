@@ -14,6 +14,8 @@ export const account_pt_BR = {
     "credits": "Créditos",
     "credits_value": "{{count}} créditos",
     "free_plan": "Sem assinatura",
+    "plan_trial_one": "Período de teste — resta 1 dia (até {{date}})",
+    "plan_trial_other": "Período de teste — restam {{count}} dias (até {{date}})",
     "manage_payment": "Gerenciar Pagamento",
     "buy_credits": "Comprar Mais Créditos",
     "plan_past_due": "O pagamento do seu plano {{plan}} está em atraso. Atualize as informações de pagamento da sua assinatura.",
@@ -431,8 +433,8 @@ export const attendance_pt_BR = {
   } as const;
 
 export const auth_pt_BR = {
-    "login_title": "Bem-vindo de volta",
-    "login_subtitle": "Entre na sua conta para continuar",
+    "login_title": "Entrar na sua conta",
+    "login_subtitle": "Continue organizando turmas, presença e encontros no mesmo lugar.",
     "login_email_label": "Email",
     "login_email_placeholder": "seu@email.com",
     "login_password_label": "Senha",
@@ -441,10 +443,10 @@ export const auth_pt_BR = {
     "login_button": "Entrar",
     "login_loading": "Entrando...",
     "login_divider": "ou",
-    "login_google": "Entrar com Google",
+    "login_google": "Continuar com Google",
     "login_continue_with_email": "Continuar com email",
     "login_no_account": "Ainda não tem uma conta?",
-    "login_create_account": "Criar conta",
+    "login_create_account": "Começar os 7 dias",
     "login_error_fill_all": "Preencha todos os campos.",
     "login_error_invalid": "Email ou senha incorretos.",
     "login_error_twofactor_check": "Erro ao verificar autenticação. Tente novamente.",
@@ -459,8 +461,8 @@ export const auth_pt_BR = {
     "two_factor_back_button": "Voltar ao login",
     "two_factor_error_required": "Digite o código de 6 dígitos.",
     "two_factor_error_invalid": "Código inválido.",
-    "signup_title": "Criar conta",
-    "signup_subtitle": "Crie sua conta e comece a organizar sua catequese",
+    "signup_title": "Começar os 7 dias",
+    "signup_subtitle": "Crie sua conta e organize turma, chamada e encontros no mesmo lugar.",
     "signup_email_label": "Email",
     "signup_email_placeholder": "seu@email.com",
     "signup_password_label": "Senha",
@@ -472,14 +474,14 @@ export const auth_pt_BR = {
     "signup_terms_and": "e a",
     "terms_of_use": "Termos de Uso",
     "privacy_policy": "Política de Privacidade",
-    "signup_button": "Criar conta",
+    "signup_button": "Criar conta e continuar",
     "signup_loading": "Criando conta...",
     "signup_divider": "ou",
-    "signup_google": "Criar conta com Google",
+    "signup_google": "Continuar com Google",
     "signup_continue_with_email": "Continuar com email",
     "signup_has_account": "Já tem uma conta?",
     "signup_login_link": "Entrar",
-    "signup_success_title": "Conta criada!",
+    "signup_success_title": "Confirme seu email",
     "signup_success_sent_to": "Enviamos um link de confirmação para {{email}}.",
     "signup_success_check_email": "Verifique seu email para ativar a conta.",
     "signup_success_invite_hint": "Depois de confirmar,",
@@ -490,7 +492,7 @@ export const auth_pt_BR = {
     "signup_error_password_mismatch": "As senhas não coincidem.",
     "signup_error_terms": "Deve aceitar os Termos de Uso e a Política de Privacidade.",
     "signup_error_create": "Erro ao criar conta. Tente novamente.",
-    "footer_copyright": "Catequese Viva &copy; {{year}}",
+    "footer_copyright": "© {{year}} Catequese Viva",
     "email_verified": "E-mail verificado com sucesso?",
     "password_reset_success": "Senha redefinida com sucesso?",
     "remember_password": "Lembrou sua senha?",
@@ -535,7 +537,24 @@ export const auth_pt_BR = {
     "password_reset_family_button": "Redefinir senha (família)",
     "email_portal_label": "Portal da família:",
     "email_footer_portal": "portal da família",
-    "email_footer_disclaimer": "Se você não criou esta conta, ignore este email."
+    "email_footer_disclaimer": "Se você não criou esta conta, ignore este email.",
+    "language_label": "Idioma",
+    "signup_panel_eyebrow": "Experimente 7 dias",
+    "signup_panel_title": "Sua catequese organizada começa aqui",
+    "signup_panel_subtitle": "Uma conta. Um lugar para a turma, a presença e o próximo encontro.",
+    "signup_panel_points": [
+      "Monte a turma e importe catequizandos",
+      "Faça a chamada pelo celular",
+      "Prepare o próximo encontro com clareza"
+    ],
+    "login_panel_eyebrow": "Bem-vindo de volta",
+    "login_panel_title": "Sua catequese, de onde parou",
+    "login_panel_subtitle": "Acesse a turma, a chamada e os encontros com a mesma clareza de sempre.",
+    "login_panel_points": [
+      "Retome a organização da turma em segundos",
+      "Registre presença no celular",
+      "Prepare o próximo encontro com tranquilidade"
+    ]
   } as const;
 
 export const bible_pt_BR = {
@@ -597,6 +616,23 @@ export const billing_pt_BR = {
     "active_desc": "Seu plano está ativo. Continue com encontros, histórico e famílias no mesmo fluxo.",
     "upgrade_desc": "Escolha o plano para continuar com encontros, histórico e acompanhamento sem interrupções.",
     "payment_desc": "Conclua o pagamento para liberar seu acesso completo.",
+    "trial_status_badge": "Período de teste",
+    "trial_plan_badge": "Em teste",
+    "trial_status_title": "Período de teste",
+    "trial_status_desc_one": "Resta 1 dia do seu teste gratuito. Assine para manter o acesso sem interrupção.",
+    "trial_status_desc_other": "Restam {{count}} dias do seu teste gratuito. Você já usa o Plano Único com limites liberados.",
+    "trial_hero_subtitle_one": "Último dia do período de teste. Assine quando quiser manter tudo funcionando.",
+    "trial_hero_subtitle_other": "Você está no período de teste ({{count}} dias restantes). Explore a plataforma sem cobrança por enquanto.",
+    "trial_ends_on": "O teste termina em {{date}}.",
+    "trial_subscribe_cta": "Assinar agora",
+    "trial_subscribe_plan": "Assinar {{plan}}",
+    "trial_banner_title_one": "Resta 1 dia do seu período de teste",
+    "trial_banner_title_other": "Restam {{count}} dias do seu período de teste",
+    "trial_banner_subtitle": "Assine para manter turmas, presença e IA sem interrupção.",
+    "trial_banner_ends": "Termina em {{date}}.",
+    "trial_banner_cta": "Ver assinatura",
+    "trial_topbar_one": "1 dia de teste",
+    "trial_topbar_other": "{{count}} dias de teste",
     "cancel_subscription": "Cancelar assinatura",
     "cancelling": "Cancelando…",
     "manage_payment": "Gerenciar pagamento",
@@ -652,8 +688,8 @@ export const billing_pt_BR = {
         "annual_price": "R$ 290/ano (~R$ 24/mês)",
         "features": [
           "1 paróquia",
-          "1 turma",
-          "150 catequizandos",
+          "Até 3 turmas",
+          "150 catequizandos no total",
           "Presença e calendário litúrgico",
           "15 créditos de IA/mês"
         ]
@@ -702,6 +738,7 @@ export const billing_pt_BR = {
     "unlimited": "ilimitado",
     "limit_caption": "Limite {{limit}}",
     "conversion_badge": "Assinatura",
+    "conversion_trial_cta": "Testar por 7 dias",
     "conversion_payment_title": "Confirme sua assinatura",
     "conversion_required_title": "Escolha seu plano para continuar",
     "conversion_personal_title": "Escolha o plano do seu espaço pessoal",
@@ -1869,6 +1906,20 @@ export const cookie_pt_BR = {
 export const dashboard_pt_BR = {
     "title": "Painel da Catequese",
     "subtitle": "Acompanhe turmas, presença e pendências pastorais.",
+    "activation": {
+      "eyebrow": "Primeiros passos",
+      "title": "Deixe sua catequese pronta para o dia a dia",
+      "progress": "{{done}} de {{total}} concluídos",
+      "dismiss": "Dispensar checklist",
+      "step_class_title": "Ter uma turma",
+      "step_class_desc": "A turma é o centro da chamada e do acompanhamento.",
+      "step_people_title": "Incluir catequizandos",
+      "step_people_desc": "Sem nomes, a presença e os relatórios ficam vazios.",
+      "step_attendance_title": "Registrar a primeira presença",
+      "step_attendance_desc": "Marque quem veio e mantenha o histórico da turma.",
+      "step_meeting_title": "Preparar um encontro",
+      "step_meeting_desc": "Use o hub de IA ou a biblioteca para o próximo encontro."
+    },
     "quick_new_class": "Criar nova turma",
     "quick_new_catechumen": "Cadastrar catequizando",
     "quick_ai": "Copiloto IA",
@@ -2021,24 +2072,22 @@ export const family_pt_BR = {
 
 export const landing_pt_BR = {
     "hero": {
-      "headline_line1": "Pare de preparar a catequese na correria",
-      "headline_line2": "e acompanhe sua turma pelo celular",
-      "subheadline": "Prepare o encontro, faça a chamada e fale com as famílias — tudo num só lugar, direto do celular.",
-      "badge": "7 dias grátis para experimentar",
-      "cta_primary": "Começar grátis por 7 dias",
-      "click_trigger": "Sem cartão de crédito · Cancele quando quiser",
-      "image_alt": "Catequese Viva no celular — chamada, encontros e famílias",
-      "cta_secondary": "Ver como funciona",
-      "trust_signals": "Funciona no celular • Importacao por planilha • Dados protegidos",
-      "cta_secondary_href": "/#planos",
+      "headline_line1": "Sua catequese sem caderno, planilha e WhatsApp perdidos",
+      "headline_line2": "",
+      "subheadline": "Em 7 dias você coloca a turma, a chamada e o próximo encontro no mesmo lugar. Teste na sua realidade.",
+      "badge": "Experimente 7 dias",
+      "cta_primary": "Começar os 7 dias",
+      "cta_secondary": "Como funciona",
+      "trust_signals": "Funciona no celular • Importação por planilha • Dados protegidos",
+      "cta_secondary_href": "/#como",
       "highlights": [
         "Chamada e acompanhamento pelo celular",
-        "Importacao de catequizandos por planilha",
+        "Importação de catequizandos por planilha",
         "IA para preparar encontros e avisos",
-        "Familias acompanham pelo portal"
+        "Famílias acompanham pelo portal"
       ],
-      "cta_helper": "Compare os planos e veja qual faz sentido para a sua realidade.",
-      "audience_label": "Qual e a sua realidade hoje?",
+      "cta_helper": "Comece em minutos",
+      "audience_label": "Qual é a sua realidade hoje?",
       "audiences": [
         {
           "id": "catequista",
@@ -2046,19 +2095,21 @@ export const landing_pt_BR = {
           "desc": "Quero organizar minha turma, fazer a chamada no celular e preparar encontros com mais tranquilidade.",
           "href": "/#planos",
           "cta": "Ver plano para catequista",
-          "pill": "Para quem cuida de 1 turma",
+          "pill": "Para quem cuida de até 3 turmas",
           "micro": "Organize sua turma e prepare encontros com mais tranquilidade."
         },
         {
           "id": "paroquia",
-          "title": "Sou paroquia ou diocese",
-          "desc": "Quero centralizar turmas, catequistas, familias e acompanhamento pastoral no mesmo sistema.",
+          "title": "Sou paróquia ou diocese",
+          "desc": "Quero centralizar turmas, catequistas, famílias e acompanhamento pastoral no mesmo sistema.",
           "href": "/#planos",
           "cta": "Ver plano institucional",
-          "pill": "Para coordenacao e equipe",
-          "micro": "Centralize turmas, familias e catequistas em um so lugar."
+          "pill": "Para coordenação e equipe",
+          "micro": "Centralize turmas, famílias e catequistas em um só lugar."
         }
-      ]
+      ],
+      "click_trigger": "Funciona no celular · Feito para a rotina da catequese",
+      "image_alt": "Catequese Viva no celular — chamada e turma organizadas"
     },
     "pain_title": "A catequese não precisa ficar espalhada em caderno, planilha e mensagens",
     "pain_subtitle": "A Catequese Viva junta preparação, turma, presença e família no mesmo fluxo.",
@@ -2085,31 +2136,6 @@ export const landing_pt_BR = {
     "ai_showcase_title": "Veja como um encontro pode nascer em minutos",
     "ai_showcase_subtitle": "A Catequese Viva reúne tema, faixa etária e referências católicas para montar um primeiro rascunho que você revisa antes de usar.",
     "ai_showcase_cta": "Ver planos para preparar a próxima turma",
-    "simple_features": {
-      "title": "Tudo que o catequista precisa, sem complicação",
-      "subtitle": "Prepare encontros, registre presença e conecte as famílias — pelo celular, sem papel.",
-      "attendance": {
-        "title": "Chamada digital pelo celular",
-        "desc": "Registre presença com um toque durante o encontro. Sem papel, sem planilha.",
-        "b1": "Marque presente, falta, atraso ou justificada",
-        "b2": "Importe catequizandos por planilha CSV",
-        "b3": "Relatórios de frequência automáticos"
-      },
-      "ai": {
-        "title": "IA que prepara o encontro para você revisar",
-        "desc": "Crie roteiros, atividades e mensagens para as famílias em minutos — com base teológica católica.",
-        "b1": "Roteiros com Bíblia, Catecismo e Diretório",
-        "b2": "Atividades e quizzes adaptáveis",
-        "b3": "Mensagens prontas para enviar às famílias"
-      },
-      "family": {
-        "title": "Famílias acompanham pelo portal",
-        "desc": "Pais e responsáveis veem presenças, justificam faltas e recebem avisos — sem precisar ligar.",
-        "b1": "Portal personalizado por filho",
-        "b2": "Justificativa de faltas online",
-        "b3": "Envio de documentos por link seguro"
-      }
-    },
     "features_title": "O essencial para organizar a catequese sem improviso",
     "features_subtitle": "Tudo o que mais pesa na rotina do catequista e da coordenacao, no mesmo sistema.",
     "features": {
@@ -2198,99 +2224,89 @@ export const landing_pt_BR = {
     ],
     "more_features": "Mais recursos para quando sua catequese crescer",
     "more_features_sub": "Ferramentas que continuam úteis depois da primeira turma.",
-    "steps_title": "Comece em minutos, não em horas",
-    "steps_subtitle": "Tão simples que você já começou.",
-    "steps_endowed_title": "Você já está aqui",
-    "steps_endowed_desc": "Conhecendo a plataforma",
+    "steps_title": "Simples de entrar",
+    "steps_subtitle": "Três passos até usar na sua turma.",
     "steps": [
       {
         "title": "Crie sua conta",
-        "desc": "Leva menos de 2 minutos. Sem cartão de crédito."
+        "desc": "Nome, e-mail e senha. Rápido."
       },
       {
-        "title": "Monte sua turma",
-        "desc": "Cadastre catequizandos ou importe por planilha."
+        "title": "Ative o trial de 7 dias",
+        "desc": "Entre e comece a usar na mesma hora."
       },
       {
-        "title": "Prepare o próximo encontro",
-        "desc": "Use a IA para sair da página em branco."
+        "title": "Use na sua turma",
+        "desc": "Monte a turma, faça a chamada e prepare o encontro."
       }
     ],
-    "steps_cta": "Criar conta grátis",
-    "pricing_title": "Escolha o plano que combina com a sua realidade",
-    "pricing_subtitle": "Um plano para o catequista individual. Outro para a paroquia ou diocese organizar toda a operacao.",
+    "steps_cta": "Começar os 7 dias",
+    "pricing_title": "Depois do trial, escolha o plano",
+    "pricing_subtitle": "R$ 29 para o catequista. R$ 99 para paróquia ou diocese. Nos 7 primeiros dias você testa sem cobrança.",
     "plans": {
       "single": {
         "name": "Plano Único",
-        "audience": "Para catequista individual",
-        "desc": "Para quem quer organizar a propria turma, fazer a chamada no celular e preparar encontros com mais clareza.",
+        "audience": "Catequista · até 3 turmas",
+        "desc": "Organize sua turma e prepare encontros.",
         "price": "R$ 29",
         "features": [
-          "1 turma com ate 150 catequizandos",
-          "Chamada e historico de presenca",
-          "Calendario e organizacao da turma",
-          "15 creditos de IA por mes"
+          "Até 3 turmas com 150 catequizandos no total",
+          "Chamada e histórico no celular",
+          "Calendário da turma",
+          "15 créditos de IA por mês"
         ]
       },
       "unlimited": {
         "name": "Plano Ilimitado",
-        "audience": "Para paroquia e diocese",
-        "desc": "Para coordenar turmas, catequistas, familias e presenca no mesmo sistema, sem limite operacional.",
+        "audience": "Paróquia ou diocese",
+        "desc": "Várias turmas e equipe no mesmo sistema.",
         "price": "R$ 99",
         "features": [
           "Turmas e catequistas ilimitados",
-          "Catequizandos ilimitados",
+          "Famílias e comunicação no sistema",
           "IA para preparar encontros",
-          "Comunicacao e acompanhamento no mesmo sistema"
+          "Operação institucional sem teto"
         ]
       }
     },
     "price_free": "Desde",
-    "price_popular": "Mais escolhido",
+    "price_popular": "Para equipes",
     "price_monthly": "Mensal",
     "price_annual": "Anual",
     "price_cta_free": "Ver caminhos",
-    "price_cta_start": "Ver detalhes do plano",
+    "price_cta_start": "Começar trial de 7 dias",
     "per_month": "/mês",
     "per_year": "/ano",
-    "annual_discount": "17% de desconto",
-    "compare_plans": "Comparar todos os detalhes dos planos",
-    "faq_title": "Duvidas comuns antes de comecar",
-    "faq_subtitle": "Respostas diretas para quem quer sair do papel e organizar a catequese com mais clareza.",
+    "annual_discount": "2 meses grátis",
+    "compare_plans": "Ver detalhes completos dos planos",
+    "faq_title": "Antes de começar",
+    "faq_subtitle": "Respostas objetivas para catequistas e coordenação.",
     "faqs": [
       {
-        "q": "Os 7 dias grátis são realmente grátis?",
-        "a": "Sim. Você cria a conta sem cartão de crédito e tem 7 dias para usar a plataforma. Se não fizer sentido, não precisa fazer nada — a conta simplesmente expira."
+        "q": "O que eu posso fazer no trial de 7 dias?",
+        "a": "Organizar a turma, registrar presença no celular e preparar o próximo encontro — o fluxo real da catequese."
       },
       {
-        "q": "Posso comecar sozinho, como catequista?",
-        "a": "Sim. O plano para catequista foi pensado para organizar uma turma, fazer a chamada no celular e preparar encontros sem depender de papel ou planilha."
+        "q": "Posso começar sozinho, como catequista?",
+        "a": "Sim. O trial serve para quem cuida de uma turma e também para quem coordena várias."
       },
       {
         "q": "Funciona no celular?",
-        "a": "Sim. Voce consegue registrar presenca, consultar a turma e acessar os principais fluxos pelo navegador do celular."
+        "a": "Sim, no navegador do celular — sem instalar app. A chamada foi pensada para usar no encontro."
       },
       {
-        "q": "Consigo importar a planilha que ja uso?",
-        "a": "Sim. Voce pode importar os catequizandos em lote por planilha e evitar cadastro manual do zero."
+        "q": "Consigo importar a planilha da turma?",
+        "a": "Sim. Você pode importar catequizandos em lote e evitar cadastro manual do zero."
       },
       {
-        "q": "A IA substitui a revisao do catequista?",
-        "a": "Nao. Ela ajuda a montar o primeiro rascunho do encontro, das atividades e dos avisos. A revisao final continua com voce."
-      },
-      {
-        "q": "Os dados das criancas ficam protegidos?",
-        "a": "Sim. A plataforma tem controle de acesso, consentimentos e recursos alinhados a LGPD para cuidar dos dados da catequese."
-      },
-      {
-        "q": "Quando vale ir para o plano institucional?",
-        "a": "Quando a paroquia ou diocese precisa centralizar varias turmas, catequistas, familias e presenca no mesmo sistema."
+        "q": "Os dados das crianças ficam protegidos?",
+        "a": "Sim. Há controle de acesso, consentimentos e recursos alinhados à LGPD."
       }
     ],
-    "cta_title": "Não deixe o próximo encontro depender de improviso",
-    "cta_subtitle": "Cada semana sem organização é uma turma que perde clareza. Comece agora — os primeiros 7 dias são grátis.",
-    "cta_button": "Começar grátis por 7 dias",
-    "cta_badge": "Sem compromisso",
+    "cta_title": "Organize a catequese com clareza",
+    "cta_subtitle": "Pare de espalhar a rotina em caderno, planilha e mensagens. Experimente 7 dias na sua turma.",
+    "cta_button": "Começar os 7 dias",
+    "cta_badge": "Trial",
     "cta_see_plans": "Ver planos",
     "mock": {
       "ai_title": "Gerador de Encontros IA",
@@ -2392,69 +2408,214 @@ export const landing_pt_BR = {
         "desc": "Informações protegidas em trânsito e em repouso, com acesso restrito por papel."
       },
       {
-        "title": "Escolha o plano certo",
-        "desc": "Plano Único para começar sozinho. Plano Ilimitado para cobrir equipe, paróquia ou diocese no mesmo sistema."
+        "title": "7 dias sem cartão",
+        "desc": "Teste sem compromisso. Se não fizer sentido, cancele quando quiser."
       },
       {
         "title": "Controle dos seus dados",
         "desc": "Exporte ou solicite a exclusão dos dados a qualquer momento, conforme a LGPD."
       }
     ],
-    "testimonials_title": "Quem já usa vê mais clareza na rotina pastoral",
-    "testimonials_subtitle": "Depoimentos reais sobre preparação, acompanhamento da turma e comunicação com as famílias.",
-    "testimonials": [
-      {
-        "name": "Ana Costa",
-        "role": "Catequista — São Paulo, SP",
-        "text": "A preparação da catequese ficou mais clara. Consigo sair do improviso, organizar a turma e revisar o encontro antes da semana começar."
-      },
-      {
-        "name": "Maria Silva",
-        "role": "Coordenadora paroquial — Campinas, SP",
-        "text": "Hoje a coordenação acompanha presença, documentos e comunicação no mesmo lugar. Isso reduziu muito o trabalho espalhado entre papel, planilha e mensagens."
-      },
-      {
-        "name": "Pe. João Santos",
-        "role": "Pároco — Belo Horizonte, MG",
-        "text": "A plataforma ajuda a enxergar a catequese como processo pastoral, não só como administração. A visibilidade da caminhada da turma melhorou bastante."
-      }
-    ],
-    "cta_helper": "Sem formulario antes. Primeiro voce entende o plano, depois decide.",
+    "testimonials_title": "Depoimentos",
+    "testimonials_subtitle": "Quando tivermos autorizações reais de catequistas e paróquias, elas aparecem aqui.",
+    "testimonials": [],
+    "cta_helper": "Feito para catequistas e paróquias",
     "mobile_cta": {
-      "title": "Ver planos",
-      "subtitle": "Catequista ou paroquia: compare em menos de 1 minuto.",
-      "button": "Abrir planos"
+      "title": "Trial de 7 dias",
+      "subtitle": "Organize a turma no celular",
+      "button": "Começar os 7 dias"
     },
     "proof": {
-      "badge": "Antes de escolher, entenda se serve para voce",
-      "title": "A Catequese Viva faz sentido para catequista? Faz. Para a paroquia tambem.",
-      "subtitle": "Voce entra pelo caminho que combina com a sua realidade de hoje: organizar uma turma ou coordenar varias ao mesmo tempo.",
+      "badge": "Comece com tranquilidade",
+      "title": "Feito para a rotina real da catequese",
+      "subtitle": "Seja para uma turma ou para a coordenação da paróquia, o fluxo é o mesmo: preparar, acompanhar e falar com as famílias no mesmo lugar.",
       "stats": [
         {
-          "title": "Para quem cuida de 1 turma",
-          "desc": "O plano para catequista resolve preparacao, chamada e acompanhamento no dia a dia."
+          "title": "Para o catequista",
+          "desc": "Uma turma, chamada no celular e preparação de encontros no mesmo fluxo."
         },
         {
-          "title": "Para quem coordena equipes",
-          "desc": "O plano institucional centraliza turmas, catequistas, familias e presenca."
+          "title": "Para a paróquia",
+          "desc": "Várias turmas, catequistas e famílias centralizados quando a coordenação precisar."
         },
         {
-          "title": "Funciona no celular",
-          "desc": "A chamada e o acompanhamento da turma podem ser feitos no navegador do proprio celular."
+          "title": "No celular",
+          "desc": "Presença e acompanhamento no navegador, sem instalar app."
         }
       ],
-      "featured": {
-        "quote": "Hoje a coordenacao acompanha presenca, documentos e comunicacao no mesmo lugar. Isso reduziu muito o trabalho espalhado entre papel, planilha e mensagens.",
-        "name": "Maria Silva",
-        "role": "Coordenadora paroquial — Campinas, SP"
-      },
       "chips": [
-        "Chamada no celular",
-        "Importacao por planilha",
-        "Mensagens para familias",
-        "Portal da familia"
+        "7 dias grátis",
+        "Sem cartão para começar",
+        "LGPD",
+        "Demo sem conta",
+        "Cancelamento simples"
+      ],
+      "launch_title": "Teste na sua realidade",
+      "launch_text": "Crie a conta, monte a turma e prepare o próximo encontro. Você tem 7 dias para ver se faz sentido — sem cartão de crédito.",
+      "promises": [
+        "7 dias grátis, sem cartão de crédito",
+        "Você revisa tudo que a IA gerar",
+        "Dados de crianças com cuidado e LGPD",
+        "Cancele quando quiser"
+      ],
+      "launch_cta": "Começar grátis por 7 dias",
+      "launch_helper": "Sem cartão · Funciona no celular · Cancele quando quiser"
+    },
+    "simple_features": {
+      "title": "Tudo que o catequista precisa, sem complicação",
+      "subtitle": "Prepare encontros, registre presença e conecte as famílias — pelo celular, sem papel.",
+      "attendance": {
+        "title": "Chamada digital pelo celular",
+        "desc": "Registre presença com um toque durante o encontro. Sem papel, sem planilha.",
+        "b1": "Marque presente, falta, atraso ou justificada",
+        "b2": "Importe catequizandos por planilha CSV",
+        "b3": "Relatórios de frequência automáticos"
+      },
+      "ai": {
+        "title": "IA que prepara o encontro para você revisar",
+        "desc": "Crie roteiros, atividades e mensagens para as famílias em minutos — com base teológica católica.",
+        "b1": "Roteiros com Bíblia, Catecismo e Diretório",
+        "b2": "Atividades e quizzes adaptáveis",
+        "b3": "Mensagens prontas para enviar às famílias"
+      },
+      "family": {
+        "title": "Famílias acompanham pelo portal",
+        "desc": "Pais e responsáveis veem presenças, justificam faltas e recebem avisos — sem precisar ligar.",
+        "b1": "Portal personalizado por filho",
+        "b2": "Justificativa de faltas online",
+        "b3": "Envio de documentos por link seguro"
+      }
+    },
+    "steps_endowed_title": "Você já está aqui",
+    "steps_endowed_desc": "Conhecendo a plataforma",
+    "price_trial_badge": "7 dias grátis · Sem cartão",
+    "price_trial_note": "O trial exige cartão (Stripe). Nos 7 dias não cobramos; cancele antes e não paga.",
+    "comparison": {
+      "title": "Pare de espalhar a catequese em papel, planilha e WhatsApp",
+      "subtitle": "Compare o jeito atual com a Catequese Viva em critérios que importam na rotina pastoral.",
+      "col_criterion": "O que você precisa",
+      "col_old": "Papel + planilha + WhatsApp",
+      "col_next": "Catequese Viva",
+      "cta": "Começar grátis por 7 dias",
+      "helper": "Sem cartão de crédito. Cancele quando quiser.",
+      "rows": [
+        {
+          "criterion": "Preparar o encontro",
+          "old": "Copiar de pastas, buscas soltas e improviso de última hora",
+          "next": "Roteiro com IA + Bíblia e Catecismo no mesmo lugar, para você revisar"
+        },
+        {
+          "criterion": "Chamada e faltas",
+          "old": "Lista em papel que se perde e dificilmente vira histórico",
+          "next": "Chamada no celular com histórico e alertas de faltas"
+        },
+        {
+          "criterion": "Lista de catequizandos",
+          "old": "Planilha desatualizada e versões diferentes por catequista",
+          "next": "Cadastro único com importação por planilha"
+        },
+        {
+          "criterion": "Avisos às famílias",
+          "old": "Mensagens perdidas em grupos e conversas paralelas",
+          "next": "Portal da família e comunicação no mesmo sistema"
+        },
+        {
+          "criterion": "Documentos e certidões",
+          "old": "Fotos no WhatsApp, e-mail e pastas sem controle",
+          "next": "Envio por link seguro com status de pendências"
+        },
+        {
+          "criterion": "Visão da turma",
+          "old": "Você só descobre o problema no próximo encontro",
+          "next": "Painel com o que precisa de atenção antes do encontro"
+        }
       ]
-    }
+    },
+    "faq_cta": "Começar os 7 dias",
+    "faq_cta_helper": "Use na sua turma esta semana",
+    "price_cta_single": "Testar Plano Único",
+    "price_cta_unlimited": "Testar Plano Ilimitado",
+    "price_annual_equivalent": "Equivale a {{price}}/mês",
+    "demo": {
+      "badge": "Experimente sem criar conta",
+      "title": "Veja um encontro nascer em segundos",
+      "subtitle": "Escolha um tema, gere o rascunho e entenda o fluxo — sem cadastro e sem cartão.",
+      "helper": "Demonstração local de exemplo. No produto, a IA usa base católica e você revisa antes de usar.",
+      "panel_title": "Gerador de encontros",
+      "panel_subtitle": "Demo interativa · sem conta",
+      "prompt_label": "Tema do encontro",
+      "generate": "Gerar rascunho",
+      "regenerate": "Gerar de novo",
+      "generating": "Montando o roteiro…",
+      "empty": "Clique em “Gerar rascunho” para ver um exemplo de encontro.",
+      "result_title": "Roteiro de exemplo",
+      "result_badge": "Demo",
+      "done_note": "Gostou do fluxo? Crie a conta e prepare o próximo encontro de verdade.",
+      "cta": "Começar grátis por 7 dias",
+      "topics": [
+        {
+          "id": "eucaristia",
+          "label": "Eucaristia",
+          "prompt": "Encontro sobre a Eucaristia para crianças de 9–10 anos, 60 minutos, linguagem acessível.",
+          "steps": [
+            "Acolhida e oração inicial (5 min)",
+            "Dinâmica: “Pão que une” — partilha simbólica",
+            "Leitura: Lc 22,14-20 (instituição da Eucaristia)",
+            "Explicação simples com Catecismo (CIC §1322-1327)",
+            "Atividade em grupo + compromisso com a família",
+            "Oração final e envio"
+          ]
+        },
+        {
+          "id": "crisma",
+          "label": "Crisma",
+          "prompt": "Encontro sobre o Espírito Santo na Crisma para adolescentes, 75 minutos.",
+          "steps": [
+            "Quebra-gelo: “Qual dom eu preciso hoje?”",
+            "Leitura: At 2,1-4 (Pentecostes)",
+            "Diálogo: dons do Espírito na vida real",
+            "Referência do Diretório e da vida paroquial",
+            "Quiz rápido em duplas",
+            "Oração de envio e compromisso da semana"
+          ]
+        },
+        {
+          "id": "familia",
+          "label": "Família",
+          "prompt": "Encontro sobre a família como Igreja doméstica, para 1ª Eucaristia, 50 minutos.",
+          "steps": [
+            "Acolhida com música e gesto de paz",
+            "História bíblica: a Sagrada Família",
+            "Conversa: como a fé aparece em casa",
+            "Atividade para levar aos pais",
+            "Mensagem pronta para o portal da família",
+            "Oração final conjunta"
+          ]
+        }
+      ]
+    },
+    "testimonials_note": "Produto em lançamento: não publicamos depoimentos sem autorização.",
+    "outcomes": {
+      "title": "O essencial da catequese, reunido",
+      "subtitle": "Três mudanças que você sente já na primeira semana.",
+      "items": [
+        {
+          "title": "Turma organizada",
+          "desc": "Catequizandos, horários e histórico em um só lugar — sem planilha desatualizada."
+        },
+        {
+          "title": "Chamada no celular",
+          "desc": "Presença no encontro, sem papel que some e com faltas fáceis de acompanhar."
+        },
+        {
+          "title": "Próximo encontro pronto",
+          "desc": "Prepare o roteiro (com ajuda da IA, se quiser) e revise antes de usar."
+        }
+      ],
+      "eyebrow": "Na prática"
+    },
+    "steps_eyebrow": "Começar",
+    "faq_eyebrow": "Dúvidas"
   } as const;
 
 export const landingIa_pt_BR = {
@@ -3047,37 +3208,31 @@ export const onboarding_pt_BR = {
     "no_parish_selected": "Nenhuma paróquia selecionada.",
     "summary": {
       "type": "Tipo",
-      "personal_account": "Espaço pessoal",
+      "personal_account": "Espaço do catequista",
       "plan": "Plano",
-      "plan_free": "Sem assinatura",
-      "plan_pro": "Plano Único",
+      "plan_free": "—",
+      "plan_pro": "—",
       "class": "Turma",
       "create_later": "Criar depois",
       "diocese": "Diocese",
       "parish": "Paróquia",
       "year": "Ano",
-      "plan_none": "Sem assinatura",
-      "plan_paid": "Plano Único"
+      "plan_none": "—",
+      "plan_paid": "—",
+      "catechumens": "Catequizandos"
     },
     "welcome": {
-      "hello": "Olá, {{name}}!",
-      "hello_default": "Bem-vindo(a)!",
-      "question": "Como você quer começar?",
-      "personal_title": "Quero organizar minha turma",
-      "personal_desc": "Para quem organiza a própria turma e quer começar sem depender da paróquia.",
-      "personal_features": [
-        "Espaço pessoal isolado",
-        "Suas turmas e catequizandos",
-        "Gerador de encontros com IA"
-      ],
-      "manager_title": "Quero organizar a catequese da paróquia",
-      "manager_desc": "Para quem coordena a catequese da paróquia e precisa organizar equipe, turmas e calendário.",
-      "manager_features": [
-        "Multi-catequista",
-        "Comunicação integrada",
-        "Gestão completa da catequese"
-      ],
-      "helper": "Escolha o caminho que mais combina com a sua realidade."
+      "hello": "Olá, {{name}}",
+      "hello_default": "Bem-vindo(a)",
+      "question": "Como você vai usar a Catequese Viva?",
+      "personal_title": "Sou catequista e cuido da minha turma",
+      "personal_desc": "Criar a turma, incluir catequizandos e usar no dia a dia.",
+      "personal_features": [],
+      "manager_title": "Organizo a catequese da paróquia",
+      "manager_desc": "Paróquia, ano catequético e turmas da equipe.",
+      "manager_features": [],
+      "helper": "Você pode mudar de caminho depois, se precisar.",
+      "eyebrow": "Primeiros passos"
     },
     "personal_setup": {
       "title": "Conta Pessoal",
@@ -3214,24 +3369,30 @@ export const onboarding_pt_BR = {
       "optional_details_hint": "Esses detalhes ajudam, mas não precisam bloquear a criação da primeira turma."
     },
     "completion": {
-      "title": "Tudo pronto!",
-      "desc": "Seu acesso já está pronto. Veja o que foi configurado:",
-      "redirecting": "Redirecionando em 5 segundos...",
-      "go_dashboard": "Ir para o Dashboard",
-      "progress_badge": "Cadastro concluído",
-      "next_step_hint": "Agora é hora de começar a usar a plataforma.",
-      "go_billing": "Escolher plano",
+      "title": "Tudo pronto",
+      "desc": "Configuração concluída.",
+      "redirecting": "",
+      "go_dashboard": "Ir ao início",
+      "progress_badge": "Configuração concluída",
+      "next_step_hint": "Agora você pode usar a plataforma no ritmo da sua catequese.",
+      "go_billing": "Continuar",
       "primary_create_class": "Criar minha primeira turma",
-      "primary_create_meeting": "Gerar meu primeiro encontro",
-      "primary_invite_catechist": "Convidar primeiro catequista",
-      "personal_ready_title": "Seu espaço pessoal está pronto",
-      "personal_ready_desc": "Agora crie sua primeira turma para começar a organizar a catequese.",
-      "personal_class_title": "Sua primeira turma já está encaminhada",
-      "personal_class_desc": "Agora gere o primeiro encontro para aproveitar o que já foi preparado.",
-      "manager_ready_title": "A paróquia já está configurada",
-      "manager_ready_desc": "Agora crie a primeira turma para começar a organizar a catequese da paróquia.",
-      "manager_class_title": "A primeira turma da paróquia já está pronta",
-      "manager_class_desc": "Agora convide o primeiro catequista para começar o trabalho em equipe."
+      "primary_create_meeting": "Preparar um encontro",
+      "primary_invite_catechist": "Convidar catequista",
+      "personal_ready_title": "Seu espaço está pronto",
+      "personal_ready_desc": "Você já pode criar turmas e organizar a catequese.",
+      "personal_class_title": "Turma criada",
+      "personal_class_desc": "Sua primeira turma está configurada.",
+      "manager_ready_title": "Paróquia configurada",
+      "manager_ready_desc": "Você já pode criar turmas e convidar catequistas.",
+      "manager_class_title": "Paróquia pronta com a primeira turma",
+      "manager_class_desc": "Estrutura criada. Convide a equipe e continue organizando.",
+      "primary_open_class": "Abrir minha turma",
+      "primary_add_people": "Adicionar catequizandos",
+      "personal_class_ready_title": "Sua turma está pronta",
+      "personal_class_ready_desc": "Turma criada e com catequizandos. Você já pode registrar presença e acompanhar a caminhada.",
+      "personal_class_empty_title": "Turma criada",
+      "personal_class_empty_desc": "A turma existe. Inclua catequizandos quando quiser para usar a chamada com nomes reais."
     },
     "roles": {
       "coordinator": {
@@ -3291,14 +3452,78 @@ export const onboarding_pt_BR = {
     "limits_free": "Nenhum — assine um plano para começar",
     "subtitle_welcome": "Escolha o caminho que leva você ao primeiro resultado com menos esforço.",
     "shell": {
-      "welcome_title": "Vamos começar",
-      "welcome_subtitle": "Escolha como você vai usar a plataforma para seguir pelo caminho certo.",
-      "personal_title": "Monte sua primeira turma",
-      "personal_subtitle": "Comece pelo essencial. O resto você ajusta depois.",
-      "manager_parish_title": "Onde a catequese vai começar?",
-      "manager_parish_subtitle": "Escolha a diocese e a paróquia para cadastrar a primeira turma no lugar certo.",
-      "manager_details_title": "Cadastre a primeira turma",
-      "manager_details_subtitle": "Crie a primeira turma e deixe o ano catequético organizado para a equipe."
+      "welcome_title": "Vamos preparar seu espaço",
+      "welcome_subtitle": "Escolha como você usa a catequese no dia a dia.",
+      "personal_title": "Sua turma, passo a passo",
+      "personal_subtitle": "Em poucos minutos a primeira turma fica utilizável.",
+      "manager_parish_title": "Paróquia e diocese",
+      "manager_parish_subtitle": "Localize a estrutura para a catequese da paróquia.",
+      "manager_details_title": "Ano e primeira turma",
+      "manager_details_subtitle": "Organize o calendário e a equipe com um ponto de partida.",
+      "personal_class_title": "Primeira turma",
+      "personal_class_subtitle": "Dê um nome claro — o restante você ajusta quando quiser.",
+      "personal_people_title": "Quem faz parte da turma",
+      "personal_people_subtitle": "Sem pessoas, a chamada e o acompanhamento ficam vazios."
+    },
+    "back_clean": "Voltar",
+    "change_diocese_clean": "Alterar",
+    "progress": {
+      "welcome": "Caminho",
+      "class": "Turma",
+      "catechumens": "Catequizandos",
+      "done": "Pronto",
+      "institution": "Paróquia",
+      "setup": "Organização"
+    },
+    "class_setup": {
+      "eyebrow": "Passo da turma",
+      "title": "Dê nome à sua primeira turma",
+      "subtitle": "É o núcleo da sua catequese. Horário e local podem vir agora ou depois.",
+      "name_label": "Nome da turma",
+      "name_placeholder": "Ex.: Crisma 2026 — Turma A",
+      "name_hint": "Use um nome que você e as famílias reconheçam com facilidade.",
+      "name_required": "Informe o nome da turma para continuar.",
+      "optional_show": "Adicionar dia, horário e local",
+      "optional_hide": "Ocultar detalhes",
+      "optional_hint": "Opcional. Ajuda a organizar a rotina sem travar o começo.",
+      "day": "Dia da semana",
+      "day_placeholder": "Selecionar",
+      "start_time": "Início",
+      "end_time": "Término",
+      "location": "Local",
+      "location_placeholder": "Ex.: Salão paroquial",
+      "saving": "Criando turma…",
+      "continue": "Continuar",
+      "days": {
+        "0": "Domingo",
+        "1": "Segunda",
+        "2": "Terça",
+        "3": "Quarta",
+        "4": "Quinta",
+        "5": "Sexta",
+        "6": "Sábado"
+      }
+    },
+    "catechumens_setup": {
+      "eyebrow": "Pessoas da turma",
+      "title": "Quem faz parte desta turma?",
+      "subtitle": "Inclua os catequizandos de «{{className}}». Depois você edita e completa os dados.",
+      "tab_manual": "Um a um",
+      "tab_bulk": "Lista",
+      "first_name": "Nome",
+      "last_name": "Sobrenome",
+      "name_required": "Informe ao menos o nome.",
+      "add_one": "Adicionar à turma",
+      "bulk_label": "Lista (um por linha)",
+      "bulk_placeholder": "Maria Silva\nJoão Santos, Oliveira",
+      "bulk_hint": "Nome e sobrenome separados por vírgula ou só o nome em cada linha.",
+      "bulk_empty": "Cole ou digite ao menos um nome.",
+      "add_bulk": "Adicionar lista à turma",
+      "add_error": "Não foi possível adicionar. Tente novamente.",
+      "added_count": "{{count}} na turma",
+      "continue": "Concluir com {{count}} na turma",
+      "skip": "Concluir sem adicionar agora",
+      "skip_hint": "A chamada ficará vazia até você incluir alguém."
     }
   } as const;
 
@@ -3591,7 +3816,7 @@ export const public_pt_BR = {
         },
         {
           "q": "Qual a diferença entre o Plano Único e o Plano Ilimitado?",
-          "a": "O Plano Único cobre 1 paróquia, 1 turma e até 150 catequizandos para um catequista. O Plano Ilimitado remove os limites operacionais e foi pensado para a rotina de paróquias e dioceses."
+          "a": "O Plano Único cobre 1 paróquia, até 3 turmas e até 150 catequizandos no total para um catequista. O Plano Ilimitado remove os limites operacionais e foi pensado para a rotina de paróquias e dioceses."
         },
         {
           "q": "Como funciona o pagamento?",
@@ -3706,15 +3931,24 @@ export const publicNav_pt_BR = {
     "privacy": "Privacidade",
     "terms": "Termos",
     "login": "Entrar",
-    "signup": "Ver planos",
+    "signup": "Começar os 7 dias",
     "openMenu": "Abrir menu",
     "closeMenu": "Fechar menu",
     "tagline": "Plataforma pastoral para organizar turmas, encontros, presença e famílias na catequese católica.",
     "audience": "catequistas • paróquias • dioceses",
-    "cta": "Ver planos",
+    "cta": "Começar os 7 dias",
     "share": "Compartilhar",
     "share_copied": "Link copiado para compartilhar",
-    "share_error": "Não foi possível compartilhar agora"
+    "share_error": "Não foi possível compartilhar agora",
+    "share_hook": "Menos papel. Mais catequese.",
+    "share_subhook": "Compartilhe com outro catequista ou com a coordenação da paróquia.",
+    "share_title": "Catequese Viva",
+    "share_text": "Organize a catequese sem papel e improviso — prepare encontros, faça a chamada e fale com as famílias no mesmo lugar.",
+    "how_it_works": "Como funciona",
+    "footer_explore": "Explorar",
+    "footer_start": "Experimentar",
+    "footer_start_desc": "Organize turma, chamada e encontros no mesmo lugar. Comece os 7 dias.",
+    "language": "Idioma"
   } as const;
 
 export const reports_pt_BR = {

@@ -24,6 +24,23 @@
   "active_desc": "Your plan is active. Keep meetings, history, and families in the same flow.",
   "upgrade_desc": "Choose the plan to continue with meetings, history, and follow-up without interruptions.",
   "payment_desc": "Complete payment to unlock full access.",
+  "trial_status_badge": "Trial period",
+  "trial_plan_badge": "On trial",
+  "trial_status_title": "Trial period",
+  "trial_status_desc_one": "1 day left on your free trial. Subscribe to keep access without interruption.",
+  "trial_status_desc_other": "{{count}} days left on your free trial. You already use Single plan limits.",
+  "trial_hero_subtitle_one": "Last day of your trial. Subscribe when you want to keep everything running.",
+  "trial_hero_subtitle_other": "You are on a trial ({{count}} days left). Explore the product with no charge for now.",
+  "trial_ends_on": "Trial ends on {{date}}.",
+  "trial_subscribe_cta": "Subscribe now",
+  "trial_subscribe_plan": "Subscribe to {{plan}}",
+  "trial_banner_title_one": "1 day left on your trial",
+  "trial_banner_title_other": "{{count}} days left on your trial",
+  "trial_banner_subtitle": "Subscribe to keep classes, attendance, and AI without interruption.",
+  "trial_banner_ends": "Ends on {{date}}.",
+  "trial_banner_cta": "View billing",
+  "trial_topbar_one": "1 trial day left",
+  "trial_topbar_other": "{{count}} trial days left",
   "cancel_subscription": "Cancel subscription",
   "cancelling": "Cancelling…",
   "manage_payment": "Manage payment",
@@ -79,8 +96,8 @@
       "annual_price": "R$ 290/year (~R$ 24/month)",
       "features": [
         "1 parish",
-        "1 class",
-        "150 catechumens",
+        "Up to 3 classes",
+        "150 catechumens in total",
         "Attendance and liturgical calendar",
         "15 AI credits/month"
       ]
@@ -129,6 +146,7 @@
   "unlimited": "unlimited",
   "limit_caption": "Limit {{limit}}",
   "conversion_badge": "Subscription",
+  "conversion_trial_cta": "Try for 7 days",
   "conversion_payment_title": "Confirm your subscription",
   "conversion_required_title": "Choose your plan to continue",
   "conversion_personal_title": "Choose the plan for your personal space",
@@ -213,3 +231,4 @@
   "switch_interval_error": "Failed to change the billing interval. Try again.",
   "switching": "Switching..."
 }
+

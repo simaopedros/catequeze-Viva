@@ -6,7 +6,7 @@
  *
  * Simplified plan structure (BRL only, Stripe only):
  *   - catechist_free : sentinel "Sem assinatura" (access = zero)
- *   - single         : Plano Único (1 paróquia, 1 turma, 150 catequizandos)
+ *   - single         : Plano Único (1 paróquia, 3 turmas, 150 catequizandos no total)
  *   - unlimited      : Plano Ilimitado (paróquia/diocese, tudo ilimitado)
  *
  * Legacy plan ids (catechist_pro, parish_complete, diocese, ...) are mapped to
@@ -146,7 +146,7 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
     level: 'personal',
     prices: { monthlyCents: 2900, annualCents: 29000 },
     limits: {
-      maxClasses: 1,
+      maxClasses: 3,
       maxCatechumens: 150,
       maxCatechists: 1,
       maxParishes: 1,
@@ -158,8 +158,8 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
     },
     features: [
       '1 paróquia',
-      '1 turma',
-      '150 catequizandos',
+      'Até 3 turmas',
+      '150 catequizandos no total',
       'Presença e calendário litúrgico',
       '15 créditos de IA/mês',
     ],
@@ -364,28 +364,77 @@ const PERSONAL_PLAN_IDS: PlanId[] = ['catechist_free', 'single'];
  * Subscription statuses that grant access.
  * `cancel_at_period_end` grants access until the period ends.
  * `past_due` grants access during the dunning grace period.
+ * `trialing` is the product trial (no card) — access depends on trial window.
  */
 const ACTIVE_LIKE_STATUSES = new Set(['active', 'cancel_at_period_end', 'past_due']);
 
+/** Default plan granted during the no-card product trial. */
+export const PRODUCT_TRIAL_PLAN_ID: PlanId = 'single';
+
+export type UserSubscriptionFields = {
+  subscriptionStatus?: string | null;
+  subscriptionPlan?: string | null;
+  /** Used to bound product trial (status = trialing) from signup time. */
+  createdAt?: Date | string | null;
+};
+
 /**
- * Whether a subscription status string counts as having access.
+ * Whether a subscription status string counts as paid access.
  * Treats `active`, `cancel_at_period_end`, and `past_due` as active-like.
- * Never compare subscriptionStatus strings directly — use this.
+ * Product trial (`trialing`) is handled separately via getPersonalPlanId.
+ * Never compare subscriptionStatus strings directly — use this or getPersonalPlanId.
  */
 export function isSubscriptionActiveLike(status: string | null | undefined): boolean {
   if (!status) return false;
   return ACTIVE_LIKE_STATUSES.has(status.toLowerCase());
 }
 
+/** True when status is the no-card product trial marker. */
+export function isProductTrialStatus(status: string | null | undefined): boolean {
+  return (status || '').toLowerCase() === 'trialing';
+}
+
+/**
+ * Product trial window from account creation (SUBSCRIPTION_TRIAL_DAYS).
+ * If createdAt is missing, returns false (fail closed for access checks).
+ */
+export function isProductTrialWindowOpen(
+  createdAt: Date | string | null | undefined,
+  now: Date = new Date(),
+): boolean {
+  if (!createdAt) return false;
+  const start = typeof createdAt === 'string' ? new Date(createdAt) : createdAt;
+  if (Number.isNaN(start.getTime())) return false;
+  const endMs = start.getTime() + SUBSCRIPTION_TRIAL_DAYS * 24 * 60 * 60 * 1000;
+  return endMs >= now.getTime();
+}
+
 /**
  * Effective PERSONAL plan id (lowercase) for a user's personal workspace.
- * Honors active-like subscriptions (active, cancel_at_period_end, past_due).
+ * Honors active-like subscriptions (active, cancel_at_period_end, past_due)
+ * and the no-card product trial (`trialing` within SUBSCRIPTION_TRIAL_DAYS of createdAt).
  * Institutional plan values on User.subscription* resolve to catechist_free
  * (institutional access is governed by TenantBilling).
  */
 export function getPersonalPlanId(
-  user: { subscriptionStatus?: string | null; subscriptionPlan?: string | null } | null | undefined,
+  user: UserSubscriptionFields | null | undefined,
 ): string {
+  const status = (user?.subscriptionStatus || '').toLowerCase();
+
+  // No-card product trial → Single entitlements while the window is open.
+  if (isProductTrialStatus(status) && isProductTrialWindowOpen(user?.createdAt)) {
+    const trialPlan = (user?.subscriptionPlan || PRODUCT_TRIAL_PLAN_ID).toLowerCase();
+    const resolvedTrial = resolvePlanId(trialPlan);
+    if (
+      resolvedTrial &&
+      resolvedTrial !== 'catechist_free' &&
+      (PERSONAL_PLAN_IDS as readonly string[]).includes(resolvedTrial)
+    ) {
+      return resolvedTrial;
+    }
+    return PRODUCT_TRIAL_PLAN_ID;
+  }
+
   const active = isSubscriptionActiveLike(user?.subscriptionStatus);
   const plan = (active ? user?.subscriptionPlan : null)?.toLowerCase() || '';
   const resolved = resolvePlanId(plan);
@@ -395,11 +444,45 @@ export function getPersonalPlanId(
   return 'catechist_free';
 }
 
-/** Whether the user has paid personal access (Single, even cancel_at_period_end). */
+/** Whether the user has paid or trial personal access (Single, even cancel_at_period_end). */
 export function hasPersonalAccess(
-  user: { subscriptionStatus?: string | null; subscriptionPlan?: string | null } | null | undefined,
+  user: UserSubscriptionFields | null | undefined,
 ): boolean {
   return getPersonalPlanId(user) !== 'catechist_free';
+}
+
+/** True while the user is on the no-card product trial (not a paid Stripe sub). */
+export function isOnProductTrial(
+  user: UserSubscriptionFields | null | undefined,
+): boolean {
+  return (
+    isProductTrialStatus(user?.subscriptionStatus) &&
+    isProductTrialWindowOpen(user?.createdAt)
+  );
+}
+
+/** Calendar end of product trial from account creation. */
+export function getProductTrialEndsAt(
+  createdAt: Date | string | null | undefined,
+): Date | null {
+  if (!createdAt) return null;
+  const start = typeof createdAt === 'string' ? new Date(createdAt) : createdAt;
+  if (Number.isNaN(start.getTime())) return null;
+  return new Date(start.getTime() + SUBSCRIPTION_TRIAL_DAYS * 24 * 60 * 60 * 1000);
+}
+
+/**
+ * Whole days remaining in the product trial (ceil).
+ * Returns null when the user is not on product trial.
+ */
+export function getProductTrialDaysLeft(
+  user: UserSubscriptionFields | null | undefined,
+  now: Date = new Date(),
+): number | null {
+  if (!isOnProductTrial(user)) return null;
+  const endsAt = getProductTrialEndsAt(user?.createdAt);
+  if (!endsAt) return null;
+  return Math.max(0, Math.ceil((endsAt.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)));
 }
 
 // ─── Institutional billing helpers ────────────────────────────────────────
@@ -427,13 +510,38 @@ export function isBillingActive(billing: BillingInfo | null | undefined): boolea
   return false;
 }
 
+/** Institutional TenantBilling on TRIAL that is still within trialEndsAt. */
+export function isOnInstitutionalTrial(
+  billing: BillingInfo | null | undefined,
+): boolean {
+  return Boolean(billing && billing.status === 'TRIAL' && isBillingActive(billing));
+}
+
+export function getInstitutionalTrialDaysLeft(
+  billing: BillingInfo | null | undefined,
+  now: Date = new Date(),
+): number | null {
+  if (!isOnInstitutionalTrial(billing) || !billing?.trialEndsAt) return null;
+  const endsAt =
+    typeof billing.trialEndsAt === 'string'
+      ? new Date(billing.trialEndsAt)
+      : billing.trialEndsAt;
+  if (Number.isNaN(endsAt.getTime())) return null;
+  return Math.max(0, Math.ceil((endsAt.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)));
+}
+
 export function getEffectiveBillingPlan(billing: BillingInfo | null | undefined): string {
   if (!billing) return 'CATECHIST_FREE';
   if (!isBillingActive(billing)) return 'CATECHIST_FREE';
   // Normalise legacy plan values to the new canonical ids (uppercase, as
   // stored in the TenantBilling.plan enum column).
   const resolved = resolvePlanId(billing.plan);
-  if (!resolved || resolved === 'catechist_free') return 'CATECHIST_FREE';
+  // Active product trial that still stores the free sentinel should grant
+  // Single entitlements so onboarding (first class, first people) works.
+  if (!resolved || resolved === 'catechist_free') {
+    if (billing.status === 'TRIAL') return PRODUCT_TRIAL_PLAN_ID.toUpperCase();
+    return 'CATECHIST_FREE';
+  }
   return resolved.toUpperCase();
 }
 
@@ -468,7 +576,7 @@ export interface WorkspaceEffectivePlan {
  * should use to decide what plan governs the current workspace.
  */
 export function getWorkspaceEffectivePlan(opts: {
-  user: { subscriptionStatus?: string | null; subscriptionPlan?: string | null } | null | undefined;
+  user: UserSubscriptionFields | null | undefined;
   parishType?: string | null;
   billing?: BillingInfo | null;
   dioceseBilling?: BillingInfo | null;
@@ -478,6 +586,10 @@ export function getWorkspaceEffectivePlan(opts: {
 
   if (isPersonal) {
     const plan = resolvePlanIdOrFree(getPersonalPlanId(user));
+    const status = (user?.subscriptionStatus || '').toLowerCase();
+    if (plan !== 'catechist_free' && isProductTrialStatus(status)) {
+      return { plan, source: 'trial' };
+    }
     return {
       plan,
       source: plan === 'catechist_free' ? 'free' : 'personal',
@@ -491,6 +603,10 @@ export function getWorkspaceEffectivePlan(opts: {
     const plan = getInstitutionalPlanId(billing);
     if (plan) {
       return { plan, source: 'institutional', billingInfo: billing };
+    }
+    // Active TRIAL with free sentinel → Single product trial
+    if (billing.status === 'TRIAL') {
+      return { plan: PRODUCT_TRIAL_PLAN_ID, source: 'trial', billingInfo: billing };
     }
   }
 
@@ -506,13 +622,16 @@ export function getWorkspaceEffectivePlan(opts: {
     }
   }
 
-  // 3. If billing exists but is TRIAL and not expired
+  // 3. If billing exists but is TRIAL and not expired (defensive; covered by isBillingActive above)
   if (billing && billing.status === 'TRIAL' && billing.trialEndsAt) {
     const trialEnd = typeof billing.trialEndsAt === 'string'
       ? new Date(billing.trialEndsAt)
       : billing.trialEndsAt;
     if (trialEnd >= new Date()) {
-      return { plan: 'catechist_free', source: 'trial', billingInfo: billing };
+      const resolved = resolvePlanId(billing.plan);
+      const trialPlan =
+        resolved && resolved !== 'catechist_free' ? resolved : PRODUCT_TRIAL_PLAN_ID;
+      return { plan: trialPlan, source: 'trial', billingInfo: billing };
     }
   }
 

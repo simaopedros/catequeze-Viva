@@ -15,6 +15,7 @@ import {
   Gift, Calendar, Clock, ChevronRight, ArrowUpDown,
   Search, Sparkles, ArrowRight, CheckCircle2,
 } from 'lucide-react';
+import { ActivationChecklist } from './ActivationChecklist';
 
 interface CoordinatorDashboardProps {
   stats: any;
@@ -146,6 +147,8 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
 
   return (
     <div className="space-y-8">
+      <ActivationChecklist stats={stats} />
+
       <section className="overflow-hidden rounded-[32px] border border-border/70 bg-[radial-gradient(circle_at_top_left,_rgba(17,60,107,0.10),_transparent_34%),linear-gradient(180deg,_rgba(255,255,255,1),_rgba(248,250,252,0.96))] p-6 shadow-sm shadow-slate-200/70 lg:p-8">
         <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr] xl:items-start">
           <div className="space-y-6">

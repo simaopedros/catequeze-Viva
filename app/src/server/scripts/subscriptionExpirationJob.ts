@@ -1,12 +1,12 @@
 import { logger } from '../logger';
+import { SUBSCRIPTION_TRIAL_DAYS } from '../../shared/pricing';
 
 /**
  * Subscription expiration job — expires trials and downgrades past-due tenants.
  *
- * This job handles trial expiry for TenantBilling records. Stripe handles
- * active subscription lifecycle via webhooks (invoice.paid,
- * customer.subscription.updated, customer.subscription.deleted), so this job
- * only touches TRIAL records whose trialEndsAt has passed.
+ * This job handles trial expiry for TenantBilling records and the no-card
+ * product trial on User (subscriptionStatus = trialing). Stripe handles
+ * paid subscription lifecycle via webhooks.
  */
 import { skipIfNotJobWorker } from '../jobs/jobGuard';
 
@@ -45,12 +45,15 @@ export const expireSubscriptionsJob = async (
       expiredCount++;
     }
 
-    // 2. Expire trials on User (personal workspace level — subscriptionStatus TRIAL)
+    // 2. Expire product trials on User (personal workspace, no Stripe).
+    // Window = SUBSCRIPTION_TRIAL_DAYS from createdAt. Status is `trialing`
+    // (Stripe-compatible); also clear legacy `trial` markers.
+    const trialCutoff = new Date(now.getTime() - SUBSCRIPTION_TRIAL_DAYS * 24 * 60 * 60 * 1000);
     const expiredUserTrials = await context.entities.User.findMany({
       where: {
-        subscriptionStatus: 'trial',
-        // Users on trial have no datePaid set; we consider trials older than 30 days
-        createdAt: { lt: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000) },
+        subscriptionStatus: { in: ['trialing', 'trial'] },
+        paymentProcessorUserId: null,
+        createdAt: { lt: trialCutoff },
       },
       select: { id: true },
     });
@@ -59,7 +62,7 @@ export const expireSubscriptionsJob = async (
       await context.entities.User.update({
         where: { id: user.id },
         data: {
-          subscriptionStatus: 'canceled',
+          subscriptionStatus: 'deleted',
           subscriptionPlan: 'catechist_free',
         },
       });

@@ -6,7 +6,6 @@ import {
   Check,
   CreditCard,
   PiggyBank,
-  ArrowRight,
 } from "lucide-react";
 import { PublicNavbar } from "../PublicNavbar";
 import { PublicFooter } from "../PublicFooter";
@@ -20,6 +19,10 @@ import {
 import { PLANS, PLAN_IDS, type PlanId } from "../../shared/pricing";
 import { formatPrice } from "../../shared/currency";
 import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
+import {
+  buildViewPricingDataLayerEvent,
+  pushDataLayerEvent,
+} from "../../client/analytics/metaTracking";
 
 type PlanLevel = "personal" | "institutional";
 
@@ -67,9 +70,9 @@ export default function PricingPage() {
 
   useEffect(() => {
     trackMarketingEvent("pricing_viewed", { placement: "pricing_page" });
+    pushDataLayerEvent("view_pricing", buildViewPricingDataLayerEvent());
   }, []);
 
-  // Only the 2 paid plans are offered (free/sentinel is never shown here).
   const pricingPlans = useMemo((): PricingPlan[] => {
     return (PLAN_IDS as readonly PlanId[])
       .filter((id) => id !== "catechist_free")
@@ -85,7 +88,7 @@ export default function PricingPage() {
             def.features,
           ),
           highlight: def.highlight,
-          cta: translatedString(tp, "pricing.cta_paid", "Começar agora"),
+          cta: translatedString(tp, "pricing.cta_paid", "Comecar agora"),
           priceCents: def.prices.monthlyCents,
           priceCentsAnnual: def.prices.annualCents,
         };

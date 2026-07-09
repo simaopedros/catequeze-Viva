@@ -1,23 +1,25 @@
-import { Link } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import { Cross } from 'lucide-react';
-import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
+import { Link } from "react-router";
+import { BrandLockup } from "../client/components/brand/Brand";
 
 /**
- * Minimal header for auth pages (login / signup).
- * No marketing CTAs — just logo and language.
+ * Minimal header for auth pages — brand only (language lives in layout footer).
  */
-export function AuthHeader() {
-  const { t } = useTranslation('common');
-
+export function AuthHeader({ mobileOnly = false }: { mobileOnly?: boolean }) {
   return (
-    <header className="sticky top-0 z-sticky border-b bg-background/95 backdrop-blur-sm shadow-elevation-sticky">
-      <div className="max-w-6xl mx-auto flex h-14 items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2 font-semibold text-primary">
-          <Cross className="h-5 w-5" />
-          <span className="hidden sm:inline">{t('app_name')}</span>
+    <header
+      className={
+        mobileOnly
+          ? "border-b border-[#071A2D]/08 bg-white lg:hidden"
+          : "border-b border-[#071A2D]/08 bg-white"
+      }
+    >
+      <div className="mx-auto flex h-14 max-w-6xl items-center px-4 sm:px-6">
+        <Link
+          to="/"
+          className="rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
+        >
+          <BrandLockup compact hideBadge />
         </Link>
-        <LanguageSwitcher />
       </div>
     </header>
   );

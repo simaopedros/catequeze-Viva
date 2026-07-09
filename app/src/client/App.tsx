@@ -23,6 +23,11 @@ import {
   marketingLandingFromPath,
   trackMarketingEvent,
 } from "./analytics/marketingAnalytics";
+import {
+  ensureFbcFromFbclid,
+  persistAttributionParams,
+  pushDataLayerEvent,
+} from "./analytics/metaTracking";
 
 import "../i18n/config";
 
@@ -130,6 +135,7 @@ export default function App() {
       "/presenca",
       "/sistema",
       "/pricing",
+      "/obrigado",
       "/about",
       "/privacy",
       "/terms",
@@ -171,9 +177,12 @@ export default function App() {
   }, [location.pathname]);
 
   useEffect(() => {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: "page_view",
+    ensureFbcFromFbclid();
+    persistAttributionParams();
+  }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    pushDataLayerEvent("page_view", {
       page: {
         path: location.pathname,
         title: document.title,

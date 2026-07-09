@@ -1,7 +1,12 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useAuth } from 'wasp/client/auth';
-import { hasPersonalAccess, isSubscriptionActiveLike, resolvePlanId } from '../../shared/pricing';
+import {
+  hasPersonalAccess,
+  isBillingActive,
+  isOnProductTrial,
+  resolvePlanId,
+} from '../../shared/pricing';
 import { useActiveWorkspace } from '../../client/hooks/useActiveWorkspace';
 import { buildBillingJourneyHref } from '../lib/upgradeJourney';
 import { PaymentPlanId } from '../../payment/plans';
@@ -16,20 +21,29 @@ const ALWAYS_ACCESSIBLE = [
 interface WorkspaceBilling {
   plan?: string | null;
   status?: string | null;
+  trialEndsAt?: string | Date | null;
 }
 
 function workspaceHasAccess(
   isPersonal: boolean,
-  user: { subscriptionStatus?: string | null; subscriptionPlan?: string | null } | null | undefined,
+  user: {
+    subscriptionStatus?: string | null;
+    subscriptionPlan?: string | null;
+    createdAt?: Date | string | null;
+  } | null | undefined,
   billing: WorkspaceBilling | null | undefined,
 ): boolean {
   if (isPersonal) {
-    return hasPersonalAccess(user);
+    return hasPersonalAccess(user) || isOnProductTrial(user);
   }
   if (!billing || !billing.status || !billing.plan) return false;
-  if (!isSubscriptionActiveLike(billing.status)) return false;
+  // TenantBilling TRIAL/ACTIVE/PAST_DUE — not Stripe user subscription statuses
+  if (!isBillingActive({ plan: billing.plan, status: billing.status, trialEndsAt: billing.trialEndsAt })) {
+    return false;
+  }
   const resolved = resolvePlanId(billing.plan);
-  return resolved === 'unlimited';
+  // Unlimited paid/trial, or Single product trial on institutional parish
+  return resolved === 'unlimited' || resolved === 'single';
 }
 
 export function SubscriptionGate({ children }: { children: ReactNode }) {
@@ -43,7 +57,14 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
     location.pathname.startsWith(p),
   );
 
-  const hasAccess = workspaceHasAccess(isPersonal, user, workspace?.billing);
+  const workspaceBilling: WorkspaceBilling | null = workspace
+    ? {
+        plan: workspace.plan,
+        status: workspace.billingStatus ?? workspace.billing?.status ?? null,
+        trialEndsAt: (workspace as { trialEndsAt?: string | Date | null }).trialEndsAt ?? null,
+      }
+    : null;
+  const hasAccess = workspaceHasAccess(isPersonal, user, workspaceBilling);
 
   useEffect(() => {
     if (user === undefined) return;

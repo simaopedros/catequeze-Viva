@@ -1,6 +1,20 @@
 {
   "title": "Catechesis Dashboard",
   "subtitle": "Track classes, attendance, and pastoral pending items.",
+  "activation": {
+    "eyebrow": "Getting started",
+    "title": "Get your catechesis ready for daily use",
+    "progress": "{{done}} of {{total}} done",
+    "dismiss": "Dismiss checklist",
+    "step_class_title": "Have a class",
+    "step_class_desc": "The class is the hub for attendance and follow-up.",
+    "step_people_title": "Add catechumens",
+    "step_people_desc": "Without names, attendance and reports stay empty.",
+    "step_attendance_title": "Record first attendance",
+    "step_attendance_desc": "Mark who came and keep the class history.",
+    "step_meeting_title": "Prepare a session",
+    "step_meeting_desc": "Use the AI hub or library for the next meeting."
+  },
   "quick_new_class": "Create new class",
   "quick_new_catechumen": "Register catechumen",
   "quick_ai": "AI Copilot",

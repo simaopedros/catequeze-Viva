@@ -15,6 +15,9 @@ import {
   isInstitutionalPlan,
   resolvePlanIdOrFree,
   isSubscriptionActiveLike,
+  isProductTrialStatus,
+  isProductTrialWindowOpen,
+  PRODUCT_TRIAL_PLAN_ID,
   PLANS,
   SUBSCRIPTION_TRIAL_DAYS,
   type PlanLimits,
@@ -281,12 +284,81 @@ export async function resolveNewParishBilling(
     return { skip: false, plan: creatorPlan.toUpperCase(), status: 'ACTIVE', trialEndsAt: null };
   }
 
+  // No-card product trial for new institutional parishes: Single entitlements
+  // for SUBSCRIPTION_TRIAL_DAYS so first class / year setup works without Stripe.
   return {
     skip: false,
-    plan: 'CATECHIST_FREE',
+    plan: PRODUCT_TRIAL_PLAN_ID.toUpperCase(),
     status: 'TRIAL',
     trialEndsAt: new Date(Date.now() + SUBSCRIPTION_TRIAL_DAYS * 24 * 60 * 60 * 1000),
   };
+}
+
+/**
+ * Ensure the user has an active product trial when still within the signup window.
+ * Heals accounts created before onAfterSignup started writing trialing/single.
+ * Never touches users already managed by Stripe (paymentProcessorUserId set).
+ */
+export async function ensureProductTrial(
+  context: any,
+  userId: string,
+): Promise<{
+  subscriptionStatus: string | null;
+  subscriptionPlan: string | null;
+  createdAt: Date;
+  paymentProcessorUserId: string | null;
+}> {
+  const user = await context.entities.User.findUnique({
+    where: { id: userId },
+    select: {
+      subscriptionStatus: true,
+      subscriptionPlan: true,
+      createdAt: true,
+      paymentProcessorUserId: true,
+    },
+  });
+  if (!user) {
+    throw new HttpError(401);
+  }
+
+  // Stripe-managed or already paid — leave alone.
+  if (user.paymentProcessorUserId) return user;
+  if (isSubscriptionActiveLike(user.subscriptionStatus)) return user;
+  if (isProductTrialStatus(user.subscriptionStatus) && isProductTrialWindowOpen(user.createdAt)) {
+    // Ensure plan id is a real personal plan during trial.
+    if ((user.subscriptionPlan || '').toLowerCase() === 'catechist_free' || !user.subscriptionPlan) {
+      return context.entities.User.update({
+        where: { id: userId },
+        data: { subscriptionPlan: PRODUCT_TRIAL_PLAN_ID },
+        select: {
+          subscriptionStatus: true,
+          subscriptionPlan: true,
+          createdAt: true,
+          paymentProcessorUserId: true,
+        },
+      });
+    }
+    return user;
+  }
+
+  // Still inside the signup trial window → start / restore product trial.
+  if (isProductTrialWindowOpen(user.createdAt)) {
+    return context.entities.User.update({
+      where: { id: userId },
+      data: {
+        subscriptionStatus: 'trialing',
+        subscriptionPlan: PRODUCT_TRIAL_PLAN_ID,
+      },
+      select: {
+        subscriptionStatus: true,
+        subscriptionPlan: true,
+        createdAt: true,
+        paymentProcessorUserId: true,
+      },
+    });
+  }
+
+  return user;
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -417,7 +489,10 @@ export async function assertCanCreateClass(
   });
 
   if (parish?.type === 'PERSONAL') {
-    const plan = getPersonalPlanId(context.user);
+    if (!context.user) throw new HttpError(401);
+    // Fresh user + heal product trial so onboarding is not blocked by free sentinel.
+    const freshUser = await ensureProductTrial(context, context.user.id);
+    const plan = getPersonalPlanId(freshUser);
     const limits = getPlanLimits(plan);
     if (limits.maxClasses === null) return;
 
@@ -477,7 +552,9 @@ export async function assertCanEnrollCatechumen(
   });
 
   if (parish?.type === 'PERSONAL') {
-    const plan = getPersonalPlanId(context.user);
+    if (!context.user) throw new HttpError(401);
+    const freshUser = await ensureProductTrial(context, context.user.id);
+    const plan = getPersonalPlanId(freshUser);
     const limits = getPlanLimits(plan);
     if (limits.maxCatechumens === null) return;
 

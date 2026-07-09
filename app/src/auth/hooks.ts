@@ -2,6 +2,8 @@
  * Auth hooks for Catequese Viva.
  */
 
+import { PRODUCT_TRIAL_PLAN_ID } from '../shared/pricing';
+
 interface OnAfterSignupArgs {
   user: { id: string; email: string | null };
   prisma: any;
@@ -12,12 +14,29 @@ interface OnAfterSignupArgs {
 /**
  * Runs right after a new user account is created (any auth method).
  *
- * Converts any PendingInvitations addressed to the new user's email into
- * INVITED memberships. Keeps the PendingInvitation records alive so the
- * token-based accept flow (family portal) still works — they are deleted
- * only when the user explicitly accepts via acceptInvitationByToken.
+ * 1. Starts the no-card product trial (Single entitlements for 7 days).
+ * 2. Converts any PendingInvitations addressed to the new user's email into
+ *    INVITED memberships. Keeps the PendingInvitation records alive so the
+ *    token-based accept flow (family portal) still works — they are deleted
+ *    only when the user explicitly accepts via acceptInvitationByToken.
  */
 export const onAfterSignup = async ({ user, prisma }: OnAfterSignupArgs): Promise<void> => {
+  if (!user?.id) return;
+
+  // Product trial: access without Stripe until SUBSCRIPTION_TRIAL_DAYS elapse
+  // (window is measured from User.createdAt in getPersonalPlanId).
+  try {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        subscriptionStatus: 'trialing',
+        subscriptionPlan: PRODUCT_TRIAL_PLAN_ID,
+      },
+    });
+  } catch {
+    // Non-fatal — ensureProductTrial will heal on first workspace/class action.
+  }
+
   const email = user?.email;
   if (!email) return;
 

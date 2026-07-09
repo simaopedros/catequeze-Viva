@@ -9,6 +9,8 @@
   "credits": "Créditos",
   "credits_value": "{{count}} créditos",
   "free_plan": "Sin suscripción",
+  "plan_trial_one": "Periodo de prueba — queda 1 día (hasta {{date}})",
+  "plan_trial_other": "Periodo de prueba — quedan {{count}} días (hasta {{date}})",
   "manage_payment": "Gestionar Pago",
   "buy_credits": "Comprar Más Créditos",
   "plan_past_due": "El pago de tu plan {{plan}} está vencido. Actualiza los datos de pago de tu suscripción.",

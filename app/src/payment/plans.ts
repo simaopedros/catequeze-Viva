@@ -10,7 +10,7 @@ export enum SubscriptionStatus {
  *
  * Simplified structure (Stripe only, BRL only):
  *   - CatechistFree : sentinel "no subscription", cannot be purchased
- *   - Single        : Plano Único (1 paróquia, 1 turma, 150 catequizandos)
+ *   - Single        : Plano Único (1 paróquia, 3 turmas, 150 catequizandos no total)
  *   - Unlimited     : Plano Ilimitado (paróquia/diocese, tudo ilimitado)
  *   - AiCredits20/50: one-time AI credit top-up packs
  */

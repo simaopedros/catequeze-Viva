@@ -24,6 +24,23 @@
   "active_desc": "Seu plano está ativo. Continue com encontros, histórico e famílias no mesmo fluxo.",
   "upgrade_desc": "Escolha o plano para continuar com encontros, histórico e acompanhamento sem interrupções.",
   "payment_desc": "Conclua o pagamento para liberar seu acesso completo.",
+  "trial_status_badge": "Período de teste",
+  "trial_plan_badge": "Em teste",
+  "trial_status_title": "Período de teste",
+  "trial_status_desc_one": "Resta 1 dia do seu teste gratuito. Assine para manter o acesso sem interrupção.",
+  "trial_status_desc_other": "Restam {{count}} dias do seu teste gratuito. Você já usa o Plano Único com limites liberados.",
+  "trial_hero_subtitle_one": "Último dia do período de teste. Assine quando quiser manter tudo funcionando.",
+  "trial_hero_subtitle_other": "Você está no período de teste ({{count}} dias restantes). Explore a plataforma sem cobrança por enquanto.",
+  "trial_ends_on": "O teste termina em {{date}}.",
+  "trial_subscribe_cta": "Assinar agora",
+  "trial_subscribe_plan": "Assinar {{plan}}",
+  "trial_banner_title_one": "Resta 1 dia do seu período de teste",
+  "trial_banner_title_other": "Restam {{count}} dias do seu período de teste",
+  "trial_banner_subtitle": "Assine para manter turmas, presença e IA sem interrupção.",
+  "trial_banner_ends": "Termina em {{date}}.",
+  "trial_banner_cta": "Ver assinatura",
+  "trial_topbar_one": "1 dia de teste",
+  "trial_topbar_other": "{{count}} dias de teste",
   "cancel_subscription": "Cancelar assinatura",
   "cancelling": "Cancelando…",
   "manage_payment": "Gerenciar pagamento",
@@ -79,8 +96,8 @@
       "annual_price": "R$ 290/ano (~R$ 24/mês)",
       "features": [
         "1 paróquia",
-        "1 turma",
-        "150 catequizandos",
+        "Até 3 turmas",
+        "150 catequizandos no total",
         "Presença e calendário litúrgico",
         "15 créditos de IA/mês"
       ]
@@ -129,6 +146,7 @@
   "unlimited": "ilimitado",
   "limit_caption": "Limite {{limit}}",
   "conversion_badge": "Assinatura",
+  "conversion_trial_cta": "Testar por 7 dias",
   "conversion_payment_title": "Confirme sua assinatura",
   "conversion_required_title": "Escolha seu plano para continuar",
   "conversion_personal_title": "Escolha o plano do seu espaço pessoal",
@@ -213,3 +231,4 @@
   "switch_interval_error": "Erro ao alterar a periodicidade. Tente novamente.",
   "switching": "Alterando..."
 }
+

@@ -92,7 +92,7 @@ describe('Plan Limits (simplified plans)', () => {
 
     it('returns capped limits for single', () => {
       const limits = getPlanLimits('single');
-      expect(limits.maxClasses).toBe(1);
+      expect(limits.maxClasses).toBe(3);
       expect(limits.maxCatechumens).toBe(150);
       expect(limits.maxCatechists).toBe(1);
       expect(limits.maxParishes).toBe(1);
@@ -108,7 +108,7 @@ describe('Plan Limits (simplified plans)', () => {
 
     it('resolves legacy aliases', () => {
       // pro/ai/essential → single limits
-      expect(getPlanLimits('catechist_pro').maxClasses).toBe(1);
+      expect(getPlanLimits('catechist_pro').maxClasses).toBe(3);
       expect(getPlanLimits('parish_essential').maxCatechumens).toBe(150);
       // parish/complete/diocese → unlimited limits
       expect(getPlanLimits('parish_complete').maxClasses).toBeNull();

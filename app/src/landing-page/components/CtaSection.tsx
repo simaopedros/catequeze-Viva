@@ -1,43 +1,59 @@
 import { Link } from "react-router";
-import { useTranslation } from "react-i18next";
 import { ArrowRight } from "lucide-react";
-import { useScrollReveal } from "../hooks/useScrollReveal";
 import { Button } from "../../client/components/ui/button";
-import { Badge } from "../../client/components/ui/badge";
-import { BrandMark } from "../../client/components/brand/Brand";
-import { cn } from "../../client/utils";
 import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
-
-function useLandingText(ns: string) {
-  const { t } = useTranslation(ns);
-  const { t: tLanding } = useTranslation("landing");
-
-  return (key: string) => {
-    const value = t(key);
-    return typeof value === "string" && value !== key ? value : tLanding(key);
-  };
-}
+import { useLandingText } from "../hooks/useLandingText";
 
 export function CtaSection({ ns = "landing", responsiveCtas = false }: { ns?: string; responsiveCtas?: boolean }) {
   const tr = useLandingText(ns);
-  const { ref, className } = useScrollReveal();
-  const ctaClassName = responsiveCtas ? "h-auto min-h-12 w-full px-6 text-center leading-snug whitespace-normal sm:w-auto sm:px-10" : undefined;
+  const ctaClassName = responsiveCtas
+    ? "h-auto min-h-12 w-full px-6 text-center leading-snug whitespace-normal sm:w-auto sm:px-8"
+    : undefined;
 
   return (
-    <section className="mx-auto max-w-3xl px-4 pb-32 md:pb-20">
-      <div ref={ref} className={cn("relative overflow-hidden rounded-3xl border border-border/70 bg-muted/20 p-12 text-center space-y-5", responsiveCtas && "rounded-2xl px-5 py-8 sm:rounded-3xl sm:p-12", className)}>
-        <div className="relative space-y-5">
-          <Badge variant="brand" className="inline-flex items-center gap-1.5 border-0 bg-background text-primary shadow-none"><BrandMark className="h-3.5 w-3.5" />{tr("cta_badge")}</Badge>
-          <h2 className="text-title-xl font-bold">{tr("cta_title")}</h2>
-          <p className="mx-auto max-w-lg text-text-secondary">{tr("cta_subtitle")}</p>
-          <div className="flex flex-col gap-2 pt-2">
-            <Button size="xl" variant="brand" asChild className={ctaClassName}>
-              <Link to="/signup" onClick={() => trackMarketingEvent("primary_cta_clicked", { landing: ns, placement: "closing_cta", destination: "/signup" })}>
-                {tr("cta_button")}
-                <ArrowRight className="h-4 w-4 shrink-0" />
-              </Link>
-            </Button>
-            <p className="text-xs leading-relaxed text-text-secondary">{tr("cta_helper")}</p>
+    <section className="px-4 pb-28 pt-4 md:pb-20">
+      <div className="mx-auto max-w-6xl overflow-hidden rounded-2xl bg-primary text-primary-foreground">
+        <div className="relative px-6 py-12 sm:px-12 sm:py-14 md:px-16">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.07]"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 20% 20%, #F4CF7A 0%, transparent 40%), radial-gradient(circle at 80% 80%, #D39A2B 0%, transparent 35%)",
+            }}
+            aria-hidden
+          />
+          <div className="relative max-w-xl space-y-5">
+            <h2
+              className="text-3xl sm:text-4xl font-semibold tracking-tight"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
+              {tr("cta_title")}
+            </h2>
+            <p className="text-primary-foreground/80 leading-relaxed text-base sm:text-lg">
+              {tr("cta_subtitle")}
+            </p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center pt-1">
+              <Button
+                size="xl"
+                asChild
+                className={`rounded-md bg-[#FFF7E7] text-primary shadow-none hover:bg-white hover:text-primary ${ctaClassName ?? ""}`}
+              >
+                <Link
+                  to="/signup"
+                  onClick={() =>
+                    trackMarketingEvent("primary_cta_clicked", {
+                      landing: ns,
+                      placement: "closing_cta",
+                      destination: "/signup",
+                    })
+                  }
+                >
+                  {tr("cta_button")}
+                  <ArrowRight className="h-4 w-4 shrink-0" />
+                </Link>
+              </Button>
+              <p className="text-sm text-primary-foreground/65">{tr("cta_helper")}</p>
+            </div>
           </div>
         </div>
       </div>

@@ -21,7 +21,7 @@ export default function LandingIa() {
     <div className="min-h-screen flex flex-col bg-background">
       <PublicNavbar />
       <main className="flex-1">
-        <HeroSection ns={NS} />
+        <HeroSection ns={NS} variant="centered" />
         <LazySection>
           <PricingPreviewSection ns={NS} />
         </LazySection>

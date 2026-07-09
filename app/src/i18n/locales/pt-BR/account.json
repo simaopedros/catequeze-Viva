@@ -9,6 +9,8 @@
   "credits": "Créditos",
   "credits_value": "{{count}} créditos",
   "free_plan": "Sem assinatura",
+  "plan_trial_one": "Período de teste — resta 1 dia (até {{date}})",
+  "plan_trial_other": "Período de teste — restam {{count}} dias (até {{date}})",
   "manage_payment": "Gerenciar Pagamento",
   "buy_credits": "Comprar Mais Créditos",
   "plan_past_due": "O pagamento do seu plano {{plan}} está em atraso. Atualize as informações de pagamento da sua assinatura.",

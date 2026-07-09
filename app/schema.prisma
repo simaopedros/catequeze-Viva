@@ -176,7 +176,7 @@ enum VisibilityScope {
 
 enum BillingPlan {
   CATECHIST_FREE        // sentinel — "no subscription" (access = zero)
-  SINGLE                // Plano Único (personal: 1 paróquia, 1 turma, 150 catequizandos)
+  SINGLE                // Plano Único (personal: 1 paróquia, 3 turmas, 150 catequizandos no total)
   UNLIMITED             // Plano Ilimitado (institutional: paróquia/diocese, ilimitado)
   // Legacy values retained for migration compatibility (mapped to SINGLE/UNLIMITED
   // via pricing.ts PLAN_ALIASES). Do not assign to new rows.
@@ -1476,6 +1476,29 @@ model PricingEvent {
   @@index([sessionId])
 }
 
+model TrackedEvent {
+  id                   String   @id @default(uuid())
+  provider             String
+  eventName            String
+  eventId              String   @unique
+  stripeEventId        String?
+  stripeSessionId      String?
+  stripeSubscriptionId String?
+  stripeCustomerId     String?
+  invoiceId            String?
+  status               String
+  responseJson         Json?
+  errorMessage         String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@unique([stripeEventId, eventName])
+  @@unique([stripeSubscriptionId, eventName])
+  @@unique([invoiceId, eventName])
+  @@index([provider, eventName])
+  @@index([stripeCustomerId])
+  @@index([createdAt])
+}
 model DailyStats {
   id   Int      @id @default(autoincrement())
   date DateTime @unique @default(now())
@@ -1525,5 +1548,6 @@ model ContactFormMessage {
   isRead    Boolean   @default(false)
   repliedAt DateTime?
 }
+
 
 

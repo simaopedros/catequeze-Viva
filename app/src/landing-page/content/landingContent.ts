@@ -217,7 +217,7 @@ export const PRICING_PREVIEW: PricingPlan[] = [
     desc: 'Pessoal — organize sua paróquia, turma e catequizandos com clareza',
     features: [
       '1 paróquia',
-      '1 turma e 150 catequizandos',
+      'Até 3 turmas e 150 catequizandos no total',
       'Presenças e calendário litúrgico',
       '15 créditos de IA/mês',
     ],

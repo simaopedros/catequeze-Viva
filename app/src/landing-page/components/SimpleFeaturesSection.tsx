@@ -1,89 +1,49 @@
 import { useTranslation } from "react-i18next";
-import { ClipboardCheck, Sparkles, Heart } from "lucide-react";
-import { CheckCircle2 } from "lucide-react";
+import { SHOWCASES } from "../content/landingContent";
 import { useScrollReveal } from "../hooks/useScrollReveal";
-import { Card } from "../../client/components/ui/card";
+import { FeatureShowcase } from "./FeatureShowcase";
 
-const FEATURES = [
-  {
-    id: "attendance",
-    icon: ClipboardCheck,
-    titleKey: "simple_features.attendance.title",
-    descKey: "simple_features.attendance.desc",
-    bullets: [
-      "simple_features.attendance.b1",
-      "simple_features.attendance.b2",
-      "simple_features.attendance.b3",
-    ],
-  },
-  {
-    id: "ai",
-    icon: Sparkles,
-    titleKey: "simple_features.ai.title",
-    descKey: "simple_features.ai.desc",
-    bullets: [
-      "simple_features.ai.b1",
-      "simple_features.ai.b2",
-      "simple_features.ai.b3",
-    ],
-  },
-  {
-    id: "family",
-    icon: Heart,
-    titleKey: "simple_features.family.title",
-    descKey: "simple_features.family.desc",
-    bullets: [
-      "simple_features.family.b1",
-      "simple_features.family.b2",
-      "simple_features.family.b3",
-    ],
-  },
-] as const;
+/** Three core product demos for the main landing (with mockups). */
+const HOME_FEATURE_ORDER = ["attendance", "ai-planner", "family-portal"] as const;
 
+/**
+ * Compact features block: real UI mockups + benefits for the three
+ * highest-conversion capabilities (attendance, AI, family portal).
+ */
 export function SimpleFeaturesSection({ ns = "landing" }: { ns?: string }) {
   const { t } = useTranslation(ns);
+  const { t: tLanding } = useTranslation("landing");
   const { ref: headerRef, className: headerClass } = useScrollReveal();
 
-  return (
-    <section id="recursos" className="scroll-mt-20 py-16 md:py-24">
-      <div className="max-w-5xl mx-auto px-4">
-        <div ref={headerRef} className={`text-center mb-12 space-y-3 ${headerClass}`}>
-          <h2 className="text-3xl sm:text-4xl font-bold">{t("simple_features.title")}</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            {t("simple_features.subtitle")}
-          </p>
-        </div>
+  const title = (() => {
+    const v = t("simple_features.title");
+    return typeof v === "string" && v !== "simple_features.title" ? v : tLanding("simple_features.title");
+  })();
+  const subtitle = (() => {
+    const v = t("simple_features.subtitle");
+    return typeof v === "string" && v !== "simple_features.subtitle"
+      ? v
+      : tLanding("simple_features.subtitle");
+  })();
 
-        <div className="grid gap-6 md:grid-cols-3">
-          {FEATURES.map((feature, index) => (
-            <FeatureCard key={feature.id} feature={feature} index={index} ns={ns} />
-          ))}
+  const showcases = HOME_FEATURE_ORDER.map((id) => SHOWCASES.find((s) => s.id === id)).filter(
+    Boolean
+  ) as typeof SHOWCASES;
+
+  return (
+    <section id="recursos" className="scroll-mt-20">
+      <div className="max-w-6xl mx-auto px-4 pt-16 md:pt-20 pb-4">
+        <div ref={headerRef} className={`text-center space-y-3 ${headerClass}`}>
+          <h2 className="text-3xl sm:text-4xl font-bold">{title}</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{subtitle}</p>
         </div>
+      </div>
+
+      <div className="divide-y divide-border/50">
+        {showcases.map((showcase) => (
+          <FeatureShowcase key={showcase.id} showcase={showcase} ns={ns} />
+        ))}
       </div>
     </section>
-  );
-}
-
-function FeatureCard({ feature, index, ns }: { feature: (typeof FEATURES)[number]; index: number; ns: string }) {
-  const { t } = useTranslation(ns);
-  const { ref, className } = useScrollReveal({ delay: index * 80 });
-  const Icon = feature.icon;
-
-  return (
-    <Card ref={ref} variant="interactive" className={`p-6 space-y-4 ${className}`}>
-      <div className="inline-flex rounded-xl bg-primary/10 p-3">
-        <Icon className="h-6 w-6 text-primary" />
-      </div>
-      <h3 className="text-xl font-bold">{t(feature.titleKey)}</h3>
-      <p className="text-sm text-muted-foreground leading-relaxed">{t(feature.descKey)}</p>
-      <ul className="space-y-2">
-        {feature.bullets.map((bulletKey) => (
-          <li key={bulletKey} className="flex items-start gap-2 text-sm">
-            <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-            <span>{t(bulletKey)}</span>
-          </li>
-        ))}
-      </ul>
-    </Card>
   );
 }

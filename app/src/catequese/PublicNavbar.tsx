@@ -1,85 +1,132 @@
-import { useState } from 'react';
-import { Link } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import { Menu, X, Globe } from 'lucide-react';
-import { Button } from '../client/components/ui/button';
-import { useLocale, SupportedLocale } from '../i18n/useLocale';
-import { BrandLockup } from '../client/components/brand/Brand';
+import { useEffect, useState } from "react";
+import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
+import { Menu, X } from "lucide-react";
+import { Button } from "../client/components/ui/button";
+import { BrandLockup } from "../client/components/brand/Brand";
 
-export function PublicNavbar() {
-  const { t: tCommon } = useTranslation('common');
-  const { t } = useTranslation('publicNav');
-  const { currentLocale, setLocale, supportedLocales, getLocaleLabel } = useLocale();
+export function PublicNavbar({ hidePricing = false }: { hidePricing?: boolean }) {
+  const { t } = useTranslation("publicNav");
   const [open, setOpen] = useState(false);
-  const [langOpen, setLangOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  const linkClass =
+    "text-[0.8125rem] font-medium tracking-wide text-muted-foreground transition-colors hover:text-foreground";
 
   return (
-    <header className="sticky top-0 z-sticky border-b bg-background/95 backdrop-blur-sm shadow-elevation-sticky">
-      <div className="max-w-6xl mx-auto flex h-14 items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2 font-semibold text-primary">
+    <header className="sticky top-0 z-sticky border-b border-[#071A2D]/08 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/90">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-6 px-4 sm:px-6">
+        <Link
+          to="/"
+          className="min-w-0 shrink-0 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
+          onClick={() => setOpen(false)}
+        >
           <BrandLockup compact hideBadge />
         </Link>
 
-        <nav className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
-          <a href="/#recursos" className="hover:text-foreground transition-colors">{t('resources')}</a>
-          <Link to="/about" className="hover:text-foreground transition-colors">{t('about')}</Link>
-          <Link to="/pricing" className="hover:text-foreground transition-colors">{t('pricing')}</Link>
-          <Link to="/contact" className="hover:text-foreground transition-colors">{t('contact')}</Link>
+        <nav className="hidden flex-1 items-center justify-center gap-8 md:flex">
+          <a href="/#recursos" className={linkClass}>
+            {t("resources")}
+          </a>
+          <a href="/#como" className={linkClass}>
+            {t("how_it_works")}
+          </a>
+          {!hidePricing && (
+            <Link to="/pricing" className={linkClass}>
+              {t("pricing")}
+            </Link>
+          )}
+          <Link to="/contact" className={linkClass}>
+            {t("contact")}
+          </Link>
         </nav>
 
-        <div className="hidden md:flex items-center gap-3">
-          <div className="relative">
-            <button onClick={() => setLangOpen(!langOpen)} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md" aria-label={tCommon('change_language')}>
-              <Globe className="h-3.5 w-3.5" />
-              <span className="hidden lg:inline">{getLocaleLabel(currentLocale as SupportedLocale)}</span>
-            </button>
-            {langOpen && (
-              <div className="absolute right-0 top-full mt-1 rounded-lg border bg-card shadow-lg py-1 z-50 min-w-[130px]">
-                {supportedLocales.map((locale) => (
-                  <button key={locale} onClick={() => { setLocale(locale); setLangOpen(false); }} className={`block w-full text-left px-3 py-1.5 text-xs hover:bg-muted transition-colors ${currentLocale === locale ? 'font-semibold text-primary' : 'text-muted-foreground'}`}>
-                    {getLocaleLabel(locale)}
-                    {currentLocale === locale && <span className="ml-2 text-primary">✓</span>}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <Button variant="outline" size="sm" asChild>
-            <Link to="/login">{t('login')}</Link>
-          </Button>
-          <Button size="sm" asChild>
-            <Link to="/pricing">{t('cta')}</Link>
+        <div className="hidden items-center gap-5 md:flex">
+          <Link
+            to="/login"
+            className="text-[0.8125rem] font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            {t("login")}
+          </Link>
+          <Button
+            size="sm"
+            variant="default"
+            asChild
+            className="h-9 rounded-sm px-4 text-[0.8125rem] font-medium shadow-none"
+          >
+            <Link to="/signup">{t("cta")}</Link>
           </Button>
         </div>
 
-        <button className="md:hidden p-2" onClick={() => setOpen(!open)} aria-label={open ? t('closeMenu') : t('openMenu')} aria-expanded={open}>
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        <button
+          type="button"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-sm text-foreground md:hidden"
+          onClick={() => setOpen((v) => !v)}
+          aria-label={open ? t("closeMenu") : t("openMenu")}
+          aria-expanded={open}
+        >
+          {open ? <X className="h-5 w-5" strokeWidth={1.75} /> : <Menu className="h-5 w-5" strokeWidth={1.75} />}
         </button>
       </div>
 
       {open && (
-        <div className="md:hidden border-t bg-card shadow-elevation-md animate-in slide-in-from-top-2 duration-200 px-4 py-3 space-y-2">
-          <a href="/#recursos" className="block py-2 text-sm text-muted-foreground" onClick={() => setOpen(false)}>{t('resources')}</a>
-          <Link to="/about" className="block py-2 text-sm text-muted-foreground" onClick={() => setOpen(false)}>{t('about')}</Link>
-          <Link to="/pricing" className="block py-2 text-sm text-muted-foreground" onClick={() => setOpen(false)}>{t('pricing')}</Link>
-          <Link to="/contact" className="block py-2 text-sm text-muted-foreground" onClick={() => setOpen(false)}>{t('contact')}</Link>
-          <div className="border-t pt-2 flex items-center gap-2">
-            <Globe className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-            <div className="flex gap-1.5 overflow-x-auto">
-              {supportedLocales.map((locale) => (
-                <button key={locale} onClick={() => { setLocale(locale); }} className={`text-xs px-2 py-1 rounded-md transition-colors ${currentLocale === locale ? 'bg-primary/10 text-primary font-semibold' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}>
-                  {getLocaleLabel(locale)}
-                </button>
-              ))}
+        <div className="border-t border-[#071A2D]/08 bg-white md:hidden">
+          <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+            <nav className="flex flex-col">
+              <a
+                href="/#recursos"
+                className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-foreground"
+                onClick={() => setOpen(false)}
+              >
+                {t("resources")}
+              </a>
+              <a
+                href="/#como"
+                className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-foreground"
+                onClick={() => setOpen(false)}
+              >
+                {t("how_it_works")}
+              </a>
+              {!hidePricing && (
+                <Link
+                  to="/pricing"
+                  className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-foreground"
+                  onClick={() => setOpen(false)}
+                >
+                  {t("pricing")}
+                </Link>
+              )}
+              <Link
+                to="/contact"
+                className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-foreground"
+                onClick={() => setOpen(false)}
+              >
+                {t("contact")}
+              </Link>
+            </nav>
+
+            <div className="mt-6 flex flex-col gap-2.5">
+              <Button size="lg" variant="default" asChild className="h-11 w-full rounded-sm shadow-none">
+                <Link to="/signup" onClick={() => setOpen(false)}>
+                  {t("cta")}
+                </Link>
+              </Button>
+              <Link
+                to="/login"
+                onClick={() => setOpen(false)}
+                className="py-2 text-center text-sm font-medium text-muted-foreground hover:text-foreground"
+              >
+                {t("login")}
+              </Link>
             </div>
-          </div>
-          <div className="flex gap-2 pt-2">
-            <Button variant="outline" size="sm" asChild className="flex-1">
-              <Link to="/login" onClick={() => setOpen(false)}>{t('login')}</Link>
-            </Button>
-            <Button size="sm" asChild className="flex-1">
-              <Link to="/pricing" onClick={() => setOpen(false)}>{t('cta')}</Link>
-            </Button>
           </div>
         </div>
       )}

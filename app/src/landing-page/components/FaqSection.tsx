@@ -1,40 +1,68 @@
-import { useTranslation } from 'react-i18next';
-import { ChevronRight } from 'lucide-react';
-import { useScrollReveal } from '../hooks/useScrollReveal';
+import { Link } from "react-router";
+import { ArrowRight, Plus } from "lucide-react";
+import { useLandingText } from "../hooks/useLandingText";
+import { Button } from "../../client/components/ui/button";
+import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
 
-export function FaqSection({ ns = 'landing' }: { ns?: string }) {
-  const { t } = useTranslation(ns);
-  const { ref: headerRef, className: headerClass } = useScrollReveal();
-  const faqs = t('faqs', { returnObjects: true }) as any[];
+export function FaqSection({ ns = "landing", showCta = true }: { ns?: string; showCta?: boolean }) {
+  const tr = useLandingText(ns);
+  const faqs = tr("faqs", { returnObjects: true }) as any[];
+  const list = Array.isArray(faqs) ? faqs : [];
 
   return (
-    <section className="max-w-3xl mx-auto px-4 py-20">
-      <div ref={headerRef} className={`text-center mb-12 space-y-3 ${headerClass}`}>
-        <h2 className="text-3xl sm:text-4xl font-bold">{t('faq_title')}</h2>
-        <p className="text-lg text-muted-foreground">{t('faq_subtitle')}</p>
-      </div>
+    <section className="bg-background">
+      <div className="mx-auto max-w-6xl px-4 py-16 sm:py-20">
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
+          <div className="space-y-3 lg:sticky lg:top-24 lg:self-start">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              {tr("faq_eyebrow")}
+            </p>
+            <h2
+              className="text-3xl sm:text-4xl font-semibold tracking-tight text-foreground"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
+              {tr("faq_title")}
+            </h2>
+            <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+            <p className="text-muted-foreground leading-relaxed max-w-sm">{tr("faq_subtitle")}</p>
 
-      <div className="space-y-4">
-        {(Array.isArray(faqs) ? faqs : []).map((item: any, index: number) => (
-          <FaqItem key={item.q} item={item} delay={index * 40} />
-        ))}
+            {showCta && (
+              <div className="pt-4">
+                <Button size="lg" variant="default" asChild className="rounded-md shadow-none">
+                  <Link
+                    to="/signup"
+                    onClick={() =>
+                      trackMarketingEvent("primary_cta_clicked", {
+                        landing: ns,
+                        placement: "faq_cta",
+                        destination: "/signup",
+                      })
+                    }
+                  >
+                    {tr("faq_cta")}
+                    <ArrowRight className="h-4 w-4 shrink-0" />
+                  </Link>
+                </Button>
+                <p className="mt-3 text-xs text-muted-foreground">{tr("faq_cta_helper")}</p>
+              </div>
+            )}
+          </div>
+
+          <div className="divide-y divide-border/70 border-y border-border/70">
+            {list.map((item: any) => (
+              <details key={item.q} className="group py-1">
+                <summary className="flex cursor-pointer list-none items-start justify-between gap-4 py-5 text-left font-medium text-foreground marker:content-none [&::-webkit-details-marker]:hidden">
+                  <span className="text-[15px] leading-snug pr-2">{item.q}</span>
+                  <Plus className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-45" />
+                </summary>
+                <p className="pb-5 pr-8 text-sm leading-relaxed text-muted-foreground">
+                  {item.a}
+                </p>
+              </details>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
-  );
-}
-
-function FaqItem({ item, delay }: { item: any; delay: number }) {
-  const { ref, className } = useScrollReveal<HTMLDivElement>({ delay });
-
-  return (
-    <div ref={ref} className={className}>
-      <details className="group rounded-xl border bg-card">
-      <summary className="flex items-center justify-between px-6 py-4 cursor-pointer font-medium text-sm list-none">
-        {item.q}
-        <ChevronRight className="h-4 w-4 transition-transform group-open:rotate-90 text-muted-foreground" />
-      </summary>
-      <p className="px-6 pb-4 text-sm text-muted-foreground leading-relaxed">{item.a}</p>
-      </details>
-    </div>
   );
 }

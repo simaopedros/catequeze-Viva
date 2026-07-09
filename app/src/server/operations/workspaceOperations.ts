@@ -1,5 +1,10 @@
 import { HttpError } from 'wasp/server';
-import { resolveEffectiveBilling, getEffectiveBillingPlan, isBillingActive } from './billingEnforcement';
+import {
+  resolveEffectiveBilling,
+  getEffectiveBillingPlan,
+  isBillingActive,
+  ensureProductTrial,
+} from './billingEnforcement';
 import { getPersonalPlanId, isSubscriptionActiveLike } from '../../shared/planLimits';
 import { getDioceseParishIds } from '../auth/helpers';
 
@@ -17,6 +22,9 @@ const MANAGER_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'CO
  */
 export const ensurePersonalWorkspace = async (_args: void, context: any) => {
   if (!context.user) throw new HttpError(401);
+
+  // Heal product trial so first-class creation during onboarding is not blocked.
+  await ensureProductTrial(context, context.user.id);
 
   // Check if user already has a personal workspace
   const existing = await context.entities.Parish.findFirst({
@@ -85,7 +93,7 @@ export const listWorkspaces = async (_args: void, context: any) => {
   // Fetch fresh user from DB — context.user may be stale (cached at login)
   const freshUser = await context.entities.User.findUnique({
     where: { id: context.user.id },
-    select: { subscriptionStatus: true, subscriptionPlan: true },
+    select: { subscriptionStatus: true, subscriptionPlan: true, createdAt: true },
   });
 
   // Personal workspace — user's own parish with type=PERSONAL
@@ -166,6 +174,7 @@ export const listWorkspaces = async (_args: void, context: any) => {
       role: m.role,
       plan,
       billingStatus,
+      trialEndsAt: ownBilling?.trialEndsAt ?? billing?.trialEndsAt ?? null,
       isPersonal: false,
       membershipStatus: m.status,
       membershipId: m.id,

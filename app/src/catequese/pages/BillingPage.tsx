@@ -46,10 +46,25 @@ import {
   hasInstitutionalAccess,
   isBillingActive,
   getInstitutionalPlanId,
+  isOnProductTrial,
+  getProductTrialDaysLeft,
+  getProductTrialEndsAt,
+  isOnInstitutionalTrial,
+  getInstitutionalTrialDaysLeft,
+  SUBSCRIPTION_TRIAL_DAYS,
 } from '../../shared/pricing';
 import { BuyCreditsButton } from '../components/BuyCreditsButton';
 import { formatPrice } from '../../shared/currency';
 import { trackMarketingEvent } from '../../client/analytics/marketingAnalytics';
+import {
+  buildInitiateCheckoutDataLayerEvent,
+  buildViewPricingDataLayerEvent,
+  createEventId,
+  ensureFbcFromFbclid,
+  getMetaBrowserIds,
+  getPersistedAttributionParams,
+  pushDataLayerEvent,
+} from '../../client/analytics/metaTracking';
 import { cn } from '../../client/utils';
 import type { ReactNode } from 'react';
 import { parseUpgradeJourneyReason } from '../lib/upgradeJourney';
@@ -123,6 +138,14 @@ function getAnnualSavings(monthlyCents: number, annualCents: number): string {
   return formatPriceFromCents(monthlyCents * 12 - annualCents);
 }
 
+function getPlanCheckoutValue(plan: Pick<PlanCard, 'priceCents' | 'priceCentsAnnual'>, interval: BillingInterval): number {
+  const cents = interval === 'annual' && plan.priceCentsAnnual
+    ? plan.priceCentsAnnual
+    : plan.priceCents ?? 0;
+
+  return Number((cents / 100).toFixed(2));
+}
+
 const AUTO_CHECKOUT_SESSION_KEY = 'cv-auto-checkout-started';
 
 function SurfaceSection({
@@ -184,7 +207,7 @@ function UsageRow({
 }
 
 export default function BillingPage() {
-  const { t } = useTranslation('billing');
+  const { t, i18n } = useTranslation('billing');
   const { t: tp } = useTranslation('public');
   const allPlans = useMemo(() => buildPlanCards(t), [t]);
 
@@ -234,23 +257,59 @@ export default function BillingPage() {
   let effectivePlanId = PaymentPlanId.CatechistFree;
   let isActive = false;
   let isParishManaged = false;
+  let isTrialAccess = false;
+  let trialDaysLeft: number | null = null;
+  let trialEndsAt: Date | null = null;
 
   if (!isPersonal && parish?.billing) {
     const pBilling = parish.billing;
     const billingIsActive = isBillingActive(pBilling);
+    const onInstTrial = isOnInstitutionalTrial(pBilling);
 
-    if (billingIsActive && hasInstitutionalAccess(pBilling)) {
+    if (billingIsActive && (hasInstitutionalAccess(pBilling) || onInstTrial)) {
       const instPlan = getInstitutionalPlanId(pBilling);
       isActive = true;
-      isParishManaged = true;
-      if (instPlan === 'unlimited') {
+      isParishManaged = !onInstTrial && hasInstitutionalAccess(pBilling);
+      isTrialAccess = onInstTrial;
+      if (onInstTrial) {
+        trialDaysLeft = getInstitutionalTrialDaysLeft(pBilling);
+        trialEndsAt = pBilling.trialEndsAt
+          ? typeof pBilling.trialEndsAt === 'string'
+            ? new Date(pBilling.trialEndsAt)
+            : pBilling.trialEndsAt
+          : null;
+        // Product trial on institutional parish grants Single-level access by default
+        effectivePlanId = instPlan === 'unlimited'
+          ? PaymentPlanId.Unlimited
+          : PaymentPlanId.Single;
+      } else if (instPlan === 'unlimited') {
         effectivePlanId = PaymentPlanId.Unlimited;
       }
     }
   } else if (hasPersonalPlan && user?.subscriptionPlan) {
-    effectivePlanId = user.subscriptionPlan as PaymentPlanId;
+    effectivePlanId = (user.subscriptionPlan === 'catechist_free'
+      ? PaymentPlanId.Single
+      : user.subscriptionPlan) as PaymentPlanId;
     isActive = true;
+    if (isOnProductTrial(user)) {
+      isTrialAccess = true;
+      trialDaysLeft = getProductTrialDaysLeft(user);
+      trialEndsAt = getProductTrialEndsAt(user.createdAt);
+      // Ensure UI shows Single during product trial even if plan field is messy
+      if (effectivePlanId === PaymentPlanId.CatechistFree) {
+        effectivePlanId = PaymentPlanId.Single;
+      }
+    }
   }
+
+  const isPaidActive = isActive && !isTrialAccess;
+  const trialEndsLabel = trialEndsAt
+    ? trialEndsAt.toLocaleDateString(i18n.language || 'pt-BR', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+      })
+    : null;
 
   const effectivePlan: PlanCard = effectivePlanId === PaymentPlanId.CatechistFree
     ? {
@@ -277,7 +336,7 @@ export default function BillingPage() {
   const isMonthly = currentInterval === 'month';
   const isAnnual = currentInterval === 'year';
   const canSwitchInterval =
-    isActive &&
+    isPaidActive &&
     effectivePlanId !== PaymentPlanId.CatechistFree &&
     (isMonthly || isAnnual) &&
     isPlanManager &&
@@ -306,10 +365,27 @@ export default function BillingPage() {
   const maxCatechumens = effectivePlan.maxCatechumens ?? Infinity;
 
   const startCheckout = useCallback(async (planId: PaymentPlanId) => {
-    if (planId === effectivePlanId) return;
+    // Product trial uses the same plan id as Single — still allow checkout to convert.
+    if (planId === effectivePlanId && !isTrialAccess) return;
     setError(null);
     setUpgradingPlan(planId);
     try {
+      const plan = getPlanDef(planId);
+      const attribution = getPersistedAttributionParams();
+      const ensuredFbc = ensureFbcFromFbclid();
+      const browserIds = getMetaBrowserIds();
+      const initiateCheckoutEventId = createEventId('initiate_checkout');
+      const checkoutValue = getPlanCheckoutValue(plan, billingInterval);
+
+      pushDataLayerEvent('initiate_checkout', buildInitiateCheckoutDataLayerEvent({
+        event_id: initiateCheckoutEventId,
+        content_name: plan.name,
+        plan_id: planId,
+        value: checkoutValue,
+        currency: 'BRL',
+        trial_days: SUBSCRIPTION_TRIAL_DAYS,
+      }));
+
       trackMarketingEvent('checkout_started', {
         plan: planId,
         interval: billingInterval,
@@ -322,6 +398,22 @@ export default function BillingPage() {
       const result = await generateCheckoutSession({
         planId,
         interval: billingInterval,
+        planName: plan.name,
+        value: checkoutValue,
+        currency: 'BRL',
+        initiate_checkout_event_id: initiateCheckoutEventId,
+        fbp: browserIds.fbp,
+        fbc: ensuredFbc ?? browserIds.fbc,
+        fbclid: attribution.fbclid,
+        client_user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+        event_source_url: typeof window !== 'undefined' ? window.location.href : undefined,
+        landing_page_url: attribution.landing_page_url,
+        referrer: attribution.referrer,
+        utm_source: attribution.utm_source,
+        utm_medium: attribution.utm_medium,
+        utm_campaign: attribution.utm_campaign,
+        utm_content: attribution.utm_content,
+        utm_term: attribution.utm_term,
       });
       if (result.sessionUrl) {
         window.location.href = result.sessionUrl;
@@ -331,7 +423,7 @@ export default function BillingPage() {
       setUpgradingPlan(null);
       throw err;
     }
-  }, [billingInterval, effectivePlanId, isPersonal, journeyReason, journeySource, t]);
+  }, [billingInterval, effectivePlanId, isTrialAccess, isPersonal, journeyReason, journeySource, t, getPlanDef]);
 
   const handleUpgrade = async (planId: PaymentPlanId) => {
     trackMarketingEvent('plan_selected', {
@@ -425,6 +517,7 @@ export default function BillingPage() {
     if (isParishManaged) return;
 
     pricingViewedRef.current = true;
+    pushDataLayerEvent('view_pricing', buildViewPricingDataLayerEvent());
     trackMarketingEvent('pricing_viewed', {
       placement: 'billing_page',
       workspace: isPersonal ? 'personal' : 'institutional',
@@ -498,7 +591,9 @@ export default function BillingPage() {
   const primaryPlanCard = isUpgradeJourney ? upgradePlanCard : recommendedPlanCard;
   const primaryCtaLabel = isUpgradeJourney
     ? t(`upgrade_journey.${journeyReason}.cta`, { defaultValue: t('upgrade_journey.generic.cta') })
-    : (primaryPlanCard ? t('subscribe_plan', { plan: primaryPlanCard.name }) : null);
+    : isConversionMode
+      ? t('conversion_trial_cta')
+      : (primaryPlanCard ? t('subscribe_plan', { plan: primaryPlanCard.name }) : null);
   const journeyCurrentCount = journeyReason === 'catechumen_limit'
     ? catechumensUsed
     : journeyReason === 'class_limit'
@@ -617,15 +712,23 @@ export default function BillingPage() {
                         {effectivePlan.name}
                       </span>
                     )}
-                    {!isConversionMode && (isActive && user?.subscriptionStatus === 'cancel_at_period_end' ? (
+                    {!isConversionMode && (isTrialAccess ? (
+                      <Badge className="bg-amber-100 text-amber-900 text-xs">{t('trial_status_badge')}</Badge>
+                    ) : isActive && user?.subscriptionStatus === 'cancel_at_period_end' ? (
                       <Badge variant="outline" className="bg-warning/10 text-warning text-xs">{t('cancel_scheduled')}</Badge>
-                    ) : isActive ? (
+                    ) : isPaidActive ? (
                       <Badge className="bg-emerald-100 text-emerald-700 text-xs">{t('active')}</Badge>
                     ) : null)}
                   </div>
 
                   <p className="max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
-                    {heroSubtitle}
+                    {isTrialAccess
+                      ? (trialDaysLeft === 1
+                          ? t('trial_hero_subtitle_one')
+                          : t('trial_hero_subtitle_other', {
+                              count: trialDaysLeft ?? SUBSCRIPTION_TRIAL_DAYS,
+                            }))
+                      : heroSubtitle}
                   </p>
 
                   {supportingCopy && (
@@ -656,7 +759,28 @@ export default function BillingPage() {
                   </Button>
                 )}
 
-                {!isUpgradeJourney && !isConversionMode && isActive && !effectivePlan.isFree && isPlanManager && (
+                {!isUpgradeJourney && !isConversionMode && isTrialAccess && (
+                  <Button
+                    size="lg"
+                    className="h-11 rounded-xl px-5"
+                    onClick={() => handleUpgrade(effectivePlanId === PaymentPlanId.CatechistFree ? PaymentPlanId.Single : effectivePlanId)}
+                    disabled={!!upgradingPlan}
+                  >
+                    {upgradingPlan ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {t('redirecting')}
+                      </>
+                    ) : (
+                      <>
+                        {t('trial_subscribe_cta')}
+                        <ArrowUpRight className="ml-2 h-4 w-4" />
+                      </>
+                    )}
+                  </Button>
+                )}
+
+                {!isUpgradeJourney && !isConversionMode && isPaidActive && !effectivePlan.isFree && isPlanManager && (
                   <>
                     <Button variant="outline" size="lg" className="h-11 rounded-xl px-5 bg-white/80" onClick={handleManagePayment} disabled={managePaymentLoading}>
                       {managePaymentLoading ? (
@@ -773,17 +897,47 @@ export default function BillingPage() {
 
                 <div className="rounded-3xl border border-white/70 bg-white/85 p-5 shadow-sm shadow-slate-200/60 backdrop-blur">
                   <div className="flex items-start gap-4">
-                    <div className={cn('rounded-2xl p-3', isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700')}>
+                    <div
+                      className={cn(
+                        'rounded-2xl p-3',
+                        isTrialAccess
+                          ? 'bg-amber-100 text-amber-800'
+                          : isPaidActive
+                            ? 'bg-emerald-100 text-emerald-700'
+                            : 'bg-amber-100 text-amber-700'
+                      )}
+                    >
                       <Clock className="h-6 w-6" />
                     </div>
                     <div className="space-y-1">
                       <p className="text-2xl font-bold tracking-tight text-slate-950">
-                        {isActive ? t('subscription_active') : effectivePlan.isFree ? t('free_plan') : t('awaiting_payment')}
+                        {isTrialAccess
+                          ? t('trial_status_title')
+                          : isPaidActive
+                            ? t('subscription_active')
+                            : effectivePlan.isFree
+                              ? t('free_plan')
+                              : t('awaiting_payment')}
                       </p>
                       <p className="text-sm leading-relaxed text-slate-600">
-                        {isActive ? t('active_desc') : effectivePlan.isFree ? t('upgrade_desc') : t('payment_desc')}
+                        {isTrialAccess
+                          ? (trialDaysLeft === 1
+                              ? t('trial_status_desc_one')
+                              : t('trial_status_desc_other', {
+                                  count: trialDaysLeft ?? SUBSCRIPTION_TRIAL_DAYS,
+                                }))
+                          : isPaidActive
+                            ? t('active_desc')
+                            : effectivePlan.isFree
+                              ? t('upgrade_desc')
+                              : t('payment_desc')}
                       </p>
-                      {user?.subscriptionStatus === 'cancel_at_period_end' && (
+                      {isTrialAccess && trialEndsLabel && (
+                        <p className="text-xs font-medium text-amber-800/90">
+                          {t('trial_ends_on', { date: trialEndsLabel })}
+                        </p>
+                      )}
+                      {isPaidActive && user?.subscriptionStatus === 'cancel_at_period_end' && (
                         <p className="text-xs text-slate-500">{t('cancel_scheduled_desc')}</p>
                       )}
                     </div>
@@ -951,7 +1105,10 @@ export default function BillingPage() {
                           </p>
                         )}
                       </div>
-                      {isCurrent && <Badge>{t('current')}</Badge>}
+                      {isCurrent && isTrialAccess && (
+                        <Badge className="bg-amber-100 text-amber-900">{t('trial_plan_badge')}</Badge>
+                      )}
+                      {isCurrent && !isTrialAccess && <Badge>{t('current')}</Badge>}
                       {isRequested && <Badge className="bg-accent/15 text-accent">{t('selected')}</Badge>}
                     </div>
 
@@ -1004,7 +1161,25 @@ export default function BillingPage() {
                       ))}
                     </ul>
 
-                    {isCurrent ? (
+                    {isCurrent && isTrialAccess ? (
+                      <Button
+                        className="mt-5 w-full rounded-xl text-sm"
+                        onClick={() => handleUpgrade(plan.planId)}
+                        disabled={isUpgrading}
+                      >
+                        {isUpgrading ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            {t('redirecting')}
+                          </>
+                        ) : (
+                          <>
+                            {t('trial_subscribe_plan', { plan: plan.name })}
+                            <ArrowUpRight className="ml-2 h-4 w-4" />
+                          </>
+                        )}
+                      </Button>
+                    ) : isCurrent ? (
                       <Button variant="outline" className="mt-5 w-full rounded-xl text-sm" disabled>
                         {t('current_plan_btn')}
                       </Button>
@@ -1030,7 +1205,12 @@ export default function BillingPage() {
                           </>
                         ) : (
                           <>
-                            {isUpgradeJourney && isRecommended ? primaryCtaLabel : t('subscribe_plan', { plan: plan.name })}
+                            {isConversionMode
+                              ? t('conversion_trial_cta')
+                              : isUpgradeJourney && isRecommended
+                                ? primaryCtaLabel
+                                : t('subscribe_plan', { plan: plan.name })
+                            }
                             <ArrowUpRight className="ml-2 h-4 w-4" />
                           </>
                         )}
@@ -1063,3 +1243,4 @@ export default function BillingPage() {
     </>
   );
 }
+

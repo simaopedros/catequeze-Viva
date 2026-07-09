@@ -15,9 +15,9 @@ describe('Plan Limits Configuration (simplified plans)', () => {
     expect(limits.maxCatechists).toBe(0);
   });
 
-  it('SINGLE has capped limits (1 class, 150 catechumens, 1 parish)', () => {
+  it('SINGLE has capped limits (3 classes, 150 catechumens total, 1 parish)', () => {
     const limits = getPlanLimits('single');
-    expect(limits.maxClasses).toBe(1);
+    expect(limits.maxClasses).toBe(3);
     expect(limits.maxCatechumens).toBe(150);
     expect(limits.maxParishes).toBe(1);
     expect(limits.maxCatechists).toBe(1);
@@ -33,7 +33,7 @@ describe('Plan Limits Configuration (simplified plans)', () => {
 
   it('legacy aliases resolve to their canonical plan limits', () => {
     // pro/ai/essential → single
-    expect(getPlanLimits('catechist_pro').maxClasses).toBe(1);
+    expect(getPlanLimits('catechist_pro').maxClasses).toBe(3);
     expect(getPlanLimits('parish_essential').maxCatechumens).toBe(150);
     // parish/complete/diocese → unlimited
     expect(getPlanLimits('parish_complete').maxClasses).toBeNull();

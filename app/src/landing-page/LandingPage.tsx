@@ -3,31 +3,41 @@ import { PublicFooter } from "../catequese/PublicFooter";
 import { PublicNavbar } from "../catequese/PublicNavbar";
 import { FaqSection } from "./components/FaqSection";
 import { HeroSection } from "./components/HeroSection";
+import { MobileStickyCta } from "./components/MobileStickyCta";
 
-const PainPointsSection = lazy(() => import("./components/PainPointsSection").then((m) => ({ default: m.PainPointsSection })));
-const SimpleFeaturesSection = lazy(() => import("./components/SimpleFeaturesSection").then((m) => ({ default: m.SimpleFeaturesSection })));
-const PricingPreviewSection = lazy(() => import("./components/PricingPreviewSection").then((m) => ({ default: m.PricingPreviewSection })));
-const StepsSection = lazy(() => import("./components/StepsSection").then((m) => ({ default: m.StepsSection })));
-const CtaSection = lazy(() => import("./components/CtaSection").then((m) => ({ default: m.CtaSection })));
+const OutcomesSection = lazy(() =>
+  import("./components/OutcomesSection").then((m) => ({ default: m.OutcomesSection }))
+);
+const StepsSection = lazy(() =>
+  import("./components/StepsSection").then((m) => ({ default: m.StepsSection }))
+);
+const CtaSection = lazy(() =>
+  import("./components/CtaSection").then((m) => ({ default: m.CtaSection }))
+);
 
-const SectionFallback = () => (<div className="h-40 animate-pulse bg-muted/20 rounded-lg" />);
+const SectionFallback = () => (
+  <div className="mx-4 h-20 animate-pulse rounded-md bg-muted/30" aria-hidden />
+);
 
+/**
+ * Professional conversion landing: trial-first, no prices.
+ * Editorial brand layout for credibility.
+ */
 export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <PublicNavbar />
+      <PublicNavbar hidePricing />
       <main className="flex-1">
-        <HeroSection responsiveCtas />
+        <HeroSection responsiveCtas variant="editorial" />
         <Suspense fallback={<SectionFallback />}>
-          <PainPointsSection />
-          <SimpleFeaturesSection />
-          <PricingPreviewSection />
+          <OutcomesSection />
           <StepsSection responsiveCtas />
           <FaqSection />
           <CtaSection responsiveCtas />
         </Suspense>
       </main>
-      <PublicFooter />
+      <PublicFooter hidePricing />
+      <MobileStickyCta />
     </div>
   );
 }
