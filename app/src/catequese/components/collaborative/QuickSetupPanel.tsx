@@ -340,7 +340,7 @@ export function QuickSetupPanel({
 
           {showAgeGroup && (
             <div className="space-y-3">
-              <Label className="text-base font-semibold">
+              <Label className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 {t("planner.step_age")}
               </Label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -355,7 +355,12 @@ export function QuickSetupPanel({
                     }`}
                   >
                     <g.icon className="mx-auto mb-2 h-8 w-8 text-[#071A2D]" />
-                    <div className="font-semibold text-sm">{g.label}</div>
+                    <div
+                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
+                      {g.label}
+                    </div>
                     <div className="text-xs text-muted-foreground">{g.age}</div>
                   </button>
                 ))}
@@ -366,7 +371,10 @@ export function QuickSetupPanel({
           {/* Improvement goal — only for improve/adapt flows */}
           {(isImprove || isAdapt) && (
             <div className="space-y-2">
-              <Label htmlFor="improveGoal" className="text-base font-semibold">
+              <Label
+                htmlFor="improveGoal"
+                className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+              >
                 {t("planner.step_improve_goal")}
               </Label>
               <Textarea
@@ -384,7 +392,7 @@ export function QuickSetupPanel({
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="theme" className="text-base font-semibold">
+            <Label htmlFor="theme" className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               {contentFieldLabel}
             </Label>
             <Input
@@ -402,7 +410,7 @@ export function QuickSetupPanel({
           {showFullForm && (
             <div className="grid gap-4 md:grid-cols-[0.8fr_1.2fr]">
               <div className="space-y-3">
-                <Label className="flex items-center gap-2 text-base font-semibold">
+                <Label className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                   <Clock className="h-4 w-4 text-[#071A2D]" />
                   {t("planner.step_duration")}
                 </Label>
@@ -426,7 +434,7 @@ export function QuickSetupPanel({
               </div>
 
               <div className="space-y-3">
-                <Label className="flex items-center gap-2 text-base font-semibold">
+                <Label className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                   <HeartHandshake className="h-4 w-4 text-[#071A2D]" />
                   {t("planner.step_approach")}
                 </Label>

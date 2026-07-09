@@ -218,7 +218,9 @@ export default function CatechismPage() {
                     <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-medium text-foreground">
                       {entry.number}
                     </span>
-                    <p className="font-medium text-sm">{entry.question}</p>
+                    <p className="text-sm font-semibold tracking-tight text-foreground">
+                      {entry.question}
+                    </p>
                   </div>
                   {expanded[entry.id] && (
                     <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
@@ -257,7 +259,9 @@ export default function CatechismPage() {
                     <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-medium text-foreground">
                       {entry.number}
                     </span>
-                    <p className="font-medium text-sm">{entry.question}</p>
+                    <p className="text-sm font-semibold tracking-tight text-foreground">
+                      {entry.question}
+                    </p>
                   </div>
                   {expanded[entry.id] && (
                     <p className="mt-2 text-sm text-muted-foreground leading-relaxed">

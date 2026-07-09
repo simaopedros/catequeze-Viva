@@ -368,7 +368,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                   const Icon = MODULE_ICONS[module] || Search;
                   return (
                     <div key={module}>
-                      <div className="flex items-center gap-2 px-3 py-1.5 text-overline font-semibold uppercase tracking-wider text-text-tertiary bg-muted/50 border-y">
+                      <div className="flex items-center gap-2 border-y border-border/70 bg-muted/40 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                         <Icon className="h-3 w-3" />
                         {getModuleLabel(module)}
                       </div>

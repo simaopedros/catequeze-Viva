@@ -138,7 +138,7 @@ export function GenerateActivityFlow() {
           )}
 
           <div className="space-y-3">
-            <Label className="text-base font-semibold">
+            <Label className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               {t("activity.type_label")}
             </Label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">

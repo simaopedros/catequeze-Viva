@@ -290,8 +290,13 @@ export default function PricingPage() {
                   key={i}
                   className="rounded-sm border border-border/70 bg-white p-5"
                 >
-                  <h3 className="font-semibold">{f.q}</h3>
-                  <p className="text-sm text-muted-foreground mt-2">{f.a}</p>
+                  <h3
+                    className="font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
+                    {f.q}
+                  </h3>
+                  <p className="mt-2 text-sm text-muted-foreground">{f.a}</p>
                 </div>
               ))}
             </div>

@@ -221,7 +221,9 @@ export default function DirectoryPage() {
                       §{entry.number}
                     </span>
                     {entry.title && (
-                      <span className="font-medium text-sm">{entry.title}</span>
+                      <span className="text-sm font-semibold tracking-tight text-foreground">
+                        {entry.title}
+                      </span>
                     )}
                     {entry.chapter && (
                       <span className="text-xs text-muted-foreground">

@@ -151,7 +151,7 @@ export function GenerateWhatsappFlow() {
           )}
 
           <div className="space-y-3">
-            <Label className="text-base font-semibold">
+            <Label className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               {t("whatsapp.tone_label")}
             </Label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -172,7 +172,7 @@ export function GenerateWhatsappFlow() {
           </div>
 
           <div className="space-y-3">
-            <Label className="text-base font-semibold">
+            <Label className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               {t("whatsapp.length_label")}
             </Label>
             <div className="grid grid-cols-3 gap-2">

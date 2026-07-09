@@ -135,9 +135,12 @@ export function ParishCommunitiesTab({
                   key={c.id}
                   className="rounded-sm border border-border/70 bg-white p-4 space-y-2 md:col-span-2"
                 >
-                  <h3 className="font-medium text-sm">
-                    {tp("edit_community")}
-                  </h3>
+                  <div className="space-y-1.5">
+                    <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      {tp("edit_community")}
+                    </h3>
+                    <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                  </div>
                   <div className="flex gap-3">
                     <input
                       value={editCommFields.name}
@@ -249,7 +252,12 @@ export function ParishCommunitiesTab({
                 <div className="flex justify-between items-start">
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="font-medium">{c.name}</p>
+                      <p
+                        className="font-semibold tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
+                        {c.name}
+                      </p>
                       {c.type && (
                         <span className="text-overline bg-muted px-1.5 py-0.5 rounded">
                           {typeShortLabel(c.type)}

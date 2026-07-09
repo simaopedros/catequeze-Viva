@@ -267,7 +267,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
               </SectionCard>
             )}
 
-            <SectionCard title="Como comecar" icon={ArrowRight}>
+            <SectionCard title="Como começar" icon={ArrowRight}>
               <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
                 <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
                   1. Crie a turma com etapa, dias de encontro e responsaveis.

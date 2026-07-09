@@ -324,7 +324,12 @@ export default function ReportsPage() {
                     className="p-4 flex items-center justify-between"
                   >
                     <div className="flex-1">
-                      <p className="font-medium text-sm">{r.name}</p>
+                      <p
+                        className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
+                        {r.name}
+                      </p>
                       <p className="text-xs text-muted-foreground">
                         {t("enrolled_meetings", {
                           enrolled: r.totalEnrolled,
@@ -408,7 +413,12 @@ export default function ReportsPage() {
                               : `#${i + 1}`}
                       </span>
                       <div>
-                        <p className="font-medium text-sm">{r.name}</p>
+                        <p
+                        className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
+                        {r.name}
+                      </p>
                         <p className="text-xs text-muted-foreground">
                           {r.totalEnrolled} {tc("enrolled")}
                         </p>

@@ -86,14 +86,18 @@ function ImproveWorkspace() {
                 }
                 className="group flex flex-col items-start gap-3 rounded-sm border border-border/70 bg-white p-5 text-left transition-colors hover:border-[#071A2D]/40"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-foreground">
+                <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
                   <Copy className="h-5 w-5" />
                 </div>
-                <div>
-                  <h3 className="font-semibold text-sm">
+                <div className="space-y-1">
+                  <h3
+                    className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
                     {t("improve.create_copy")}
                   </h3>
-                  <p className="mt-1 text-xs text-muted-foreground">
+                  <div className="h-px w-6 bg-[#D39A2B]" aria-hidden />
+                  <p className="text-xs text-muted-foreground">
                     {t("improve.create_copy_desc")}
                   </p>
                 </div>
@@ -113,14 +117,18 @@ function ImproveWorkspace() {
                 }
                 className="group flex flex-col items-start gap-3 rounded-sm border border-border/70 bg-white p-5 text-left transition-colors hover:border-border"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-foreground">
+                <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
                   <AlertTriangle className="h-5 w-5" />
                 </div>
-                <div>
-                  <h3 className="font-semibold text-sm">
+                <div className="space-y-1">
+                  <h3
+                    className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
                     {t("improve.apply_original")}
                   </h3>
-                  <p className="mt-1 text-xs text-muted-foreground">
+                  <div className="h-px w-6 bg-[#D39A2B]" aria-hidden />
+                  <p className="text-xs text-muted-foreground">
                     {t("improve.apply_original_desc")}
                   </p>
                 </div>

@@ -238,7 +238,12 @@ export default function CommunityDetailPage() {
                   className="flex items-center justify-between rounded-sm border border-border/70 bg-white p-3 transition-colors hover:bg-muted/20"
                 >
                   <div>
-                    <p className="font-medium text-sm">{cls.name}</p>
+                    <p
+                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
+                      {cls.name}
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       {cls.stage?.name && `${cls.stage.name} · `}
                       {cls.dayOfWeek && `${cls.dayOfWeek} ${cls.startTime}`}
@@ -271,7 +276,12 @@ export default function CommunityDetailPage() {
                   to={`/app/families/${h.id}`}
                   className="rounded-sm border border-border/70 bg-white p-3 transition-colors hover:bg-muted/20"
                 >
-                  <p className="font-medium text-sm">{h.name}</p>
+                  <p
+                    className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
+                    {h.name}
+                  </p>
                   <p className="text-xs text-muted-foreground">
                     {t("families.summary", {
                       catechumens: h._count?.catechumens || 0,

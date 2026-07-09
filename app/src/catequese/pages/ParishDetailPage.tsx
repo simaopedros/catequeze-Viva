@@ -308,10 +308,10 @@ export default function ParishDetailPage() {
             />
 
             {parish?.type !== "PERSONAL" && (
-              <div className="rounded-sm border border-destructive/30 bg-destructive/5 p-5 space-y-3">
-                <div className="flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4 text-destructive" />
-                  <h3 className="font-semibold text-destructive">
+              <div className="space-y-3 rounded-sm border border-destructive/30 bg-destructive/5 p-5">
+                <div className="space-y-1.5">
+                  <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-destructive">
+                    <AlertCircle className="h-3.5 w-3.5" />
                     {tp("danger_zone")}
                   </h3>
                 </div>
