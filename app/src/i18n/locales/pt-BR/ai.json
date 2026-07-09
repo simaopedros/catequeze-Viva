@@ -1,7 +1,7 @@
 {
   "planner": {
-    "title": "Copiloto de Conteúdo",
-    "subtitle": "Crie, melhore e adapte encontros de catequese com IA",
+    "title": "Assistência editorial",
+    "subtitle": "Crie, melhore e adapte encontros de catequese",
     "credits_left": "{{count}} créditos de IA restantes",
     "credits_remaining": "{{count}} créditos de IA restantes",
     "upgrade": "Fazer upgrade",
@@ -9,12 +9,12 @@
     "step_age": "Para qual faixa etária?",
     "step_theme": "Qual o tema do encontro?",
     "theme_placeholder": "Ex: O Sacramento da Eucaristia, A Oração do Pai Nosso...",
-    "theme_hint": "Seja específico. A IA usa o tema para montar todo o roteiro.",
+    "theme_hint": "Seja específico. O tema orienta todo o roteiro do encontro.",
     "step_duration": "Duração do encontro",
     "step_approach": "Abordagem pastoral",
     "continue": "Continuar",
-    "adapt": "Adaptar com IA",
-    "generate": "Gerar com IA",
+    "adapt": "Adaptar roteiro",
+    "generate": "Gerar roteiro",
     "minutes_abbr": "min",
     "step_tone": "Tom da linguagem",
     "tone_label": "Tom da linguagem",
@@ -52,13 +52,13 @@
     "linked": "Vinculado ao Encontro",
     "link_to_meeting": "Vincular ao Encontro",
     "improve_hint": "Os campos abaixo serão usados como contexto para melhorar o conteúdo.",
-    "adapt_hint": "Defina a faixa etária e o ajuste desejado para a IA adaptar linguagem e metodologia.",
-    "activity_hint": "A IA vai gerar uma atividade complementar adequada à sua turma.",
-    "whatsapp_hint": "A IA vai gerar uma mensagem pronta para enviar às famílias.",
+    "adapt_hint": "Defina a faixa etária e o ajuste desejado para adaptar linguagem e metodologia.",
+    "activity_hint": "Gere uma atividade complementar adequada à sua turma.",
+    "whatsapp_hint": "Gere uma mensagem pronta para enviar às famílias.",
     "adapt_field_hint": "Ex: tornar mais simples para 9-11 anos, deixar mais pastoral, incluir mais participação da turma.",
     "step_improve_goal": "O que você quer melhorar?",
     "improve_goal_placeholder": "Ex: Clareza da redação, profundidade teológica, ritmo do encontro, engajamento da turma...",
-    "improve_goal_hint": "Descreva o ajuste desejado. A IA usará isso como guia para revisar o roteiro.",
+    "improve_goal_hint": "Descreva o ajuste desejado. Isso guia a revisão do roteiro.",
     "step_context": "Qual o conteúdo?",
     "step_context_additional": "Que ajuste você quer fazer nesse conteúdo?",
     "step_adaptation_request": "Como você quer adaptar esse conteúdo?",
@@ -96,10 +96,11 @@
     ]
   },
   "hub": {
+    "eyebrow": "Encontros",
     "title": "O que você quer fazer hoje?",
-    "subtitle": "Escolha como o Copiloto de Conteúdo pode ajudar",
+    "subtitle": "Escolha como a assistência editorial pode ajudar",
     "create_new": "Criar um encontro do zero",
-    "create_new_desc": "Planeje um roteiro completo do início com ajuda da IA",
+    "create_new_desc": "Planeje um roteiro completo do início, com apoio quando precisar",
     "work_on_existing": "Usar um conteúdo já criado",
     "work_on_existing_desc": "Melhore, crie atividades ou gere mensagens a partir de um conteúdo existente",
     "use_existing": "Usar um conteúdo já criado",
@@ -198,7 +199,7 @@
     "no_content_selected": "Nenhum conteúdo selecionado para melhoria."
   },
   "widget": {
-    "greeting": "Olá! Sou o Assistente Teológico. Pergunte-me sobre fé, doutrina, sacramentos e pastoral. Para criar ou adaptar roteiros de encontro, acesse o Copiloto de Conteúdo no menu lateral.",
+    "greeting": "Olá! Sou o Assistente Teológico. Pergunte-me sobre fé, doutrina, sacramentos e pastoral. Para criar ou adaptar roteiros de encontro, use a Assistência editorial no menu lateral.",
     "error_connect": "Erro ao conectar com a IA.",
     "error_streaming": "Streaming não suportado.",
     "upgrade_required": "Você precisa do plano Catequista IA ou Paróquia para usar o assistente teológico. Acesse /app/billing para fazer upgrade.",
@@ -210,6 +211,6 @@
     "catholic_ai": "IA Católica • Catequese Viva",
     "empty_response": "Resposta vazia da IA.",
     "view_history": "Ver histórico de conversas",
-    "open_copilot": "Abrir Copiloto de Conteúdo"
+    "open_copilot": "Abrir assistência editorial"
   }
 }

@@ -161,7 +161,7 @@ export const admin_es = {
 
 export const ai_es = {
     "planner": {
-      "title": "Copiloto de Contenido",
+      "title": "Asistencia editorial",
       "subtitle": "Cree, mejore y adapte encuentros de catequesis con IA",
       "credits_left": "{{count}} créditos de IA restantes",
       "credits_remaining": "{{count}} créditos de IA restantes",
@@ -175,7 +175,7 @@ export const ai_es = {
       "step_approach": "Enfoque pastoral",
       "continue": "Continuar",
       "adapt": "Adaptar con IA",
-      "generate": "Generar con IA",
+      "generate": "Generar guion",
       "minutes_abbr": "min",
       "step_tone": "Tono del lenguaje",
       "tone_label": "Tono del lenguaje",
@@ -257,8 +257,9 @@ export const ai_es = {
       ]
     },
     "hub": {
+      "eyebrow": "Encuentros",
       "title": "¿Qué quieres hacer hoy?",
-      "subtitle": "Elige cómo el Copiloto de Contenido puede ayudar",
+      "subtitle": "Elige cómo la asistencia editorial puede ayudar",
       "create_new": "Crear un encuentro desde cero",
       "create_new_desc": "Planifica un guion completo desde el inicio con ayuda de la IA",
       "work_on_existing": "Usar un contenido ya creado",
@@ -359,7 +360,7 @@ export const ai_es = {
       "no_content_selected": "Ningún contenido seleccionado para mejorar."
     },
     "widget": {
-      "greeting": "¡Hola! Soy el Asistente Teológico. Pregúntame sobre fe, doctrina, sacramentos y pastoral. Para crear o adaptar guiones de encuentro, usa el Copiloto de Contenido en el menú lateral.",
+      "greeting": "¡Hola! Soy el Asistente Teológico. Pregúntame sobre fe, doctrina, sacramentos y pastoral. Para crear o adaptar guiones de encuentro, usa la Asistencia editorial en el menú lateral.",
       "error_connect": "Error al conectar con la IA.",
       "error_streaming": "Streaming no soportado.",
       "upgrade_required": "Necesita el plan Catequista IA o Parroquia para usar el asistente teológico. Vaya a /app/billing para actualizar.",
@@ -371,7 +372,7 @@ export const ai_es = {
       "catholic_ai": "IA Católica • Catequese Viva",
       "empty_response": "Respuesta vacía de la IA.",
       "view_history": "Ver historial de conversas",
-      "open_copilot": "Abrir Copiloto de Contenido"
+      "open_copilot": "Abrir asistencia editorial"
     }
   } as const;
 
@@ -1781,7 +1782,7 @@ export const content_es = {
     "library": {
       "subtitle": "{{scripts}} guiones · {{activities}} actividades",
       "count_badge": "{{count}} contenidos",
-      "generate_ai": "Generar con IA",
+      "generate_ai": "Asistencia editorial",
       "diocese": "Diócesis",
       "with_activities": "Con actividades",
       "search_placeholder": "Buscar contenido por título, tema o autor...",
@@ -1804,9 +1805,9 @@ export const content_es = {
       "confirm_remove_activity": "¿Eliminar esta actividad?",
       "error_generate_activity": "Error al generar actividad.",
       "new_activity": "Nueva actividad",
-      "generate_ai": "Generar con IA",
+      "generate_ai": "Asistencia editorial",
       "generating": "Generando...",
-      "open_copilot": "Abrir en Copiloto",
+      "open_copilot": "Abrir asistencia editorial",
       "update_activity": "Actualizar",
       "create_activity": "Crear actividad",
       "no_activities": "Sin actividades",
@@ -1831,7 +1832,7 @@ export const content_es = {
       "enhance_hint": "La IA expandirá y mejorará su borrador, sugerirá referencias bíblicas y del Catecismo, y completará campos vacíos.",
       "ai_suggestions": "Sugerencias de la IA",
       "create_content": "Crear contenido",
-      "open_copilot": "Abrir en Copiloto",
+      "open_copilot": "Abrir asistencia editorial",
       "error_title_required": "Complete al menos el título antes de usar la IA.",
       "error_required_fields": "Título y contenido principal son obligatorios.",
       "error_enhance": "Error al mejorar con IA.",
@@ -1844,7 +1845,7 @@ export const content_es = {
     },
     "edit_page": {
       "title": "Editar Contenido",
-      "ai_badge": "IA",
+      "ai_badge": "Assist.",
       "cic_ref": "Referencia CIC",
       "central_content": "Contenido Central",
       "group_dynamic": "Dinámica / Actividad en Grupo",
@@ -1858,7 +1859,7 @@ export const content_es = {
       "error_enhance": "Error al mejorar con IA.",
       "success_saved": "Contenido guardado.",
       "error_load": "Error al cargar contenido.",
-      "open_copilot": "Abrir en Copiloto"
+      "open_copilot": "Abrir asistencia editorial"
     },
     "print_page": {
       "loading": "Cargando...",
@@ -1928,12 +1929,12 @@ export const dashboard_es = {
       "step_attendance_title": "Registrar la primera asistencia",
       "step_attendance_desc": "Marca quién vino y mantén el historial del grupo.",
       "step_meeting_title": "Preparar un encuentro",
-      "step_meeting_desc": "Usa el hub de IA o la biblioteca para el próximo encuentro."
+      "step_meeting_desc": "Usa el assistência editorial o la biblioteca para el próximo encuentro."
     },
     "quick_new_class": "Crear nueva clase",
     "quick_new_catechumen": "Registrar catequizando",
-    "quick_ai": "Copiloto IA",
-    "quick_ai_desc": "Crear contenido con IA",
+    "quick_ai": "Asistencia editorial",
+    "quick_ai_desc": "Preparar guiones de encuentro",
     "no_meetings_today": "Ningún encuentro hoy.",
     "institutional_title": "Panel de Gestión Pastoral",
     "institutional_subtitle": "KPIs consolidados, tendencias y alertas.",
@@ -3129,7 +3130,7 @@ export const navigation_es = {
     "catechumens": "Catecúmenos",
     "families": "Familias",
     "content_library": "Biblioteca",
-    "ai_hub": "Copiloto de Contenido",
+    "ai_hub": "Asistencia editorial",
     "activities": "Actividades",
     "calendar": "Calendario",
     "sacraments": "Sacramentos",

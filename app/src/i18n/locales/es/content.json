@@ -36,7 +36,7 @@
   "library": {
     "subtitle": "{{scripts}} guiones · {{activities}} actividades",
     "count_badge": "{{count}} contenidos",
-    "generate_ai": "Generar con IA",
+    "generate_ai": "Asistencia editorial",
     "diocese": "Diócesis",
     "with_activities": "Con actividades",
     "search_placeholder": "Buscar contenido por título, tema o autor...",
@@ -59,9 +59,9 @@
     "confirm_remove_activity": "¿Eliminar esta actividad?",
     "error_generate_activity": "Error al generar actividad.",
     "new_activity": "Nueva actividad",
-    "generate_ai": "Generar con IA",
+    "generate_ai": "Asistencia editorial",
     "generating": "Generando...",
-    "open_copilot": "Abrir en Copiloto",
+    "open_copilot": "Abrir asistencia editorial",
     "update_activity": "Actualizar",
     "create_activity": "Crear actividad",
     "no_activities": "Sin actividades",
@@ -86,7 +86,7 @@
     "enhance_hint": "La IA expandirá y mejorará su borrador, sugerirá referencias bíblicas y del Catecismo, y completará campos vacíos.",
     "ai_suggestions": "Sugerencias de la IA",
     "create_content": "Crear contenido",
-    "open_copilot": "Abrir en Copiloto",
+    "open_copilot": "Abrir asistencia editorial",
     "error_title_required": "Complete al menos el título antes de usar la IA.",
     "error_required_fields": "Título y contenido principal son obligatorios.",
     "error_enhance": "Error al mejorar con IA.",
@@ -99,7 +99,7 @@
   },
   "edit_page": {
     "title": "Editar Contenido",
-    "ai_badge": "IA",
+    "ai_badge": "Assist.",
     "cic_ref": "Referencia CIC",
     "central_content": "Contenido Central",
     "group_dynamic": "Dinámica / Actividad en Grupo",
@@ -113,7 +113,7 @@
     "error_enhance": "Error al mejorar con IA.",
     "success_saved": "Contenido guardado.",
     "error_load": "Error al cargar contenido.",
-    "open_copilot": "Abrir en Copiloto"
+    "open_copilot": "Abrir asistencia editorial"
   },
   "print_page": {
     "loading": "Cargando...",

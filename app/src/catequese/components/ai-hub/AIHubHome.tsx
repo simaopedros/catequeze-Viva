@@ -117,7 +117,7 @@ export function AIHubHome() {
     return (
       <div className="mx-auto w-full max-w-5xl space-y-8 px-1 py-4 sm:px-0">
         <AppPageHeader
-          eyebrow={t("hub.eyebrow", { defaultValue: "Copiloto" })}
+          eyebrow={t("hub.eyebrow", { defaultValue: "Encontros" })}
           title={t("hub.existing_title")}
           subtitle={t("hub.existing_subtitle")}
         />
@@ -156,7 +156,7 @@ export function AIHubHome() {
   return (
     <div className="mx-auto w-full max-w-5xl space-y-8 px-1 py-4 sm:px-0">
       <AppPageHeader
-        eyebrow={t("hub.eyebrow", { defaultValue: "Copiloto" })}
+        eyebrow={t("hub.eyebrow", { defaultValue: "Encontros" })}
         title={t("hub.title")}
         subtitle={t("hub.subtitle")}
       />
@@ -165,7 +165,7 @@ export function AIHubHome() {
         <InteractiveCard
           icon={FilePenLine}
           title="Criar manualmente"
-          description="Monte o encontro no editor visual, adicione referências e recursos, e use IA apenas se quiser."
+          description="Monte o encontro no editor visual, adicione referências e recursos, com apoio editorial só se precisar."
           onClick={handleCreateManual}
           showArrow
           flat

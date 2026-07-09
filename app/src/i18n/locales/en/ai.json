@@ -1,6 +1,6 @@
 {
   "planner": {
-    "title": "Content Copilot",
+    "title": "Editorial assistance",
     "subtitle": "Create, improve and adapt catechesis meetings with AI",
     "credits_left": "{{count}} AI credits remaining",
     "credits_remaining": "{{count}} AI credits remaining",
@@ -9,12 +9,12 @@
     "step_age": "Which age group?",
     "step_theme": "What is the meeting theme?",
     "theme_placeholder": "E.g.: The Sacrament of the Eucharist, The Lord's Prayer...",
-    "theme_hint": "Be specific. AI uses the theme to build the entire script.",
+    "theme_hint": "Be specific. The theme guides the entire meeting outline.",
     "step_duration": "Meeting duration",
     "step_approach": "Pastoral approach",
     "continue": "Continue",
-    "adapt": "Adapt with AI",
-    "generate": "Generate with AI",
+    "adapt": "Adapt outline",
+    "generate": "Generate outline",
     "minutes_abbr": "min",
     "step_tone": "Language tone",
     "tone_label": "Language tone",
@@ -96,8 +96,9 @@
     ]
   },
   "hub": {
+    "eyebrow": "Meetings",
     "title": "What would you like to do today?",
-    "subtitle": "Choose how Content Copilot can help",
+    "subtitle": "Choose how editorial assistance can help",
     "create_new": "Create a meeting from scratch",
     "create_new_desc": "Plan a complete catechesis script from the start with AI assistance",
     "work_on_existing": "Use existing content",
@@ -198,7 +199,7 @@
     "no_content_selected": "No content selected for improvement."
   },
   "widget": {
-    "greeting": "Hello! I'm the Theological Assistant. Ask me about faith, doctrine, sacraments, and pastoral care. To create or adapt meeting scripts, use the Content Copilot in the sidebar.",
+    "greeting": "Hello! I'm the Theological Assistant. Ask me about faith, doctrine, sacraments, and pastoral care. To create or adapt meeting scripts, use Editorial assistance in the sidebar.",
     "error_connect": "Error connecting to AI.",
     "error_streaming": "Streaming not supported.",
     "upgrade_required": "You need the Catechist AI or Parish plan to use the theological assistant. Go to /app/billing to upgrade.",
@@ -210,6 +211,6 @@
     "catholic_ai": "Catholic AI • Catequese Viva",
     "empty_response": "Empty AI response.",
     "view_history": "View chat history",
-    "open_copilot": "Open Content Copilot"
+    "open_copilot": "Open editorial assistance"
   }
 }

@@ -536,10 +536,13 @@ export default function ClassDetailPage() {
 
         {editing ? (
           <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3">
-            <h3 className="font-semibold text-sm flex items-center gap-2">
-              <Pencil className="h-4 w-4" />
-              {t("detail.edit_class")}
-            </h3>
+            <div className="space-y-1.5">
+              <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <Pencil className="h-3.5 w-3.5" />
+                {t("detail.edit_class")}
+              </p>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <label className="text-xs font-medium">{t("name")}</label>

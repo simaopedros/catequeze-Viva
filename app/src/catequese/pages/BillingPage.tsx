@@ -176,9 +176,12 @@ function SurfaceSection({
         className,
       )}
     >
-      <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-        <Icon className="h-4 w-4" />
-        <span>{title}</span>
+      <div className="mb-4 space-y-1.5">
+        <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          <Icon className="h-3.5 w-3.5" />
+          <span>{title}</span>
+        </div>
+        <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
       </div>
       {children}
     </section>

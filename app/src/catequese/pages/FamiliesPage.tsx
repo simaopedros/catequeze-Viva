@@ -162,7 +162,10 @@ export default function FamiliesPage() {
               className="group rounded-sm border border-border/70 bg-white p-4 transition-colors hover:border-[#071A2D]/30"
             >
               <div className="flex items-start justify-between mb-2">
-                <h3 className="text-sm font-semibold group-hover:text-[#071A2D]">
+                <h3
+                  className="text-sm font-semibold tracking-tight text-foreground group-hover:text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
                   {h.name}
                 </h3>
                 <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />

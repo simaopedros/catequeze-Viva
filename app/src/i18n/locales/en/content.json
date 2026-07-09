@@ -36,7 +36,7 @@
   "library": {
     "subtitle": "{{scripts}} scripts · {{activities}} activities",
     "count_badge": "{{count}} items",
-    "generate_ai": "Generate with AI",
+    "generate_ai": "Editorial assistance",
     "diocese": "Diocese",
     "with_activities": "With activities",
     "search_placeholder": "Search content by title, theme or author...",
@@ -59,9 +59,9 @@
     "confirm_remove_activity": "Remove this activity?",
     "error_generate_activity": "Error generating activity.",
     "new_activity": "New activity",
-    "generate_ai": "Generate with AI",
+    "generate_ai": "Editorial assistance",
     "generating": "Generating...",
-    "open_copilot": "Open in Copilot",
+    "open_copilot": "Open editorial assistance",
     "update_activity": "Update",
     "create_activity": "Create activity",
     "no_activities": "No activities",
@@ -86,7 +86,7 @@
     "enhance_hint": "AI will expand and improve your draft, suggest biblical and Catechism references, and fill empty fields.",
     "ai_suggestions": "AI suggestions",
     "create_content": "Create content",
-    "open_copilot": "Open in Copilot",
+    "open_copilot": "Open editorial assistance",
     "error_title_required": "Fill in at least the title before using AI.",
     "error_required_fields": "Title and main content are required.",
     "error_enhance": "Error enhancing with AI.",
@@ -113,7 +113,7 @@
     "error_enhance": "Error enhancing with AI.",
     "success_saved": "Content saved.",
     "error_load": "Error loading content.",
-    "open_copilot": "Open in Copilot"
+    "open_copilot": "Open editorial assistance"
   },
   "print_page": {
     "loading": "Loading...",

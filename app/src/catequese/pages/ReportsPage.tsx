@@ -198,6 +198,9 @@ export default function ReportsPage() {
       <AppPageHeader
         eyebrow={t("title")}
         title={t("title")}
+        subtitle={t("subtitle", {
+          defaultValue: "Presença, ranking e visão consolidada das turmas.",
+        })}
         actions={
           <div className="flex gap-2">
             <Button

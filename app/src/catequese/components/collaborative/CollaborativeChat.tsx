@@ -48,21 +48,31 @@ export function CollaborativeChat() {
         className="flex-1 overflow-y-auto px-3 py-3 space-y-4"
       >
         {visibleMessages.length === 0 && (
-          <div className="rounded-sm border border-dashed border-border/70 bg-muted/20 px-4 py-5 text-sm text-muted-foreground">
-            <div className="mb-3 flex items-center gap-2 text-foreground">
-              <Feather className="h-4 w-4 text-[#071A2D]" />
-              <p className="font-semibold">{t("title")}</p>
+          <div className="rounded-sm border border-border/70 bg-white px-4 py-5 text-sm text-muted-foreground">
+            <div className="mb-3 space-y-1.5">
+              <div className="flex items-center gap-2">
+                <Feather className="h-4 w-4 text-[#071A2D]" />
+                <p
+                  className="font-semibold tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
+                  {t("title")}
+                </p>
+              </div>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
             </div>
             <p className="leading-relaxed">{t("chat.empty")}</p>
             <div className="mt-4 grid gap-1.5 text-xs">
-              <p className="font-semibold text-foreground">{t("chat.tips")}</p>
-              <p className="rounded bg-background px-2 py-1">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                {t("chat.tips")}
+              </p>
+              <p className="rounded-sm border border-border/70 bg-muted/20 px-2 py-1">
                 {t("chat.tip_refine")}
               </p>
-              <p className="rounded bg-background px-2 py-1">
+              <p className="rounded-sm border border-border/70 bg-muted/20 px-2 py-1">
                 {t("chat.tip_catechism")}
               </p>
-              <p className="rounded bg-background px-2 py-1">
+              <p className="rounded-sm border border-border/70 bg-muted/20 px-2 py-1">
                 {t("chat.tip_dynamic")}
               </p>
             </div>

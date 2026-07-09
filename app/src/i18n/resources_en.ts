@@ -161,7 +161,7 @@ export const admin_en = {
 
 export const ai_en = {
     "planner": {
-      "title": "Content Copilot",
+      "title": "Editorial assistance",
       "subtitle": "Create, improve and adapt catechesis meetings with AI",
       "credits_left": "{{count}} AI credits remaining",
       "credits_remaining": "{{count}} AI credits remaining",
@@ -170,12 +170,12 @@ export const ai_en = {
       "step_age": "Which age group?",
       "step_theme": "What is the meeting theme?",
       "theme_placeholder": "E.g.: The Sacrament of the Eucharist, The Lord's Prayer...",
-      "theme_hint": "Be specific. AI uses the theme to build the entire script.",
+      "theme_hint": "Be specific. The theme guides the entire meeting outline.",
       "step_duration": "Meeting duration",
       "step_approach": "Pastoral approach",
       "continue": "Continue",
-      "adapt": "Adapt with AI",
-      "generate": "Generate with AI",
+      "adapt": "Adapt outline",
+      "generate": "Generate outline",
       "minutes_abbr": "min",
       "step_tone": "Language tone",
       "tone_label": "Language tone",
@@ -257,8 +257,9 @@ export const ai_en = {
       ]
     },
     "hub": {
+      "eyebrow": "Meetings",
       "title": "What would you like to do today?",
-      "subtitle": "Choose how Content Copilot can help",
+      "subtitle": "Choose how editorial assistance can help",
       "create_new": "Create a meeting from scratch",
       "create_new_desc": "Plan a complete catechesis script from the start with AI assistance",
       "work_on_existing": "Use existing content",
@@ -359,7 +360,7 @@ export const ai_en = {
       "no_content_selected": "No content selected for improvement."
     },
     "widget": {
-      "greeting": "Hello! I'm the Theological Assistant. Ask me about faith, doctrine, sacraments, and pastoral care. To create or adapt meeting scripts, use the Content Copilot in the sidebar.",
+      "greeting": "Hello! I'm the Theological Assistant. Ask me about faith, doctrine, sacraments, and pastoral care. To create or adapt meeting scripts, use Editorial assistance in the sidebar.",
       "error_connect": "Error connecting to AI.",
       "error_streaming": "Streaming not supported.",
       "upgrade_required": "You need the Catechist AI or Parish plan to use the theological assistant. Go to /app/billing to upgrade.",
@@ -371,7 +372,7 @@ export const ai_en = {
       "catholic_ai": "Catholic AI • Catequese Viva",
       "empty_response": "Empty AI response.",
       "view_history": "View chat history",
-      "open_copilot": "Open Content Copilot"
+      "open_copilot": "Open editorial assistance"
     }
   } as const;
 
@@ -1781,7 +1782,7 @@ export const content_en = {
     "library": {
       "subtitle": "{{scripts}} scripts · {{activities}} activities",
       "count_badge": "{{count}} items",
-      "generate_ai": "Generate with AI",
+      "generate_ai": "Editorial assistance",
       "diocese": "Diocese",
       "with_activities": "With activities",
       "search_placeholder": "Search content by title, theme or author...",
@@ -1804,9 +1805,9 @@ export const content_en = {
       "confirm_remove_activity": "Remove this activity?",
       "error_generate_activity": "Error generating activity.",
       "new_activity": "New activity",
-      "generate_ai": "Generate with AI",
+      "generate_ai": "Editorial assistance",
       "generating": "Generating...",
-      "open_copilot": "Open in Copilot",
+      "open_copilot": "Open editorial assistance",
       "update_activity": "Update",
       "create_activity": "Create activity",
       "no_activities": "No activities",
@@ -1831,7 +1832,7 @@ export const content_en = {
       "enhance_hint": "AI will expand and improve your draft, suggest biblical and Catechism references, and fill empty fields.",
       "ai_suggestions": "AI suggestions",
       "create_content": "Create content",
-      "open_copilot": "Open in Copilot",
+      "open_copilot": "Open editorial assistance",
       "error_title_required": "Fill in at least the title before using AI.",
       "error_required_fields": "Title and main content are required.",
       "error_enhance": "Error enhancing with AI.",
@@ -1858,7 +1859,7 @@ export const content_en = {
       "error_enhance": "Error enhancing with AI.",
       "success_saved": "Content saved.",
       "error_load": "Error loading content.",
-      "open_copilot": "Open in Copilot"
+      "open_copilot": "Open editorial assistance"
     },
     "print_page": {
       "loading": "Loading...",
@@ -1932,8 +1933,8 @@ export const dashboard_en = {
     },
     "quick_new_class": "Create new class",
     "quick_new_catechumen": "Register catechumen",
-    "quick_ai": "AI Copilot",
-    "quick_ai_desc": "Create content with AI",
+    "quick_ai": "Editorial assistance",
+    "quick_ai_desc": "Prepare meeting outlines",
     "no_meetings_today": "No meetings today.",
     "institutional_title": "Pastoral Management Dashboard",
     "institutional_subtitle": "Consolidated KPIs, trends and alerts.",
@@ -3129,7 +3130,7 @@ export const navigation_en = {
     "catechumens": "Catechumens",
     "families": "Families",
     "content_library": "Library",
-    "ai_hub": "Content Copilot",
+    "ai_hub": "Editorial assistance",
     "activities": "Activities",
     "calendar": "Calendar",
     "sacraments": "Sacraments",

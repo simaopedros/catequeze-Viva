@@ -1,6 +1,6 @@
 {
   "planner": {
-    "title": "Copiloto de Contenido",
+    "title": "Asistencia editorial",
     "subtitle": "Cree, mejore y adapte encuentros de catequesis con IA",
     "credits_left": "{{count}} créditos de IA restantes",
     "credits_remaining": "{{count}} créditos de IA restantes",
@@ -14,7 +14,7 @@
     "step_approach": "Enfoque pastoral",
     "continue": "Continuar",
     "adapt": "Adaptar con IA",
-    "generate": "Generar con IA",
+    "generate": "Generar guion",
     "minutes_abbr": "min",
     "step_tone": "Tono del lenguaje",
     "tone_label": "Tono del lenguaje",
@@ -96,8 +96,9 @@
     ]
   },
   "hub": {
+    "eyebrow": "Encuentros",
     "title": "¿Qué quieres hacer hoy?",
-    "subtitle": "Elige cómo el Copiloto de Contenido puede ayudar",
+    "subtitle": "Elige cómo la asistencia editorial puede ayudar",
     "create_new": "Crear un encuentro desde cero",
     "create_new_desc": "Planifica un guion completo desde el inicio con ayuda de la IA",
     "work_on_existing": "Usar un contenido ya creado",
@@ -198,7 +199,7 @@
     "no_content_selected": "Ningún contenido seleccionado para mejorar."
   },
   "widget": {
-    "greeting": "¡Hola! Soy el Asistente Teológico. Pregúntame sobre fe, doctrina, sacramentos y pastoral. Para crear o adaptar guiones de encuentro, usa el Copiloto de Contenido en el menú lateral.",
+    "greeting": "¡Hola! Soy el Asistente Teológico. Pregúntame sobre fe, doctrina, sacramentos y pastoral. Para crear o adaptar guiones de encuentro, usa la Asistencia editorial en el menú lateral.",
     "error_connect": "Error al conectar con la IA.",
     "error_streaming": "Streaming no soportado.",
     "upgrade_required": "Necesita el plan Catequista IA o Parroquia para usar el asistente teológico. Vaya a /app/billing para actualizar.",
@@ -210,6 +211,6 @@
     "catholic_ai": "IA Católica • Catequese Viva",
     "empty_response": "Respuesta vacía de la IA.",
     "view_history": "Ver historial de conversas",
-    "open_copilot": "Abrir Copiloto de Contenido"
+    "open_copilot": "Abrir asistencia editorial"
   }
 }

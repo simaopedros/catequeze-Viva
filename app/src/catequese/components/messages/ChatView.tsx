@@ -182,14 +182,18 @@ export function ChatView({
 
         {/* Empty state */}
         {messages.length === 0 && !isLoading && (
-          <div className="flex flex-col items-center justify-center h-full text-center py-16">
-            <div className="h-16 w-16 rounded-sm bg-muted/40 flex items-center justify-center mb-4">
-              <Send className="h-7 w-7 text-muted-foreground" />
+          <div className="flex h-full flex-col items-center justify-center py-16 text-center">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-sm border border-border/70 bg-muted/30">
+              <Send className="h-7 w-7 text-[#071A2D]" />
             </div>
-            <h3 className="font-semibold text-sm mb-1">
+            <h3
+              className="mb-1 text-sm font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
               {t("chat_start_title")}
             </h3>
-            <p className="text-xs text-muted-foreground max-w-[240px]">
+            <div className="mx-auto mb-2 h-px w-8 bg-[#D39A2B]" aria-hidden />
+            <p className="max-w-[240px] text-xs text-muted-foreground">
               {t("chat_start_desc")}
             </p>
           </div>

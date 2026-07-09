@@ -16,12 +16,12 @@
     "step_attendance_title": "Registrar la primera asistencia",
     "step_attendance_desc": "Marca quién vino y mantén el historial del grupo.",
     "step_meeting_title": "Preparar un encuentro",
-    "step_meeting_desc": "Usa el hub de IA o la biblioteca para el próximo encuentro."
+    "step_meeting_desc": "Usa el assistência editorial o la biblioteca para el próximo encuentro."
   },
   "quick_new_class": "Crear nueva clase",
   "quick_new_catechumen": "Registrar catequizando",
-  "quick_ai": "Copiloto IA",
-  "quick_ai_desc": "Crear contenido con IA",
+  "quick_ai": "Asistencia editorial",
+  "quick_ai_desc": "Preparar guiones de encuentro",
   "no_meetings_today": "Ningún encuentro hoy.",
   "institutional_title": "Panel de Gestión Pastoral",
   "institutional_subtitle": "KPIs consolidados, tendencias y alertas.",

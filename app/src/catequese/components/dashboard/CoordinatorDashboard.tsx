@@ -106,7 +106,10 @@ function SectionCard({
 }) {
   return (
     <AppPanel className={cn(className)}>
-      <AppEyebrow className="mb-4">{title}</AppEyebrow>
+      <div className="mb-4 space-y-1.5">
+        <AppEyebrow>{title}</AppEyebrow>
+        <AppGoldRule className="w-8" />
+      </div>
       {children}
     </AppPanel>
   );
@@ -270,8 +273,8 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                   2. Cadastre os catequizandos e distribua nas turmas.
                 </div>
                 <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
-                  3. Use o Copiloto para montar os primeiros encontros com mais
-                  qualidade.
+                  3. Use a assistência editorial para montar os primeiros
+                  encontros com mais qualidade.
                 </div>
               </div>
             </SectionCard>
