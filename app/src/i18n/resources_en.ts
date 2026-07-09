@@ -940,6 +940,8 @@ export const catechism_en = {
 export const classes_en = {
     "title": "Classes",
     "subtitle": "Manage classes, catechists, and catechumens.",
+    "eyebrow": "Catechesis",
+    "metrics_visible": "Visible",
     "active_count": "{{count}} active",
     "create": "Create class",
     "new_class": "New class",
@@ -1911,6 +1913,9 @@ export const cookie_en = {
 export const dashboard_en = {
     "title": "Catechesis Dashboard",
     "subtitle": "Track classes, attendance, and pastoral pending items.",
+    "eyebrow": "Overview",
+    "quick_actions": "Shortcuts",
+    "search_tip_title": "Search",
     "activation": {
       "eyebrow": "Getting started",
       "title": "Get your catechesis ready for daily use",

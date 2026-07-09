@@ -1,6 +1,8 @@
 {
   "title": "Grupos",
   "subtitle": "Gestione grupos, catequistas y catecúmenos.",
+  "eyebrow": "Catequesis",
+  "metrics_visible": "Visibles",
   "active_count": "{{count}} activas",
   "create": "Crear grupo",
   "new_class": "Nuevo grupo",

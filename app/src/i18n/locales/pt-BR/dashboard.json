@@ -1,6 +1,9 @@
 {
   "title": "Painel da Catequese",
   "subtitle": "Acompanhe turmas, presença e pendências pastorais.",
+  "eyebrow": "Visão geral",
+  "quick_actions": "Atalhos",
+  "search_tip_title": "Busca",
   "activation": {
     "eyebrow": "Primeiros passos",
     "title": "Deixe sua catequese pronta para o dia a dia",

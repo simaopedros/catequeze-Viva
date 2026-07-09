@@ -64,7 +64,10 @@ export function ActivationChecklist({ stats }: { stats: ActivationStats | null |
         done: hasAttendance,
         title: t('activation.step_attendance_title'),
         description: t('activation.step_attendance_desc'),
-        to: '/app/attendance',
+        // Attendance lives under the class: /app/classes/:id/attendance
+        to: firstClassId
+          ? `/app/classes/${firstClassId}/attendance`
+          : '/app/classes',
       },
       {
         id: 'meeting',
@@ -92,16 +95,20 @@ export function ActivationChecklist({ stats }: { stats: ActivationStats | null |
   };
 
   return (
-    <section className="rounded-3xl border border-primary/15 bg-gradient-to-br from-white via-slate-50 to-primary/[0.04] p-5 shadow-sm shadow-slate-200/60">
+    <section className="rounded-sm border border-border/70 bg-white p-5">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             {t('activation.eyebrow')}
           </p>
-          <h2 className="mt-1 text-lg font-semibold tracking-tight text-slate-950">
+          <h2
+            className="mt-1 text-lg font-semibold tracking-tight text-foreground"
+            style={{ fontFamily: 'var(--font-brand-display)' }}
+          >
             {t('activation.title')}
           </h2>
-          <p className="mt-1 text-sm text-slate-600">
+          <div className="mt-2 h-px w-10 bg-[#D39A2B]" aria-hidden />
+          <p className="mt-2 text-sm text-muted-foreground">
             {t('activation.progress', { done: doneCount, total: steps.length })}
           </p>
         </div>
@@ -109,7 +116,7 @@ export function ActivationChecklist({ stats }: { stats: ActivationStats | null |
           type="button"
           variant="ghost"
           size="icon"
-          className="h-8 w-8 shrink-0 text-slate-400 hover:text-slate-700"
+          className="h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground"
           onClick={dismiss}
           aria-label={t('activation.dismiss')}
         >
@@ -117,16 +124,14 @@ export function ActivationChecklist({ stats }: { stats: ActivationStats | null |
         </Button>
       </div>
 
-      <ol className="space-y-2">
+      <ol className="space-y-1 border-t border-border/70">
         {steps.map((step) => (
           <li key={step.id}>
             <Link
               to={step.to}
               className={cn(
-                'flex items-start gap-3 rounded-2xl border px-3 py-3 transition-colors',
-                step.done
-                  ? 'border-border/50 bg-white/60'
-                  : 'border-border/70 bg-white hover:border-primary/30 hover:bg-primary/[0.02]'
+                'flex items-start gap-3 border-b border-border/60 px-1 py-3 last:border-0 transition-colors',
+                step.done ? 'opacity-70' : 'hover:bg-muted/20'
               )}
             >
               {step.done ? (

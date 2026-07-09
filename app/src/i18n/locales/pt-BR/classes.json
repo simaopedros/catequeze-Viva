@@ -1,6 +1,8 @@
 {
   "title": "Turmas",
   "subtitle": "Gerencie turmas, catequistas e catequizandos.",
+  "eyebrow": "Catequese",
+  "metrics_visible": "Visíveis",
   "active_count": "{{count}} ativas",
   "create": "Criar turma",
   "new_class": "Nova turma",

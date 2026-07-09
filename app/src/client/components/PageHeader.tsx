@@ -69,21 +69,25 @@ export function PageHeader({
                 ))}
               </nav>
             )}
-            <h1 className={cn(
-              'font-bold tracking-tight flex items-center gap-2',
-              compact ? 'text-title-xsm' : 'text-title-md'
-            )}>
+            <h1
+              className={cn(
+                'font-semibold tracking-tight flex items-center gap-2 text-foreground',
+                compact ? 'text-xl' : 'text-2xl sm:text-[1.75rem]'
+              )}
+              style={{ fontFamily: 'var(--font-brand-display)' }}
+            >
               {title}
               {count !== undefined && (
-                <span className="text-body-sm font-normal text-text-secondary bg-muted/60 rounded-full px-2.5 py-0.5">
+                <span className="text-body-sm font-normal text-text-secondary border border-border/70 rounded-sm px-2 py-0.5">
                   {count}
                 </span>
               )}
             </h1>
+            {!compact && <div className="mt-2 h-px w-10 bg-[#D39A2B]" aria-hidden />}
           </div>
         </div>
         {subtitle && !compact && (
-          <p className="text-body-sm text-text-secondary">{subtitle}</p>
+          <p className="text-body-sm text-text-secondary max-w-xl leading-relaxed">{subtitle}</p>
         )}
         {children && <div className="flex gap-2 shrink-0">{children}</div>}
       </div>

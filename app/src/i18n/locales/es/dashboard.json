@@ -1,6 +1,9 @@
 {
   "title": "Panel de Catequesis",
   "subtitle": "Siga grupos, asistencia y pendientes pastorales.",
+  "eyebrow": "Resumen",
+  "quick_actions": "Atajos",
+  "search_tip_title": "Búsqueda",
   "activation": {
     "eyebrow": "Primeros pasos",
     "title": "Deja tu catequesis lista para el día a día",

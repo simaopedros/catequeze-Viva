@@ -1,6 +1,9 @@
 {
   "title": "Catechesis Dashboard",
   "subtitle": "Track classes, attendance, and pastoral pending items.",
+  "eyebrow": "Overview",
+  "quick_actions": "Shortcuts",
+  "search_tip_title": "Search",
   "activation": {
     "eyebrow": "Getting started",
     "title": "Get your catechesis ready for daily use",

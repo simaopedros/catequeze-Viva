@@ -71,10 +71,10 @@ function NavItemLink({ item, collapsed, badge }: NavItemProps & { badge?: number
       prefetch="intent"
       data-tour={tourMap[item.iconKey] || undefined}
       className={({ isActive }) => cn(
-        'flex items-center justify-between rounded-md px-2.5 py-1.5 text-sm font-medium transition-all duration-200 w-full relative',
+        'relative flex w-full items-center justify-between rounded-sm px-2.5 py-2 text-sm font-medium transition-colors duration-150',
         isActive
-          ? 'bg-primary/10 text-primary border-l-2 border-primary shadow-[inset_2px_0_0_var(--color-primary)]'
-          : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground border-l-2 border-transparent',
+          ? 'bg-[#071A2D]/[0.06] text-[#071A2D] border-l-2 border-[#D39A2B]'
+          : 'border-l-2 border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground',
         collapsed && 'justify-center px-2',
         'motion-reduce:transition-none'
       )}
@@ -162,13 +162,18 @@ export function Sidebar() {
   };
 
   return (
-    <aside className={cn('flex flex-col border-r bg-card shadow-elevation-sticky transition-all duration-200 h-full', collapsed ? 'w-16' : 'w-60')}>
-      <div className="flex h-14 items-center border-b px-3">
+    <aside
+      className={cn(
+        'flex h-full flex-col border-r border-[#071A2D]/10 bg-white transition-all duration-200',
+        collapsed ? 'w-16' : 'w-60'
+      )}
+    >
+      <div className="flex h-14 items-center border-b border-[#071A2D]/08 px-3">
         {!collapsed && <BrandLockup compact hideBadge className="max-w-full" />}
         {collapsed && <BrandMark className="mx-auto h-8 w-8" />}
       </div>
 
-      <nav className="flex-1 overflow-y-auto py-4 no-scrollbar">
+      <nav className="no-scrollbar flex-1 overflow-y-auto py-4">
         {mainSections.map((section) => {
           const isPrimary = section.section === 'primary';
           const isMore = section.section === 'more';
@@ -180,7 +185,7 @@ export function Sidebar() {
           // Primary section: items always visible, no collapsible header
           if (isPrimary) {
             return (
-              <div key={section.section} className="px-3 space-y-1">
+              <div key={section.section} className="space-y-0.5 px-2.5">
                 {filtered.map((item) => (
                   <NavItemLink
                     key={item.to}
@@ -189,7 +194,7 @@ export function Sidebar() {
                     badge={item.iconKey === 'messages' ? unreadMessagesCount : undefined}
                   />
                 ))}
-                <div className="border-t my-2" />
+                <div className="my-3 border-t border-[#071A2D]/08" />
               </div>
             );
           }

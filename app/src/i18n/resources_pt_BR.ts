@@ -940,6 +940,8 @@ export const catechism_pt_BR = {
 export const classes_pt_BR = {
     "title": "Turmas",
     "subtitle": "Gerencie turmas, catequistas e catequizandos.",
+    "eyebrow": "Catequese",
+    "metrics_visible": "Visíveis",
     "active_count": "{{count}} ativas",
     "create": "Criar turma",
     "new_class": "Nova turma",
@@ -1911,6 +1913,9 @@ export const cookie_pt_BR = {
 export const dashboard_pt_BR = {
     "title": "Painel da Catequese",
     "subtitle": "Acompanhe turmas, presença e pendências pastorais.",
+    "eyebrow": "Visão geral",
+    "quick_actions": "Atalhos",
+    "search_tip_title": "Busca",
     "activation": {
       "eyebrow": "Primeiros passos",
       "title": "Deixe sua catequese pronta para o dia a dia",

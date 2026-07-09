@@ -940,6 +940,8 @@ export const catechism_es = {
 export const classes_es = {
     "title": "Grupos",
     "subtitle": "Gestione grupos, catequistas y catecúmenos.",
+    "eyebrow": "Catequesis",
+    "metrics_visible": "Visibles",
     "active_count": "{{count}} activas",
     "create": "Crear grupo",
     "new_class": "Nuevo grupo",
@@ -1911,6 +1913,9 @@ export const cookie_es = {
 export const dashboard_es = {
     "title": "Panel de Catequesis",
     "subtitle": "Siga grupos, asistencia y pendientes pastorales.",
+    "eyebrow": "Resumen",
+    "quick_actions": "Atajos",
+    "search_tip_title": "Búsqueda",
     "activation": {
       "eyebrow": "Primeros pasos",
       "title": "Deja tu catequesis lista para el día a día",

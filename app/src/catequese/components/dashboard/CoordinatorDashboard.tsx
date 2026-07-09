@@ -4,6 +4,12 @@ import { Link } from 'react-router';
 import { Button } from '../../../client/components/ui/button';
 import { Badge } from '../../../client/components/ui/badge';
 import { EmptyState } from '../../../client/components/EmptyState';
+import {
+  AppPageHeader,
+  AppPanel,
+  AppMetric,
+  AppEyebrow,
+} from '../../../client/components/brand/AppChrome';
 import { useQuery, getClassComparison } from 'wasp/client/operations';
 import { useActiveParish } from '../../../client/hooks/useActiveParish';
 import { formatDate, formatDateOnly } from '../../../i18n/format';
@@ -31,101 +37,61 @@ function getRiskBadge(riskLevel: string, t: (key: string) => string) {
 }
 
 function MetricCard({
-  icon: Icon,
   label,
   value,
-  accent,
 }: {
-  icon: LucideIcon;
+  icon?: LucideIcon;
   label: string;
   value: string | number;
-  accent: string;
+  accent?: string;
 }) {
-  return (
-    <div className="rounded-2xl border border-white/60 bg-white/85 p-4 shadow-sm shadow-slate-200/60 backdrop-blur">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">{label}</p>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-slate-950">{value}</p>
-        </div>
-        <div className={cn('rounded-2xl p-2.5', accent)}>
-          <Icon className="h-4 w-4" />
-        </div>
-      </div>
-    </div>
-  );
+  return <AppMetric label={label} value={value} />;
 }
 
 function ActionCard({
   to,
-  icon: Icon,
   title,
   description,
-  accent,
-  featured = false,
 }: {
   to: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
   title: string;
   description: string;
-  accent: string;
+  accent?: string;
   featured?: boolean;
 }) {
   return (
     <Link
       to={to}
-      className={cn(
-        'group rounded-2xl border p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg',
-        featured
-          ? 'border-primary/20 bg-gradient-to-br from-primary/[0.08] via-white to-amber-50/80 shadow-sm shadow-primary/10 hover:border-primary/35 hover:shadow-primary/15'
-          : 'border-border/70 bg-white/85 shadow-sm shadow-slate-200/60 hover:border-primary/20'
-      )}
+      className="group flex items-start justify-between gap-3 border-b border-border/70 py-3.5 last:border-0 transition-colors hover:bg-muted/20"
     >
-      <div className="flex items-start gap-3">
-        <div className={cn('rounded-2xl p-2.5 transition-transform group-hover:scale-105', accent)}>
-          <Icon className="h-4 w-4" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-3">
-            <p className="text-sm font-semibold text-slate-950">{title}</p>
-            <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-slate-700" />
-          </div>
-          <p className="mt-1 text-sm leading-relaxed text-slate-600">{description}</p>
-        </div>
-      </div>
+      <span className="min-w-0 space-y-0.5">
+        <span className="block text-sm font-semibold text-foreground group-hover:text-primary">
+          {title}
+        </span>
+        <span className="block text-xs leading-relaxed text-muted-foreground">{description}</span>
+      </span>
+      <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
     </Link>
   );
 }
 
 function SectionCard({
   title,
-  icon: Icon,
   children,
   className,
-  tone = 'default',
 }: {
   title: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
   children: ReactNode;
   className?: string;
   tone?: 'default' | 'soft';
 }) {
   return (
-    <section
-      className={cn(
-        'rounded-3xl border p-5 shadow-sm shadow-slate-200/60',
-        tone === 'soft'
-          ? 'border-primary/15 bg-gradient-to-br from-white via-slate-50 to-primary/[0.04]'
-          : 'border-border/70 bg-white/90',
-        className
-      )}
-    >
-      <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
-        <Icon className="h-4 w-4" />
-        <span>{title}</span>
-      </div>
+    <AppPanel className={cn(className)}>
+      <AppEyebrow className="mb-4">{title}</AppEyebrow>
       {children}
-    </section>
+    </AppPanel>
   );
 }
 
@@ -149,80 +115,50 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
     <div className="space-y-8">
       <ActivationChecklist stats={stats} />
 
-      <section className="overflow-hidden rounded-[32px] border border-border/70 bg-[radial-gradient(circle_at_top_left,_rgba(17,60,107,0.10),_transparent_34%),linear-gradient(180deg,_rgba(255,255,255,1),_rgba(248,250,252,0.96))] p-6 shadow-sm shadow-slate-200/70 lg:p-8">
-        <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr] xl:items-start">
-          <div className="space-y-6">
-            <div className="space-y-3">
-              <Badge variant="outline" className="rounded-full border-primary/20 bg-white/80 px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-primary">
-                Painel pastoral
-              </Badge>
-              <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
-                  {t('title')}
-                </h1>
-                <p className="max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
-                  {t('subtitle')}
-                </p>
-              </div>
-            </div>
+      <AppPageHeader
+        eyebrow={t('eyebrow')}
+        title={t('title')}
+        subtitle={t('subtitle')}
+        actions={
+          <>
+            <Button asChild className="h-10 rounded-sm shadow-none">
+              <Link to="/app/classes/new">{t('create_class')}</Link>
+            </Button>
+            <Button variant="outline" asChild className="h-10 rounded-sm">
+              <Link to="/app/catechumens/new">{tc('create_catechumen')}</Link>
+            </Button>
+          </>
+        }
+      />
 
-            <div data-tour="dashboard-stats" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              <MetricCard icon={Users} label={t('active_catechumens')} value={stats?.activeCatechumens ?? 0} accent="bg-primary/10 text-primary" />
-              <MetricCard icon={BookOpen} label={t('active_classes')} value={stats?.activeClasses ?? 0} accent="bg-emerald-100 text-emerald-700" />
-              <MetricCard icon={TrendingUp} label={t('avg_attendance')} value={`${stats?.avgAttendance ?? 0}%`} accent="bg-amber-100 text-amber-700" />
-              <MetricCard icon={Cross} label={t('pending_sacraments')} value={stats?.pendingSacraments ?? 0} accent="bg-orange-100 text-orange-700" />
-            </div>
+      <div data-tour="dashboard-stats" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <MetricCard label={t('active_catechumens')} value={stats?.activeCatechumens ?? 0} />
+        <MetricCard label={t('active_classes')} value={stats?.activeClasses ?? 0} />
+        <MetricCard label={t('avg_attendance')} value={`${stats?.avgAttendance ?? 0}%`} />
+        <MetricCard label={t('pending_sacraments')} value={stats?.pendingSacraments ?? 0} />
+      </div>
 
-            <div className="flex flex-wrap gap-3">
-              <Button asChild size="lg" className="h-11 rounded-xl px-5">
-                <Link to="/app/classes/new">{t('create_class')}</Link>
-              </Button>
-              <Button variant="outline" asChild size="lg" className="h-11 rounded-xl px-5 bg-white/80">
-                <Link to="/app/catechumens/new">{tc('create_catechumen')}</Link>
-              </Button>
-            </div>
+      <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+        <AppPanel padded={false} className="px-5">
+          <div className="border-b border-border/70 py-3">
+            <AppEyebrow>{t('quick_actions')}</AppEyebrow>
           </div>
-
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-            <ActionCard
-              to="/app/classes/new"
-              icon={BookOpen}
-              title={t('create_class')}
-              description={t('quick_new_class')}
-              accent="bg-primary/10 text-primary"
-            />
-            <ActionCard
-              to="/app/catechumens/new"
-              icon={Users}
-              title={tc('create_catechumen')}
-              description={t('quick_new_catechumen')}
-              accent="bg-emerald-100 text-emerald-700"
-            />
-            <ActionCard
-              to="/app/ai-hub"
-              icon={Sparkles}
-              title={t('quick_ai')}
-              description={t('quick_ai_desc')}
-              accent="bg-amber-100 text-amber-700"
-              featured
-            />
-            <div className="rounded-2xl border border-dashed border-border/80 bg-white/75 p-4">
-              <div className="flex items-start gap-3">
-                <div className="rounded-2xl bg-slate-100 p-2.5 text-slate-500">
-                  <Search className="h-4 w-4" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-slate-900">Busca rapida</p>
-                  <p className="mt-1 text-sm leading-relaxed text-slate-600">{tc('quick_tip_search')}</p>
-                </div>
-                <kbd className="hidden shrink-0 rounded-lg border bg-slate-50 px-2 py-1 text-[11px] font-mono text-slate-500 sm:inline-flex">
-                  Ctrl + K
-                </kbd>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+          <ActionCard to="/app/classes/new" title={t('create_class')} description={t('quick_new_class')} />
+          <ActionCard
+            to="/app/catechumens/new"
+            title={tc('create_catechumen')}
+            description={t('quick_new_catechumen')}
+          />
+          <ActionCard to="/app/ai-hub" title={t('quick_ai')} description={t('quick_ai_desc')} />
+        </AppPanel>
+        <AppPanel>
+          <AppEyebrow className="mb-3">{t('search_tip_title')}</AppEyebrow>
+          <p className="text-sm leading-relaxed text-muted-foreground">{tc('quick_tip_search')}</p>
+          <kbd className="mt-4 inline-flex rounded-sm border border-border/70 bg-muted/40 px-2 py-1 text-[11px] font-mono text-muted-foreground">
+            Ctrl + K
+          </kbd>
+        </AppPanel>
+      </div>
 
       {!hasClasses ? (
         <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">

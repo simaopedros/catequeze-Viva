@@ -1,6 +1,8 @@
 {
   "title": "Classes",
   "subtitle": "Manage classes, catechists, and catechumens.",
+  "eyebrow": "Catechesis",
+  "metrics_visible": "Visible",
   "active_count": "{{count}} active",
   "create": "Create class",
   "new_class": "New class",
