@@ -56,7 +56,7 @@ type ReferenceTab = 'bible' | 'catechism' | 'directory'
 
 function SelectedChip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full border border-border bg-muted/30 px-2.5 py-1 text-xs text-foreground">
+    <span className="inline-flex items-center gap-1 rounded-sm border border-border/70 bg-muted/30 px-2.5 py-1 text-xs text-foreground">
       {label}
       <button type="button" onClick={onRemove} className="text-muted-foreground transition-colors hover:text-destructive">
         ×
