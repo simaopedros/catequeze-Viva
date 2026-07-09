@@ -187,7 +187,7 @@ export default function ContentDetailPage() {
           ) : (
             <div className="flex gap-2">
               <Button onClick={() => setShowForm(true)} className="gap-2"><Plus className="h-4 w-4" /> {t('detail.new_activity')}</Button>
-              <Button variant="outline" asChild className="gap-2 border-dashed border-violet-300 text-violet-700 hover:bg-violet-50 dark:border-violet-700 dark:text-violet-300 dark:hover:bg-violet-950/30">
+              <Button variant="outline" asChild className="gap-2 rounded-sm border-dashed border-border/70 text-foreground hover:bg-muted/20">
                 <Link to={`/app/ai-hub?mode=generate-activity&contentId=${id}&contentTitle=${encodeURIComponent(item.title || '')}&contentTheme=${encodeURIComponent(item.theme || '')}`}>
                   <Sparkles className="h-4 w-4" />
                   {t('detail.open_copilot') ? t('detail.open_copilot') : t('detail.generate_ai')}

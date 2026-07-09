@@ -9,7 +9,7 @@ import { EmptyState } from '../../client/components/EmptyState';
 import { useQuery, listCommunities, listClasses, listHouseholds, createConversation } from 'wasp/client/operations';
 import { useCommunityTypeLabels } from '../../i18n/useLabels';
 
-const AVATAR_COLORS = ['bg-blue-100 text-blue-700','bg-green-100 text-green-700','bg-amber-100 text-amber-700','bg-purple-100 text-purple-700','bg-pink-100 text-pink-700'];
+const AVATAR_COLORS = ['border border-border/70 bg-muted/30 text-foreground'];
 
 export default function CommunityDetailPage() {
   const { t } = useTranslation('common');
@@ -129,7 +129,7 @@ export default function CommunityDetailPage() {
             ) : (
               <div className="grid gap-2">
                 {classes.map((cls: any) => (
-                  <Link key={cls.id} to={`/app/classes/${cls.id}`} className="flex items-center justify-between rounded-lg border p-3 hover:bg-muted/30">
+                  <Link key={cls.id} to={`/app/classes/${cls.id}`} className="flex items-center justify-between rounded-sm border border-border/70 bg-white p-3 transition-colors hover:bg-muted/20">
                     <div>
                       <p className="font-medium text-sm">{cls.name}</p>
                       <p className="text-xs text-muted-foreground">
@@ -153,7 +153,7 @@ export default function CommunityDetailPage() {
             ) : (
               <div className="grid gap-2 md:grid-cols-2">
                 {households.map((h: any) => (
-                  <Link key={h.id} to={`/app/families/${h.id}`} className="rounded-lg border p-3 hover:bg-muted/30">
+                  <Link key={h.id} to={`/app/families/${h.id}`} className="rounded-sm border border-border/70 bg-white p-3 transition-colors hover:bg-muted/20">
                     <p className="font-medium text-sm">{h.name}</p>
                     <p className="text-xs text-muted-foreground">
                       {t('families.summary', { catechumens: h._count?.catechumens || 0, guardians: h.guardians?.length || 0 })}
@@ -179,8 +179,8 @@ export default function CommunityDetailPage() {
             ) : (
               <div className="grid gap-2">
                 {uniqueCatechists.map((c: any) => (
-                  <div key={c.id} className="flex items-center gap-3 rounded-lg border p-3">
-                    <div className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${AVATAR_COLORS[Math.abs(c.firstName?.charCodeAt(0) || 0) % AVATAR_COLORS.length]}`}>
+                  <div key={c.id} className="flex items-center gap-3 rounded-sm border border-border/70 bg-white p-3">
+                    <div className={`flex h-8 w-8 items-center justify-center rounded-sm text-xs font-semibold ${AVATAR_COLORS[0]}`}>
                       {c.firstName?.[0]}{c.lastName?.[0]}
                     </div>
                     <div className="flex-1">

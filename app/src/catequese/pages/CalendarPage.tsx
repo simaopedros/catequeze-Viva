@@ -501,7 +501,7 @@ function AgendaView({
           >
             {/* Date block */}
             <div className="flex flex-col items-center justify-center w-11 h-11 rounded-lg bg-muted flex-shrink-0">
-              <span className="text-sm font-bold leading-none">{day}</span>
+              <span className="text-sm font-semibold tabular-nums leading-none">{day}</span>
               <span className="text-overline text-muted-foreground mt-0.5">
                 {months[month].slice(0, 3)}
               </span>

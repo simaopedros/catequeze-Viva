@@ -181,7 +181,7 @@ export function ActivityForm({
               <Button size="sm" variant="outline" onClick={addQuizQuestion}><Plus className="h-3 w-3 mr-1"/> {t('form.add_question')}</Button>
             </div>
             {quizQuestions.map((q, qi) => (
-              <div key={q.id} className="rounded-lg border p-4 space-y-3 bg-muted/20">
+              <div key={q.id} className="rounded-sm border border-border/70 bg-white p-4 space-y-3 bg-muted/20">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold text-muted-foreground">#{qi + 1}</span>
                   <Input

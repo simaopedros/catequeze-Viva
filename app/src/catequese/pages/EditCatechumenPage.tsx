@@ -91,7 +91,7 @@ export default function EditCatechumenPage() {
           </div>
         )}
         {error && (
-          <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+          <div className="rounded-sm border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
             {error}
           </div>
         )}

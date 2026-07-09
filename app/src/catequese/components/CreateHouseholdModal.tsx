@@ -101,7 +101,7 @@ export default function CreateHouseholdModal({ isOpen, onClose, onCreated }: Cre
         {/* Body */}
         <div className="p-4 space-y-4">
           {error && (
-            <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
+            <div className="rounded-sm border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
           )}
 
           <div className="space-y-2">

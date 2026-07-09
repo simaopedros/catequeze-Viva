@@ -322,7 +322,7 @@ export default function MessagesPage() {
 
                 {/* Details sidebar */}
                 {showDetails && activeConv?.type !== 'DIRECT' && (
-                  <div className="w-64 border-l bg-card/50 p-4 overflow-y-auto hidden lg:block animate-in slide-in-from-right-2 duration-200">
+                  <div className="hidden w-64 overflow-y-auto border-l border-border/70 bg-white p-4 animate-in slide-in-from-right-2 duration-200 lg:block">
                     <h3 className="font-semibold text-sm mb-3">{t('participants')}</h3>
                     <div className="space-y-2">
                       {activeConv.participants.map((p: any) => (
@@ -344,7 +344,7 @@ export default function MessagesPage() {
                     {activeConv.type !== 'DIRECT' && (
                       <button
                         onClick={handleLeave}
-                        className="mt-6 w-full flex items-center gap-2 text-xs text-destructive hover:text-destructive/80 py-2 rounded-lg hover:bg-destructive/5 px-2 transition-colors"
+                        className="mt-6 flex w-full items-center gap-2 rounded-sm px-2 py-2 text-xs text-destructive transition-colors hover:bg-destructive/5 hover:text-destructive/80"
                       >
                         <LogOut className="h-3.5 w-3.5" />
                         {t('leave_group')}

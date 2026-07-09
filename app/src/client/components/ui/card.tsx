@@ -8,13 +8,13 @@ const cardVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-card text-card-foreground ",
+        default: "border-border/70 bg-white text-foreground",
         accent:
           "bg-card-accent text-card-accent-foreground",
         bento:
           "bg-card-subtle text-card-subtle-foreground border-none shadow-none",
         interactive:
-          "bg-card text-card-foreground  hover: transition-shadow cursor-pointer",
+          "cursor-pointer border-border/70 bg-white text-foreground transition-colors hover:border-primary/30",
         flat:
           "bg-muted/50 border-0 shadow-none",
       },
@@ -86,7 +86,7 @@ function CardMedia({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-media"
-      className={cn("-mx-5 -mt-5 mb-4 overflow-hidden rounded-t-xl", className)}
+      className={cn("-mx-5 -mt-5 mb-4 overflow-hidden rounded-t-sm", className)}
       {...props}
     />
   );

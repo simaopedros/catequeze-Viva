@@ -144,7 +144,7 @@ export default function CatechismPage() {
                   if (el) entryRefs.current.set(entry.id, el);
                   else entryRefs.current.delete(entry.id);
                 }}
-                className="rounded-lg border"
+                className="rounded-sm border border-border/70 bg-white"
               >
                 <button
                   onClick={() => toggle(entry.id)}
@@ -168,7 +168,7 @@ export default function CatechismPage() {
           <div className="space-y-2">
             <p className="text-sm text-muted-foreground">{t('entriesInCategory', { count: entries.length, category: t(`categories.${category}`) })}</p>
             {entries.map((entry: any) => (
-              <div key={entry.id} className="rounded-lg border">
+              <div key={entry.id} className="rounded-sm border border-border/70 bg-white">
                 <button
                   onClick={() => toggle(entry.id)}
                   className="w-full text-left p-4 flex items-start justify-between gap-3"

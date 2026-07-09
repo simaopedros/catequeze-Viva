@@ -39,14 +39,7 @@ import { AppPageHeader, AppPanel, AppMetric } from '../../client/components/bran
 
 const PAGE_SIZE = 50;
 
-const AVATAR_COLORS = [
-  'border border-border/70 bg-muted/30 text-foreground',
-  'bg-success/10 text-success',
-  'bg-warning/10 text-warning',
-  'bg-secondary text-secondary-foreground',
-  'bg-accent text-accent-foreground',
-  'bg-muted text-muted-foreground',
-];
+const AVATAR_COLORS = ['border border-border/70 bg-muted/30 text-foreground'];
 
 function getAge(birthDate: string): number | null {
   return getAgeFromDate(birthDate);
@@ -262,7 +255,7 @@ export default function CatechumensPage() {
                   <tr key={c.id} className="border-b border-border/60 last:border-0 hover:bg-muted/30 transition-colors">
                     <td className="p-4">
                       <Link to={`/app/catechumens/${c.id}`} className="flex items-center gap-3 hover:text-primary">
-                        <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold overflow-hidden ${!c.photoUrl ? AVATAR_COLORS[Math.abs(c.firstName?.charCodeAt(0) || 0) % AVATAR_COLORS.length] : ''}`}>
+                        <div className={`flex h-10 w-10 items-center justify-center rounded-sm text-sm font-semibold overflow-hidden ${!c.photoUrl ? AVATAR_COLORS[Math.abs(c.firstName?.charCodeAt(0) || 0) % AVATAR_COLORS.length] : ''}`}>
                           {c.photoUrl ? <img src={c.photoUrl} className="h-full w-full object-cover" alt="" /> : `${c.firstName?.[0] || ''}${c.lastName?.[0] || ''}`}
                         </div>
                         <div>

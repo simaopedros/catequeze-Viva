@@ -243,7 +243,7 @@ export default function SettingsPage() {
 
         {/* Privacy notice */}
         <div className="rounded-sm border border-border/70 bg-white p-4 flex items-center gap-3"> 
-          <div className="rounded-lg bg-purple-50 dark:bg-purple-950/30 p-2 text-purple-600 dark:text-purple-400"><Shield className="h-5 w-5"/></div>
+          <div className="rounded-sm border border-border/70 bg-muted/30 p-2 text-foreground"><Shield className="h-5 w-5"/></div>
           <p className="text-xs text-muted-foreground">{t('privacy_notice')}</p>
         </div>
       </div>

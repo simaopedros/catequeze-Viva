@@ -64,7 +64,7 @@ function StatusCell({
     <div ref={ref} className="relative inline-block">
       <button
         onClick={() => setOpen(!open)}
-        className={`min-w-[44px] min-h-[44px] w-10 h-8 rounded border text-xs font-bold flex items-center justify-center cursor-pointer transition-colors ${
+        className={`flex min-h-[44px] min-w-[44px] h-8 w-10 cursor-pointer items-center justify-center rounded-sm border text-xs font-semibold transition-colors ${
    st ? st.color : 'bg-muted text-muted-foreground border-border hover:border-foreground/30'
   }`}
         title={st ? st.fullLabel : notFilledLabel}
@@ -294,7 +294,7 @@ export default function AttendancePage() {
         <div className="flex gap-4 text-xs">
           {statusOptions.map(s => (
             <span key={s.key} className="flex items-center gap-1">
-              <span className={`inline-flex items-center justify-center w-7 h-6 rounded border text-xs font-bold ${s.color}`}>{s.label}</span>
+              <span className={`inline-flex h-6 w-7 items-center justify-center rounded-sm border text-xs font-semibold ${s.color}`}>{s.label}</span>
               {s.fullLabel}
             </span>
           ))}
@@ -330,7 +330,7 @@ export default function AttendancePage() {
             {/* Bulk actions */}
             <div className="flex gap-2 flex-wrap">
               {meetings.map((m: any) => (
-                <div key={m.id} className="flex items-center gap-1 text-xs bg-muted/30 rounded-lg px-2 py-1">
+                <div key={m.id} className="flex items-center gap-1 rounded-sm border border-border/70 bg-muted/30 px-2 py-1 text-xs">
                   <span className="text-muted-foreground truncate max-w-[120px]">{formatDate(m.date, currentLocale, { day: '2-digit', month: '2-digit' })}</span>
                   <button
                     onClick={() => triggerBulkAction(m.id, m.title || formatDate(m.date, currentLocale, { day: '2-digit', month: '2-digit' }), 'PRESENT')}

@@ -119,7 +119,7 @@ export default function PublicUploadDocsPage() {
           <h2 className="font-semibold text-sm">{t('upload_docs.new_title')}</h2>
 
           {sent && (
-            <div className="rounded-lg bg-success/10 border border-success/30 p-3 text-sm text-success flex items-center gap-2">
+            <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-sm text-foreground flex items-center gap-2">
               <CheckCircle className="h-4 w-4" />
               {t('upload_docs.sent_success')}
             </div>

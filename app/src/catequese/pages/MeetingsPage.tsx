@@ -151,7 +151,7 @@ export default function MeetingsPage() {
         ) : (
           <div className="space-y-3">
             {meetings.map((m: any) => (
-              <div key={m.id} className="rounded-lg border p-4 space-y-2">
+              <div key={m.id} className="rounded-sm border border-border/70 bg-white p-4 space-y-2">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <p className="font-medium text-sm">{m.title || t('no_title')}</p>

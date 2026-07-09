@@ -43,7 +43,7 @@ export function CollaborativeChat() {
     <div className="flex flex-col h-full">
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 py-3 space-y-4">
         {visibleMessages.length === 0 && (
-          <div className="rounded-lg border border-dashed bg-card-subtle/40 px-4 py-5 text-sm text-muted-foreground">
+          <div className="rounded-sm border border-dashed border-border/70 bg-muted/20 px-4 py-5 text-sm text-muted-foreground">
             <div className="mb-3 flex items-center gap-2 text-foreground">
               <Sparkles className="h-4 w-4 text-secondary" />
               <p className="font-semibold">{t('title')}</p>

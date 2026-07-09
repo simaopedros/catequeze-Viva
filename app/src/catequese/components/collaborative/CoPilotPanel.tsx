@@ -21,7 +21,7 @@ export function CoPilotPanel() {
   const { contentItem, messages, attachments, suggestions, intent } = useCollaborative();
 
   return (
-    <div className="flex h-full flex-col bg-card">
+    <div className="flex h-full flex-col bg-white">
       {/* Header */}
       <div className="border-b border-border/70 bg-white-subtle/60 px-3 py-2 shrink-0">
         <div className="mb-2 flex items-center justify-between gap-2">

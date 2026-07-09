@@ -290,8 +290,8 @@ export default function ContentPrintPage() {
                   activityTypes.find((type) => type.value === activity.type)
                     ?.label || activity.type;
                 return (
-                  <div key={activity.id} className="rounded-lg border p-4">
-                    <h3 className="mb-1 font-bold">
+                  <div key={activity.id} className="rounded-sm border border-border/70 bg-white p-4">
+                    <h3 className="mb-1 font-semibold">
                       {index + 1}. {activity.title} — {typeLabel}
                     </h3>
                     {activity.description && (

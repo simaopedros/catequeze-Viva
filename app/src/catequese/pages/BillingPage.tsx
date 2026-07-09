@@ -728,7 +728,7 @@ export default function BillingPage() {
                     ) : isActive && user?.subscriptionStatus === 'cancel_at_period_end' ? (
                       <Badge variant="outline" className="bg-warning/10 text-warning text-xs">{t('cancel_scheduled')}</Badge>
                     ) : isPaidActive ? (
-                      <Badge className="bg-emerald-100 text-emerald-700 text-xs">{t('active')}</Badge>
+                      <Badge className="rounded-sm border border-border/70 bg-muted/30 text-xs text-foreground">{t('active')}</Badge>
                     ) : null)}
                   </div>
 
@@ -974,7 +974,7 @@ export default function BillingPage() {
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
                     {aiCredits.hasAiAccess ? (
-                      <Badge className="bg-violet-100 text-violet-700 text-overline">{t('monthly_badge')}</Badge>
+                      <Badge className="rounded-sm border border-border/70 bg-muted/30 text-overline text-foreground">{t('monthly_badge')}</Badge>
                     ) : (
                       <Badge className="bg-muted text-muted-foreground text-overline">{t('trial_badge')}</Badge>
                     )}
@@ -983,7 +983,7 @@ export default function BillingPage() {
                     label={aiCredits.hasAiAccess ? t('credits_used_month') : t('credits_used_trial')}
                     used={aiCredits.monthlyAllowance - aiCredits.creditsLeft}
                     limit={aiCredits.monthlyAllowance}
-                    accent={aiCredits.hasAiAccess ? 'bg-violet-500' : 'bg-muted/300'}
+                    accent={aiCredits.hasAiAccess ? 'bg-[#071A2D]' : 'bg-muted-foreground/30'}
                     ariaLabel={t('ai_credits_quota_label')}
                   />
                   <div className="flex items-center justify-between rounded-sm bg-muted/30 px-4 py-3 ring-1 ring-border/70">
@@ -1034,7 +1034,7 @@ export default function BillingPage() {
                 <Button
                   onClick={handleSwitchInterval}
                   disabled={switchingInterval}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  className="rounded-sm bg-[#071A2D] text-white hover:bg-[#0a2540]"
                 >
                   {switchingInterval ? (
                     <>
@@ -1099,7 +1099,7 @@ export default function BillingPage() {
                       isCurrent
                         ? 'border-[#071A2D] ring-1 ring-[#071A2D]/10'
                         : (isConversionMode || isUpgradeJourney ? isRecommended : plan.highlight)
-                          ? 'border-primary ring-2 ring-primary/15'
+                          ? 'border-[#071A2D] ring-1 ring-[#071A2D]/15'
                           : 'border-border/70',
                       isRequested && 'ring-2 ring-accent'
                     )}

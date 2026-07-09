@@ -16,13 +16,7 @@ import { toast } from '../../client/hooks/use-toast';
 import { calculatePoints } from '../../shared/gamification';
 import { formatDateOnly, getAgeFromDate } from '../../i18n/format';
 
-const AVATAR_COLORS = [
-    'bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 dark:border dark:border-blue-900/50',
-    'bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-400 dark:border dark:border-green-900/50',
-    'bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 dark:border dark:border-amber-900/50',
-    'bg-purple-100 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400 dark:border dark:border-purple-900/50',
-    'bg-pink-100 text-pink-700 dark:bg-pink-950/40 dark:text-pink-400 dark:border dark:border-pink-900/50'
-];
+const AVATAR_COLORS = ['border border-border/70 bg-muted/30 text-foreground'];
 
 const DOC_TYPE_KEYS: Record<string, string> = {
   BAPTISM_CERTIFICATE: 'BAPTISM_CERTIFICATE',
@@ -260,10 +254,10 @@ function PastoralAnalysisInline({ catechumenId, classId }: { catechumenId: strin
         <div className="pastoral-print-card rounded-sm border border-border/70 bg-white p-3"><p className="text-2xl font-semibold tracking-tight tabular-nums text-destructive">{data.justifiedCount + data.absentCount}</p><p className="text-muted-foreground">{t('absent')}</p></div>
       </div>
 
-      {data.monthlyPresence?.length > 0 && <div className="pastoral-print-card rounded-sm border border-border/70 bg-white p-4"><h4 className="mb-3 flex items-center gap-1 text-xs font-semibold uppercase text-muted-foreground"><BarChart3 className="h-3 w-3" />{t('monthlyPresence')}</h4><ResponsiveContainer width="100%" height={220}><BarChart data={data.monthlyPresence} margin={{ top: 5, right: 12, left: 0, bottom: 20 }}><CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" /><XAxis dataKey="month" tick={{ fontSize: 10 }} /><YAxis allowDecimals={false} tick={{ fontSize: 10 }} /><Tooltip /><Bar dataKey="present" stackId="a" fill="#16a34a" name={t('present')} /><Bar dataKey="late" stackId="a" fill="#f59e0b" name={t('late')} /><Bar dataKey="absent" stackId="a" fill="#ef4444" name={t('absent')} /></BarChart></ResponsiveContainer><div className="mt-3 overflow-x-auto rounded-lg border"><table className="w-full text-xs"><thead className="bg-muted/60"><tr><th className="p-2 text-left font-medium">{t('month')}</th><th className="p-2 text-center font-medium">{t('present')}</th><th className="p-2 text-center font-medium">{t('late')}</th><th className="p-2 text-center font-medium">{t('absent')}</th><th className="p-2 text-center font-medium">{t('meetings')}</th></tr></thead><tbody>{data.monthlyPresence.map((row: any) => <tr key={row.month} className="border-t"><td className="p-2 font-medium">{row.month}</td><td className="p-2 text-center text-emerald-700">{row.present}</td><td className="p-2 text-center text-amber-700">{row.late}</td><td className="p-2 text-center text-red-700">{row.absent + row.justified}</td><td className="p-2 text-center">{row.totalMeetings}</td></tr>)}</tbody></table></div></div>}
+      {data.monthlyPresence?.length > 0 && <div className="pastoral-print-card rounded-sm border border-border/70 bg-white p-4"><h4 className="mb-3 flex items-center gap-1 text-xs font-semibold uppercase text-muted-foreground"><BarChart3 className="h-3 w-3" />{t('monthlyPresence')}</h4><ResponsiveContainer width="100%" height={220}><BarChart data={data.monthlyPresence} margin={{ top: 5, right: 12, left: 0, bottom: 20 }}><CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" /><XAxis dataKey="month" tick={{ fontSize: 10 }} /><YAxis allowDecimals={false} tick={{ fontSize: 10 }} /><Tooltip /><Bar dataKey="present" stackId="a" fill="#16a34a" name={t('present')} /><Bar dataKey="late" stackId="a" fill="#f59e0b" name={t('late')} /><Bar dataKey="absent" stackId="a" fill="#ef4444" name={t('absent')} /></BarChart></ResponsiveContainer><div className="mt-3 overflow-x-auto rounded-sm border border-border/70"><table className="w-full text-xs"><thead className="bg-muted/60"><tr><th className="p-2 text-left font-medium">{t('month')}</th><th className="p-2 text-center font-medium">{t('present')}</th><th className="p-2 text-center font-medium">{t('late')}</th><th className="p-2 text-center font-medium">{t('absent')}</th><th className="p-2 text-center font-medium">{t('meetings')}</th></tr></thead><tbody>{data.monthlyPresence.map((row: any) => <tr key={row.month} className="border-t"><td className="p-2 font-medium">{row.month}</td><td className="p-2 text-center text-emerald-700">{row.present}</td><td className="p-2 text-center text-amber-700">{row.late}</td><td className="p-2 text-center text-red-700">{row.absent + row.justified}</td><td className="p-2 text-center">{row.totalMeetings}</td></tr>)}</tbody></table></div></div>}
 
       <div className="pastoral-print-grid grid gap-4 md:grid-cols-2">
-        <div className="pastoral-print-card rounded-sm border border-border/70 bg-white p-4"><h4 className="mb-3 flex items-center gap-1 text-xs font-semibold uppercase text-emerald-700"><CheckCircle className="h-3 w-3" />{t('attendedThemes')} ({attendedThemes.length})</h4>{attendedThemes.length ? <div className="space-y-1">{attendedThemes.map((item: any, i: number) => <div key={`${item.date}-${i}`} className="grid grid-cols-[80px_1fr_auto] gap-2 border-b py-1 text-xs last:border-b-0"><span className="text-muted-foreground">{formatDate(item.date)}</span><span>{displayTheme(item)}</span><span className="text-[10px] text-muted-foreground">{statusLabels[item.status] || item.status}</span></div>)}</div> : <p className="text-xs text-muted-foreground">{t('noAttendedThemes')}</p>}</div>
+        <div className="pastoral-print-card rounded-sm border border-border/70 bg-white p-4"><h4 className="mb-3 flex items-center gap-1 text-xs font-semibold uppercase text-muted-foreground"><CheckCircle className="h-3 w-3" />{t('attendedThemes')} ({attendedThemes.length})</h4>{attendedThemes.length ? <div className="space-y-1">{attendedThemes.map((item: any, i: number) => <div key={`${item.date}-${i}`} className="grid grid-cols-[80px_1fr_auto] gap-2 border-b py-1 text-xs last:border-b-0"><span className="text-muted-foreground">{formatDate(item.date)}</span><span>{displayTheme(item)}</span><span className="text-[10px] text-muted-foreground">{statusLabels[item.status] || item.status}</span></div>)}</div> : <p className="text-xs text-muted-foreground">{t('noAttendedThemes')}</p>}</div>
         <div className="pastoral-print-card rounded-sm border border-border/70 bg-white p-4"><h4 className="mb-3 flex items-center gap-1 text-xs font-semibold uppercase text-destructive"><XCircle className="h-3 w-3" />{t('missedThemes')} ({missedThemes.length})</h4>{missedThemes.length ? <div className="space-y-1">{missedThemes.map((item: any, i: number) => <div key={`${item.date}-${i}`} className="grid grid-cols-[80px_1fr] gap-2 border-b py-1 text-xs last:border-b-0"><span className="text-muted-foreground">{formatDate(item.date)}</span><span>{displayTheme(item)}</span></div>)}</div> : <p className="text-xs text-muted-foreground">{t('noMissedThemes')}</p>}</div>
       </div>
 
@@ -521,7 +515,7 @@ export default function CatechumenDetailPage() {
                 <span className="text-xs text-muted-foreground">{t('catechumens.detail_points')}</span>
               </div>
               {attendancePct !== null && attendancePct >= 90 && (
-                <div className="flex items-center gap-2 text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/30 rounded-lg p-2">
+                <div className="flex items-center gap-2 rounded-sm border border-border/70 bg-muted/30 p-2 text-xs text-foreground">
                   <span className="text-lg">🌟</span> {t('catechumens.detail_perfect_attendance')}
                 </div>
               )}
@@ -594,15 +588,15 @@ export default function CatechumenDetailPage() {
                     )}
                   </div>
                   <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                    <div className="bg-muted rounded-lg p-2">
+                    <div className="rounded-sm border border-border/70 bg-muted/30 p-2">
                       <p className="text-lg font-semibold tracking-tight tabular-nums">{report.totalPresent}</p>
                       <p className="text-muted-foreground">{t('catechumens.detail_present_count')}</p>
                     </div>
-                    <div className="bg-muted rounded-lg p-2">
+                    <div className="rounded-sm border border-border/70 bg-muted/30 p-2">
                       <p className="text-lg font-semibold tracking-tight tabular-nums">{report.totalAbsent}</p>
                       <p className="text-muted-foreground">{t('catechumens.detail_absent_count')}</p>
                     </div>
-                    <div className="bg-muted rounded-lg p-2">
+                    <div className="rounded-sm border border-border/70 bg-muted/30 p-2">
                       <p className="text-lg font-semibold tracking-tight tabular-nums">{report.totalJustified}</p>
                       <p className="text-muted-foreground">{t('catechumens.detail_justified_count')}</p>
                     </div>
@@ -630,13 +624,13 @@ export default function CatechumenDetailPage() {
               const hasBlocked = j.milestones?.some((m:any)=>m.status==='REJECTED');
               const hasWaiting = j.milestones?.some((m:any)=>m.status==='WAITING_APPROVAL');
               return(
-                <Link key={j.id} to={`/app/sacramental-journeys/${j.id}`} className="block rounded-lg border p-3 hover:bg-muted/50 transition-colors">
+                <Link key={j.id} to={`/app/sacramental-journeys/${j.id}`} className="block rounded-sm border border-border/70 bg-white p-3 transition-colors hover:bg-muted/20">
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-medium text-sm">{j.template?.name}</span>
                     <Badge variant={pct===100?'default':'outline'} className="text-overline">{done}/{total}</Badge>
                   </div>
                   <div className="w-full bg-muted rounded-full h-1.5 mb-1">
-                    <div className={`h-1.5 rounded-full transition-all ${pct===100?'bg-emerald-500':pct>=50?'bg-amber-500':'bg-primary'}`} style={{width:`${pct}%`}}/>
+                    <div className={`h-1.5 rounded-sm transition-all ${pct===100?'bg-foreground':pct>=50?'bg-[#D39A2B]':'bg-muted-foreground/40'}`} style={{width:`${pct}%`}}/>
                   </div>
                   <div className="flex gap-2 mt-1">
                     {hasBlocked && <span className="text-overline text-red-600 flex items-center gap-1"><XCircle className="h-3 w-3"/>{t('catechumens.detail_blocked')}</span>}

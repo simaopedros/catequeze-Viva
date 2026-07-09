@@ -88,7 +88,7 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
 
           <form onSubmit={handleVerify} className="space-y-4">
             {error && (
-              <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
+              <div className="rounded-sm border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
             )}
             <div className="space-y-2">
               <Label htmlFor="app-totp">{t('two_factor_gate_otp_label')}</Label>

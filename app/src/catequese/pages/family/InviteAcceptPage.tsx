@@ -148,7 +148,7 @@ export default function InviteAcceptPage() {
         </div>
 
         {error && (
-          <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
+          <div className="rounded-sm border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
         )}
 
         {authUser ? (
@@ -183,7 +183,7 @@ export default function InviteAcceptPage() {
             </Link>
             <Link
               to={`/criar-conta?token=${token}`}
-              className="block w-full rounded-lg border border-input bg-background h-10 px-4 py-2 text-sm font-medium text-center hover:bg-muted/30 transition-colors"
+              className="block h-10 w-full rounded-sm border border-input bg-background px-4 py-2 text-sm font-medium text-center hover:bg-muted/30 transition-colors"
             >
               {t('invite.signup')}
             </Link>

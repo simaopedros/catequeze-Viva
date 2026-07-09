@@ -150,7 +150,7 @@ export default function DocumentsPage() {
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
-              <div className="flex items-center gap-3 rounded-lg border border-dashed p-6 justify-center transition-colors hover:bg-muted/30">
+              <div className="flex items-center justify-center gap-3 rounded-sm border border-dashed border-border/70 p-6 transition-colors hover:bg-muted/20">
                 <label className="flex flex-col items-center gap-2 cursor-pointer">
                   <FileUp className="h-8 w-8 text-muted-foreground" />
                   <span className="text-sm font-medium">{tc('documents.select_file')}</span>
@@ -246,7 +246,7 @@ export default function DocumentsPage() {
                       return (
                         <div
                           key={type}
-                          className={`flex items-center justify-between rounded-lg border p-2.5 h-[44px] ${
+                          className={`flex h-[44px] items-center justify-between rounded-sm border border-border/70 p-2.5 ${
        status === 'MISSING' ? 'border-dashed bg-muted/10' : ''
        }`}
                         >

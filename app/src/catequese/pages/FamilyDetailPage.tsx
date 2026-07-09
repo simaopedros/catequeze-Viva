@@ -564,14 +564,14 @@ export default function FamilyDetailPage() {
               {household.catechumens.map((c: any) => (
                 <div
                   key={c.id}
-                  className="group flex items-center justify-between gap-3 rounded-lg border p-3 hover:bg-muted/30"
+                  className="group flex items-center justify-between gap-3 rounded-sm border border-border/70 bg-white p-3 transition-colors hover:bg-muted/20"
                 >
                   <Link
                     to={`/app/catechumens/${c.id}`}
                     className="flex flex-1 items-center gap-3"
                   >
                     <div
-                      className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold ${
+                      className={`flex h-9 w-9 items-center justify-center rounded-sm border border-border/70 text-sm font-semibold ${
       getAvatarColorClass(c.firstName)
       }`}
                     >

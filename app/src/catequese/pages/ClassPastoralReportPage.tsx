@@ -227,7 +227,7 @@ export default function ClassPastoralReportPage() {
                         r.riskLevel === 'ALTO' && r.enrollmentStatus === 'ENROLLED' ? 'bg-destructive/5' :
                         i === 0 ? 'bg-warning/5' : i === 1 ? 'bg-muted/30' : i === 2 ? 'bg-warning/[0.02]' : ''
                       }>
-                        <td className="p-3 font-bold">
+                        <td className="p-3 font-semibold tabular-nums">
                           {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`}
                         </td>
                         <td className="p-3">
@@ -243,7 +243,7 @@ export default function ClassPastoralReportPage() {
                         <td className="p-3 text-center">{r.justifiedCount}</td>
                         <td className="p-3 text-center text-destructive font-medium">{r.absentCount}</td>
                         <td className="p-3 text-center">{r.totalValidMeetings}</td>
-                        <td className="p-3 text-center font-bold">{r.attendanceRate}%</td>
+                        <td className="p-3 text-center font-semibold tabular-nums">{r.attendanceRate}%</td>
                         <td className="p-3 text-center">{r.consecutiveAbsences}</td>
                       </tr>
                     ))}

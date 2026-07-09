@@ -177,7 +177,7 @@ export default function WorkspaceSelectorPage() {
             onClick={(e) => { e.stopPropagation(); handleManage(ws); }}
             title={t('workspace.settings_workspace')}
             aria-label={t('workspace.settings_workspace')}
-            className="rounded-lg p-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors mt-1"
+            className="rounded-sm p-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors mt-1"
           >
             <Settings className="h-5 w-5" />
           </button>

@@ -87,7 +87,7 @@ export default function BirthdaysPage() {
 
       {isLoading ? (
         <div className="space-y-2 animate-pulse">
-          {[1,2,3].map(i => <div key={i} className="h-14 rounded-lg bg-muted" />)}
+          {[1,2,3].map(i => <div key={i} className="h-14 rounded-sm bg-muted" />)}
         </div>
       ) : !birthdays?.length ? (
         <EmptyState icon={Cake} title={t('noBirthdays')} compact />

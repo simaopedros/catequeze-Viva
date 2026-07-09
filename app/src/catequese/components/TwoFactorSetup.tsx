@@ -110,10 +110,10 @@ export default function TwoFactorSetup() {
       )}
 
       {error && (
-        <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
+        <div className="rounded-sm border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
       )}
       {success && (
-        <div className="rounded-lg bg-success/10 border border-success/30 p-3 text-sm text-success">{success}</div>
+        <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-sm text-foreground">{success}</div>
       )}
 
       {/* Not enabled — show enable flow */}

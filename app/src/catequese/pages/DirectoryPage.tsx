@@ -150,7 +150,7 @@ export default function DirectoryPage() {
                   if (el) entryRefs.current.set(entry.id, el);
                   else entryRefs.current.delete(entry.id);
                 }}
-                className="rounded-lg border"
+                className="rounded-sm border border-border/70 bg-white"
               >
                 <button onClick={() => toggle(entry.id)} className="w-full text-left p-4 flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">

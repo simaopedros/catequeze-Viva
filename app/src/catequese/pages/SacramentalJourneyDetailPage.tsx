@@ -172,7 +172,7 @@ export default function SacramentalJourneyDetailPage() {
           <div>
             <div className="flex justify-between mb-2">
               <span className="text-sm font-medium">{t('detail.progress')}</span>
-              <span className="text-sm font-bold">{t('detail.progress_count', { done, total, pct })}</span>
+              <span className="text-sm font-semibold tabular-nums">{t('detail.progress_count', { done, total, pct })}</span>
             </div>
             <div className="w-full bg-muted rounded-full h-3">
               <div
@@ -207,7 +207,7 @@ export default function SacramentalJourneyDetailPage() {
                 const isOverdue = deadline && deadline < new Date() && m.status !== 'COMPLETED' && m.status !== 'APPROVED';
 
                 return (
-                  <div key={m.id} className={`rounded-lg border p-4 ${m.status === 'REJECTED' ? 'border-red-200 bg-red-50/30 dark:border-red-900/30 dark:bg-red-950/10' : m.status === 'APPROVED' || m.status === 'COMPLETED' ? 'border-green-200 bg-green-50/30 dark:border-green-900/30 dark:bg-green-950/10' : isOverdue ? 'border-amber-300 bg-amber-50/30' : 'bg-card'}`}>
+                  <div key={m.id} className={`rounded-sm border p-4 ${m.status === 'REJECTED' ? 'border-destructive/30 bg-destructive/5' : m.status === 'APPROVED' || m.status === 'COMPLETED' ? 'border-border/70 bg-muted/20' : isOverdue ? 'border-[#D39A2B]/40 bg-muted/30' : 'border-border/70 bg-white'}`}>
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3 min-w-0 flex-1">
                         <div className={`mt-0.5 flex-shrink-0 ${color}`}>

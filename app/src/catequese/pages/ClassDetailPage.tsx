@@ -403,7 +403,7 @@ export default function ClassDetailPage() {
                 ) : null;
 
                 return(
-                <div key={e.id} className="flex items-center justify-between rounded-lg border p-3">
+                <div key={e.id} className="flex items-center justify-between rounded-sm border border-border/70 bg-white p-3">
                   <div className="flex items-center gap-3 min-w-0">
                     <Link to={`/app/catechumens/${e.catechumenProfile?.id}`} className="flex items-center gap-3 hover:text-primary min-w-0">
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-foreground">{e.catechumenProfile?.firstName?.[0]}{e.catechumenProfile?.lastName?.[0]}</div>
@@ -428,7 +428,7 @@ export default function ClassDetailPage() {
               <div className="mt-6">
                 <h3 className="font-semibold text-sm mb-2">{t('detail.available_to_enroll', { count: available.length })}</h3>
                 <div className="grid gap-2">{available.map((c:any)=>(
-                  <div key={c.id} className="flex items-center justify-between rounded-lg border p-3">
+                  <div key={c.id} className="flex items-center justify-between rounded-sm border border-border/70 bg-white p-3">
                     <div className="flex items-center gap-3"><div className="flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-foreground">{c.firstName?.[0]}{c.lastName?.[0]}</div><span className="text-sm">{c.firstName} {c.lastName}</span></div>
                     <Button size="sm" variant="outline" onClick={()=>handleEnroll(c.id)}><UserPlus className="mr-1 h-3 w-3"/>{t('detail.enroll_btn')}</Button>
                   </div>
@@ -464,7 +464,7 @@ export default function ClassDetailPage() {
               </EmptyState>
             ) :
               <div className="grid gap-2">{cls.meetings.map((m:any)=>(
-                <div key={m.id} className="flex items-center justify-between rounded-lg border p-3">
+                <div key={m.id} className="flex items-center justify-between rounded-sm border border-border/70 bg-white p-3">
                   <div>
                     <p className="font-medium text-sm">{m.title||t('detail.no_title')}</p>
                     <div className="flex items-center gap-2">
@@ -499,7 +499,7 @@ export default function ClassDetailPage() {
                     {t('detail.add_catechist')}
                   </Button>
                 ) : (
-                  <div className="flex items-center gap-2 rounded-lg border p-3">
+                  <div className="flex items-center gap-2 rounded-sm border border-border/70 bg-white p-3">
                     <select
                       value={addUserId}
                       onChange={e => setAddUserId(e.target.value)}
@@ -533,7 +533,7 @@ export default function ClassDetailPage() {
                 {cls.catechists.map((cc: any) => {
                   const canRemove = isCoordinator || (isLeadCatechist && cc.role === 'ASSISTANT') || (cc.userId === user?.id && cc.role === 'ASSISTANT');
                   return (
-                    <div key={cc.id} className="flex items-center justify-between rounded-lg border p-3">
+                    <div key={cc.id} className="flex items-center justify-between rounded-sm border border-border/70 bg-white p-3">
                       <div className="flex items-center gap-2 min-w-0">
                         <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-foreground flex-shrink-0">
                           {cc.user?.firstName?.[0]}{cc.user?.lastName?.[0]}

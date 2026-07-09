@@ -260,7 +260,7 @@ Maria,Santos,2014-07-22,Silva Santos`}
           )}
 
           {error && (
-            <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive flex items-center gap-2">
+            <div className="rounded-sm border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive flex items-center gap-2">
               <AlertCircle className="h-4 w-4" /> {error}
             </div>
           )}
