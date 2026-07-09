@@ -6,8 +6,13 @@ export function LibraryMock({ ns = 'landing' }: { ns?: string }) {
   return (
     <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-overline sm:text-xs">
       <div>
-        <p className="font-semibold text-sm">{t('mockup_library.title')}</p>
-        <p className="text-muted-foreground">{t('mockup_library.subtitle')}</p>
+        <p
+          className="text-sm font-semibold tracking-tight text-[#071A2D]"
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
+          {t("mockup_library.title")}
+        </p>
+        <p className="text-muted-foreground">{t("mockup_library.subtitle")}</p>
       </div>
 
       <div className="flex gap-1 rounded-sm border border-border/70 bg-muted/30 p-1">
@@ -37,7 +42,12 @@ export function LibraryMock({ ns = 'landing' }: { ns?: string }) {
       </div>
 
       <div className="rounded-sm border border-border/70 bg-white p-3 space-y-2">
-        <p className="font-semibold text-[#071A2D]">João 3:16</p>
+        <p
+          className="font-semibold tracking-tight text-[#071A2D]"
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
+          João 3:16
+        </p>
         <p className="leading-relaxed text-muted-foreground italic">
           "Porque Deus amou tanto o mundo, que deu o seu Filho unigênito..."
         </p>

@@ -6,21 +6,36 @@ export function FamilyPortalMock({ ns = 'landing' }: { ns?: string }) {
   return (
     <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-overline sm:text-xs">
       <div>
-        <p className="font-semibold text-sm">{t('mockup_family.title')}</p>
-        <p className="text-muted-foreground">{t('mockup_family.greeting')}</p>
+        <p
+          className="text-sm font-semibold tracking-tight text-[#071A2D]"
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
+          {t("mockup_family.title")}
+        </p>
+        <p className="text-muted-foreground">{t("mockup_family.greeting")}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-2">
         <div className="rounded-sm border border-border/70 bg-white p-2">
-          <p className="text-muted-foreground mb-0.5">Ana Silva</p>
-          <p className="font-semibold">{t('mockup_family.first_eucharist')}</p>
-          <p className="text-success flex items-center gap-1 mt-1">
-            <CheckCircle2 className="h-3 w-3" /> {t('mockup_family.attendance_pct')}
+          <p className="mb-0.5 text-muted-foreground">Ana Silva</p>
+          <p
+            className="font-semibold tracking-tight text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
+            {t("mockup_family.first_eucharist")}
+          </p>
+          <p className="mt-1 flex items-center gap-1 text-success">
+            <CheckCircle2 className="h-3 w-3" /> {t("mockup_family.attendance_pct")}
           </p>
         </div>
         <div className="rounded-sm border border-border/70 bg-white p-2">
-          <p className="text-muted-foreground mb-0.5">Pedro Silva</p>
-          <p className="font-semibold">{t('mockup_family.confirmation')}</p>
+          <p className="mb-0.5 text-muted-foreground">Pedro Silva</p>
+          <p
+            className="font-semibold tracking-tight text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
+            {t("mockup_family.confirmation")}
+          </p>
           <p className="text-warning flex items-center gap-1 mt-1">
             <XCircle className="h-3 w-3" /> {t('mockup_family.absence_recent')}
           </p>
@@ -36,8 +51,11 @@ export function FamilyPortalMock({ ns = 'landing' }: { ns?: string }) {
       </div>
 
       <div className="rounded-sm border border-border/70 bg-white p-2 space-y-2">
-        <p className="font-semibold flex items-center gap-1">
-          <Calendar className="h-3 w-3" /> {t('mockup_family.next_meeting')}
+        <p
+          className="flex items-center gap-1 font-semibold tracking-tight text-[#071A2D]"
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
+          <Calendar className="h-3 w-3" /> {t("mockup_family.next_meeting")}
         </p>
         <p>{t('mockup_family.next_meeting_detail')}</p>
         <button type="button" className="text-[#071A2D] font-medium underline underline-offset-2">

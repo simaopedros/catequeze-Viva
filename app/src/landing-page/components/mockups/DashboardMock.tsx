@@ -6,25 +6,55 @@ export function DashboardMock({ ns = 'landing' }: { ns?: string }) {
   return (
     <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-overline sm:text-xs">
       <div>
-        <p className="font-semibold text-sm">{t('mockup_dashboard.title')}</p>
-        <p className="text-muted-foreground">{t('mockup_dashboard.subtitle')}</p>
+        <p
+          className="text-sm font-semibold tracking-tight text-[#071A2D]"
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
+          {t("mockup_dashboard.title")}
+        </p>
+        <p className="text-muted-foreground">{t("mockup_dashboard.subtitle")}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-2">
- {[
- { l: t('mockup_dashboard.catechumens'), v: '142', i: Users, c: 'text-[#071A2D] bg-[#071A2D]/08' },
- { l: t('mockup_dashboard.active_classes'), v: '8', i: BookOpen, c: 'text-[#071A2D] bg-muted/40' },
- { l: t('mockup_dashboard.avg_attendance'), v: '87%', i: TrendingUp, c: 'text-[#071A2D] bg-muted/40' },
- { l: t('mockup_dashboard.sacraments'), v: '12', i: Cross, c: 'text-[#071A2D] bg-muted/40' },
- ].map((k) => (
- <div key={k.l} className="rounded-sm border border-border/70 bg-white p-2">
+        {[
+          {
+            l: t("mockup_dashboard.catechumens"),
+            v: "142",
+            i: Users,
+            c: "text-[#071A2D] bg-[#071A2D]/08",
+          },
+          {
+            l: t("mockup_dashboard.active_classes"),
+            v: "8",
+            i: BookOpen,
+            c: "text-[#071A2D] bg-muted/40",
+          },
+          {
+            l: t("mockup_dashboard.avg_attendance"),
+            v: "87%",
+            i: TrendingUp,
+            c: "text-[#071A2D] bg-muted/40",
+          },
+          {
+            l: t("mockup_dashboard.sacraments"),
+            v: "12",
+            i: Cross,
+            c: "text-[#071A2D] bg-muted/40",
+          },
+        ].map((k) => (
+          <div key={k.l} className="rounded-sm border border-border/70 bg-white p-2">
             <div className="flex items-center gap-2">
               <div className={`rounded-sm p-1 ${k.c}`}>
                 <k.i className="h-3 w-3" />
               </div>
               <div>
-                <p className="text-overline text-muted-foreground uppercase">{k.l}</p>
-                <p className="font-semibold text-sm">{k.v}</p>
+                <p className="text-overline uppercase text-muted-foreground">{k.l}</p>
+                <p
+                  className="text-sm font-semibold tabular-nums tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
+                  {k.v}
+                </p>
               </div>
             </div>
           </div>

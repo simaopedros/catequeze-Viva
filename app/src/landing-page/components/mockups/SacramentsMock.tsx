@@ -15,18 +15,28 @@ export function SacramentsMock({ ns = 'landing' }: { ns?: string }) {
   return (
     <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-overline sm:text-xs">
       <div>
-        <p className="font-semibold text-sm">{t('mockup_sacraments.title')}</p>
-        <p className="text-muted-foreground">{t('mockup_sacraments.subtitle')}</p>
+        <p
+          className="text-sm font-semibold tracking-tight text-[#071A2D]"
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
+          {t("mockup_sacraments.title")}
+        </p>
+        <p className="text-muted-foreground">{t("mockup_sacraments.subtitle")}</p>
       </div>
 
       <div className="rounded-sm border border-border/70 bg-white p-3">
-        <div className="flex items-center gap-2 mb-3">
+        <div className="mb-3 flex items-center gap-2">
           <div className="rounded-sm border border-border/70 bg-muted/30 p-1.5">
             <Cross className="h-4 w-4 text-[#071A2D]" />
           </div>
           <div>
-            <p className="font-semibold">Maria Oliveira</p>
-            <p className="text-muted-foreground">{t('mockup_sacraments.class')}</p>
+            <p
+              className="font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
+              Maria Oliveira
+            </p>
+            <p className="text-muted-foreground">{t("mockup_sacraments.class")}</p>
           </div>
         </div>
 

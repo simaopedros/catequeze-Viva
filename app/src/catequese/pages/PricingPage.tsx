@@ -150,7 +150,10 @@ export default function PricingPage() {
         <div className="mt-4 mb-1">
           {showAnnual ? (
             <>
-              <span className="text-4xl font-semibold tracking-tight">
+              <span
+                className="text-4xl font-semibold tracking-tight text-[#071A2D]"
+                style={{ fontFamily: "var(--font-brand-display)" }}
+              >
                 {equivalentMonthlyPrice(plan.priceCentsAnnual!)}
               </span>
               <span className="text-base font-normal text-muted-foreground">
@@ -159,7 +162,10 @@ export default function PricingPage() {
             </>
           ) : (
             <>
-              <span className="text-4xl font-semibold tracking-tight">
+              <span
+                className="text-4xl font-semibold tracking-tight text-[#071A2D]"
+                style={{ fontFamily: "var(--font-brand-display)" }}
+              >
                 {formatPrice(plan.priceCents)}
               </span>
               <span className="text-base font-normal text-muted-foreground">

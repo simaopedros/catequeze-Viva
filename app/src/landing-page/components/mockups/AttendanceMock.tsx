@@ -15,7 +15,12 @@ export function AttendanceMock({ ns = 'landing' }: { ns?: string }) {
     <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-overline sm:text-xs">
       <div className="flex items-center justify-between">
         <div>
-          <p className="font-semibold text-sm">{t('mockup_attendance.title')}</p>
+          <p
+            className="text-sm font-semibold tracking-tight text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
+            {t("mockup_attendance.title")}
+          </p>
           <p className="text-muted-foreground flex items-center gap-1">
             <Clock className="h-3 w-3" /> {t('mockup_attendance.meeting')}
           </p>
@@ -33,7 +38,9 @@ export function AttendanceMock({ ns = 'landing' }: { ns?: string }) {
           { l: t('mockup_attendance.justified'), v: '1', c: 'bg-muted text-muted-foreground' },
         ].map((s) => (
           <div key={s.l} className={`rounded-sm p-2 text-center ${s.c}`}>
-            <p className="font-semibold text-sm">{s.v}</p>
+            <p className="text-sm font-semibold tabular-nums tracking-tight text-[#071A2D]">
+              {s.v}
+            </p>
             <p className="text-overline">{s.l}</p>
           </div>
         ))}

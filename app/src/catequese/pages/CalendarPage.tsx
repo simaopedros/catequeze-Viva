@@ -516,12 +516,12 @@ function MonthGrid({
             >
               {/* Day number */}
               <span
-                className={`inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full text-xs sm:text-sm font-medium flex-shrink-0 ${
+                className={`inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-sm text-xs font-semibold tabular-nums sm:h-6 sm:w-6 sm:text-sm ${
                   today
                     ? "bg-[#071A2D] text-white"
                     : isWeekend(dow)
                       ? "text-muted-foreground/60"
-                      : ""
+                      : "text-[#071A2D]"
                 }`}
               >
                 {day}
