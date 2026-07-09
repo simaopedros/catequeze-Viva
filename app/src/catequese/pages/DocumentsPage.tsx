@@ -411,7 +411,10 @@ export default function DocumentsPage() {
                           <StatusIcon
                             className={`h-4 w-4 flex-shrink-0 ${statusVisual.color}`}
                           />
-                          <span className="text-xs font-medium truncate">
+                          <span
+                            className="truncate text-xs font-semibold tracking-tight text-[#071A2D]"
+                            style={{ fontFamily: "var(--font-brand-display)" }}
+                          >
                             {label}
                           </span>
                           {status !== "MISSING" && (

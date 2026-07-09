@@ -80,11 +80,16 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
       <div className="relative mx-auto max-w-5xl px-4 py-16 md:py-20">
         <div ref={ref} className={cn("grid gap-10 lg:grid-cols-2 lg:items-center", className)}>
           <div className="space-y-5 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 rounded-full bg-[#071A2D]/08 border border-[#071A2D]/20 px-3 py-1 text-sm font-medium text-[#071A2D]">
+            <div className="inline-flex items-center gap-2 rounded-sm border border-[#071A2D]/20 bg-[#071A2D]/08 px-3 py-1 text-sm font-medium text-[#071A2D]">
               <Feather className="h-3.5 w-3.5" />
               {tr("demo.badge")}
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">{tr("demo.title")}</h2>
+            <h2
+              className="text-3xl font-semibold tracking-tight text-[#071A2D] sm:text-4xl"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
+              {tr("demo.title")}
+            </h2>
             <p className="text-muted-foreground text-lg leading-relaxed max-w-xl mx-auto lg:mx-0">
               {tr("demo.subtitle")}
             </p>
@@ -101,7 +106,7 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                     setVisibleSteps(0);
                   }}
                   className={cn(
-                    "rounded-full border px-3 py-1.5 text-sm font-medium transition-colors",
+                    "rounded-sm border px-3 py-1.5 text-sm font-medium transition-colors",
                     selectedId === topic.id
                       ? "border-[#071A2D] bg-[#071A2D] text-white"
                       : "border-border bg-card text-muted-foreground hover:border-[#071A2D]/40 hover:text-foreground"
@@ -131,7 +136,12 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                   <Feather className="h-4 w-4 text-[#071A2D]" />
                 </div>
                 <div>
-                  <p className="font-bold text-sm">{tr("demo.panel_title")}</p>
+                  <p
+                    className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
+                    {tr("demo.panel_title")}
+                  </p>
                   <p className="text-xs text-muted-foreground">{tr("demo.panel_subtitle")}</p>
                 </div>
               </div>

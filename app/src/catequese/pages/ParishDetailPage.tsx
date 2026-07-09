@@ -233,7 +233,10 @@ export default function ParishDetailPage() {
             {tn("parishes")}
           </button>
           <span>/</span>
-          <span className="text-foreground font-medium truncate">
+          <span
+            className="truncate font-semibold tracking-tight text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
             {parish?.name}
           </span>
         </div>

@@ -227,14 +227,14 @@ const RevenueAndProfitChart = ({ weeklyStats, isLoading }: DailyStatsProps) => {
           </div>
         </div>
         <div className="max-w-45 flex w-full justify-end">
-          <div className="bg-muted inline-flex items-center rounded-sm p-1.5">
-            <button className="bg-background text-foreground hover:bg-background rounded px-3 py-1 text-xs font-medium">
+          <div className="inline-flex items-center rounded-sm bg-muted p-1.5">
+            <button className="rounded-sm bg-background px-3 py-1 text-xs font-medium text-foreground hover:bg-background">
               Day
             </button>
-            <button className="text-muted-foreground hover:bg-background rounded px-3 py-1 text-xs font-medium">
+            <button className="rounded-sm px-3 py-1 text-xs font-medium text-muted-foreground hover:bg-background">
               Week
             </button>
-            <button className="text-muted-foreground hover:bg-background rounded px-3 py-1 text-xs font-medium">
+            <button className="rounded-sm px-3 py-1 text-xs font-medium text-muted-foreground hover:bg-background">
               Month
             </button>
           </div>

@@ -640,10 +640,13 @@ function AgendaView({
 
             {/* Content */}
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium truncate">
+              <p
+                className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+                style={{ fontFamily: "var(--font-brand-display)" }}
+              >
                 {e.name}
                 {e.className && (
-                  <span className="text-overline text-muted-foreground ml-1">
+                  <span className="ml-1 text-overline font-medium text-muted-foreground">
                     ({e.className})
                   </span>
                 )}
@@ -755,7 +758,12 @@ function SidePanelContent({
                     style={{ background: e.color || DEFAULT_COLOR }}
                   />
                   <div className="min-w-0">
-                    <p className="text-xs font-medium truncate">{e.name}</p>
+                    <p
+                      className="truncate text-xs font-semibold tracking-tight text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
+                      {e.name}
+                    </p>
                     <p className="text-overline text-muted-foreground">
                       {eventTypeLabels[e.type] || e.type}
                     </p>
@@ -820,10 +828,13 @@ function SidePanelContent({
                   style={{ background: e.color || DEFAULT_COLOR }}
                 />
                 <div className="min-w-0">
-                  <p className="text-sm font-medium truncate">
+                  <p
+                    className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
                     {e.name}
                     {e.className && (
-                      <span className="text-overline text-muted-foreground ml-1">
+                      <span className="ml-1 text-overline font-medium text-muted-foreground">
                         ({e.className})
                       </span>
                     )}

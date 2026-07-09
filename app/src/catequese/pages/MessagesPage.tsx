@@ -424,7 +424,12 @@ export default function MessagesPage() {
                               .toUpperCase() || "?"}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-medium truncate">
+                            <p
+                              className="truncate text-xs font-semibold tracking-tight text-[#071A2D]"
+                              style={{
+                                fontFamily: "var(--font-brand-display)",
+                              }}
+                            >
                               {[p.user.firstName, p.user.lastName]
                                 .filter(Boolean)
                                 .join(" ") || p.user.email}

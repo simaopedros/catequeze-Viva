@@ -85,7 +85,10 @@ export function Breadcrumbs() {
               {item.label}
             </Link>
           ) : (
-            <span className="text-foreground font-medium truncate max-w-[160px]">
+            <span
+              className="max-w-[160px] truncate font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
               {item.label}
             </span>
           )}

@@ -546,7 +546,10 @@ function ContentLibrarySidebar() {
                   <ScrollText className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
-                  <div className="line-clamp-2 text-sm font-medium text-foreground">
+                  <div
+                    className="line-clamp-2 text-sm font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
                     {item.title || "Rascunho sem título"}
                   </div>
                   <div className="mt-1 text-xs text-muted-foreground">

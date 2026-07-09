@@ -1003,7 +1003,12 @@ export default function ClassDetailPage() {
                           {cc.user?.lastName?.[0]}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-medium truncate">
+                          <p
+                            className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+                            style={{
+                              fontFamily: "var(--font-brand-display)",
+                            }}
+                          >
                             {cc.user?.firstName} {cc.user?.lastName}
                           </p>
                           <p className="text-xs text-muted-foreground truncate">

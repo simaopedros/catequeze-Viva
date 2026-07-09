@@ -83,7 +83,10 @@ export function GuardianDashboard({ stats }: GuardianDashboardProps) {
                 key={m.id}
                 className="flex items-center justify-between py-2.5 text-sm"
               >
-                <span className="mr-2 truncate font-medium">
+                <span
+                  className="mr-2 truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
                   {m.class?.name}
                 </span>
                 <span className="shrink-0 text-xs text-muted-foreground">

@@ -198,7 +198,10 @@ export function ContextSelector() {
                   >
                     <Shield className="h-4 w-4 text-muted-foreground shrink-0" />
                     <div className="flex-1 text-left min-w-0">
-                      <span className="text-sm font-medium truncate block">
+                      <span
+                        className="block truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
                         {roleLabels[m.role as keyof typeof roleLabels] ||
                           m.role}
                       </span>

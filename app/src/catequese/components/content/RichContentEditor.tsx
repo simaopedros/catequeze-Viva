@@ -513,7 +513,10 @@ function SelectionActionBubble({
                     onClick={() => void result.onSelect()}
                   >
                     <div className="min-w-0 flex-1">
-                      <div className="font-medium text-foreground">
+                      <div
+                        className="font-semibold tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
                         {result.title}
                       </div>
                       <div className="mt-1 line-clamp-2 text-muted-foreground">
@@ -704,7 +707,12 @@ export function RichContentEditor({
       <div className="border-b border-border/50 bg-background/55 px-4 py-3 ">
         <div className="mb-3 flex items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-medium text-foreground">Documento</p>
+            <p
+              className="text-sm font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
+              Documento
+            </p>
             <p className="text-xs text-muted-foreground">
               Selecione um trecho para vincular referências ou adicionar ações
               contextuais.

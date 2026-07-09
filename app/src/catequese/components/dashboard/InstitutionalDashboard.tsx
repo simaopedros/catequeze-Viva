@@ -695,7 +695,12 @@ export function InstitutionalDashboard() {
                     key={c.id}
                     className="border-b last:border-0 hover:bg-muted/30 transition-colors"
                   >
-                    <td className="py-2.5 px-4 font-medium">{c.name}</td>
+                    <td
+                      className="px-4 py-2.5 font-semibold tracking-tight text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
+                      {c.name}
+                    </td>
                     <td className="py-2.5 px-4 text-xs text-muted-foreground">
                       {c.stage}
                     </td>

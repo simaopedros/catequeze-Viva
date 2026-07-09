@@ -366,10 +366,11 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                           key={c.id}
                           className="border-b border-border/60 last:border-0 hover:bg-muted/30 transition-colors"
                         >
-                          <td className="px-5 py-3 font-medium">
+                          <td className="px-5 py-3">
                             <Link
                               to={`/app/classes/${c.id}`}
-                              className="hover:text-[#071A2D] transition-colors"
+                              className="font-semibold tracking-tight text-[#071A2D] transition-colors hover:text-[#0a2540]"
+                              style={{ fontFamily: "var(--font-brand-display)" }}
                             >
                               {c.name}
                             </Link>
@@ -425,7 +426,10 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                       key={m.id}
                       className="flex items-center justify-between rounded-sm border border-border/70 bg-white px-4 py-3"
                     >
-                      <span className="mr-3 truncate text-sm font-medium text-foreground">
+                      <span
+                        className="mr-3 truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
                         {m.class?.name}
                       </span>
                       <span className="shrink-0 text-xs font-medium text-muted-foreground">
@@ -446,7 +450,10 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                       to={`/app/classes/${c.id}`}
                       className="flex items-center justify-between rounded-sm border border-border/70 bg-white px-4 py-3 transition-colors hover:bg-muted"
                     >
-                      <span className="mr-3 truncate text-sm font-medium text-foreground">
+                      <span
+                        className="mr-3 truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
                         {c.name}
                       </span>
                       <span className="shrink-0 text-xs font-medium text-muted-foreground">

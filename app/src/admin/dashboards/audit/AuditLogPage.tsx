@@ -74,11 +74,11 @@ const AuditLogPage = ({ user }: { user: AuthUser }) => {
               <table className="w-full text-sm">
                 <thead className="bg-muted/50 border-b">
                   <tr>
-                    <th className="text-left px-4 py-3 font-medium">Data</th>
-                    <th className="text-left px-4 py-3 font-medium">Acção</th>
-                    <th className="text-left px-4 py-3 font-medium">Entidade</th>
-                    <th className="text-left px-4 py-3 font-medium hidden md:table-cell">Operação</th>
-                    <th className="text-left px-4 py-3 font-medium hidden lg:table-cell">Utilizador</th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Data</th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Acção</th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Entidade</th>
+                    <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground md:table-cell">Operação</th>
+                    <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:table-cell">Utilizador</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -91,7 +91,7 @@ const AuditLogPage = ({ user }: { user: AuthUser }) => {
                           {new Date(log.createdAt).toLocaleString('pt-BR')}
                         </td>
                         <td className="px-4 py-2.5">
-                          <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${
+                          <span className={`rounded-sm px-1.5 py-0.5 text-xs font-medium ${
  log.action === 'CREATE' ? 'bg-[#071A2D]/08 text-[#071A2D]' :
  log.action === 'UPDATE' ? 'bg-[#071A2D]/08 text-[#071A2D]' :
  log.action === 'DELETE' ? 'bg-destructive/10 text-destructive' :

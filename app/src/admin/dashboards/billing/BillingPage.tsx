@@ -39,10 +39,10 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
             <table className="w-full text-sm">
               <thead className="bg-muted/50 border-b">
                 <tr>
-                  <th className="text-left px-4 py-3 font-medium">{t('table_entity')}</th>
-                  <th className="text-left px-4 py-3 font-medium">{t('table_type')}</th>
-                  <th className="text-left px-4 py-3 font-medium">{t('table_plan')}</th>
-                  <th className="text-left px-4 py-3 font-medium">{t('table_status')}</th>
+                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{t('table_entity')}</th>
+                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{t('table_type')}</th>
+                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{t('table_plan')}</th>
+                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{t('table_status')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -51,7 +51,12 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         {p.type === 'PERSONAL' ? <Activity className="h-4 w-4" /> : p.dioceseId ? <Building2 className="h-4 w-4" /> : <Church className="h-4 w-4" />}
-                        <span className="font-medium">{p.name}</span>
+                        <span
+                          className="font-semibold tracking-tight text-[#071A2D]"
+                          style={{ fontFamily: "var(--font-brand-display)" }}
+                        >
+                          {p.name}
+                        </span>
                       </div>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground text-xs">{p.type || 'PARISH'}</td>
