@@ -15,7 +15,12 @@ const Breadcrumb = ({ pageName }: BreadcrumbProps) => {
             <WaspRouterLink to={routes.AdminRoute.to}>Dashboard</WaspRouterLink>
           </li>
           <li>/</li>
-          <li className="font-medium">{pageName}</li>
+          <li
+            className="font-semibold tracking-tight text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
+            {pageName}
+          </li>
         </ul>
       </nav>
     </div>

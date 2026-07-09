@@ -530,7 +530,12 @@ export default function JourneyTemplatesPage() {
                               ) : (
                                 <div className="flex items-center justify-between gap-2">
                                   <div>
-                                    <p className="text-sm font-medium flex items-center gap-1.5 flex-wrap">
+                                    <p
+                                      className="flex flex-wrap items-center gap-1.5 text-sm font-semibold tracking-tight text-[#071A2D]"
+                                      style={{
+                                        fontFamily: "var(--font-brand-display)",
+                                      }}
+                                    >
                                       {m.name}
                                       {m.required && (
                                         <Badge

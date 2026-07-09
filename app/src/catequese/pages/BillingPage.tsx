@@ -206,8 +206,13 @@ function UsageRow({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between text-sm">
-        <span className="font-medium text-foreground">{label}</span>
-        <span className="font-semibold text-foreground">
+        <span
+          className="font-semibold tracking-tight text-[#071A2D]"
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
+          {label}
+        </span>
+        <span className="font-semibold tabular-nums text-[#071A2D]">
           {used}/{limit === Infinity ? "∞" : limit}
         </span>
       </div>

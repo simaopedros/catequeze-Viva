@@ -135,7 +135,12 @@ export default function BirthdaysPage() {
                     <Cake className="h-4 w-4" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-[#071A2D]">{b.name}</p>
+                    <p
+                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
+                      {b.name}
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       {t("turningAge", { age: b.age })} ·{" "}
                       {formatDate(b.nextBirthday, currentLocale)} ·{" "}

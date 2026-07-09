@@ -56,7 +56,7 @@ export function SacramentsMock({ ns = 'landing' }: { ns?: string }) {
         ].map((c) => (
           <div key={c.name} className="rounded-sm border border-border/70 bg-white p-2">
             <div className="flex justify-between mb-1">
-              <span className="font-medium">{c.name}</span>
+              <span className="font-semibold tracking-tight text-[#071A2D]">{c.name}</span>
               <span className="text-muted-foreground">{c.progress}</span>
             </div>
             <div className="h-1.5 overflow-hidden rounded-sm bg-muted">

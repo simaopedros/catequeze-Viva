@@ -42,7 +42,7 @@ export function AttendanceMock({ ns = 'landing' }: { ns?: string }) {
       <div className="rounded-sm border border-border/70 bg-white divide-y">
         {STUDENTS.map((s) => (
           <div key={s.name} className="flex items-center justify-between px-3 py-2">
-            <span className="font-medium">{s.name}</span>
+            <span className="font-semibold tracking-tight text-[#071A2D]">{s.name}</span>
             <div className="flex gap-1">
               <button
                 type="button"

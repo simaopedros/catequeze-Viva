@@ -53,7 +53,7 @@ export default function NavBar({
       >
         <div
           className={cn("transition-all duration-300", {
-            "bg-background/90 border-border mx-4 rounded-full border pr-2 backdrop-blur-lg md:mx-20 lg:pr-0":
+            "bg-background/90 border-border mx-4 rounded-sm border pr-2 backdrop-blur-lg md:mx-20 lg:pr-0":
               isScrolled,
             "bg-background/80 border-border mx-0 border-b backdrop-blur-lg":
               !isScrolled,

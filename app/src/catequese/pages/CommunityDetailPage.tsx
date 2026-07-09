@@ -329,7 +329,10 @@ export default function CommunityDetailPage() {
                     {c.lastName?.[0]}
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium">
+                    <p
+                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
                       {c.firstName} {c.lastName}
                     </p>
                     <p className="text-xs text-muted-foreground">

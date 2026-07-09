@@ -50,12 +50,12 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
             <table className="w-full text-sm">
               <thead className="bg-muted/50 border-b">
                 <tr>
-                  <th className="text-left px-4 py-3 font-medium">Nome</th>
-                  <th className="text-left px-4 py-3 font-medium hidden lg:table-cell">Diocese</th>
-                  <th className="text-left px-4 py-3 font-medium hidden md:table-cell">Cidade</th>
-                  <th className="text-left px-4 py-3 font-medium hidden lg:table-cell">Plano</th>
-                  <th className="text-left px-4 py-3 font-medium hidden lg:table-cell">Owner</th>
-                  <th className="text-left px-4 py-3 font-medium hidden lg:table-cell">Membros</th>
+                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Nome</th>
+                  <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:table-cell">Diocese</th>
+                  <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground md:table-cell">Cidade</th>
+                  <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:table-cell">Plano</th>
+                  <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:table-cell">Owner</th>
+                  <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:table-cell">Membros</th>
                 </tr>
               </thead>
               <tbody>
@@ -65,9 +65,14 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
                       <div className="flex items-center gap-2">
                         <Church className="h-4 w-4 text-[#071A2D] shrink-0" />
                         <div>
-                          <span className="font-medium hover:underline">{p.name}</span>
+                          <span
+                            className="font-semibold tracking-tight text-[#071A2D] hover:underline"
+                            style={{ fontFamily: "var(--font-brand-display)" }}
+                          >
+                            {p.name}
+                          </span>
                           {!p.active && (
-                            <span className="ml-2 text-xs bg-[#D39A2B]/15 text-[#8A6418] px-1.5 py-0.5 rounded">Arquivada</span>
+                            <span className="ml-2 rounded-sm bg-[#D39A2B]/15 px-1.5 py-0.5 text-xs text-[#8A6418]">Arquivada</span>
                           )}
                         </div>
                       </div>

@@ -481,7 +481,7 @@ export function ReferencePicker({
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <span className="font-medium text-[#071A2D]">
+                      <span className="font-semibold tracking-tight text-[#071A2D]">
                         {v.chapter?.book?.abbreviation || v.chapter?.book?.name}{" "}
                         {v.chapter?.number}:{v.number}
                       </span>
@@ -670,7 +670,7 @@ export function ReferencePicker({
                   className="flex w-full items-start justify-between gap-2 border-b px-3 py-2 text-left text-xs transition-colors last:border-b-0 hover:bg-muted/50"
                 >
                   <div className="min-w-0 flex-1">
-                    <div className="font-medium text-[#071A2D]">
+                    <div className="font-semibold tracking-tight text-[#071A2D]">
                       §{entry.number}
                     </div>
                     <div className="mt-1 line-clamp-2 text-muted-foreground">
@@ -701,7 +701,7 @@ export function ReferencePicker({
                   className="flex w-full items-start justify-between gap-2 border-b px-3 py-2 text-left text-xs transition-colors last:border-b-0 hover:bg-muted/50"
                 >
                   <div className="min-w-0 flex-1">
-                    <div className="font-medium text-[#071A2D]">
+                    <div className="font-semibold tracking-tight text-[#071A2D]">
                       §{entry.number}
                     </div>
                     <div className="mt-1 line-clamp-2 text-muted-foreground">

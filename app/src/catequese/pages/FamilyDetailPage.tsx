@@ -630,7 +630,12 @@ export default function FamilyDetailPage() {
                       {avatarLetter}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium">{displayName}</p>
+                      <p
+                        className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
+                        {displayName}
+                      </p>
                       <p className="text-xs text-muted-foreground truncate">
                         {emailOrPlaceholder}
                         {emailOrPlaceholder && (g.relationship || g.phone)

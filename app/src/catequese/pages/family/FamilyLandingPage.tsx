@@ -29,7 +29,10 @@ export default function FamilyLandingPage() {
         <AppPanel className="space-y-6 p-8">
           <Church className="mx-auto h-12 w-12 text-[#071A2D]" />
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-[#071A2D]">
+            <h2
+              className="text-xl font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
               {t("landing.invite_title")}
             </h2>
             <p className="text-sm text-muted-foreground">

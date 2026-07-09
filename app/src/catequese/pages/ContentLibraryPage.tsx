@@ -442,7 +442,8 @@ export default function ContentLibraryPage() {
                     <td className="p-4">
                       <Link
                         to={`/app/content-library/${i.id}`}
-                        className="text-sm font-medium hover:text-[#071A2D]"
+                        className="text-sm font-semibold tracking-tight text-[#071A2D] hover:text-[#0a2540]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
                       >
                         {i.title}
                       </Link>
@@ -540,7 +541,10 @@ export default function ContentLibraryPage() {
                     <Clock className="h-3.5 w-3.5" />
                     Duracao
                   </div>
-                  <p className="mt-1 text-sm font-medium text-foreground">
+                  <p
+                    className="mt-1 text-sm font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
                     {item.estimatedTime
                       ? t("library.minutes", { count: item.estimatedTime })
                       : "—"}
@@ -551,7 +555,10 @@ export default function ContentLibraryPage() {
                     <Puzzle className="h-3.5 w-3.5" />
                     Atividades
                   </div>
-                  <p className="mt-1 text-sm font-medium text-foreground">
+                  <p
+                    className="mt-1 text-sm font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
                     {item._count?.activities || 0}
                   </p>
                 </div>

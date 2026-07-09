@@ -50,7 +50,12 @@ export default function AccountPage() {
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 {t('linked_parish')}
               </p>
-              <p className="font-medium">{ctxParishName}</p>
+              <p
+                className="font-semibold tracking-tight text-[#071A2D]"
+                style={{ fontFamily: "var(--font-brand-display)" }}
+              >
+                {ctxParishName}
+              </p>
             </div>
           </AppPanel>
         )}

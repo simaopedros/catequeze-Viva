@@ -455,7 +455,12 @@ export default function ContentDetailPage() {
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <p className="text-sm font-medium">{activity.title}</p>
+                        <p
+                          className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                          style={{ fontFamily: "var(--font-brand-display)" }}
+                        >
+                          {activity.title}
+                        </p>
                         <Badge variant="outline" className="text-overline">
                           {activityTypes.find(
                             (type) => type.value === activity.type,

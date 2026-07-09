@@ -30,7 +30,7 @@ export function FamilyPortalMock({ ns = 'landing' }: { ns?: string }) {
       <div className="rounded-sm border border-[#071A2D]/20 bg-muted/30 p-2 flex items-start gap-2">
         <Bell className="h-3.5 w-3.5 text-[#071A2D] flex-shrink-0 mt-0.5" />
         <div>
-          <p className="font-medium">{t('mockup_family.notice_title')}</p>
+          <p className="font-semibold tracking-tight text-[#071A2D]">{t('mockup_family.notice_title')}</p>
           <p className="text-muted-foreground">{t('mockup_family.notice_text')}</p>
         </div>
       </div>
@@ -48,7 +48,7 @@ export function FamilyPortalMock({ ns = 'landing' }: { ns?: string }) {
       <div className="rounded-sm border border-dashed border-border/70 bg-muted/20 p-2 flex items-center gap-2">
         <FileUp className="h-4 w-4 text-muted-foreground" />
         <div>
-          <p className="font-medium">{t('mockup_family.send_certificate')}</p>
+          <p className="font-semibold tracking-tight text-[#071A2D]">{t('mockup_family.send_certificate')}</p>
           <p className="text-muted-foreground">{t('mockup_family.pending_doc')}</p>
         </div>
       </div>

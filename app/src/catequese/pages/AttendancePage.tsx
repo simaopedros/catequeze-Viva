@@ -541,13 +541,13 @@ export default function AttendancePage() {
               <table className="w-full text-xs">
                 <thead>
                   <tr className="bg-muted/50">
-                    <th className="sticky left-0 bg-muted/50 p-2 text-left font-medium min-w-[140px] z-10 border-r">
+                    <th className="sticky left-0 z-10 min-w-[140px] border-r bg-muted/50 p-2 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       {t("matrix.catechumen_column")}
                     </th>
                     {meetings.map((m: any) => (
                       <th
                         key={m.id}
-                        className="p-2 text-center font-medium min-w-[90px]"
+                        className="min-w-[90px] p-2 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground"
                       >
                         <div>
                           {formatDate(m.date, currentLocale, {
@@ -555,12 +555,12 @@ export default function AttendancePage() {
                             month: "2-digit",
                           })}
                         </div>
-                        <div className="text-overline text-muted-foreground truncate max-w-[80px]">
+                        <div className="max-w-[80px] truncate text-overline font-medium normal-case tracking-normal text-muted-foreground">
                           {m.title || t("matrix.no_title")}
                         </div>
                       </th>
                     ))}
-                    <th className="p-2 text-center font-medium bg-muted/30 min-w-[50px]">
+                    <th className="min-w-[50px] bg-muted/30 p-2 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       {t("matrix.percent_column")}
                     </th>
                   </tr>
@@ -568,7 +568,10 @@ export default function AttendancePage() {
                 <tbody>
                   {filteredCatechumens.map((cat: any) => (
                     <tr key={cat.id} className="border-t hover:bg-muted/30">
-                      <td className="sticky left-0 z-10 border-r border-border/70 bg-white p-2 font-medium">
+                      <td
+                        className="sticky left-0 z-10 border-r border-border/70 bg-white p-2 font-semibold tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
                         {cat.firstName} {cat.lastName}
                       </td>
                       {meetings.map((m: any) => {
@@ -684,7 +687,7 @@ export default function AttendancePage() {
                             className="flex items-center justify-between gap-2"
                           >
                             <div className="flex-1 min-w-0">
-                              <span className="text-xs font-medium block truncate">
+                              <span className="block truncate text-xs font-semibold tracking-tight text-[#071A2D]">
                                 {formatDate(m.date, currentLocale, {
                                   day: "2-digit",
                                   month: "2-digit",

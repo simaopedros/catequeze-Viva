@@ -163,7 +163,7 @@ export default function FamiliesPage() {
             >
               <div className="flex items-start justify-between mb-2">
                 <h3
-                  className="text-sm font-semibold tracking-tight text-foreground group-hover:text-[#071A2D]"
+                  className="text-sm font-semibold tracking-tight text-[#071A2D] group-hover:text-[#0a2540]"
                   style={{ fontFamily: "var(--font-brand-display)" }}
                 >
                   {h.name}
