@@ -285,7 +285,7 @@ export function QuickSetupPanel({
       <div className="w-full max-w-4xl space-y-6">
         <div className="space-y-2.5 text-center">
           <AppEyebrow className="text-center">
-            {t("hub.eyebrow", { defaultValue: "Copiloto" })}
+            {t("hub.eyebrow", { defaultValue: "Encontros" })}
           </AppEyebrow>
           <AppDisplayTitle className="text-center">
             {t(modeLabelKey)}

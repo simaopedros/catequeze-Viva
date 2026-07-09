@@ -150,7 +150,7 @@ export default function CommunityDetailPage() {
       <div className="grid gap-4 md:grid-cols-3">
         {community.street && (
           <div className="rounded-sm border border-border/70 bg-white p-4">
-            <h3 className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-1 mb-1">
+            <h3 className="mb-1 flex items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               <MapPin className="h-3 w-3" />
               {t("address")}
             </h3>
@@ -165,7 +165,7 @@ export default function CommunityDetailPage() {
         )}
         {community.phone && (
           <div className="rounded-sm border border-border/70 bg-white p-4">
-            <h3 className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-1 mb-1">
+            <h3 className="mb-1 flex items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               <Phone className="h-3 w-3" />
               {tp("contact")}
             </h3>
@@ -176,7 +176,7 @@ export default function CommunityDetailPage() {
           </div>
         )}
         <div className="rounded-sm border border-border/70 bg-white p-4">
-          <h3 className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-1 mb-1">
+          <h3 className="mb-1 flex items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             <Building2 className="h-3 w-3" />
             {tp("summary")}
           </h3>

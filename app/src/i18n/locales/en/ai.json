@@ -1,7 +1,7 @@
 {
   "planner": {
     "title": "Editorial assistance",
-    "subtitle": "Create, improve and adapt catechesis meetings with AI",
+    "subtitle": "Create, improve and adapt catechesis meetings",
     "credits_left": "{{count}} AI credits remaining",
     "credits_remaining": "{{count}} AI credits remaining",
     "upgrade": "Upgrade",
@@ -100,7 +100,7 @@
     "title": "What would you like to do today?",
     "subtitle": "Choose how editorial assistance can help",
     "create_new": "Create a meeting from scratch",
-    "create_new_desc": "Plan a complete catechesis script from the start with AI assistance",
+    "create_new_desc": "Plan a complete catechesis script from the start, with support when needed",
     "work_on_existing": "Use existing content",
     "work_on_existing_desc": "Improve, create activities, or generate messages from existing content",
     "use_existing": "Use existing content",
@@ -123,7 +123,7 @@
     "recent_flows": "Recent flows",
     "recent_create-meeting": "New meeting",
     "create_meeting": "Create a meeting from scratch",
-    "create_meeting_desc": "Plan a complete catechesis script with AI assistance",
+    "create_meeting_desc": "Plan a complete catechesis script with support when needed",
     "improve_content": "Improve existing content",
     "improve_content_desc": "Review and enrich a script you already have",
     "generate_activity": "Generate supplementary activity",

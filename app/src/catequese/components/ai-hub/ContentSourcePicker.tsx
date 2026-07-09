@@ -44,7 +44,7 @@ export function ContentSourcePicker({
     <div className="flex items-center justify-center px-3 py-6">
       <div className="w-full max-w-2xl space-y-8">
         <AppPageHeader
-          eyebrow={t("hub.eyebrow", { defaultValue: "Copiloto" })}
+          eyebrow={t("hub.eyebrow", { defaultValue: "Encontros" })}
           title={t(modeLabelKey)}
           subtitle={t("hub.pick_content")}
         />
@@ -87,19 +87,22 @@ export function ContentSourcePicker({
               >
                 <Card className="cursor-pointer rounded-sm border-border/70 p-4 transition-colors hover:border-[#071A2D]/30 hover:bg-muted/20">
                   <div className="flex items-start gap-3">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-foreground">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
                       <FileText className="h-4 w-4" />
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold text-sm truncate">
+                    <div className="min-w-0 flex-1 space-y-0.5">
+                      <h3
+                        className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
                         {item.title || t("planner.untitled")}
                       </h3>
                       {item.theme && (
-                        <p className="text-xs text-muted-foreground truncate mt-0.5">
+                        <p className="truncate text-xs text-muted-foreground">
                           {item.theme}
                         </p>
                       )}
-                      <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
+                      <div className="mt-1.5 flex items-center gap-3 text-xs text-muted-foreground">
                         {item.updatedAt && (
                           <span className="inline-flex items-center gap-1">
                             <Calendar className="h-3 w-3" />
@@ -108,7 +111,7 @@ export function ContentSourcePicker({
                         )}
                         {item.isAiGenerated && (
                           <span className="inline-flex items-center gap-1 text-[#071A2D]">
-                            <Feather className="h-3 w-3" /> IA
+                            <Feather className="h-3 w-3" /> Assist.
                           </span>
                         )}
                       </div>

@@ -28,7 +28,7 @@ export function AiHubLayout({
       <div className="shrink-0 border-b border-border/70 bg-white px-3 py-4 lg:px-4">
         <AppPageHeader
           className="border-0 pb-0"
-          eyebrow={t("hub.eyebrow", { defaultValue: "Copiloto" })}
+          eyebrow={t("hub.eyebrow", { defaultValue: "Encontros" })}
           title={title}
           subtitle={subtitle}
           actions={

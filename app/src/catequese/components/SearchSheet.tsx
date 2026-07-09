@@ -156,14 +156,18 @@ export function SearchSheet({
         <div className="px-2 pb-4">
           {query.length < 2 ? (
             <div className="py-12 text-center">
-              <Search className="mx-auto h-8 w-8 text-text-tertiary mb-2 opacity-50" />
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-sm border border-border/70 bg-muted/30">
+                <Search className="h-6 w-6 text-[#071A2D]" />
+              </div>
               <p className="text-sm text-muted-foreground">
                 {t("searchFocusHint")}
               </p>
             </div>
           ) : flatResults.length === 0 ? (
             <div className="py-12 text-center">
-              <Search className="mx-auto h-8 w-8 text-text-tertiary mb-2 opacity-50" />
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-sm border border-border/70 bg-muted/30">
+                <Search className="h-6 w-6 text-[#071A2D]" />
+              </div>
               <p className="text-sm text-muted-foreground">{t("noResults")}</p>
             </div>
           ) : (
@@ -172,7 +176,7 @@ export function SearchSheet({
                 const Icon = MODULE_ICONS[module] || Search;
                 return (
                   <div key={module}>
-                    <div className="flex items-center gap-2 px-3 py-1.5 text-overline font-semibold uppercase tracking-wider text-text-tertiary bg-muted/50 rounded-sm">
+                    <div className="flex items-center gap-2 rounded-sm bg-muted/40 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       <Icon className="h-3 w-3" />
                       {getModuleLabel(module)}
                     </div>

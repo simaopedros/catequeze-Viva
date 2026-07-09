@@ -63,9 +63,12 @@ function SurfaceSection({
 }) {
   return (
     <AppPanel className={className}>
-      <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-        {title}
-      </p>
+      <div className="mb-4 space-y-1.5">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          {title}
+        </p>
+        <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+      </div>
       {children}
     </AppPanel>
   );
@@ -321,7 +324,7 @@ export default function CatechumensPage() {
       ) : view === "table" ? (
         <section className="overflow-hidden rounded-sm border border-border/70 bg-white/90 ">
           <div className="border-b border-border/70 bg-muted/30 px-5 py-4">
-            <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               {tn("catechumens")}
             </h3>
           </div>

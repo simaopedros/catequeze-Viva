@@ -114,9 +114,17 @@ export function ParishCommunitiesTab({
       </div>
 
       {communities.length === 0 ? (
-        <div className="text-center text-muted-foreground py-12">
-          <Building2 className="mx-auto h-8 w-8 mb-2" />
-          {tp("no_communities")}
+        <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white px-6 py-12 text-center">
+          <div className="mb-3 rounded-sm border border-border/70 bg-muted/30 p-3">
+            <Building2 className="h-8 w-8 text-[#071A2D]" />
+          </div>
+          <p
+            className="text-sm font-semibold tracking-tight text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
+            {tp("no_communities")}
+          </p>
+          <div className="mx-auto mt-2 h-px w-8 bg-[#D39A2B]" aria-hidden />
         </div>
       ) : (
         <div className="grid gap-3 md:grid-cols-2">

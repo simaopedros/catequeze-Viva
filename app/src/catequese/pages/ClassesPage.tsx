@@ -56,9 +56,12 @@ function SurfaceSection({
         className,
       )}
     >
-      <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-        {title}
-      </p>
+      <div className="mb-4 space-y-1.5">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          {title}
+        </p>
+        <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+      </div>
       {children}
     </section>
   );
@@ -297,8 +300,8 @@ export default function ClassesPage() {
                 progresso.
               </div>
               <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
-                Use o Copiloto de Conteudo para preparar os encontros com mais
-                consistencia.
+                Use a assistência editorial para preparar os encontros com
+                mais consistência.
               </div>
             </div>
           </SurfaceSection>

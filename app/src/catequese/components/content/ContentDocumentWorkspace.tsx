@@ -589,7 +589,8 @@ export function ContentDocumentWorkspace({
               asChild
             >
               <Link to={aiLink}>
-                <MessageSquareShare className="h-4 w-4" /> Melhorar com IA
+                <MessageSquareShare className="h-4 w-4" /> Melhorar com
+                assistência
               </Link>
             </Button>
             <Button

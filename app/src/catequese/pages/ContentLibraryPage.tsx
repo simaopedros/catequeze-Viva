@@ -61,9 +61,12 @@ function SurfaceSection({
 }) {
   return (
     <AppPanel className={className}>
-      <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-        {title}
-      </p>
+      <div className="mb-4 space-y-1.5">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          {title}
+        </p>
+        <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+      </div>
       {children}
     </AppPanel>
   );
@@ -397,8 +400,8 @@ export default function ContentLibraryPage() {
                   utilizavel.
                 </div>
                 <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
-                  Combine criacao manual com IA quando precisar acelerar a
-                  preparacao.
+                  Combine criação manual com assistência editorial quando
+                  precisar acelerar a preparação.
                 </div>
               </div>
             </SurfaceSection>
@@ -407,9 +410,12 @@ export default function ContentLibraryPage() {
       ) : view === "list" ? (
         <section className="overflow-hidden rounded-sm border border-border/70 bg-white ">
           <div className="border-b border-border/70 bg-muted/30 px-5 py-4">
-            <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-              {t("library.table_title")}
-            </h3>
+            <div className="space-y-1.5">
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                {t("library.table_title")}
+              </h3>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            </div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">

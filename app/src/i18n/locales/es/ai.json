@@ -1,7 +1,7 @@
 {
   "planner": {
     "title": "Asistencia editorial",
-    "subtitle": "Cree, mejore y adapte encuentros de catequesis con IA",
+    "subtitle": "Cree, mejore y adapte encuentros de catequesis",
     "credits_left": "{{count}} créditos de IA restantes",
     "credits_remaining": "{{count}} créditos de IA restantes",
     "upgrade": "Actualizar",
@@ -13,7 +13,7 @@
     "step_duration": "Duración del encuentro",
     "step_approach": "Enfoque pastoral",
     "continue": "Continuar",
-    "adapt": "Adaptar con IA",
+    "adapt": "Adaptar guion",
     "generate": "Generar guion",
     "minutes_abbr": "min",
     "step_tone": "Tono del lenguaje",
