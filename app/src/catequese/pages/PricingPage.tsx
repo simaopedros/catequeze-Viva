@@ -207,7 +207,7 @@ export default function PricingPage() {
         </ul>
         <button
           onClick={() => handleSelect(plan)}
-          className={`mt-6 block w-full text-center rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
+          className={`mt-6 block w-full text-center rounded-sm px-4 py-3 text-sm font-semibold transition-all ${
             plan.highlight
               ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25"
               : "bg-muted hover:bg-muted/80"
@@ -281,7 +281,7 @@ export default function PricingPage() {
             </h2>
             <div className="space-y-4">
               {faq.map((f, i) => (
-                <div key={i} className="rounded-xl border bg-card p-5">
+                <div key={i} className="rounded-sm border border-border/70 bg-white p-5">
                   <h3 className="font-semibold">{f.q}</h3>
                   <p className="text-sm text-muted-foreground mt-2">{f.a}</p>
                 </div>

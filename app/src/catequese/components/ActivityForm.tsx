@@ -201,8 +201,8 @@ export function ActivityForm({
                         type="button"
                         onClick={() => setQuizQuestions(prev => prev.map(p => p.id === q.id ? { ...p, correctIndex: oi } : p))}
                         className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs flex-shrink-0 transition-colors ${
-                          q.correctIndex === oi ? 'bg-success border-success text-success-foreground' : 'border-muted-foreground/30'
-                        }`}
+       q.correctIndex === oi ? 'bg-success border-success text-success-foreground' : 'border-muted-foreground/30'
+      }`}
                       >
                         {q.correctIndex === oi ? <Check className="h-3 w-3"/> : <span className="text-overline">{['A','B','C','D'][oi]}</span>}
                       </button>
@@ -444,7 +444,7 @@ export function ActivityForm({
 
   // ── Main render ─────────────────────────────────────────────────────────
   return (
-    <div className="rounded-xl border-2 border-dashed border-primary/30 bg-primary/5 p-5 space-y-4">
+    <div className="rounded-sm border-2 border-dashed border-primary/30 bg-primary/5 p-5 space-y-4">
       <h3 className="font-semibold text-sm flex items-center gap-2">
         {initialTitle ? t('form.edit_title') : t('form.new_title')}
       </h3>

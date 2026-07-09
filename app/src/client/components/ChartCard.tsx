@@ -17,7 +17,7 @@ export function ChartCard({ title, description, action, children, className, loa
   }
 
   return (
-    <div className={cn('rounded-xl border bg-card p-5 shadow-elevation-sm', className)}>
+    <div className={cn('rounded-sm border border-border/70 bg-white p-5 ', className)}>
       <div className="flex items-center justify-between mb-4">
         <div className="min-w-0">
           <h3 className="font-semibold text-body-sm">{title}</h3>

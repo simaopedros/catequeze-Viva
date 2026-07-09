@@ -34,7 +34,7 @@ export function FilterPills({ options, value, onChange, className, onClear, clea
             'rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-[var(--motion-duration-fast,150ms)] ease-[var(--motion-easing-default,ease-out)] whitespace-nowrap shrink-0 snap-start',
             'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
             value === opt.value
-              ? 'bg-primary text-primary-foreground shadow-elevation-xs scale-[1.02]'
+              ? 'bg-primary text-primary-foreground  scale-[1.02]'
               : 'bg-muted text-muted-foreground hover:bg-muted/80 active:scale-95',
           )}
         >

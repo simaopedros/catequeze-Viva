@@ -133,7 +133,7 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40 -sm" onClick={onClose} />
 
-      <div className="relative w-full max-w-md mx-4 bg-card rounded-sm shadow-elevation-modal border overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-md mx-4 bg-card rounded-sm border overflow-hidden animate-in zoom-in-95 duration-200">
         <div className="flex items-center justify-between p-4 border-b">
           <h3 className="font-semibold">
             {step === 'type' ? t('new_dialog.title_type') : t('new_dialog.title_contacts')}
@@ -233,7 +233,7 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
                         isSelected ? 'bg-primary/5' : 'hover:bg-muted/50'
                       )}
                     >
-                      <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary/60 to-primary/30 flex items-center justify-center text-white text-overline font-semibold flex-shrink-0">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-[#071A2D] text-overline font-semibold text-white">
                         {getInitials(c.firstName, c.lastName)}
                       </div>
                       <div className="flex-1 min-w-0">

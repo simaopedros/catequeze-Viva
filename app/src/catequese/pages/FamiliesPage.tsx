@@ -119,7 +119,7 @@ export default function FamiliesPage() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((h: any) => (
-              <Link key={h.id} to={`/app/families/${h.id}`} className="rounded-xl border bg-card p-4 shadow-elevation-sm hover:shadow-elevation-md transition-shadow group">
+              <Link key={h.id} to={`/app/families/${h.id}`} className="group rounded-sm border border-border/70 bg-white p-4 transition-colors hover:border-primary/30">
                 <div className="flex items-start justify-between mb-2">
                   <h3 className="font-semibold text-sm group-hover:text-primary">{h.name}</h3>
                   <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />

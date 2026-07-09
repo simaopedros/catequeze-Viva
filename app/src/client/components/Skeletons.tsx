@@ -21,7 +21,7 @@ function Skeleton({ className }: SkeletonProps) {
 
 export function SkeletonCard({ className }: SkeletonProps) {
   return (
-    <div role="status" aria-busy="true" className={cn('rounded-xl border bg-card p-5 space-y-3', className)}>
+    <div role="status" aria-busy="true" className={cn('rounded-sm border border-border/70 bg-white p-5 space-y-3', className)}>
       <Skeleton className="h-4 w-3/4" />
       <Skeleton className="h-3 w-1/2" />
       <Skeleton className="h-8 w-full mt-4" />
@@ -31,7 +31,7 @@ export function SkeletonCard({ className }: SkeletonProps) {
 
 export function SkeletonTable({ rows = 5, className }: SkeletonProps & { rows?: number }) {
   return (
-    <div role="status" aria-busy="true" className={cn('rounded-xl border bg-card overflow-hidden', className)}>
+    <div role="status" aria-busy="true" className={cn('rounded-sm border border-border/70 bg-white overflow-hidden', className)}>
       <div className="border-b p-3">
         <Skeleton className="h-4 w-1/3" />
       </div>
@@ -99,7 +99,7 @@ export function SkeletonPage({ className }: SkeletonProps) {
 
 export function SkeletonChart({ height = 'h-64', className }: SkeletonProps & { height?: string }) {
   return (
-    <div role="status" aria-busy="true" className={cn('rounded-xl border bg-card p-5', className)}>
+    <div role="status" aria-busy="true" className={cn('rounded-sm border border-border/70 bg-white p-5', className)}>
       <Skeleton className="h-4 w-1/3 mb-4" />
       <Skeleton className={cn('w-full rounded-lg', height)} />
     </div>
@@ -110,7 +110,7 @@ export function SkeletonStats({ count = 4, className }: SkeletonProps & { count?
   return (
     <div role="status" aria-busy="true" className={cn('grid gap-4 grid-cols-2 lg:grid-cols-4', className)}>
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="rounded-xl border bg-card p-5 space-y-3">
+        <div key={i} className="rounded-sm border border-border/70 bg-white p-5 space-y-3">
           <Skeleton className="h-4 w-20" />
           <Skeleton className="h-8 w-16" />
           <Skeleton className="h-3 w-24" />

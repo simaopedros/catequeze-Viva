@@ -31,7 +31,7 @@ export function CatechistDetails({ parishName, onComplete }: CatechistDetailsPro
   };
 
   return (
-    <div className="rounded-xl border bg-card p-6 space-y-4">
+    <div className="rounded-sm border border-border/70 bg-white p-6 space-y-4">
       <h2 className="text-lg font-semibold flex items-center gap-2">
         <GraduationCap className="h-5 w-5 text-primary" />{t('catechist.class_title')}
       </h2>

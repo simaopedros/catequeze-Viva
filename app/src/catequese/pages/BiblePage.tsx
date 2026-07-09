@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
 import { FilterPills } from '../../client/components/FilterPills';
-import { PageHeader } from '../../client/components/PageHeader';
+import { AppPageHeader } from '../../client/components/brand/AppChrome';
 import { SearchInput } from '../../client/components/SearchInput';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../../client/components/ui/sheet';
 import { useQuery, listBibleBooks, getBibleBook, getBibleChapter, searchBible } from 'wasp/client/operations';
@@ -425,12 +425,11 @@ export default function BiblePage() {
 
   const suggestions = SEARCH_SUGGESTIONS[currentLocale] || SEARCH_SUGGESTIONS['pt-BR'];
 
-  // Breadcrumbs for PageHeader
-  const breadcrumbs = [{ label: t('title') }];
+  const breadcrumbTrail = [t('title')];
   if (selectedBook) {
-    breadcrumbs.push({ label: selectedBook.name });
+    breadcrumbTrail.push(selectedBook.name);
     if (selectedChapter !== null) {
-      breadcrumbs.push({ label: `${t('chapter')} ${selectedChapter}` });
+      breadcrumbTrail.push(`${t('chapter')} ${selectedChapter}`);
     }
   }
 
@@ -638,57 +637,59 @@ export default function BiblePage() {
 
   return (
       <div className="space-y-4">
-        <PageHeader title={t('title')} compact breadcrumbs={breadcrumbs}>
-          <div className="flex items-center gap-2">
-            {/* Font size toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={cycleFontSize}
-              title={`${t('font_size')}: ${fontSize}`}
-            >
-              <Type className="h-4 w-4" />
-            </Button>
-
-            {/* Copy reference — only when chapter loaded */}
-            {selectedChapter !== null && chapterData && (
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={copyReference} title={t('copy_reference')}>
-                <Copy className="h-4 w-4" />
+        <AppPageHeader
+          eyebrow={t('title')}
+          title={t('title')}
+          subtitle={breadcrumbTrail.length > 1 ? breadcrumbTrail.join(' · ') : undefined}
+          actions={
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 rounded-sm"
+                onClick={cycleFontSize}
+                title={`${t('font_size')}: ${fontSize}`}
+              >
+                <Type className="h-4 w-4" />
               </Button>
-            )}
 
-            {/* Mobile nav trigger */}
-            {mode === 'read' && selectedChapter !== null && (
-              <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
-                <SheetTrigger asChild>
-                  <Button variant="outline" size="sm" className="lg:hidden">
-                    <List className="h-4 w-4" />
-                    <span className="ml-1.5">{t('chapters')}</span>
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="w-72 p-4 overflow-y-auto">
-                  <SheetHeader>
-                    <SheetTitle>{t('title')}</SheetTitle>
-                  </SheetHeader>
-                  <div className="mt-4">{sidebarContent}</div>
-                </SheetContent>
-              </Sheet>
-            )}
+              {selectedChapter !== null && chapterData && (
+                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-sm" onClick={copyReference} title={t('copy_reference')}>
+                  <Copy className="h-4 w-4" />
+                </Button>
+              )}
 
-            <FilterPills
-              options={[
-                { value: 'read', label: t('read') },
-                { value: 'search', label: t('search') },
-              ]}
-              value={mode}
-              onChange={(v) => {
-                setMode(v as 'read' | 'search');
-                setError('');
-              }}
-            />
-          </div>
-        </PageHeader>
+              {mode === 'read' && selectedChapter !== null && (
+                <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="sm" className="h-10 rounded-sm lg:hidden">
+                      <List className="h-4 w-4" />
+                      <span className="ml-1.5">{t('chapters')}</span>
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="w-72 p-4 overflow-y-auto">
+                    <SheetHeader>
+                      <SheetTitle>{t('title')}</SheetTitle>
+                    </SheetHeader>
+                    <div className="mt-4">{sidebarContent}</div>
+                  </SheetContent>
+                </Sheet>
+              )}
+
+              <FilterPills
+                options={[
+                  { value: 'read', label: t('read') },
+                  { value: 'search', label: t('search') },
+                ]}
+                value={mode}
+                onChange={(v) => {
+                  setMode(v as 'read' | 'search');
+                  setError('');
+                }}
+              />
+            </div>
+          }
+        />
 
         {/* ── SEARCH MODE ── */}
         {mode === 'search' && (
@@ -726,7 +727,7 @@ export default function BiblePage() {
             )}
 
             {error && (
-              <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center space-y-3">
+              <div className="rounded-sm border border-destructive/30 bg-destructive/5 p-6 text-center space-y-3">
                 <AlertCircle className="h-8 w-8 text-destructive mx-auto" />
                 <p className="text-sm text-destructive">{error}</p>
                 <Button size="sm" variant="outline" onClick={() => handleSearch()}>
@@ -849,7 +850,7 @@ export default function BiblePage() {
 
               {/* Chapter error */}
               {selectedChapter !== null && !loading && error && (
-                <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center space-y-3">
+                <div className="rounded-sm border border-destructive/30 bg-destructive/5 p-6 text-center space-y-3">
                   <AlertCircle className="h-8 w-8 text-destructive mx-auto" />
                   <p className="text-sm text-destructive">{error}</p>
                   <Button

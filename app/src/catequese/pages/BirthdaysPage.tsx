@@ -92,7 +92,7 @@ export default function BirthdaysPage() {
       ) : !birthdays?.length ? (
         <EmptyState icon={Cake} title={t('noBirthdays')} compact />
       ) : (
-        <div className="rounded-xl border bg-card">
+        <div className="rounded-sm border border-border/70 bg-white">
           <div className="divide-y">
             {birthdays.map((b: any) => (
               <div key={b.catechumenId} className="p-3 flex items-center justify-between">

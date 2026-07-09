@@ -35,7 +35,7 @@ export function RoleStep({ selected, onSelect }: RoleStepProps) {
   const { t } = useTranslation('onboarding');
 
   return (
-    <div className="rounded-xl border bg-card p-6 space-y-4">
+    <div className="rounded-sm border border-border/70 bg-white p-6 space-y-4">
       <h2 className="text-lg font-semibold">{t('role_step.title')}</h2>
       <p className="text-sm text-muted-foreground">{t('role_step.subtitle')}</p>
 
@@ -44,7 +44,7 @@ export function RoleStep({ selected, onSelect }: RoleStepProps) {
           <button
             key={role.id}
             onClick={() => onSelect(role.id)}
-            className={`flex items-start gap-4 rounded-xl border p-4 text-left transition-all ${
+            className={`flex items-start gap-4 rounded-sm border p-4 text-left transition-all ${
               selected === role.id
                 ? `border-2 shadow-sm ${role.color}`
                 : 'hover:bg-muted/30'

@@ -268,13 +268,13 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
               'Sugerir oração inicial',
               'Sugerir compromisso para a família',
             ].map(label => (
-              <div key={label} className="flex items-center justify-between rounded-xl border border-border bg-background px-3 py-2 text-sm">
+              <div key={label} className="flex items-center justify-between rounded-sm border border-border bg-background px-3 py-2 text-sm">
                 <span>{label}</span>
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </div>
             ))}
           </div>
-          <Button variant="outline" className="w-full justify-start rounded-xl gap-2">
+          <Button variant="outline" className="w-full justify-start rounded-sm gap-2">
             <Sparkles className="h-4 w-4" /> Abrir no copiloto de IA
           </Button>
         </div>
@@ -313,7 +313,7 @@ function ContentLibrarySidebar() {
             <button type="button" className="text-primary">Limpar</button>
           </div>
           {['Tipo de conteúdo', 'Faixa etária', 'Temas', 'Tempo de encontro', 'Dificuldade'].map(label => (
-            <button key={label} type="button" className="flex w-full items-center justify-between rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground">
+            <button key={label} type="button" className="flex w-full items-center justify-between rounded-sm border border-border bg-background px-3 py-2.5 text-sm text-foreground">
               <span>{label}</span>
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </button>
@@ -335,7 +335,7 @@ function ContentLibrarySidebar() {
           <div className="space-y-3">
             {filteredItems.map((item: any, index: number) => (
               <Link key={item.id} to={`/app/content-library/${item.id}`} className="flex items-start gap-3 rounded-sm border border-border bg-background p-3">
-                <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl ${RECENT_THUMBNAIL_STYLES[index % RECENT_THUMBNAIL_STYLES.length]}`}>
+                <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-sm ${RECENT_THUMBNAIL_STYLES[index % RECENT_THUMBNAIL_STYLES.length]}`}>
                   <ScrollText className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
@@ -348,7 +348,7 @@ function ContentLibrarySidebar() {
                 </div>
               </Link>
             ))}
-            <Button variant="outline" asChild className="w-full justify-between rounded-xl">
+            <Button variant="outline" asChild className="w-full justify-between rounded-sm">
               <Link to="/app/content-library">
                 Ver todos os conteúdos
                 <ChevronRight className="h-4 w-4" />
@@ -410,7 +410,7 @@ function WorkspaceTopBar({ contentItemId, estimatedTime }: { contentItemId: stri
           <div className="flex items-center gap-2 text-muted-foreground">
             <span>Encontro para:</span>
             <Select defaultValue="criancas">
-              <SelectTrigger className="h-9 w-[220px] rounded-xl border-0 bg-transparent px-0 shadow-none focus:ring-0">
+              <SelectTrigger className="h-9 w-[220px] rounded-sm border-0 bg-transparent px-0 shadow-none focus:ring-0">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -423,7 +423,7 @@ function WorkspaceTopBar({ contentItemId, estimatedTime }: { contentItemId: stri
           <div className="flex items-center gap-2 text-muted-foreground">
             <span>Faixa etária:</span>
             <Select defaultValue="9-11">
-              <SelectTrigger className="h-9 w-[120px] rounded-xl border-0 bg-transparent px-0 shadow-none focus:ring-0">
+              <SelectTrigger className="h-9 w-[120px] rounded-sm border-0 bg-transparent px-0 shadow-none focus:ring-0">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -437,7 +437,7 @@ function WorkspaceTopBar({ contentItemId, estimatedTime }: { contentItemId: stri
             <Clock3 className="h-4 w-4" />
             <span>Duração:</span>
             <Select defaultValue={String(estimatedTime || 60)}>
-              <SelectTrigger className="h-9 w-[90px] rounded-xl border-0 bg-transparent px-0 shadow-none focus:ring-0">
+              <SelectTrigger className="h-9 w-[90px] rounded-sm border-0 bg-transparent px-0 shadow-none focus:ring-0">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -450,8 +450,8 @@ function WorkspaceTopBar({ contentItemId, estimatedTime }: { contentItemId: stri
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="ghost" className="gap-2 rounded-xl text-base"><Save className="h-4 w-4" /> Salvar</Button>
-          <Button asChild className="rounded-xl px-5 gap-2"><Link to={`/app/content-library/${contentItemId}`}><Eye className="h-4 w-4" /> Visualizar</Link></Button>
+          <Button variant="ghost" className="gap-2 rounded-sm text-base"><Save className="h-4 w-4" /> Salvar</Button>
+          <Button asChild className="rounded-sm px-5 gap-2"><Link to={`/app/content-library/${contentItemId}`}><Eye className="h-4 w-4" /> Visualizar</Link></Button>
         </div>
       </div>
     </Card>

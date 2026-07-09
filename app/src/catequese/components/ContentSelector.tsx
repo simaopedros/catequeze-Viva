@@ -94,8 +94,8 @@ export function ContentSelector({
                     setSearch('');
                   }}
                   className={`w-full px-3 py-2 text-left text-sm hover:bg-muted ${
-                    c.id === selectedId ? 'bg-primary/10 font-medium' : ''
-                  }`}
+     c.id === selectedId ? 'bg-primary/10 font-medium' : ''
+     }`}
                 >
                   <span>{c.title}</span>
                   {c.theme && (

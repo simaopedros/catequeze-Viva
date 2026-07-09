@@ -127,9 +127,9 @@ export default function InviteAcceptPage() {
           <h1 className="text-2xl font-bold">{t('invite.title')}</h1>
         </div>
 
-        <div className="rounded-sm border bg-card p-6 shadow-elevation-xs space-y-4">
+        <div className="rounded-sm border bg-card p-6 space-y-4">
           <div className="flex items-center gap-4">
-            <div className="rounded-xl bg-primary/10 p-3">
+            <div className="rounded-sm bg-primary/10 p-3">
               <Church className="h-6 w-6 text-primary" />
             </div>
             <div>

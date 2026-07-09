@@ -11,17 +11,17 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-elevation-sm hover:bg-primary/90 hover:shadow-elevation-md",
+          "bg-primary text-primary-foreground  hover:bg-primary/90 hover:",
         destructive:
-          "bg-destructive text-destructive-foreground shadow-elevation-sm hover:bg-destructive/90 hover:shadow-elevation-md",
+          "bg-destructive text-destructive-foreground  hover:bg-destructive/90 hover:",
         outline:
-          "border border-input bg-background shadow-elevation-xs hover:bg-accent hover:text-accent-foreground hover:border-accent-foreground/20",
+          "border border-input bg-background  hover:bg-accent hover:text-accent-foreground hover:border-accent-foreground/20",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-elevation-sm hover:bg-secondary/80 hover:shadow-elevation-md",
+          "bg-secondary text-secondary-foreground  hover:bg-secondary/80 hover:",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         brand:
-          "bg-gradient-to-r from-primary to-primary/85 text-primary-foreground shadow-elevation-sm hover:from-primary/90 hover:to-primary/75 hover:shadow-elevation-md",
+          "bg-gradient-to-r from-primary to-primary/85 text-primary-foreground  hover:from-primary/90 hover:to-primary/75 hover:",
         subtle:
           "bg-primary/10 text-primary hover:bg-primary/15",
       },

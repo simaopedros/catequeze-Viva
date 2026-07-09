@@ -44,7 +44,7 @@ export default function SendAnnouncementButton({ classId, className }: Props) {
   }
 
   return (
-    <div className="rounded-xl border bg-card p-4 space-y-3">
+    <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3">
       <div className="flex items-center justify-between">
         <h3 className="font-semibold text-sm flex items-center gap-2">
           <Mail className="h-4 w-4"/>{t('announcement.title', { className })}

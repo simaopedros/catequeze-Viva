@@ -141,7 +141,7 @@ function ToolbarButton({
       variant={active ? "default" : "outline"}
       size="sm"
       className={cn(
-        "h-9 rounded-xl border-border/60 px-3 shadow-none",
+        "h-9 rounded-sm border-border/60 px-3 shadow-none",
         !active &&
           "bg-background/80 text-muted-foreground hover:bg-background hover:text-foreground",
       )}
@@ -474,7 +474,7 @@ function SelectionActionBubble({
       </div>
 
       {mode ? (
-        <div className="mt-3 space-y-2 rounded-xl border border-border/50 bg-muted/20 p-2">
+        <div className="mt-3 space-y-2 rounded-sm border border-border/50 bg-muted/20 p-2">
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
@@ -590,7 +590,7 @@ export function RichContentEditor({
     editorProps: {
       attributes: {
         class:
-          "min-h-[720px] outline-none px-8 py-10 prose prose-slate max-w-none prose-headings:font-semibold prose-p:leading-7 prose-img:rounded-xl prose-blockquote:border-l-primary prose-blockquote:text-foreground",
+          "min-h-[720px] outline-none px-8 py-10 prose prose-slate max-w-none prose-headings:font-semibold prose-p:leading-7 prose-img:rounded-sm prose-blockquote:border-l-primary prose-blockquote:text-foreground",
       },
       handlePaste: (_view, event) => {
         const items = event.clipboardData?.items;

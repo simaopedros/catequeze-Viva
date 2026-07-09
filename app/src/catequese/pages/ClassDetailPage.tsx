@@ -211,7 +211,7 @@ export default function ClassDetailPage() {
     return t('detail.role_coordinator');
   };
 
-  if(loading)return <AppShell><div className="space-y-6 animate-pulse"><div className="h-8 w-48 bg-muted rounded"/><div className="grid gap-4 md:grid-cols-4">{[1,2,3,4].map(i=><div key={i} className="h-20 rounded-xl bg-muted"/>)}</div></div></AppShell>;
+  if(loading)return <AppShell><div className="space-y-6 animate-pulse"><div className="h-8 w-48 bg-muted rounded"/><div className="grid gap-4 md:grid-cols-4">{[1,2,3,4].map(i=><div key={i} className="h-20 rounded-sm bg-muted"/>)}</div></div></AppShell>;
   if(!cls) {
     const errMsg = classError ? (classError as any)?.message || String(classError) : t('not_found');
     return <AppShell><div className="p-6 text-destructive">{errMsg}</div></AppShell>;
@@ -267,10 +267,24 @@ export default function ClassDetailPage() {
         </div>
 
         <div className="grid gap-3 md:grid-cols-4">
-          <div className="rounded-sm border border-border/70 bg-white p-4"><div className="text-xs text-muted-foreground flex items-center gap-1"><MapPin className="h-3 w-3"/>{t('location')}</div><p className="font-medium text-sm">{cls.location||'—'}</p></div>
-          <div className="rounded-sm border border-border/70 bg-white p-4"><div className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3"/>{t('schedule')}</div><p className="font-medium text-sm">{t(`days_long.${cls.dayOfWeek}`) || cls.dayOfWeek} {cls.startTime}{cls.endTime&&`-${cls.endTime}`}</p></div>
-          <div className="rounded-sm border border-border/70 bg-white p-4"><div className="text-xs text-muted-foreground flex items-center gap-1"><Users className="h-3 w-3"/>{t('enrolled')}</div><p className="font-medium text-sm">{enrolledIds.length}/{cls.maxCapacity}</p></div>
-          <div className="rounded-sm border border-border/70 bg-white p-4"><div className="text-xs text-muted-foreground flex items-center gap-1"><TrendingUp className="h-3 w-3"/>{t('attendance')}</div><p className="font-medium text-sm">{attendanceRate}%</p></div>
+          <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{t('location')}</p>
+            <p className="mt-1.5 text-sm font-medium text-foreground">{cls.location || '—'}</p>
+          </div>
+          <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{t('schedule')}</p>
+            <p className="mt-1.5 text-sm font-medium text-foreground">
+              {t(`days_long.${cls.dayOfWeek}`) || cls.dayOfWeek} {cls.startTime}{cls.endTime && `-${cls.endTime}`}
+            </p>
+          </div>
+          <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{t('enrolled')}</p>
+            <p className="mt-1.5 text-2xl font-semibold tracking-tight tabular-nums text-foreground">{enrolledIds.length}/{cls.maxCapacity}</p>
+          </div>
+          <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{t('attendance')}</p>
+            <p className="mt-1.5 text-2xl font-semibold tracking-tight tabular-nums text-foreground">{attendanceRate}%</p>
+          </div>
         </div>
 
         {editing ? (

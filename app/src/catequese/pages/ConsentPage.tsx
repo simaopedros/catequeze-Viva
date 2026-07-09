@@ -51,7 +51,7 @@ export default function ConsentPage() {
         </div>
         <div className="space-y-3">
           {consentTypes.map(ct => (
-            <div key={ct.key} className="rounded-xl border bg-card p-5 flex items-center justify-between">
+            <div key={ct.key} className="rounded-sm border border-border/70 bg-white p-5 flex items-center justify-between">
               <div>
                 <h3 className="font-semibold">{ct.label}</h3>
                 <p className="text-sm text-muted-foreground">{ct.desc}</p>

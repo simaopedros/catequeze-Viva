@@ -37,10 +37,10 @@ export function TheologicalDepthSlider() {
               onClick={() => adjustDepth(i + 1)}
               disabled={generating}
               className={`text-overline px-2 py-1 rounded-full transition-colors ${
-                depth === i + 1
-                  ? 'bg-primary text-primary-foreground font-semibold'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
+    depth === i + 1
+     ? 'bg-primary text-primary-foreground font-semibold'
+     : 'text-muted-foreground hover:text-foreground'
+    }`}
             >
               {label}
             </button>

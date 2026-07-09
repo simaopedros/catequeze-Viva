@@ -55,7 +55,7 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
             <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
             <span>{t('personal_setup.progress_copy')}</span>
           </div>
-          <div className="space-y-2 rounded-xl border border-primary/15 bg-primary/[0.04] p-4">
+          <div className="space-y-2 rounded-sm border border-primary/15 bg-primary/[0.04] p-4">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary/70">
               {t('personal_setup.value_title')}
             </p>
@@ -79,7 +79,7 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
           <p className="mt-1 text-caption text-muted-foreground">{t('personal_setup.first_class_hint')}</p>
         </div>
 
-        <div className="rounded-xl border border-dashed border-border/80 bg-white/70 text-left">
+        <div className="rounded-sm border border-dashed border-border/80 bg-white/70 text-left">
           <button
             type="button"
             onClick={() => setShowOptionalDetails((current) => !current)}

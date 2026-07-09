@@ -71,7 +71,7 @@ export function InteractiveCard({
         isInteractive && [
           borderColorMap[color],
           bgTintMap[color],
-          'hover:shadow-elevation-md',
+          'hover:',
           'cursor-pointer active:scale-[0.98]',
           'motion-reduce:active:scale-100 motion-reduce:transition-none',
         ],

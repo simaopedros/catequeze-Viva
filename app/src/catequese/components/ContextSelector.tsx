@@ -56,7 +56,7 @@ export function ContextSelector() {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-foreground border border-input rounded-xl px-2.5 sm:px-3 py-1.5 h-9 max-w-[160px] sm:max-w-[240px] xl:max-w-[280px]">
+          <Button variant="ghost" size="sm" className="flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-foreground border border-input rounded-sm px-2.5 sm:px-3 py-1.5 h-9 max-w-[160px] sm:max-w-[240px] xl:max-w-[280px]">
             {wsIcon(workspaceType || 'PERSONAL')}
             <span className="truncate font-medium text-sm min-w-0">{workspaceName}</span>
             {currentRoleLabel && (
@@ -166,7 +166,7 @@ export function ContextSelector() {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-foreground border border-input rounded-xl px-2.5 sm:px-3 py-1.5 h-9 max-w-[160px] sm:max-w-[240px] xl:max-w-[280px]">
+          <Button variant="ghost" size="sm" className="flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-foreground border border-input rounded-sm px-2.5 sm:px-3 py-1.5 h-9 max-w-[160px] sm:max-w-[240px] xl:max-w-[280px]">
             <Church className="h-4 w-4 text-primary shrink-0" />
             <span className="truncate font-medium text-sm min-w-0">{activeParishName}</span>
             <span className="text-xs text-muted-foreground hidden sm:inline">·</span>

@@ -65,10 +65,10 @@ export function CollaborativeChat() {
           >
             <div
               className={`max-w-[88%] rounded-sm px-3 py-2.5 text-sm whitespace-pre-wrap shadow-sm ${
-                msg.role === 'user'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'border bg-card text-foreground'
-              }`}
+    msg.role === 'user'
+     ? 'bg-primary text-primary-foreground'
+     : 'border bg-card text-foreground'
+    }`}
             >
               <div className="mb-1 flex items-center gap-1.5 text-overline font-semibold uppercase tracking-wide opacity-70">
                 {msg.role === 'user' ? <UserRound className="h-3 w-3" /> : <Sparkles className="h-3 w-3" />}

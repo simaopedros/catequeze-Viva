@@ -63,7 +63,7 @@ export function BottomNav() {
             <Menu className="h-5 w-5" />
             <span>{t('more', { ns: 'common' })}</span>
             {unreadCount > 0 && (
-              <span className="absolute -top-0.5 right-1/4 h-[18px] min-w-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-overline font-bold px-1 animate-in zoom-in-50 shadow-elevation-xs">
+              <span className="absolute -top-0.5 right-1/4 h-[18px] min-w-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-overline font-bold px-1 animate-in zoom-in-50 ">
                 {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )}

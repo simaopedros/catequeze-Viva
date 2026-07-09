@@ -87,7 +87,7 @@ export default function ContentDetailPage() {
   };
 
   if (loading) {
-    return <div className="mx-auto max-w-3xl space-y-6 px-4 py-8"><div className="h-8 w-48 rounded bg-muted" /><div className="h-48 rounded-xl bg-muted" /></div>;
+    return <div className="mx-auto max-w-3xl space-y-6 px-4 py-8"><div className="h-8 w-48 rounded bg-muted" /><div className="h-48 rounded-sm bg-muted" /></div>;
   }
   if (!item) {
     return <div className="p-6 text-center text-destructive">{t('not_found')}</div>;
@@ -111,8 +111,10 @@ export default function ContentDetailPage() {
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
         <div className="flex items-start gap-4">
           <Button variant="ghost" size="icon" asChild><Link to="/app/content-library"><ArrowLeft className="h-5 w-5" /></Link></Button>
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight">{item.title}</h1>
+          <div className="space-y-2.5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{t('script')}</p>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]" style={{ fontFamily: 'var(--font-brand-display)' }}>{item.title}</h1>
+            <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant={STATUS_MAP[item.status as keyof typeof STATUS_MAP]?.variant || 'secondary'}>{STATUS_MAP[item.status as keyof typeof STATUS_MAP]?.label}</Badge>
               {item.estimatedTime && <span className="text-sm text-muted-foreground"><Clock className="mr-1 inline h-3 w-3" />{t('library.minutes', { count: item.estimatedTime })}</span>}
@@ -122,8 +124,8 @@ export default function ContentDetailPage() {
         </div>
 
         <div className="flex flex-wrap gap-2 lg:ml-auto">
-          <Button size="sm" variant="outline" asChild><Link to={`/app/content-library/${id}/edit`}><Edit3 className="mr-1 h-3 w-3" />{tc('edit')}</Link></Button>
-          <Button size="sm" variant="outline" asChild><Link to={`/app/content-library/${id}/print`}><Printer className="mr-1 h-3 w-3" />{t('print')}</Link></Button>
+          <Button size="sm" variant="outline" className="h-10 rounded-sm" asChild><Link to={`/app/content-library/${id}/edit`}><Edit3 className="mr-1 h-3 w-3" />{tc('edit')}</Link></Button>
+          <Button size="sm" variant="outline" className="h-10 rounded-sm" asChild><Link to={`/app/content-library/${id}/print`}><Printer className="mr-1 h-3 w-3" />{t('print')}</Link></Button>
         </div>
       </div>
 
@@ -151,13 +153,13 @@ export default function ContentDetailPage() {
 
       {tab === 'meeting' && (
         <div className="space-y-5">
-          {item.theme && <div className="rounded-xl border bg-card p-4"><h3 className="mb-1 text-xs font-medium uppercase text-muted-foreground">{t('theme')}</h3><p className="text-sm">{item.theme}</p></div>}
-          <div className="rounded-[28px] border border-border/70 bg-card p-4 shadow-sm sm:p-8">
+          {item.theme && <div className="rounded-sm border border-border/70 bg-white p-4"><h3 className="mb-1 text-xs font-medium uppercase text-muted-foreground">{t('theme')}</h3><p className="text-sm">{item.theme}</p></div>}
+          <div className="rounded-sm border border-border/70 bg-white p-4 sm:p-8">
             <ContentDocumentRenderer document={document} />
           </div>
           {item.tags && <div className="flex flex-wrap gap-1">{item.tags.split(',').map((tag: string) => <span key={tag} className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs"><Tag className="mr-1 h-3 w-3" />{tag.trim()}</span>)}</div>}
           {item.meetings?.length > 0 && (
-            <div className="rounded-xl border bg-card p-4">
+            <div className="rounded-sm border border-border/70 bg-white p-4">
               <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold"><Calendar className="h-4 w-4" />{t('used_in_meetings', { count: item.meetings.length })}</h3>
               <div className="space-y-1">{item.meetings.map((meeting: any) => (
                 <Link key={meeting.id} to={`/app/classes/${meeting.classId}/attendance`} className="flex justify-between py-1 text-sm hover:text-primary">

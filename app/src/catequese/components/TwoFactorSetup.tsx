@@ -85,7 +85,7 @@ export default function TwoFactorSetup() {
 
   if (loading) {
     return (
-      <div className="rounded-xl border bg-card p-6 space-y-4">
+      <div className="rounded-sm border border-border/70 bg-white p-6 space-y-4">
         <h3 className="font-semibold flex items-center gap-2"><Shield className="h-4 w-4"/>{t('two_factor_setup_security_title')}</h3>
         <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin"/>{t('two_factor_setup_loading')}</div>
       </div>
@@ -93,7 +93,7 @@ export default function TwoFactorSetup() {
   }
 
   return (
-    <div className="rounded-xl border bg-card p-6 space-y-4">
+    <div className="rounded-sm border border-border/70 bg-white p-6 space-y-4">
       <h3 className="font-semibold flex items-center gap-2">
         <Shield className="h-4 w-4"/>{t('two_factor_setup_security_title')}
         {status.enabled ? (

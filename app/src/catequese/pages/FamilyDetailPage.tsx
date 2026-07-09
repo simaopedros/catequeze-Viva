@@ -488,8 +488,8 @@ export default function FamilyDetailPage() {
                   <div key={g.id} className="flex items-center gap-3 group">
                     <div
                       className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${
-                        getAvatarColorClass(avatarLetter)
-                      }`}
+      getAvatarColorClass(avatarLetter)
+      }`}
                     >
                       {avatarLetter}
                     </div>
@@ -571,8 +571,8 @@ export default function FamilyDetailPage() {
                   >
                     <div
                       className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold ${
-                        getAvatarColorClass(c.firstName)
-                      }`}
+      getAvatarColorClass(c.firstName)
+      }`}
                     >
                       {c.firstName?.[0]}
                       {c.lastName?.[0]}

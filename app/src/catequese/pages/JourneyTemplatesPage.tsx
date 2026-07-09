@@ -117,7 +117,7 @@ export default function JourneyTemplatesPage() {
   };
 
   if (isLoading) {
-    return <AppShell><div className="space-y-4 animate-pulse"><div className="h-8 w-56 bg-muted rounded"/>{[1,2,3].map(i => <div key={i} className="h-24 rounded-xl bg-muted"/>)}</div></AppShell>;
+    return <AppShell><div className="space-y-4 animate-pulse"><div className="h-8 w-56 bg-muted rounded"/>{[1,2,3].map(i => <div key={i} className="h-24 rounded-sm bg-muted"/>)}</div></AppShell>;
   }
 
   return (
@@ -180,7 +180,7 @@ export default function JourneyTemplatesPage() {
                   : t('templates.scope_parish', { name: tmpl.parish?.name || '—' });
 
               return (
-                <div key={tmpl.id} className="rounded-xl border bg-card overflow-hidden">
+                <div key={tmpl.id} className="rounded-sm border border-border/70 bg-white overflow-hidden">
                   <div className="p-4 flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       {isEditing ? (

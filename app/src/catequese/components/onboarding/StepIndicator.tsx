@@ -22,12 +22,12 @@ export function StepIndicator({ steps, currentStep, onStepClick }: StepIndicator
             disabled={!onStepClick || currentStep <= s.id}
             onClick={() => onStepClick?.(s.id)}
             className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
-              currentStep === s.id
-                ? 'bg-primary text-primary-foreground'
-                : currentStep > s.id
-                  ? 'bg-primary/20 text-primary cursor-pointer hover:bg-primary/30'
-                  : 'bg-muted text-muted-foreground'
-            }`}
+    currentStep === s.id
+    ? 'bg-primary text-primary-foreground'
+    : currentStep > s.id
+     ? 'bg-primary/20 text-primary cursor-pointer hover:bg-primary/30'
+     : 'bg-muted text-muted-foreground'
+   }`}
           >
             {currentStep > s.id ? (
               <Check className="h-4 w-4" />

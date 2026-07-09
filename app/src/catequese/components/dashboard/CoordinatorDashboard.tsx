@@ -258,7 +258,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
             )}
 
             {comparison && comparison.length > 1 && (
-              <section className="overflow-hidden rounded-sm border border-border/70 bg-white/90  ">
+              <section className="overflow-hidden rounded-sm border border-border/70 bg-white/90 ">
                 <div className="border-b border-border/70 bg-slate-50/80 px-5 py-4">
                   <h3 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
                     <ArrowUpDown className="h-4 w-4" />

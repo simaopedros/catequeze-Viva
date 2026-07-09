@@ -33,7 +33,7 @@ export function ParishSearchForm({
   };
 
   return (
-    <div className="rounded-xl border bg-card p-6 space-y-4">
+    <div className="rounded-sm border border-border/70 bg-white p-6 space-y-4">
       <h2 className="text-lg font-semibold flex items-center gap-2">
         <Search className="h-5 w-5 text-primary" />
         {t('parish_search.title')}
@@ -60,8 +60,8 @@ export function ParishSearchForm({
               key={p.id}
               onClick={() => setSelectedId(p.id)}
               className={`w-full text-left rounded-lg border px-4 py-3 text-sm transition-colors flex items-center gap-2 ${
-                selectedId === p.id ? 'border-primary bg-primary/5' : 'hover:bg-muted/30'
-              }`}
+    selectedId === p.id ? 'border-primary bg-primary/5' : 'hover:bg-muted/30'
+    }`}
             >
               <span className="flex-1">{p.name}</span>
               {selectedId === p.id && <Check className="h-4 w-4 text-primary" />}

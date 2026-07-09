@@ -11,7 +11,7 @@ export default function FamilyLoginPage() {
   useRedirectIfLoggedIn();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary/5 to-background p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#F7F4EE] p-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-primary text-sm font-medium">
@@ -22,7 +22,7 @@ export default function FamilyLoginPage() {
           <p className="text-sm text-muted-foreground">{t('login.subtitle')}</p>
         </div>
 
-        <div className="rounded-sm border bg-card p-6 shadow-elevation-xs">
+        <div className="rounded-sm border bg-card p-6 ">
           <CustomLoginForm inviteToken={token} />
         </div>
 

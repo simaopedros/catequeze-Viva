@@ -19,7 +19,7 @@ export default function FamilyInviteCodePage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary/5 to-background p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#F7F4EE] p-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center space-y-2">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10">
@@ -29,7 +29,7 @@ export default function FamilyInviteCodePage() {
           <p className="text-sm text-muted-foreground">{t('signup.requires_invite')}</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="rounded-sm border bg-card p-6 shadow-elevation-xs space-y-4">
+        <form onSubmit={handleSubmit} className="rounded-sm border bg-card p-6 space-y-4">
           <div className="space-y-2">
             <Label htmlFor="invite-code">{t('landing.insert_code')}</Label>
             <Input

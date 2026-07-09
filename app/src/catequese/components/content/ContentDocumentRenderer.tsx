@@ -125,13 +125,13 @@ function renderNode(node: ContentDocNode, index: number): ReactNode {
           <img
             src={String(node.attrs?.src || "")}
             alt={String(node.attrs?.alt || "")}
-            className="max-h-[420px] w-auto max-w-full rounded-xl border bg-muted/20 object-contain"
+            className="max-h-[420px] w-auto max-w-full rounded-sm border bg-muted/20 object-contain"
           />
         </figure>
       );
     case "table":
       return (
-        <div key={index} className="my-6 overflow-x-auto rounded-xl border">
+        <div key={index} className="my-6 overflow-x-auto rounded-sm border">
           <table className="w-full border-collapse text-sm">
             {renderChildren(node.content)}
           </table>

@@ -209,7 +209,7 @@ export function QuickSetupPanel({ mode, applyToOriginal }: { mode: string; apply
 
         <Card className="p-4 space-y-6 sm:p-6">
           {hasSelectedSource && (
-            <div className="rounded-xl border bg-muted/20 p-4">
+            <div className="rounded-sm border bg-muted/20 p-4">
               <div className="flex items-start gap-3">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   {contentId ? <FileText className="h-4 w-4" /> : <CalendarDays className="h-4 w-4" />}
@@ -235,11 +235,11 @@ export function QuickSetupPanel({ mode, applyToOriginal }: { mode: string; apply
                   <button
                     key={g.value}
                     onClick={() => setAgeGroup(g.value)}
-                    className={`p-4 rounded-xl border-2 text-center transition-all hover:-translate-y-1 ${
-                      ageGroup === g.value
-                        ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
-                        : 'border-border hover:border-primary/50'
-                    }`}
+                    className={`p-4 rounded-sm border-2 text-center transition-all hover:-translate-y-1 ${
+      ageGroup === g.value
+      ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
+      : 'border-border hover:border-primary/50'
+     }`}
                   >
                     <g.icon className="h-8 w-8 mx-auto mb-2 text-primary" />
                     <div className="font-semibold text-sm">{g.label}</div>
@@ -298,10 +298,10 @@ export function QuickSetupPanel({ mode, applyToOriginal }: { mode: string; apply
                       type="button"
                       onClick={() => setDuration(value)}
                       className={`rounded-md border px-2 py-2 text-sm font-medium transition-colors ${
-                        duration === value
-                          ? 'border-primary bg-primary text-primary-foreground'
-                          : 'border-border hover:border-primary/50'
-                      }`}
+      duration === value
+       ? 'border-primary bg-primary text-primary-foreground'
+       : 'border-border hover:border-primary/50'
+      }`}
                     >
                       {value}{t('planner.minutes_abbr')}
                     </button>
@@ -321,10 +321,10 @@ export function QuickSetupPanel({ mode, applyToOriginal }: { mode: string; apply
                       type="button"
                       onClick={() => setApproach(option.value)}
                       className={`rounded-md border p-3 text-left transition-colors ${
-                        approach === option.value
-                          ? 'border-primary bg-primary/10 ring-2 ring-primary/15'
-                          : 'border-border hover:border-primary/50'
-                      }`}
+      approach === option.value
+       ? 'border-primary bg-primary/10 ring-2 ring-primary/15'
+       : 'border-border hover:border-primary/50'
+      }`}
                     >
                       <p className="text-sm font-semibold">{t(option.labelKey)}</p>
                       <p className="mt-1 text-xs leading-snug text-muted-foreground">{t(option.descKey)}</p>

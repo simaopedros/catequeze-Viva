@@ -147,9 +147,9 @@ export default function WorkspaceSelectorPage() {
     >
       <div className="flex items-start gap-4">
         <div
-          className={`rounded-xl p-3 group-hover:bg-opacity-80 transition-colors ${
-            ws.type === 'DIOCESE' ? 'bg-secondary/10' : ws.type === 'COMMUNITY' ? 'bg-success/10' : 'bg-accent/10'
-          }`}
+          className={`rounded-sm p-3 group-hover:bg-opacity-80 transition-colors ${
+   ws.type === 'DIOCESE' ? 'bg-secondary/10' : ws.type === 'COMMUNITY' ? 'bg-success/10' : 'bg-accent/10'
+   }`}
         >
           {workspaceIcon(ws.type)}
         </div>
@@ -158,8 +158,8 @@ export default function WorkspaceSelectorPage() {
           <div className="flex flex-wrap items-center gap-2 mt-1">
             <span
               className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                ws.type === 'DIOCESE' ? 'bg-secondary/10 text-secondary' : ws.type === 'COMMUNITY' ? 'bg-success/10 text-success' : 'bg-accent/10 text-accent'
-              }`}
+    ws.type === 'DIOCESE' ? 'bg-secondary/10 text-secondary' : ws.type === 'COMMUNITY' ? 'bg-success/10 text-success' : 'bg-accent/10 text-accent'
+    }`}
             >
               {planLabel(ws.plan, t)}
             </span>
@@ -233,7 +233,7 @@ export default function WorkspaceSelectorPage() {
               className="w-full rounded-sm border-2 border-primary/40 bg-primary/5 hover:border-primary/60 hover:bg-primary/10 transition-all p-5 text-left group cursor-pointer"
             >
               <div className="flex items-start gap-4">
-                <div className="rounded-xl bg-primary/10 p-3 group-hover:bg-primary/20 transition-colors">
+                <div className="rounded-sm bg-primary/10 p-3 group-hover:bg-primary/20 transition-colors">
                   {lastUsed.isPersonal ? (
                     <User className="h-6 w-6 text-primary" />
                   ) : (
@@ -275,7 +275,7 @@ export default function WorkspaceSelectorPage() {
               className="w-full rounded-sm border-2 border-primary/30 bg-primary/5 hover:border-primary/50 hover:bg-primary/10 transition-all p-5 text-left group cursor-pointer"
             >
               <div className="flex items-start gap-4">
-                <div className="rounded-xl bg-primary/10 p-3 group-hover:bg-primary/20 transition-colors">
+                <div className="rounded-sm bg-primary/10 p-3 group-hover:bg-primary/20 transition-colors">
                   <User className="h-6 w-6 text-primary" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -315,7 +315,7 @@ export default function WorkspaceSelectorPage() {
             </h3>
             {pendingInvitations.map((ws: Workspace) => (
               <div key={ws.id} className="rounded-sm border-2 border-warning/30 bg-warning/5 p-5 flex items-center gap-4">
-                <div className="rounded-xl bg-warning/10 p-3">
+                <div className="rounded-sm bg-warning/10 p-3">
                   <Church className="h-6 w-6 text-warning" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -356,8 +356,8 @@ export default function WorkspaceSelectorPage() {
                     </div>
                     <span
                       className={`text-overline px-2 py-0.5 rounded-full font-medium ${
-                        licensed ? 'bg-secondary/15 text-secondary' : 'bg-muted text-muted-foreground'
-                      }`}
+      licensed ? 'bg-secondary/15 text-secondary' : 'bg-muted text-muted-foreground'
+      }`}
                     >
                       {licensed ? t('workspace.diocese_license_active') : t('workspace.diocese_license_inactive')}
                     </span>
@@ -365,7 +365,7 @@ export default function WorkspaceSelectorPage() {
                   {group.items.map((ws) => renderWorkspaceCard(ws, { covered: coverageLabel(ws), canManage: true }))}
                   <button
                     onClick={() => createInDiocese(dioceseId)}
-                    className="w-full rounded-xl border-2 border-dashed border-secondary/40 hover:bg-secondary/10 transition-all p-3 text-center text-secondary flex items-center justify-center gap-2"
+                    className="w-full rounded-sm border-2 border-dashed border-secondary/40 hover:bg-secondary/10 transition-all p-3 text-center text-secondary flex items-center justify-center gap-2"
                   >
                     <Plus className="h-4 w-4" />
                     <span className="text-sm font-medium">{t('workspace.create_parish_in_diocese')}</span>
@@ -386,15 +386,15 @@ export default function WorkspaceSelectorPage() {
                     </div>
                     <span
                       className={`text-overline px-2 py-0.5 rounded-full font-medium ${
-                        d.licensed ? 'bg-secondary/15 text-secondary' : 'bg-muted text-muted-foreground'
-                      }`}
+      d.licensed ? 'bg-secondary/15 text-secondary' : 'bg-muted text-muted-foreground'
+      }`}
                     >
                       {d.licensed ? t('workspace.diocese_license_active') : t('workspace.diocese_license_inactive')}
                     </span>
                   </div>
                   <button
                     onClick={() => createInDiocese(d.id)}
-                    className="w-full rounded-xl border-2 border-dashed border-secondary/40 hover:bg-secondary/10 transition-all p-3 text-center text-secondary flex items-center justify-center gap-2"
+                    className="w-full rounded-sm border-2 border-dashed border-secondary/40 hover:bg-secondary/10 transition-all p-3 text-center text-secondary flex items-center justify-center gap-2"
                   >
                     <Plus className="h-4 w-4" />
                     <span className="text-sm font-medium">{t('workspace.create_parish_in_diocese')}</span>

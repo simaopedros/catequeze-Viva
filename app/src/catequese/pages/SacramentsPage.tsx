@@ -287,7 +287,7 @@ export default function SacramentsPage() {
               const sacramentName = j.template?.sacrament?.name;
 
               return (
-                <div key={j.id} className="block rounded-sm border border-border/70 bg-white p-5  hover: transition-shadow cursor-pointer" onClick={() => navigate(`/app/sacramental-journeys/${j.id}`)}>
+                <div key={j.id} className="block rounded-sm border border-border/70 bg-white p-5 hover: transition-shadow cursor-pointer" onClick={() => navigate(`/app/sacramental-journeys/${j.id}`)}>
                   <div className="flex items-center justify-between mb-3">
                     <Link
                       to={`/app/sacramental-journeys/${j.id}`}

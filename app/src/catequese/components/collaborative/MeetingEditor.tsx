@@ -131,7 +131,7 @@ function MeetingBlockComponent({
       <div className="flex gap-4 p-4">
         <div className="flex shrink-0 items-start gap-3">
           <div className="pt-1 text-sm font-semibold text-muted-foreground">{index}.</div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-muted/30 text-foreground">
+          <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border bg-muted/30 text-foreground">
             <Icon className="h-4 w-4" />
           </div>
         </div>
@@ -158,7 +158,7 @@ function MeetingBlockComponent({
           </div>
 
           {showRefine && (
-            <div className="flex gap-2 rounded-xl border border-border bg-muted/20 p-2">
+            <div className="flex gap-2 rounded-sm border border-border bg-muted/20 p-2">
               <Input
                 ref={inputRef}
                 placeholder={t('editor.instruction_placeholder')}
@@ -182,7 +182,7 @@ function MeetingBlockComponent({
               onChange={e => setDraft(e.target.value)}
               onBlur={handleSave}
               placeholder={helper}
-              className="h-12 rounded-xl border-border/70"
+              className="h-12 rounded-sm border-border/70"
             />
           ) : (
             <Textarea
@@ -190,7 +190,7 @@ function MeetingBlockComponent({
               onChange={e => setDraft(e.target.value)}
               onBlur={handleSave}
               placeholder={helper}
-              className={`resize-none rounded-xl border-border/70 text-sm leading-relaxed ${minHeight || 'min-h-[110px]'}`}
+              className={`resize-none rounded-sm border-border/70 text-sm leading-relaxed ${minHeight || 'min-h-[110px]'}`}
             />
           )}
         </div>
@@ -243,11 +243,11 @@ export function MeetingEditor() {
             )}
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="rounded-xl" onClick={() => setShowVersions(!showVersions)}>
+            <Button variant="outline" size="sm" className="rounded-sm" onClick={() => setShowVersions(!showVersions)}>
               <History className="mr-1 h-3.5 w-3.5" /> Versões
             </Button>
             {contentItemId && (
-              <Button variant="outline" size="sm" className="rounded-xl" asChild>
+              <Button variant="outline" size="sm" className="rounded-sm" asChild>
                 <Link to={`/app/content-library/${contentItemId}`}>Ver detalhe</Link>
               </Button>
             )}
@@ -332,11 +332,11 @@ function VersionHistoryPanel({ onClose }: { onClose: () => void }) {
           <History className="h-4 w-4" /> {t('editor.history')}
         </h3>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="rounded-xl" onClick={handleSave} disabled={saving}>
+          <Button variant="outline" size="sm" className="rounded-sm" onClick={handleSave} disabled={saving}>
             {saving && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
             {t('editor.save_version')}
           </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl" onClick={onClose}>
+          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-sm" onClick={onClose}>
             <X className="h-3.5 w-3.5" />
           </Button>
         </div>
@@ -353,7 +353,7 @@ function VersionHistoryPanel({ onClose }: { onClose: () => void }) {
                 <div className="text-xs font-semibold">{t('editor.version')} {v.version}</div>
                 <div className="text-caption text-muted-foreground">{new Date(v.createdAt).toLocaleString()} — {v.changeNotes || t('editor.no_description')}</div>
               </div>
-              <Button variant="outline" size="sm" className="rounded-xl" onClick={() => handleRestore(v.id)} disabled={restoringId === v.id}>
+              <Button variant="outline" size="sm" className="rounded-sm" onClick={() => handleRestore(v.id)} disabled={restoringId === v.id}>
                 {restoringId === v.id ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <ArrowLeftRight className="mr-1 h-3 w-3" />}
                 {t('editor.restore')}
               </Button>

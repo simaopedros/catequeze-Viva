@@ -54,7 +54,7 @@ export function ResponsiveTable<T>({
   return (
     <>
       {/* Desktop: standard table */}
-      <div className={cn('hidden md:block overflow-x-auto rounded-xl border bg-card', className)}>
+      <div className={cn('hidden md:block overflow-x-auto rounded-sm border border-border/70 bg-white', className)}>
         <table className={cn('w-full text-sm', tableClassName)}>
           <thead>
             <tr className="bg-muted/50 border-b">
@@ -101,7 +101,7 @@ export function ResponsiveTable<T>({
           <div
             key={getRowKey(item, idx)}
             className={cn(
-              'rounded-xl border bg-card p-4 shadow-elevation-xs',
+              'rounded-sm border border-border/70 bg-white p-4 ',
               onRowClick && 'cursor-pointer active:scale-[0.98] transition-transform',
             )}
             onClick={() => onRowClick?.(item)}

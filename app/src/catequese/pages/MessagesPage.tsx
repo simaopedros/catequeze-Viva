@@ -327,7 +327,7 @@ export default function MessagesPage() {
                     <div className="space-y-2">
                       {activeConv.participants.map((p: any) => (
                         <div key={p.id} className="flex items-center gap-2.5">
-                          <div className="h-7 w-7 rounded-full bg-gradient-to-br from-primary/60 to-primary/30 flex items-center justify-center text-white text-overline font-semibold flex-shrink-0">
+                          <div className="h-7 w-7 rounded-full bg-[#071A2D] flex items-center justify-center text-white text-overline font-semibold flex-shrink-0">
                             {[p.user.firstName?.[0], p.user.lastName?.[0]].filter(Boolean).join('').toUpperCase() || '?'}
                           </div>
                           <div className="flex-1 min-w-0">
@@ -357,7 +357,7 @@ export default function MessagesPage() {
           ) : (
             /* Empty state */
             <div className="flex-1 flex flex-col items-center justify-center text-center px-6 py-8">
-              <div className="h-20 w-20 rounded-sm bg-gradient-to-br from-primary/20 via-primary/10 to-transparent flex items-center justify-center mb-5 animate-in zoom-in-50 duration-500">
+              <div className="h-20 w-20 rounded-sm bg-muted/40 flex items-center justify-center mb-5 animate-in zoom-in-50 duration-500">
                 <MessageSquareText className="h-9 w-9 text-primary/60" />
               </div>
               <h2 className="text-lg font-semibold mb-1.5">{t('hub_title')}</h2>
@@ -365,16 +365,16 @@ export default function MessagesPage() {
 
               {/* Use case examples */}
               <div className="grid gap-2 w-full max-w-xs mb-5">
-                <div className="rounded-lg border bg-card/50 p-2.5 text-left text-xs">
-                  <span className="text-primary font-medium">{t('use_case_class')}</span>
+                <div className="rounded-sm border border-border/70 bg-white p-2.5 text-left text-xs">
+                  <span className="font-semibold text-foreground">{t('use_case_class')}</span>
                   <p className="text-muted-foreground mt-0.5">{t('use_case_class_desc')}</p>
                 </div>
-                <div className="rounded-lg border bg-card/50 p-2.5 text-left text-xs">
-                  <span className="text-warning font-medium">{t('use_case_notice')}</span>
+                <div className="rounded-sm border border-border/70 bg-white p-2.5 text-left text-xs">
+                  <span className="font-semibold text-foreground">{t('use_case_notice')}</span>
                   <p className="text-muted-foreground mt-0.5">{t('use_case_notice_desc')}</p>
                 </div>
-                <div className="rounded-lg border bg-card/50 p-2.5 text-left text-xs">
-                  <span className="text-info font-medium">{t('use_case_direct')}</span>
+                <div className="rounded-sm border border-border/70 bg-white p-2.5 text-left text-xs">
+                  <span className="font-semibold text-foreground">{t('use_case_direct')}</span>
                   <p className="text-muted-foreground mt-0.5">{t('use_case_direct_desc')}</p>
                 </div>
               </div>

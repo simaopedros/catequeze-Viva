@@ -14,7 +14,7 @@ export function GuardianDetails({ onComplete }: GuardianDetailsProps) {
   const [phone, setPhone] = useState('');
 
   return (
-    <div className="rounded-xl border bg-card p-6 space-y-4">
+    <div className="rounded-sm border border-border/70 bg-white p-6 space-y-4">
       <h2 className="text-lg font-semibold flex items-center gap-2">
         <Heart className="h-5 w-5 text-primary" />{t('guardian.title')}
       </h2>

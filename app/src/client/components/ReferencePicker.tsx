@@ -198,7 +198,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
   const hasSelected = selectedVerses.size > 0;
 
   return (
-    <div className="rounded-xl border bg-card p-4 space-y-3">
+    <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3">
       <h3 className="font-medium text-sm">{t('references.title')}</h3>
 
       {/* Tabs */}

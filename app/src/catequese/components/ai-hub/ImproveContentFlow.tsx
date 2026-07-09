@@ -59,9 +59,9 @@ function ImproveWorkspace() {
                   next.set('apply', 'copy');
                   return next;
                 })}
-                className="group flex flex-col items-start gap-3 rounded-xl border-2 border-primary/30 bg-primary/5 p-5 text-left transition-all hover:border-primary hover:bg-primary/10 hover:-translate-y-0.5"
+                className="group flex flex-col items-start gap-3 rounded-sm border border-border/70 bg-white p-5 text-left transition-colors hover:border-primary/40"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-foreground">
                   <Copy className="h-5 w-5" />
                 </div>
                 <div>
@@ -80,9 +80,9 @@ function ImproveWorkspace() {
                   next.set('apply', 'original');
                   return next;
                 })}
-                className="group flex flex-col items-start gap-3 rounded-xl border-2 border-border p-5 text-left transition-all hover:border-amber-300 hover:bg-amber-50 dark:hover:bg-amber-950/20 hover:-translate-y-0.5"
+                className="group flex flex-col items-start gap-3 rounded-sm border border-border/70 bg-white p-5 text-left transition-colors hover:border-border"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 group-hover:bg-amber-200 dark:group-hover:bg-amber-900/50 transition-colors">
+                <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-foreground">
                   <AlertTriangle className="h-5 w-5" />
                 </div>
                 <div>

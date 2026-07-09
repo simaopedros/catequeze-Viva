@@ -26,7 +26,7 @@ export default function FamilySignupPage() {
 
   if (!token) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary/5 to-background p-4">
+      <div className="min-h-screen flex items-center justify-center bg-[#F7F4EE] p-4">
         <div className="w-full max-w-md space-y-8 text-center">
           <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-primary text-sm font-medium">
             <Sparkles className="h-4 w-4" /> {t('portal_badge')}
@@ -56,7 +56,7 @@ export default function FamilySignupPage() {
   if (error || !invitation) {
     const isExpired = (error as any)?.statusCode === 410;
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary/5 to-background p-4">
+      <div className="min-h-screen flex items-center justify-center bg-[#F7F4EE] p-4">
         <div className="w-full max-w-md text-center space-y-6">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-destructive/10">
             {isExpired ? <Clock className="h-8 w-8 text-destructive" /> : <AlertTriangle className="h-8 w-8 text-destructive" />}
@@ -71,7 +71,7 @@ export default function FamilySignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary/5 to-background p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#F7F4EE] p-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-primary text-sm font-medium">
@@ -84,7 +84,7 @@ export default function FamilySignupPage() {
           </p>
         </div>
 
-        <div className="rounded-sm border bg-card p-6 shadow-elevation-xs">
+        <div className="rounded-sm border bg-card p-6 ">
           <CustomSignupForm inviteToken={token} defaultEmail={(invitation as any).inviteEmail} />
         </div>
 

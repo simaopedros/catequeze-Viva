@@ -124,7 +124,7 @@ export default function CatechismPage() {
         )}
 
         {error && (
-          <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center space-y-3">
+          <div className="rounded-sm border border-destructive/30 bg-destructive/5 p-6 text-center space-y-3">
             <AlertCircle className="h-8 w-8 text-destructive mx-auto" />
             <p className="text-sm text-destructive">{error}</p>
             <Button size="sm" variant="outline" onClick={() => category ? loadCategory(category) : handleSearch()}>{tCommon('try_again')}</Button>
@@ -189,7 +189,7 @@ export default function CatechismPage() {
         ) : category ? (
           <div className="text-center text-muted-foreground py-12">{t('noCategory')}</div>
         ) : (
-          <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center">
+          <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
             <div className="mb-4 rounded-full bg-primary/10 p-3"><BookOpen className="h-8 w-8 text-primary" /></div>
             <h3 className="text-lg font-semibold">{t('emptyTitle')}</h3>
             <p className="text-sm text-muted-foreground mt-1 max-w-md">

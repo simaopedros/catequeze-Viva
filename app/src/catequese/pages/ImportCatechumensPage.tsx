@@ -153,7 +153,7 @@ export default function ImportCatechumensPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border bg-card p-6 space-y-4">
+        <div className="rounded-sm border border-border/70 bg-white p-6 space-y-4">
           <div>
             <h3 className="font-semibold mb-1">{t('catechumens.import_format_title')}</h3>
             <p className="text-sm text-muted-foreground">
@@ -189,10 +189,10 @@ Maria,Santos,2014-07-22,Silva Santos`}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
               className={`mt-1 flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors cursor-pointer ${
-                dragOver
-                  ? 'border-primary bg-primary/5'
-                  : 'border-muted-foreground/25 hover:border-muted-foreground/50 bg-muted/20'
-              }`}
+    dragOver
+     ? 'border-primary bg-primary/5'
+     : 'border-muted-foreground/25 hover:border-muted-foreground/50 bg-muted/20'
+    }`}
             >
               <FileUp className={`h-8 w-8 mb-2 ${dragOver ? 'text-primary' : 'text-muted-foreground'}`} />
               <p className="text-sm text-muted-foreground text-center">
@@ -267,7 +267,7 @@ Maria,Santos,2014-07-22,Silva Santos`}
         </div>
 
         {results && (
-          <div className="rounded-xl border bg-card p-6 space-y-3">
+          <div className="rounded-sm border border-border/70 bg-white p-6 space-y-3">
             <h3 className="font-semibold flex items-center gap-2">
               <CheckCircle className="h-5 w-5 text-green-600" />
               {t('catechumens.import_result_title')}

@@ -84,11 +84,11 @@ export function StatCard({ variant = 'default', href, className, ...props }: Sta
   const card = (
     <div
       className={cn(
-        'rounded-xl border bg-card shadow-elevation-sm',
+        'rounded-sm border border-border/70 bg-white ',
         variant === 'centered'
           ? 'p-5 flex flex-col items-center text-center gap-3'
           : 'p-5 flex items-start gap-4',
-        href && 'hover:shadow-elevation-md transition-all duration-200 cursor-pointer active:scale-[0.98] motion-reduce:transition-none motion-reduce:active:scale-100',
+        href && 'hover: transition-all duration-200 cursor-pointer active:scale-[0.98] motion-reduce:transition-none motion-reduce:active:scale-100',
         className
       )}
     >

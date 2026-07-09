@@ -247,8 +247,8 @@ export default function DocumentsPage() {
                         <div
                           key={type}
                           className={`flex items-center justify-between rounded-lg border p-2.5 h-[44px] ${
-                            status === 'MISSING' ? 'border-dashed bg-muted/10' : ''
-                          }`}
+       status === 'MISSING' ? 'border-dashed bg-muted/10' : ''
+       }`}
                         >
                           <div className="flex items-center gap-2 min-w-0">
                             <StatusIcon className={`h-4 w-4 flex-shrink-0 ${statusVisual.color}`} />

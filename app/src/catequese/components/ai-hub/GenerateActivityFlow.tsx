@@ -124,10 +124,10 @@ export function GenerateActivityFlow() {
                   key={at.value}
                   onClick={() => setActivityType(at.value)}
                   className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition-all ${
-                    activityType === at.value
-                      ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
-                      : 'border-border hover:border-primary/50'
-                  }`}
+     activityType === at.value
+      ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
+      : 'border-border hover:border-primary/50'
+     }`}
                 >
                   {t(at.labelKey)}
                 </button>

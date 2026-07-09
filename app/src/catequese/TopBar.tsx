@@ -291,8 +291,8 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                             onMouseDown={(e) => { e.preventDefault(); handleSelect(item.route); }}
                             onMouseEnter={() => setSelectedIndex(globalIdx)}
                             className={`w-full text-left px-3 py-2 flex items-start gap-2.5 transition-colors ${
-                              isSelected ? 'bg-accent' : 'hover:bg-muted/50'
-                            }`}
+        isSelected ? 'bg-accent' : 'hover:bg-muted/50'
+       }`}
                           >
                             <Icon className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
                             <div className="min-w-0 flex-1">
@@ -341,7 +341,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
             <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-sm hover:bg-accent/50">
               <Bell className="h-5 w-5" />
               {unreadCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 h-[18px] min-w-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-overline font-bold px-1 animate-in zoom-in-50 shadow-elevation-xs">
+                <span className="absolute -top-0.5 -right-0.5 h-[18px] min-w-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-overline font-bold px-1 animate-in zoom-in-50 ">
                   {unreadCount > 99 ? '99+' : unreadCount}
                 </span>
               )}

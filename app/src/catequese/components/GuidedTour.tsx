@@ -114,7 +114,7 @@ export function GuidedTour({ onComplete }: GuidedTourProps) {
       )}
 
       <div
-        className="fixed z-[102] w-80 bg-card border-2 border-primary rounded-xl shadow-2xl p-5 transition-all duration-300"
+        className="fixed z-[102] w-80 bg-card border-2 border-primary rounded-sm shadow-2xl p-5 transition-all duration-300"
         style={tooltipStyle}
       >
         <div className="flex items-center justify-between mb-2">

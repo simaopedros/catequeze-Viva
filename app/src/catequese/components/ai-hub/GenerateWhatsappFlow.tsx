@@ -137,10 +137,10 @@ export function GenerateWhatsappFlow() {
                   key={opt.value}
                   onClick={() => setTone(opt.value)}
                   className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition-all ${
-                    tone === opt.value
-                      ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
-                      : 'border-border hover:border-primary/50'
-                  }`}
+     tone === opt.value
+      ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
+      : 'border-border hover:border-primary/50'
+     }`}
                 >
                   {t(opt.labelKey)}
                 </button>
@@ -156,10 +156,10 @@ export function GenerateWhatsappFlow() {
                   key={opt.value}
                   onClick={() => setLength(opt.value)}
                   className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition-all ${
-                    length === opt.value
-                      ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
-                      : 'border-border hover:border-primary/50'
-                  }`}
+     length === opt.value
+      ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
+      : 'border-border hover:border-primary/50'
+     }`}
                 >
                   {t(opt.labelKey)}
                 </button>

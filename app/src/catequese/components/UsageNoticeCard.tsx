@@ -37,7 +37,7 @@ export function UsageNoticeCard({ severity = 'info', icon, title, description, a
   return (
     <div
       className={cn(
-        'rounded-xl border px-4 py-3 space-y-2',
+        'rounded-sm border px-4 py-3 space-y-2',
         severityStyles[severity],
         className,
       )}

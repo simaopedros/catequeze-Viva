@@ -162,7 +162,7 @@ export default function CalendarPage() {
   if (loading) return (
       <div className="space-y-6 animate-pulse">
         <div className="h-8 w-48 bg-muted rounded" />
-        <div className="h-80 rounded-xl bg-muted" />
+        <div className="h-80 rounded-sm bg-muted" />
       </div>
   );
 
@@ -291,7 +291,7 @@ export default function CalendarPage() {
               className="absolute inset-0 bg-black/40 -sm transition-opacity"
               onClick={() => setMobilePanelOpen(false)}
             />
-            <div className="relative z-10 w-full max-h-[75vh] overflow-y-auto rounded-t-2xl border-t bg-card shadow-elevation-modal animate-in slide-in-from-bottom-5 duration-300 motion-reduce:animate-none">
+            <div className="relative z-10 w-full max-h-[75vh] overflow-y-auto rounded-t-2xl border-t bg-card animate-in slide-in-from-bottom-5 duration-300 motion-reduce:animate-none">
               <div className="sticky top-0 z-10 flex items-center justify-between p-4 border-b bg-card/95 -sm rounded-t-2xl">
                 <h3 className="font-semibold text-sm flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
@@ -356,15 +356,15 @@ function MonthGrid({
   const isWeekend = (dow: number) => dow >= 5;
 
   return (
-    <div className="lg:col-span-2 rounded-sm border border-border/70 bg-white overflow-hidden shadow-elevation-xs">
+    <div className="lg:col-span-2 rounded-sm border border-border/70 bg-white overflow-hidden ">
       {/* Weekday headers */}
       <div className="grid grid-cols-7 bg-muted/40 border-b">
         {weekdays.map((d, i) => (
           <div
             key={d}
             className={`p-2 text-center text-xs font-semibold uppercase tracking-wide ${
-              isWeekend(i) ? 'text-muted-foreground/60' : 'text-muted-foreground'
-            }`}
+    isWeekend(i) ? 'text-muted-foreground/60' : 'text-muted-foreground'
+   }`}
           >
             {d}
           </div>
@@ -393,22 +393,22 @@ function MonthGrid({
               aria-label={`${day} ${events.length > 0 ? `, ${events.length} events` : ''}`}
               aria-current={today ? 'date' : undefined}
               className={`p-1.5 sm:p-2 border-t border-l text-left transition-colors flex flex-col focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset focus-visible:z-10 ${
-                isSelected
-                  ? 'bg-primary/10 ring-1 ring-inset ring-primary z-[1]'
-                  : isWeekend(dow)
-                    ? 'bg-muted/15 hover:bg-muted/30'
-                    : 'hover:bg-muted/20'
-              }`}
+    isSelected
+     ? 'bg-primary/10 ring-1 ring-inset ring-primary z-[1]'
+     : isWeekend(dow)
+     ? 'bg-muted/15 hover:bg-muted/30'
+     : 'hover:bg-muted/20'
+    }`}
             >
               {/* Day number */}
               <span
                 className={`inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full text-xs sm:text-sm font-medium flex-shrink-0 ${
-                  today
-                    ? 'bg-primary text-primary-foreground'
-                    : isWeekend(dow)
-                      ? 'text-muted-foreground/60'
-                      : ''
-                }`}
+     today
+     ? 'bg-primary text-primary-foreground'
+     : isWeekend(dow)
+      ? 'text-muted-foreground/60'
+      : ''
+    }`}
               >
                 {day}
               </span>
@@ -497,7 +497,7 @@ function AgendaView({
           <button
             key={e.id}
             onClick={() => { setSelectedDay(day); setMobilePanelOpen(true); }}
-            className="w-full rounded-sm border border-border/70 bg-white p-3.5 text-left hover:bg-muted/30 transition-colors flex items-center gap-3 shadow-elevation-xs"
+            className="w-full rounded-sm border border-border/70 bg-white p-3.5 text-left hover:bg-muted/30 transition-colors flex items-center gap-3 "
           >
             {/* Date block */}
             <div className="flex flex-col items-center justify-center w-11 h-11 rounded-lg bg-muted flex-shrink-0">
@@ -569,7 +569,7 @@ function SidePanelContent({
   /* ── No day selected ── show upcoming events ──────────────────────── */
   if (!selectedDay) {
     return (
-      <div className="rounded-sm border border-border/70 bg-white p-4 shadow-elevation-xs space-y-3">
+      <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3">
         <h3 className="font-semibold text-sm flex items-center gap-2">
           <Calendar className="h-4 w-4 text-primary" />
           {t('upcoming_events')}
@@ -612,7 +612,7 @@ function SidePanelContent({
   return (
     <>
       {/* Day header card */}
-      <div className="rounded-sm border border-border/70 bg-white p-4 shadow-elevation-xs">
+      <div className="rounded-sm border border-border/70 bg-white p-4 ">
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-sm flex items-center gap-2">
             <Calendar className="h-4 w-4 text-primary" />
@@ -626,7 +626,7 @@ function SidePanelContent({
 
       {/* Event list */}
       {dayEvents.length === 0 ? (
-        <div className="rounded-sm border border-border/70 bg-white p-6 text-center shadow-elevation-xs">
+        <div className="rounded-sm border border-border/70 bg-white p-6 text-center ">
           <p className="text-sm text-muted-foreground">{t('no_events')}</p>
           <Button
             variant="outline"
@@ -643,7 +643,7 @@ function SidePanelContent({
           {dayEvents.map(e => (
             <div
               key={e.id}
-              className="flex items-start justify-between rounded-sm border border-border/70 bg-white p-3 hover:bg-muted/20 transition-colors shadow-elevation-xs"
+              className="flex items-start justify-between rounded-sm border border-border/70 bg-white p-3 hover:bg-muted/20 transition-colors "
             >
               <div className="flex items-start gap-2.5 min-w-0">
                 <div
@@ -704,7 +704,7 @@ function SidePanelContent({
 
       {/* ── Create event form ───────────────────────────────────────────── */}
       {showForm && (
-        <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3 shadow-elevation-xs">
+        <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3 ">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-sm flex items-center gap-1.5">
               <Plus className="h-4 w-4 text-primary" />
@@ -763,7 +763,7 @@ function SidePanelContent({
               />
               <label
                 htmlFor="event-color-picker"
-                className="flex items-center justify-center h-9 w-9 rounded-md border border-input cursor-pointer hover:border-primary/50 transition-colors shadow-elevation-xs"
+                className="flex items-center justify-center h-9 w-9 rounded-md border border-input cursor-pointer hover:border-primary/50 transition-colors "
                 style={{ background: color }}
                 aria-label="Cor do evento"
               >

@@ -73,7 +73,7 @@ export default function PublicUploadDocsPage() {
   const catechumen = data as any;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#F7F4EE] flex items-center justify-center p-4">
       <div className="max-w-lg w-full space-y-6">
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary text-sm font-medium px-4 py-1.5 mb-2">
@@ -90,7 +90,7 @@ export default function PublicUploadDocsPage() {
         </div>
 
         {catechumen.documents?.length > 0 && (
-          <div className="rounded-xl border bg-card p-5 shadow-sm">
+          <div className="rounded-sm border border-border/70 bg-white p-5 shadow-sm">
             <h2 className="font-semibold text-sm mb-3">{t('upload_docs.existing_title')}</h2>
             <div className="space-y-2">
               {catechumen.documents.map((d: any) => (
@@ -115,7 +115,7 @@ export default function PublicUploadDocsPage() {
           </div>
         )}
 
-        <div className="rounded-xl border bg-card p-5 shadow-sm space-y-4">
+        <div className="rounded-sm border border-border/70 bg-white p-5 shadow-sm space-y-4">
           <h2 className="font-semibold text-sm">{t('upload_docs.new_title')}</h2>
 
           {sent && (

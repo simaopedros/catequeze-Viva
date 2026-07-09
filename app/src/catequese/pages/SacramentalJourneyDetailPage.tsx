@@ -107,7 +107,7 @@ export default function SacramentalJourneyDetailPage() {
   };
 
   if (isLoading) {
-    return <AppShell><div className="space-y-6 animate-pulse"><div className="h-8 w-64 bg-muted rounded"/><div className="grid gap-4">{[1,2,3,4,5].map(i => <div key={i} className="h-20 rounded-xl bg-muted"/>)}</div></div></AppShell>;
+    return <AppShell><div className="space-y-6 animate-pulse"><div className="h-8 w-64 bg-muted rounded"/><div className="grid gap-4">{[1,2,3,4,5].map(i => <div key={i} className="h-20 rounded-sm bg-muted"/>)}</div></div></AppShell>;
   }
 
   if (!journey) {
@@ -144,7 +144,7 @@ export default function SacramentalJourneyDetailPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border bg-card p-5 space-y-4">
+        <div className="rounded-sm border border-border/70 bg-white p-5 space-y-4">
           <div className="flex items-center gap-3">
             <Calendar className="h-4 w-4 text-muted-foreground" />
             {editingTargetDate ? (
@@ -340,7 +340,7 @@ export default function SacramentalJourneyDetailPage() {
         </div>
 
         {journey.template?.parish && (
-          <div className="rounded-xl border bg-card p-4">
+          <div className="rounded-sm border border-border/70 bg-white p-4">
             <h3 className="text-sm font-semibold mb-2 flex items-center gap-1"><BookOpen className="h-4 w-4" />{t('detail.template')}</h3>
             <p className="text-sm">{journey.template.name}</p>
             <p className="text-xs text-muted-foreground">

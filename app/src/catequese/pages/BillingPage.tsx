@@ -732,7 +732,8 @@ export default function BillingPage() {
                     ) : null)}
                   </div>
 
-                  <p className="max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
+                  <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+                  <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-[0.95rem]">
                     {isTrialAccess
                       ? (trialDaysLeft === 1
                           ? t('trial_hero_subtitle_one')
@@ -743,7 +744,7 @@ export default function BillingPage() {
                   </p>
 
                   {supportingCopy && (
-                    <p className="text-sm text-slate-500">{supportingCopy}</p>
+                    <p className="text-sm text-muted-foreground">{supportingCopy}</p>
                   )}
                 </div>
               </div>
@@ -826,7 +827,7 @@ export default function BillingPage() {
               )}
 
               {isParishManaged && (
-                <div className="rounded-sm border border-primary/15 bg-white/85 p-5  ">
+                <div className="rounded-sm border border-primary/15 bg-white/85 p-5 ">
                   <div className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
                     <ShieldCheck className="h-4 w-4" />
                     <span>{t('corporate_plan')}</span>
@@ -864,7 +865,7 @@ export default function BillingPage() {
             </div>
 
             {isConversionMode ? (
-              <div className="rounded-sm border border-white/70 bg-white/88 p-5   ">
+              <div className="rounded-sm border border-white/70 bg-white/88 p-5 ">
                 <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
                   <CheckCircle className="h-4 w-4" />
                   <span>{t('conversion_checklist_title')}</span>
@@ -879,7 +880,7 @@ export default function BillingPage() {
                 </div>
               </div>
             ) : isUpgradeJourney ? (
-              <div className="rounded-sm border border-primary/15 bg-white/88 p-5   ">
+              <div className="rounded-sm border border-primary/15 bg-white/88 p-5 ">
                 <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
                   <CheckCircle className="h-4 w-4" />
                   <span>{t('upgrade_checklist_title')}</span>
@@ -895,7 +896,7 @@ export default function BillingPage() {
               </div>
             ) : (
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
-                <div className="rounded-sm border border-white/70 bg-white/85 p-5   ">
+                <div className="rounded-sm border border-white/70 bg-white/85 p-5 ">
                   <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
                     <TrendingUp className="h-4 w-4" />
                     <span>{t('usage_title')}</span>
@@ -906,7 +907,7 @@ export default function BillingPage() {
                   </div>
                 </div>
 
-                <div className="rounded-sm border border-white/70 bg-white/85 p-5   ">
+                <div className="rounded-sm border border-white/70 bg-white/85 p-5 ">
                   <div className="flex items-start gap-4">
                     <div
                       className={cn(
@@ -1055,7 +1056,7 @@ export default function BillingPage() {
                   {isConversionMode ? t('conversion_plans_subtitle') : isUpgradeJourney ? t('upgrade_plans_subtitle') : t('pricing_section_subtitle')}
                 </p>
               </div>
-              <div className="inline-flex items-center rounded-sm border border-border/70 bg-white/90 p-1  ">
+              <div className="inline-flex items-center rounded-sm border border-border/70 bg-white/90 p-1 ">
                 <button
                   type="button"
                   onClick={() => setBillingInterval('monthly')}

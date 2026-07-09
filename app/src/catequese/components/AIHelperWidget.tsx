@@ -243,11 +243,11 @@ export function AIHelperWidget() {
                   </div>
                 )}
                 <div
-                  className={`max-w-[80%] rounded-xl px-3 py-2 text-sm ${
-                    m.role === 'user'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted'
-                  }`}
+                  className={`max-w-[80%] rounded-sm px-3 py-2 text-sm ${
+     m.role === 'user'
+      ? 'bg-primary text-primary-foreground'
+      : 'bg-muted'
+     }`}
                 >
                   <div className="whitespace-pre-line">
                     {m.content.includes('/app/billing') ? (
@@ -298,7 +298,7 @@ export function AIHelperWidget() {
                 <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1">
                   <Bot className="h-3 w-3 text-primary" />
                 </div>
-                <div className="bg-muted rounded-xl px-3 py-2">
+                <div className="bg-muted rounded-sm px-3 py-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
                 </div>
               </div>

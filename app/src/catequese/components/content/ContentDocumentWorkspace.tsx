@@ -617,7 +617,7 @@ export function ContentDocumentWorkspace({
             <Input
               value={title}
               onChange={(event) => setTitle(event.target.value)}
-              className="mt-2 h-11 rounded-xl border-0 bg-transparent px-0 text-base shadow-none focus-visible:ring-0"
+              className="mt-2 h-11 rounded-sm border-0 bg-transparent px-0 text-base shadow-none focus-visible:ring-0"
               placeholder="Nome do encontro"
             />
           </div>
@@ -628,7 +628,7 @@ export function ContentDocumentWorkspace({
             <Input
               value={theme}
               onChange={(event) => setTheme(event.target.value)}
-              className="mt-2 h-11 rounded-xl border-0 bg-transparent px-0 text-base shadow-none focus-visible:ring-0"
+              className="mt-2 h-11 rounded-sm border-0 bg-transparent px-0 text-base shadow-none focus-visible:ring-0"
               placeholder="Tema central"
             />
           </div>
@@ -643,7 +643,7 @@ export function ContentDocumentWorkspace({
                 onChange={(event) =>
                   setEstimatedTime(event.target.value.replace(/[^0-9]/g, ""))
                 }
-                className="h-11 rounded-xl border-0 bg-transparent pl-7 pr-0 text-base shadow-none focus-visible:ring-0"
+                className="h-11 rounded-sm border-0 bg-transparent pl-7 pr-0 text-base shadow-none focus-visible:ring-0"
                 placeholder="60"
               />
             </div>
@@ -657,7 +657,7 @@ export function ContentDocumentWorkspace({
               <Input
                 value={tags}
                 onChange={(event) => setTags(event.target.value)}
-                className="h-11 rounded-xl border-0 bg-transparent pl-7 pr-0 text-base shadow-none focus-visible:ring-0"
+                className="h-11 rounded-sm border-0 bg-transparent pl-7 pr-0 text-base shadow-none focus-visible:ring-0"
                 placeholder="fé, família, sacramentos"
               />
             </div>

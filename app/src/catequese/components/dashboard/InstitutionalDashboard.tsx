@@ -108,12 +108,12 @@ function KpiCard({ kpi }: { kpi: KpiBlock }) {
         {kpi.delta !== null && kpi.delta !== undefined && (
           <span
             className={`flex items-center gap-0.5 text-xs font-medium ${
-              kpi.delta > 0
-                ? 'text-success'
-                : kpi.delta < 0
-                  ? 'text-destructive'
-                  : 'text-muted-foreground'
-            }`}
+    kpi.delta > 0
+    ? 'text-success'
+    : kpi.delta < 0
+     ? 'text-destructive'
+     : 'text-muted-foreground'
+   }`}
           >
             {kpi.delta > 0 ? (
               <ArrowUp className="h-3 w-3" />
@@ -348,10 +348,10 @@ export function InstitutionalDashboard() {
                 key={opt.value}
                 onClick={() => handleScopeChange(opt.value as 'diocese' | 'parish' | 'community')}
                 className={`px-3 py-1.5 text-xs font-medium rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${
-                  scope === opt.value
-                    ? 'bg-background text-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
+     scope === opt.value
+     ? 'bg-background text-foreground'
+     : 'text-muted-foreground hover:text-foreground'
+    }`}
               >
                 {opt.label}
               </button>

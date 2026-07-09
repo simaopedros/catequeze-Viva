@@ -65,8 +65,8 @@ function StatusCell({
       <button
         onClick={() => setOpen(!open)}
         className={`min-w-[44px] min-h-[44px] w-10 h-8 rounded border text-xs font-bold flex items-center justify-center cursor-pointer transition-colors ${
-          st ? st.color : 'bg-muted text-muted-foreground border-border hover:border-foreground/30'
-        }`}
+   st ? st.color : 'bg-muted text-muted-foreground border-border hover:border-foreground/30'
+  }`}
         title={st ? st.fullLabel : notFilledLabel}
         aria-label={notFilledLabel}
       >
@@ -346,7 +346,7 @@ export default function AttendancePage() {
               ))}
             </div>
 
-          <div className="overflow-x-auto rounded-xl border bg-card hidden md:block">
+          <div className="overflow-x-auto rounded-sm border border-border/70 bg-white hidden md:block">
             <table className="w-full text-xs">
               <thead>
                 <tr className="bg-muted/50">
@@ -408,7 +408,7 @@ export default function AttendancePage() {
                 ? Math.round((Object.values(matrix).filter(m => m[cat.id] === 'PRESENT' || m[cat.id] === 'JUSTIFIED').length / meetings.length) * 100)
                 : 0;
               return (
-                <div key={cat.id} className="rounded-xl border bg-card p-4 shadow-elevation-xs">
+                <div key={cat.id} className="rounded-sm border border-border/70 bg-white p-4 ">
                   <div className="flex items-center justify-between mb-3">
                     <span className="font-semibold text-sm">{cat.firstName} {cat.lastName}</span>
                     <span className={cn(

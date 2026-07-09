@@ -125,7 +125,7 @@ export function ChatView({
   const dateGroups = groupMessagesByDate(messages);
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-b from-background to-muted/20">
+    <div className="flex flex-col h-full bg-background">
       {/* Messages area */}
       <div
         ref={scrollContainerRef}
@@ -148,7 +148,7 @@ export function ChatView({
         {/* Empty state */}
         {messages.length === 0 && !isLoading && (
           <div className="flex flex-col items-center justify-center h-full text-center py-16">
-            <div className="h-16 w-16 rounded-sm bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
+            <div className="h-16 w-16 rounded-sm bg-muted/40 flex items-center justify-center mb-4">
               <Send className="h-7 w-7 text-primary/60" />
             </div>
             <h3 className="font-semibold text-sm mb-1">{t('chat_start_title')}</h3>
@@ -173,10 +173,10 @@ export function ChatView({
                 )}
                 <div
                   className={`rounded-sm px-3.5 py-2 animate-pulse ${
-                    i % 2 === 0
-                      ? 'bg-primary/20 rounded-br-md'
-                      : 'bg-muted rounded-bl-md'
-                  }`}
+     i % 2 === 0
+      ? 'bg-primary/20 rounded-br-md'
+      : 'bg-muted rounded-bl-md'
+     }`}
                   style={{
                     width: `${30 + Math.random() * 35}%`,
                     minWidth: '80px',
@@ -229,7 +229,7 @@ export function ChatView({
                 >
                   {/* Avatar */}
                   {!isMe && !isConsecutive ? (
-                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary/70 to-primary/40 flex items-center justify-center text-white text-overline font-semibold flex-shrink-0 mt-0.5 shadow-sm">
+                    <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-[#071A2D] text-overline font-semibold text-white">
                       {getSenderInitials(msg.sender)}
                     </div>
                   ) : !isMe ? (

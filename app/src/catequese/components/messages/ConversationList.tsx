@@ -54,11 +54,11 @@ function getAvatarInitials(name: string): string {
 
 function getAvatarColor(type: string): string {
   switch (type) {
-    case 'DIRECT': return 'from-blue-500 to-blue-600';
-    case 'GROUP': return 'from-emerald-500 to-emerald-600';
-    case 'CLASS_CHAT': return 'from-amber-500 to-amber-600';
-    case 'ANNOUNCEMENT': return 'from-purple-500 to-purple-600';
-    default: return 'from-slate-500 to-slate-600';
+    case 'DIRECT': return 'bg-[#071A2D]';
+    case 'GROUP': return 'bg-[#0f3d2e]';
+    case 'CLASS_CHAT': return 'bg-[#5c4a1f]';
+    case 'ANNOUNCEMENT': return 'bg-[#3b2f5c]';
+    default: return 'bg-slate-600';
   }
 }
 
@@ -144,7 +144,7 @@ export function ConversationList({ conversations, activeId, onSelect, onNewConve
               className={cn(
                 'px-2.5 py-1 rounded-full text-overline font-medium whitespace-nowrap transition-all',
                 filter === opt.value
-                  ? 'bg-primary text-primary-foreground shadow-elevation-xs'
+                  ? 'bg-primary text-primary-foreground '
                   : 'bg-muted/50 text-muted-foreground hover:bg-muted'
               )}
             >
@@ -192,7 +192,7 @@ export function ConversationList({ conversations, activeId, onSelect, onNewConve
               >
                 {/* Avatar */}
                 <div className={cn(
-                  'h-10 w-10 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0 bg-gradient-to-br shadow-sm',
+                  'h-10 w-10 rounded-sm flex items-center justify-center text-white text-xs font-semibold flex-shrink-0',
                   getAvatarColor(conv.type)
                 )}>
                   {conv.type === 'DIRECT' ? (

@@ -22,7 +22,7 @@ export function InstallPrompt() {
       <div className="fixed bottom-24 right-4 z-overlay animate-in fade-in duration-200">
         <button
           onClick={() => setMinimized(false)}
-          className="flex items-center gap-2 rounded-full border bg-card px-3 py-2 shadow-elevation-md text-xs font-medium hover:bg-muted transition-colors"
+          className="flex items-center gap-2 rounded-full border bg-card px-3 py-2 text-xs font-medium hover:bg-muted transition-colors"
           aria-label={t('install_title')}
         >
           <Download className="h-3.5 w-3.5 text-primary" />
@@ -41,8 +41,8 @@ export function InstallPrompt() {
 
   return (
     <div className="fixed bottom-24 left-2 right-2 z-overlay sm:bottom-6 sm:left-auto sm:right-4 sm:max-w-xs animate-in slide-in-from-bottom-5 fade-in duration-300">
-      <div className="flex items-center gap-3 rounded-xl border bg-card p-3 shadow-elevation-lg">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+      <div className="flex items-center gap-3 rounded-sm border border-border/70 bg-white p-3 shadow-elevation-lg">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-primary/10">
           <Download className="h-5 w-5 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
