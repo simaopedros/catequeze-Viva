@@ -1,5 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { GraduationCap, Users, Heart, Eye } from "lucide-react";
+import {
+  AppEyebrow,
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
 
 export type RoleType = "coordinator" | "catechist" | "guardian" | "viewer";
 
@@ -20,10 +25,14 @@ export function RoleStep({ selected, onSelect }: RoleStepProps) {
 
   return (
     <div className="space-y-4 rounded-sm border border-border/70 bg-white p-6">
-      <h2 className="text-lg font-semibold tracking-tight text-foreground">
-        {t("role_step.title")}
-      </h2>
-      <p className="text-sm text-muted-foreground">{t("role_step.subtitle")}</p>
+      <div className="space-y-2.5">
+        <AppEyebrow>{t("role_step.eyebrow", { defaultValue: "Função" })}</AppEyebrow>
+        <AppDisplayTitle as="h2" className="text-lg sm:text-lg">
+          {t("role_step.title")}
+        </AppDisplayTitle>
+        <AppGoldRule />
+        <p className="text-sm text-muted-foreground">{t("role_step.subtitle")}</p>
+      </div>
 
       <div className="grid gap-3">
         {ROLE_META.map((role) => (

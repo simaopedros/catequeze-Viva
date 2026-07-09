@@ -16,6 +16,11 @@ import {
 import CityStateSelect from "../../../client/components/CityStateSelect";
 import type { DioceseSelection } from "./DioceseStep";
 import { cn } from "../../../client/utils";
+import {
+  AppEyebrow,
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
 
 export interface ParishSelection {
   id?: string;
@@ -143,16 +148,9 @@ export function ParishStep({
   return (
     <div className="space-y-7">
       <div className="space-y-3">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          {t("parish.progress_status")}
-        </p>
-        <h2
-          className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]"
-          style={{ fontFamily: "var(--font-brand-display)" }}
-        >
-          {t("parish.title")}
-        </h2>
-        <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+        <AppEyebrow>{t("parish.progress_status")}</AppEyebrow>
+        <AppDisplayTitle as="h2">{t("parish.title")}</AppDisplayTitle>
+        <AppGoldRule />
         <p className="text-sm leading-relaxed text-muted-foreground">
           {t("parish.subtitle")}
         </p>

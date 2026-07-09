@@ -2,6 +2,10 @@ import { ReactNode } from "react";
 import { Link } from "react-router";
 import { BrandLockup } from "../../../client/components/brand/Brand";
 import { cn } from "../../../client/utils";
+import {
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
 
 export type ProgressStep = {
   id: string;
@@ -73,13 +77,10 @@ export function OnboardingShell({
             </Link>
 
             <div className="space-y-3">
-              <h1
-                className="text-[1.65rem] font-semibold leading-snug tracking-tight text-white xl:text-[1.85rem]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <AppDisplayTitle className="text-[1.65rem] text-white xl:text-[1.85rem]">
                 {panelTitle}
-              </h1>
-              <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+              </AppDisplayTitle>
+              <AppGoldRule />
               {panelSubtitle && (
                 <p className="text-sm leading-relaxed text-[#A8B8C9]">
                   {panelSubtitle}

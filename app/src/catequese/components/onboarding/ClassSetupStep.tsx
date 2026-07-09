@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../../client/components/ui/button";
+import {
+  AppEyebrow,
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
 import { Input } from "../../../client/components/ui/input";
 import { Label } from "../../../client/components/ui/label";
 import { ArrowRight, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
@@ -57,16 +62,9 @@ export function ClassSetupStep({
   return (
     <div className="space-y-7">
       <div className="space-y-3">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          {t("class_setup.eyebrow")}
-        </p>
-        <h2
-          className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]"
-          style={{ fontFamily: "var(--font-brand-display)" }}
-        >
-          {t("class_setup.title")}
-        </h2>
-        <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+        <AppEyebrow>{t("class_setup.eyebrow")}</AppEyebrow>
+        <AppDisplayTitle as="h2">{t("class_setup.title")}</AppDisplayTitle>
+        <AppGoldRule />
         <p className="text-sm leading-relaxed text-muted-foreground">
           {t("class_setup.subtitle")}
         </p>

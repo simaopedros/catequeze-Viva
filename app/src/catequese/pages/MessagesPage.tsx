@@ -304,15 +304,19 @@ export default function MessagesPage() {
               <div className="flex items-center gap-3 border-b border-border/70 bg-white px-4 py-3">
                 <button
                   onClick={handleBackToList}
-                  className="md:hidden flex h-8 w-8 items-center justify-center rounded-sm hover:bg-muted"
+                  className="flex h-8 w-8 items-center justify-center rounded-sm hover:bg-muted md:hidden"
                 >
                   <ArrowLeft className="h-4 w-4" />
                 </button>
 
-                <div className="flex-1 min-w-0">
-                  <h2 className="font-semibold text-sm truncate">
+                <div className="min-w-0 flex-1 space-y-0.5">
+                  <h2
+                    className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
                     {conversationName || t("default_conversation")}
                   </h2>
+                  <div className="h-px w-6 bg-[#D39A2B]" aria-hidden />
                   <p className="text-overline text-muted-foreground">
                     {activeConv?.type === "DIRECT"
                       ? t("direct_chat")

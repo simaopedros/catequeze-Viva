@@ -6,6 +6,11 @@ import { Input } from "../../../client/components/ui/input";
 import { Label } from "../../../client/components/ui/label";
 import { ArrowRight, Loader2, Plus } from "lucide-react";
 import { cn } from "../../../client/utils";
+import {
+  AppEyebrow,
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
 import { trackMarketingEvent } from "../../../client/analytics/marketingAnalytics";
 
 type AddedPerson = { id: string; firstName: string; lastName: string };
@@ -159,16 +164,9 @@ export function CatechumensSetupStep({
   return (
     <div className="space-y-7">
       <div className="space-y-3">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          {t("catechumens_setup.eyebrow")}
-        </p>
-        <h2
-          className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]"
-          style={{ fontFamily: "var(--font-brand-display)" }}
-        >
-          {t("catechumens_setup.title")}
-        </h2>
-        <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+        <AppEyebrow>{t("catechumens_setup.eyebrow")}</AppEyebrow>
+        <AppDisplayTitle as="h2">{t("catechumens_setup.title")}</AppDisplayTitle>
+        <AppGoldRule />
         <p className="text-sm leading-relaxed text-muted-foreground">
           {t("catechumens_setup.subtitle", { className })}
         </p>

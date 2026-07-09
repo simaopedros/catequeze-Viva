@@ -2,6 +2,11 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "wasp/client/auth";
 import { ArrowRight } from "lucide-react";
 import { cn } from "../../../client/utils";
+import {
+  AppEyebrow,
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
 
 interface WelcomeStepProps {
   onPersonal: () => void;
@@ -16,18 +21,13 @@ export function WelcomeStep({ onPersonal, onManager }: WelcomeStepProps) {
   return (
     <div className="space-y-8">
       <div className="space-y-3">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          {t("welcome.eyebrow")}
-        </p>
-        <h2
-          className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl"
-          style={{ fontFamily: "var(--font-brand-display)" }}
-        >
+        <AppEyebrow>{t("welcome.eyebrow")}</AppEyebrow>
+        <AppDisplayTitle as="h2">
           {firstName
             ? t("welcome.hello", { name: firstName })
             : t("welcome.hello_default")}
-        </h2>
-        <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+        </AppDisplayTitle>
+        <AppGoldRule />
         <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
           {t("welcome.question")}
         </p>

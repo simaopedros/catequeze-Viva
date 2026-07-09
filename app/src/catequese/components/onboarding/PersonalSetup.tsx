@@ -11,6 +11,11 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { Button } from "../../../client/components/ui/button";
+import {
+  AppEyebrow,
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
 import { Input } from "../../../client/components/ui/input";
 
 interface PersonalSetupProps {
@@ -53,12 +58,9 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
       </div>
 
       <div className="max-w-md space-y-2.5">
-        <h2
-          className="text-2xl font-semibold tracking-tight text-foreground"
-          style={{ fontFamily: "var(--font-brand-display)" }}
-        >
+        <AppDisplayTitle as="h2">
           {t("personal_setup.title")}
-        </h2>
+        </AppDisplayTitle>
         <div className="mx-auto h-px w-10 bg-[#D39A2B]" aria-hidden />
         <p className="text-sm text-muted-foreground">
           {t("personal_setup.subtitle")}
@@ -79,9 +81,7 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
             <span>{t("personal_setup.progress_copy")}</span>
           </div>
           <div className="space-y-2 rounded-sm border border-border/70 bg-muted/20 p-4">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              {t("personal_setup.value_title")}
-            </p>
+            <AppEyebrow>{t("personal_setup.value_title")}</AppEyebrow>
             <ul className="space-y-1 text-xs text-muted-foreground">
               <li>• {t("personal_setup.first_value")}</li>
               <li>• {t("personal_setup.ai_generator")}</li>

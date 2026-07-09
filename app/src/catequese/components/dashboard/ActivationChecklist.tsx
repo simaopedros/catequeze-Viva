@@ -3,6 +3,11 @@ import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { CheckCircle2, Circle, X, ArrowRight } from "lucide-react";
 import { cn } from "../../../client/utils";
+import {
+  AppEyebrow,
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
 import { Button } from "../../../client/components/ui/button";
 
 const DISMISS_KEY = "cv-activation-checklist-dismissed";
@@ -104,16 +109,14 @@ export function ActivationChecklist({
     <section className="rounded-sm border border-border/70 bg-white p-5">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            {t("activation.eyebrow")}
-          </p>
-          <h2
-            className="mt-1 text-lg font-semibold tracking-tight text-foreground"
-            style={{ fontFamily: "var(--font-brand-display)" }}
+          <AppEyebrow>{t("activation.eyebrow")}</AppEyebrow>
+          <AppDisplayTitle
+            as="h2"
+            className="mt-1 text-lg sm:text-lg"
           >
             {t("activation.title")}
-          </h2>
-          <div className="mt-2 h-px w-10 bg-[#D39A2B]" aria-hidden />
+          </AppDisplayTitle>
+          <AppGoldRule className="mt-2" />
           <p className="mt-2 text-sm text-muted-foreground">
             {t("activation.progress", { done: doneCount, total: steps.length })}
           </p>

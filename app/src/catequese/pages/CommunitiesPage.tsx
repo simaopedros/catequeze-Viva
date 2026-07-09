@@ -142,7 +142,7 @@ export default function CommunitiesPage() {
   return (
     <div className="space-y-6">
       <AppPageHeader
-        eyebrow={tn("communities")}
+        eyebrow={tp("communities_eyebrow", { defaultValue: "Paróquia" })}
         title={tn("communities")}
         subtitle={tp("communities_page_subtitle")}
         actions={

@@ -1,5 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { Button } from "../../../client/components/ui/button";
+import {
+  AppEyebrow,
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
 import { ArrowRight } from "lucide-react";
 
 export interface CompletionSummary {
@@ -28,16 +33,9 @@ export function CompletionStep({
   return (
     <div className="space-y-8">
       <div className="space-y-3">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          {t("completion.progress_badge")}
-        </p>
-        <h2
-          className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.85rem]"
-          style={{ fontFamily: "var(--font-brand-display)" }}
-        >
-          {summary.title}
-        </h2>
-        <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+        <AppEyebrow>{t("completion.progress_badge")}</AppEyebrow>
+        <AppDisplayTitle as="h2">{summary.title}</AppDisplayTitle>
+        <AppGoldRule />
         <p className="text-sm leading-relaxed text-muted-foreground">
           {summary.description}
         </p>
