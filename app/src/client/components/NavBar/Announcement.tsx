@@ -9,24 +9,24 @@ export function Announcement() {
         rel="noopener noreferrer"
         className="hidden cursor-pointer transition-opacity hover:opacity-90 lg:block"
       >
-        Support Open-Source Software!
+        Software de código aberto
       </a>
       <div className="hidden w-0.5 self-stretch bg-white/20 lg:block"></div>
       <a
         href={ANNOUNCEMENT_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="bg-background/20 hover:bg-background/30 hidden cursor-pointer rounded-full px-2.5 py-1 text-xs tracking-wider transition-colors lg:block"
+        className="hidden cursor-pointer rounded-sm bg-background/20 px-2.5 py-1 text-xs tracking-wider transition-colors hover:bg-background/30 lg:block"
       >
-        Star Our Repo on Github ⭐️ →
+        Ver o repositório no GitHub →
       </a>
       <a
         href={ANNOUNCEMENT_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="bg-background/20 hover:bg-background/30 cursor-pointer rounded-full px-2.5 py-1 text-xs transition-colors lg:hidden"
+        className="cursor-pointer rounded-sm bg-background/20 px-2.5 py-1 text-xs transition-colors hover:bg-background/30 lg:hidden"
       >
-        ⭐️ Star the Our Repo and Support Open-Source! ⭐️
+        Ver o repositório no GitHub
       </a>
     </div>
   );

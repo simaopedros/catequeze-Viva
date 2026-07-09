@@ -438,23 +438,26 @@ export default function ClassPastoralReportPage() {
                           r.riskLevel === "ALTO" &&
                           r.enrollmentStatus === "ENROLLED"
                             ? "bg-destructive/5"
-                            : i === 0
-                              ? "bg-warning/5"
-                              : i === 1
-                                ? "bg-muted/30"
-                                : i === 2
-                                  ? "bg-warning/[0.02]"
-                                  : ""
+                            : i < 3
+                              ? "bg-[#D39A2B]/[0.04]"
+                              : ""
                         }
                       >
-                        <td className="p-3 font-semibold tabular-nums">
-                          {i === 0
-                            ? "🥇"
-                            : i === 1
-                              ? "🥈"
-                              : i === 2
-                                ? "🥉"
-                                : `#${i + 1}`}
+                        <td className="p-3">
+                          <span
+                            className={`inline-flex h-7 min-w-7 items-center justify-center rounded-sm border px-1.5 text-xs font-semibold tabular-nums ${
+                              i < 3
+                                ? "border-[#D39A2B]/40 bg-[#D39A2B]/10 text-[#071A2D]"
+                                : "border-border/70 bg-muted/30 text-muted-foreground"
+                            }`}
+                            style={
+                              i < 3
+                                ? { fontFamily: "var(--font-brand-display)" }
+                                : undefined
+                            }
+                          >
+                            {i + 1}
+                          </span>
                         </td>
                         <td className="p-3">
                           <div className="flex items-center gap-2">

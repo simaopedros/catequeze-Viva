@@ -164,15 +164,22 @@ export function AIHubHome() {
       <div className="grid gap-3 lg:grid-cols-3">
         <InteractiveCard
           icon={FilePenLine}
-          title="Criar manualmente"
-          description="Monte o encontro no editor visual, adicione referências e recursos, com apoio editorial só se precisar."
+          title={t("hub.create_manual", {
+            defaultValue: "Criar manualmente",
+          })}
+          description={t("hub.create_manual_desc", {
+            defaultValue:
+              "Monte o encontro no editor visual, adicione referências e recursos, com apoio editorial só se precisar.",
+          })}
           onClick={handleCreateManual}
           showArrow
           flat
           className="h-full rounded-sm border-border/70 bg-white p-5 hover:bg-muted/20"
         >
           <p className="mt-3 max-w-[28ch] text-sm leading-relaxed text-muted-foreground">
-            Começar do zero e editar os blocos manualmente
+            {t("hub.create_manual_hint", {
+              defaultValue: "Começar do zero e editar os blocos manualmente",
+            })}
           </p>
         </InteractiveCard>
         <InteractiveCard

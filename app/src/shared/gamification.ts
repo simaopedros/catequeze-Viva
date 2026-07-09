@@ -10,12 +10,12 @@ export interface Badge {
 }
 
 export const BADGES: Badge[] = [
-  { id: 'perfect_attendance_5', name: 'Presença Perfeita', description: '5 encontros seguidos sem falta', icon: '🌟', condition: '5 consecutive attendances' },
-  { id: 'perfect_attendance_10', name: 'Fiel', description: '10 encontros seguidos sem falta', icon: '👑', condition: '10 consecutive attendances' },
-  { id: 'quiz_champion', name: 'Quiz Campeão', description: 'Acertou todas as perguntas de um quiz', icon: '🏆', condition: '100% on a quiz' },
-  { id: 'bible_reader', name: 'Leitor da Bíblia', description: 'Leu 10 passagens bíblicas', icon: '📖', condition: 'Read 10 Bible passages' },
-  { id: 'first_communion', name: 'Primeira Eucaristia', description: 'Completou a preparação para a Primeira Eucaristia', icon: '🍞', condition: 'Completed First Communion prep' },
-  { id: 'helper', name: 'Ajudante', description: 'Ajudou em 3 dinâmicas de grupo', icon: '🤝', condition: 'Helped in 3 group dynamics' },
+  { id: 'perfect_attendance_5', name: 'Presença Perfeita', description: '5 encontros seguidos sem falta', icon: 'P5', condition: '5 consecutive attendances' },
+  { id: 'perfect_attendance_10', name: 'Fiel', description: '10 encontros seguidos sem falta', icon: 'F10', condition: '10 consecutive attendances' },
+  { id: 'quiz_champion', name: 'Quiz Campeão', description: 'Acertou todas as perguntas de um quiz', icon: 'Q', condition: '100% on a quiz' },
+  { id: 'bible_reader', name: 'Leitor da Bíblia', description: 'Leu 10 passagens bíblicas', icon: 'B', condition: 'Read 10 Bible passages' },
+  { id: 'first_communion', name: 'Primeira Eucaristia', description: 'Completou a preparação para a Primeira Eucaristia', icon: 'E', condition: 'Completed First Communion prep' },
+  { id: 'helper', name: 'Ajudante', description: 'Ajudou em 3 dinâmicas de grupo', icon: 'A', condition: 'Helped in 3 group dynamics' },
 ];
 
 /**

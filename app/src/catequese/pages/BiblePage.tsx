@@ -349,7 +349,9 @@ export default function BiblePage() {
     const label = `${bookName} ${selectedChapter}:${verseNum}`;
     const added = toggleFavoriteKey(key, label);
     setFavorites(loadFavorites());
-    toast({ description: added ? "⭐ Favorito" : "Favorito removido" });
+    toast({
+      description: added ? "Favorito adicionado" : "Favorito removido",
+    });
   };
 
   // ── Actions ──

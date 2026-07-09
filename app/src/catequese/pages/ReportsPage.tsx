@@ -388,37 +388,32 @@ export default function ReportsPage() {
                 .map((r: any, i: number) => (
                   <div
                     key={r.id}
-                    className={`p-4 flex items-center justify-between ${
-                      i === 0
-                        ? "bg-muted/40"
-                        : i === 1
-                          ? "bg-muted/20"
-                          : i === 2
-                            ? "bg-muted/10"
-                            : ""
+                    className={`flex items-center justify-between p-4 ${
+                      i < 3 ? "bg-[#D39A2B]/[0.04]" : ""
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <span
-                        className={`w-8 text-center text-lg font-semibold tabular-nums ${
-                          i < 3 ? "text-[#071A2D]" : "text-muted-foreground"
+                        className={`flex h-8 w-8 items-center justify-center rounded-sm border text-sm font-semibold tabular-nums ${
+                          i < 3
+                            ? "border-[#D39A2B]/40 bg-[#D39A2B]/10 text-[#071A2D]"
+                            : "border-border/70 bg-muted/30 text-muted-foreground"
                         }`}
+                        style={
+                          i < 3
+                            ? { fontFamily: "var(--font-brand-display)" }
+                            : undefined
+                        }
                       >
-                        {i === 0
-                          ? "🥇"
-                          : i === 1
-                            ? "🥈"
-                            : i === 2
-                              ? "🥉"
-                              : `#${i + 1}`}
+                        {i + 1}
                       </span>
                       <div>
                         <p
-                        className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
-                        {r.name}
-                      </p>
+                          className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                          style={{ fontFamily: "var(--font-brand-display)" }}
+                        >
+                          {r.name}
+                        </p>
                         <p className="text-xs text-muted-foreground">
                           {r.totalEnrolled} {tc("enrolled")}
                         </p>
