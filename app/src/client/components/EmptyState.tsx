@@ -101,7 +101,7 @@ export function EmptyState({
         </div>
       )}
       <h3
-        className="text-lg font-semibold tracking-tight text-foreground"
+        className="text-lg font-semibold tracking-tight text-[#071A2D]"
         style={{ fontFamily: "var(--font-brand-display)" }}
       >
         {title}

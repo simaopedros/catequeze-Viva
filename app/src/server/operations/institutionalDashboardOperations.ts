@@ -407,7 +407,7 @@ export const getInstitutionalOverview = async (args: ScopeArgs, context: any): P
     content: [
       { label: 'Em revisão', value: inReviewContent, delta: null, deltaLabel: null },
       { label: 'Publicados no período', value: publishedTotal, delta: null, deltaLabel: null },
-      { label: '% Conteúdo IA', value: aiPct, delta: null, deltaLabel: null, format: 'percent' },
+      { label: '% Conteúdo editorial', value: aiPct, delta: null, deltaLabel: null, format: 'percent' },
     ],
     compliance: [
       { label: 'Documentos totais', value: totalDocuments, delta: null, deltaLabel: null },

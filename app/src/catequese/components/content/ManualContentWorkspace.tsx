@@ -407,16 +407,20 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
             variant="outline"
             className="rounded-sm px-2.5 py-0.5 text-xs"
           >
-            IA opcional
+            Assistência opcional
           </Badge>
         </div>
         <div className="space-y-3">
           <div>
-            <h3 className="text-sm font-semibold text-foreground">
+            <h3
+              className="text-sm font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
               Sugestões quando você quiser acelerar
             </h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              A IA entra só como apoio, por bloco ou no copiloto.
+              A assistência editorial entra só como apoio, por bloco ou no hub
+              de encontros.
             </p>
           </div>
           <div className="space-y-2">
@@ -430,7 +434,7 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
                 key={label}
                 className="flex items-center justify-between rounded-sm border border-border bg-background px-3 py-2 text-sm"
               >
-                <span>{label}</span>
+                <span className="font-medium text-[#071A2D]">{label}</span>
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </div>
             ))}
@@ -439,7 +443,7 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
             variant="outline"
             className="w-full justify-start rounded-sm gap-2"
           >
-            <Feather className="h-4 w-4" /> Abrir no copiloto de IA
+            <Feather className="h-4 w-4" /> Abrir assistência editorial
           </Button>
         </div>
       </Card>

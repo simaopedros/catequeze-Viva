@@ -468,7 +468,10 @@ function VersionHistoryPanel({ onClose }: { onClose: () => void }) {
   return (
     <div className="border-b bg-muted/10 p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="flex items-center gap-1.5 text-sm font-semibold">
+        <h3
+          className="flex items-center gap-1.5 text-sm font-semibold tracking-tight text-[#071A2D]"
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
           <History className="h-4 w-4" /> {t("editor.history")}
         </h3>
         <div className="flex gap-2">

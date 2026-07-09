@@ -107,7 +107,7 @@ function DialogTitle({
     <DialogPrimitive.Title
       data-slot="dialog-title"
       className={cn(
-        "text-lg font-semibold leading-none tracking-tight text-foreground",
+        "text-lg font-semibold leading-none tracking-tight text-[#071A2D]",
         className,
       )}
       style={{ fontFamily: "var(--font-brand-display)", ...style }}

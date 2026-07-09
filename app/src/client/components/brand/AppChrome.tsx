@@ -43,7 +43,7 @@ export function AppDisplayTitle({
   return (
     <Tag
       className={cn(
-        "text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]",
+        "text-2xl font-semibold tracking-tight text-[#071A2D] sm:text-[1.75rem]",
         className,
       )}
       style={{ fontFamily: "var(--font-brand-display)" }}
@@ -128,7 +128,10 @@ export function AppMetric({
       <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
         {label}
       </p>
-      <p className="mt-1.5 text-2xl font-semibold tracking-tight text-foreground tabular-nums">
+      <p
+        className="mt-1.5 text-2xl font-semibold tracking-tight tabular-nums text-[#071A2D]"
+        style={{ fontFamily: "var(--font-brand-display)" }}
+      >
         {value}
       </p>
     </div>
@@ -157,7 +160,10 @@ export function AppListLink({
       )}
     >
       <span className="min-w-0 space-y-0.5">
-        <span className="block text-sm font-semibold text-foreground group-hover:text-[#071A2D]">
+        <span
+          className="block text-sm font-semibold tracking-tight text-[#071A2D] group-hover:text-[#0a2540]"
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
           {title}
         </span>
         {description && (

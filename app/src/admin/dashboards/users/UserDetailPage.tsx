@@ -156,7 +156,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
             <div className="mb-4 space-y-1.5">
               <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 <BarChart3 className="h-3.5 w-3.5 text-[#071A2D]" />
-                Uso de IA (30d)
+                Uso editorial (30d)
               </h2>
               <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
             </div>

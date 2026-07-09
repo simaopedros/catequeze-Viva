@@ -57,9 +57,10 @@ export function StatCard({
       </p>
       <p
         className={cn(
-          "mt-1.5 font-semibold tracking-tight text-foreground tabular-nums",
+          "mt-1.5 font-semibold tracking-tight tabular-nums text-[#071A2D]",
           variant === "minimal" ? "text-xl" : "text-2xl",
         )}
+        style={{ fontFamily: "var(--font-brand-display)" }}
       >
         {value}
       </p>

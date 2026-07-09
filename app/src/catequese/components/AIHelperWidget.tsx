@@ -172,7 +172,9 @@ export function AIHelperWidget() {
         e?.message?.includes("402") || e?.message?.includes("Créditos");
       const isTwoFactorError =
         e?.message?.includes("duas etapas") || e?.message?.includes("2FA");
-      const isConfigError = e?.message?.includes("IA não configurado");
+      const isConfigError =
+        e?.message?.includes("IA não configurado") ||
+        e?.message?.includes("assistência editorial não configurado");
       const errorMsg = isCreditError
         ? creditsLeft != null && creditsLeft <= 0
           ? ta("widget.no_credits")

@@ -88,6 +88,7 @@ const KPI_LABEL_KEYS: Record<string, string> = {
   "Em revisão": "kpi_in_review",
   "Publicados no período": "kpi_published_in_period",
   "% Conteúdo IA": "kpi_ai_content_pct",
+  "% Conteúdo editorial": "kpi_ai_content_pct",
   "Documentos totais": "kpi_total_documents",
   "Documentos pendentes": "pending_documents",
   "Consentimentos ausentes": "kpi_missing_consents",

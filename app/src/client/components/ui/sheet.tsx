@@ -123,7 +123,7 @@ function SheetTitle({
     <SheetPrimitive.Title
       data-slot="sheet-title"
       className={cn(
-        "text-lg font-semibold tracking-tight text-foreground",
+        "text-lg font-semibold tracking-tight text-[#071A2D]",
         className,
       )}
       style={{ fontFamily: "var(--font-brand-display)", ...style }}
