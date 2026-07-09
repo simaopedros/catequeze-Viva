@@ -477,15 +477,18 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                   {stats.aniversariantes.map((c: any) => (
                     <div
                       key={c.id}
-                      className="flex items-center gap-2 rounded-sm border border-border/70 bg-muted/30 px-3 py-1.5 text-xs text-foreground"
+                      className="flex items-center gap-2 rounded-sm border border-border/70 bg-muted/30 px-3 py-1.5 text-xs text-[#071A2D]"
                     >
-                      <span className="font-semibold tabular-nums">
+                      <span
+                        className="font-semibold tabular-nums tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
                         {formatDateOnly(c.birthDate, currentLocale, {
                           day: "2-digit",
                           month: "2-digit",
                         })}
                       </span>
-                      <span>{c.firstName}</span>
+                      <span className="font-medium">{c.firstName}</span>
                     </div>
                   ))}
                 </div>

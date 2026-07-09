@@ -498,7 +498,10 @@ export default function ClassPastoralReportPage() {
                         <td className="p-3 text-center">
                           {r.totalValidMeetings}
                         </td>
-                        <td className="p-3 text-center font-semibold tabular-nums">
+                        <td
+                          className="p-3 text-center font-semibold tabular-nums tracking-tight text-[#071A2D]"
+                          style={{ fontFamily: "var(--font-brand-display)" }}
+                        >
                           {r.attendanceRate}%
                         </td>
                         <td className="p-3 text-center">

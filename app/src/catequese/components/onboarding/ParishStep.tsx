@@ -161,7 +161,10 @@ export function ParishStep({
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {t("parish.diocese_context_label")}
           </p>
-          <p className="mt-0.5 text-sm font-medium text-foreground">
+          <p
+            className="mt-0.5 text-sm font-semibold tracking-tight text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
             {diocese.name}
             {diocese.state ? ` (${diocese.state})` : ""}
           </p>

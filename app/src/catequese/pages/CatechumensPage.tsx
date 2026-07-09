@@ -478,7 +478,10 @@ export default function CatechumensPage() {
                     <School className="h-3.5 w-3.5" />
                     Turmas
                   </div>
-                  <p className="mt-1 text-sm font-medium text-foreground">
+                  <p
+                    className="mt-1 text-sm font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
                     {c.enrollments?.length
                       ? `${c.enrollments.length} vinculada(s)`
                       : t("catechumens.no_class")}
@@ -489,7 +492,10 @@ export default function CatechumensPage() {
                     <House className="h-3.5 w-3.5" />
                     Familia
                   </div>
-                  <p className="mt-1 truncate text-sm font-medium text-foreground">
+                  <p
+                    className="mt-1 truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
                     {c.household?.name || "Nao vinculada"}
                   </p>
                 </div>

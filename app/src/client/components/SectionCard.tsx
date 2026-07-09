@@ -31,7 +31,12 @@ export function SectionCard({
             </div>
           )}
           <div className="min-w-0">
-            <h3 className="text-body font-semibold">{title}</h3>
+            <h3
+              className="text-body font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
+              {title}
+            </h3>
             {description && (
               <p className="text-body-xs text-text-secondary mt-0.5">
                 {description}

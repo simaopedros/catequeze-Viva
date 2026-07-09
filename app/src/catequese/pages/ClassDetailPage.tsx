@@ -509,7 +509,10 @@ export default function ClassDetailPage() {
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               {t("location")}
             </p>
-            <p className="mt-1.5 text-sm font-medium text-foreground">
+            <p
+              className="mt-1.5 text-sm font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
               {cls.location || "—"}
             </p>
           </div>
@@ -517,7 +520,10 @@ export default function ClassDetailPage() {
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               {t("schedule")}
             </p>
-            <p className="mt-1.5 text-sm font-medium text-foreground">
+            <p
+              className="mt-1.5 text-sm font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
               {t(`days_long.${cls.dayOfWeek}`) || cls.dayOfWeek} {cls.startTime}
               {cls.endTime && `-${cls.endTime}`}
             </p>

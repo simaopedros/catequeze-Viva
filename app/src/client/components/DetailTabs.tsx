@@ -37,13 +37,13 @@ export function DetailTabs({
             "relative px-4 py-2.5 text-sm font-medium transition-all duration-[var(--motion-duration-fast,150ms)] ease-[var(--motion-easing-default,ease-out)] whitespace-nowrap shrink-0",
             "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
             value === tab.id
-              ? "text-foreground"
-              : "text-muted-foreground hover:text-foreground",
+              ? "font-semibold text-[#071A2D]"
+              : "text-muted-foreground hover:text-[#071A2D]",
           )}
         >
           {tab.label}
           {value === tab.id && (
-            <span className="absolute bottom-0 left-0 right-0 h-0.5 rounded-sm bg-[#D39A2B] origin-left animate-[slide-indicator_var(--motion-duration-normal,250ms)_var(--motion-easing-emphasized,ease-out)_both]" />
+            <span className="absolute bottom-0 left-0 right-0 h-0.5 origin-left rounded-sm bg-[#D39A2B] animate-[slide-indicator_var(--motion-duration-normal,250ms)_var(--motion-easing-emphasized,ease-out)_both]" />
           )}
         </button>
       ))}

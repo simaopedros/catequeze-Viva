@@ -83,7 +83,10 @@ export function CoordinatorDetails({
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {t("coordinator.parish_context")}
           </p>
-          <p className="mt-0.5 text-sm font-medium text-foreground">
+          <p
+            className="mt-0.5 text-sm font-semibold tracking-tight text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
             {parishName}
           </p>
         </div>

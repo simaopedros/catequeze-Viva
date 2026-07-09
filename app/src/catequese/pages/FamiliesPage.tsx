@@ -192,8 +192,11 @@ export default function FamiliesPage() {
                   Sem telefone
                 </p>
               )}
-              <div className="flex items-center gap-4 pt-2 border-t text-overline">
-                <span className="flex items-center gap-1 text-muted-foreground">
+              <div className="flex items-center gap-4 border-t pt-2 text-overline">
+                <span
+                  className="flex items-center gap-1 font-semibold tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
                   <Users className="h-3 w-3" />
                   {t("families.catechumens_count", {
                     count: h._count?.catechumens || 0,
@@ -205,7 +208,10 @@ export default function FamiliesPage() {
                     {t("families.no_guardians")}
                   </span>
                 ) : (
-                  <span className="flex items-center gap-1 text-muted-foreground">
+                  <span
+                    className="flex items-center gap-1 font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
                     <User className="h-3 w-3" />
                     {t("families.guardians_count", {
                       count: h.guardians?.length || 0,

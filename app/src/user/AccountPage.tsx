@@ -43,7 +43,7 @@ export default function AccountPage() {
 
         {ctxParishName && (
           <AppPanel className="flex items-center gap-3">
-            <div className="rounded-sm border border-border/70 bg-muted/30 p-2 text-foreground">
+            <div className="rounded-sm border border-border/70 bg-muted/30 p-2 text-[#071A2D]">
               <Church className="h-5 w-5" />
             </div>
             <div>
@@ -77,7 +77,10 @@ export default function AccountPage() {
                     <div className="text-muted-foreground text-sm font-medium">
                       {t('email')}
                     </div>
-                    <div className="text-foreground mt-1 text-sm sm:col-span-2 sm:mt-0">
+                    <div
+                      className="mt-1 text-sm font-semibold tracking-tight text-[#071A2D] sm:col-span-2 sm:mt-0"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
                       {user.email}
                     </div>
                   </div>
@@ -91,7 +94,10 @@ export default function AccountPage() {
                       <div className="text-muted-foreground text-sm font-medium">
                         {t('username')}
                       </div>
-                      <div className="text-foreground mt-1 text-sm sm:col-span-2 sm:mt-0">
+                      <div
+                        className="mt-1 text-sm font-semibold tracking-tight text-[#071A2D] sm:col-span-2 sm:mt-0"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
                         {user.username}
                       </div>
                     </div>
@@ -132,7 +138,10 @@ export default function AccountPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
-              <span className="text-sm">
+              <span
+                className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                style={{ fontFamily: "var(--font-brand-display)" }}
+              >
                 {t('credits_value', { count: user.credits })}
               </span>
               <BuyMoreButton subscriptionStatus={user.subscriptionStatus} />
@@ -185,7 +194,12 @@ function UserCurrentSubscriptionPlan({
 
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="text-sm">{message}</span>
+      <span
+        className="text-sm font-semibold tracking-tight text-[#071A2D]"
+        style={{ fontFamily: "var(--font-brand-display)" }}
+      >
+        {message}
+      </span>
       {onTrial ? (
         <a href="/app/billing" className="text-sm font-medium text-[#071A2D] hover:underline">
           {tb('trial_banner_cta')}
