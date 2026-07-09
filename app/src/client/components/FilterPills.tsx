@@ -69,7 +69,7 @@ export function FilterPills({
         <button
           type="button"
           onClick={onClear}
-          className="rounded-full px-3 py-1.5 text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-all duration-[var(--motion-duration-fast,150ms)] whitespace-nowrap shrink-0 snap-start flex items-center gap-1"
+          className="flex shrink-0 snap-start items-center gap-1 whitespace-nowrap rounded-sm bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/80"
         >
           <X className="h-3 w-3" />
           Limpar

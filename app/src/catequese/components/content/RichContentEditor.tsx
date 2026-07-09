@@ -391,7 +391,7 @@ function SelectionActionBubble({
 
   const bubbleButtonClass = (active: boolean) =>
     cn(
-      "inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition-colors",
+      "inline-flex h-8 items-center gap-1.5 rounded-sm border px-3 text-xs font-medium transition-colors",
       active
         ? "border-[#071A2D] bg-[#071A2D] text-white"
         : "border-border/60 bg-background/90 text-muted-foreground hover:text-foreground",
@@ -418,7 +418,7 @@ function SelectionActionBubble({
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border/60 bg-background/90 text-muted-foreground transition-colors hover:text-foreground"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-sm border border-border/60 bg-background/90 text-muted-foreground transition-colors hover:text-foreground"
             aria-label="Fechar balão"
             title="Fechar"
           >

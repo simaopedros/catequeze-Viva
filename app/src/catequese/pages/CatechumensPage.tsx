@@ -375,7 +375,10 @@ export default function CatechumensPage() {
                           )}
                         </div>
                         <div>
-                          <p className="font-medium text-sm">
+                          <p
+                            className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                            style={{ fontFamily: "var(--font-brand-display)" }}
+                          >
                             {c.firstName} {c.lastName}
                           </p>
                           {c.birthDate && (

@@ -116,15 +116,21 @@ function ReferencesSidebar({
       <Card className="rounded-sm border border-border/70 bg-white p-5 ">
         <div className="mb-4 flex items-start justify-between gap-3">
           <div>
-            <div className="flex items-center gap-2">
-              <BookMarked className="h-4 w-4 text-[#071A2D]/80" />
-              <h3 className="text-base font-semibold text-foreground">
-                Referências do encontro
-              </h3>
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2">
+                <BookMarked className="h-4 w-4 text-[#071A2D]" />
+                <h3
+                  className="text-base font-semibold tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
+                  Referências do encontro
+                </h3>
+              </div>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+              <p className="text-sm leading-6 text-muted-foreground">
+                Anexe Bíblia, Catecismo e Diretório sem sair do editor.
+              </p>
             </div>
-            <p className="mt-1 text-sm leading-6 text-muted-foreground">
-              Anexe Bíblia, Catecismo e Diretório sem sair do editor.
-            </p>
           </div>
           <Badge
             variant="secondary"

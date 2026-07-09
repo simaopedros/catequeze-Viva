@@ -379,14 +379,18 @@ export default function MessagesPage() {
                     />
                   </div>
                 ) : (
-                  <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
-                    <div className="h-16 w-16 rounded-sm bg-destructive/10 flex items-center justify-center mb-4">
-                      <MessageSquareText className="h-7 w-7 text-destructive/70" />
+                  <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
+                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-sm border border-destructive/20 bg-destructive/10">
+                      <MessageSquareText className="h-7 w-7 text-destructive" />
                     </div>
-                    <h3 className="text-base font-semibold mb-1">
+                    <h3
+                      className="mb-1 text-base font-semibold tracking-tight text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
                       {t("title")}
                     </h3>
-                    <p className="text-sm text-muted-foreground max-w-sm mb-4">
+                    <div className="mx-auto mb-2 h-px w-8 bg-[#D39A2B]" aria-hidden />
+                    <p className="mb-4 max-w-sm text-sm text-muted-foreground">
                       {conversationError || tc("try_again")}
                     </p>
                     <button

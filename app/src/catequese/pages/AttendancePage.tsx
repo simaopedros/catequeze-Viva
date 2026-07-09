@@ -655,7 +655,10 @@ export default function AttendancePage() {
                     className="rounded-sm border border-border/70 bg-white p-4 "
                   >
                     <div className="flex items-center justify-between mb-3">
-                      <span className="font-semibold text-sm">
+                      <span
+                        className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
                         {cat.firstName} {cat.lastName}
                       </span>
                       <span

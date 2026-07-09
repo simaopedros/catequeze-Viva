@@ -300,7 +300,7 @@ export function NewConversationDialog({
                       </div>
                       <div
                         className={cn(
-                          "h-5 w-5 rounded-full border-2 flex items-center justify-center transition-colors",
+                          "flex h-5 w-5 items-center justify-center rounded-sm border-2 transition-colors",
                           isSelected
                             ? "bg-[#071A2D] border-[#071A2D] text-white"
                             : "border-muted-foreground/30",

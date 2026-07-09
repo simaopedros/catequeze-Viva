@@ -865,7 +865,10 @@ export default function ClassDetailPage() {
                     className="flex items-center justify-between rounded-sm border border-border/70 bg-white p-3"
                   >
                     <div>
-                      <p className="font-medium text-sm">
+                      <p
+                        className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
                         {m.title || t("detail.no_title")}
                       </p>
                       <div className="flex items-center gap-2">

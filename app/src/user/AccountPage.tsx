@@ -3,10 +3,15 @@ import { useAuth } from 'wasp/client/auth';
 import { Link as WaspRouterLink, routes } from 'wasp/client/router';
 import type { User } from 'wasp/entities';
 import { getCustomerPortalUrl, useQuery } from 'wasp/client/operations';
-import { AppPageHeader, AppPanel } from '../client/components/brand/AppChrome';
+import {
+  AppEyebrow,
+  AppGoldRule,
+  AppPageHeader,
+  AppPanel,
+} from '../client/components/brand/AppChrome';
 import { useUserContext } from '../client/hooks/useUserContext';
 import { Button } from '../client/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../client/components/ui/card';
+import { Card, CardContent, CardHeader } from '../client/components/ui/card';
 import { Separator } from '../client/components/ui/separator';
 import { Church, User as UserIcon, CreditCard, Coins } from 'lucide-react';
 import {
@@ -51,12 +56,13 @@ export default function AccountPage() {
         )}
 
         {/* Account info */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <UserIcon className="h-4 w-4" />
+        <Card className="rounded-sm border-border/70">
+          <CardHeader className="space-y-1.5">
+            <AppEyebrow className="flex items-center gap-2">
+              <UserIcon className="h-3.5 w-3.5" />
               {t('account_info')}
-            </CardTitle>
+            </AppEyebrow>
+            <AppGoldRule className="w-8" />
           </CardHeader>
           <CardContent className="p-0">
             <div className="space-y-0">
@@ -92,12 +98,13 @@ export default function AccountPage() {
         </Card>
 
         {/* Plan */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <CreditCard className="h-4 w-4" />
+        <Card className="rounded-sm border-border/70">
+          <CardHeader className="space-y-1.5">
+            <AppEyebrow className="flex items-center gap-2">
+              <CreditCard className="h-3.5 w-3.5" />
               {t('plan')}
-            </CardTitle>
+            </AppEyebrow>
+            <AppGoldRule className="w-8" />
           </CardHeader>
           <CardContent>
             <UserCurrentSubscriptionPlan
@@ -110,12 +117,13 @@ export default function AccountPage() {
         </Card>
 
         {/* Credits */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <Coins className="h-4 w-4" />
+        <Card className="rounded-sm border-border/70">
+          <CardHeader className="space-y-1.5">
+            <AppEyebrow className="flex items-center gap-2">
+              <Coins className="h-3.5 w-3.5" />
               {t('credits')}
-            </CardTitle>
+            </AppEyebrow>
+            <AppGoldRule className="w-8" />
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
