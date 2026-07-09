@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../../client/components/ui/button";
 import { Input } from "../../../client/components/ui/input";
@@ -6,6 +6,18 @@ import { Label } from "../../../client/components/ui/label";
 import { ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
 
 const DAY_VALUES = ["0", "1", "2", "3", "4", "5", "6"];
+
+/** Brazilian catechetical year defaults: ~Feb 1 → Dec 15 of the current calendar year. */
+function defaultCatecheticalYear(now = new Date()) {
+  const y = now.getFullYear();
+  // If past October, default to next calendar year's cycle.
+  const startYear = now.getMonth() >= 9 ? y + 1 : y;
+  return {
+    yearName: `Catequese ${startYear}`,
+    yearStart: `${startYear}-02-01`,
+    yearEnd: `${startYear}-12-15`,
+  };
+}
 
 interface CoordinatorDetailsProps {
   parishName: string;
@@ -23,10 +35,11 @@ interface CoordinatorDetailsProps {
 
 export function CoordinatorDetails({ parishName, onComplete }: CoordinatorDetailsProps) {
   const { t } = useTranslation("onboarding");
+  const defaults = useMemo(() => defaultCatecheticalYear(), []);
   const [step, setStep] = useState<"class" | "year">("class");
-  const [yearName, setYearName] = useState("");
-  const [yearStart, setYearStart] = useState("");
-  const [yearEnd, setYearEnd] = useState("");
+  const [yearName, setYearName] = useState(defaults.yearName);
+  const [yearStart, setYearStart] = useState(defaults.yearStart);
+  const [yearEnd, setYearEnd] = useState(defaults.yearEnd);
   const [className, setClassName] = useState("");
   const [skipClass, setSkipClass] = useState(false);
   const [dayOfWeek, setDayOfWeek] = useState("6");
@@ -37,13 +50,14 @@ export function CoordinatorDetails({ parishName, onComplete }: CoordinatorDetail
   const [showOptionalDetails, setShowOptionalDetails] = useState(false);
 
   const handleYearFinish = () => {
+    if (!yearName.trim()) return;
     if (yearStart && yearEnd && yearEnd <= yearStart) {
       setDateError(t("coordinator.date_error"));
       return;
     }
     setDateError("");
     onComplete({
-      yearName,
+      yearName: yearName.trim(),
       yearStart,
       yearEnd,
       className: skipClass ? undefined : className.trim() || undefined,
@@ -56,6 +70,15 @@ export function CoordinatorDetails({ parishName, onComplete }: CoordinatorDetail
 
   return (
     <div className="space-y-7">
+      {parishName && (
+        <div className="border border-border/70 px-4 py-3 rounded-sm">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            {t("coordinator.parish_context")}
+          </p>
+          <p className="mt-0.5 text-sm font-medium text-foreground">{parishName}</p>
+        </div>
+      )}
+
       {step === "class" && (
         <>
           <div className="space-y-3">
@@ -187,7 +210,12 @@ export function CoordinatorDetails({ parishName, onComplete }: CoordinatorDetail
             </label>
           </div>
 
-          <Button type="button" onClick={() => setStep("year")} className="h-11 w-full rounded-sm shadow-none">
+          <Button
+            type="button"
+            onClick={() => setStep("year")}
+            disabled={!skipClass && !className.trim()}
+            className="h-11 w-full rounded-sm shadow-none"
+          >
             {t("coordinator.next")}
             <ArrowRight className="ml-1 h-4 w-4" />
           </Button>
@@ -261,7 +289,7 @@ export function CoordinatorDetails({ parishName, onComplete }: CoordinatorDetail
             <Button
               type="button"
               onClick={handleYearFinish}
-              disabled={!yearName.trim()}
+              disabled={!yearName.trim() || !yearStart || !yearEnd}
               className="h-11 w-full rounded-sm shadow-none"
             >
               {t("coordinator.finish")}

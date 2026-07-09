@@ -3336,6 +3336,7 @@ export const onboarding_es = {
       "select_hint": "Selecciona una parroquia para seguir"
     },
     "coordinator": {
+      "parish_context": "Parroquia",
       "year_title": "Año Catequético",
       "year_name": "Nombre del año *",
       "year_name_placeholder": "Ej: Catequesis 2026",

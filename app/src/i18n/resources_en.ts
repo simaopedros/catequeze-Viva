@@ -3336,6 +3336,7 @@ export const onboarding_en = {
       "select_hint": "Select a parish to move on"
     },
     "coordinator": {
+      "parish_context": "Parish",
       "year_title": "Catechetical Year",
       "year_name": "Year name *",
       "year_name_placeholder": "Ex: Catechesis 2026",
