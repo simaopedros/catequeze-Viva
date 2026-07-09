@@ -1315,16 +1315,17 @@ export default function BillingPage() {
               </div>
             ) : null}
 
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div>
-                <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div className="space-y-2">
+                <AppDisplayTitle as="h2" className="text-2xl sm:text-2xl">
                   {isConversionMode
                     ? t("conversion_plans_title")
                     : isUpgradeJourney
                       ? t("upgrade_plans_title")
                       : t("available_plans")}
-                </h2>
-                <p className="mt-1 text-sm text-muted-foreground">
+                </AppDisplayTitle>
+                <AppGoldRule />
+                <p className="text-sm text-muted-foreground">
                   {isConversionMode
                     ? t("conversion_plans_subtitle")
                     : isUpgradeJourney
@@ -1406,9 +1407,9 @@ export default function BillingPage() {
                   >
                     <div className="mb-4 flex items-start justify-between gap-3">
                       <div>
-                        <h3 className="text-lg font-semibold tracking-tight text-foreground">
+                        <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
                           {plan.name}
-                        </h3>
+                        </AppDisplayTitle>
                         {((isConversionMode && isRecommended) ||
                           (isUpgradeJourney && isRecommended) ||
                           (!isConversionMode &&

@@ -5,6 +5,10 @@ import { useCollaborative } from "./CollaborativeContext";
 import { QuickSetupPanel } from "./QuickSetupPanel";
 import { getContentItem } from "wasp/client/operations";
 import { modeToIntent, type SessionContext } from "../../../shared/intent";
+import {
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
 import { Loader2, Feather, AlertTriangle } from "lucide-react";
 
 export function AutoStartPanel({ mode }: { mode: string }) {
@@ -104,15 +108,16 @@ export function AutoStartPanel({ mode }: { mode: string }) {
             <Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" />
           )}
         </div>
-        <div>
-          <p className="text-lg font-semibold">
+        <div className="space-y-2">
+          <AppDisplayTitle as="h2" className="text-lg sm:text-lg">
             {status === "starting"
               ? t("planner.generating_title")
               : "A carregar conteúdo..."}
-          </p>
-          <p className="text-sm text-muted-foreground mt-1">
+          </AppDisplayTitle>
+          <AppGoldRule className="mx-auto" />
+          <p className="mt-1 text-sm text-muted-foreground">
             {status === "starting"
-              ? "A preparar o seu conteúdo no Copiloto..."
+              ? "A preparar o seu conteúdo..."
               : "A obter os dados do conteúdo existente..."}
           </p>
         </div>

@@ -3,6 +3,11 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../client/components/ui/button";
 import { Badge } from "../../client/components/ui/badge";
+import {
+  AppDisplayTitle,
+  AppEyebrow,
+  AppGoldRule,
+} from "../../client/components/brand/AppChrome";
 import { FileText, Upload, CheckCircle, Clock, Loader2 } from "lucide-react";
 import { useQuery, getCatechumenByUploadToken } from "wasp/client/operations";
 import { toast } from "../../client/hooks/use-toast";
@@ -69,9 +74,10 @@ export default function PublicUploadDocsPage() {
           <div className="mx-auto w-fit rounded-sm border border-destructive/20 bg-destructive/10 p-4">
             <Clock className="h-8 w-8 text-destructive" />
           </div>
-          <h1 className="text-xl font-semibold tracking-tight">
+          <AppDisplayTitle className="text-xl sm:text-xl">
             {t("upload_docs.invalid_title")}
-          </h1>
+          </AppDisplayTitle>
+          <AppGoldRule className="mx-auto" />
           <p className="text-sm text-muted-foreground">
             {error?.message || t("upload_docs.invalid_desc")}
           </p>
@@ -85,17 +91,18 @@ export default function PublicUploadDocsPage() {
   return (
     <div className="min-h-screen bg-[#F7F4EE] flex items-center justify-center p-4">
       <div className="max-w-lg w-full space-y-6">
-        <div className="text-center space-y-2">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground mb-2">
-            <FileText className="h-4 w-4" />
+        <div className="space-y-2.5 text-center">
+          <AppEyebrow className="inline-flex items-center justify-center gap-1.5">
+            <FileText className="h-3.5 w-3.5" />
             {t("workspace.app_name")}
-          </div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+          </AppEyebrow>
+          <AppDisplayTitle className="text-2xl sm:text-2xl">
             {t("upload_docs.greeting")}{" "}
             <span className="text-[#071A2D]">
               {catechumen.firstName} {catechumen.lastName}
             </span>
-          </h1>
+          </AppDisplayTitle>
+          <AppGoldRule className="mx-auto" />
           <p className="text-sm text-muted-foreground">
             {t("upload_docs.subtitle")}
           </p>

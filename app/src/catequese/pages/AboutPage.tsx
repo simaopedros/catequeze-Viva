@@ -1,6 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { PublicNavbar } from "../PublicNavbar";
 import { PublicFooter } from "../PublicFooter";
+import {
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../client/components/brand/AppChrome";
 
 const OFFER_KEYS = [
   "classes",
@@ -15,31 +19,28 @@ export default function AboutPage() {
   const { t } = useTranslation("public");
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-background">
       <PublicNavbar />
       <main className="mx-auto max-w-3xl flex-1 space-y-8 px-4 py-20">
-        <div className="space-y-3">
-          <h1
-            className="text-4xl font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+        <div className="space-y-2.5">
+          <AppDisplayTitle className="text-4xl text-[#071A2D] sm:text-4xl">
             {t("about.title")}
-          </h1>
-          <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+          </AppDisplayTitle>
+          <AppGoldRule />
           <p className="text-lg text-muted-foreground">{t("about.intro")}</p>
         </div>
 
-        <section>
-          <h2 className="mb-3 text-2xl font-semibold text-[#071A2D]">
+        <section className="space-y-2">
+          <AppDisplayTitle as="h2" className="text-2xl text-[#071A2D] sm:text-2xl">
             {t("about.mission_title")}
-          </h2>
+          </AppDisplayTitle>
           <p className="text-muted-foreground">{t("about.mission_text")}</p>
         </section>
 
-        <section>
-          <h2 className="mb-3 text-2xl font-semibold text-[#071A2D]">
+        <section className="space-y-2">
+          <AppDisplayTitle as="h2" className="text-2xl text-[#071A2D] sm:text-2xl">
             {t("about.offer_title")}
-          </h2>
+          </AppDisplayTitle>
           <ul className="space-y-3 text-muted-foreground">
             {OFFER_KEYS.map((key) => (
               <li key={key}>{t(`about.offers.${key}`)}</li>

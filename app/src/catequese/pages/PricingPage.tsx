@@ -18,6 +18,10 @@ import {
   trackLead,
   trackViewPricing,
 } from "../../client/analytics/metaTracking";
+import {
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../client/components/brand/AppChrome";
 
 type PlanLevel = "personal" | "institutional";
 
@@ -139,8 +143,10 @@ export default function PricingPage() {
             <Star className="h-3 w-3" /> {tp("pricing.most_popular")}
           </div>
         )}
-        <h3 className="text-lg font-semibold tracking-tight">{plan.name}</h3>
-        <p className="text-sm text-muted-foreground mt-1">{plan.desc}</p>
+        <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
+          {plan.name}
+        </AppDisplayTitle>
+        <p className="mt-1 text-sm text-muted-foreground">{plan.desc}</p>
         <div className="mt-4 mb-1">
           {showAnnual ? (
             <>
@@ -219,11 +225,12 @@ export default function PricingPage() {
       <PublicNavbar />
 
       <main className="flex-1">
-        <section className="max-w-4xl mx-auto px-4 pt-16 pb-8 text-center space-y-4">
-          <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+        <section className="mx-auto max-w-4xl space-y-4 px-4 pb-8 pt-16 text-center">
+          <AppDisplayTitle className="text-4xl sm:text-5xl">
             {tp("pricing.title")}
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          </AppDisplayTitle>
+          <AppGoldRule className="mx-auto" />
+          <p className="mx-auto max-w-2xl text-lg text-muted-foreground sm:text-xl">
             {tp("pricing.subtitle")}
           </p>
           <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground pt-2 flex-wrap">
@@ -271,9 +278,12 @@ export default function PricingPage() {
 
         <section className="bg-muted/30 border-t">
           <div className="max-w-3xl mx-auto px-4 py-16">
-            <h2 className="text-2xl font-semibold tracking-tight text-center mb-10 text-foreground">
-              {tp("pricing.faq_title")}
-            </h2>
+            <div className="mb-10 space-y-2.5 text-center">
+              <AppDisplayTitle as="h2" className="text-2xl sm:text-2xl">
+                {tp("pricing.faq_title")}
+              </AppDisplayTitle>
+              <AppGoldRule className="mx-auto" />
+            </div>
             <div className="space-y-4">
               {faq.map((f, i) => (
                 <div

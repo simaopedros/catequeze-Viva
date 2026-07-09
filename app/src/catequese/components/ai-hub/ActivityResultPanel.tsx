@@ -4,6 +4,10 @@ import { Button } from "../../../client/components/ui/button";
 import { Card } from "../../../client/components/ui/card";
 import { Badge } from "../../../client/components/ui/badge";
 import {
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
+import {
   RotateCcw,
   Pencil,
   ArrowLeft,
@@ -57,9 +61,10 @@ export function ActivityResultPanel({
         <Card className="space-y-4 rounded-sm border-border/70 p-6">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 space-y-2">
-              <h2 className="text-xl font-semibold tracking-tight text-foreground">
+              <AppDisplayTitle as="h2" className="text-xl sm:text-xl">
                 {activity.title}
-              </h2>
+              </AppDisplayTitle>
+              <AppGoldRule />
               <Badge
                 variant="secondary"
                 className="gap-1 rounded-sm border border-border/70 bg-muted/30 font-medium text-foreground"

@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { ROLE_LABELS } from "../../shared/constants";
 import {
+  AppEyebrow,
   AppPageHeader,
   AppPanel,
 } from "../../client/components/brand/AppChrome";
@@ -189,9 +190,7 @@ export default function SettingsPage() {
       )}
 
       <AppPanel className="space-y-4">
-        <h3 className="text-sm font-semibold tracking-tight text-foreground">
-          {t("profile")}
-        </h3>
+        <AppEyebrow>{t("profile")}</AppEyebrow>
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
             <label htmlFor="firstName" className="text-xs font-medium">
@@ -255,10 +254,8 @@ export default function SettingsPage() {
       </AppPanel>
 
       {/* Password */}
-      <div className="rounded-sm border border-border/70 bg-white p-5 space-y-4">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-          {t("change_password")}
-        </p>
+      <AppPanel className="space-y-4">
+        <AppEyebrow>{t("change_password")}</AppEyebrow>
         {passwordForm.formState.errors.root && (
           <p
             className={`text-xs flex items-center gap-1 ${
@@ -330,18 +327,18 @@ export default function SettingsPage() {
             </Button>
           </form>
         </Form>
-      </div>
+      </AppPanel>
 
       {/* Two-Factor Authentication */}
       <TwoFactorSetup />
 
       {/* Data export */}
-      <div className="rounded-sm border border-border/70 bg-white p-4">
-        <h3 className="font-semibold text-sm flex items-center gap-2 mb-1">
-          <Download className="h-4 w-4" />
+      <AppPanel className="space-y-3">
+        <AppEyebrow className="flex items-center gap-2">
+          <Download className="h-3.5 w-3.5" />
           {t("export_data")}
-        </h3>
-        <p className="text-xs text-muted-foreground mb-3">{t("export_desc")}</p>
+        </AppEyebrow>
+        <p className="text-xs text-muted-foreground">{t("export_desc")}</p>
         {exportMsg && (
           <p
             className={`text-xs mb-3 ${
@@ -354,21 +351,22 @@ export default function SettingsPage() {
         <Button
           size="sm"
           variant="outline"
+          className="rounded-sm"
           onClick={handleExportData}
           disabled={exporting}
         >
           <Download className="mr-1 h-3 w-3" />
           {exporting ? t("export_requesting") : t("export_request")}
         </Button>
-      </div>
+      </AppPanel>
 
       {/* Migration — only for coordinators */}
       {userRole === "PARISH_COORDINATOR" && (
-        <div className="rounded-sm border border-border/70 bg-white p-5 space-y-4">
-          <h3 className="font-semibold flex items-center gap-2">
-            <GitMerge className="h-4 w-4" />
+        <AppPanel className="space-y-4">
+          <AppEyebrow className="flex items-center gap-2">
+            <GitMerge className="h-3.5 w-3.5" />
             {t("migration")}
-          </h3>
+          </AppEyebrow>
           <p className="text-xs text-muted-foreground">{t("migration_desc")}</p>
           <div>
             <label htmlFor="source-parish" className="text-xs font-medium">
@@ -416,16 +414,16 @@ export default function SettingsPage() {
             />
             {migrating ? t("migrating") : t("migrate_data")}
           </Button>
-        </div>
+        </AppPanel>
       )}
 
       {/* Privacy notice */}
-      <div className="rounded-sm border border-border/70 bg-white p-4 flex items-center gap-3">
+      <AppPanel className="flex items-center gap-3" padded>
         <div className="rounded-sm border border-border/70 bg-muted/30 p-2 text-foreground">
           <Shield className="h-5 w-5" />
         </div>
         <p className="text-xs text-muted-foreground">{t("privacy_notice")}</p>
-      </div>
+      </AppPanel>
     </div>
   );
 }

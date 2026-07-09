@@ -1,6 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { PublicNavbar } from "../PublicNavbar";
 import { PublicFooter } from "../PublicFooter";
+import {
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../client/components/brand/AppChrome";
 
 export default function TermsPage() {
   const { t } = useTranslation("legal");
@@ -9,39 +13,36 @@ export default function TermsPage() {
   }) as string[];
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-background">
       <PublicNavbar />
       <main className="mx-auto max-w-3xl flex-1 space-y-8 px-4 py-20">
-        <div className="space-y-3">
-          <h1
-            className="text-4xl font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+        <div className="space-y-2.5">
+          <AppDisplayTitle className="text-4xl text-[#071A2D] sm:text-4xl">
             {t("terms.title")}
-          </h1>
-          <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+          </AppDisplayTitle>
+          <AppGoldRule />
           <p className="text-muted-foreground">{t("terms.updated")}</p>
         </div>
 
         <div className="space-y-6 text-sm text-muted-foreground">
           <section>
-            <h2 className="text-xl font-semibold text-foreground mb-2">
+            <AppDisplayTitle as="h2" className="mb-2 text-xl sm:text-xl">
               {t("terms.sections.acceptance.title")}
-            </h2>
+            </AppDisplayTitle>
             <p>{t("terms.sections.acceptance.text")}</p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-foreground mb-2">
+            <AppDisplayTitle as="h2" className="mb-2 text-xl sm:text-xl">
               {t("terms.sections.service.title")}
-            </h2>
+            </AppDisplayTitle>
             <p>{t("terms.sections.service.text")}</p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-foreground mb-2">
+            <AppDisplayTitle as="h2" className="mb-2 text-xl sm:text-xl">
               {t("terms.sections.obligations.title")}
-            </h2>
+            </AppDisplayTitle>
             <ul className="list-disc pl-5 space-y-1">
               {obligations.map((item, i) => (
                 <li key={i}>{item}</li>
@@ -50,16 +51,16 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-foreground mb-2">
+            <AppDisplayTitle as="h2" className="mb-2 text-xl sm:text-xl">
               {t("terms.sections.liability.title")}
-            </h2>
+            </AppDisplayTitle>
             <p>{t("terms.sections.liability.text")}</p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-foreground mb-2">
+            <AppDisplayTitle as="h2" className="mb-2 text-xl sm:text-xl">
               {t("terms.sections.jurisdiction.title")}
-            </h2>
+            </AppDisplayTitle>
             <p>{t("terms.sections.jurisdiction.text")}</p>
           </section>
         </div>

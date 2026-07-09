@@ -167,7 +167,10 @@ export function GuidedTour({ onComplete }: GuidedTourProps) {
             <X className="h-4 w-4" />
           </button>
         </div>
-        <h3 className="mb-1 text-lg font-semibold tracking-tight text-foreground">
+        <h3
+          className="mb-1 text-lg font-semibold tracking-tight text-foreground"
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
           {step.title}
         </h3>
         <p className="text-sm text-muted-foreground mb-4">{step.description}</p>

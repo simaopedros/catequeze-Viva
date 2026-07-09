@@ -200,9 +200,12 @@ export default function WorkspaceSelectorPage() {
           {workspaceIcon(ws.type)}
         </div>
         <div className="min-w-0 flex-1">
-          <h2 className="text-lg font-semibold tracking-tight text-[#071A2D]">
+          <p
+            className="text-lg font-semibold tracking-tight text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
             {ws.name}
-          </h2>
+          </p>
           <div className="mt-1 flex flex-wrap items-center gap-2">
             <span className="rounded-sm bg-[#071A2D]/08 px-2 py-0.5 text-xs font-medium text-[#071A2D]">
               {planLabel(ws.plan, t)}
@@ -304,9 +307,12 @@ export default function WorkspaceSelectorPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <h2 className="text-lg font-semibold tracking-tight text-foreground">
+                        <p
+                          className="text-lg font-semibold tracking-tight text-foreground"
+                          style={{ fontFamily: "var(--font-brand-display)" }}
+                        >
                           {lastUsed.name}
-                        </h2>
+                        </p>
                         <span className="text-overline text-muted-foreground rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5">
                           {t("workspace.last_used")}
                         </span>
@@ -352,9 +358,12 @@ export default function WorkspaceSelectorPage() {
                       <User className="h-6 w-6 text-foreground" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h2 className="text-lg font-semibold tracking-tight text-foreground">
+                      <p
+                        className="text-lg font-semibold tracking-tight text-foreground"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
                         {personal.name}
-                      </h2>
+                      </p>
                       <p className="text-sm text-muted-foreground">
                         {personal.subtitle}
                       </p>
@@ -404,9 +413,12 @@ export default function WorkspaceSelectorPage() {
                       <Church className="h-6 w-6 text-warning" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h2 className="text-lg font-semibold tracking-tight text-foreground">
+                      <p
+                        className="text-lg font-semibold tracking-tight text-foreground"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
                         {ws.name}
-                      </h2>
+                      </p>
                       <p className="text-sm text-muted-foreground">
                         {t("workspace.invited_as", {
                           role: roleLabel(ws.role, t),

@@ -14,6 +14,10 @@ import { Label } from "../../client/components/ui/label";
 import { Button } from "../../client/components/ui/button";
 import { PublicNavbar } from "../PublicNavbar";
 import { PublicFooter } from "../PublicFooter";
+import {
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../client/components/brand/AppChrome";
 import { submitContactMessage } from "wasp/client/operations";
 import { cn } from "../../client/utils";
 
@@ -52,14 +56,11 @@ export default function ContactPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <PublicNavbar />
       <main className="mx-auto max-w-3xl flex-1 px-4 py-20">
-        <div className="mb-10 space-y-3">
-          <h1
-            className="text-4xl font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+        <div className="mb-10 space-y-2.5">
+          <AppDisplayTitle className="text-4xl text-[#071A2D] sm:text-4xl">
             {t("contact.title")}
-          </h1>
-          <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+          </AppDisplayTitle>
+          <AppGoldRule />
           <p className="text-lg text-muted-foreground">{t("contact.intro")}</p>
         </div>
 
