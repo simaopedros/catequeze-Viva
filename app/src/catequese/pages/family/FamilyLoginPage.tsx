@@ -16,7 +16,7 @@ export default function FamilyLoginPage() {
   useRedirectIfLoggedIn();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F7F4EE] p-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-8">
         <div className="space-y-2.5 text-center">
           <AppEyebrow className="text-center">{t("portal_badge")}</AppEyebrow>

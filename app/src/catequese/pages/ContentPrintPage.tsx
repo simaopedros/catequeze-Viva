@@ -135,12 +135,21 @@ export default function ContentPrintPage() {
             position: static !important;
           }
 
+          /*
+            Only hide chrome marked .no-print / data-print-hide.
+            Do NOT hide bare <header>/<nav>/<aside> — the print document
+            title block is a <header> and was being wiped from the PDF.
+          */
           .no-print,
-          aside,
-          header,
-          nav,
           [data-print-hide="true"] {
             display: none !important;
+          }
+
+          /* Explicitly keep document chrome (title, time, theme) */
+          #print-content .print-doc-header,
+          #print-content [data-print-keep="true"] {
+            display: block !important;
+            visibility: visible !important;
           }
 
           #print-root {
@@ -275,7 +284,10 @@ export default function ContentPrintPage() {
             id="print-content"
             className="px-6 py-8 text-[#071A2D] sm:px-10 sm:py-10"
           >
-            <header className="print-keep mb-8 border-b border-[#071A2D]/15 pb-6 text-center">
+            <header
+              className="print-doc-header print-keep mb-8 border-b border-[#071A2D]/15 pb-6 text-center"
+              data-print-keep="true"
+            >
               <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#6b7c8a]">
                 {t("print_page.header_badge")}
               </p>
@@ -468,7 +480,7 @@ export default function ContentPrintPage() {
                             (question: any, questionIndex: number) => (
                               <div
                                 key={question.id || questionIndex}
-                                className="mb-3 rounded-sm border border-border/70 bg-[#F7F4EE] p-3"
+                                className="mb-3 rounded-sm border border-border/70 bg-background p-3"
                               >
                                 <p className="mb-2 text-sm font-semibold tracking-tight text-[#071A2D]">
                                   {questionIndex + 1}. {question.question}
@@ -495,7 +507,7 @@ export default function ContentPrintPage() {
                           data.steps?.map((step: any, stepIndex: number) => (
                             <div
                               key={step.id || stepIndex}
-                              className="mb-2 rounded-sm border border-border/70 bg-[#F7F4EE] p-3 text-sm"
+                              className="mb-2 rounded-sm border border-border/70 bg-background p-3 text-sm"
                             >
                               <p className="font-semibold tracking-tight text-[#071A2D]">
                                 {t("print_page.step", { num: stepIndex + 1 })}{" "}

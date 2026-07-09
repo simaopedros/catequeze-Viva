@@ -25,7 +25,7 @@ export default function FamilyInviteCodePage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F7F4EE] p-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-8">
         <div className="space-y-2.5 text-center">
           <div className="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-sm border border-border/70 bg-muted/30">

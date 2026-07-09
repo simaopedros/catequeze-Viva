@@ -18,7 +18,7 @@ export function StepsSection({
   const list = Array.isArray(steps) ? steps : [];
 
   return (
-    <section id="como" className="scroll-mt-20 border-y border-border/50 bg-[#FBF8F2]">
+    <section id="como" className="scroll-mt-20 border-y border-border/50 bg-background">
       <div className="mx-auto max-w-6xl px-4 py-16 sm:py-20">
         <div className="flex flex-col gap-8 sm:gap-10 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-md space-y-3">

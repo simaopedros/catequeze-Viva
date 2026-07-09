@@ -958,7 +958,7 @@ export function RichContentEditor({
         }}
       />
 
-      <div className="overflow-visible bg-[#F7F4EE]/50 p-3 sm:p-6 lg:p-8">
+      <div className="overflow-visible bg-muted/40 p-3 sm:p-6 lg:p-8">
         <div
           className={cn(
             "relative z-10 mx-auto max-w-[920px] overflow-visible rounded-sm border border-border/70 bg-white",

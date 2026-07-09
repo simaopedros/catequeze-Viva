@@ -57,7 +57,7 @@ export function AiHubLayout({
           }
         />
       </div>
-      <div className="flex-1 bg-[#F7F4EE]/40">{children}</div>
+      <div className="flex-1 bg-muted/30">{children}</div>
     </div>
   );
 }

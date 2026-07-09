@@ -13,7 +13,7 @@ export function OutcomesSection({ ns = "landing" }: { ns?: string }) {
   if (list.length === 0) return null;
 
   return (
-    <section id="recursos" className="scroll-mt-20 bg-[#F7F4EE]">
+    <section id="recursos" className="scroll-mt-20 bg-background">
       <div className="mx-auto max-w-6xl px-4 py-16 sm:py-20">
         <div className="max-w-xl space-y-3">
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">

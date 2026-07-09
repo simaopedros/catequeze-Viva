@@ -10,7 +10,7 @@ export function AiShowcaseSection({ ns = 'landing', responsiveCtas = false }: { 
   const { ref, className } = useScrollReveal();
 
   return (
-    <section className="relative overflow-hidden border-y border-border/70 bg-[#F7F4EE]">
+    <section className="relative overflow-hidden border-y border-border/70 bg-background">
       <div className="relative mx-auto max-w-4xl space-y-6 px-4 py-20 text-center">
         <div ref={ref} className={className}>
           <div className="mb-6 inline-flex items-center gap-2 rounded-sm border border-border/70 bg-white px-4 py-1.5 text-sm font-medium text-[#071A2D]">

@@ -76,7 +76,7 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
 
   return (
     <section id="demo" className="scroll-mt-20 relative overflow-hidden border-y">
-      <div className="absolute inset-0 bg-[#F7F4EE]/70" />
+      <div className="absolute inset-0 bg-background/70" />
       <div className="relative mx-auto max-w-5xl px-4 py-16 md:py-20">
         <div ref={ref} className={cn("grid gap-10 lg:grid-cols-2 lg:items-center", className)}>
           <div className="space-y-5 text-center lg:text-left">

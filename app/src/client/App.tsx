@@ -232,7 +232,7 @@ export default function App() {
         </div>
       )}
       {isFamilyPortal && location.pathname === "/" ? (
-        <div className="min-h-screen bg-[#F7F4EE] text-[#071A2D]">
+        <div className="min-h-screen bg-background text-[#071A2D]">
           <ErrorBoundary>
             <FamilyLandingPage />
           </ErrorBoundary>

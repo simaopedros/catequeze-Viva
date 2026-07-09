@@ -1,4 +1,4 @@
-/** Institutional avatar tokens — ink on paper, not multi-color SaaS chips. */
+/** Institutional avatar tokens — ink on white, not multi-color SaaS chips. */
 export const AVATAR_COLORS = [
   "border border-border/70 bg-muted/30 text-[#071A2D]",
   "border border-[#071A2D]/15 bg-[#071A2D]/[0.06] text-[#071A2D]",

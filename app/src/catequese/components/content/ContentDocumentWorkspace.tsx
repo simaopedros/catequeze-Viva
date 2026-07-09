@@ -1026,7 +1026,7 @@ export function ContentDocumentWorkspace({
               antes de salvar.
             </SheetDescription>
           </SheetHeader>
-          <div className="min-h-0 flex-1 overflow-y-auto bg-[#F7F4EE]/40 px-5 py-5">
+          <div className="min-h-0 flex-1 overflow-y-auto bg-muted/30 px-5 py-5">
             <article className="rounded-sm border border-border/70 bg-white px-5 py-6 sm:px-7 sm:py-8">
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 Encontro

@@ -161,7 +161,7 @@ export function AppShell({ children }: AppShellProps) {
   // Prevent the stale shell from rendering while the hard redirect to the auth
   // entrypoint is in flight.
   if (authUser === null) {
-    return <div className="min-h-screen bg-[#F7F4EE]" />;
+    return <div className="min-h-screen bg-background" />;
   }
 
   if (isFamily) {
@@ -171,7 +171,7 @@ export function AppShell({ children }: AppShellProps) {
   if (isMinimalPath) {
     return (
       <TwoFactorGate>
-        <div className="min-h-screen bg-[#F7F4EE]">{children}</div>
+        <div className="min-h-screen bg-background">{children}</div>
       </TwoFactorGate>
     );
   }
@@ -215,7 +215,7 @@ export function AppShell({ children }: AppShellProps) {
           <main
             id="main-content"
             ref={mainRef}
-            className="no-overscroll scroll-touch flex-1 overflow-y-auto bg-[#F7F4EE] p-4 print:overflow-visible print:bg-white print:p-0 md:p-6"
+            className="no-overscroll scroll-touch flex-1 overflow-y-auto bg-background p-4 print:overflow-visible print:bg-white print:p-0 md:p-6"
             style={{
               paddingBottom: "calc(4rem + env(safe-area-inset-bottom, 0px))",
             }}

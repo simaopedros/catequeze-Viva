@@ -61,7 +61,7 @@ export default function PublicUploadDocsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F7F4EE] dark:bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-background dark:bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" />
       </div>
     );
@@ -69,7 +69,7 @@ export default function PublicUploadDocsPage() {
 
   if (error || !data) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F7F4EE] dark:bg-background p-6">
+      <div className="min-h-screen flex items-center justify-center bg-background dark:bg-background p-6">
         <div className="w-full max-w-md space-y-4 rounded-sm border border-border/70 bg-white p-8 text-center">
           <div className="mx-auto w-fit rounded-sm border border-destructive/20 bg-destructive/10 p-4">
             <Clock className="h-8 w-8 text-destructive" />
@@ -89,7 +89,7 @@ export default function PublicUploadDocsPage() {
   const catechumen = data as any;
 
   return (
-    <div className="min-h-screen bg-[#F7F4EE] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="max-w-lg w-full space-y-6">
         <div className="space-y-2.5 text-center">
           <AppEyebrow className="inline-flex items-center justify-center gap-1.5">

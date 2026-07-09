@@ -13,7 +13,7 @@ export default function FamilyLandingPage() {
   const { t } = useTranslation("family");
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F7F4EE] p-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md text-center space-y-8">
         <div className="space-y-2.5">
           <AppEyebrow className="text-center">{t("portal_badge")}</AppEyebrow>

@@ -17,7 +17,7 @@ export function PersonasSection({ ns = 'landing' }: { ns?: string }) {
   }));
 
   return (
-    <section className="border-y border-border/70 bg-[#F7F4EE]">
+    <section className="border-y border-border/70 bg-background">
       <div className="max-w-6xl mx-auto px-4 py-16">
         <div ref={headerRef} className={`text-center mb-10 space-y-3 ${headerClass}`}>
           <div className="mx-auto h-px w-10 bg-[#D39A2B]" aria-hidden />

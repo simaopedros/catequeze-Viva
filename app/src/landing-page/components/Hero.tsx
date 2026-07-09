@@ -8,7 +8,7 @@ export default function Hero() {
 
   return (
     <div className="relative w-full pt-14 overflow-hidden">
-      <div className="absolute inset-0 bg-[#F7F4EE]/80" />
+      <div className="absolute inset-0 bg-background/80" />
       <div
         className="pointer-events-none absolute right-10 top-20 h-72 w-72 rounded-sm bg-[#071A2D]/[0.04]"
         aria-hidden

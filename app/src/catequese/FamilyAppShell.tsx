@@ -29,7 +29,7 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
 
   return (
     <TwoFactorGate>
-      <div className="flex min-h-screen flex-col bg-[#F7F4EE]">
+      <div className="flex min-h-screen flex-col bg-background">
         {/* Top bar */}
         <header
           className="sticky top-0 z-sticky border-b border-border/70 bg-white"
@@ -50,7 +50,7 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
 
         {/* Content */}
         <main
-          className="no-overscroll scroll-touch flex-1 bg-[#F7F4EE] p-4 md:p-6"
+          className="no-overscroll scroll-touch flex-1 bg-background p-4 md:p-6"
           style={{
             paddingBottom: "calc(5rem + env(safe-area-inset-bottom, 0px))",
           }}
