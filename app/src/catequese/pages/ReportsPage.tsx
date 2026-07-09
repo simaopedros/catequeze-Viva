@@ -283,8 +283,8 @@ export default function ReportsPage() {
           {/* Risk alert */}
           {riskClasses.length > 0 && (
             <div className="rounded-sm border border-destructive/30 bg-destructive/10 p-4">
-              <h3 className="font-semibold text-sm text-destructive flex items-center gap-2 mb-2">
-                <AlertTriangle className="h-4 w-4" />
+              <h3 className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-destructive">
+                <AlertTriangle className="h-3.5 w-3.5" />
                 {t("dropout_title")}
               </h3>
               <p className="text-xs text-destructive/90 mb-2">
@@ -442,10 +442,13 @@ export default function ReportsPage() {
         <div className="space-y-6">
           {/* Bar Chart */}
           <div className="rounded-sm border border-border/70 bg-white p-6">
-            <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              {t("chart_attendance")}
-            </h3>
+            <div className="mb-4 space-y-1.5">
+              <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <BarChart3 className="h-3.5 w-3.5 text-[#071A2D]" />
+                {t("chart_attendance")}
+              </h3>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            </div>
             {!classReports.length ? (
               <EmptyState icon={BarChart3} title={t("no_chart_data")} compact />
             ) : (
@@ -490,10 +493,13 @@ export default function ReportsPage() {
 
           {/* Pie Chart */}
           <div className="rounded-sm border border-border/70 bg-white p-6">
-            <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
-              <PieChart className="h-4 w-4" />
-              {t("chart_distribution")}
-            </h3>
+            <div className="mb-4 space-y-1.5">
+              <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <PieChart className="h-3.5 w-3.5 text-[#071A2D]" />
+                {t("chart_distribution")}
+              </h3>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            </div>
             {pieData[0].value + pieData[1].value === 0 ? (
               <EmptyState
                 icon={PieChart}

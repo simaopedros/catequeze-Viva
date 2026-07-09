@@ -203,10 +203,11 @@ export default function ImportCatechumensPage() {
       />
 
       <AppPanel className="space-y-4">
-        <div>
-          <h3 className="font-semibold mb-1">
+        <div className="space-y-1.5">
+          <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {t("catechumens.import_format_title")}
           </h3>
+          <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
           <p className="text-sm text-muted-foreground">
             {t("catechumens.import_format_desc")}
           </p>
@@ -356,11 +357,14 @@ Maria,Santos,2014-07-22,Silva Santos`}
       </AppPanel>
 
       {results && (
-        <div className="rounded-sm border border-border/70 bg-white p-6 space-y-3">
-          <h3 className="font-semibold flex items-center gap-2">
-            <CheckCircle className="h-5 w-5 text-[#071A2D]" />
-            {t("catechumens.import_result_title")}
-          </h3>
+        <div className="space-y-3 rounded-sm border border-border/70 bg-white p-6">
+          <div className="space-y-1.5">
+            <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              <CheckCircle className="h-4 w-4 text-[#071A2D]" />
+              {t("catechumens.import_result_title")}
+            </h3>
+            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-sm border border-border/70 bg-muted/30 p-4 text-center">
               <p className="text-2xl font-semibold tracking-tight tabular-nums text-foreground">

@@ -110,8 +110,13 @@ export function ParishMembersTab({
       </div>
 
       {showInvite && (
-        <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3">
-          <h3 className="font-medium text-sm">{tp("invite_member")}</h3>
+        <div className="space-y-3 rounded-sm border border-border/70 bg-white p-4">
+          <div className="space-y-1.5">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              {tp("invite_member")}
+            </h3>
+            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          </div>
           <div className="flex flex-wrap gap-3">
             <input
               value={inviteEmail}

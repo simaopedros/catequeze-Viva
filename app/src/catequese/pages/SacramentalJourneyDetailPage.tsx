@@ -647,11 +647,19 @@ export default function SacramentalJourneyDetailPage() {
 
       {journey.template?.parish && (
         <div className="rounded-sm border border-border/70 bg-white p-4">
-          <h3 className="text-sm font-semibold mb-2 flex items-center gap-1">
-            <BookOpen className="h-4 w-4" />
-            {t("detail.template")}
-          </h3>
-          <p className="text-sm">{journey.template.name}</p>
+          <div className="mb-2 space-y-1.5">
+            <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              <BookOpen className="h-3.5 w-3.5 text-[#071A2D]" />
+              {t("detail.template")}
+            </h3>
+            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          </div>
+          <p
+            className="text-sm font-semibold tracking-tight text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
+            {journey.template.name}
+          </p>
           <p className="text-xs text-muted-foreground">
             {journey.template.parish.type === "PERSONAL"
               ? t("detail.template_personal")

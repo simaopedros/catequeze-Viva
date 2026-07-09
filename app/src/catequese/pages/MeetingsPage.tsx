@@ -154,6 +154,12 @@ export default function MeetingsPage() {
 
       {showForm && (
         <AppPanel className="space-y-3">
+          <div className="space-y-1.5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              {t("new")}
+            </p>
+            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          </div>
           <div className="flex gap-3">
             <div className="flex-1 space-y-1.5">
               <Label htmlFor="meetingTitle">{t("meeting_title")}</Label>

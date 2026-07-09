@@ -1288,11 +1288,13 @@ export default function BillingPage() {
             {/* Savings CTA: switch from monthly to annual */}
             {canSwitchInterval && isMonthly && annualSavingsAmount ? (
               <div className="flex flex-col gap-4 rounded-sm border border-border/70 bg-white p-5 sm:flex-row sm:items-center">
-                <div className="flex-1">
-                  <p className="font-semibold text-[#071A2D] dark:text-white flex items-center gap-2">
-                    <PiggyBank className="h-4 w-4" /> {t("switch_annual_title")}
+                <div className="flex-1 space-y-1.5">
+                  <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    <PiggyBank className="h-3.5 w-3.5 text-[#071A2D]" />{" "}
+                    {t("switch_annual_title")}
                   </p>
-                  <p className="text-sm text-[#071A2D]/80 dark:text-white/80 mt-1">
+                  <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                  <p className="text-sm text-muted-foreground">
                     {t("switch_annual_desc", {
                       savings: formatPriceFromCents(annualSavingsAmount),
                       equivalent: monthlyEquivalentAnnual

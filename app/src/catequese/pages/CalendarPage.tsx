@@ -378,15 +378,18 @@ export default function CalendarPage() {
       {mobilePanelOpen && selectedDay != null && (
         <div className="lg:hidden fixed inset-0 z-modal flex items-end motion-reduce:transition-none">
           <div
-            className="absolute inset-0 bg-black/40 -sm transition-opacity"
+            className="absolute inset-0 bg-black/40 transition-opacity"
             onClick={() => setMobilePanelOpen(false)}
           />
           <div className="relative z-10 max-h-[75vh] w-full overflow-y-auto rounded-t-sm border-t border-border/70 bg-white animate-in slide-in-from-bottom-5 duration-300 motion-reduce:animate-none">
             <div className="sticky top-0 z-10 flex items-center justify-between rounded-t-sm border-b border-border/70 bg-white p-4">
-              <h3 className="font-semibold text-sm flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                {t("day_title", { day: selectedDay, month: months[month] })}
-              </h3>
+              <div className="space-y-1.5">
+                <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  <Calendar className="h-3.5 w-3.5 text-[#071A2D]" />
+                  {t("day_title", { day: selectedDay, month: months[month] })}
+                </h3>
+                <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+              </div>
               <Button
                 variant="ghost"
                 size="icon"
@@ -716,11 +719,14 @@ function SidePanelContent({
   /* ── No day selected ── show upcoming events ──────────────────────── */
   if (!selectedDay) {
     return (
-      <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3">
-        <h3 className="font-semibold text-sm flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-[#071A2D]" />
-          {t("upcoming_events")}
-        </h3>
+      <div className="space-y-3 rounded-sm border border-border/70 bg-white p-4">
+        <div className="space-y-1.5">
+          <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            <Calendar className="h-3.5 w-3.5 text-[#071A2D]" />
+            {t("upcoming_events")}
+          </h3>
+          <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+        </div>
         {upcomingEvents.length === 0 ? (
           <p className="text-xs text-muted-foreground py-2 text-center">
             {t("no_events")}
@@ -772,13 +778,16 @@ function SidePanelContent({
   return (
     <>
       {/* Day header card */}
-      <div className="rounded-sm border border-border/70 bg-white p-4 ">
-        <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-sm flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-[#071A2D]" />
-            {t("day_title", { day: selectedDay, month: months[month] })}
-          </h3>
-          <Badge variant="outline" className="text-overline">
+      <div className="rounded-sm border border-border/70 bg-white p-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="space-y-1.5">
+            <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              <Calendar className="h-3.5 w-3.5 text-[#071A2D]" />
+              {t("day_title", { day: selectedDay, month: months[month] })}
+            </h3>
+            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          </div>
+          <Badge variant="outline" className="rounded-sm text-overline">
             {dayEvents.length === 0 ? "0" : String(dayEvents.length)}
           </Badge>
         </div>
@@ -864,12 +873,15 @@ function SidePanelContent({
 
       {/* ── Create event form ───────────────────────────────────────────── */}
       {showForm && (
-        <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3 ">
-          <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-sm flex items-center gap-1.5">
-              <Plus className="h-4 w-4 text-[#071A2D]" />
-              {t("new_event")}
-            </h3>
+        <div className="space-y-3 rounded-sm border border-border/70 bg-white p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="space-y-1.5">
+              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <Plus className="h-3.5 w-3.5 text-[#071A2D]" />
+                {t("new_event")}
+              </h3>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            </div>
             <Button
               variant="ghost"
               size="icon"

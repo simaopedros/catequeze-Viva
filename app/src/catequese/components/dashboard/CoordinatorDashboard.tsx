@@ -199,7 +199,10 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
           />
         </AppPanel>
         <AppPanel>
-          <AppEyebrow className="mb-3">{t("search_tip_title")}</AppEyebrow>
+          <div className="mb-3 space-y-1.5">
+            <AppEyebrow>{t("search_tip_title")}</AppEyebrow>
+            <AppGoldRule className="w-8" />
+          </div>
           <p className="text-sm leading-relaxed text-muted-foreground">
             {tc("quick_tip_search")}
           </p>
