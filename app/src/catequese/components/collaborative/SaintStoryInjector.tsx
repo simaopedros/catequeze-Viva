@@ -86,7 +86,10 @@ export function SaintStoryInjector() {
         <div className="space-y-2">
           <div className="bg-muted/50 rounded-sm p-3 space-y-2">
             <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="text-xs">
+              <Badge
+                variant="secondary"
+                className="rounded-sm text-xs font-semibold tracking-tight text-[#071A2D]"
+              >
                 {story.saintName}
               </Badge>
               <span className="text-xs text-muted-foreground">
@@ -97,11 +100,15 @@ export function SaintStoryInjector() {
               {story.story}
             </p>
             <div className="text-xs">
-              <span className="font-semibold">{t("tools.saint.virtue")}:</span>{" "}
+              <span className="font-semibold tracking-tight text-[#071A2D]">
+                {t("tools.saint.virtue")}:
+              </span>{" "}
               {story.virtue}
             </div>
             <div className="text-xs">
-              <span className="font-semibold">{t("tools.saint.lesson")}:</span>{" "}
+              <span className="font-semibold tracking-tight text-[#071A2D]">
+                {t("tools.saint.lesson")}:
+              </span>{" "}
               {story.practicalLesson}
             </div>
           </div>

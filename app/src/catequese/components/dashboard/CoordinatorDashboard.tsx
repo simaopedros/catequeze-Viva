@@ -393,7 +393,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                           <td className="px-5 py-3 text-center">
                             <span
                               className={cn(
-                                "font-bold",
+                                "font-semibold tabular-nums",
                                 c.attendanceRate >= 75
                                   ? "text-[#071A2D]"
                                   : c.attendanceRate >= 50

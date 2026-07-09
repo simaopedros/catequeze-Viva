@@ -312,7 +312,10 @@ export default function ContentPrintPage() {
                     key={activity.id}
                     className="rounded-sm border border-border/70 bg-white p-4"
                   >
-                    <h3 className="mb-1 font-semibold">
+                    <h3
+                      className="mb-1 font-semibold tracking-tight text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
                       {index + 1}. {activity.title} — {typeLabel}
                     </h3>
                     {activity.description && (
@@ -352,9 +355,9 @@ export default function ContentPrintPage() {
                       data.steps?.map((step: any, stepIndex: number) => (
                         <div
                           key={step.id || stepIndex}
-                          className="mb-2 rounded bg-[#F7F4EE] p-3 text-sm"
+                          className="mb-2 rounded-sm border border-border/70 bg-[#F7F4EE] p-3 text-sm"
                         >
-                          <p className="font-semibold">
+                          <p className="font-semibold tracking-tight text-[#071A2D]">
                             {t("print_page.step", { num: stepIndex + 1 })}{" "}
                             {step.instruction}
                           </p>

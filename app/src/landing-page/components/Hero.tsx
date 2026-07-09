@@ -13,9 +13,12 @@ export default function Hero() {
       <div className="md:p-24 relative">
         <div className="max-w-8xl mx-auto px-6 lg:px-8">
           <div className="lg:mb-18 mx-auto max-w-3xl text-center">
-            <h1 className="text-foreground text-5xl font-bold sm:text-6xl tracking-tight text-balance">
-              {t('hero.headline_line1')}{' '}
-              <span className="text-gradient-primary">{t('hero.headline_line2')}</span>
+            <h1
+              className="text-balance text-5xl font-semibold tracking-tight text-[#071A2D] sm:text-6xl"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
+              {t("hero.headline_line1")}{" "}
+              <span className="text-[#D39A2B]">{t("hero.headline_line2")}</span>
             </h1>
             <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-lg leading-8">
               {t('hero.subheadline')}

@@ -478,7 +478,10 @@ export default function SacramentsPage() {
                     className="flex items-center gap-2 hover:text-[#071A2D] transition-colors"
                   >
                     <User className="h-4 w-4 text-[#071A2D]" />
-                    <span className="font-semibold">
+                    <span
+                      className="font-semibold tracking-tight text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
                       {j.catechumenProfile?.firstName}{" "}
                       {j.catechumenProfile?.lastName}
                     </span>
@@ -489,9 +492,11 @@ export default function SacramentsPage() {
                 </div>
 
                 <div className="mb-3">
-                  <div className="flex justify-between text-overline text-muted-foreground mb-1">
+                  <div className="mb-1 flex justify-between text-overline text-muted-foreground">
                     <span>{t("page.milestones_count", { done, total })}</span>
-                    <span className="font-bold">{pct}%</span>
+                    <span className="font-semibold tabular-nums text-[#071A2D]">
+                      {pct}%
+                    </span>
                   </div>
                   <div className="h-2 w-full rounded-sm bg-muted">
                     <div

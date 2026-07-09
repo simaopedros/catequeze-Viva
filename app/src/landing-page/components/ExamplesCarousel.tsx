@@ -160,7 +160,12 @@ const ExampleCard = forwardRef<HTMLDivElement, ExampleCardProps>(
               className="aspect-video h-auto w-full object-cover object-top"
             />
             <div className="p-4">
-              <p className="font-bold">{example.name}</p>
+              <p
+                className="font-semibold tracking-tight text-[#071A2D]"
+                style={{ fontFamily: "var(--font-brand-display)" }}
+              >
+                {example.name}
+              </p>
               <p className="text-muted-foreground text-xs">
                 {example.description}
               </p>

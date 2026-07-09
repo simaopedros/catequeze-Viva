@@ -80,7 +80,7 @@ function TestimonialCard({ testimonial, delay }: { testimonial: Testimonial; del
 
       <div className="flex items-center gap-3 pt-2 border-t border-border/60">
         <div
-          className="flex h-11 w-11 items-center justify-center rounded-full bg-[#071A2D]/08 text-[#071A2D] font-bold text-sm shrink-0"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm bg-[#071A2D]/08 text-sm font-semibold text-[#071A2D]"
           aria-hidden
         >
           {initials}

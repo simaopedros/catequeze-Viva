@@ -149,7 +149,7 @@ function PlanCard({
  }`}
     >
       {highlight && (
-        <span className="self-start text-[11px] font-bold uppercase tracking-wide text-[#071A2D] mb-2">
+        <span className="mb-2 self-start text-[11px] font-semibold uppercase tracking-wide text-[#071A2D]">
           {popularLabel}
         </span>
       )}
