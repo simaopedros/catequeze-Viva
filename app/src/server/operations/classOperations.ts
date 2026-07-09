@@ -285,14 +285,19 @@ export const createClass = async (args: any, context: any) => {
       yearId: args.yearId || null, dayOfWeek: args.dayOfWeek,
       startTime: args.startTime, endTime: args.endTime,
       location: args.location, maxCapacity: args.maxCapacity || 30,
-      status: ClassStatus.DRAFT,
+      // New classes start usable (onboarding and day-to-day); pause/archive later if needed.
+      status: ClassStatus.ACTIVE,
     },
   });
 
-  // Auto-assign the creator as the lead catechist of this class (only for catechist roles, not coordinators/owners)
+  // Auto-assign the creator as lead catechist for teaching roles and personal owners
+  // (personal workspace: PERSONAL_OWNER must own the class to appear in "my classes").
   if (!context.user.isAdmin) {
     const creatorRole = await getEffectiveParishRole(context, effectiveParishId);
-    if (creatorRole && isCatechist(creatorRole)) {
+    if (
+      creatorRole &&
+      (isCatechist(creatorRole) || creatorRole === 'PERSONAL_OWNER')
+    ) {
       await context.entities.ClassCatechist.create({
         data: {
           classId: newClass.id,

@@ -341,7 +341,31 @@ export default function ClassDetailPage() {
 
         {tab==='inscritos'&&(
           <div>
-            {enrolled.length===0?<EmptyState compact icon={Users} title={t('detail.no_enrolled')} description={t('detail.no_enrolled_alt_desc')} />:
+            {enrolled.length===0?(
+              <EmptyState
+                compact
+                icon={Users}
+                title={t('detail.no_enrolled')}
+                description={t('detail.no_enrolled_next_desc')}
+              >
+                {canEnroll ? (
+                  <div className="mt-4 flex flex-wrap justify-center gap-2">
+                    <Button size="sm" asChild>
+                      <Link to="/app/catechumens/new">
+                        <UserPlus className="mr-1 h-3.5 w-3.5" />
+                        {t('detail.empty_cta_create_person')}
+                      </Link>
+                    </Button>
+                    <Button size="sm" variant="outline" asChild>
+                      <Link to="/app/attendance">
+                        <ClipboardList className="mr-1 h-3.5 w-3.5" />
+                        {t('detail.empty_cta_attendance')}
+                      </Link>
+                    </Button>
+                  </div>
+                ) : null}
+              </EmptyState>
+            ) :
               <div className="grid gap-2 overflow-x-auto">{enrolled.map((e:any)=>{
                 const journeys = e.catechumenProfile?.sacramentalJourneys || [];
                 const relevantJourney = cls.sacrament?.id
@@ -400,7 +424,29 @@ export default function ClassDetailPage() {
 
         {tab==='encontros'&&(
           <div>
-            {!cls.meetings?.length?<EmptyState compact icon={Calendar} title={t('detail.no_meetings_registered')} description={t('detail.schedule_meetings_desc')} />:
+            {!cls.meetings?.length?(
+              <EmptyState
+                compact
+                icon={Calendar}
+                title={t('detail.no_meetings_registered')}
+                description={t('detail.schedule_meetings_next_desc')}
+              >
+                <div className="mt-4 flex flex-wrap justify-center gap-2">
+                  <Button size="sm" asChild>
+                    <Link to="/app/ai-hub">
+                      <BookOpen className="mr-1 h-3.5 w-3.5" />
+                      {t('detail.empty_cta_prepare_meeting')}
+                    </Link>
+                  </Button>
+                  <Button size="sm" variant="outline" asChild>
+                    <Link to="/app/attendance">
+                      <ClipboardList className="mr-1 h-3.5 w-3.5" />
+                      {t('detail.empty_cta_attendance')}
+                    </Link>
+                  </Button>
+                </div>
+              </EmptyState>
+            ) :
               <div className="grid gap-2">{cls.meetings.map((m:any)=>(
                 <div key={m.id} className="flex items-center justify-between rounded-lg border p-3">
                   <div>
