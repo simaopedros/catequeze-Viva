@@ -240,7 +240,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                   icon={BookOpen}
                   title={t("create_class")}
                   description="Crie sua primeira turma para organizar encontros, presença e acompanhamento."
-                  accent="border border-border/70 bg-muted/30 text-foreground"
+                  accent="border border-border/70 bg-muted/30 text-[#071A2D]"
                   featured
                 />
                 <ActionCard

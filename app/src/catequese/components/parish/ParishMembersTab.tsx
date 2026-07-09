@@ -187,7 +187,7 @@ export function ParishMembersTab({
       {members.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
           <div className="mb-4 rounded-sm border border-border/70 bg-muted/30 p-3">
-            <Users className="h-8 w-8 text-foreground" />
+            <Users className="h-8 w-8 text-[#071A2D]" />
           </div>
           <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
             {tp("no_members")}

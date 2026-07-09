@@ -70,7 +70,7 @@ function SelectedChip({
   onRemove: () => void;
 }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-sm border border-border/70 bg-muted/30 px-2.5 py-1 text-xs text-foreground">
+    <span className="inline-flex items-center gap-1 rounded-sm border border-border/70 bg-muted/30 px-2.5 py-1 text-xs font-semibold tracking-tight text-[#071A2D]">
       {label}
       <button
         type="button"
@@ -516,7 +516,7 @@ function ContentLibrarySidebar() {
             <button
               key={label}
               type="button"
-              className="flex w-full items-center justify-between rounded-sm border border-border bg-background px-3 py-2.5 text-sm text-foreground"
+              className="flex w-full items-center justify-between rounded-sm border border-border bg-background px-3 py-2.5 text-sm font-medium tracking-tight text-[#071A2D]"
             >
               <span>{label}</span>
               <ChevronRight className="h-4 w-4 text-muted-foreground" />

@@ -356,7 +356,7 @@ export function AIHelperWidget() {
                     )}
                 </div>
                 {m.role === "user" && (
-                  <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-foreground">
+                  <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
                     <User className="h-3 w-3" />
                   </div>
                 )}

@@ -63,7 +63,7 @@ import { toast } from "../../client/hooks/use-toast";
 import { calculatePoints } from "../../shared/gamification";
 import { formatDateOnly, getAgeFromDate } from "../../i18n/format";
 
-const AVATAR_COLORS = ["border border-border/70 bg-muted/30 text-foreground"];
+const AVATAR_COLORS = ["border border-border/70 bg-muted/30 text-[#071A2D]"];
 
 const DOC_TYPE_KEYS: Record<string, string> = {
   BAPTISM_CERTIFICATE: "BAPTISM_CERTIFICATE",

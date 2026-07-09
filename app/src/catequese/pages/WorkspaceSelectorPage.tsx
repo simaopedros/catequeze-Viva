@@ -298,9 +298,9 @@ export default function WorkspaceSelectorPage() {
                   className="group w-full cursor-pointer rounded-sm border border-[#071A2D]/30 bg-white p-5 text-left transition-colors hover:border-[#071A2D]/50"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-foreground">
+                    <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-[#071A2D]">
                       {lastUsed.isPersonal ? (
-                        <User className="h-6 w-6 text-foreground" />
+                        <User className="h-6 w-6 text-[#071A2D]" />
                       ) : (
                         workspaceIcon(lastUsed.type)
                       )}

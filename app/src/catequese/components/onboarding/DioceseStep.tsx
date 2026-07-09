@@ -321,7 +321,10 @@ export function DioceseStep({
           {duplicateDiocese && (
             <div className="border border-border/70 px-3 py-2 text-xs text-muted-foreground rounded-sm">
               {t("diocese.duplicate_warning")}{" "}
-              <strong className="text-foreground">
+              <strong
+                className="font-semibold tracking-tight text-[#071A2D]"
+                style={{ fontFamily: "var(--font-brand-display)" }}
+              >
                 {duplicateDiocese.name}
               </strong>
               {duplicateDiocese.state && <> ({duplicateDiocese.state})</>}.
@@ -332,7 +335,7 @@ export function DioceseStep({
                   setShowCreate(false);
                   setNewName("");
                 }}
-                className="ml-2 font-medium text-foreground underline"
+                className="ml-2 font-medium text-[#071A2D] underline underline-offset-2"
               >
                 {t("diocese.use_this")}
               </button>

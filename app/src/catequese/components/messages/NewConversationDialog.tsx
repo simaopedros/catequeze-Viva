@@ -198,7 +198,7 @@ export function NewConversationDialog({
                     type === ct.value && "border-[#071A2D] bg-muted/30",
                   )}
                 >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-foreground">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
                     <Icon className="h-5 w-5" />
                   </div>
                   <div>

@@ -206,7 +206,7 @@ function MeetingBlockComponent({
           <div className="pt-1 text-sm font-semibold text-muted-foreground">
             {index}.
           </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border bg-muted/30 text-foreground">
+          <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
             <Icon className="h-4 w-4" />
           </div>
         </div>

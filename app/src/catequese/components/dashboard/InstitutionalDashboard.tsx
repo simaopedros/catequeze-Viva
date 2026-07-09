@@ -195,8 +195,8 @@ function AlertBanner({ alerts }: { alerts?: any[] }) {
 
   const severityColors: Record<string, string> = {
     critical: "border-destructive/40 bg-destructive/5 text-destructive",
-    high: "border-border/70 bg-muted/30 text-foreground",
-    medium: "border-border/70 bg-muted/20 text-foreground",
+    high: "border-border/70 bg-muted/30 text-[#071A2D]",
+    medium: "border-border/70 bg-muted/20 text-[#071A2D]",
     low: "border-border/70 bg-white text-muted-foreground",
   };
 

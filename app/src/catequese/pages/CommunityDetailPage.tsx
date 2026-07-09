@@ -23,7 +23,7 @@ import {
 import { useCommunityTypeLabels } from "../../i18n/useLabels";
 import { AppPageHeader } from "../../client/components/brand/AppChrome";
 
-const AVATAR_COLORS = ["border border-border/70 bg-muted/30 text-foreground"];
+const AVATAR_COLORS = ["border border-border/70 bg-muted/30 text-[#071A2D]"];
 
 export default function CommunityDetailPage() {
   const { t } = useTranslation("common");

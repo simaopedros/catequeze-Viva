@@ -51,7 +51,7 @@ function SelectedChip({
   onRemove: () => void;
 }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-sm border border-border/70 bg-white px-2.5 py-1 text-xs text-foreground">
+    <span className="inline-flex items-center gap-1 rounded-sm border border-border/70 bg-white px-2.5 py-1 text-xs font-semibold tracking-tight text-[#071A2D]">
       {label}
       <button
         type="button"
@@ -576,7 +576,7 @@ export function ContentDocumentWorkspace({
                 saveState === "saved" &&
                   "border-[#071A2D]/20 bg-[#071A2D]/05 text-[#071A2D]",
                 saveState === "saving" &&
-                  "border-border/70 bg-muted/30 text-foreground",
+                  "border-border/70 bg-muted/30 text-[#071A2D]",
                 saveState === "idle" &&
                   "border-[#D39A2B]/30 bg-[#D39A2B]/10 text-[#8A6418]",
               )}

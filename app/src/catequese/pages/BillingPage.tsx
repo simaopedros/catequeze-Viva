@@ -806,7 +806,7 @@ export default function BillingPage() {
 
   const scopeBadgeClass = isPersonal
     ? "border-[#071A2D]/20 bg-white/85 text-[#071A2D]"
-    : "border-border/70 bg-muted/30 text-foreground";
+    : "border-border/70 bg-muted/30 text-[#071A2D]";
 
   return (
     <>
@@ -846,7 +846,7 @@ export default function BillingPage() {
                     )}
                     {!isConversionMode &&
                       (isTrialAccess ? (
-                        <Badge className="rounded-sm border border-border/70 bg-muted/30 text-xs text-foreground">
+                        <Badge className="rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold tracking-tight text-[#071A2D]">
                           {t("trial_status_badge")}
                         </Badge>
                       ) : isActive &&
@@ -986,7 +986,7 @@ export default function BillingPage() {
               </div>
 
               {requestedPlanId && !requestedPlanLevelMatches && (
-                <div className="rounded-sm border border-border/70 bg-muted/30 px-4 py-3 text-sm text-foreground">
+                <div className="rounded-sm border border-border/70 bg-muted/30 px-4 py-3 text-sm font-medium tracking-tight text-[#071A2D]">
                   <p>
                     {requestedIsInstitutional
                       ? t("plan_mismatch_institutional")
@@ -1143,9 +1143,9 @@ export default function BillingPage() {
                       className={cn(
                         "rounded-sm p-3",
                         isTrialAccess
-                          ? "border border-border/70 bg-muted/30 text-foreground"
+                          ? "border border-border/70 bg-muted/30 text-[#071A2D]"
                           : isPaidActive
-                            ? "border border-border/70 bg-muted/30 text-foreground"
+                            ? "border border-border/70 bg-muted/30 text-[#071A2D]"
                             : "border border-border/70 bg-muted/30 text-muted-foreground",
                       )}
                     >
@@ -1210,7 +1210,7 @@ export default function BillingPage() {
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
                     {aiCredits.hasAiAccess ? (
-                      <Badge className="rounded-sm border border-border/70 bg-muted/30 text-overline text-foreground">
+                      <Badge className="rounded-sm border border-border/70 bg-muted/30 text-overline font-semibold tracking-tight text-[#071A2D]">
                         {t("monthly_badge")}
                       </Badge>
                     ) : (
@@ -1444,7 +1444,7 @@ export default function BillingPage() {
                           )}
                       </div>
                       {isCurrent && isTrialAccess && (
-                        <Badge className="rounded-sm border border-border/70 bg-muted/30 text-foreground">
+                        <Badge className="rounded-sm border border-border/70 bg-muted/30 font-semibold tracking-tight text-[#071A2D]">
                           {t("trial_plan_badge")}
                         </Badge>
                       )}

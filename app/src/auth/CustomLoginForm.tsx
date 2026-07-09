@@ -134,7 +134,7 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
           )}
 
           <div className="space-y-1.5">
-            <Label htmlFor="totp" className="text-xs font-medium text-foreground">
+            <Label htmlFor="totp" className="text-xs font-medium text-[#071A2D]">
               {t("two_factor_otp_label")}
             </Label>
             <Input
@@ -198,7 +198,7 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
         <a
           href={googleSignInUrl}
           onClick={() => inviteToken && rememberPendingInviteToken(inviteToken)}
-          className="flex h-11 w-full items-center justify-center gap-3 rounded-sm border border-border bg-white px-4 text-sm font-medium text-foreground transition-colors hover:bg-muted/40"
+          className="flex h-11 w-full items-center justify-center gap-3 rounded-sm border border-border bg-white px-4 text-sm font-medium text-[#071A2D] transition-colors hover:bg-muted/40"
         >
           <GoogleLogo className="h-5 w-5" />
           {t("login_google")}
@@ -217,7 +217,7 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
           <button
             type="button"
             onClick={() => setShowEmailForm(true)}
-            className="flex h-11 w-full items-center justify-center gap-2 rounded-sm border border-border bg-white text-sm font-medium text-foreground transition-colors hover:bg-muted/40"
+            className="flex h-11 w-full items-center justify-center gap-2 rounded-sm border border-border bg-white text-sm font-medium text-[#071A2D] transition-colors hover:bg-muted/40"
           >
             {t("login_continue_with_email")}
             <ArrowRight className="h-3.5 w-3.5" />
@@ -231,7 +231,7 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
             )}
 
             <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-xs font-medium text-foreground">
+              <Label htmlFor="email" className="text-xs font-medium text-[#071A2D]">
                 {t("login_email_label")}
               </Label>
               <Input
@@ -250,7 +250,7 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between gap-2">
-                <Label htmlFor="password" className="text-xs font-medium text-foreground">
+                <Label htmlFor="password" className="text-xs font-medium text-[#071A2D]">
                   {t("login_password_label")}
                 </Label>
                 <a

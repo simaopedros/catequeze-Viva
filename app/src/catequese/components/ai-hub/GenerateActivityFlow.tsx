@@ -148,7 +148,7 @@ export function GenerateActivityFlow() {
                   onClick={() => setActivityType(at.value)}
                   className={`rounded-sm border px-3 py-2.5 text-sm font-medium transition-colors ${
                     activityType === at.value
-                      ? "border-[#071A2D] bg-muted/30 text-foreground"
+                      ? "border-[#071A2D] bg-muted/30 font-semibold tracking-tight text-[#071A2D]"
                       : "border-border/70 hover:border-[#071A2D]/30"
                   }`}
                 >

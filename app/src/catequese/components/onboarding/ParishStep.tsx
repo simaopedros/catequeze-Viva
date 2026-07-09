@@ -327,7 +327,10 @@ export function ParishStep({
           {duplicateParish && (
             <div className="border border-border/70 px-3 py-2 text-xs text-muted-foreground rounded-sm">
               {t("parish.duplicate_warning")}{" "}
-              <strong className="text-foreground">
+              <strong
+                className="font-semibold tracking-tight text-[#071A2D]"
+                style={{ fontFamily: "var(--font-brand-display)" }}
+              >
                 {duplicateParish.name}
               </strong>
               {duplicateParish.city && (
@@ -350,7 +353,7 @@ export function ParishStep({
                   setShowCreate(false);
                   setNewName("");
                 }}
-                className="ml-2 font-medium text-foreground underline"
+                className="ml-2 font-medium text-[#071A2D] underline underline-offset-2"
               >
                 {t("parish.use_this")}
               </button>

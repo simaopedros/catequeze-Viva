@@ -168,7 +168,7 @@ export default function PublicUploadDocsPage() {
           </div>
 
           {sent && (
-            <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-sm text-foreground flex items-center gap-2">
+            <div className="flex items-center gap-2 rounded-sm border border-border/70 bg-muted/30 p-3 text-sm font-medium tracking-tight text-[#071A2D]">
               <CheckCircle className="h-4 w-4" />
               {t("upload_docs.sent_success")}
             </div>

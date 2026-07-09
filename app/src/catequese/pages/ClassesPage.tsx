@@ -497,7 +497,7 @@ export default function ClassesPage() {
                   className={cn(
                     "mt-4 rounded-sm px-4 py-3 text-sm font-medium",
                     isToday(cls.meetings[0].date)
-                      ? "border border-[#071A2D]/20 bg-muted/30 text-foreground"
+                      ? "border border-[#071A2D]/20 bg-muted/30 font-semibold tracking-tight text-[#071A2D]"
                       : "border border-border/70 bg-muted/30 text-muted-foreground",
                   )}
                 >

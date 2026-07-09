@@ -316,7 +316,10 @@ export function CatechumensSetupStep({
                 key={p.id}
                 className="flex items-center justify-between py-1.5 text-sm"
               >
-                <span className="text-foreground">
+                <span
+                  className="font-semibold tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
                   {p.firstName} {p.lastName}
                 </span>
               </li>
