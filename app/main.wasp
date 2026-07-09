@@ -196,7 +196,7 @@ query getSubscriptionDetails {
 
 action generateCheckoutSession {
   fn: import { generateCheckoutSession } from "@src/payment/operations",
-  entities: [User, Parish, Membership, PricingEvent]
+  entities: [User, Parish, Membership, PricingEvent, TrackedEvent]
 }
 
 action cancelSubscription {

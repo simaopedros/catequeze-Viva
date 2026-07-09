@@ -31,7 +31,7 @@ Match browser and server events with a shared `event_id` / `eventID`.
 | Google signup click | `generate_lead` | `Lead` | Browser |
 | Signup completed (email) | `complete_registration` | `CompleteRegistration` | Browser |
 | Signup completed (any method) | — | `CompleteRegistration` | CAPI (`onAfterSignup`) |
-| Start Stripe Checkout | `initiate_checkout` | `InitiateCheckout` | Browser |
+| Start Stripe Checkout | `initiate_checkout` | `InitiateCheckout` | Browser + CAPI (`generateCheckoutSession`) |
 | Trial started (thank-you) | `start_trial_success_page` | `StartTrial` | Browser (optional) |
 | Trial confirmed | — | `StartTrial` | CAPI (Stripe `checkout.session.completed`) |
 | First paid subscription invoice | — | `Subscribe` | CAPI (Stripe invoice paid) |
@@ -130,7 +130,9 @@ window.dataLayer.push({
 });
 ```
 
-The same `event_id` is forwarded to the backend as `initiate_checkout_event_id` and stored in Stripe metadata.
+The same `event_id` is forwarded to the backend as `initiate_checkout_event_id`,
+stored in Stripe metadata, and reused by Meta CAPI so Pixel + server events
+deduplicate in Events Manager.
 
 ### `start_trial_success_page` → `StartTrial`
 
@@ -185,6 +187,20 @@ Success redirect:
 ```
 
 ## Server-side Meta events (CAPI)
+
+### `InitiateCheckout`
+
+From `generateCheckoutSession` after Stripe Checkout session creation succeeds
+(subscription plans and AI credit packs).
+
+- `event_id`: same as browser `initiate_checkout_event_id` (fallback `initiate_checkout_<session_id>`)
+- `user_data`: hashed `em`, hashed `external_id` (user id), `fbp`, `fbc`, client IP + UA
+- `custom_data`: plan name/ids, `value`, `currency`, `content_type=product`, `trial_days`
+- Idempotent via `TrackedEvent`
+- Failures are logged and never block checkout redirect
+
+This closes Meta's "Improve CAPI coverage for InitiateCheckout" diagnostic:
+Pixel and Conversions API must share the same `event_id` / `eventID`.
 
 ### `CompleteRegistration`
 
@@ -310,5 +326,7 @@ For real StartTrial / first Subscribe validation, run a test-mode checkout with 
 
 - Native `fbq` loads only when `REACT_APP_META_PIXEL_ID` is set.
 - dataLayer events always fire so GTM-only setups keep working.
+- `InitiateCheckout` is dual-sent: browser Pixel (with `eventID`) + CAPI from `generateCheckoutSession` (same `event_id`).
+- In GTM, map dataLayer `event_id` → Meta Event ID parameter so Pixel and CAPI dedupe correctly.
 - Stripe webhook remains the reliable source for `StartTrial` and `Subscribe`.
 - Thank-you page `StartTrial` is browser-side only and optional for EMQ; CAPI is authoritative.

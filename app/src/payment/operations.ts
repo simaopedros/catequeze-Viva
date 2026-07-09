@@ -22,9 +22,11 @@ import {
   resolvePlanIdOrFree,
   type PlanId,
   PLANS,
+  SUBSCRIPTION_TRIAL_DAYS,
 } from "../shared/pricing";
 import { trackPricingEvent } from "./pricingEvents";
 import { detectCurrency } from "../shared/currency";
+import { sendInitiateCheckoutToMeta } from "./meta/sendInitiateCheckout";
 
 export type CheckoutSession = {
   sessionUrl: string | null;
@@ -145,6 +147,11 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     );
   }
 
+  const planName = input.planName ?? prettyPaymentPlanName(paymentPlanId);
+  const checkoutValue = input.value ?? getCheckoutValue(paymentPlanId, interval) ?? 0;
+  const currency = input.currency ?? detectCurrency();
+  const isCreditsPlan = paymentPlan.effect.kind === "credits";
+
   let session;
   try {
     const result = await paymentProcessor.createCheckoutSession({
@@ -156,9 +163,9 @@ export const generateCheckoutSession: GenerateCheckoutSession<
       tracking: {
         priceId: input.priceId,
         planId: paymentPlanId,
-        planName: input.planName ?? prettyPaymentPlanName(paymentPlanId),
-        value: input.value ?? getCheckoutValue(paymentPlanId, interval),
-        currency: input.currency ?? detectCurrency(),
+        planName,
+        value: checkoutValue,
+        currency,
         initiateCheckoutEventId: input.initiate_checkout_event_id,
         fbp: input.fbp,
         fbc: input.fbc,
@@ -189,6 +196,33 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     }
     throw new HttpError(500, message || "Erro ao comunicar com o serviço de pagamento. Tente novamente.");
   }
+
+  // Same event_id as browser Pixel InitiateCheckout for Meta deduplication.
+  // Fallback keeps CAPI coverage when the client omits the id.
+  const initiateCheckoutEventId =
+    input.initiate_checkout_event_id?.trim() ||
+    `initiate_checkout_${session.id}`;
+
+  await sendInitiateCheckoutToMeta({
+    userId,
+    email: userEmail,
+    eventId: initiateCheckoutEventId,
+    planId: paymentPlanId,
+    planName,
+    value: checkoutValue,
+    currency,
+    priceId: input.priceId,
+    contentCategory: isCreditsPlan ? "ai_credits" : "subscription",
+    trialDays: isCreditsPlan ? 0 : SUBSCRIPTION_TRIAL_DAYS,
+    fbp: input.fbp,
+    fbc: input.fbc,
+    fbclid: input.fbclid,
+    clientUserAgent: input.client_user_agent,
+    eventSourceUrl: input.event_source_url,
+    stripeSessionId: session.id,
+    prisma: { trackedEvent: (context.entities as any).TrackedEvent },
+    req: (context as any).req,
+  });
 
   await trackPricingEvent(context, {
     userId,
