@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { Button } from '../../../client/components/ui/button';
 import { Card } from '../../../client/components/ui/card';
 import { Badge } from '../../../client/components/ui/badge';
-import { Sparkles, RotateCcw, Pencil, ArrowLeft, FileText, Clock, Star, Target } from 'lucide-react';
+import { RotateCcw, Pencil, ArrowLeft, FileText, Clock, Star, Target } from 'lucide-react';
 
 interface ActivityResultPanelProps {
   activity: any;
@@ -34,12 +34,12 @@ export function ActivityResultPanel({ activity, contentId, onRegenerate, onBack 
   return (
     <div className="flex items-center justify-center px-3 py-6">
       <div className="w-full max-w-2xl space-y-6">
-        <Card className="p-6 space-y-4">
+        <Card className="space-y-4 rounded-sm border-border/70 p-6">
           <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0 space-y-1">
-              <h2 className="text-xl font-bold">{activity.title}</h2>
-              <Badge variant="secondary" className="gap-1">
-                <Sparkles className="h-3 w-3" /> {typeLabel}
+            <div className="min-w-0 space-y-2">
+              <h2 className="text-xl font-semibold tracking-tight text-foreground">{activity.title}</h2>
+              <Badge variant="secondary" className="gap-1 rounded-sm border border-border/70 bg-muted/30 font-medium text-foreground">
+                {typeLabel}
               </Badge>
             </div>
             {activity.points > 0 && (

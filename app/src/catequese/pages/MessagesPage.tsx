@@ -381,7 +381,7 @@ export default function MessagesPage() {
 
               <button
                 onClick={() => setShowNewDialog(true)}
-                className="px-5 py-2.5 rounded-sm bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 shadow-md hover:shadow-lg transition-all active:scale-95"
+                className="rounded-sm bg-[#071A2D] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#0a2540]"
               >
                 {t('start_conversation')}
               </button>

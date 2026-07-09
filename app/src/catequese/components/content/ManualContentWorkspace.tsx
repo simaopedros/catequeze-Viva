@@ -167,7 +167,7 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
 
   return (
     <div className="space-y-4">
-      <Card className="rounded-sm border-border/70 p-5 shadow-sm">
+      <Card className="rounded-sm border-border/70 p-5">
         <div className="mb-4 flex items-start justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
@@ -222,7 +222,7 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
       </Card>
 
       {activePicker && (
-        <Card className="rounded-sm border-border/70 p-2 shadow-sm">
+        <Card className="rounded-sm border-border/70 p-2">
           <ReferencePicker
             bibleRefs={bibleRefs}
             catechismRefs={catechismRefs}
@@ -252,7 +252,7 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
         </Card>
       )}
 
-      <Card className="rounded-sm border-border/70 p-5 shadow-sm">
+      <Card className="rounded-sm border-border/70 p-5">
         <div className="mb-3 flex items-center gap-2">
           <Badge variant="outline" className="rounded-full px-2.5 py-0.5 text-xs">IA opcional</Badge>
         </div>
@@ -293,7 +293,7 @@ function ContentLibrarySidebar() {
 
   return (
     <div className="space-y-4">
-      <Card className="rounded-sm border-border/70 p-4 shadow-sm">
+      <Card className="rounded-sm border-border/70 p-4">
         <div className="mb-4 flex items-center gap-2">
           <Library className="h-4 w-4 text-foreground" />
           <div>
@@ -321,7 +321,7 @@ function ContentLibrarySidebar() {
         </div>
       </Card>
 
-      <Card className="rounded-sm border-border/70 p-4 shadow-sm">
+      <Card className="rounded-sm border-border/70 p-4">
         <div className="mb-4">
           <h3 className="text-lg font-semibold text-foreground">Conteúdos recentes</h3>
           <p className="text-sm text-muted-foreground">Retome rascunhos e reaproveite encontros.</p>
@@ -402,7 +402,7 @@ function HeaderSection({ backTo }: { backTo: string }) {
 
 function WorkspaceTopBar({ contentItemId, estimatedTime }: { contentItemId: string; estimatedTime?: number | null }) {
   return (
-    <Card className="rounded-sm border-border/70 px-4 py-4 shadow-sm">
+    <Card className="rounded-sm border-border/70 px-4 py-4">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div className="flex flex-1 flex-wrap items-center gap-4 text-sm">
           <div className="text-muted-foreground">Rascunho salvo há 2 min</div>
@@ -531,7 +531,7 @@ function ManualContentWorkspaceInner({ existingContentId, source = 'library' }: 
       <WorkspaceTopBar contentItemId={contentItemId} estimatedTime={contentItem?.estimatedTime} />
       <div className="grid gap-5 xl:grid-cols-[240px_minmax(0,1fr)_340px]">
         <ContentLibrarySidebar />
-        <Card className="rounded-sm border-border/70 p-0 shadow-sm">
+        <Card className="rounded-sm border-border/70 p-0">
           <MeetingEditor />
         </Card>
         <ReferencesSidebar contentId={contentItemId} />

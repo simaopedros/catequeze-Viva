@@ -38,7 +38,7 @@ function ImproveWorkspace() {
             {contentId && (
               <Card className="p-4 space-y-2">
                 <div className="flex items-start gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-foreground">
                     <FileText className="h-4 w-4" />
                   </div>
                   <div className="min-w-0">
@@ -118,13 +118,13 @@ function ImproveWorkspace() {
       creditsLeft={creditsLeft}
     >
       <div className="flex-1 flex flex-col min-h-0">
-        <div className="flex items-center gap-2 border-b bg-card px-3 py-2 shrink-0 lg:px-4">
+        <div className="flex items-center gap-2 border-b border-border/70 bg-white px-3 py-2 shrink-0 lg:px-4">
           <div className="inline-flex items-center gap-2 rounded-md border border-success/20 bg-success/10 px-3 py-1.5 text-xs font-medium text-success">
             <Circle className="h-2 w-2 fill-current" />
             {tc('workspace.live_status')}
           </div>
           {choice === 'copy' && (
-            <div className="inline-flex items-center gap-1 rounded-md border border-primary/20 bg-primary/10 px-2 py-1 text-xs text-primary">
+            <div className="inline-flex items-center gap-1 rounded-sm border border-border/70 bg-muted/30 px-2 py-1 text-xs text-foreground">
               <Copy className="h-3 w-3" />
               {t('improve.copy_badge')}
             </div>
@@ -144,7 +144,7 @@ function ImproveWorkspace() {
             <MeetingEditor />
           </div>
         </div>
-        <div className="flex items-center gap-3 border-t bg-card px-3 py-2 shrink-0">
+        <div className="flex items-center gap-3 border-t border-border/70 bg-white px-3 py-2 shrink-0">
           <Button variant="outline" size="sm" onClick={handleStartOver}>
             <RotateCcw className="mr-1 h-3.5 w-3.5" />
             {t('planner.back_to_hub')}

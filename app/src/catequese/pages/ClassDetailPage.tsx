@@ -575,7 +575,7 @@ export default function ClassDetailPage() {
             ) : monthlyPlan ? (
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="rounded-lg bg-primary/10 p-2 text-primary">
+                  <div className="rounded-sm border border-border/70 bg-muted/30 p-2 text-foreground">
                     <Calendar className="h-5 w-5"/>
                   </div>
                   <div>
@@ -591,7 +591,7 @@ export default function ClassDetailPage() {
                 ) : (
                   <div className="space-y-3">
                     {monthlyPlan.weeks?.map((week: any, wi: number) => (
-                      <div key={wi} className="rounded-lg border bg-card p-3">
+                      <div key={wi} className="rounded-sm border border-border/70 bg-white p-3">
                         <p className="text-xs font-medium text-muted-foreground mb-2">
                           {t('detail.week_of', { date: formatDate(week.weekStart, currentLocale, { day: 'numeric', month: 'short' }) })}
                         </p>
@@ -614,13 +614,13 @@ export default function ClassDetailPage() {
                 )}
 
                 {monthlyPlan.availableContent?.length > 0 && (
-                  <div className="rounded-lg border bg-card p-3">
+                  <div className="rounded-sm border border-border/70 bg-white p-3">
                     <h4 className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1">
                       <BookOpen className="h-3 w-3"/>{t('detail.available_content')}
                     </h4>
                     <div className="flex flex-wrap gap-1">
                       {monthlyPlan.availableContent.slice(0, 8).map((c: any) => (
-                        <Link key={c.id} to={`/app/content-library/${c.id}`} className="text-xs bg-muted px-2 py-1 rounded-full hover:bg-primary/10 hover:text-primary transition-colors">
+                        <Link key={c.id} to={`/app/content-library/${c.id}`} className="rounded-sm border border-border/70 bg-muted/30 px-2 py-1 text-xs transition-colors hover:border-primary/30">
                           {c.title}
                         </Link>
                       ))}

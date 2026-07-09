@@ -46,13 +46,13 @@ export function WhatsappResultPanel({ message, contentId, onRegenerate, onBack }
   return (
     <div className="flex items-center justify-center px-3 py-6">
       <div className="w-full max-w-2xl space-y-6">
-        <Card className="p-6 space-y-4">
-          <div className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/10 text-green-600 dark:text-green-400">
+        <Card className="space-y-4 rounded-sm border-border/70 p-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-foreground">
               <Smartphone className="h-5 w-5" />
             </div>
-            <div>
-              <h2 className="text-lg font-bold">{t('whatsapp.result_title')}</h2>
+            <div className="space-y-1">
+              <h2 className="text-lg font-semibold tracking-tight text-foreground">{t('whatsapp.result_title')}</h2>
               <p className="text-xs text-muted-foreground">{t('whatsapp.result_subtitle')}</p>
             </div>
           </div>

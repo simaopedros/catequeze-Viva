@@ -108,7 +108,7 @@ function ReferencesSidebar({
 
   return (
     <div className="space-y-4">
-      <Card className="rounded-[28px] border-border/60 bg-white/85 p-5 shadow-[0_18px_45px_rgba(15,23,42,0.05)] ">
+      <Card className="rounded-sm border border-border/70 bg-white p-5 ">
         <div className="mb-4 flex items-start justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
@@ -207,7 +207,7 @@ function ReferencesSidebar({
       </Card>
 
       {pickerOpen && (
-        <Card className="rounded-[28px] border-border/60 bg-white/85 p-2 shadow-[0_18px_45px_rgba(15,23,42,0.05)] ">
+        <Card className="rounded-sm border border-border/70 bg-white p-2 ">
           <ReferencePicker
             bibleRefs={bibleRefs}
             catechismRefs={catechismRefs}
@@ -541,7 +541,7 @@ export function ContentDocumentWorkspace({
 
   return (
     <div className="mx-auto max-w-[1660px] space-y-6 px-4 pb-10 pt-6">
-      <div className="rounded-sm border border-border/50 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,244,237,0.92))] px-6 py-5 shadow-[0_24px_60px_rgba(15,23,42,0.06)]">
+      <div className="rounded-sm border border-border/70 bg-white px-6 py-5">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="space-y-3">
             <Link
@@ -550,22 +550,24 @@ export function ContentDocumentWorkspace({
             >
               <ArrowLeft className="h-4 w-4" /> Voltar para a biblioteca
             </Link>
-            <h1 className="text-4xl font-semibold tracking-tight text-foreground">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Conteúdo</p>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]" style={{ fontFamily: 'var(--font-brand-display)' }}>
               Editor do encontro
             </h1>
+            <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
           </div>
 
           <div className="flex flex-wrap items-center gap-3 xl:justify-end">
             <Badge
               variant="secondary"
               className={cn(
-                "rounded-full border px-3 py-1 text-xs",
+                "rounded-sm border px-3 py-1 text-xs font-medium",
                 saveState === "error" &&
                   "border-destructive/20 bg-destructive/10 text-destructive",
                 saveState === "saved" &&
                   "border-emerald-200 bg-emerald-50 text-emerald-700",
                 saveState === "saving" &&
-                  "border-primary/20 bg-primary/10 text-primary",
+                  "border-border/70 bg-muted/30 text-foreground",
                 saveState === "idle" &&
                   "border-amber-200 bg-amber-50 text-amber-700",
               )}
@@ -601,7 +603,7 @@ export function ContentDocumentWorkspace({
             >
               <Trash2 className="h-4 w-4" /> Excluir
             </Button>
-            <Button className="h-10 gap-2 rounded-sm shadow-sm" asChild>
+            <Button className="h-10 gap-2 rounded-sm shadow-none" asChild>
               <Link to={`/app/content-library/${contentId}`}>
                 <Eye className="h-4 w-4" /> Visualizar
               </Link>

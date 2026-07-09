@@ -189,14 +189,20 @@ export function QuickSetupPanel({ mode, applyToOriginal }: { mode: string; apply
   return (
     <div className="flex min-h-[80vh] items-center justify-center px-3 py-6">
       <div className="w-full max-w-4xl space-y-6">
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center gap-2 text-2xl font-semibold tracking-tight sm:text-3xl">
-            <Sparkles className="h-8 w-8 text-yellow-500" />
+        <div className="space-y-2.5 text-center">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            {t('hub.eyebrow', { defaultValue: 'Copiloto' })}
+          </p>
+          <h1
+            className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]"
+            style={{ fontFamily: 'var(--font-brand-display)' }}
+          >
             {t(modeLabelKey)}
-          </div>
-          <p className="text-muted-foreground">{t('planner.subtitle')}</p>
+          </h1>
+          <div className="mx-auto h-px w-10 bg-[#D39A2B]" aria-hidden />
+          <p className="text-sm text-muted-foreground">{t('planner.subtitle')}</p>
           {hintText && (
-            <div className="inline-flex items-center gap-2 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 px-3 py-1.5 text-xs text-blue-700 dark:text-blue-300 mt-2">
+            <div className="mt-2 inline-flex items-center gap-2 rounded-sm border border-border/70 bg-muted/30 px-3 py-1.5 text-xs text-muted-foreground">
               <Info className="h-3.5 w-3.5" />
               {hintText}
             </div>
@@ -211,7 +217,7 @@ export function QuickSetupPanel({ mode, applyToOriginal }: { mode: string; apply
           {hasSelectedSource && (
             <div className="rounded-sm border bg-muted/20 p-4">
               <div className="flex items-start gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-foreground">
                   {contentId ? <FileText className="h-4 w-4" /> : <CalendarDays className="h-4 w-4" />}
                 </div>
                 <div className="min-w-0">
@@ -237,7 +243,7 @@ export function QuickSetupPanel({ mode, applyToOriginal }: { mode: string; apply
                     onClick={() => setAgeGroup(g.value)}
                     className={`p-4 rounded-sm border-2 text-center transition-all hover:-translate-y-1 ${
       ageGroup === g.value
-      ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
+      ? 'border-[#071A2D] bg-muted/30'
       : 'border-border hover:border-primary/50'
      }`}
                   >
@@ -322,7 +328,7 @@ export function QuickSetupPanel({ mode, applyToOriginal }: { mode: string; apply
                       onClick={() => setApproach(option.value)}
                       className={`rounded-md border p-3 text-left transition-colors ${
       approach === option.value
-       ? 'border-primary bg-primary/10 ring-2 ring-primary/15'
+       ? 'border-[#071A2D] bg-muted/30'
        : 'border-border hover:border-primary/50'
       }`}
                     >
