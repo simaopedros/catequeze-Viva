@@ -10,16 +10,23 @@ import { Loader2, Eye, EyeOff, ArrowRight, CheckCircle2, Mail } from "lucide-rea
 import { isFamilyPortalHost } from "../shared/portal";
 import { rememberPendingInviteToken } from "./inviteTokenStorage";
 import { trackMarketingEvent } from "../client/analytics/marketingAnalytics";
+import {
+  trackCompleteRegistration,
+  trackLead,
+} from "../client/analytics/metaTracking";
 import { GoogleLogo } from "../client/icons/GoogleLogo";
 
 type CustomSignupFormProps = {
   inviteToken?: string | null;
   defaultEmail?: string;
+  /** Plan id from Meta Ads / landing CTAs (`?plan=`). */
+  intendedPlanId?: string | null;
 };
 
 export default function CustomSignupForm({
   inviteToken,
   defaultEmail,
+  intendedPlanId,
 }: CustomSignupFormProps = {}) {
   const { t } = useTranslation("auth");
   const [email, setEmail] = useState(defaultEmail || "");
@@ -39,6 +46,7 @@ export default function CustomSignupForm({
     trackMarketingEvent("signup_started", {
       method: "email",
       invite: Boolean(inviteToken),
+      plan: intendedPlanId || undefined,
     });
   };
 
@@ -78,13 +86,40 @@ export default function CustomSignupForm({
     setIsLoading(true);
     try {
       await signup({ email, password, username: email, isAdmin: false });
-      trackMarketingEvent("signup_completed", {
-        method: "email",
-        invite: Boolean(inviteToken),
-      });
+      // Fire Meta browser event immediately after successful account create.
+      // Server also sends CAPI CompleteRegistration in onAfterSignup (authoritative).
+      try {
+        trackMarketingEvent("signup_completed", {
+          method: "email",
+          invite: Boolean(inviteToken),
+          plan: intendedPlanId || undefined,
+        });
+        trackCompleteRegistration({
+          method: inviteToken ? "email_invite" : "email",
+          content_name: intendedPlanId
+            ? `Signup Catechis ${intendedPlanId}`
+            : "Signup Catechis",
+        });
+      } catch {
+        // Analytics must never block the success UI
+      }
       setSuccess(true);
     } catch (err: any) {
-      setError(err?.message || t("signup_error_create"));
+      // Account may already exist if verification email failed after create.
+      // Still attempt browser CompleteRegistration so Meta sees the intent.
+      const message = err?.message || t("signup_error_create");
+      const maybeCreated =
+        typeof message === "string" &&
+        /email|verif|enviad|sent|already/i.test(message);
+      if (maybeCreated) {
+        try {
+          trackCompleteRegistration({
+            method: inviteToken ? "email_invite" : "email",
+            content_name: "Signup Catechis (client fallback)",
+          });
+        } catch {}
+      }
+      setError(message);
     } finally {
       setIsLoading(false);
     }
@@ -157,6 +192,18 @@ export default function CustomSignupForm({
             trackMarketingEvent("signup_started", {
               method: "google",
               invite: Boolean(inviteToken),
+              plan: intendedPlanId || undefined,
+            });
+            // Intent signal before OAuth redirect; CAPI CompleteRegistration fires onAfterSignup.
+            trackLead({
+              content_name: intendedPlanId
+                ? `Signup Google ${intendedPlanId}`
+                : "Signup Google Catechis",
+              content_category: "subscription",
+              content_ids: intendedPlanId
+                ? ["signup_google", intendedPlanId]
+                : ["signup_google"],
+              plan_id: intendedPlanId || undefined,
             });
             if (inviteToken) rememberPendingInviteToken(inviteToken);
           }}

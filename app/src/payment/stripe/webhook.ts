@@ -194,6 +194,7 @@ async function handleCheckoutSessionCompleted(
     event_source_url: metadata.event_source_url || config.frontendUrl,
     user_data: {
       email: customerEmail,
+      external_id: session.client_reference_id || undefined,
       fbp: metadata.fbp,
       fbc: metadata.fbc,
       client_user_agent: metadata.client_user_agent,
@@ -203,6 +204,9 @@ async function handleCheckoutSessionCompleted(
       value: 0,
       content_name: metadata.plan_name || prettyPaymentPlanName(getPaymentPlanIdFromSubscription(subscription)),
       content_category: "subscription",
+      content_type: "product",
+      content_ids: metadata.plan_id ? [metadata.plan_id] : undefined,
+      num_items: 1,
       subscription_id: subscription.id,
       stripe_customer_id: stripeCustomerId,
       stripe_session_id: session.id,
@@ -291,6 +295,13 @@ async function processPaidInvoice(
         await finishTrackedEvent(trackedEventDelegate, invoiceProcessing.id, {
           responseJson: { invoiceId: invoice.id, paymentPlanId },
         });
+        await deliverAiCreditsPurchaseMetaEvent({
+          invoice,
+          paymentPlanId,
+          stripeEventId,
+          customerId,
+          trackedEventDelegate,
+        });
         break;
       case PaymentPlanId.Single:
       case PaymentPlanId.Unlimited: {
@@ -354,6 +365,7 @@ async function processPaidInvoice(
             event_source_url: metadata.event_source_url || config.frontendUrl,
             user_data: {
               email: customer?.email ?? undefined,
+              external_id: metadata.user_id || undefined,
               fbp: metadata.fbp,
               fbc: metadata.fbc,
               client_user_agent: metadata.client_user_agent,
@@ -363,6 +375,9 @@ async function processPaidInvoice(
               value: Number((invoice.amount_paid / 100).toFixed(2)),
               content_name: metadata.plan_name || prettyPaymentPlanName(paymentPlanId),
               content_category: "subscription",
+              content_type: "product",
+              content_ids: [metadata.plan_id || paymentPlanId],
+              num_items: 1,
               subscription_id: subscriptionId,
               stripe_customer_id: customerId,
               invoice_id: invoice.id,
@@ -479,6 +494,67 @@ async function handleCustomerSubscriptionDeleted(
     event: "subscription_canceled",
     processor: STRIPE_PROVIDER,
   });
+}
+
+/** One-time AI credit pack → Meta Purchase (not Subscribe). */
+async function deliverAiCreditsPurchaseMetaEvent(args: {
+  invoice: Stripe.Invoice;
+  paymentPlanId: PaymentPlanId;
+  stripeEventId: string;
+  customerId: string | undefined;
+  trackedEventDelegate: TrackedEventDelegate;
+}): Promise<void> {
+  const { invoice, paymentPlanId, stripeEventId, customerId, trackedEventDelegate } = args;
+  if (!invoice.id || invoice.amount_paid <= 0) return;
+
+  const purchaseEventId = `purchase_${invoice.id}`;
+  const customer = await retrieveCustomer(invoice.customer);
+  const metadata = normalizeMetadata(
+    invoice.parent?.subscription_details?.metadata as Record<string, string> | undefined,
+  );
+  // One-time payments may store tracking on the Checkout Session; fall back to invoice metadata.
+  const invoiceMeta = normalizeMetadata(
+    (invoice.metadata as Record<string, string> | null | undefined) ?? undefined,
+  );
+  const merged = { ...invoiceMeta, ...metadata };
+
+  await deliverMetaTrackedEvent(
+    trackedEventDelegate,
+    {
+      provider: META_PROVIDER,
+      eventName: "Purchase",
+      eventId: purchaseEventId,
+      stripeEventId,
+      stripeCustomerId: customerId,
+      invoiceId: invoice.id,
+      status: "failed",
+    },
+    {
+      event_name: "Purchase",
+      event_time: Math.floor(Date.now() / 1000),
+      event_id: purchaseEventId,
+      event_source_url: merged.event_source_url || config.frontendUrl,
+      user_data: {
+        email: customer?.email ?? undefined,
+        external_id: merged.user_id || undefined,
+        fbp: merged.fbp,
+        fbc: merged.fbc,
+        client_user_agent: merged.client_user_agent,
+      },
+      custom_data: {
+        currency: (invoice.currency || merged.currency || "brl").toUpperCase(),
+        value: Number((invoice.amount_paid / 100).toFixed(2)),
+        content_name: merged.plan_name || prettyPaymentPlanName(paymentPlanId),
+        content_category: "ai_credits",
+        content_type: "product",
+        content_ids: [merged.plan_id || paymentPlanId],
+        num_items: 1,
+        stripe_customer_id: customerId,
+        invoice_id: invoice.id,
+        plan_id: merged.plan_id || paymentPlanId,
+      },
+    },
+  );
 }
 
 async function deliverMetaTrackedEvent(

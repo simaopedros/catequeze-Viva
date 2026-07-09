@@ -41,6 +41,7 @@ describe('metaCapi', () => {
       event_source_url: 'https://catechis.app/app/billing',
       user_data: {
         email: ' User@Example.com ',
+        external_id: 'user_1',
         fbp: 'fb.1.123',
         fbc: 'fb.1.456',
       },
@@ -48,8 +49,13 @@ describe('metaCapi', () => {
         currency: 'BRL',
         value: 29,
         content_name: 'Plano Unico',
+        content_category: 'subscription',
+        content_type: 'product',
+        content_ids: ['single'],
+        num_items: 1,
         subscription_id: 'sub_1',
         invoice_id: 'in_1',
+        plan_id: 'single',
       },
     });
 
@@ -63,6 +69,7 @@ describe('metaCapi', () => {
           event_source_url: 'https://catechis.app/app/billing',
           user_data: {
             em: ['b4c9a289323b21a01c3e940f150eb9b8c542587f1abfd8f0e1cc1ffc5e475514'],
+            external_id: [sha256('user_1')],
             fbp: 'fb.1.123',
             fbc: 'fb.1.456',
           },
@@ -70,8 +77,13 @@ describe('metaCapi', () => {
             currency: 'BRL',
             value: 29,
             content_name: 'Plano Unico',
+            content_category: 'subscription',
+            content_type: 'product',
+            content_ids: ['single'],
+            num_items: 1,
             subscription_id: 'sub_1',
             invoice_id: 'in_1',
+            plan_id: 'single',
           },
         },
       ],

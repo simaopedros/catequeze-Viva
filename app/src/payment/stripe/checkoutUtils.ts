@@ -75,10 +75,14 @@ export function createStripeCheckoutSession({
   mode,
   tracking,
 }: CreateStripeCheckoutSessionParams): Promise<Stripe.Checkout.Session> {
-  const metadata = toStripeMetadata({
+  const trackingMetadata = toStripeMetadata({
     ...tracking,
     priceId: tracking?.priceId ?? priceId,
   });
+  const metadata = {
+    ...trackingMetadata,
+    user_id: userId,
+  };
 
   return stripeClient.checkout.sessions.create({
     customer: customerId,

@@ -2,11 +2,19 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   buildInitiateCheckoutDataLayerEvent,
   buildViewPricingDataLayerEvent,
+  buildCompleteRegistrationDataLayerEvent,
+  buildLeadDataLayerEvent,
   ensureFbcFromFbclid,
   getMetaBrowserIds,
   getPersistedAttributionParams,
   persistAttributionParams,
   pushDataLayerEvent,
+  trackCompleteRegistration,
+  trackInitiateCheckout,
+  trackLead,
+  trackMetaStandardEvent,
+  trackPageView,
+  trackViewPricing,
 } from './metaTracking';
 
 function createLocalStorage() {
@@ -52,6 +60,7 @@ function installBrowser(url: string, referrer = 'https://google.com/search') {
     location: new URL(url),
     dataLayer: [],
     localStorage: createLocalStorage(),
+    fbq: undefined as undefined | ((...args: unknown[]) => void),
   });
 
   return cookieStore;
@@ -108,6 +117,7 @@ describe('metaTracking', () => {
         meta_event_name: 'ViewContent',
         content_name: 'Planos Catechis',
         content_category: 'subscription',
+        content_type: 'product',
         currency: 'BRL',
       },
       {
@@ -116,12 +126,118 @@ describe('metaTracking', () => {
         event_id: 'initiate_checkout_test',
         content_name: 'Plano Unico',
         content_category: 'subscription',
+        content_type: 'product',
+        content_ids: ['single'],
         plan_id: 'single',
         price_id: 'price_single',
         value: 29,
         currency: 'BRL',
         trial_days: 7,
+        num_items: 1,
       },
     ]);
+  });
+
+  it('builds CompleteRegistration and Lead payloads for Meta Ads funnel', () => {
+    expect(buildCompleteRegistrationDataLayerEvent({
+      event_id: 'complete_registration_test',
+      method: 'email',
+    })).toEqual({
+      meta_event_name: 'CompleteRegistration',
+      event_id: 'complete_registration_test',
+      content_name: 'Signup Catechis',
+      content_category: 'subscription',
+      method: 'email',
+      status: true,
+    });
+
+    expect(buildLeadDataLayerEvent({
+      event_id: 'lead_test',
+      content_name: 'Plano Unico',
+      plan_id: 'single',
+      value: 29,
+      currency: 'BRL',
+    })).toEqual({
+      meta_event_name: 'Lead',
+      event_id: 'lead_test',
+      content_name: 'Plano Unico',
+      content_category: 'subscription',
+      content_type: 'product',
+      content_ids: ['single'],
+      plan_id: 'single',
+      value: 29,
+      currency: 'BRL',
+    });
+  });
+
+  it('mirrors standard events to fbq with eventID when native pixel is present', () => {
+    installBrowser('https://catechis.app/pricing');
+    const fbq = vi.fn();
+    (window as any).fbq = fbq;
+
+    trackMetaStandardEvent('initiate_checkout', 'InitiateCheckout', {
+      event_id: 'initiate_checkout_dedup',
+      content_name: 'Plano Unico',
+      value: 29,
+      currency: 'BRL',
+    });
+
+    expect(fbq).toHaveBeenCalledWith(
+      'track',
+      'InitiateCheckout',
+      {
+        content_name: 'Plano Unico',
+        value: 29,
+        currency: 'BRL',
+      },
+      { eventID: 'initiate_checkout_dedup' },
+    );
+    expect((window as any).dataLayer[0]).toMatchObject({
+      event: 'initiate_checkout',
+      meta_event_name: 'InitiateCheckout',
+      event_id: 'initiate_checkout_dedup',
+    });
+  });
+
+  it('tracks PageView, ViewContent, Lead and CompleteRegistration helpers', () => {
+    installBrowser('https://catechis.app/pricing');
+    const fbq = vi.fn();
+    (window as any).fbq = fbq;
+
+    trackPageView('/pricing', 'Pricing');
+    trackViewPricing({ plan_ids: ['single', 'unlimited'] });
+    trackLead({
+      event_id: 'lead_1',
+      content_name: 'Plano Unico',
+      plan_id: 'single',
+      value: 29,
+    });
+    trackCompleteRegistration({
+      event_id: 'reg_1',
+      method: 'email',
+    });
+    trackInitiateCheckout({
+      event_id: 'ic_1',
+      content_name: 'Plano Unico',
+      plan_id: 'single',
+      value: 29,
+    });
+
+    const events = (window as any).dataLayer.map((entry: any) => entry.event);
+    expect(events).toEqual([
+      'page_view',
+      'view_pricing',
+      'generate_lead',
+      'complete_registration',
+      'initiate_checkout',
+    ]);
+
+    expect(fbq).toHaveBeenCalledWith('track', 'PageView', expect.any(Object));
+    expect(fbq).toHaveBeenCalledWith(
+      'track',
+      'CompleteRegistration',
+      expect.objectContaining({ method: 'email', status: true }),
+      { eventID: 'reg_1' },
+    );
   });
 });

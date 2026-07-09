@@ -5,6 +5,10 @@ import { ArrowRight, Check } from "lucide-react";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import { useLandingText } from "../hooks/useLandingText";
 import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
+import {
+  trackLead,
+  trackViewPricing,
+} from "../../client/analytics/metaTracking";
 import { Button } from "../../client/components/ui/button";
 import { formatPrice } from "../../shared/currency";
 import { PLANS } from "../../shared/pricing";
@@ -24,6 +28,11 @@ export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
     trackMarketingEvent("pricing_viewed", {
       landing: ns,
       placement: "landing_lean_pricing",
+    });
+    // Meta ViewContent when pricing enters viewport (main Meta Ads landing surface).
+    trackViewPricing({
+      plan_ids: ["single", "unlimited"],
+      content_name: "Planos Catechis Landing",
     });
   }, [isVisible, ns]);
 
@@ -161,14 +170,25 @@ function PlanCard({
       >
         <Link
           to={href}
-          onClick={() =>
+          onClick={() => {
             trackMarketingEvent("primary_cta_clicked", {
               landing: ns,
               placement: "lean_pricing_plan",
               destination: href,
               plan: planId,
-            })
-          }
+            });
+            const planDef = PLANS[planId as keyof typeof PLANS];
+            const value = planDef
+              ? Number((planDef.prices.monthlyCents / 100).toFixed(2))
+              : undefined;
+            trackLead({
+              content_name: name,
+              plan_id: planId,
+              content_ids: [planId],
+              value,
+              currency: "BRL",
+            });
+          }}
         >
           {cta}
           <ArrowRight className="h-4 w-4" />

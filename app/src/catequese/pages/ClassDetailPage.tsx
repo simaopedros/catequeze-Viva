@@ -357,7 +357,7 @@ export default function ClassDetailPage() {
                       </Link>
                     </Button>
                     <Button size="sm" variant="outline" asChild>
-                      <Link to="/app/attendance">
+                      <Link to={`/app/classes/${id}/attendance`}>
                         <ClipboardList className="mr-1 h-3.5 w-3.5" />
                         {t('detail.empty_cta_attendance')}
                       </Link>
@@ -439,7 +439,7 @@ export default function ClassDetailPage() {
                     </Link>
                   </Button>
                   <Button size="sm" variant="outline" asChild>
-                    <Link to="/app/attendance">
+                    <Link to={`/app/classes/${id}/attendance`}>
                       <ClipboardList className="mr-1 h-3.5 w-3.5" />
                       {t('detail.empty_cta_attendance')}
                     </Link>

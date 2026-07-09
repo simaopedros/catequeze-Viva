@@ -4,6 +4,10 @@ import { useTranslation } from "react-i18next";
 import { ArrowRight, Check, Star } from "lucide-react";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
+import {
+  trackLead,
+  trackViewPricing,
+} from "../../client/analytics/metaTracking";
 import { PRICING_PREVIEW } from "../content/landingContent";
 import { Button } from "../../client/components/ui/button";
 import { formatPrice } from "../../shared/currency";
@@ -52,6 +56,10 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
     trackMarketingEvent("pricing_viewed", {
       landing: ns,
       placement: "landing_pricing_preview",
+    });
+    trackViewPricing({
+      plan_ids: ["single", "unlimited"],
+      content_name: "Planos Catechis Landing Preview",
     });
   }, [isVisible, ns]);
 
@@ -205,15 +213,30 @@ function PricingPreviewCard({
       >
         <Link
           to={signupHref}
-          onClick={() =>
+          onClick={() => {
             trackMarketingEvent("primary_cta_clicked", {
               landing: ns,
               placement: "landing_pricing_plan",
               destination: signupHref,
               plan: plan.planId,
               interval,
-            })
-          }
+            });
+            const def = PLANS[plan.planId as PlanId];
+            const cents =
+              interval === "annual" && def?.prices.annualCents != null
+                ? def.prices.annualCents
+                : def?.prices.monthlyCents;
+            trackLead({
+              content_name: name,
+              plan_id: plan.planId,
+              content_ids: [plan.planId],
+              value:
+                typeof cents === "number"
+                  ? Number((cents / 100).toFixed(2))
+                  : undefined,
+              currency: "BRL",
+            });
+          }}
         >
           {typeof ctaLabel === "string" && ctaLabel.includes("price_cta")
             ? tr("price_cta_start")

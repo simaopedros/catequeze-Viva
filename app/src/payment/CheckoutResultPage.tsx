@@ -2,7 +2,8 @@ import { useEffect, useMemo } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "../client/components/ui/button";
-import { pushDataLayerEvent } from "../client/analytics/metaTracking";
+import { trackStartTrialBrowser } from "../client/analytics/metaTracking";
+import { SUBSCRIPTION_TRIAL_DAYS } from "../shared/pricing";
 
 const BILLING_PAGE_REDIRECT_DELAY_MS = 4000;
 
@@ -22,11 +23,13 @@ export default function CheckoutResultPage() {
 
   useEffect(() => {
     if (sessionId) {
-      pushDataLayerEvent("start_trial_success_page", {
-        meta_event_name: "StartTrial",
+      // Same event_id as server CAPI StartTrial for Meta deduplication.
+      trackStartTrialBrowser({
         event_id: `starttrial_${sessionId}`,
-        content_category: "subscription",
-        trial_days: 7,
+        content_name: "Trial Catechis",
+        trial_days: SUBSCRIPTION_TRIAL_DAYS,
+        value: 0,
+        currency: "BRL",
       });
     }
 

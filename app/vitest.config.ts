@@ -8,6 +8,7 @@ export default defineConfig({
     setupFiles: ['./src/__tests__/setup.ts'],
     exclude: [
       '**/node_modules/**',
+      '**/.wasp/**',
       '**/e2e-tests/**',
       '**/tests/e2e/**',
     ],

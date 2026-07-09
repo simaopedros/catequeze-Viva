@@ -20,8 +20,8 @@ import { PLANS, PLAN_IDS, type PlanId } from "../../shared/pricing";
 import { formatPrice } from "../../shared/currency";
 import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
 import {
-  buildViewPricingDataLayerEvent,
-  pushDataLayerEvent,
+  trackLead,
+  trackViewPricing,
 } from "../../client/analytics/metaTracking";
 
 type PlanLevel = "personal" | "institutional";
@@ -70,7 +70,10 @@ export default function PricingPage() {
 
   useEffect(() => {
     trackMarketingEvent("pricing_viewed", { placement: "pricing_page" });
-    pushDataLayerEvent("view_pricing", buildViewPricingDataLayerEvent());
+    trackViewPricing({
+      plan_ids: ["single", "unlimited"],
+      content_name: "Planos Catechis",
+    });
   }, []);
 
   const pricingPlans = useMemo((): PricingPlan[] => {
@@ -107,6 +110,17 @@ export default function PricingPage() {
       level: plan.level,
       interval: billingInterval,
       placement: "pricing_page",
+    });
+    const selectedValue =
+      billingInterval === "annual" && plan.priceCentsAnnual
+        ? Number((plan.priceCentsAnnual / 100).toFixed(2))
+        : Number((plan.priceCents / 100).toFixed(2));
+    trackLead({
+      content_name: plan.name,
+      plan_id: plan.planId,
+      content_ids: [plan.planId],
+      value: selectedValue,
+      currency: "BRL",
     });
     setIntendedPlan(plan.planId);
     navigate(isLoggedIn ? `/app/billing?plan=${plan.planId}` : "/signup");

@@ -57,13 +57,9 @@ import { BuyCreditsButton } from '../components/BuyCreditsButton';
 import { formatPrice } from '../../shared/currency';
 import { trackMarketingEvent } from '../../client/analytics/marketingAnalytics';
 import {
-  buildInitiateCheckoutDataLayerEvent,
-  buildViewPricingDataLayerEvent,
-  createEventId,
-  ensureFbcFromFbclid,
-  getMetaBrowserIds,
-  getPersistedAttributionParams,
-  pushDataLayerEvent,
+  buildCheckoutTrackingFields,
+  trackInitiateCheckout,
+  trackViewPricing,
 } from '../../client/analytics/metaTracking';
 import { cn } from '../../client/utils';
 import type { ReactNode } from 'react';
@@ -371,20 +367,23 @@ export default function BillingPage() {
     setUpgradingPlan(planId);
     try {
       const plan = getPlanDef(planId);
-      const attribution = getPersistedAttributionParams();
-      const ensuredFbc = ensureFbcFromFbclid();
-      const browserIds = getMetaBrowserIds();
-      const initiateCheckoutEventId = createEventId('initiate_checkout');
       const checkoutValue = getPlanCheckoutValue(plan, billingInterval);
+      const tracking = buildCheckoutTrackingFields({
+        planId,
+        planName: plan.name,
+        value: checkoutValue,
+        currency: 'BRL',
+      });
 
-      pushDataLayerEvent('initiate_checkout', buildInitiateCheckoutDataLayerEvent({
-        event_id: initiateCheckoutEventId,
+      trackInitiateCheckout({
+        event_id: tracking.initiate_checkout_event_id,
         content_name: plan.name,
+        content_ids: [planId],
         plan_id: planId,
         value: checkoutValue,
         currency: 'BRL',
         trial_days: SUBSCRIPTION_TRIAL_DAYS,
-      }));
+      });
 
       trackMarketingEvent('checkout_started', {
         plan: planId,
@@ -401,19 +400,19 @@ export default function BillingPage() {
         planName: plan.name,
         value: checkoutValue,
         currency: 'BRL',
-        initiate_checkout_event_id: initiateCheckoutEventId,
-        fbp: browserIds.fbp,
-        fbc: ensuredFbc ?? browserIds.fbc,
-        fbclid: attribution.fbclid,
-        client_user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
-        event_source_url: typeof window !== 'undefined' ? window.location.href : undefined,
-        landing_page_url: attribution.landing_page_url,
-        referrer: attribution.referrer,
-        utm_source: attribution.utm_source,
-        utm_medium: attribution.utm_medium,
-        utm_campaign: attribution.utm_campaign,
-        utm_content: attribution.utm_content,
-        utm_term: attribution.utm_term,
+        initiate_checkout_event_id: tracking.initiate_checkout_event_id,
+        fbp: tracking.fbp,
+        fbc: tracking.fbc,
+        fbclid: tracking.fbclid,
+        client_user_agent: tracking.client_user_agent,
+        event_source_url: tracking.event_source_url,
+        landing_page_url: tracking.landing_page_url,
+        referrer: tracking.referrer,
+        utm_source: tracking.utm_source,
+        utm_medium: tracking.utm_medium,
+        utm_campaign: tracking.utm_campaign,
+        utm_content: tracking.utm_content,
+        utm_term: tracking.utm_term,
       });
       if (result.sessionUrl) {
         window.location.href = result.sessionUrl;
@@ -517,7 +516,10 @@ export default function BillingPage() {
     if (isParishManaged) return;
 
     pricingViewedRef.current = true;
-    pushDataLayerEvent('view_pricing', buildViewPricingDataLayerEvent());
+    trackViewPricing({
+      plan_ids: isPersonal ? ['single'] : ['unlimited'],
+      content_name: isPersonal ? 'Plano Unico' : 'Plano Ilimitado',
+    });
     trackMarketingEvent('pricing_viewed', {
       placement: 'billing_page',
       workspace: isPersonal ? 'personal' : 'institutional',
@@ -525,7 +527,16 @@ export default function BillingPage() {
       reason: journeyReason,
       current_plan: effectivePlanId,
     });
-  }, [effectivePlanId, isParishManaged, isPersonal, journeyReason, journeySource, loading, loadingParish, parishId]);
+  }, [
+    effectivePlanId,
+    isParishManaged,
+    isPersonal,
+    journeyReason,
+    journeySource,
+    loading,
+    loadingParish,
+    parishId,
+  ]);
 
   useEffect(() => {
     if (!requestedPlanId || !allowAutoCheckout) return;

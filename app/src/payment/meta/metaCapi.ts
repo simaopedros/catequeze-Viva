@@ -4,6 +4,8 @@ import { logger } from "../../server/logger";
 
 export interface MetaEventUserData {
   email?: string;
+  /** Unhashed external user id — hashed before send. */
+  external_id?: string;
   fbp?: string;
   fbc?: string;
   client_ip_address?: string;
@@ -15,6 +17,11 @@ export interface MetaEventCustomData {
   value?: number;
   content_name?: string;
   content_category?: string;
+  content_ids?: string[];
+  content_type?: string;
+  num_items?: number;
+  /** CompleteRegistration success flag (Meta accepts bool/string). */
+  status?: boolean | string;
   subscription_id?: string;
   stripe_customer_id?: string;
   stripe_session_id?: string;
@@ -45,8 +52,13 @@ interface MetaGraphPayload {
   test_event_code?: string;
 }
 
-function isConfigured(): boolean {
+export function isMetaCapiConfigured(): boolean {
   return Boolean(env.META_PIXEL_ID && env.META_CAPI_ACCESS_TOKEN);
+}
+
+/** @deprecated use isMetaCapiConfigured */
+function isConfigured(): boolean {
+  return isMetaCapiConfigured();
 }
 
 export function normalizeEmail(email?: string | null): string | undefined {
@@ -77,9 +89,15 @@ export function buildMetaEventRequestBody(
 ): MetaGraphPayload {
   const normalizedEmail = normalizeEmail(params.user_data?.email);
   const emailHash = sha256(normalizedEmail);
+  const externalIdHash = sha256(
+    params.user_data?.external_id?.trim()
+      ? params.user_data.external_id.trim()
+      : undefined,
+  );
 
   const userData = cleanObject({
     em: emailHash ? [emailHash] : undefined,
+    external_id: externalIdHash ? [externalIdHash] : undefined,
     fbp: params.user_data?.fbp,
     fbc: params.user_data?.fbc,
     client_ip_address: params.user_data?.client_ip_address,

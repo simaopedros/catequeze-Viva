@@ -15,6 +15,7 @@ import {
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
 import GoogleTagScripts from "./analytics/GoogleTagScripts";
+import MetaPixelScripts from "./analytics/MetaPixelScripts";
 import { isFamilyPortalHost } from "../shared/portal";
 import FamilyLandingPage from "../catequese/pages/family/FamilyLandingPage";
 import { AppShell } from "../catequese/AppShell";
@@ -26,7 +27,7 @@ import {
 import {
   ensureFbcFromFbclid,
   persistAttributionParams,
-  pushDataLayerEvent,
+  trackPageView,
 } from "./analytics/metaTracking";
 
 import "../i18n/config";
@@ -182,13 +183,7 @@ export default function App() {
   }, [location.pathname, location.search]);
 
   useEffect(() => {
-    pushDataLayerEvent("page_view", {
-      page: {
-        path: location.pathname,
-        title: document.title,
-        location: window.location.href,
-      },
-    });
+    trackPageView(location.pathname, document.title);
     const landing = marketingLandingFromPath(location.pathname);
     if (landing) {
       trackMarketingEvent("landing_viewed", {
@@ -270,6 +265,7 @@ export default function App() {
       </Suspense>
       <InstallPrompt />
       <GoogleTagScripts />
+      <MetaPixelScripts />
     </>
   );
 }
