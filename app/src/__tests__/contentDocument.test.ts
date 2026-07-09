@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { buildLegacyContentDocument, createEmptyContentDocument, parseContentDocument } from '../shared/contentDocument';
+import {
+  buildLegacyContentDocument,
+  createEmptyContentDocument,
+  createMeetingSkeletonDocument,
+  isBlankContentDocument,
+  isUnmodifiedMeetingSkeleton,
+  MEETING_SECTION_TITLES,
+  parseContentDocument,
+} from '../shared/contentDocument';
 
 describe('contentDocument', () => {
   it('builds a document from legacy fields in the expected order', () => {
@@ -41,5 +49,29 @@ describe('contentDocument', () => {
     expect(parseContentDocument(JSON.stringify(empty))).toEqual(empty);
     expect(parseContentDocument('{invalid')).toBeNull();
     expect(parseContentDocument(null)).toBeNull();
+  });
+
+  it('creates a pastoral meeting skeleton with named sections', () => {
+    const skeleton = createMeetingSkeletonDocument();
+    const headings = skeleton.content
+      .filter((node) => node.type === 'heading')
+      .map((node) => node.content?.[0]?.text);
+
+    expect(headings).toEqual([...MEETING_SECTION_TITLES]);
+    expect(isUnmodifiedMeetingSkeleton(skeleton)).toBe(true);
+    expect(isBlankContentDocument(skeleton)).toBe(false);
+    expect(isBlankContentDocument(createEmptyContentDocument())).toBe(true);
+  });
+
+  it('detects when the skeleton has been edited', () => {
+    const skeleton = createMeetingSkeletonDocument();
+    const edited = {
+      ...skeleton,
+      content: [
+        ...skeleton.content,
+        { type: 'paragraph', content: [{ type: 'text', text: 'Anotação' }] },
+      ],
+    };
+    expect(isUnmodifiedMeetingSkeleton(edited)).toBe(false);
   });
 });

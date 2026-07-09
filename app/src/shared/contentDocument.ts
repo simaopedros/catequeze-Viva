@@ -58,6 +58,52 @@ export function createEmptyContentDocument(): ContentDocument {
   };
 }
 
+/** Default pastoral sections for the manual meeting editor. */
+export const MEETING_SECTION_TITLES = [
+  'Oração inicial',
+  'Acolhida / recado',
+  'Conteúdo principal',
+  'Dinâmica / atividade',
+  'Compromisso com a família',
+  'Oração final',
+] as const;
+
+/**
+ * Structured empty meeting skeleton — headings + blank paragraphs so catechists
+ * start from a recognizable pastoral outline instead of a blank page.
+ */
+export function createMeetingSkeletonDocument(): ContentDocument {
+  const content: ContentDocNode[] = [];
+  for (const title of MEETING_SECTION_TITLES) {
+    content.push(headingNode(title, 2));
+    content.push(paragraphNode(''));
+  }
+  return { type: 'doc', content };
+}
+
+/** True when the doc is a single empty paragraph (legacy blank). */
+export function isBlankContentDocument(doc: ContentDocument | null | undefined): boolean {
+  if (!doc?.content?.length) return true;
+  if (doc.content.length !== 1) return false;
+  const node = doc.content[0];
+  if (node.type !== 'paragraph') return false;
+  const text = (node.content || [])
+    .map((child) => (child.type === 'text' ? child.text || '' : ''))
+    .join('')
+    .trim();
+  return text.length === 0;
+}
+
+/**
+ * True when the document is still the default skeleton with no body text
+ * (only H2 section titles and empty paragraphs).
+ */
+export function isUnmodifiedMeetingSkeleton(doc: ContentDocument | null | undefined): boolean {
+  if (!doc?.content?.length) return false;
+  const skeleton = createMeetingSkeletonDocument();
+  return JSON.stringify(doc) === JSON.stringify(skeleton);
+}
+
 export function parseContentDocument(value: string | null | undefined): ContentDocument | null {
   if (!value) return null;
   try {

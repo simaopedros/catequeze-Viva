@@ -22,11 +22,26 @@ import {
   searchDirectory,
 } from "wasp/client/operations";
 import { Button } from "../../../client/components/ui/button";
+import { Input } from "../../../client/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../../../client/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../client/components/ui/dropdown-menu";
 import { cn } from "../../../client/utils";
 import { useLocale } from "../../../i18n/useLocale";
 import {
   parseContentDocument,
   createEmptyContentDocument,
+  MEETING_SECTION_TITLES,
 } from "../../../shared/contentDocument";
 import {
   Bold,
@@ -50,6 +65,8 @@ import {
   FileText,
   Unlink2,
   X,
+  LayoutList,
+  ChevronDown,
 } from "lucide-react";
 
 type ReferenceKind = "bible" | "catechism" | "directory";
@@ -298,15 +315,11 @@ function SelectionActionBubble({
   };
 
   const handleLink = () => {
+    // Link editing from the bubble uses the parent toolbar dialog via focus restore.
     const selection = restoreSelection();
     if (!selection) return;
     const previous = editor.getAttributes("link").href as string | undefined;
-    const href = window.prompt("Cole o link", previous || "https://");
-    if (href === null) return;
-    if (!href.trim()) {
-      editor.chain().focus().setTextSelection(selection).unsetLink().run();
-      return;
-    }
+    const href = previous || "https://";
     editor
       .chain()
       .focus()
@@ -574,6 +587,8 @@ export function RichContentEditor({
   const dismissedSelectionRef = useRef<string | null>(null);
   const [selectionBubble, setSelectionBubble] =
     useState<SelectionBubbleState | null>(null);
+  const [linkOpen, setLinkOpen] = useState(false);
+  const [linkHref, setLinkHref] = useState("https://");
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -593,7 +608,7 @@ export function RichContentEditor({
     editorProps: {
       attributes: {
         class:
-          "min-h-[720px] max-w-none px-8 py-10 outline-none prose prose-neutral prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-[#071A2D] prose-p:leading-7 prose-img:rounded-sm prose-blockquote:border-l-[#071A2D] prose-blockquote:text-[#071A2D]/90 prose-strong:text-[#071A2D]",
+          "min-h-[50vh] max-w-none px-5 py-8 outline-none prose prose-neutral sm:min-h-[60vh] sm:px-8 sm:py-10 prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-[#071A2D] prose-p:leading-7 prose-img:rounded-sm prose-blockquote:border-l-[#071A2D] prose-blockquote:text-[#071A2D]/90 prose-strong:text-[#071A2D]",
       },
       handlePaste: (_view, event) => {
         const items = event.clipboardData?.items;
@@ -685,16 +700,43 @@ export function RichContentEditor({
     syncRef.current = false;
   }, [editor, value]);
 
-  const insertLink = () => {
+  const openLinkDialog = () => {
     if (!editor) return;
     const previous = editor.getAttributes("link").href as string | undefined;
-    const href = window.prompt("Cole o link", previous || "https://");
-    if (href === null) return;
-    if (!href.trim()) {
-      editor.chain().focus().unsetLink().run();
-      return;
+    setLinkHref(previous || "https://");
+    setLinkOpen(true);
+  };
+
+  const applyLink = () => {
+    if (!editor) return;
+    const href = linkHref.trim();
+    if (!href) {
+      editor.chain().focus().extendMarkRange("link").unsetLink().run();
+    } else {
+      editor
+        .chain()
+        .focus()
+        .extendMarkRange("link")
+        .setLink({ href })
+        .run();
     }
-    editor.chain().focus().extendMarkRange("link").setLink({ href }).run();
+    setLinkOpen(false);
+  };
+
+  const insertMeetingSection = (sectionTitle: string) => {
+    if (!editor) return;
+    editor
+      .chain()
+      .focus()
+      .insertContent([
+        {
+          type: "heading",
+          attrs: { level: 2 },
+          content: [{ type: "text", text: sectionTitle }],
+        },
+        { type: "paragraph" },
+      ])
+      .run();
   };
 
   const insertImage = async (file: File) => {
@@ -702,24 +744,53 @@ export function RichContentEditor({
     editor?.chain().focus().setImage({ src: url, alt: file.name }).run();
   };
 
+  const ToolbarDivider = () => (
+    <span className="mx-0.5 hidden h-6 w-px bg-border/70 sm:inline-block" />
+  );
+
   return (
     <div className="overflow-visible rounded-sm border border-border/70 bg-white">
-      <div className="border-b border-border/50 bg-background/55 px-4 py-3 ">
-        <div className="mb-3 flex items-center justify-between gap-3">
+      <div className="sticky top-[8.5rem] z-20 border-b border-border/50 bg-white/95 px-3 py-3 backdrop-blur-md sm:px-4">
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
           <div>
             <p
               className="text-sm font-semibold tracking-tight text-[#071A2D]"
               style={{ fontFamily: "var(--font-brand-display)" }}
             >
-              Documento
+              Roteiro do encontro
             </p>
             <p className="text-xs text-muted-foreground">
-              Selecione um trecho para vincular referências ou adicionar ações
-              contextuais.
+              Selecione um trecho para vincular Bíblia, Catecismo ou Diretório.
+              Atalhos: Ctrl/Cmd+B negrito · Ctrl/Cmd+I itálico.
             </p>
           </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-9 gap-1.5 rounded-sm"
+              >
+                <LayoutList className="h-4 w-4" />
+                Inserir seção
+                <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              {MEETING_SECTION_TITLES.map((section) => (
+                <DropdownMenuItem
+                  key={section}
+                  onClick={() => insertMeetingSection(section)}
+                >
+                  {section}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-        <div className="flex flex-wrap gap-2">
+
+        <div className="flex gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
           <ToolbarButton
             title="Parágrafo"
             onClick={() => editor?.chain().focus().setParagraph().run()}
@@ -754,15 +825,16 @@ export function RichContentEditor({
           >
             <Heading3 className="h-4 w-4" />
           </ToolbarButton>
+          <ToolbarDivider />
           <ToolbarButton
-            title="Negrito"
+            title="Negrito (Ctrl/Cmd+B)"
             onClick={() => editor?.chain().focus().toggleBold().run()}
             active={editor?.isActive("bold")}
           >
             <Bold className="h-4 w-4" />
           </ToolbarButton>
           <ToolbarButton
-            title="Itálico"
+            title="Itálico (Ctrl/Cmd+I)"
             onClick={() => editor?.chain().focus().toggleItalic().run()}
             active={editor?.isActive("italic")}
           >
@@ -775,6 +847,7 @@ export function RichContentEditor({
           >
             <UnderlineIcon className="h-4 w-4" />
           </ToolbarButton>
+          <ToolbarDivider />
           <ToolbarButton
             title="Lista"
             onClick={() => editor?.chain().focus().toggleBulletList().run()}
@@ -802,9 +875,10 @@ export function RichContentEditor({
           >
             <Minus className="h-4 w-4" />
           </ToolbarButton>
+          <ToolbarDivider />
           <ToolbarButton
             title="Link"
-            onClick={insertLink}
+            onClick={openLinkDialog}
             active={editor?.isActive("link")}
           >
             <LinkIcon className="h-4 w-4" />
@@ -828,6 +902,7 @@ export function RichContentEditor({
           >
             <ImageIcon className="h-4 w-4" />
           </ToolbarButton>
+          <ToolbarDivider />
           <ToolbarButton
             title="Desfazer"
             onClick={() => editor?.chain().focus().undo().run()}
@@ -856,7 +931,7 @@ export function RichContentEditor({
         }}
       />
 
-      <div className="overflow-visible bg-[#F7F4EE]/50 p-4 sm:p-6 lg:p-8">
+      <div className="overflow-visible bg-[#F7F4EE]/50 p-3 sm:p-6 lg:p-8">
         <div
           className={cn(
             "relative z-10 mx-auto max-w-[920px] overflow-visible rounded-sm border border-border/70 bg-white",
@@ -878,6 +953,46 @@ export function RichContentEditor({
           <EditorContent editor={editor} />
         </div>
       </div>
+
+      <Dialog open={linkOpen} onOpenChange={setLinkOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Inserir link</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2 py-2">
+            <label className="text-xs font-medium text-muted-foreground">
+              URL
+            </label>
+            <Input
+              value={linkHref}
+              onChange={(e) => setLinkHref(e.target.value)}
+              placeholder="https://"
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  applyLink();
+                }
+              }}
+            />
+          </div>
+          <DialogFooter className="gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                editor?.chain().focus().extendMarkRange("link").unsetLink().run();
+                setLinkOpen(false);
+              }}
+            >
+              Remover link
+            </Button>
+            <Button type="button" onClick={applyLink}>
+              Aplicar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
