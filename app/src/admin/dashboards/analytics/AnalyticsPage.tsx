@@ -70,35 +70,30 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
       value: counts?.landing_viewed ?? 0,
       subtitle: `${data?.counts7d.landing_viewed ?? 0} nos últimos 7 dias`,
       icon: BarChart3,
-      color: 'text-blue-600 bg-blue-50',
     },
     {
       label: 'Pricing views (30d)',
       value: counts?.pricing_viewed ?? 0,
       subtitle: percent(data?.conversion30d.landingToPricing ?? null),
       icon: MousePointerClick,
-      color: 'text-sky-600 bg-sky-50',
     },
     {
       label: 'Checkout started (30d)',
       value: counts?.checkout_started ?? 0,
       subtitle: percent(data?.conversion30d.signupToCheckout ?? null),
       icon: CreditCard,
-      color: 'text-amber-600 bg-amber-50',
     },
     {
       label: 'Purchases (30d)',
       value: counts?.purchase_completed ?? 0,
       subtitle: percent(data?.conversion30d.checkoutToPurchase ?? null),
       icon: ShoppingCart,
-      color: 'text-emerald-600 bg-emerald-50',
     },
     {
       label: 'Activations (30d)',
       value: counts?.activation_completed ?? 0,
       subtitle: percent(data?.conversion30d.purchaseToActivation ?? null),
       icon: Rocket,
-      color: 'text-violet-600 bg-violet-50',
     },
   ];
 
@@ -131,12 +126,12 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
           <>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
               {topCards.map((card) => (
-                <div key={card.label} className="rounded-xl border bg-card p-5 shadow-sm">
-                  <div className={`inline-flex rounded-lg p-2.5 ${card.color}`}>
-                    <card.icon className="h-5 w-5" />
+                <div key={card.label} className="rounded-sm border border-border/70 bg-white p-5">
+                  <div className="inline-flex h-9 w-9 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
+                    <card.icon className="h-4 w-4" />
                   </div>
                   <div className="mt-3">
-                    <p className="text-2xl font-bold">{card.value}</p>
+                    <p className="text-2xl font-semibold tracking-tight text-[#071A2D]">{card.value}</p>
                     <p className="text-xs font-medium text-muted-foreground">{card.label}</p>
                     <p className="text-caption text-muted-foreground/70 mt-0.5">{card.subtitle}</p>
                   </div>
@@ -145,18 +140,18 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
             </div>
 
             <div className="grid gap-6 xl:grid-cols-[2fr_1fr]">
-              <div className="rounded-xl border bg-card p-5">
+              <div className="rounded-sm border border-border/70 bg-white p-5">
                 <h2 className="font-semibold">Etapas do funil</h2>
                 <p className="text-sm text-muted-foreground mt-1">Contagens em 30 dias com conversão entre etapas principais.</p>
                 <div className="mt-4 grid gap-3 md:grid-cols-2">
                   {funnelSteps.map((step) => (
-                    <div key={step.label} className="rounded-lg border bg-background p-4">
+                    <div key={step.label} className="rounded-sm border border-border/70 bg-white p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <p className="text-sm font-medium">{step.label}</p>
                           <p className="text-2xl font-bold mt-1">{step.count}</p>
                         </div>
-                        <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
+                        <span className="rounded-sm bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
                           {percent(step.rate)}
                         </span>
                       </div>
@@ -166,7 +161,7 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
               </div>
 
               <div className="space-y-6">
-                <div className="rounded-xl border bg-card p-5">
+                <div className="rounded-sm border border-border/70 bg-white p-5">
                   <h2 className="font-semibold flex items-center gap-2">
                     <Users className="h-4 w-4" />
                     Convites e share
@@ -191,7 +186,7 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                   </div>
                 </div>
 
-                <div className="rounded-xl border bg-card p-5">
+                <div className="rounded-sm border border-border/70 bg-white p-5">
                   <h2 className="font-semibold flex items-center gap-2">
                     <Share2 className="h-4 w-4" />
                     Top plans (30d)
@@ -206,7 +201,7 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                   </div>
                 </div>
 
-                <div className="rounded-xl border bg-card p-5">
+                <div className="rounded-sm border border-border/70 bg-white p-5">
                   <h2 className="font-semibold">Processors (30d)</h2>
                   <div className="mt-4 space-y-3 text-sm">
                     {data?.topProcessors.length ? data.topProcessors.map((item) => (
@@ -220,7 +215,7 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
               </div>
             </div>
 
-            <div className="rounded-xl border bg-card p-5">
+            <div className="rounded-sm border border-border/70 bg-white p-5">
               <h2 className="font-semibold">Recent purchases</h2>
               <p className="text-sm text-muted-foreground mt-1">Últimos eventos autoritativos de pagamento confirmado.</p>
               <div className="mt-4 overflow-x-auto">

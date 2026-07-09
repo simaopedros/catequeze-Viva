@@ -44,7 +44,7 @@ const UsersTable = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="border-border bg-card rounded-sm border shadow-sm">
+      <div className="border-border/70 bg-white rounded-sm border">
         <div className="bg-muted/40 flex w-full items-center gap-4 p-4">
           <Label htmlFor="email-filter" className="text-muted-foreground text-sm">{t('email')}:</Label>
           <Input

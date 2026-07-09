@@ -48,7 +48,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
 
         {/* Profile + Billing */}
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-          <div className="rounded-xl border bg-card p-5">
+          <div className="rounded-sm border border-border/70 bg-white p-5">
             <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
               <Users className="h-4 w-4 text-primary" />
               Perfil
@@ -61,7 +61,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
             </div>
           </div>
 
-          <div className="rounded-xl border bg-card p-5">
+          <div className="rounded-sm border border-border/70 bg-white p-5">
             <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
               <CreditCard className="h-4 w-4 text-primary" />
               Billing
@@ -76,7 +76,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
         </div>
 
         {/* Memberships */}
-        <div className="rounded-xl border bg-card p-5">
+        <div className="rounded-sm border border-border/70 bg-white p-5">
           <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
             <Building2 className="h-4 w-4 text-primary" />
             Paróquias ({u.memberships?.length || 0})
@@ -104,7 +104,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
         </div>
 
         {/* Audit Log */}
-        <div className="rounded-xl border bg-card p-5">
+        <div className="rounded-sm border border-border/70 bg-white p-5">
           <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
             <History className="h-4 w-4 text-primary" />
             Histórico de Acções
@@ -135,7 +135,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
 
         {/* AI Usage */}
         {u.aiUsage && u.aiUsage.length > 0 && (
-          <div className="rounded-xl border bg-card p-5">
+          <div className="rounded-sm border border-border/70 bg-white p-5">
             <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
               <BarChart3 className="h-4 w-4 text-primary" />
               Uso de IA (30d)

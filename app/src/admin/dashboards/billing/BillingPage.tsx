@@ -33,7 +33,7 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
           </div>
         ) : (
-          <div className="rounded-xl border bg-card overflow-hidden">
+          <div className="rounded-sm border border-border/70 bg-white overflow-hidden">
             <table className="w-full text-sm">
               <thead className="bg-muted/50 border-b">
                 <tr>

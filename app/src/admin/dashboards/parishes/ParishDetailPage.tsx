@@ -74,30 +74,30 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-          <div className="rounded-xl border bg-card p-4">
+          <div className="rounded-sm border border-border/70 bg-white p-4">
             <p className="text-2xl font-bold">{parish._count?.classes || 0}</p>
             <p className="text-xs text-muted-foreground">Turmas</p>
           </div>
-          <div className="rounded-xl border bg-card p-4">
+          <div className="rounded-sm border border-border/70 bg-white p-4">
             <p className="text-2xl font-bold">{parish._count?.catechumens || 0}</p>
             <p className="text-xs text-muted-foreground">Catequizandos</p>
           </div>
-          <div className="rounded-xl border bg-card p-4">
+          <div className="rounded-sm border border-border/70 bg-white p-4">
             <p className="text-2xl font-bold">{parish._count?.memberships || 0}</p>
             <p className="text-xs text-muted-foreground">Membros</p>
           </div>
-          <div className="rounded-xl border bg-card p-4">
+          <div className="rounded-sm border border-border/70 bg-white p-4">
             <p className="text-2xl font-bold">{parish._count?.communities || 0}</p>
             <p className="text-xs text-muted-foreground">Comunidades</p>
           </div>
-          <div className="rounded-xl border bg-card p-4">
+          <div className="rounded-sm border border-border/70 bg-white p-4">
             <p className="text-2xl font-bold">{parish._count?.messageCampaigns || 0}</p>
             <p className="text-xs text-muted-foreground">Campanhas</p>
           </div>
         </div>
 
         {/* Billing */}
-        <div className="rounded-xl border bg-card p-5">
+        <div className="rounded-sm border border-border/70 bg-white p-5">
           <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
             <CircleDot className="h-4 w-4 text-primary" />
             Licença
@@ -127,7 +127,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
         </div>
 
         {/* Members */}
-        <div className="rounded-xl border bg-card p-5">
+        <div className="rounded-sm border border-border/70 bg-white p-5">
           <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
             <Users className="h-4 w-4 text-primary" />
             Membros ({parish.members?.length || 0})
@@ -150,7 +150,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
         </div>
 
         {/* Audit */}
-        <div className="rounded-xl border bg-card p-5">
+        <div className="rounded-sm border border-border/70 bg-white p-5">
           <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
             <History className="h-4 w-4 text-primary" />
             Actividade Recente

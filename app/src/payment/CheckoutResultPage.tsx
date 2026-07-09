@@ -48,15 +48,19 @@ export default function CheckoutResultPage() {
 
   return (
     <div className="mt-10 flex flex-col items-stretch sm:mx-6 sm:items-center">
-      <div className="flex flex-col gap-4 px-4 py-8 text-center shadow-xl ring-1 ring-gray-900/10 sm:max-w-md sm:rounded-lg sm:px-10 dark:ring-gray-100/10">
-        <h1 className="text-xl font-semibold">{t("trial_started_title")}</h1>
-        <span>{t("trial_started_description")}</span>
-        <span>
+      <div className="flex flex-col gap-4 rounded-sm border border-border/70 bg-white px-4 py-8 text-center sm:max-w-md sm:px-10">
+        <div className="mx-auto h-px w-10 bg-[#D39A2B]" aria-hidden />
+        <h1 className="text-xl font-semibold tracking-tight text-[#071A2D]">{t("trial_started_title")}</h1>
+        <span className="text-sm text-muted-foreground">{t("trial_started_description")}</span>
+        <span className="text-sm text-muted-foreground">
           {t("trial_started_redirect", {
             seconds: BILLING_PAGE_REDIRECT_DELAY_MS / 1000,
           })}
         </span>
-        <Button onClick={() => navigate(billingDestination)}>
+        <Button
+          className="rounded-sm bg-[#071A2D] text-white hover:bg-[#0a2540]"
+          onClick={() => navigate(billingDestination)}
+        >
           {t("go_to_billing")}
         </Button>
       </div>

@@ -54,7 +54,7 @@ const AuditLogPage = ({ user }: { user: AuthUser }) => {
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
           </div>
         ) : (!data?.logs || data.logs.length === 0) ? (
-          <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center">
+          <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
             <ShieldCheck className="h-10 w-10 text-muted-foreground/40 mb-3" />
             <h3 className="text-lg font-semibold">Nenhum registo</h3>
             <p className="text-sm text-muted-foreground max-w-md mt-1">
@@ -63,7 +63,7 @@ const AuditLogPage = ({ user }: { user: AuthUser }) => {
           </div>
         ) : (
           <>
-            <div className="rounded-xl border bg-card overflow-hidden">
+            <div className="rounded-sm border border-border/70 bg-white overflow-hidden">
               <table className="w-full text-sm">
                 <thead className="bg-muted/50 border-b">
                   <tr>
@@ -85,13 +85,13 @@ const AuditLogPage = ({ user }: { user: AuthUser }) => {
                         </td>
                         <td className="px-4 py-2.5">
                           <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${
-                            log.action === 'CREATE' ? 'bg-green-100 text-green-800' :
-                            log.action === 'UPDATE' ? 'bg-blue-100 text-blue-800' :
-                            log.action === 'DELETE' ? 'bg-red-100 text-red-800' :
-                            log.action === 'APPROVE' ? 'bg-purple-100 text-purple-800' :
-                            log.action === 'REJECT' ? 'bg-orange-100 text-orange-800' :
-                            'bg-muted text-muted-foreground'
-                          }`}>
+ log.action === 'CREATE' ? 'bg-green-100 text-green-800' :
+ log.action === 'UPDATE' ? 'bg-blue-100 text-blue-800' :
+ log.action === 'DELETE' ? 'bg-red-100 text-red-800' :
+ log.action === 'APPROVE' ? 'bg-purple-100 text-purple-800' :
+ log.action === 'REJECT' ? 'bg-orange-100 text-orange-800' :
+ 'bg-muted text-muted-foreground'
+ }`}>
                             {log.action}
                           </span>
                         </td>
@@ -115,7 +115,7 @@ const AuditLogPage = ({ user }: { user: AuthUser }) => {
                 <button
                   onClick={() => setPage(Math.max(0, page - 1))}
                   disabled={page === 0}
-                  className="text-xs px-3 py-1.5 rounded-md border bg-card hover:bg-muted disabled:opacity-50"
+                  className="text-xs px-3 py-1.5 rounded-sm border border-border/70 bg-white hover:bg-muted disabled:opacity-50"
                 >
                   Anterior
                 </button>
@@ -125,7 +125,7 @@ const AuditLogPage = ({ user }: { user: AuthUser }) => {
                 <button
                   onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
                   disabled={page >= totalPages - 1}
-                  className="text-xs px-3 py-1.5 rounded-md border bg-card hover:bg-muted disabled:opacity-50"
+                  className="text-xs px-3 py-1.5 rounded-sm border border-border/70 bg-white hover:bg-muted disabled:opacity-50"
                 >
                   Seguinte
                 </button>

@@ -2,18 +2,18 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../../utils';
 
 const badgeVariants = cva(
-  'inline-flex items-center rounded-full border font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+  'inline-flex items-center rounded-sm border font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
   {
     variants: {
       variant: {
-        default: 'border-transparent bg-primary text-primary-foreground',
-        secondary: 'border-transparent bg-secondary text-white',
+        default: 'border-transparent bg-[#071A2D] text-white',
+        secondary: 'border-transparent bg-muted text-foreground',
         destructive: 'border-transparent bg-destructive text-destructive-foreground',
         outline: 'text-foreground',
-        brand: 'border-transparent bg-primary/10 text-primary',
-        success: 'border-transparent bg-success/10 text-success',
-        warning: 'border-transparent bg-warning/10 text-warning',
-        info: 'border-transparent bg-info/10 text-info',
+        brand: 'border-transparent bg-[#071A2D]/08 text-[#071A2D]',
+        success: 'border-transparent bg-muted text-foreground',
+        warning: 'border-transparent bg-muted text-foreground',
+        info: 'border-transparent bg-muted text-foreground',
         dot: 'border-transparent gap-1.5',
       },
       size: {

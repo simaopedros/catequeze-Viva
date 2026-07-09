@@ -30,13 +30,13 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
           </div>
         ) : parishes.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center">
+          <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
             <Church className="h-10 w-10 text-muted-foreground/40 mb-3" />
             <h3 className="text-lg font-semibold">Nenhuma paróquia</h3>
             <p className="text-sm text-muted-foreground">As paróquias aparecerão aqui quando forem criadas.</p>
           </div>
         ) : (
-          <div className="rounded-xl border bg-card overflow-hidden">
+          <div className="rounded-sm border border-border/70 bg-white overflow-hidden">
             <table className="w-full text-sm">
               <thead className="bg-muted/50 border-b">
                 <tr>
@@ -92,15 +92,15 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
         {/* Summary cards */}
         {parishes.length > 0 && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div className="rounded-xl border bg-card p-4">
+            <div className="rounded-sm border border-border/70 bg-white p-4">
               <p className="text-2xl font-bold">{parishes.length}</p>
               <p className="text-xs text-muted-foreground">Total de paróquias</p>
             </div>
-            <div className="rounded-xl border bg-card p-4">
+            <div className="rounded-sm border border-border/70 bg-white p-4">
               <p className="text-2xl font-bold">{parishes.filter((p: any) => p.active).length}</p>
               <p className="text-xs text-muted-foreground">Paróquias ativas</p>
             </div>
-            <div className="rounded-xl border bg-card p-4">
+            <div className="rounded-sm border border-border/70 bg-white p-4">
               <p className="text-2xl font-bold">{parishes.reduce((sum: number, p: any) => sum + (p._count?.memberships || 0), 0)}</p>
               <p className="text-xs text-muted-foreground">Total de membros</p>
             </div>

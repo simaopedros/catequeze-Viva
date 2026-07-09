@@ -216,7 +216,7 @@ function renderNavigationItems(
   setMobileMenuOpen?: Dispatch<SetStateAction<boolean>>,
 ) {
   const menuStyles = cn({
-    'block rounded-lg px-3 py-2 text-sm font-medium leading-7 text-foreground hover:bg-accent hover:text-accent-foreground transition-colors':
+    'block rounded-sm px-3 py-2 text-sm font-medium leading-7 text-foreground hover:bg-accent hover:text-accent-foreground transition-colors':
       !!setMobileMenuOpen,
     'text-sm font-normal leading-6 text-foreground duration-300 ease-in-out hover:text-primary transition-colors':
       !setMobileMenuOpen,

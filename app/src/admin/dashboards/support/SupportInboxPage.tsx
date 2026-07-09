@@ -21,7 +21,7 @@ const SupportInboxPage = ({ user }: { user: AuthUser }) => {
           <p className="text-muted-foreground text-sm mt-1">
             Mensagens recebidas do formulário de contacto.
             {unreadCount > 0 && (
-              <span className="ml-2 text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+              <span className="ml-2 text-xs bg-[#071A2D]/08 text-[#071A2D] px-2 py-0.5 rounded-sm">
                 {unreadCount} não lida{unreadCount > 1 ? 's' : ''}
               </span>
             )}
@@ -33,7 +33,7 @@ const SupportInboxPage = ({ user }: { user: AuthUser }) => {
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
           </div>
         ) : messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center">
+          <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
             <Bell className="h-10 w-10 text-muted-foreground/40 mb-3" />
             <h3 className="text-lg font-semibold">Nenhuma mensagem</h3>
             <p className="text-sm text-muted-foreground max-w-md mt-1">
@@ -45,8 +45,8 @@ const SupportInboxPage = ({ user }: { user: AuthUser }) => {
             {messages.map((msg: any) => (
               <div
                 key={msg.id}
-                className={`rounded-xl border p-5 ${
-                  !msg.isRead ? 'bg-primary/5 border-primary/20' : 'bg-card'
+                className={`rounded-sm border border-border/70 p-5 ${
+                  !msg.isRead ? 'border-[#071A2D]/20 bg-muted/30' : 'bg-white'
                 }`}
               >
                 <div className="flex items-start justify-between gap-4">
@@ -56,7 +56,7 @@ const SupportInboxPage = ({ user }: { user: AuthUser }) => {
                       <span className="font-medium text-sm">{msg.name}</span>
                       <span className="text-xs text-muted-foreground">{msg.email}</span>
                       {!msg.isRead && (
-                        <span className="text-overline bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full">
+                        <span className="rounded-sm bg-[#071A2D] px-1.5 py-0.5 text-overline text-white">
                           Nova
                         </span>
                       )}
@@ -69,7 +69,7 @@ const SupportInboxPage = ({ user }: { user: AuthUser }) => {
                   {!msg.isRead && (
                     <button
                       onClick={() => handleMarkRead(msg.id)}
-                      className="text-xs flex items-center gap-1 px-2 py-1 rounded-md bg-muted hover:bg-muted/80 text-muted-foreground shrink-0"
+                      className="flex shrink-0 items-center gap-1 rounded-sm bg-muted px-2 py-1 text-xs text-muted-foreground hover:bg-muted/80"
                     >
                       <CheckCircle className="h-3 w-3" />
                       Marcar lida

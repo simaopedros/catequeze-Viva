@@ -202,7 +202,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
       <h3 className="font-medium text-sm">{t('references.title')}</h3>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-muted rounded-lg p-1">
+      <div className="flex gap-1 rounded-sm bg-muted p-1">
         <button onClick={() => { setTab('bible'); setQuery(''); setResults([]); setSearched(false); setShowResults(false); setBrowseBook(null); setChapterVerses([]); }}
           className={'flex flex-1 items-center justify-center gap-1.5 rounded-sm px-3 py-1.5 text-xs font-medium transition-colors ' + (tab === 'bible' ? 'bg-white text-foreground' : 'text-muted-foreground hover:text-foreground')}>
           <BookOpen className="h-3.5 w-3.5" />{t('bible.title')}
@@ -308,7 +308,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
           <div className="flex flex-wrap gap-1 mt-1">
             {browseBook.chapters?.map((ch: any) => (
               <button key={ch.id} onClick={() => handleBrowseChapter(browseBook.id, ch.number)}
-                className="px-2 py-1 text-xs rounded border hover:bg-primary/10 transition-colors">
+                className="rounded-sm border border-border/70 px-2 py-1 text-xs transition-colors hover:bg-muted/40">
                 {ch.number}
             </button>
             )
@@ -426,10 +426,10 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
             <span key={i}
               onMouseEnter={e => showTooltip(e, g.text || g.label)}
               onMouseLeave={hideTooltip}
-              className="relative inline-flex items-center gap-1 bg-primary/10 text-primary text-caption pl-2 pr-1 py-1 rounded-full cursor-default group">
+              className="relative inline-flex cursor-default items-center gap-1 rounded-sm bg-[#071A2D]/08 py-1 pl-2 pr-1 text-caption text-[#071A2D] group">
               {g.label}
               <button onClick={() => g.ids.forEach(id => onRemoveBible(id))}
-                className="hover:text-destructive hover:bg-destructive/10 rounded-full p-0.5">
+                className="rounded-sm p-0.5 hover:bg-destructive/10 hover:text-destructive">
                 <X className="h-3 w-3" />
               </button>
             </span>
@@ -438,10 +438,10 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
             <span key={r.id || i}
               onMouseEnter={e => showTooltip(e, (r.question || '') + '\n\n' + (r.answer || ''))}
               onMouseLeave={hideTooltip}
-              className="relative inline-flex items-center gap-1 bg-secondary/10 text-secondary text-caption pl-2 pr-1 py-1 rounded-full cursor-default group">
+              className="relative inline-flex cursor-default items-center gap-1 rounded-sm bg-muted py-1 pl-2 pr-1 text-caption text-foreground group">
               {r.label}
               <button onClick={() => onRemoveCatechism(r.id || r.entryId)}
-                className="hover:text-destructive hover:bg-destructive/10 rounded-full p-0.5">
+                className="rounded-sm p-0.5 hover:bg-destructive/10 hover:text-destructive">
                 <X className="h-3 w-3" />
               </button>
             </span>
@@ -450,10 +450,10 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
             <span key={r.id || i}
               onMouseEnter={e => showTooltip(e, r.content || r.label)}
               onMouseLeave={hideTooltip}
-              className="relative inline-flex items-center gap-1 bg-green-50 text-green-700 text-caption pl-2 pr-1 py-1 rounded-full cursor-default group">      
-              📋 {r.label}
-              <button onClick={() => onRemoveDirectory(r.id || r.entryId)}      
-                className="hover:text-red-500 hover:bg-red-50 rounded-full p-0.5">
+              className="relative inline-flex cursor-default items-center gap-1 rounded-sm bg-muted py-1 pl-2 pr-1 text-caption text-foreground group">
+              {r.label}
+              <button onClick={() => onRemoveDirectory(r.id || r.entryId)}
+                className="rounded-sm p-0.5 hover:bg-destructive/10 hover:text-destructive">
                 <X className="h-3 w-3" />
               </button>
             </span>

@@ -13,35 +13,30 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
       value: overview?.totalUsers,
       subtitle: `+${overview?.newUsers7d || 0} nos últimos 7d`,
       icon: Users,
-      color: 'text-green-600 bg-green-50',
     },
     {
       label: 'Paróquias Ativas',
       value: overview?.activeParishes,
       subtitle: `${overview?.archivedParishes || 0} arquivadas`,
       icon: Church,
-      color: 'text-blue-600 bg-blue-50',
     },
     {
       label: 'Turmas Ativas',
       value: overview?.totalClasses,
       subtitle: `${overview?.totalCatechumens || 0} catequizandos`,
       icon: GraduationCap,
-      color: 'text-purple-600 bg-purple-50',
     },
     {
       label: 'Assinantes Pagos',
       value: overview?.payingTenants,
       subtitle: `${overview?.activeSubscriptions || 0} users ativos`,
       icon: CreditCard,
-      color: 'text-amber-600 bg-amber-50',
     },
     {
       label: 'MRR Estimado',
       value: overview?.mrr != null ? `$ ${overview.mrr.toFixed(0)}` : '—',
       subtitle: `${overview?.trialsExpiring || 0} trials a expirar`,
       icon: DollarSign,
-      color: 'text-emerald-600 bg-emerald-50',
     },
   ];
 
@@ -56,14 +51,14 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
         {/* KPI Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
           {kpiCards.map((card) => (
-            <div key={card.label} className="rounded-xl border bg-card p-5 shadow-sm">
+            <div key={card.label} className="rounded-sm border border-border/70 bg-white p-5">
               <div className="flex items-center gap-3">
-                <div className={`rounded-lg p-2.5 ${card.color}`}>
-                  <card.icon className="h-5 w-5" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
+                  <card.icon className="h-4 w-4" />
                 </div>
               </div>
               <div className="mt-3">
-                <p className="text-2xl font-bold">
+                <p className="text-2xl font-semibold tracking-tight text-[#071A2D]">
                   {isLoading ? '—' : (card.value ?? '—')}
                 </p>
                 <p className="text-xs font-medium text-muted-foreground">{card.label}</p>
@@ -77,7 +72,7 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
 
         {/* Alerts */}
         {alerts.length > 0 && (
-          <div className="rounded-xl border bg-card p-5">
+          <div className="rounded-sm border border-border/70 bg-white p-5">
             <h2 className="font-medium text-sm flex items-center gap-2 mb-3">
               <AlertTriangle className="h-4 w-4 text-amber-500" />
               Requer Atenção
@@ -86,12 +81,12 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
               {alerts.map((alert, i) => (
                 <div
                   key={i}
-                  className={`flex items-center gap-2 text-sm px-3 py-2 rounded-md ${
+                  className={`flex items-center gap-2 rounded-sm border border-border/70 px-3 py-2 text-sm ${
                     alert.type === 'warning'
-                      ? 'bg-amber-50 text-amber-800'
+                      ? 'bg-muted/40 text-foreground'
                       : alert.type === 'error'
-                      ? 'bg-red-50 text-red-800'
-                      : 'bg-blue-50 text-blue-800'
+                      ? 'border-destructive/30 bg-destructive/5 text-destructive'
+                      : 'bg-muted/30 text-foreground'
                   }`}
                 >
                   <CircleDot className="h-3 w-3 shrink-0" />

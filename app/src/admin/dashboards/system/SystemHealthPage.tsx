@@ -22,21 +22,21 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
           <>
             {/* KPIs */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <div className="rounded-xl border bg-card p-5">
+              <div className="rounded-sm border border-border/70 bg-white p-5">
                 <div className="flex items-center gap-2">
                   <Zap className="h-4 w-4 text-amber-500" />
                   <h3 className="text-sm font-medium">Créditos IA (mês)</h3>
                 </div>
                 <p className="text-2xl font-bold mt-2">{health?.totalAiCreditsThisMonth || 0}</p>
               </div>
-              <div className="rounded-xl border bg-card p-5">
+              <div className="rounded-sm border border-border/70 bg-white p-5">
                 <div className="flex items-center gap-2">
                   <Users className="h-4 w-4 text-blue-500" />
                   <h3 className="text-sm font-medium">Users com Créditos</h3>
                 </div>
                 <p className="text-2xl font-bold mt-2">{health?.usersWithCredits || 0}</p>
               </div>
-              <div className="rounded-xl border bg-card p-5">
+              <div className="rounded-sm border border-border/70 bg-white p-5">
                 <div className="flex items-center gap-2">
                   <AlertTriangle className="h-4 w-4 text-red-500" />
                   <h3 className="text-sm font-medium">Erros Recentes</h3>
@@ -47,7 +47,7 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
 
             {/* Job Errors */}
             {health?.recentErrors && health.recentErrors.length > 0 && (
-              <div className="rounded-xl border bg-card p-5">
+              <div className="rounded-sm border border-border/70 bg-white p-5">
                 <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
                   <AlertTriangle className="h-4 w-4 text-red-500" />
                   Erros de Jobs ({health.recentErrors.length})
@@ -65,7 +65,7 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
 
             {/* Daily Stats */}
             {health?.recentDailyStats && health.recentDailyStats.length > 0 && (
-              <div className="rounded-xl border bg-card p-5">
+              <div className="rounded-sm border border-border/70 bg-white p-5">
                 <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
                   <TrendingUp className="h-4 w-4 text-green-500" />
                   Daily Stats (7d)
@@ -96,7 +96,7 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
             )}
 
             {/* Jobs Status */}
-            <div className="rounded-xl border bg-card p-5">
+            <div className="rounded-sm border border-border/70 bg-white p-5">
               <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
                 <Activity className="h-4 w-4 text-primary" />
                 Jobs Agendados
