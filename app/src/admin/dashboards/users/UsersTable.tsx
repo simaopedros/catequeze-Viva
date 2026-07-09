@@ -86,12 +86,12 @@ const UsersTable = () => {
           )}
         </div>
 
-        <div className="py-3 grid grid-cols-7 border-t-2 px-4 md:px-6 bg-muted/20">
-          <div className="col-span-2 font-medium text-sm">{t('email')}</div>
-          <div className="col-span-2 font-medium text-sm">{t('name')}</div>
-          <div className="col-span-1 font-medium text-sm">{t('admin')}</div>
-          <div className="col-span-1 font-medium text-sm">{t('created_at')}</div>
-          <div className="col-span-1 font-medium text-sm text-right">{t('columns.actions')}</div>
+        <div className="grid grid-cols-7 border-t-2 bg-muted/20 px-4 py-3 md:px-6">
+          <div className="col-span-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{t('email')}</div>
+          <div className="col-span-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{t('name')}</div>
+          <div className="col-span-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{t('admin')}</div>
+          <div className="col-span-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{t('created_at')}</div>
+          <div className="col-span-1 text-right text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{t('columns.actions')}</div>
         </div>
 
         {isLoading && <LoadingSpinner />}

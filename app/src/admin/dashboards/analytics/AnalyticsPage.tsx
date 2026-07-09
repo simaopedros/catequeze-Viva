@@ -144,8 +144,15 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
 
             <div className="grid gap-6 xl:grid-cols-[2fr_1fr]">
               <div className="rounded-sm border border-border/70 bg-white p-5">
-                <h2 className="font-semibold">Etapas do funil</h2>
-                <p className="text-sm text-muted-foreground mt-1">Contagens em 30 dias com conversão entre etapas principais.</p>
+                <div className="space-y-1.5">
+                  <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    Etapas do funil
+                  </h2>
+                  <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Contagens em 30 dias com conversão entre etapas principais.
+                </p>
                 <div className="mt-4 grid gap-3 md:grid-cols-2">
                   {funnelSteps.map((step) => (
                     <div key={step.label} className="rounded-sm border border-border/70 bg-white p-4">
@@ -167,10 +174,13 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
 
               <div className="space-y-6">
                 <div className="rounded-sm border border-border/70 bg-white p-5">
-                  <h2 className="font-semibold flex items-center gap-2">
-                    <Users className="h-4 w-4" />
-                    Convites e share
-                  </h2>
+                  <div className="space-y-1.5">
+                    <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      <Users className="h-3.5 w-3.5 text-[#071A2D]" />
+                      Convites e share
+                    </h2>
+                    <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                  </div>
                   <div className="mt-4 space-y-3 text-sm">
                     <div className="flex items-center justify-between">
                       <span>Invites sent</span>
@@ -192,10 +202,13 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                 </div>
 
                 <div className="rounded-sm border border-border/70 bg-white p-5">
-                  <h2 className="font-semibold flex items-center gap-2">
-                    <Share2 className="h-4 w-4" />
-                    Top plans (30d)
-                  </h2>
+                  <div className="space-y-1.5">
+                    <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      <Share2 className="h-3.5 w-3.5 text-[#071A2D]" />
+                      Top plans (30d)
+                    </h2>
+                    <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                  </div>
                   <div className="mt-4 space-y-3 text-sm">
                     {data?.topPlans.length ? data.topPlans.map((item) => (
                       <div key={item.plan} className="flex items-center justify-between">
@@ -207,7 +220,12 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                 </div>
 
                 <div className="rounded-sm border border-border/70 bg-white p-5">
-                  <h2 className="font-semibold">Processors (30d)</h2>
+                  <div className="space-y-1.5">
+                    <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      Processors (30d)
+                    </h2>
+                    <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                  </div>
                   <div className="mt-4 space-y-3 text-sm">
                     {data?.topProcessors.length ? data.topProcessors.map((item) => (
                       <div key={item.processor} className="flex items-center justify-between">
@@ -221,16 +239,31 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
             </div>
 
             <div className="rounded-sm border border-border/70 bg-white p-5">
-              <h2 className="font-semibold">Recent purchases</h2>
-              <p className="text-sm text-muted-foreground mt-1">Últimos eventos autoritativos de pagamento confirmado.</p>
+              <div className="space-y-1.5">
+                <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  Recent purchases
+                </h2>
+                <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+              </div>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Últimos eventos autoritativos de pagamento confirmado.
+              </p>
               <div className="mt-4 overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="border-b text-left text-muted-foreground">
                     <tr>
-                      <th className="pb-3 pr-4 font-medium">Data</th>
-                      <th className="pb-3 pr-4 font-medium">Plano</th>
-                      <th className="pb-3 pr-4 font-medium">Processor</th>
-                      <th className="pb-3 pr-4 font-medium">User</th>
+                      <th className="pb-3 pr-4 text-[11px] font-semibold uppercase tracking-[0.14em]">
+                        Data
+                      </th>
+                      <th className="pb-3 pr-4 text-[11px] font-semibold uppercase tracking-[0.14em]">
+                        Plano
+                      </th>
+                      <th className="pb-3 pr-4 text-[11px] font-semibold uppercase tracking-[0.14em]">
+                        Processor
+                      </th>
+                      <th className="pb-3 pr-4 text-[11px] font-semibold uppercase tracking-[0.14em]">
+                        User
+                      </th>
                     </tr>
                   </thead>
                   <tbody>

@@ -106,7 +106,10 @@ export function ContextSelector() {
             className="flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-foreground border border-input rounded-sm px-2.5 sm:px-3 py-1.5 h-9 max-w-[160px] sm:max-w-[240px] xl:max-w-[280px]"
           >
             {wsIcon(workspaceType || "PERSONAL")}
-            <span className="truncate font-medium text-sm min-w-0">
+            <span
+              className="min-w-0 truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
               {workspaceName}
             </span>
             {currentRoleLabel && (
@@ -143,7 +146,10 @@ export function ContextSelector() {
                   >
                     {wsIcon(ws.isPersonal ? "PERSONAL" : ws.type)}
                     <div className="flex-1 text-left min-w-0">
-                      <div className="font-medium text-sm truncate">
+                      <div
+                        className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
                         {ws.name}
                       </div>
                       <div className="text-overline text-muted-foreground truncate">
@@ -241,7 +247,10 @@ export function ContextSelector() {
             className="flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-foreground border border-input rounded-sm px-2.5 sm:px-3 py-1.5 h-9 max-w-[160px] sm:max-w-[240px] xl:max-w-[280px]"
           >
             <Church className="h-4 w-4 shrink-0 text-foreground" />
-            <span className="truncate font-medium text-sm min-w-0">
+            <span
+              className="min-w-0 truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
               {activeParishName}
             </span>
             <span className="text-xs text-muted-foreground hidden sm:inline">

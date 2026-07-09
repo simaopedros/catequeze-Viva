@@ -581,7 +581,7 @@ export default function BiblePage() {
 
           {filteredOt.length > 0 && (
             <div>
-              <h2 className="font-semibold text-xs text-muted-foreground mb-2 uppercase tracking-wider">
+              <h2 className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 {t("old_testament")}
               </h2>
               <div className="grid grid-cols-2 gap-1">
@@ -589,12 +589,14 @@ export default function BiblePage() {
                   <button
                     key={b.id}
                     onClick={() => loadBook(b.id)}
-                    className="text-left px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors truncate"
+                    className="truncate rounded-sm px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted"
                     title={b.name}
                   >
-                    <span className="font-medium">{b.name}</span>
+                    <span className="font-semibold tracking-tight text-[#071A2D]">
+                      {b.name}
+                    </span>
                     {b.abbreviation && b.abbreviation !== b.name && (
-                      <span className="text-muted-foreground ml-1 text-xs">
+                      <span className="ml-1 text-xs text-muted-foreground">
                         {b.abbreviation}
                       </span>
                     )}
@@ -606,7 +608,7 @@ export default function BiblePage() {
 
           {filteredNt.length > 0 && (
             <div>
-              <h2 className="font-semibold text-xs text-muted-foreground mb-2 uppercase tracking-wider">
+              <h2 className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 {t("new_testament")}
               </h2>
               <div className="grid grid-cols-2 gap-1">
@@ -614,10 +616,12 @@ export default function BiblePage() {
                   <button
                     key={b.id}
                     onClick={() => loadBook(b.id)}
-                    className="text-left px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors truncate"
+                    className="truncate rounded-sm px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted"
                     title={b.name}
                   >
-                    <span className="font-medium">{b.name}</span>
+                    <span className="font-semibold tracking-tight text-[#071A2D]">
+                      {b.name}
+                    </span>
                     {b.abbreviation && b.abbreviation !== b.name && (
                       <span className="text-muted-foreground ml-1 text-xs">
                         {b.abbreviation}

@@ -344,7 +344,8 @@ export default function ClassesPage() {
                     <td className="p-4">
                       <Link
                         to={`/app/classes/${cls.id}`}
-                        className="font-medium text-sm hover:text-[#071A2D]"
+                        className="text-sm font-semibold tracking-tight text-[#071A2D] hover:text-[#0a2540]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
                       >
                         {cls.name}
                       </Link>

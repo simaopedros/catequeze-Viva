@@ -1429,11 +1429,17 @@ export default function CatechumenDetailPage() {
 
         <div className="grid gap-4 md:grid-cols-2">
           <div className="rounded-sm border border-border/70 bg-white p-4">
-            <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-1 mb-2">
-              <Heart className="h-4 w-4" />
-              {t("catechumens.detail_family")}
-            </h3>
-            <p className="font-medium">
+            <div className="mb-2 space-y-1.5">
+              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <Heart className="h-3.5 w-3.5" />
+                {t("catechumens.detail_family")}
+              </h3>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            </div>
+            <p
+              className="font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
               {profile.household?.name || t("catechumens.detail_not_linked")}
             </p>
             {profile.household?.guardians?.map((g: any) => (
@@ -1453,15 +1459,19 @@ export default function CatechumenDetailPage() {
             ))}
           </div>
           <div className="rounded-sm border border-border/70 bg-white p-4">
-            <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-1 mb-2">
-              <BookOpen className="h-4 w-4" />
-              {tp("classes")}
-            </h3>
+            <div className="mb-2 space-y-1.5">
+              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <BookOpen className="h-3.5 w-3.5" />
+                {tp("classes")}
+              </h3>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            </div>
             {profile.enrollments?.map((e: any) => (
               <Link
                 key={e.id}
                 to={`/app/classes/${e.class?.id}`}
-                className="block text-sm text-[#071A2D] hover:underline py-0.5"
+                className="block py-0.5 text-sm font-semibold tracking-tight text-[#071A2D] hover:underline"
+                style={{ fontFamily: "var(--font-brand-display)" }}
               >
                 {e.class?.name}{" "}
                 {e.class?.stage?.name && `· ${e.class.stage.name}`}
@@ -1492,7 +1502,7 @@ export default function CatechumenDetailPage() {
                     <span className="text-xs text-muted-foreground">
                       {new Date(a.meetingDate).toLocaleDateString()}
                     </span>{" "}
-                    <span className="font-medium">
+                    <span className="font-semibold tracking-tight text-foreground">
                       {a.meetingTitle || t("catechumens.detail_meeting")}
                     </span>
                     <span className="text-overline text-muted-foreground ml-1">

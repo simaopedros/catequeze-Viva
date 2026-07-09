@@ -74,10 +74,13 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
         {/* Alerts */}
         {alerts.length > 0 && (
           <div className="rounded-sm border border-border/70 bg-white p-5">
-            <h2 className="font-medium text-sm flex items-center gap-2 mb-3">
-              <AlertTriangle className="h-4 w-4 text-[#D39A2B]" />
-              Requer Atenção
-            </h2>
+            <div className="mb-3 space-y-1.5">
+              <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <AlertTriangle className="h-3.5 w-3.5 text-[#D39A2B]" />
+                Requer Atenção
+              </h2>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            </div>
             <div className="space-y-2">
               {alerts.map((alert, i) => (
                 <div

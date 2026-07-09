@@ -371,7 +371,10 @@ export default function SacramentalJourneyDetailPage() {
                         <Icon className="h-5 w-5" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="font-medium text-sm flex items-center gap-2 flex-wrap">
+                        <p
+                          className="flex flex-wrap items-center gap-2 text-sm font-semibold tracking-tight text-[#071A2D]"
+                          style={{ fontFamily: "var(--font-brand-display)" }}
+                        >
                           {tm?.name}
                           {tm?.required && (
                             <Badge variant="outline" className="text-overline">

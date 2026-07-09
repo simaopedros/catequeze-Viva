@@ -59,7 +59,12 @@ const SupportInboxPage = ({ user }: { user: AuthUser }) => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
-                      <span className="font-medium text-sm">{msg.name}</span>
+                      <span
+                        className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: 'var(--font-brand-display)' }}
+                      >
+                        {msg.name}
+                      </span>
                       <span className="text-xs text-muted-foreground">{msg.email}</span>
                       {!msg.isRead && (
                         <span className="rounded-sm bg-[#071A2D] px-1.5 py-0.5 text-overline text-white">

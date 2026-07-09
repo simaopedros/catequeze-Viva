@@ -458,7 +458,14 @@ export default function ClassPastoralReportPage() {
                         </td>
                         <td className="p-3">
                           <div className="flex items-center gap-2">
-                            <span className="font-medium">{r.name}</span>
+                            <span
+                              className="font-semibold tracking-tight text-[#071A2D]"
+                              style={{
+                                fontFamily: "var(--font-brand-display)",
+                              }}
+                            >
+                              {r.name}
+                            </span>
                             <Badge
                               variant="outline"
                               className="text-[10px] px-1.5 py-0"

@@ -1105,7 +1105,12 @@ export default function ClassDetailPage() {
                                     day: "numeric",
                                   })}
                                 </Badge>
-                                <span className="font-medium">
+                                <span
+                                  className="font-semibold tracking-tight text-[#071A2D]"
+                                  style={{
+                                    fontFamily: "var(--font-brand-display)",
+                                  }}
+                                >
                                   {m.title || t("detail.no_title")}
                                 </span>
                               </div>

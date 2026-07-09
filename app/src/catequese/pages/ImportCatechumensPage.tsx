@@ -284,15 +284,18 @@ Maria,Santos,2014-07-22,Silva Santos`}
         {previewRows.length > 0 && (
           <div className="border rounded-sm p-4 bg-muted/30 space-y-3">
             <div className="flex items-center justify-between">
-              <h4 className="font-medium text-sm flex items-center gap-1.5">
-                <Eye className="h-4 w-4 text-[#071A2D]" />
-                {t("catechumens.import_preview") || "Visualização dos Dados"} (
-                {previewRows.length} {t("catechumens.rows") || "linhas"})
-              </h4>
+              <div className="space-y-1.5">
+                <h4 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  <Eye className="h-3.5 w-3.5 text-[#071A2D]" />
+                  {t("catechumens.import_preview") || "Visualização dos Dados"}{" "}
+                  ({previewRows.length} {t("catechumens.rows") || "linhas"})
+                </h4>
+                <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+              </div>
             </div>
             <div className="max-h-60 overflow-x-auto rounded-sm border border-border/70 bg-white">
               <table className="min-w-full text-xs text-left">
-                <thead className="bg-muted text-muted-foreground uppercase font-semibold border-b">
+                <thead className="border-b bg-muted text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                   <tr>
                     <th className="px-3 py-2">
                       {t("catechumens.line") || "Linha"}
