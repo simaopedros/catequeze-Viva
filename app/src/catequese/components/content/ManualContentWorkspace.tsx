@@ -405,7 +405,7 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
         <div className="mb-3 flex items-center gap-2">
           <Badge
             variant="outline"
-            className="rounded-full px-2.5 py-0.5 text-xs"
+            className="rounded-sm px-2.5 py-0.5 text-xs"
           >
             IA opcional
           </Badge>

@@ -4,7 +4,10 @@ import { useState, useEffect, useMemo } from "react";
 import { AppShell } from "../AppShell";
 import { Button } from "../../client/components/ui/button";
 import { Badge } from "../../client/components/ui/badge";
-import { AppPageHeader } from "../../client/components/brand/AppChrome";
+import {
+  AppMetric,
+  AppPageHeader,
+} from "../../client/components/brand/AppChrome";
 import {
   ArrowLeft,
   UserPlus,
@@ -519,22 +522,16 @@ export default function ClassDetailPage() {
               {cls.endTime && `-${cls.endTime}`}
             </p>
           </div>
-          <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              {t("enrolled")}
-            </p>
-            <p className="mt-1.5 text-2xl font-semibold tracking-tight tabular-nums text-foreground">
-              {enrolledIds.length}/{cls.maxCapacity}
-            </p>
-          </div>
-          <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              {t("attendance")}
-            </p>
-            <p className="mt-1.5 text-2xl font-semibold tracking-tight tabular-nums text-foreground">
-              {attendanceRate}%
-            </p>
-          </div>
+          <AppMetric
+            label={t("enrolled")}
+            value={`${enrolledIds.length}/${cls.maxCapacity}`}
+            className="bg-white"
+          />
+          <AppMetric
+            label={t("attendance")}
+            value={`${attendanceRate}%`}
+            className="bg-white"
+          />
         </div>
 
         {editing ? (

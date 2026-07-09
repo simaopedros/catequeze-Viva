@@ -465,7 +465,7 @@ export default function WorkspaceSelectorPage() {
                           {group.name}
                         </div>
                         <span
-                          className={`text-overline px-2 py-0.5 rounded-full font-medium ${
+                          className={`text-overline px-2 py-0.5 rounded-sm font-medium ${
                             licensed
                               ? "bg-[#071A2D]/10 text-[#071A2D]"
                               : "bg-muted text-muted-foreground"
@@ -509,7 +509,7 @@ export default function WorkspaceSelectorPage() {
                           {d.name}
                         </div>
                         <span
-                          className={`text-overline px-2 py-0.5 rounded-full font-medium ${
+                          className={`text-overline px-2 py-0.5 rounded-sm font-medium ${
                             d.licensed
                               ? "bg-[#071A2D]/10 text-[#071A2D]"
                               : "bg-muted text-muted-foreground"

@@ -9,6 +9,11 @@ import {
   Hash,
 } from "lucide-react";
 import { cn } from "../../../client/utils";
+import {
+  AppDisplayTitle,
+  AppEyebrow,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
 
 interface Participant {
   id: string;
@@ -171,16 +176,11 @@ export function ConversationList({
       <div className="space-y-2 border-b border-border/70 p-3">
         <div className="flex items-center justify-between">
           <div className="space-y-1.5">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              {t("conversations")}
-            </p>
-            <p
-              className="text-base font-semibold tracking-tight text-[#071A2D]"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <AppEyebrow>{t("conversations")}</AppEyebrow>
+            <AppDisplayTitle as="h2" className="text-base sm:text-base text-[#071A2D]">
               {t("title")}
-            </p>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            </AppDisplayTitle>
+            <AppGoldRule className="w-8" />
           </div>
           <button
             onClick={onNewConversation}

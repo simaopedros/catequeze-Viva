@@ -9,6 +9,10 @@ import {
 import { Button } from "../../client/components/ui/button";
 import { Input } from "../../client/components/ui/input";
 import {
+  AppEyebrow,
+  AppPanel,
+} from "../../client/components/brand/AppChrome";
+import {
   Shield,
   ShieldCheck,
   ShieldAlert,
@@ -114,36 +118,38 @@ export default function TwoFactorSetup() {
 
   if (loading) {
     return (
-      <div className="rounded-sm border border-border/70 bg-white p-6 space-y-4">
-        <h3 className="font-semibold flex items-center gap-2">
-          <Shield className="h-4 w-4" />
+      <AppPanel className="space-y-4">
+        <AppEyebrow className="flex items-center gap-2">
+          <Shield className="h-3.5 w-3.5" />
           {t("two_factor_setup_security_title")}
-        </h3>
+        </AppEyebrow>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" />
           {t("two_factor_setup_loading")}
         </div>
-      </div>
+      </AppPanel>
     );
   }
 
   return (
-    <div className="rounded-sm border border-border/70 bg-white p-6 space-y-4">
-      <h3 className="font-semibold flex items-center gap-2">
-        <Shield className="h-4 w-4" />
-        {t("two_factor_setup_security_title")}
+    <AppPanel className="space-y-4">
+      <div className="flex flex-wrap items-center gap-2">
+        <AppEyebrow className="flex items-center gap-2">
+          <Shield className="h-3.5 w-3.5" />
+          {t("two_factor_setup_security_title")}
+        </AppEyebrow>
         {status.enabled ? (
-          <span className="text-xs text-[#071A2D] flex items-center gap-1">
+          <span className="flex items-center gap-1 text-xs text-[#071A2D]">
             <ShieldCheck className="h-3 w-3" />
             {t("two_factor_setup_active")}
           </span>
         ) : (
-          <span className="text-xs text-muted-foreground flex items-center gap-1">
+          <span className="flex items-center gap-1 text-xs text-muted-foreground">
             <ShieldAlert className="h-3 w-3" />
             {t("two_factor_setup_inactive")}
           </span>
         )}
-      </h3>
+      </div>
 
       {status.required && !status.enabled && (
         <div className="rounded-sm bg-warning/10 border border-warning/30 p-3 text-sm text-warning">
@@ -278,6 +284,6 @@ export default function TwoFactorSetup() {
           </div>
         </div>
       )}
-    </div>
+    </AppPanel>
   );
 }

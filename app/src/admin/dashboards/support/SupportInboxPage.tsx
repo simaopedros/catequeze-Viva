@@ -1,6 +1,11 @@
 import { type AuthUser } from "wasp/auth";
 import { useQuery, getContactMessages, markContactMessageRead } from "wasp/client/operations";
 import DefaultLayout from "../../layout/DefaultLayout";
+import {
+  AppDisplayTitle,
+  AppGoldRule,
+  AppPageHeader,
+} from "../../../client/components/brand/AppChrome";
 import { Bell, Mail, CheckCircle } from 'lucide-react';
 
 const SupportInboxPage = ({ user }: { user: AuthUser }) => {
@@ -16,17 +21,15 @@ const SupportInboxPage = ({ user }: { user: AuthUser }) => {
   return (
     <DefaultLayout user={user}>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold">Suporte</h1>
-          <p className="text-muted-foreground text-sm mt-1">
-            Mensagens recebidas do formulário de contacto.
-            {unreadCount > 0 && (
-              <span className="ml-2 text-xs bg-[#071A2D]/08 text-[#071A2D] px-2 py-0.5 rounded-sm">
-                {unreadCount} não lida{unreadCount > 1 ? 's' : ''}
-              </span>
-            )}
-          </p>
-        </div>
+        <AppPageHeader
+          eyebrow="Admin"
+          title="Suporte"
+          subtitle={
+            unreadCount > 0
+              ? `Mensagens do formulário de contacto · ${unreadCount} não lida${unreadCount > 1 ? "s" : ""}`
+              : "Mensagens recebidas do formulário de contacto."
+          }
+        />
 
         {isLoading ? (
           <div className="flex justify-center py-12">
@@ -35,7 +38,10 @@ const SupportInboxPage = ({ user }: { user: AuthUser }) => {
         ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
             <Bell className="h-10 w-10 text-muted-foreground/40 mb-3" />
-            <h3 className="text-lg font-semibold">Nenhuma mensagem</h3>
+            <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
+              Nenhuma mensagem
+            </AppDisplayTitle>
+            <AppGoldRule className="mx-auto" />
             <p className="text-sm text-muted-foreground max-w-md mt-1">
               As mensagens enviadas pelo formulário de contacto público aparecerão aqui.
             </p>

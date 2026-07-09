@@ -11,6 +11,10 @@ import { isFamilyPortalHost } from "../../shared/portal";
 import { Button } from "../../client/components/ui/button";
 import { Input } from "../../client/components/ui/input";
 import { Label } from "../../client/components/ui/label";
+import {
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../client/components/brand/AppChrome";
 import { Loader2, ShieldCheck } from "lucide-react";
 
 /**
@@ -81,13 +85,14 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background p-4">
         <div className="w-full max-w-md space-y-6 rounded-sm border border-border/70 bg-white p-6">
-          <div className="text-center space-y-2">
+          <div className="space-y-2.5 text-center">
             <div className="inline-flex rounded-sm border border-border/70 bg-muted/30 p-3">
               <ShieldCheck className="h-6 w-6 text-[#071A2D]" />
             </div>
-            <h1 className="text-xl font-semibold tracking-tight">
+            <AppDisplayTitle className="text-xl sm:text-xl">
               {t("two_factor_gate_title")}
-            </h1>
+            </AppDisplayTitle>
+            <AppGoldRule className="mx-auto" />
             <p className="text-sm text-muted-foreground">
               {t("two_factor_gate_subtitle")}
             </p>

@@ -178,9 +178,9 @@ export default function InviteAcceptPage() {
               <Church className="h-6 w-6 text-[#071A2D]" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold tracking-tight text-foreground">
+              <AppDisplayTitle as="h2" className="text-lg sm:text-lg">
                 {invitation.parishName}
-              </h2>
+              </AppDisplayTitle>
               <p className="text-sm text-muted-foreground">
                 {t("invite.as_role", { role: invitation.roleLabel })}
               </p>

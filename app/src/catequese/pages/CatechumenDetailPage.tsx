@@ -1686,7 +1686,7 @@ export default function CatechumenDetailPage() {
                         {done}/{total}
                       </Badge>
                     </div>
-                    <div className="w-full bg-muted rounded-full h-1.5 mb-1">
+                    <div className="mb-1 h-1.5 w-full rounded-sm bg-muted">
                       <div
                         className={`h-1.5 rounded-sm transition-all ${
                           pct === 100

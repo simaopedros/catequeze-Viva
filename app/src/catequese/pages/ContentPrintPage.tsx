@@ -193,9 +193,13 @@ export default function ContentPrintPage() {
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8a96a0]">
                 Apoio pastoral
               </p>
-              <h2 className="mt-1 text-xl font-semibold tracking-tight text-[#071A2D]">
+              <h2
+                className="mt-1 text-xl font-semibold tracking-tight text-[#071A2D]"
+                style={{ fontFamily: "var(--font-brand-display)" }}
+              >
                 Referências vinculadas
               </h2>
+              <div className="mt-2 h-px w-10 bg-[#D39A2B]" aria-hidden />
               <p className="mt-1 text-sm text-[#6b7c8a]">
                 Passagens e textos de apoio usados neste encontro.
               </p>

@@ -214,9 +214,13 @@ function MeetingBlockComponent({
         <div className="min-w-0 flex-1 space-y-3">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h3 className="text-[28px] leading-none font-semibold tracking-tight text-foreground sm:text-[30px]">
+              <h3
+                className="text-[28px] leading-none font-semibold tracking-tight text-foreground sm:text-[30px]"
+                style={{ fontFamily: "var(--font-brand-display)" }}
+              >
                 {label}
               </h3>
+              <div className="mt-2 h-px w-10 bg-[#D39A2B]" aria-hidden />
               <p className="mt-2 text-sm text-muted-foreground">{helper}</p>
             </div>
             <div className="flex items-center gap-2">
@@ -232,7 +236,7 @@ function MeetingBlockComponent({
               {saving && !isStreaming && (
                 <Badge
                   variant="outline"
-                  className="rounded-full px-2.5 py-0.5 text-xs"
+                  className="rounded-sm px-2.5 py-0.5 text-xs"
                 >
                   <Loader2 className="mr-1 h-3 w-3 animate-spin" /> salvando
                 </Badge>

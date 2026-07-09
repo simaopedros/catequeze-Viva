@@ -2,6 +2,11 @@ import { type AuthUser } from 'wasp/auth';
 import { useQuery, listParishes } from 'wasp/client/operations';
 import { NavLink } from 'react-router';
 import DefaultLayout from '../../layout/DefaultLayout';
+import {
+  AppDisplayTitle,
+  AppGoldRule,
+  AppPageHeader,
+} from '../../../client/components/brand/AppChrome';
 import { Church, MapPin, Users, Crown, Building2, BadgeCheck, AlertTriangle, CircleDot, ChevronRight } from 'lucide-react';
 
 const ParishesPage = ({ user }: { user: AuthUser }) => {
@@ -20,10 +25,11 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
   return (
     <DefaultLayout user={user}>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold">Paróquias</h1>
-          <p className="text-muted-foreground text-sm mt-1">Gerir todas as paróquias da plataforma.</p>
-        </div>
+        <AppPageHeader
+          eyebrow="Admin"
+          title="Paróquias"
+          subtitle="Gerir todas as paróquias da plataforma."
+        />
 
         {isLoading ? (
           <div className="flex justify-center py-12">
@@ -32,7 +38,10 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
         ) : parishes.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
             <Church className="h-10 w-10 text-muted-foreground/40 mb-3" />
-            <h3 className="text-lg font-semibold">Nenhuma paróquia</h3>
+            <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
+              Nenhuma paróquia
+            </AppDisplayTitle>
+            <AppGoldRule className="mx-auto" />
             <p className="text-sm text-muted-foreground">As paróquias aparecerão aqui quando forem criadas.</p>
           </div>
         ) : (

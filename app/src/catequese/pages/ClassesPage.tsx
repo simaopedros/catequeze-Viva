@@ -33,6 +33,7 @@ import { cn } from "../../client/utils";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import {
+  AppDisplayTitle,
   AppPageHeader,
   AppPanel,
 } from "../../client/components/brand/AppChrome";
@@ -241,9 +242,10 @@ export default function ClassesPage() {
           >
             <div className="space-y-6">
               <div className="space-y-2">
-                <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+                <AppDisplayTitle as="h2">
                   {t("no_classes")}
-                </h2>
+                </AppDisplayTitle>
+                <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
                 <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
                   {t("no_classes_desc")}
                 </p>

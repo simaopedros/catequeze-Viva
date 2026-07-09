@@ -351,7 +351,7 @@ export default function ParishesPage() {
                     {planBadge(billing)}
                     <span
                       className={
-                        "inline-flex items-center rounded-full px-2 py-0.5 text-overline font-medium " +
+                        "inline-flex items-center rounded-sm px-2 py-0.5 text-overline font-medium " +
                         statusInfo.color
                       }
                     >

@@ -25,6 +25,11 @@ import { cn } from "../../client/utils";
 import { toast } from "../../client/hooks/use-toast";
 import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
 import { usePageVisibility } from "../../client/hooks/usePageVisibility";
+import {
+  AppDisplayTitle,
+  AppEyebrow,
+  AppGoldRule,
+} from "../../client/components/brand/AppChrome";
 
 export default function MessagesPage() {
   const { t } = useTranslation("messages");
@@ -443,22 +448,16 @@ export default function MessagesPage() {
             /* Empty state */
             <div className="flex flex-1 flex-col items-center justify-center px-6 py-8 text-center">
               <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-sm border border-border/70 bg-muted/30">
-                <MessageSquareText className="h-7 w-7 text-foreground" />
+                <MessageSquareText className="h-7 w-7 text-[#071A2D]" />
               </div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                {t("title")}
-              </p>
-              <h2
-                className="mt-2 text-xl font-semibold tracking-tight text-foreground"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
-                {t("hub_title")}
-              </h2>
-              <div
-                className="mx-auto mt-2 h-px w-10 bg-[#D39A2B]"
-                aria-hidden
-              />
-              <p className="mt-3 mb-5 max-w-sm text-sm text-muted-foreground">
+              <div className="space-y-2.5">
+                <AppEyebrow className="text-center">{t("title")}</AppEyebrow>
+                <AppDisplayTitle as="h2" className="text-xl sm:text-xl">
+                  {t("hub_title")}
+                </AppDisplayTitle>
+                <AppGoldRule className="mx-auto" />
+              </div>
+              <p className="mb-5 mt-3 max-w-sm text-sm text-muted-foreground">
                 {t("hub_desc")}
               </p>
 

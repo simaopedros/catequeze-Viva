@@ -86,9 +86,10 @@ export default function FamilySignupPage() {
               <AlertTriangle className="h-8 w-8 text-destructive" />
             )}
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight text-[#071A2D]">
+          <AppDisplayTitle className="text-2xl text-[#071A2D] sm:text-2xl">
             {isExpired ? t("signup.expired_title") : t("signup.invalid_title")}
-          </h1>
+          </AppDisplayTitle>
+          <AppGoldRule className="mx-auto" />
           <p className="text-sm text-muted-foreground">
             {isExpired ? t("signup.expired_desc") : t("signup.invalid_desc")}
           </p>

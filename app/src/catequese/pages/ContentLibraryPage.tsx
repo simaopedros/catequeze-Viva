@@ -33,6 +33,7 @@ import { cn } from "../../client/utils";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import {
+  AppDisplayTitle,
   AppPageHeader,
   AppPanel,
   AppMetric,
@@ -358,9 +359,10 @@ export default function ContentLibraryPage() {
             >
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+                  <AppDisplayTitle as="h2">
                     {t("library.empty_no_content")}
-                  </h2>
+                  </AppDisplayTitle>
+                  <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
                   <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
                     {t("library.empty_create_desc")}
                   </p>
@@ -375,7 +377,9 @@ export default function ContentLibraryPage() {
                     asChild
                   >
                     <Link to="/app/ai-hub?mode=create-meeting">
-                      {t("library.generate_ai")}
+                      {t("library.generate_ai", {
+                        defaultValue: "Assistência editorial",
+                      })}
                     </Link>
                   </Button>
                 </div>
