@@ -2,7 +2,10 @@ import { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../client/components/ui/button";
-import { AppPageHeader } from "../../client/components/brand/AppChrome";
+import {
+  AppDisplayTitle,
+  AppPageHeader,
+} from "../../client/components/brand/AppChrome";
 import { Badge } from "../../client/components/ui/badge";
 import {
   Users,
@@ -284,8 +287,10 @@ export default function ParishMembersPage() {
             <div className="mb-4 rounded-sm border border-border/70 bg-muted/30 p-3">
               <Users className="h-8 w-8 text-foreground" />
             </div>
-            <h3 className="text-lg font-semibold">{tp("no_members")}</h3>
-            <p className="text-sm text-muted-foreground">
+            <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
+              {tp("no_members")}
+            </AppDisplayTitle>
+            <p className="mt-2 text-sm text-muted-foreground">
               {tp("no_members_desc")}
             </p>
           </div>

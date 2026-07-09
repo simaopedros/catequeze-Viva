@@ -10,7 +10,10 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { Button } from "../../client/components/ui/button";
-import { AppPageHeader } from "../../client/components/brand/AppChrome";
+import {
+  AppDisplayTitle,
+  AppPageHeader,
+} from "../../client/components/brand/AppChrome";
 import {
   listCatechismByCategory,
   searchCatechism,
@@ -129,6 +132,10 @@ export default function CatechismPage() {
       <AppPageHeader
         eyebrow={t("title")}
         title={t("heading")}
+        subtitle={t("subtitle", {
+          defaultValue:
+            "Consulte o Catecismo da Igreja Católica por categoria ou pesquisa.",
+        })}
         actions={
           <div className="flex gap-2">
             <input
@@ -274,10 +281,12 @@ export default function CatechismPage() {
       ) : (
         <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
           <div className="mb-4 rounded-sm border border-border/70 bg-muted/30 p-3">
-            <BookOpen className="h-8 w-8 text-foreground" />
+            <BookOpen className="h-8 w-8 text-[#071A2D]" />
           </div>
-          <h3 className="text-lg font-semibold">{t("emptyTitle")}</h3>
-          <p className="text-sm text-muted-foreground mt-1 max-w-md">
+          <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
+            {t("emptyTitle")}
+          </AppDisplayTitle>
+          <p className="mt-2 max-w-md text-sm text-muted-foreground">
             {t("emptyDesc")}
           </p>
         </div>

@@ -16,6 +16,7 @@ import {
   X,
 } from "lucide-react";
 import {
+  AppDisplayTitle,
   AppPageHeader,
   AppPanel,
 } from "../../client/components/brand/AppChrome";
@@ -262,11 +263,11 @@ export default function JourneyTemplatesPage() {
 
       {templates.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
-          <ClipboardList className="h-10 w-10 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-semibold">
+          <ClipboardList className="mb-4 h-10 w-10 text-[#071A2D]" />
+          <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
             {t("templates.empty_title")}
-          </h3>
-          <p className="text-sm text-muted-foreground mt-1">
+          </AppDisplayTitle>
+          <p className="mt-2 text-sm text-muted-foreground">
             {t("templates.empty_desc")}
           </p>
         </div>

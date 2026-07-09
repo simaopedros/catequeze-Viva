@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "../../../client/components/ui/button";
 import { Badge } from "../../../client/components/ui/badge";
 import { ConfirmDialog } from "../../../client/components/ConfirmDialog";
+import { AppDisplayTitle } from "../../../client/components/brand/AppChrome";
 import { Users, UserPlus, Mail, Trash2 } from "lucide-react";
 import {
   useRoleLabels,
@@ -183,8 +184,10 @@ export function ParishMembersTab({
           <div className="mb-4 rounded-sm border border-border/70 bg-muted/30 p-3">
             <Users className="h-8 w-8 text-foreground" />
           </div>
-          <h3 className="text-lg font-semibold">{tp("no_members")}</h3>
-          <p className="text-sm text-muted-foreground">
+          <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
+            {tp("no_members")}
+          </AppDisplayTitle>
+          <p className="mt-2 text-sm text-muted-foreground">
             {tp("no_members_desc")}
           </p>
         </div>

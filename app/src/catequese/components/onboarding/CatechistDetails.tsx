@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../../client/components/ui/button";
+import {
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
 import { GraduationCap, Check } from "lucide-react";
 
 const DAY_VALUES = ["0", "1", "2", "3", "4", "5", "6"];
@@ -40,11 +44,16 @@ export function CatechistDetails({
   };
 
   return (
-    <div className="rounded-sm border border-border/70 bg-white p-6 space-y-4">
-      <h2 className="text-lg font-semibold flex items-center gap-2">
-        <GraduationCap className="h-5 w-5 text-[#071A2D]" />
-        {t("catechist.class_title")}
-      </h2>
+    <div className="space-y-4 rounded-sm border border-border/70 bg-white p-6">
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <GraduationCap className="h-5 w-5 shrink-0 text-[#071A2D]" />
+          <AppDisplayTitle as="h2" className="text-lg sm:text-lg">
+            {t("catechist.class_title")}
+          </AppDisplayTitle>
+        </div>
+        <AppGoldRule />
+      </div>
 
       <div>
         <label className="text-sm font-medium">

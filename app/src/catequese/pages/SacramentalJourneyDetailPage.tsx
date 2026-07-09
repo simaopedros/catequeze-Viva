@@ -3,7 +3,11 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AppShell } from "../AppShell";
 import { Button } from "../../client/components/ui/button";
-import { AppPageHeader } from "../../client/components/brand/AppChrome";
+import {
+  AppDisplayTitle,
+  AppGoldRule,
+  AppPageHeader,
+} from "../../client/components/brand/AppChrome";
 import { Badge } from "../../client/components/ui/badge";
 import {
   ArrowLeft,
@@ -312,7 +316,12 @@ export default function SacramentalJourneyDetailPage() {
       </div>
 
       <div className="space-y-3">
-        <h2 className="text-lg font-semibold">{t("milestones")}</h2>
+        <div className="space-y-2">
+          <AppDisplayTitle as="h2" className="text-lg sm:text-lg">
+            {t("milestones")}
+          </AppDisplayTitle>
+          <AppGoldRule />
+        </div>
         {milestones.length === 0 ? (
           <EmptyState
             icon={CheckCircle}

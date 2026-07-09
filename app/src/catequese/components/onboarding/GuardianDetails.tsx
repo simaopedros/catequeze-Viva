@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../../client/components/ui/button";
+import {
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
 import { Heart, Check } from "lucide-react";
 import PhoneMaskInput from "../../../client/components/PhoneMaskInput";
 
@@ -14,11 +18,16 @@ export function GuardianDetails({ onComplete }: GuardianDetailsProps) {
   const [phone, setPhone] = useState("");
 
   return (
-    <div className="rounded-sm border border-border/70 bg-white p-6 space-y-4">
-      <h2 className="text-lg font-semibold flex items-center gap-2">
-        <Heart className="h-5 w-5 text-[#071A2D]" />
-        {t("guardian.title")}
-      </h2>
+    <div className="space-y-4 rounded-sm border border-border/70 bg-white p-6">
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <Heart className="h-5 w-5 shrink-0 text-[#071A2D]" />
+          <AppDisplayTitle as="h2" className="text-lg sm:text-lg">
+            {t("guardian.title")}
+          </AppDisplayTitle>
+        </div>
+        <AppGoldRule />
+      </div>
       <div className="space-y-3">
         <div>
           <label className="text-sm font-medium">

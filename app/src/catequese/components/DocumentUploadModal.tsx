@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../client/components/ui/button";
+import {
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../client/components/brand/AppChrome";
 import { FilePlus, Loader2, X } from "lucide-react";
 import { uploadDocumentMultipart } from "../../client/utils/documentUpload";
 import { toast } from "../../client/hooks/use-toast";
@@ -60,13 +64,19 @@ export function DocumentUploadModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="rounded-sm border border-border/70 bg-white w-full max-w-md p-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <FilePlus className="h-5 w-5" /> {t("new_document")}
-          </h2>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 space-y-2">
+            <div className="flex items-center gap-2">
+              <FilePlus className="h-5 w-5 shrink-0 text-[#071A2D]" />
+              <AppDisplayTitle as="h2" className="text-lg sm:text-lg">
+                {t("new_document")}
+              </AppDisplayTitle>
+            </div>
+            <AppGoldRule />
+          </div>
           <button
             onClick={onClose}
-            className="text-muted-foreground hover:text-foreground p-1"
+            className="p-1 text-muted-foreground hover:text-foreground"
           >
             <X className="h-4 w-4" />
           </button>

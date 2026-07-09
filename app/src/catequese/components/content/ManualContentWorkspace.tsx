@@ -47,6 +47,11 @@ import {
   Users,
 } from "lucide-react";
 import { toast } from "../../../client/hooks/use-toast";
+import {
+  AppDisplayTitle,
+  AppEyebrow,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
 
 const RECENT_THUMBNAIL_STYLES = [
   "bg-[#071A2D]/08 text-[#071A2D]",
@@ -224,19 +229,22 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
       <Card className="rounded-sm border-border/70 p-5">
         <div className="mb-4 flex items-start justify-between gap-3">
           <div>
-            <div className="flex items-center gap-2">
-              <BookMarked className="h-4 w-4 text-[#071A2D]" />
-              <h3 className="text-lg font-semibold text-foreground">
-                Referências para o encontro
-              </h3>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <BookMarked className="h-4 w-4 shrink-0 text-[#071A2D]" />
+                <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
+                  Referências para o encontro
+                </AppDisplayTitle>
+              </div>
+              <AppGoldRule />
+              <p className="text-sm text-muted-foreground">
+                Selecione e organize referências.
+              </p>
             </div>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Selecione e organize referências.
-            </p>
           </div>
           <Badge
             variant="secondary"
-            className="rounded-full px-2.5 py-0.5 text-xs"
+            className="rounded-sm px-2.5 py-0.5 text-xs"
           >
             {totalRefs}
           </Badge>
@@ -456,16 +464,17 @@ function ContentLibrarySidebar() {
   return (
     <div className="space-y-4">
       <Card className="rounded-sm border-border/70 p-4">
-        <div className="mb-4 flex items-center gap-2">
-          <Library className="h-4 w-4 text-foreground" />
-          <div>
-            <h3 className="text-lg font-semibold text-foreground">
+        <div className="mb-4 space-y-2">
+          <div className="flex items-center gap-2">
+            <Library className="h-4 w-4 shrink-0 text-[#071A2D]" />
+            <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
               Biblioteca de conteúdos
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              Inspire-se e reutilize materiais.
-            </p>
+            </AppDisplayTitle>
           </div>
+          <AppGoldRule />
+          <p className="text-sm text-muted-foreground">
+            Inspire-se e reutilize materiais.
+          </p>
         </div>
 
         <div className="relative mb-4">
@@ -505,10 +514,11 @@ function ContentLibrarySidebar() {
       </Card>
 
       <Card className="rounded-sm border-border/70 p-4">
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold text-foreground">
+        <div className="mb-4 space-y-2">
+          <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
             Conteúdos recentes
-          </h3>
+          </AppDisplayTitle>
+          <AppGoldRule />
           <p className="text-sm text-muted-foreground">
             Retome rascunhos e reaproveite encontros.
           </p>
@@ -569,7 +579,7 @@ function ContentLibrarySidebar() {
 function HeaderSection({ backTo }: { backTo: string }) {
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
         <div className="space-y-3">
           <Link
             to={backTo}
@@ -577,23 +587,24 @@ function HeaderSection({ backTo }: { backTo: string }) {
           >
             Voltar
           </Link>
-          <div>
-            <h1 className="text-5xl font-semibold tracking-tight text-foreground">
-              Conteúdo
-            </h1>
-            <p className="mt-2 text-xl text-muted-foreground">
-              Crie encontros manualmente e use IA só quando fizer sentido
+          <div className="space-y-2.5">
+            <AppEyebrow>Encontros</AppEyebrow>
+            <AppDisplayTitle>Conteúdo</AppDisplayTitle>
+            <AppGoldRule />
+            <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-[0.95rem]">
+              Crie encontros manualmente e use assistência só quando fizer
+              sentido
             </p>
           </div>
         </div>
 
         <div className="flex flex-wrap items-start gap-3">
-          <Button className="h-auto rounded-sm bg-[#071A2D] px-6 py-4 text-left hover:bg-[#0a2540]">
+          <Button className="h-auto rounded-sm bg-[#071A2D] px-6 py-4 text-left shadow-none hover:bg-[#0a2540]">
             <div className="flex items-start gap-3">
               <Plus className="mt-1 h-4 w-4" />
               <div>
-                <div className="text-lg font-semibold">Criar manualmente</div>
-                <div className="text-sm text-white/90">
+                <div className="text-sm font-semibold">Criar manualmente</div>
+                <div className="text-xs text-white/90">
                   Construa seu encontro do zero
                 </div>
               </div>
@@ -601,14 +612,16 @@ function HeaderSection({ backTo }: { backTo: string }) {
           </Button>
           <Button
             variant="outline"
-            className="h-auto rounded-sm border-[#d8b27b] px-6 py-4 text-left"
+            className="h-auto rounded-sm border-[#D39A2B]/50 px-6 py-4 text-left"
           >
             <div className="flex items-start gap-3">
-              <Feather className="mt-1 h-4 w-4 text-foreground" />
+              <Feather className="mt-1 h-4 w-4 text-[#071A2D]" />
               <div>
-                <div className="text-lg font-semibold">Gerar com IA</div>
-                <div className="text-sm text-muted-foreground">
-                  Criação assistida por IA
+                <div className="text-sm font-semibold text-[#071A2D]">
+                  Assistência editorial
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  Sugestões para o encontro
                 </div>
               </div>
             </div>

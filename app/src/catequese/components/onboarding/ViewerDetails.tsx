@@ -1,5 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { Button } from "../../../client/components/ui/button";
+import {
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
 import { Eye, Check } from "lucide-react";
 
 interface ViewerDetailsProps {
@@ -10,11 +14,16 @@ export function ViewerDetails({ onComplete }: ViewerDetailsProps) {
   const { t } = useTranslation("onboarding");
 
   return (
-    <div className="rounded-sm border border-border/70 bg-white p-6 space-y-4">
-      <h2 className="text-lg font-semibold flex items-center gap-2">
-        <Eye className="h-5 w-5 text-[#071A2D]" />
-        {t("viewer.title")}
-      </h2>
+    <div className="space-y-4 rounded-sm border border-border/70 bg-white p-6">
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <Eye className="h-5 w-5 shrink-0 text-[#071A2D]" />
+          <AppDisplayTitle as="h2" className="text-lg sm:text-lg">
+            {t("viewer.title")}
+          </AppDisplayTitle>
+        </div>
+        <AppGoldRule />
+      </div>
       <p className="text-sm text-muted-foreground">{t("viewer.desc")}</p>
       <div className="flex justify-end">
         <Button onClick={onComplete}>

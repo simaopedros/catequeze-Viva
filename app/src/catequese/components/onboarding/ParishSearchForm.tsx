@@ -2,6 +2,10 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Search, ChevronRight, Check } from "lucide-react";
 import { Button } from "../../../client/components/ui/button";
+import {
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
 
 interface ParishSearchFormProps {
   parishes: { id: string; name: string }[];
@@ -33,11 +37,16 @@ export function ParishSearchForm({
   };
 
   return (
-    <div className="rounded-sm border border-border/70 bg-white p-6 space-y-4">
-      <h2 className="text-lg font-semibold flex items-center gap-2">
-        <Search className="h-5 w-5 text-[#071A2D]" />
-        {t("parish_search.title")}
-      </h2>
+    <div className="space-y-4 rounded-sm border border-border/70 bg-white p-6">
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <Search className="h-5 w-5 shrink-0 text-[#071A2D]" />
+          <AppDisplayTitle as="h2" className="text-lg sm:text-lg">
+            {t("parish_search.title")}
+          </AppDisplayTitle>
+        </div>
+        <AppGoldRule />
+      </div>
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <input

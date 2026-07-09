@@ -10,7 +10,10 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { Button } from "../../client/components/ui/button";
-import { AppPageHeader } from "../../client/components/brand/AppChrome";
+import {
+  AppDisplayTitle,
+  AppPageHeader,
+} from "../../client/components/brand/AppChrome";
 import { SearchInput } from "../../client/components/SearchInput";
 import {
   listDirectoryByPart,
@@ -250,8 +253,10 @@ export default function DirectoryPage() {
           <div className="mb-4 rounded-sm border border-border/70 bg-muted/30 p-3">
             <BookOpen className="h-8 w-8 text-foreground" />
           </div>
-          <h3 className="text-lg font-semibold">{t("directory.emptyTitle")}</h3>
-          <p className="text-sm text-muted-foreground mt-1 max-w-md">
+          <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
+            {t("directory.emptyTitle")}
+          </AppDisplayTitle>
+          <p className="mt-2 max-w-md text-sm text-muted-foreground">
             {t("directory.emptyDesc")}
           </p>
         </div>

@@ -5,6 +5,11 @@ import { Button } from "../../../client/components/ui/button";
 import { Card } from "../../../client/components/ui/card";
 import { Textarea } from "../../../client/components/ui/textarea";
 import {
+  AppDisplayTitle,
+  AppEyebrow,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
+import {
   RotateCcw,
   ArrowLeft,
   Copy,
@@ -59,17 +64,16 @@ export function WhatsappResultPanel({
     <div className="flex items-center justify-center px-3 py-6">
       <div className="w-full max-w-2xl space-y-6">
         <Card className="space-y-4 rounded-sm border-border/70 p-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-foreground">
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
               <Smartphone className="h-5 w-5" />
             </div>
-            <div className="space-y-1">
-              <h2 className="text-lg font-semibold tracking-tight text-foreground">
+            <div className="min-w-0 space-y-2">
+              <AppEyebrow>{t("whatsapp.result_subtitle")}</AppEyebrow>
+              <AppDisplayTitle as="h2" className="text-lg sm:text-lg">
                 {t("whatsapp.result_title")}
-              </h2>
-              <p className="text-xs text-muted-foreground">
-                {t("whatsapp.result_subtitle")}
-              </p>
+              </AppDisplayTitle>
+              <AppGoldRule />
             </div>
           </div>
 
