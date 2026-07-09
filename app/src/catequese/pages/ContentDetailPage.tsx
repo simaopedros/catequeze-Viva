@@ -143,10 +143,10 @@ export default function ContentDetailPage() {
       </div>
 
       <div className="flex border-b">
-        <button onClick={() => handleTabChange('meeting')} className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors ${tab === 'meeting' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
+        <button onClick={() => handleTabChange('meeting')} className={`relative flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors ${tab === 'meeting' ? 'border-[#D39A2B] text-[#071A2D]' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
           <FileText className="h-4 w-4" /> {t('script')}
         </button>
-        <button onClick={() => handleTabChange('activities')} className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors ${tab === 'activities' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
+        <button onClick={() => handleTabChange('activities')} className={`relative flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors ${tab === 'activities' ? 'border-[#D39A2B] text-[#071A2D]' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
           <Puzzle className="h-4 w-4" /> {t('activities_tab')} ({activities.length})
         </button>
       </div>
@@ -162,7 +162,7 @@ export default function ContentDetailPage() {
             <div className="rounded-sm border border-border/70 bg-white p-4">
               <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold"><Calendar className="h-4 w-4" />{t('used_in_meetings', { count: item.meetings.length })}</h3>
               <div className="space-y-1">{item.meetings.map((meeting: any) => (
-                <Link key={meeting.id} to={`/app/classes/${meeting.classId}/attendance`} className="flex justify-between py-1 text-sm hover:text-primary">
+                <Link key={meeting.id} to={`/app/classes/${meeting.classId}/attendance`} className="flex justify-between py-1 text-sm hover:text-[#071A2D]">
                   <span>{meeting.title || t('meeting_default')}</span><span className="text-xs text-muted-foreground">{formatDate(meeting.date, currentLocale)}</span>
                 </Link>
               ))}</div>

@@ -162,14 +162,14 @@ export default function MeetingsPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="text-overline">{t('attendance_count', { count: m._count?.attendance || 0 })}</Badge>
-                    <Link to={`/app/classes/${classId}/attendance`} className="text-xs text-primary hover:underline">{tcl('attendance')}</Link>
+                    <Link to={`/app/classes/${classId}/attendance`} className="text-xs font-medium text-[#071A2D] underline-offset-2 hover:underline">{tcl('attendance')}</Link>
                   </div>
                 </div>
 
                 {m.content ? (
-                  <div className="flex items-center gap-2 bg-muted/30 rounded-md p-2 text-xs">
-                    <BookOpen className="h-3 w-3 text-primary" />
-                    <Link to={`/app/content-library/${m.content.id}`} className="text-primary hover:underline font-medium">{m.content.title}</Link>
+                  <div className="flex items-center gap-2 rounded-sm border border-border/70 bg-muted/30 p-2 text-xs">
+                    <BookOpen className="h-3 w-3 text-[#071A2D]" />
+                    <Link to={`/app/content-library/${m.content.id}`} className="font-medium text-[#071A2D] underline-offset-2 hover:underline">{m.content.title}</Link>
                     <button
                       onClick={() => handleLinkContent(m.id, null)}
                       className="ml-auto text-muted-foreground hover:text-destructive text-overline"

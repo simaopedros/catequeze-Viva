@@ -1,13 +1,12 @@
 import { useParams, Link, useNavigate } from 'react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AppShell } from '../AppShell';
 import { Button } from '../../client/components/ui/button';
-import { Badge } from '../../client/components/ui/badge';
 import { ArrowLeft, Building2, Users, GraduationCap, User, MessageCircle, MapPin, Phone } from 'lucide-react';
 import { EmptyState } from '../../client/components/EmptyState';
 import { useQuery, listCommunities, listClasses, listHouseholds, createConversation } from 'wasp/client/operations';
 import { useCommunityTypeLabels } from '../../i18n/useLabels';
+import { AppPageHeader } from '../../client/components/brand/AppChrome';
 
 const AVATAR_COLORS = ['border border-border/70 bg-muted/30 text-foreground'];
 
@@ -65,21 +64,23 @@ export default function CommunityDetailPage() {
   ];
 
   return (
-      <div className="max-w-4xl mx-auto space-y-6 py-6">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild><Link to="/app/communities"><ArrowLeft className="h-5 w-5" /></Link></Button>
-          <div className="flex-1">
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]" style={{ fontFamily: 'var(--font-brand-display)' }}>{community.name}</h1>
-            <div className="flex items-center gap-2 mt-1">
-              <Badge variant="outline">{typeLabels[community.type as keyof typeof typeLabels] || community.type}</Badge>
-              {community.coordinatorName && (
-                <span className="text-sm text-muted-foreground">{tp('coordinator_label', { name: community.coordinatorName })}</span>
-              )}
-            </div>
-          </div>
-          <Button variant="outline" size="sm" onClick={handleOpenCommunityChat}>
-            <MessageCircle className="mr-1 h-3 w-3" />{tp('chat')}
+    <AppShell>
+      <div className="mx-auto max-w-4xl space-y-6 py-6">
+        <div className="flex items-start gap-3">
+          <Button variant="ghost" size="icon" className="mt-1 shrink-0" asChild>
+            <Link to="/app/communities"><ArrowLeft className="h-5 w-5" /></Link>
           </Button>
+          <AppPageHeader
+            className="min-w-0 flex-1 border-0 pb-0"
+            eyebrow={typeLabels[community.type as keyof typeof typeLabels] || community.type}
+            title={community.name}
+            subtitle={community.coordinatorName ? tp('coordinator_label', { name: community.coordinatorName }) : undefined}
+            actions={
+              <Button variant="outline" size="sm" className="rounded-sm" onClick={handleOpenCommunityChat}>
+                <MessageCircle className="mr-1 h-3 w-3" />{tp('chat')}
+              </Button>
+            }
+          />
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
@@ -109,15 +110,22 @@ export default function CommunityDetailPage() {
           </div>
         )}
 
-        <div className="flex gap-1 border-b pb-2">
+        <div className="flex gap-1 border-b border-border/70">
           {tabs.map(tabItem => (
             <button
               key={tabItem.id}
               onClick={() => setTab(tabItem.id)}
-              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors flex items-center gap-1 ${tab === tabItem.id ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`relative flex items-center gap-1 px-4 py-2.5 text-sm font-medium transition-colors ${
+                tab === tabItem.id
+                  ? 'text-[#071A2D]'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
             >
               <tabItem.icon className="h-3.5 w-3.5" />
               {tabItem.label}
+              {tab === tabItem.id && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#D39A2B]" aria-hidden />
+              )}
             </button>
           ))}
         </div>
@@ -161,7 +169,7 @@ export default function CommunityDetailPage() {
                     {h.catechumens?.length > 0 && (
                       <div className="mt-1 flex flex-wrap gap-1">
                         {h.catechumens.slice(0, 3).map((c: any) => (
-                          <span key={c.id} className="text-overline bg-muted px-2 py-0.5 rounded-full">{c.firstName}</span>
+                          <span key={c.id} className="rounded-sm bg-muted px-2 py-0.5 text-overline">{c.firstName}</span>
                         ))}
                       </div>
                     )}
@@ -194,5 +202,6 @@ export default function CommunityDetailPage() {
           </div>
         )}
       </div>
+    </AppShell>
   );
 }

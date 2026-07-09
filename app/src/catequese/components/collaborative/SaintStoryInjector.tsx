@@ -49,7 +49,7 @@ export function SaintStoryInjector() {
     <Card className="p-4 space-y-3">
       <div>
         <div className="flex items-center gap-1.5 mb-0.5">
-          <Church className="h-4 w-4 text-primary" />
+          <Church className="h-4 w-4 text-[#071A2D]" />
           <h3 className="text-sm font-semibold">{t('tools.saint.title')}</h3>
         </div>
         <p className="text-xs text-muted-foreground">{t('tools.saint.description')}</p>

@@ -49,7 +49,7 @@ export function SuggestionCards() {
           >
             <Card className="p-3 hover:border-primary/50 hover:bg-muted/50 transition-colors cursor-pointer">
               <div className="flex items-start gap-2">
-                <Icon className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[#071A2D]" />
                 <span className="text-xs leading-relaxed">{suggestion.label}</span>
               </div>
             </Card>

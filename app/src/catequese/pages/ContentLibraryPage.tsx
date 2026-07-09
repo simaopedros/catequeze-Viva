@@ -295,7 +295,7 @@ export default function ContentLibraryPage() {
                 {filtered.map((i: any) => (
                   <tr key={i.id} className="border-b border-border/60 last:border-0 hover:bg-muted/30 transition-colors">
                     <td className="p-4">
-                      <Link to={`/app/content-library/${i.id}`} className="font-medium text-sm hover:text-primary">{i.title}</Link>
+                      <Link to={`/app/content-library/${i.id}`} className="text-sm font-medium hover:text-[#071A2D]">{i.title}</Link>
                       <p className="text-overline text-muted-foreground">{i.theme}</p>
                     </td>
                     <td className="p-4 hidden md:table-cell">
@@ -327,7 +327,7 @@ export default function ContentLibraryPage() {
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="line-clamp-2 text-lg font-semibold tracking-tight text-foreground group-hover:text-primary">
+                    <h3 className="line-clamp-2 text-lg font-semibold tracking-tight text-foreground group-hover:text-[#071A2D]">
                       {item.title}
                     </h3>
                     <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />

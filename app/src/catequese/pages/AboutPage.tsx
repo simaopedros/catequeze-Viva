@@ -10,19 +10,20 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <PublicNavbar />
-      <main className="flex-1 max-w-3xl mx-auto px-4 py-20 space-y-8">
-        <div>
-          <h1 className="mb-4 text-4xl font-semibold tracking-tight text-foreground">{t('about.title')}</h1>
+      <main className="mx-auto max-w-3xl flex-1 space-y-8 px-4 py-20">
+        <div className="space-y-3">
+          <h1 className="text-4xl font-semibold tracking-tight text-[#071A2D]" style={{ fontFamily: 'var(--font-brand-display)' }}>{t('about.title')}</h1>
+          <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
           <p className="text-lg text-muted-foreground">{t('about.intro')}</p>
         </div>
 
         <section>
-          <h2 className="text-2xl font-semibold mb-3">{t('about.mission_title')}</h2>
+          <h2 className="mb-3 text-2xl font-semibold text-[#071A2D]">{t('about.mission_title')}</h2>
           <p className="text-muted-foreground">{t('about.mission_text')}</p>
         </section>
 
         <section>
-          <h2 className="text-2xl font-semibold mb-3">{t('about.offer_title')}</h2>
+          <h2 className="mb-3 text-2xl font-semibold text-[#071A2D]">{t('about.offer_title')}</h2>
           <ul className="space-y-3 text-muted-foreground">
             {OFFER_KEYS.map(key => (
               <li key={key}>{t(`about.offers.${key}`)}</li>

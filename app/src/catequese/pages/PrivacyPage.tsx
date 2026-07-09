@@ -10,9 +10,10 @@ export default function PrivacyPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <PublicNavbar />
-      <main className="flex-1 max-w-3xl mx-auto px-4 py-20 space-y-8">
-        <div>
-          <h1 className="mb-4 text-4xl font-semibold tracking-tight text-foreground">{t('privacy.title')}</h1>
+      <main className="mx-auto max-w-3xl flex-1 space-y-8 px-4 py-20">
+        <div className="space-y-3">
+          <h1 className="text-4xl font-semibold tracking-tight text-[#071A2D]" style={{ fontFamily: 'var(--font-brand-display)' }}>{t('privacy.title')}</h1>
+          <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
           <p className="text-muted-foreground">{t('privacy.updated')}</p>
         </div>
 

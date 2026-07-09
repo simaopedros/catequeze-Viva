@@ -121,7 +121,7 @@ export default function FamiliesPage() {
             {filtered.map((h: any) => (
               <Link key={h.id} to={`/app/families/${h.id}`} className="group rounded-sm border border-border/70 bg-white p-4 transition-colors hover:border-primary/30">
                 <div className="flex items-start justify-between mb-2">
-                  <h3 className="font-semibold text-sm group-hover:text-primary">{h.name}</h3>
+                  <h3 className="text-sm font-semibold group-hover:text-[#071A2D]">{h.name}</h3>
                   <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                 </div>
                 {h.address ? (

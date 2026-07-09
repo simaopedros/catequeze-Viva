@@ -68,7 +68,7 @@ function ImproveWorkspace() {
                   <h3 className="font-semibold text-sm">{t('improve.create_copy')}</h3>
                   <p className="mt-1 text-xs text-muted-foreground">{t('improve.create_copy_desc')}</p>
                 </div>
-                <div className="mt-auto inline-flex items-center gap-1 text-xs font-medium text-primary">
+                <div className="mt-auto inline-flex items-center gap-1 text-xs font-medium text-[#071A2D]">
                   <Check className="h-3 w-3" />
                   {t('improve.recommended')}
                 </div>
@@ -119,7 +119,7 @@ function ImproveWorkspace() {
     >
       <div className="flex-1 flex flex-col min-h-0">
         <div className="flex items-center gap-2 border-b border-border/70 bg-white px-3 py-2 shrink-0 lg:px-4">
-          <div className="inline-flex items-center gap-2 rounded-md border border-success/20 bg-success/10 px-3 py-1.5 text-xs font-medium text-success">
+          <div className="inline-flex items-center gap-2 rounded-sm border border-border/70 bg-muted/40 px-3 py-1.5 text-xs font-medium text-foreground">
             <Circle className="h-2 w-2 fill-current" />
             {tc('workspace.live_status')}
           </div>
@@ -130,7 +130,7 @@ function ImproveWorkspace() {
             </div>
           )}
           {choice === 'original' && (
-            <div className="inline-flex items-center gap-1 rounded-md border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 px-2 py-1 text-xs text-amber-700 dark:text-amber-300">
+            <div className="inline-flex items-center gap-1 rounded-sm border border-border/70 bg-muted/40 px-2 py-1 text-xs text-muted-foreground">
               <AlertTriangle className="h-3 w-3" />
               {t('improve.original_badge')}
             </div>

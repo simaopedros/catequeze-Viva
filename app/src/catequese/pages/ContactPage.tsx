@@ -38,22 +38,25 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <PublicNavbar />
-      <main className="flex-1 max-w-3xl mx-auto px-4 py-20">
-        <h1 className="mb-4 text-4xl font-semibold tracking-tight text-foreground">{t('contact.title')}</h1>
-        <p className="text-lg text-muted-foreground mb-10">{t('contact.intro')}</p>
+      <main className="mx-auto max-w-3xl flex-1 px-4 py-20">
+        <div className="mb-10 space-y-3">
+          <h1 className="text-4xl font-semibold tracking-tight text-[#071A2D]" style={{ fontFamily: 'var(--font-brand-display)' }}>{t('contact.title')}</h1>
+          <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+          <p className="text-lg text-muted-foreground">{t('contact.intro')}</p>
+        </div>
 
         <div className="grid gap-8 md:grid-cols-5">
-          <div className="md:col-span-2 space-y-4">
+          <div className="space-y-4 md:col-span-2">
             <div className="flex items-center gap-3 text-muted-foreground">
-              <Mail className="h-5 w-5 text-primary" />
+              <Mail className="h-5 w-5 text-[#071A2D]" />
               <span>contato@catechis.app</span>
             </div>
             <div className="flex items-center gap-3 text-muted-foreground">
-              <Phone className="h-5 w-5 text-primary" />
+              <Phone className="h-5 w-5 text-[#071A2D]" />
               <span>+55 11 93930-7494</span>
             </div>
             <div className="flex items-center gap-3 text-muted-foreground">
-              <MapPin className="h-5 w-5 text-primary" />
+              <MapPin className="h-5 w-5 text-[#071A2D]" />
               <span>{t('contact.location')}</span>
             </div>
           </div>
@@ -88,7 +91,7 @@ export default function ContactPage() {
               </div>
             )}
 
-            <Button type="submit" disabled={sending || !name || !email || !message} className="gap-2">
+            <Button type="submit" disabled={sending || !name || !email || !message} className="gap-2 rounded-sm bg-[#071A2D] text-white hover:bg-[#0a2540]">
               <Send className="h-4 w-4" />
               {sending ? t('contact.sending') : t('contact.send')}
             </Button>

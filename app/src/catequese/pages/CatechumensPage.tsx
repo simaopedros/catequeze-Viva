@@ -254,7 +254,7 @@ export default function CatechumensPage() {
                 {filtered.map((c: any) => (
                   <tr key={c.id} className="border-b border-border/60 last:border-0 hover:bg-muted/30 transition-colors">
                     <td className="p-4">
-                      <Link to={`/app/catechumens/${c.id}`} className="flex items-center gap-3 hover:text-primary">
+                      <Link to={`/app/catechumens/${c.id}`} className="flex items-center gap-3 hover:text-[#071A2D]">
                         <div className={`flex h-10 w-10 items-center justify-center rounded-sm text-sm font-semibold overflow-hidden ${!c.photoUrl ? AVATAR_COLORS[Math.abs(c.firstName?.charCodeAt(0) || 0) % AVATAR_COLORS.length] : ''}`}>
                           {c.photoUrl ? <img src={c.photoUrl} className="h-full w-full object-cover" alt="" /> : `${c.firstName?.[0] || ''}${c.lastName?.[0] || ''}`}
                         </div>
@@ -293,7 +293,7 @@ export default function CatechumensPage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="truncate text-lg font-semibold tracking-tight text-foreground group-hover:text-primary">
+                      <p className="truncate text-lg font-semibold tracking-tight text-foreground group-hover:text-[#071A2D]">
                         {c.firstName} {c.lastName}
                       </p>
                       <p className="mt-1 text-sm text-muted-foreground">

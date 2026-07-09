@@ -247,7 +247,7 @@ export function QuickSetupPanel({ mode, applyToOriginal }: { mode: string; apply
       : 'border-border hover:border-primary/50'
      }`}
                   >
-                    <g.icon className="h-8 w-8 mx-auto mb-2 text-primary" />
+                    <g.icon className="mx-auto mb-2 h-8 w-8 text-[#071A2D]" />
                     <div className="font-semibold text-sm">{g.label}</div>
                     <div className="text-xs text-muted-foreground">{g.age}</div>
                   </button>
@@ -294,7 +294,7 @@ export function QuickSetupPanel({ mode, applyToOriginal }: { mode: string; apply
             <div className="grid gap-4 md:grid-cols-[0.8fr_1.2fr]">
               <div className="space-y-3">
                 <Label className="flex items-center gap-2 text-base font-semibold">
-                  <Clock className="h-4 w-4 text-primary" />
+                  <Clock className="h-4 w-4 text-[#071A2D]" />
                   {t('planner.step_duration')}
                 </Label>
                 <div className="grid grid-cols-4 gap-2">
@@ -303,11 +303,11 @@ export function QuickSetupPanel({ mode, applyToOriginal }: { mode: string; apply
                       key={value}
                       type="button"
                       onClick={() => setDuration(value)}
-                      className={`rounded-md border px-2 py-2 text-sm font-medium transition-colors ${
-      duration === value
-       ? 'border-primary bg-primary text-primary-foreground'
-       : 'border-border hover:border-primary/50'
-      }`}
+                      className={`rounded-sm border px-2 py-2 text-sm font-medium transition-colors ${
+                        duration === value
+                          ? 'border-[#071A2D] bg-[#071A2D] text-white'
+                          : 'border-border hover:border-[#071A2D]/40'
+                      }`}
                     >
                       {value}{t('planner.minutes_abbr')}
                     </button>
@@ -317,7 +317,7 @@ export function QuickSetupPanel({ mode, applyToOriginal }: { mode: string; apply
 
               <div className="space-y-3">
                 <Label className="flex items-center gap-2 text-base font-semibold">
-                  <HeartHandshake className="h-4 w-4 text-primary" />
+                  <HeartHandshake className="h-4 w-4 text-[#071A2D]" />
                   {t('planner.step_approach')}
                 </Label>
                 <div className="grid gap-2 sm:grid-cols-3">
@@ -326,11 +326,11 @@ export function QuickSetupPanel({ mode, applyToOriginal }: { mode: string; apply
                       key={option.value}
                       type="button"
                       onClick={() => setApproach(option.value)}
-                      className={`rounded-md border p-3 text-left transition-colors ${
-      approach === option.value
-       ? 'border-[#071A2D] bg-muted/30'
-       : 'border-border hover:border-primary/50'
-      }`}
+                      className={`rounded-sm border p-3 text-left transition-colors ${
+                        approach === option.value
+                          ? 'border-[#071A2D] bg-muted/30'
+                          : 'border-border hover:border-[#071A2D]/40'
+                      }`}
                     >
                       <p className="text-sm font-semibold">{t(option.labelKey)}</p>
                       <p className="mt-1 text-xs leading-snug text-muted-foreground">{t(option.descKey)}</p>

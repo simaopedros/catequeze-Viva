@@ -245,7 +245,7 @@ export default function ClassDetailPage() {
               <Badge variant={statusBadge?.variant || 'secondary'}>{statusBadge?.label || cls.status}</Badge>
               {cls.stage&&<span className="text-sm text-muted-foreground">{cls.stage.name}</span>}
               {cls.community && (
-                <Link to={`/app/communities/${cls.community.id}`} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary">
+                <Link to={`/app/communities/${cls.community.id}`} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-[#071A2D]">
                   <Building2 className="h-3 w-3" />
                   {cls.community.name}
                 </Link>
@@ -405,7 +405,7 @@ export default function ClassDetailPage() {
                 return(
                 <div key={e.id} className="flex items-center justify-between rounded-sm border border-border/70 bg-white p-3">
                   <div className="flex items-center gap-3 min-w-0">
-                    <Link to={`/app/catechumens/${e.catechumenProfile?.id}`} className="flex items-center gap-3 hover:text-primary min-w-0">
+                    <Link to={`/app/catechumens/${e.catechumenProfile?.id}`} className="flex min-w-0 items-center gap-3 hover:text-[#071A2D]">
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-foreground">{e.catechumenProfile?.firstName?.[0]}{e.catechumenProfile?.lastName?.[0]}</div>
                       <span className="text-sm font-medium truncate">{e.catechumenProfile?.firstName} {e.catechumenProfile?.lastName}</span>
                     </Link>
@@ -470,7 +470,7 @@ export default function ClassDetailPage() {
                     <div className="flex items-center gap-2">
                       <p className="text-xs text-muted-foreground flex items-center gap-1"><Calendar className="h-3 w-3"/>{formatDate(m.date, currentLocale)}</p>
                       {m.content && (
-                        <Link to={`/app/content-library/${m.content.id}`} className="text-xs text-primary hover:underline flex items-center gap-1">
+                        <Link to={`/app/content-library/${m.content.id}`} className="flex items-center gap-1 text-xs font-medium text-[#071A2D] underline-offset-2 hover:underline">
                           <BookOpen className="h-3 w-3"/>{m.content.title}
                         </Link>
                       )}
@@ -481,7 +481,7 @@ export default function ClassDetailPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="text-overline">{t('detail.attendance_records', { count: m._count?.attendance||0 })}</Badge>
-                    <Link to={`/app/classes/${id}/attendance`} className="text-xs text-primary hover:underline">{t('attendance')}</Link>
+                    <Link to={`/app/classes/${id}/attendance`} className="text-xs font-medium text-[#071A2D] underline-offset-2 hover:underline">{t('attendance')}</Link>
                   </div>
                 </div>
               ))}</div>}

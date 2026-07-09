@@ -64,7 +64,7 @@ export function ActivityResultPanel({ activity, contentId, onRegenerate, onBack 
             <div className="space-y-2">
               {parsedData.objective && (
                 <div className="flex items-start gap-2 text-sm">
-                  <Target className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                  <Target className="mt-0.5 h-4 w-4 shrink-0 text-[#071A2D]" />
                   <span className="text-muted-foreground">{parsedData.objective}</span>
                 </div>
               )}

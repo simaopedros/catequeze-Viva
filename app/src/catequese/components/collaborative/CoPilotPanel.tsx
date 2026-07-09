@@ -52,13 +52,13 @@ export function CoPilotPanel() {
 
         {/* View tabs — hidden when chat is open */}
         {!chatOpen && (
-          <div className="grid grid-cols-2 overflow-hidden rounded-md border bg-background">
+          <div className="grid grid-cols-2 overflow-hidden rounded-sm border border-border/70 bg-white">
             <button
               onClick={() => setView('briefing')}
               className={cn(
                 'flex min-w-0 items-center justify-center gap-1.5 px-2 py-2 text-caption font-medium transition-colors',
                 view === 'briefing'
-                  ? 'bg-primary text-primary-foreground'
+                  ? 'bg-[#071A2D] text-white'
                   : 'text-muted-foreground hover:text-foreground'
               )}
             >
@@ -70,7 +70,7 @@ export function CoPilotPanel() {
               className={cn(
                 'flex min-w-0 items-center justify-center gap-1.5 px-2 py-2 text-caption font-medium transition-colors',
                 view === 'refine'
-                  ? 'bg-primary text-primary-foreground'
+                  ? 'bg-[#071A2D] text-white'
                   : 'text-muted-foreground hover:text-foreground'
               )}
             >

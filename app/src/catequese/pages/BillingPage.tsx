@@ -692,7 +692,7 @@ export default function BillingPage() {
   }
 
   const scopeBadgeClass = isPersonal
-    ? 'border-primary/20 bg-white/85 text-primary'
+    ? 'border-[#071A2D]/20 bg-white/85 text-[#071A2D]'
     : 'border-border/70 bg-muted/30 text-foreground';
 
   return (
@@ -873,7 +873,7 @@ export default function BillingPage() {
                 <div className="space-y-3">
                   {conversionChecklist.map((item) => (
                     <div key={item} className="flex items-start gap-3 text-sm text-muted-foreground">
-                      <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+                      <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#071A2D]" />
                       <span>{item}</span>
                     </div>
                   ))}
@@ -888,7 +888,7 @@ export default function BillingPage() {
                 <div className="space-y-3">
                   {upgradeChecklist.map((item) => (
                     <div key={item} className="flex items-start gap-3 text-sm text-muted-foreground">
-                      <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+                      <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#071A2D]" />
                       <span>{item}</span>
                     </div>
                   ))}
@@ -902,8 +902,8 @@ export default function BillingPage() {
                     <span>{t('usage_title')}</span>
                   </div>
                   <div className="space-y-4">
-                    <UsageRow label={t('classes')} used={classesUsed} limit={maxClasses} accent="bg-primary" ariaLabel={t('classes_quota_label')} />
-                    <UsageRow label={t('catechumens')} used={catechumensUsed} limit={maxCatechumens} accent="bg-primary" ariaLabel={t('catechumens_quota_label')} />
+                    <UsageRow label={t('classes')} used={classesUsed} limit={maxClasses} accent="bg-[#071A2D]" ariaLabel={t('classes_quota_label')} />
+                    <UsageRow label={t('catechumens')} used={catechumensUsed} limit={maxCatechumens} accent="bg-[#071A2D]" ariaLabel={t('catechumens_quota_label')} />
                   </div>
                 </div>
 
@@ -1108,7 +1108,7 @@ export default function BillingPage() {
                       <div>
                         <h3 className="text-lg font-semibold tracking-tight text-foreground">{plan.name}</h3>
                         {((isConversionMode && isRecommended) || (isUpgradeJourney && isRecommended) || (!isConversionMode && !isUpgradeJourney && plan.highlight)) && !isCurrent && (
-                          <p className="mt-1 text-sm text-primary">
+                          <p className="mt-1 text-sm text-[#071A2D]">
                             {isUpgradeJourney
                               ? t('upgrade_journey_badge')
                               : isConversionMode
@@ -1167,7 +1167,7 @@ export default function BillingPage() {
                     <ul className="mt-5 space-y-2 text-sm text-muted-foreground flex-1">
                       {plan.features.map((f) => (
                         <li key={f} className="flex items-start gap-2">
-                          <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+                          <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#071A2D]" />
                           <span>{f}</span>
                         </li>
                       ))}

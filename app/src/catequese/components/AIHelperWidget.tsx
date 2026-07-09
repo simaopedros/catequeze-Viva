@@ -210,7 +210,7 @@ export function AIHelperWidget() {
           <div className="flex items-center justify-between border-b border-border/70 bg-white p-4" style={{ paddingTop: 'calc(1rem + env(safe-area-inset-top, 0px))' }}>
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-sm border border-border/70 bg-muted/30 flex items-center justify-center">
-                <Bot className="h-4 w-4 text-primary" />
+                <Bot className="h-4 w-4 text-[#071A2D]" />
               </div>
               <div>
                 <h3 className="font-semibold text-sm">{ta('widget.theological_assistant')}</h3>
@@ -218,10 +218,10 @@ export function AIHelperWidget() {
               </div>
             </div>
             <div className="flex items-center gap-1">
-              <Link to="/app/ai-hub" className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title={ta('widget.open_copilot')}>
+              <Link to="/app/ai-hub" className="rounded-sm p-1.5 text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground" title={ta('widget.open_copilot')}>
                 <ExternalLink className="h-4 w-4" />
               </Link>
-              <Link to="/app/messages" className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title={ta('widget.view_history')}>
+              <Link to="/app/messages" className="rounded-sm p-1.5 text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground" title={ta('widget.view_history')}>
                 <MessageSquareText className="h-4 w-4" />
               </Link>
               <Button variant="ghost" size="icon" onClick={() => setOpen(false)}>
@@ -239,21 +239,21 @@ export function AIHelperWidget() {
               >
                 {m.role === 'assistant' && (
                   <div className="w-6 h-6 rounded-sm border border-border/70 bg-muted/30 flex items-center justify-center flex-shrink-0 mt-1">
-                    <Bot className="h-3 w-3 text-primary" />
+                    <Bot className="h-3 w-3 text-[#071A2D]" />
                   </div>
                 )}
                 <div
                   className={`max-w-[80%] rounded-sm px-3 py-2 text-sm ${
- m.role === 'user'
- ? 'bg-primary text-primary-foreground'
- : 'bg-muted'
- }`}
+                    m.role === 'user'
+                      ? 'bg-[#071A2D] text-white'
+                      : 'border border-border/70 bg-muted/40'
+                  }`}
                 >
                   <div className="whitespace-pre-line">
                     {m.content.includes('/app/billing') ? (
                       <>
                         {m.content.split('/app/billing')[0]}
-                        <Link to="/app/billing" className="underline font-semibold text-primary hover:underline">/app/billing</Link>
+                        <Link to="/app/billing" className="font-semibold underline hover:underline">/app/billing</Link>
                         {m.content.split('/app/billing').slice(1).join('/app/billing')}
                       </>
                     ) : (
@@ -296,9 +296,9 @@ export function AIHelperWidget() {
             {loading && (
               <div className="flex gap-2">
                 <div className="w-6 h-6 rounded-sm border border-border/70 bg-muted/30 flex items-center justify-center flex-shrink-0 mt-1">
-                  <Bot className="h-3 w-3 text-primary" />
+                  <Bot className="h-3 w-3 text-[#071A2D]" />
                 </div>
-                <div className="bg-muted rounded-sm px-3 py-2">
+                <div className="rounded-sm border border-border/70 bg-muted/40 px-3 py-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
                 </div>
               </div>
