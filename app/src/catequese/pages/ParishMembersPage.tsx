@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
+import { AppPageHeader } from '../../client/components/brand/AppChrome';
 import { Badge } from '../../client/components/ui/badge';
 import { Users, UserPlus, Trash2, Mail, AlertCircle, ArrowLeft, Loader2 } from 'lucide-react';
 import { useRoleLabels, useMembershipStatusLabels } from '../../i18n/useLabels';
@@ -109,24 +110,17 @@ export default function ParishMembersPage() {
 
   return (
     <>
-      <div className="space-y-6">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <button onClick={() => navigate('/app/parishes')} className="hover:text-foreground transition-colors">{tn('parishes')}</button>
-          <span>/</span>
-          <button onClick={() => navigate('/app/parishes/' + parishId)} className="hover:text-foreground transition-colors">{tn('breadcrumb.detail')}</button>
-          <span>/</span>
-          <span className="text-foreground font-medium">{tn('breadcrumb.members')}</span>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">{tp('parish_members_title')}</h1>
-            <p className="text-muted-foreground text-sm">{tp('members_count_short', { count: members.length })}</p>
-          </div>
-          <Button size="sm" onClick={() => setShowInvite(!showInvite)}>
-            <UserPlus className="mr-1 h-4 w-4" />{tp('invite')}
-          </Button>
-        </div>
+      <div className="space-y-8">
+        <AppPageHeader
+          eyebrow={tn('parishes')}
+          title={tp('parish_members_title')}
+          subtitle={tp('members_count_short', { count: members.length })}
+          actions={
+            <Button size="sm" className="h-10 rounded-sm shadow-none" onClick={() => setShowInvite(!showInvite)}>
+              <UserPlus className="mr-1 h-4 w-4" />{tp('invite')}
+            </Button>
+          }
+        />
 
         {error && (
           <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive flex items-center gap-2">
@@ -172,7 +166,7 @@ export default function ParishMembersPage() {
 
         {members.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
-            <div className="mb-4 rounded-full bg-primary/10 p-3"><Users className="h-8 w-8 text-primary" /></div>
+            <div className="mb-4 rounded-sm border border-border/70 bg-muted/30 p-3"><Users className="h-8 w-8 text-foreground" /></div>
             <h3 className="text-lg font-semibold">{tp('no_members')}</h3>
             <p className="text-sm text-muted-foreground">{tp('no_members_desc')}</p>
           </div>

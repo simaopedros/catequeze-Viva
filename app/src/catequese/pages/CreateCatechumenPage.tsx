@@ -21,6 +21,11 @@ import {
   FormMessage,
 } from '../../client/components/ui/form';
 import { useState } from 'react';
+import {
+  AppPageHeader,
+  AppPanel,
+  AppDisplayTitle,
+} from '../../client/components/brand/AppChrome';
 
 function compressImage(file: File): Promise<string> {
   return new Promise((resolve) => {
@@ -98,35 +103,40 @@ export default function CreateCatechumenPage() {
 
   if (!canManage) {
     return (
-        <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+        <div className="flex flex-col items-center justify-center space-y-4 py-20 text-center">
           <AlertTriangle className="h-12 w-12 text-destructive" />
-          <h1 className="text-xl font-bold">{t('catechumens.access_restricted')}</h1>
-          <p className="text-muted-foreground max-w-md">{t('catechumens.access_restricted_desc')}</p>
-          <Button variant="outline" onClick={() => navigate('/app/catechumens')}>{t('back')}</Button>
+          <AppDisplayTitle as="h1" className="text-xl sm:text-xl">{t('catechumens.access_restricted')}</AppDisplayTitle>
+          <p className="max-w-md text-muted-foreground">{t('catechumens.access_restricted_desc')}</p>
+          <Button variant="outline" className="h-10 rounded-sm" onClick={() => navigate('/app/catechumens')}>{t('back')}</Button>
         </div>
     );
   }
 
   return (
     <>
-      <div className="max-w-lg mx-auto space-y-6">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/app/catechumens"><ArrowLeft className="h-5 w-5" /></Link>
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">{t('catechumens.new_title')}</h1>
-          </div>
-        </div>
+      <div className="mx-auto max-w-lg space-y-8">
+        <AppPageHeader
+          eyebrow={t('catechumens.new_title')}
+          title={t('catechumens.new_title')}
+          actions={
+            <Button variant="outline" size="sm" className="h-10 rounded-sm" asChild>
+              <Link to="/app/catechumens">
+                <ArrowLeft className="mr-1 h-4 w-4" />
+                {t('back')}
+              </Link>
+            </Button>
+          }
+        />
 
         {form.formState.errors.root && (
-          <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+          <div className="rounded-sm bg-destructive/10 p-3 text-sm text-destructive">
             {form.formState.errors.root.message}
           </div>
         )}
 
+        <AppPanel className="space-y-6">
         <div className="flex flex-col items-center gap-3">
-          <div className="relative w-24 h-24 rounded-full overflow-hidden bg-muted border-2 border-dashed cursor-pointer" onClick={() => fileRef.current?.click()}>
+          <div className="relative w-24 h-24 rounded-sm overflow-hidden bg-muted border border-dashed border-border/70 cursor-pointer" onClick={() => fileRef.current?.click()}>
             {photo ? <img src={photo} alt={t('catechumens.photo_alt')} className="w-full h-full object-cover" /> : <div className="flex items-center justify-center h-full text-muted-foreground"><Camera className="h-8 w-8" /></div>}
           </div>
           <input ref={fileRef} type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
@@ -250,6 +260,7 @@ export default function CreateCatechumenPage() {
             </div>
           </form>
         </Form>
+        </AppPanel>
       </div>
 
       <CreateHouseholdModal

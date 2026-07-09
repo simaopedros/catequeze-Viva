@@ -2,6 +2,7 @@ import { useParams, Link, useNavigate } from 'react-router';
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
+import { AppPageHeader, AppPanel } from '../../client/components/brand/AppChrome';
 import { ArrowLeft, Save, Camera } from 'lucide-react';
 import { getCatechumenProfile, updateCatechumen } from 'wasp/client/operations';
 import { toast } from '../../client/hooks/use-toast';
@@ -82,7 +83,7 @@ export default function EditCatechumenPage() {
   };
 
   return (
-      <div className="max-w-lg mx-auto space-y-6">
+      <div className="mx-auto max-w-lg space-y-8">
         {loading && (
           <div className="animate-pulse space-y-4">
             <div className="h-8 w-48 bg-muted rounded"/>
@@ -96,13 +97,22 @@ export default function EditCatechumenPage() {
         )}
         {!loading && !error && (
         <>
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild><Link to={`/app/catechumens/${id}`}><ArrowLeft className="h-5 w-5" /></Link></Button>
-          <h1 className="text-2xl font-bold">{t('catechumens.edit_title')}</h1>
-        </div>
+        <AppPageHeader
+          eyebrow={t('catechumens.edit_title')}
+          title={t('catechumens.edit_title')}
+          actions={
+            <Button variant="outline" size="sm" className="h-10 rounded-sm" asChild>
+              <Link to={`/app/catechumens/${id}`}>
+                <ArrowLeft className="mr-1 h-4 w-4" />
+                {t('back')}
+              </Link>
+            </Button>
+          }
+        />
 
+        <AppPanel className="space-y-6">
         <div className="flex flex-col items-center gap-3">
-          <div className="relative w-24 h-24 rounded-full overflow-hidden bg-muted border-2 border-dashed cursor-pointer" onClick={() => fileRef.current?.click()}>
+          <div className="relative w-24 h-24 rounded-sm overflow-hidden bg-muted border border-dashed border-border/70 cursor-pointer" onClick={() => fileRef.current?.click()}>
             {photo ? <img src={photo} alt={t('catechumens.photo_alt')} className="w-full h-full object-cover" /> : <div className="flex items-center justify-center h-full text-muted-foreground"><Camera className="h-8 w-8" /></div>}
           </div>
           <input ref={fileRef} type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
@@ -120,6 +130,7 @@ export default function EditCatechumenPage() {
             <Button variant="outline" asChild><Link to={`/app/catechumens/${id}`}>{t('cancel')}</Link></Button>
           </div>
         </div>
+        </AppPanel>
         </>
         )}
       </div>

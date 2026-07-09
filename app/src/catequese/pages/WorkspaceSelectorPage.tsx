@@ -200,7 +200,7 @@ export default function WorkspaceSelectorPage() {
         {/* Loading state */}
         {(loadingWorkspaces || loadingContext) ? (
           <div className="text-center py-16 space-y-4">
-            <div className="inline-flex rounded-full bg-primary/10 p-4">
+            <div className="inline-flex rounded-sm border border-border/70 bg-muted/30 p-4">
               <Sparkles className="h-8 w-8 text-primary animate-pulse" />
             </div>
             <p className="text-muted-foreground text-sm">{t('loading')}</p>
@@ -208,13 +208,18 @@ export default function WorkspaceSelectorPage() {
         ) : (
           <>
         {/* Header */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-primary text-sm font-medium">
-            <Sparkles className="h-4 w-4" />
+        <div className="space-y-2.5 text-center">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             {t('workspace.app_name')}
-          </div>
-          <h1 className="text-2xl font-bold">{t('workspace.title')}</h1>
-          <p className="text-muted-foreground text-sm">{t('workspace.subtitle')}</p>
+          </p>
+          <h1
+            className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]"
+            style={{ fontFamily: 'var(--font-brand-display)' }}
+          >
+            {t('workspace.title')}
+          </h1>
+          <div className="mx-auto h-px w-10 bg-[#D39A2B]" aria-hidden />
+          <p className="text-sm text-muted-foreground">{t('workspace.subtitle')}</p>
         </div>
 
         {/* Continue where you left off — shown when user has been here before */}
@@ -282,7 +287,7 @@ export default function WorkspaceSelectorPage() {
                   <h2 className="font-bold text-lg">{personal.name}</h2>
                   <p className="text-sm text-muted-foreground">{personal.subtitle}</p>
                   <div className="flex items-center gap-2 mt-2">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
+                    <span className="text-xs px-2 py-0.5 rounded-sm border border-border/70 bg-muted/30 text-foreground font-medium">
                       {planLabel(personal.plan, t)}
                     </span>
                     <span className="text-xs text-muted-foreground">{t('workspace.personal_plan_hint')}</span>

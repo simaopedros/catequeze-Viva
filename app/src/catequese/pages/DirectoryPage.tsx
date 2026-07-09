@@ -172,7 +172,7 @@ export default function DirectoryPage() {
           <div className="text-center text-muted-foreground py-12">{t('directory.noPart')}</div>
         ) : (
           <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
-            <div className="mb-4 rounded-full bg-primary/10 p-3"><BookOpen className="h-8 w-8 text-primary" /></div>
+            <div className="mb-4 rounded-sm border border-border/70 bg-muted/30 p-3"><BookOpen className="h-8 w-8 text-foreground" /></div>
             <h3 className="text-lg font-semibold">{t('directory.emptyTitle')}</h3>
             <p className="text-sm text-muted-foreground mt-1 max-w-md">
               {t('directory.emptyDesc')}

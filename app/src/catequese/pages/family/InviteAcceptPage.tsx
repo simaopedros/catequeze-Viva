@@ -120,14 +120,14 @@ export default function InviteAcceptPage() {
     <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-primary text-sm font-medium">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             <Mail className="h-4 w-4" />
             {t('invite.badge')}
           </div>
           <h1 className="text-2xl font-bold">{t('invite.title')}</h1>
         </div>
 
-        <div className="rounded-sm border bg-card p-6 space-y-4">
+        <div className="rounded-sm border border-border/70 bg-white p-6 space-y-4">
           <div className="flex items-center gap-4">
             <div className="rounded-sm bg-primary/10 p-3">
               <Church className="h-6 w-6 text-primary" />

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router';
 import { Search, BookOpen, Loader2, ChevronDown, ChevronUp, AlertCircle } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
+import { AppPageHeader } from '../../client/components/brand/AppChrome';
 import { listCatechismByCategory, searchCatechism, getCatechismEntry } from 'wasp/client/operations';
 import { useLocale } from '../../i18n/useLocale';
 
@@ -89,25 +90,25 @@ export default function CatechismPage() {
   const displayEntries = searchResults.length > 0 ? searchResults : entries;
 
   return (
-      <div className="space-y-4">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-          <span>{t('title')}</span>
-        </div>
-
-        <h1 className="text-2xl font-bold">{t('heading')}</h1>
-
-        <div className="flex gap-3">
-          <input
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleSearch()}
-            className="flex-1 h-9 rounded-md border border-input bg-background px-3 text-sm"
-            placeholder={t('searchPlaceholder')}
-          />
-          <Button size="sm" onClick={handleSearch} disabled={loading || searchQuery.length < 2}>
-            <Search className="mr-1 h-4 w-4" />{t('searchButton')}
-          </Button>
-        </div>
+      <div className="space-y-6">
+        <AppPageHeader
+          eyebrow={t('title')}
+          title={t('heading')}
+          actions={
+            <div className="flex gap-2">
+              <input
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                className="flex h-10 w-48 rounded-sm border border-input bg-background px-3 text-sm sm:w-64"
+                placeholder={t('searchPlaceholder')}
+              />
+              <Button size="sm" className="h-10 rounded-sm" onClick={handleSearch} disabled={loading || searchQuery.length < 2}>
+                <Search className="mr-1 h-4 w-4" />{t('searchButton')}
+              </Button>
+            </div>
+          }
+        />
 
         {searchResults.length === 0 && (
           <div className="flex flex-wrap gap-2">
@@ -190,7 +191,7 @@ export default function CatechismPage() {
           <div className="text-center text-muted-foreground py-12">{t('noCategory')}</div>
         ) : (
           <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
-            <div className="mb-4 rounded-full bg-primary/10 p-3"><BookOpen className="h-8 w-8 text-primary" /></div>
+            <div className="mb-4 rounded-sm border border-border/70 bg-muted/30 p-3"><BookOpen className="h-8 w-8 text-foreground" /></div>
             <h3 className="text-lg font-semibold">{t('emptyTitle')}</h3>
             <p className="text-sm text-muted-foreground mt-1 max-w-md">
               {t('emptyDesc')}

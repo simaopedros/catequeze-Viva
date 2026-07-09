@@ -152,9 +152,10 @@ export default function ParishDetailPage() {
 
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="rounded-full bg-primary/10 p-3"><Church className="h-6 w-6 text-primary" /></div>
+            <div className="rounded-sm border border-border/70 bg-muted/30 p-3"><Church className="h-6 w-6 text-foreground" /></div>
             <div>
               <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]" style={{ fontFamily: 'var(--font-brand-display)' }}>{parish?.name}</h1>
+              <div className="mt-2 h-px w-10 bg-[#D39A2B]" aria-hidden />
               {(parish?.city || parish?.state) && (
                 <p className="text-muted-foreground text-sm flex items-center gap-1"><MapPin className="h-3 w-3" />{[parish.city, parish.state].filter(Boolean).join(', ')}</p>
               )}

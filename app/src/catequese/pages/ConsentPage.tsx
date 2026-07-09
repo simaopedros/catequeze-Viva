@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../client/components/ui/button';
+import { AppPageHeader } from '../../client/components/brand/AppChrome';
 import { Shield, CheckCircle, XCircle } from 'lucide-react';
 import { listConsents, saveConsent } from 'wasp/client/operations';
 import { toast } from '../../client/hooks/use-toast';
@@ -39,16 +40,12 @@ export default function ConsentPage() {
   };
 
   return (
-      <div className="max-w-2xl mx-auto space-y-6">
-        <div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-            <span>{t('consent_page.title')}</span>
-          </div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Shield className="h-6 w-6 text-primary" />{t('consent_page.title')}
-          </h1>
-          <p className="text-muted-foreground">{t('consent_page.subtitle')}</p>
-        </div>
+      <div className="mx-auto max-w-2xl space-y-8">
+        <AppPageHeader
+          eyebrow={t('consent_page.title')}
+          title={t('consent_page.title')}
+          subtitle={t('consent_page.subtitle')}
+        />
         <div className="space-y-3">
           {consentTypes.map(ct => (
             <div key={ct.key} className="rounded-sm border border-border/70 bg-white p-5 flex items-center justify-between">
@@ -57,10 +54,10 @@ export default function ConsentPage() {
                 <p className="text-sm text-muted-foreground">{ct.desc}</p>
               </div>
               <div className="flex gap-2">
-                <Button size="sm" variant={consents[ct.key] ? 'default' : 'outline'} onClick={() => toggle(ct.key, true)}>
+                <Button size="sm" className="rounded-sm" variant={consents[ct.key] ? 'default' : 'outline'} onClick={() => toggle(ct.key, true)}>
                   <CheckCircle className="mr-1 h-3 w-3" />{t('consent_page.authorize')}
                 </Button>
-                <Button size="sm" variant={!consents[ct.key] ? 'destructive' : 'outline'} onClick={() => toggle(ct.key, false)}>
+                <Button size="sm" className="rounded-sm" variant={!consents[ct.key] ? 'destructive' : 'outline'} onClick={() => toggle(ct.key, false)}>
                   <XCircle className="mr-1 h-3 w-3" />{t('consent_page.deny')}
                 </Button>
               </div>

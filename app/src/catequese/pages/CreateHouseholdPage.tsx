@@ -18,6 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from '../../client/components/ui/form';
+import { AppPageHeader, AppPanel } from '../../client/components/brand/AppChrome';
 
 export default function CreateHouseholdPage() {
   const { t } = useTranslation('common');
@@ -58,22 +59,27 @@ export default function CreateHouseholdPage() {
   };
 
   return (
-      <div className="max-w-lg mx-auto space-y-6">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/app/families"><ArrowLeft className="h-5 w-5" /></Link>
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">{t('families.create_title')}</h1>
-          </div>
-        </div>
+      <div className="mx-auto max-w-lg space-y-8">
+        <AppPageHeader
+          eyebrow={t('families.create_title')}
+          title={t('families.create_title')}
+          actions={
+            <Button variant="outline" size="sm" className="h-10 rounded-sm" asChild>
+              <Link to="/app/families">
+                <ArrowLeft className="mr-1 h-4 w-4" />
+                {t('back')}
+              </Link>
+            </Button>
+          }
+        />
 
         {form.formState.errors.root && (
-          <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+          <div className="rounded-sm bg-destructive/10 p-3 text-sm text-destructive">
             {form.formState.errors.root.message}
           </div>
         )}
 
+        <AppPanel>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -137,6 +143,7 @@ export default function CreateHouseholdPage() {
             </div>
           </form>
         </Form>
+        </AppPanel>
       </div>
   );
 }

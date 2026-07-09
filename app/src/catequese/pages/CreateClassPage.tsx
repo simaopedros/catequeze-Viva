@@ -18,6 +18,10 @@ import {
   FormLabel,
   FormMessage,
 } from '../../client/components/ui/form';
+import {
+  AppPageHeader,
+  AppPanel,
+} from '../../client/components/brand/AppChrome';
 
 export default function CreateClassPage() {
   const { t } = useTranslation('classes');
@@ -52,20 +56,27 @@ export default function CreateClassPage() {
   };
 
   return (
-      <div className="max-w-lg mx-auto space-y-6">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/app/classes"><ArrowLeft className="h-5 w-5" /></Link>
-          </Button>
-          <div><h1 className="text-2xl font-bold tracking-tight">{t('create')}</h1></div>
-        </div>
+      <div className="mx-auto max-w-lg space-y-8">
+        <AppPageHeader
+          eyebrow={t('create')}
+          title={t('create')}
+          actions={
+            <Button variant="outline" size="sm" className="h-10 rounded-sm" asChild>
+              <Link to="/app/classes">
+                <ArrowLeft className="mr-1 h-4 w-4" />
+                {tc('back')}
+              </Link>
+            </Button>
+          }
+        />
 
         {form.formState.errors.root && (
-          <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+          <div className="rounded-sm bg-destructive/10 p-3 text-sm text-destructive">
             {form.formState.errors.root.message}
           </div>
         )}
 
+        <AppPanel>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -163,16 +174,17 @@ export default function CreateClassPage() {
             />
 
             <div className="flex gap-3 pt-4">
-              <Button type="submit" disabled={form.formState.isSubmitting}>
+              <Button type="submit" className="h-10 rounded-sm shadow-none" disabled={form.formState.isSubmitting}>
                 <Save className="mr-2 h-4 w-4" />
                 {form.formState.isSubmitting ? tc('loading') : t('create')}
               </Button>
-              <Button type="button" variant="outline" asChild>
+              <Button type="button" variant="outline" className="h-10 rounded-sm" asChild>
                 <Link to="/app/classes">{tc('cancel')}</Link>
               </Button>
             </div>
           </form>
         </Form>
+        </AppPanel>
       </div>
   );
 }

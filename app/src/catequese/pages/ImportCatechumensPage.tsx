@@ -7,6 +7,7 @@ import { ArrowLeft, Upload, CheckCircle, AlertCircle, FileUp, Eye } from 'lucide
 import { useQuery, importCatechumensCSV, listParishes } from 'wasp/client/operations';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { useActiveParish } from '../../client/hooks/useActiveParish';
+import { AppPageHeader, AppPanel } from '../../client/components/brand/AppChrome';
 
 function parseCSVLine(line: string): string[] {
   const result: string[] = [];
@@ -142,18 +143,22 @@ export default function ImportCatechumensPage() {
   };
 
   return (
-      <div className="max-w-2xl mx-auto space-y-6">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/app/catechumens"><ArrowLeft className="h-5 w-5" /></Link>
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">{t('catechumens.import_title')}</h1>
-            <p className="text-muted-foreground text-sm">{t('catechumens.import_subtitle')}</p>
-          </div>
-        </div>
+      <div className="mx-auto max-w-2xl space-y-8">
+        <AppPageHeader
+          eyebrow={t('catechumens.import_title')}
+          title={t('catechumens.import_title')}
+          subtitle={t('catechumens.import_subtitle')}
+          actions={
+            <Button variant="outline" size="sm" className="h-10 rounded-sm" asChild>
+              <Link to="/app/catechumens">
+                <ArrowLeft className="mr-1 h-4 w-4" />
+                {t('back')}
+              </Link>
+            </Button>
+          }
+        />
 
-        <div className="rounded-sm border border-border/70 bg-white p-6 space-y-4">
+        <AppPanel className="space-y-4">
           <div>
             <h3 className="font-semibold mb-1">{t('catechumens.import_format_title')}</h3>
             <p className="text-sm text-muted-foreground">
@@ -260,11 +265,11 @@ Maria,Santos,2014-07-22,Silva Santos`}
             </div>
           )}
 
-          <Button onClick={handleImport} disabled={!csvData.trim() || importing}>
+          <Button className="h-10 rounded-sm shadow-none" onClick={handleImport} disabled={!csvData.trim() || importing}>
             <Upload className="mr-2 h-4 w-4" />
             {importing ? t('catechumens.importing') : t('import')}
           </Button>
-        </div>
+        </AppPanel>
 
         {results && (
           <div className="rounded-sm border border-border/70 bg-white p-6 space-y-3">

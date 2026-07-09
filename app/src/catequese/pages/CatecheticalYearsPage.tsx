@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { CalendarDays, Plus, Check } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
+import { AppPageHeader } from '../../client/components/brand/AppChrome';
 import { Badge } from '../../client/components/ui/badge';
 import { EmptyState } from '../../client/components/EmptyState';
 import { useQuery, listCatecheticalYears, createCatecheticalYear } from 'wasp/client/operations';
@@ -65,17 +66,18 @@ export default function CatecheticalYearsPage() {
   }
 
   return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">{t('title')}</h1>
-            <p className="text-muted-foreground text-sm">{t('subtitle')}</p>
-          </div>
-          <Button size="sm" onClick={() => setShowForm(!showForm)}>
-            <Plus className="mr-1 h-4 w-4" />
-            {t('new_year')}
-          </Button>
-        </div>
+      <div className="space-y-8">
+        <AppPageHeader
+          eyebrow={t('title')}
+          title={t('title')}
+          subtitle={t('subtitle')}
+          actions={
+            <Button size="sm" className="h-10 rounded-sm shadow-none" onClick={() => setShowForm(!showForm)}>
+              <Plus className="mr-1 h-4 w-4" />
+              {t('new_year')}
+            </Button>
+          }
+        />
 
         {error && (
           <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>

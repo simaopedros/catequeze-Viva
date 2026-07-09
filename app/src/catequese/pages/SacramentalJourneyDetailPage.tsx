@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppShell } from '../AppShell';
 import { Button } from '../../client/components/ui/button';
+import { AppPageHeader } from '../../client/components/brand/AppChrome';
 import { Badge } from '../../client/components/ui/badge';
 import { ArrowLeft, CheckCircle, Clock, AlertTriangle, XCircle, FileText, User, Calendar, BookOpen, Cross, Pencil, Save, Upload, X } from 'lucide-react';
 import { EmptyState } from '../../client/components/EmptyState';
@@ -123,26 +124,20 @@ export default function SacramentalJourneyDetailPage() {
   const targetDate = journey.targetDate ? new Date(journey.targetDate) : null;
 
   return (
-      <div className="space-y-6">
-        <div className="flex flex-wrap items-center gap-3">
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/app/sacramental-journeys"><ArrowLeft className="h-5 w-5" /></Link>
-          </Button>
-          <div className="flex-1">
-            <h1 className="text-2xl font-bold flex items-center gap-2">
-              <Cross className="h-6 w-6 text-primary" />
-              {journey.template?.sacrament?.name || journey.template?.name || t('detail.journey_default')}
-            </h1>
-            <div className="flex items-center gap-2 mt-1">
-              <Link to={`/app/catechumens/${journey.catechumenProfile?.id}`} className="flex items-center gap-1 text-sm text-primary hover:underline">
-                <User className="h-3 w-3" />
-                {journey.catechumenProfile?.firstName} {journey.catechumenProfile?.lastName}
+      <div className="space-y-8">
+        <AppPageHeader
+          eyebrow={t('detail.journey_default')}
+          title={journey.template?.sacrament?.name || journey.template?.name || t('detail.journey_default')}
+          subtitle={`${journey.catechumenProfile?.firstName || ''} ${journey.catechumenProfile?.lastName || ''}${journey.template?.name ? ` · ${journey.template.name}` : ''}`.trim()}
+          actions={
+            <Button variant="outline" size="sm" className="h-10 rounded-sm" asChild>
+              <Link to="/app/sacramental-journeys">
+                <ArrowLeft className="mr-1 h-4 w-4" />
+                {tc('back')}
               </Link>
-              <span className="text-sm text-muted-foreground">·</span>
-              <span className="text-sm text-muted-foreground">{journey.template?.name}</span>
-            </div>
-          </div>
-        </div>
+            </Button>
+          }
+        />
 
         <div className="rounded-sm border border-border/70 bg-white p-5 space-y-4">
           <div className="flex items-center gap-3">
