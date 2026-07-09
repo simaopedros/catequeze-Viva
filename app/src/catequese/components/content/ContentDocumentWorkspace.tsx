@@ -833,169 +833,136 @@ export function ContentDocumentWorkspace({
 
   return (
     <div className="mx-auto max-w-[1660px] space-y-3 px-3 pb-8 pt-2 sm:px-4">
-      <div className="sticky top-0 z-30 -mx-3 border-b border-border/60 bg-[#F7F4EE]/95 px-3 py-2 backdrop-blur-md sm:-mx-4 sm:px-4">
-        <div className="rounded-sm border border-border/70 bg-white px-3 py-2 sm:px-4">
-          {/* Row 1: navigation + actions */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Link
-              to="/app/content-library"
-              className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-sm px-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/40 hover:text-[#071A2D]"
-              title="Voltar para a biblioteca"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Biblioteca</span>
-            </Link>
-            <div className="hidden h-4 w-px shrink-0 bg-border/70 sm:block" />
-            <p
-              className="min-w-0 truncate text-sm font-semibold tracking-tight text-[#071A2D]"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
-              Editor do encontro
-            </p>
-            <Badge
-              variant="secondary"
-              className={cn(
-                "ml-auto hidden shrink-0 rounded-sm border px-2 py-0.5 text-[10px] font-medium sm:inline-flex",
-                saveBadge.className,
-              )}
-            >
-              {saveBadge.label}
-            </Badge>
+      {/* Scrolls away — meta fields are not needed during continuous writing */}
+      <div className="rounded-sm border border-border/70 bg-white px-3 py-2 sm:px-4">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Link
+            to="/app/content-library"
+            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-sm px-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/40 hover:text-[#071A2D]"
+            title="Voltar para a biblioteca"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Biblioteca</span>
+          </Link>
+          <div className="hidden h-4 w-px shrink-0 bg-border/70 sm:block" />
+          <p
+            className="min-w-0 truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
+            Editor do encontro
+          </p>
+          <Badge
+            variant="secondary"
+            className={cn(
+              "ml-auto shrink-0 rounded-sm border px-2 py-0.5 text-[10px] font-medium",
+              saveBadge.className,
+            )}
+          >
+            {saveBadge.label}
+          </Badge>
 
-            <div className="flex shrink-0 items-center gap-1.5 sm:ml-0">
-              {saveState === "error" && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 rounded-sm px-2 text-xs"
-                  onClick={() => void saveNow()}
-                >
-                  Tentar de novo
-                </Button>
-              )}
-
+          <div className="flex shrink-0 items-center gap-1.5">
+            {saveState === "error" && (
               <Button
                 variant="outline"
                 size="sm"
-                className="h-8 gap-1.5 rounded-sm border-border/60 px-2.5 text-xs"
+                className="h-8 rounded-sm px-2 text-xs"
                 onClick={() => void saveNow()}
               >
-                <Save className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Salvar</span>
+                Tentar de novo
               </Button>
+            )}
 
-              {contentId ? (
-                <Button
-                  size="sm"
-                  className="h-8 gap-1.5 rounded-sm px-2.5 text-xs shadow-none"
-                  asChild
-                >
-                  <Link to={`/app/content-library/${contentId}`}>
-                    <Eye className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">Visualizar</span>
-                  </Link>
-                </Button>
-              ) : (
-                <Button
-                  size="sm"
-                  className="h-8 gap-1.5 rounded-sm px-2.5 text-xs shadow-none"
-                  onClick={() => void saveNow()}
-                >
-                  <Save className="h-3.5 w-3.5" />
-                  <span className="hidden xs:inline sm:inline">Salvar</span>
-                </Button>
-              )}
+            {contentId ? (
+              <Button
+                size="sm"
+                className="h-8 gap-1.5 rounded-sm px-2.5 text-xs shadow-none"
+                asChild
+              >
+                <Link to={`/app/content-library/${contentId}`}>
+                  <Eye className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Visualizar</span>
+                </Link>
+              </Button>
+            ) : null}
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8 rounded-sm"
-                    aria-label="Mais ações"
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 rounded-sm"
+                  aria-label="Mais ações"
+                >
+                  <MoreHorizontal className="h-3.5 w-3.5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {aiLink && (
+                  <DropdownMenuItem asChild>
+                    <Link to={aiLink} className="flex items-center gap-2">
+                      <MessageSquareShare className="h-4 w-4" />
+                      Assistência editorial
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem onClick={useSkeletonDocument}>
+                  Usar esqueleto de encontro
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={useBlankDocument}>
+                  Documento em branco
+                </DropdownMenuItem>
+                {contentId && (
+                  <DropdownMenuItem
+                    className="text-destructive focus:text-destructive"
+                    onClick={() => setDeleteOpen(true)}
                   >
-                    <MoreHorizontal className="h-3.5 w-3.5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {aiLink && (
-                    <DropdownMenuItem asChild>
-                      <Link to={aiLink} className="flex items-center gap-2">
-                        <MessageSquareShare className="h-4 w-4" />
-                        Assistência editorial
-                      </Link>
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuItem onClick={useSkeletonDocument}>
-                    Usar esqueleto de encontro
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Excluir rascunho
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={useBlankDocument}>
-                    Documento em branco
-                  </DropdownMenuItem>
-                  {contentId && (
-                    <DropdownMenuItem
-                      className="text-destructive focus:text-destructive"
-                      onClick={() => setDeleteOpen(true)}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Excluir rascunho
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
+        </div>
 
-          {/* Row 2: compact meta fields */}
-          <div className="mt-2 grid grid-cols-2 gap-1.5 sm:grid-cols-4 sm:gap-2">
+        <div className="mt-2 grid grid-cols-2 gap-1.5 sm:grid-cols-4 sm:gap-2">
+          <Input
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            className="h-8 rounded-sm border-border/60 bg-muted/20 px-2.5 text-sm font-semibold tracking-tight text-[#071A2D] shadow-none focus-visible:ring-1"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+            placeholder="Título do encontro"
+            aria-label="Título"
+          />
+          <Input
+            value={theme}
+            onChange={(event) => setTheme(event.target.value)}
+            className="h-8 rounded-sm border-border/60 bg-muted/20 px-2.5 text-sm shadow-none focus-visible:ring-1"
+            placeholder="Tema"
+            aria-label="Tema"
+          />
+          <div className="relative">
+            <Clock3 className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
             <Input
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              className="h-8 rounded-sm border-border/60 bg-muted/20 px-2.5 text-sm font-semibold tracking-tight text-[#071A2D] shadow-none focus-visible:ring-1"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-              placeholder="Título do encontro"
-              aria-label="Título"
+              value={estimatedTime}
+              onChange={(event) =>
+                setEstimatedTime(event.target.value.replace(/[^0-9]/g, ""))
+              }
+              className="h-8 rounded-sm border-border/60 bg-muted/20 pl-7 pr-2 text-sm shadow-none focus-visible:ring-1"
+              placeholder="min"
+              aria-label="Duração em minutos"
             />
-            <Input
-              value={theme}
-              onChange={(event) => setTheme(event.target.value)}
-              className="h-8 rounded-sm border-border/60 bg-muted/20 px-2.5 text-sm shadow-none focus-visible:ring-1"
-              placeholder="Tema"
-              aria-label="Tema"
-            />
-            <div className="relative">
-              <Clock3 className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={estimatedTime}
-                onChange={(event) =>
-                  setEstimatedTime(event.target.value.replace(/[^0-9]/g, ""))
-                }
-                className="h-8 rounded-sm border-border/60 bg-muted/20 pl-7 pr-2 text-sm shadow-none focus-visible:ring-1"
-                placeholder="min"
-                aria-label="Duração em minutos"
-              />
-            </div>
-            <div className="relative">
-              <Tags className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={tags}
-                onChange={(event) => setTags(event.target.value)}
-                className="h-8 rounded-sm border-border/60 bg-muted/20 pl-7 pr-2 text-sm shadow-none focus-visible:ring-1"
-                placeholder="Tags"
-                aria-label="Tags"
-              />
-            </div>
           </div>
-          <div className="mt-1.5 sm:hidden">
-            <Badge
-              variant="secondary"
-              className={cn(
-                "rounded-sm border px-2 py-0.5 text-[10px] font-medium",
-                saveBadge.className,
-              )}
-            >
-              {saveBadge.label}
-            </Badge>
+          <div className="relative">
+            <Tags className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={tags}
+              onChange={(event) => setTags(event.target.value)}
+              className="h-8 rounded-sm border-border/60 bg-muted/20 pl-7 pr-2 text-sm shadow-none focus-visible:ring-1"
+              placeholder="Tags"
+              aria-label="Tags"
+            />
           </div>
         </div>
       </div>
@@ -1020,10 +987,19 @@ export function ContentDocumentWorkspace({
             onAddCatechismReference={attachCatechismReference}
             onAddDirectoryReference={attachDirectoryReference}
             placeholder="Escreva o roteiro do encontro nesta seção…"
+            onSave={() => void saveNow()}
+            saveLabel={
+              saveState === "saving"
+                ? "Salvando…"
+                : saveState === "error"
+                  ? "Tentar de novo"
+                  : "Salvar"
+            }
+            saveDisabled={saveState === "saving"}
           />
         </div>
 
-        <div className="xl:sticky xl:top-28">
+        <div className="xl:sticky xl:top-14">
           <ReferencesSidebar
             contentId={contentId}
             ensurePersisted={ensurePersisted}

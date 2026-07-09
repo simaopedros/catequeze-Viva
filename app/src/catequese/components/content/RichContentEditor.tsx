@@ -67,6 +67,7 @@ import {
   X,
   LayoutList,
   ChevronDown,
+  Save,
 } from "lucide-react";
 
 type ReferenceKind = "bible" | "catechism" | "directory";
@@ -561,6 +562,9 @@ export function RichContentEditor({
   onAddCatechismReference,
   onAddDirectoryReference,
   placeholder = "Escreva o encontro aqui...",
+  onSave,
+  saveLabel = "Salvar",
+  saveDisabled = false,
 }: {
   value: string;
   onChange: (next: string) => void;
@@ -581,6 +585,10 @@ export function RichContentEditor({
     content: string,
   ) => Promise<void> | void;
   placeholder?: string;
+  /** Single save action shown on the sticky format bar */
+  onSave?: () => void;
+  saveLabel?: string;
+  saveDisabled?: boolean;
 }) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const syncRef = useRef(false);
@@ -749,9 +757,10 @@ export function RichContentEditor({
   );
 
   return (
-    <div className="overflow-visible rounded-sm border border-border/70 bg-white">
-      <div className="sticky top-[4.75rem] z-20 border-b border-border/50 bg-white/95 px-2 py-1.5 backdrop-blur-md sm:top-[5.25rem] sm:px-3">
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+    <div className="rounded-sm border border-border/70 bg-white">
+      {/* Only the format bar sticks at the scroll container top */}
+      <div className="sticky top-0 z-40 flex border-b border-border/60 bg-white shadow-sm">
+        <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto px-2 py-1.5 no-scrollbar sm:px-3">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -902,6 +911,20 @@ export function RichContentEditor({
             <Redo2 className="h-3.5 w-3.5" />
           </ToolbarButton>
         </div>
+        {onSave ? (
+          <div className="flex shrink-0 items-center border-l border-border/60 bg-white px-2 py-1.5 sm:px-3">
+            <Button
+              type="button"
+              size="sm"
+              className="h-8 shrink-0 gap-1.5 rounded-sm px-2.5 text-xs shadow-none"
+              onClick={onSave}
+              disabled={saveDisabled}
+            >
+              <Save className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{saveLabel}</span>
+            </Button>
+          </div>
+        ) : null}
       </div>
 
       <input
