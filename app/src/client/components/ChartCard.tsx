@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "../utils";
 import { SkeletonChart } from "./Skeletons";
+import { AppEyebrow, AppGoldRule } from "./brand/AppChrome";
 
 interface ChartCardProps {
   title: string;
@@ -30,16 +31,15 @@ export function ChartCard({
         className,
       )}
     >
-      <div className="flex items-center justify-between mb-4">
-        <div className="min-w-0">
-          <h3 className="font-semibold text-body-sm">{title}</h3>
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div className="min-w-0 space-y-1.5">
+          <AppEyebrow>{title}</AppEyebrow>
+          <AppGoldRule className="w-8" />
           {description && (
-            <p className="text-body-xs text-text-secondary mt-0.5">
-              {description}
-            </p>
+            <p className="text-body-xs text-text-secondary">{description}</p>
           )}
         </div>
-        {action && <div className="shrink-0 ml-3">{action}</div>}
+        {action && <div className="ml-3 shrink-0">{action}</div>}
       </div>
       {children}
     </div>

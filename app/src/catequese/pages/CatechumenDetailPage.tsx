@@ -750,7 +750,10 @@ function PastoralAnalysisInline({
                 <p className="text-overline text-muted-foreground">
                   {t("reportTitle")}
                 </p>
-                <h4 className="text-lg font-semibold tracking-tight leading-tight">
+                <h4
+                  className="text-lg font-semibold leading-tight tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
                   {catechumen.name}
                 </h4>
                 <p className="text-xs text-muted-foreground">

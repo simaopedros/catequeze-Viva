@@ -51,17 +51,21 @@ function ImproveWorkspace() {
         <div className="flex items-center justify-center px-3 py-6">
           <div className="w-full max-w-2xl space-y-6">
             {contentId && (
-              <Card className="p-4 space-y-2">
+              <Card className="space-y-2 rounded-sm border-border/70 p-4">
                 <div className="flex items-start gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-foreground">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
                     <FileText className="h-4 w-4" />
                   </div>
-                  <div className="min-w-0">
-                    <h3 className="font-semibold text-sm truncate">
+                  <div className="min-w-0 space-y-1">
+                    <h3
+                      className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
                       {existingContentTitle
                         ? decodeURIComponent(existingContentTitle)
                         : t("planner.untitled")}
                     </h3>
+                    <div className="h-px w-6 bg-[#D39A2B]" aria-hidden />
                   </div>
                 </div>
               </Card>

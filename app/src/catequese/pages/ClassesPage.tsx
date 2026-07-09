@@ -410,6 +410,7 @@ export default function ClassesPage() {
                     <Link
                       to={`/app/classes/${cls.id}`}
                       className="block truncate text-lg font-semibold tracking-tight text-foreground hover:text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
                     >
                       {cls.name}
                     </Link>

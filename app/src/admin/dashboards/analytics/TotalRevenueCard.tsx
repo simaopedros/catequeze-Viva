@@ -36,19 +36,19 @@ const TotalRevenueCard = ({
   }, [weeklyStats]);
 
   return (
-    <Card>
+    <Card className="rounded-sm border-border/70">
       <CardHeader>
-        <div className="h-11.5 w-11.5 bg-muted flex items-center justify-center rounded-full">
-          <ShoppingCart className="size-6" />
+        <div className="flex h-11 w-11 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
+          <ShoppingCart className="size-5" />
         </div>
       </CardHeader>
 
       <CardContent className="flex justify-between">
         <div>
-          <h4 className="text-title-md text-foreground font-bold">
+          <h4 className="text-title-md font-semibold tracking-tight text-[#071A2D] tabular-nums">
             ${dailyStats?.totalRevenue}
           </h4>
-          <span className="text-muted-foreground text-sm font-medium">
+          <span className="text-sm font-medium text-muted-foreground">
             Total Revenue
           </span>
         </div>

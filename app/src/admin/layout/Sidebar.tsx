@@ -79,7 +79,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
           {/* VISÃO GERAL */}
           <div>
-            <h3 className="text-muted-foreground mb-4 ml-4 text-sm font-semibold">{t('sidebar.overview')}</h3>
+            <h3 className="mb-4 ml-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{t('sidebar.overview')}</h3>
             <ul className="mb-6 flex flex-col gap-1.5">
               <li>
                 <NavLink to="/admin" end className={navLinkClass}>
@@ -96,7 +96,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
           {/* GOVERNANÇA */}
           <div>
-            <h3 className="text-muted-foreground mb-4 ml-4 text-sm font-semibold">{t('sidebar.governance')}</h3>
+            <h3 className="mb-4 ml-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{t('sidebar.governance')}</h3>
             <ul className="mb-6 flex flex-col gap-1.5">
               <li>
                 <NavLink to="/admin/parishes" end className={navLinkClass}>
@@ -123,7 +123,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
           {/* OPERAÇÕES */}
           <div>
-            <h3 className="text-muted-foreground mb-4 ml-4 text-sm font-semibold">{t('sidebar.operations')}</h3>
+            <h3 className="mb-4 ml-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{t('sidebar.operations')}</h3>
             <ul className="mb-6 flex flex-col gap-1.5">
               <li>
                 <NavLink to="/admin/support" end className={navLinkClass}>
@@ -145,7 +145,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
           {/* OUTROS */}
           <div>
-            <h3 className="text-muted-foreground mb-4 ml-4 text-sm font-semibold">{t('sidebar.other')}</h3>
+            <h3 className="mb-4 ml-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{t('sidebar.other')}</h3>
             <ul className="mb-6 flex flex-col gap-1.5">
               <li>
                 <NavLink to="/app" end className={navLinkClass}>
