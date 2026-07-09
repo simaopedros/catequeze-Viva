@@ -1,7 +1,7 @@
 import { Link as WaspRouterLink, routes } from "wasp/client/router";
 import { Button } from "../../client/components/ui/button";
 import { useTranslation } from "react-i18next";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Feather } from "lucide-react";
 
 export default function Hero() {
   const { t } = useTranslation('landing');
@@ -34,7 +34,7 @@ export default function Hero() {
               </Button>
             </div>
             <p className="mt-4 text-sm text-muted-foreground">
-              <Sparkles className="inline h-3.5 w-3.5 mr-1" />
+              <Feather className="inline h-3.5 w-3.5 mr-1" />
               {t('hero.trust_signals')}
             </p>
           </div>

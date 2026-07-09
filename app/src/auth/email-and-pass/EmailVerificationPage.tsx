@@ -9,9 +9,9 @@ export function EmailVerificationPage() {
     <AuthPageLayout>
       <VerifyEmailForm />
       <br />
-      <span className="text-sm font-medium text-gray-900 dark:text-gray-300">
+      <span className="text-sm font-medium text-[#071A2D]">
         {t('email_verified')}{" "}
-        <WaspRouterLink to={routes.LoginRoute.to} className="underline">
+        <WaspRouterLink to={routes.LoginRoute.to} className="font-semibold text-[#071A2D] underline underline-offset-2">
           {t('login_link')}
         </WaspRouterLink>
         .

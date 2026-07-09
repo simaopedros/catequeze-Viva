@@ -28,7 +28,7 @@ export function FaqSection({ ns = "landing", showCta = true }: { ns?: string; sh
 
             {showCta && (
               <div className="pt-4">
-                <Button size="lg" variant="default" asChild className="rounded-md shadow-none">
+                <Button size="lg" variant="default" asChild className="rounded-sm shadow-none">
                   <Link
                     to="/signup"
                     onClick={() =>

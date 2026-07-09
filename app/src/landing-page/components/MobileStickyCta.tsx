@@ -34,7 +34,7 @@ export function MobileStickyCta({ ns = "landing" }: { ns?: string }) {
       )}
       aria-hidden={!shouldShow}
     >
-      <Button size="lg" variant="default" asChild className="h-12 w-full rounded-md shadow-none">
+      <Button size="lg" variant="default" asChild className="h-12 w-full rounded-sm shadow-none">
         <Link
           to="/signup"
           onClick={() =>

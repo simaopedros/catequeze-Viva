@@ -12,7 +12,7 @@ const SourcesTable = ({
       </h4>
 
       <div className="flex flex-col">
-        <div className="bg-gray-2 grid grid-cols-3 rounded-sm">
+        <div className="grid grid-cols-3 rounded-sm bg-muted/40">
           <div className="p-2.5 xl:p-5">
             <h5 className="xsm:text-base text-sm font-medium uppercase">
               Source

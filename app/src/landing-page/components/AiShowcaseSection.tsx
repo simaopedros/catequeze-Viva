@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { Sparkles, ChevronRight } from 'lucide-react';
+import { Feather, ChevronRight } from 'lucide-react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { cn } from '../../client/utils';
 import { trackMarketingEvent } from '../../client/analytics/marketingAnalytics';
@@ -14,7 +14,7 @@ export function AiShowcaseSection({ ns = 'landing', responsiveCtas = false }: { 
       <div className="relative mx-auto max-w-4xl space-y-6 px-4 py-20 text-center">
         <div ref={ref} className={className}>
           <div className="mb-6 inline-flex items-center gap-2 rounded-sm border border-border/70 bg-white px-4 py-1.5 text-sm font-medium text-[#071A2D]">
-            <Sparkles className="h-4 w-4 text-[#D39A2B]" />
+            <Feather className="h-4 w-4 text-[#D39A2B]" />
             {t('ai_showcase_badge')}
           </div>
           <div className="mx-auto mb-4 h-px w-10 bg-[#D39A2B]" aria-hidden />

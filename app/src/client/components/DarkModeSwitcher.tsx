@@ -54,7 +54,7 @@ function ModeIcon({ isInLightMode }: { isInLightMode: boolean }) {
       <span
         className={cn(iconStyle, !isInLightMode ? "opacity-100" : "opacity-0")}
       >
-        <Moon className="size-4 fill-slate-600 stroke-slate-600" />
+        <Moon className="size-4 fill-[#071A2D] stroke-[#071A2D]" />
       </span>
     </>
   );

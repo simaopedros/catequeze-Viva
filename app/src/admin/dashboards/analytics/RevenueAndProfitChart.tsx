@@ -215,11 +215,11 @@ const RevenueAndProfitChart = ({ weeklyStats, isLoading }: DailyStatsProps) => {
             </div>
           </div>
           <div className="min-w-47.5 flex">
-            <span className="border-secondary mr-2 mt-1 flex h-4 w-full max-w-4 items-center justify-center rounded-full border">
-              <span className="bg-secondary block h-2.5 w-full max-w-2.5 rounded-full"></span>
+            <span className="mr-2 mt-1 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-[#D39A2B]">
+              <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-[#D39A2B]"></span>
             </span>
             <div className="w-full">
-              <p className="text-secondary font-semibold">Total Revenue</p>
+              <p className="font-semibold text-[#8A6418]">Total Revenue</p>
               <p className="text-muted-foreground text-sm font-medium">
                 Last 7 Days
               </p>

@@ -13,7 +13,7 @@ export default function Features({ features }: { features: Feature[] }) {
       <SectionTitle
         title={
           <p className="text-foreground mt-2 text-4xl font-bold tracking-tight sm:text-5xl">
-            The <span className="text-secondary">Best</span> Features
+            The <span className="text-[#D39A2B]">Best</span> Features
           </p>
         }
         description="Don't work harder. Work smarter."

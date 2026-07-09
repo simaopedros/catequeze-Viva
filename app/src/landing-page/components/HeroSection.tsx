@@ -46,7 +46,7 @@ export function HeroSection({
         responsiveCtas && "w-full sm:w-auto"
       )}
     >
-      <Button size="xl" variant="default" asChild className={cn("rounded-md shadow-none", ctaClassName)}>
+      <Button size="xl" variant="default" asChild className={cn("rounded-sm shadow-none", ctaClassName)}>
         <Link
           to="/signup"
           onClick={() =>

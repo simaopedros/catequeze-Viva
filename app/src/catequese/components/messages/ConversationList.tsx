@@ -89,13 +89,13 @@ function getAvatarColor(type: string): string {
     case "DIRECT":
       return "bg-[#071A2D]";
     case "GROUP":
-      return "bg-[#0f3d2e]";
+      return "bg-[#0a2540]";
     case "CLASS_CHAT":
-      return "bg-[#5c4a1f]";
+      return "bg-[#8A6418]";
     case "ANNOUNCEMENT":
-      return "bg-[#3b2f5c]";
+      return "bg-[#D39A2B]";
     default:
-      return "bg-slate-600";
+      return "bg-muted-foreground";
   }
 }
 

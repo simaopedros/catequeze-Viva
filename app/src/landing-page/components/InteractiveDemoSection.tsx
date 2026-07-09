@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router";
-import { ArrowRight, Loader2, Sparkles, Wand2 } from "lucide-react";
+import { ArrowRight, Loader2, Feather, RefreshCw } from "lucide-react";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import { Button } from "../../client/components/ui/button";
 import { cn } from "../../client/utils";
@@ -81,7 +81,7 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
         <div ref={ref} className={cn("grid gap-10 lg:grid-cols-2 lg:items-center", className)}>
           <div className="space-y-5 text-center lg:text-left">
             <div className="inline-flex items-center gap-2 rounded-full bg-[#071A2D]/08 border border-[#071A2D]/20 px-3 py-1 text-sm font-medium text-[#071A2D]">
-              <Sparkles className="h-3.5 w-3.5" />
+              <Feather className="h-3.5 w-3.5" />
               {tr("demo.badge")}
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">{tr("demo.title")}</h2>
@@ -120,7 +120,7 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                 <span className="h-2.5 w-2.5 rounded-full bg-warning/60" />
                 <span className="h-2.5 w-2.5 rounded-full bg-success/60" />
               </div>
-              <div className="mx-auto flex-1 max-w-[220px] rounded-md bg-background/80 px-3 py-1 text-center text-xs text-muted-foreground truncate">
+              <div className="mx-auto flex-1 max-w-[220px] rounded-sm bg-background/80 px-3 py-1 text-center text-xs text-muted-foreground truncate">
                 catechis.app/demo
               </div>
             </div>
@@ -128,7 +128,7 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
             <div className="p-4 sm:p-5 space-y-4">
               <div className="flex items-center gap-2">
                 <div className="rounded-sm bg-[#071A2D]/08 p-2">
-                  <Sparkles className="h-4 w-4 text-[#071A2D]" />
+                  <Feather className="h-4 w-4 text-[#071A2D]" />
                 </div>
                 <div>
                   <p className="font-bold text-sm">{tr("demo.panel_title")}</p>
@@ -156,7 +156,7 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                     </>
                   ) : (
                     <>
-                      <Wand2 className="h-3.5 w-3.5" />
+                      <RefreshCw className="h-3.5 w-3.5" />
                       {status === "done" ? tr("demo.regenerate") : tr("demo.generate")}
                     </>
                   )}

@@ -40,7 +40,7 @@ export function StepsSection({
             variant="default"
             asChild
             className={cn(
-              "rounded-md shadow-none shrink-0",
+              "rounded-sm shadow-none shrink-0",
               responsiveCtas && "h-auto min-h-11 w-full max-w-sm lg:w-auto"
             )}
           >

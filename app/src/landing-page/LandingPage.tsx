@@ -16,7 +16,7 @@ const CtaSection = lazy(() =>
 );
 
 const SectionFallback = () => (
-  <div className="mx-4 h-20 animate-pulse rounded-md bg-muted/30" aria-hidden />
+  <div className="mx-4 h-20 animate-pulse rounded-sm bg-muted/30" aria-hidden />
 );
 
 /**

@@ -12,17 +12,17 @@ export default function Footer({
   };
 }) {
   return (
-    <div className="dark:bg-boxdark-2 mx-auto mt-6 max-w-7xl px-6 lg:px-8">
+    <div className="mx-auto mt-6 max-w-7xl px-6 lg:px-8">
       <footer
         aria-labelledby="footer-heading"
-        className="relative border-t border-gray-900/10 py-24 sm:mt-32 dark:border-gray-200/10"
+        className="relative border-t border-[#071A2D]/10 py-24 sm:mt-32"
       >
         <h2 id="footer-heading" className="sr-only">
           Footer
         </h2>
         <div className="mt-10 flex items-start justify-end gap-20">
           <div>
-            <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white">
+            <h3 className="text-sm font-semibold leading-6 text-[#071A2D]">
               App
             </h3>
             <ul role="list" className="mt-6 space-y-4">
@@ -30,7 +30,7 @@ export default function Footer({
                 <li key={item.name}>
                   <a
                     href={item.href}
-                    className="text-sm leading-6 text-gray-600 hover:text-gray-900 dark:text-white"
+                    className="text-sm leading-6 text-muted-foreground transition-colors hover:text-[#071A2D]"
                   >
                     {item.name}
                   </a>
@@ -39,7 +39,7 @@ export default function Footer({
             </ul>
           </div>
           <div>
-            <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white">
+            <h3 className="text-sm font-semibold leading-6 text-[#071A2D]">
               Company
             </h3>
             <ul role="list" className="mt-6 space-y-4">
@@ -47,7 +47,7 @@ export default function Footer({
                 <li key={item.name}>
                   <a
                     href={item.href}
-                    className="text-sm leading-6 text-gray-600 hover:text-gray-900 dark:text-white"
+                    className="text-sm leading-6 text-muted-foreground transition-colors hover:text-[#071A2D]"
                   >
                     {item.name}
                   </a>
