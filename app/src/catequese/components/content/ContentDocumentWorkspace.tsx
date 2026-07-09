@@ -629,7 +629,8 @@ export function ContentDocumentWorkspace({
             <Input
               value={title}
               onChange={(event) => setTitle(event.target.value)}
-              className="mt-2 h-11 rounded-sm border-0 bg-transparent px-0 text-base shadow-none focus-visible:ring-0"
+              className="mt-2 h-11 rounded-sm border-0 bg-transparent px-0 text-xl font-semibold tracking-tight text-[#071A2D] shadow-none focus-visible:ring-0"
+              style={{ fontFamily: "var(--font-brand-display)" }}
               placeholder="Nome do encontro"
             />
           </div>

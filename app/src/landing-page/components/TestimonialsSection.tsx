@@ -86,7 +86,12 @@ function TestimonialCard({ testimonial, delay }: { testimonial: Testimonial; del
           {initials}
         </div>
         <div className="min-w-0">
-          <p className="font-semibold text-sm truncate">{testimonial.name}</p>
+          <p
+            className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
+            {testimonial.name}
+          </p>
           <p className="text-xs text-muted-foreground truncate">{testimonial.role}</p>
           {meta && (
             <p className="text-[11px] text-muted-foreground/90 flex items-center gap-1 mt-0.5 truncate">

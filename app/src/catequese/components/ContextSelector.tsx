@@ -259,7 +259,7 @@ export function ContextSelector() {
             <span className="text-xs text-muted-foreground hidden sm:inline">
               ·
             </span>
-            <span className="hidden text-xs font-semibold text-foreground sm:inline">
+            <span className="hidden text-xs font-semibold tracking-tight text-[#071A2D] sm:inline">
               {yearLabel}
             </span>
             <ChevronDown className="h-3.5 w-3.5 opacity-60 shrink-0" />

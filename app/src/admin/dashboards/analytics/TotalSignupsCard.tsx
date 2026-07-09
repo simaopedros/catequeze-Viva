@@ -23,7 +23,8 @@ const TotalSignupsCard = ({ dailyStats, isLoading }: DailyStatsProps) => {
 
       <CardContent className="flex justify-between">
         <div>
-          <h4 className="text-title-md font-semibold tracking-tight text-[#071A2D] tabular-nums">
+          <h4 className="text-title-md font-semibold tracking-tight tabular-nums text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}>
             {dailyStats?.userCount}
           </h4>
           <span className="text-sm font-medium text-muted-foreground">

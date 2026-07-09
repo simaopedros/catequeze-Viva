@@ -24,7 +24,7 @@ export function CtaSection({ ns = "landing", responsiveCtas = false }: { ns?: st
           />
           <div className="relative max-w-xl space-y-5">
             <h2
-              className="text-3xl sm:text-4xl font-semibold tracking-tight"
+              className="text-3xl font-semibold tracking-tight text-white sm:text-4xl"
               style={{ fontFamily: "var(--font-brand-display)" }}
             >
               {tr("cta_title")}

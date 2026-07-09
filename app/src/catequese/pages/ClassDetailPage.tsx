@@ -742,7 +742,7 @@ export default function ClassDetailPage() {
                           to={`/app/catechumens/${e.catechumenProfile?.id}`}
                           className="flex min-w-0 items-center gap-3 hover:text-[#071A2D]"
                         >
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-foreground">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-[#071A2D]">
                             {e.catechumenProfile?.firstName?.[0]}
                             {e.catechumenProfile?.lastName?.[0]}
                           </div>
@@ -811,7 +811,7 @@ export default function ClassDetailPage() {
                         className="flex items-center justify-between rounded-sm border border-border/70 bg-white p-3"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-foreground">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-[#071A2D]">
                             {c.firstName?.[0]}
                             {c.lastName?.[0]}
                           </div>
@@ -998,7 +998,7 @@ export default function ClassDetailPage() {
                       className="flex items-center justify-between rounded-sm border border-border/70 bg-white p-3"
                     >
                       <div className="flex items-center gap-2 min-w-0">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-foreground flex-shrink-0">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-[#071A2D] flex-shrink-0">
                           {cc.user?.firstName?.[0]}
                           {cc.user?.lastName?.[0]}
                         </div>
