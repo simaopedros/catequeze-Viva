@@ -56,7 +56,7 @@ import {
 const RECENT_THUMBNAIL_STYLES = [
   "bg-[#071A2D]/08 text-[#071A2D]",
   "bg-[#D39A2B]/15 text-[#8A6418]",
-  "bg-muted text-foreground",
+  "bg-muted/40 text-[#071A2D]",
   "bg-muted/70 text-muted-foreground",
 ];
 
@@ -102,7 +102,7 @@ function ReferenceSection({
     <div className="rounded-sm border border-border bg-background p-4">
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="flex items-start gap-2">
-          <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-sm bg-muted text-foreground">
+          <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-sm bg-muted/40 text-[#071A2D]">
             <Icon className="h-4 w-4" />
           </div>
           <div>
@@ -598,7 +598,7 @@ function HeaderSection({ backTo }: { backTo: string }) {
         <div className="space-y-3">
           <Link
             to={backTo}
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-[#071A2D]"
           >
             Voltar
           </Link>

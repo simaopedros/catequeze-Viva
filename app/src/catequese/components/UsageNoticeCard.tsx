@@ -13,13 +13,13 @@ interface UsageNoticeCardProps {
 }
 
 const severityStyles: Record<Severity, string> = {
-  info: "bg-muted/30 border-border/50 text-foreground",
+  info: "border-border/50 bg-muted/30 text-[#071A2D]",
   warning: "bg-[#D39A2B]/10 border-[#D39A2B]/30 text-[#8A6418]",
   limit: "bg-muted/40 border-border/60 text-muted-foreground",
 };
 
 const severityIconStyles: Record<Severity, string> = {
-  info: "text-muted-foreground",
+  info: "text-[#071A2D]",
   warning: "text-[#D39A2B]",
   limit: "text-muted-foreground/60",
 };

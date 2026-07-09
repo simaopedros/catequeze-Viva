@@ -70,7 +70,7 @@ export function Breadcrumbs() {
     >
       <Link
         to="/app"
-        className="hover:text-foreground transition-colors flex-shrink-0"
+        className="hover:text-[#071A2D] transition-colors flex-shrink-0"
       >
         <Home className="h-3.5 w-3.5" />
       </Link>
@@ -80,7 +80,7 @@ export function Breadcrumbs() {
           {item.to ? (
             <Link
               to={item.to}
-              className="hover:text-foreground transition-colors truncate max-w-[160px]"
+              className="hover:text-[#071A2D] transition-colors truncate max-w-[160px]"
             >
               {item.label}
             </Link>

@@ -171,7 +171,7 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
           <button
             type="button"
             onClick={handleBackToLogin}
-            className="flex w-full items-center justify-center gap-1.5 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            className="flex w-full items-center justify-center gap-1.5 py-2 text-sm text-muted-foreground transition-colors hover:text-[#071A2D]"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             {t("two_factor_back_button")}
@@ -255,7 +255,7 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
                 </Label>
                 <a
                   href="/request-password-reset"
-                  className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+                  className="text-xs text-muted-foreground transition-colors hover:text-[#071A2D]"
                 >
                   {t("login_forgot_password")}
                 </a>
@@ -275,7 +275,7 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-[#071A2D]"
                   tabIndex={-1}
                   aria-label={showPassword ? t("aria_hide_password") : t("aria_show_password")}
                 >

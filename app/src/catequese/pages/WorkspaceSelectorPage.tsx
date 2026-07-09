@@ -231,7 +231,7 @@ export default function WorkspaceSelectorPage() {
             }}
             title={t("workspace.settings_workspace")}
             aria-label={t("workspace.settings_workspace")}
-            className="rounded-sm p-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors mt-1"
+            className="rounded-sm p-2 text-muted-foreground hover:text-[#071A2D] hover:bg-muted transition-colors mt-1"
           >
             <Settings className="h-5 w-5" />
           </button>
@@ -383,7 +383,7 @@ export default function WorkspaceSelectorPage() {
                       }}
                       title={t("workspace.settings_account")}
                       aria-label={t("workspace.settings_account")}
-                      className="mt-1 rounded-sm p-2 text-muted-foreground transition-colors hover:bg-muted/30 hover:text-foreground"
+                      className="mt-1 rounded-sm p-2 text-muted-foreground transition-colors hover:bg-muted/30 hover:text-[#071A2D]"
                     >
                       <Settings className="h-5 w-5" />
                     </button>
@@ -604,7 +604,7 @@ export default function WorkspaceSelectorPage() {
             {/* Create an independent parish (new institutional workspace) */}
             <button
               onClick={() => navigate("/app/parishes?new=true")}
-              className="w-full rounded-sm border border-dashed border-border/70 hover:border-[#071A2D]/30 hover:bg-muted/20 transition-colors p-4 text-center text-muted-foreground hover:text-foreground flex items-center justify-center gap-2"
+              className="w-full rounded-sm border border-dashed border-border/70 hover:border-[#071A2D]/30 hover:bg-muted/20 transition-colors p-4 text-center text-muted-foreground hover:text-[#071A2D] flex items-center justify-center gap-2"
             >
               <Plus className="h-4 w-4" />
               <span className="text-sm font-semibold tracking-tight text-[#071A2D]">

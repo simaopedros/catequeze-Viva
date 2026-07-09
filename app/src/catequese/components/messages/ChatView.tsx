@@ -414,7 +414,7 @@ export function ChatView({
           </div>
           <button
             onClick={() => setReplyTo(null)}
-            className="text-muted-foreground hover:text-foreground text-xs"
+            className="text-muted-foreground hover:text-[#071A2D] text-xs"
           >
             ✕
           </button>

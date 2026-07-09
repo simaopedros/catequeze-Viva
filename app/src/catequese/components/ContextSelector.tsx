@@ -48,12 +48,12 @@ export function ContextSelector() {
 
   const wsIcon = (type: string) => {
     if (type === "PERSONAL")
-      return <User className="h-4 w-4 shrink-0 text-foreground" />;
+      return <User className="h-4 w-4 shrink-0 text-[#071A2D]" />;
     if (type === "DIOCESE")
-      return <Building2 className="h-4 w-4 shrink-0 text-foreground" />;
+      return <Building2 className="h-4 w-4 shrink-0 text-[#071A2D]" />;
     if (type === "COMMUNITY")
-      return <Building2 className="h-4 w-4 shrink-0 text-foreground" />;
-    return <Church className="h-4 w-4 shrink-0 text-foreground" />;
+      return <Building2 className="h-4 w-4 shrink-0 text-[#071A2D]" />;
+    return <Church className="h-4 w-4 shrink-0 text-[#071A2D]" />;
   };
 
   const needsPaidPlanRole = (role: string) =>
@@ -103,7 +103,7 @@ export function ContextSelector() {
           <Button
             variant="ghost"
             size="sm"
-            className="flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-foreground border border-input rounded-sm px-2.5 sm:px-3 py-1.5 h-9 max-w-[160px] sm:max-w-[240px] xl:max-w-[280px]"
+            className="flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-[#071A2D] border border-input rounded-sm px-2.5 sm:px-3 py-1.5 h-9 max-w-[160px] sm:max-w-[240px] xl:max-w-[280px]"
           >
             {wsIcon(workspaceType || "PERSONAL")}
             <span
@@ -168,7 +168,7 @@ export function ContextSelector() {
               {g.items.length > MAX_PER_GROUP && (
                 <button
                   onClick={() => navigate("/app/select-workspace")}
-                  className="w-full px-2 py-1 text-left text-caption text-foreground underline-offset-2 hover:underline"
+                  className="w-full px-2 py-1 text-left text-caption font-medium text-[#071A2D] underline-offset-2 hover:underline"
                 >
                   {t("viewAll", { count: g.items.length })}
                 </button>
@@ -228,7 +228,7 @@ export function ContextSelector() {
           <div className="border-t mt-2 pt-2">
             <button
               onClick={() => navigate("/app/select-workspace")}
-              className="w-full text-xs text-muted-foreground hover:text-foreground px-2 py-1.5 rounded-sm hover:bg-accent transition-colors text-left"
+              className="w-full text-xs text-muted-foreground hover:text-[#071A2D] px-2 py-1.5 rounded-sm hover:bg-accent transition-colors text-left"
             >
               {t("viewAllWorkspaces")}
             </button>
@@ -247,9 +247,9 @@ export function ContextSelector() {
           <Button
             variant="ghost"
             size="sm"
-            className="flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-foreground border border-input rounded-sm px-2.5 sm:px-3 py-1.5 h-9 max-w-[160px] sm:max-w-[240px] xl:max-w-[280px]"
+            className="flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-[#071A2D] border border-input rounded-sm px-2.5 sm:px-3 py-1.5 h-9 max-w-[160px] sm:max-w-[240px] xl:max-w-[280px]"
           >
-            <Church className="h-4 w-4 shrink-0 text-foreground" />
+            <Church className="h-4 w-4 shrink-0 text-[#071A2D]" />
             <span
               className="min-w-0 truncate text-sm font-semibold tracking-tight text-[#071A2D]"
               style={{ fontFamily: "var(--font-brand-display)" }}

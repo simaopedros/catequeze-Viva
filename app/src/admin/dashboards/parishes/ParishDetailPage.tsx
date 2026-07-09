@@ -46,7 +46,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
       <div className="space-y-6">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <NavLink to="/admin/parishes" className="hover:text-foreground">Paróquias</NavLink>
+          <NavLink to="/admin/parishes" className="hover:text-[#071A2D]">Paróquias</NavLink>
           <span>/</span>
           <span
             className="font-semibold tracking-tight text-[#071A2D]"

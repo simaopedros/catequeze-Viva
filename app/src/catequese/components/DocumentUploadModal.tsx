@@ -76,7 +76,7 @@ export function DocumentUploadModal({
           </div>
           <button
             onClick={onClose}
-            className="p-1 text-muted-foreground hover:text-foreground"
+            className="p-1 text-muted-foreground hover:text-[#071A2D]"
           >
             <X className="h-4 w-4" />
           </button>

@@ -309,7 +309,7 @@ export function ParishStep({
             setShowCreate(true);
             setNewName(searchQuery);
           }}
-          className="w-full border border-dashed border-border/80 px-3 py-2.5 text-left text-sm text-muted-foreground transition-colors rounded-sm hover:border-[#071A2D]/40 hover:text-foreground"
+          className="w-full border border-dashed border-border/80 px-3 py-2.5 text-left text-sm text-muted-foreground transition-colors rounded-sm hover:border-[#071A2D]/40 hover:text-[#071A2D]"
         >
           {t("parish.create_link")}
         </button>

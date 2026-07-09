@@ -275,7 +275,7 @@ export default function CustomSignupForm({
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-[#071A2D]"
                   tabIndex={-1}
                   aria-label={showPassword ? t("aria_hide_password") : t("aria_show_password")}
                 >

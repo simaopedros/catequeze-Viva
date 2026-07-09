@@ -44,7 +44,7 @@ export function TheologicalDepthSlider() {
               className={`rounded-sm px-2 py-1 text-overline transition-colors ${
                 depth === i + 1
                   ? "bg-[#071A2D] font-semibold text-white"
-                  : "text-muted-foreground hover:text-foreground"
+                  : "text-muted-foreground hover:text-[#071A2D]"
               }`}
             >
               {label}

@@ -143,7 +143,7 @@ function ToolbarButton({
       className={cn(
         "h-9 rounded-sm border-border/60 px-3 shadow-none",
         !active &&
-          "bg-background/80 text-muted-foreground hover:bg-background hover:text-foreground",
+          "bg-background/80 text-muted-foreground hover:bg-background hover:text-[#071A2D]",
       )}
       onClick={onClick}
       title={title}
@@ -394,7 +394,7 @@ function SelectionActionBubble({
       "inline-flex h-8 items-center gap-1.5 rounded-sm border px-3 text-xs font-medium transition-colors",
       active
         ? "border-[#071A2D] bg-[#071A2D] text-white"
-        : "border-border/60 bg-background/90 text-muted-foreground hover:text-foreground",
+        : "border-border/60 bg-background/90 text-muted-foreground hover:text-[#071A2D]",
     );
 
   const bubbleNode = (
@@ -418,7 +418,7 @@ function SelectionActionBubble({
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-7 w-7 items-center justify-center rounded-sm border border-border/60 bg-background/90 text-muted-foreground transition-colors hover:text-foreground"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-sm border border-border/60 bg-background/90 text-muted-foreground transition-colors hover:text-[#071A2D]"
             aria-label="Fechar balão"
             title="Fechar"
           >

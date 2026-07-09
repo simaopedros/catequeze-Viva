@@ -46,7 +46,7 @@ export function RoleStep({ selected, onSelect }: RoleStepProps) {
                 : "border-border/70 hover:border-[#071A2D]/30 hover:bg-muted/20"
             }`}
           >
-            <div className="shrink-0 rounded-sm border border-border/70 bg-muted/30 p-3 text-foreground">
+            <div className="shrink-0 rounded-sm border border-border/70 bg-muted/30 p-3 text-[#071A2D]">
               <role.icon className="h-5 w-5" />
             </div>
             <div className="min-w-0 flex-1">

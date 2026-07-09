@@ -422,7 +422,7 @@ export default function SettingsPage() {
 
       {/* Privacy notice */}
       <AppPanel className="flex items-center gap-3" padded>
-        <div className="rounded-sm border border-border/70 bg-muted/30 p-2 text-foreground">
+        <div className="rounded-sm border border-border/70 bg-muted/30 p-2 text-[#071A2D]">
           <Shield className="h-5 w-5" />
         </div>
         <p className="text-xs text-muted-foreground">{t("privacy_notice")}</p>

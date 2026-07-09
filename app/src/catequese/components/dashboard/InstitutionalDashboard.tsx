@@ -492,7 +492,7 @@ export function InstitutionalDashboard() {
             title={t("domain_people")}
             icon={Users}
             kpis={overview.people}
-            colorClass="text-foreground bg-muted/30"
+            colorClass="bg-muted/30 text-[#071A2D]"
           />
           <DomainSection
             title={t("domain_classes")}

@@ -303,7 +303,7 @@ export function DioceseStep({
             setShowCreate(true);
             setNewName(searchQuery);
           }}
-          className="w-full border border-dashed border-border/80 px-3 py-2.5 text-left text-sm text-muted-foreground transition-colors rounded-sm hover:border-[#071A2D]/40 hover:text-foreground"
+          className="w-full border border-dashed border-border/80 px-3 py-2.5 text-left text-sm text-muted-foreground transition-colors rounded-sm hover:border-[#071A2D]/40 hover:text-[#071A2D]"
         >
           {t("diocese.create_link")}
         </button>
@@ -385,7 +385,7 @@ export function DioceseStep({
         <button
           type="button"
           onClick={onSkip}
-          className="py-2 text-center text-sm text-muted-foreground transition-colors hover:text-foreground"
+          className="py-2 text-center text-sm text-muted-foreground transition-colors hover:text-[#071A2D]"
         >
           {t("diocese.skip")}
         </button>

@@ -63,12 +63,12 @@ export function PageHeader({
                     {crumb.href ? (
                       <Link
                         to={crumb.href}
-                        className="hover:text-foreground transition-colors truncate max-w-[100px] sm:max-w-[160px]"
+                        className="hover:text-[#071A2D] transition-colors truncate max-w-[100px] sm:max-w-[160px]"
                       >
                         {crumb.label}
                       </Link>
                     ) : (
-                      <span className="text-foreground truncate max-w-[100px] sm:max-w-[160px]">
+                      <span className="max-w-[100px] truncate font-semibold tracking-tight text-[#071A2D] sm:max-w-[160px]">
                         {crumb.label}
                       </span>
                     )}
@@ -78,7 +78,7 @@ export function PageHeader({
             )}
             <h1
               className={cn(
-                "font-semibold tracking-tight flex items-center gap-2 text-foreground",
+                "flex items-center gap-2 font-semibold tracking-tight text-[#071A2D]",
                 compact ? "text-xl" : "text-2xl sm:text-[1.75rem]",
               )}
               style={{ fontFamily: "var(--font-brand-display)" }}

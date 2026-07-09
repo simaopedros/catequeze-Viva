@@ -53,7 +53,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     cn(
-      "group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-muted-foreground transition-colors duration-200 hover:bg-muted/50 hover:text-foreground",
+      "group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-muted-foreground transition-colors duration-200 hover:bg-muted/50 hover:text-[#071A2D]",
       { "bg-[#071A2D]/08 font-semibold text-[#071A2D]": isActive }
     );
 

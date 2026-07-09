@@ -329,7 +329,7 @@ export function NewConversationDialog({
                   setSelected(new Set());
                   setError("");
                 }}
-                className="text-xs text-muted-foreground hover:text-foreground"
+                className="text-xs text-muted-foreground hover:text-[#071A2D]"
               >
                 {t("new_dialog.back")}
               </button>

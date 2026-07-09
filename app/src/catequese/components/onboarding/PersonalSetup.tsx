@@ -54,7 +54,7 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
   return (
     <div className="animate-in fade-in duration-500 flex flex-col items-center space-y-5 py-4 text-center">
       <div className="rounded-sm border border-border/70 bg-muted/30 p-4">
-        <User className="h-10 w-10 text-foreground" />
+        <User className="h-10 w-10 text-[#071A2D]" />
       </div>
 
       <div className="max-w-md space-y-2.5">
@@ -77,7 +77,7 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
             <div className="h-1.5 w-[38%] rounded-sm bg-[#D39A2B]" />
           </div>
           <div className="flex items-start gap-2 text-sm text-muted-foreground">
-            <CheckCircle2 className="mt-0.5 h-4 w-4 text-foreground" />
+            <CheckCircle2 className="mt-0.5 h-4 w-4 text-[#071A2D]" />
             <span>{t("personal_setup.progress_copy")}</span>
           </div>
           <div className="space-y-2 rounded-sm border border-border/70 bg-muted/20 p-4">

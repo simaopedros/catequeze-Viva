@@ -138,7 +138,7 @@ export function SearchSheet({
             {query && (
               <button
                 onClick={() => onQueryChange("")}
-                className="text-muted-foreground hover:text-foreground shrink-0"
+                className="text-muted-foreground hover:text-[#071A2D] shrink-0"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -146,7 +146,7 @@ export function SearchSheet({
           </div>
           <button
             onClick={onClose}
-            className="absolute right-4 top-3.5 text-muted-foreground hover:text-foreground"
+            className="absolute right-4 top-3.5 text-muted-foreground hover:text-[#071A2D]"
           >
             <X className="h-5 w-5" />
           </button>

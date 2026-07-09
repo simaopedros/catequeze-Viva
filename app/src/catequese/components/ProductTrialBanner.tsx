@@ -73,7 +73,7 @@ export function ProductTrialBanner() {
   return (
     <div
       className={cn(
-        "flex flex-col gap-2 border-b border-border/70 bg-white px-4 py-2.5 text-foreground sm:flex-row sm:items-center sm:justify-between",
+        "flex flex-col gap-2 border-b border-border/70 bg-white px-4 py-2.5 text-[#071A2D] sm:flex-row sm:items-center sm:justify-between",
       )}
       role="status"
     >

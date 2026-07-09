@@ -90,7 +90,7 @@ export function CollaborativeChat() {
               className={`max-w-[88%] rounded-sm px-3 py-2.5 text-sm whitespace-pre-wrap ${
                 msg.role === "user"
                   ? "bg-[#071A2D] text-white"
-                  : "border border-border/70 bg-white text-foreground"
+                  : "border border-border/70 bg-white text-[#071A2D]"
               }`}
             >
               <div className="mb-1 flex items-center gap-1.5 text-overline font-semibold uppercase tracking-wide opacity-70">

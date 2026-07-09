@@ -162,7 +162,7 @@ export function GuidedTour({ onComplete }: GuidedTourProps) {
           </span>
           <button
             onClick={handleDismiss}
-            className="text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-[#071A2D]"
           >
             <X className="h-4 w-4" />
           </button>
@@ -179,7 +179,7 @@ export function GuidedTour({ onComplete }: GuidedTourProps) {
           <button
             onClick={handlePrev}
             disabled={currentStep === 0}
-            className="text-sm text-muted-foreground hover:text-foreground disabled:opacity-30 flex items-center gap-1"
+            className="text-sm text-muted-foreground hover:text-[#071A2D] disabled:opacity-30 flex items-center gap-1"
           >
             <ChevronLeft className="h-4 w-4" /> {t("previous")}
           </button>

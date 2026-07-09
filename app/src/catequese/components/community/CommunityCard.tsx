@@ -93,7 +93,7 @@ export function CommunityCard({
               e.stopPropagation();
               onEdit(c);
             }}
-            className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-[#071A2D] transition-colors"
             title={t("edit")}
           >
             <Pencil className="h-3.5 w-3.5" />

@@ -355,8 +355,8 @@ export function ReferencePicker({
           className={
             "flex flex-1 items-center justify-center gap-1.5 rounded-sm px-3 py-1.5 text-xs font-medium transition-colors " +
             (tab === "bible"
-              ? "bg-white text-foreground"
-              : "text-muted-foreground hover:text-foreground")
+              ? "bg-white font-semibold tracking-tight text-[#071A2D]"
+              : "text-muted-foreground hover:text-[#071A2D]")
           }
         >
           <BookOpen className="h-3.5 w-3.5" />
@@ -373,8 +373,8 @@ export function ReferencePicker({
           className={
             "flex flex-1 items-center justify-center gap-1.5 rounded-sm px-3 py-1.5 text-xs font-medium transition-colors " +
             (tab === "catechism"
-              ? "bg-white text-foreground"
-              : "text-muted-foreground hover:text-foreground")
+              ? "bg-white font-semibold tracking-tight text-[#071A2D]"
+              : "text-muted-foreground hover:text-[#071A2D]")
           }
         >
           <Church className="h-3.5 w-3.5" />
@@ -391,8 +391,8 @@ export function ReferencePicker({
           className={
             "flex flex-1 items-center justify-center gap-1.5 rounded-sm px-3 py-1.5 text-xs font-medium transition-colors " +
             (tab === "directory"
-              ? "bg-white text-foreground"
-              : "text-muted-foreground hover:text-foreground")
+              ? "bg-white font-semibold tracking-tight text-[#071A2D]"
+              : "text-muted-foreground hover:text-[#071A2D]")
           }
         >
           <FileText className="h-3.5 w-3.5" />
@@ -754,7 +754,7 @@ export function ReferencePicker({
                 showTooltip(e, (r.question || "") + "\n\n" + (r.answer || ""))
               }
               onMouseLeave={hideTooltip}
-              className="relative inline-flex cursor-default items-center gap-1 rounded-sm bg-muted py-1 pl-2 pr-1 text-caption text-foreground group"
+              className="group relative inline-flex cursor-default items-center gap-1 rounded-sm border border-border/70 bg-muted/30 py-1 pl-2 pr-1 text-caption font-semibold tracking-tight text-[#071A2D]"
             >
               {r.label}
               <button
@@ -770,7 +770,7 @@ export function ReferencePicker({
               key={r.id || i}
               onMouseEnter={(e) => showTooltip(e, r.content || r.label)}
               onMouseLeave={hideTooltip}
-              className="relative inline-flex cursor-default items-center gap-1 rounded-sm bg-muted py-1 pl-2 pr-1 text-caption text-foreground group"
+              className="group relative inline-flex cursor-default items-center gap-1 rounded-sm border border-border/70 bg-muted/30 py-1 pl-2 pr-1 text-caption font-semibold tracking-tight text-[#071A2D]"
             >
               {r.label}
               <button

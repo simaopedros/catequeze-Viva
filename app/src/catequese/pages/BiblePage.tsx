@@ -805,7 +805,7 @@ export default function BiblePage() {
                     setSearchQuery(s);
                     handleSearch(s);
                   }}
-                  className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-[#071A2D]/30 hover:text-foreground"
+                  className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-[#071A2D]/30 hover:text-[#071A2D]"
                 >
                   {s}
                 </button>
@@ -932,7 +932,7 @@ export default function BiblePage() {
                                 ?.id || "",
                             )
                           }
-                          className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs transition-colors hover:border-[#071A2D]/30 hover:text-foreground"
+                          className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs transition-colors hover:border-[#071A2D]/30 hover:text-[#071A2D]"
                         >
                           {suggestion}
                         </button>

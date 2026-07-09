@@ -319,7 +319,7 @@ export function CoordinatorDetails({
             <button
               type="button"
               onClick={() => setStep("class")}
-              className="py-2 text-center text-sm text-muted-foreground transition-colors hover:text-foreground"
+              className="py-2 text-center text-sm text-muted-foreground transition-colors hover:text-[#071A2D]"
             >
               {t("coordinator.back")}
             </button>

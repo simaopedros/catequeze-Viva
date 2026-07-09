@@ -435,7 +435,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
           {onTrial && (
             <Link
               to="/app/billing"
-              className="hidden sm:inline-flex items-center gap-1.5 rounded-sm border border-border/70 bg-muted/30 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-foreground transition-colors hover:bg-muted/50"
+              className="hidden items-center gap-1.5 rounded-sm border border-border/70 bg-muted/30 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#071A2D] transition-colors hover:bg-muted/50 sm:inline-flex"
               title={tBilling("trial_status_title")}
             >
               <Clock className="h-3 w-3 shrink-0" aria-hidden />

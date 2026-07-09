@@ -29,12 +29,12 @@ const TYPE_CONFIG: Record<
   DIRECTORY_REF: {
     labelKey: "context.directory",
     icon: ScrollText,
-    color: "bg-muted text-foreground",
+    color: "bg-muted/40 text-[#071A2D]",
   },
   TEXT: {
     labelKey: "context.text",
     icon: ScrollText,
-    color: "bg-muted text-foreground",
+    color: "bg-muted/40 text-[#071A2D]",
   },
 };
 

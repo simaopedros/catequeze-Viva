@@ -423,7 +423,7 @@ export default function ContentDetailPage() {
               <Button
                 variant="outline"
                 asChild
-                className="gap-2 rounded-sm border-dashed border-border/70 text-foreground hover:bg-muted/20"
+                className="gap-2 rounded-sm border-dashed border-border/70 text-[#071A2D] hover:bg-muted/20"
               >
                 <Link
                   to={`/app/ai-hub?mode=generate-activity&contentId=${id}&contentTitle=${encodeURIComponent(

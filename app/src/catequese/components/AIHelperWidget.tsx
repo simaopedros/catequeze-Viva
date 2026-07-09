@@ -251,14 +251,14 @@ export function AIHelperWidget() {
             <div className="flex items-center gap-1">
               <Link
                 to="/app/ai-hub"
-                className="rounded-sm p-1.5 text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
+                className="rounded-sm p-1.5 text-muted-foreground transition-colors hover:bg-muted/40 hover:text-[#071A2D]"
                 title={ta("widget.open_copilot")}
               >
                 <ExternalLink className="h-4 w-4" />
               </Link>
               <Link
                 to="/app/messages"
-                className="rounded-sm p-1.5 text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
+                className="rounded-sm p-1.5 text-muted-foreground transition-colors hover:bg-muted/40 hover:text-[#071A2D]"
                 title={ta("widget.view_history")}
               >
                 <MessageSquareText className="h-4 w-4" />

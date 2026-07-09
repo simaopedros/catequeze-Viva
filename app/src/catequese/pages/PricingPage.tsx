@@ -253,7 +253,7 @@ export default function PricingPage() {
               onClick={() => setBillingInterval("monthly")}
               className={`px-4 py-2 text-sm font-medium rounded-sm transition-all ${
                 billingInterval === "monthly"
-                  ? "bg-white text-foreground"
+                  ? "bg-white font-semibold tracking-tight text-[#071A2D]"
                   : "text-muted-foreground hover:text-[#071A2D]"
               }`}
             >
@@ -264,7 +264,7 @@ export default function PricingPage() {
               onClick={() => setBillingInterval("annual")}
               className={`px-4 py-2 text-sm font-medium rounded-sm transition-all flex items-center gap-1.5 ${
                 billingInterval === "annual"
-                  ? "bg-white text-foreground"
+                  ? "bg-white font-semibold tracking-tight text-[#071A2D]"
                   : "text-muted-foreground hover:text-[#071A2D]"
               }`}
             >

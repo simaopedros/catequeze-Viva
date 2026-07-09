@@ -72,7 +72,7 @@ export default function NavBar({
             <div className="flex items-center gap-6">
               <WaspRouterLink
                 to={routes.LandingPageRoute.to}
-                className="text-foreground hover:text-[#071A2D] flex items-center transition-colors duration-300 ease-in-out"
+                className="text-[#071A2D] hover:text-[#0a2540] flex items-center transition-colors duration-300 ease-in-out"
               >
                 <BrandLockup compact={isScrolled} />
               </WaspRouterLink>
@@ -113,7 +113,7 @@ function NavBarDesktopUserDropdown({ isScrolled }: { isScrolled: boolean }) {
             },
           )}
         >
-          <div className="text-foreground hover:text-[#071A2D] flex items-center transition-colors duration-300 ease-in-out">
+          <div className="text-[#071A2D] hover:text-[#0a2540] flex items-center transition-colors duration-300 ease-in-out">
             {t("login")}{" "}
             <LogIn
               size={isScrolled ? "1rem" : "1.1rem"}
@@ -187,7 +187,7 @@ function NavBarMobileMenu({
               <div className="py-6">
                 {isUserLoading ? null : !user ? (
                   <WaspRouterLink to={routes.LoginRoute.to}>
-                    <div className="text-foreground hover:text-[#071A2D] flex items-center justify-end transition-colors duration-300 ease-in-out">
+                    <div className="text-[#071A2D] hover:text-[#0a2540] flex items-center justify-end transition-colors duration-300 ease-in-out">
                       {tPublicNav("login")}{" "}
                       <LogIn size="1.1rem" className="ml-1" />
                     </div>
@@ -217,7 +217,7 @@ function renderNavigationItems(
   setMobileMenuOpen?: Dispatch<SetStateAction<boolean>>,
 ) {
   const menuStyles = cn({
-    "block rounded-sm px-3 py-2 text-sm font-medium leading-7 text-foreground hover:bg-accent hover:text-accent-foreground transition-colors":
+    "block rounded-sm px-3 py-2 text-sm font-medium leading-7 text-[#071A2D] hover:bg-accent hover:text-[#0a2540] transition-colors":
       !!setMobileMenuOpen,
     "text-sm font-normal leading-6 text-foreground duration-300 ease-in-out hover:text-[#071A2D] transition-colors":
       !setMobileMenuOpen,

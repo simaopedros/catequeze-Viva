@@ -458,7 +458,7 @@ export default function OnboardingPage() {
         <button
           type="button"
           onClick={goBack}
-          className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-[#071A2D]"
         >
           <ChevronLeft className="h-4 w-4" />
           {t("back_clean")}

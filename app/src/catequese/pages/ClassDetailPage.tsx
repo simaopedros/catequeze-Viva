@@ -1062,7 +1062,7 @@ export default function ClassDetailPage() {
             ) : monthlyPlan ? (
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="rounded-sm border border-border/70 bg-muted/30 p-2 text-foreground">
+                  <div className="rounded-sm border border-border/70 bg-muted/30 p-2 text-[#071A2D]">
                     <Calendar className="h-5 w-5" />
                   </div>
                   <div>

@@ -140,7 +140,7 @@ export function AIHubHome() {
         <div className="text-center">
           <button
             onClick={handleBack}
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-[#071A2D]"
           >
             <ArrowLeft className="h-4 w-4" />
             {t("common:back")}
@@ -230,7 +230,7 @@ export function AIHubHome() {
                 <button
                   key={flow}
                   onClick={() => setSearchParams({ mode })}
-                  className="rounded-sm border border-border/70 bg-white px-3 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted/30 hover:text-foreground"
+                  className="rounded-sm border border-border/70 bg-white px-3 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted/30 hover:text-[#071A2D]"
                 >
                   {label}
                 </button>
@@ -246,7 +246,7 @@ export function AIHubHome() {
         </p>
         <button
           onClick={handleAskAssistant}
-          className="inline-flex items-center gap-2 rounded-sm border border-dashed border-border/80 px-4 py-2.5 text-sm text-muted-foreground transition-colors hover:border-[#071A2D]/40 hover:bg-muted/20 hover:text-foreground"
+          className="inline-flex items-center gap-2 rounded-sm border border-dashed border-border/80 px-4 py-2.5 text-sm text-muted-foreground transition-colors hover:border-[#071A2D]/40 hover:bg-muted/20 hover:text-[#071A2D]"
         >
           <MessageSquareText className="h-4 w-4" />
           <span>{t("hub.ask_cta")}</span>

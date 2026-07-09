@@ -71,7 +71,7 @@ export default function SendAnnouncementButton({ classId, className }: Props) {
             setError("");
             setResult(null);
           }}
-          className="text-muted-foreground hover:text-foreground"
+          className="text-muted-foreground hover:text-[#071A2D]"
         >
           <X className="h-4 w-4" />
         </button>
