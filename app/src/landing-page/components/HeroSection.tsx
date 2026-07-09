@@ -102,7 +102,7 @@ export function HeroSection({
 
       <h1
         className={cn(
-          "font-semibold tracking-tight text-foreground text-balance",
+          "font-semibold tracking-tight text-[#071A2D] text-balance",
           isEditorial
             ? "text-[2.05rem] sm:text-[2.75rem] lg:text-[3.15rem] leading-[1.14]"
             : "text-3xl sm:text-5xl leading-[1.12]"
@@ -113,7 +113,7 @@ export function HeroSection({
         {hasLine2 ? (
           <>
             <br className="hidden sm:block" />
-            <span className="text-foreground"> {line2}</span>
+            <span className="text-[#071A2D]"> {line2}</span>
           </>
         ) : null}
       </h1>

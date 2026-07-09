@@ -739,7 +739,7 @@ function PastoralAnalysisInline({
         <div className="pastoral-print-card rounded-sm border border-border/70 bg-white p-4 ">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-base font-semibold text-foreground">
+              <div className="flex h-12 w-12 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-base font-semibold text-[#071A2D]">
                 {catechumen.name
                   .split(" ")
                   .map((part: string) => part[0])

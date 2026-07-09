@@ -1238,7 +1238,10 @@ export default function BillingPage() {
                     <span className="text-sm text-muted-foreground">
                       {t("remaining")}
                     </span>
-                    <span className="text-sm font-semibold text-foreground">
+                    <span
+                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
                       {aiCredits.creditsLeft} {creditLabel}
                     </span>
                   </div>

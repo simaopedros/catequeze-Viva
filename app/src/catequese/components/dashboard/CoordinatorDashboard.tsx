@@ -81,7 +81,10 @@ function ActionCard({
       className="group flex items-start justify-between gap-3 border-b border-border/70 py-3.5 last:border-0 transition-colors hover:bg-muted/20"
     >
       <span className="min-w-0 space-y-0.5">
-        <span className="block text-sm font-semibold text-foreground group-hover:text-[#071A2D]">
+        <span
+          className="block text-sm font-semibold tracking-tight text-[#071A2D] group-hover:text-[#0a2540]"
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
           {title}
         </span>
         <span className="block text-xs leading-relaxed text-muted-foreground">
@@ -296,7 +299,10 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                       className="group flex items-center justify-between rounded-sm border border-border/70 bg-white px-4 py-3 transition-colors hover:bg-muted/20"
                     >
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-foreground group-hover:text-[#071A2D]">
+                        <p
+                          className="text-sm font-semibold tracking-tight text-[#071A2D] group-hover:text-[#0a2540]"
+                          style={{ fontFamily: "var(--font-brand-display)" }}
+                        >
                           {m.class?.name}
                         </p>
                         <p className="mt-1 text-xs text-muted-foreground">

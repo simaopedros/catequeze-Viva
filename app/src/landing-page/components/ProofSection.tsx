@@ -55,7 +55,12 @@ export function ProofSection({ ns = "landing" }: { ns?: string }) {
                     <div className="inline-flex rounded-sm bg-muted p-2 text-[#071A2D]">
                       <Icon className="h-4 w-4" />
                     </div>
-                    <p className="text-sm font-semibold text-foreground">{stat.title}</p>
+                    <p
+                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
+                      {stat.title}
+                    </p>
                     <p className="text-xs leading-relaxed text-text-secondary">{stat.desc}</p>
                   </div>
                 );
@@ -67,7 +72,7 @@ export function ProofSection({ ns = "landing" }: { ns?: string }) {
                 {chipList.map((chip) => (
                   <span
                     key={chip}
-                    className="rounded-full bg-muted/70 px-2.5 py-1 text-[11px] font-medium text-text-secondary"
+                    className="rounded-sm bg-muted/70 px-2.5 py-1 text-[11px] font-medium text-text-secondary"
                   >
                     {chip}
                   </span>

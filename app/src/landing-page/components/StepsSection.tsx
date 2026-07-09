@@ -70,7 +70,12 @@ export function StepsSection({
               >
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <h3 className="text-base font-semibold text-foreground">{step.title}</h3>
+              <h3
+                className="text-base font-semibold tracking-tight text-[#071A2D]"
+                style={{ fontFamily: "var(--font-brand-display)" }}
+              >
+                {step.title}
+              </h3>
               <p className="text-sm text-muted-foreground leading-relaxed max-w-[15rem]">
                 {step.desc}
               </p>

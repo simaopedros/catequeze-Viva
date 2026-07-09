@@ -106,7 +106,12 @@ function ReferenceSection({
             <Icon className="h-4 w-4" />
           </div>
           <div>
-            <div className="text-sm font-semibold text-foreground">{title}</div>
+            <div
+              className="text-sm font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
+              {title}
+            </div>
             <div className="text-xs text-muted-foreground">
               {count} selecionadas
             </div>
@@ -333,7 +338,10 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
             </ReferenceSection>
 
             <div className="rounded-sm border border-border bg-muted/20 p-4">
-              <div className="mb-2 text-sm font-semibold text-foreground">
+              <div
+                className="mb-2 text-sm font-semibold tracking-tight text-[#071A2D]"
+                style={{ fontFamily: "var(--font-brand-display)" }}
+              >
                 Referências selecionadas
               </div>
               <div className="space-y-2 text-sm text-muted-foreground">

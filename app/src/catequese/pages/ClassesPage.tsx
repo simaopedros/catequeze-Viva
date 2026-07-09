@@ -259,17 +259,26 @@ export default function ClassesPage() {
 
               <div className="grid gap-3 sm:grid-cols-3">
                 <div className="rounded-sm border border-border/70 bg-white px-4 py-4">
-                  <p className="text-sm font-semibold text-foreground">
+                  <p
+                    className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
                     1. {t("empty_step1")}
                   </p>
                 </div>
                 <div className="rounded-sm border border-border/70 bg-white px-4 py-4">
-                  <p className="text-sm font-semibold text-foreground">
+                  <p
+                    className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
                     2. {t("empty_step2")}
                   </p>
                 </div>
                 <div className="rounded-sm border border-border/70 bg-white px-4 py-4">
-                  <p className="text-sm font-semibold text-foreground">
+                  <p
+                    className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
                     3. {t("empty_step3")}
                   </p>
                 </div>

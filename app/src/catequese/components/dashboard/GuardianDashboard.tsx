@@ -44,7 +44,7 @@ export function GuardianDashboard({ stats }: GuardianDashboardProps) {
               className="group rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-[#071A2D]/30"
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-sm font-semibold text-foreground">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-sm font-semibold text-[#071A2D]">
                   {d.firstName?.[0]}
                   {d.lastName?.[0]}
                 </div>

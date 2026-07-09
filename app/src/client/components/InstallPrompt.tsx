@@ -49,7 +49,12 @@ export function InstallPrompt() {
           <Download className="h-5 w-5 text-[#071A2D]" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold">{t("install_title")}</p>
+          <p
+            className="text-sm font-semibold tracking-tight text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
+            {t("install_title")}
+          </p>
           <p className="text-xs text-muted-foreground">
             {t("install_description")}
           </p>
