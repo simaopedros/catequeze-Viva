@@ -285,7 +285,7 @@ job subscriptionExpirationJob {
   schedule: {
     cron: "45 3 * * *" // daily at 03:45 (staggered 20min apart)
   },
-  entities: [User, TenantBilling]
+  entities: [User, TenantBilling, Notification, Parish]
 }
 //#endregion
 

@@ -24,7 +24,7 @@ export function CatechumensSetupStep({
   onSkip,
 }: CatechumensSetupStepProps) {
   const { t } = useTranslation("onboarding");
-  const [mode, setMode] = useState<"manual" | "bulk">("manual");
+  const [mode, setMode] = useState<"manual" | "bulk" | "file">("manual");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [bulkText, setBulkText] = useState("");
@@ -39,6 +39,73 @@ export function CatechumensSetupStep({
     });
     await enrollCatechumen({ classId, catechumenProfileId: profile.id });
     return { id: profile.id as string, firstName: fn, lastName: ln || "" };
+  };
+
+  /** Parse CSV/TSV or "name, last" lines into first/last pairs. */
+  const parseNameLines = (text: string): { fn: string; ln: string }[] => {
+    const rows: { fn: string; ln: string }[] = [];
+    for (const raw of text.split(/\r?\n/)) {
+      const line = raw.trim();
+      if (!line) continue;
+      // Skip header-ish rows
+      if (/^(nome|name|first|primeiro)/i.test(line) && /sobrenome|last|surname/i.test(line)) {
+        continue;
+      }
+      const parts = line.split(/[,;\t]/).map((p) => p.trim()).filter(Boolean);
+      if (parts.length === 0) continue;
+      if (parts.length === 1) {
+        const words = parts[0].split(/\s+/);
+        rows.push({
+          fn: words[0] || parts[0],
+          ln: words.slice(1).join(" ") || "",
+        });
+      } else {
+        rows.push({ fn: parts[0], ln: parts.slice(1).join(" ") });
+      }
+    }
+    return rows;
+  };
+
+  const enrollParsed = async (rows: { fn: string; ln: string }[], method: string) => {
+    if (rows.length === 0) {
+      setError(t("catechumens_setup.bulk_empty"));
+      return;
+    }
+    setLoading(true);
+    setError("");
+    const created: AddedPerson[] = [];
+    try {
+      for (const row of rows) {
+        const person = await addOne(row.fn, row.ln);
+        created.push(person);
+      }
+      setAdded((prev) => [...prev, ...created]);
+      trackMarketingEvent("onboarding_step_completed", {
+        step: "catechumens_bulk_added",
+        method,
+        count: created.length,
+      });
+    } catch (err: any) {
+      setError(err?.message || t("catechumens_setup.add_error"));
+      if (created.length) setAdded((prev) => [...prev, ...created]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFile = async (file: File | null) => {
+    if (!file) return;
+    const name = file.name.toLowerCase();
+    if (!name.endsWith(".csv") && !name.endsWith(".txt") && !name.endsWith(".tsv")) {
+      setError(t("catechumens_setup.file_type_error"));
+      return;
+    }
+    try {
+      const text = await file.text();
+      await enrollParsed(parseNameLines(text), "csv_file");
+    } catch {
+      setError(t("catechumens_setup.file_read_error"));
+    }
   };
 
   const handleAddManual = async (e: React.FormEvent) => {
@@ -67,37 +134,9 @@ export function CatechumensSetupStep({
   };
 
   const handleBulkAdd = async () => {
-    const lines = bulkText
-      .split("\n")
-      .map((l) => l.trim())
-      .filter(Boolean);
-    if (lines.length === 0) {
-      setError(t("catechumens_setup.bulk_empty"));
-      return;
-    }
-    setLoading(true);
-    setError("");
-    const created: AddedPerson[] = [];
-    try {
-      for (const line of lines) {
-        const parts = line.split(/[,\t]/).map((p) => p.trim()).filter(Boolean);
-        const fn = parts[0] || line;
-        const ln = parts.slice(1).join(" ") || "";
-        const person = await addOne(fn, ln);
-        created.push(person);
-      }
-      setAdded((prev) => [...prev, ...created]);
-      setBulkText("");
-      trackMarketingEvent("onboarding_step_completed", {
-        step: "catechumens_bulk_added",
-        count: created.length,
-      });
-    } catch (err: any) {
-      setError(err?.message || t("catechumens_setup.add_error"));
-      if (created.length) setAdded((prev) => [...prev, ...created]);
-    } finally {
-      setLoading(false);
-    }
+    const rows = parseNameLines(bulkText);
+    await enrollParsed(rows, "bulk_text");
+    if (rows.length) setBulkText("");
   };
 
   const handleContinue = () => {
@@ -129,29 +168,30 @@ export function CatechumensSetupStep({
       )}
 
       <div className="flex gap-1 rounded-sm border border-border/70 p-1">
-        <button
-          type="button"
-          onClick={() => setMode("manual")}
-          className={cn(
-            "flex-1 rounded-sm py-2 text-xs font-medium transition-colors",
-            mode === "manual" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-          )}
-        >
-          {t("catechumens_setup.tab_manual")}
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode("bulk")}
-          className={cn(
-            "flex-1 rounded-sm py-2 text-xs font-medium transition-colors",
-            mode === "bulk" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-          )}
-        >
-          {t("catechumens_setup.tab_bulk")}
-        </button>
+        {(
+          [
+            ["manual", "tab_manual"],
+            ["bulk", "tab_bulk"],
+            ["file", "tab_file"],
+          ] as const
+        ).map(([id, key]) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() => setMode(id)}
+            className={cn(
+              "flex-1 rounded-sm py-2 text-xs font-medium transition-colors",
+              mode === id
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {t(`catechumens_setup.${key}`)}
+          </button>
+        ))}
       </div>
 
-      {mode === "manual" ? (
+      {mode === "manual" && (
         <form onSubmit={handleAddManual} className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
@@ -185,7 +225,9 @@ export function CatechumensSetupStep({
             {t("catechumens_setup.add_one")}
           </Button>
         </form>
-      ) : (
+      )}
+
+      {mode === "bulk" && (
         <div className="space-y-3">
           <Label htmlFor="ob-bulk" className="text-xs font-medium">
             {t("catechumens_setup.bulk_label")}
@@ -213,6 +255,28 @@ export function CatechumensSetupStep({
         </div>
       )}
 
+      {mode === "file" && (
+        <div className="space-y-3">
+          <Label htmlFor="ob-csv" className="text-xs font-medium">
+            {t("catechumens_setup.file_label")}
+          </Label>
+          <input
+            id="ob-csv"
+            type="file"
+            accept=".csv,.txt,.tsv,text/csv,text/plain"
+            disabled={loading}
+            onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
+            className="block w-full text-sm text-muted-foreground file:mr-3 file:rounded-sm file:border-0 file:bg-primary file:px-3 file:py-2 file:text-xs file:font-medium file:text-primary-foreground"
+          />
+          <p className="text-xs text-muted-foreground">{t("catechumens_setup.file_hint")}</p>
+          {loading && (
+            <p className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              {t("catechumens_setup.file_importing")}
+            </p>
+          )}
+        </div>
+      )}
       {added.length > 0 && (
         <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground">
