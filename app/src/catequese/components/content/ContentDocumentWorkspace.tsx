@@ -46,7 +46,7 @@ function SelectedChip({
   onRemove: () => void;
 }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background/90 px-2.5 py-1 text-xs text-foreground">
+    <span className="inline-flex items-center gap-1 rounded-sm border border-border/70 bg-white px-2.5 py-1 text-xs text-foreground">
       {label}
       <button
         type="button"

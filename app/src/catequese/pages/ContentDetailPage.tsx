@@ -157,7 +157,7 @@ export default function ContentDetailPage() {
           <div className="rounded-sm border border-border/70 bg-white p-4 sm:p-8">
             <ContentDocumentRenderer document={document} />
           </div>
-          {item.tags && <div className="flex flex-wrap gap-1">{item.tags.split(',').map((tag: string) => <span key={tag} className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs"><Tag className="mr-1 h-3 w-3" />{tag.trim()}</span>)}</div>}
+          {item.tags && <div className="flex flex-wrap gap-1">{item.tags.split(',').map((tag: string) => <span key={tag} className="inline-flex items-center rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5 text-xs"><Tag className="mr-1 h-3 w-3" />{tag.trim()}</span>)}</div>}
           {item.meetings?.length > 0 && (
             <div className="rounded-sm border border-border/70 bg-white p-4">
               <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold"><Calendar className="h-4 w-4" />{t('used_in_meetings', { count: item.meetings.length })}</h3>

@@ -39,7 +39,7 @@ export function CommunityCard({ community, onEdit, isEditing, editForm }: Commun
         </div>
         <div className="flex items-center gap-2 ml-2">
            <button onClick={(e) => { e.stopPropagation(); onEdit(c); }} className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors" title={t('edit')}><Pencil className="h-3.5 w-3.5" /></button>
-          {c.parish && <span className="text-overline text-muted-foreground bg-muted px-2 py-0.5 rounded-full hidden sm:inline-block">{c.parish.name}</span>}
+          {c.parish && <span className="hidden rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5 text-overline text-muted-foreground sm:inline-block">{c.parish.name}</span>}
           {expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
         </div>
       </div>

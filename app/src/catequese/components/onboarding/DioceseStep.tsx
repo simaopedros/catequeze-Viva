@@ -163,7 +163,7 @@ export function DioceseStep({ selected, onSelect, onSkip, onContinue }: DioceseS
                 className={cn(
                   'mb-1 flex w-full items-center gap-2 border px-3 py-2.5 text-left text-sm transition-colors rounded-sm',
                   selected?.wikidataId === d.wikidataId
-                    ? 'border-primary/40 bg-primary/5'
+                    ? 'border-[#071A2D]/40 bg-muted/30'
                     : 'border-border/70 hover:bg-muted/30'
                 )}
               >
@@ -192,7 +192,7 @@ export function DioceseStep({ selected, onSelect, onSkip, onContinue }: DioceseS
                 className={cn(
                   'mb-1 flex w-full items-center gap-2 border px-3 py-2.5 text-left text-sm transition-colors rounded-sm',
                   selected?.id === d.id
-                    ? 'border-primary/40 bg-primary/5'
+                    ? 'border-[#071A2D]/40 bg-muted/30'
                     : 'border-border/70 hover:bg-muted/30'
                 )}
               >

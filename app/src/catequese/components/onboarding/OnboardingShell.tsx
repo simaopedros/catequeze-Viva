@@ -89,7 +89,7 @@ export function OnboardingShell({
                     <div className="flex flex-col items-center">
                       <span
                         className={cn(
-                          "flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-semibold tabular-nums",
+                          "flex h-7 w-7 items-center justify-center rounded-sm border border-border/70 text-[11px] font-semibold tabular-nums",
                           done && "bg-[#D39A2B] text-[#071A2D]",
                           current && "bg-white text-[#071A2D]",
                           !done && !current && "border border-white/25 text-white/50"
@@ -137,7 +137,7 @@ export function OnboardingShell({
 
       {saving && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#071A2D]/40 -[2px]">
-          <div className="rounded-sm border border-white/10 bg-white px-8 py-6 text-center shadow-xl">
+          <div className="rounded-sm border border-border/70 bg-white px-8 py-6 text-center">
             <p className="text-sm font-medium text-foreground">{savingLabel || "…"}</p>
           </div>
         </div>

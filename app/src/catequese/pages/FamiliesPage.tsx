@@ -144,7 +144,7 @@ export default function FamiliesPage() {
                 </div>
                 {h.catechumens?.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-1">
-                    {h.catechumens.slice(0, 3).map((c: any) => <span key={c.id} className="text-overline bg-muted px-2 py-0.5 rounded-full">{c.firstName}</span>)}
+                    {h.catechumens.slice(0, 3).map((c: any) => <span key={c.id} className="rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5 text-overline">{c.firstName}</span>)}
                     {h.catechumens.length > 3 && <span className="text-overline text-muted-foreground">+{h.catechumens.length - 3}</span>}
                   </div>
                 )}

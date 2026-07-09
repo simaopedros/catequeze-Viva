@@ -76,7 +76,7 @@ function formatTime(dateStr: string, t: (k: string) => string, locale: string): 
 function ConversationSkeleton() {
   return (
     <div className="flex items-center gap-3 px-3 py-3 animate-pulse">
-      <div className="h-10 w-10 rounded-full bg-muted" />
+      <div className="h-10 w-10 rounded-sm bg-muted" />
       <div className="flex-1 space-y-2">
         <div className="h-3.5 w-24 rounded bg-muted" />
         <div className="h-3 w-32 rounded bg-muted" />

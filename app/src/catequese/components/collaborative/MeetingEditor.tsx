@@ -144,7 +144,7 @@ function MeetingBlockComponent({
             </div>
             <div className="flex items-center gap-2">
               {isStreaming && (
-                <Badge variant="secondary" className="rounded-full px-2.5 py-0.5 text-xs">
+                <Badge variant="secondary" className="rounded-sm border border-border/70 px-2.5 py-0.5 text-xs">
                   <Loader2 className="mr-1 h-3 w-3 animate-spin" /> {t('editor.generating')}
                 </Badge>
               )}
@@ -235,7 +235,7 @@ export function MeetingEditor() {
       <div className="border-b border-border/70 px-4 py-4">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary" className="rounded-full px-2.5 py-0.5 text-xs">{tc('status_draft')}</Badge>
+            <Badge variant="secondary" className="rounded-sm border border-border/70 px-2.5 py-0.5 text-xs">{tc('status_draft')}</Badge>
             {contentItem.estimatedTime && (
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Clock className="h-3.5 w-3.5" /> {contentItem.estimatedTime}min

@@ -118,14 +118,14 @@ export function GuidedTour({ onComplete }: GuidedTourProps) {
         style={tooltipStyle}
       >
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-bold text-primary uppercase tracking-wider">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {t('stepOf', { current: currentStep + 1, total: steps.length })}
           </span>
           <button onClick={handleDismiss} className="text-muted-foreground hover:text-foreground">
             <X className="h-4 w-4" />
           </button>
         </div>
-        <h3 className="font-bold text-lg mb-1">{step.title}</h3>
+        <h3 className="mb-1 text-lg font-semibold tracking-tight text-foreground">{step.title}</h3>
         <p className="text-sm text-muted-foreground mb-4">{step.description}</p>
         <div className="flex items-center justify-between">
           <button

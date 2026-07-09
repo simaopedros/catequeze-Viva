@@ -34,7 +34,7 @@ export function CoPilotPanel() {
             </p>
           </div>
           <div className="flex items-center gap-1">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-background px-2 py-1 text-overline font-medium text-muted-foreground">
+            <span className="inline-flex items-center gap-1.5 rounded-sm border border-border/70 bg-white px-2 py-1 text-overline font-medium text-muted-foreground">
               <Circle className="h-2 w-2 fill-success text-success" />
               {t('workspace.ai_ready')}
             </span>

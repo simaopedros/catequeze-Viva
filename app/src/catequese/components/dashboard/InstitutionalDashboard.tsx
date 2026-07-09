@@ -392,7 +392,7 @@ export function InstitutionalDashboard() {
             title={t('domain_people')}
             icon={Users}
             kpis={overview.people}
-            colorClass="text-primary bg-primary/10"
+            colorClass="text-foreground bg-muted/30"
           />
           <DomainSection
             title={t('domain_classes')}
@@ -531,7 +531,7 @@ export function InstitutionalDashboard() {
                     <td className="py-2.5 px-4 text-center">{c.enrolled}</td>
                     <td className="py-2.5 px-4 text-center">{c.totalMeetings}</td>
                     <td className="py-2.5 px-4 text-center">
-                      <span className={`font-bold text-sm ${c.attendanceRate >= 75 ? 'text-success' : c.attendanceRate >= 50 ? 'text-warning' : 'text-destructive'}`}>
+                      <span className={`text-sm font-semibold tabular-nums ${c.attendanceRate >= 75 ? 'text-success' : c.attendanceRate >= 50 ? 'text-warning' : 'text-destructive'}`}>
                         {c.attendanceRate}%
                       </span>
                     </td>

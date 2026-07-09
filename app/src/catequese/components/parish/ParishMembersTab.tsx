@@ -145,7 +145,7 @@ export function ParishMembersTab({ members, communities, households, onInvite, o
                     <td className="px-4 py-3 text-muted-foreground">{m.user?.email || '\u2014'}</td>
                     <td className="px-4 py-3 text-muted-foreground">{m.community?.name || '\u2014'}</td>
                     <td className="px-4 py-3"><Badge variant="outline" className="text-xs">{roleLabels[m.role as keyof typeof roleLabels] || m.role}</Badge></td>
-                    <td className="px-4 py-3"><span className={'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ' + status.color}>{status.label}</span></td>
+                    <td className="px-4 py-3"><span className={'inline-flex items-center rounded-sm border border-border/70 px-2 py-0.5 text-xs font-medium ' + status.color}>{status.label}</span></td>
                     <td className="px-4 py-3 text-right">
                       <button onClick={() => setRemoveTarget(m.id)} className="text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="h-4 w-4" /></button>
                     </td>

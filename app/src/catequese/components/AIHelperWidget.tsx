@@ -207,7 +207,7 @@ export function AIHelperWidget() {
       {open && (
         <div className="fixed inset-0 z-modal lg:inset-auto lg:bottom-6 lg:right-6 lg:w-96 lg:h-[500px] bg-card border lg:rounded-sm shadow-2xl flex flex-col overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b bg-primary/5" style={{ paddingTop: 'calc(1rem + env(safe-area-inset-top, 0px))' }}>
+          <div className="flex items-center justify-between border-b border-border/70 bg-white p-4" style={{ paddingTop: 'calc(1rem + env(safe-area-inset-top, 0px))' }}>
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-sm border border-border/70 bg-muted/30 flex items-center justify-center">
                 <Bot className="h-4 w-4 text-primary" />
@@ -287,7 +287,7 @@ export function AIHelperWidget() {
                   )}
                 </div>
                 {m.role === 'user' && (
-                  <div className="w-6 h-6 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center flex-shrink-0 mt-1">
+                  <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-foreground">
                     <User className="h-3 w-3" />
                   </div>
                 )}

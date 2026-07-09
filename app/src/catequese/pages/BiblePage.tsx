@@ -598,7 +598,7 @@ export default function BiblePage() {
               <button
                 key={ch.id}
                 onClick={() => loadChapter(selectedBook.id, ch.number)}
-                className="px-2 py-2 text-sm rounded-md border hover:bg-primary/10 hover:border-primary/30 transition-colors text-center"
+                className="rounded-sm border border-border/70 px-2 py-2 text-center text-sm transition-colors hover:border-primary/30 hover:bg-muted/20"
               >
                 {ch.number}
               </button>
@@ -622,8 +622,8 @@ export default function BiblePage() {
                 onClick={() => loadChapter(selectedBook.id, ch.number)}
                 className={`px-2 py-2 text-sm rounded-md border transition-colors text-center ${
                   ch.number === selectedChapter
-                    ? 'bg-primary/15 border-primary font-medium'
-                    : 'hover:bg-primary/10 hover:border-primary/30'
+                    ? 'border-[#071A2D] bg-muted/30 font-medium'
+                    : 'hover:border-primary/30 hover:bg-muted/20'
                 }`}
               >
                 {ch.number}
@@ -718,7 +718,7 @@ export default function BiblePage() {
                       setSearchQuery(s);
                       handleSearch(s);
                     }}
-                    className="rounded-full px-3 py-1 text-xs border border-border bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                    className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground"
                   >
                     {s}
                   </button>
@@ -746,7 +746,7 @@ export default function BiblePage() {
                     key={v.id}
                     type="button"
                     onClick={() => openSearchResult(v)}
-                    className="w-full text-left rounded-lg border p-3 text-sm hover:border-primary/50 hover:bg-muted/30 transition-colors group"
+                    className="group w-full rounded-sm border border-border/70 p-3 text-left text-sm transition-colors hover:border-primary/30 hover:bg-muted/20"
                   >
                     <p className="font-medium text-xs text-primary mb-1 group-hover:underline">
                       {v.chapter?.book?.name} {v.chapter?.number}:{v.number}
@@ -821,7 +821,7 @@ export default function BiblePage() {
                           onClick={() => loadBook(
                             books.find((b: any) => b.name === suggestion)?.id || ''
                           )}
-                          className="rounded-full bg-muted px-3 py-1 text-xs hover:bg-muted/80 hover:text-foreground transition-colors"
+                          className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs transition-colors hover:border-primary/30 hover:text-foreground"
                         >
                           {suggestion}
                         </button>

@@ -45,7 +45,7 @@ export function BottomSheetNav({ open, onClose }: BottomSheetNavProps) {
 
             return (
               <div key={section.section}>
-                <p className="text-overline font-bold text-muted-foreground/60 uppercase tracking-wider mb-2 px-1">
+                <p className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/60">
                   {t(`${section.section}Section`)}
                 </p>
                 <div className="space-y-1">

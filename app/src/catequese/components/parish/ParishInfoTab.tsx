@@ -79,7 +79,7 @@ export function ParishInfoTab({
         <div><span className="text-muted-foreground">{tp('name')}:</span> {parish?.name}</div>
         <div><span className="text-muted-foreground">{tp('city')}:</span> {parish?.city || '\u2014'}</div>
         <div><span className="text-muted-foreground">{tp('state')}:</span> {parish?.state || '\u2014'}</div>
-        <div><span className="text-muted-foreground">{tp('status')}:</span>{' '}<span className={'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ' + (parish?.active !== false ? 'bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-zinc-400')}>{parish?.active !== false ? tp('active') : tp('inactive')}</span></div>
+        <div><span className="text-muted-foreground">{tp('status')}:</span>{' '}<span className={'inline-flex items-center rounded-sm border border-border/70 px-2 py-0.5 text-xs font-medium ' + (parish?.active !== false ? 'bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-zinc-400')}>{parish?.active !== false ? tp('active') : tp('inactive')}</span></div>
         {parish?.diocese && <div><span className="text-muted-foreground">{tp('diocese')}:</span> {parish.diocese.name}</div>}
         <div className="flex items-center gap-1"><span className="text-muted-foreground">{tp('locale_label')}:</span> {parish?.locale || 'pt-BR'}</div>
         <div className="flex items-center gap-1"><span className="text-muted-foreground">{tp('timezone_label')}:</span> {parish?.timezone || 'America/Sao_Paulo'}</div>
@@ -93,7 +93,7 @@ export function ParishInfoTab({
         <div className="flex items-center gap-2 pt-2 text-sm text-muted-foreground border-t">
           {tp('plan_label')}: <strong>{planLabel(billing.plan)}</strong>
           {statusInfo && (
-            <span className={'inline-flex items-center rounded-full px-2 py-0.5 text-overline font-medium ' + statusInfo.color}>{STATUS_KEYS[billing.status] ? tp(statusInfo.key) : billing.status}</span>
+            <span className={'inline-flex items-center rounded-sm border border-border/70 px-2 py-0.5 text-overline font-medium ' + statusInfo.color}>{STATUS_KEYS[billing.status] ? tp(statusInfo.key) : billing.status}</span>
           )}
         </div>
       )}

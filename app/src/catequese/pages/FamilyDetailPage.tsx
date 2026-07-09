@@ -488,7 +488,7 @@ export default function FamilyDetailPage() {
                 return (
                   <div key={g.id} className="flex items-center gap-3 group">
                     <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${
+                      className={`flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 text-xs font-semibold ${
       getAvatarColorClass(avatarLetter)
       }`}
                     >

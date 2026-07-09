@@ -373,12 +373,12 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                       onClick={() => handleNotifClick(n)}
                       className={cn(
                         'w-full flex items-start gap-2.5 px-3 py-2.5 text-left transition-colors hover:bg-muted/50',
-                        !n.readAt && 'bg-primary/5'
+                        !n.readAt && 'bg-muted/30'
                       )}
                     >
                       <div className={cn(
                         'h-7 w-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5',
-                        !n.readAt ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
+                        !n.readAt ? 'bg-[#071A2D] text-white' : 'bg-muted text-muted-foreground'
                       )}>
                         <NIcon className="h-3.5 w-3.5" />
                       </div>
@@ -388,7 +388,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                         <p className="text-overline text-text-tertiary mt-0.5">{formatRelativeTime(n.createdAt, currentLocale)}</p>
                       </div>
                       {!n.readAt && (
-                        <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0 mt-1.5" />
+                        <div className="mt-1.5 h-2 w-2 shrink-0 rounded-sm bg-[#D39A2B]" />
                       )}
                     </button>
                   );

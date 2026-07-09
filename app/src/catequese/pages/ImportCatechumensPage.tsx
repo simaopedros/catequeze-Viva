@@ -195,7 +195,7 @@ Maria,Santos,2014-07-22,Silva Santos`}
               onClick={() => fileInputRef.current?.click()}
               className={`mt-1 flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors cursor-pointer ${
     dragOver
-     ? 'border-primary bg-primary/5'
+     ? 'border-[#071A2D] bg-muted/30'
      : 'border-muted-foreground/25 hover:border-muted-foreground/50 bg-muted/20'
     }`}
             >

@@ -444,7 +444,7 @@ export function ActivityForm({
 
   // ── Main render ─────────────────────────────────────────────────────────
   return (
-    <div className="rounded-sm border-2 border-dashed border-primary/30 bg-primary/5 p-5 space-y-4">
+    <div className="space-y-4 rounded-sm border border-dashed border-border/70 bg-muted/20 p-5">
       <h3 className="font-semibold text-sm flex items-center gap-2">
         {initialTitle ? t('form.edit_title') : t('form.new_title')}
       </h3>

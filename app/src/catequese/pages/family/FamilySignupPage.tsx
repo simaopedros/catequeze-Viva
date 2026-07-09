@@ -59,7 +59,7 @@ export default function FamilySignupPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F7F4EE] p-4">
         <div className="w-full max-w-md text-center space-y-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-destructive/10">
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-sm border border-destructive/20 bg-destructive/10">
             {isExpired ? <Clock className="h-8 w-8 text-destructive" /> : <AlertTriangle className="h-8 w-8 text-destructive" />}
           </div>
           <h1 className="text-2xl font-semibold tracking-tight text-[#071A2D]">{isExpired ? t('signup.expired_title') : t('signup.invalid_title')}</h1>

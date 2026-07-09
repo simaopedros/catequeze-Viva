@@ -248,7 +248,7 @@ export default function MessagesPage() {
               <div className="flex items-center gap-3 border-b border-border/70 bg-white px-4 py-3">
                 <button
                   onClick={handleBackToList}
-                  className="md:hidden h-8 w-8 flex items-center justify-center rounded-lg hover:bg-muted"
+                  className="md:hidden flex h-8 w-8 items-center justify-center rounded-sm hover:bg-muted"
                 >
                   <ArrowLeft className="h-4 w-4" />
                 </button>
@@ -266,7 +266,7 @@ export default function MessagesPage() {
                 <div className="flex items-center gap-1">
                   <button
                     onClick={handleMute}
-                    className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
+                    className="flex h-8 w-8 items-center justify-center rounded-sm transition-colors hover:bg-muted"
                     title={myParticipant?.mutedAt ? t('unmute') : t('mute')}
                   >
                     <BellOff className={cn('h-4 w-4', myParticipant?.mutedAt && 'text-primary')} />
@@ -275,7 +275,7 @@ export default function MessagesPage() {
                     <button
                       onClick={() => setShowDetails(!showDetails)}
                       className={cn(
-                        'h-8 w-8 flex items-center justify-center rounded-lg hover:bg-muted transition-colors',
+                        'flex h-8 w-8 items-center justify-center rounded-sm transition-colors hover:bg-muted',
                         showDetails && 'bg-muted'
                       )}
                       title={t('details')}
@@ -327,7 +327,7 @@ export default function MessagesPage() {
                     <div className="space-y-2">
                       {activeConv.participants.map((p: any) => (
                         <div key={p.id} className="flex items-center gap-2.5">
-                          <div className="h-7 w-7 rounded-full bg-[#071A2D] flex items-center justify-center text-white text-overline font-semibold flex-shrink-0">
+                          <div className="h-7 w-7 rounded-sm bg-[#071A2D] flex items-center justify-center text-white text-overline font-semibold flex-shrink-0">
                             {[p.user.firstName?.[0], p.user.lastName?.[0]].filter(Boolean).join('').toUpperCase() || '?'}
                           </div>
                           <div className="flex-1 min-w-0">

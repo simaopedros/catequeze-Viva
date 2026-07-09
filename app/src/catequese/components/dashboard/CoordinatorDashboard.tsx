@@ -175,7 +175,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                   icon={BookOpen}
                   title={t('create_class')}
                   description="Crie sua primeira turma para organizar encontros, presença e acompanhamento."
-                  accent="bg-primary/10 text-primary"
+                  accent="border border-border/70 bg-muted/30 text-foreground"
                   featured
                 />
                 <ActionCard
@@ -227,7 +227,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                     <Link
                       key={m.id}
                       to={`/app/classes/${m.class?.id}/attendance`}
-                      className="group flex items-center justify-between rounded-sm border border-primary/10 bg-white/80 px-4 py-3 transition-colors hover:bg-primary/5"
+                      className="group flex items-center justify-between rounded-sm border border-border/70 bg-white px-4 py-3 transition-colors hover:bg-muted/20"
                     >
                       <div className="min-w-0">
                         <p className="text-sm font-semibold text-foreground group-hover:text-primary">{m.class?.name}</p>
@@ -346,8 +346,8 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
               <SectionCard title={tc('birthdays_month')} icon={Gift}>
                 <div className="flex flex-wrap gap-2">
                   {stats.aniversariantes.map((c: any) => (
-                    <div key={c.id} className="flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1.5 text-xs text-orange-900">
-                      <span className="font-bold">{formatDateOnly(c.birthDate, currentLocale, { day: '2-digit', month: '2-digit' })}</span>
+                    <div key={c.id} className="flex items-center gap-2 rounded-sm border border-border/70 bg-muted/30 px-3 py-1.5 text-xs text-foreground">
+                      <span className="font-semibold tabular-nums">{formatDateOnly(c.birthDate, currentLocale, { day: '2-digit', month: '2-digit' })}</span>
                       <span>{c.firstName}</span>
                     </div>
                   ))}

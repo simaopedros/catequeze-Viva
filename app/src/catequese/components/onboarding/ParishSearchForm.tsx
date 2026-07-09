@@ -60,7 +60,7 @@ export function ParishSearchForm({
               key={p.id}
               onClick={() => setSelectedId(p.id)}
               className={`w-full text-left rounded-lg border px-4 py-3 text-sm transition-colors flex items-center gap-2 ${
-    selectedId === p.id ? 'border-primary bg-primary/5' : 'hover:bg-muted/30'
+    selectedId === p.id ? 'border-[#071A2D] bg-muted/30' : 'hover:bg-muted/30'
     }`}
             >
               <span className="flex-1">{p.name}</span>

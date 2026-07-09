@@ -719,7 +719,7 @@ export default function BillingPage() {
                       {heroTitle}
                     </h1>
                     {!isConversionMode && (
-                      <span className="rounded-full bg-white/80 px-3 py-1 text-sm font-medium text-muted-foreground ring-1 ring-border/70">
+                      <span className="rounded-sm border border-border/70 bg-white px-3 py-1 text-sm font-medium text-muted-foreground">
                         {effectivePlan.name}
                       </span>
                     )}
