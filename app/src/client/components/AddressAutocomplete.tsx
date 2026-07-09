@@ -1,8 +1,8 @@
-import { useState, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useViaCep } from '../hooks/useViaCep';
-import CityStateSelect from './CityStateSelect';
-import { Loader2 } from 'lucide-react';
+import { useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { useViaCep } from "../hooks/useViaCep";
+import CityStateSelect from "./CityStateSelect";
+import { Loader2 } from "lucide-react";
 
 export interface AddressData {
   zipCode: string;
@@ -21,7 +21,7 @@ interface AddressAutocompleteProps {
 }
 
 const formatCep = (raw: string): string => {
-  const digits = raw.replace(/\D/g, '').slice(0, 8);
+  const digits = raw.replace(/\D/g, "").slice(0, 8);
   if (digits.length <= 5) return digits;
   return `${digits.slice(0, 5)}-${digits.slice(5)}`;
 };
@@ -35,12 +35,13 @@ export default function AddressAutocomplete({
   onChange,
   disabled = false,
 }: AddressAutocompleteProps) {
-  const { t } = useTranslation('components');
+  const { t } = useTranslation("components");
   const [autoFilledFromCep, setAutoFilledFromCep] = useState(false);
   const { data: cepData, loading: cepLoading } = useViaCep(value.zipCode);
 
-  const cepDigits = value.zipCode.replace(/\D/g, '');
-  const showFillButton = cepData && cepDigits.length === 8 && !autoFilledFromCep;
+  const cepDigits = value.zipCode.replace(/\D/g, "");
+  const showFillButton =
+    cepData && cepDigits.length === 8 && !autoFilledFromCep;
 
   const fillFromCep = useCallback(() => {
     if (!cepData) return;
@@ -56,7 +57,7 @@ export default function AddressAutocomplete({
   }, [cepData, value, onChange]);
 
   const update = (field: keyof AddressData, val: string) => {
-    if (field === 'zipCode') {
+    if (field === "zipCode") {
       setAutoFilledFromCep(false);
       onChange({ ...value, zipCode: val });
     } else {
@@ -71,30 +72,34 @@ export default function AddressAutocomplete({
   };
 
   const inputClass =
-    'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm';
+    "flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm";
 
   return (
     <div className="space-y-3">
       {/* CEP */}
       <div>
-        <label className="text-xs font-medium text-muted-foreground">{t('cep_label')}</label>
+        <label className="text-xs font-medium text-muted-foreground">
+          {t("cep_label")}
+        </label>
         <div className="flex items-center gap-2 mt-1">
           <input
             value={value.zipCode}
             onChange={handleCepChange}
             disabled={disabled}
-            placeholder={t('cep_placeholder')}
-            className={inputClass + ' w-40'}
+            placeholder={t("cep_placeholder")}
+            className={inputClass + " w-40"}
             maxLength={9}
           />
-          {cepLoading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+          {cepLoading && (
+            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+          )}
           {showFillButton && (
             <button
               type="button"
               onClick={fillFromCep}
               className="text-xs text-[#071A2D] hover:underline whitespace-nowrap"
             >
-              {t('address_fill')}
+              {t("address_fill")}
             </button>
           )}
         </div>
@@ -103,22 +108,26 @@ export default function AddressAutocomplete({
       {/* Street + Number */}
       <div className="grid grid-cols-[1fr_100px] gap-3">
         <div>
-          <label className="text-xs font-medium text-muted-foreground">{t('street_label')}</label>
+          <label className="text-xs font-medium text-muted-foreground">
+            {t("street_label")}
+          </label>
           <input
             value={value.street}
-            onChange={(e) => update('street', e.target.value)}
-            className={inputClass + ' mt-1'}
-            placeholder={t('street_placeholder')}
+            onChange={(e) => update("street", e.target.value)}
+            className={inputClass + " mt-1"}
+            placeholder={t("street_placeholder")}
             disabled={disabled}
           />
         </div>
         <div>
-          <label className="text-xs font-medium text-muted-foreground">{t('number_label')}</label>
+          <label className="text-xs font-medium text-muted-foreground">
+            {t("number_label")}
+          </label>
           <input
             value={value.number}
-            onChange={(e) => update('number', e.target.value)}
-            className={inputClass + ' mt-1'}
-            placeholder={t('number_placeholder')}
+            onChange={(e) => update("number", e.target.value)}
+            className={inputClass + " mt-1"}
+            placeholder={t("number_placeholder")}
             disabled={disabled}
           />
         </div>
@@ -127,22 +136,26 @@ export default function AddressAutocomplete({
       {/* Neighborhood + Complement */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="text-xs font-medium text-muted-foreground">{t('neighborhood_label')}</label>
+          <label className="text-xs font-medium text-muted-foreground">
+            {t("neighborhood_label")}
+          </label>
           <input
             value={value.neighborhood}
-            onChange={(e) => update('neighborhood', e.target.value)}
-            className={inputClass + ' mt-1'}
-            placeholder={t('neighborhood_placeholder')}
+            onChange={(e) => update("neighborhood", e.target.value)}
+            className={inputClass + " mt-1"}
+            placeholder={t("neighborhood_placeholder")}
             disabled={disabled}
           />
         </div>
         <div>
-          <label className="text-xs font-medium text-muted-foreground">{t('complement_label')}</label>
+          <label className="text-xs font-medium text-muted-foreground">
+            {t("complement_label")}
+          </label>
           <input
             value={value.complement}
-            onChange={(e) => update('complement', e.target.value)}
-            className={inputClass + ' mt-1'}
-            placeholder={t('complement_placeholder')}
+            onChange={(e) => update("complement", e.target.value)}
+            className={inputClass + " mt-1"}
+            placeholder={t("complement_placeholder")}
             disabled={disabled}
           />
         </div>
@@ -150,13 +163,15 @@ export default function AddressAutocomplete({
 
       {/* City + State (IBGE) */}
       <div>
-        <label className="text-xs font-medium text-muted-foreground">{t('city_state_label')}</label>
+        <label className="text-xs font-medium text-muted-foreground">
+          {t("city_state_label")}
+        </label>
         <div className="mt-1">
           <CityStateSelect
             city={value.city}
             state={value.state}
-            onCityChange={(city) => update('city', city)}
-            onStateChange={(state) => update('state', state)}
+            onCityChange={(city) => update("city", city)}
+            onStateChange={(state) => update("state", state)}
             disabled={disabled}
           />
         </div>

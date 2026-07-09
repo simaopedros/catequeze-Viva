@@ -1,4 +1,4 @@
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { useAuth } from "wasp/client/auth";
 import { Link as WaspRouterLink, routes } from "wasp/client/router";
 import { PublicNavbar } from "../../catequese/PublicNavbar";
@@ -8,7 +8,7 @@ import { Button } from "./ui/button";
 
 export function NotFoundPage() {
   const { data: user } = useAuth();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -21,17 +21,23 @@ export function NotFoundPage() {
           <div className="space-y-2">
             <h1 className="text-6xl font-bold tracking-tight">404</h1>
             <p className="text-lg text-muted-foreground">
-              {t('not_found_desc')}
+              {t("not_found_desc")}
             </p>
           </div>
           <div className="flex gap-3 justify-center">
             <Button variant="outline" onClick={() => window.history.back()}>
               <ArrowLeft className="mr-2 h-4 w-4" />
-              {t('back')}
+              {t("back")}
             </Button>
             <Button asChild>
-              <WaspRouterLink to={user ? routes.AppDashboardRoute.to : routes.LandingPageRoute.to}>
-                {t('go_home')}
+              <WaspRouterLink
+                to={
+                  user
+                    ? routes.AppDashboardRoute.to
+                    : routes.LandingPageRoute.to
+                }
+              >
+                {t("go_home")}
               </WaspRouterLink>
             </Button>
           </div>

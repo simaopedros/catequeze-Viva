@@ -1,16 +1,28 @@
-import { useState, useRef, useEffect, Fragment } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Send, Reply, CornerDownRight, ChevronDown } from 'lucide-react';
-import { cn } from '../../../client/utils';
+import { useState, useRef, useEffect, Fragment } from "react";
+import { useTranslation } from "react-i18next";
+import { Send, Reply, CornerDownRight, ChevronDown } from "lucide-react";
+import { cn } from "../../../client/utils";
 
 interface MessageItem {
   id: string;
   content: string;
   contentType: string;
   createdAt: string;
-  sender: { id: string; firstName: string | null; lastName: string | null; avatarUrl: string | null };
-  parent?: { id: string; content: string; sender: { firstName: string | null; lastName: string | null } } | null;
-  reactions?: { emoji: string; user: { id: string; firstName: string | null } }[];
+  sender: {
+    id: string;
+    firstName: string | null;
+    lastName: string | null;
+    avatarUrl: string | null;
+  };
+  parent?: {
+    id: string;
+    content: string;
+    sender: { firstName: string | null; lastName: string | null };
+  } | null;
+  reactions?: {
+    emoji: string;
+    user: { id: string; firstName: string | null };
+  }[];
 }
 
 interface ChatViewProps {
@@ -26,26 +38,49 @@ interface ChatViewProps {
 }
 
 function formatMessageTime(dateStr: string, locale: string): string {
-  return new Date(dateStr).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+  return new Date(dateStr).toLocaleTimeString(locale, {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
-function formatDateHeader(dateStr: string, t: (k: string) => string, locale: string): string {
+function formatDateHeader(
+  dateStr: string,
+  t: (k: string) => string,
+  locale: string,
+): string {
   const date = new Date(dateStr);
   const now = new Date();
-  const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+  const diffDays = Math.floor(
+    (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
+  );
 
-  if (diffDays === 0) return t('today');
-  if (diffDays === 1) return t('yesterday');
-  return date.toLocaleDateString(locale, { day: '2-digit', month: 'long', year: 'numeric' });
+  if (diffDays === 0) return t("today");
+  if (diffDays === 1) return t("yesterday");
+  return date.toLocaleDateString(locale, {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
 }
 
-function getSenderInitials(sender: { firstName: string | null; lastName: string | null }): string {
-  return [sender.firstName?.[0], sender.lastName?.[0]].filter(Boolean).join('').toUpperCase() || '?';
+function getSenderInitials(sender: {
+  firstName: string | null;
+  lastName: string | null;
+}): string {
+  return (
+    [sender.firstName?.[0], sender.lastName?.[0]]
+      .filter(Boolean)
+      .join("")
+      .toUpperCase() || "?"
+  );
 }
 
-function groupMessagesByDate(messages: MessageItem[]): { date: string; messages: MessageItem[] }[] {
+function groupMessagesByDate(
+  messages: MessageItem[],
+): { date: string; messages: MessageItem[] }[] {
   const groups: { date: string; messages: MessageItem[] }[] = [];
-  let currentDate = '';
+  let currentDate = "";
 
   for (const msg of messages) {
     const d = new Date(msg.createdAt).toDateString();
@@ -70,8 +105,8 @@ export function ChatView({
   onSendMessage,
   isSending,
 }: ChatViewProps) {
-  const { t, i18n } = useTranslation('messages');
-  const [input, setInput] = useState('');
+  const { t, i18n } = useTranslation("messages");
+  const [input, setInput] = useState("");
   const [replyTo, setReplyTo] = useState<MessageItem | null>(null);
   const [showScrollDown, setShowScrollDown] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -81,7 +116,7 @@ export function ChatView({
   // Auto-scroll to bottom on new messages
   useEffect(() => {
     if (!showScrollDown) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages.length]);
 
@@ -94,20 +129,20 @@ export function ChatView({
   };
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleSend = () => {
     const text = input.trim();
     if (!text) return;
     onSendMessage(text, replyTo?.id);
-    setInput('');
+    setInput("");
     setReplyTo(null);
     inputRef.current?.focus();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
@@ -117,8 +152,8 @@ export function ChatView({
   useEffect(() => {
     const el = inputRef.current;
     if (el) {
-      el.style.height = 'auto';
-      el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+      el.style.height = "auto";
+      el.style.height = Math.min(el.scrollHeight, 120) + "px";
     }
   }, [input]);
 
@@ -140,7 +175,7 @@ export function ChatView({
               disabled={isLoading}
               className="text-xs text-[#071A2D] hover:underline disabled:opacity-50"
             >
-              {isLoading ? t('new_dialog.loading_contacts') : t('load_older')}
+              {isLoading ? t("new_dialog.loading_contacts") : t("load_older")}
             </button>
           </div>
         )}
@@ -151,9 +186,11 @@ export function ChatView({
             <div className="h-16 w-16 rounded-sm bg-muted/40 flex items-center justify-center mb-4">
               <Send className="h-7 w-7 text-muted-foreground" />
             </div>
-            <h3 className="font-semibold text-sm mb-1">{t('chat_start_title')}</h3>
+            <h3 className="font-semibold text-sm mb-1">
+              {t("chat_start_title")}
+            </h3>
             <p className="text-xs text-muted-foreground max-w-[240px]">
-              {t('chat_start_desc')}
+              {t("chat_start_desc")}
             </p>
           </div>
         )}
@@ -164,7 +201,9 @@ export function ChatView({
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={`skel-${i}`}
-                className={`flex gap-2 ${i % 2 === 0 ? 'flex-row-reverse' : 'flex-row'}`}
+                className={`flex gap-2 ${
+                  i % 2 === 0 ? "flex-row-reverse" : "flex-row"
+                }`}
               >
                 {i % 2 !== 0 ? (
                   <div className="mt-0.5 h-8 w-8 shrink-0 animate-pulse rounded-sm bg-muted" />
@@ -172,11 +211,13 @@ export function ChatView({
                   <div className="w-8 flex-shrink-0" />
                 )}
                 <div
-                  className={`rounded-sm px-3.5 py-2 animate-pulse ${i % 2 === 0 ? 'bg-muted' : 'bg-muted/60'}`}
+                  className={`rounded-sm px-3.5 py-2 animate-pulse ${
+                    i % 2 === 0 ? "bg-muted" : "bg-muted/60"
+                  }`}
                   style={{
                     width: `${30 + Math.random() * 35}%`,
-                    minWidth: '80px',
-                    height: `${40 + (i * 8)}px`,
+                    minWidth: "80px",
+                    height: `${40 + i * 8}px`,
                   }}
                 />
               </div>
@@ -199,10 +240,13 @@ export function ChatView({
             {/* Messages */}
             {group.messages.map((msg, mi) => {
               const isMe = msg.sender.id === currentUserId;
-              const isSystem = msg.contentType === 'SYSTEM';
+              const isSystem = msg.contentType === "SYSTEM";
               const prevMsg = mi > 0 ? group.messages[mi - 1] : null;
-              const isConsecutive = prevMsg?.sender.id === msg.sender.id &&
-                new Date(msg.createdAt).getTime() - new Date(prevMsg.createdAt).getTime() < 120000;
+              const isConsecutive =
+                prevMsg?.sender.id === msg.sender.id &&
+                new Date(msg.createdAt).getTime() -
+                  new Date(prevMsg.createdAt).getTime() <
+                  120000;
 
               if (isSystem) {
                 return (
@@ -218,9 +262,9 @@ export function ChatView({
                 <div
                   key={msg.id}
                   className={cn(
-                    'flex gap-2 group',
-                    isMe ? 'flex-row-reverse' : 'flex-row',
-                    isConsecutive ? 'mt-0.5' : 'mt-3'
+                    "flex gap-2 group",
+                    isMe ? "flex-row-reverse" : "flex-row",
+                    isConsecutive ? "mt-0.5" : "mt-3",
                   )}
                 >
                   {/* Avatar */}
@@ -233,24 +277,37 @@ export function ChatView({
                   ) : null}
 
                   {/* Bubble */}
-                  <div className={cn('max-w-[70%] min-w-[60px]', isMe && 'items-end')}>
-                    {/* Sender name */}
-                    {!isMe && !isConsecutive && conversationType !== 'DIRECT' && (
-                      <p className="text-overline font-semibold text-muted-foreground mb-0.5 ml-1">
-                        {[msg.sender.firstName, msg.sender.lastName].filter(Boolean).join(' ')}
-                      </p>
+                  <div
+                    className={cn(
+                      "max-w-[70%] min-w-[60px]",
+                      isMe && "items-end",
                     )}
+                  >
+                    {/* Sender name */}
+                    {!isMe &&
+                      !isConsecutive &&
+                      conversationType !== "DIRECT" && (
+                        <p className="text-overline font-semibold text-muted-foreground mb-0.5 ml-1">
+                          {[msg.sender.firstName, msg.sender.lastName]
+                            .filter(Boolean)
+                            .join(" ")}
+                        </p>
+                      )}
 
                     {/* Reply context */}
                     {msg.parent && (
-                      <div className={cn(
-                        'mb-1 ml-1 flex items-center gap-1.5 rounded-sm border-l-2 px-2 py-1 text-overline',
-                        isMe
-                          ? 'border-l-[#071A2D]/40 bg-muted/30 text-muted-foreground'
-                          : 'bg-muted/40 border-l-muted-foreground/30 text-muted-foreground'
-                      )}>
+                      <div
+                        className={cn(
+                          "mb-1 ml-1 flex items-center gap-1.5 rounded-sm border-l-2 px-2 py-1 text-overline",
+                          isMe
+                            ? "border-l-[#071A2D]/40 bg-muted/30 text-muted-foreground"
+                            : "bg-muted/40 border-l-muted-foreground/30 text-muted-foreground",
+                        )}
+                      >
                         <CornerDownRight className="h-2.5 w-2.5 flex-shrink-0" />
-                        <span className="font-medium">{msg.parent.sender.firstName}</span>
+                        <span className="font-medium">
+                          {msg.parent.sender.firstName}
+                        </span>
                         <span className="truncate">{msg.parent.content}</span>
                       </div>
                     )}
@@ -258,32 +315,38 @@ export function ChatView({
                     {/* Message body */}
                     <div
                       className={cn(
-                        'relative rounded-sm px-3.5 py-2 text-sm',
+                        "relative rounded-sm px-3.5 py-2 text-sm",
                         isMe
-                          ? 'rounded-br-sm bg-[#071A2D] text-white'
-                          : 'rounded-bl-sm border border-border/70 bg-white',
+                          ? "rounded-br-sm bg-[#071A2D] text-white"
+                          : "rounded-bl-sm border border-border/70 bg-white",
                       )}
                     >
-                      <p className="whitespace-pre-wrap break-words leading-relaxed">{msg.content}</p>
-                      <span className={cn(
-                        'text-overline float-right mt-1 ml-2 flex items-center gap-0.5',
-                        isMe ? 'text-white/60' : 'text-muted-foreground/60'
-                      )}>
+                      <p className="whitespace-pre-wrap break-words leading-relaxed">
+                        {msg.content}
+                      </p>
+                      <span
+                        className={cn(
+                          "text-overline float-right mt-1 ml-2 flex items-center gap-0.5",
+                          isMe ? "text-white/60" : "text-muted-foreground/60",
+                        )}
+                      >
                         {formatMessageTime(msg.createdAt, i18n.language)}
                       </span>
                     </div>
 
                     {/* Reply button */}
-                    <div className={cn(
-                      'opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 mt-0.5',
-                      isMe ? 'justify-end mr-1' : 'ml-1'
-                    )}>
+                    <div
+                      className={cn(
+                        "opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 mt-0.5",
+                        isMe ? "justify-end mr-1" : "ml-1",
+                      )}
+                    >
                       <button
                         onClick={() => setReplyTo(msg)}
                         className="text-overline text-muted-foreground hover:text-[#071A2D] flex items-center gap-0.5"
                       >
                         <Reply className="h-3 w-3" />
-                        {t('reply')}
+                        {t("reply")}
                       </button>
                     </div>
 
@@ -291,12 +354,18 @@ export function ChatView({
                     {msg.reactions && msg.reactions.length > 0 && (
                       <div className="flex gap-0.5 mt-0.5 ml-1 flex-wrap">
                         {Object.entries(
-                          msg.reactions.reduce((acc: Record<string, number>, r) => {
-                            acc[r.emoji] = (acc[r.emoji] || 0) + 1;
-                            return acc;
-                          }, {})
+                          msg.reactions.reduce(
+                            (acc: Record<string, number>, r) => {
+                              acc[r.emoji] = (acc[r.emoji] || 0) + 1;
+                              return acc;
+                            },
+                            {},
+                          ),
                         ).map(([emoji, count]) => (
-                          <span key={emoji} className="rounded-sm border border-border/70 bg-muted/50 px-1.5 py-0.5 text-overline">
+                          <span
+                            key={emoji}
+                            className="rounded-sm border border-border/70 bg-muted/50 px-1.5 py-0.5 text-overline"
+                          >
                             {emoji} {count > 1 && count}
                           </span>
                         ))}
@@ -331,24 +400,33 @@ export function ChatView({
           <Reply className="h-3.5 w-3.5 text-[#071A2D] flex-shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-overline font-semibold text-[#071A2D]">
-              {[replyTo.sender.firstName, replyTo.sender.lastName].filter(Boolean).join(' ')}
+              {[replyTo.sender.firstName, replyTo.sender.lastName]
+                .filter(Boolean)
+                .join(" ")}
             </p>
-            <p className="text-xs text-muted-foreground truncate">{replyTo.content}</p>
+            <p className="text-xs text-muted-foreground truncate">
+              {replyTo.content}
+            </p>
           </div>
-          <button onClick={() => setReplyTo(null)} className="text-muted-foreground hover:text-foreground text-xs">✕</button>
+          <button
+            onClick={() => setReplyTo(null)}
+            className="text-muted-foreground hover:text-foreground text-xs"
+          >
+            ✕
+          </button>
         </div>
       )}
 
       {/* Input area */}
-      <div className={cn('p-3 border-t bg-white -sm', replyTo && 'pt-0')}>
+      <div className={cn("p-3 border-t bg-white -sm", replyTo && "pt-0")}>
         <div className="flex items-end gap-2">
           <div className="flex-1 relative">
             <textarea
               ref={inputRef}
               value={input}
-              onChange={e => setInput(e.target.value)}
+              onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={t('message_placeholder')}
+              placeholder={t("message_placeholder")}
               rows={1}
               className="w-full resize-none rounded-sm border border-input bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring min-h-[40px] max-h-[120px]"
             />
@@ -357,13 +435,13 @@ export function ChatView({
             onClick={handleSend}
             disabled={!input.trim() || isSending}
             className={cn(
-              'h-10 w-10 rounded-sm flex items-center justify-center transition-all flex-shrink-0',
+              "h-10 w-10 rounded-sm flex items-center justify-center transition-all flex-shrink-0",
               input.trim()
-                ? 'bg-[#071A2D] text-white hover:bg-[#0a2540]'
-                : 'bg-muted text-muted-foreground'
+                ? "bg-[#071A2D] text-white hover:bg-[#0a2540]"
+                : "bg-muted text-muted-foreground",
             )}
           >
-            <Send className={cn('h-4.5 w-4.5', isSending && 'animate-pulse')} />
+            <Send className={cn("h-4.5 w-4.5", isSending && "animate-pulse")} />
           </button>
         </div>
       </div>

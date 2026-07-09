@@ -1,9 +1,23 @@
-import { useEffect, useRef, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Search, X, Loader2, Users, GraduationCap, ScrollText, BookMarked, FileText, Library, FolderOpen } from 'lucide-react';
-import { cn } from '../../client/utils';
+import { useEffect, useRef, useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  Search,
+  X,
+  Loader2,
+  Users,
+  GraduationCap,
+  ScrollText,
+  BookMarked,
+  FileText,
+  Library,
+  FolderOpen,
+} from "lucide-react";
+import { cn } from "../../client/utils";
 
-const MODULE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+const MODULE_ICONS: Record<
+  string,
+  React.ComponentType<{ className?: string }>
+> = {
   catechumen: Users,
   class: GraduationCap,
   content: Library,
@@ -29,10 +43,17 @@ interface SearchSheetProps {
 }
 
 export function SearchSheet({
-  open, onClose, query, onQueryChange, results, isLoading, onSelect, currentLocale,
+  open,
+  onClose,
+  query,
+  onQueryChange,
+  results,
+  isLoading,
+  onSelect,
+  currentLocale,
 }: SearchSheetProps) {
-  const { t } = useTranslation('topbar');
-  const { t: tNav } = useTranslation('navigation');
+  const { t } = useTranslation("topbar");
+  const { t: tNav } = useTranslation("navigation");
   const inputRef = useRef<HTMLInputElement>(null);
   const selectedIndex = useRef(0);
 
@@ -56,19 +77,25 @@ export function SearchSheet({
   const moduleNames = Object.keys(grouped);
   const flatResults = moduleNames.flatMap((m) => grouped[m]);
 
-  const handleSelect = useCallback((route: string) => {
-    onSelect(route);
-  }, [onSelect]);
+  const handleSelect = useCallback(
+    (route: string) => {
+      onSelect(route);
+    },
+    [onSelect],
+  );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (flatResults.length === 0) return;
-    if (e.key === 'ArrowDown') {
+    if (e.key === "ArrowDown") {
       e.preventDefault();
-      selectedIndex.current = Math.min(selectedIndex.current + 1, flatResults.length - 1);
-    } else if (e.key === 'ArrowUp') {
+      selectedIndex.current = Math.min(
+        selectedIndex.current + 1,
+        flatResults.length - 1,
+      );
+    } else if (e.key === "ArrowUp") {
       e.preventDefault();
       selectedIndex.current = Math.max(selectedIndex.current - 1, 0);
-    } else if (e.key === 'Enter' && flatResults[selectedIndex.current]) {
+    } else if (e.key === "Enter" && flatResults[selectedIndex.current]) {
       e.preventDefault();
       handleSelect(flatResults[selectedIndex.current].route);
     }
@@ -79,7 +106,10 @@ export function SearchSheet({
   return (
     <>
       {/* Backdrop */}
-      <div className="fixed inset-0 z-50 bg-black/40 lg:hidden" onClick={onClose} />
+      <div
+        className="fixed inset-0 z-50 bg-black/40 lg:hidden"
+        onClick={onClose}
+      />
 
       {/* Sheet from top (search is a header-level action) */}
       <div className="fixed inset-x-0 top-0 z-50 max-h-[85vh] overflow-y-auto rounded-b-sm border-b border-border/70 bg-white transition-transform duration-300 lg:hidden">
@@ -91,14 +121,25 @@ export function SearchSheet({
               ref={inputRef}
               type="text"
               value={query}
-              onChange={(e) => { onQueryChange(e.target.value); selectedIndex.current = 0; }}
-              onKeyDown={(e) => { if (e.key === 'Escape') onClose(); handleKeyDown(e); }}
-              placeholder={t('searchPlaceholder')}
+              onChange={(e) => {
+                onQueryChange(e.target.value);
+                selectedIndex.current = 0;
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") onClose();
+                handleKeyDown(e);
+              }}
+              placeholder={t("searchPlaceholder")}
               className="flex-1 bg-transparent border-none outline-none text-sm placeholder:text-text-tertiary"
             />
-            {isLoading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground shrink-0" />}
+            {isLoading && (
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground shrink-0" />
+            )}
             {query && (
-              <button onClick={() => onQueryChange('')} className="text-muted-foreground hover:text-foreground shrink-0">
+              <button
+                onClick={() => onQueryChange("")}
+                className="text-muted-foreground hover:text-foreground shrink-0"
+              >
                 <X className="h-4 w-4" />
               </button>
             )}
@@ -116,12 +157,14 @@ export function SearchSheet({
           {query.length < 2 ? (
             <div className="py-12 text-center">
               <Search className="mx-auto h-8 w-8 text-text-tertiary mb-2 opacity-50" />
-              <p className="text-sm text-muted-foreground">{t('searchFocusHint')}</p>
+              <p className="text-sm text-muted-foreground">
+                {t("searchFocusHint")}
+              </p>
             </div>
           ) : flatResults.length === 0 ? (
             <div className="py-12 text-center">
               <Search className="mx-auto h-8 w-8 text-text-tertiary mb-2 opacity-50" />
-              <p className="text-sm text-muted-foreground">{t('noResults')}</p>
+              <p className="text-sm text-muted-foreground">{t("noResults")}</p>
             </div>
           ) : (
             <div className="space-y-3 py-2">
@@ -141,15 +184,19 @@ export function SearchSheet({
                           key={`${item.type}-${item.id}`}
                           onClick={() => handleSelect(item.route)}
                           className={cn(
-                            'w-full text-left px-3 py-2.5 flex items-start gap-3 rounded-sm transition-colors',
-                            isSelected ? 'bg-accent' : 'hover:bg-muted/50'
+                            "w-full text-left px-3 py-2.5 flex items-start gap-3 rounded-sm transition-colors",
+                            isSelected ? "bg-accent" : "hover:bg-muted/50",
                           )}
                         >
                           <Icon className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
                           <div className="min-w-0 flex-1">
-                            <p className="text-sm font-medium truncate">{item.label}</p>
+                            <p className="text-sm font-medium truncate">
+                              {item.label}
+                            </p>
                             {item.description && (
-                              <p className="text-xs text-muted-foreground truncate">{item.description}</p>
+                              <p className="text-xs text-muted-foreground truncate">
+                                {item.description}
+                              </p>
                             )}
                           </div>
                         </button>

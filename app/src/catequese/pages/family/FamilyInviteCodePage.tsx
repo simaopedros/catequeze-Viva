@@ -1,15 +1,15 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
-import { Button } from '../../../client/components/ui/button';
-import { Input } from '../../../client/components/ui/input';
-import { Label } from '../../../client/components/ui/label';
-import { Mail } from 'lucide-react';
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
+import { Button } from "../../../client/components/ui/button";
+import { Input } from "../../../client/components/ui/input";
+import { Label } from "../../../client/components/ui/label";
+import { Mail } from "lucide-react";
 
 export default function FamilyInviteCodePage() {
-  const { t } = useTranslation('family');
+  const { t } = useTranslation("family");
   const navigate = useNavigate();
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,13 +25,20 @@ export default function FamilyInviteCodePage() {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-sm border border-border/70 bg-muted/30">
             <Mail className="h-6 w-6 text-[#071A2D]" />
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight text-[#071A2D]">{t('landing.insert_code')}</h1>
-          <p className="text-sm text-muted-foreground">{t('signup.requires_invite')}</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-[#071A2D]">
+            {t("landing.insert_code")}
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            {t("signup.requires_invite")}
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="rounded-sm border border-border/70 bg-white p-6 space-y-4">
+        <form
+          onSubmit={handleSubmit}
+          className="rounded-sm border border-border/70 bg-white p-6 space-y-4"
+        >
           <div className="space-y-2">
-            <Label htmlFor="invite-code">{t('landing.insert_code')}</Label>
+            <Label htmlFor="invite-code">{t("landing.insert_code")}</Label>
             <Input
               id="invite-code"
               value={code}
@@ -42,7 +49,7 @@ export default function FamilyInviteCodePage() {
             />
           </div>
           <Button type="submit" className="w-full" disabled={!code.trim()}>
-            {t('invite.accept')}
+            {t("invite.accept")}
           </Button>
         </form>
       </div>

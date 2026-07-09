@@ -1,6 +1,6 @@
-import type { LucideIcon } from 'lucide-react';
-import type { ReactNode } from 'react';
-import { cn } from '../utils';
+import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
+import { cn } from "../utils";
 
 interface SectionCardProps {
   title: string;
@@ -11,9 +11,18 @@ interface SectionCardProps {
   className?: string;
 }
 
-export function SectionCard({ title, description, icon: Icon, action, children, className }: SectionCardProps) {
+export function SectionCard({
+  title,
+  description,
+  icon: Icon,
+  action,
+  children,
+  className,
+}: SectionCardProps) {
   return (
-    <section className={cn('rounded-sm border border-border/70 bg-white', className)}>
+    <section
+      className={cn("rounded-sm border border-border/70 bg-white", className)}
+    >
       <div className="flex items-center justify-between p-5 pb-0">
         <div className="flex items-center gap-3 min-w-0">
           {Icon && (
@@ -24,7 +33,9 @@ export function SectionCard({ title, description, icon: Icon, action, children, 
           <div className="min-w-0">
             <h3 className="text-body font-semibold">{title}</h3>
             {description && (
-              <p className="text-body-xs text-text-secondary mt-0.5">{description}</p>
+              <p className="text-body-xs text-text-secondary mt-0.5">
+                {description}
+              </p>
             )}
           </div>
         </div>

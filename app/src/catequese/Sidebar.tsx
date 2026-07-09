@@ -1,21 +1,51 @@
-import { NavLink } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
-import { cn } from '../client/utils';
+import { NavLink } from "react-router";
+import { useTranslation } from "react-i18next";
+import { useState } from "react";
+import { cn } from "../client/utils";
 import {
-  LayoutDashboard, Users, GraduationCap, Heart, Library, Puzzle,
-  Calendar, Cross, MessageSquareText, BarChart3, Settings, CreditCard,
-  ChevronLeft, ChevronRight, ChevronDown, Church, Building2, FileText,
-  BookMarked, ScrollText, FolderOpen, FileCheck, CalendarRange, Shield,
-  Sparkles, ClipboardList,
-} from 'lucide-react';
-import { useUserContext } from '../client/hooks/useUserContext';
-import { NAV_SECTIONS, filterByRole, type NavItemConfig } from '../shared/navigation';
-import { useQuery, getUnreadMessagesCount } from 'wasp/client/operations';
-import { useActiveWorkspace } from '../client/hooks/useActiveWorkspace';
-import { usePageVisibility } from '../client/hooks/usePageVisibility';
-import { BrandLockup, BrandMark } from '../client/components/brand/Brand';
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '../client/components/ui/tooltip';
+  LayoutDashboard,
+  Users,
+  GraduationCap,
+  Heart,
+  Library,
+  Puzzle,
+  Calendar,
+  Cross,
+  MessageSquareText,
+  BarChart3,
+  Settings,
+  CreditCard,
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  Church,
+  Building2,
+  FileText,
+  BookMarked,
+  ScrollText,
+  FolderOpen,
+  FileCheck,
+  CalendarRange,
+  Shield,
+  Sparkles,
+  ClipboardList,
+} from "lucide-react";
+import { useUserContext } from "../client/hooks/useUserContext";
+import {
+  NAV_SECTIONS,
+  filterByRole,
+  type NavItemConfig,
+} from "../shared/navigation";
+import { useQuery, getUnreadMessagesCount } from "wasp/client/operations";
+import { useActiveWorkspace } from "../client/hooks/useActiveWorkspace";
+import { usePageVisibility } from "../client/hooks/usePageVisibility";
+import { BrandLockup, BrandMark } from "../client/components/brand/Brand";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider,
+} from "../client/components/ui/tooltip";
 
 // ---- Icon Map (iconKey → Lucide component) ----
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -45,39 +75,45 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 // ---- Section label keys for collapse state initialization ----
-const ALL_SECTIONS = ['more'];
+const ALL_SECTIONS = ["more"];
 
 interface NavItemProps {
   item: NavItemConfig;
   collapsed: boolean;
 }
 
-function NavItemLink({ item, collapsed, badge }: NavItemProps & { badge?: number }) {
-  const { t } = useTranslation('navigation');
+function NavItemLink({
+  item,
+  collapsed,
+  badge,
+}: NavItemProps & { badge?: number }) {
+  const { t } = useTranslation("navigation");
   const Icon = ICON_MAP[item.iconKey];
 
   // Map iconKey to data-tour attributes for the guided tour
   const tourMap: Record<string, string> = {
-    classes: 'sidebar-classes',
-    ai_hub: 'sidebar-ai',
-    messages: 'sidebar-messages',
+    classes: "sidebar-classes",
+    ai_hub: "sidebar-ai",
+    messages: "sidebar-messages",
   };
 
   const link = (
     <NavLink
       key={item.to}
       to={item.to}
-      end={item.to === '/app'}
+      end={item.to === "/app"}
       prefetch="intent"
       data-tour={tourMap[item.iconKey] || undefined}
-      className={({ isActive }) => cn(
-        'relative flex w-full items-center justify-between rounded-sm px-2.5 py-2 text-sm font-medium transition-colors duration-150',
-        isActive
-          ? 'bg-[#071A2D]/[0.06] text-[#071A2D] border-l-2 border-[#D39A2B]'
-          : 'border-l-2 border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground',
-        collapsed && 'justify-center px-2',
-        'motion-reduce:transition-none'
-      )}
+      className={({ isActive }) =>
+        cn(
+          "relative flex w-full items-center justify-between rounded-sm px-2.5 py-2 text-sm font-medium transition-colors duration-150",
+          isActive
+            ? "bg-[#071A2D]/[0.06] text-[#071A2D] border-l-2 border-[#D39A2B]"
+            : "border-l-2 border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground",
+          collapsed && "justify-center px-2",
+          "motion-reduce:transition-none",
+        )
+      }
     >
       <div className="flex items-center gap-3">
         {Icon && <Icon className="h-5 w-5 flex-shrink-0" />}
@@ -85,7 +121,7 @@ function NavItemLink({ item, collapsed, badge }: NavItemProps & { badge?: number
       </div>
       {!collapsed && badge !== undefined && badge > 0 && (
         <span className="h-4.5 min-w-[18px] flex items-center justify-center rounded-sm bg-[#071A2D] text-white text-overline font-semibold px-1">
-          {badge > 99 ? '99+' : badge}
+          {badge > 99 ? "99+" : badge}
         </span>
       )}
       {collapsed && badge !== undefined && badge > 0 && (
@@ -98,13 +134,13 @@ function NavItemLink({ item, collapsed, badge }: NavItemProps & { badge?: number
     return (
       <TooltipProvider>
         <Tooltip>
-          <TooltipTrigger asChild>
-            {link}
-          </TooltipTrigger>
+          <TooltipTrigger asChild>{link}</TooltipTrigger>
           <TooltipContent side="right">
             <span>{t(item.labelKey)}</span>
             {badge !== undefined && badge > 0 && (
-              <span className="ml-1.5 opacity-70">({badge > 99 ? '99+' : badge})</span>
+              <span className="ml-1.5 opacity-70">
+                ({badge > 99 ? "99+" : badge})
+              </span>
             )}
           </TooltipContent>
         </Tooltip>
@@ -116,11 +152,11 @@ function NavItemLink({ item, collapsed, badge }: NavItemProps & { badge?: number
 }
 
 export function Sidebar() {
-  const { t } = useTranslation('navigation');
-  const { t: tc } = useTranslation('common');
+  const { t } = useTranslation("navigation");
+  const { t: tc } = useTranslation("common");
   const [collapsed, setCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    () => new Set(ALL_SECTIONS)
+    () => new Set(ALL_SECTIONS),
   );
   const { userRole, isAdmin } = useUserContext();
   const { isPersonal } = useActiveWorkspace();
@@ -136,21 +172,28 @@ export function Sidebar() {
 
   const unreadMessagesCount = unreadMessages?.count || 0;
 
-  const mainSections = NAV_SECTIONS.filter(s => s.section !== 'bottom');
-  const bottomSection = NAV_SECTIONS.find(s => s.section === 'bottom');
+  const mainSections = NAV_SECTIONS.filter((s) => s.section !== "bottom");
+  const bottomSection = NAV_SECTIONS.find((s) => s.section === "bottom");
 
   // Items only available in institutional parishes
   const institutionalOnlyItems = [
-    'parishes', 'communities', 'reports', 'admin', 'catechetical_years', 'consents',
+    "parishes",
+    "communities",
+    "reports",
+    "admin",
+    "catechetical_years",
+    "consents",
   ];
 
   const filterForWorkspace = (items: NavItemConfig[]) => {
     if (!isPersonal) return items;
-    return items.filter(item => !institutionalOnlyItems.includes(item.iconKey));
+    return items.filter(
+      (item) => !institutionalOnlyItems.includes(item.iconKey),
+    );
   };
 
   const toggleSection = (section: string) => {
-    setExpandedSections(prev => {
+    setExpandedSections((prev) => {
       const next = new Set(prev);
       if (next.has(section)) {
         next.delete(section);
@@ -164,8 +207,8 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        'flex h-full flex-col border-r border-[#071A2D]/10 bg-white transition-all duration-200',
-        collapsed ? 'w-16' : 'w-60'
+        "flex h-full flex-col border-r border-[#071A2D]/10 bg-white transition-all duration-200",
+        collapsed ? "w-16" : "w-60",
       )}
     >
       <div className="flex h-14 items-center border-b border-[#071A2D]/08 px-3">
@@ -175,8 +218,8 @@ export function Sidebar() {
 
       <nav className="no-scrollbar flex-1 overflow-y-auto py-4">
         {mainSections.map((section) => {
-          const isPrimary = section.section === 'primary';
-          const isMore = section.section === 'more';
+          const isPrimary = section.section === "primary";
+          const isMore = section.section === "more";
           let filtered = filterByRole(section.items, userRole, isAdmin);
           filtered = filterForWorkspace(filtered);
 
@@ -191,7 +234,11 @@ export function Sidebar() {
                     key={item.to}
                     item={item}
                     collapsed={collapsed}
-                    badge={item.iconKey === 'messages' ? unreadMessagesCount : undefined}
+                    badge={
+                      item.iconKey === "messages"
+                        ? unreadMessagesCount
+                        : undefined
+                    }
                   />
                 ))}
                 <div className="my-3 border-t border-[#071A2D]/08" />
@@ -209,12 +256,12 @@ export function Sidebar() {
                   className="flex w-full items-center justify-between mb-0.5 px-2.5 py-1 rounded-sm hover:bg-accent/50 transition-colors"
                 >
                   <p className="select-none text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                    {t('moreSection')}
+                    {t("moreSection")}
                   </p>
                   <ChevronDown
                     className={cn(
-                      'h-3.5 w-3.5 text-muted-foreground/60 transition-transform duration-200',
-                      !isExpanded && '-rotate-90'
+                      "h-3.5 w-3.5 text-muted-foreground/60 transition-transform duration-200",
+                      !isExpanded && "-rotate-90",
                     )}
                   />
                 </button>
@@ -225,11 +272,11 @@ export function Sidebar() {
               {(collapsed || isExpanded) && (
                 <div
                   className={cn(
-                    'space-y-1 overflow-hidden transition-all duration-200',
-                    collapsed ? 'px-2' : 'px-2',
-                    !collapsed && !isExpanded && 'max-h-0 opacity-0',
-                    !collapsed && isExpanded && 'max-h-96 opacity-100',
-                    collapsed && 'max-h-96 opacity-100'
+                    "space-y-1 overflow-hidden transition-all duration-200",
+                    collapsed ? "px-2" : "px-2",
+                    !collapsed && !isExpanded && "max-h-0 opacity-0",
+                    !collapsed && isExpanded && "max-h-96 opacity-100",
+                    collapsed && "max-h-96 opacity-100",
                   )}
                 >
                   {filtered.map((item) => (
@@ -247,20 +294,33 @@ export function Sidebar() {
       </nav>
 
       <div className="border-t p-2 space-y-1">
-        {filterForWorkspace(filterByRole(bottomSection?.items || [], userRole, isAdmin))
-          .map((item) => (
+        {filterForWorkspace(
+          filterByRole(bottomSection?.items || [], userRole, isAdmin),
+        ).map((item) => (
           <NavItemLink
             key={item.to}
             item={item}
             collapsed={collapsed}
-            badge={item.iconKey === 'messages' ? unreadMessagesCount : undefined}
+            badge={
+              item.iconKey === "messages" ? unreadMessagesCount : undefined
+            }
           />
         ))}
-        <button onClick={() => setCollapsed(!collapsed)} className="flex w-full items-center gap-3 rounded-sm px-3 py-2 text-sm text-muted-foreground hover:bg-accent" aria-label={collapsed ? tc('expand_menu') : tc('collapse_menu')}>
-          {collapsed ? <ChevronRight className="h-5 w-5 mx-auto" /> : <><ChevronLeft className="h-5 w-5" /><span>{tc('collapse')}</span></>}
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="flex w-full items-center gap-3 rounded-sm px-3 py-2 text-sm text-muted-foreground hover:bg-accent"
+          aria-label={collapsed ? tc("expand_menu") : tc("collapse_menu")}
+        >
+          {collapsed ? (
+            <ChevronRight className="h-5 w-5 mx-auto" />
+          ) : (
+            <>
+              <ChevronLeft className="h-5 w-5" />
+              <span>{tc("collapse")}</span>
+            </>
+          )}
         </button>
       </div>
     </aside>
   );
 }
-

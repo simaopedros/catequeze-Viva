@@ -1,22 +1,22 @@
-import { PaymentPlanId } from '../../payment/plans';
-import { resolvePlanIdOrFree } from '../../shared/pricing';
+import { PaymentPlanId } from "../../payment/plans";
+import { resolvePlanIdOrFree } from "../../shared/pricing";
 
 export type UpgradeJourneyReason =
-  | 'class_limit'
-  | 'catechumen_limit'
-  | 'parish_limit'
-  | 'catechist_limit'
-  | 'required'
-  | 'generic';
+  | "class_limit"
+  | "catechumen_limit"
+  | "parish_limit"
+  | "catechist_limit"
+  | "required"
+  | "generic";
 
 export type UpgradeJourneySource =
-  | 'limit_banner'
-  | 'limit_toast'
-  | 'subscription_gate'
-  | 'billing_page'
-  | 'pricing'
-  | 'onboarding'
-  | 'direct';
+  | "limit_banner"
+  | "limit_toast"
+  | "subscription_gate"
+  | "billing_page"
+  | "pricing"
+  | "onboarding"
+  | "direct";
 
 interface BillingJourneyOptions {
   source: UpgradeJourneySource;
@@ -34,27 +34,34 @@ interface BillingJourneyFromContextOptions {
 }
 
 const REASONS: UpgradeJourneyReason[] = [
-  'class_limit',
-  'catechumen_limit',
-  'parish_limit',
-  'catechist_limit',
-  'required',
-  'generic',
+  "class_limit",
+  "catechumen_limit",
+  "parish_limit",
+  "catechist_limit",
+  "required",
+  "generic",
 ];
 
-export function parseUpgradeJourneyReason(value: string | null | undefined): UpgradeJourneyReason | null {
+export function parseUpgradeJourneyReason(
+  value: string | null | undefined,
+): UpgradeJourneyReason | null {
   if (!value) return null;
-  return REASONS.includes(value as UpgradeJourneyReason) ? (value as UpgradeJourneyReason) : null;
+  return REASONS.includes(value as UpgradeJourneyReason)
+    ? (value as UpgradeJourneyReason)
+    : null;
 }
 
-export function inferUpgradeJourneyReasonFromMessage(message: string): UpgradeJourneyReason {
+export function inferUpgradeJourneyReasonFromMessage(
+  message: string,
+): UpgradeJourneyReason {
   const normalized = message.toLowerCase();
 
-  if (normalized.includes('catequizand')) return 'catechumen_limit';
-  if (normalized.includes('turma')) return 'class_limit';
-  if (normalized.includes('paróquia') || normalized.includes('paroquia')) return 'parish_limit';
-  if (normalized.includes('catequista')) return 'catechist_limit';
-  return 'generic';
+  if (normalized.includes("catequizand")) return "catechumen_limit";
+  if (normalized.includes("turma")) return "class_limit";
+  if (normalized.includes("paróquia") || normalized.includes("paroquia"))
+    return "parish_limit";
+  if (normalized.includes("catequista")) return "catechist_limit";
+  return "generic";
 }
 
 export function getSuggestedUpgradePlan(opts: {
@@ -63,9 +70,11 @@ export function getSuggestedUpgradePlan(opts: {
 }): PaymentPlanId | null {
   const normalizedPlan = resolvePlanIdOrFree(opts.currentPlan);
 
-  if (normalizedPlan === 'unlimited') return null;
-  if (normalizedPlan === 'single') return PaymentPlanId.Unlimited;
-  return opts.isPersonalWorkspace ? PaymentPlanId.Single : PaymentPlanId.Unlimited;
+  if (normalizedPlan === "unlimited") return null;
+  if (normalizedPlan === "single") return PaymentPlanId.Unlimited;
+  return opts.isPersonalWorkspace
+    ? PaymentPlanId.Single
+    : PaymentPlanId.Unlimited;
 }
 
 export function buildBillingJourneyHref({
@@ -75,12 +84,12 @@ export function buildBillingJourneyHref({
   required,
 }: BillingJourneyOptions): string {
   const params = new URLSearchParams();
-  if (planId) params.set('plan', planId);
-  if (reason) params.set('reason', reason);
-  if (source) params.set('source', source);
-  if (required) params.set('required', '1');
+  if (planId) params.set("plan", planId);
+  if (reason) params.set("reason", reason);
+  if (source) params.set("source", source);
+  if (required) params.set("required", "1");
   const query = params.toString();
-  return query ? `/app/billing?${query}` : '/app/billing';
+  return query ? `/app/billing?${query}` : "/app/billing";
 }
 
 export function buildBillingJourneyHrefFromContext({

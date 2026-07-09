@@ -18,7 +18,11 @@ interface CompletionStepProps {
   onSecondaryAction: () => void;
 }
 
-export function CompletionStep({ summary, onPrimaryAction, onSecondaryAction }: CompletionStepProps) {
+export function CompletionStep({
+  summary,
+  onPrimaryAction,
+  onSecondaryAction,
+}: CompletionStepProps) {
   const { t } = useTranslation("onboarding");
 
   return (
@@ -34,24 +38,36 @@ export function CompletionStep({ summary, onPrimaryAction, onSecondaryAction }: 
           {summary.title}
         </h2>
         <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
-        <p className="text-sm leading-relaxed text-muted-foreground">{summary.description}</p>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          {summary.description}
+        </p>
       </div>
 
       <dl className="divide-y divide-border/70 border-y border-border/70">
         {summary.items.map((item) => (
-          <div key={item.label} className="flex items-baseline justify-between gap-4 py-3">
+          <div
+            key={item.label}
+            className="flex items-baseline justify-between gap-4 py-3"
+          >
             <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               {item.label}
             </dt>
-            <dd className="text-sm font-medium text-foreground text-right">{item.value}</dd>
+            <dd className="text-sm font-medium text-foreground text-right">
+              {item.value}
+            </dd>
           </div>
         ))}
       </dl>
 
-      <p className="text-sm text-muted-foreground">{t("completion.next_step_hint")}</p>
+      <p className="text-sm text-muted-foreground">
+        {t("completion.next_step_hint")}
+      </p>
 
       <div className="flex flex-col gap-2.5">
-        <Button onClick={onPrimaryAction} className="h-11 w-full rounded-sm shadow-none">
+        <Button
+          onClick={onPrimaryAction}
+          className="h-11 w-full rounded-sm shadow-none"
+        >
           {summary.primaryActionLabel}
           <ArrowRight className="ml-1 h-4 w-4" />
         </Button>

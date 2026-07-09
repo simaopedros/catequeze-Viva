@@ -1,5 +1,5 @@
-import { useParams } from 'react-router';
-import { ContentDocumentWorkspace } from '../components/content/ContentDocumentWorkspace';
+import { useParams } from "react-router";
+import { ContentDocumentWorkspace } from "../components/content/ContentDocumentWorkspace";
 
 export default function EditContentPage() {
   const { id } = useParams<{ id: string }>();

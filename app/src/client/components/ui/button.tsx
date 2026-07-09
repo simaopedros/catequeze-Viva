@@ -10,8 +10,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          "bg-[#071A2D] text-white hover:bg-[#0a2540] shadow-none",
+        default: "bg-[#071A2D] text-white hover:bg-[#0a2540] shadow-none",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-none",
         outline:
@@ -20,8 +19,7 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-none",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-[#071A2D] underline-offset-4 hover:underline",
-        brand:
-          "bg-[#071A2D] text-white hover:bg-[#0a2540] shadow-none",
+        brand: "bg-[#071A2D] text-white hover:bg-[#0a2540] shadow-none",
         subtle:
           "border border-border/70 bg-muted/30 text-foreground hover:bg-muted/50",
       },
@@ -38,10 +36,12 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
-interface ButtonProps extends React.ComponentProps<"button">, VariantProps<typeof buttonVariants> {
+interface ButtonProps
+  extends React.ComponentProps<"button">,
+    VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   loading?: boolean;
 }
@@ -65,12 +65,21 @@ function Button({
       disabled={disabled || loading}
       {...props}
     >
-      {asChild ? children : (
+      {asChild ? (
+        children
+      ) : (
         <span className="relative inline-flex items-center gap-2">
           {loading && (
             <Loader2 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-4 w-4 animate-spin" />
           )}
-          <span className={cn('inline-flex items-center min-w-0', loading && 'invisible')}>{children}</span>
+          <span
+            className={cn(
+              "inline-flex items-center min-w-0",
+              loading && "invisible",
+            )}
+          >
+            {children}
+          </span>
         </span>
       )}
     </Comp>

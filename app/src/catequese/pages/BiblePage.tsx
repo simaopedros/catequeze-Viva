@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router';
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router";
 import {
   Search,
   ChevronLeft,
@@ -14,15 +14,27 @@ import {
   Type,
   BookOpenCheck,
   Clock,
-} from 'lucide-react';
-import { Button } from '../../client/components/ui/button';
-import { FilterPills } from '../../client/components/FilterPills';
-import { AppPageHeader } from '../../client/components/brand/AppChrome';
-import { SearchInput } from '../../client/components/SearchInput';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../../client/components/ui/sheet';
-import { useQuery, listBibleBooks, getBibleBook, getBibleChapter, searchBible } from 'wasp/client/operations';
-import { useLocale } from '../../i18n/useLocale';
-import { toast } from '../../client/hooks/use-toast';
+} from "lucide-react";
+import { Button } from "../../client/components/ui/button";
+import { FilterPills } from "../../client/components/FilterPills";
+import { AppPageHeader } from "../../client/components/brand/AppChrome";
+import { SearchInput } from "../../client/components/SearchInput";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "../../client/components/ui/sheet";
+import {
+  useQuery,
+  listBibleBooks,
+  getBibleBook,
+  getBibleChapter,
+  searchBible,
+} from "wasp/client/operations";
+import { useLocale } from "../../i18n/useLocale";
+import { toast } from "../../client/hooks/use-toast";
 
 // ── localStorage helpers ──
 
@@ -33,9 +45,9 @@ interface RecentEntry {
   timestamp: number;
 }
 
-const RECENTS_KEY = 'cv-bible-recents';
-const FAVORITES_KEY = 'cv-bible-favorites';
-const FONT_SIZE_KEY = 'cv-bible-font-size';
+const RECENTS_KEY = "cv-bible-recents";
+const FAVORITES_KEY = "cv-bible-favorites";
+const FONT_SIZE_KEY = "cv-bible-font-size";
 
 function loadRecents(): RecentEntry[] {
   try {
@@ -51,7 +63,9 @@ function saveRecents(entries: RecentEntry[]) {
 }
 
 function addRecent(entry: RecentEntry) {
-  const recents = loadRecents().filter((r) => !(r.bookId === entry.bookId && r.chapter === entry.chapter));
+  const recents = loadRecents().filter(
+    (r) => !(r.bookId === entry.bookId && r.chapter === entry.chapter),
+  );
   recents.unshift(entry);
   saveRecents(recents);
 }
@@ -78,51 +92,53 @@ function toggleFavoriteKey(key: string, label: string): boolean {
   }
 }
 
-function loadFontSize(): 'sm' | 'md' | 'lg' {
+function loadFontSize(): "sm" | "md" | "lg" {
   const v = localStorage.getItem(FONT_SIZE_KEY);
-  if (v === 'sm' || v === 'md' || v === 'lg') return v;
-  return 'md';
+  if (v === "sm" || v === "md" || v === "lg") return v;
+  return "md";
 }
 
-function saveFontSize(size: 'sm' | 'md' | 'lg') {
+function saveFontSize(size: "sm" | "md" | "lg") {
   localStorage.setItem(FONT_SIZE_KEY, size);
 }
 
 const FONT_SIZE_CLASS: Record<string, string> = {
-  sm: 'text-sm leading-relaxed',
-  md: 'text-base leading-relaxed',
-  lg: 'text-lg leading-relaxed',
+  sm: "text-sm leading-relaxed",
+  md: "text-base leading-relaxed",
+  lg: "text-lg leading-relaxed",
 };
 
-const FONT_SIZE_NEXT: Record<string, 'sm' | 'md' | 'lg'> = {
-  sm: 'md',
-  md: 'lg',
-  lg: 'sm',
+const FONT_SIZE_NEXT: Record<string, "sm" | "md" | "lg"> = {
+  sm: "md",
+  md: "lg",
+  lg: "sm",
 };
 
 const SEARCH_SUGGESTIONS: Record<string, string[]> = {
-  'pt-BR': ['Jo 3:16', 'Gn 1', 'amor', 'fé'],
-  en: ['Jn 3:16', 'Gn 1', 'love', 'faith'],
-  es: ['Jn 3:16', 'Gn 1', 'amor', 'fe'],
+  "pt-BR": ["Jo 3:16", "Gn 1", "amor", "fé"],
+  en: ["Jn 3:16", "Gn 1", "love", "faith"],
+  es: ["Jn 3:16", "Gn 1", "amor", "fe"],
 };
 
 export default function BiblePage() {
-  const { t } = useTranslation('bible');
-  const { t: tc } = useTranslation('common');
+  const { t } = useTranslation("bible");
+  const { t: tc } = useTranslation("common");
   const { currentLocale } = useLocale();
-  const { data: books = [] } = useQuery(listBibleBooks, { locale: currentLocale });
+  const { data: books = [] } = useQuery(listBibleBooks, {
+    locale: currentLocale,
+  });
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [mode, setMode] = useState<'read' | 'search'>('read');
+  const [mode, setMode] = useState<"read" | "search">("read");
   const [selectedBook, setSelectedBook] = useState<any>(null);
   const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
   const [chapterData, setChapterData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   // Search state
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [searching, setSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
@@ -132,23 +148,29 @@ export default function BiblePage() {
   const verseRefs = useRef<Map<number, HTMLDivElement>>(new Map());
 
   // Book filter + mobile sheet
-  const [bookFilter, setBookFilter] = useState('');
+  const [bookFilter, setBookFilter] = useState("");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   // Font size
-  const [fontSize, setFontSize] = useState<'sm' | 'md' | 'lg'>(loadFontSize);
+  const [fontSize, setFontSize] = useState<"sm" | "md" | "lg">(loadFontSize);
 
   // Favorites (reactive)
-  const [favorites, setFavorites] = useState<Record<string, string>>(loadFavorites);
+  const [favorites, setFavorites] =
+    useState<Record<string, string>>(loadFavorites);
 
   // Recents (reactive)
   const [recents, setRecents] = useState<RecentEntry[]>(loadRecents);
 
   // Track last processed URL state to avoid re-processing same params
-  const lastProcessed = useRef<{ book?: string | null; chapter?: string | null; verse?: string | null; ref?: string | null }>({});
+  const lastProcessed = useRef<{
+    book?: string | null;
+    chapter?: string | null;
+    verse?: string | null;
+    ref?: string | null;
+  }>({});
 
-  const otBooks = books.filter((b: any) => b.testament === 'OT');
-  const ntBooks = books.filter((b: any) => b.testament === 'NT');
+  const otBooks = books.filter((b: any) => b.testament === "OT");
+  const ntBooks = books.filter((b: any) => b.testament === "NT");
 
   const filterBooks = (list: any[]) => {
     if (!bookFilter.trim()) return list;
@@ -169,22 +191,22 @@ export default function BiblePage() {
     (bookId?: string, chapter?: number, verse?: number | null) => {
       const next = new URLSearchParams(searchParams);
       if (bookId) {
-        next.set('book', bookId);
+        next.set("book", bookId);
       } else {
-        next.delete('book');
-        next.delete('chapter');
-        next.delete('verse');
+        next.delete("book");
+        next.delete("chapter");
+        next.delete("verse");
       }
       if (chapter !== undefined && chapter !== null) {
-        next.set('chapter', String(chapter));
+        next.set("chapter", String(chapter));
       } else {
-        next.delete('chapter');
-        next.delete('verse');
+        next.delete("chapter");
+        next.delete("verse");
       }
       if (verse !== undefined && verse !== null) {
-        next.set('verse', String(verse));
+        next.set("verse", String(verse));
       } else if (chapter === undefined || chapter === null) {
-        next.delete('verse');
+        next.delete("verse");
       }
       setSearchParams(next, { replace: true });
     },
@@ -196,7 +218,7 @@ export default function BiblePage() {
     if (highlightedVerse !== null && verseRefs.current.has(highlightedVerse)) {
       const timer = setTimeout(() => {
         const el = verseRefs.current.get(highlightedVerse);
-        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el?.scrollIntoView({ behavior: "smooth", block: "center" });
       }, 50);
       return () => clearTimeout(timer);
     }
@@ -206,10 +228,10 @@ export default function BiblePage() {
   useEffect(() => {
     if (books.length === 0) return;
 
-    const bookId = searchParams.get('book');
-    const chapterStr = searchParams.get('chapter');
-    const verseStr = searchParams.get('verse');
-    const refParam = searchParams.get('ref');
+    const bookId = searchParams.get("book");
+    const chapterStr = searchParams.get("chapter");
+    const verseStr = searchParams.get("verse");
+    const refParam = searchParams.get("ref");
 
     // Skip if params haven't changed since last processing
     if (
@@ -221,7 +243,12 @@ export default function BiblePage() {
       return;
     }
 
-    lastProcessed.current = { book: bookId, chapter: chapterStr, verse: verseStr, ref: refParam };
+    lastProcessed.current = {
+      book: bookId,
+      chapter: chapterStr,
+      verse: verseStr,
+      ref: refParam,
+    };
 
     // Handle ref param (legacy: "João 3:16") — parse and redirect to canonical params
     if (refParam && !bookId) {
@@ -235,16 +262,16 @@ export default function BiblePage() {
         );
         if (matchingBook) {
           const next = new URLSearchParams();
-          next.set('book', matchingBook.id);
-          next.set('chapter', refChapter);
-          if (refVerse) next.set('verse', refVerse);
+          next.set("book", matchingBook.id);
+          next.set("chapter", refChapter);
+          if (refVerse) next.set("verse", refVerse);
           setSearchParams(next, { replace: true });
           return;
         }
       }
       // Can't parse ref — clear it
       const next = new URLSearchParams(searchParams);
-      next.delete('ref');
+      next.delete("ref");
       setSearchParams(next, { replace: true });
       return;
     }
@@ -267,8 +294,15 @@ export default function BiblePage() {
       try {
         const book = await getBibleBook({ id: bookId, locale: currentLocale });
         setSelectedBook(book);
-        if (chapter && book.chapters?.some((ch: any) => ch.number === chapter)) {
-          const data = await getBibleChapter({ bookId, chapter, locale: currentLocale });
+        if (
+          chapter &&
+          book.chapters?.some((ch: any) => ch.number === chapter)
+        ) {
+          const data = await getBibleChapter({
+            bookId,
+            chapter,
+            locale: currentLocale,
+          });
           setChapterData(data);
           setSelectedChapter(chapter);
           if (verse) {
@@ -302,7 +336,7 @@ export default function BiblePage() {
     if (!bookName || selectedChapter === null) return;
     const ref = `${bookName} ${selectedChapter}`;
     navigator.clipboard.writeText(ref).then(() => {
-      toast({ description: t('reference_copied') });
+      toast({ description: t("reference_copied") });
     });
   };
 
@@ -315,13 +349,13 @@ export default function BiblePage() {
     const label = `${bookName} ${selectedChapter}:${verseNum}`;
     const added = toggleFavoriteKey(key, label);
     setFavorites(loadFavorites());
-    toast({ description: added ? '⭐ Favorito' : 'Favorito removido' });
+    toast({ description: added ? "⭐ Favorito" : "Favorito removido" });
   };
 
   // ── Actions ──
 
   const loadBook = async (bookId: string) => {
-    setError('');
+    setError("");
     setHighlightedVerse(null);
     try {
       const book = await getBibleBook({ id: bookId, locale: currentLocale });
@@ -331,16 +365,20 @@ export default function BiblePage() {
       updateUrl(bookId);
       setMobileNavOpen(false);
     } catch {
-      setError(t('load_book_error'));
+      setError(t("load_book_error"));
     }
   };
 
   const loadChapter = async (bookId: string, chapter: number) => {
     setLoading(true);
-    setError('');
+    setError("");
     setHighlightedVerse(null);
     try {
-      const data = await getBibleChapter({ bookId, chapter, locale: currentLocale });
+      const data = await getBibleChapter({
+        bookId,
+        chapter,
+        locale: currentLocale,
+      });
       setChapterData(data);
       setSelectedChapter(chapter);
       updateUrl(bookId, chapter);
@@ -348,14 +386,14 @@ export default function BiblePage() {
       // Add to recents
       const entry: RecentEntry = {
         bookId,
-        bookName: data.book?.name || selectedBook?.name || '',
+        bookName: data.book?.name || selectedBook?.name || "",
         chapter,
         timestamp: Date.now(),
       };
       addRecent(entry);
       setRecents(loadRecents());
     } catch {
-      setError(t('load_chapter_error'));
+      setError(t("load_chapter_error"));
     }
     setLoading(false);
   };
@@ -381,13 +419,14 @@ export default function BiblePage() {
     const q = (query ?? searchQuery).trim();
     if (!q || q.length < 2) return;
     setSearching(true);
-    setError('');
+    setError("");
     setHasSearched(true);
     try {
-      const results = (await searchBible({ query: q, locale: currentLocale })) || [];
+      const results =
+        (await searchBible({ query: q, locale: currentLocale })) || [];
       setSearchResults(results);
     } catch {
-      setError(t('search_error'));
+      setError(t("search_error"));
     }
     setSearching(false);
   };
@@ -398,13 +437,17 @@ export default function BiblePage() {
     const verseNum = result.number;
     if (!bookId || !chapterNum) return;
 
-    setMode('read');
-    setSearchQuery('');
+    setMode("read");
+    setSearchQuery("");
 
     try {
       const book = await getBibleBook({ id: bookId, locale: currentLocale });
       setSelectedBook(book);
-      const data = await getBibleChapter({ bookId, chapter: chapterNum, locale: currentLocale });
+      const data = await getBibleChapter({
+        bookId,
+        chapter: chapterNum,
+        locale: currentLocale,
+      });
       setChapterData(data);
       setSelectedChapter(chapterNum);
       setHighlightedVerse(verseNum);
@@ -419,24 +462,25 @@ export default function BiblePage() {
       });
       setRecents(loadRecents());
     } catch {
-      setError(t('load_chapter_error'));
+      setError(t("load_chapter_error"));
     }
   };
 
-  const suggestions = SEARCH_SUGGESTIONS[currentLocale] || SEARCH_SUGGESTIONS['pt-BR'];
+  const suggestions =
+    SEARCH_SUGGESTIONS[currentLocale] || SEARCH_SUGGESTIONS["pt-BR"];
 
-  const breadcrumbTrail = [t('title')];
+  const breadcrumbTrail = [t("title")];
   if (selectedBook) {
     breadcrumbTrail.push(selectedBook.name);
     if (selectedChapter !== null) {
-      breadcrumbTrail.push(`${t('chapter')} ${selectedChapter}`);
+      breadcrumbTrail.push(`${t("chapter")} ${selectedChapter}`);
     }
   }
 
   // Group favorites for display
   const favoriteEntries = useMemo(() => {
     return Object.entries(favorites).map(([key, label]) => {
-      const parts = key.split(':');
+      const parts = key.split(":");
       const bookId = parts[0];
       const chapter = parseInt(parts[1]);
       const verse = parts[2] ? parseInt(parts[2]) : null;
@@ -451,14 +495,16 @@ export default function BiblePage() {
         <div>
           <h2 className="font-semibold text-xs text-muted-foreground mb-2 uppercase tracking-wider flex items-center gap-1.5">
             <Clock className="h-3 w-3" />
-            {t('recent')}
+            {t("recent")}
           </h2>
           <div className="space-y-0.5">
             {recents.slice(0, 5).map((r) => (
               <button
                 key={`${r.bookId}-${r.chapter}`}
                 onClick={() => {
-                  loadBook(r.bookId).then(() => loadChapter(r.bookId, r.chapter));
+                  loadBook(r.bookId).then(() =>
+                    loadChapter(r.bookId, r.chapter),
+                  );
                 }}
                 className="w-full text-left px-2 py-1 text-sm rounded hover:bg-muted transition-colors flex items-center gap-2"
               >
@@ -476,7 +522,7 @@ export default function BiblePage() {
         <div>
           <h2 className="font-semibold text-xs text-muted-foreground mb-2 uppercase tracking-wider flex items-center gap-1.5">
             <Bookmark className="h-3 w-3" />
-            {t('favorites')}
+            {t("favorites")}
           </h2>
           <div className="space-y-0.5">
             {favoriteEntries.slice(0, 10).map((f) => (
@@ -489,7 +535,7 @@ export default function BiblePage() {
                 }}
                 className="w-full text-left px-2 py-1 text-sm rounded hover:bg-muted transition-colors flex items-center gap-2"
               >
-                <Bookmark className="h-3.5 w-3.5 text-amber-500 flex-shrink-0 fill-amber-500" />
+                <Bookmark className="h-3.5 w-3.5 text-[#D39A2B] flex-shrink-0 fill-[#D39A2B]" />
                 <span className="truncate">{f.label}</span>
               </button>
             ))}
@@ -504,7 +550,7 @@ export default function BiblePage() {
             <input
               value={bookFilter}
               onChange={(e) => setBookFilter(e.target.value)}
-              placeholder={t('book_filter')}
+              placeholder={t("book_filter")}
               className="w-full h-8 rounded-sm border border-input bg-background pl-8 pr-3 text-xs"
             />
           </div>
@@ -527,7 +573,7 @@ export default function BiblePage() {
               <input
                 value={bookFilter}
                 onChange={(e) => setBookFilter(e.target.value)}
-                placeholder={t('book_filter')}
+                placeholder={t("book_filter")}
                 className="w-full h-8 rounded-sm border border-input bg-background pl-8 pr-3 text-xs"
               />
             </div>
@@ -536,7 +582,7 @@ export default function BiblePage() {
           {filteredOt.length > 0 && (
             <div>
               <h2 className="font-semibold text-xs text-muted-foreground mb-2 uppercase tracking-wider">
-                {t('old_testament')}
+                {t("old_testament")}
               </h2>
               <div className="grid grid-cols-2 gap-1">
                 {filteredOt.map((b: any) => (
@@ -548,7 +594,9 @@ export default function BiblePage() {
                   >
                     <span className="font-medium">{b.name}</span>
                     {b.abbreviation && b.abbreviation !== b.name && (
-                      <span className="text-muted-foreground ml-1 text-xs">{b.abbreviation}</span>
+                      <span className="text-muted-foreground ml-1 text-xs">
+                        {b.abbreviation}
+                      </span>
                     )}
                   </button>
                 ))}
@@ -559,7 +607,7 @@ export default function BiblePage() {
           {filteredNt.length > 0 && (
             <div>
               <h2 className="font-semibold text-xs text-muted-foreground mb-2 uppercase tracking-wider">
-                {t('new_testament')}
+                {t("new_testament")}
               </h2>
               <div className="grid grid-cols-2 gap-1">
                 {filteredNt.map((b: any) => (
@@ -571,7 +619,9 @@ export default function BiblePage() {
                   >
                     <span className="font-medium">{b.name}</span>
                     {b.abbreviation && b.abbreviation !== b.name && (
-                      <span className="text-muted-foreground ml-1 text-xs">{b.abbreviation}</span>
+                      <span className="text-muted-foreground ml-1 text-xs">
+                        {b.abbreviation}
+                      </span>
                     )}
                   </button>
                 ))}
@@ -580,7 +630,9 @@ export default function BiblePage() {
           )}
 
           {filteredOt.length === 0 && filteredNt.length === 0 && bookFilter && (
-            <p className="text-xs text-muted-foreground text-center py-4">{tc('no_results')}</p>
+            <p className="text-xs text-muted-foreground text-center py-4">
+              {tc("no_results")}
+            </p>
           )}
         </div>
       )}
@@ -590,7 +642,7 @@ export default function BiblePage() {
         <div className="space-y-4">
           <Button variant="ghost" size="sm" onClick={goToBooks}>
             <ChevronLeft className="h-4 w-4" />
-            {t('books')}
+            {t("books")}
           </Button>
           <h2 className="font-semibold text-sm">{selectedBook.name}</h2>
           <div className="grid grid-cols-5 sm:grid-cols-6 gap-1.5">
@@ -612,9 +664,11 @@ export default function BiblePage() {
         <div className="space-y-4">
           <Button variant="ghost" size="sm" onClick={goToChapters}>
             <ChevronLeft className="h-4 w-4" />
-            {t('chapters')}
+            {t("chapters")}
           </Button>
-          <h2 className="font-semibold text-sm">{chapterData?.book?.name || selectedBook.name}</h2>
+          <h2 className="font-semibold text-sm">
+            {chapterData?.book?.name || selectedBook.name}
+          </h2>
           <div className="grid grid-cols-5 sm:grid-cols-6 gap-1.5">
             {selectedBook.chapters?.map((ch: any) => (
               <button
@@ -622,8 +676,8 @@ export default function BiblePage() {
                 onClick={() => loadChapter(selectedBook.id, ch.number)}
                 className={`px-2 py-2 text-sm rounded-sm border transition-colors text-center ${
                   ch.number === selectedChapter
-                    ? 'border-[#071A2D] bg-muted/30 font-medium'
-                    : 'hover:border-[#071A2D]/30 hover:bg-muted/20'
+                    ? "border-[#071A2D] bg-muted/30 font-medium"
+                    : "hover:border-[#071A2D]/30 hover:bg-muted/20"
                 }`}
               >
                 {ch.number}
@@ -636,310 +690,356 @@ export default function BiblePage() {
   );
 
   return (
-      <div className="space-y-4">
-        <AppPageHeader
-          eyebrow={t('title')}
-          title={t('title')}
-          subtitle={breadcrumbTrail.length > 1 ? breadcrumbTrail.join(' · ') : undefined}
-          actions={
-            <div className="flex flex-wrap items-center gap-2">
+    <div className="space-y-4">
+      <AppPageHeader
+        eyebrow={t("title")}
+        title={t("title")}
+        subtitle={
+          breadcrumbTrail.length > 1 ? breadcrumbTrail.join(" · ") : undefined
+        }
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10 rounded-sm"
+              onClick={cycleFontSize}
+              title={`${t("font_size")}: ${fontSize}`}
+            >
+              <Type className="h-4 w-4" />
+            </Button>
+
+            {selectedChapter !== null && chapterData && (
               <Button
                 variant="ghost"
                 size="icon"
                 className="h-10 w-10 rounded-sm"
-                onClick={cycleFontSize}
-                title={`${t('font_size')}: ${fontSize}`}
+                onClick={copyReference}
+                title={t("copy_reference")}
               >
-                <Type className="h-4 w-4" />
+                <Copy className="h-4 w-4" />
               </Button>
+            )}
 
-              {selectedChapter !== null && chapterData && (
-                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-sm" onClick={copyReference} title={t('copy_reference')}>
-                  <Copy className="h-4 w-4" />
-                </Button>
+            {mode === "read" && selectedChapter !== null && (
+              <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-10 rounded-sm lg:hidden"
+                  >
+                    <List className="h-4 w-4" />
+                    <span className="ml-1.5">{t("chapters")}</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-72 p-4 overflow-y-auto">
+                  <SheetHeader>
+                    <SheetTitle>{t("title")}</SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-4">{sidebarContent}</div>
+                </SheetContent>
+              </Sheet>
+            )}
+
+            <FilterPills
+              options={[
+                { value: "read", label: t("read") },
+                { value: "search", label: t("search") },
+              ]}
+              value={mode}
+              onChange={(v) => {
+                setMode(v as "read" | "search");
+                setError("");
+              }}
+            />
+          </div>
+        }
+      />
+
+      {/* ── SEARCH MODE ── */}
+      {mode === "search" && (
+        <div className="space-y-4 max-w-2xl">
+          <div className="flex gap-2">
+            <SearchInput
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              placeholder={t("search_placeholder")}
+              containerClassName="max-w-none flex-1"
+            />
+            <Button
+              onClick={() => handleSearch()}
+              disabled={searching || searchQuery.trim().length < 2}
+            >
+              {searching ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Search className="h-4 w-4" />
               )}
+              <span className="ml-1.5 hidden sm:inline">{t("search")}</span>
+            </Button>
+          </div>
 
-              {mode === 'read' && selectedChapter !== null && (
-                <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" size="sm" className="h-10 rounded-sm lg:hidden">
-                      <List className="h-4 w-4" />
-                      <span className="ml-1.5">{t('chapters')}</span>
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent side="left" className="w-72 p-4 overflow-y-auto">
-                    <SheetHeader>
-                      <SheetTitle>{t('title')}</SheetTitle>
-                    </SheetHeader>
-                    <div className="mt-4">{sidebarContent}</div>
-                  </SheetContent>
-                </Sheet>
-              )}
-
-              <FilterPills
-                options={[
-                  { value: 'read', label: t('read') },
-                  { value: 'search', label: t('search') },
-                ]}
-                value={mode}
-                onChange={(v) => {
-                  setMode(v as 'read' | 'search');
-                  setError('');
-                }}
-              />
+          {!hasSearched && (
+            <div className="flex flex-wrap gap-1.5">
+              {suggestions.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery(s);
+                    handleSearch(s);
+                  }}
+                  className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-[#071A2D]/30 hover:text-foreground"
+                >
+                  {s}
+                </button>
+              ))}
             </div>
-          }
-        />
+          )}
 
-        {/* ── SEARCH MODE ── */}
-        {mode === 'search' && (
-          <div className="space-y-4 max-w-2xl">
-            <div className="flex gap-2">
-              <SearchInput
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                placeholder={t('search_placeholder')}
-                containerClassName="max-w-none flex-1"
-              />
-              <Button onClick={() => handleSearch()} disabled={searching || searchQuery.trim().length < 2}>
-                {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-                <span className="ml-1.5 hidden sm:inline">{t('search')}</span>
+          {error && (
+            <div className="rounded-sm border border-destructive/30 bg-destructive/5 p-6 text-center space-y-3">
+              <AlertCircle className="h-8 w-8 text-destructive mx-auto" />
+              <p className="text-sm text-destructive">{error}</p>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleSearch()}
+              >
+                {tc("try_again")}
               </Button>
             </div>
+          )}
 
-            {!hasSearched && (
-              <div className="flex flex-wrap gap-1.5">
-                {suggestions.map((s) => (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => {
-                      setSearchQuery(s);
-                      handleSearch(s);
-                    }}
-                    className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-[#071A2D]/30 hover:text-foreground"
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-            )}
+          {hasSearched && !error && searchResults.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">
+                {t("results_count", { count: searchResults.length })}
+              </p>
+              {searchResults.map((v: any) => (
+                <button
+                  key={v.id}
+                  type="button"
+                  onClick={() => openSearchResult(v)}
+                  className="group w-full rounded-sm border border-border/70 p-3 text-left text-sm transition-colors hover:border-[#071A2D]/30 hover:bg-muted/20"
+                >
+                  <p className="font-medium text-xs text-[#071A2D] mb-1 group-hover:underline">
+                    {v.chapter?.book?.name} {v.chapter?.number}:{v.number}
+                  </p>
+                  <p className="line-clamp-3">{v.text}</p>
+                </button>
+              ))}
+            </div>
+          )}
 
-            {error && (
-              <div className="rounded-sm border border-destructive/30 bg-destructive/5 p-6 text-center space-y-3">
-                <AlertCircle className="h-8 w-8 text-destructive mx-auto" />
-                <p className="text-sm text-destructive">{error}</p>
-                <Button size="sm" variant="outline" onClick={() => handleSearch()}>
-                  {tc('try_again')}
-                </Button>
-              </div>
-            )}
-
-            {hasSearched && !error && searchResults.length > 0 && (
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">
-                  {t('results_count', { count: searchResults.length })}
-                </p>
-                {searchResults.map((v: any) => (
-                  <button
-                    key={v.id}
-                    type="button"
-                    onClick={() => openSearchResult(v)}
-                    className="group w-full rounded-sm border border-border/70 p-3 text-left text-sm transition-colors hover:border-[#071A2D]/30 hover:bg-muted/20"
-                  >
-                    <p className="font-medium text-xs text-[#071A2D] mb-1 group-hover:underline">
-                      {v.chapter?.book?.name} {v.chapter?.number}:{v.number}
-                    </p>
-                    <p className="line-clamp-3">{v.text}</p>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {hasSearched && !error && !searching && searchResults.length === 0 && (
+          {hasSearched &&
+            !error &&
+            !searching &&
+            searchResults.length === 0 && (
               <div className="text-center text-muted-foreground py-12">
                 <Search className="mx-auto h-8 w-8 mb-2 opacity-30" />
-                <p>{t('no_search_results', { query: searchQuery })}</p>
+                <p>{t("no_search_results", { query: searchQuery })}</p>
               </div>
             )}
 
-            {!hasSearched && (
-              <div className="text-center text-muted-foreground py-12">
-                <Search className="mx-auto h-10 w-10 mb-3 opacity-20" />
-                <p className="text-sm max-w-sm mx-auto">{t('empty_search_hint')}</p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ── READ MODE ── */}
-        {mode === 'read' && (
-          <div className="flex flex-col lg:flex-row gap-6">
-            {/* Desktop sidebar */}
-            <div className="hidden lg:block lg:w-64 flex-shrink-0">
-              <div className="lg:sticky lg:top-4 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto">
-                {sidebarContent}
-              </div>
+          {!hasSearched && (
+            <div className="text-center text-muted-foreground py-12">
+              <Search className="mx-auto h-10 w-10 mb-3 opacity-20" />
+              <p className="text-sm max-w-sm mx-auto">
+                {t("empty_search_hint")}
+              </p>
             </div>
+          )}
+        </div>
+      )}
 
-            {/* Mobile: inline navigation when no chapter loaded */}
-            <div className="lg:hidden">{!selectedChapter && sidebarContent}</div>
+      {/* ── READ MODE ── */}
+      {mode === "read" && (
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Desktop sidebar */}
+          <div className="hidden lg:block lg:w-64 flex-shrink-0">
+            <div className="lg:sticky lg:top-4 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto">
+              {sidebarContent}
+            </div>
+          </div>
 
-            {/* Main content */}
-            <div className="flex-1 min-w-0 lg:border-l lg:pl-6">
-              {/* No book selected */}
-              {!selectedBook && (
-                <div className="flex flex-col items-center justify-center py-16 text-center text-muted-foreground gap-4">
-                  <BookOpen className="h-12 w-12 opacity-20" />
-                  <p className="text-sm font-medium">{t('choose_book')}</p>
-                  <p className="text-xs max-w-xs">{t('choose_book_hint')}</p>
+          {/* Mobile: inline navigation when no chapter loaded */}
+          <div className="lg:hidden">{!selectedChapter && sidebarContent}</div>
 
-                  {/* Continue reading CTA */}
-                  {recents.length > 0 && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        const last = recents[0];
-                        loadBook(last.bookId).then(() => loadChapter(last.bookId, last.chapter));
-                      }}
-                    >
-                      <BookOpenCheck className="h-4 w-4" />
-                      <span className="ml-1.5">
-                        {t('continue_reading')}: {recents[0].bookName} {recents[0].chapter}
-                      </span>
-                    </Button>
-                  )}
+          {/* Main content */}
+          <div className="flex-1 min-w-0 lg:border-l lg:pl-6">
+            {/* No book selected */}
+            {!selectedBook && (
+              <div className="flex flex-col items-center justify-center py-16 text-center text-muted-foreground gap-4">
+                <BookOpen className="h-12 w-12 opacity-20" />
+                <p className="text-sm font-medium">{t("choose_book")}</p>
+                <p className="text-xs max-w-xs">{t("choose_book_hint")}</p>
 
-                  {/* Quick start suggestions */}
-                  {recents.length === 0 && (
-                    <div className="flex flex-wrap justify-center gap-2 pt-2">
-                      {['Gênesis', 'Salmos', 'Mateus', 'João', 'Atos'].map(suggestion => (
+                {/* Continue reading CTA */}
+                {recents.length > 0 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const last = recents[0];
+                      loadBook(last.bookId).then(() =>
+                        loadChapter(last.bookId, last.chapter),
+                      );
+                    }}
+                  >
+                    <BookOpenCheck className="h-4 w-4" />
+                    <span className="ml-1.5">
+                      {t("continue_reading")}: {recents[0].bookName}{" "}
+                      {recents[0].chapter}
+                    </span>
+                  </Button>
+                )}
+
+                {/* Quick start suggestions */}
+                {recents.length === 0 && (
+                  <div className="flex flex-wrap justify-center gap-2 pt-2">
+                    {["Gênesis", "Salmos", "Mateus", "João", "Atos"].map(
+                      (suggestion) => (
                         <button
                           key={suggestion}
-                          onClick={() => loadBook(
-                            books.find((b: any) => b.name === suggestion)?.id || ''
-                          )}
+                          onClick={() =>
+                            loadBook(
+                              books.find((b: any) => b.name === suggestion)
+                                ?.id || "",
+                            )
+                          }
                           className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs transition-colors hover:border-[#071A2D]/30 hover:text-foreground"
                         >
                           {suggestion}
                         </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
+                      ),
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
 
-              {/* Book selected, no chapter */}
-              {selectedBook && selectedChapter === null && (
-                <div className="flex flex-col items-center justify-center py-16 text-center text-muted-foreground">
-                  <BookOpen className="h-12 w-12 mb-4 opacity-20" />
-                  <p className="text-sm font-medium">
-                    {t('choose_chapter', { book: selectedBook.name })}
-                  </p>
-                </div>
-              )}
+            {/* Book selected, no chapter */}
+            {selectedBook && selectedChapter === null && (
+              <div className="flex flex-col items-center justify-center py-16 text-center text-muted-foreground">
+                <BookOpen className="h-12 w-12 mb-4 opacity-20" />
+                <p className="text-sm font-medium">
+                  {t("choose_chapter", { book: selectedBook.name })}
+                </p>
+              </div>
+            )}
 
-              {/* Chapter loading */}
-              {selectedChapter !== null && loading && (
-                <div className="flex justify-center py-16">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" />
-                </div>
-              )}
+            {/* Chapter loading */}
+            {selectedChapter !== null && loading && (
+              <div className="flex justify-center py-16">
+                <Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" />
+              </div>
+            )}
 
-              {/* Chapter error */}
-              {selectedChapter !== null && !loading && error && (
-                <div className="rounded-sm border border-destructive/30 bg-destructive/5 p-6 text-center space-y-3">
-                  <AlertCircle className="h-8 w-8 text-destructive mx-auto" />
-                  <p className="text-sm text-destructive">{error}</p>
+            {/* Chapter error */}
+            {selectedChapter !== null && !loading && error && (
+              <div className="rounded-sm border border-destructive/30 bg-destructive/5 p-6 text-center space-y-3">
+                <AlertCircle className="h-8 w-8 text-destructive mx-auto" />
+                <p className="text-sm text-destructive">{error}</p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => loadChapter(selectedBook.id, selectedChapter!)}
+                >
+                  {tc("try_again")}
+                </Button>
+              </div>
+            )}
+
+            {/* Chapter content */}
+            {selectedChapter !== null && !loading && !error && chapterData && (
+              <div className="space-y-4">
+                <div className="space-y-3">
+                  {chapterData.verses?.map((v: any) => {
+                    const favKey = `${chapterData.book?.id}:${selectedChapter}:${v.number}`;
+                    const isFav = !!favorites[favKey];
+
+                    return (
+                      <div
+                        key={v.id}
+                        ref={(el) => {
+                          if (el) verseRefs.current.set(v.number, el);
+                          else verseRefs.current.delete(v.number);
+                        }}
+                        className={`group flex gap-3 py-1 px-2 -mx-2 rounded transition-colors ${
+                          highlightedVerse === v.number
+                            ? "bg-[#D39A2B]/15 bg-[#D39A2B]/10 ring-1 ring-[#D39A2B]/40 dark:ring-[#D39A2B]/50"
+                            : ""
+                        }`}
+                      >
+                        <span className="text-[#071A2D] font-medium text-xs w-6 text-right flex-shrink-0 mt-0.5">
+                          {v.number}
+                        </span>
+                        <p className={`flex-1 ${FONT_SIZE_CLASS[fontSize]}`}>
+                          {v.text}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => toggleVerseFavorite(v.number)}
+                          className={`flex-shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity ${
+                            isFav ? "opacity-100" : ""
+                          }`}
+                          title={
+                            isFav ? "Remover favorito" : "Adicionar favorito"
+                          }
+                        >
+                          <Bookmark
+                            className={`h-4 w-4 ${
+                              isFav
+                                ? "text-[#D39A2B] fill-[#D39A2B]"
+                                : "text-muted-foreground hover:text-[#D39A2B]"
+                            }`}
+                          />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="flex justify-between pt-4 border-t">
                   <Button
+                    variant="ghost"
                     size="sm"
-                    variant="outline"
-                    onClick={() => loadChapter(selectedBook.id, selectedChapter!)}
+                    disabled={selectedChapter <= 1}
+                    onClick={() =>
+                      loadChapter(chapterData.book.id, selectedChapter - 1)
+                    }
                   >
-                    {tc('try_again')}
+                    <ChevronLeft className="h-4 w-4" />
+                    {t("previous")}
+                  </Button>
+                  <span
+                    className={`text-muted-foreground self-center ${FONT_SIZE_CLASS[fontSize]}`}
+                  >
+                    {chapterData.book?.name} {selectedChapter}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    disabled={
+                      !selectedBook ||
+                      selectedChapter >= (selectedBook.chapters?.length || 1)
+                    }
+                    onClick={() =>
+                      loadChapter(chapterData.book.id, selectedChapter + 1)
+                    }
+                  >
+                    {t("next")}
+                    <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
-              )}
-
-              {/* Chapter content */}
-              {selectedChapter !== null && !loading && !error && chapterData && (
-                <div className="space-y-4">
-                  <div className="space-y-3">
-                    {chapterData.verses?.map((v: any) => {
-                      const favKey = `${chapterData.book?.id}:${selectedChapter}:${v.number}`;
-                      const isFav = !!favorites[favKey];
-
-                      return (
-                        <div
-                          key={v.id}
-                          ref={(el) => {
-                            if (el) verseRefs.current.set(v.number, el);
-                            else verseRefs.current.delete(v.number);
-                          }}
-                          className={`group flex gap-3 py-1 px-2 -mx-2 rounded transition-colors ${
-                            highlightedVerse === v.number
-                              ? 'bg-amber-100 dark:bg-amber-900/20 ring-1 ring-amber-300 dark:ring-amber-700'
-                              : ''
-                          }`}
-                        >
-                          <span className="text-[#071A2D] font-medium text-xs w-6 text-right flex-shrink-0 mt-0.5">
-                            {v.number}
-                          </span>
-                          <p className={`flex-1 ${FONT_SIZE_CLASS[fontSize]}`}>{v.text}</p>
-                          <button
-                            type="button"
-                            onClick={() => toggleVerseFavorite(v.number)}
-                            className={`flex-shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity ${
-                              isFav ? 'opacity-100' : ''
-                            }`}
-                            title={isFav ? 'Remover favorito' : 'Adicionar favorito'}
-                          >
-                            <Bookmark
-                              className={`h-4 w-4 ${
-                                isFav
-                                  ? 'text-amber-500 fill-amber-500'
-                                  : 'text-muted-foreground hover:text-amber-500'
-                              }`}
-                            />
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  <div className="flex justify-between pt-4 border-t">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      disabled={selectedChapter <= 1}
-                      onClick={() => loadChapter(chapterData.book.id, selectedChapter - 1)}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                      {t('previous')}
-                    </Button>
-                    <span className={`text-muted-foreground self-center ${FONT_SIZE_CLASS[fontSize]}`}>
-                      {chapterData.book?.name} {selectedChapter}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      disabled={
-                        !selectedBook ||
-                        selectedChapter >= (selectedBook.chapters?.length || 1)
-                      }
-                      onClick={() => loadChapter(chapterData.book.id, selectedChapter + 1)}
-                    >
-                      {t('next')}
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
+    </div>
   );
 }

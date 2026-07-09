@@ -550,8 +550,13 @@ export function ContentDocumentWorkspace({
             >
               <ArrowLeft className="h-4 w-4" /> Voltar para a biblioteca
             </Link>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Conteúdo</p>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]" style={{ fontFamily: 'var(--font-brand-display)' }}>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              Conteúdo
+            </p>
+            <h1
+              className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
               Editor do encontro
             </h1>
             <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
@@ -565,11 +570,11 @@ export function ContentDocumentWorkspace({
                 saveState === "error" &&
                   "border-destructive/20 bg-destructive/10 text-destructive",
                 saveState === "saved" &&
-                  "border-emerald-200 bg-emerald-50 text-emerald-700",
+                  "border-[#071A2D]/20 bg-[#071A2D]/05 text-[#071A2D]",
                 saveState === "saving" &&
                   "border-border/70 bg-muted/30 text-foreground",
                 saveState === "idle" &&
-                  "border-amber-200 bg-amber-50 text-amber-700",
+                  "border-[#D39A2B]/30 bg-[#D39A2B]/10 text-[#8A6418]",
               )}
             >
               {saveState === "saving"

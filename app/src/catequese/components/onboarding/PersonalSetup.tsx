@@ -1,23 +1,38 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { User, ArrowRight, Loader2, Clock, MapPin, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
-import { Button } from '../../../client/components/ui/button';
-import { Input } from '../../../client/components/ui/input';
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  User,
+  ArrowRight,
+  Loader2,
+  Clock,
+  MapPin,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
+import { Button } from "../../../client/components/ui/button";
+import { Input } from "../../../client/components/ui/input";
 
 interface PersonalSetupProps {
-  onComplete: (details: { className?: string; dayOfWeek?: string; startTime?: string; endTime?: string; location?: string }) => void;
+  onComplete: (details: {
+    className?: string;
+    dayOfWeek?: string;
+    startTime?: string;
+    endTime?: string;
+    location?: string;
+  }) => void;
   loading: boolean;
 }
 
-const DAY_KEYS = ['0', '1', '2', '3', '4', '5', '6'];
+const DAY_KEYS = ["0", "1", "2", "3", "4", "5", "6"];
 
 export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
-  const { t } = useTranslation('onboarding');
-  const [className, setClassName] = useState('');
-  const [dayOfWeek, setDayOfWeek] = useState('');
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
-  const [location, setLocation] = useState('');
+  const { t } = useTranslation("onboarding");
+  const [className, setClassName] = useState("");
+  const [dayOfWeek, setDayOfWeek] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [location, setLocation] = useState("");
   const [showOptionalDetails, setShowOptionalDetails] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -38,46 +53,57 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
       </div>
 
       <div className="max-w-md space-y-2.5">
-        <h2 className="text-2xl font-semibold tracking-tight text-foreground" style={{ fontFamily: 'var(--font-brand-display)' }}>{t('personal_setup.title')}</h2>
+        <h2
+          className="text-2xl font-semibold tracking-tight text-foreground"
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
+          {t("personal_setup.title")}
+        </h2>
         <div className="mx-auto h-px w-10 bg-[#D39A2B]" aria-hidden />
-        <p className="text-sm text-muted-foreground">{t('personal_setup.subtitle')}</p>
+        <p className="text-sm text-muted-foreground">
+          {t("personal_setup.subtitle")}
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">
         <div className="space-y-3 rounded-sm border border-border/70 bg-white p-4 text-left">
           <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            <span>{t('personal_setup.progress_title')}</span>
-            <span>{t('personal_setup.progress_status')}</span>
+            <span>{t("personal_setup.progress_title")}</span>
+            <span>{t("personal_setup.progress_status")}</span>
           </div>
           <div className="h-1.5 rounded-sm bg-muted">
             <div className="h-1.5 w-[38%] rounded-sm bg-[#D39A2B]" />
           </div>
           <div className="flex items-start gap-2 text-sm text-muted-foreground">
             <CheckCircle2 className="mt-0.5 h-4 w-4 text-foreground" />
-            <span>{t('personal_setup.progress_copy')}</span>
+            <span>{t("personal_setup.progress_copy")}</span>
           </div>
           <div className="space-y-2 rounded-sm border border-border/70 bg-muted/20 p-4">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              {t('personal_setup.value_title')}
+              {t("personal_setup.value_title")}
             </p>
             <ul className="space-y-1 text-xs text-muted-foreground">
-              <li>• {t('personal_setup.first_value')}</li>
-              <li>• {t('personal_setup.ai_generator')}</li>
-              <li>• {t('personal_setup.liturgical_calendar')}</li>
+              <li>• {t("personal_setup.first_value")}</li>
+              <li>• {t("personal_setup.ai_generator")}</li>
+              <li>• {t("personal_setup.liturgical_calendar")}</li>
             </ul>
           </div>
         </div>
 
         <div className="text-left">
-          <label htmlFor="ps-class-name" className="text-sm font-medium">{t('personal_setup.first_class_label')}</label>
+          <label htmlFor="ps-class-name" className="text-sm font-medium">
+            {t("personal_setup.first_class_label")}
+          </label>
           <Input
             id="ps-class-name"
             value={className}
             onChange={(e) => setClassName(e.target.value)}
-            placeholder={t('personal_setup.first_class_placeholder')}
+            placeholder={t("personal_setup.first_class_placeholder")}
             className="mt-1"
           />
-          <p className="mt-1 text-caption text-muted-foreground">{t('personal_setup.first_class_hint')}</p>
+          <p className="mt-1 text-caption text-muted-foreground">
+            {t("personal_setup.first_class_hint")}
+          </p>
         </div>
 
         <div className="rounded-sm border border-dashed border-border/80 bg-white/70 text-left">
@@ -86,40 +112,97 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
             onClick={() => setShowOptionalDetails((current) => !current)}
             className="flex w-full items-center justify-between px-4 py-3 text-sm font-medium text-foreground"
           >
-            <span>{showOptionalDetails ? t('personal_setup.optional_details_hide') : t('personal_setup.optional_details_toggle')}</span>
-            {showOptionalDetails ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            <span>
+              {showOptionalDetails
+                ? t("personal_setup.optional_details_hide")
+                : t("personal_setup.optional_details_toggle")}
+            </span>
+            {showOptionalDetails ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
           </button>
 
           {showOptionalDetails && (
             <div className="space-y-4 border-t border-border/70 px-4 pb-4 pt-3">
-              <p className="text-xs text-muted-foreground">{t('personal_setup.optional_details_hint')}</p>
+              <p className="text-xs text-muted-foreground">
+                {t("personal_setup.optional_details_hint")}
+              </p>
 
               <div>
-                <label htmlFor="ps-day" className="flex items-center gap-1 text-sm font-medium"><Clock className="h-3 w-3" /> {t('personal_setup.schedule_label')}</label>
+                <label
+                  htmlFor="ps-day"
+                  className="flex items-center gap-1 text-sm font-medium"
+                >
+                  <Clock className="h-3 w-3" />{" "}
+                  {t("personal_setup.schedule_label")}
+                </label>
                 <div className="mt-1 grid grid-cols-3 gap-2">
-                  <select id="ps-day" value={dayOfWeek} onChange={e => setDayOfWeek(e.target.value)} className="h-9 rounded-sm border border-input bg-background px-2 text-sm">
-                    <option value="">{t('personal_setup.day')}</option>
-                    {DAY_KEYS.map(d => <option key={d} value={d}>{t(`personal_setup.days.${d}`)}</option>)}
+                  <select
+                    id="ps-day"
+                    value={dayOfWeek}
+                    onChange={(e) => setDayOfWeek(e.target.value)}
+                    className="h-9 rounded-sm border border-input bg-background px-2 text-sm"
+                  >
+                    <option value="">{t("personal_setup.day")}</option>
+                    {DAY_KEYS.map((d) => (
+                      <option key={d} value={d}>
+                        {t(`personal_setup.days.${d}`)}
+                      </option>
+                    ))}
                   </select>
-                  <Input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} className="h-9" />
-                  <Input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} className="h-9" />
+                  <Input
+                    type="time"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    className="h-9"
+                  />
+                  <Input
+                    type="time"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    className="h-9"
+                  />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="ps-location" className="flex items-center gap-1 text-sm font-medium"><MapPin className="h-3 w-3" /> {t('personal_setup.location_label')}</label>
-                <Input id="ps-location" value={location} onChange={(e) => setLocation(e.target.value)} placeholder={t('personal_setup.location_placeholder')} className="mt-1" />
+                <label
+                  htmlFor="ps-location"
+                  className="flex items-center gap-1 text-sm font-medium"
+                >
+                  <MapPin className="h-3 w-3" />{" "}
+                  {t("personal_setup.location_label")}
+                </label>
+                <Input
+                  id="ps-location"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder={t("personal_setup.location_placeholder")}
+                  className="mt-1"
+                />
               </div>
             </div>
           )}
         </div>
 
-        <Button type="submit" className="w-full gap-2" size="lg" disabled={loading}>
+        <Button
+          type="submit"
+          className="w-full gap-2"
+          size="lg"
+          disabled={loading}
+        >
           {loading ? (
-            <><Loader2 className="h-4 w-4 animate-spin" /> {t('personal_setup.creating')}</>
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />{" "}
+              {t("personal_setup.creating")}
+            </>
           ) : (
             <>
-              {className.trim() ? t('personal_setup.enter_with_class') : t('personal_setup.enter_and_create_later')}
+              {className.trim()
+                ? t("personal_setup.enter_with_class")
+                : t("personal_setup.enter_and_create_later")}
               <ArrowRight className="h-4 w-4" />
             </>
           )}

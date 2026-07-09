@@ -21,7 +21,11 @@ interface ClassSetupStepProps {
 
 const DAY_KEYS = ["0", "1", "2", "3", "4", "5", "6"];
 
-export function ClassSetupStep({ onComplete, loading, initial }: ClassSetupStepProps) {
+export function ClassSetupStep({
+  onComplete,
+  loading,
+  initial,
+}: ClassSetupStepProps) {
   const { t } = useTranslation("onboarding");
   const [className, setClassName] = useState(initial?.className || "");
   const [dayOfWeek, setDayOfWeek] = useState(initial?.dayOfWeek || "");
@@ -29,7 +33,7 @@ export function ClassSetupStep({ onComplete, loading, initial }: ClassSetupStepP
   const [endTime, setEndTime] = useState(initial?.endTime || "");
   const [location, setLocation] = useState(initial?.location || "");
   const [showOptional, setShowOptional] = useState(
-    Boolean(initial?.dayOfWeek || initial?.startTime || initial?.location)
+    Boolean(initial?.dayOfWeek || initial?.startTime || initial?.location),
   );
   const [localError, setLocalError] = useState("");
 
@@ -63,7 +67,9 @@ export function ClassSetupStep({ onComplete, loading, initial }: ClassSetupStepP
           {t("class_setup.title")}
         </h2>
         <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
-        <p className="text-sm leading-relaxed text-muted-foreground">{t("class_setup.subtitle")}</p>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          {t("class_setup.subtitle")}
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -87,7 +93,9 @@ export function ClassSetupStep({ onComplete, loading, initial }: ClassSetupStepP
             disabled={loading}
             required
           />
-          <p className="text-xs text-muted-foreground">{t("class_setup.name_hint")}</p>
+          <p className="text-xs text-muted-foreground">
+            {t("class_setup.name_hint")}
+          </p>
         </div>
 
         <div className="border border-border/70 rounded-sm">
@@ -97,13 +105,21 @@ export function ClassSetupStep({ onComplete, loading, initial }: ClassSetupStepP
             className="flex w-full items-center justify-between px-4 py-3 text-sm font-medium text-foreground"
           >
             <span>
-              {showOptional ? t("class_setup.optional_hide") : t("class_setup.optional_show")}
+              {showOptional
+                ? t("class_setup.optional_hide")
+                : t("class_setup.optional_show")}
             </span>
-            {showOptional ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            {showOptional ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
           </button>
           {showOptional && (
             <div className="space-y-4 border-t border-border/70 px-4 pb-4 pt-3">
-              <p className="text-xs text-muted-foreground">{t("class_setup.optional_hint")}</p>
+              <p className="text-xs text-muted-foreground">
+                {t("class_setup.optional_hint")}
+              </p>
               <div className="space-y-1.5">
                 <Label htmlFor="ob-day" className="text-xs font-medium">
                   {t("class_setup.day")}
@@ -168,7 +184,11 @@ export function ClassSetupStep({ onComplete, loading, initial }: ClassSetupStepP
           )}
         </div>
 
-        <Button type="submit" disabled={loading} className="h-11 w-full rounded-sm shadow-none">
+        <Button
+          type="submit"
+          disabled={loading}
+          className="h-11 w-full rounded-sm shadow-none"
+        >
           {loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

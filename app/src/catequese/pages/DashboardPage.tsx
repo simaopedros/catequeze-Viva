@@ -1,19 +1,31 @@
-import { useTranslation } from 'react-i18next';
-import { useQuery, getDashboardStats } from 'wasp/client/operations';
-import { useUserContext } from '../../client/hooks/useUserContext';
-import { useActiveParish } from '../../client/hooks/useActiveParish';
-import { useActiveWorkspace } from '../../client/hooks/useActiveWorkspace';
-import { GuardianDashboard } from '../components/dashboard/GuardianDashboard';
-import { CatechumenDashboard } from '../components/dashboard/CatechumenDashboard';
-import { ReviewerDashboard } from '../components/dashboard/ReviewerDashboard';
-import { PastoralDashboard } from '../components/dashboard/PastoralDashboard';
-import { CoordinatorDashboard } from '../components/dashboard/CoordinatorDashboard';
-import { InstitutionalDashboard } from '../components/dashboard/InstitutionalDashboard';
-import { SkeletonPage } from '../../client/components/Skeletons';
+import { useTranslation } from "react-i18next";
+import { useQuery, getDashboardStats } from "wasp/client/operations";
+import { useUserContext } from "../../client/hooks/useUserContext";
+import { useActiveParish } from "../../client/hooks/useActiveParish";
+import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
+import { GuardianDashboard } from "../components/dashboard/GuardianDashboard";
+import { CatechumenDashboard } from "../components/dashboard/CatechumenDashboard";
+import { ReviewerDashboard } from "../components/dashboard/ReviewerDashboard";
+import { PastoralDashboard } from "../components/dashboard/PastoralDashboard";
+import { CoordinatorDashboard } from "../components/dashboard/CoordinatorDashboard";
+import { InstitutionalDashboard } from "../components/dashboard/InstitutionalDashboard";
+import { SkeletonPage } from "../../client/components/Skeletons";
 
-const INSTITUTIONAL_PLANS = ['unlimited', 'parish', 'parish_essential', 'parish_complete', 'diocese'];
-const INSTITUTIONAL_TYPES = ['PARISH', 'DIOCESE'];
-const STAFF_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'];
+const INSTITUTIONAL_PLANS = [
+  "unlimited",
+  "parish",
+  "parish_essential",
+  "parish_complete",
+  "diocese",
+];
+const INSTITUTIONAL_TYPES = ["PARISH", "DIOCESE"];
+const STAFF_ROLES = [
+  "SUPER_ADMIN",
+  "DIOCESE_ADMIN",
+  "PARISH_COORDINATOR",
+  "COMMUNITY_COORDINATOR",
+  "PERSONAL_OWNER",
+];
 
 export default function DashboardPage() {
   const { activeParishId } = useActiveParish();
@@ -23,15 +35,13 @@ export default function DashboardPage() {
     {
       staleTime: 60000,
       refetchOnWindowFocus: false,
-    }
+    },
   );
   const { userRole, isLoading: loadingCtx } = useUserContext();
   const { workspaceType, workspacePlan } = useActiveWorkspace();
 
   if (loading || loadingCtx) {
-    return (
-        <SkeletonPage />
-    );
+    return <SkeletonPage />;
   }
 
   // Institutional dashboard for PARISH/DIOCESE workspaces with active institutional plan
@@ -40,9 +50,7 @@ export default function DashboardPage() {
     INSTITUTIONAL_PLANS.includes(workspacePlan) &&
     STAFF_ROLES.includes(userRole)
   ) {
-    return (
-        <InstitutionalDashboard />
-    );
+    return <InstitutionalDashboard />;
   }
 
   const roleDashboards: Record<string, React.ComponentType<{ stats: any }>> = {
@@ -54,8 +62,5 @@ export default function DashboardPage() {
 
   const DashboardComponent = roleDashboards[userRole] || CoordinatorDashboard;
 
-  return (
-      <DashboardComponent stats={stats} />
-  );
+  return <DashboardComponent stats={stats} />;
 }
-

@@ -176,7 +176,7 @@ export function ContentDocumentRenderer({
   return (
     <div
       className={cn(
-        "prose prose-slate max-w-none prose-headings:font-semibold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:leading-7 prose-blockquote:border-l-primary prose-blockquote:text-foreground prose-li:leading-7",
+        "prose prose-neutral max-w-none prose-headings:font-semibold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:leading-7 prose-blockquote:border-l-[#071A2D] prose-blockquote:text-foreground prose-li:leading-7",
         className,
       )}
     >

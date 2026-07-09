@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -7,10 +7,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from './ui/dialog';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Loader2 } from 'lucide-react';
+} from "./ui/dialog";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Loader2 } from "lucide-react";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -19,7 +19,7 @@ interface ConfirmDialogProps {
   description?: string;
   confirmLabel?: string;
   cancelLabel?: string;
-  variant?: 'default' | 'destructive';
+  variant?: "default" | "destructive";
   onConfirm: () => void;
   loading?: boolean;
   confirmPhrase?: string;
@@ -32,16 +32,16 @@ export function ConfirmDialog({
   description,
   confirmLabel,
   cancelLabel,
-  variant = 'default',
+  variant = "default",
   onConfirm,
   loading = false,
   confirmPhrase,
 }: ConfirmDialogProps) {
-  const { t } = useTranslation('common');
-  const [typed, setTyped] = useState('');
+  const { t } = useTranslation("common");
+  const [typed, setTyped] = useState("");
 
   useEffect(() => {
-    if (!open) setTyped('');
+    if (!open) setTyped("");
   }, [open]);
 
   const phraseRequired = !!confirmPhrase;
@@ -57,7 +57,7 @@ export function ConfirmDialog({
         {phraseRequired && (
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">
-              {t('confirm_phrase_hint', { phrase: confirmPhrase })}
+              {t("confirm_phrase_hint", { phrase: confirmPhrase })}
             </label>
             <Input
               value={typed}
@@ -68,16 +68,20 @@ export function ConfirmDialog({
           </div>
         )}
         <DialogFooter className="gap-2 sm:gap-0">
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
-            {cancelLabel ?? t('cancel')}
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={loading}
+          >
+            {cancelLabel ?? t("cancel")}
           </Button>
           <Button
-            variant={variant === 'destructive' ? 'destructive' : 'default'}
+            variant={variant === "destructive" ? "destructive" : "default"}
             onClick={onConfirm}
             disabled={loading || !phraseMatches}
           >
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {confirmLabel ?? t('confirm')}
+            {confirmLabel ?? t("confirm")}
           </Button>
         </DialogFooter>
       </DialogContent>

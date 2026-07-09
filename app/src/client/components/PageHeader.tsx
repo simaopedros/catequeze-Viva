@@ -1,8 +1,8 @@
-import { Link } from 'react-router';
-import { ArrowLeft } from 'lucide-react';
-import { Button } from './ui/button';
-import { cn } from '../utils';
-import type { ReactNode } from 'react';
+import { Link } from "react-router";
+import { ArrowLeft } from "lucide-react";
+import { Button } from "./ui/button";
+import { cn } from "../utils";
+import type { ReactNode } from "react";
 
 interface BreadcrumbItem {
   label: string;
@@ -40,10 +40,12 @@ export function PageHeader({
 }: PageHeaderProps) {
   return (
     <div className={cn(className)}>
-      <div className={cn(
-        'flex flex-col sm:flex-row sm:items-center justify-between gap-4',
-        compact ? 'pb-1' : 'pb-0'
-      )}>
+      <div
+        className={cn(
+          "flex flex-col sm:flex-row sm:items-center justify-between gap-4",
+          compact ? "pb-1" : "pb-0",
+        )}
+      >
         <div className="flex items-center gap-3 min-w-0">
           {backTo && (
             <Button variant="ghost" size="icon" asChild className="shrink-0">
@@ -59,11 +61,16 @@ export function PageHeader({
                   <span key={i} className="flex items-center gap-1.5 shrink-0">
                     {i > 0 && <span className="text-border">/</span>}
                     {crumb.href ? (
-                      <Link to={crumb.href} className="hover:text-foreground transition-colors truncate max-w-[100px] sm:max-w-[160px]">
+                      <Link
+                        to={crumb.href}
+                        className="hover:text-foreground transition-colors truncate max-w-[100px] sm:max-w-[160px]"
+                      >
                         {crumb.label}
                       </Link>
                     ) : (
-                      <span className="text-foreground truncate max-w-[100px] sm:max-w-[160px]">{crumb.label}</span>
+                      <span className="text-foreground truncate max-w-[100px] sm:max-w-[160px]">
+                        {crumb.label}
+                      </span>
                     )}
                   </span>
                 ))}
@@ -71,10 +78,10 @@ export function PageHeader({
             )}
             <h1
               className={cn(
-                'font-semibold tracking-tight flex items-center gap-2 text-foreground',
-                compact ? 'text-xl' : 'text-2xl sm:text-[1.75rem]'
+                "font-semibold tracking-tight flex items-center gap-2 text-foreground",
+                compact ? "text-xl" : "text-2xl sm:text-[1.75rem]",
               )}
-              style={{ fontFamily: 'var(--font-brand-display)' }}
+              style={{ fontFamily: "var(--font-brand-display)" }}
             >
               {title}
               {count !== undefined && (
@@ -83,11 +90,15 @@ export function PageHeader({
                 </span>
               )}
             </h1>
-            {!compact && <div className="mt-2 h-px w-10 bg-[#D39A2B]" aria-hidden />}
+            {!compact && (
+              <div className="mt-2 h-px w-10 bg-[#D39A2B]" aria-hidden />
+            )}
           </div>
         </div>
         {subtitle && !compact && (
-          <p className="text-body-sm text-text-secondary max-w-xl leading-relaxed">{subtitle}</p>
+          <p className="text-body-sm text-text-secondary max-w-xl leading-relaxed">
+            {subtitle}
+          </p>
         )}
         {children && <div className="flex gap-2 shrink-0">{children}</div>}
       </div>

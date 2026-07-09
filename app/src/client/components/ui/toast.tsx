@@ -41,7 +41,7 @@ function ToastViewport({
       className={cn(
         "fixed z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:flex-col md:max-w-[420px]",
         positionClasses,
-        className
+        className,
       )}
       {...props}
     />
@@ -61,7 +61,7 @@ const toastVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  }
+  },
 );
 
 function Toast({
@@ -88,7 +88,7 @@ function ToastAction({
       data-slot="toast-action"
       className={cn(
         "inline-flex h-8 shrink-0 items-center justify-center rounded-sm border border-transparent bg-[#071A2D] px-3 text-sm font-medium text-white transition-colors hover:bg-[#0a2540] focus:outline-none focus:ring-1 focus:ring-[#071A2D]/30 group-[.destructive]:border-muted/40 group-[.destructive]:hover:border-destructive/30 group-[.destructive]:hover:bg-destructive group-[.destructive]:hover:text-destructive-foreground group-[.destructive]:focus:ring-destructive disabled:pointer-events-none disabled:opacity-50",
-        className
+        className,
       )}
       {...props}
     />
@@ -104,7 +104,7 @@ function ToastClose({
       data-slot="toast-close"
       className={cn(
         "absolute right-1 top-1 rounded-sm p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-1 group-hover:opacity-100 group-[.destructive]:text-red-300 group-[.destructive]:hover:text-red-50 group-[.destructive]:focus:ring-red-400 group-[.destructive]:focus:ring-offset-red-600",
-        className
+        className,
       )}
       toast-close=""
       {...props}

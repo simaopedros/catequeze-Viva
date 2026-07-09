@@ -1,27 +1,39 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useSearchParams, useNavigate } from 'react-router';
-import { Sparkles, FilePenLine, ArrowLeft, MessageSquareText, Pencil, Puzzle, Smartphone, Wand2, Clock } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
-import { InteractiveCard } from '../../../client/components/InteractiveCard';
-import { AppPageHeader } from '../../../client/components/brand/AppChrome';
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useSearchParams, useNavigate } from "react-router";
+import {
+  Sparkles,
+  FilePenLine,
+  ArrowLeft,
+  MessageSquareText,
+  Pencil,
+  Puzzle,
+  Smartphone,
+  Wand2,
+  Clock,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { InteractiveCard } from "../../../client/components/InteractiveCard";
+import { AppPageHeader } from "../../../client/components/brand/AppChrome";
 
-const RECENT_FLOWS_KEY = 'cv-aihub-recent';
+const RECENT_FLOWS_KEY = "cv-aihub-recent";
 
 function loadRecentFlows(): string[] {
   try {
     const raw = localStorage.getItem(RECENT_FLOWS_KEY);
     return raw ? JSON.parse(raw) : [];
-  } catch { return []; }
+  } catch {
+    return [];
+  }
 }
 
 function saveRecentFlow(flowKey: string) {
-  const flows = loadRecentFlows().filter(f => f !== flowKey);
+  const flows = loadRecentFlows().filter((f) => f !== flowKey);
   flows.unshift(flowKey);
   localStorage.setItem(RECENT_FLOWS_KEY, JSON.stringify(flows.slice(0, 5)));
 }
 
-type HubStep = 'menu' | 'existing';
+type HubStep = "menu" | "existing";
 
 interface SubOption {
   key: string;
@@ -34,92 +46,96 @@ interface SubOption {
 
 const EXISTING_OPTIONS: SubOption[] = [
   {
-    key: 'improve',
-    titleKey: 'hub.existing_improve',
-    descKey: 'hub.existing_improve_desc',
+    key: "improve",
+    titleKey: "hub.existing_improve",
+    descKey: "hub.existing_improve_desc",
     icon: Pencil,
-    mode: 'improve-content',
-    intent: 'improve',
+    mode: "improve-content",
+    intent: "improve",
   },
   {
-    key: 'activity',
-    titleKey: 'hub.existing_activity',
-    descKey: 'hub.existing_activity_desc',
+    key: "activity",
+    titleKey: "hub.existing_activity",
+    descKey: "hub.existing_activity_desc",
     icon: Puzzle,
-    mode: 'generate-activity',
+    mode: "generate-activity",
   },
   {
-    key: 'whatsapp',
-    titleKey: 'hub.existing_whatsapp',
-    descKey: 'hub.existing_whatsapp_desc',
+    key: "whatsapp",
+    titleKey: "hub.existing_whatsapp",
+    descKey: "hub.existing_whatsapp_desc",
     icon: Smartphone,
-    mode: 'generate-whatsapp',
+    mode: "generate-whatsapp",
   },
   {
-    key: 'adapt',
-    titleKey: 'hub.existing_adapt',
-    descKey: 'hub.existing_adapt_desc',
+    key: "adapt",
+    titleKey: "hub.existing_adapt",
+    descKey: "hub.existing_adapt_desc",
     icon: Wand2,
-    mode: 'improve-content',
-    intent: 'adapt',
+    mode: "improve-content",
+    intent: "adapt",
   },
 ];
 
 export function AIHubHome() {
-  const { t } = useTranslation('ai');
+  const { t } = useTranslation("ai");
   const [, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [step, setStep] = useState<HubStep>('menu');
+  const [step, setStep] = useState<HubStep>("menu");
 
   const handleCreateNew = () => {
-    setSearchParams({ mode: 'create-meeting' });
+    setSearchParams({ mode: "create-meeting" });
   };
 
   const handleCreateManual = () => {
-    navigate('/app/content-library/new');
+    navigate("/app/content-library/new");
   };
 
   const handleExisting = () => {
-    setStep('existing');
+    setStep("existing");
   };
 
   const handleSubOption = (option: SubOption) => {
-    setSearchParams(option.intent ? { mode: option.mode, intent: option.intent } : { mode: option.mode });
+    setSearchParams(
+      option.intent
+        ? { mode: option.mode, intent: option.intent }
+        : { mode: option.mode },
+    );
   };
 
   const handleAskAssistant = () => {
-    setSearchParams({ assistant: 'open' });
-    window.dispatchEvent(new CustomEvent('open-ai-widget'));
+    setSearchParams({ assistant: "open" });
+    window.dispatchEvent(new CustomEvent("open-ai-widget"));
   };
 
   const handleBack = () => {
-    setStep('menu');
+    setStep("menu");
   };
 
   // ── Step 2: "Usar um conteúdo já criado" sub-options ──────────────────
-  if (step === 'existing') {
+  if (step === "existing") {
     return (
       <div className="mx-auto w-full max-w-5xl space-y-8 px-1 py-4 sm:px-0">
         <AppPageHeader
-          eyebrow={t('hub.eyebrow', { defaultValue: 'Copiloto' })}
-          title={t('hub.existing_title')}
-          subtitle={t('hub.existing_subtitle')}
+          eyebrow={t("hub.eyebrow", { defaultValue: "Copiloto" })}
+          title={t("hub.existing_title")}
+          subtitle={t("hub.existing_subtitle")}
         />
 
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-            {EXISTING_OPTIONS.map((option) => (
-              <InteractiveCard
-                key={option.key}
-                icon={option.icon}
-                title={t(option.titleKey)}
-                description={t(option.descKey)}
-                onClick={() => handleSubOption(option)}
-                showArrow
-                flat
-                className="h-full rounded-sm border-border/70 bg-white p-5 hover:bg-muted/20"
-              />
-            ))}
-          </div>
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          {EXISTING_OPTIONS.map((option) => (
+            <InteractiveCard
+              key={option.key}
+              icon={option.icon}
+              title={t(option.titleKey)}
+              description={t(option.descKey)}
+              onClick={() => handleSubOption(option)}
+              showArrow
+              flat
+              className="h-full rounded-sm border-border/70 bg-white p-5 hover:bg-muted/20"
+            />
+          ))}
+        </div>
 
         <div className="text-center">
           <button
@@ -127,7 +143,7 @@ export function AIHubHome() {
             className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" />
-            {t('common:back')}
+            {t("common:back")}
           </button>
         </div>
       </div>
@@ -140,90 +156,95 @@ export function AIHubHome() {
   return (
     <div className="mx-auto w-full max-w-5xl space-y-8 px-1 py-4 sm:px-0">
       <AppPageHeader
-        eyebrow={t('hub.eyebrow', { defaultValue: 'Copiloto' })}
-        title={t('hub.title')}
-        subtitle={t('hub.subtitle')}
+        eyebrow={t("hub.eyebrow", { defaultValue: "Copiloto" })}
+        title={t("hub.title")}
+        subtitle={t("hub.subtitle")}
       />
 
-        <div className="grid gap-3 lg:grid-cols-3">
-          <InteractiveCard
-            icon={FilePenLine}
-            title="Criar manualmente"
-            description="Monte o encontro no editor visual, adicione referências e recursos, e use IA apenas se quiser."
-            onClick={handleCreateManual}
-            showArrow
-            flat
-            className="h-full rounded-sm border-border/70 bg-white p-5 hover:bg-muted/20"
-          >
-            <p className="mt-3 max-w-[28ch] text-sm leading-relaxed text-muted-foreground">
-              Começar do zero e editar os blocos manualmente
-            </p>
-          </InteractiveCard>
-          <InteractiveCard
-            icon={Sparkles}
-            title={t('hub.create_new')}
-            description={t('hub.create_new_desc')}
-            onClick={() => { saveRecentFlow('create-meeting'); handleCreateNew(); }}
-            showArrow
-            flat
-            className="h-full rounded-sm border-border/70 bg-white p-5 hover:bg-muted/20"
-          >
-            <p className="mt-3 max-w-[28ch] text-sm leading-relaxed text-muted-foreground">
-              {t('hub.example_create')}
-            </p>
-          </InteractiveCard>
-          <InteractiveCard
-            icon={FilePenLine}
-            title={t('hub.use_existing')}
-            description={t('hub.use_existing_desc')}
-            onClick={handleExisting}
-            showArrow
-            flat
-            className="h-full rounded-sm border-border/70 bg-white p-5 hover:bg-muted/20"
-          >
-            <p className="mt-3 max-w-[28ch] text-sm leading-relaxed text-muted-foreground">
-              {t('hub.example_existing')}
-            </p>
-          </InteractiveCard>
-        </div>
+      <div className="grid gap-3 lg:grid-cols-3">
+        <InteractiveCard
+          icon={FilePenLine}
+          title="Criar manualmente"
+          description="Monte o encontro no editor visual, adicione referências e recursos, e use IA apenas se quiser."
+          onClick={handleCreateManual}
+          showArrow
+          flat
+          className="h-full rounded-sm border-border/70 bg-white p-5 hover:bg-muted/20"
+        >
+          <p className="mt-3 max-w-[28ch] text-sm leading-relaxed text-muted-foreground">
+            Começar do zero e editar os blocos manualmente
+          </p>
+        </InteractiveCard>
+        <InteractiveCard
+          icon={Sparkles}
+          title={t("hub.create_new")}
+          description={t("hub.create_new_desc")}
+          onClick={() => {
+            saveRecentFlow("create-meeting");
+            handleCreateNew();
+          }}
+          showArrow
+          flat
+          className="h-full rounded-sm border-border/70 bg-white p-5 hover:bg-muted/20"
+        >
+          <p className="mt-3 max-w-[28ch] text-sm leading-relaxed text-muted-foreground">
+            {t("hub.example_create")}
+          </p>
+        </InteractiveCard>
+        <InteractiveCard
+          icon={FilePenLine}
+          title={t("hub.use_existing")}
+          description={t("hub.use_existing_desc")}
+          onClick={handleExisting}
+          showArrow
+          flat
+          className="h-full rounded-sm border-border/70 bg-white p-5 hover:bg-muted/20"
+        >
+          <p className="mt-3 max-w-[28ch] text-sm leading-relaxed text-muted-foreground">
+            {t("hub.example_existing")}
+          </p>
+        </InteractiveCard>
+      </div>
 
-        {recentFlows.length > 0 && (
-          <div className="border-t border-border/70 pt-4">
-            <p className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              <Clock className="h-3 w-3" />
-              {t('hub.recent_flows')}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {recentFlows.map((flow) => {
-                const label = t(`hub.recent_${flow}`, flow);
-                const mode = flow === 'create-meeting' ? 'create-meeting' : 'improve-content';
-                return (
-                  <button
-                    key={flow}
-                    onClick={() => setSearchParams({ mode })}
-                    className="rounded-sm border border-border/70 bg-white px-3 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted/30 hover:text-foreground"
-                  >
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
+      {recentFlows.length > 0 && (
+        <div className="border-t border-border/70 pt-4">
+          <p className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            <Clock className="h-3 w-3" />
+            {t("hub.recent_flows")}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {recentFlows.map((flow) => {
+              const label = t(`hub.recent_${flow}`, flow);
+              const mode =
+                flow === "create-meeting"
+                  ? "create-meeting"
+                  : "improve-content";
+              return (
+                <button
+                  key={flow}
+                  onClick={() => setSearchParams({ mode })}
+                  className="rounded-sm border border-border/70 bg-white px-3 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted/30 hover:text-foreground"
+                >
+                  {label}
+                </button>
+              );
+            })}
           </div>
-        )}
+        </div>
+      )}
 
       <div className="border-t border-border/70 pt-4 text-center">
         <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-          {t('hub.assistant_context')}
+          {t("hub.assistant_context")}
         </p>
         <button
           onClick={handleAskAssistant}
           className="inline-flex items-center gap-2 rounded-sm border border-dashed border-border/80 px-4 py-2.5 text-sm text-muted-foreground transition-colors hover:border-[#071A2D]/40 hover:bg-muted/20 hover:text-foreground"
         >
           <MessageSquareText className="h-4 w-4" />
-          <span>{t('hub.ask_cta')}</span>
+          <span>{t("hub.ask_cta")}</span>
         </button>
       </div>
     </div>
   );
 }
-

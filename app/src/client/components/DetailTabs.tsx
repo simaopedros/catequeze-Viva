@@ -1,4 +1,4 @@
-import { cn } from '../utils';
+import { cn } from "../utils";
 
 export interface DetailTabOption {
   id: string;
@@ -12,10 +12,21 @@ interface DetailTabsProps {
   className?: string;
 }
 
-export function DetailTabs({ tabs, value, onChange, className }: DetailTabsProps) {
+export function DetailTabs({
+  tabs,
+  value,
+  onChange,
+  className,
+}: DetailTabsProps) {
   return (
-    <div className={cn('flex gap-0 border-b overflow-x-auto no-scrollbar scroll-touch -mx-4 px-4 sm:mx-0 sm:px-0', className)} role="tablist">
-      {tabs.map(tab => (
+    <div
+      className={cn(
+        "flex gap-0 border-b overflow-x-auto no-scrollbar scroll-touch -mx-4 px-4 sm:mx-0 sm:px-0",
+        className,
+      )}
+      role="tablist"
+    >
+      {tabs.map((tab) => (
         <button
           key={tab.id}
           type="button"
@@ -23,11 +34,11 @@ export function DetailTabs({ tabs, value, onChange, className }: DetailTabsProps
           aria-selected={value === tab.id}
           onClick={() => onChange(tab.id)}
           className={cn(
-            'relative px-4 py-2.5 text-sm font-medium transition-all duration-[var(--motion-duration-fast,150ms)] ease-[var(--motion-easing-default,ease-out)] whitespace-nowrap shrink-0',
-            'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
+            "relative px-4 py-2.5 text-sm font-medium transition-all duration-[var(--motion-duration-fast,150ms)] ease-[var(--motion-easing-default,ease-out)] whitespace-nowrap shrink-0",
+            "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
             value === tab.id
-              ? 'text-foreground'
-              : 'text-muted-foreground hover:text-foreground',
+              ? "text-foreground"
+              : "text-muted-foreground hover:text-foreground",
           )}
         >
           {tab.label}

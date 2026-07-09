@@ -3,11 +3,11 @@
  * signup -> onboarding -> billing flow, so the chosen account LEVEL (personal
  * vs institutional) and billing interval (monthly vs annual) are preserved.
  */
-const INTENDED_PLAN_KEY = 'cv-intended-plan';
-const INTENDED_INTERVAL_KEY = 'cv-intended-interval';
+const INTENDED_PLAN_KEY = "cv-intended-plan";
+const INTENDED_INTERVAL_KEY = "cv-intended-interval";
 
-export type IntendedPlanLevel = 'personal' | 'institutional';
-export type BillingInterval = 'monthly' | 'annual';
+export type IntendedPlanLevel = "personal" | "institutional";
+export type BillingInterval = "monthly" | "annual";
 
 export function setIntendedPlan(planId: string): void {
   try {
@@ -45,19 +45,29 @@ export function setIntendedInterval(interval: BillingInterval): void {
 export function getIntendedInterval(): BillingInterval {
   try {
     const v = localStorage.getItem(INTENDED_INTERVAL_KEY);
-    return v === 'annual' ? 'annual' : 'monthly';
+    return v === "annual" ? "annual" : "monthly";
   } catch {
-    return 'monthly';
+    return "monthly";
   }
 }
 
-export function isInstitutionalPlanId(planId: string | null | undefined): boolean {
+export function isInstitutionalPlanId(
+  planId: string | null | undefined,
+): boolean {
   if (!planId) return false;
   // Unlimited is the only institutional plan; legacy ids kept for safety.
-  const institutional = ['unlimited', 'parish', 'parish_essential', 'parish_complete', 'diocese'];
+  const institutional = [
+    "unlimited",
+    "parish",
+    "parish_essential",
+    "parish_complete",
+    "diocese",
+  ];
   return institutional.includes(planId.toLowerCase());
 }
 
-export function planLevel(planId: string | null | undefined): IntendedPlanLevel {
-  return isInstitutionalPlanId(planId) ? 'institutional' : 'personal';
+export function planLevel(
+  planId: string | null | undefined,
+): IntendedPlanLevel {
+  return isInstitutionalPlanId(planId) ? "institutional" : "personal";
 }

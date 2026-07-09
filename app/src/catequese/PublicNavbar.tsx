@@ -5,7 +5,11 @@ import { Menu, X } from "lucide-react";
 import { Button } from "../client/components/ui/button";
 import { BrandLockup } from "../client/components/brand/Brand";
 
-export function PublicNavbar({ hidePricing = false }: { hidePricing?: boolean }) {
+export function PublicNavbar({
+  hidePricing = false,
+}: {
+  hidePricing?: boolean;
+}) {
   const { t } = useTranslation("publicNav");
   const [open, setOpen] = useState(false);
 
@@ -73,7 +77,11 @@ export function PublicNavbar({ hidePricing = false }: { hidePricing?: boolean })
           aria-label={open ? t("closeMenu") : t("openMenu")}
           aria-expanded={open}
         >
-          {open ? <X className="h-5 w-5" strokeWidth={1.75} /> : <Menu className="h-5 w-5" strokeWidth={1.75} />}
+          {open ? (
+            <X className="h-5 w-5" strokeWidth={1.75} />
+          ) : (
+            <Menu className="h-5 w-5" strokeWidth={1.75} />
+          )}
         </button>
       </div>
 
@@ -114,7 +122,12 @@ export function PublicNavbar({ hidePricing = false }: { hidePricing?: boolean })
             </nav>
 
             <div className="mt-6 flex flex-col gap-2.5">
-              <Button size="lg" variant="default" asChild className="h-11 w-full rounded-sm shadow-none">
+              <Button
+                size="lg"
+                variant="default"
+                asChild
+                className="h-11 w-full rounded-sm shadow-none"
+              >
                 <Link to="/signup" onClick={() => setOpen(false)}>
                   {t("cta")}
                 </Link>

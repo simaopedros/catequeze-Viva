@@ -1,12 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import {
-  Star,
-  Check,
-  CreditCard,
-  PiggyBank,
-} from "lucide-react";
+import { Star, Check, CreditCard, PiggyBank } from "lucide-react";
 import { PublicNavbar } from "../PublicNavbar";
 import { PublicFooter } from "../PublicFooter";
 import { useAuth } from "wasp/client/auth";
@@ -281,7 +276,10 @@ export default function PricingPage() {
             </h2>
             <div className="space-y-4">
               {faq.map((f, i) => (
-                <div key={i} className="rounded-sm border border-border/70 bg-white p-5">
+                <div
+                  key={i}
+                  className="rounded-sm border border-border/70 bg-white p-5"
+                >
                   <h3 className="font-semibold">{f.q}</h3>
                   <p className="text-sm text-muted-foreground mt-2">{f.a}</p>
                 </div>

@@ -1,34 +1,38 @@
-import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router';
-import { Button } from '../../../client/components/ui/button';
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router";
+import { Button } from "../../../client/components/ui/button";
 import {
   AppPageHeader,
   AppPanel,
   AppEyebrow,
-} from '../../../client/components/brand/AppChrome';
-import { EmptyState } from '../../../client/components/EmptyState';
-import { formatDate } from '../../../i18n/format';
-import { useLocale } from '../../../i18n/useLocale';
-import { Heart, Calendar, Users } from 'lucide-react';
+} from "../../../client/components/brand/AppChrome";
+import { EmptyState } from "../../../client/components/EmptyState";
+import { formatDate } from "../../../i18n/format";
+import { useLocale } from "../../../i18n/useLocale";
+import { Heart, Calendar, Users } from "lucide-react";
 
 interface GuardianDashboardProps {
   stats: any;
 }
 
 export function GuardianDashboard({ stats }: GuardianDashboardProps) {
-  const { t } = useTranslation('common');
-  const { t: tn } = useTranslation('navigation');
+  const { t } = useTranslation("common");
+  const { t: tn } = useTranslation("navigation");
   const { currentLocale } = useLocale();
 
-  const dateOpts = { weekday: 'short' as const, day: '2-digit' as const, month: '2-digit' as const };
+  const dateOpts = {
+    weekday: "short" as const,
+    day: "2-digit" as const,
+    month: "2-digit" as const,
+  };
   const hasDependents = stats?.dependents?.length > 0;
 
   return (
     <div className="space-y-8">
       <AppPageHeader
-        eyebrow={t('guardian_portal')}
-        title={t('guardian_portal')}
-        subtitle={t('guardian_subtitle')}
+        eyebrow={t("guardian_portal")}
+        title={t("guardian_portal")}
+        subtitle={t("guardian_subtitle")}
       />
 
       {hasDependents ? (
@@ -49,7 +53,8 @@ export function GuardianDashboard({ stats }: GuardianDashboardProps) {
                     {d.firstName} {d.lastName}
                   </p>
                   <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                    {d.enrollments?.map((e: any) => e.class.name).join(', ') || t('no_class')}
+                    {d.enrollments?.map((e: any) => e.class.name).join(", ") ||
+                      t("no_class")}
                   </p>
                 </div>
               </div>
@@ -57,19 +62,24 @@ export function GuardianDashboard({ stats }: GuardianDashboardProps) {
           ))}
         </div>
       ) : (
-        <EmptyState icon={Heart} title={t('no_dependents')} compact />
+        <EmptyState icon={Heart} title={t("no_dependents")} compact />
       )}
 
       {stats?.upcomingMeetings?.length > 0 && (
         <AppPanel>
           <AppEyebrow className="mb-3 flex items-center gap-1.5">
             <Calendar className="h-3.5 w-3.5" />
-            {t('upcoming_meetings')}
+            {t("upcoming_meetings")}
           </AppEyebrow>
           <div className="divide-y divide-border/70">
             {stats.upcomingMeetings.map((m: any) => (
-              <div key={m.id} className="flex items-center justify-between py-2.5 text-sm">
-                <span className="mr-2 truncate font-medium">{m.class?.name}</span>
+              <div
+                key={m.id}
+                className="flex items-center justify-between py-2.5 text-sm"
+              >
+                <span className="mr-2 truncate font-medium">
+                  {m.class?.name}
+                </span>
                 <span className="shrink-0 text-xs text-muted-foreground">
                   {formatDate(m.date, currentLocale, dateOpts)}
                 </span>
@@ -83,13 +93,13 @@ export function GuardianDashboard({ stats }: GuardianDashboardProps) {
         <Button asChild variant="outline" className="h-10 rounded-sm">
           <Link to="/app/catechumens">
             <Users className="mr-2 h-4 w-4" />
-            {tn('catechumens')}
+            {tn("catechumens")}
           </Link>
         </Button>
         <Button asChild variant="outline" className="h-10 rounded-sm">
           <Link to="/app/calendar">
             <Calendar className="mr-2 h-4 w-4" />
-            {t('calendar')}
+            {t("calendar")}
           </Link>
         </Button>
       </div>

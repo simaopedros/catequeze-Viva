@@ -1,21 +1,21 @@
-import { ReactNode, useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
-import { useAuth } from 'wasp/client/auth';
+import { ReactNode, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router";
+import { useAuth } from "wasp/client/auth";
 import {
   hasPersonalAccess,
   isBillingActive,
   isOnProductTrial,
   resolvePlanId,
-} from '../../shared/pricing';
-import { useActiveWorkspace } from '../../client/hooks/useActiveWorkspace';
-import { buildBillingJourneyHref } from '../lib/upgradeJourney';
-import { PaymentPlanId } from '../../payment/plans';
+} from "../../shared/pricing";
+import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
+import { buildBillingJourneyHref } from "../lib/upgradeJourney";
+import { PaymentPlanId } from "../../payment/plans";
 
 const ALWAYS_ACCESSIBLE = [
-  '/app/billing',
-  '/account',
-  '/app/onboarding',
-  '/app/select-workspace',
+  "/app/billing",
+  "/account",
+  "/app/onboarding",
+  "/app/select-workspace",
 ];
 
 interface WorkspaceBilling {
@@ -26,11 +26,14 @@ interface WorkspaceBilling {
 
 function workspaceHasAccess(
   isPersonal: boolean,
-  user: {
-    subscriptionStatus?: string | null;
-    subscriptionPlan?: string | null;
-    createdAt?: Date | string | null;
-  } | null | undefined,
+  user:
+    | {
+        subscriptionStatus?: string | null;
+        subscriptionPlan?: string | null;
+        createdAt?: Date | string | null;
+      }
+    | null
+    | undefined,
   billing: WorkspaceBilling | null | undefined,
 ): boolean {
   if (isPersonal) {
@@ -38,12 +41,18 @@ function workspaceHasAccess(
   }
   if (!billing || !billing.status || !billing.plan) return false;
   // TenantBilling TRIAL/ACTIVE/PAST_DUE — not Stripe user subscription statuses
-  if (!isBillingActive({ plan: billing.plan, status: billing.status, trialEndsAt: billing.trialEndsAt })) {
+  if (
+    !isBillingActive({
+      plan: billing.plan,
+      status: billing.status,
+      trialEndsAt: billing.trialEndsAt,
+    })
+  ) {
     return false;
   }
   const resolved = resolvePlanId(billing.plan);
   // Unlimited paid/trial, or Single product trial on institutional parish
-  return resolved === 'unlimited' || resolved === 'single';
+  return resolved === "unlimited" || resolved === "single";
 }
 
 export function SubscriptionGate({ children }: { children: ReactNode }) {
@@ -61,7 +70,9 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
     ? {
         plan: workspace.plan,
         status: workspace.billingStatus ?? workspace.billing?.status ?? null,
-        trialEndsAt: (workspace as { trialEndsAt?: string | Date | null }).trialEndsAt ?? null,
+        trialEndsAt:
+          (workspace as { trialEndsAt?: string | Date | null }).trialEndsAt ??
+          null,
       }
     : null;
   const hasAccess = workspaceHasAccess(isPersonal, user, workspaceBilling);
@@ -76,8 +87,8 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
       navigate(
         buildBillingJourneyHref({
           planId: isPersonal ? PaymentPlanId.Single : PaymentPlanId.Unlimited,
-          reason: 'required',
-          source: 'subscription_gate',
+          reason: "required",
+          source: "subscription_gate",
           required: true,
         }),
         { replace: true },

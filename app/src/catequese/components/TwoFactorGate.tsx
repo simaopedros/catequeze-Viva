@@ -1,14 +1,17 @@
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
-import { signOut } from '../../client/analytics/himetrica';
-import { consumePendingInviteToken } from '../../auth/inviteTokenStorage';
-import { getTwoFactorStatus, verifyTwoFactorLogin } from 'wasp/client/operations';
-import { isFamilyPortalHost } from '../../shared/portal';
-import { Button } from '../../client/components/ui/button';
-import { Input } from '../../client/components/ui/input';
-import { Label } from '../../client/components/ui/label';
-import { Loader2, ShieldCheck } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
+import { signOut } from "../../client/analytics/himetrica";
+import { consumePendingInviteToken } from "../../auth/inviteTokenStorage";
+import {
+  getTwoFactorStatus,
+  verifyTwoFactorLogin,
+} from "wasp/client/operations";
+import { isFamilyPortalHost } from "../../shared/portal";
+import { Button } from "../../client/components/ui/button";
+import { Input } from "../../client/components/ui/input";
+import { Label } from "../../client/components/ui/label";
+import { Loader2, ShieldCheck } from "lucide-react";
 
 /**
  * Blocks app access until 2FA is verified for the current login session.
@@ -17,10 +20,10 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const [checking, setChecking] = useState(true);
   const [needsVerification, setNeedsVerification] = useState(false);
-  const [token, setToken] = useState('');
-  const [error, setError] = useState('');
+  const [token, setToken] = useState("");
+  const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const { t } = useTranslation('auth');
+  const { t } = useTranslation("auth");
 
   useEffect(() => {
     getTwoFactorStatus()
@@ -36,7 +39,9 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
 
     const pendingToken = consumePendingInviteToken();
     if (pendingToken) {
-      navigate(`/convite/${encodeURIComponent(pendingToken)}`, { replace: true });
+      navigate(`/convite/${encodeURIComponent(pendingToken)}`, {
+        replace: true,
+      });
     }
   }, [checking, needsVerification, navigate]);
 
@@ -44,12 +49,12 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
     e.preventDefault();
     if (token.length !== 6) return;
     setSubmitting(true);
-    setError('');
+    setError("");
     try {
       await verifyTwoFactorLogin({ token });
       setNeedsVerification(false);
     } catch (err: any) {
-      setError(err?.message || t('two_factor_gate_error_invalid'));
+      setError(err?.message || t("two_factor_gate_error_invalid"));
     } finally {
       setSubmitting(false);
     }
@@ -61,7 +66,7 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
     } catch {
       // ignore
     }
-    window.location.replace(isFamilyPortalHost() ? '/entrar' : '/login');
+    window.location.replace(isFamilyPortalHost() ? "/entrar" : "/login");
   };
 
   if (checking) {
@@ -80,41 +85,59 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
             <div className="inline-flex rounded-sm border border-border/70 bg-muted/30 p-3">
               <ShieldCheck className="h-6 w-6 text-[#071A2D]" />
             </div>
-            <h1 className="text-xl font-semibold tracking-tight">{t('two_factor_gate_title')}</h1>
+            <h1 className="text-xl font-semibold tracking-tight">
+              {t("two_factor_gate_title")}
+            </h1>
             <p className="text-sm text-muted-foreground">
-              {t('two_factor_gate_subtitle')}
+              {t("two_factor_gate_subtitle")}
             </p>
           </div>
 
           <form onSubmit={handleVerify} className="space-y-4">
             {error && (
-              <div className="rounded-sm border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
+              <div className="rounded-sm border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
+                {error}
+              </div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="app-totp">{t('two_factor_gate_otp_label')}</Label>
+              <Label htmlFor="app-totp">{t("two_factor_gate_otp_label")}</Label>
               <Input
                 id="app-totp"
                 type="text"
                 inputMode="numeric"
                 autoComplete="one-time-code"
                 value={token}
-                onChange={(e) => setToken(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                placeholder={t('two_factor_gate_otp_placeholder')}
+                onChange={(e) =>
+                  setToken(e.target.value.replace(/\D/g, "").slice(0, 6))
+                }
+                placeholder={t("two_factor_gate_otp_placeholder")}
                 maxLength={6}
                 className="font-mono text-center text-2xl tracking-[0.5em]"
                 autoFocus
                 required
               />
             </div>
-            <Button type="submit" className="w-full" disabled={submitting || token.length !== 6}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={submitting || token.length !== 6}
+            >
               {submitting ? (
-                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('two_factor_gate_verify_loading')}</>
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
+                  {t("two_factor_gate_verify_loading")}
+                </>
               ) : (
-                t('two_factor_gate_verify_button')
+                t("two_factor_gate_verify_button")
               )}
             </Button>
-            <Button type="button" variant="ghost" className="w-full" onClick={handleCancel}>
-              {t('two_factor_gate_cancel')}
+            <Button
+              type="button"
+              variant="ghost"
+              className="w-full"
+              onClick={handleCancel}
+            >
+              {t("two_factor_gate_cancel")}
             </Button>
           </form>
         </div>
@@ -124,5 +147,3 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
 
   return <>{children}</>;
 }
-
-

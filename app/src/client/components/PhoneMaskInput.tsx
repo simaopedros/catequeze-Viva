@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback } from "react";
 
 interface PhoneMaskInputProps {
   value: string;
@@ -17,24 +17,28 @@ interface PhoneMaskInputProps {
 export default function PhoneMaskInput({
   value,
   onChange,
-  placeholder = '(00) 00000-0000',
+  placeholder = "(00) 00000-0000",
   disabled = false,
   className,
 }: PhoneMaskInputProps) {
   const formatPhone = useCallback((raw: string): string => {
-    const digits = raw.replace(/\D/g, '');
+    const digits = raw.replace(/\D/g, "");
     const len = digits.length;
 
     if (len <= 2) return digits;
     if (len <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-    if (len <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+    if (len <= 10)
+      return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
     // 11 digits (mobile)
-    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(
+      7,
+      11,
+    )}`;
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
-    const digits = raw.replace(/\D/g, '');
+    const digits = raw.replace(/\D/g, "");
     // Limit to 11 digits
     const limited = digits.slice(0, 11);
     const formatted = formatPhone(limited);

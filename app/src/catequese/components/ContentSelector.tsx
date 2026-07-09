@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { useState, useMemo } from 'react';
-import { Search } from 'lucide-react';
+import { useState, useMemo } from "react";
+import { Search } from "lucide-react";
 
 interface ContentItem {
   id: string;
@@ -21,10 +21,10 @@ export function ContentSelector({
   items,
   selectedId,
   onSelect,
-  placeholder = 'Selecionar conteúdo...',
+  placeholder = "Selecionar conteúdo...",
 }: ContentSelectorProps) {
-  const { t } = useTranslation('common');
-  const [search, setSearch] = useState('');
+  const { t } = useTranslation("common");
+  const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
 
   const filtered = useMemo(() => {
@@ -34,7 +34,7 @@ export function ContentSelector({
       .filter(
         (c) =>
           c.title?.toLowerCase().includes(q) ||
-          c.theme?.toLowerCase().includes(q)
+          c.theme?.toLowerCase().includes(q),
       )
       .slice(0, 20);
   }, [items, search]);
@@ -48,7 +48,7 @@ export function ContentSelector({
         onClick={() => setOpen(!open)}
         className="flex h-9 w-full items-center justify-between rounded-sm border border-input bg-background px-3 py-1 text-sm text-left"
       >
-        <span className={selected ? '' : 'text-muted-foreground'}>
+        <span className={selected ? "" : "text-muted-foreground"}>
           {selected ? selected.title : placeholder}
         </span>
         <span className="text-xs text-muted-foreground">▼</span>
@@ -91,15 +91,17 @@ export function ContentSelector({
                   onClick={() => {
                     onSelect(c.id);
                     setOpen(false);
-                    setSearch('');
+                    setSearch("");
                   }}
                   className={`w-full px-3 py-2 text-left text-sm hover:bg-muted ${
-     c.id === selectedId ? 'bg-muted/40 font-medium' : ''
-     }`}
+                    c.id === selectedId ? "bg-muted/40 font-medium" : ""
+                  }`}
                 >
                   <span>{c.title}</span>
                   {c.theme && (
-                    <span className="text-xs text-muted-foreground ml-2">— {c.theme}</span>
+                    <span className="text-xs text-muted-foreground ml-2">
+                      — {c.theme}
+                    </span>
                   )}
                 </button>
               ))
@@ -110,10 +112,7 @@ export function ContentSelector({
 
       {/* Backdrop to close */}
       {open && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setOpen(false)}
-        />
+        <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
       )}
     </div>
   );

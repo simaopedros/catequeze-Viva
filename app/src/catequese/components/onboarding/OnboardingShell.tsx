@@ -29,7 +29,10 @@ export function OnboardingShell({
   saving,
   savingLabel,
 }: OnboardingShellProps) {
-  const currentIdx = Math.max(0, steps.findIndex((s) => s.id === currentStepId));
+  const currentIdx = Math.max(
+    0,
+    steps.findIndex((s) => s.id === currentStepId),
+  );
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
@@ -46,7 +49,9 @@ export function OnboardingShell({
         <div className="h-0.5 w-full bg-border/60">
           <div
             className="h-full bg-[#D39A2B] transition-all duration-300"
-            style={{ width: `${((currentIdx + 1) / Math.max(steps.length, 1)) * 100}%` }}
+            style={{
+              width: `${((currentIdx + 1) / Math.max(steps.length, 1)) * 100}%`,
+            }}
           />
         </div>
       </header>
@@ -76,7 +81,9 @@ export function OnboardingShell({
               </h1>
               <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
               {panelSubtitle && (
-                <p className="text-sm leading-relaxed text-[#A8B8C9]">{panelSubtitle}</p>
+                <p className="text-sm leading-relaxed text-[#A8B8C9]">
+                  {panelSubtitle}
+                </p>
               )}
             </div>
 
@@ -92,13 +99,20 @@ export function OnboardingShell({
                           "flex h-7 w-7 items-center justify-center rounded-sm border border-border/70 text-[11px] font-semibold tabular-nums",
                           done && "bg-[#D39A2B] text-[#071A2D]",
                           current && "bg-white text-[#071A2D]",
-                          !done && !current && "border border-white/25 text-white/50"
+                          !done &&
+                            !current &&
+                            "border border-white/25 text-white/50",
                         )}
                       >
                         {String(index + 1).padStart(2, "0")}
                       </span>
                       {index < steps.length - 1 && (
-                        <span className={cn("mt-1 w-px flex-1 min-h-[12px]", done ? "bg-[#D39A2B]/60" : "bg-white/15")} />
+                        <span
+                          className={cn(
+                            "mt-1 w-px flex-1 min-h-[12px]",
+                            done ? "bg-[#D39A2B]/60" : "bg-white/15",
+                          )}
+                        />
                       )}
                     </div>
                     <span
@@ -106,7 +120,7 @@ export function OnboardingShell({
                         "pt-1 text-sm",
                         current && "font-medium text-white",
                         done && "text-[#C5D0DC]",
-                        !done && !current && "text-white/45"
+                        !done && !current && "text-white/45",
                       )}
                     >
                       {step.label}
@@ -117,7 +131,9 @@ export function OnboardingShell({
             </ol>
           </div>
 
-          <p className="relative text-xs text-[#6B7C8F]">© {new Date().getFullYear()} Catequese Viva</p>
+          <p className="relative text-xs text-[#6B7C8F]">
+            © {new Date().getFullYear()} Catequese Viva
+          </p>
         </aside>
 
         {/* Content */}
@@ -138,7 +154,9 @@ export function OnboardingShell({
       {saving && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#071A2D]/40 -[2px]">
           <div className="rounded-sm border border-border/70 bg-white px-8 py-6 text-center">
-            <p className="text-sm font-medium text-foreground">{savingLabel || "…"}</p>
+            <p className="text-sm font-medium text-foreground">
+              {savingLabel || "…"}
+            </p>
           </div>
         </div>
       )}

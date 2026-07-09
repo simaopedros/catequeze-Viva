@@ -48,10 +48,16 @@ export function CatechumensSetupStep({
       const line = raw.trim();
       if (!line) continue;
       // Skip header-ish rows
-      if (/^(nome|name|first|primeiro)/i.test(line) && /sobrenome|last|surname/i.test(line)) {
+      if (
+        /^(nome|name|first|primeiro)/i.test(line) &&
+        /sobrenome|last|surname/i.test(line)
+      ) {
         continue;
       }
-      const parts = line.split(/[,;\t]/).map((p) => p.trim()).filter(Boolean);
+      const parts = line
+        .split(/[,;\t]/)
+        .map((p) => p.trim())
+        .filter(Boolean);
       if (parts.length === 0) continue;
       if (parts.length === 1) {
         const words = parts[0].split(/\s+/);
@@ -66,7 +72,10 @@ export function CatechumensSetupStep({
     return rows;
   };
 
-  const enrollParsed = async (rows: { fn: string; ln: string }[], method: string) => {
+  const enrollParsed = async (
+    rows: { fn: string; ln: string }[],
+    method: string,
+  ) => {
     if (rows.length === 0) {
       setError(t("catechumens_setup.bulk_empty"));
       return;
@@ -96,7 +105,11 @@ export function CatechumensSetupStep({
   const handleFile = async (file: File | null) => {
     if (!file) return;
     const name = file.name.toLowerCase();
-    if (!name.endsWith(".csv") && !name.endsWith(".txt") && !name.endsWith(".tsv")) {
+    if (
+      !name.endsWith(".csv") &&
+      !name.endsWith(".txt") &&
+      !name.endsWith(".tsv")
+    ) {
       setError(t("catechumens_setup.file_type_error"));
       return;
     }
@@ -183,7 +196,7 @@ export function CatechumensSetupStep({
               "flex-1 rounded-sm py-2 text-xs font-medium transition-colors",
               mode === id
                 ? "bg-[#071A2D] text-white"
-                : "text-muted-foreground hover:text-foreground"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             {t(`catechumens_setup.${key}`)}
@@ -220,8 +233,17 @@ export function CatechumensSetupStep({
               />
             </div>
           </div>
-          <Button type="submit" variant="outline" disabled={loading} className="h-10 w-full rounded-sm">
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+          <Button
+            type="submit"
+            variant="outline"
+            disabled={loading}
+            className="h-10 w-full rounded-sm"
+          >
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Plus className="h-4 w-4" />
+            )}
             {t("catechumens_setup.add_one")}
           </Button>
         </form>
@@ -241,7 +263,9 @@ export function CatechumensSetupStep({
             disabled={loading}
             className="w-full rounded-sm border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
-          <p className="text-xs text-muted-foreground">{t("catechumens_setup.bulk_hint")}</p>
+          <p className="text-xs text-muted-foreground">
+            {t("catechumens_setup.bulk_hint")}
+          </p>
           <Button
             type="button"
             variant="outline"
@@ -249,7 +273,11 @@ export function CatechumensSetupStep({
             onClick={handleBulkAdd}
             className="h-10 w-full rounded-sm"
           >
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Plus className="h-4 w-4" />
+            )}
             {t("catechumens_setup.add_bulk")}
           </Button>
         </div>
@@ -268,7 +296,9 @@ export function CatechumensSetupStep({
             onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
             className="block w-full text-sm text-muted-foreground file:mr-3 file:rounded-sm file:border-0 file:bg-[#071A2D] file:px-3 file:py-2 file:text-xs file:font-medium file:text-white"
           />
-          <p className="text-xs text-muted-foreground">{t("catechumens_setup.file_hint")}</p>
+          <p className="text-xs text-muted-foreground">
+            {t("catechumens_setup.file_hint")}
+          </p>
           {loading && (
             <p className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -284,7 +314,10 @@ export function CatechumensSetupStep({
           </p>
           <ul className="max-h-40 space-y-1 overflow-y-auto border-t border-border/60 pt-2">
             {added.map((p) => (
-              <li key={p.id} className="flex items-center justify-between py-1.5 text-sm">
+              <li
+                key={p.id}
+                className="flex items-center justify-between py-1.5 text-sm"
+              >
                 <span className="text-foreground">
                   {p.firstName} {p.lastName}
                 </span>
@@ -313,7 +346,9 @@ export function CatechumensSetupStep({
           {t("catechumens_setup.skip")}
         </button>
         {added.length === 0 && (
-          <p className="text-center text-xs text-muted-foreground">{t("catechumens_setup.skip_hint")}</p>
+          <p className="text-center text-xs text-muted-foreground">
+            {t("catechumens_setup.skip_hint")}
+          </p>
         )}
       </div>
     </div>

@@ -3,24 +3,19 @@ import { cva, VariantProps } from "class-variance-authority";
 
 import { cn } from "../../utils";
 
-const cardVariants = cva(
-  "rounded-sm border",
-  {
-    variants: {
-      variant: {
-        default: "border-border/70 bg-white text-foreground",
-        accent:
-          "bg-card-accent text-card-accent-foreground",
-        bento:
-          "bg-card-subtle text-card-subtle-foreground border-none shadow-none",
-        interactive:
-          "cursor-pointer border-border/70 bg-white text-foreground transition-colors hover:border-[#071A2D]/30",
-        flat:
-          "bg-muted/50 border-0 shadow-none",
-      },
+const cardVariants = cva("rounded-sm border", {
+  variants: {
+    variant: {
+      default: "border-border/70 bg-white text-foreground",
+      accent: "bg-card-accent text-card-accent-foreground",
+      bento:
+        "bg-card-subtle text-card-subtle-foreground border-none shadow-none",
+      interactive:
+        "cursor-pointer border-border/70 bg-white text-foreground transition-colors hover:border-[#071A2D]/30",
+      flat: "bg-muted/50 border-0 shadow-none",
     },
-  }
-);
+  },
+});
 
 function Card({
   className,
@@ -68,7 +63,11 @@ function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
 
 function CardContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div data-slot="card-content" className={cn("p-5 pt-0", className)} {...props} />
+    <div
+      data-slot="card-content"
+      className={cn("p-5 pt-0", className)}
+      {...props}
+    />
   );
 }
 

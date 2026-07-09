@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 const DarkModeSwitcher = () => {
   const [colorMode, setColorMode] = useColorMode();
   const isInLightMode = colorMode === "light";
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
 
   return (
     <div>
@@ -18,7 +18,7 @@ const DarkModeSwitcher = () => {
       >
         <input
           type="checkbox"
-          aria-label={t('toggle_dark_mode')}
+          aria-label={t("toggle_dark_mode")}
           onChange={() => {
             if (typeof setColorMode === "function") {
               setColorMode(isInLightMode ? "dark" : "light");
@@ -28,7 +28,7 @@ const DarkModeSwitcher = () => {
         />
         <span
           className={cn(
-            "border-border absolute left-[3px] top-1/2 flex h-6 w-6 -translate-y-1/2 translate-x-0 items-center justify-center rounded-full border bg-white shadow-md transition-all duration-300 ease-in-out",
+            "border-border absolute left-[3px] top-1/2 flex h-6 w-6 -translate-y-1/2 translate-x-0 items-center justify-center rounded-full border bg-white shadow-sm transition-all duration-300 ease-in-out",
             {
               "right-[3px]! translate-x-full!": !isInLightMode,
             },
@@ -49,7 +49,7 @@ function ModeIcon({ isInLightMode }: { isInLightMode: boolean }) {
       <span
         className={cn(iconStyle, isInLightMode ? "opacity-100" : "opacity-0")}
       >
-        <Sun className="size-4 fill-amber-500 stroke-amber-500" />
+        <Sun className="size-4 fill-[#D39A2B] stroke-amber-500" />
       </span>
       <span
         className={cn(iconStyle, !isInLightMode ? "opacity-100" : "opacity-0")}

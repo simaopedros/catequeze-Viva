@@ -6,12 +6,18 @@ import { cn } from "../../utils";
  * Matches home/auth/onboarding: ink, gold rule, tight radius, no soft SaaS cards.
  */
 
-export function AppEyebrow({ children, className }: { children: ReactNode; className?: string }) {
+export function AppEyebrow({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
   return (
     <p
       className={cn(
         "text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground",
-        className
+        className,
       )}
     >
       {children}
@@ -20,7 +26,9 @@ export function AppEyebrow({ children, className }: { children: ReactNode; class
 }
 
 export function AppGoldRule({ className }: { className?: string }) {
-  return <div className={cn("h-px w-10 bg-[#D39A2B]", className)} aria-hidden />;
+  return (
+    <div className={cn("h-px w-10 bg-[#D39A2B]", className)} aria-hidden />
+  );
 }
 
 export function AppDisplayTitle({
@@ -36,7 +44,7 @@ export function AppDisplayTitle({
     <Tag
       className={cn(
         "text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]",
-        className
+        className,
       )}
       style={{ fontFamily: "var(--font-brand-display)" }}
     >
@@ -62,7 +70,7 @@ export function AppPageHeader({
     <div
       className={cn(
         "flex flex-col gap-4 border-b border-border/70 pb-6 sm:flex-row sm:items-end sm:justify-between",
-        className
+        className,
       )}
     >
       <div className="min-w-0 space-y-2.5">
@@ -75,7 +83,9 @@ export function AppPageHeader({
           </p>
         )}
       </div>
-      {actions && <div className="flex shrink-0 flex-wrap gap-2">{actions}</div>}
+      {actions && (
+        <div className="flex shrink-0 flex-wrap gap-2">{actions}</div>
+      )}
     </div>
   );
 }
@@ -94,7 +104,7 @@ export function AppPanel({
       className={cn(
         "rounded-sm border border-border/70 bg-white",
         padded && "p-5 sm:p-6",
-        className
+        className,
       )}
     >
       {children}
@@ -112,7 +122,9 @@ export function AppMetric({
   className?: string;
 }) {
   return (
-    <div className={cn("border border-border/70 px-4 py-3 rounded-sm", className)}>
+    <div
+      className={cn("border border-border/70 px-4 py-3 rounded-sm", className)}
+    >
       <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
         {label}
       </p>
@@ -141,7 +153,7 @@ export function AppListLink({
       className={cn(
         "group flex items-start justify-between gap-3 border-b border-border/60 py-3.5 last:border-0",
         "transition-colors hover:bg-muted/20",
-        className
+        className,
       )}
     >
       <span className="min-w-0 space-y-0.5">
@@ -149,7 +161,9 @@ export function AppListLink({
           {title}
         </span>
         {description && (
-          <span className="block text-xs leading-relaxed text-muted-foreground">{description}</span>
+          <span className="block text-xs leading-relaxed text-muted-foreground">
+            {description}
+          </span>
         )}
       </span>
     </a>

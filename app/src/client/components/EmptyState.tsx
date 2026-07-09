@@ -1,5 +1,5 @@
-import type { LucideIcon } from 'lucide-react';
-import { cn } from '../utils';
+import type { LucideIcon } from "lucide-react";
+import { cn } from "../utils";
 
 interface EmptyStateProps {
   icon?: LucideIcon;
@@ -27,7 +27,12 @@ export function EmptyState({
 }: EmptyStateProps) {
   if (inline) {
     return (
-      <span className={cn('inline-flex items-center gap-1.5 text-body-xs text-text-tertiary', className)}>
+      <span
+        className={cn(
+          "inline-flex items-center gap-1.5 text-body-xs text-text-tertiary",
+          className,
+        )}
+      >
         {Icon && <Icon className="h-3.5 w-3.5" />}
         {title}
       </span>
@@ -36,10 +41,19 @@ export function EmptyState({
 
   if (minimal) {
     return (
-      <div className={cn('flex flex-col items-center justify-center gap-2 py-8', className)}>
+      <div
+        className={cn(
+          "flex flex-col items-center justify-center gap-2 py-8",
+          className,
+        )}
+      >
         {Icon && <Icon className="h-8 w-8 text-muted-foreground/50" />}
         <p className="text-body-sm text-text-secondary">{title}</p>
-        {description && <p className="text-body-xs text-text-tertiary max-w-xs text-center">{description}</p>}
+        {description && (
+          <p className="text-body-xs text-text-tertiary max-w-xs text-center">
+            {description}
+          </p>
+        )}
         {children}
       </div>
     );
@@ -47,14 +61,23 @@ export function EmptyState({
 
   if (compact) {
     return (
-      <div className={cn('flex flex-col items-center justify-center py-12 text-center', className)}>
+      <div
+        className={cn(
+          "flex flex-col items-center justify-center py-12 text-center",
+          className,
+        )}
+      >
         {Icon && (
           <div className="mb-3 rounded-sm border border-border/70 bg-muted/30 p-3">
             <Icon className="h-5 w-5 text-muted-foreground" />
           </div>
         )}
         <p className="text-body-sm font-medium text-foreground">{title}</p>
-        {description && <p className="text-body-xs mt-1 max-w-sm text-muted-foreground">{description}</p>}
+        {description && (
+          <p className="text-body-xs mt-1 max-w-sm text-muted-foreground">
+            {description}
+          </p>
+        )}
         {children}
       </div>
     );
@@ -63,7 +86,7 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center',
+        "flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center",
         className,
       )}
     >
@@ -72,9 +95,13 @@ export function EmptyState({
           <Icon className="h-8 w-8 text-foreground" />
         </div>
       )}
-      <h3 className="text-lg font-semibold tracking-tight text-foreground">{title}</h3>
+      <h3 className="text-lg font-semibold tracking-tight text-foreground">
+        {title}
+      </h3>
       {description && (
-        <p className="mt-1 max-w-md text-sm leading-relaxed text-muted-foreground">{description}</p>
+        <p className="mt-1 max-w-md text-sm leading-relaxed text-muted-foreground">
+          {description}
+        </p>
       )}
       {children}
     </div>

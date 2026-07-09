@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Button } from '../../client/components/ui/button';
-import { FilePlus, Loader2, X } from 'lucide-react';
-import { uploadDocumentMultipart } from '../../client/utils/documentUpload';
-import { toast } from '../../client/hooks/use-toast';
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Button } from "../../client/components/ui/button";
+import { FilePlus, Loader2, X } from "lucide-react";
+import { uploadDocumentMultipart } from "../../client/utils/documentUpload";
+import { toast } from "../../client/hooks/use-toast";
 
 const DOC_TYPES = [
-  'BAPTISM_CERTIFICATE',
-  'BIRTH_CERTIFICATE',
-  'CONSENT_FORM',
-  'MARRIAGE_CERTIFICATE',
-  'PASTORAL_LETTER',
-  'OTHER',
+  "BAPTISM_CERTIFICATE",
+  "BIRTH_CERTIFICATE",
+  "CONSENT_FORM",
+  "MARRIAGE_CERTIFICATE",
+  "PASTORAL_LETTER",
+  "OTHER",
 ] as const;
 
 interface DocumentUploadModalProps {
@@ -27,9 +27,9 @@ export function DocumentUploadModal({
   onClose,
   onSuccess,
 }: DocumentUploadModalProps) {
-  const { t } = useTranslation('common');
-  const [name, setName] = useState('');
-  const [type, setType] = useState<string>('BAPTISM_CERTIFICATE');
+  const { t } = useTranslation("common");
+  const [name, setName] = useState("");
+  const [type, setType] = useState<string>("BAPTISM_CERTIFICATE");
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -45,13 +45,13 @@ export function DocumentUploadModal({
         type,
         catechumenProfileId,
       });
-      toast({ title: t('documents.sent_success') });
-      setName('');
+      toast({ title: t("documents.sent_success") });
+      setName("");
       setFile(null);
       onSuccess?.();
       onClose();
     } catch (e: any) {
-      toast({ title: t('upload_error') });
+      toast({ title: t("upload_error") });
     } finally {
       setUploading(false);
     }
@@ -62,17 +62,22 @@ export function DocumentUploadModal({
       <div className="rounded-sm border border-border/70 bg-white w-full max-w-md p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold flex items-center gap-2">
-            <FilePlus className="h-5 w-5" /> {t('new_document')}
+            <FilePlus className="h-5 w-5" /> {t("new_document")}
           </h2>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground p-1">
+          <button
+            onClick={onClose}
+            className="text-muted-foreground hover:text-foreground p-1"
+          >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         <div>
-          <label className="text-sm font-medium text-muted-foreground">{t('documents.name')}</label>
+          <label className="text-sm font-medium text-muted-foreground">
+            {t("documents.name")}
+          </label>
           <input
-            placeholder={t('documents.name_placeholder')}
+            placeholder={t("documents.name_placeholder")}
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="mt-1 flex h-9 w-full rounded-sm border border-input bg-background px-3 py-1 text-sm"
@@ -81,20 +86,26 @@ export function DocumentUploadModal({
         </div>
 
         <div>
-          <label className="text-sm font-medium text-muted-foreground">{t('documents.doc_type_label')}</label>
+          <label className="text-sm font-medium text-muted-foreground">
+            {t("documents.doc_type_label")}
+          </label>
           <select
             value={type}
             onChange={(e) => setType(e.target.value)}
             className="mt-1 flex h-9 w-full rounded-sm border border-input bg-background px-3 py-1 text-sm"
           >
             {DOC_TYPES.map((dt) => (
-              <option key={dt} value={dt}>{t('catechumens.doc_types.' + dt)}</option>
+              <option key={dt} value={dt}>
+                {t("catechumens.doc_types." + dt)}
+              </option>
             ))}
           </select>
         </div>
 
         <div>
-          <label className="text-sm font-medium text-muted-foreground">{t('documents.doc_file_label')}</label>
+          <label className="text-sm font-medium text-muted-foreground">
+            {t("documents.doc_file_label")}
+          </label>
           <input
             type="file"
             accept=".jpg,.jpeg,.png,.webp,.pdf"
@@ -104,11 +115,26 @@ export function DocumentUploadModal({
         </div>
 
         <div className="flex gap-2 justify-end">
-          <Button variant="ghost" size="sm" onClick={onClose} disabled={uploading}>
-            {t('cancel')}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            disabled={uploading}
+          >
+            {t("cancel")}
           </Button>
-          <Button size="sm" onClick={handleUpload} disabled={uploading || !name.trim() || !file}>
-            {uploading ? <><Loader2 className="mr-1 h-3 w-3 animate-spin" /> {t('saving')}</> : t('upload')}
+          <Button
+            size="sm"
+            onClick={handleUpload}
+            disabled={uploading || !name.trim() || !file}
+          >
+            {uploading ? (
+              <>
+                <Loader2 className="mr-1 h-3 w-3 animate-spin" /> {t("saving")}
+              </>
+            ) : (
+              t("upload")
+            )}
           </Button>
         </div>
       </div>

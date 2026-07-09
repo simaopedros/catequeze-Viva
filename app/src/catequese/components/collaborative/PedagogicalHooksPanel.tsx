@@ -1,91 +1,104 @@
-import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { useCollaborative } from './CollaborativeContext'
-import { Button } from '../../../client/components/ui/button'
-import { Card } from '../../../client/components/ui/card'
-import { Badge } from '../../../client/components/ui/badge'
-import { Lightbulb, Loader2, Sparkles, Check } from 'lucide-react'
-import { getPedagogicalHooks } from 'wasp/client/operations'
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useCollaborative } from "./CollaborativeContext";
+import { Button } from "../../../client/components/ui/button";
+import { Card } from "../../../client/components/ui/card";
+import { Badge } from "../../../client/components/ui/badge";
+import { Lightbulb, Loader2, Sparkles, Check } from "lucide-react";
+import { getPedagogicalHooks } from "wasp/client/operations";
 
 export function PedagogicalHooksPanel() {
-  const { t } = useTranslation('collaborative')
-  const { contentItem, sendMessage } = useCollaborative()
-  const [hooks, setHooks] = useState<any[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const { t } = useTranslation("collaborative");
+  const { contentItem, sendMessage } = useCollaborative();
+  const [hooks, setHooks] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const theme = contentItem?.theme || ''
-  let ageGroup = 'Crisma: 12-15 anos'
+  const theme = contentItem?.theme || "";
+  let ageGroup = "Crisma: 12-15 anos";
   try {
     if (contentItem?.aiPrompt) {
-      const parsed = JSON.parse(contentItem.aiPrompt)
-      if (parsed.ageGroup) ageGroup = parsed.ageGroup
+      const parsed = JSON.parse(contentItem.aiPrompt);
+      if (parsed.ageGroup) ageGroup = parsed.ageGroup;
     }
   } catch {}
 
   const handleFetch = async () => {
-    setLoading(true)
-    setError('')
-    setHooks([])
+    setLoading(true);
+    setError("");
+    setHooks([]);
     try {
-      const result = await getPedagogicalHooks({ theme, ageGroup })
-      setHooks((result as any)?.hooks || [])
+      const result = await getPedagogicalHooks({ theme, ageGroup });
+      setHooks((result as any)?.hooks || []);
     } catch (e: any) {
-      setError(e?.message || t('tools.hooks.error'))
+      setError(e?.message || t("tools.hooks.error"));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleUse = (hook: any) => {
     sendMessage(
       `Use este gancho pedagógico para iniciar o encontro: "${hook.title}". ` +
-      `Descrição: ${hook.description}. Materiais: ${hook.materials}.`
-    )
-  }
+        `Descrição: ${hook.description}. Materiais: ${hook.materials}.`,
+    );
+  };
 
   return (
     <Card className="p-4 space-y-3">
       <div>
         <div className="flex items-center gap-1.5 mb-0.5">
           <Lightbulb className="h-4 w-4 text-yellow-500" />
-          <h3 className="text-sm font-semibold">{t('tools.hooks.title')}</h3>
+          <h3 className="text-sm font-semibold">{t("tools.hooks.title")}</h3>
         </div>
-        <p className="text-xs text-muted-foreground">{t('tools.hooks.description')}</p>
+        <p className="text-xs text-muted-foreground">
+          {t("tools.hooks.description")}
+        </p>
       </div>
 
       {hooks.length === 0 && !loading && (
-        <Button variant="outline" size="sm" className="w-full text-xs" onClick={handleFetch}>
-          <Sparkles className="h-3.5 w-3.5 mr-1" /> {t('tools.hooks.generate')}
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full text-xs"
+          onClick={handleFetch}
+        >
+          <Sparkles className="h-3.5 w-3.5 mr-1" /> {t("tools.hooks.generate")}
         </Button>
       )}
 
       {loading && (
         <div className="flex items-center gap-2 text-muted-foreground text-xs py-2">
-          <Loader2 className="h-3.5 w-3.5 animate-spin" /> {t('tools.hooks.generating')}
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />{" "}
+          {t("tools.hooks.generating")}
         </div>
       )}
 
-      {error && (
-        <p className="text-xs text-destructive">{error}</p>
-      )}
+      {error && <p className="text-xs text-destructive">{error}</p>}
 
       {hooks.length > 0 && (
         <div className="space-y-2">
           {hooks.map((hook, i) => (
             <Card key={i} className="p-3 space-y-1.5">
               <h4 className="text-xs font-semibold">{hook.title}</h4>
-              <p className="text-xs text-muted-foreground">{hook.description}</p>
-              <p className="text-overline text-muted-foreground italic">
-                {t('tools.hooks.materials')}: {hook.materials || 'Nenhum'}
+              <p className="text-xs text-muted-foreground">
+                {hook.description}
               </p>
-              <Button variant="ghost" size="sm" className="h-6 text-overline w-full" onClick={() => handleUse(hook)}>
-                <Check className="h-3 w-3 mr-1" /> {t('tools.hooks.use')}
+              <p className="text-overline text-muted-foreground italic">
+                {t("tools.hooks.materials")}: {hook.materials || "Nenhum"}
+              </p>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 text-overline w-full"
+                onClick={() => handleUse(hook)}
+              >
+                <Check className="h-3 w-3 mr-1" /> {t("tools.hooks.use")}
               </Button>
             </Card>
           ))}
         </div>
       )}
     </Card>
-  )
+  );
 }

@@ -90,7 +90,7 @@ type SelectionBubbleState = {
 };
 
 const referenceMarkClassName =
-  "rounded bg-amber-100/80 px-0.5 underline decoration-dotted underline-offset-4 decoration-amber-500/80";
+  "rounded-sm bg-[#D39A2B]/15 px-0.5 underline decoration-dotted underline-offset-4 decoration-[#D39A2B]/80";
 
 const ReferenceAnchor = Mark.create({
   name: "referenceAnchor",
@@ -399,7 +399,7 @@ function SelectionActionBubble({
 
   const bubbleNode = (
     <div
-      className="fixed z-[2147483000] w-[340px] max-w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-[calc(100%+12px)] rounded-sm border border-border/60 bg-background/95 p-3  "
+      className="fixed z-[2147483000] w-[340px] max-w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-[calc(100%+12px)] rounded-sm border border-border/60 bg-background/95 p-3 "
       style={{ left: bubble.left, top: bubble.top }}
       onMouseDown={(event) => event.preventDefault()}
     >
@@ -590,7 +590,7 @@ export function RichContentEditor({
     editorProps: {
       attributes: {
         class:
-          "min-h-[720px] outline-none px-8 py-10 prose prose-slate max-w-none prose-headings:font-semibold prose-p:leading-7 prose-img:rounded-sm prose-blockquote:border-l-primary prose-blockquote:text-foreground",
+          "min-h-[720px] max-w-none px-8 py-10 outline-none prose prose-neutral prose-headings:font-semibold prose-p:leading-7 prose-img:rounded-sm prose-blockquote:border-l-[#071A2D] prose-blockquote:text-foreground",
       },
       handlePaste: (_view, event) => {
         const items = event.clipboardData?.items;

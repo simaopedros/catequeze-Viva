@@ -1,29 +1,32 @@
-import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router';
-import { Button } from '../../../client/components/ui/button';
-import { Badge } from '../../../client/components/ui/badge';
-import { AppPageHeader, AppPanel } from '../../../client/components/brand/AppChrome';
-import { EmptyState } from '../../../client/components/EmptyState';
-import { Eye, Library } from 'lucide-react';
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router";
+import { Button } from "../../../client/components/ui/button";
+import { Badge } from "../../../client/components/ui/badge";
+import {
+  AppPageHeader,
+  AppPanel,
+} from "../../../client/components/brand/AppChrome";
+import { EmptyState } from "../../../client/components/EmptyState";
+import { Eye, Library } from "lucide-react";
 
 interface ReviewerDashboardProps {
   stats: any;
 }
 
 export function ReviewerDashboard({ stats }: ReviewerDashboardProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
 
   return (
     <div className="space-y-8">
       <AppPageHeader
-        eyebrow={t('reviewer_title')}
-        title={t('reviewer_title')}
-        subtitle={t('reviewer_subtitle')}
+        eyebrow={t("reviewer_title")}
+        title={t("reviewer_title")}
+        subtitle={t("reviewer_subtitle")}
         actions={
           <Button asChild className="h-10 rounded-sm shadow-none">
             <Link to="/app/content-library">
               <Library className="mr-2 h-4 w-4" />
-              {t('go_to_library')}
+              {t("go_to_library")}
             </Link>
           </Button>
         }
@@ -42,11 +45,11 @@ export function ReviewerDashboard({ stats }: ReviewerDashboardProps) {
                   {c.title}
                 </p>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  {c.theme} · {t('by')} {c.createdBy?.firstName}
+                  {c.theme} · {t("by")} {c.createdBy?.firstName}
                 </p>
               </div>
               <Badge variant="secondary" className="shrink-0 rounded-sm">
-                {t('pending_review')}
+                {t("pending_review")}
               </Badge>
             </Link>
           ))}
@@ -55,8 +58,8 @@ export function ReviewerDashboard({ stats }: ReviewerDashboardProps) {
         <EmptyState
           compact
           icon={Eye}
-          title={t('no_pending_review')}
-          description={t('no_pending_review_desc')}
+          title={t("no_pending_review")}
+          description={t("no_pending_review_desc")}
         />
       )}
     </div>

@@ -2,14 +2,30 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { WelcomeStep } from "../components/onboarding/WelcomeStep";
-import { ClassSetupStep, type ClassSetupDetails } from "../components/onboarding/ClassSetupStep";
+import {
+  ClassSetupStep,
+  type ClassSetupDetails,
+} from "../components/onboarding/ClassSetupStep";
 import { CatechumensSetupStep } from "../components/onboarding/CatechumensSetupStep";
 import { CompletionStep } from "../components/onboarding/CompletionStep";
-import { OnboardingShell, type ProgressStep } from "../components/onboarding/OnboardingShell";
-import { DioceseStep, type DioceseSelection } from "../components/onboarding/DioceseStep";
-import { ParishStep, type ParishSelection } from "../components/onboarding/ParishStep";
+import {
+  OnboardingShell,
+  type ProgressStep,
+} from "../components/onboarding/OnboardingShell";
+import {
+  DioceseStep,
+  type DioceseSelection,
+} from "../components/onboarding/DioceseStep";
+import {
+  ParishStep,
+  type ParishSelection,
+} from "../components/onboarding/ParishStep";
 import { CoordinatorDetails } from "../components/onboarding/CoordinatorDetails";
-import { getIntendedPlan, clearIntendedPlan, isInstitutionalPlanId } from "../lib/intendedPlan";
+import {
+  getIntendedPlan,
+  clearIntendedPlan,
+  isInstitutionalPlanId,
+} from "../lib/intendedPlan";
 import {
   createParish,
   joinParish,
@@ -83,16 +99,25 @@ export default function OnboardingPage() {
 
   const persisted = useMemo(() => loadPersisted(), []);
   const [step, setStep] = useState<Step>(persisted.step || "welcome");
-  const [accountType, setAccountType] = useState<AccountType>(persisted.accountType || null);
-  const [workspaceId, setWorkspaceId] = useState<string | undefined>(persisted.workspaceId);
+  const [accountType, setAccountType] = useState<AccountType>(
+    persisted.accountType || null,
+  );
+  const [workspaceId, setWorkspaceId] = useState<string | undefined>(
+    persisted.workspaceId,
+  );
   const [classId, setClassId] = useState<string | undefined>(persisted.classId);
-  const [className, setClassName] = useState<string | undefined>(persisted.className);
-  const [catechumensCount, setCatechumensCount] = useState(persisted.catechumensCount || 0);
+  const [className, setClassName] = useState<string | undefined>(
+    persisted.className,
+  );
+  const [catechumensCount, setCatechumensCount] = useState(
+    persisted.catechumensCount || 0,
+  );
 
   const [diocese, setDiocese] = useState<DioceseSelection | null>(null);
   const [dioceseStepDone, setDioceseStepDone] = useState(false);
   const [parish, setParish] = useState<ParishSelection | null>(null);
-  const [completionData, setCompletionData] = useState<CompletionSummary | null>(null);
+  const [completionData, setCompletionData] =
+    useState<CompletionSummary | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -123,21 +148,49 @@ export default function OnboardingPage() {
   ];
 
   const steps =
-    accountType === "manager" ? managerSteps : accountType === "personal" ? personalSteps : personalSteps;
+    accountType === "manager"
+      ? managerSteps
+      : accountType === "personal"
+        ? personalSteps
+        : personalSteps;
 
   const panelCopy = (() => {
     if (step === "welcome") {
-      return { title: t("shell.welcome_title"), subtitle: t("shell.welcome_subtitle") };
+      return {
+        title: t("shell.welcome_title"),
+        subtitle: t("shell.welcome_subtitle"),
+      };
     }
     if (accountType === "personal") {
-      if (step === "class") return { title: t("shell.personal_class_title"), subtitle: t("shell.personal_class_subtitle") };
+      if (step === "class")
+        return {
+          title: t("shell.personal_class_title"),
+          subtitle: t("shell.personal_class_subtitle"),
+        };
       if (step === "catechumens")
-        return { title: t("shell.personal_people_title"), subtitle: t("shell.personal_people_subtitle") };
-      return { title: t("shell.personal_title"), subtitle: t("shell.personal_subtitle") };
+        return {
+          title: t("shell.personal_people_title"),
+          subtitle: t("shell.personal_people_subtitle"),
+        };
+      return {
+        title: t("shell.personal_title"),
+        subtitle: t("shell.personal_subtitle"),
+      };
     }
-    if (step === "parish") return { title: t("shell.manager_parish_title"), subtitle: t("shell.manager_parish_subtitle") };
-    if (step === "details") return { title: t("shell.manager_details_title"), subtitle: t("shell.manager_details_subtitle") };
-    return { title: t("shell.welcome_title"), subtitle: t("shell.welcome_subtitle") };
+    if (step === "parish")
+      return {
+        title: t("shell.manager_parish_title"),
+        subtitle: t("shell.manager_parish_subtitle"),
+      };
+    if (step === "details")
+      return {
+        title: t("shell.manager_details_title"),
+        subtitle: t("shell.manager_details_subtitle"),
+      };
+    return {
+      title: t("shell.welcome_title"),
+      subtitle: t("shell.welcome_subtitle"),
+    };
   })();
 
   const getDeferredTarget = (): string | null => {
@@ -195,8 +248,13 @@ export default function OnboardingPage() {
       if (!personalParish?.id) throw new Error(t("personal_workspace_error"));
 
       setWorkspaceId(personalParish.id);
-      localStorage.setItem("catequese-viva-active-workspace", personalParish.id);
-      window.dispatchEvent(new CustomEvent("workspace-changed", { detail: personalParish.id }));
+      localStorage.setItem(
+        "catequese-viva-active-workspace",
+        personalParish.id,
+      );
+      window.dispatchEvent(
+        new CustomEvent("workspace-changed", { detail: personalParish.id }),
+      );
 
       trackMarketingEvent("onboarding_step_completed", {
         account_type: "personal",
@@ -244,16 +302,23 @@ export default function OnboardingPage() {
     }
     setCompletionData({
       role: "catechist",
-      title: count > 0 ? t("completion.personal_class_ready_title") : t("completion.personal_class_empty_title"),
+      title:
+        count > 0
+          ? t("completion.personal_class_ready_title")
+          : t("completion.personal_class_empty_title"),
       description:
-        count > 0 ? t("completion.personal_class_ready_desc") : t("completion.personal_class_empty_desc"),
+        count > 0
+          ? t("completion.personal_class_ready_desc")
+          : t("completion.personal_class_empty_desc"),
       items: [
         { label: t("summary.type"), value: t("summary.personal_account") },
         { label: t("summary.class"), value: className || "—" },
         { label: t("summary.catechumens"), value: String(count) },
       ],
       primaryActionLabel:
-        count > 0 ? t("completion.primary_open_class") : t("completion.primary_add_people"),
+        count > 0
+          ? t("completion.primary_open_class")
+          : t("completion.primary_add_people"),
       primaryActionTo: classId ? `/app/classes/${classId}` : "/app/classes",
     });
     setStep("completion");
@@ -302,7 +367,9 @@ export default function OnboardingPage() {
       if (!parishId) throw new Error(t("no_parish_selected"));
 
       localStorage.setItem("catequese-viva-active-workspace", parishId);
-      window.dispatchEvent(new CustomEvent("workspace-changed", { detail: parishId }));
+      window.dispatchEvent(
+        new CustomEvent("workspace-changed", { detail: parishId }),
+      );
 
       if (details?.yearName && details?.yearStart && details?.yearEnd) {
         const result = await completeCoordinatorOnboarding({
@@ -343,7 +410,9 @@ export default function OnboardingPage() {
 
       setCompletionData({
         role: "coordinator",
-        title: details?.className ? t("completion.manager_class_title") : t("completion.manager_ready_title"),
+        title: details?.className
+          ? t("completion.manager_class_title")
+          : t("completion.manager_ready_title"),
         description: details?.className
           ? t("completion.manager_class_desc")
           : t("completion.manager_ready_desc"),
@@ -351,12 +420,17 @@ export default function OnboardingPage() {
           { label: t("summary.diocese"), value: diocese?.name || "—" },
           { label: t("summary.parish"), value: parish.name },
           { label: t("summary.year"), value: details?.yearName || "—" },
-          { label: t("summary.class"), value: details?.className || t("summary.create_later") },
+          {
+            label: t("summary.class"),
+            value: details?.className || t("summary.create_later"),
+          },
         ],
         primaryActionLabel: details?.className
           ? t("completion.primary_invite_catechist")
           : t("completion.primary_create_class"),
-        primaryActionTo: details?.className ? `/app/parishes/${parishId}/members` : "/app/classes/new",
+        primaryActionTo: details?.className
+          ? `/app/parishes/${parishId}/members`
+          : "/app/classes/new",
       });
       setStep("completion");
       clearPersisted();
@@ -454,7 +528,9 @@ export default function OnboardingPage() {
                     <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       {t("diocese_selected")}
                     </p>
-                    <p className="text-sm font-medium text-foreground">{diocese.name}</p>
+                    <p className="text-sm font-medium text-foreground">
+                      {diocese.name}
+                    </p>
                   </div>
                   <Button
                     type="button"

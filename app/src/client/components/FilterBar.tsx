@@ -1,7 +1,7 @@
-import type { ChangeEvent, ReactNode } from 'react';
-import { cn } from '../utils';
-import { SearchInput } from './SearchInput';
-import { FilterPills, type FilterPillOption } from './FilterPills';
+import type { ChangeEvent, ReactNode } from "react";
+import { cn } from "../utils";
+import { SearchInput } from "./SearchInput";
+import { FilterPills, type FilterPillOption } from "./FilterPills";
 
 interface FilterBarProps {
   searchPlaceholder?: string;
@@ -26,7 +26,12 @@ export function FilterBar({
   className,
 }: FilterBarProps) {
   return (
-    <div className={cn('flex flex-col sm:flex-row gap-3 items-start sm:items-center', className)}>
+    <div
+      className={cn(
+        "flex flex-col sm:flex-row gap-3 items-start sm:items-center",
+        className,
+      )}
+    >
       <div className="flex flex-wrap items-center gap-3 flex-1 min-w-0">
         {onSearchChange && (
           <SearchInput
@@ -39,7 +44,9 @@ export function FilterBar({
         {filters?.map((filter, i) => (
           <div key={i} className="flex items-center gap-2">
             {filter.label && (
-              <span className="text-body-xs text-text-secondary shrink-0">{filter.label}</span>
+              <span className="text-body-xs text-text-secondary shrink-0">
+                {filter.label}
+              </span>
             )}
             <FilterPills
               options={filter.options}
@@ -49,7 +56,9 @@ export function FilterBar({
           </div>
         ))}
       </div>
-      {actions && <div className="flex items-center gap-2 shrink-0">{actions}</div>}
+      {actions && (
+        <div className="flex items-center gap-2 shrink-0">{actions}</div>
+      )}
     </div>
   );
 }

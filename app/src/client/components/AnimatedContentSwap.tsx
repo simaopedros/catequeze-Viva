@@ -1,5 +1,5 @@
-import { type ReactNode } from 'react';
-import { cn } from '../utils';
+import { type ReactNode } from "react";
+import { cn } from "../utils";
 
 interface AnimatedContentSwapProps {
   children: ReactNode;
@@ -15,9 +15,13 @@ interface AnimatedContentSwapProps {
  * The swapKey should change whenever the displayed content changes
  * (e.g., the active filter value, tab id, or a serialized query state).
  */
-export function AnimatedContentSwap({ children, swapKey, className }: AnimatedContentSwapProps) {
+export function AnimatedContentSwap({
+  children,
+  swapKey,
+  className,
+}: AnimatedContentSwapProps) {
   return (
-    <div key={swapKey} className={cn('content-transition', className)}>
+    <div key={swapKey} className={cn("content-transition", className)}>
       {children}
     </div>
   );

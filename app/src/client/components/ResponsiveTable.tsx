@@ -1,5 +1,5 @@
-import { type ReactNode } from 'react';
-import { cn } from '../utils';
+import { type ReactNode } from "react";
+import { cn } from "../utils";
 
 export interface ResponsiveTableColumn<T> {
   key: string;
@@ -54,15 +54,20 @@ export function ResponsiveTable<T>({
   return (
     <>
       {/* Desktop: standard table */}
-      <div className={cn('hidden md:block overflow-x-auto rounded-sm border border-border/70 bg-white', className)}>
-        <table className={cn('w-full text-sm', tableClassName)}>
+      <div
+        className={cn(
+          "hidden md:block overflow-x-auto rounded-sm border border-border/70 bg-white",
+          className,
+        )}
+      >
+        <table className={cn("w-full text-sm", tableClassName)}>
           <thead>
             <tr className="bg-muted/50 border-b">
               {columns.map((col) => (
                 <th
                   key={col.key}
                   className={cn(
-                    'p-3 text-left font-medium text-muted-foreground whitespace-nowrap',
+                    "p-3 text-left font-medium text-muted-foreground whitespace-nowrap",
                     col.headerClassName,
                   )}
                 >
@@ -76,15 +81,15 @@ export function ResponsiveTable<T>({
               <tr
                 key={getRowKey(item, idx)}
                 className={cn(
-                  'border-b last:border-0 hover:bg-muted/30 transition-colors',
-                  onRowClick && 'cursor-pointer',
+                  "border-b last:border-0 hover:bg-muted/30 transition-colors",
+                  onRowClick && "cursor-pointer",
                 )}
                 onClick={() => onRowClick?.(item)}
               >
                 {columns.map((col) => (
                   <td
                     key={col.key}
-                    className={cn('p-3 whitespace-nowrap', col.className)}
+                    className={cn("p-3 whitespace-nowrap", col.className)}
                   >
                     {col.render(item)}
                   </td>
@@ -96,13 +101,14 @@ export function ResponsiveTable<T>({
       </div>
 
       {/* Mobile: stacked cards */}
-      <div className={cn('md:hidden space-y-3', className)}>
+      <div className={cn("md:hidden space-y-3", className)}>
         {data.map((item, idx) => (
           <div
             key={getRowKey(item, idx)}
             className={cn(
-              'rounded-sm border border-border/70 bg-white p-4 ',
-              onRowClick && 'cursor-pointer active:scale-[0.98] transition-transform',
+              "rounded-sm border border-border/70 bg-white p-4 ",
+              onRowClick &&
+                "cursor-pointer active:scale-[0.98] transition-transform",
             )}
             onClick={() => onRowClick?.(item)}
           >
@@ -111,7 +117,10 @@ export function ResponsiveTable<T>({
             )}
             <dl className="space-y-2">
               {columns.map((col) => (
-                <div key={col.key} className="flex justify-between items-start gap-2">
+                <div
+                  key={col.key}
+                  className="flex justify-between items-start gap-2"
+                >
                   <dt className="text-xs text-muted-foreground shrink-0">
                     {col.cardLabel || col.header}
                   </dt>

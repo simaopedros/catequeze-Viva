@@ -1,14 +1,14 @@
-import { useState, useRef, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useCollaborative } from './CollaborativeContext';
-import { Button } from '../../../client/components/ui/button';
-import { Textarea } from '../../../client/components/ui/textarea';
-import { Send, Loader2, Sparkles, UserRound } from 'lucide-react';
+import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { useCollaborative } from "./CollaborativeContext";
+import { Button } from "../../../client/components/ui/button";
+import { Textarea } from "../../../client/components/ui/textarea";
+import { Send, Loader2, Sparkles, UserRound } from "lucide-react";
 
 export function CollaborativeChat() {
-  const { t } = useTranslation('collaborative');
+  const { t } = useTranslation("collaborative");
   const { messages, sendMessage } = useCollaborative();
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -21,7 +21,7 @@ export function CollaborativeChat() {
   const handleSend = async () => {
     const trimmed = input.trim();
     if (!trimmed || sending) return;
-    setInput('');
+    setInput("");
     setSending(true);
     try {
       await sendMessage(trimmed);
@@ -31,53 +31,70 @@ export function CollaborativeChat() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
   };
 
-  const visibleMessages = messages.filter(m => m.role === 'user' || m.role === 'assistant');
+  const visibleMessages = messages.filter(
+    (m) => m.role === "user" || m.role === "assistant",
+  );
 
   return (
     <div className="flex flex-col h-full">
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 py-3 space-y-4">
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto px-3 py-3 space-y-4"
+      >
         {visibleMessages.length === 0 && (
           <div className="rounded-sm border border-dashed border-border/70 bg-muted/20 px-4 py-5 text-sm text-muted-foreground">
             <div className="mb-3 flex items-center gap-2 text-foreground">
               <Sparkles className="h-4 w-4 text-secondary" />
-              <p className="font-semibold">{t('title')}</p>
+              <p className="font-semibold">{t("title")}</p>
             </div>
-            <p className="leading-relaxed">{t('chat.empty')}</p>
+            <p className="leading-relaxed">{t("chat.empty")}</p>
             <div className="mt-4 grid gap-1.5 text-xs">
-              <p className="font-semibold text-foreground">{t('chat.tips')}</p>
-              <p className="rounded bg-background px-2 py-1">{t('chat.tip_refine')}</p>
-              <p className="rounded bg-background px-2 py-1">{t('chat.tip_catechism')}</p>
-              <p className="rounded bg-background px-2 py-1">{t('chat.tip_dynamic')}</p>
+              <p className="font-semibold text-foreground">{t("chat.tips")}</p>
+              <p className="rounded bg-background px-2 py-1">
+                {t("chat.tip_refine")}
+              </p>
+              <p className="rounded bg-background px-2 py-1">
+                {t("chat.tip_catechism")}
+              </p>
+              <p className="rounded bg-background px-2 py-1">
+                {t("chat.tip_dynamic")}
+              </p>
             </div>
           </div>
         )}
 
-        {visibleMessages.map(msg => (
+        {visibleMessages.map((msg) => (
           <div
             key={msg.id}
-            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            className={`flex ${
+              msg.role === "user" ? "justify-end" : "justify-start"
+            }`}
           >
             <div
               className={`max-w-[88%] rounded-sm px-3 py-2.5 text-sm whitespace-pre-wrap ${
-    msg.role === 'user'
-     ? 'bg-[#071A2D] text-white'
-     : 'border border-border/70 bg-white text-foreground'
-    }`}
+                msg.role === "user"
+                  ? "bg-[#071A2D] text-white"
+                  : "border border-border/70 bg-white text-foreground"
+              }`}
             >
               <div className="mb-1 flex items-center gap-1.5 text-overline font-semibold uppercase tracking-wide opacity-70">
-                {msg.role === 'user' ? <UserRound className="h-3 w-3" /> : <Sparkles className="h-3 w-3" />}
-                {msg.role === 'user' ? t('chat.you') : t('chat.ai')}
+                {msg.role === "user" ? (
+                  <UserRound className="h-3 w-3" />
+                ) : (
+                  <Sparkles className="h-3 w-3" />
+                )}
+                {msg.role === "user" ? t("chat.you") : t("chat.ai")}
               </div>
               {msg.content || (
                 <span className="flex items-center gap-2 text-muted-foreground">
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  {t('chat.thinking')}
+                  {t("chat.thinking")}
                 </span>
               )}
             </div>
@@ -89,22 +106,26 @@ export function CollaborativeChat() {
         <div className="flex gap-2">
           <Textarea
             value={input}
-            onChange={e => setInput(e.target.value)}
+            onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={t('chat.placeholder')}
+            placeholder={t("chat.placeholder")}
             className="min-h-[44px] max-h-[120px] resize-none text-sm"
             rows={1}
             disabled={sending}
-            aria-label={t('chat.placeholder')}
+            aria-label={t("chat.placeholder")}
           />
           <Button
             size="icon"
             onClick={handleSend}
             disabled={sending || !input.trim()}
             className="shrink-0"
-            aria-label={t('chat.send')}
+            aria-label={t("chat.send")}
           >
-            {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            {sending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
           </Button>
         </div>
       </div>

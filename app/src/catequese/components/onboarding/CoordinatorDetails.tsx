@@ -33,7 +33,10 @@ interface CoordinatorDetailsProps {
   }) => void;
 }
 
-export function CoordinatorDetails({ parishName, onComplete }: CoordinatorDetailsProps) {
+export function CoordinatorDetails({
+  parishName,
+  onComplete,
+}: CoordinatorDetailsProps) {
   const { t } = useTranslation("onboarding");
   const defaults = useMemo(() => defaultCatecheticalYear(), []);
   const [step, setStep] = useState<"class" | "year">("class");
@@ -75,7 +78,9 @@ export function CoordinatorDetails({ parishName, onComplete }: CoordinatorDetail
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {t("coordinator.parish_context")}
           </p>
-          <p className="mt-0.5 text-sm font-medium text-foreground">{parishName}</p>
+          <p className="mt-0.5 text-sm font-medium text-foreground">
+            {parishName}
+          </p>
         </div>
       )}
 
@@ -92,7 +97,9 @@ export function CoordinatorDetails({ parishName, onComplete }: CoordinatorDetail
               {t("coordinator.class_title")}
             </h2>
             <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
-            <p className="text-sm leading-relaxed text-muted-foreground">{t("coordinator.class_desc")}</p>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              {t("coordinator.class_desc")}
+            </p>
           </div>
 
           <div className="space-y-4">
@@ -132,10 +139,15 @@ export function CoordinatorDetails({ parishName, onComplete }: CoordinatorDetail
 
                 {showOptionalDetails && (
                   <div className="space-y-4 border-t border-border/70 px-4 pb-4 pt-3">
-                    <p className="text-xs text-muted-foreground">{t("coordinator.optional_details_hint")}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {t("coordinator.optional_details_hint")}
+                    </p>
 
                     <div className="space-y-1.5">
-                      <Label htmlFor="coord-day" className="text-xs font-medium">
+                      <Label
+                        htmlFor="coord-day"
+                        className="text-xs font-medium"
+                      >
                         {t("coordinator.day_of_week")}
                       </Label>
                       <select
@@ -154,7 +166,10 @@ export function CoordinatorDetails({ parishName, onComplete }: CoordinatorDetail
 
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1.5">
-                        <Label htmlFor="coord-start" className="text-xs font-medium">
+                        <Label
+                          htmlFor="coord-start"
+                          className="text-xs font-medium"
+                        >
                           {t("coordinator.start_time")}
                         </Label>
                         <Input
@@ -166,7 +181,10 @@ export function CoordinatorDetails({ parishName, onComplete }: CoordinatorDetail
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <Label htmlFor="coord-end" className="text-xs font-medium">
+                        <Label
+                          htmlFor="coord-end"
+                          className="text-xs font-medium"
+                        >
                           {t("coordinator.end_time")}
                         </Label>
                         <Input
@@ -180,7 +198,10 @@ export function CoordinatorDetails({ parishName, onComplete }: CoordinatorDetail
                     </div>
 
                     <div className="space-y-1.5">
-                      <Label htmlFor="coord-location" className="text-xs font-medium">
+                      <Label
+                        htmlFor="coord-location"
+                        className="text-xs font-medium"
+                      >
                         {t("coordinator.location")}
                       </Label>
                       <Input
@@ -235,7 +256,9 @@ export function CoordinatorDetails({ parishName, onComplete }: CoordinatorDetail
               {t("coordinator.year_title")}
             </h2>
             <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
-            <p className="text-sm leading-relaxed text-muted-foreground">{t("coordinator.year_desc")}</p>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              {t("coordinator.year_desc")}
+            </p>
           </div>
 
           <div className="space-y-4">

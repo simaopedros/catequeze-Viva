@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { Download, X, Minimize2 } from 'lucide-react';
-import { Button } from './ui/button';
-import { useInstallPrompt } from '../hooks/useInstallPrompt';
-import { useTranslation } from 'react-i18next';
+import { useState } from "react";
+import { Download, X, Minimize2 } from "lucide-react";
+import { Button } from "./ui/button";
+import { useInstallPrompt } from "../hooks/useInstallPrompt";
+import { useTranslation } from "react-i18next";
 
 /**
  * Elegant banner that invites the user to install the PWA.
@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
  */
 export function InstallPrompt() {
   const { canInstall, promptInstall, dismiss } = useInstallPrompt();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
   const [minimized, setMinimized] = useState(false);
 
   if (!canInstall) return null;
@@ -23,14 +23,17 @@ export function InstallPrompt() {
         <button
           onClick={() => setMinimized(false)}
           className="flex items-center gap-2 rounded-sm border border-border/70 bg-white px-3 py-2 text-xs font-medium transition-colors hover:bg-muted/40"
-          aria-label={t('install_title')}
+          aria-label={t("install_title")}
         >
           <Download className="h-3.5 w-3.5 text-[#071A2D]" />
-          <span className="text-muted-foreground">{t('install_button')}</span>
+          <span className="text-muted-foreground">{t("install_button")}</span>
           <button
-            onClick={(e) => { e.stopPropagation(); dismiss(); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              dismiss();
+            }}
             className="ml-1 rounded-sm p-0.5 hover:bg-muted-foreground/10"
-            aria-label={t('close')}
+            aria-label={t("close")}
           >
             <X className="h-3 w-3 text-muted-foreground/60" />
           </button>
@@ -46,8 +49,10 @@ export function InstallPrompt() {
           <Download className="h-5 w-5 text-[#071A2D]" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold">{t('install_title')}</p>
-          <p className="text-xs text-muted-foreground">{t('install_description')}</p>
+          <p className="text-sm font-semibold">{t("install_title")}</p>
+          <p className="text-xs text-muted-foreground">
+            {t("install_description")}
+          </p>
         </div>
         <div className="flex items-center gap-1 shrink-0">
           <Button
@@ -55,14 +60,14 @@ export function InstallPrompt() {
             className="h-8 rounded-sm bg-[#071A2D] text-xs text-white hover:bg-[#0a2540]"
             onClick={promptInstall}
           >
-            {t('install_button')}
+            {t("install_button")}
           </Button>
           <Button
             variant="ghost"
             size="icon"
             className="h-8 w-8"
             onClick={() => setMinimized(true)}
-            aria-label={t('minimize')}
+            aria-label={t("minimize")}
           >
             <Minimize2 className="h-3.5 w-3.5" />
           </Button>
@@ -71,7 +76,7 @@ export function InstallPrompt() {
             size="icon"
             className="h-8 w-8"
             onClick={dismiss}
-            aria-label={t('close')}
+            aria-label={t("close")}
           >
             <X className="h-4 w-4" />
           </Button>

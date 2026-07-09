@@ -1,4 +1,4 @@
-import { ManualContentWorkspace } from '../content/ManualContentWorkspace';
+import { ManualContentWorkspace } from "../content/ManualContentWorkspace";
 
 export function ManualContentFlow() {
   return <ManualContentWorkspace source="hub" />;

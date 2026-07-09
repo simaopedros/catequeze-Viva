@@ -1,7 +1,7 @@
-import { type ReactNode } from 'react';
-import { cn } from '../../client/utils';
+import { type ReactNode } from "react";
+import { cn } from "../../client/utils";
 
-type Severity = 'info' | 'warning' | 'limit';
+type Severity = "info" | "warning" | "limit";
 
 interface UsageNoticeCardProps {
   severity?: Severity;
@@ -13,15 +13,15 @@ interface UsageNoticeCardProps {
 }
 
 const severityStyles: Record<Severity, string> = {
-  info: 'bg-muted/30 border-border/50 text-foreground',
-  warning: 'bg-amber-50/50 border-amber-200/60 text-amber-800',
-  limit: 'bg-muted/40 border-border/60 text-muted-foreground',
+  info: "bg-muted/30 border-border/50 text-foreground",
+  warning: "bg-[#D39A2B]/10 border-[#D39A2B]/30 text-[#8A6418]",
+  limit: "bg-muted/40 border-border/60 text-muted-foreground",
 };
 
 const severityIconStyles: Record<Severity, string> = {
-  info: 'text-muted-foreground',
-  warning: 'text-amber-500',
-  limit: 'text-muted-foreground/60',
+  info: "text-muted-foreground",
+  warning: "text-[#D39A2B]",
+  limit: "text-muted-foreground/60",
 };
 
 /**
@@ -33,18 +33,25 @@ const severityIconStyles: Record<Severity, string> = {
  * - warning: gentle alert (e.g. "2 credits left")
  * - limit: reached maximum (e.g. "0 credits, upgrade available")
  */
-export function UsageNoticeCard({ severity = 'info', icon, title, description, action, className }: UsageNoticeCardProps) {
+export function UsageNoticeCard({
+  severity = "info",
+  icon,
+  title,
+  description,
+  action,
+  className,
+}: UsageNoticeCardProps) {
   return (
     <div
       className={cn(
-        'rounded-sm border px-4 py-3 space-y-2',
+        "rounded-sm border px-4 py-3 space-y-2",
         severityStyles[severity],
         className,
       )}
     >
       <div className="flex items-start gap-3">
         {icon && (
-          <span className={cn('shrink-0 mt-0.5', severityIconStyles[severity])}>
+          <span className={cn("shrink-0 mt-0.5", severityIconStyles[severity])}>
             {icon}
           </span>
         )}

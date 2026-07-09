@@ -1,23 +1,23 @@
-import { Coins, Loader2 } from 'lucide-react';
-import { useState } from 'react';
-import { Button } from '../../client/components/ui/button';
-import { generateCheckoutSession } from 'wasp/client/operations';
-import { PaymentPlanId } from '../../payment/plans';
-import { cn } from '../../client/utils';
-import { trackMarketingEvent } from '../../client/analytics/marketingAnalytics';
+import { Coins, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { Button } from "../../client/components/ui/button";
+import { generateCheckoutSession } from "wasp/client/operations";
+import { PaymentPlanId } from "../../payment/plans";
+import { cn } from "../../client/utils";
+import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
 import {
   buildCheckoutTrackingFields,
   trackInitiateCheckout,
-} from '../../client/analytics/metaTracking';
-import { AI_CREDIT_PACKS } from '../../shared/pricing';
+} from "../../client/analytics/metaTracking";
+import { AI_CREDIT_PACKS } from "../../shared/pricing";
 
 interface BuyCreditsButtonProps {
   /** Visual size */
-  size?: 'sm' | 'default' | 'lg';
+  size?: "sm" | "default" | "lg";
   /** Visual style */
-  variant?: 'default' | 'outline' | 'ghost' | 'link';
+  variant?: "default" | "outline" | "ghost" | "link";
   /** Pre-select pack: '20' or '50' */
-  pack?: '20' | '50';
+  pack?: "20" | "50";
   /** Custom label override */
   label?: string;
   className?: string;
@@ -28,15 +28,20 @@ interface BuyCreditsButtonProps {
  * Opens Stripe checkout for AI credit packs.
  * Use `pack='20'` or `pack='50'` for a direct pack, or omit for generic.
  */
-export function BuyCreditsButton({ size = 'sm', variant = 'default', pack, label, className }: BuyCreditsButtonProps) {
+export function BuyCreditsButton({
+  size = "sm",
+  variant = "default",
+  pack,
+  label,
+  className,
+}: BuyCreditsButtonProps) {
   const [loading, setLoading] = useState(false);
 
-  const packKey = pack === '50' ? 'ai_credits_50' : 'ai_credits_20';
-  const planId = pack === '50' ? PaymentPlanId.AiCredits50 : PaymentPlanId.AiCredits20;
+  const packKey = pack === "50" ? "ai_credits_50" : "ai_credits_20";
+  const planId =
+    pack === "50" ? PaymentPlanId.AiCredits50 : PaymentPlanId.AiCredits20;
   const packDef = AI_CREDIT_PACKS[packKey];
-  const defaultLabel = pack
-    ? `+${pack} créditos`
-    : 'Comprar créditos';
+  const defaultLabel = pack ? `+${pack} créditos` : "Comprar créditos";
 
   const handleBuy = async () => {
     setLoading(true);
@@ -47,31 +52,31 @@ export function BuyCreditsButton({ size = 'sm', variant = 'default', pack, label
         planId,
         planName,
         value: checkoutValue,
-        currency: 'BRL',
+        currency: "BRL",
       });
 
       trackInitiateCheckout({
         event_id: tracking.initiate_checkout_event_id,
         content_name: planName,
-        content_category: 'ai_credits',
+        content_category: "ai_credits",
         content_ids: [planId],
         plan_id: planId,
         value: checkoutValue,
-        currency: 'BRL',
+        currency: "BRL",
         trial_days: 0,
       });
 
-      trackMarketingEvent('checkout_started', {
+      trackMarketingEvent("checkout_started", {
         plan: planId,
-        interval: 'monthly',
-        placement: 'buy_credits_button',
+        interval: "monthly",
+        placement: "buy_credits_button",
       });
       const result = await generateCheckoutSession({
         planId,
-        interval: 'monthly',
+        interval: "monthly",
         planName,
         value: checkoutValue,
-        currency: 'BRL',
+        currency: "BRL",
         initiate_checkout_event_id: tracking.initiate_checkout_event_id,
         fbp: tracking.fbp,
         fbc: tracking.fbc,
@@ -102,14 +107,14 @@ export function BuyCreditsButton({ size = 'sm', variant = 'default', pack, label
       variant={variant}
       onClick={handleBuy}
       disabled={loading}
-      className={cn('gap-1.5', className)}
+      className={cn("gap-1.5", className)}
     >
       {loading ? (
         <Loader2 className="h-3.5 w-3.5 animate-spin" />
       ) : (
         <Coins className="h-3.5 w-3.5" />
       )}
-      {loading ? 'Aguarde…' : (label || defaultLabel)}
+      {loading ? "Aguarde…" : label || defaultLabel}
     </Button>
   );
 }

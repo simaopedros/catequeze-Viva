@@ -9,22 +9,26 @@ declare global {
 
 /** Normalize i18n language to one of the cookie-consent supported locales. */
 function normalizeLocale(lang: string | undefined): string {
-  if (!lang || lang === 'pt') return 'pt-BR';
-  if (['pt-BR', 'en', 'es'].includes(lang)) return lang;
-  return 'pt-BR';
+  if (!lang || lang === "pt") return "pt-BR";
+  if (["pt-BR", "en", "es"].includes(lang)) return lang;
+  return "pt-BR";
 }
 
 function buildCookieTranslations(lang: string) {
-  const t = (key: string) => i18n.t(key, { ns: 'cookie', lng: lang });
+  const t = (key: string) => i18n.t(key, { ns: "cookie", lng: lang });
   return {
     consentModal: {
-      title: t('consent_modal.title'),
-      description: t('consent_modal.description'),
-      acceptAllBtn: t('consent_modal.accept_all'),
-      acceptNecessaryBtn: t('consent_modal.reject_all'),
+      title: t("consent_modal.title"),
+      description: t("consent_modal.description"),
+      acceptAllBtn: t("consent_modal.accept_all"),
+      acceptNecessaryBtn: t("consent_modal.reject_all"),
       footer: `
-            <a href="/privacy" target="_blank">${t('consent_modal.privacy_link')}</a>
-            <a href="/terms" target="_blank">${t('consent_modal.terms_link')}</a>
+            <a href="/privacy" target="_blank">${t(
+              "consent_modal.privacy_link",
+            )}</a>
+            <a href="/terms" target="_blank">${t(
+              "consent_modal.terms_link",
+            )}</a>
                     `,
     },
     preferencesModal: {
@@ -66,17 +70,15 @@ const getConfig = () => {
       },
       analytics: {
         autoClear: {
-          cookies: [
-            { name: /^_ga/ },
-            { name: "_gid" },
-          ],
+          cookies: [{ name: /^_ga/ }, { name: "_gid" }],
         },
         services: {
           ga: {
-            label: i18n.t('analytics_label', { ns: 'cookie' }),
+            label: i18n.t("analytics_label", { ns: "cookie" }),
             onAccept: () => {
               try {
-                const GA_ANALYTICS_ID = import.meta.env.REACT_APP_GOOGLE_ANALYTICS_ID;
+                const GA_ANALYTICS_ID = import.meta.env
+                  .REACT_APP_GOOGLE_ANALYTICS_ID;
                 if (!GA_ANALYTICS_ID || !GA_ANALYTICS_ID.length) {
                   throw new Error("Google Analytics ID is missing");
                 }
@@ -104,9 +106,9 @@ const getConfig = () => {
     language: {
       default: normalizeLocale(i18n.language),
       translations: {
-        'pt-BR': buildCookieTranslations('pt-BR'),
-        en: buildCookieTranslations('en'),
-        es: buildCookieTranslations('es'),
+        "pt-BR": buildCookieTranslations("pt-BR"),
+        en: buildCookieTranslations("en"),
+        es: buildCookieTranslations("es"),
       },
     },
   };

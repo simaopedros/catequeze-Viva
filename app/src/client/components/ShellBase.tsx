@@ -1,10 +1,10 @@
-import type { ReactNode } from 'react';
-import { cn } from '../utils';
+import type { ReactNode } from "react";
+import { cn } from "../utils";
 
 interface ShellBaseProps {
   children: ReactNode;
   /** Visual variant: app has sidebar offset, public has navbar, auth centered, family simple */
-  variant?: 'app' | 'public' | 'auth' | 'family';
+  variant?: "app" | "public" | "auth" | "family";
   className?: string;
 }
 
@@ -12,16 +12,20 @@ interface ShellBaseProps {
  * Shared visual foundation for all application shells.
  * Provides consistent background, text color, and content container.
  */
-export function ShellBase({ children, variant = 'app', className }: ShellBaseProps) {
+export function ShellBase({
+  children,
+  variant = "app",
+  className,
+}: ShellBaseProps) {
   const variantStyles: Record<string, string> = {
-    app: 'flex h-screen overflow-hidden bg-background',
-    public: 'min-h-screen bg-background',
-    auth: 'min-h-screen bg-surface-subtle flex flex-col',
-    family: 'min-h-screen bg-background flex flex-col',
+    app: "flex h-screen overflow-hidden bg-background",
+    public: "min-h-screen bg-background",
+    auth: "min-h-screen bg-surface-subtle flex flex-col",
+    family: "min-h-screen bg-background flex flex-col",
   };
 
   return (
-    <div className={cn(variantStyles[variant], 'text-foreground', className)}>
+    <div className={cn(variantStyles[variant], "text-foreground", className)}>
       {children}
     </div>
   );
@@ -35,7 +39,7 @@ interface ShellContentProps {
 /** Standard content area with responsive padding */
 export function ShellContent({ children, className }: ShellContentProps) {
   return (
-    <main className={cn('flex-1 overflow-y-auto p-4 md:p-6', className)}>
+    <main className={cn("flex-1 overflow-y-auto p-4 md:p-6", className)}>
       {children}
     </main>
   );
@@ -49,7 +53,12 @@ interface ShellHeaderProps {
 /** Standard header bar — h-14, border-b, elevation */
 export function ShellHeader({ children, className }: ShellHeaderProps) {
   return (
-    <header className={cn('flex h-14 items-center gap-3 border-b border-border/70 bg-white px-4', className)}>
+    <header
+      className={cn(
+        "flex h-14 items-center gap-3 border-b border-border/70 bg-white px-4",
+        className,
+      )}
+    >
       {children}
     </header>
   );

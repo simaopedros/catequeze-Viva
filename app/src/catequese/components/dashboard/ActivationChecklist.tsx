@@ -1,11 +1,11 @@
-import { useMemo, useState } from 'react';
-import { Link } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import { CheckCircle2, Circle, X, ArrowRight } from 'lucide-react';
-import { cn } from '../../../client/utils';
-import { Button } from '../../../client/components/ui/button';
+import { useMemo, useState } from "react";
+import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
+import { CheckCircle2, Circle, X, ArrowRight } from "lucide-react";
+import { cn } from "../../../client/utils";
+import { Button } from "../../../client/components/ui/button";
 
-const DISMISS_KEY = 'cv-activation-checklist-dismissed';
+const DISMISS_KEY = "cv-activation-checklist-dismissed";
 
 type ActivationStats = {
   activeClasses?: number;
@@ -27,11 +27,15 @@ type Step = {
  * First-session guidance after onboarding: class → people → attendance → meeting.
  * Hidden when all steps are complete or the user dismisses it.
  */
-export function ActivationChecklist({ stats }: { stats: ActivationStats | null | undefined }) {
-  const { t } = useTranslation('dashboard');
+export function ActivationChecklist({
+  stats,
+}: {
+  stats: ActivationStats | null | undefined;
+}) {
+  const { t } = useTranslation("dashboard");
   const [dismissed, setDismissed] = useState(() => {
     try {
-      return localStorage.getItem(DISMISS_KEY) === '1';
+      return localStorage.getItem(DISMISS_KEY) === "1";
     } catch {
       return false;
     }
@@ -46,38 +50,40 @@ export function ActivationChecklist({ stats }: { stats: ActivationStats | null |
   const steps: Step[] = useMemo(
     () => [
       {
-        id: 'class',
+        id: "class",
         done: hasClasses,
-        title: t('activation.step_class_title'),
-        description: t('activation.step_class_desc'),
-        to: firstClassId ? `/app/classes/${firstClassId}` : '/app/classes/new',
+        title: t("activation.step_class_title"),
+        description: t("activation.step_class_desc"),
+        to: firstClassId ? `/app/classes/${firstClassId}` : "/app/classes/new",
       },
       {
-        id: 'people',
+        id: "people",
         done: hasPeople,
-        title: t('activation.step_people_title'),
-        description: t('activation.step_people_desc'),
-        to: firstClassId ? `/app/classes/${firstClassId}` : '/app/catechumens/new',
+        title: t("activation.step_people_title"),
+        description: t("activation.step_people_desc"),
+        to: firstClassId
+          ? `/app/classes/${firstClassId}`
+          : "/app/catechumens/new",
       },
       {
-        id: 'attendance',
+        id: "attendance",
         done: hasAttendance,
-        title: t('activation.step_attendance_title'),
-        description: t('activation.step_attendance_desc'),
+        title: t("activation.step_attendance_title"),
+        description: t("activation.step_attendance_desc"),
         // Attendance lives under the class: /app/classes/:id/attendance
         to: firstClassId
           ? `/app/classes/${firstClassId}/attendance`
-          : '/app/classes',
+          : "/app/classes",
       },
       {
-        id: 'meeting',
+        id: "meeting",
         done: hasMeeting,
-        title: t('activation.step_meeting_title'),
-        description: t('activation.step_meeting_desc'),
-        to: '/app/ai-hub',
+        title: t("activation.step_meeting_title"),
+        description: t("activation.step_meeting_desc"),
+        to: "/app/ai-hub",
       },
     ],
-    [firstClassId, hasAttendance, hasClasses, hasMeeting, hasPeople, t]
+    [firstClassId, hasAttendance, hasClasses, hasMeeting, hasPeople, t],
   );
 
   const doneCount = steps.filter((s) => s.done).length;
@@ -87,7 +93,7 @@ export function ActivationChecklist({ stats }: { stats: ActivationStats | null |
 
   const dismiss = () => {
     try {
-      localStorage.setItem(DISMISS_KEY, '1');
+      localStorage.setItem(DISMISS_KEY, "1");
     } catch {
       /* ignore */
     }
@@ -99,17 +105,17 @@ export function ActivationChecklist({ stats }: { stats: ActivationStats | null |
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            {t('activation.eyebrow')}
+            {t("activation.eyebrow")}
           </p>
           <h2
             className="mt-1 text-lg font-semibold tracking-tight text-foreground"
-            style={{ fontFamily: 'var(--font-brand-display)' }}
+            style={{ fontFamily: "var(--font-brand-display)" }}
           >
-            {t('activation.title')}
+            {t("activation.title")}
           </h2>
           <div className="mt-2 h-px w-10 bg-[#D39A2B]" aria-hidden />
           <p className="mt-2 text-sm text-muted-foreground">
-            {t('activation.progress', { done: doneCount, total: steps.length })}
+            {t("activation.progress", { done: doneCount, total: steps.length })}
           </p>
         </div>
         <Button
@@ -118,7 +124,7 @@ export function ActivationChecklist({ stats }: { stats: ActivationStats | null |
           size="icon"
           className="h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground"
           onClick={dismiss}
-          aria-label={t('activation.dismiss')}
+          aria-label={t("activation.dismiss")}
         >
           <X className="h-4 w-4" />
         </Button>
@@ -130,20 +136,22 @@ export function ActivationChecklist({ stats }: { stats: ActivationStats | null |
             <Link
               to={step.to}
               className={cn(
-                'flex items-start gap-3 border-b border-border/60 px-1 py-3 last:border-0 transition-colors',
-                step.done ? 'opacity-70' : 'hover:bg-muted/20'
+                "flex items-start gap-3 border-b border-border/60 px-1 py-3 last:border-0 transition-colors",
+                step.done ? "opacity-70" : "hover:bg-muted/20",
               )}
             >
               {step.done ? (
-                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
+                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[#071A2D]" />
               ) : (
                 <Circle className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground/40" />
               )}
               <span className="min-w-0 flex-1">
                 <span
                   className={cn(
-                    'block text-sm font-medium',
-                    step.done ? 'text-muted-foreground line-through' : 'text-foreground'
+                    "block text-sm font-medium",
+                    step.done
+                      ? "text-muted-foreground line-through"
+                      : "text-foreground",
                   )}
                 >
                   {step.title}
@@ -154,7 +162,9 @@ export function ActivationChecklist({ stats }: { stats: ActivationStats | null |
                   </span>
                 )}
               </span>
-              {!step.done && <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" />}
+              {!step.done && (
+                <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" />
+              )}
             </Link>
           </li>
         ))}
