@@ -336,7 +336,12 @@ export default function ContentDetailPage() {
               <h3 className="mb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 {t("theme")}
               </h3>
-              <p className="text-sm">{item.theme}</p>
+              <p
+                className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                style={{ fontFamily: "var(--font-brand-display)" }}
+              >
+                {item.theme}
+              </p>
             </div>
           )}
           <div className="rounded-sm border border-border/70 bg-white p-4 sm:p-8">
@@ -347,7 +352,7 @@ export default function ContentDetailPage() {
               {item.tags.split(",").map((tag: string) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5 text-xs"
+                  className="inline-flex items-center rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5 text-xs font-semibold tracking-tight text-[#071A2D]"
                 >
                   <Tag className="mr-1 h-3 w-3" />
                   {tag.trim()}
@@ -369,9 +374,14 @@ export default function ContentDetailPage() {
                   <Link
                     key={meeting.id}
                     to={`/app/classes/${meeting.classId}/attendance`}
-                    className="flex justify-between py-1 text-sm hover:text-[#071A2D]"
+                    className="flex justify-between py-1 text-sm font-medium tracking-tight text-[#071A2D] hover:text-[#0a2540]"
                   >
-                    <span>{meeting.title || t("meeting_default")}</span>
+                    <span
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                      className="font-semibold"
+                    >
+                      {meeting.title || t("meeting_default")}
+                    </span>
                     <span className="text-xs text-muted-foreground">
                       {formatDate(meeting.date, currentLocale)}
                     </span>

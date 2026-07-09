@@ -821,7 +821,10 @@ export default function ClassDetailPage() {
                             {c.firstName?.[0]}
                             {c.lastName?.[0]}
                           </div>
-                          <span className="text-sm">
+                          <span
+                            className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                            style={{ fontFamily: "var(--font-brand-display)" }}
+                          >
                             {c.firstName} {c.lastName}
                           </span>
                         </div>

@@ -72,8 +72,8 @@ export function BottomSheetNav({ open, onClose }: BottomSheetNavProps) {
                           cn(
                             "flex items-center gap-3 rounded-sm px-3 py-2.5 text-sm font-medium transition-colors",
                             isActive
-                              ? "bg-muted/40 text-foreground border-l-2 border-[#D39A2B]"
-                              : "text-muted-foreground hover:bg-accent",
+                              ? "border-l-2 border-[#D39A2B] bg-muted/40 font-semibold text-[#071A2D]"
+                              : "text-muted-foreground hover:bg-accent hover:text-[#071A2D]",
                           )
                         }
                       >

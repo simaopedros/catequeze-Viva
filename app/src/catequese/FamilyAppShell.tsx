@@ -78,11 +78,13 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
                   className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-sm transition-colors ${
                     isActive
                       ? "text-[#071A2D]"
-                      : "text-muted-foreground hover:text-foreground"
+                      : "text-muted-foreground hover:text-[#071A2D]"
                   }`}
                 >
                   <item.icon className="h-5 w-5" />
-                  <span className="text-overline font-medium">
+                  <span
+                    className={`text-overline font-medium ${isActive ? "text-[#071A2D]" : ""}`}
+                  >
                     {item.label}
                   </span>
                 </button>

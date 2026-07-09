@@ -67,7 +67,12 @@ export function ContentSourcePicker({
         ) : filtered.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             <FileText className="h-12 w-12 mx-auto mb-3 opacity-30" />
-            <p className="text-sm">{t("hub.no_content_found")}</p>
+            <p
+              className="text-sm font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
+              {t("hub.no_content_found")}
+            </p>
             <Button variant="outline" size="sm" asChild className="mt-3 gap-2">
               <Link to="/app/ai-hub?mode=create-meeting">
                 <Feather className="h-4 w-4" />

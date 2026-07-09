@@ -378,9 +378,12 @@ export default function ClassPastoralReportPage() {
 
           {/* Ranking Table */}
           <div className="rounded-sm border border-border/70 bg-white">
-            <div className="p-4 border-b font-medium flex items-center justify-between flex-wrap gap-2">
-              <span className="flex items-center gap-2">
-                <Trophy className="h-4 w-4 text-warning" />
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b p-4">
+              <span
+                className="flex items-center gap-2 font-semibold tracking-tight text-[#071A2D]"
+                style={{ fontFamily: "var(--font-brand-display)" }}
+              >
+                <Trophy className="h-4 w-4 text-[#D39A2B]" />
                 {t("ranking")}
               </span>
               <FilterPills

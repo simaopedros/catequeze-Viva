@@ -91,14 +91,14 @@ export function PublicNavbar({
             <nav className="flex flex-col">
               <a
                 href="/#recursos"
-                className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-foreground"
+                className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-[#071A2D]"
                 onClick={() => setOpen(false)}
               >
                 {t("resources")}
               </a>
               <a
                 href="/#como"
-                className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-foreground"
+                className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-[#071A2D]"
                 onClick={() => setOpen(false)}
               >
                 {t("how_it_works")}
@@ -106,7 +106,7 @@ export function PublicNavbar({
               {!hidePricing && (
                 <Link
                   to="/pricing"
-                  className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-foreground"
+                  className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-[#071A2D]"
                   onClick={() => setOpen(false)}
                 >
                   {t("pricing")}
@@ -114,7 +114,7 @@ export function PublicNavbar({
               )}
               <Link
                 to="/contact"
-                className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-foreground"
+                className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-[#071A2D]"
                 onClick={() => setOpen(false)}
               >
                 {t("contact")}

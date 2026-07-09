@@ -35,7 +35,12 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <NavLink to="/admin/users" className="hover:text-foreground">Utilizadores</NavLink>
           <span>/</span>
-          <span className="text-foreground font-medium">{u.email}</span>
+          <span
+            className="font-semibold tracking-tight text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
+            {u.email}
+          </span>
         </div>
 
         <AppPageHeader
@@ -57,10 +62,42 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
               <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
             </div>
             <div className="grid grid-cols-2 gap-3 text-sm">
-              <div><p className="text-xs text-muted-foreground">Username</p><p>{u.username || '—'}</p></div>
-              <div><p className="text-xs text-muted-foreground">Telefone</p><p>{u.phone || '—'}</p></div>
-              <div><p className="text-xs text-muted-foreground">Locale</p><p>{u.locale}</p></div>
-              <div><p className="text-xs text-muted-foreground">Criado em</p><p>{new Date(u.createdAt).toLocaleDateString('pt-BR')}</p></div>
+              <div>
+                <p className="text-xs text-muted-foreground">Username</p>
+                <p
+                  className="font-semibold tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
+                  {u.username || "—"}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Telefone</p>
+                <p
+                  className="font-semibold tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
+                  {u.phone || "—"}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Locale</p>
+                <p
+                  className="font-semibold tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
+                  {u.locale}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Criado em</p>
+                <p
+                  className="font-semibold tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
+                  {new Date(u.createdAt).toLocaleDateString("pt-BR")}
+                </p>
+              </div>
             </div>
           </div>
 
@@ -73,9 +110,33 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
               <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
             </div>
             <div className="grid grid-cols-2 gap-3 text-sm">
-              <div><p className="text-xs text-muted-foreground">Plano</p><p className="font-medium">{u.subscriptionPlan || '—'}</p></div>
-              <div><p className="text-xs text-muted-foreground">Status</p><p className="font-medium">{u.subscriptionStatus || '—'}</p></div>
-              <div><p className="text-xs text-muted-foreground">Créditos editoriais</p><p className="font-medium">{u.credits}</p></div>
+              <div>
+                <p className="text-xs text-muted-foreground">Plano</p>
+                <p
+                  className="font-semibold tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
+                  {u.subscriptionPlan || "—"}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Status</p>
+                <p
+                  className="font-semibold tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
+                  {u.subscriptionStatus || "—"}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Créditos editoriais</p>
+                <p
+                  className="font-semibold tabular-nums tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
+                  {u.credits}
+                </p>
+              </div>
               <div><p className="text-xs text-muted-foreground">Stripe ID</p><p className="text-xs">{u.paymentProcessorUserId || '—'}</p></div>
             </div>
           </div>
@@ -133,7 +194,12 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
               u.auditLog.map((log: any) => (
                 <div key={log.id} className="px-5 py-2.5 flex items-center justify-between text-xs">
                   <div>
-                    <span className="font-medium">{log.action}</span>
+                    <span
+                      className="font-semibold tracking-tight text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
+                      {log.action}
+                    </span>
                     <span className="text-muted-foreground ml-2">{log.entityType}</span>
                     {log.metadata && (
                       <span className="text-muted-foreground ml-2">
@@ -164,7 +230,12 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
               {u.aiUsage.map((d: any) => (
                 <div key={d.id} className="px-5 py-2 flex items-center justify-between text-xs">
                   <span>{new Date(d.date).toLocaleDateString('pt-BR')}</span>
-                  <span className="font-medium">{d.creditsUsed} créditos</span>
+                  <span
+                    className="font-semibold tabular-nums tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
+                    {d.creditsUsed} créditos
+                  </span>
                 </div>
               ))}
             </div>

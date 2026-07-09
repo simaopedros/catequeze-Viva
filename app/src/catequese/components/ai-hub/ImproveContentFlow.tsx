@@ -173,7 +173,7 @@ function ImproveWorkspace() {
             {tc("workspace.live_status")}
           </div>
           {choice === "copy" && (
-            <div className="inline-flex items-center gap-1 rounded-sm border border-border/70 bg-muted/30 px-2 py-1 text-xs text-foreground">
+            <div className="inline-flex items-center gap-1 rounded-sm border border-border/70 bg-muted/30 px-2 py-1 text-xs font-semibold tracking-tight text-[#071A2D]">
               <Copy className="h-3 w-3" />
               {t("improve.copy_badge")}
             </div>

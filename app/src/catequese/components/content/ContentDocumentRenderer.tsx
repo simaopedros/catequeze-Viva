@@ -147,7 +147,7 @@ function renderNode(node: ContentDocNode, index: number): ReactNode {
       return (
         <th
           key={index}
-          className="border-r bg-muted/40 px-3 py-2 text-left font-semibold last:border-r-0"
+          className="border-r bg-muted/40 px-3 py-2 text-left font-semibold tracking-tight text-[#071A2D] last:border-r-0"
         >
           {renderChildren(node.content)}
         </th>

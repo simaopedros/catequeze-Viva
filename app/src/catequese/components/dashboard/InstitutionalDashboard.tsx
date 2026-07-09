@@ -211,7 +211,9 @@ function AlertBanner({ alerts }: { alerts?: any[] }) {
         >
           <AlertTriangle className="h-4 w-4 flex-shrink-0" />
           <div className="flex-1 min-w-0">
-            <span className="text-sm">{a.message}</span>
+            <span className="text-sm font-medium tracking-tight text-[#071A2D]">
+              {a.message}
+            </span>
             {a.count > 0 && (
               <Badge variant="outline" size="sm" className="ml-2">
                 {a.count}

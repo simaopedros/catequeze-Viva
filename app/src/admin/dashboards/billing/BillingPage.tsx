@@ -60,7 +60,12 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground text-xs">{p.type || 'PARISH'}</td>
-                    <td className="px-4 py-3 text-xs font-medium">{p.billing?.plan}</td>
+                    <td
+                      className="px-4 py-3 text-xs font-semibold tracking-tight text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
+                      {p.billing?.plan}
+                    </td>
                     <td className="px-4 py-3">
                       <span className="flex items-center gap-1">
                         {statusIcon(p.billing?.status)}

@@ -80,7 +80,7 @@ export function CoPilotPanel() {
                 "flex min-w-0 items-center justify-center gap-1.5 px-2 py-2 text-caption font-medium transition-colors",
                 view === "briefing"
                   ? "bg-[#071A2D] text-white"
-                  : "text-muted-foreground hover:text-foreground",
+                  : "text-muted-foreground hover:text-[#071A2D]",
               )}
             >
               <FileText className="h-3.5 w-3.5" />
@@ -92,7 +92,7 @@ export function CoPilotPanel() {
                 "flex min-w-0 items-center justify-center gap-1.5 px-2 py-2 text-caption font-medium transition-colors",
                 view === "refine"
                   ? "bg-[#071A2D] text-white"
-                  : "text-muted-foreground hover:text-foreground",
+                  : "text-muted-foreground hover:text-[#071A2D]",
               )}
             >
               <SlidersHorizontal className="h-3.5 w-3.5" />

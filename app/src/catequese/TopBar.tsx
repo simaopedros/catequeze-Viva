@@ -515,13 +515,9 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                               "truncate text-xs tracking-tight",
                               !n.readAt
                                 ? "font-semibold text-[#071A2D]"
-                                : "font-medium text-foreground",
+                                : "font-medium text-[#071A2D]/80",
                             )}
-                            style={
-                              !n.readAt
-                                ? { fontFamily: "var(--font-brand-display)" }
-                                : undefined
-                            }
+                            style={{ fontFamily: "var(--font-brand-display)" }}
                           >
                             {n.title}
                           </p>

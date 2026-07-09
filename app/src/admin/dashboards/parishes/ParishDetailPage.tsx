@@ -48,7 +48,12 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <NavLink to="/admin/parishes" className="hover:text-foreground">Paróquias</NavLink>
           <span>/</span>
-          <span className="text-foreground font-medium">{parish.name}</span>
+          <span
+            className="font-semibold tracking-tight text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
+            {parish.name}
+          </span>
         </div>
 
         <AppPageHeader
@@ -94,19 +99,43 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
               <div>
                 <p className="text-xs text-muted-foreground">Plano</p>
-                <p className="font-medium">{parish.billing.plan}</p>
+                <p
+                  className="font-semibold tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
+                  {parish.billing.plan}
+                </p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Status</p>
-                <p className="font-medium flex items-center gap-1">{statusIcon(parish.billing.status)}{parish.billing.status}</p>
+                <p
+                  className="flex items-center gap-1 font-semibold tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
+                  {statusIcon(parish.billing.status)}
+                  {parish.billing.status}
+                </p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Trial até</p>
-                <p className="font-medium">{parish.billing.trialEndsAt ? new Date(parish.billing.trialEndsAt).toLocaleDateString('pt-BR') : '—'}</p>
+                <p
+                  className="font-semibold tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
+                  {parish.billing.trialEndsAt
+                    ? new Date(parish.billing.trialEndsAt).toLocaleDateString("pt-BR")
+                    : "—"}
+                </p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Limites</p>
-                <p className="font-medium">{parish.billing.maxClasses || 'default'} turmas / {parish.billing.maxCatechumens || 'default'} catequizandos</p>
+                <p
+                  className="font-semibold tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
+                  {parish.billing.maxClasses || "default"} turmas /{" "}
+                  {parish.billing.maxCatechumens || "default"} catequizandos
+                </p>
               </div>
             </div>
           ) : (

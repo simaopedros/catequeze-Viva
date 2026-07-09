@@ -110,7 +110,7 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
           <button
             type="button"
             onClick={() => setShowOptionalDetails((current) => !current)}
-            className="flex w-full items-center justify-between px-4 py-3 text-sm font-medium text-foreground"
+            className="flex w-full items-center justify-between px-4 py-3 text-sm font-medium text-[#071A2D]"
           >
             <span>
               {showOptionalDetails

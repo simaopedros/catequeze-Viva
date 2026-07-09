@@ -87,7 +87,12 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
                       {p.billing?.plan ? (
                         <span className="flex items-center gap-1">
                           {statusIcon(p.billing.status)}
-                          <span className="text-xs font-medium">{p.billing.plan}</span>
+                          <span
+                            className="text-xs font-semibold tracking-tight text-[#071A2D]"
+                            style={{ fontFamily: "var(--font-brand-display)" }}
+                          >
+                            {p.billing.plan}
+                          </span>
                         </span>
                       ) : <span className="text-muted-foreground">—</span>}
                     </td>

@@ -449,7 +449,7 @@ export function QuickSetupPanel({
                       onClick={() => setApproach(option.value)}
                       className={`rounded-sm border p-3 text-left transition-colors ${
                         approach === option.value
-                          ? "border-[#071A2D] bg-muted/30"
+                          ? "border-[#071A2D] bg-muted/30 text-[#071A2D]"
                           : "border-border hover:border-[#071A2D]/40"
                       }`}
                     >

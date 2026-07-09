@@ -249,7 +249,7 @@ export function NewConversationDialog({
                     return (
                       <span
                         key={id}
-                        className="flex items-center gap-1 rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5 text-xs text-foreground"
+                        className="flex items-center gap-1 rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5 text-xs font-semibold tracking-tight text-[#071A2D]"
                       >
                         {c.firstName || c.email}
                         <button
