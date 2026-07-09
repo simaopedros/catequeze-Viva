@@ -202,7 +202,10 @@ export function NewConversationDialog({
                     <Icon className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">
+                    <p
+                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
                       {t(`new_dialog.types.${ct.key}.label`)}
                     </p>
                     <p className="text-xs text-muted-foreground">
@@ -293,7 +296,12 @@ export function NewConversationDialog({
                         {getInitials(c.firstName, c.lastName)}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{name}</p>
+                        <p
+                          className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+                          style={{ fontFamily: "var(--font-brand-display)" }}
+                        >
+                          {name}
+                        </p>
                         <p className="text-overline text-muted-foreground truncate">
                           {c.role ? roleLabel(c.role) : c.email}
                         </p>

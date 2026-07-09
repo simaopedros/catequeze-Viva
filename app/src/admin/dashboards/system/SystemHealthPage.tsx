@@ -47,10 +47,13 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
             {/* Job Errors */}
             {health?.recentErrors && health.recentErrors.length > 0 && (
               <div className="rounded-sm border border-border/70 bg-white p-5">
-                <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
-                  <AlertTriangle className="h-4 w-4 text-destructive" />
-                  Erros de Jobs ({health.recentErrors.length})
-                </h2>
+                <div className="mb-4 space-y-1.5">
+                  <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    <AlertTriangle className="h-3.5 w-3.5 text-destructive" />
+                    Erros de Jobs ({health.recentErrors.length})
+                  </h2>
+                  <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                </div>
                 <div className="divide-y -mx-5">
                   {health.recentErrors.map((err: any) => (
                     <div key={err.id} className="px-5 py-2.5 text-xs">
@@ -65,10 +68,13 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
             {/* Daily Stats */}
             {health?.recentDailyStats && health.recentDailyStats.length > 0 && (
               <div className="rounded-sm border border-border/70 bg-white p-5">
-                <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
-                  <TrendingUp className="h-4 w-4 text-[#071A2D]" />
-                  Daily Stats (7d)
-                </h2>
+                <div className="mb-4 space-y-1.5">
+                  <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    <TrendingUp className="h-3.5 w-3.5 text-[#071A2D]" />
+                    Daily Stats (7d)
+                  </h2>
+                  <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs">
                     <thead>
@@ -96,22 +102,30 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
 
             {/* Jobs Status */}
             <div className="rounded-sm border border-border/70 bg-white p-5">
-              <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
-                <Activity className="h-4 w-4 text-[#071A2D]" />
-                Jobs Agendados
-              </h2>
+              <div className="mb-4 space-y-1.5">
+                <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  <Activity className="h-3.5 w-3.5 text-[#071A2D]" />
+                  Jobs Agendados
+                </h2>
+                <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                 {[
                   { name: 'dailyStatsJob', schedule: '04:00', desc: 'Métricas diárias de tráfego e receita' },
-                  { name: 'aiCreditsResetJob', schedule: '03:00', desc: 'Reset de créditos IA mensais' },
-                  { name: 'aiCacheCleanupJob', schedule: '04:00', desc: 'Limpeza de cache de IA' },
+                  { name: 'aiCreditsResetJob', schedule: '03:00', desc: 'Reset de créditos de assistência editorial' },
+                  { name: 'aiCacheCleanupJob', schedule: '04:00', desc: 'Limpeza de cache editorial' },
                   { name: 'subscriptionExpirationJob', schedule: '04:00', desc: 'Expiração de trials' },
                   { name: 'remindersJob', schedule: '07:00', desc: 'Lembretes de encontros' },
                 ].map((job) => (
-                  <div key={job.name} className="flex items-start gap-2 p-3 rounded-sm bg-muted/40">
+                  <div key={job.name} className="flex items-start gap-2 p-3 rounded-sm border border-border/70 bg-white">
                     <Activity className="h-3.5 w-3.5 text-[#071A2D] mt-0.5 shrink-0" />
                     <div>
-                      <p className="font-medium text-xs">{job.name}</p>
+                      <p
+                        className="text-xs font-semibold tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
+                        {job.name}
+                      </p>
                       <p className="text-xs text-muted-foreground">{job.schedule} — {job.desc}</p>
                     </div>
                   </div>

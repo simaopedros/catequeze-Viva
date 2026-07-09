@@ -389,7 +389,12 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                           >
                             <Icon className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
                             <div className="min-w-0 flex-1">
-                              <p className="text-sm font-medium truncate">
+                              <p
+                                className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+                                style={{
+                                  fontFamily: "var(--font-brand-display)",
+                                }}
+                              >
                                 {item.label}
                               </p>
                               <p className="text-xs text-muted-foreground truncate">

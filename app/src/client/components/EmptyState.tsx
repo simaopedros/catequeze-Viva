@@ -72,7 +72,12 @@ export function EmptyState({
             <Icon className="h-5 w-5 text-muted-foreground" />
           </div>
         )}
-        <p className="text-body-sm font-medium text-foreground">{title}</p>
+        <p
+          className="text-body-sm font-semibold tracking-tight text-[#071A2D]"
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
+          {title}
+        </p>
         {description && (
           <p className="text-body-xs mt-1 max-w-sm text-muted-foreground">
             {description}

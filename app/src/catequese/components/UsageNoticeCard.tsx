@@ -56,7 +56,14 @@ export function UsageNoticeCard({
           </span>
         )}
         <div className="min-w-0 space-y-1">
-          {title && <p className="text-sm font-medium">{title}</p>}
+          {title && (
+            <p
+              className="text-sm font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
+              {title}
+            </p>
+          )}
           {description && <p className="text-xs opacity-80">{description}</p>}
         </div>
       </div>

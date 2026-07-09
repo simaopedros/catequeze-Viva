@@ -191,7 +191,10 @@ export function DioceseStep({
       <div className="max-h-64 space-y-3 overflow-y-auto">
         {!shouldShowResults && (
           <div className="border border-border/70 px-4 py-4 rounded-sm">
-            <p className="text-sm font-medium text-foreground">
+            <p
+              className="text-sm font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
               {t("diocese.start_hint_title")}
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -218,7 +221,12 @@ export function DioceseStep({
                 )}
               >
                 <div className="min-w-0 flex-1">
-                  <span className="font-medium">{d.name}</span>
+                  <span
+                    className="font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
+                    {d.name}
+                  </span>
                   {d.state && (
                     <span className="ml-1 text-xs text-muted-foreground">
                       ({d.state})
@@ -251,7 +259,12 @@ export function DioceseStep({
                 )}
               >
                 <div className="min-w-0 flex-1">
-                  <span className="font-medium">{d.name}</span>
+                  <span
+                    className="font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
+                    {d.name}
+                  </span>
                   {d.state && (
                     <span className="ml-1 text-xs text-muted-foreground">
                       ({d.state})

@@ -158,7 +158,12 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                     <div key={step.label} className="rounded-sm border border-border/70 bg-white p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <p className="text-sm font-medium">{step.label}</p>
+                          <p
+                            className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                            style={{ fontFamily: "var(--font-brand-display)" }}
+                          >
+                            {step.label}
+                          </p>
                           <p className="mt-1 text-2xl font-semibold tracking-tight tabular-nums text-[#071A2D]">
                             {step.count}
                           </p>

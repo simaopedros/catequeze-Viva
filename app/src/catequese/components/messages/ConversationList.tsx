@@ -277,9 +277,10 @@ export function ConversationList({
                   <div className="flex items-center justify-between gap-1">
                     <span
                       className={cn(
-                        "text-sm truncate",
+                        "truncate text-sm tracking-tight text-[#071A2D]",
                         conv.unreadCount > 0 ? "font-semibold" : "font-medium",
                       )}
+                      style={{ fontFamily: "var(--font-brand-display)" }}
                     >
                       {name}
                     </span>
@@ -306,7 +307,7 @@ export function ConversationList({
                         <>
                           {conv.lastMessage.sender.firstName &&
                             conv.type !== "DIRECT" && (
-                              <span className="font-medium">
+                              <span className="font-semibold text-[#071A2D]/80">
                                 {conv.lastMessage.sender.firstName}:{" "}
                               </span>
                             )}

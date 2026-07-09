@@ -309,7 +309,7 @@ export function ChatView({
                         )}
                       >
                         <CornerDownRight className="h-2.5 w-2.5 flex-shrink-0" />
-                        <span className="font-medium">
+                        <span className="font-semibold tracking-tight text-[#071A2D]">
                           {msg.parent.sender.firstName}
                         </span>
                         <span className="truncate">{msg.parent.content}</span>

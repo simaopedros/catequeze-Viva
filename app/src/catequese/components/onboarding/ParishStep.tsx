@@ -203,7 +203,10 @@ export function ParishStep({
       <div className="max-h-64 space-y-3 overflow-y-auto">
         {!shouldShowResults && (
           <div className="border border-border/70 px-4 py-4 rounded-sm">
-            <p className="text-sm font-medium text-foreground">
+            <p
+              className="text-sm font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
               {t("parish.start_hint_title")}
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -230,7 +233,12 @@ export function ParishStep({
                 )}
               >
                 <div className="min-w-0 flex-1">
-                  <span className="font-medium">{p.name}</span>
+                  <span
+                    className="font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
+                    {p.name}
+                  </span>
                   {p.city && (
                     <span className="ml-1 text-xs text-muted-foreground">
                       {p.city}
@@ -264,7 +272,12 @@ export function ParishStep({
                 )}
               >
                 <div className="min-w-0 flex-1">
-                  <span className="font-medium">{op.name}</span>
+                  <span
+                    className="font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
+                    {op.name}
+                  </span>
                   {op.address && (
                     <span className="mt-0.5 block text-xs text-muted-foreground">
                       {op.address}

@@ -168,11 +168,12 @@ export function GuidedTour({ onComplete }: GuidedTourProps) {
           </button>
         </div>
         <h3
-          className="mb-1 text-lg font-semibold tracking-tight text-foreground"
+          className="mb-1 text-lg font-semibold tracking-tight text-[#071A2D]"
           style={{ fontFamily: "var(--font-brand-display)" }}
         >
           {step.title}
         </h3>
+        <div className="mb-3 h-px w-8 bg-[#D39A2B]" aria-hidden />
         <p className="text-sm text-muted-foreground mb-4">{step.description}</p>
         <div className="flex items-center justify-between">
           <button
