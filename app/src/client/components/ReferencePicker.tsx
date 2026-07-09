@@ -204,15 +204,15 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
       {/* Tabs */}
       <div className="flex gap-1 bg-muted rounded-lg p-1">
         <button onClick={() => { setTab('bible'); setQuery(''); setResults([]); setSearched(false); setShowResults(false); setBrowseBook(null); setChapterVerses([]); }}
-          className={'flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors ' + (tab === 'bible' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground')}>
+          className={'flex flex-1 items-center justify-center gap-1.5 rounded-sm px-3 py-1.5 text-xs font-medium transition-colors ' + (tab === 'bible' ? 'bg-white text-foreground' : 'text-muted-foreground hover:text-foreground')}>
           <BookOpen className="h-3.5 w-3.5" />{t('bible.title')}
         </button>
         <button onClick={() => { setTab('catechism'); setQuery(''); setResults([]); setSearched(false); setShowResults(false); }}
-          className={'flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors ' + (tab === 'catechism' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground')}>      
+          className={'flex flex-1 items-center justify-center gap-1.5 rounded-sm px-3 py-1.5 text-xs font-medium transition-colors ' + (tab === 'catechism' ? 'bg-white text-foreground' : 'text-muted-foreground hover:text-foreground')}>      
           <Church className="h-3.5 w-3.5" />{t('catechism.title')}
         </button>
         <button onClick={() => { setTab('directory'); setQuery(''); setResults([]); setSearched(false); setShowResults(false); }}
-          className={'flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors ' + (tab === 'directory' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground')}>      
+          className={'flex flex-1 items-center justify-center gap-1.5 rounded-sm px-3 py-1.5 text-xs font-medium transition-colors ' + (tab === 'directory' ? 'bg-white text-foreground' : 'text-muted-foreground hover:text-foreground')}>      
           <FileText className="h-3.5 w-3.5" />{t('directory.title')}
         </button>
       </div>
@@ -225,7 +225,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
             onChange={e => handleQueryChange(e.target.value)}
             onFocus={() => { if (results.length > 0) setShowResults(true); }}   
             onBlur={() => setTimeout(() => setShowResults(false), 200)}
-            className="flex-1 h-8 rounded-md border border-input bg-background px-2 text-xs"
+            className="h-8 flex-1 rounded-sm border border-input bg-background px-2 text-xs"
             placeholder={tab === 'bible' ? t('bible.searchPlaceholder') : tab === 'catechism' ? t('catechism.searchPlaceholder') : t('directory.searchPlaceholder')}
           />
           {searching && <div className="absolute right-10 top-1.5"><div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div>}
@@ -233,7 +233,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
 
         {/* Autocomplete dropdown */}
         {tab === 'bible' && showResults && results.length > 0 && (
-          <div className="absolute z-50 left-0 right-0 mt-1 max-h-56 overflow-y-auto border rounded-md bg-background shadow-lg">
+          <div className="absolute left-0 right-0 z-50 mt-1 max-h-56 overflow-y-auto rounded-sm border border-border/70 bg-white">
             {tab === 'bible' && (
               <>
                 {chapterVerses.length > 0 && (
@@ -373,7 +373,7 @@ export function ReferencePicker({ bibleRefs, catechismRefs, directoryRefs, onAdd
 
 
       {(tab === 'catechism' || tab === 'directory') && searched && !searching && results.length > 0 && (
-        <div className="max-h-64 overflow-y-auto rounded-md border bg-background">
+        <div className="max-h-64 overflow-y-auto rounded-sm border border-border/70 bg-white">
           {tab === 'catechism' && results.map((entry: CatechismItem) => (
             <button
               key={entry.id}

@@ -32,10 +32,10 @@ export function ContextSelector() {
     : '';
 
   const wsIcon = (type: string) => {
-    if (type === 'PERSONAL') return <User className="h-4 w-4 text-primary shrink-0" />;
-    if (type === 'DIOCESE') return <Building2 className="h-4 w-4 text-warning shrink-0" />;
-    if (type === 'COMMUNITY') return <Building2 className="h-4 w-4 text-success shrink-0" />;
-    return <Church className="h-4 w-4 text-primary shrink-0" />;
+    if (type === 'PERSONAL') return <User className="h-4 w-4 shrink-0 text-foreground" />;
+    if (type === 'DIOCESE') return <Building2 className="h-4 w-4 shrink-0 text-foreground" />;
+    if (type === 'COMMUNITY') return <Building2 className="h-4 w-4 shrink-0 text-foreground" />;
+    return <Church className="h-4 w-4 shrink-0 text-foreground" />;
   };
 
   const needsPaidPlanRole = (role: string) =>
@@ -71,7 +71,7 @@ export function ContextSelector() {
         <DropdownMenuContent align="end" sideOffset={4} className="w-[min(22rem,calc(100vw-1rem))] p-2 max-h-[70vh] overflow-y-auto">
           {groups.map(g => (
             <div key={g.key}>
-              <div className="px-2 pt-2 pb-1 text-overline font-bold uppercase text-muted-foreground tracking-wider">
+              <div className="px-2 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 {g.label} ({g.items.length})
               </div>
               {g.items.slice(0, MAX_PER_GROUP).map((ws: any) => {
@@ -92,14 +92,14 @@ export function ContextSelector() {
                         {ws.isPersonal ? (ws.subtitle || t('personalSpace')) : (roleLabels[ws.role as keyof typeof roleLabels] || ws.role)}
                       </div>
                     </div>
-                    {isActive && <Check className="h-4 w-4 text-primary shrink-0" />}
+                    {isActive && <Check className="h-4 w-4 shrink-0 text-[#071A2D]" />}
                   </button>
                 );
               })}
               {g.items.length > MAX_PER_GROUP && (
                 <button
                   onClick={() => navigate('/app/select-workspace')}
-                  className="w-full text-caption text-primary hover:underline px-2 py-1 text-left"
+                  className="w-full px-2 py-1 text-left text-caption text-foreground underline-offset-2 hover:underline"
                 >
                   {t('viewAll', { count: g.items.length })}
                 </button>
@@ -109,7 +109,7 @@ export function ContextSelector() {
           {/* Role switch within current workspace */}
           {hasMultipleRoles && (
             <div className="border-t mt-2 pt-2">
-              <div className="px-2 py-1 text-overline font-bold uppercase text-muted-foreground tracking-wider">
+              <div className="px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 {t('profiles', { count: availableMemberships.length })}
               </div>
               {availableMemberships.map((m: any) => {
@@ -141,7 +141,7 @@ export function ContextSelector() {
                         PRO
                       </Badge>
                     )}
-                    {isActive && <Check className="h-4 w-4 text-primary shrink-0" />}
+                    {isActive && <Check className="h-4 w-4 shrink-0 text-[#071A2D]" />}
                   </button>
                 );
               })}
@@ -167,10 +167,10 @@ export function ContextSelector() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="sm" className="flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-foreground border border-input rounded-sm px-2.5 sm:px-3 py-1.5 h-9 max-w-[160px] sm:max-w-[240px] xl:max-w-[280px]">
-            <Church className="h-4 w-4 text-primary shrink-0" />
+            <Church className="h-4 w-4 shrink-0 text-foreground" />
             <span className="truncate font-medium text-sm min-w-0">{activeParishName}</span>
             <span className="text-xs text-muted-foreground hidden sm:inline">·</span>
-            <span className="font-semibold text-primary text-xs hidden sm:inline">{yearLabel}</span>
+            <span className="hidden text-xs font-semibold text-foreground sm:inline">{yearLabel}</span>
             <ChevronDown className="h-3.5 w-3.5 opacity-60 shrink-0" />
           </Button>
         </DropdownMenuTrigger>
@@ -184,7 +184,7 @@ export function ContextSelector() {
           >
             <Church className="h-4 w-4 text-muted-foreground" />
             <span className="flex-1 truncate text-left">{activeParishName}</span>
-            <Check className="h-4 w-4 text-primary shrink-0" />
+            <Check className="h-4 w-4 shrink-0 text-[#071A2D]" />
           </button>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -39,7 +39,7 @@ export default function ContactPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <PublicNavbar />
       <main className="flex-1 max-w-3xl mx-auto px-4 py-20">
-        <h1 className="text-4xl font-bold mb-4">{t('contact.title')}</h1>
+        <h1 className="mb-4 text-4xl font-semibold tracking-tight text-foreground">{t('contact.title')}</h1>
         <p className="text-lg text-muted-foreground mb-10">{t('contact.intro')}</p>
 
         <div className="grid gap-8 md:grid-cols-5">

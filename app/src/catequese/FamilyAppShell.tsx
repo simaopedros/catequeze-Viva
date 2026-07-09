@@ -27,7 +27,7 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
 
   return (
     <TwoFactorGate>
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="flex min-h-screen flex-col bg-[#F7F4EE]">
       {/* Top bar */}
       <header className="sticky top-0 z-sticky border-b border-border/70 bg-white" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <div className="flex h-14 items-center justify-between px-4">
@@ -44,7 +44,7 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
       </header>
 
       {/* Content */}
-      <main className="flex-1 bg-background p-4 md:p-6 no-overscroll scroll-touch" style={{ paddingBottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))' }}>
+      <main className="no-overscroll scroll-touch flex-1 bg-[#F7F4EE] p-4 md:p-6" style={{ paddingBottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))' }}>
         {children}
       </main>
 
@@ -58,7 +58,7 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
                 key={item.to}
                 onClick={() => navigate(item.to)}
                 className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-sm transition-colors ${
-     isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+     isActive ? 'text-[#071A2D]' : 'text-muted-foreground hover:text-foreground'
     }`}
               >
                 <item.icon className="h-5 w-5" />

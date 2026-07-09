@@ -69,13 +69,12 @@ export function ProductTrialBanner() {
   return (
     <div
       className={cn(
-        'border-b border-amber-200/80 bg-amber-50 px-4 py-2.5 text-amber-950',
-        'flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'
+        'flex flex-col gap-2 border-b border-border/70 bg-white px-4 py-2.5 text-foreground sm:flex-row sm:items-center sm:justify-between'
       )}
       role="status"
     >
       <div className="flex min-w-0 items-start gap-2.5 sm:items-center">
-        <Clock className="mt-0.5 h-4 w-4 shrink-0 text-amber-700 sm:mt-0" aria-hidden />
+        <Clock className="mt-0.5 h-4 w-4 shrink-0 text-[#D39A2B] sm:mt-0" aria-hidden />
         <div className="min-w-0 text-sm leading-snug">
           <p className="font-medium">
             {days === 1
@@ -93,7 +92,7 @@ export function ProductTrialBanner() {
         asChild
         size="sm"
         variant="outline"
-        className="h-8 shrink-0 rounded-sm border-amber-300 bg-white text-amber-950 hover:bg-amber-100"
+        className="h-8 shrink-0 rounded-sm border border-border/70 bg-[#071A2D] text-white hover:bg-[#0a2540]"
       >
         <Link to="/app/billing">
           {t('trial_banner_cta')}

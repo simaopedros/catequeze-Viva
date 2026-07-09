@@ -294,34 +294,34 @@ export default function ClassDetailPage() {
               <div className="sm:col-span-2">
                 <label className="text-xs font-medium">{t('name')}</label>
                 <input value={editName} onChange={e => setEditName(e.target.value)}
-                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1" />
+                  className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1" />
               </div>
               <div>
                 <label className="text-xs font-medium">{t('detail.day_of_week')}</label>
                 <select value={editDay} onChange={e => setEditDay(e.target.value)}
-                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1">
+                  className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1">
                   {dayOptions.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
                 </select>
               </div>
               <div>
                 <label className="text-xs font-medium">{t('detail.slots')}</label>
                 <input type="number" min={1} max={200} value={editCapacity} onChange={e => setEditCapacity(Number(e.target.value))}
-                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1" />
+                  className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1" />
               </div>
               <div>
                 <label className="text-xs font-medium">{t('start')}</label>
                 <input type="time" value={editStart} onChange={e => setEditStart(e.target.value)}
-                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1" />
+                  className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1" />
               </div>
               <div>
                 <label className="text-xs font-medium">{t('detail.end_time')}</label>
                 <input type="time" value={editEnd} onChange={e => setEditEnd(e.target.value)}
-                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1" />
+                  className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1" />
               </div>
               <div className="sm:col-span-2">
                 <label className="text-xs font-medium">{t('location')}</label>
                 <input value={editLocation} onChange={e => setEditLocation(e.target.value)}
-                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm mt-1" placeholder={cls.location || t('location_placeholder')} />
+                  className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1" placeholder={cls.location || t('location_placeholder')} />
               </div>
             </div>
             <div className="flex gap-2 justify-end">
@@ -503,7 +503,7 @@ export default function ClassDetailPage() {
                     <select
                       value={addUserId}
                       onChange={e => setAddUserId(e.target.value)}
-                      className="flex-1 h-9 rounded-md border border-input bg-background px-3 text-sm"
+                      className="flex-1 h-9 rounded-sm border border-input bg-background px-3 text-sm"
                     >
                       <option value="">{t('detail.select_catechist')}</option>
                       {availableCatechists.map((m: any) => (

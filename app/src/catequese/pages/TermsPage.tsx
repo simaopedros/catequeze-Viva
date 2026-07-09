@@ -11,7 +11,7 @@ export default function TermsPage() {
       <PublicNavbar />
       <main className="flex-1 max-w-3xl mx-auto px-4 py-20 space-y-8">
         <div>
-          <h1 className="text-4xl font-bold mb-4">{t('terms.title')}</h1>
+          <h1 className="mb-4 text-4xl font-semibold tracking-tight text-foreground">{t('terms.title')}</h1>
           <p className="text-muted-foreground">{t('terms.updated')}</p>
         </div>
 
