@@ -9,6 +9,7 @@ import {
   Send,
   Loader2,
   User,
+  Bot,
   ThumbsUp,
   ThumbsDown,
   MessageSquareText,
