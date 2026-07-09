@@ -180,7 +180,7 @@ export function ContextShelf() {
         {attachments.map((att) => {
           const config = TYPE_CONFIG[att.type] || TYPE_CONFIG.TEXT;
           return (
-            <Card key={att.id} className="p-3 text-sm">
+            <Card key={att.id} className="rounded-sm border-border/70 p-3 text-sm">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 mb-1">

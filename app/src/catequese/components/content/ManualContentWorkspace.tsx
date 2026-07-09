@@ -781,7 +781,7 @@ function ManualContentWorkspaceInner({
   if (loadError) {
     return (
       <div className="mx-auto max-w-6xl space-y-6">
-        <Card className="p-8 space-y-4">
+        <Card className="space-y-4 rounded-sm border-border/70 p-8">
           <p className="text-sm text-destructive">{loadError}</p>
           <div className="flex gap-2">
             <Button
@@ -806,7 +806,7 @@ function ManualContentWorkspaceInner({
     return (
       <div className="mx-auto max-w-6xl space-y-6">
         <HeaderSection backTo={backTo} />
-        <Card className="p-8">
+        <Card className="rounded-sm border-border/70 p-8">
           <div className="flex items-center gap-3 text-sm text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> preparando rascunho do
             encontro

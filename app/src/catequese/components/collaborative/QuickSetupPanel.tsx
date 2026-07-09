@@ -308,11 +308,11 @@ export function QuickSetupPanel({
           </div>
         )}
 
-        <Card className="p-4 space-y-6 sm:p-6">
+        <Card className="space-y-6 rounded-sm border-border/70 p-4 sm:p-6">
           {hasSelectedSource && (
-            <div className="rounded-sm border bg-muted/20 p-4">
+            <div className="rounded-sm border border-border/70 bg-muted/20 p-4">
               <div className="flex items-start gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-foreground">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
                   {contentId ? (
                     <FileText className="h-4 w-4" />
                   ) : (

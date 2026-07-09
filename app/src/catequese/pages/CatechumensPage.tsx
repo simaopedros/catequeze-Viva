@@ -44,7 +44,7 @@ import {
 
 const PAGE_SIZE = 50;
 
-const AVATAR_COLORS = ["border border-border/70 bg-muted/30 text-foreground"];
+const AVATAR_COLORS = ["border border-border/70 bg-muted/30 text-[#071A2D]"];
 
 function getAge(birthDate: string): number | null {
   return getAgeFromDate(birthDate);

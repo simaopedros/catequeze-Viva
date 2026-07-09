@@ -269,7 +269,7 @@ export default function PricingPage() {
               }`}
             >
               {tp("pricing.annual_tab")}
-              <span className="text-caption font-semibold text-foreground">
+              <span className="rounded-sm bg-[#D39A2B]/15 px-1.5 py-0.5 text-caption font-semibold text-[#8A6418]">
                 {tp("pricing.annual_savings_badge")}
               </span>
             </button>

@@ -476,26 +476,35 @@ export default function MessagesPage() {
               {/* Use case examples */}
               <div className="grid gap-2 w-full max-w-xs mb-5">
                 <div className="rounded-sm border border-border/70 bg-white p-2.5 text-left text-xs">
-                  <span className="font-semibold text-foreground">
+                  <span
+                    className="font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
                     {t("use_case_class")}
                   </span>
-                  <p className="text-muted-foreground mt-0.5">
+                  <p className="mt-0.5 text-muted-foreground">
                     {t("use_case_class_desc")}
                   </p>
                 </div>
                 <div className="rounded-sm border border-border/70 bg-white p-2.5 text-left text-xs">
-                  <span className="font-semibold text-foreground">
+                  <span
+                    className="font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
                     {t("use_case_notice")}
                   </span>
-                  <p className="text-muted-foreground mt-0.5">
+                  <p className="mt-0.5 text-muted-foreground">
                     {t("use_case_notice_desc")}
                   </p>
                 </div>
                 <div className="rounded-sm border border-border/70 bg-white p-2.5 text-left text-xs">
-                  <span className="font-semibold text-foreground">
+                  <span
+                    className="font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
                     {t("use_case_direct")}
                   </span>
-                  <p className="text-muted-foreground mt-0.5">
+                  <p className="mt-0.5 text-muted-foreground">
                     {t("use_case_direct_desc")}
                   </p>
                 </div>

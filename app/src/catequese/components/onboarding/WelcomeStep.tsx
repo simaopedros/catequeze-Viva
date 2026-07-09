@@ -70,7 +70,10 @@ function PathOption({
       )}
     >
       <span className="min-w-0 space-y-1.5">
-        <span className="block text-[0.95rem] font-semibold text-foreground group-hover:text-[#071A2D]">
+        <span
+          className="block text-[0.95rem] font-semibold tracking-tight text-[#071A2D] group-hover:text-[#0a2540]"
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
           {label}
         </span>
         <span className="block text-sm leading-relaxed text-muted-foreground">
