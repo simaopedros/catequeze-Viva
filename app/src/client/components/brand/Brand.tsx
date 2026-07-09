@@ -138,7 +138,7 @@ export function BrandLockup({
         ) : (
           <span
             className={cn(
-              "mt-1 inline-flex w-fit items-center rounded-full border px-2 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.32em]",
+              "mt-1 inline-flex w-fit items-center rounded-sm border px-2 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.32em]",
               toneClasses.badge,
             )}
           >
@@ -154,7 +154,7 @@ export function BrandMedallion({ className }: BrandMedallionProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center justify-center rounded-full border border-[#f4cf7a]/30 bg-[radial-gradient(circle_at_top,_rgba(244,207,122,0.4),_rgba(244,207,122,0.08)_60%,_rgba(244,207,122,0)_100%)] p-3 shadow-[0_14px_30px_rgba(7,26,45,0.12)]",
+        "inline-flex items-center justify-center rounded-sm border border-[#D39A2B]/40 bg-[#D39A2B]/10 p-3",
         className,
       )}
     >

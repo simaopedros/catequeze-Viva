@@ -1685,7 +1685,10 @@ export default function CatechumenDetailPage() {
                     className="block rounded-sm border border-border/70 bg-white p-3 transition-colors hover:bg-muted/20"
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-sm">
+                      <span
+                        className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
                         {j.template?.name}
                       </span>
                       <Badge

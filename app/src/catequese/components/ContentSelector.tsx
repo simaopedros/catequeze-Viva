@@ -94,10 +94,25 @@ export function ContentSelector({
                     setSearch("");
                   }}
                   className={`w-full px-3 py-2 text-left text-sm hover:bg-muted ${
-                    c.id === selectedId ? "bg-muted/40 font-medium" : ""
+                    c.id === selectedId
+                      ? "bg-muted/40 font-semibold text-[#071A2D]"
+                      : ""
                   }`}
                 >
-                  <span>{c.title}</span>
+                  <span
+                    className={
+                      c.id === selectedId
+                        ? "tracking-tight"
+                        : undefined
+                    }
+                    style={
+                      c.id === selectedId
+                        ? { fontFamily: "var(--font-brand-display)" }
+                        : undefined
+                    }
+                  >
+                    {c.title}
+                  </span>
                   {c.theme && (
                     <span className="text-xs text-muted-foreground ml-2">
                       — {c.theme}

@@ -82,8 +82,11 @@ export function ProductTrialBanner() {
           className="mt-0.5 h-4 w-4 shrink-0 text-[#D39A2B] sm:mt-0"
           aria-hidden
         />
-        <div className="min-w-0 text-sm leading-snug">
-          <p className="font-medium">
+        <div className="min-w-0 space-y-0.5 text-sm leading-snug">
+          <p
+            className="font-semibold tracking-tight text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
             {days === 1
               ? t("trial_banner_title_one")
               : t("trial_banner_title_other", { count: days })}

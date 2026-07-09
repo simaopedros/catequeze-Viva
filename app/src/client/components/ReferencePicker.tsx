@@ -332,8 +332,13 @@ export function ReferencePicker({
   const hasSelected = selectedVerses.size > 0;
 
   return (
-    <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3">
-      <h3 className="font-medium text-sm">{t("references.title")}</h3>
+    <div className="space-y-3 rounded-sm border border-border/70 bg-white p-4">
+      <div className="space-y-1.5">
+        <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          {t("references.title")}
+        </h3>
+        <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+      </div>
 
       {/* Tabs */}
       <div className="flex gap-1 rounded-sm bg-muted p-1">

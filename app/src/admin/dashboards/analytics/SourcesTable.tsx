@@ -6,25 +6,28 @@ const SourcesTable = ({
   sources: PageViewSource[] | undefined;
 }) => {
   return (
-    <div className="border-border/70 bg-white sm:px-7.5 rounded-sm border px-5 pb-2.5 pt-6 xl:pb-1">
-      <h4 className="text-foreground mb-6 text-xl font-semibold">
-        Top Sources
-      </h4>
+    <div className="rounded-sm border border-border/70 bg-white px-5 pb-2.5 pt-6 sm:px-7.5 xl:pb-1">
+      <div className="mb-6 space-y-1.5">
+        <h4 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          Top Sources
+        </h4>
+        <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+      </div>
 
       <div className="flex flex-col">
         <div className="grid grid-cols-3 rounded-sm bg-muted/40">
           <div className="p-2.5 xl:p-5">
-            <h5 className="xsm:text-base text-sm font-medium uppercase">
+            <h5 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               Source
             </h5>
           </div>
           <div className="p-2.5 text-center xl:p-5">
-            <h5 className="xsm:text-base text-sm font-medium uppercase">
+            <h5 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               Visitors
             </h5>
           </div>
           <div className="hidden p-2.5 text-center sm:block xl:p-5">
-            <h5 className="xsm:text-base text-sm font-medium uppercase">
+            <h5 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               Sales
             </h5>
           </div>

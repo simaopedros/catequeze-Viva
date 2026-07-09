@@ -157,12 +157,16 @@ export function PlanLimitBanner({
       )}
     >
       <div className="flex items-start gap-3">
-        <Icon className="h-4 w-4 text-[#071A2D]/50 shrink-0 mt-0.5" />
-        <div className="space-y-1 min-w-0">
-          <p className="text-xs font-medium text-[#071A2D]/70 uppercase tracking-wide">
+        <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[#071A2D]/50" />
+        <div className="min-w-0 space-y-1.5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {t("limit_reached_title")}
           </p>
-          <p className="text-sm font-semibold text-foreground">
+          <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          <p
+            className="text-sm font-semibold tracking-tight text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
             {variant === "managed_workspace_notice"
               ? t("limit_reached_label", { label })
               : contextualTitle}

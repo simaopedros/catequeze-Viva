@@ -746,7 +746,10 @@ export default function ClassDetailPage() {
                             {e.catechumenProfile?.firstName?.[0]}
                             {e.catechumenProfile?.lastName?.[0]}
                           </div>
-                          <span className="text-sm font-medium truncate">
+                          <span
+                            className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+                            style={{ fontFamily: "var(--font-brand-display)" }}
+                          >
                             {e.catechumenProfile?.firstName}{" "}
                             {e.catechumenProfile?.lastName}
                           </span>

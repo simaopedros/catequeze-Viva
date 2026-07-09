@@ -89,11 +89,17 @@ export default function AdminDiocesesPage({ user }: { user: AuthUser }) {
 
         {showForm && (
           <AppPanel className="space-y-3">
+            <div className="space-y-1.5">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                {t("new_diocese")}
+              </p>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            </div>
             <div className="flex gap-3">
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="flex-1 h-9"
+                className="h-9 flex-1"
                 placeholder={t("name_placeholder")}
               />
               <select
@@ -136,18 +142,18 @@ export default function AdminDiocesesPage({ user }: { user: AuthUser }) {
             />
           ) : (
             <table className="w-full text-sm">
-              <thead className="bg-muted/50 border-b">
+              <thead className="border-b bg-muted/50">
                 <tr>
-                  <th className="text-left px-4 py-3 font-medium">
+                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     {t("columns.name")}
                   </th>
-                  <th className="text-left px-4 py-3 font-medium">
+                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     {t("columns.country")}
                   </th>
-                  <th className="text-left px-4 py-3 font-medium">
+                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     {t("columns.parishes")}
                   </th>
-                  <th className="text-right px-4 py-3 font-medium">
+                  <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     {t("columns.actions")}
                   </th>
                 </tr>
