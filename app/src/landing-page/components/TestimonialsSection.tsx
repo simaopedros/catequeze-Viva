@@ -59,7 +59,7 @@ function TestimonialCard({ testimonial, delay }: { testimonial: Testimonial; del
       <div className="flex items-start justify-between gap-2">
         <div className="flex gap-0.5">
           {[1, 2, 3, 4, 5].map((star) => (
-            <Star key={star} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+            <Star key={star} className="h-3.5 w-3.5 fill-[#D39A2B] text-[#D39A2B]" />
           ))}
         </div>
         <Quote className="h-4 w-4 text-[#071A2D]/30 shrink-0" aria-hidden />
