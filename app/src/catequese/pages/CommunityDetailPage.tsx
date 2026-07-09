@@ -50,12 +50,14 @@ export default function CommunityDetailPage() {
   };
 
   if (loading) {
-    return <AppShell><div className="max-w-4xl mx-auto py-6 space-y-6 animate-pulse">
-      <div className="h-8 w-48 bg-muted rounded" />
-      <div className="grid gap-4 md:grid-cols-3">{[1,2,3].map(i => <div key={i} className="h-24 rounded-sm bg-muted" />)}</div>
-    </div></AppShell>;
+    return (
+      <div className="mx-auto max-w-4xl space-y-6 animate-pulse py-6">
+        <div className="h-8 w-48 rounded bg-muted" />
+        <div className="grid gap-4 md:grid-cols-3">{[1, 2, 3].map((i) => <div key={i} className="h-24 rounded-sm bg-muted" />)}</div>
+      </div>
+    );
   }
-  if (!community) return <AppShell><div className="p-6 text-destructive">{tp('community_not_found')}</div></AppShell>;
+  if (!community) return <div className="p-6 text-destructive">{tp('community_not_found')}</div>;
 
   const tabs = [
     { id: 'turmas' as const, label: tp('tab_classes', { count: classes.length }), icon: GraduationCap },
@@ -64,7 +66,6 @@ export default function CommunityDetailPage() {
   ];
 
   return (
-    <AppShell>
       <div className="mx-auto max-w-4xl space-y-6 py-6">
         <div className="flex items-start gap-3">
           <Button variant="ghost" size="icon" className="mt-1 shrink-0" asChild>
@@ -202,6 +203,5 @@ export default function CommunityDetailPage() {
           </div>
         )}
       </div>
-    </AppShell>
   );
 }
