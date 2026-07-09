@@ -451,8 +451,7 @@ export default function FamilyDetailPage() {
                 <input
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full border-b border-input bg-transparent text-2xl font-semibold tracking-tight text-foreground outline-none sm:text-[1.75rem]"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
+                  className="w-full border-b border-input bg-transparent text-2xl font-semibold tracking-tight text-[#071A2D] outline-none sm:text-[1.75rem]"
                   style={{ fontFamily: "var(--font-brand-display)" }}
                   autoFocus
                 />

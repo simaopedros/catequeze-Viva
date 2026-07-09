@@ -1604,7 +1604,10 @@ export default function CatechumenDetailPage() {
               ) : (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-sm font-semibold">
+                    <h4
+                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
                       {t("catechumens.detail_attendance_report")}
                     </h4>
                     {report.canSeeSensitiveSignals ? (
@@ -1630,7 +1633,10 @@ export default function CatechumenDetailPage() {
                   </div>
                   <div className="grid grid-cols-3 gap-2 text-center text-xs">
                     <div className="rounded-sm border border-border/70 bg-muted/30 p-2">
-                      <p className="text-lg font-semibold tracking-tight tabular-nums">
+                      <p
+                        className="text-lg font-semibold tracking-tight tabular-nums text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
                         {report.totalPresent}
                       </p>
                       <p className="text-muted-foreground">
@@ -1638,7 +1644,10 @@ export default function CatechumenDetailPage() {
                       </p>
                     </div>
                     <div className="rounded-sm border border-border/70 bg-muted/30 p-2">
-                      <p className="text-lg font-semibold tracking-tight tabular-nums">
+                      <p
+                        className="text-lg font-semibold tracking-tight tabular-nums text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
                         {report.totalAbsent}
                       </p>
                       <p className="text-muted-foreground">
@@ -1646,7 +1655,10 @@ export default function CatechumenDetailPage() {
                       </p>
                     </div>
                     <div className="rounded-sm border border-border/70 bg-muted/30 p-2">
-                      <p className="text-lg font-semibold tracking-tight tabular-nums">
+                      <p
+                        className="text-lg font-semibold tracking-tight tabular-nums text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
                         {report.totalJustified}
                       </p>
                       <p className="text-muted-foreground">

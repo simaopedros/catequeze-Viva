@@ -183,7 +183,7 @@ async function assertAndDeductDioceseCredits(
     if (todayUsage + cost > dailyLimit) {
       throw new HttpError(
         429,
-        `Limite diário de IA atingido (${dailyLimit} créditos/dia). Tente novamente amanhã.`,
+        `Limite diário de assistência editorial atingido (${dailyLimit} créditos/dia). Tente novamente amanhã.`,
       );
     }
   }
@@ -258,7 +258,7 @@ export async function assertAndDeductCredits(
   if (!credits) {
     throw new HttpError(
       402,
-      'PLAN_NO_AI: Plano sem acesso à IA. Faça upgrade para Catequista IA ou Paróquia em /app/billing.',
+      'PLAN_NO_AI: Plano sem acesso à assistência editorial. Faça upgrade para Catequista editorial ou Paróquia em /app/billing.',
     );
   }
 
@@ -276,7 +276,7 @@ export async function assertAndDeductCredits(
     if (credits.creditsLeft <= 0) {
       throw new HttpError(
         402,
-        'CREDITS_EXHAUSTED: Créditos de teste esgotados. Compre créditos avulsos ou faça upgrade para continuar usando a IA.',
+        'CREDITS_EXHAUSTED: Créditos de teste esgotados. Compre créditos avulsos ou faça upgrade para continuar usando a assistência editorial.',
       );
     }
   } else {
@@ -301,7 +301,7 @@ export async function assertAndDeductCredits(
     if (todayUsage + cost > dailyLimit) {
       throw new HttpError(
         429,
-        `Limite diário de IA atingido (${dailyLimit} créditos/dia). Tente novamente amanhã.`,
+        `Limite diário de assistência editorial atingido (${dailyLimit} créditos/dia). Tente novamente amanhã.`,
       );
     }
   }

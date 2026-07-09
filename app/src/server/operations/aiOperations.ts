@@ -50,7 +50,7 @@ function getAiClientOrThrow() {
     AI_MODEL: process.env.AI_MODEL,
   });
   if (!config) {
-    throw new HttpError(503, 'Serviço de IA não configurado. Configure OPENAI_API_KEY, DEEPSEEK_API_KEY ou OPENROUTER_API_KEY.');
+    throw new HttpError(503, 'Serviço de assistência editorial não configurado. Configure OPENAI_API_KEY, DEEPSEEK_API_KEY ou OPENROUTER_API_KEY.');
   }
   return { client: createAiClient(config), model: config.model };
 }
@@ -71,7 +71,7 @@ function parseJsonResponse(content: string): any {
     // Try to extract JSON object from text
     const match = json.match(/\{[\s\S]*\}/);
     if (match) return JSON.parse(match[0]);
-    throw new HttpError(500, 'Falha ao processar resposta da IA. Tente novamente.');
+    throw new HttpError(500, 'Falha ao processar resposta da assistência editorial. Tente novamente.');
   }
 }
 
@@ -306,7 +306,7 @@ export const chatWithAi = async (
   // Chat is free for AI/PARISH users — just check access
   const status = await getCreditsStatus(context);
   if (!status.hasAiAccess) {
-    throw new HttpError(402, 'Plano sem acesso ao assistente de IA. Faça upgrade para Catequista IA ou Paróquia.');
+    throw new HttpError(402, 'Plano sem acesso ao assistente teológico. Faça upgrade para Catequista editorial ou Paróquia.');
   }
 
   // Check cache first (only for standalone questions, not conversation continuations)
@@ -533,7 +533,7 @@ ${activityTypeInstructions[requestedType] || activityTypeInstructions.QUIZ}`,
     const fallbackText = stripMarkdownFences(response.content || '');
     generated = {
       title: `Atividade: ${content.title}`,
-      description: fallbackText || 'Atividade complementar gerada pela IA.',
+      description: fallbackText || 'Atividade complementar gerada com assistência editorial.',
       data: requestedType === 'OPEN_QUESTION'
         ? { question: fallbackText || `O que mais chamou sua atenção no encontro "${content.title}"?` }
         : requestedType === 'FAMILY_ACTIVITY'
@@ -577,7 +577,7 @@ export const generateWhatsAppMessage = async (
   // Free — included with meeting generation
   const status = await getCreditsStatus(context);
   if (!status.hasAiAccess) {
-    throw new HttpError(402, 'Plano sem acesso à IA. Faça upgrade para Catequista IA ou Paróquia em /app/billing.');
+    throw new HttpError(402, 'Plano sem acesso à assistência editorial. Faça upgrade para Catequista editorial ou Paróquia em /app/billing.');
   }
 
   const content = await context.entities.ContentItem.findUnique({

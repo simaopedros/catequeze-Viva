@@ -26,7 +26,7 @@ function getAiClientOrThrow() {
     AI_MODEL: process.env.AI_MODEL,
   });
   if (!config) {
-    throw new HttpError(503, 'Serviço de IA não configurado.');
+    throw new HttpError(503, 'Serviço de assistência editorial não configurado.');
   }
   return { client: createAiClient(config), model: config.model };
 }
@@ -157,7 +157,7 @@ export async function collaborativeChatHandler(req: Request, res: Response, cont
 
     const status = await getCreditsStatus(context);
     if (!status.hasAiAccess) {
-      res.write(`data: ${JSON.stringify({ error: 'Plano sem acesso à IA.' })}\n\n`);
+      res.write(`data: ${JSON.stringify({ error: 'Plano sem acesso à assistência editorial.' })}\n\n`);
       res.end();
       return;
     }
@@ -175,7 +175,7 @@ export async function collaborativeChatHandler(req: Request, res: Response, cont
     if (dailyLimit > 0) {
       const todayUsage = await getDailyUsage(context.entities, context.user.id);
       if (todayUsage + CHAT_DAILY_COST > dailyLimit) {
-        res.write(`data: ${JSON.stringify({ error: `Limite diário de IA atingido (${dailyLimit} créditos/dia).` })}\n\n`);
+        res.write(`data: ${JSON.stringify({ error: `Limite diário de assistência editorial atingido (${dailyLimit} créditos/dia).` })}\n\n`);
         res.end();
         return;
       }
@@ -230,7 +230,7 @@ export async function collaborativeChatHandler(req: Request, res: Response, cont
         select: { contentItemId: true },
       });
       if (session) {
-        await autoSaveVersion(context.entities, session.contentItemId, context.user.id, 'Após conversa com IA no chat colaborativo');
+        await autoSaveVersion(context.entities, session.contentItemId, context.user.id, 'Após conversa com assistência editorial no chat colaborativo');
       }
     }
 

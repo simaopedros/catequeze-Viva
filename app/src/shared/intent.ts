@@ -2,19 +2,19 @@
  * Canonical AI intent types for the Catequese Viva platform.
  *
  * Each intent maps to one of the two AI surfaces:
- * - "Copiloto de Conteúdo" (content copilot): create_meeting, improve_content, generate_activity, generate_whatsapp
+ * - "Assistência editorial" (content assistance): create_meeting, improve_content, generate_activity, generate_whatsapp
  * - "Assistente Teológico" (theological assistant): ask_theology
  *
  * ─── Operation → Intent Mapping ───────────────────────────────────────────
  *
  * Intent               | Primary Operation(s)           | Surface
  * ---------------------|-------------------------------|--------------------
- * create_meeting       | startCollaborativeSession      | Copiloto (hub)
- * improve_content      | enhanceContentWithAi (inline)  | Copiloto (hub)
+ * create_meeting       | startCollaborativeSession      | Assistência editorial (hub)
+ * improve_content      | enhanceContentWithAi (inline)  | Assistência editorial (hub)
  *                      | or startCollaborativeSession   |
- * generate_activity    | generateActivityForMeeting     | Copiloto (hub)
+ * generate_activity    | generateActivityForMeeting     | Assistência editorial (hub)
  *                      | or startCollaborativeSession   |
- * generate_whatsapp    | generateWhatsAppMessage        | Copiloto (hub)
+ * generate_whatsapp    | generateWhatsAppMessage        | Assistência editorial (hub)
  *                      | or startCollaborativeSession   |
  * ask_theology         | chatWithAi (stream)            | Assistente (widget)
  *

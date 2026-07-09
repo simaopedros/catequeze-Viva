@@ -59,8 +59,8 @@ export function prettyPaymentPlanName(planId: PaymentPlanId): string {
     [PaymentPlanId.CatechistFree]: "Sem assinatura",
     [PaymentPlanId.Single]: "Plano Único",
     [PaymentPlanId.Unlimited]: "Plano Ilimitado",
-    [PaymentPlanId.AiCredits20]: "+20 Créditos IA",
-    [PaymentPlanId.AiCredits50]: "+50 Créditos IA",
+    [PaymentPlanId.AiCredits20]: "+20 Créditos editoriais",
+    [PaymentPlanId.AiCredits50]: "+50 Créditos editoriais",
   };
   return planToName[planId];
 }

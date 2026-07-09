@@ -487,7 +487,7 @@ export default function WorkspaceSelectorPage() {
                         className="w-full rounded-sm border border-dashed border-border/70 hover:bg-muted/20 transition-colors p-3 text-center text-muted-foreground flex items-center justify-center gap-2"
                       >
                         <Plus className="h-4 w-4" />
-                        <span className="text-sm font-medium">
+                        <span className="text-sm font-semibold tracking-tight text-[#071A2D]">
                           {t("workspace.create_parish_in_diocese")}
                         </span>
                       </button>
@@ -525,7 +525,7 @@ export default function WorkspaceSelectorPage() {
                         className="w-full rounded-sm border border-dashed border-border/70 hover:bg-muted/20 transition-colors p-3 text-center text-muted-foreground flex items-center justify-center gap-2"
                       >
                         <Plus className="h-4 w-4" />
-                        <span className="text-sm font-medium">
+                        <span className="text-sm font-semibold tracking-tight text-[#071A2D]">
                           {t("workspace.create_parish_in_diocese")}
                         </span>
                       </button>
@@ -547,7 +547,7 @@ export default function WorkspaceSelectorPage() {
                     className="w-full rounded-sm border border-dashed border-border/70 hover:border-[#071A2D]/30 hover:bg-muted/20 transition-colors p-4 text-center text-muted-foreground flex items-center justify-center gap-2"
                   >
                     <Plus className="h-4 w-4" />
-                    <span className="text-sm font-medium">
+                    <span className="text-sm font-semibold tracking-tight text-[#071A2D]">
                       {t("workspace.create_under_license", {
                         plan: planLabel(ownerPlan || "parish", t),
                       })}
@@ -602,7 +602,7 @@ export default function WorkspaceSelectorPage() {
               className="w-full rounded-sm border border-dashed border-border/70 hover:border-[#071A2D]/30 hover:bg-muted/20 transition-colors p-4 text-center text-muted-foreground hover:text-foreground flex items-center justify-center gap-2"
             >
               <Plus className="h-4 w-4" />
-              <span className="text-sm font-medium">
+              <span className="text-sm font-semibold tracking-tight text-[#071A2D]">
                 {t("workspace.create_independent")}
               </span>
             </button>

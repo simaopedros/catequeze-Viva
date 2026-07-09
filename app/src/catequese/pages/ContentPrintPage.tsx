@@ -325,9 +325,9 @@ export default function ContentPrintPage() {
                         (question: any, questionIndex: number) => (
                           <div
                             key={question.id || questionIndex}
-                            className="mb-3 rounded bg-[#F7F4EE] p-3"
+                            className="mb-3 rounded-sm border border-border/70 bg-[#F7F4EE] p-3"
                           >
-                            <p className="mb-2 text-sm font-semibold">
+                            <p className="mb-2 text-sm font-semibold tracking-tight text-[#071A2D]">
                               {questionIndex + 1}. {question.question}
                             </p>
                             <div className="ml-4 grid grid-cols-2 gap-1">

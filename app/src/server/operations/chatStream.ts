@@ -28,7 +28,7 @@ function getAiClientOrThrow() {
     AI_MODEL: process.env.AI_MODEL,
   });
   if (!config) {
-    throw new HttpError(503, 'Serviço de IA não configurado.');
+    throw new HttpError(503, 'Serviço de assistência editorial não configurado.');
   }
   return { client: createAiClient(config), model: config.model };
 }
@@ -78,7 +78,7 @@ export async function chatStreamHandler(req: Request, res: Response, context: an
   // Check AI access
   const status = await getCreditsStatus(context);
   if (!status.hasAiAccess) {
-    res.status(403).json({ error: 'Plano sem acesso à IA.' });
+    res.status(403).json({ error: 'Plano sem acesso à assistência editorial.' });
     return;
   }
 
@@ -95,7 +95,7 @@ export async function chatStreamHandler(req: Request, res: Response, context: an
   if (dailyLimit > 0) {
     const todayUsage = await getDailyUsage(context.entities, context.user.id);
     if (todayUsage + CHAT_DAILY_COST > dailyLimit) {
-      res.status(429).json({ error: `Limite diário de IA atingido (${dailyLimit} créditos/dia).` });
+      res.status(429).json({ error: `Limite diário de assistência editorial atingido (${dailyLimit} créditos/dia).` });
       return;
     }
   }

@@ -40,7 +40,7 @@ function getAiClientOrThrow() {
     AI_MODEL: process.env.AI_MODEL,
   });
   if (!config) {
-    throw new HttpError(503, 'Serviço de IA não configurado.');
+    throw new HttpError(503, 'Serviço de assistência editorial não configurado.');
   }
   return { client: createAiClient(config), model: config.model };
 }
@@ -112,7 +112,7 @@ export const startCollaborativeSession = async (
               estimatedTime: existing.estimatedTime || 60,
             }),
             changedById: userId,
-            changeNotes: 'Versão original antes da melhoria com IA',
+            changeNotes: 'Versão original antes da melhoria com assistência editorial',
           },
         });
       } catch {}
@@ -290,7 +290,7 @@ IMPORTANTE: O catequista definiu:
               version: 1,
               body,
               changedById: userId,
-              changeNotes: 'Geração inicial do encontro pela IA',
+              changeNotes: 'Geração inicial do encontro com assistência editorial',
             },
           });
         } catch {}

@@ -151,11 +151,16 @@ export function ActivationChecklist({
               <span className="min-w-0 flex-1">
                 <span
                   className={cn(
-                    "block text-sm font-medium",
+                    "block text-sm font-semibold tracking-tight",
                     step.done
                       ? "text-muted-foreground line-through"
-                      : "text-foreground",
+                      : "text-[#071A2D]",
                   )}
+                  style={
+                    step.done
+                      ? undefined
+                      : { fontFamily: "var(--font-brand-display)" }
+                  }
                 >
                   {step.title}
                 </span>

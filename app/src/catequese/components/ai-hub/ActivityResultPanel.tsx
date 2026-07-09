@@ -82,7 +82,10 @@ export function ActivityResultPanel({
 
           {activity.description && (
             <div className="space-y-2">
-              <h3 className="text-sm font-semibold flex items-center gap-1.5">
+              <h3
+                className="flex items-center gap-1.5 text-sm font-semibold tracking-tight text-[#071A2D]"
+                style={{ fontFamily: "var(--font-brand-display)" }}
+              >
                 <FileText className="h-4 w-4 text-muted-foreground" />
                 {t("activity.description")}
               </h3>
