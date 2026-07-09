@@ -9,6 +9,8 @@ import {
   AppPanel,
   AppMetric,
   AppEyebrow,
+  AppDisplayTitle,
+  AppGoldRule,
 } from "../../../client/components/brand/AppChrome";
 import { useQuery, getClassComparison } from "wasp/client/operations";
 import { useActiveParish } from "../../../client/hooks/useActiveParish";
@@ -213,10 +215,11 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
             className="p-6 lg:p-8"
           >
             <div className="space-y-6">
-              <div className="space-y-2">
-                <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+              <div className="space-y-2.5">
+                <AppDisplayTitle as="h2">
                   {t("no_classes_yet")}
-                </h2>
+                </AppDisplayTitle>
+                <AppGoldRule />
                 <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
                   {t("no_classes_description")}
                 </p>

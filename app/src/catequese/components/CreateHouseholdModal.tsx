@@ -4,6 +4,10 @@ import { X, Save, Loader2 } from "lucide-react";
 import { Button } from "../../client/components/ui/button";
 import { Input } from "../../client/components/ui/input";
 import { Label } from "../../client/components/ui/label";
+import {
+  AppDisplayTitle,
+  AppGoldRule,
+} from "../../client/components/brand/AppChrome";
 import { createHousehold } from "wasp/client/operations";
 import PhoneMaskInput from "../../client/components/PhoneMaskInput";
 import { useViaCep } from "../../client/hooks/useViaCep";
@@ -87,16 +91,21 @@ export default function CreateHouseholdModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/40 -sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative w-full max-w-md mx-4 rounded-sm border border-border/70 bg-white overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="relative mx-4 w-full max-w-md overflow-hidden rounded-sm border border-border/70 bg-white animate-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
-          <h3 className="font-semibold">{t("families.create_title")}</h3>
+        <div className="flex items-start justify-between gap-3 border-b border-border/70 p-4">
+          <div className="min-w-0 space-y-1.5">
+            <AppDisplayTitle as="h3" className="text-base sm:text-base">
+              {t("families.create_title")}
+            </AppDisplayTitle>
+            <AppGoldRule className="w-8" />
+          </div>
           <button
             onClick={onClose}
-            className="h-7 w-7 flex items-center justify-center rounded-sm hover:bg-muted transition-colors"
+            className="flex h-7 w-7 items-center justify-center rounded-sm transition-colors hover:bg-muted"
           >
             <X className="h-4 w-4" />
           </button>

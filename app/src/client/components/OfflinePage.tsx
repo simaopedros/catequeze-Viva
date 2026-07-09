@@ -1,6 +1,10 @@
 import { WifiOff, RefreshCw } from "lucide-react";
 import { Button } from "./ui/button";
 import { useTranslation } from "react-i18next";
+import {
+  AppDisplayTitle,
+  AppGoldRule,
+} from "./brand/AppChrome";
 
 /**
  * Full-page offline fallback shown when there is no network
@@ -12,11 +16,14 @@ export function OfflinePage() {
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 p-6 text-center">
       <div className="flex h-16 w-16 items-center justify-center rounded-sm border border-border/70 bg-muted/30">
-        <WifiOff className="h-8 w-8 text-muted-foreground" />
+        <WifiOff className="h-8 w-8 text-[#071A2D]" />
       </div>
-      <div className="space-y-1">
-        <h2 className="text-lg font-semibold">{t("offline_title")}</h2>
-        <p className="text-sm text-muted-foreground max-w-xs">
+      <div className="space-y-2.5">
+        <AppDisplayTitle as="h2" className="text-lg sm:text-lg">
+          {t("offline_title")}
+        </AppDisplayTitle>
+        <AppGoldRule className="mx-auto" />
+        <p className="max-w-xs text-sm text-muted-foreground">
           {t("offline_description")}
         </p>
       </div>

@@ -4,6 +4,10 @@ import { useCollaborative } from "./CollaborativeContext";
 import { Button } from "../../../client/components/ui/button";
 import { Card } from "../../../client/components/ui/card";
 import { Badge } from "../../../client/components/ui/badge";
+import {
+  AppEyebrow,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
 import { Church, Loader2, Feather } from "lucide-react";
 import { getSaintStory } from "wasp/client/operations";
 
@@ -46,12 +50,13 @@ export function SaintStoryInjector() {
   };
 
   return (
-    <Card className="p-4 space-y-3">
-      <div>
-        <div className="flex items-center gap-1.5 mb-0.5">
-          <Church className="h-4 w-4 text-[#071A2D]" />
-          <h3 className="text-sm font-semibold">{t("tools.saint.title")}</h3>
-        </div>
+    <Card className="space-y-3 rounded-sm border-border/70 p-4">
+      <div className="space-y-1.5">
+        <AppEyebrow className="flex items-center gap-1.5">
+          <Church className="h-3.5 w-3.5 text-[#071A2D]" />
+          {t("tools.saint.title")}
+        </AppEyebrow>
+        <AppGoldRule className="w-6" />
         <p className="text-xs text-muted-foreground">
           {t("tools.saint.description")}
         </p>

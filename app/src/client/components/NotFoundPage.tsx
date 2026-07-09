@@ -5,21 +5,28 @@ import { PublicNavbar } from "../../catequese/PublicNavbar";
 import { PublicFooter } from "../../catequese/PublicFooter";
 import { FileQuestion, ArrowLeft } from "lucide-react";
 import { Button } from "./ui/button";
+import {
+  AppDisplayTitle,
+  AppGoldRule,
+} from "./brand/AppChrome";
 
 export function NotFoundPage() {
   const { data: user } = useAuth();
   const { t } = useTranslation("common");
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-background">
       <PublicNavbar />
-      <main className="flex-1 flex items-center justify-center px-4">
-        <div className="text-center space-y-6 max-w-md">
-          <div className="inline-flex rounded-full bg-muted p-4">
-            <FileQuestion className="h-10 w-10 text-muted-foreground" />
+      <main className="flex flex-1 items-center justify-center px-4">
+        <div className="max-w-md space-y-6 text-center">
+          <div className="inline-flex rounded-sm border border-border/70 bg-muted/30 p-4">
+            <FileQuestion className="h-10 w-10 text-[#071A2D]" />
           </div>
-          <div className="space-y-2">
-            <h1 className="text-6xl font-bold tracking-tight">404</h1>
+          <div className="space-y-2.5">
+            <AppDisplayTitle className="text-6xl text-[#071A2D] sm:text-6xl">
+              404
+            </AppDisplayTitle>
+            <AppGoldRule className="mx-auto" />
             <p className="text-lg text-muted-foreground">
               {t("not_found_desc")}
             </p>

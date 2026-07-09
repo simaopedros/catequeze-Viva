@@ -2,6 +2,10 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../../client/components/ui/button";
 import { Textarea } from "../../../client/components/ui/textarea";
+import {
+  AppEyebrow,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
 import { Loader2 } from "lucide-react";
 import { COMMUNITY_TYPE_OPTIONS } from "../../../shared/constants";
 import PhoneMaskInput from "../../../client/components/PhoneMaskInput";
@@ -79,8 +83,11 @@ export function CommunityCreateForm({
     "w-full h-9 rounded-sm border border-input bg-background px-3 text-sm mt-1";
 
   return (
-    <div className="rounded-sm border border-border/70 bg-white p-5 space-y-4 animate-in fade-in slide-in-from-top-2">
-      <h3 className="font-semibold text-sm">{t("new_community")}</h3>
+    <div className="space-y-4 rounded-sm border border-border/70 bg-white p-5 animate-in fade-in slide-in-from-top-2">
+      <div className="space-y-1.5">
+        <AppEyebrow>{t("new_community")}</AppEyebrow>
+        <AppGoldRule className="w-8" />
+      </div>
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <label className="text-xs font-medium text-muted-foreground">

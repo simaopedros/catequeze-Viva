@@ -4,6 +4,10 @@ import { useCollaborative } from "./CollaborativeContext";
 import { Button } from "../../../client/components/ui/button";
 import { Card } from "../../../client/components/ui/card";
 import {
+  AppEyebrow,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
+import {
   Lightbulb,
   RefreshCw,
   Feather,
@@ -38,10 +42,13 @@ export function SuggestionCards() {
 
   return (
     <div className="p-3 space-y-3 overflow-y-auto h-full">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5 text-sm font-semibold">
-          <Lightbulb className="h-4 w-4 text-[#D39A2B]" />
-          {t("suggestions.title")}
+      <div className="flex items-start justify-between gap-2">
+        <div className="space-y-1.5">
+          <AppEyebrow className="flex items-center gap-1.5">
+            <Lightbulb className="h-3.5 w-3.5 text-[#D39A2B]" />
+            {t("suggestions.title")}
+          </AppEyebrow>
+          <AppGoldRule className="w-6" />
         </div>
         <Button
           variant="ghost"

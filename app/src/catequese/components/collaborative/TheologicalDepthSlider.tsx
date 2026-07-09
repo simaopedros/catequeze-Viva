@@ -4,6 +4,10 @@ import { useCollaborative } from "./CollaborativeContext";
 import { Button } from "../../../client/components/ui/button";
 import { Card } from "../../../client/components/ui/card";
 import { Badge } from "../../../client/components/ui/badge";
+import {
+  AppEyebrow,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
 import { SlidersHorizontal, Loader2 } from "lucide-react";
 
 export function TheologicalDepthSlider() {
@@ -18,14 +22,13 @@ export function TheologicalDepthSlider() {
   ];
 
   return (
-    <Card className="space-y-3 border-border/70 bg-white p-4">
-      <div>
-        <div className="mb-0.5 flex items-center gap-1.5">
-          <SlidersHorizontal className="h-4 w-4 text-[#071A2D]" />
-          <h3 className="text-sm font-semibold text-[#071A2D]">
-            {t("tools.depth.title")}
-          </h3>
-        </div>
+    <Card className="space-y-3 rounded-sm border-border/70 bg-white p-4">
+      <div className="space-y-1.5">
+        <AppEyebrow className="flex items-center gap-1.5">
+          <SlidersHorizontal className="h-3.5 w-3.5 text-[#071A2D]" />
+          {t("tools.depth.title")}
+        </AppEyebrow>
+        <AppGoldRule className="w-6" />
         <p className="text-xs text-muted-foreground">
           {t("tools.depth.description")}
         </p>

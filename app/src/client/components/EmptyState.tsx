@@ -92,14 +92,18 @@ export function EmptyState({
     >
       {Icon && (
         <div className="mb-4 rounded-sm border border-border/70 bg-muted/30 p-4">
-          <Icon className="h-8 w-8 text-foreground" />
+          <Icon className="h-8 w-8 text-[#071A2D]" />
         </div>
       )}
-      <h3 className="text-lg font-semibold tracking-tight text-foreground">
+      <h3
+        className="text-lg font-semibold tracking-tight text-foreground"
+        style={{ fontFamily: "var(--font-brand-display)" }}
+      >
         {title}
       </h3>
+      <div className="mx-auto mt-2 h-px w-8 bg-[#D39A2B]" aria-hidden />
       {description && (
-        <p className="mt-1 max-w-md text-sm leading-relaxed text-muted-foreground">
+        <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
           {description}
         </p>
       )}

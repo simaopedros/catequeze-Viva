@@ -152,7 +152,9 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <p className="text-sm font-medium">{step.label}</p>
-                          <p className="text-2xl font-bold mt-1">{step.count}</p>
+                          <p className="mt-1 text-2xl font-semibold tracking-tight tabular-nums text-[#071A2D]">
+                            {step.count}
+                          </p>
                         </div>
                         <span className="rounded-sm bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
                           {percent(step.rate)}

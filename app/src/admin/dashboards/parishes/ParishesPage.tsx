@@ -5,6 +5,7 @@ import DefaultLayout from '../../layout/DefaultLayout';
 import {
   AppDisplayTitle,
   AppGoldRule,
+  AppMetric,
   AppPageHeader,
 } from '../../../client/components/brand/AppChrome';
 import { Church, MapPin, Users, Crown, Building2, BadgeCheck, AlertTriangle, CircleDot, ChevronRight } from 'lucide-react';
@@ -101,18 +102,24 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
         {/* Summary cards */}
         {parishes.length > 0 && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div className="rounded-sm border border-border/70 bg-white p-4">
-              <p className="text-2xl font-bold">{parishes.length}</p>
-              <p className="text-xs text-muted-foreground">Total de paróquias</p>
-            </div>
-            <div className="rounded-sm border border-border/70 bg-white p-4">
-              <p className="text-2xl font-bold">{parishes.filter((p: any) => p.active).length}</p>
-              <p className="text-xs text-muted-foreground">Paróquias ativas</p>
-            </div>
-            <div className="rounded-sm border border-border/70 bg-white p-4">
-              <p className="text-2xl font-bold">{parishes.reduce((sum: number, p: any) => sum + (p._count?.memberships || 0), 0)}</p>
-              <p className="text-xs text-muted-foreground">Total de membros</p>
-            </div>
+            <AppMetric
+              label="Total de paróquias"
+              value={parishes.length}
+              className="bg-white"
+            />
+            <AppMetric
+              label="Paróquias ativas"
+              value={parishes.filter((p: any) => p.active).length}
+              className="bg-white"
+            />
+            <AppMetric
+              label="Total de membros"
+              value={parishes.reduce(
+                (sum: number, p: any) => sum + (p._count?.memberships || 0),
+                0,
+              )}
+              className="bg-white"
+            />
           </div>
         )}
       </div>

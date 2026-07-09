@@ -2,6 +2,10 @@ import { Component, ReactNode } from "react";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import i18n from "../../i18n/config";
 import { Button } from "./ui/button";
+import {
+  AppDisplayTitle,
+  AppGoldRule,
+} from "./brand/AppChrome";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -44,14 +48,15 @@ export class ErrorBoundary extends Component<
 
       return (
         <div className="flex min-h-screen items-center justify-center bg-background p-4">
-          <div className="max-w-md w-full text-center space-y-6">
-            <div className="inline-flex rounded-full bg-destructive/10 p-4">
+          <div className="w-full max-w-md space-y-6 text-center">
+            <div className="inline-flex rounded-sm border border-destructive/20 bg-destructive/10 p-4">
               <AlertTriangle className="h-8 w-8 text-destructive" />
             </div>
-            <div className="space-y-2">
-              <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+            <div className="space-y-2.5">
+              <AppDisplayTitle className="text-2xl sm:text-2xl">
                 {t("error_boundary.title")}
-              </h1>
+              </AppDisplayTitle>
+              <AppGoldRule className="mx-auto" />
               <p className="text-sm text-muted-foreground">
                 {t("error_boundary.description")}
               </p>

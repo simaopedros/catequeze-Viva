@@ -453,6 +453,7 @@ export default function FamilyDetailPage() {
                   onChange={(e) => setEditName(e.target.value)}
                   className="w-full border-b border-input bg-transparent text-2xl font-semibold tracking-tight text-foreground outline-none sm:text-[1.75rem]"
                   style={{ fontFamily: "var(--font-brand-display)" }}
+                  style={{ fontFamily: "var(--font-brand-display)" }}
                   autoFocus
                 />
                 <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />

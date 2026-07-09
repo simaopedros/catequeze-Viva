@@ -5,6 +5,10 @@ import { Button } from "../../../client/components/ui/button";
 import { Input } from "../../../client/components/ui/input";
 import { Badge } from "../../../client/components/ui/badge";
 import { Card } from "../../../client/components/ui/card";
+import {
+  AppEyebrow,
+  AppGoldRule,
+} from "../../../client/components/brand/AppChrome";
 import { Search, X, BookOpen, Church, ScrollText, Loader2 } from "lucide-react";
 import { searchBible, searchCatechism } from "wasp/client/operations";
 
@@ -80,8 +84,12 @@ export function ContextShelf() {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="p-3 border-b space-y-2 bg-muted/20">
+    <div className="flex h-full flex-col">
+      <div className="space-y-2 border-b border-border/70 bg-muted/20 p-3">
+        <div className="space-y-1.5">
+          <AppEyebrow>{t("context.title", { defaultValue: "Referências" })}</AppEyebrow>
+          <AppGoldRule className="w-6" />
+        </div>
         <div className="flex gap-1">
           <Button
             size="sm"
