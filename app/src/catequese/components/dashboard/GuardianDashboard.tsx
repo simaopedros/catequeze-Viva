@@ -49,7 +49,10 @@ export function GuardianDashboard({ stats }: GuardianDashboardProps) {
                   {d.lastName?.[0]}
                 </div>
                 <div className="min-w-0">
-                  <p className="font-semibold truncate group-hover:text-[#071A2D] transition-colors">
+                  <p
+                    className="truncate font-semibold tracking-tight text-foreground transition-colors group-hover:text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
                     {d.firstName} {d.lastName}
                   </p>
                   <p className="mt-0.5 truncate text-xs text-muted-foreground">
@@ -67,10 +70,13 @@ export function GuardianDashboard({ stats }: GuardianDashboardProps) {
 
       {stats?.upcomingMeetings?.length > 0 && (
         <AppPanel>
-          <AppEyebrow className="mb-3 flex items-center gap-1.5">
-            <Calendar className="h-3.5 w-3.5" />
-            {t("upcoming_meetings")}
-          </AppEyebrow>
+          <div className="mb-3 space-y-1.5">
+            <AppEyebrow className="flex items-center gap-1.5">
+              <Calendar className="h-3.5 w-3.5" />
+              {t("upcoming_meetings")}
+            </AppEyebrow>
+            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          </div>
           <div className="divide-y divide-border/70">
             {stats.upcomingMeetings.map((m: any) => (
               <div

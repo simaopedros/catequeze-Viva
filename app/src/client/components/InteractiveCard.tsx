@@ -67,15 +67,21 @@ export function InteractiveCard({
       {Icon && (
         <div
           className={cn(
-            "flex shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-foreground",
+            "flex shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]",
             compact ? "h-8 w-8" : "h-10 w-10",
           )}
         >
           <Icon className={compact ? "h-4 w-4" : "h-5 w-5"} />
         </div>
       )}
-      <div className="flex-1 min-w-0">
-        <h3 className={cn("font-semibold", compact ? "text-sm" : "text-body")}>
+      <div className="min-w-0 flex-1">
+        <h3
+          className={cn(
+            "font-semibold tracking-tight text-[#071A2D]",
+            compact ? "text-sm" : "text-body",
+          )}
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
           {title}
         </h3>
         {description && (

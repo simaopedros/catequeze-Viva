@@ -333,7 +333,7 @@ export default function ContentDetailPage() {
         <div className="space-y-5">
           {item.theme && (
             <div className="rounded-sm border border-border/70 bg-white p-4">
-              <h3 className="mb-1 text-xs font-medium uppercase text-muted-foreground">
+              <h3 className="mb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 {t("theme")}
               </h3>
               <p className="text-sm">{item.theme}</p>
@@ -357,10 +357,13 @@ export default function ContentDetailPage() {
           )}
           {item.meetings?.length > 0 && (
             <div className="rounded-sm border border-border/70 bg-white p-4">
-              <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold">
-                <Calendar className="h-4 w-4" />
-                {t("used_in_meetings", { count: item.meetings.length })}
-              </h3>
+              <div className="mb-2 space-y-1.5">
+                <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  <Calendar className="h-3.5 w-3.5" />
+                  {t("used_in_meetings", { count: item.meetings.length })}
+                </h3>
+                <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+              </div>
               <div className="space-y-1">
                 {item.meetings.map((meeting: any) => (
                   <Link

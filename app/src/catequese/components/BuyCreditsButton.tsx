@@ -46,7 +46,7 @@ export function BuyCreditsButton({
   const handleBuy = async () => {
     setLoading(true);
     try {
-      const planName = `+${packDef.credits} Créditos IA`;
+      const planName = `+${packDef.credits} créditos editoriais`;
       const checkoutValue = Number((packDef.priceCents / 100).toFixed(2));
       const tracking = buildCheckoutTrackingFields({
         planId,

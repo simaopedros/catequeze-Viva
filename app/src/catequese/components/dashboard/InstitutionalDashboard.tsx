@@ -168,11 +168,14 @@ function DomainSection({
 }) {
   return (
     <div className="space-y-3">
-      <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-2">
-        <Icon className="h-3.5 w-3.5" />
-        {title}
-      </h3>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="space-y-1.5">
+        <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          <Icon className="h-3.5 w-3.5" />
+          {title}
+        </h3>
+        <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+      </div>
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {kpis.map((kpi) => (
           <KpiCard key={kpi.label} kpi={kpi} />
         ))}

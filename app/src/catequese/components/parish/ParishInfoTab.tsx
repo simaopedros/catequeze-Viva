@@ -71,8 +71,13 @@ export function ParishInfoTab({
 
   if (editing) {
     return (
-      <div className="rounded-sm border border-border/70 bg-white p-5 space-y-4">
-        <h3 className="font-semibold">{tp("edit_parish_title")}</h3>
+      <div className="space-y-4 rounded-sm border border-border/70 bg-white p-5">
+        <div className="space-y-1.5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            {tp("edit_parish_title")}
+          </p>
+          <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+        </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
             <label className="text-xs font-medium text-muted-foreground">
@@ -115,10 +120,15 @@ export function ParishInfoTab({
   }
 
   return (
-    <div className="rounded-sm border border-border/70 bg-white p-5 space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="font-semibold">{tp("parish_data")}</h3>
-        <Button variant="ghost" size="sm" onClick={onStartEdit}>
+    <div className="space-y-3 rounded-sm border border-border/70 bg-white p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div className="space-y-1.5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            {tp("parish_data")}
+          </p>
+          <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+        </div>
+        <Button variant="ghost" size="sm" className="rounded-sm" onClick={onStartEdit}>
           {tp("edit")}
         </Button>
       </div>

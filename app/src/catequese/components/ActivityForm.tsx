@@ -306,7 +306,7 @@ export function ActivityForm({
                             ),
                           )
                         }
-                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs flex-shrink-0 transition-colors ${
+                        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border-2 text-xs transition-colors ${
                           q.correctIndex === oi
                             ? "bg-success border-success text-success-foreground"
                             : "border-muted-foreground/30"
@@ -717,10 +717,13 @@ export function ActivityForm({
 
   // ── Main render ─────────────────────────────────────────────────────────
   return (
-    <div className="space-y-4 rounded-sm border border-dashed border-border/70 bg-muted/20 p-5">
-      <h3 className="font-semibold text-sm flex items-center gap-2">
-        {initialTitle ? t("form.edit_title") : t("form.new_title")}
-      </h3>
+    <div className="space-y-4 rounded-sm border border-border/70 bg-white p-5">
+      <div className="space-y-1.5">
+        <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          {initialTitle ? t("form.edit_title") : t("form.new_title")}
+        </h3>
+        <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+      </div>
 
       <div>
         <label className="text-xs font-medium">{t("form.type")}</label>

@@ -51,7 +51,10 @@ export function CatechumenDashboard({ stats }: CatechumenDashboardProps) {
 
       {stats?.upcomingMeetings?.length > 0 && (
         <AppPanel>
-          <AppEyebrow className="mb-3">{t("upcoming_meetings")}</AppEyebrow>
+          <div className="mb-3 space-y-1.5">
+            <AppEyebrow>{t("upcoming_meetings")}</AppEyebrow>
+            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          </div>
           <div className="divide-y divide-border/70">
             {stats.upcomingMeetings.map((m: any) => (
               <div

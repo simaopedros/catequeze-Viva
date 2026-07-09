@@ -53,12 +53,18 @@ export default function SendAnnouncementButton({ classId, className }: Props) {
   }
 
   return (
-    <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-sm flex items-center gap-2">
-          <Mail className="h-4 w-4" />
-          {t("announcement.title", { className })}
-        </h3>
+    <div className="space-y-3 rounded-sm border border-border/70 bg-white p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 space-y-1.5">
+          <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            <Mail className="h-3.5 w-3.5" />
+            {t("announcement.title", { className })}
+          </p>
+          <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          <p className="text-xs text-muted-foreground">
+            {t("announcement.hint")}
+          </p>
+        </div>
         <button
           onClick={() => {
             setOpen(false);
@@ -70,7 +76,6 @@ export default function SendAnnouncementButton({ classId, className }: Props) {
           <X className="h-4 w-4" />
         </button>
       </div>
-      <p className="text-xs text-muted-foreground">{t("announcement.hint")}</p>
       <div>
         <Label className="text-xs font-medium">
           {t("announcement.subject")}
