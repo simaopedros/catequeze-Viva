@@ -59,7 +59,7 @@ export function BottomSheetNav({ open, onClose }: BottomSheetNavProps) {
                         onClick={onClose}
                         className={({ isActive }) => cn(
                           'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
-                          isActive ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'
+                          isActive ? 'bg-muted/40 text-foreground border-l-2 border-[#D39A2B]' : 'text-muted-foreground hover:bg-accent'
                         )}
                       >
                         {Icon && <Icon className="h-5 w-5 flex-shrink-0" />}

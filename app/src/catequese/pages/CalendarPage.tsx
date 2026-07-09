@@ -394,7 +394,7 @@ function MonthGrid({
               aria-current={today ? 'date' : undefined}
               className={`p-1.5 sm:p-2 border-t border-l text-left transition-colors flex flex-col focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset focus-visible:z-10 ${
     isSelected
-     ? 'bg-primary/10 ring-1 ring-inset ring-primary z-[1]'
+     ? 'z-[1] bg-muted/40 ring-1 ring-inset ring-[#071A2D]/30'
      : isWeekend(dow)
      ? 'bg-muted/15 hover:bg-muted/30'
      : 'hover:bg-muted/20'

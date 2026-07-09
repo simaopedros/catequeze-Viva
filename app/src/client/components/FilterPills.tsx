@@ -31,19 +31,19 @@ export function FilterPills({ options, value, onChange, className, onClear, clea
           onClick={() => onChange(opt.value)}
           aria-pressed={value === opt.value}
           className={cn(
-            'rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-[var(--motion-duration-fast,150ms)] ease-[var(--motion-easing-default,ease-out)] whitespace-nowrap shrink-0 snap-start',
-            'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+            'shrink-0 snap-start whitespace-nowrap rounded-sm px-3 py-1.5 text-xs font-medium transition-colors',
+            'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
             value === opt.value
-              ? 'bg-primary text-primary-foreground  scale-[1.02]'
-              : 'bg-muted text-muted-foreground hover:bg-muted/80 active:scale-95',
+              ? 'bg-[#071A2D] text-white'
+              : 'bg-muted text-muted-foreground hover:bg-muted/80',
           )}
         >
           {opt.label}
           {opt.count !== undefined && (
             <span className={cn(
-              'ml-1.5 inline-flex items-center justify-center rounded-full px-1.5 py-0 text-overline font-medium',
+              'ml-1.5 inline-flex items-center justify-center rounded-sm px-1.5 py-0 text-overline font-medium',
               value === opt.value
-                ? 'bg-primary-foreground/20 text-primary-foreground'
+                ? 'bg-white/15 text-white'
                 : 'bg-muted-foreground/15 text-muted-foreground',
             )}>
               {opt.count}

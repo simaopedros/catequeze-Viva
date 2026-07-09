@@ -429,7 +429,7 @@ export default function ClassDetailPage() {
                 <h3 className="font-semibold text-sm mb-2">{t('detail.available_to_enroll', { count: available.length })}</h3>
                 <div className="grid gap-2">{available.map((c:any)=>(
                   <div key={c.id} className="flex items-center justify-between rounded-lg border p-3">
-                    <div className="flex items-center gap-3"><div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-bold">{c.firstName?.[0]}{c.lastName?.[0]}</div><span className="text-sm">{c.firstName} {c.lastName}</span></div>
+                    <div className="flex items-center gap-3"><div className="flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-foreground">{c.firstName?.[0]}{c.lastName?.[0]}</div><span className="text-sm">{c.firstName} {c.lastName}</span></div>
                     <Button size="sm" variant="outline" onClick={()=>handleEnroll(c.id)}><UserPlus className="mr-1 h-3 w-3"/>{t('detail.enroll_btn')}</Button>
                   </div>
                 ))}</div>
@@ -535,7 +535,7 @@ export default function ClassDetailPage() {
                   return (
                     <div key={cc.id} className="flex items-center justify-between rounded-lg border p-3">
                       <div className="flex items-center gap-2 min-w-0">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-bold flex-shrink-0">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-foreground flex-shrink-0">
                           {cc.user?.firstName?.[0]}{cc.user?.lastName?.[0]}
                         </div>
                         <div className="min-w-0">

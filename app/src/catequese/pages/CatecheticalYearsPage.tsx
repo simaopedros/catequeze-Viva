@@ -123,10 +123,10 @@ export default function CatecheticalYearsPage() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filteredYears.map((year: any) => (
-              <div key={year.id} className="rounded-sm border border-border/70 bg-white p-5 hover:shadow-sm transition-shadow">
+              <div key={year.id} className="rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-primary/30">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <div className="rounded-lg bg-primary/10 p-2">
+                    <div className="rounded-sm border border-border/70 bg-muted/30 p-2">
                       <CalendarDays className="h-5 w-5 text-primary" />
                     </div>
                     <div>

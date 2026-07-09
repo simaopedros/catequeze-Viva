@@ -184,10 +184,10 @@ function UsageRow({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between text-sm">
-        <span className="font-medium text-slate-700">{label}</span>
+        <span className="font-medium text-foreground">{label}</span>
         <span className="font-semibold text-foreground">{used}/{limit === Infinity ? '∞' : limit}</span>
       </div>
-      <div className="h-2.5 w-full rounded-full bg-slate-100">
+      <div className="h-2.5 w-full rounded-full bg-muted">
         <div
           className={cn('h-2.5 rounded-full', accent)}
           role="progressbar"
@@ -719,7 +719,7 @@ export default function BillingPage() {
                       {heroTitle}
                     </h1>
                     {!isConversionMode && (
-                      <span className="rounded-full bg-white/80 px-3 py-1 text-sm font-medium text-muted-foreground ring-1 ring-slate-200/70">
+                      <span className="rounded-full bg-white/80 px-3 py-1 text-sm font-medium text-muted-foreground ring-1 ring-border/70">
                         {effectivePlan.name}
                       </span>
                     )}
@@ -856,7 +856,7 @@ export default function BillingPage() {
               {!isPersonal && userPersonalPlanId && (
                 <div className="rounded-sm border border-border/70 bg-white/75 px-4 py-3 text-sm text-muted-foreground">
                   <span className="inline-flex items-center gap-2">
-                    <UserIcon className="h-4 w-4 text-slate-400" />
+                    <UserIcon className="h-4 w-4 text-muted-foreground" />
                     {t('your_personal_plan')}:
                     <Badge variant="outline" className="text-xs">{getPlanDef(userPersonalPlanId).name}</Badge>
                   </span>
@@ -976,22 +976,22 @@ export default function BillingPage() {
                     {aiCredits.hasAiAccess ? (
                       <Badge className="bg-violet-100 text-violet-700 text-overline">{t('monthly_badge')}</Badge>
                     ) : (
-                      <Badge className="bg-slate-100 text-muted-foreground text-overline">{t('trial_badge')}</Badge>
+                      <Badge className="bg-muted text-muted-foreground text-overline">{t('trial_badge')}</Badge>
                     )}
                   </div>
                   <UsageRow
                     label={aiCredits.hasAiAccess ? t('credits_used_month') : t('credits_used_trial')}
                     used={aiCredits.monthlyAllowance - aiCredits.creditsLeft}
                     limit={aiCredits.monthlyAllowance}
-                    accent={aiCredits.hasAiAccess ? 'bg-violet-500' : 'bg-slate-500'}
+                    accent={aiCredits.hasAiAccess ? 'bg-violet-500' : 'bg-muted/300'}
                     ariaLabel={t('ai_credits_quota_label')}
                   />
-                  <div className="flex items-center justify-between rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                  <div className="flex items-center justify-between rounded-sm bg-muted/30 px-4 py-3 ring-1 ring-border/70">
                     <span className="text-sm text-muted-foreground">{t('remaining')}</span>
                     <span className="text-sm font-semibold text-foreground">{aiCredits.creditsLeft} {creditLabel}</span>
                   </div>
                   {aiCredits.creditsLeft <= 10 && (
-                    <div className="space-y-3 rounded-sm border border-border/70 bg-slate-50/80 p-4">
+                    <div className="space-y-3 rounded-sm border border-border/70 bg-muted/30 p-4">
                       <p className="text-sm leading-relaxed text-muted-foreground">{t('buy_credits_desc')}</p>
                       <div className="flex gap-3">
                         <BuyCreditsButton pack="20" size="sm" variant="outline" label={t('buy_credits_20')} />

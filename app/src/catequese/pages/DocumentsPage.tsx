@@ -202,7 +202,7 @@ export default function DocumentsPage() {
                   {/* Card header: avatar, name, progress */}
                   <div className="flex items-center gap-3">
                     <Avatar className="h-9 w-9">
-                      <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+                      <AvatarFallback className="rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-foreground">
                         {initials || '?'}
                       </AvatarFallback>
                     </Avatar>

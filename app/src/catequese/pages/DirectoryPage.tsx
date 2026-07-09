@@ -111,7 +111,7 @@ export default function DirectoryPage() {
               <button
                 key={topic}
                 onClick={() => { setSearchQuery(topic); handleSearch(); }}
-                className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground hover:bg-muted/80 hover:text-foreground transition-colors"
+                className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground"
               >
                 {topic}
               </button>
@@ -155,7 +155,7 @@ export default function DirectoryPage() {
                 <button onClick={() => toggle(entry.id)} className="w-full text-left p-4 flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded">§{entry.number}</span>
+                      <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-medium text-foreground">§{entry.number}</span>
                       {entry.title && <span className="font-medium text-sm">{entry.title}</span>}
                       {entry.chapter && <span className="text-xs text-muted-foreground">({entry.chapter})</span>}
                     </div>

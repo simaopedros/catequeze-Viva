@@ -194,7 +194,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
               <SectionCard title={t('pastoral_alerts')} icon={AlertCircle}>
                 <div className="space-y-2">
                   {stats.recentAlerts.map((a: any, i: number) => (
-                    <div key={i} className="rounded-sm bg-slate-50 px-4 py-3 text-sm text-slate-700 ring-1 ring-slate-200/70">
+                    <div key={i} className="rounded-sm border border-border/70 bg-white px-4 py-3 text-sm text-foreground">
                       {a.message}
                     </div>
                   ))}
@@ -204,13 +204,13 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
 
             <SectionCard title="Como comecar" icon={ArrowRight}>
               <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
-                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
                   1. Crie a turma com etapa, dias de encontro e responsaveis.
                 </div>
-                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
                   2. Cadastre os catequizandos e distribua nas turmas.
                 </div>
-                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
                   3. Use o Copiloto para montar os primeiros encontros com mais qualidade.
                 </div>
               </div>
@@ -233,7 +233,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                         <p className="text-sm font-semibold text-foreground group-hover:text-primary">{m.class?.name}</p>
                         <p className="mt-1 text-xs text-muted-foreground">{m._count?.attendance || 0} {tc('records')}</p>
                       </div>
-                      <ChevronRight className="h-4 w-4 shrink-0 text-slate-400 group-hover:text-primary" />
+                      <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-primary" />
                     </Link>
                   ))}
                 </div>
@@ -248,9 +248,9 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
               <SectionCard title={t('pastoral_alerts')} icon={AlertCircle}>
                 <div className="space-y-2">
                   {stats.recentAlerts.map((a: any, i: number) => (
-                    <div key={i} className="flex items-start gap-3 rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
-                      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
-                      <p className="text-sm leading-relaxed text-slate-700">{a.message}</p>
+                    <div key={i} className="flex items-start gap-3 rounded-sm border border-border/70 bg-white px-4 py-3">
+                      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                      <p className="text-sm leading-relaxed text-foreground">{a.message}</p>
                     </div>
                   ))}
                 </div>
@@ -259,7 +259,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
 
             {comparison && comparison.length > 1 && (
               <section className="overflow-hidden rounded-sm border border-border/70 bg-white/90 ">
-                <div className="border-b border-border/70 bg-slate-50/80 px-5 py-4">
+                <div className="border-b border-border/70 bg-muted/30 px-5 py-4">
                   <h3 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                     <ArrowUpDown className="h-4 w-4" />
                     {t('table_class_comparison')}
@@ -268,7 +268,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b bg-slate-50/50 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                      <tr className="border-b bg-muted/20 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                         <th className="px-5 py-3">{t('table_class')}</th>
                         <th className="px-5 py-3">{tcl('stage')}</th>
                         <th className="px-5 py-3 text-center">{tcl('enrolled')}</th>
@@ -279,7 +279,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                     </thead>
                     <tbody>
                       {comparison.map((c: any) => (
-                        <tr key={c.id} className="border-b border-border/60 last:border-0 hover:bg-slate-50/80 transition-colors">
+                        <tr key={c.id} className="border-b border-border/60 last:border-0 hover:bg-muted/30 transition-colors">
                           <td className="px-5 py-3 font-medium">
                             <Link to={`/app/classes/${c.id}`} className="hover:text-primary transition-colors">{c.name}</Link>
                           </td>
@@ -314,7 +314,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
               <SectionCard title={tc('upcoming_meetings')} icon={Calendar}>
                 <div className="space-y-2">
                   {stats.upcomingMeetings.map((m: any) => (
-                    <div key={m.id} className="flex items-center justify-between rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                    <div key={m.id} className="flex items-center justify-between rounded-sm border border-border/70 bg-white px-4 py-3">
                       <span className="mr-3 truncate text-sm font-medium text-foreground">{m.class?.name}</span>
                       <span className="shrink-0 text-xs font-medium text-muted-foreground">
                         {formatDate(m.date, currentLocale, dateOpts)}
@@ -332,7 +332,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                     <Link
                       key={c.id}
                       to={`/app/classes/${c.id}`}
-                      className="flex items-center justify-between rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70 transition-colors hover:bg-slate-100"
+                      className="flex items-center justify-between rounded-sm border border-border/70 bg-white px-4 py-3 transition-colors hover:bg-muted"
                     >
                       <span className="mr-3 truncate text-sm font-medium text-foreground">{c.name}</span>
                       <span className="shrink-0 text-xs font-medium text-muted-foreground">{c._count?.enrollments || 0} {tc('enrolled')}</span>

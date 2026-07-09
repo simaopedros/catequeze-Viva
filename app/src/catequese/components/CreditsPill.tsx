@@ -32,7 +32,7 @@ export function CreditsPill({ creditsLeft, monthlyAllowance, variant, onClick, c
       type="button"
       onClick={onClick}
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors',
+        'inline-flex items-center gap-1.5 rounded-sm border px-2.5 py-1 text-xs font-medium transition-colors',
         variantStyles[resolvedVariant],
         onClick && 'cursor-pointer hover:bg-muted/80',
         !onClick && 'cursor-default',

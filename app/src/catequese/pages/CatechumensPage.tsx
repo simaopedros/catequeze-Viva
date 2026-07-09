@@ -40,7 +40,7 @@ import { AppPageHeader, AppPanel, AppMetric } from '../../client/components/bran
 const PAGE_SIZE = 50;
 
 const AVATAR_COLORS = [
-  'bg-primary/10 text-primary',
+  'border border-border/70 bg-muted/30 text-foreground',
   'bg-success/10 text-success',
   'bg-warning/10 text-warning',
   'bg-secondary text-secondary-foreground',
@@ -229,13 +229,13 @@ export default function CatechumensPage() {
 
             <SurfaceSection title="Fluxo sugerido" icon={School}>
               <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
-                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
                   Cadastre nome, data de nascimento e responsaveis para iniciar o acompanhamento.
                 </div>
-                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
                   Vincule o catequizando a uma turma para organizar encontros e presenca.
                 </div>
-                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
                   Mantenha a ficha atualizada para sacramentos, comunicacao e progresso pastoral.
                 </div>
               </div>
@@ -244,13 +244,13 @@ export default function CatechumensPage() {
         )
       ) : view === 'table' ? (
         <section className="overflow-hidden rounded-sm border border-border/70 bg-white/90 ">
-          <div className="border-b border-border/70 bg-slate-50/80 px-5 py-4">
+          <div className="border-b border-border/70 bg-muted/30 px-5 py-4">
             <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">{tn('catechumens')}</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b bg-slate-50/50 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                <tr className="border-b bg-muted/20 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                   <th className="p-4">{t('first_name')}</th>
                   <th className="p-4 hidden md:table-cell">{t('age')}</th>
                   <th className="p-4 hidden md:table-cell">{t('catechumens.table_family')}</th>
@@ -259,7 +259,7 @@ export default function CatechumensPage() {
               </thead>
               <tbody>
                 {filtered.map((c: any) => (
-                  <tr key={c.id} className="border-b border-border/60 last:border-0 hover:bg-slate-50/80 transition-colors">
+                  <tr key={c.id} className="border-b border-border/60 last:border-0 hover:bg-muted/30 transition-colors">
                     <td className="p-4">
                       <Link to={`/app/catechumens/${c.id}`} className="flex items-center gap-3 hover:text-primary">
                         <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold overflow-hidden ${!c.photoUrl ? AVATAR_COLORS[Math.abs(c.firstName?.charCodeAt(0) || 0) % AVATAR_COLORS.length] : ''}`}>
@@ -291,10 +291,10 @@ export default function CatechumensPage() {
             <Link
               key={c.id}
               to={`/app/catechumens/${c.id}`}
-              className="group overflow-hidden rounded-sm border border-border/70 bg-white/90 p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-300/40"
+              className="group overflow-hidden rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-primary/30"
             >
               <div className="flex items-start gap-4">
-                <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-sm text-base font-bold overflow-hidden ring-1 ring-slate-200/70 ${!c.photoUrl ? AVATAR_COLORS[Math.abs(c.firstName?.charCodeAt(0) || 0) % AVATAR_COLORS.length] : ''}`}>
+                <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-sm text-base font-bold overflow-hidden ring-1 ring-border/70 ${!c.photoUrl ? AVATAR_COLORS[Math.abs(c.firstName?.charCodeAt(0) || 0) % AVATAR_COLORS.length] : ''}`}>
                   {c.photoUrl ? <img src={c.photoUrl} className="h-full w-full object-cover" alt="" /> : `${c.firstName?.[0] || ''}${c.lastName?.[0] || ''}`}
                 </div>
                 <div className="min-w-0 flex-1">
@@ -308,13 +308,13 @@ export default function CatechumensPage() {
                         {c.birthDate && `${getAge(c.birthDate) ? ' · ' : ''}${formatDateOnly(c.birthDate, i18n.language, { day: '2-digit', month: '2-digit', year: '2-digit' })}`}
                       </p>
                     </div>
-                    <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-slate-700" />
+                    <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />
                   </div>
                 </div>
               </div>
 
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
                   <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-muted-foreground">
                     <School className="h-3.5 w-3.5" />
                     Turmas
@@ -323,7 +323,7 @@ export default function CatechumensPage() {
                     {c.enrollments?.length ? `${c.enrollments.length} vinculada(s)` : t('catechumens.no_class')}
                   </p>
                 </div>
-                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
                   <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-muted-foreground">
                     <House className="h-3.5 w-3.5" />
                     Familia
@@ -348,7 +348,7 @@ export default function CatechumensPage() {
               {c.household?.name && (
                 <div className="mt-4 border-t border-border/60 pt-4 text-sm text-muted-foreground">
                   <span className="inline-flex items-center gap-2">
-                    <Users className="h-4 w-4 text-slate-400" />
+                    <Users className="h-4 w-4 text-muted-foreground" />
                     {c.household.name}
                   </span>
                 </div>

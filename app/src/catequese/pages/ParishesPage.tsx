@@ -202,12 +202,12 @@ export default function ParishesPage() {
               const isActive = p.active !== false;
               return (
                 <div key={p.id} onClick={() => navigate('/app/parishes/' + p.id)}
-                  className="group rounded-sm border border-border/70 bg-white p-5 cursor-pointer transition-all hover:border-primary/40 hover: hover:-translate-y-0.5">
+                  className="group cursor-pointer rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-primary/30">
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <h3 className="font-semibold truncate group-hover:text-primary transition-colors">{p.name}</h3>
-                        {!isActive && <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-overline font-medium text-gray-600 dark:bg-zinc-800 dark:text-zinc-400">{tp('inactive_label')}</span>}
+                        {!isActive && <span className="inline-flex items-center rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5 text-overline font-medium text-muted-foreground">{tp('inactive_label')}</span>}
                       </div>
                       {(p.city || p.state) && <p className="text-sm text-muted-foreground flex items-center gap-1 mt-0.5"><MapPin className="h-3 w-3" />{[p.city, p.state].filter(Boolean).join(', ')}</p>}
                     </div>

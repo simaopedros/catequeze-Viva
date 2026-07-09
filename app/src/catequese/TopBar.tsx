@@ -266,7 +266,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
 
         {/* Results dropdown */}
         {showDropdown && (
-          <div className="absolute top-full mt-1 left-0 right-0 z-50 rounded-sm border bg-card shadow-lg overflow-hidden">
+          <div className="absolute top-full mt-1 left-0 right-0 z-50 overflow-hidden rounded-sm border border-border/70 bg-white">
             {flatResults.length === 0 ? (
               <div className="px-4 py-6 text-center">
                 <Search className="mx-auto h-5 w-5 text-text-tertiary mb-1" />

@@ -12,7 +12,7 @@ const TYPE_CONFIG: Record<string, { labelKey: string; icon: typeof BookOpen; col
   BIBLE_REF: { labelKey: 'context.bible', icon: BookOpen, color: 'bg-blue-100 text-blue-700' },
   CATECHISM_REF: { labelKey: 'context.catechism', icon: Church, color: 'bg-amber-100 text-amber-700' },
   DIRECTORY_REF: { labelKey: 'context.directory', icon: ScrollText, color: 'bg-green-100 text-green-700' },
-  TEXT: { labelKey: 'context.text', icon: ScrollText, color: 'bg-slate-100 text-slate-700' },
+  TEXT: { labelKey: 'context.text', icon: ScrollText, color: 'bg-muted text-foreground' },
 }
 
 export function ContextShelf() {

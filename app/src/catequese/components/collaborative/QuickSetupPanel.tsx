@@ -241,7 +241,7 @@ export function QuickSetupPanel({ mode, applyToOriginal }: { mode: string; apply
                   <button
                     key={g.value}
                     onClick={() => setAgeGroup(g.value)}
-                    className={`p-4 rounded-sm border-2 text-center transition-all hover:-translate-y-1 ${
+                    className={`rounded-sm border p-4 text-center transition-colors ${
       ageGroup === g.value
       ? 'border-[#071A2D] bg-muted/30'
       : 'border-border hover:border-primary/50'

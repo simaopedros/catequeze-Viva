@@ -73,7 +73,7 @@ function StatusCell({
         {st ? st.label : <Minus className="h-3 w-3" />}
       </button>
       {open && (
-        <div className="absolute z-50 left-1/2 -translate-x-1/2 mt-1 bg-popover border rounded-md shadow-lg p-1 flex flex-col gap-0.5 min-w-[100px]">
+        <div className="absolute z-50 left-1/2 -translate-x-1/2 mt-1 rounded-sm border border-border/70 bg-white p-1 shadow-sm flex flex-col gap-0.5 min-w-[100px]">
           {statusOptions.map(opt => (
             <button
               key={opt.key}
@@ -412,7 +412,7 @@ export default function AttendancePage() {
                   <div className="flex items-center justify-between mb-3">
                     <span className="font-semibold text-sm">{cat.firstName} {cat.lastName}</span>
                     <span className={cn(
-                      'text-sm font-bold px-2 py-0.5 rounded-full',
+                      'rounded-sm border border-border/70 px-2 py-0.5 text-sm font-semibold',
                       pct >= 80 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400' :
                       pct >= 50 ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400' :
                       'bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400'

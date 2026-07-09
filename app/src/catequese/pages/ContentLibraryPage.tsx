@@ -263,13 +263,13 @@ export default function ContentLibraryPage() {
 
             <SurfaceSection title="Fluxo sugerido" icon={FileText}>
               <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
-                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
                   Crie roteiros base para organizar temas, tempo estimado e publico.
                 </div>
-                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
                   Adicione atividades para transformar o conteudo em encontro utilizavel.
                 </div>
-                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
                   Combine criacao manual com IA quando precisar acelerar a preparacao.
                 </div>
               </div>
@@ -277,14 +277,14 @@ export default function ContentLibraryPage() {
           </div>
         )
       ) : view === 'list' ? (
-        <section className="overflow-hidden rounded-sm border border-border/70 bg-white/90 ">
-          <div className="border-b border-border/70 bg-slate-50/80 px-5 py-4">
+        <section className="overflow-hidden rounded-sm border border-border/70 bg-white ">
+          <div className="border-b border-border/70 bg-muted/30 px-5 py-4">
             <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">{t('library.table_title')}</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b bg-slate-50/50 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                <tr className="border-b bg-muted/20 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                   <th className="p-4">{t('library.table_title')}</th>
                   <th className="p-4 hidden md:table-cell">{t('library.table_status')}</th>
                   <th className="p-4 hidden md:table-cell">{t('library.table_activities')}</th>
@@ -293,7 +293,7 @@ export default function ContentLibraryPage() {
               </thead>
               <tbody>
                 {filtered.map((i: any) => (
-                  <tr key={i.id} className="border-b border-border/60 last:border-0 hover:bg-slate-50/80 transition-colors">
+                  <tr key={i.id} className="border-b border-border/60 last:border-0 hover:bg-muted/30 transition-colors">
                     <td className="p-4">
                       <Link to={`/app/content-library/${i.id}`} className="font-medium text-sm hover:text-primary">{i.title}</Link>
                       <p className="text-overline text-muted-foreground">{i.theme}</p>
@@ -322,7 +322,7 @@ export default function ContentLibraryPage() {
             <Link
               key={item.id}
               to={`/app/content-library/${item.id}`}
-              className="group overflow-hidden rounded-sm border border-border/70 bg-white/90 p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-300/40"
+              className="group overflow-hidden rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-primary/30"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
@@ -330,7 +330,7 @@ export default function ContentLibraryPage() {
                     <h3 className="line-clamp-2 text-lg font-semibold tracking-tight text-foreground group-hover:text-primary">
                       {item.title}
                     </h3>
-                    <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-slate-700" />
+                    <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />
                   </div>
                   {item.theme && <p className="mt-1 line-clamp-1 text-sm text-muted-foreground">{item.theme}</p>}
                 </div>
@@ -351,7 +351,7 @@ export default function ContentLibraryPage() {
               </div>
 
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
                   <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-muted-foreground">
                     <Clock className="h-3.5 w-3.5" />
                     Duracao
@@ -360,7 +360,7 @@ export default function ContentLibraryPage() {
                     {item.estimatedTime ? t('library.minutes', { count: item.estimatedTime }) : '—'}
                   </p>
                 </div>
-                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
                   <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-muted-foreground">
                     <Puzzle className="h-3.5 w-3.5" />
                     Atividades
@@ -371,7 +371,7 @@ export default function ContentLibraryPage() {
 
               <div className="mt-4 border-t border-border/60 pt-4 text-sm text-muted-foreground">
                 <span className="inline-flex items-center gap-2">
-                  <User className="h-4 w-4 text-slate-400" />
+                  <User className="h-4 w-4 text-muted-foreground" />
                   {item.createdBy?.firstName || '—'}
                 </span>
               </div>

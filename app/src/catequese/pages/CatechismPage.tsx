@@ -152,7 +152,7 @@ export default function CatechismPage() {
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded">{entry.number}</span>
+                      <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-medium text-foreground">{entry.number}</span>
                       <p className="font-medium text-sm">{entry.question}</p>
                     </div>
                     {expanded[entry.id] && (
@@ -175,7 +175,7 @@ export default function CatechismPage() {
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded">{entry.number}</span>
+                      <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-medium text-foreground">{entry.number}</span>
                       <p className="font-medium text-sm">{entry.question}</p>
                     </div>
                     {expanded[entry.id] && (

@@ -12,7 +12,7 @@ const ROLE_META: { id: RoleType; icon: typeof GraduationCap; color: string }[] =
   {
     id: 'coordinator',
     icon: GraduationCap,
-    color: 'bg-primary/10 text-primary border-primary/30',
+    color: 'border-border/70 bg-muted/30 text-foreground',
   },
   {
     id: 'catechist',

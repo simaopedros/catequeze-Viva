@@ -77,7 +77,7 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
       <div className="flex min-h-screen items-center justify-center bg-background p-4">
         <div className="w-full max-w-md space-y-6 rounded-sm border border-border/70 bg-white p-6 shadow-sm">
           <div className="text-center space-y-2">
-            <div className="inline-flex rounded-sm bg-primary/10 p-3">
+            <div className="inline-flex rounded-sm border border-border/70 bg-muted/30 p-3">
               <ShieldCheck className="h-6 w-6 text-primary" />
             </div>
             <h1 className="text-xl font-bold">{t('two_factor_gate_title')}</h1>
