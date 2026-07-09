@@ -25,7 +25,7 @@ export function ShellBase({
   };
 
   return (
-    <div className={cn(variantStyles[variant], "text-foreground", className)}>
+    <div className={cn(variantStyles[variant], "text-[#071A2D]", className)}>
       {children}
     </div>
   );

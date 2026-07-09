@@ -26,7 +26,9 @@ export function InstallPrompt() {
           aria-label={t("install_title")}
         >
           <Download className="h-3.5 w-3.5 text-[#071A2D]" />
-          <span className="text-muted-foreground">{t("install_button")}</span>
+          <span className="font-semibold tracking-tight text-[#071A2D]">
+            {t("install_button")}
+          </span>
           <button
             onClick={(e) => {
               e.stopPropagation();

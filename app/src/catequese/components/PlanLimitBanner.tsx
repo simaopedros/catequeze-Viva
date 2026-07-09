@@ -127,8 +127,8 @@ export function PlanLimitBanner({
           className,
         )}
       >
-        <Icon className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-        <span className="text-muted-foreground min-w-0 truncate text-xs">
+        <Icon className="h-3.5 w-3.5 shrink-0 text-[#071A2D]" />
+        <span className="min-w-0 truncate text-xs font-medium tracking-tight text-[#071A2D]">
           {currentCount}/{maxAllowed === null ? "∞" : maxAllowed} {label}
           {plural} · {currentPlanName}
         </span>

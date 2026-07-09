@@ -69,7 +69,7 @@ export function EmptyState({
       >
         {Icon && (
           <div className="mb-3 rounded-sm border border-border/70 bg-muted/30 p-3">
-            <Icon className="h-5 w-5 text-muted-foreground" />
+            <Icon className="h-5 w-5 text-[#071A2D]" />
           </div>
         )}
         <p

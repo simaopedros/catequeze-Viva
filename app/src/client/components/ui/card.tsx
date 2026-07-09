@@ -6,13 +6,13 @@ import { cn } from "../../utils";
 const cardVariants = cva("rounded-sm border", {
   variants: {
     variant: {
-      default: "border-border/70 bg-white text-foreground",
+      default: "border-border/70 bg-white text-[#071A2D]",
       accent: "bg-card-accent text-card-accent-foreground",
       bento:
-        "bg-card-subtle text-card-subtle-foreground border-none shadow-none",
+        "border-none bg-card-subtle text-card-subtle-foreground shadow-none",
       interactive:
-        "cursor-pointer border-border/70 bg-white text-foreground transition-colors hover:border-[#071A2D]/30",
-      flat: "bg-muted/50 border-0 shadow-none",
+        "cursor-pointer border-border/70 bg-white text-[#071A2D] transition-colors hover:border-[#071A2D]/30",
+      flat: "border-0 bg-muted/50 shadow-none",
     },
   },
 });

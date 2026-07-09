@@ -45,7 +45,10 @@ export function ResponsiveTable<T>({
 }: ResponsiveTableProps<T>) {
   if (data.length === 0 && emptyMessage) {
     return (
-      <div className="py-12 text-center text-muted-foreground text-sm">
+      <div
+        className="py-12 text-center text-sm font-semibold tracking-tight text-[#071A2D]"
+        style={{ fontFamily: "var(--font-brand-display)" }}
+      >
         {emptyMessage}
       </div>
     );
@@ -62,12 +65,12 @@ export function ResponsiveTable<T>({
       >
         <table className={cn("w-full text-sm", tableClassName)}>
           <thead>
-            <tr className="bg-muted/50 border-b">
+            <tr className="border-b bg-muted/50">
               {columns.map((col) => (
                 <th
                   key={col.key}
                   className={cn(
-                    "p-3 text-left font-medium text-muted-foreground whitespace-nowrap",
+                    "whitespace-nowrap p-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground",
                     col.headerClassName,
                   )}
                 >

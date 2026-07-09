@@ -199,7 +199,7 @@ export default function PublicUploadDocsPage() {
               type="file"
               accept=".jpg,.jpeg,.png,.pdf"
               onChange={(e) => setDocFile(e.target.files?.[0] || null)}
-              className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1 file:mr-4 file:py-1 file:px-3 file:rounded-sm file:border-0 file:text-sm file:bg-muted file:text-foreground"
+              className="mt-1 flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm file:mr-4 file:rounded-sm file:border-0 file:bg-muted file:px-3 file:py-1 file:text-sm file:font-semibold file:tracking-tight file:text-[#071A2D]"
             />
             <p className="text-overline text-muted-foreground mt-1">
               {t("upload_docs.file_hint")}

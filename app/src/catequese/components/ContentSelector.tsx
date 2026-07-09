@@ -48,7 +48,16 @@ export function ContentSelector({
         onClick={() => setOpen(!open)}
         className="flex h-9 w-full items-center justify-between rounded-sm border border-input bg-background px-3 py-1 text-sm text-left"
       >
-        <span className={selected ? "" : "text-muted-foreground"}>
+        <span
+          className={
+            selected
+              ? "font-semibold tracking-tight text-[#071A2D]"
+              : "text-muted-foreground"
+          }
+          style={
+            selected ? { fontFamily: "var(--font-brand-display)" } : undefined
+          }
+        >
           {selected ? selected.title : placeholder}
         </span>
         <span className="text-xs text-muted-foreground">▼</span>
