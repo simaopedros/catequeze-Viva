@@ -822,21 +822,30 @@ function PastoralAnalysisInline({
 
         <div className="grid grid-cols-2 gap-2 text-center text-xs sm:grid-cols-4">
           <div className="pastoral-print-card rounded-sm border border-border/70 bg-white p-3">
-            <p className="text-2xl font-semibold tracking-tight tabular-nums text-foreground">
+            <p
+              className="text-2xl font-semibold tracking-tight tabular-nums text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
               {data.overallFrequency}%
             </p>
             <p className="text-muted-foreground">{t("overallFrequency")}</p>
           </div>
           {canSeeSensitiveSignals && (
             <div className="pastoral-print-card rounded-sm border border-border/70 bg-white p-3">
-              <p className="text-2xl font-semibold tracking-tight tabular-nums text-foreground">
+              <p
+                className="text-2xl font-semibold tracking-tight tabular-nums text-[#071A2D]"
+                style={{ fontFamily: "var(--font-brand-display)" }}
+              >
                 {data.rankingPosition}/{data.totalCatechumensInClass}
               </p>
               <p className="text-muted-foreground">{t("rankingPosition")}</p>
             </div>
           )}
           <div className="pastoral-print-card rounded-sm border border-border/70 bg-white p-3">
-            <p className="text-2xl font-semibold tracking-tight tabular-nums text-foreground">
+            <p
+              className="text-2xl font-semibold tracking-tight tabular-nums text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
               {data.presentCount + data.lateCount}
             </p>
             <p className="text-muted-foreground">{t("present")}</p>
@@ -1418,8 +1427,11 @@ export default function CatechumenDetailPage() {
                 <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                   {t("catechumens.detail_progress")}
                 </p>
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-2xl font-semibold tracking-tight tabular-nums text-foreground">
+                <div className="mb-3 flex items-center gap-2">
+                  <span
+                    className="text-2xl font-semibold tracking-tight tabular-nums text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
                     {points}
                   </span>
                   <span className="text-xs text-muted-foreground">
@@ -1427,8 +1439,7 @@ export default function CatechumenDetailPage() {
                   </span>
                 </div>
                 {attendancePct !== null && attendancePct >= 90 && (
-                  <div className="flex items-center gap-2 rounded-sm border border-border/70 bg-muted/30 p-2 text-xs text-foreground">
-                    <span className="text-lg">🌟</span>{" "}
+                  <div className="rounded-sm border border-[#D39A2B]/30 bg-[#D39A2B]/10 p-2 text-xs font-medium text-[#8A6418]">
                     {t("catechumens.detail_perfect_attendance")}
                   </div>
                 )}

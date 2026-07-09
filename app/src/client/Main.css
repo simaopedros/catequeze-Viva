@@ -465,26 +465,6 @@
   @apply h-[calc(100vh-8.125rem)] lg:h-[calc(100vh-5.625rem)];
 }
 
-@utility text-gradient-primary {
-  background: linear-gradient(to right, hsl(var(--secondary-muted)), hsl(var(--secondary)));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-@utility text-gradient-primary-diagonal {
-  background: linear-gradient(135deg, hsl(var(--secondary-muted)), hsl(var(--secondary)));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-@utility border-gradient-primary {
-  background: linear-gradient(to right, hsl(var(--secondary-muted)), hsl(var(--secondary)));
-  padding: 1px;
-  & > * { background: hsl(var(--background)); }
-}
-
 /* ── Third-party libraries ─────────────────────────────────────────── */
 
 .tableCheckbox:checked ~ div span { @apply opacity-100; }

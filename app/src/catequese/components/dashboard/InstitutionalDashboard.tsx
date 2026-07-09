@@ -127,7 +127,10 @@ function KpiCard({ kpi }: { kpi: KpiBlock }) {
         {translateKpiLabel(kpi.label, t)}
       </p>
       <div className="mt-1.5 flex items-baseline gap-2">
-        <p className="text-2xl font-semibold tracking-tight tabular-nums text-foreground">
+        <p
+          className="text-2xl font-semibold tracking-tight tabular-nums text-[#071A2D]"
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
           {formatted}
         </p>
         {kpi.delta !== null && kpi.delta !== undefined && (

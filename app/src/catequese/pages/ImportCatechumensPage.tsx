@@ -314,14 +314,19 @@ Maria,Santos,2014-07-22,Silva Santos`}
                       <td className="px-3 py-2 text-muted-foreground">
                         {row.lineNumber}
                       </td>
-                      <td className="px-3 py-2 font-medium">
+                      <td
+                        className="px-3 py-2 font-semibold tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
                         {row.firstName || (
-                          <span className="text-destructive font-normal">
+                          <span className="font-normal text-destructive">
                             {t("catechumens.empty") || "Vazio"}
                           </span>
                         )}
                       </td>
-                      <td className="px-3 py-2">{row.lastName}</td>
+                      <td className="px-3 py-2 font-medium text-[#071A2D]/90">
+                        {row.lastName}
+                      </td>
                       <td className="px-3 py-2 text-muted-foreground">
                         {row.birthDate || "-"}
                       </td>
@@ -370,7 +375,10 @@ Maria,Santos,2014-07-22,Silva Santos`}
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-sm border border-border/70 bg-muted/30 p-4 text-center">
-              <p className="text-2xl font-semibold tracking-tight tabular-nums text-foreground">
+              <p
+                className="text-2xl font-semibold tracking-tight tabular-nums text-[#071A2D]"
+                style={{ fontFamily: "var(--font-brand-display)" }}
+              >
                 {results.created}
               </p>
               <p className="text-sm text-[#071A2D]">

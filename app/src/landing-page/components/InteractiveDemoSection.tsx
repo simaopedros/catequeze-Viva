@@ -195,7 +195,7 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                         key={`${selected.id}-${index}`}
                         className="flex gap-2 text-sm animate-in fade-in slide-in-from-bottom-1 duration-300"
                       >
-                        <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-sm bg-[#071A2D]/15 text-[11px] font-bold text-[#071A2D]">
+                        <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-sm bg-[#071A2D]/15 text-[11px] font-semibold text-[#071A2D]">
                           {index + 1}
                         </span>
                         <span className="leading-snug">{step}</span>

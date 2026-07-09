@@ -9,7 +9,10 @@ export default function Hero() {
   return (
     <div className="relative w-full pt-14 overflow-hidden">
       <div className="absolute inset-0 bg-[#F7F4EE]/80" />
-      <div className="absolute top-20 right-10 w-72 h-72 bg-[#071A2D]/08 rounded-full blur-3xl pointer-events-none" />
+      <div
+        className="pointer-events-none absolute right-10 top-20 h-72 w-72 rounded-sm bg-[#071A2D]/[0.04]"
+        aria-hidden
+      />
       <div className="md:p-24 relative">
         <div className="max-w-8xl mx-auto px-6 lg:px-8">
           <div className="lg:mb-18 mx-auto max-w-3xl text-center">
