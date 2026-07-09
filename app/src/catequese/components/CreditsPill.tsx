@@ -31,9 +31,9 @@ export function CreditsPill({
         : ("default" as const));
 
   const variantStyles = {
-    default: "bg-muted/60 text-muted-foreground border-border/50",
-    low: "bg-[#D39A2B]/10 text-[#8A6418] border-[#D39A2B]/30",
-    zero: "bg-muted/40 text-muted-foreground/60 border-border/40",
+    default: "border-border/70 bg-white text-[#071A2D]",
+    low: "border-[#D39A2B]/30 bg-[#D39A2B]/10 text-[#8A6418]",
+    zero: "border-border/40 bg-muted/40 text-muted-foreground/60",
   };
 
   return (
@@ -41,15 +41,19 @@ export function CreditsPill({
       type="button"
       onClick={onClick}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-sm border px-2.5 py-1 text-xs font-medium transition-colors",
+        "inline-flex items-center gap-1.5 rounded-sm border px-2.5 py-1 text-xs font-semibold tracking-tight transition-colors",
         variantStyles[resolvedVariant],
-        onClick && "cursor-pointer hover:bg-muted/80",
+        onClick && "cursor-pointer hover:bg-muted/40",
         !onClick && "cursor-default",
         className,
       )}
     >
       <Coins
-        className={cn("h-3 w-3", resolvedVariant === "low" && "text-[#D39A2B]")}
+        className={cn(
+          "h-3 w-3",
+          resolvedVariant === "low" && "text-[#D39A2B]",
+          resolvedVariant === "default" && "text-[#071A2D]",
+        )}
       />
       <span>
         {creditsLeft} {creditsLeft === 1 ? "crédito" : "créditos"}

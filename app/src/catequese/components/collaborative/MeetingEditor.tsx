@@ -510,7 +510,10 @@ function VersionHistoryPanel({ onClose }: { onClose: () => void }) {
           <Card key={v.id} className="rounded-sm p-3">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <div className="text-xs font-semibold">
+                <div
+                  className="text-xs font-semibold tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
                   {t("editor.version")} {v.version}
                 </div>
                 <div className="text-caption text-muted-foreground">

@@ -623,8 +623,8 @@ function AgendaView({
             className="w-full rounded-sm border border-border/70 bg-white p-3.5 text-left hover:bg-muted/30 transition-colors flex items-center gap-3 "
           >
             {/* Date block */}
-            <div className="flex flex-col items-center justify-center w-11 h-11 rounded-sm bg-muted flex-shrink-0">
-              <span className="text-sm font-semibold tabular-nums leading-none">
+            <div className="flex h-11 w-11 flex-shrink-0 flex-col items-center justify-center rounded-sm border border-border/70 bg-white">
+              <span className="text-sm font-semibold leading-none tabular-nums text-[#071A2D]">
                 {day}
               </span>
               <span className="text-overline text-muted-foreground mt-0.5">
@@ -745,8 +745,8 @@ function SidePanelContent({
                   key={e.id}
                   className="flex items-center gap-2.5 rounded-sm p-2 hover:bg-muted/30 transition-colors"
                 >
-                  <div className="flex flex-col items-center w-9 shrink-0">
-                    <span className="text-xs font-bold">
+                  <div className="flex w-9 shrink-0 flex-col items-center">
+                    <span className="text-xs font-semibold tabular-nums text-[#071A2D]">
                       {eventDate.getDate()}
                     </span>
                     <span className="text-overline text-muted-foreground">

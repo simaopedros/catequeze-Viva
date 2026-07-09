@@ -589,8 +589,8 @@ export default function AttendancePage() {
                           </td>
                         );
                       })}
-                      <td className="p-1 text-center bg-muted/20">
-                        <span className="text-sm font-semibold tabular-nums">
+                      <td className="bg-muted/20 p-1 text-center">
+                        <span className="text-sm font-semibold tabular-nums text-[#071A2D]">
                           {meetings.length > 0
                             ? Math.round(
                                 (Object.values(matrix).filter(
@@ -610,7 +610,7 @@ export default function AttendancePage() {
                 </tbody>
                 <tfoot>
                   <tr className="border-t-2 bg-muted/30 font-medium">
-                    <td className="sticky left-0 bg-muted/30 p-2 border-r z-10">
+                    <td className="sticky left-0 z-10 border-r bg-muted/30 p-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       {t("matrix.totals")}
                     </td>
                     {meetings.map((m: any) => (
@@ -629,7 +629,7 @@ export default function AttendancePage() {
                         </span>
                       </td>
                     ))}
-                    <td className="bg-muted/30 p-2 text-center font-semibold tabular-nums">
+                    <td className="bg-muted/30 p-2 text-center text-sm font-semibold tabular-nums text-[#071A2D]">
                       {getOverallPct()}%
                     </td>
                   </tr>

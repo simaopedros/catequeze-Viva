@@ -338,7 +338,7 @@ export default function ReportsPage() {
                       </p>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="w-10 text-right text-sm font-semibold tabular-nums">
+                      <span className="w-10 text-right text-sm font-semibold tabular-nums text-[#071A2D]">
                         {r.attendanceRate}%
                       </span>
                       <div className="h-1.5 w-28 rounded-sm bg-muted">
@@ -401,7 +401,7 @@ export default function ReportsPage() {
                     <div className="flex items-center gap-3">
                       <span
                         className={`w-8 text-center text-lg font-semibold tabular-nums ${
-                          i < 3 ? "text-foreground" : "text-muted-foreground"
+                          i < 3 ? "text-[#071A2D]" : "text-muted-foreground"
                         }`}
                       >
                         {i === 0
@@ -425,7 +425,7 @@ export default function ReportsPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-lg font-semibold tabular-nums">
+                      <span className="text-lg font-semibold tabular-nums text-[#071A2D]">
                         {r.attendanceRate}%
                       </span>
                       <div className="h-1.5 w-24 rounded-sm bg-muted">

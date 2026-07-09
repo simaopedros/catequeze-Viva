@@ -512,9 +512,16 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                         <div className="flex-1 min-w-0">
                           <p
                             className={cn(
-                              "text-xs truncate",
-                              !n.readAt && "font-semibold",
+                              "truncate text-xs tracking-tight",
+                              !n.readAt
+                                ? "font-semibold text-[#071A2D]"
+                                : "font-medium text-foreground",
                             )}
+                            style={
+                              !n.readAt
+                                ? { fontFamily: "var(--font-brand-display)" }
+                                : undefined
+                            }
                           >
                             {n.title}
                           </p>
