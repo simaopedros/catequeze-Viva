@@ -37,6 +37,11 @@ import {
   Tags,
   Trash2,
 } from "lucide-react";
+import {
+  AppGoldRule,
+  AppEyebrow,
+  AppDisplayTitle,
+} from "../../../client/components/brand/AppChrome";
 
 function SelectedChip({
   label,
@@ -543,23 +548,16 @@ export function ContentDocumentWorkspace({
     <div className="mx-auto max-w-[1660px] space-y-6 px-4 pb-10 pt-6">
       <div className="rounded-sm border border-border/70 bg-white px-6 py-5">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             <Link
               to="/app/content-library"
-              className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-[#071A2D]"
             >
               <ArrowLeft className="h-4 w-4" /> Voltar para a biblioteca
             </Link>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              Conteúdo
-            </p>
-            <h1
-              className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
-              Editor do encontro
-            </h1>
-            <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+            <AppEyebrow>Conteúdo</AppEyebrow>
+            <AppDisplayTitle>Editor do encontro</AppDisplayTitle>
+            <AppGoldRule />
           </div>
 
           <div className="flex flex-wrap items-center gap-3 xl:justify-end">

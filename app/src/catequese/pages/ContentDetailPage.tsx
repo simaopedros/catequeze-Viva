@@ -40,6 +40,7 @@ import {
   buildLegacyContentDocument,
 } from "../../shared/contentDocument";
 import { ContentDocumentRenderer } from "../components/content/ContentDocumentRenderer";
+import { AppPageHeader } from "../../client/components/brand/AppChrome";
 
 function parseData(data: string | null): any {
   if (!data) return {};
@@ -188,74 +189,61 @@ export default function ContentDetailPage() {
   const document =
     parseContentDocument(item.documentJson) || buildLegacyContentDocument(item);
 
+  const subtitleParts = [
+    STATUS_MAP[item.status as keyof typeof STATUS_MAP]?.label,
+    item.estimatedTime
+      ? t("library.minutes", { count: item.estimatedTime })
+      : null,
+    item.createdBy
+      ? t("detail.by_author", { name: item.createdBy.firstName })
+      : null,
+  ].filter(Boolean);
+
   return (
     <div className="mx-auto max-w-5xl space-y-6 px-4 py-8">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
-        <div className="flex items-start gap-4">
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/app/content-library">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-          </Button>
-          <div className="space-y-2.5">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              {t("script")}
-            </p>
-            <h1
-              className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
-              {item.title}
-            </h1>
-            <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge
-                variant={
-                  STATUS_MAP[item.status as keyof typeof STATUS_MAP]?.variant ||
-                  "secondary"
-                }
+      <div className="flex items-start gap-3">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="mt-1 shrink-0 rounded-sm"
+          asChild
+        >
+          <Link to="/app/content-library">
+            <ArrowLeft className="h-5 w-5" />
+          </Link>
+        </Button>
+        <AppPageHeader
+          className="min-w-0 flex-1 border-0 pb-0"
+          eyebrow={t("script")}
+          title={item.title}
+          subtitle={subtitleParts.join(" · ")}
+          actions={
+            <>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-10 rounded-sm"
+                asChild
               >
-                {STATUS_MAP[item.status as keyof typeof STATUS_MAP]?.label}
-              </Badge>
-              {item.estimatedTime && (
-                <span className="text-sm text-muted-foreground">
-                  <Clock className="mr-1 inline h-3 w-3" />
-                  {t("library.minutes", { count: item.estimatedTime })}
-                </span>
-              )}
-              {item.createdBy && (
-                <span className="text-xs text-muted-foreground">
-                  {t("detail.by_author", { name: item.createdBy.firstName })}
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap gap-2 lg:ml-auto">
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-10 rounded-sm"
-            asChild
-          >
-            <Link to={`/app/content-library/${id}/edit`}>
-              <Edit3 className="mr-1 h-3 w-3" />
-              {tc("edit")}
-            </Link>
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-10 rounded-sm"
-            asChild
-          >
-            <Link to={`/app/content-library/${id}/print`}>
-              <Printer className="mr-1 h-3 w-3" />
-              {t("print")}
-            </Link>
-          </Button>
-        </div>
+                <Link to={`/app/content-library/${id}/edit`}>
+                  <Edit3 className="mr-1 h-3 w-3" />
+                  {tc("edit")}
+                </Link>
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-10 rounded-sm"
+                asChild
+              >
+                <Link to={`/app/content-library/${id}/print`}>
+                  <Printer className="mr-1 h-3 w-3" />
+                  {t("print")}
+                </Link>
+              </Button>
+            </>
+          }
+        />
       </div>
 
       <div className="flex flex-wrap gap-2">

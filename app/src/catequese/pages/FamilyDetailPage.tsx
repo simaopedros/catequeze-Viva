@@ -55,6 +55,10 @@ import {
 
 import { getAvatarColorClass } from "../lib/avatarColors";
 import { formatDateOnly } from "../../i18n/format";
+import {
+  AppPageHeader,
+  AppPanel,
+} from "../../client/components/brand/AppChrome";
 
 const RELATIONSHIP_KEYS = [
   { value: "Pai", key: "father" },
@@ -426,65 +430,85 @@ export default function FamilyDetailPage() {
 
   return (
     <>
-      <div className="max-w-2xl mx-auto space-y-6">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
+      <div className="mx-auto max-w-2xl space-y-6">
+        <div className="flex items-start gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="mt-1 shrink-0 rounded-sm"
+            asChild
+          >
             <Link to="/app/families">
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>
-          <div className="flex-1">
-            {editing ? (
-              <input
-                value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-                className="w-full border-b border-input bg-transparent text-2xl font-semibold tracking-tight text-foreground outline-none"
-                autoFocus
-              />
-            ) : (
-              <>
-                <h1
-                  className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
-                  {household.name}
-                </h1>
-                <div className="mt-2 h-px w-10 bg-[#D39A2B]" aria-hidden />
-                <p className="text-sm text-muted-foreground">
-                  {t("families.summary", {
-                    catechumens: household._count?.catechumens || 0,
-                    guardians: household.guardians?.length || 0,
-                  })}
-                </p>
-              </>
-            )}
-          </div>
           {editing ? (
-            <div className="flex gap-2">
-              <Button size="sm" onClick={handleSave} disabled={saving}>
-                {saving ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Save className="mr-1 h-3 w-3" />
-                )}
-                {saving ? t("saving") : t("save")}
-              </Button>
-              <Button size="sm" variant="ghost" onClick={cancelEditing}>
-                <X className="mr-1 h-3 w-3" />
-                {t("cancel")}
-              </Button>
+            <div className="flex min-w-0 flex-1 flex-col gap-4 border-b border-border/70 pb-6 sm:flex-row sm:items-end sm:justify-between">
+              <div className="min-w-0 flex-1 space-y-2.5">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  {t("families.eyebrow", { defaultValue: "Família" })}
+                </p>
+                <input
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="w-full border-b border-input bg-transparent text-2xl font-semibold tracking-tight text-foreground outline-none sm:text-[1.75rem]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                  autoFocus
+                />
+                <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  className="h-10 rounded-sm"
+                  onClick={handleSave}
+                  disabled={saving}
+                >
+                  {saving ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="mr-1 h-3 w-3" />
+                  )}
+                  {saving ? t("saving") : t("save")}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-10 rounded-sm"
+                  onClick={cancelEditing}
+                >
+                  <X className="mr-1 h-3 w-3" />
+                  {t("cancel")}
+                </Button>
+              </div>
             </div>
           ) : (
-            <Button size="sm" variant="outline" onClick={startEditing}>
-              <Edit3 className="mr-1 h-3 w-3" />
-              {t("edit")}
-            </Button>
+            <AppPageHeader
+              className="min-w-0 flex-1 border-0 pb-0"
+              eyebrow={t("families.eyebrow", { defaultValue: "Família" })}
+              title={household.name}
+              subtitle={t("families.summary", {
+                catechumens: household._count?.catechumens || 0,
+                guardians: household.guardians?.length || 0,
+              })}
+              actions={
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-10 rounded-sm"
+                  onClick={startEditing}
+                >
+                  <Edit3 className="mr-1 h-3 w-3" />
+                  {t("edit")}
+                </Button>
+              }
+            />
           )}
         </div>
 
         {/* Contact info */}
         {editing ? (
-          <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3">
+          <AppPanel className="space-y-3">
             <h3 className="text-xs font-medium text-muted-foreground uppercase">
               {t("families.edit_address_phone")}
             </h3>
@@ -532,30 +556,30 @@ export default function FamilyDetailPage() {
               <PhoneMaskInput
                 value={editPhone}
                 onChange={setEditPhone}
-                className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
+                className="mt-1 flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm"
                 placeholder={t("phone_placeholder")}
               />
             </div>
-          </div>
+          </AppPanel>
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
             {household.address && (
-              <div className="rounded-sm border border-border/70 bg-white p-4">
-                <h3 className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-1 mb-1">
+              <AppPanel className="p-4">
+                <h3 className="mb-1 flex items-center gap-1 text-xs font-medium uppercase text-muted-foreground">
                   <MapPin className="h-3 w-3" />
                   {t("address")}
                 </h3>
                 <p className="text-sm">{household.address}</p>
-              </div>
+              </AppPanel>
             )}
             {household.phone && (
-              <div className="rounded-sm border border-border/70 bg-white p-4">
-                <h3 className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-1 mb-1">
+              <AppPanel className="p-4">
+                <h3 className="mb-1 flex items-center gap-1 text-xs font-medium uppercase text-muted-foreground">
                   <Phone className="h-3 w-3" />
                   {t("phone")}
                 </h3>
                 <p className="text-sm">{household.phone}</p>
-              </div>
+              </AppPanel>
             )}
             {household.community && (
               <div className="rounded-sm border border-border/70 bg-white p-4">

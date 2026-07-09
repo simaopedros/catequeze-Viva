@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { AppShell } from "../AppShell";
 import { Button } from "../../client/components/ui/button";
 import { Badge } from "../../client/components/ui/badge";
+import { AppPageHeader } from "../../client/components/brand/AppChrome";
 import {
   ArrowLeft,
   UserPlus,
@@ -406,91 +407,98 @@ export default function ClassDetailPage() {
 
   const statusBadge = classStatusMap[cls.status as keyof typeof classStatusMap];
 
+  const classSubtitle = [
+    statusBadge?.label || cls.status,
+    cls.stage?.name,
+    cls.community?.name,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
   return (
     <>
       <div className="space-y-6">
-        <div className="flex flex-wrap items-center gap-3">
-          <Button variant="ghost" size="icon" asChild>
+        <div className="flex items-start gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="mt-1 shrink-0 rounded-sm"
+            asChild
+          >
             <Link to="/app/classes">
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>
-          <div className="min-w-0 flex-1 space-y-2 border-b border-border/70 pb-4 sm:border-0 sm:pb-0">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              Turma
-            </p>
-            <h1
-              className="text-2xl font-semibold tracking-tight text-foreground"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
-              {cls.name}
-            </h1>
-            <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
-            <div className="flex items-center gap-2">
-              <Badge variant={statusBadge?.variant || "secondary"}>
-                {statusBadge?.label || cls.status}
-              </Badge>
-              {cls.stage && (
-                <span className="text-sm text-muted-foreground">
-                  {cls.stage.name}
-                </span>
-              )}
-              {cls.community && (
-                <Link
-                  to={`/app/communities/${cls.community.id}`}
-                  className="flex items-center gap-1 text-sm text-muted-foreground hover:text-[#071A2D]"
+          <AppPageHeader
+            className="min-w-0 flex-1 border-0 pb-0"
+            eyebrow="Turma"
+            title={cls.name}
+            subtitle={classSubtitle}
+            actions={
+              <>
+                {canManageClass &&
+                  statusOpts
+                    .filter((s) => s.status !== cls.status)
+                    .map((s) => (
+                      <Button
+                        key={s.status}
+                        size="sm"
+                        className="h-10 rounded-sm"
+                        variant={s.variant}
+                        onClick={() => handleStatus(s.status)}
+                      >
+                        {s.label}
+                      </Button>
+                    ))}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-10 rounded-sm"
+                  onClick={handleOpenChat}
+                  disabled={chatting}
                 >
-                  <Building2 className="h-3 w-3" />
-                  {cls.community.name}
-                </Link>
-              )}
-            </div>
-          </div>
-          <div className="flex gap-2">
-            {canManageClass &&
-              statusOpts
-                .filter((s) => s.status !== cls.status)
-                .map((s) => (
-                  <Button
-                    key={s.status}
-                    size="sm"
-                    variant={s.variant}
-                    onClick={() => handleStatus(s.status)}
-                  >
-                    {s.label}
-                  </Button>
-                ))}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleOpenChat}
-              disabled={chatting}
-            >
-              <MessageCircle className="mr-1 h-3 w-3" />
-              {chatting ? tc("loading") : t("detail.chat")}
-            </Button>
-            <Button asChild variant="outline" size="sm">
-              <Link to={`/app/classes/${id}/attendance`}>
-                <ClipboardList className="mr-1 h-3 w-3" />
-                {t("attendance")}
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="sm">
-              <Link to={`/app/classes/${id}/meetings`}>
-                <Calendar className="mr-1 h-3 w-3" />
-                {t("detail.tabs.meetings")}
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="sm">
-              <Link to={`/app/classes/${id}/reports`}>
-                <BarChart3 className="mr-1 h-3 w-3" />
-                {t("indicators")}
-              </Link>
-            </Button>
-            {canManageClass && (
-              <SendAnnouncementButton classId={id!} className={cls.name} />
-            )}
-          </div>
+                  <MessageCircle className="mr-1 h-3 w-3" />
+                  {chatting ? tc("loading") : t("detail.chat")}
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="h-10 rounded-sm"
+                >
+                  <Link to={`/app/classes/${id}/attendance`}>
+                    <ClipboardList className="mr-1 h-3 w-3" />
+                    {t("attendance")}
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="h-10 rounded-sm"
+                >
+                  <Link to={`/app/classes/${id}/meetings`}>
+                    <Calendar className="mr-1 h-3 w-3" />
+                    {t("detail.tabs.meetings")}
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="h-10 rounded-sm"
+                >
+                  <Link to={`/app/classes/${id}/reports`}>
+                    <BarChart3 className="mr-1 h-3 w-3" />
+                    {t("indicators")}
+                  </Link>
+                </Button>
+                {canManageClass && (
+                  <SendAnnouncementButton classId={id!} className={cls.name} />
+                )}
+              </>
+            }
+          />
         </div>
 
         <div className="grid gap-3 md:grid-cols-4">

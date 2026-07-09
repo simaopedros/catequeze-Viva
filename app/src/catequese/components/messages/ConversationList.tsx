@@ -170,9 +170,15 @@ export function ConversationList({
     <div className="flex h-full flex-col border-r border-border/70 bg-white">
       <div className="space-y-2 border-b border-border/70 p-3">
         <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <div className="space-y-1.5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               {t("conversations")}
+            </p>
+            <p
+              className="text-base font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
+              {t("title")}
             </p>
             <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
           </div>
