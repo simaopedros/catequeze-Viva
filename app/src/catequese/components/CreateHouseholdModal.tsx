@@ -86,7 +86,7 @@ export default function CreateHouseholdModal({ isOpen, onClose, onCreated }: Cre
       <div className="absolute inset-0 bg-black/40 -sm" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative w-full max-w-md mx-4 bg-card rounded-sm shadow-2xl border overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-md mx-4 rounded-sm border border-border/70 bg-white overflow-hidden animate-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           <h3 className="font-semibold">{t('families.create_title')}</h3>

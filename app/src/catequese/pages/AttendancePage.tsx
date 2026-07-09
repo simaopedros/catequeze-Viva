@@ -363,7 +363,7 @@ export default function AttendancePage() {
               <tbody>
                 {filteredCatechumens.map((cat: any) => (
                   <tr key={cat.id} className="border-t hover:bg-muted/30">
-                    <td className="sticky left-0 bg-card p-2 font-medium border-r z-10">{cat.firstName} {cat.lastName}</td>
+                    <td className="sticky left-0 z-10 border-r border-border/70 bg-white p-2 font-medium">{cat.firstName} {cat.lastName}</td>
                     {meetings.map((m: any) => {
                       const status = matrix[m.id]?.[cat.id];
                       const isSaving = saving === `${m.id}-${cat.id}`;
@@ -380,7 +380,7 @@ export default function AttendancePage() {
                       );
                     })}
                     <td className="p-1 text-center bg-muted/20">
-                      <span className="font-bold text-sm">{meetings.length > 0 ? Math.round((Object.values(matrix).filter(m => m[cat.id] === 'PRESENT' || m[cat.id] === 'JUSTIFIED').length / meetings.length) * 100) : 0}%</span>
+                      <span className="text-sm font-semibold tabular-nums">{meetings.length > 0 ? Math.round((Object.values(matrix).filter(m => m[cat.id] === 'PRESENT' || m[cat.id] === 'JUSTIFIED').length / meetings.length) * 100) : 0}%</span>
                     </td>
                   </tr>
                 ))}
@@ -395,7 +395,7 @@ export default function AttendancePage() {
                       <span className="text-purple-600 dark:text-purple-400">{stats[m.id]?.abonados || 0}{t('matrix.justified_letter')}</span>
                     </td>
                   ))}
-                  <td className="p-2 text-center bg-muted/30 font-bold">{getOverallPct()}%</td>
+                  <td className="bg-muted/30 p-2 text-center font-semibold tabular-nums">{getOverallPct()}%</td>
                 </tr>
               </tfoot>
             </table>

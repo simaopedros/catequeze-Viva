@@ -32,9 +32,9 @@ export function BottomSheetNav({ open, onClose }: BottomSheetNavProps) {
       <div className="fixed inset-0 z-50 bg-black/40 lg:hidden" onClick={onClose} />
 
       {/* Sheet */}
-      <div className="fixed inset-x-0 bottom-0 z-50 bg-card rounded-t-2xl shadow-2xl max-h-[70vh] overflow-y-auto transition-transform duration-300 lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-50 max-h-[70vh] overflow-y-auto rounded-t-sm border-t border-border/70 bg-white transition-transform duration-300 lg:hidden">
         {/* Handle */}
-        <div className="sticky top-0 bg-card pt-3 pb-2 flex justify-center border-b">
+        <div className="sticky top-0 border-b border-border/70 bg-white pt-3 pb-2 flex justify-center border-b">
           <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
         </div>
 

@@ -74,7 +74,7 @@ export default function BirthdaysPage() {
 
       {classes.length > 1 && (
         <select
-          className="rounded-lg border bg-background px-3 py-2 text-sm w-full max-w-xs"
+          className="rounded-sm border border-border/70 bg-white px-3 py-2 text-sm w-full max-w-xs"
           value={classFilter}
           onChange={(e) => setClassFilter(e.target.value)}
         >

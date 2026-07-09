@@ -211,7 +211,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
   }, [searchExpanded]);
 
   return (
-    <header className="flex items-center gap-2 sm:gap-3 border-b bg-card px-3 sm:px-4 lg:px-5" style={{ height: 'calc(3.5rem + env(safe-area-inset-top, 0px))', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+    <header className="flex items-center gap-2 sm:gap-3 border-b border-border/70 bg-white px-3 sm:px-4 lg:px-5" style={{ height: 'calc(3.5rem + env(safe-area-inset-top, 0px))', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
       {/* Mobile menu toggle — hidden when search expanded */}
       {!searchExpanded && (
         <Button variant="ghost" size="icon" className="lg:hidden shrink-0" onClick={onMenuToggle} aria-label={tTop('openMenu')}>
@@ -323,7 +323,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
         {onTrial && (
           <Link
             to="/app/billing"
-            className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-950 transition-colors hover:bg-amber-100"
+            className="hidden sm:inline-flex items-center gap-1.5 rounded-sm border border-border/70 bg-muted/30 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-foreground transition-colors hover:bg-muted/50"
             title={tBilling('trial_status_title')}
           >
             <Clock className="h-3 w-3 shrink-0" aria-hidden />
@@ -341,7 +341,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
             <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-sm hover:bg-accent/50">
               <Bell className="h-5 w-5" />
               {unreadCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 h-[18px] min-w-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-overline font-bold px-1 animate-in zoom-in-50 ">
+                <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-sm bg-destructive px-1 text-overline font-semibold text-destructive-foreground ">
                   {unreadCount > 99 ? '99+' : unreadCount}
                 </span>
               )}
@@ -377,7 +377,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                       )}
                     >
                       <div className={cn(
-                        'h-7 w-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5',
+                        'mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-sm',
                         !n.readAt ? 'bg-[#071A2D] text-white' : 'bg-muted text-muted-foreground'
                       )}>
                         <NIcon className="h-3.5 w-3.5" />

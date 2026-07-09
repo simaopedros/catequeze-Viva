@@ -64,10 +64,10 @@ export function CollaborativeChat() {
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[88%] rounded-sm px-3 py-2.5 text-sm whitespace-pre-wrap shadow-sm ${
+              className={`max-w-[88%] rounded-sm px-3 py-2.5 text-sm whitespace-pre-wrap ${
     msg.role === 'user'
      ? 'bg-primary text-primary-foreground'
-     : 'border bg-card text-foreground'
+     : 'border border-border/70 bg-white text-foreground'
     }`}
             >
               <div className="mb-1 flex items-center gap-1.5 text-overline font-semibold uppercase tracking-wide opacity-70">
@@ -85,7 +85,7 @@ export function CollaborativeChat() {
         ))}
       </div>
 
-      <div className="border-t bg-card p-3 shrink-0">
+      <div className="border-t border-border/70 bg-white p-3 shrink-0">
         <div className="flex gap-2">
           <Textarea
             value={input}

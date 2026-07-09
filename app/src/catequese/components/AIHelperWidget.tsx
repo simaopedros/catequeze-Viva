@@ -205,7 +205,7 @@ export function AIHelperWidget() {
 
       {/* Chat panel */}
       {open && (
-        <div className="fixed inset-0 z-modal lg:inset-auto lg:bottom-6 lg:right-6 lg:w-96 lg:h-[500px] bg-card border lg:rounded-sm shadow-2xl flex flex-col overflow-hidden">
+        <div className="fixed inset-0 z-modal lg:inset-auto lg:bottom-6 lg:right-6 lg:w-96 lg:h-[500px] border border-border/70 bg-white lg:rounded-sm flex flex-col overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border/70 bg-white p-4" style={{ paddingTop: 'calc(1rem + env(safe-area-inset-top, 0px))' }}>
             <div className="flex items-center gap-2">
@@ -244,10 +244,10 @@ export function AIHelperWidget() {
                 )}
                 <div
                   className={`max-w-[80%] rounded-sm px-3 py-2 text-sm ${
-     m.role === 'user'
-      ? 'bg-primary text-primary-foreground'
-      : 'bg-muted'
-     }`}
+ m.role === 'user'
+ ? 'bg-primary text-primary-foreground'
+ : 'bg-muted'
+ }`}
                 >
                   <div className="whitespace-pre-line">
                     {m.content.includes('/app/billing') ? (

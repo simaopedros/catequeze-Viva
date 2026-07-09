@@ -90,7 +90,7 @@ export function ParishCommunitiesTab({ communities, onCreate, onUpdate }: Parish
           {communities.map((c: any) => {
             if (editingCommId === c.id) {
               return (
-                <div key={c.id} className="rounded-lg border bg-card p-4 space-y-2 md:col-span-2">
+                <div key={c.id} className="rounded-sm border border-border/70 bg-white p-4 space-y-2 md:col-span-2">
                   <h3 className="font-medium text-sm">{tp('edit_community')}</h3>
                   <div className="flex gap-3">
                     <input value={editCommFields.name} onChange={e => setEditCommFields((p: any) => ({...p, name: e.target.value}))} className="flex-1 h-9 rounded-md border border-input bg-background px-3 text-sm" placeholder={`${tp('name')} *`} autoFocus />

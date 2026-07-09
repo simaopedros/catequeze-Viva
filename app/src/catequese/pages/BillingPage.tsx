@@ -187,9 +187,9 @@ function UsageRow({
         <span className="font-medium text-foreground">{label}</span>
         <span className="font-semibold text-foreground">{used}/{limit === Infinity ? '∞' : limit}</span>
       </div>
-      <div className="h-2.5 w-full rounded-full bg-muted">
+      <div className="h-1.5 w-full rounded-sm bg-muted">
         <div
-          className={cn('h-2.5 rounded-full', accent)}
+          className={cn('h-1.5 rounded-sm', accent)}
           role="progressbar"
           aria-label={ariaLabel}
           aria-valuenow={used}
@@ -702,7 +702,7 @@ export default function BillingPage() {
           <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr] xl:items-start">
             <div className="space-y-6">
               <div className="space-y-3">
-                <Badge variant="outline" className={cn('rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.22em]', scopeBadgeClass)}>
+                <Badge variant="outline" className={cn('rounded-sm px-3 py-1 text-[11px] uppercase tracking-[0.22em]', scopeBadgeClass)}>
                   {isPersonal ? <UserIcon className="mr-1 h-3.5 w-3.5" /> : <Building2 className="mr-1 h-3.5 w-3.5" />}
                   {isUpgradeJourney
                     ? t('upgrade_journey_badge')
@@ -1076,7 +1076,7 @@ export default function BillingPage() {
                   )}
                 >
                   {t('annual')}
-                  <span className={cn('rounded-full px-2 py-0.5 text-[11px] font-semibold', billingInterval === 'annual' ? 'bg-white/15 text-emerald-200' : 'bg-emerald-100 text-emerald-700')}>
+                  <span className={cn('rounded-sm px-2 py-0.5 text-[11px] font-semibold', billingInterval === 'annual' ? 'bg-white/15 text-emerald-200' : 'border border-border/70 bg-muted/30 text-foreground')}>
                     {t('annual_savings')}
                   </span>
                 </button>

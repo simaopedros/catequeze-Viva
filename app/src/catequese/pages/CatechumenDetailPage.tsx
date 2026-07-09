@@ -658,7 +658,7 @@ export default function CatechumenDetailPage() {
             </h3>
             {profile.enrollments.length > 1 && (
               <select
-                className="w-full rounded-lg border bg-background px-3 py-2 text-sm mb-3"
+                className="w-full rounded-sm border border-border/70 bg-white px-3 py-2 text-sm mb-3"
                 value={selectedAnalysisClassId || ''}
                 onChange={(e) => setSelectedAnalysisClassId(e.target.value || null)}
               >

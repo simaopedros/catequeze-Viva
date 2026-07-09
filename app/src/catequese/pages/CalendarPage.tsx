@@ -291,8 +291,8 @@ export default function CalendarPage() {
               className="absolute inset-0 bg-black/40 -sm transition-opacity"
               onClick={() => setMobilePanelOpen(false)}
             />
-            <div className="relative z-10 w-full max-h-[75vh] overflow-y-auto rounded-t-2xl border-t bg-card animate-in slide-in-from-bottom-5 duration-300 motion-reduce:animate-none">
-              <div className="sticky top-0 z-10 flex items-center justify-between p-4 border-b bg-card/95 -sm rounded-t-2xl">
+            <div className="relative z-10 max-h-[75vh] w-full overflow-y-auto rounded-t-sm border-t border-border/70 bg-white animate-in slide-in-from-bottom-5 duration-300 motion-reduce:animate-none">
+              <div className="sticky top-0 z-10 flex items-center justify-between rounded-t-sm border-b border-border/70 bg-white p-4">
                 <h3 className="font-semibold text-sm flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
                   {t('day_title', { day: selectedDay, month: months[month] })}

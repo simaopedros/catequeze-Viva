@@ -261,7 +261,7 @@ export function ChatView({
                         'relative rounded-sm px-3.5 py-2 text-sm',
                         isMe
                           ? 'bg-primary text-primary-foreground rounded-br-md'
-                          : 'bg-card border rounded-bl-md',
+                          : 'rounded-bl-md border border-border/70 bg-white',
                         'animate-in slide-in-from-bottom-1 duration-200'
                       )}
                     >

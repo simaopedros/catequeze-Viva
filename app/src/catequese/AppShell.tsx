@@ -136,14 +136,14 @@ export function AppShell({ children }: AppShellProps) {
               className="fixed inset-0 z-modal bg-black/50 backdrop-blur-sm lg:hidden"
               onClick={() => setMobileMenuOpen(false)}
             />
-            <nav className="fixed inset-y-0 left-0 z-[501] w-64 bg-card  overflow-y-auto lg:hidden animate-in slide-in-from-left-5 duration-200">
+            <nav className="fixed inset-y-0 left-0 z-[501] w-64 overflow-y-auto border-r border-border/70 bg-white lg:hidden animate-in slide-in-from-left-5 duration-200">
               <Sidebar />
             </nav>
           </>
         )}
 
         <div className="flex flex-1 flex-col overflow-hidden">
-          <ErrorBoundary fallback={<div className="flex h-14 items-center border-b bg-card  px-4" />}>
+          <ErrorBoundary fallback={<div className="flex h-14 items-center border-b border-border/70 bg-white  px-4" />}>
             <TopBar onMenuToggle={handleMenuToggle} />
           </ErrorBoundary>
           <ProductTrialBanner />

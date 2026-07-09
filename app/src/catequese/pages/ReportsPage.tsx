@@ -168,14 +168,14 @@ export default function ReportsPage() {
             )}
 
             <div className="rounded-sm border border-border/70 bg-white">
-              <div className="p-4 border-b font-medium flex items-center gap-2"><BarChart3 className="h-4 w-4"/>{t('attendance_by_class')}</div>
+              <div className="flex items-center gap-2 border-b border-border/70 p-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground"><BarChart3 className="h-4 w-4"/>{t('attendance_by_class')}</div>
               {!classReports.length?<EmptyState icon={BarChart3} title={t('no_classes')} description={t('no_classes_desc')} compact />:
                 <div className="divide-y">{classReports.map((r:any)=>(     
                   <div key={r.id} className="p-4 flex items-center justify-between">
                     <div className="flex-1"><p className="font-medium text-sm">{r.name}</p><p className="text-xs text-muted-foreground">{t('enrolled_meetings', { enrolled: r.totalEnrolled, meetings: r.totalMeetings })}</p></div>
                     <div className="flex items-center gap-3">
-                      <span className="text-sm font-bold w-10 text-right">{r.attendanceRate}%</span>
-                      <div className="w-28 bg-muted rounded-full h-2.5"><div className={`h-2.5 rounded-full ${r.attendanceRate>=70?'bg-success':r.attendanceRate>=40?'bg-warning':'bg-destructive'}`} style={{width:r.attendanceRate+'%'}}/></div>
+                      <span className="w-10 text-right text-sm font-semibold tabular-nums">{r.attendanceRate}%</span>
+                      <div className="h-1.5 w-28 rounded-sm bg-muted"><div className={`h-1.5 rounded-sm ${r.attendanceRate>=70?'bg-success':r.attendanceRate>=40?'bg-warning':'bg-destructive'}`} style={{width:r.attendanceRate+'%'}}/></div>
                       <span className="text-xs text-muted-foreground w-16 text-right">{t('present_absent', { present: r.presentCount, absent: r.absentCount })}</span>
                     </div>
                   </div>
@@ -186,18 +186,18 @@ export default function ReportsPage() {
 
         {tab==='ranking'&&(
           <div className="rounded-sm border border-border/70 bg-white">
-            <div className="p-4 border-b font-medium flex items-center gap-2 bg-warning/10"><Trophy className="h-4 w-4 text-warning"/>{t('ranking_title')}</div>
+            <div className="flex items-center gap-2 border-b border-border/70 bg-muted/20 p-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground"><Trophy className="h-4 w-4 text-warning"/>{t('ranking_title')}</div>
             {!classReports.length?<EmptyState icon={Trophy} title={t('no_data')} description={t('no_frequency_data')} compact />:
               <div className="divide-y">
                 {[...classReports].sort((a:any,b:any)=>b.attendanceRate-a.attendanceRate).map((r:any,i:number)=>(
-                  <div key={r.id} className={`p-4 flex items-center justify-between ${i===0?'bg-warning/10':i===1?'bg-muted/50':i===2?'bg-warning/5':''}`}>
+                  <div key={r.id} className={`p-4 flex items-center justify-between ${i===0?'bg-muted/40':i===1?'bg-muted/20':i===2?'bg-muted/10':''}`}>
                     <div className="flex items-center gap-3">
-                      <span className={`text-lg font-bold w-8 text-center ${i===0?'text-warning':i===1?'text-muted-foreground':i===2?'text-warning/70':'text-muted-foreground'}`}>{i===0?'🥇':i===1?'🥈':i===2?'🥉':`#${i+1}`}</span>
+                      <span className={`w-8 text-center text-lg font-semibold tabular-nums ${i < 3 ? 'text-foreground' : 'text-muted-foreground'}`}>{i===0?'🥇':i===1?'🥈':i===2?'🥉':`#${i+1}`}</span>
                       <div><p className="font-medium text-sm">{r.name}</p><p className="text-xs text-muted-foreground">{r.totalEnrolled} {tc('enrolled')}</p></div>    
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-lg font-bold">{r.attendanceRate}%</span>
-                      <div className="w-24 bg-muted rounded-full h-2.5"><div className={`h-2.5 rounded-full ${r.attendanceRate>=80?'bg-warning':r.attendanceRate>=60?'bg-success':'bg-destructive'}`} style={{width:r.attendanceRate+'%'}}/></div>
+                      <span className="text-lg font-semibold tabular-nums">{r.attendanceRate}%</span>
+                      <div className="h-1.5 w-24 rounded-sm bg-muted"><div className={`h-1.5 rounded-sm ${r.attendanceRate>=80?'bg-warning':r.attendanceRate>=60?'bg-success':'bg-destructive'}`} style={{width:r.attendanceRate+'%'}}/></div>
                     </div>
                   </div>
                 ))}

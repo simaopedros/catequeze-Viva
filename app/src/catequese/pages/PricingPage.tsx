@@ -239,13 +239,13 @@ export default function PricingPage() {
               <PiggyBank className="h-4 w-4" /> {tp("pricing.annual_savings")}
             </span>
           </div>
-          <div className="inline-flex items-center rounded-lg border bg-muted p-0.5 mt-4">
+          <div className="mt-4 inline-flex items-center rounded-sm border border-border/70 bg-muted/30 p-0.5">
             <button
               type="button"
               onClick={() => setBillingInterval("monthly")}
               className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
                 billingInterval === "monthly"
-                  ? "bg-background text-foreground shadow-sm"
+                  ? "bg-white text-foreground"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -256,7 +256,7 @@ export default function PricingPage() {
               onClick={() => setBillingInterval("annual")}
               className={`px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-1.5 ${
                 billingInterval === "annual"
-                  ? "bg-background text-foreground shadow-sm"
+                  ? "bg-white text-foreground"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >

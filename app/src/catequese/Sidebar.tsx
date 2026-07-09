@@ -89,7 +89,7 @@ function NavItemLink({ item, collapsed, badge }: NavItemProps & { badge?: number
         </span>
       )}
       {collapsed && badge !== undefined && badge > 0 && (
-        <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary ring-2 ring-background animate-pulse" />
+        <span className="absolute right-1 top-1 h-2 w-2 rounded-sm bg-[#D39A2B] ring-2 ring-background" />
       )}
     </NavLink>
   );
@@ -208,7 +208,7 @@ export function Sidebar() {
                   onClick={() => toggleSection(section.section)}
                   className="flex w-full items-center justify-between mb-0.5 px-2.5 py-1 rounded-md hover:bg-accent/50 transition-colors"
                 >
-                  <p className="text-overline font-bold text-text-tertiary uppercase select-none">
+                  <p className="select-none text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     {t('moreSection')}
                   </p>
                   <ChevronDown

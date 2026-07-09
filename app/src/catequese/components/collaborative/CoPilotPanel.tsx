@@ -23,7 +23,7 @@ export function CoPilotPanel() {
   return (
     <div className="flex h-full flex-col bg-card">
       {/* Header */}
-      <div className="border-b bg-card-subtle/60 px-3 py-2 shrink-0">
+      <div className="border-b border-border/70 bg-white-subtle/60 px-3 py-2 shrink-0">
         <div className="mb-2 flex items-center justify-between gap-2">
           <div className="min-w-0">
             <p className="truncate text-xs font-semibold text-foreground">

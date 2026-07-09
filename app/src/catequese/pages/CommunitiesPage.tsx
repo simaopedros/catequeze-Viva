@@ -142,7 +142,7 @@ export default function CommunitiesPage() {
                 onEdit={startEdit}
                 isEditing={editingId === c.id}
                 editForm={
-                  <div className="rounded-lg border bg-card p-4 space-y-3">
+                  <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3">
                     <h3 className="font-semibold text-sm">{tp('edit_community')}</h3>
                     <div className="grid gap-3 sm:grid-cols-2">
                       <div className="sm:col-span-2"><label className="text-xs font-medium text-muted-foreground">{tp('name')} *</label><input value={editFields.name} onChange={e => updateEditField('name', e.target.value)} className={inputClass} autoFocus /></div>

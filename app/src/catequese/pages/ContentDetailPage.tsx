@@ -205,7 +205,7 @@ export default function ContentDetailPage() {
               {activities.map((activity: any) => {
                 const data = parseData(activity.data);
                 return (
-                  <div key={activity.id} className="flex items-center justify-between rounded-lg border bg-card p-4 transition-colors hover:bg-muted/30">
+                  <div key={activity.id} className="flex items-center justify-between rounded-sm border border-border/70 bg-white p-4 transition-colors hover:bg-muted/30">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-medium">{activity.title}</p>

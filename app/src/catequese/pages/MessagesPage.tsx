@@ -313,7 +313,7 @@ export default function MessagesPage() {
                     </p>
                     <button
                       onClick={() => activeConversationId && loadConversation(activeConversationId)}
-                      className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90"
+                      className="rounded-sm bg-[#071A2D] px-4 py-2 text-sm font-medium text-white hover:bg-[#0a2540]"
                     >
                       {tc('try_again')}
                     </button>
@@ -356,12 +356,14 @@ export default function MessagesPage() {
             </>
           ) : (
             /* Empty state */
-            <div className="flex-1 flex flex-col items-center justify-center text-center px-6 py-8">
-              <div className="h-20 w-20 rounded-sm bg-muted/40 flex items-center justify-center mb-5 animate-in zoom-in-50 duration-500">
-                <MessageSquareText className="h-9 w-9 text-primary/60" />
+            <div className="flex flex-1 flex-col items-center justify-center px-6 py-8 text-center">
+              <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-sm border border-border/70 bg-muted/30">
+                <MessageSquareText className="h-7 w-7 text-foreground" />
               </div>
-              <h2 className="text-lg font-semibold mb-1.5">{t('hub_title')}</h2>
-              <p className="text-sm text-muted-foreground max-w-sm mb-5">{t('hub_desc')}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{t('title')}</p>
+              <h2 className="mt-2 text-xl font-semibold tracking-tight text-foreground" style={{ fontFamily: 'var(--font-brand-display)' }}>{t('hub_title')}</h2>
+              <div className="mx-auto mt-2 h-px w-10 bg-[#D39A2B]" aria-hidden />
+              <p className="mt-3 mb-5 max-w-sm text-sm text-muted-foreground">{t('hub_desc')}</p>
 
               {/* Use case examples */}
               <div className="grid gap-2 w-full max-w-xs mb-5">

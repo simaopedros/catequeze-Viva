@@ -59,7 +59,7 @@ export function DocumentUploadModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-card rounded-sm border shadow-xl w-full max-w-md p-6 space-y-4">
+      <div className="rounded-sm border border-border/70 bg-white w-full max-w-md p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold flex items-center gap-2">
             <FilePlus className="h-5 w-5" /> {t('new_document')}
