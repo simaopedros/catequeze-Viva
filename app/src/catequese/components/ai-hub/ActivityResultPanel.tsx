@@ -67,7 +67,7 @@ export function ActivityResultPanel({
               <AppGoldRule />
               <Badge
                 variant="secondary"
-                className="gap-1 rounded-sm border border-border/70 bg-muted/30 font-medium text-foreground"
+                className="gap-1 rounded-sm border border-border/70 bg-muted/30 font-semibold tracking-tight text-[#071A2D]"
               >
                 {typeLabel}
               </Badge>

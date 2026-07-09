@@ -261,7 +261,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                   {stats.recentAlerts.map((a: any, i: number) => (
                     <div
                       key={i}
-                      className="rounded-sm border border-border/70 bg-white px-4 py-3 text-sm text-foreground"
+                      className="rounded-sm border border-border/70 bg-white px-4 py-3 text-sm font-medium tracking-tight text-[#071A2D]"
                     >
                       {a.message}
                     </div>
@@ -329,7 +329,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                       className="flex items-start gap-3 rounded-sm border border-border/70 bg-white px-4 py-3"
                     >
                       <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-                      <p className="text-sm leading-relaxed text-foreground">
+                      <p className="text-sm font-medium leading-relaxed tracking-tight text-[#071A2D]">
                         {a.message}
                       </p>
                     </div>

@@ -55,7 +55,7 @@ export function CreditsPill({
           resolvedVariant === "default" && "text-[#071A2D]",
         )}
       />
-      <span>
+      <span style={{ fontFamily: "var(--font-brand-display)" }}>
         {creditsLeft} {creditsLeft === 1 ? "crédito" : "créditos"}
       </span>
       {monthlyAllowance && resolvedVariant === "low" && (

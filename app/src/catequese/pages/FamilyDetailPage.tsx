@@ -565,31 +565,42 @@ export default function FamilyDetailPage() {
           <div className="grid gap-4 md:grid-cols-2">
             {household.address && (
               <AppPanel className="p-4">
-                <h3 className="mb-1 flex items-center gap-1 text-xs font-medium uppercase text-muted-foreground">
+                <h3 className="mb-1 flex items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                   <MapPin className="h-3 w-3" />
                   {t("address")}
                 </h3>
-                <p className="text-sm">{household.address}</p>
+                <p
+                  className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
+                  {household.address}
+                </p>
               </AppPanel>
             )}
             {household.phone && (
               <AppPanel className="p-4">
-                <h3 className="mb-1 flex items-center gap-1 text-xs font-medium uppercase text-muted-foreground">
+                <h3 className="mb-1 flex items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                   <Phone className="h-3 w-3" />
                   {t("phone")}
                 </h3>
-                <p className="text-sm">{household.phone}</p>
+                <p
+                  className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
+                  {household.phone}
+                </p>
               </AppPanel>
             )}
             {household.community && (
               <div className="rounded-sm border border-border/70 bg-white p-4">
-                <h3 className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-1 mb-1">
+                <h3 className="mb-1 flex items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                   <Building2 className="h-3 w-3" />
                   {t("families.community")}
                 </h3>
                 <Link
                   to={`/app/communities/${household.community.id}`}
-                  className="text-sm text-[#071A2D] hover:underline"
+                  className="text-sm font-semibold tracking-tight text-[#071A2D] hover:underline"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
                 >
                   {household.community.name}
                 </Link>

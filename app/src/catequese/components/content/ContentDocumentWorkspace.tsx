@@ -134,7 +134,7 @@ function ReferencesSidebar({
           </div>
           <Badge
             variant="secondary"
-            className="rounded-sm border border-border/70 bg-muted/30 px-2.5 py-0.5 text-xs font-medium text-foreground"
+            className="rounded-sm border border-border/70 bg-muted/30 px-2.5 py-0.5 text-xs font-semibold tracking-tight text-[#071A2D]"
           >
             {bibleRefs.length + catechismRefs.length + directoryRefs.length}
           </Badge>

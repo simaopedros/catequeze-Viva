@@ -256,7 +256,7 @@ export default function DirectoryPage() {
       ) : (
         <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
           <div className="mb-4 rounded-sm border border-border/70 bg-muted/30 p-3">
-            <BookOpen className="h-8 w-8 text-foreground" />
+            <BookOpen className="h-8 w-8 text-[#071A2D]" />
           </div>
           <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
             {t("directory.emptyTitle")}

@@ -65,19 +65,22 @@ export function CommunityCard({
               {address}
             </p>
           )}
-          <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1">
+          <div className="mt-2 flex items-center gap-3 text-xs">
+            <span
+              className="flex items-center gap-1 font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
               <Users className="h-3 w-3" />
               {c._count?.memberships || 0} membros
             </span>
             {c.phone && (
-              <span className="flex items-center gap-1">
+              <span className="flex items-center gap-1 text-muted-foreground">
                 <Phone className="h-3 w-3" />
                 {c.phone}
               </span>
             )}
             {c.email && (
-              <span className="flex items-center gap-1">
+              <span className="flex items-center gap-1 text-muted-foreground">
                 <Mail className="h-3 w-3" />
                 {c.email}
               </span>
@@ -114,9 +117,12 @@ export function CommunityCard({
           )}
           <div className="grid gap-1 sm:grid-cols-2">
             {c.coordinatorName && (
-              <div className="flex items-center gap-1 text-muted-foreground">
-                <User className="h-3 w-3" />
-                <span>
+              <div className="flex items-center gap-1 text-[#071A2D]">
+                <User className="h-3 w-3 shrink-0" />
+                <span
+                  className="font-semibold tracking-tight"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
                   Resp.: {c.coordinatorName}
                   {c.coordinatorPhone ? ` (${c.coordinatorPhone})` : ""}
                 </span>

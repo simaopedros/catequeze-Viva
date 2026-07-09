@@ -297,9 +297,9 @@ export function ConversationList({
                   <div className="flex items-center justify-between gap-1 mt-0.5">
                     <p
                       className={cn(
-                        "text-xs truncate",
+                        "truncate text-xs",
                         conv.unreadCount > 0
-                          ? "text-foreground font-medium"
+                          ? "font-medium text-[#071A2D]"
                           : "text-muted-foreground",
                       )}
                     >

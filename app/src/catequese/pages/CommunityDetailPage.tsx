@@ -154,7 +154,10 @@ export default function CommunityDetailPage() {
               <MapPin className="h-3 w-3" />
               {t("address")}
             </h3>
-            <p className="text-sm">
+            <p
+              className="text-sm font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
               {community.street}
               {community.number ? `, ${community.number}` : ""}
             </p>
@@ -169,7 +172,12 @@ export default function CommunityDetailPage() {
               <Phone className="h-3 w-3" />
               {tp("contact")}
             </h3>
-            <p className="text-sm">{community.phone}</p>
+            <p
+              className="text-sm font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
+              {community.phone}
+            </p>
             {community.email && (
               <p className="text-xs text-muted-foreground">{community.email}</p>
             )}
@@ -180,7 +188,10 @@ export default function CommunityDetailPage() {
             <Building2 className="h-3 w-3" />
             {tp("summary")}
           </h3>
-          <p className="text-sm">
+          <p
+            className="text-sm font-semibold tracking-tight text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
             {tp("summary_counts", {
               classes: classes.length,
               families: households.length,

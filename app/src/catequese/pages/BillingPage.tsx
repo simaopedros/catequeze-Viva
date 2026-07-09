@@ -1378,7 +1378,7 @@ export default function BillingPage() {
                       "rounded-sm px-2 py-0.5 text-[11px] font-semibold",
                       billingInterval === "annual"
                         ? "bg-white/15 text-[#F4CF7A]"
-                        : "border border-border/70 bg-muted/30 text-foreground",
+                        : "border border-border/70 bg-muted/30 text-[#071A2D]",
                     )}
                   >
                     {t("annual_savings")}

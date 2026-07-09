@@ -354,8 +354,8 @@ export default function WorkspaceSelectorPage() {
                   className="group w-full cursor-pointer rounded-sm border border-border/70 bg-white p-5 text-left transition-colors hover:border-[#071A2D]/30"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-foreground">
-                      <User className="h-6 w-6 text-foreground" />
+                    <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-[#071A2D]">
+                      <User className="h-6 w-6 text-[#071A2D]" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p
@@ -368,7 +368,7 @@ export default function WorkspaceSelectorPage() {
                         {personal.subtitle}
                       </p>
                       <div className="flex items-center gap-2 mt-2">
-                        <span className="text-xs px-2 py-0.5 rounded-sm border border-border/70 bg-muted/30 text-foreground font-medium">
+                        <span className="rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5 text-xs font-semibold tracking-tight text-[#071A2D]">
                           {planLabel(personal.plan, t)}
                         </span>
                         <span className="text-xs text-muted-foreground">

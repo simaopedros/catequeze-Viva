@@ -163,7 +163,7 @@ export default function TwoFactorSetup() {
         </div>
       )}
       {success && (
-        <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-sm text-foreground">
+        <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-sm font-medium tracking-tight text-[#071A2D]">
           {success}
         </div>
       )}
