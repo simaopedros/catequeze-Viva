@@ -10,13 +10,14 @@ import { toast } from '../../client/hooks/use-toast';
 import { useLocale } from '../../i18n/useLocale';
 import { formatDate } from '../../i18n/format';
 import { ConfirmDialog } from '../../client/components/ConfirmDialog';
+import { AppPageHeader } from '../../client/components/brand/AppChrome';
 
 const STATUS_KEYS = ['PRESENT', 'LATE', 'ABSENT', 'JUSTIFIED'] as const;
 const STATUS_COLORS: Record<string, string> = {
-  PRESENT: 'bg-emerald-100 text-emerald-700 border-emerald-300 hover:bg-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800 dark:hover:bg-emerald-950',
-  LATE: 'bg-amber-100 text-amber-700 border-amber-300 hover:bg-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800 dark:hover:bg-amber-950',
-  ABSENT: 'bg-red-100 text-red-700 border-red-300 hover:bg-red-200 dark:bg-red-950/40 dark:text-red-400 dark:border-red-800 dark:hover:bg-red-950',
-  JUSTIFIED: 'bg-purple-100 text-purple-700 border-purple-300 hover:bg-purple-200 dark:bg-purple-950/40 dark:text-purple-400 dark:border-purple-800 dark:hover:bg-purple-950',
+  PRESENT: 'border-[#071A2D]/25 bg-[#071A2D]/08 text-[#071A2D] hover:bg-[#071A2D]/12',
+  LATE: 'border-[#D39A2B]/40 bg-[#D39A2B]/12 text-[#8A6418] hover:bg-[#D39A2B]/18',
+  ABSENT: 'border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/15',
+  JUSTIFIED: 'border-border/70 bg-muted/50 text-muted-foreground hover:bg-muted',
 };
 const STATUS_ICONS: Record<string, ReactNode> = {
   PRESENT: <Check className="h-3 w-3" />,
@@ -265,22 +266,24 @@ export default function AttendancePage() {
   return (
     <>
       <div className="space-y-6">
-        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border/70 pb-6">
-          <div className="flex items-start gap-3">
-            <Button variant="ghost" size="icon" className="rounded-sm" asChild><Link to={`/app/classes/${classId}`}><ArrowLeft className="h-5 w-5" /></Link></Button>
-            <div className="space-y-2">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{t('matrix.eyebrow', { defaultValue: 'Presença' })}</p>
-              <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]" style={{ fontFamily: 'var(--font-brand-display)' }}>{t('matrix.title')}</h1>
-              <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
-              <p className="text-sm text-muted-foreground">
-                {t('matrix.subtitle', {
-                  catechumens: tcl('catechumens_count', { count: catechumens.length }),
-                  meetings: t('matrix.meetings_count', { count: meetings.length }),
-                })}
-              </p>
-            </div>
-          </div>
-          <Button className="h-10 rounded-sm shadow-none" onClick={() => setShowNew(!showNew)}><Plus className="mr-2 h-4 w-4" />{t('matrix.new_meeting')}</Button>
+        <div className="flex items-start gap-3 border-b border-border/70 pb-6">
+          <Button variant="ghost" size="icon" className="mt-1 shrink-0 rounded-sm" asChild>
+            <Link to={`/app/classes/${classId}`}><ArrowLeft className="h-5 w-5" /></Link>
+          </Button>
+          <AppPageHeader
+            className="min-w-0 flex-1 border-0 pb-0"
+            eyebrow={t('matrix.eyebrow', { defaultValue: 'Presença' })}
+            title={t('matrix.title')}
+            subtitle={t('matrix.subtitle', {
+              catechumens: tcl('catechumens_count', { count: catechumens.length }),
+              meetings: t('matrix.meetings_count', { count: meetings.length }),
+            })}
+            actions={
+              <Button className="h-10 rounded-sm shadow-none" onClick={() => setShowNew(!showNew)}>
+                <Plus className="mr-2 h-4 w-4" />{t('matrix.new_meeting')}
+              </Button>
+            }
+          />
         </div>
 
         {showNew && (

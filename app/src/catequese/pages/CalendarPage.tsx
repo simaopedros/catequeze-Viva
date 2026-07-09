@@ -672,7 +672,7 @@ function SidePanelContent({
               <div className="flex gap-0.5 flex-shrink-0 ml-2">
                 <button
                   onClick={() => exportICS(e)}
-                  className="text-muted-foreground hover:text-[#071A2D] p-1.5 rounded-md hover:bg-muted transition-colors"
+                  className="text-muted-foreground hover:text-[#071A2D] p-1.5 rounded-sm hover:bg-muted transition-colors"
                   aria-label="Exportar .ics"
                 >
                   <Download className="h-3.5 w-3.5" />
@@ -680,7 +680,7 @@ function SidePanelContent({
                 {e.type !== 'class' && (
                   <button
                     onClick={() => handleDelete(e.id)}
-                    className="text-muted-foreground hover:text-destructive p-1.5 rounded-md hover:bg-destructive/10 transition-colors"
+                    className="text-muted-foreground hover:text-destructive p-1.5 rounded-sm hover:bg-destructive/10 transition-colors"
                     aria-label="Excluir evento"
                   >
                     <Trash2 className="h-3.5 w-3.5" />

@@ -243,7 +243,7 @@ export default function PricingPage() {
             <button
               type="button"
               onClick={() => setBillingInterval("monthly")}
-              className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
+              className={`px-4 py-2 text-sm font-medium rounded-sm transition-all ${
                 billingInterval === "monthly"
                   ? "bg-white text-foreground"
                   : "text-muted-foreground hover:text-foreground"
@@ -254,7 +254,7 @@ export default function PricingPage() {
             <button
               type="button"
               onClick={() => setBillingInterval("annual")}
-              className={`px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-1.5 ${
+              className={`px-4 py-2 text-sm font-medium rounded-sm transition-all flex items-center gap-1.5 ${
                 billingInterval === "annual"
                   ? "bg-white text-foreground"
                   : "text-muted-foreground hover:text-foreground"

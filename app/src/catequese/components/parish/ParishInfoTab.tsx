@@ -10,8 +10,8 @@ const PLAN_KEYS: Record<string, string> = {
 };
 
 const STATUS_KEYS: Record<string, { key: string; color: string }> = {
-  ACTIVE: { key: 'active', color: 'bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-400' },
-  TRIAL: { key: 'trial', color: 'bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400' },
+  ACTIVE: { key: 'active', color: 'bg-[#071A2D]/08 text-[#071A2D]' },
+  TRIAL: { key: 'trial', color: 'bg-[#D39A2B]/15 text-[#8A6418]' },
   PAST_DUE: { key: 'past_due', color: 'bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400' },
   CANCELED: { key: 'canceled', color: 'bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-zinc-400' },
 };
@@ -79,7 +79,7 @@ export function ParishInfoTab({
         <div><span className="text-muted-foreground">{tp('name')}:</span> {parish?.name}</div>
         <div><span className="text-muted-foreground">{tp('city')}:</span> {parish?.city || '\u2014'}</div>
         <div><span className="text-muted-foreground">{tp('state')}:</span> {parish?.state || '\u2014'}</div>
-        <div><span className="text-muted-foreground">{tp('status')}:</span>{' '}<span className={'inline-flex items-center rounded-sm border border-border/70 px-2 py-0.5 text-xs font-medium ' + (parish?.active !== false ? 'bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-zinc-400')}>{parish?.active !== false ? tp('active') : tp('inactive')}</span></div>
+        <div><span className="text-muted-foreground">{tp('status')}:</span>{' '}<span className={'inline-flex items-center rounded-sm border border-border/70 px-2 py-0.5 text-xs font-medium ' + (parish?.active !== false ? 'bg-[#071A2D]/08 text-[#071A2D]' : 'bg-muted text-muted-foreground')}>{parish?.active !== false ? tp('active') : tp('inactive')}</span></div>
         {parish?.diocese && <div><span className="text-muted-foreground">{tp('diocese')}:</span> {parish.diocese.name}</div>}
         <div className="flex items-center gap-1"><span className="text-muted-foreground">{tp('locale_label')}:</span> {parish?.locale || 'pt-BR'}</div>
         <div className="flex items-center gap-1"><span className="text-muted-foreground">{tp('timezone_label')}:</span> {parish?.timezone || 'America/Sao_Paulo'}</div>

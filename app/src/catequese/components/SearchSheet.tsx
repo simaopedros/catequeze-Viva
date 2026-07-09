@@ -129,7 +129,7 @@ export function SearchSheet({
                 const Icon = MODULE_ICONS[module] || Search;
                 return (
                   <div key={module}>
-                    <div className="flex items-center gap-2 px-3 py-1.5 text-overline font-semibold uppercase tracking-wider text-text-tertiary bg-muted/50 rounded-md">
+                    <div className="flex items-center gap-2 px-3 py-1.5 text-overline font-semibold uppercase tracking-wider text-text-tertiary bg-muted/50 rounded-sm">
                       <Icon className="h-3 w-3" />
                       {getModuleLabel(module)}
                     </div>
@@ -141,7 +141,7 @@ export function SearchSheet({
                           key={`${item.type}-${item.id}`}
                           onClick={() => handleSelect(item.route)}
                           className={cn(
-                            'w-full text-left px-3 py-2.5 flex items-start gap-3 rounded-md transition-colors',
+                            'w-full text-left px-3 py-2.5 flex items-start gap-3 rounded-sm transition-colors',
                             isSelected ? 'bg-accent' : 'hover:bg-muted/50'
                           )}
                         >

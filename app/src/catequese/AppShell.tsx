@@ -125,7 +125,7 @@ export function AppShell({ children }: AppShellProps) {
   return (
     <TwoFactorGate>
       <ShellBase variant="app">
-        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-overlay focus:px-4 focus:py-2 focus:bg-[#071A2D] focus:text-white focus:rounded-md">
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-overlay focus:px-4 focus:py-2 focus:bg-[#071A2D] focus:text-white focus:rounded-sm">
           {t('skip_to_content')}
         </a>
         <div className="hidden lg:block flex-shrink-0"><Sidebar /></div>

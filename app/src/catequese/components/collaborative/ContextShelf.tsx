@@ -9,9 +9,9 @@ import { Search, X, BookOpen, Church, ScrollText, Loader2 } from 'lucide-react'
 import { searchBible, searchCatechism } from 'wasp/client/operations'
 
 const TYPE_CONFIG: Record<string, { labelKey: string; icon: typeof BookOpen; color: string }> = {
-  BIBLE_REF: { labelKey: 'context.bible', icon: BookOpen, color: 'bg-blue-100 text-blue-700' },
-  CATECHISM_REF: { labelKey: 'context.catechism', icon: Church, color: 'bg-amber-100 text-amber-700' },
-  DIRECTORY_REF: { labelKey: 'context.directory', icon: ScrollText, color: 'bg-green-100 text-green-700' },
+  BIBLE_REF: { labelKey: 'context.bible', icon: BookOpen, color: 'bg-[#D39A2B]/15 text-[#8A6418]' },
+  CATECHISM_REF: { labelKey: 'context.catechism', icon: Church, color: 'bg-[#071A2D]/08 text-[#071A2D]' },
+  DIRECTORY_REF: { labelKey: 'context.directory', icon: ScrollText, color: 'bg-muted text-foreground' },
   TEXT: { labelKey: 'context.text', icon: ScrollText, color: 'bg-muted text-foreground' },
 }
 

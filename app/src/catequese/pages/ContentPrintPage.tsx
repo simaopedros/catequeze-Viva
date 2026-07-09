@@ -224,7 +224,7 @@ export default function ContentPrintPage() {
                   {catechismRefs.map((ref: any) => (
                     <div
                       key={ref.id}
-                      className="print-reference-card rounded-sm border border-sky-200 bg-sky-50/60 p-4"
+                      className="print-reference-card rounded-sm border border-border/70 bg-muted/30 p-4"
                     >
                       <div className="mb-2 text-sm font-semibold text-sky-900">
                         {ref.label}

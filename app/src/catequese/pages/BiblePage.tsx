@@ -620,7 +620,7 @@ export default function BiblePage() {
               <button
                 key={ch.id}
                 onClick={() => loadChapter(selectedBook.id, ch.number)}
-                className={`px-2 py-2 text-sm rounded-md border transition-colors text-center ${
+                className={`px-2 py-2 text-sm rounded-sm border transition-colors text-center ${
                   ch.number === selectedChapter
                     ? 'border-[#071A2D] bg-muted/30 font-medium'
                     : 'hover:border-[#071A2D]/30 hover:bg-muted/20'

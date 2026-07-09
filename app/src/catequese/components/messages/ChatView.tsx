@@ -261,8 +261,7 @@ export function ChatView({
                         'relative rounded-sm px-3.5 py-2 text-sm',
                         isMe
                           ? 'rounded-br-sm bg-[#071A2D] text-white'
-                          : 'rounded-bl-md border border-border/70 bg-white',
-                        'animate-in slide-in-from-bottom-1 duration-200'
+                          : 'rounded-bl-sm border border-border/70 bg-white',
                       )}
                     >
                       <p className="whitespace-pre-wrap break-words leading-relaxed">{msg.content}</p>

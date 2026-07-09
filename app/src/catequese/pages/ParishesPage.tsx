@@ -19,8 +19,8 @@ const PLAN_KEYS: Record<string, string> = {
 };
 
 const STATUS_KEYS: Record<string, { key: string; color: string }> = {
-  ACTIVE: { key: 'active', color: 'bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-400' },
-  TRIAL: { key: 'trial', color: 'bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400' },
+  ACTIVE: { key: 'active', color: 'bg-[#071A2D]/08 text-[#071A2D]' },
+  TRIAL: { key: 'trial', color: 'bg-[#D39A2B]/15 text-[#8A6418]' },
   PAST_DUE: { key: 'past_due', color: 'bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400' },
   CANCELED: { key: 'canceled', color: 'bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-zinc-400' },
 };

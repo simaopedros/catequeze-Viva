@@ -46,10 +46,10 @@ import {
 import { toast } from '../../../client/hooks/use-toast'
 
 const RECENT_THUMBNAIL_STYLES = [
-  'bg-amber-100 text-amber-700',
-  'bg-sky-100 text-sky-700',
-  'bg-emerald-100 text-emerald-700',
-  'bg-rose-100 text-rose-700',
+  'bg-[#071A2D]/08 text-[#071A2D]',
+  'bg-[#D39A2B]/15 text-[#8A6418]',
+  'bg-muted text-foreground',
+  'bg-muted/70 text-muted-foreground',
 ]
 
 type ReferenceTab = 'bible' | 'catechism' | 'directory'

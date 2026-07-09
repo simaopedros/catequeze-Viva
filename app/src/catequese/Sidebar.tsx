@@ -206,7 +206,7 @@ export function Sidebar() {
               {!collapsed ? (
                 <button
                   onClick={() => toggleSection(section.section)}
-                  className="flex w-full items-center justify-between mb-0.5 px-2.5 py-1 rounded-md hover:bg-accent/50 transition-colors"
+                  className="flex w-full items-center justify-between mb-0.5 px-2.5 py-1 rounded-sm hover:bg-accent/50 transition-colors"
                 >
                   <p className="select-none text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     {t('moreSection')}

@@ -116,7 +116,7 @@ export default function CatechismPage() {
               <button
                 key={key}
                 onClick={() => loadCategory(key)}
-                className={'px-3 py-1.5 text-sm rounded-md transition-colors ' + (category === key ? 'bg-[#071A2D] text-white' : 'bg-muted hover:bg-muted/70')}
+                className={'px-3 py-1.5 text-sm rounded-sm transition-colors ' + (category === key ? 'bg-[#071A2D] text-white' : 'bg-muted hover:bg-muted/70')}
               >
                 {t(`categories.${key}`)}
               </button>

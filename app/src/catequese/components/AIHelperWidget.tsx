@@ -271,14 +271,14 @@ export function AIHelperWidget() {
                     <div className="flex gap-1 mt-1.5 pt-1.5 border-t border-border/50">
                       <button
                         onClick={() => submitAiFeedback({ prompt: m.prompt || '', response: m.content, rating: 'thumbs_up' })}
-                        className="p-0.5 rounded hover:bg-green-100 text-muted-foreground hover:text-green-600 transition-colors"
+                        className="rounded-sm p-0.5 text-muted-foreground transition-colors hover:bg-muted hover:text-[#071A2D]"
                         title={t("ai_helper_useful")}
                       >
                         <ThumbsUp className="h-3 w-3" />
                       </button>
                       <button
                         onClick={() => submitAiFeedback({ prompt: m.prompt || '', response: m.content, rating: 'thumbs_down' })}
-                        className="p-0.5 rounded hover:bg-red-100 text-muted-foreground hover:text-red-600 transition-colors"
+                        className="rounded-sm p-0.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                         title={t("ai_helper_not_useful")}
                       >
                         <ThumbsDown className="h-3 w-3" />

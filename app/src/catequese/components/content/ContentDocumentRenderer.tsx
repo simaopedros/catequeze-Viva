@@ -10,13 +10,13 @@ import type {
 function getReferenceMarkClass(refType?: string) {
   switch (refType) {
     case "bible":
-      return "rounded bg-amber-100/80 px-0.5 underline decoration-dotted underline-offset-4 decoration-amber-600/80";
+      return "rounded-sm bg-[#D39A2B]/15 px-0.5 underline decoration-dotted underline-offset-4 decoration-[#D39A2B]/80";
     case "catechism":
-      return "rounded bg-sky-100/80 px-0.5 underline decoration-dotted underline-offset-4 decoration-sky-600/80";
+      return "rounded-sm bg-[#071A2D]/08 px-0.5 underline decoration-dotted underline-offset-4 decoration-[#071A2D]/60";
     case "directory":
-      return "rounded bg-emerald-100/80 px-0.5 underline decoration-dotted underline-offset-4 decoration-emerald-600/80";
+      return "rounded-sm bg-muted/70 px-0.5 underline decoration-dotted underline-offset-4 decoration-muted-foreground/70";
     default:
-      return "rounded bg-muted/60 px-0.5 underline decoration-dotted underline-offset-4";
+      return "rounded-sm bg-muted/60 px-0.5 underline decoration-dotted underline-offset-4";
   }
 }
 
