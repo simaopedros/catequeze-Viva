@@ -49,26 +49,33 @@ export function EmptyState({
     return (
       <div className={cn('flex flex-col items-center justify-center py-12 text-center', className)}>
         {Icon && (
-          <div className="mb-3 rounded-full bg-muted p-3">
-            <Icon className="h-5 w-5 text-muted-foreground/70" />
+          <div className="mb-3 rounded-sm border border-border/70 bg-muted/30 p-3">
+            <Icon className="h-5 w-5 text-muted-foreground" />
           </div>
         )}
-        <p className="text-body-sm font-medium text-foreground/80">{title}</p>
-        {description && <p className="text-body-xs mt-1 max-w-sm text-text-secondary">{description}</p>}
+        <p className="text-body-sm font-medium text-foreground">{title}</p>
+        {description && <p className="text-body-xs mt-1 max-w-sm text-muted-foreground">{description}</p>}
         {children}
       </div>
     );
   }
 
   return (
-    <div className={cn('flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center ', className)}>
+    <div
+      className={cn(
+        'flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center',
+        className,
+      )}
+    >
       {Icon && (
-        <div className="mb-4 rounded-full bg-primary/5 ring-1 ring-primary/10 p-4">
-          <Icon className="h-8 w-8 text-primary/70" />
+        <div className="mb-4 rounded-sm border border-border/70 bg-muted/30 p-4">
+          <Icon className="h-8 w-8 text-foreground" />
         </div>
       )}
-      <h3 className="text-lg font-semibold">{title}</h3>
-      {description && <p className="mt-1 text-body-sm text-text-secondary max-w-md">{description}</p>}
+      <h3 className="text-lg font-semibold tracking-tight text-foreground">{title}</h3>
+      {description && (
+        <p className="mt-1 max-w-md text-sm leading-relaxed text-muted-foreground">{description}</p>
+      )}
       {children}
     </div>
   );

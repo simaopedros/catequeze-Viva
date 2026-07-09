@@ -137,24 +137,24 @@ export function ActivationChecklist({ stats }: { stats: ActivationStats | null |
               {step.done ? (
                 <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
               ) : (
-                <Circle className="mt-0.5 h-5 w-5 shrink-0 text-slate-300" />
+                <Circle className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground/40" />
               )}
               <span className="min-w-0 flex-1">
                 <span
                   className={cn(
                     'block text-sm font-medium',
-                    step.done ? 'text-slate-500 line-through' : 'text-slate-950'
+                    step.done ? 'text-muted-foreground line-through' : 'text-foreground'
                   )}
                 >
                   {step.title}
                 </span>
                 {!step.done && (
-                  <span className="mt-0.5 block text-xs leading-relaxed text-slate-500">
+                  <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground">
                     {step.description}
                   </span>
                 )}
               </span>
-              {!step.done && <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-slate-400" />}
+              {!step.done && <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" />}
             </Link>
           </li>
         ))}

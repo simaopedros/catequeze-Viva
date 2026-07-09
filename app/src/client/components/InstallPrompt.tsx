@@ -41,7 +41,7 @@ export function InstallPrompt() {
 
   return (
     <div className="fixed bottom-24 left-2 right-2 z-overlay sm:bottom-6 sm:left-auto sm:right-4 sm:max-w-xs animate-in slide-in-from-bottom-5 fade-in duration-300">
-      <div className="flex items-center gap-3 rounded-sm border border-border/70 bg-white p-3 shadow-elevation-lg">
+      <div className="flex items-center gap-3 rounded-sm border border-border/70 bg-white p-3 ">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-primary/10">
           <Download className="h-5 w-5 text-primary" />
         </div>

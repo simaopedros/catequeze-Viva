@@ -49,7 +49,7 @@ export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
     <div ref={containerRef} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="text-foreground hover:text-primary flex items-center h-9 w-9 lg:w-auto justify-center lg:justify-start transition-colors duration-300 ease-in-out rounded-xl lg:rounded-none hover:bg-accent/50 lg:hover:bg-transparent"
+        className="text-foreground hover:text-primary flex items-center h-9 w-9 lg:w-auto justify-center lg:justify-start transition-colors duration-300 ease-in-out rounded-sm lg:rounded-none hover:bg-accent/50 lg:hover:bg-transparent"
       >
         <span className="text-foreground mr-2 hidden text-right text-sm font-medium lg:block">
           {displayName}

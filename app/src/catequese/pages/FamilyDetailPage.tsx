@@ -357,7 +357,7 @@ export default function FamilyDetailPage() {
               <input
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                className="text-2xl font-bold bg-transparent border-b border-input outline-none w-full"
+                className="w-full border-b border-input bg-transparent text-2xl font-semibold tracking-tight text-foreground outline-none"
                 autoFocus
               />
             ) : (

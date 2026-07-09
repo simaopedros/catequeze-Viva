@@ -101,7 +101,7 @@ export function GenerateActivityFlow() {
           {contentTitle && (
             <Card className="p-4">
               <div className="flex items-start gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-foreground">
                   <FileText className="h-4 w-4" />
                 </div>
                 <div className="min-w-0">
@@ -123,11 +123,11 @@ export function GenerateActivityFlow() {
                 <button
                   key={at.value}
                   onClick={() => setActivityType(at.value)}
-                  className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition-all ${
-     activityType === at.value
-      ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
-      : 'border-border hover:border-primary/50'
-     }`}
+                  className={`rounded-sm border px-3 py-2.5 text-sm font-medium transition-colors ${
+                    activityType === at.value
+                      ? 'border-[#071A2D] bg-muted/30 text-foreground'
+                      : 'border-border/70 hover:border-primary/30'
+                  }`}
                 >
                   {t(at.labelKey)}
                 </button>

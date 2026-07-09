@@ -1062,7 +1062,7 @@ export default function BillingPage() {
                   onClick={() => setBillingInterval('monthly')}
                   className={cn(
                     'rounded-sm px-4 py-2 text-sm font-medium transition-all',
-                    billingInterval === 'monthly' ? 'bg-slate-950 text-white' : 'text-muted-foreground hover:text-slate-900'
+                    billingInterval === 'monthly' ? 'bg-[#071A2D] text-white' : 'text-muted-foreground hover:text-foreground'
                   )}
                 >
                   {t('monthly')}
@@ -1072,7 +1072,7 @@ export default function BillingPage() {
                   onClick={() => setBillingInterval('annual')}
                   className={cn(
                     'rounded-sm px-4 py-2 text-sm font-medium transition-all flex items-center gap-2',
-                    billingInterval === 'annual' ? 'bg-slate-950 text-white' : 'text-muted-foreground hover:text-slate-900'
+                    billingInterval === 'annual' ? 'bg-[#071A2D] text-white' : 'text-muted-foreground hover:text-foreground'
                   )}
                 >
                   {t('annual')}
@@ -1095,13 +1095,13 @@ export default function BillingPage() {
                   <div
                     key={plan.planId}
                     className={cn(
-                      'flex flex-col rounded-sm border bg-white/90 p-5   transition-all duration-200 hover:-translate-y-1 hover:shadow-lg',
+                      'flex flex-col rounded-sm border bg-white/90 p-5   transition-all duration-200 hover:border-primary/30',
                       isCurrent
-                        ? 'border-slate-950 ring-1 ring-slate-950/10'
+                        ? 'border-[#071A2D] ring-1 ring-[#071A2D]/10'
                         : (isConversionMode || isUpgradeJourney ? isRecommended : plan.highlight)
                           ? 'border-primary ring-2 ring-primary/15'
                           : 'border-border/70',
-                      isRequested && 'ring-2 ring-accent shadow-lg'
+                      isRequested && 'ring-2 ring-accent'
                     )}
                   >
                     <div className="mb-4 flex items-start justify-between gap-3">

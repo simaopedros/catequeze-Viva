@@ -46,7 +46,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               <AlertTriangle className="h-8 w-8 text-destructive" />
             </div>
             <div className="space-y-2">
-              <h1 className="text-2xl font-bold tracking-tight">{t('error_boundary.title')}</h1>
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">{t('error_boundary.title')}</h1>
               <p className="text-sm text-muted-foreground">{t('error_boundary.description')}</p>
               {this.state.error && (
                 <details className="mt-3 text-left">

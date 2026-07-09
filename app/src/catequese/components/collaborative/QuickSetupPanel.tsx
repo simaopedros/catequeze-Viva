@@ -190,7 +190,7 @@ export function QuickSetupPanel({ mode, applyToOriginal }: { mode: string; apply
     <div className="flex min-h-[80vh] items-center justify-center px-3 py-6">
       <div className="w-full max-w-4xl space-y-6">
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center gap-2 text-2xl font-bold sm:text-3xl">
+          <div className="inline-flex items-center justify-center gap-2 text-2xl font-semibold tracking-tight sm:text-3xl">
             <Sparkles className="h-8 w-8 text-yellow-500" />
             {t(modeLabelKey)}
           </div>

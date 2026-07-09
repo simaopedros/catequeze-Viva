@@ -84,7 +84,7 @@ function NavItemLink({ item, collapsed, badge }: NavItemProps & { badge?: number
         {!collapsed && <span>{t(item.labelKey)}</span>}
       </div>
       {!collapsed && badge !== undefined && badge > 0 && (
-        <span className="h-4.5 min-w-[18px] flex items-center justify-center rounded-full bg-primary text-primary-foreground text-overline font-bold px-1 animate-in zoom-in-50">
+        <span className="h-4.5 min-w-[18px] flex items-center justify-center rounded-sm bg-[#071A2D] text-white text-overline font-semibold px-1">
           {badge > 99 ? '99+' : badge}
         </span>
       )}

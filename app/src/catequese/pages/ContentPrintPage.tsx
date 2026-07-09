@@ -145,7 +145,7 @@ export default function ContentPrintPage() {
           <p className="mb-4 text-xs uppercase tracking-widest text-gray-400">
             {t("print_page.header_badge")}
           </p>
-          <h1 className="mb-2 text-2xl font-bold">{item.title}</h1>
+          <h1 className="mb-2 text-2xl font-semibold tracking-tight">{item.title}</h1>
           {item.theme && (
             <p className="mb-3 text-lg italic text-gray-600">{item.theme}</p>
           )}

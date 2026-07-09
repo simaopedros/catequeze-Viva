@@ -140,7 +140,7 @@ export default function PricingPage() {
         }`}
       >
         {plan.highlight && (
-          <div className="inline-flex items-center gap-1 rounded-full bg-primary text-primary-foreground text-caption font-bold px-3 py-1 mb-3 self-start">
+          <div className="inline-flex items-center gap-1 rounded-sm bg-[#071A2D] text-white text-caption font-semibold px-3 py-1 mb-3 self-start">
             <Star className="h-3 w-3" /> {tp("pricing.most_popular")}
           </div>
         )}
@@ -276,7 +276,7 @@ export default function PricingPage() {
 
         <section className="bg-muted/30 border-t">
           <div className="max-w-3xl mx-auto px-4 py-16">
-            <h2 className="text-2xl font-bold text-center mb-10">
+            <h2 className="text-2xl font-semibold tracking-tight text-center mb-10 text-foreground">
               {tp("pricing.faq_title")}
             </h2>
             <div className="space-y-4">

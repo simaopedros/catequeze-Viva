@@ -279,11 +279,11 @@ Maria,Santos,2014-07-22,Silva Santos`}
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="rounded-lg bg-green-500/10 p-4 text-center">
-                <p className="text-2xl font-bold text-green-600">{results.created}</p>
+                <p className="text-2xl font-semibold tracking-tight tabular-nums text-foreground">{results.created}</p>
                 <p className="text-sm text-green-600">{t('catechumens.import_created')}</p>
               </div>
               <div className="rounded-lg bg-destructive/10 p-4 text-center">
-                <p className="text-2xl font-bold text-destructive">{results.errors}</p>
+                <p className="text-2xl font-semibold tracking-tight tabular-nums text-destructive">{results.errors}</p>
                 <p className="text-sm text-destructive">{t('catechumens.import_errors')}</p>
               </div>
             </div>
