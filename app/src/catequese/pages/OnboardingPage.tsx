@@ -528,7 +528,10 @@ export default function OnboardingPage() {
                     <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       {t("diocese_selected")}
                     </p>
-                    <p className="text-sm font-medium text-foreground">
+                    <p
+                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
                       {diocese.name}
                     </p>
                   </div>

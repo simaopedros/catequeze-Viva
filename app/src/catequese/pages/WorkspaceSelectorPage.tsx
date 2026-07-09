@@ -308,7 +308,7 @@ export default function WorkspaceSelectorPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <p
-                          className="text-lg font-semibold tracking-tight text-foreground"
+                          className="text-lg font-semibold tracking-tight text-[#071A2D]"
                           style={{ fontFamily: "var(--font-brand-display)" }}
                         >
                           {lastUsed.name}
@@ -359,7 +359,7 @@ export default function WorkspaceSelectorPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p
-                        className="text-lg font-semibold tracking-tight text-foreground"
+                        className="text-lg font-semibold tracking-tight text-[#071A2D]"
                         style={{ fontFamily: "var(--font-brand-display)" }}
                       >
                         {personal.name}
@@ -414,7 +414,7 @@ export default function WorkspaceSelectorPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p
-                        className="text-lg font-semibold tracking-tight text-foreground"
+                        className="text-lg font-semibold tracking-tight text-[#071A2D]"
                         style={{ fontFamily: "var(--font-brand-display)" }}
                       >
                         {ws.name}

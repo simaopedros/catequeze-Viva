@@ -837,7 +837,10 @@ export default function BiblePage() {
                   onClick={() => openSearchResult(v)}
                   className="group w-full rounded-sm border border-border/70 p-3 text-left text-sm transition-colors hover:border-[#071A2D]/30 hover:bg-muted/20"
                 >
-                  <p className="font-medium text-xs text-[#071A2D] mb-1 group-hover:underline">
+                  <p
+                    className="mb-1 text-xs font-semibold tracking-tight text-[#071A2D] group-hover:underline"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
                     {v.chapter?.book?.name} {v.chapter?.number}:{v.number}
                   </p>
                   <p className="line-clamp-3">{v.text}</p>
@@ -886,7 +889,12 @@ export default function BiblePage() {
             {!selectedBook && (
               <div className="flex flex-col items-center justify-center py-16 text-center text-muted-foreground gap-4">
                 <BookOpen className="h-12 w-12 opacity-20" />
-                <p className="text-sm font-medium">{t("choose_book")}</p>
+                <p
+                  className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
+                  {t("choose_book")}
+                </p>
                 <p className="text-xs max-w-xs">{t("choose_book_hint")}</p>
 
                 {/* Continue reading CTA */}
@@ -937,7 +945,10 @@ export default function BiblePage() {
             {selectedBook && selectedChapter === null && (
               <div className="flex flex-col items-center justify-center py-16 text-center text-muted-foreground">
                 <BookOpen className="h-12 w-12 mb-4 opacity-20" />
-                <p className="text-sm font-medium">
+                <p
+                  className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
                   {t("choose_chapter", { book: selectedBook.name })}
                 </p>
               </div>

@@ -217,11 +217,14 @@ export default function DirectoryPage() {
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-medium text-foreground">
+                    <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-semibold tracking-tight text-[#071A2D]">
                       §{entry.number}
                     </span>
                     {entry.title && (
-                      <span className="text-sm font-semibold tracking-tight text-foreground">
+                      <span
+                        className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
                         {entry.title}
                       </span>
                     )}

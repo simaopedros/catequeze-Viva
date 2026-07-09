@@ -294,7 +294,7 @@ export default function ParishesPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <h3
-                        className="truncate font-semibold tracking-tight text-foreground transition-colors group-hover:text-[#071A2D]"
+                        className="truncate font-semibold tracking-tight text-[#071A2D] transition-colors group-hover:text-[#0a2540]"
                         style={{ fontFamily: "var(--font-brand-display)" }}
                       >
                         {p.name}

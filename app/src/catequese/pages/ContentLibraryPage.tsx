@@ -260,7 +260,9 @@ export default function ContentLibraryPage() {
           value={totalActivities}
         />
         <LibraryMetric
-          label={t("library.metric_ai", { defaultValue: "Com IA" })}
+          label={t("library.metric_ai", {
+            defaultValue: "Assistência editorial",
+          })}
           value={aiCount}
         />
       </div>
@@ -459,7 +461,9 @@ export default function ContentLibraryPage() {
                             className="border-[#071A2D]/20 bg-[#071A2D]/08 text-[#071A2D] text-overline"
                           >
                             <Feather className="h-2.5 w-2.5" />
-                            IA
+                            {t("library.badge_editorial", {
+                              defaultValue: "Editorial",
+                            })}
                           </Badge>
                         )}
                         <Badge
@@ -524,7 +528,9 @@ export default function ContentLibraryPage() {
                     className="gap-1 border-[#071A2D]/20 bg-[#071A2D]/08 text-[#071A2D] text-overline"
                   >
                     <Feather className="h-2.5 w-2.5" />
-                    IA
+                    {t("library.badge_editorial", {
+                      defaultValue: "Editorial",
+                    })}
                   </Badge>
                 )}
                 <Badge

@@ -251,7 +251,10 @@ export default function SacramentalJourneyDetailPage() {
             </div>
           ) : (
             <div className="flex items-center gap-2 flex-1">
-              <span className="text-sm font-medium">
+              <span
+                className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                style={{ fontFamily: "var(--font-brand-display)" }}
+              >
                 {targetDate
                   ? t("detail.sacrament_date", {
                       date: formatDate(targetDate, currentLocale),
@@ -279,8 +282,10 @@ export default function SacramentalJourneyDetailPage() {
 
         <div>
           <div className="flex justify-between mb-2">
-            <span className="text-sm font-medium">{t("detail.progress")}</span>
-            <span className="text-sm font-semibold tabular-nums">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              {t("detail.progress")}
+            </span>
+            <span className="text-sm font-semibold tabular-nums text-[#071A2D]">
               {t("detail.progress_count", { done, total, pct })}
             </span>
           </div>

@@ -215,10 +215,13 @@ export default function CatechismPage() {
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-medium text-foreground">
+                    <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-semibold tracking-tight text-[#071A2D]">
                       {entry.number}
                     </span>
-                    <p className="text-sm font-semibold tracking-tight text-foreground">
+                    <p
+                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
                       {entry.question}
                     </p>
                   </div>
@@ -256,10 +259,13 @@ export default function CatechismPage() {
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-medium text-foreground">
+                    <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-semibold tracking-tight text-[#071A2D]">
                       {entry.number}
                     </span>
-                    <p className="text-sm font-semibold tracking-tight text-foreground">
+                    <p
+                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
                       {entry.question}
                     </p>
                   </div>

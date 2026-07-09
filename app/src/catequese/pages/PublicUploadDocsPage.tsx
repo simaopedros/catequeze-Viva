@@ -125,7 +125,12 @@ export default function PublicUploadDocsPage() {
                   <div className="flex items-center gap-2">
                     <FileText className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">{d.name}</p>
+                      <p
+                        className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
+                        {d.name}
+                      </p>
                       <p className="text-overline text-muted-foreground">
                         {t(`upload_docs.types.${d.type}`, {
                           defaultValue: d.type,

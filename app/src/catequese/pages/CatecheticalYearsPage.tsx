@@ -181,7 +181,10 @@ export default function CatecheticalYearsPage() {
                     <CalendarDays className="h-5 w-5 text-[#071A2D]" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-[#071A2D]">
+                    <h3
+                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
                       {year.name}
                     </h3>
                     {year.parish?.name && (

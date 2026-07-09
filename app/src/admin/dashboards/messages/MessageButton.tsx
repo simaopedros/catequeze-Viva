@@ -5,12 +5,12 @@ const MessageButton = () => {
   return (
     <li className="relative" x-data="{ dropdownOpen: false, notifying: true }">
       <WaspRouterLink
-        className="h-8.5 w-8.5 border-stroke bg-gray hover:text-[#071A2D] dark:border-strokedark dark:bg-meta-4 relative flex items-center justify-center rounded-full border-[0.5px] dark:text-white"
+        className="relative flex h-9 w-9 items-center justify-center rounded-sm border border-border/70 bg-white text-[#071A2D] transition-colors hover:bg-muted/40"
         to={routes.AppMessagesRoute.to}
       >
-        <span className="z-1 bg-meta-1 absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full">
+        <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-sm bg-[#D39A2B]">
           {/* TODO: only animate if there are new messages */}
-          <span className="-z-1 bg-meta-1 absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"></span>
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-sm bg-[#D39A2B] opacity-75"></span>
         </span>
         <MessageCircleMore className="size-5" />
       </WaspRouterLink>

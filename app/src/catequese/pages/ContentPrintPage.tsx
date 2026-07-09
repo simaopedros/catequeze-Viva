@@ -245,7 +245,7 @@ export default function ContentPrintPage() {
                         {ref.label}
                       </div>
                       {ref.title && (
-                        <p className="mb-2 text-sm font-medium text-[#071A2D]">
+                        <p className="mb-2 text-sm font-semibold tracking-tight text-[#071A2D]">
                           {ref.title}
                         </p>
                       )}
@@ -279,7 +279,7 @@ export default function ContentPrintPage() {
                         {ref.label}
                       </div>
                       {ref.title && (
-                        <p className="mb-2 text-sm font-medium text-[#071A2D]">
+                        <p className="mb-2 text-sm font-semibold tracking-tight text-[#071A2D]">
                           {ref.title}
                         </p>
                       )}

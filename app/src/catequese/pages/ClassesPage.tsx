@@ -448,7 +448,10 @@ export default function ClassesPage() {
                     <Users className="h-3.5 w-3.5" />
                     {t("enrolled")}
                   </div>
-                  <p className="mt-1 text-lg font-semibold text-foreground">
+                  <p
+                    className="mt-1 text-lg font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
                     {cls._count?.enrollments || 0}
                   </p>
                 </div>
@@ -457,7 +460,10 @@ export default function ClassesPage() {
                     <Clock className="h-3.5 w-3.5" />
                     {t("table_schedule")}
                   </div>
-                  <p className="mt-1 text-sm font-medium text-foreground">
+                  <p
+                    className="mt-1 text-sm font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
                     {cls.dayOfWeek != null && cls.dayOfWeek !== ""
                       ? `${formatDay(cls.dayOfWeek)}${
                           cls.startTime ? ` ${cls.startTime}` : ""

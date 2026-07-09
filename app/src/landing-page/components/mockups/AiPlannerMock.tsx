@@ -8,7 +8,12 @@ export function AiPlannerMock() {
       <div className="flex items-center gap-2">
         <div className="rounded-sm border border-border/70 bg-muted/30 p-1.5"><Feather className="h-4 w-4 text-[#071A2D]" /></div>
         <div>
-          <p className="font-semibold text-sm">{t('mock.ai_title') || 'Gerador de Encontros IA'}</p>
+          <p
+            className="text-sm font-semibold tracking-tight text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
+            {t('mock.ai_title') || 'Assistência para encontros'}
+          </p>
           <p className="text-muted-foreground">{t('mock.ai_subtitle') || 'Base teológica CNBB · Catecismo · Diretório'}</p>
         </div>
       </div>

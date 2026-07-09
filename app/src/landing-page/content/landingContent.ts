@@ -5,12 +5,12 @@ import {
   Calendar,
   Church,
   ClipboardCheck,
+  Feather,
   Globe,
   GraduationCap,
   Heart,
   ScrollText,
   Search,
-  Sparkles,
   UserCheck,
   Users,
 } from 'lucide-react';
@@ -293,7 +293,7 @@ export const FAQ: FaqItem[] = [
 export const HERO_BADGE = {
   icon: GraduationCap,
   text: 'Ferramentas para o dia-a-dia do catequista',
-  accentIcon: Sparkles,
+  accentIcon: Feather,
 };
 
 export const SHOWCASE_ICONS: Record<ShowcaseId, LucideIcon> = {
@@ -301,6 +301,6 @@ export const SHOWCASE_ICONS: Record<ShowcaseId, LucideIcon> = {
   attendance: ClipboardCheck,
   sacraments: ScrollText,
   library: BookOpen,
-  'ai-planner': Sparkles,
+  'ai-planner': Feather,
   'family-portal': Heart,
 };
