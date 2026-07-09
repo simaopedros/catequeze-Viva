@@ -125,7 +125,7 @@ export function ActivationChecklist({
           type="button"
           variant="ghost"
           size="icon"
-          className="h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground"
+          className="h-8 w-8 shrink-0 text-muted-foreground hover:text-[#071A2D]"
           onClick={dismiss}
           aria-label={t("activation.dismiss")}
         >

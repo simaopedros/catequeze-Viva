@@ -1357,7 +1357,7 @@ export default function BillingPage() {
                     "rounded-sm px-4 py-2 text-sm font-medium transition-all",
                     billingInterval === "monthly"
                       ? "bg-[#071A2D] text-white"
-                      : "text-muted-foreground hover:text-foreground",
+                      : "text-muted-foreground hover:text-[#071A2D]",
                   )}
                 >
                   {t("monthly")}
@@ -1369,7 +1369,7 @@ export default function BillingPage() {
                     "rounded-sm px-4 py-2 text-sm font-medium transition-all flex items-center gap-2",
                     billingInterval === "annual"
                       ? "bg-[#071A2D] text-white"
-                      : "text-muted-foreground hover:text-foreground",
+                      : "text-muted-foreground hover:text-[#071A2D]",
                   )}
                 >
                   {t("annual")}

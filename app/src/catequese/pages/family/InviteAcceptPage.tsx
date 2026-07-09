@@ -243,7 +243,7 @@ export default function InviteAcceptPage() {
             </Link>
             <Link
               to={`/criar-conta?token=${token}`}
-              className="block h-10 w-full rounded-sm border border-input bg-background px-4 py-2 text-sm font-medium text-center hover:bg-muted/30 transition-colors"
+              className="block h-10 w-full rounded-sm border border-input bg-background px-4 py-2 text-center text-sm font-medium text-[#071A2D] transition-colors hover:bg-muted/30"
             >
               {t("invite.signup")}
             </Link>

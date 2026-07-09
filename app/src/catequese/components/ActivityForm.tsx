@@ -712,7 +712,9 @@ export function ActivityForm({
                 onChange={(e) => setTaskRequiresUpload(e.target.checked)}
                 className="h-4 w-4"
               />
-              <span className="text-sm">{t("form.require_upload")}</span>
+              <span className="text-sm font-medium tracking-tight text-[#071A2D]">
+                {t("form.require_upload")}
+              </span>
             </label>
           </div>
         );

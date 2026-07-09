@@ -217,7 +217,7 @@ export default function CommunityDetailPage() {
             className={`relative flex items-center gap-1 px-4 py-2.5 text-sm font-medium transition-colors ${
               tab === tabItem.id
                 ? "text-[#071A2D]"
-                : "text-muted-foreground hover:text-foreground"
+                : "text-muted-foreground hover:text-[#071A2D]"
             }`}
           >
             <tabItem.icon className="h-3.5 w-3.5" />

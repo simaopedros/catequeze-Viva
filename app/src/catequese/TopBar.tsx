@@ -333,7 +333,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                 setSelectedIndex(0);
                 inputRef.current?.focus();
               }}
-              className="text-muted-foreground hover:text-foreground shrink-0"
+              className="text-muted-foreground hover:text-[#071A2D] shrink-0"
             >
               <X className="h-4 w-4" />
             </button>
@@ -345,7 +345,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                 setSearchExpanded(false);
                 setQuery("");
               }}
-              className="sm:hidden text-muted-foreground hover:text-foreground shrink-0 ml-1"
+              className="sm:hidden text-muted-foreground hover:text-[#071A2D] shrink-0 ml-1"
             >
               <X className="h-4 w-4" />
             </button>

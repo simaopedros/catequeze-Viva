@@ -254,7 +254,7 @@ export default function PricingPage() {
               className={`px-4 py-2 text-sm font-medium rounded-sm transition-all ${
                 billingInterval === "monthly"
                   ? "bg-white text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
+                  : "text-muted-foreground hover:text-[#071A2D]"
               }`}
             >
               {tp("pricing.monthly_tab")}
@@ -265,7 +265,7 @@ export default function PricingPage() {
               className={`px-4 py-2 text-sm font-medium rounded-sm transition-all flex items-center gap-1.5 ${
                 billingInterval === "annual"
                   ? "bg-white text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
+                  : "text-muted-foreground hover:text-[#071A2D]"
               }`}
             >
               {tp("pricing.annual_tab")}

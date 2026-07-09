@@ -203,7 +203,7 @@ export default function AdminDiocesesPage({ user }: { user: AuthUser }) {
                             setEditingId(d.id);
                             setEditName(d.name);
                           }}
-                          className="p-1 text-muted-foreground hover:text-foreground rounded"
+                          className="p-1 text-muted-foreground hover:text-[#071A2D] rounded"
                         >
                           <Edit className="h-4 w-4" />
                         </button>

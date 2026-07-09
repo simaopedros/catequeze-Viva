@@ -151,7 +151,7 @@ export default function DirectoryPage() {
                   setSearchQuery(topic);
                   handleSearch();
                 }}
-                className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-[#071A2D]/30 hover:text-foreground"
+                className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-[#071A2D]/30 hover:text-[#071A2D]"
               >
                 {topic}
               </button>

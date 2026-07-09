@@ -228,7 +228,7 @@ export default function ParishDetailPage() {
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <button
             onClick={() => navigate("/app/parishes")}
-            className="hover:text-foreground transition-colors"
+            className="hover:text-[#071A2D] transition-colors"
           >
             {tn("parishes")}
           </button>
@@ -284,7 +284,7 @@ export default function ParishDetailPage() {
                 "flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors " +
                 (tab === tabItem.id
                   ? "border-[#071A2D] text-[#071A2D]"
-                  : "border-transparent text-muted-foreground hover:text-foreground")
+                  : "border-transparent text-muted-foreground hover:text-[#071A2D]")
               }
             >
               <tabItem.icon className="h-4 w-4" />

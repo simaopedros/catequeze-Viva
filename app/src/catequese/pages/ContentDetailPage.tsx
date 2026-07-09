@@ -311,7 +311,7 @@ export default function ContentDetailPage() {
           className={`relative flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors ${
             tab === "meeting"
               ? "border-[#D39A2B] text-[#071A2D]"
-              : "border-transparent text-muted-foreground hover:text-foreground"
+              : "border-transparent text-muted-foreground hover:text-[#071A2D]"
           }`}
         >
           <FileText className="h-4 w-4" /> {t("script")}
@@ -321,7 +321,7 @@ export default function ContentDetailPage() {
           className={`relative flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors ${
             tab === "activities"
               ? "border-[#D39A2B] text-[#071A2D]"
-              : "border-transparent text-muted-foreground hover:text-foreground"
+              : "border-transparent text-muted-foreground hover:text-[#071A2D]"
           }`}
         >
           <Puzzle className="h-4 w-4" /> {t("activities_tab")} (

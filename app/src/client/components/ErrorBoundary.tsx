@@ -62,7 +62,7 @@ export class ErrorBoundary extends Component<
               </p>
               {this.state.error && (
                 <details className="mt-3 text-left">
-                  <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground">
+                  <summary className="cursor-pointer text-xs text-muted-foreground hover:text-[#071A2D]">
                     {t("error_boundary.technical_details")}
                   </summary>
                   <pre className="mt-2 max-h-48 overflow-auto rounded-sm bg-muted p-3 text-xs text-muted-foreground">

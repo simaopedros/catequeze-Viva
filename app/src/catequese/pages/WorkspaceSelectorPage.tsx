@@ -391,8 +391,13 @@ export default function WorkspaceSelectorPage() {
                   </div>
                 </div>
               ) : (
-                <div className="rounded-sm border-2 border-dashed border-muted-foreground/30 p-6 text-center text-muted-foreground">
-                  <p className="text-sm">{t("workspace.personal_pending")}</p>
+                <div className="rounded-sm border-2 border-dashed border-border/70 bg-white p-6 text-center">
+                  <p
+                    className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                    style={{ fontFamily: "var(--font-brand-display)" }}
+                  >
+                    {t("workspace.personal_pending")}
+                  </p>
                 </div>
               )}
             </div>

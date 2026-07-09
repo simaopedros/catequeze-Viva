@@ -593,7 +593,7 @@ export function RichContentEditor({
     editorProps: {
       attributes: {
         class:
-          "min-h-[720px] max-w-none px-8 py-10 outline-none prose prose-neutral prose-headings:font-semibold prose-p:leading-7 prose-img:rounded-sm prose-blockquote:border-l-[#071A2D] prose-blockquote:text-foreground",
+          "min-h-[720px] max-w-none px-8 py-10 outline-none prose prose-neutral prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-[#071A2D] prose-p:leading-7 prose-img:rounded-sm prose-blockquote:border-l-[#071A2D] prose-blockquote:text-[#071A2D]/90 prose-strong:text-[#071A2D]",
       },
       handlePaste: (_view, event) => {
         const items = event.clipboardData?.items;

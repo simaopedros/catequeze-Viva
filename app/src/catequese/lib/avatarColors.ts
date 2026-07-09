@@ -1,9 +1,10 @@
+/** Institutional avatar tokens — ink on paper, not multi-color SaaS chips. */
 export const AVATAR_COLORS = [
-  "bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 dark:border dark:border-blue-900/50",
-  "bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-400 dark:border dark:border-green-900/50",
-  "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 dark:border dark:border-amber-900/50",
-  "bg-purple-100 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400 dark:border dark:border-purple-900/50",
-  "bg-pink-100 text-pink-700 dark:bg-pink-950/40 dark:text-pink-400 dark:border dark:border-pink-900/50",
+  "border border-border/70 bg-muted/30 text-[#071A2D]",
+  "border border-[#071A2D]/15 bg-[#071A2D]/[0.06] text-[#071A2D]",
+  "border border-[#D39A2B]/30 bg-[#D39A2B]/10 text-[#071A2D]",
+  "border border-border/70 bg-white text-[#071A2D]",
+  "border border-[#071A2D]/20 bg-muted/40 text-[#0a2540]",
 ];
 
 export function getAvatarColorClass(name: string | undefined | null): string {

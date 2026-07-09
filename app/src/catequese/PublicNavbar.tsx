@@ -23,7 +23,7 @@ export function PublicNavbar({
   }, [open]);
 
   const linkClass =
-    "text-[0.8125rem] font-medium tracking-wide text-muted-foreground transition-colors hover:text-foreground";
+    "text-[0.8125rem] font-medium tracking-wide text-muted-foreground transition-colors hover:text-[#071A2D]";
 
   return (
     <header className="sticky top-0 z-sticky border-b border-[#071A2D]/08 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/90">
@@ -56,7 +56,7 @@ export function PublicNavbar({
         <div className="hidden items-center gap-5 md:flex">
           <Link
             to="/login"
-            className="text-[0.8125rem] font-medium text-muted-foreground transition-colors hover:text-foreground"
+            className="text-[0.8125rem] font-medium text-muted-foreground transition-colors hover:text-[#071A2D]"
           >
             {t("login")}
           </Link>
@@ -135,7 +135,7 @@ export function PublicNavbar({
               <Link
                 to="/login"
                 onClick={() => setOpen(false)}
-                className="py-2 text-center text-sm font-medium text-muted-foreground hover:text-foreground"
+                className="py-2 text-center text-sm font-medium text-muted-foreground hover:text-[#071A2D]"
               >
                 {t("login")}
               </Link>

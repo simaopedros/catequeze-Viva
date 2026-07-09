@@ -190,7 +190,12 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
               parish.recentAudit.map((log: any) => (
                 <div key={log.id} className="px-5 py-2.5 flex items-center justify-between text-xs">
                   <div>
-                    <span className="font-medium">{log.action}</span>
+                    <span
+                      className="font-semibold tracking-tight text-[#071A2D]"
+                      style={{ fontFamily: "var(--font-brand-display)" }}
+                    >
+                      {log.action}
+                    </span>
                     <span className="text-muted-foreground ml-2">{log.entityType}</span>
                     {log.metadata && (
                       <span className="text-muted-foreground ml-2">

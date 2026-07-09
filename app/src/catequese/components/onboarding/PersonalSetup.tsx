@@ -133,7 +133,7 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
               <div>
                 <label
                   htmlFor="ps-day"
-                  className="flex items-center gap-1 text-sm font-medium"
+                  className="flex items-center gap-1 text-sm font-medium text-[#071A2D]"
                 >
                   <Clock className="h-3 w-3" />{" "}
                   {t("personal_setup.schedule_label")}
@@ -170,7 +170,7 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
               <div>
                 <label
                   htmlFor="ps-location"
-                  className="flex items-center gap-1 text-sm font-medium"
+                  className="flex items-center gap-1 text-sm font-medium text-[#071A2D]"
                 >
                   <MapPin className="h-3 w-3" />{" "}
                   {t("personal_setup.location_label")}

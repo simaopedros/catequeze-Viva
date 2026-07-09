@@ -300,7 +300,7 @@ export function AIHelperWidget() {
                         {m.content.split("/app/billing")[0]}
                         <Link
                           to="/app/billing"
-                          className="font-semibold underline hover:underline"
+                          className="font-semibold text-[#F4CF7A] underline hover:underline"
                         >
                           /app/billing
                         </Link>

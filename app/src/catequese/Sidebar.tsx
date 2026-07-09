@@ -109,7 +109,7 @@ function NavItemLink({
           "relative flex w-full items-center justify-between rounded-sm px-2.5 py-2 text-sm font-medium transition-colors duration-150",
           isActive
             ? "bg-[#071A2D]/[0.06] text-[#071A2D] border-l-2 border-[#D39A2B]"
-            : "border-l-2 border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground",
+            : "border-l-2 border-transparent text-muted-foreground hover:bg-muted/50 hover:text-[#071A2D]",
           collapsed && "justify-center px-2",
           "motion-reduce:transition-none",
         )

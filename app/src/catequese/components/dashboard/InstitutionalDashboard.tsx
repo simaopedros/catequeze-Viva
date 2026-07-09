@@ -440,10 +440,10 @@ export function InstitutionalDashboard() {
                       opt.value as "diocese" | "parish" | "community",
                     )
                   }
-                  className={`px-3 py-1.5 text-xs font-medium rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${
+                  className={`rounded-sm px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${
                     scope === opt.value
-                      ? "bg-background text-foreground"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "bg-background font-semibold tracking-tight text-[#071A2D]"
+                      : "text-muted-foreground hover:text-[#071A2D]"
                   }`}
                 >
                   {opt.label}
@@ -676,23 +676,17 @@ export function InstitutionalDashboard() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-xs text-muted-foreground uppercase tracking-wide border-b bg-muted/10">
-                  <th className="py-2.5 px-4 font-semibold">
-                    {t("table_class")}
-                  </th>
-                  <th className="py-2.5 px-4 font-semibold">{tcl("stage")}</th>
-                  <th className="py-2.5 px-4 font-semibold text-center">
-                    {tcl("enrolled")}
-                  </th>
-                  <th className="py-2.5 px-4 font-semibold text-center">
+                <tr className="border-b bg-muted/10 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  <th className="px-4 py-2.5">{t("table_class")}</th>
+                  <th className="px-4 py-2.5">{tcl("stage")}</th>
+                  <th className="px-4 py-2.5 text-center">{tcl("enrolled")}</th>
+                  <th className="px-4 py-2.5 text-center">
                     {t("table_meetings")}
                   </th>
-                  <th className="py-2.5 px-4 font-semibold text-center">
+                  <th className="px-4 py-2.5 text-center">
                     {t("table_attendance")}
                   </th>
-                  <th className="py-2.5 px-4 font-semibold text-center">
-                    {t("table_risk")}
-                  </th>
+                  <th className="px-4 py-2.5 text-center">{t("table_risk")}</th>
                 </tr>
               </thead>
               <tbody>

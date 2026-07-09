@@ -211,7 +211,7 @@ export function ConversationList({
                 "whitespace-nowrap rounded-sm px-2.5 py-1 text-overline font-medium transition-colors",
                 filter === opt.value
                   ? "bg-[#071A2D] text-white"
-                  : "bg-muted/50 text-muted-foreground hover:bg-muted",
+                  : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-[#071A2D]",
               )}
             >
               {opt.label}
@@ -228,8 +228,11 @@ export function ConversationList({
           ))
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-48 px-6 text-center">
-            <MessageSquareText className="h-8 w-8 text-muted-foreground/40 mb-2" />
-            <p className="text-xs text-muted-foreground">
+            <MessageSquareText className="mb-2 h-8 w-8 text-[#071A2D]/40" />
+            <p
+              className="text-xs font-semibold tracking-tight text-[#071A2D]"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
               {search ? t("no_conversation_found") : t("no_conversations_yet")}
             </p>
             {!search && (

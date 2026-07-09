@@ -194,7 +194,7 @@ export function CatechumensSetupStep({
               "flex-1 rounded-sm py-2 text-xs font-medium transition-colors",
               mode === id
                 ? "bg-[#071A2D] text-white"
-                : "text-muted-foreground hover:text-foreground",
+                : "text-muted-foreground hover:text-[#071A2D]",
             )}
           >
             {t(`catechumens_setup.${key}`)}

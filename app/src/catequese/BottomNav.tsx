@@ -77,7 +77,7 @@ export function BottomNav() {
                   "flex flex-col items-center justify-center gap-0.5 h-full text-overline font-medium transition-colors",
                   isActive
                     ? "text-[#071A2D]"
-                    : "text-muted-foreground hover:text-foreground",
+                    : "text-muted-foreground hover:text-[#071A2D]",
                 )
               }
             >
@@ -87,7 +87,7 @@ export function BottomNav() {
           ))}
           <button
             onClick={() => setSheetOpen(true)}
-            className="relative flex flex-col items-center justify-center gap-0.5 h-full text-overline font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="relative flex flex-col items-center justify-center gap-0.5 h-full text-overline font-medium text-muted-foreground hover:text-[#071A2D] transition-colors"
           >
             <Menu className="h-5 w-5" />
             <span>{t("more", { ns: "common" })}</span>
