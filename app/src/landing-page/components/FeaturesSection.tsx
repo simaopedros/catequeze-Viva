@@ -54,7 +54,12 @@ function FeatureGridSection({ ns = 'landing' }: { ns?: string }) {
   return (
     <div className="max-w-6xl mx-auto px-4 py-16">
       <div ref={headerRef} className={`text-center mb-10 space-y-2 ${headerClass}`}>
-        <h3 className="text-xl sm:text-2xl font-semibold">{t('more_features')}</h3>
+        <h3
+          className="text-xl font-semibold tracking-tight text-[#071A2D] sm:text-2xl"
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
+          {t("more_features")}
+        </h3>
         <p className="text-muted-foreground">{t('more_features_sub')}</p>
       </div>
 

@@ -34,7 +34,12 @@ export function SimpleFeaturesSection({ ns = "landing" }: { ns?: string }) {
     <section id="recursos" className="scroll-mt-20">
       <div className="max-w-6xl mx-auto px-4 pt-16 md:pt-20 pb-4">
         <div ref={headerRef} className={`text-center space-y-3 ${headerClass}`}>
-          <h2 className="text-3xl sm:text-4xl font-bold">{title}</h2>
+          <h2
+            className="text-3xl font-semibold tracking-tight text-[#071A2D] sm:text-4xl"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
+            {title}
+          </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{subtitle}</p>
         </div>
       </div>

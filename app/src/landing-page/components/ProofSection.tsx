@@ -38,7 +38,12 @@ export function ProofSection({ ns = "landing" }: { ns?: string }) {
                 <Rocket className="h-3.5 w-3.5" />
                 {tr("proof.badge")}
               </Badge>
-              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{tr("proof.title")}</h2>
+              <h2
+                className="text-2xl font-semibold tracking-tight text-[#071A2D] sm:text-3xl"
+                style={{ fontFamily: "var(--font-brand-display)" }}
+              >
+                {tr("proof.title")}
+              </h2>
               <p className="max-w-2xl text-sm leading-relaxed text-text-secondary sm:text-base">
                 {tr("proof.subtitle")}
               </p>
@@ -90,14 +95,19 @@ export function ProofSection({ ns = "landing" }: { ns?: string }) {
                 <ShieldCheck className="h-5 w-5" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-lg font-bold text-foreground">{tr("proof.launch_title")}</h3>
+                <h3
+                  className="text-lg font-semibold tracking-tight text-[#071A2D]"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
+                  {tr("proof.launch_title")}
+                </h3>
                 <p className="text-sm leading-relaxed text-text-secondary">{tr("proof.launch_text")}</p>
               </div>
               {promiseList.length > 0 && (
                 <ul className="space-y-2">
                   {promiseList.map((item) => (
                     <li key={item} className="flex items-start gap-2 text-sm text-foreground">
-                      <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#071A2D] shrink-0" />
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-sm bg-[#071A2D]" />
                       <span>{item}</span>
                     </li>
                   ))}

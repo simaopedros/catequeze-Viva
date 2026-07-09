@@ -41,7 +41,10 @@ export function OutcomesSection({ ns = "landing" }: { ns?: string }) {
               >
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <h3 className="mt-5 text-[1.05rem] font-semibold text-foreground tracking-tight">
+              <h3
+                className="mt-5 text-[1.05rem] font-semibold tracking-tight text-[#071A2D]"
+                style={{ fontFamily: "var(--font-brand-display)" }}
+              >
                 {item.title}
               </h3>
               <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground max-w-[17rem]">

@@ -23,7 +23,12 @@ export function TrustSection({ ns = "landing" }: { ns?: string }) {
     <section className="bg-muted/30 border-y">
       <div className="max-w-5xl mx-auto px-4 py-20">
         <div ref={headerRef} className={`text-center mb-12 space-y-3 ${headerClass}`}>
-          <h2 className="text-title-xl font-bold">{t("trust_title")}</h2>
+          <h2
+            className="text-title-xl font-semibold tracking-tight text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
+            {t("trust_title")}
+          </h2>
           <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">{t("trust_subtitle")}</p>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -44,7 +49,12 @@ function TrustCard({ icon: Icon, title, desc, delay }: { icon: typeof ShieldChec
       <div className="inline-flex rounded-sm bg-[#071A2D]/08 p-2.5">
         <Icon className="h-5 w-5 text-[#071A2D]" />
       </div>
-      <h3 className="font-semibold text-body-sm">{title}</h3>
+      <h3
+        className="text-body-sm font-semibold tracking-tight text-[#071A2D]"
+        style={{ fontFamily: "var(--font-brand-display)" }}
+      >
+        {title}
+      </h3>
       <p className="text-body-xs text-text-secondary leading-relaxed">{desc}</p>
     </Card>
   );

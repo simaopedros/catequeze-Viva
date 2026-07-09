@@ -41,11 +41,19 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-function CardTitle({ className, ...props }: React.ComponentProps<"h3">) {
+function CardTitle({
+  className,
+  style,
+  ...props
+}: React.ComponentProps<"h3">) {
   return (
     <h3
       data-slot="card-title"
-      className={cn("font-semibold leading-none tracking-tight", className)}
+      className={cn(
+        "font-semibold leading-none tracking-tight text-[#071A2D]",
+        className,
+      )}
+      style={{ fontFamily: "var(--font-brand-display)", ...style }}
       {...props}
     />
   );

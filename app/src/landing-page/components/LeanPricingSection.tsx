@@ -52,7 +52,12 @@ export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
   return (
     <section id="planos" className="scroll-mt-20 max-w-4xl mx-auto px-4 py-14 md:py-16">
       <div ref={headerRef} className={`text-center mb-8 space-y-2 ${headerClass}`}>
-        <h2 className="text-2xl sm:text-3xl font-bold">{tr("pricing_title")}</h2>
+        <h2
+          className="text-2xl font-semibold tracking-tight text-[#071A2D] sm:text-3xl"
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
+          {tr("pricing_title")}
+        </h2>
         <p className="text-muted-foreground max-w-xl mx-auto">{tr("pricing_subtitle")}</p>
         <p className="text-sm font-medium text-[#071A2D]">{tr("price_trial_note")}</p>
       </div>
@@ -149,9 +154,19 @@ function PlanCard({
         </span>
       )}
       <p className="text-xs text-muted-foreground">{audience}</p>
-      <h3 className="text-lg font-bold mt-1">{name}</h3>
+      <h3
+        className="mt-1 text-lg font-semibold tracking-tight text-[#071A2D]"
+        style={{ fontFamily: "var(--font-brand-display)" }}
+      >
+        {name}
+      </h3>
       <div className="mt-2 flex items-baseline gap-1">
-        <span className="text-3xl font-bold">{price}</span>
+        <span
+          className="text-3xl font-semibold tracking-tight text-[#071A2D]"
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
+          {price}
+        </span>
         <span className="text-sm text-muted-foreground">{period}</span>
       </div>
       <ul className="mt-4 space-y-2 text-sm flex-1">

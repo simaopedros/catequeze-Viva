@@ -26,7 +26,12 @@ export function ComparisonSection({ ns = "landing" }: { ns?: string }) {
     <section className="border-y bg-muted/20">
       <div className="mx-auto max-w-5xl px-4 py-16 md:py-20">
         <div ref={headerRef} className={`text-center mb-10 space-y-3 ${headerClass}`}>
-          <h2 className="text-3xl sm:text-4xl font-bold">{tr("comparison.title")}</h2>
+          <h2
+            className="text-3xl font-semibold tracking-tight text-[#071A2D] sm:text-4xl"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
+            {tr("comparison.title")}
+          </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{tr("comparison.subtitle")}</p>
         </div>
 

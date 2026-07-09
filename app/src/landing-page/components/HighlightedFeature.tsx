@@ -32,7 +32,12 @@ const HighlightedFeature = ({
       )}
     >
       <div className="flex-1 flex-col">
-        <h2 className="mb-2 text-4xl font-bold">{name}</h2>
+        <h2
+          className="mb-2 text-4xl font-semibold tracking-tight text-[#071A2D]"
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
+          {name}
+        </h2>
         {typeof description === "string" ? (
           <p className="text-muted-foreground">{description}</p>
         ) : (

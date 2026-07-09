@@ -11,7 +11,12 @@ export function PainPointsSection({ ns = 'landing' }: { ns?: string }) {
     <section className="bg-muted/30 border-y">
       <div className="max-w-4xl mx-auto px-4 py-16">
         <div ref={headerRef} className={`text-center mb-10 space-y-3 ${headerClass}`}>
-          <h2 className="text-3xl sm:text-4xl font-bold">{t('pain_title')}</h2>
+          <h2
+            className="text-3xl font-semibold tracking-tight text-[#071A2D] sm:text-4xl"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
+            {t("pain_title")}
+          </h2>
           <p className="text-lg text-muted-foreground">{t('pain_subtitle')}</p>
         </div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
