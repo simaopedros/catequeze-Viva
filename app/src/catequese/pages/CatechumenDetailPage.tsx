@@ -234,7 +234,7 @@ function PastoralAnalysisInline({ catechumenId, classId }: { catechumenId: strin
             </div>
             <div>
               <p className="text-overline text-muted-foreground">{t('reportTitle')}</p>
-              <h4 className="text-lg font-bold leading-tight">{catechumen.name}</h4>
+              <h4 className="text-lg font-semibold tracking-tight leading-tight">{catechumen.name}</h4>
               <p className="text-xs text-muted-foreground">{cls.name} {cls.catechists?.length ? `- ${t('catechists')}: ${cls.catechists.join(', ')}` : ''}</p>
             </div>
           </div>
@@ -244,20 +244,20 @@ function PastoralAnalysisInline({ catechumenId, classId }: { catechumenId: strin
           </div>
         </div>
         <div className="mt-4 flex flex-wrap gap-2 text-xs">
-          <span className="rounded-full bg-muted px-2 py-0.5">{t('enrollmentStatus')}: {enrollment.status}</span>
-          {enrollment.origin && <span className="rounded-full bg-muted px-2 py-0.5">{t('origin')}: {enrollment.origin}</span>}
-          {enrollment.startedAt && <span className="rounded-full bg-muted px-2 py-0.5">{t('startDate')}: {formatDate(enrollment.startedAt)}</span>}
-          {enrollment.endedAt && <span className="rounded-full bg-muted px-2 py-0.5">{t('endDate')}: {formatDate(enrollment.endedAt)}</span>}
+          <span className="rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5">{t('enrollmentStatus')}: {enrollment.status}</span>
+          {enrollment.origin && <span className="rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5">{t('origin')}: {enrollment.origin}</span>}
+          {enrollment.startedAt && <span className="rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5">{t('startDate')}: {formatDate(enrollment.startedAt)}</span>}
+          {enrollment.endedAt && <span className="rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5">{t('endDate')}: {formatDate(enrollment.endedAt)}</span>}
         </div>
       </div>
 
       {canSeeSensitiveSignals && alerts.length > 0 && <div className="pastoral-print-card space-y-1 rounded-sm border border-border/70 bg-white p-3">{alerts.map((a: any, i: number) => <div key={i} className="flex items-center gap-2 rounded bg-destructive/10 p-2 text-xs text-destructive"><AlertTriangle className="h-3.5 w-3.5 shrink-0" />{a.type === 'risk_high' && t('riskHighWarning')}{a.type === 'consecutive_absences' && t('consecutiveAbsencesWarning', { count: data.consecutiveAbsences })}{a.type === 'low_frequency' && t('lowFrequencyWarning')}</div>)}</div>}
 
       <div className="grid grid-cols-2 gap-2 text-center text-xs sm:grid-cols-4">
-        <div className="pastoral-print-card rounded-lg border bg-muted/40 p-3"><p className="text-2xl font-semibold tracking-tight tabular-nums text-foreground">{data.overallFrequency}%</p><p className="text-muted-foreground">{t('overallFrequency')}</p></div>
-        {canSeeSensitiveSignals && <div className="pastoral-print-card rounded-lg border bg-muted/40 p-3"><p className="text-2xl font-semibold tracking-tight tabular-nums text-foreground">{data.rankingPosition}/{data.totalCatechumensInClass}</p><p className="text-muted-foreground">{t('rankingPosition')}</p></div>}
-        <div className="pastoral-print-card rounded-lg border bg-muted/40 p-3"><p className="text-2xl font-semibold tracking-tight tabular-nums text-foreground">{data.presentCount + data.lateCount}</p><p className="text-muted-foreground">{t('present')}</p></div>
-        <div className="pastoral-print-card rounded-lg border bg-muted/40 p-3"><p className="text-2xl font-semibold tracking-tight tabular-nums text-destructive">{data.justifiedCount + data.absentCount}</p><p className="text-muted-foreground">{t('absent')}</p></div>
+        <div className="pastoral-print-card rounded-sm border border-border/70 bg-white p-3"><p className="text-2xl font-semibold tracking-tight tabular-nums text-foreground">{data.overallFrequency}%</p><p className="text-muted-foreground">{t('overallFrequency')}</p></div>
+        {canSeeSensitiveSignals && <div className="pastoral-print-card rounded-sm border border-border/70 bg-white p-3"><p className="text-2xl font-semibold tracking-tight tabular-nums text-foreground">{data.rankingPosition}/{data.totalCatechumensInClass}</p><p className="text-muted-foreground">{t('rankingPosition')}</p></div>}
+        <div className="pastoral-print-card rounded-sm border border-border/70 bg-white p-3"><p className="text-2xl font-semibold tracking-tight tabular-nums text-foreground">{data.presentCount + data.lateCount}</p><p className="text-muted-foreground">{t('present')}</p></div>
+        <div className="pastoral-print-card rounded-sm border border-border/70 bg-white p-3"><p className="text-2xl font-semibold tracking-tight tabular-nums text-destructive">{data.justifiedCount + data.absentCount}</p><p className="text-muted-foreground">{t('absent')}</p></div>
       </div>
 
       {data.monthlyPresence?.length > 0 && <div className="pastoral-print-card rounded-sm border border-border/70 bg-white p-4"><h4 className="mb-3 flex items-center gap-1 text-xs font-semibold uppercase text-muted-foreground"><BarChart3 className="h-3 w-3" />{t('monthlyPresence')}</h4><ResponsiveContainer width="100%" height={220}><BarChart data={data.monthlyPresence} margin={{ top: 5, right: 12, left: 0, bottom: 20 }}><CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" /><XAxis dataKey="month" tick={{ fontSize: 10 }} /><YAxis allowDecimals={false} tick={{ fontSize: 10 }} /><Tooltip /><Bar dataKey="present" stackId="a" fill="#16a34a" name={t('present')} /><Bar dataKey="late" stackId="a" fill="#f59e0b" name={t('late')} /><Bar dataKey="absent" stackId="a" fill="#ef4444" name={t('absent')} /></BarChart></ResponsiveContainer><div className="mt-3 overflow-x-auto rounded-lg border"><table className="w-full text-xs"><thead className="bg-muted/60"><tr><th className="p-2 text-left font-medium">{t('month')}</th><th className="p-2 text-center font-medium">{t('present')}</th><th className="p-2 text-center font-medium">{t('late')}</th><th className="p-2 text-center font-medium">{t('absent')}</th><th className="p-2 text-center font-medium">{t('meetings')}</th></tr></thead><tbody>{data.monthlyPresence.map((row: any) => <tr key={row.month} className="border-t"><td className="p-2 font-medium">{row.month}</td><td className="p-2 text-center text-emerald-700">{row.present}</td><td className="p-2 text-center text-amber-700">{row.late}</td><td className="p-2 text-center text-red-700">{row.absent + row.justified}</td><td className="p-2 text-center">{row.totalMeetings}</td></tr>)}</tbody></table></div></div>}
@@ -417,7 +417,7 @@ export default function CatechumenDetailPage() {
     const preferred = profile.enrollments.find((enr: any) => enr.status === 'ENROLLED') || profile.enrollments[0];
     if (preferred?.classId) setSelectedAnalysisClassId(preferred.classId);
   }, [profile, selectedAnalysisClassId]);
-  if(loading)return <AppShell><div className="space-y-6 max-w-2xl mx-auto animate-pulse"><div className="flex items-center gap-4"><div className="h-16 w-16 rounded-full bg-muted"/><div className="h-8 w-40 bg-muted rounded"/></div><div className="grid gap-4 md:grid-cols-2">{[1,2,3,4].map(i=><div key={i} className="h-32 rounded-sm bg-muted"/>)}</div></div></AppShell>;
+  if(loading)return <AppShell><div className="space-y-6 max-w-2xl mx-auto animate-pulse"><div className="flex items-center gap-4"><div className="h-16 w-16 rounded-sm bg-muted"/><div className="h-8 w-40 bg-muted rounded"/></div><div className="grid gap-4 md:grid-cols-2">{[1,2,3,4].map(i=><div key={i} className="h-32 rounded-sm bg-muted"/>)}</div></div></AppShell>;
   if(queryError) {
     const status = (queryError as any)?.status;
     const msg = (queryError as any)?.message || String(queryError);
@@ -595,15 +595,15 @@ export default function CatechumenDetailPage() {
                   </div>
                   <div className="grid grid-cols-3 gap-2 text-center text-xs">
                     <div className="bg-muted rounded-lg p-2">
-                      <p className="font-bold text-lg">{report.totalPresent}</p>
+                      <p className="text-lg font-semibold tracking-tight tabular-nums">{report.totalPresent}</p>
                       <p className="text-muted-foreground">{t('catechumens.detail_present_count')}</p>
                     </div>
                     <div className="bg-muted rounded-lg p-2">
-                      <p className="font-bold text-lg">{report.totalAbsent}</p>
+                      <p className="text-lg font-semibold tracking-tight tabular-nums">{report.totalAbsent}</p>
                       <p className="text-muted-foreground">{t('catechumens.detail_absent_count')}</p>
                     </div>
                     <div className="bg-muted rounded-lg p-2">
-                      <p className="font-bold text-lg">{report.totalJustified}</p>
+                      <p className="text-lg font-semibold tracking-tight tabular-nums">{report.totalJustified}</p>
                       <p className="text-muted-foreground">{t('catechumens.detail_justified_count')}</p>
                     </div>
                   </div>

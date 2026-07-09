@@ -76,7 +76,7 @@ export default function InviteAcceptPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
         <div className="w-full max-w-md text-center space-y-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-destructive/10">
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-sm border border-destructive/20 bg-destructive/10">
             {isExpired ? <Clock className="h-8 w-8 text-destructive" /> : <AlertTriangle className="h-8 w-8 text-destructive" />}
           </div>
           <div className="space-y-2">
@@ -99,7 +99,7 @@ export default function InviteAcceptPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
         <div className="w-full max-w-md text-center space-y-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-success/10">
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-sm border border-border/70 bg-muted/30">
             <Check className="h-8 w-8 text-success" />
           </div>
           <div className="space-y-2">
@@ -129,11 +129,11 @@ export default function InviteAcceptPage() {
 
         <div className="rounded-sm border border-border/70 bg-white p-6 space-y-4">
           <div className="flex items-center gap-4">
-            <div className="rounded-sm bg-primary/10 p-3">
+            <div className="rounded-sm border border-border/70 bg-muted/30 p-3">
               <Church className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <h2 className="font-bold text-lg">{invitation.parishName}</h2>
+              <h2 className="text-lg font-semibold tracking-tight text-foreground">{invitation.parishName}</h2>
               <p className="text-sm text-muted-foreground">{t('invite.as_role', { role: invitation.roleLabel })}</p>
             </div>
           </div>
@@ -177,7 +177,7 @@ export default function InviteAcceptPage() {
             </p>
             <Link
               to={`/entrar?token=${token}`}
-              className="block w-full rounded-lg bg-primary text-primary-foreground h-10 px-4 py-2 text-sm font-medium text-center hover:bg-primary/90 transition-colors"
+              className="block h-10 w-full rounded-sm bg-[#071A2D] px-4 py-2 text-center text-sm font-medium text-white transition-colors hover:bg-[#0a2540]"
             >
               {t('invite.login')}
             </Link>

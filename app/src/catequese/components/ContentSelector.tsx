@@ -55,7 +55,7 @@ export function ContentSelector({
       </button>
 
       {open && (
-        <div className="absolute z-50 mt-1 w-full rounded-md border bg-card shadow-lg">
+        <div className="absolute z-50 mt-1 w-full rounded-sm border border-border/70 bg-white">
           <div className="flex items-center border-b px-3 py-2">
             <Search className="h-3.5 w-3.5 text-muted-foreground mr-2" />
             <input
@@ -94,7 +94,7 @@ export function ContentSelector({
                     setSearch('');
                   }}
                   className={`w-full px-3 py-2 text-left text-sm hover:bg-muted ${
-     c.id === selectedId ? 'bg-primary/10 font-medium' : ''
+     c.id === selectedId ? 'bg-muted/40 font-medium' : ''
      }`}
                 >
                   <span>{c.title}</span>

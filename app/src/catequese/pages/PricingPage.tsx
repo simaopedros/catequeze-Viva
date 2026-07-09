@@ -133,9 +133,9 @@ export default function PricingPage() {
     return (
       <div
         key={plan.planId}
-        className={`rounded-sm border-2 p-6 bg-card transition-all hover:-translate-y-1 hover:shadow-lg relative flex flex-col ${
+        className={`relative flex flex-col rounded-sm border border-border/70 bg-white p-6 transition-colors ${
           plan.highlight
-            ? "border-primary ring-2 ring-primary/20 sm:scale-[1.02] shadow-lg shadow-primary/10"
+            ? "border-[#071A2D] ring-1 ring-[#071A2D]/15"
             : "border-border"
         }`}
       >
@@ -144,12 +144,12 @@ export default function PricingPage() {
             <Star className="h-3 w-3" /> {tp("pricing.most_popular")}
           </div>
         )}
-        <h3 className="text-lg font-bold">{plan.name}</h3>
+        <h3 className="text-lg font-semibold tracking-tight">{plan.name}</h3>
         <p className="text-sm text-muted-foreground mt-1">{plan.desc}</p>
         <div className="mt-4 mb-1">
           {showAnnual ? (
             <>
-              <span className="text-4xl font-bold">
+              <span className="text-4xl font-semibold tracking-tight">
                 {equivalentMonthlyPrice(plan.priceCentsAnnual!)}
               </span>
               <span className="text-base font-normal text-muted-foreground">
@@ -158,7 +158,7 @@ export default function PricingPage() {
             </>
           ) : (
             <>
-              <span className="text-4xl font-bold">
+              <span className="text-4xl font-semibold tracking-tight">
                 {formatPrice(plan.priceCents)}
               </span>
               <span className="text-base font-normal text-muted-foreground">
@@ -209,7 +209,7 @@ export default function PricingPage() {
           onClick={() => handleSelect(plan)}
           className={`mt-6 block w-full text-center rounded-sm px-4 py-3 text-sm font-semibold transition-all ${
             plan.highlight
-              ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25"
+              ? "bg-[#071A2D] text-white hover:bg-[#0a2540]"
               : "bg-muted hover:bg-muted/80"
           }`}
         >
@@ -225,7 +225,7 @@ export default function PricingPage() {
 
       <main className="flex-1">
         <section className="max-w-4xl mx-auto px-4 pt-16 pb-8 text-center space-y-4">
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
+          <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
             {tp("pricing.title")}
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">

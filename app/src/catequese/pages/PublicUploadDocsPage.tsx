@@ -57,11 +57,11 @@ export default function PublicUploadDocsPage() {
   if (error || !data) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 p-6">
-        <div className="max-w-md w-full rounded-sm border bg-card p-8 text-center space-y-4 shadow-lg">
-          <div className="rounded-full bg-destructive/10 p-4 w-fit mx-auto">
+        <div className="w-full max-w-md space-y-4 rounded-sm border border-border/70 bg-white p-8 text-center">
+          <div className="mx-auto w-fit rounded-sm border border-destructive/20 bg-destructive/10 p-4">
             <Clock className="h-8 w-8 text-destructive" />
           </div>
-          <h1 className="text-xl font-bold">{t('upload_docs.invalid_title')}</h1>
+          <h1 className="text-xl font-semibold tracking-tight">{t('upload_docs.invalid_title')}</h1>
           <p className="text-sm text-muted-foreground">
             {error?.message || t('upload_docs.invalid_desc')}
           </p>
@@ -90,7 +90,7 @@ export default function PublicUploadDocsPage() {
         </div>
 
         {catechumen.documents?.length > 0 && (
-          <div className="rounded-sm border border-border/70 bg-white p-5 shadow-sm">
+          <div className="rounded-sm border border-border/70 bg-white p-5">
             <h2 className="font-semibold text-sm mb-3">{t('upload_docs.existing_title')}</h2>
             <div className="space-y-2">
               {catechumen.documents.map((d: any) => (
@@ -115,7 +115,7 @@ export default function PublicUploadDocsPage() {
           </div>
         )}
 
-        <div className="rounded-sm border border-border/70 bg-white p-5 shadow-sm space-y-4">
+        <div className="rounded-sm border border-border/70 bg-white p-5 space-y-4">
           <h2 className="font-semibold text-sm">{t('upload_docs.new_title')}</h2>
 
           {sent && (
@@ -144,7 +144,7 @@ export default function PublicUploadDocsPage() {
               type="file"
               accept=".jpg,.jpeg,.png,.pdf"
               onChange={e => setDocFile(e.target.files?.[0] || null)}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-sm file:bg-primary/10 file:text-primary"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-sm file:bg-muted file:text-foreground"
             />
             <p className="text-overline text-muted-foreground mt-1">{t('upload_docs.file_hint')}</p>
           </div>

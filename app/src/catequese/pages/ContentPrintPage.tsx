@@ -166,7 +166,7 @@ export default function ContentPrintPage() {
           </div>
         </div>
 
-        <div className="print-section rounded-[24px] border border-gray-200 bg-white p-8 shadow-sm">
+        <div className="print-section rounded-sm border border-gray-200 bg-white p-8">
           <ContentDocumentRenderer
             document={document}
             className="prose-neutral prose-img:max-h-[320px]"
@@ -179,7 +179,7 @@ export default function ContentPrintPage() {
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
                 Apoio pastoral
               </p>
-              <h2 className="mt-1 text-xl font-bold text-gray-900">
+              <h2 className="mt-1 text-xl font-semibold tracking-tight text-gray-900">
                 Referências vinculadas
               </h2>
               <p className="mt-1 text-sm text-gray-500">
@@ -280,7 +280,7 @@ export default function ContentPrintPage() {
 
         {activities.length > 0 && (
           <div className="print-section mt-8">
-            <h2 className="mb-3 border-b pb-2 text-sm font-bold uppercase text-blue-700">
+            <h2 className="mb-3 border-b pb-2 text-sm font-semibold uppercase tracking-[0.12em] text-gray-700">
               {t("print_page.activities_title", { count: activities.length })}
             </h2>
             <div className="space-y-6">

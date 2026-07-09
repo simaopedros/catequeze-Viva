@@ -149,7 +149,7 @@ export function ChatView({
         {messages.length === 0 && !isLoading && (
           <div className="flex flex-col items-center justify-center h-full text-center py-16">
             <div className="h-16 w-16 rounded-sm bg-muted/40 flex items-center justify-center mb-4">
-              <Send className="h-7 w-7 text-primary/60" />
+              <Send className="h-7 w-7 text-muted-foreground" />
             </div>
             <h3 className="font-semibold text-sm mb-1">{t('chat_start_title')}</h3>
             <p className="text-xs text-muted-foreground max-w-[240px]">
@@ -167,16 +167,12 @@ export function ChatView({
                 className={`flex gap-2 ${i % 2 === 0 ? 'flex-row-reverse' : 'flex-row'}`}
               >
                 {i % 2 !== 0 ? (
-                  <div className="h-8 w-8 rounded-full bg-muted animate-pulse flex-shrink-0 mt-0.5" />
+                  <div className="mt-0.5 h-8 w-8 shrink-0 animate-pulse rounded-sm bg-muted" />
                 ) : (
                   <div className="w-8 flex-shrink-0" />
                 )}
                 <div
-                  className={`rounded-sm px-3.5 py-2 animate-pulse ${
-     i % 2 === 0
-      ? 'bg-primary/20 rounded-br-md'
-      : 'bg-muted rounded-bl-md'
-     }`}
+                  className={`rounded-sm px-3.5 py-2 animate-pulse ${i % 2 === 0 ? 'bg-muted' : 'bg-muted/60'}`}
                   style={{
                     width: `${30 + Math.random() * 35}%`,
                     minWidth: '80px',
@@ -194,7 +190,7 @@ export function ChatView({
             {/* Date separator */}
             <div className="flex items-center gap-3 py-3">
               <div className="flex-1 h-px bg-border" />
-              <span className="text-overline font-medium text-muted-foreground bg-background px-2 py-0.5 rounded-full">
+              <span className="text-overline font-medium text-muted-foreground rounded-sm border border-border/70 bg-white px-2 py-0.5">
                 {formatDateHeader(group.date, t, i18n.language)}
               </span>
               <div className="flex-1 h-px bg-border" />
@@ -211,7 +207,7 @@ export function ChatView({
               if (isSystem) {
                 return (
                   <div key={msg.id} className="flex justify-center py-1">
-                    <span className="text-overline text-muted-foreground italic bg-muted/30 px-3 py-1 rounded-full">
+                    <span className="text-overline text-muted-foreground italic rounded-sm border border-border/70 bg-muted/30 px-3 py-1">
                       {msg.content}
                     </span>
                   </div>
@@ -240,7 +236,7 @@ export function ChatView({
                   <div className={cn('max-w-[70%] min-w-[60px]', isMe && 'items-end')}>
                     {/* Sender name */}
                     {!isMe && !isConsecutive && conversationType !== 'DIRECT' && (
-                      <p className="text-overline font-semibold text-primary/80 mb-0.5 ml-1">
+                      <p className="text-overline font-semibold text-muted-foreground mb-0.5 ml-1">
                         {[msg.sender.firstName, msg.sender.lastName].filter(Boolean).join(' ')}
                       </p>
                     )}
@@ -250,7 +246,7 @@ export function ChatView({
                       <div className={cn(
                         'flex items-center gap-1.5 mb-1 ml-1 px-2 py-1 rounded-md text-overline border-l-2',
                         isMe
-                          ? 'bg-primary/5 border-l-primary/50 text-primary/70'
+                          ? 'border-l-[#071A2D]/40 bg-muted/30 text-muted-foreground'
                           : 'bg-muted/40 border-l-muted-foreground/30 text-muted-foreground'
                       )}>
                         <CornerDownRight className="h-2.5 w-2.5 flex-shrink-0" />
@@ -262,7 +258,7 @@ export function ChatView({
                     {/* Message body */}
                     <div
                       className={cn(
-                        'rounded-sm px-3.5 py-2 text-sm relative shadow-sm',
+                        'relative rounded-sm px-3.5 py-2 text-sm',
                         isMe
                           ? 'bg-primary text-primary-foreground rounded-br-md'
                           : 'bg-card border rounded-bl-md',
@@ -301,7 +297,7 @@ export function ChatView({
                             return acc;
                           }, {})
                         ).map(([emoji, count]) => (
-                          <span key={emoji} className="bg-muted/50 rounded-full px-1.5 py-0.5 text-overline border">
+                          <span key={emoji} className="rounded-sm border border-border/70 bg-muted/50 px-1.5 py-0.5 text-overline">
                             {emoji} {count > 1 && count}
                           </span>
                         ))}
@@ -323,7 +319,7 @@ export function ChatView({
         <div className="absolute bottom-24 right-6 z-10">
           <button
             onClick={scrollToBottom}
-            className="h-8 w-8 rounded-full bg-card border shadow-lg flex items-center justify-center hover:bg-muted transition-all animate-in zoom-in-50"
+            className="flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 bg-white hover:bg-muted"
           >
             <ChevronDown className="h-4 w-4" />
           </button>
@@ -355,7 +351,7 @@ export function ChatView({
               onKeyDown={handleKeyDown}
               placeholder={t('message_placeholder')}
               rows={1}
-              className="w-full resize-none rounded-sm border border-input bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-shadow min-h-[40px] max-h-[120px]"
+              className="w-full resize-none rounded-sm border border-input bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring min-h-[40px] max-h-[120px]"
             />
           </div>
           <button
@@ -364,7 +360,7 @@ export function ChatView({
             className={cn(
               'h-10 w-10 rounded-sm flex items-center justify-center transition-all flex-shrink-0',
               input.trim()
-                ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg active:scale-95'
+                ? 'bg-[#071A2D] text-white hover:bg-[#0a2540]'
                 : 'bg-muted text-muted-foreground'
             )}
           >

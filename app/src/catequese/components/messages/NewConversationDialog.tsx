@@ -131,9 +131,9 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40 -sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
 
-      <div className="relative w-full max-w-md mx-4 bg-card rounded-sm border overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="relative mx-4 w-full max-w-md overflow-hidden rounded-sm border border-border/70 bg-white">
         <div className="flex items-center justify-between p-4 border-b">
           <h3 className="font-semibold">
             {step === 'type' ? t('new_dialog.title_type') : t('new_dialog.title_contacts')}
@@ -152,11 +152,11 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
                   key={ct.value}
                   onClick={() => { setType(ct.value); setStep('contacts'); }}
                   className={cn(
-                    'w-full flex items-center gap-3 rounded-sm border p-3 text-left transition-all hover:border-primary/50 hover:bg-primary/5',
-                    type === ct.value && 'border-primary bg-primary/5'
+                    'w-full flex items-center gap-3 rounded-sm border border-border/70 p-3 text-left transition-colors hover:border-primary/30 hover:bg-muted/20',
+                    type === ct.value && 'border-[#071A2D] bg-muted/30'
                   )}
                 >
-                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-foreground">
                     <Icon className="h-5 w-5" />
                   </div>
                   <div>
@@ -200,7 +200,7 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
                     return (
                       <span
                         key={id}
-                        className="flex items-center gap-1 bg-primary/10 text-primary rounded-full px-2 py-0.5 text-xs"
+                        className="flex items-center gap-1 rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5 text-xs text-foreground"
                       >
                         {c.firstName || c.email}
                         <button onClick={() => toggleContact(id)} className="hover:text-destructive">✕</button>
@@ -230,7 +230,7 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
                       onClick={() => toggleContact(c.id)}
                       className={cn(
                         'w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors',
-                        isSelected ? 'bg-primary/5' : 'hover:bg-muted/50'
+                        isSelected ? 'bg-muted/30' : 'hover:bg-muted/50'
                       )}
                     >
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-[#071A2D] text-overline font-semibold text-white">
@@ -269,7 +269,7 @@ export function NewConversationDialog({ isOpen, onClose, onCreated }: NewConvers
                 className={cn(
                   'px-4 py-2 rounded-lg text-sm font-medium transition-all',
                   selected.size > 0
-                    ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm'
+                    ? 'bg-[#071A2D] text-white hover:bg-[#0a2540]'
                     : 'bg-muted text-muted-foreground'
                 )}
               >

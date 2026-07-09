@@ -143,7 +143,7 @@ export default function WorkspaceSelectorPage() {
       data-testid={`workspace-card-${ws.id}`}
       onClick={() => handleEnter(ws.id)}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleEnter(ws.id); } }}
-      className="w-full rounded-sm border-2 border-muted bg-card hover:border-primary/50 hover:shadow-sm transition-all p-5 text-left group cursor-pointer"
+      className="group w-full cursor-pointer rounded-sm border border-border/70 bg-white p-5 text-left transition-colors hover:border-primary/30"
     >
       <div className="flex items-start gap-4">
         <div
@@ -154,7 +154,7 @@ export default function WorkspaceSelectorPage() {
           {workspaceIcon(ws.type)}
         </div>
         <div className="flex-1 min-w-0">
-          <h2 className="font-bold text-lg">{ws.name}</h2>
+          <h2 className="text-lg font-semibold tracking-tight text-foreground">{ws.name}</h2>
           <div className="flex flex-wrap items-center gap-2 mt-1">
             <span
               className={`text-xs px-2 py-0.5 rounded-full font-medium ${
@@ -195,13 +195,13 @@ export default function WorkspaceSelectorPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
+    <div className="min-h-screen flex items-center justify-center border border-border/70 bg-muted/30 p-4">
       <div className="w-full max-w-lg space-y-6">
         {/* Loading state */}
         {(loadingWorkspaces || loadingContext) ? (
           <div className="text-center py-16 space-y-4">
-            <div className="inline-flex rounded-sm border border-border/70 bg-muted/30 p-4">
-              <Sparkles className="h-8 w-8 text-primary animate-pulse" />
+            <div className="inline-flex rounded-sm border border-border/70 border border-border/70 bg-muted/30 p-4">
+              <Sparkles className="h-8 w-8 text-muted-foreground animate-pulse" />
             </div>
             <p className="text-muted-foreground text-sm">{t('loading')}</p>
           </div>
@@ -225,7 +225,7 @@ export default function WorkspaceSelectorPage() {
         {/* Continue where you left off — shown when user has been here before */}
         {lastUsed && workspaces.length > 1 && (
           <div className="space-y-3">
-            <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider px-1 flex items-center gap-1.5">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground px-1 flex items-center gap-1.5">
               <History className="h-3.5 w-3.5" />
               {t('workspace.continue_title')}
             </h3>
@@ -235,30 +235,30 @@ export default function WorkspaceSelectorPage() {
               data-testid="workspace-card-last-used"
               onClick={() => handleEnter(lastUsed.id)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleEnter(lastUsed.id); } }}
-              className="w-full rounded-sm border-2 border-primary/40 bg-primary/5 hover:border-primary/60 hover:bg-primary/10 transition-all p-5 text-left group cursor-pointer"
+              className="group w-full cursor-pointer rounded-sm border border-[#071A2D]/30 bg-white p-5 text-left transition-colors hover:border-[#071A2D]/50"
             >
               <div className="flex items-start gap-4">
-                <div className="rounded-sm bg-primary/10 p-3 group-hover:bg-primary/20 transition-colors">
+                <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-foreground">
                   {lastUsed.isPersonal ? (
-                    <User className="h-6 w-6 text-primary" />
+                    <User className="h-6 w-6 text-foreground" />
                   ) : (
                     workspaceIcon(lastUsed.type)
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <h2 className="font-bold text-lg">{lastUsed.name}</h2>
-                    <span className="text-overline text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{t('workspace.last_used')}</span>
+                    <h2 className="text-lg font-semibold tracking-tight text-foreground">{lastUsed.name}</h2>
+                    <span className="text-overline text-muted-foreground rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5">{t('workspace.last_used')}</span>
                   </div>
                   <p className="text-sm text-muted-foreground">
                     {lastUsed.isPersonal ? lastUsed.subtitle : roleLabel(lastUsed.role, t)}
                   </p>
                 </div>
-                <ArrowRight className="h-5 w-5 text-primary/60 group-hover:translate-x-1 transition-transform mt-2" />
+                <ArrowRight className="h-5 w-5 mt-2 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
               </div>
             </div>
             <div className="border-t pt-3">
-              <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider px-1 mb-2">
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground px-1 mb-2">
                 {t('workspace.switch_workspace')}
               </h3>
             </div>
@@ -267,7 +267,7 @@ export default function WorkspaceSelectorPage() {
 
         {/* Personal Workspace */}
         <div>
-          <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider px-1 mb-2">
+          <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground px-1 mb-2">
             {t('workspace.personal_section')}
           </h3>
           {personal ? (
@@ -277,14 +277,14 @@ export default function WorkspaceSelectorPage() {
               data-testid="workspace-card-personal"
               onClick={() => handleEnter(personal.id)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleEnter(personal.id); } }}
-              className="w-full rounded-sm border-2 border-primary/30 bg-primary/5 hover:border-primary/50 hover:bg-primary/10 transition-all p-5 text-left group cursor-pointer"
+              className="group w-full cursor-pointer rounded-sm border border-border/70 bg-white p-5 text-left transition-colors hover:border-primary/30"
             >
               <div className="flex items-start gap-4">
-                <div className="rounded-sm bg-primary/10 p-3 group-hover:bg-primary/20 transition-colors">
-                  <User className="h-6 w-6 text-primary" />
+                <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-foreground">
+                  <User className="h-6 w-6 text-foreground" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h2 className="font-bold text-lg">{personal.name}</h2>
+                  <h2 className="text-lg font-semibold tracking-tight text-foreground">{personal.name}</h2>
                   <p className="text-sm text-muted-foreground">{personal.subtitle}</p>
                   <div className="flex items-center gap-2 mt-2">
                     <span className="text-xs px-2 py-0.5 rounded-sm border border-border/70 bg-muted/30 text-foreground font-medium">
@@ -297,11 +297,11 @@ export default function WorkspaceSelectorPage() {
                   onClick={(e) => { e.stopPropagation(); handleManage(personal); }}
                   title={t('workspace.settings_account')}
                   aria-label={t('workspace.settings_account')}
-                  className="rounded-lg p-2 text-primary/70 hover:text-primary hover:bg-primary/10 transition-colors mt-1"
+                  className="mt-1 rounded-sm p-2 text-muted-foreground transition-colors hover:bg-muted/30 hover:text-foreground"
                 >
                   <Settings className="h-5 w-5" />
                 </button>
-                <ArrowRight className="h-5 w-5 text-primary/60 group-hover:translate-x-1 transition-transform mt-2" />
+                <ArrowRight className="h-5 w-5 mt-2 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
               </div>
             </div>
           ) : (
@@ -314,7 +314,7 @@ export default function WorkspaceSelectorPage() {
         {/* Pending Invitations */}
         {pendingInvitations.length > 0 && (
           <div className="space-y-3">
-            <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider px-1 flex items-center gap-1.5">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground px-1 flex items-center gap-1.5">
               <Mail className="h-3.5 w-3.5" />
               {t('workspace.pending_invites')}
             </h3>
@@ -324,7 +324,7 @@ export default function WorkspaceSelectorPage() {
                   <Church className="h-6 w-6 text-warning" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h2 className="font-bold text-lg">{ws.name}</h2>
+                  <h2 className="text-lg font-semibold tracking-tight text-foreground">{ws.name}</h2>
                   <p className="text-sm text-muted-foreground">{t('workspace.invited_as', { role: roleLabel(ws.role, t) })}</p>
                 </div>
                 <Button
@@ -344,7 +344,7 @@ export default function WorkspaceSelectorPage() {
         {/* Managed institutional workspaces */}
         {(managed.length > 0 || manageDioceses.length > 0) && (
           <div className="space-y-4">
-            <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider px-1 flex items-center gap-1.5">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground px-1 flex items-center gap-1.5">
               <ShieldCheck className="h-3.5 w-3.5" />
               {t('workspace.managed_section')}
             </h3>
@@ -370,7 +370,7 @@ export default function WorkspaceSelectorPage() {
                   {group.items.map((ws) => renderWorkspaceCard(ws, { covered: coverageLabel(ws), canManage: true }))}
                   <button
                     onClick={() => createInDiocese(dioceseId)}
-                    className="w-full rounded-sm border-2 border-dashed border-secondary/40 hover:bg-secondary/10 transition-all p-3 text-center text-secondary flex items-center justify-center gap-2"
+                    className="w-full rounded-sm border border-dashed border-border/70 hover:bg-muted/20 transition-colors p-3 text-center text-muted-foreground flex items-center justify-center gap-2"
                   >
                     <Plus className="h-4 w-4" />
                     <span className="text-sm font-medium">{t('workspace.create_parish_in_diocese')}</span>
@@ -399,7 +399,7 @@ export default function WorkspaceSelectorPage() {
                   </div>
                   <button
                     onClick={() => createInDiocese(d.id)}
-                    className="w-full rounded-sm border-2 border-dashed border-secondary/40 hover:bg-secondary/10 transition-all p-3 text-center text-secondary flex items-center justify-center gap-2"
+                    className="w-full rounded-sm border border-dashed border-border/70 hover:bg-muted/20 transition-colors p-3 text-center text-muted-foreground flex items-center justify-center gap-2"
                   >
                     <Plus className="h-4 w-4" />
                     <span className="text-sm font-medium">{t('workspace.create_parish_in_diocese')}</span>
@@ -416,7 +416,7 @@ export default function WorkspaceSelectorPage() {
             {canCreateUnderOwnerPlan && (
               <button
                 onClick={() => navigate('/app/parishes?new=true')}
-                className="w-full rounded-sm border-2 border-dashed border-primary/30 hover:bg-primary/5 transition-all p-4 text-center text-primary flex items-center justify-center gap-2"
+                className="w-full rounded-sm border border-dashed border-border/70 hover:border-primary/30 hover:bg-muted/20 transition-colors p-4 text-center text-muted-foreground flex items-center justify-center gap-2"
               >
                 <Plus className="h-4 w-4" />
                 <span className="text-sm font-medium">
@@ -430,7 +430,7 @@ export default function WorkspaceSelectorPage() {
         {/* Participating institutional workspaces */}
         {participating.length > 0 && (
           <div className="space-y-3">
-            <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider px-1 flex items-center gap-1.5">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground px-1 flex items-center gap-1.5">
               <Users2 className="h-3.5 w-3.5" />
               {t('workspace.participating_section')}
             </h3>
@@ -447,7 +447,7 @@ export default function WorkspaceSelectorPage() {
             <div className="flex gap-2 justify-center">
               <button
                 onClick={() => navigate('/app/onboarding')}
-                className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground h-9 px-4 text-sm font-medium"
+                className="inline-flex items-center justify-center h-9 rounded-sm bg-[#071A2D] px-4 text-sm font-medium text-white"
               >
                 {t('workspace.go_onboarding')}
               </button>
@@ -464,7 +464,7 @@ export default function WorkspaceSelectorPage() {
         {/* Create an independent parish (new institutional workspace) */}
         <button
           onClick={() => navigate('/app/parishes?new=true')}
-          className="w-full rounded-sm border-2 border-dashed border-muted-foreground/30 hover:border-primary/40 hover:bg-accent/50 transition-all p-4 text-center text-muted-foreground hover:text-foreground flex items-center justify-center gap-2"
+          className="w-full rounded-sm border border-dashed border-border/70 hover:border-primary/30 hover:bg-muted/20 transition-colors p-4 text-center text-muted-foreground hover:text-foreground flex items-center justify-center gap-2"
         >
           <Plus className="h-4 w-4" />
           <span className="text-sm font-medium">{t('workspace.create_independent')}</span>
