@@ -201,13 +201,13 @@ export default function ClassesPage() {
               </div>
 
               <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-2xl bg-white/80 px-4 py-4 ring-1 ring-slate-200/70">
+                <div className="rounded-sm bg-white/80 px-4 py-4 ring-1 ring-slate-200/70">
                   <p className="text-sm font-semibold text-slate-900">1. {t('empty_step1')}</p>
                 </div>
-                <div className="rounded-2xl bg-white/80 px-4 py-4 ring-1 ring-slate-200/70">
+                <div className="rounded-sm bg-white/80 px-4 py-4 ring-1 ring-slate-200/70">
                   <p className="text-sm font-semibold text-slate-900">2. {t('empty_step2')}</p>
                 </div>
-                <div className="rounded-2xl bg-white/80 px-4 py-4 ring-1 ring-slate-200/70">
+                <div className="rounded-sm bg-white/80 px-4 py-4 ring-1 ring-slate-200/70">
                   <p className="text-sm font-semibold text-slate-900">3. {t('empty_step3')}</p>
                 </div>
               </div>
@@ -216,7 +216,7 @@ export default function ClassesPage() {
                 <PlanLimitBanner type="class_limit" currentCount={activeClassesCount} userPlan={effectivePlan} isParishManaged={!isPersonal} isPersonalWorkspace={isPersonal} />
               ) : canCreateClass ? (
                 <div className="flex flex-wrap gap-3">
-                  <Button className="h-11 rounded-xl px-5" asChild>
+                  <Button className="h-11 rounded-sm px-5" asChild>
                     <Link to="/app/classes/new">{t('create')}</Link>
                   </Button>
                 </div>
@@ -226,13 +226,13 @@ export default function ClassesPage() {
 
           <SurfaceSection title="Estrutura sugerida" icon={BookOpen}>
             <div className="space-y-3 text-sm leading-relaxed text-slate-600">
-              <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+              <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
                 Defina etapa, horario e catequista principal para cada turma.
               </div>
-              <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+              <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
                 Cadastre os catequizandos para acompanhar presenca, encontros e progresso.
               </div>
-              <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+              <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
                 Use o Copiloto de Conteudo para preparar os encontros com mais consistencia.
               </div>
             </div>
@@ -243,7 +243,7 @@ export default function ClassesPage() {
           <EmptyState compact icon={Search} title={t('no_filter_results')} description={t('no_filter_desc')} />
         </SurfaceSection>
       ) : view === 'list' ? (
-        <section className="overflow-hidden rounded-3xl border border-border/70 bg-white/90 shadow-sm shadow-slate-200/60">
+        <section className="overflow-hidden rounded-sm border border-border/70 bg-white/90 shadow-sm shadow-slate-200/60">
           <div className="border-b border-border/70 bg-slate-50/80 px-5 py-4">
             <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">{t('table_class')}</h3>
           </div>
@@ -290,7 +290,7 @@ export default function ClassesPage() {
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {filtered.map((cls: any) => (
-            <div key={cls.id} className="group overflow-hidden rounded-3xl border border-border/70 bg-white/90 p-5 shadow-sm shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-300/40">
+            <div key={cls.id} className="group overflow-hidden rounded-sm border border-border/70 bg-white/90 p-5 shadow-sm shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-300/40">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-3">
@@ -310,14 +310,14 @@ export default function ClassesPage() {
               </div>
 
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
                   <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-slate-500">
                     <Users className="h-3.5 w-3.5" />
                     {t('enrolled')}
                   </div>
                   <p className="mt-1 text-lg font-semibold text-slate-900">{cls._count?.enrollments || 0}</p>
                 </div>
-                <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
                   <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-slate-500">
                     <Clock className="h-3.5 w-3.5" />
                     {t('table_schedule')}
@@ -337,7 +337,7 @@ export default function ClassesPage() {
 
               {cls.meetings?.[0] && (
                 <div className={cn(
-                  'mt-4 rounded-2xl px-4 py-3 text-sm font-medium',
+                  'mt-4 rounded-sm px-4 py-3 text-sm font-medium',
                   isToday(cls.meetings[0].date)
                     ? 'bg-primary/10 text-primary ring-1 ring-primary/15'
                     : 'bg-slate-50 text-slate-600 ring-1 ring-slate-200/70'
@@ -351,13 +351,13 @@ export default function ClassesPage() {
               )}
 
               <div className="mt-5 flex gap-2 border-t border-border/60 pt-4">
-                <Button size="sm" variant="outline" className="h-9 flex-1 rounded-xl bg-white" asChild>
+                <Button size="sm" variant="outline" className="h-9 flex-1 rounded-sm bg-white" asChild>
                   <Link to={`/app/classes/${cls.id}/attendance`}><ClipboardList className="mr-2 h-3.5 w-3.5" />{t('attendance')}</Link>
                 </Button>
-                <Button size="sm" variant="outline" className="h-9 flex-1 rounded-xl bg-white" asChild>
+                <Button size="sm" variant="outline" className="h-9 flex-1 rounded-sm bg-white" asChild>
                   <Link to={`/app/classes/${cls.id}`}><Edit3 className="mr-2 h-3.5 w-3.5" />{t('details')}</Link>
                 </Button>
-                <Button size="sm" variant="ghost" className="h-9 w-9 rounded-xl px-0" asChild>
+                <Button size="sm" variant="ghost" className="h-9 w-9 rounded-sm px-0" asChild>
                   <Link to={`/app/classes/${cls.id}`} aria-label={t('details')}><ArrowRight className="h-4 w-4" /></Link>
                 </Button>
               </div>

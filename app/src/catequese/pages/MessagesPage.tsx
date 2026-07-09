@@ -221,7 +221,7 @@ export default function MessagesPage() {
 
   return (
     <>
-      <div className="chat-height flex overflow-hidden rounded-xl border bg-card/30 backdrop-blur-sm shadow-elevation-sm mx-auto max-w-7xl">
+      <div className="chat-height mx-auto flex max-w-7xl overflow-hidden rounded-sm border border-border/70 bg-white">
         {/* Conversation list - hidden on mobile when chat is open */}
         <div className={cn(
           'w-80 flex-shrink-0 border-r transition-all',
@@ -245,7 +245,7 @@ export default function MessagesPage() {
           {activeConversationId && (loadingChat || activeConv || conversationError) ? (
             <>
               {/* Chat header */}
-              <div className="flex items-center gap-3 px-4 py-3 border-b bg-card/80 backdrop-blur-sm">
+              <div className="flex items-center gap-3 border-b border-border/70 bg-white px-4 py-3">
                 <button
                   onClick={handleBackToList}
                   className="md:hidden h-8 w-8 flex items-center justify-center rounded-lg hover:bg-muted"
@@ -304,7 +304,7 @@ export default function MessagesPage() {
                   </div>
                 ) : (
                   <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
-                    <div className="h-16 w-16 rounded-2xl bg-destructive/10 flex items-center justify-center mb-4">
+                    <div className="h-16 w-16 rounded-sm bg-destructive/10 flex items-center justify-center mb-4">
                       <MessageSquareText className="h-7 w-7 text-destructive/70" />
                     </div>
                     <h3 className="text-base font-semibold mb-1">{t('title')}</h3>
@@ -357,7 +357,7 @@ export default function MessagesPage() {
           ) : (
             /* Empty state */
             <div className="flex-1 flex flex-col items-center justify-center text-center px-6 py-8">
-              <div className="h-20 w-20 rounded-3xl bg-gradient-to-br from-primary/20 via-primary/10 to-transparent flex items-center justify-center mb-5 animate-in zoom-in-50 duration-500">
+              <div className="h-20 w-20 rounded-sm bg-gradient-to-br from-primary/20 via-primary/10 to-transparent flex items-center justify-center mb-5 animate-in zoom-in-50 duration-500">
                 <MessageSquareText className="h-9 w-9 text-primary/60" />
               </div>
               <h2 className="text-lg font-semibold mb-1.5">{t('hub_title')}</h2>
@@ -381,7 +381,7 @@ export default function MessagesPage() {
 
               <button
                 onClick={() => setShowNewDialog(true)}
-                className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 shadow-md hover:shadow-lg transition-all active:scale-95"
+                className="px-5 py-2.5 rounded-sm bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 shadow-md hover:shadow-lg transition-all active:scale-95"
               >
                 {t('start_conversation')}
               </button>

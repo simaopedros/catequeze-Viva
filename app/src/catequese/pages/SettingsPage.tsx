@@ -8,7 +8,7 @@ import { Input } from '../../client/components/ui/input';
 import { Badge } from '../../client/components/ui/badge';
 import { User, Globe, Bell, Shield, Save, Key, Download, Church, CheckCircle, AlertCircle, GitMerge, RefreshCw } from 'lucide-react';
 import { ROLE_LABELS } from '../../shared/constants';
-import { PageHeader } from '../../client/components/PageHeader';
+import { AppPageHeader, AppPanel } from '../../client/components/brand/AppChrome';
 import { useUserContext } from '../../client/hooks/useUserContext';
 import { updateUserProfile, requestDataExport, changePassword, useQuery, listParishes, executeParishMigration } from 'wasp/client/operations';
 import PhoneMaskInput from '../../client/components/PhoneMaskInput';
@@ -121,33 +121,37 @@ export default function SettingsPage() {
 
   return(
       <div className="max-w-2xl mx-auto space-y-6">
-        <PageHeader title={t('title')} subtitle={`${user?.email || ''} ${userRole ? tc(`roles.${userRole}`) || userRole : ''}`} />
+        <AppPageHeader
+          eyebrow={t('eyebrow', { defaultValue: 'Conta' })}
+          title={t('title')}
+          subtitle={`${user?.email || ''} ${userRole ? tc(`roles.${userRole}`) || userRole : ''}`}
+        />
 
-        {/* Parish info */}
-        {ctxParishName&&(
-          <div className="rounded-xl border bg-card p-4 flex items-center gap-3">
-            <div className="rounded-lg bg-primary/10 p-2 text-primary"><Church className="h-5 w-5"/></div>
-            <div><p className="text-xs text-muted-foreground uppercase">{t('linked_parish')}</p><p className="font-medium">{ctxParishName}</p></div>
-          </div>
+        {ctxParishName && (
+          <AppPanel>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              {t('linked_parish')}
+            </p>
+            <p className="mt-1 text-sm font-medium text-foreground">{ctxParishName}</p>
+          </AppPanel>
         )}
 
-        {/* Profile */}
-        <div className="rounded-xl border bg-card p-6 space-y-4">
-          <h3 className="font-semibold flex items-center gap-2"><User className="h-4 w-4"/>{t('profile')}</h3>
+        <AppPanel className="space-y-4">
+          <h3 className="text-sm font-semibold tracking-tight text-foreground">{t('profile')}</h3>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5"><label htmlFor="firstName" className="text-sm font-medium">{t('first_name')}</label><Input id="firstName" value={firstName} onChange={e=>setFirstName(e.target.value)} placeholder={t('first_name_placeholder')}/></div>
-            <div className="space-y-1.5"><label htmlFor="lastName" className="text-sm font-medium">{t('last_name')}</label><Input id="lastName" value={lastName} onChange={e=>setLastName(e.target.value)} placeholder={t('last_name_placeholder')}/></div>
+            <div className="space-y-1.5"><label htmlFor="firstName" className="text-xs font-medium">{t('first_name')}</label><Input id="firstName" value={firstName} onChange={e=>setFirstName(e.target.value)} placeholder={t('first_name_placeholder')} className="h-10 rounded-sm"/></div>
+            <div className="space-y-1.5"><label htmlFor="lastName" className="text-xs font-medium">{t('last_name')}</label><Input id="lastName" value={lastName} onChange={e=>setLastName(e.target.value)} placeholder={t('last_name_placeholder')} className="h-10 rounded-sm"/></div>
           </div>
-          <div className="space-y-1.5"><label htmlFor="phone" className="text-sm font-medium">{t('phone')}</label><PhoneMaskInput value={phone} onChange={setPhone} className="flex h-9 w-full" placeholder={t('phone_placeholder')}/></div>
+          <div className="space-y-1.5"><label htmlFor="phone" className="text-xs font-medium">{t('phone')}</label><PhoneMaskInput value={phone} onChange={setPhone} className="flex h-10 w-full rounded-sm" placeholder={t('phone_placeholder')}/></div>
           {saveError && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="h-3 w-3"/>{saveError}</p>}
           <div className="flex gap-2">
-            <Button size="sm" onClick={handleSaveProfile} disabled={saving}><Save className="mr-1 h-3 w-3"/>{saving ? t('saving') : tc('save')}</Button>
+            <Button size="sm" className="rounded-sm shadow-none" onClick={handleSaveProfile} disabled={saving}><Save className="mr-1 h-3 w-3"/>{saving ? t('saving') : tc('save')}</Button>
             {saved&&<span className="text-xs text-success flex items-center gap-1 self-center"><CheckCircle className="h-3 w-3"/>{t('saved')}</span>}
           </div>
-        </div>
+        </AppPanel>
 
         {/* Password */}
-        <div className="rounded-xl border bg-card p-6 space-y-4">
+        <div className="rounded-sm border border-border/70 bg-white p-5 space-y-4">
           <h3 className="font-semibold flex items-center gap-2"><Key className="h-4 w-4"/>{t('change_password')}</h3>
           {passwordForm.formState.errors.root && (
             <p className={`text-xs flex items-center gap-1 ${passwordForm.formState.errors.root.message === t('password_changed') ? 'text-success' : 'text-destructive'}`}>
@@ -196,7 +200,7 @@ export default function SettingsPage() {
         <TwoFactorSetup />
 
         {/* Data export */}
-        <div className="rounded-xl border bg-card p-4">
+        <div className="rounded-sm border border-border/70 bg-white p-4">
           <h3 className="font-semibold text-sm flex items-center gap-2 mb-1"><Download className="h-4 w-4"/>{t('export_data')}</h3>
           <p className="text-xs text-muted-foreground mb-3">{t('export_desc')}</p>
           {exportMsg && <p className={`text-xs mb-3 ${exportMsg.includes('Erro') ? 'text-destructive' : 'text-success'}`}>{exportMsg}</p>}
@@ -205,7 +209,7 @@ export default function SettingsPage() {
 
         {/* Migration — only for coordinators */}
         {userRole === 'PARISH_COORDINATOR' && (
-          <div className="rounded-xl border bg-card p-6 space-y-4">
+          <div className="rounded-sm border border-border/70 bg-white p-5 space-y-4">
             <h3 className="font-semibold flex items-center gap-2"><GitMerge className="h-4 w-4"/>{t('migration')}</h3>
             <p className="text-xs text-muted-foreground">{t('migration_desc')}</p>
             <div>
@@ -238,7 +242,7 @@ export default function SettingsPage() {
         )}
 
         {/* Privacy notice */}
-        <div className="rounded-xl border bg-card p-4 flex items-center gap-3"> 
+        <div className="rounded-sm border border-border/70 bg-white p-4 flex items-center gap-3"> 
           <div className="rounded-lg bg-purple-50 dark:bg-purple-950/30 p-2 text-purple-600 dark:text-purple-400"><Shield className="h-5 w-5"/></div>
           <p className="text-xs text-muted-foreground">{t('privacy_notice')}</p>
         </div>

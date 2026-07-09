@@ -354,7 +354,7 @@ function MonthGrid({
   const isWeekend = (dow: number) => dow >= 5;
 
   return (
-    <div className="lg:col-span-2 rounded-xl border bg-card overflow-hidden shadow-elevation-xs">
+    <div className="lg:col-span-2 rounded-sm border border-border/70 bg-white overflow-hidden shadow-elevation-xs">
       {/* Weekday headers */}
       <div className="grid grid-cols-7 bg-muted/40 border-b">
         {weekdays.map((d, i) => (
@@ -495,7 +495,7 @@ function AgendaView({
           <button
             key={e.id}
             onClick={() => { setSelectedDay(day); setMobilePanelOpen(true); }}
-            className="w-full rounded-xl border bg-card p-3.5 text-left hover:bg-muted/30 transition-colors flex items-center gap-3 shadow-elevation-xs"
+            className="w-full rounded-sm border border-border/70 bg-white p-3.5 text-left hover:bg-muted/30 transition-colors flex items-center gap-3 shadow-elevation-xs"
           >
             {/* Date block */}
             <div className="flex flex-col items-center justify-center w-11 h-11 rounded-lg bg-muted flex-shrink-0">
@@ -567,7 +567,7 @@ function SidePanelContent({
   /* ── No day selected ── show upcoming events ──────────────────────── */
   if (!selectedDay) {
     return (
-      <div className="rounded-xl border bg-card p-4 shadow-elevation-xs space-y-3">
+      <div className="rounded-sm border border-border/70 bg-white p-4 shadow-elevation-xs space-y-3">
         <h3 className="font-semibold text-sm flex items-center gap-2">
           <Calendar className="h-4 w-4 text-primary" />
           {t('upcoming_events')}
@@ -610,7 +610,7 @@ function SidePanelContent({
   return (
     <>
       {/* Day header card */}
-      <div className="rounded-xl border bg-card p-4 shadow-elevation-xs">
+      <div className="rounded-sm border border-border/70 bg-white p-4 shadow-elevation-xs">
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-sm flex items-center gap-2">
             <Calendar className="h-4 w-4 text-primary" />
@@ -624,7 +624,7 @@ function SidePanelContent({
 
       {/* Event list */}
       {dayEvents.length === 0 ? (
-        <div className="rounded-xl border bg-card p-6 text-center shadow-elevation-xs">
+        <div className="rounded-sm border border-border/70 bg-white p-6 text-center shadow-elevation-xs">
           <p className="text-sm text-muted-foreground">{t('no_events')}</p>
           <Button
             variant="outline"
@@ -641,7 +641,7 @@ function SidePanelContent({
           {dayEvents.map(e => (
             <div
               key={e.id}
-              className="flex items-start justify-between rounded-xl border bg-card p-3 hover:bg-muted/20 transition-colors shadow-elevation-xs"
+              className="flex items-start justify-between rounded-sm border border-border/70 bg-white p-3 hover:bg-muted/20 transition-colors shadow-elevation-xs"
             >
               <div className="flex items-start gap-2.5 min-w-0">
                 <div
@@ -702,7 +702,7 @@ function SidePanelContent({
 
       {/* ── Create event form ───────────────────────────────────────────── */}
       {showForm && (
-        <div className="rounded-xl border bg-card p-4 space-y-3 shadow-elevation-xs">
+        <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3 shadow-elevation-xs">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-sm flex items-center gap-1.5">
               <Plus className="h-4 w-4 text-primary" />

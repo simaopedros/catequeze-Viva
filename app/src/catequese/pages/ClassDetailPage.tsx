@@ -237,9 +237,11 @@ export default function ClassDetailPage() {
       <div className="space-y-6">
         <div className="flex flex-wrap items-center gap-3">
           <Button variant="ghost" size="icon" asChild><Link to="/app/classes"><ArrowLeft className="h-5 w-5"/></Link></Button>
-          <div className="flex-1">
-            <h1 className="text-2xl font-bold">{cls.name}</h1>
-            <div className="flex items-center gap-2 mt-1">
+          <div className="min-w-0 flex-1 space-y-2 border-b border-border/70 pb-4 sm:border-0 sm:pb-0">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Turma</p>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground" style={{ fontFamily: 'var(--font-brand-display)' }}>{cls.name}</h1>
+            <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+            <div className="flex items-center gap-2">
               <Badge variant={statusBadge?.variant || 'secondary'}>{statusBadge?.label || cls.status}</Badge>
               {cls.stage&&<span className="text-sm text-muted-foreground">{cls.stage.name}</span>}
               {cls.community && (
@@ -265,14 +267,14 @@ export default function ClassDetailPage() {
         </div>
 
         <div className="grid gap-3 md:grid-cols-4">
-          <div className="rounded-xl border bg-card p-4"><div className="text-xs text-muted-foreground flex items-center gap-1"><MapPin className="h-3 w-3"/>{t('location')}</div><p className="font-medium text-sm">{cls.location||'—'}</p></div>
-          <div className="rounded-xl border bg-card p-4"><div className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3"/>{t('schedule')}</div><p className="font-medium text-sm">{t(`days_long.${cls.dayOfWeek}`) || cls.dayOfWeek} {cls.startTime}{cls.endTime&&`-${cls.endTime}`}</p></div>
-          <div className="rounded-xl border bg-card p-4"><div className="text-xs text-muted-foreground flex items-center gap-1"><Users className="h-3 w-3"/>{t('enrolled')}</div><p className="font-medium text-sm">{enrolledIds.length}/{cls.maxCapacity}</p></div>
-          <div className="rounded-xl border bg-card p-4"><div className="text-xs text-muted-foreground flex items-center gap-1"><TrendingUp className="h-3 w-3"/>{t('attendance')}</div><p className="font-medium text-sm">{attendanceRate}%</p></div>
+          <div className="rounded-sm border border-border/70 bg-white p-4"><div className="text-xs text-muted-foreground flex items-center gap-1"><MapPin className="h-3 w-3"/>{t('location')}</div><p className="font-medium text-sm">{cls.location||'—'}</p></div>
+          <div className="rounded-sm border border-border/70 bg-white p-4"><div className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3"/>{t('schedule')}</div><p className="font-medium text-sm">{t(`days_long.${cls.dayOfWeek}`) || cls.dayOfWeek} {cls.startTime}{cls.endTime&&`-${cls.endTime}`}</p></div>
+          <div className="rounded-sm border border-border/70 bg-white p-4"><div className="text-xs text-muted-foreground flex items-center gap-1"><Users className="h-3 w-3"/>{t('enrolled')}</div><p className="font-medium text-sm">{enrolledIds.length}/{cls.maxCapacity}</p></div>
+          <div className="rounded-sm border border-border/70 bg-white p-4"><div className="text-xs text-muted-foreground flex items-center gap-1"><TrendingUp className="h-3 w-3"/>{t('attendance')}</div><p className="font-medium text-sm">{attendanceRate}%</p></div>
         </div>
 
         {editing ? (
-          <div className="rounded-xl border bg-card p-4 space-y-3">
+          <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3">
             <h3 className="font-semibold text-sm flex items-center gap-2"><Pencil className="h-4 w-4"/>{t('detail.edit_class')}</h3>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="sm:col-span-2">

@@ -81,7 +81,7 @@ function ReferenceSection({
   children: React.ReactNode
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-background p-4">
+    <div className="rounded-sm border border-border bg-background p-4">
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="flex items-start gap-2">
           <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-lg bg-muted text-foreground">
@@ -167,7 +167,7 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
 
   return (
     <div className="space-y-4">
-      <Card className="rounded-3xl border-border/70 p-5 shadow-sm">
+      <Card className="rounded-sm border-border/70 p-5 shadow-sm">
         <div className="mb-4 flex items-start justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
@@ -209,7 +209,7 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
               </div>
             </ReferenceSection>
 
-            <div className="rounded-2xl border border-border bg-muted/20 p-4">
+            <div className="rounded-sm border border-border bg-muted/20 p-4">
               <div className="mb-2 text-sm font-semibold text-foreground">Referências selecionadas</div>
               <div className="space-y-2 text-sm text-muted-foreground">
                 <div className="flex items-center justify-between"><span>Bíblia Sagrada</span><span>{bibleRefs.length} referências</span></div>
@@ -222,7 +222,7 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
       </Card>
 
       {activePicker && (
-        <Card className="rounded-3xl border-border/70 p-2 shadow-sm">
+        <Card className="rounded-sm border-border/70 p-2 shadow-sm">
           <ReferencePicker
             bibleRefs={bibleRefs}
             catechismRefs={catechismRefs}
@@ -252,7 +252,7 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
         </Card>
       )}
 
-      <Card className="rounded-3xl border-border/70 p-5 shadow-sm">
+      <Card className="rounded-sm border-border/70 p-5 shadow-sm">
         <div className="mb-3 flex items-center gap-2">
           <Badge variant="outline" className="rounded-full px-2.5 py-0.5 text-xs">IA opcional</Badge>
         </div>
@@ -293,7 +293,7 @@ function ContentLibrarySidebar() {
 
   return (
     <div className="space-y-4">
-      <Card className="rounded-3xl border-border/70 p-4 shadow-sm">
+      <Card className="rounded-sm border-border/70 p-4 shadow-sm">
         <div className="mb-4 flex items-center gap-2">
           <Library className="h-4 w-4 text-foreground" />
           <div>
@@ -321,7 +321,7 @@ function ContentLibrarySidebar() {
         </div>
       </Card>
 
-      <Card className="rounded-3xl border-border/70 p-4 shadow-sm">
+      <Card className="rounded-sm border-border/70 p-4 shadow-sm">
         <div className="mb-4">
           <h3 className="text-lg font-semibold text-foreground">Conteúdos recentes</h3>
           <p className="text-sm text-muted-foreground">Retome rascunhos e reaproveite encontros.</p>
@@ -334,7 +334,7 @@ function ContentLibrarySidebar() {
         ) : (
           <div className="space-y-3">
             {filteredItems.map((item: any, index: number) => (
-              <Link key={item.id} to={`/app/content-library/${item.id}`} className="flex items-start gap-3 rounded-2xl border border-border bg-background p-3">
+              <Link key={item.id} to={`/app/content-library/${item.id}`} className="flex items-start gap-3 rounded-sm border border-border bg-background p-3">
                 <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl ${RECENT_THUMBNAIL_STYLES[index % RECENT_THUMBNAIL_STYLES.length]}`}>
                   <ScrollText className="h-5 w-5" />
                 </div>
@@ -374,7 +374,7 @@ function HeaderSection({ backTo }: { backTo: string }) {
         </div>
 
         <div className="flex flex-wrap items-start gap-3">
-          <Button className="h-auto rounded-2xl bg-emerald-900 px-6 py-4 text-left hover:bg-emerald-950">
+          <Button className="h-auto rounded-sm bg-emerald-900 px-6 py-4 text-left hover:bg-emerald-950">
             <div className="flex items-start gap-3">
               <Plus className="mt-1 h-4 w-4" />
               <div>
@@ -383,7 +383,7 @@ function HeaderSection({ backTo }: { backTo: string }) {
               </div>
             </div>
           </Button>
-          <Button variant="outline" className="h-auto rounded-2xl border-[#d8b27b] px-6 py-4 text-left">
+          <Button variant="outline" className="h-auto rounded-sm border-[#d8b27b] px-6 py-4 text-left">
             <div className="flex items-start gap-3">
               <Sparkles className="mt-1 h-4 w-4 text-foreground" />
               <div>
@@ -392,8 +392,8 @@ function HeaderSection({ backTo }: { backTo: string }) {
               </div>
             </div>
           </Button>
-          <Button variant="outline" size="icon" className="rounded-2xl"><MoreHorizontal className="h-4 w-4" /></Button>
-          <Button variant="ghost" className="gap-2 rounded-2xl"><CircleHelp className="h-4 w-4" /> Ajuda</Button>
+          <Button variant="outline" size="icon" className="rounded-sm"><MoreHorizontal className="h-4 w-4" /></Button>
+          <Button variant="ghost" className="gap-2 rounded-sm"><CircleHelp className="h-4 w-4" /> Ajuda</Button>
         </div>
       </div>
     </div>
@@ -402,7 +402,7 @@ function HeaderSection({ backTo }: { backTo: string }) {
 
 function WorkspaceTopBar({ contentItemId, estimatedTime }: { contentItemId: string; estimatedTime?: number | null }) {
   return (
-    <Card className="rounded-3xl border-border/70 px-4 py-4 shadow-sm">
+    <Card className="rounded-sm border-border/70 px-4 py-4 shadow-sm">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div className="flex flex-1 flex-wrap items-center gap-4 text-sm">
           <div className="text-muted-foreground">Rascunho salvo há 2 min</div>
@@ -531,7 +531,7 @@ function ManualContentWorkspaceInner({ existingContentId, source = 'library' }: 
       <WorkspaceTopBar contentItemId={contentItemId} estimatedTime={contentItem?.estimatedTime} />
       <div className="grid gap-5 xl:grid-cols-[240px_minmax(0,1fr)_340px]">
         <ContentLibrarySidebar />
-        <Card className="rounded-3xl border-border/70 p-0 shadow-sm">
+        <Card className="rounded-sm border-border/70 p-0 shadow-sm">
           <MeetingEditor />
         </Card>
         <ReferencesSidebar contentId={contentItemId} />

@@ -199,7 +199,7 @@ function ReferencesSidebar({
 
         <Button
           variant="outline"
-          className="mt-5 h-10 w-full rounded-2xl border-border/60 bg-background/80"
+          className="mt-5 h-10 w-full rounded-sm border-border/60 bg-background/80"
           onClick={() => setPickerOpen((value) => !value)}
         >
           {pickerOpen ? "Fechar seletor" : "Selecionar referências"}
@@ -525,7 +525,7 @@ export function ContentDocumentWorkspace({
   if (loading || !contentId) {
     return (
       <div className="mx-auto max-w-5xl space-y-6 px-4 py-8">
-        <Card className="rounded-3xl p-8">
+        <Card className="rounded-sm p-8">
           <div className="flex items-center gap-3 text-sm text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> preparando editor do
             encontro
@@ -580,7 +580,7 @@ export function ContentDocumentWorkspace({
             </Badge>
             <Button
               variant="outline"
-              className="h-10 gap-2 rounded-2xl border-border/60 bg-background/80"
+              className="h-10 gap-2 rounded-sm border-border/60 bg-background/80"
               asChild
             >
               <Link to={aiLink}>
@@ -589,19 +589,19 @@ export function ContentDocumentWorkspace({
             </Button>
             <Button
               variant="outline"
-              className="h-10 gap-2 rounded-2xl border-border/60 bg-background/80"
+              className="h-10 gap-2 rounded-sm border-border/60 bg-background/80"
               onClick={() => void saveNow()}
             >
               <Save className="h-4 w-4" /> Salvar agora
             </Button>
             <Button
               variant="outline"
-              className="h-10 gap-2 rounded-2xl border-destructive/30 text-destructive hover:bg-destructive/5 hover:text-destructive"
+              className="h-10 gap-2 rounded-sm border-destructive/30 text-destructive hover:bg-destructive/5 hover:text-destructive"
               onClick={() => void handleDeleteContent()}
             >
               <Trash2 className="h-4 w-4" /> Excluir
             </Button>
-            <Button className="h-10 gap-2 rounded-2xl shadow-sm" asChild>
+            <Button className="h-10 gap-2 rounded-sm shadow-sm" asChild>
               <Link to={`/app/content-library/${contentId}`}>
                 <Eye className="h-4 w-4" /> Visualizar
               </Link>
@@ -610,7 +610,7 @@ export function ContentDocumentWorkspace({
         </div>
 
         <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,2fr)_minmax(0,1.15fr)_minmax(0,0.75fr)_minmax(0,1.2fr)]">
-          <div className="rounded-2xl border border-border/50 bg-white/75 p-3">
+          <div className="rounded-sm border border-border/50 bg-white/75 p-3">
             <label className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
               Título
             </label>
@@ -621,7 +621,7 @@ export function ContentDocumentWorkspace({
               placeholder="Nome do encontro"
             />
           </div>
-          <div className="rounded-2xl border border-border/50 bg-white/75 p-3">
+          <div className="rounded-sm border border-border/50 bg-white/75 p-3">
             <label className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
               Tema
             </label>
@@ -632,7 +632,7 @@ export function ContentDocumentWorkspace({
               placeholder="Tema central"
             />
           </div>
-          <div className="rounded-2xl border border-border/50 bg-white/75 p-3">
+          <div className="rounded-sm border border-border/50 bg-white/75 p-3">
             <label className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
               Duração
             </label>
@@ -648,7 +648,7 @@ export function ContentDocumentWorkspace({
               />
             </div>
           </div>
-          <div className="rounded-2xl border border-border/50 bg-white/75 p-3">
+          <div className="rounded-sm border border-border/50 bg-white/75 p-3">
             <label className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
               Tags
             </label>

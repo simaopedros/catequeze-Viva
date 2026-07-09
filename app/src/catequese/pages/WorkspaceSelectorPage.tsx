@@ -143,7 +143,7 @@ export default function WorkspaceSelectorPage() {
       data-testid={`workspace-card-${ws.id}`}
       onClick={() => handleEnter(ws.id)}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleEnter(ws.id); } }}
-      className="w-full rounded-2xl border-2 border-muted bg-card hover:border-primary/50 hover:shadow-sm transition-all p-5 text-left group cursor-pointer"
+      className="w-full rounded-sm border-2 border-muted bg-card hover:border-primary/50 hover:shadow-sm transition-all p-5 text-left group cursor-pointer"
     >
       <div className="flex items-start gap-4">
         <div
@@ -230,7 +230,7 @@ export default function WorkspaceSelectorPage() {
               data-testid="workspace-card-last-used"
               onClick={() => handleEnter(lastUsed.id)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleEnter(lastUsed.id); } }}
-              className="w-full rounded-2xl border-2 border-primary/40 bg-primary/5 hover:border-primary/60 hover:bg-primary/10 transition-all p-5 text-left group cursor-pointer"
+              className="w-full rounded-sm border-2 border-primary/40 bg-primary/5 hover:border-primary/60 hover:bg-primary/10 transition-all p-5 text-left group cursor-pointer"
             >
               <div className="flex items-start gap-4">
                 <div className="rounded-xl bg-primary/10 p-3 group-hover:bg-primary/20 transition-colors">
@@ -272,7 +272,7 @@ export default function WorkspaceSelectorPage() {
               data-testid="workspace-card-personal"
               onClick={() => handleEnter(personal.id)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleEnter(personal.id); } }}
-              className="w-full rounded-2xl border-2 border-primary/30 bg-primary/5 hover:border-primary/50 hover:bg-primary/10 transition-all p-5 text-left group cursor-pointer"
+              className="w-full rounded-sm border-2 border-primary/30 bg-primary/5 hover:border-primary/50 hover:bg-primary/10 transition-all p-5 text-left group cursor-pointer"
             >
               <div className="flex items-start gap-4">
                 <div className="rounded-xl bg-primary/10 p-3 group-hover:bg-primary/20 transition-colors">
@@ -300,7 +300,7 @@ export default function WorkspaceSelectorPage() {
               </div>
             </div>
           ) : (
-            <div className="rounded-2xl border-2 border-dashed border-muted-foreground/30 p-6 text-center text-muted-foreground">
+            <div className="rounded-sm border-2 border-dashed border-muted-foreground/30 p-6 text-center text-muted-foreground">
               <p className="text-sm">{t('workspace.personal_pending')}</p>
             </div>
           )}
@@ -314,7 +314,7 @@ export default function WorkspaceSelectorPage() {
               {t('workspace.pending_invites')}
             </h3>
             {pendingInvitations.map((ws: Workspace) => (
-              <div key={ws.id} className="rounded-2xl border-2 border-warning/30 bg-warning/5 p-5 flex items-center gap-4">
+              <div key={ws.id} className="rounded-sm border-2 border-warning/30 bg-warning/5 p-5 flex items-center gap-4">
                 <div className="rounded-xl bg-warning/10 p-3">
                   <Church className="h-6 w-6 text-warning" />
                 </div>
@@ -348,7 +348,7 @@ export default function WorkspaceSelectorPage() {
             {[...dioceseGroups.entries()].map(([dioceseId, group]) => {
               const licensed = manageDioceses.find((d) => d.id === dioceseId)?.licensed;
               return (
-                <div key={dioceseId} className="space-y-2 rounded-2xl border border-secondary/30 bg-secondary/5 p-3">
+                <div key={dioceseId} className="space-y-2 rounded-sm border border-secondary/30 bg-secondary/5 p-3">
                   <div className="flex items-center justify-between gap-2 px-1">
                     <div className="flex items-center gap-1.5 text-sm font-semibold text-secondary">
                       <Building2 className="h-4 w-4" />
@@ -378,7 +378,7 @@ export default function WorkspaceSelectorPage() {
             {manageDioceses
               .filter((d) => !dioceseGroups.has(d.id))
               .map((d) => (
-                <div key={d.id} className="space-y-2 rounded-2xl border border-secondary/30 bg-secondary/5 p-3">
+                <div key={d.id} className="space-y-2 rounded-sm border border-secondary/30 bg-secondary/5 p-3">
                   <div className="flex items-center justify-between gap-2 px-1">
                     <div className="flex items-center gap-1.5 text-sm font-semibold text-secondary">
                       <Building2 className="h-4 w-4" />
@@ -411,7 +411,7 @@ export default function WorkspaceSelectorPage() {
             {canCreateUnderOwnerPlan && (
               <button
                 onClick={() => navigate('/app/parishes?new=true')}
-                className="w-full rounded-2xl border-2 border-dashed border-primary/30 hover:bg-primary/5 transition-all p-4 text-center text-primary flex items-center justify-center gap-2"
+                className="w-full rounded-sm border-2 border-dashed border-primary/30 hover:bg-primary/5 transition-all p-4 text-center text-primary flex items-center justify-center gap-2"
               >
                 <Plus className="h-4 w-4" />
                 <span className="text-sm font-medium">
@@ -435,7 +435,7 @@ export default function WorkspaceSelectorPage() {
 
         {/* Empty state: no workspaces at all */}
         {!personal && pendingInvitations.length === 0 && institutional.length === 0 && manageDioceses.length === 0 && (
-          <div className="rounded-2xl border-2 border-dashed border-warning/50 bg-warning/5 p-6 text-center space-y-3">
+          <div className="rounded-sm border-2 border-dashed border-warning/50 bg-warning/5 p-6 text-center space-y-3">
             <p className="text-sm text-muted-foreground">
               {t('workspace.empty_desc')}
             </p>
@@ -459,7 +459,7 @@ export default function WorkspaceSelectorPage() {
         {/* Create an independent parish (new institutional workspace) */}
         <button
           onClick={() => navigate('/app/parishes?new=true')}
-          className="w-full rounded-2xl border-2 border-dashed border-muted-foreground/30 hover:border-primary/40 hover:bg-accent/50 transition-all p-4 text-center text-muted-foreground hover:text-foreground flex items-center justify-center gap-2"
+          className="w-full rounded-sm border-2 border-dashed border-muted-foreground/30 hover:border-primary/40 hover:bg-accent/50 transition-all p-4 text-center text-muted-foreground hover:text-foreground flex items-center justify-center gap-2"
         >
           <Plus className="h-4 w-4" />
           <span className="text-sm font-medium">{t('workspace.create_independent')}</span>

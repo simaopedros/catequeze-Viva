@@ -35,6 +35,7 @@ import { formatDateOnly, getAgeFromDate } from '../../i18n/format';
 import { cn } from '../../client/utils';
 import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { AppPageHeader, AppPanel, AppMetric } from '../../client/components/brand/AppChrome';
 
 const PAGE_SIZE = 50;
 
@@ -53,49 +54,27 @@ function getAge(birthDate: string): number | null {
 
 function SurfaceSection({
   title,
-  icon: Icon,
   children,
   className,
-  tone = 'default',
 }: {
   title: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
   children: ReactNode;
   className?: string;
   tone?: 'default' | 'soft';
 }) {
   return (
-    <section
-      className={cn(
-        'rounded-3xl border p-5 shadow-sm shadow-slate-200/60',
-        tone === 'soft'
-          ? 'border-primary/15 bg-gradient-to-br from-white via-slate-50 to-primary/[0.04]'
-          : 'border-border/70 bg-white/90',
-        className
-      )}
-    >
-      <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
-        <Icon className="h-4 w-4" />
-        <span>{title}</span>
-      </div>
+    <AppPanel className={className}>
+      <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+        {title}
+      </p>
       {children}
-    </section>
+    </AppPanel>
   );
 }
 
-function CatechumenMetric({
-  label,
-  value,
-}: {
-  label: string;
-  value: string | number;
-}) {
-  return (
-    <div className="rounded-2xl border border-white/60 bg-white/85 px-4 py-3 shadow-sm shadow-slate-200/60 backdrop-blur">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">{label}</p>
-      <p className="mt-1.5 text-2xl font-bold tracking-tight text-slate-950">{value}</p>
-    </div>
-  );
+function CatechumenMetric({ label, value }: { label: string; value: string | number }) {
+  return <AppMetric label={label} value={value} />;
 }
 
 export default function CatechumensPage() {
@@ -158,89 +137,68 @@ export default function CatechumensPage() {
 
   return (
     <div className="space-y-8">
-      <section className="overflow-hidden rounded-[32px] border border-border/70 bg-[radial-gradient(circle_at_top_left,_rgba(17,60,107,0.10),_transparent_34%),linear-gradient(180deg,_rgba(255,255,255,1),_rgba(248,250,252,0.96))] p-6 shadow-sm shadow-slate-200/70 lg:p-8">
-        <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr] xl:items-start">
-          <div className="space-y-6">
-            <div className="space-y-3">
-              <Badge variant="outline" className="rounded-full border-primary/20 bg-white/80 px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-primary">
-                Acompanhamento pastoral
-              </Badge>
-              <div className="space-y-2">
-                <div className="flex flex-wrap items-center gap-3">
-                  <h1 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
-                    {tn('catechumens')}
-                  </h1>
-                  <span className="rounded-full bg-white/80 px-3 py-1 text-sm font-medium text-slate-500 ring-1 ring-slate-200/70">
-                    {t('catechumens.count_short', { count: catechumens.length })}
-                  </span>
-                </div>
-                <p className="max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
-                  {t('catechumens.subtitle_registered', { count: catechumens.length || 0 })}
-                </p>
-              </div>
-            </div>
+      <AppPageHeader
+        eyebrow={t('catechumens.eyebrow', { defaultValue: 'Pessoas' })}
+        title={tn('catechumens')}
+        subtitle={t('catechumens.subtitle_registered', { count: catechumens.length || 0 })}
+        actions={
+          <>
+            <Button
+              variant="outline"
+              className="h-10 rounded-sm"
+              onClick={() => setView((v) => (v === 'cards' ? 'table' : 'cards'))}
+            >
+              {view === 'cards' ? <List className="mr-2 h-4 w-4" /> : <LayoutGrid className="mr-2 h-4 w-4" />}
+              {view === 'cards' ? 'Tabela' : 'Cards'}
+            </Button>
+            {canManageCatechumens && (
+              <>
+                <Button variant="outline" className="h-10 rounded-sm" asChild>
+                  <Link to="/app/catechumens/import">
+                    <Upload className="mr-2 h-4 w-4" />
+                    {t('import')}
+                  </Link>
+                </Button>
+                <Button className="h-10 rounded-sm shadow-none" asChild>
+                  <Link to="/app/catechumens/new">
+                    <Plus className="mr-2 h-4 w-4" />
+                    {t('new')}
+                  </Link>
+                </Button>
+              </>
+            )}
+          </>
+        }
+      />
 
-            <div className="grid gap-3 sm:grid-cols-3">
-              <CatechumenMetric label="Cadastros visiveis" value={filtered.length} />
-              <CatechumenMetric label="Em turmas" value={enrolledCount} />
-              <CatechumenMetric label="Sem turma" value={noClassCount} />
-            </div>
+      <div className="grid gap-3 sm:grid-cols-3">
+        <CatechumenMetric label={t('catechumens.metrics_visible', { defaultValue: 'Visíveis' })} value={filtered.length} />
+        <CatechumenMetric label={t('catechumens.metrics_enrolled', { defaultValue: 'Em turmas' })} value={enrolledCount} />
+        <CatechumenMetric label={t('catechumens.metrics_no_class', { defaultValue: 'Sem turma' })} value={noClassCount} />
+      </div>
 
-            <div className="flex flex-wrap gap-3">
-              <Button
-                size="lg"
-                variant="outline"
-                className="h-11 rounded-xl px-5 bg-white/80"
-                onClick={() => setView((v) => v === 'cards' ? 'table' : 'cards')}
-              >
-                {view === 'cards' ? <List className="mr-2 h-4 w-4" /> : <LayoutGrid className="mr-2 h-4 w-4" />}
-                {view === 'cards' ? 'Tabela' : 'Cards'}
-              </Button>
-              {canManageCatechumens && (
-                <>
-                  <Button size="lg" variant="outline" className="h-11 rounded-xl px-5 bg-white/80" asChild>
-                    <Link to="/app/catechumens/import"><Upload className="mr-2 h-4 w-4" />{t('import')}</Link>
-                  </Button>
-                  <Button size="lg" className="h-11 rounded-xl px-5" asChild>
-                    <Link to="/app/catechumens/new"><Plus className="mr-2 h-4 w-4" />{t('new')}</Link>
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="rounded-3xl border border-white/70 bg-white/80 p-4 shadow-sm shadow-slate-200/60 backdrop-blur">
-              <div className="space-y-4">
-                <SearchInput placeholder={t('catechumens.search_by_name')} value={search} onChange={(e) => setSearch(e.target.value)} />
-                <Select value={classFilter || 'all'} onValueChange={(v) => setClassFilter(v)}>
-                  <SelectTrigger className="h-11 rounded-2xl border-border/70 bg-white text-base">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t('catechumens.all_classes')}</SelectItem>
-                    {classNames.map((n) => <SelectItem key={n} value={n}>{n}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="rounded-3xl border border-dashed border-border/80 bg-white/70 p-4">
-              <div className="flex items-start gap-3">
-                <div className="rounded-2xl bg-slate-100 p-2.5 text-slate-500">
-                  <Search className="h-4 w-4" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-slate-900">Encontre rapidamente cada catequizando</p>
-                  <p className="mt-1 text-sm leading-relaxed text-slate-600">
-                    Busque por nome, filtre por turma e acompanhe quem ja esta vinculado ou ainda precisa de alocacao.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+      <AppPanel>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <SearchInput
+            placeholder={t('catechumens.search_by_name')}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <Select value={classFilter || 'all'} onValueChange={(v) => setClassFilter(v)}>
+            <SelectTrigger className="h-10 rounded-sm border-border/70 bg-white sm:w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t('catechumens.all_classes')}</SelectItem>
+              {classNames.map((n) => (
+                <SelectItem key={n} value={n}>
+                  {n}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-      </section>
+      </AppPanel>
 
       {filtered.length === 0 ? (
         hasFilters ? (
@@ -258,10 +216,10 @@ export default function CatechumensPage() {
 
                 {canManageCatechumens && (
                   <div className="flex flex-wrap gap-3">
-                    <Button className="h-11 rounded-xl px-5" asChild>
+                    <Button className="h-11 rounded-sm px-5" asChild>
                       <Link to="/app/catechumens/new">{t('create_catechumen')}</Link>
                     </Button>
-                    <Button variant="outline" className="h-11 rounded-xl px-5 bg-white" asChild>
+                    <Button variant="outline" className="h-11 rounded-sm px-5 bg-white" asChild>
                       <Link to="/app/catechumens/import">{t('import')}</Link>
                     </Button>
                   </div>
@@ -271,13 +229,13 @@ export default function CatechumensPage() {
 
             <SurfaceSection title="Fluxo sugerido" icon={School}>
               <div className="space-y-3 text-sm leading-relaxed text-slate-600">
-                <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
                   Cadastre nome, data de nascimento e responsaveis para iniciar o acompanhamento.
                 </div>
-                <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
                   Vincule o catequizando a uma turma para organizar encontros e presenca.
                 </div>
-                <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
                   Mantenha a ficha atualizada para sacramentos, comunicacao e progresso pastoral.
                 </div>
               </div>
@@ -285,7 +243,7 @@ export default function CatechumensPage() {
           </div>
         )
       ) : view === 'table' ? (
-        <section className="overflow-hidden rounded-3xl border border-border/70 bg-white/90 shadow-sm shadow-slate-200/60">
+        <section className="overflow-hidden rounded-sm border border-border/70 bg-white/90 shadow-sm shadow-slate-200/60">
           <div className="border-b border-border/70 bg-slate-50/80 px-5 py-4">
             <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">{tn('catechumens')}</h3>
           </div>
@@ -333,10 +291,10 @@ export default function CatechumensPage() {
             <Link
               key={c.id}
               to={`/app/catechumens/${c.id}`}
-              className="group overflow-hidden rounded-3xl border border-border/70 bg-white/90 p-5 shadow-sm shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-300/40"
+              className="group overflow-hidden rounded-sm border border-border/70 bg-white/90 p-5 shadow-sm shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-300/40"
             >
               <div className="flex items-start gap-4">
-                <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-base font-bold overflow-hidden ring-1 ring-slate-200/70 ${!c.photoUrl ? AVATAR_COLORS[Math.abs(c.firstName?.charCodeAt(0) || 0) % AVATAR_COLORS.length] : ''}`}>
+                <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-sm text-base font-bold overflow-hidden ring-1 ring-slate-200/70 ${!c.photoUrl ? AVATAR_COLORS[Math.abs(c.firstName?.charCodeAt(0) || 0) % AVATAR_COLORS.length] : ''}`}>
                   {c.photoUrl ? <img src={c.photoUrl} className="h-full w-full object-cover" alt="" /> : `${c.firstName?.[0] || ''}${c.lastName?.[0] || ''}`}
                 </div>
                 <div className="min-w-0 flex-1">
@@ -356,7 +314,7 @@ export default function CatechumensPage() {
               </div>
 
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
                   <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-slate-500">
                     <School className="h-3.5 w-3.5" />
                     Turmas
@@ -365,7 +323,7 @@ export default function CatechumensPage() {
                     {c.enrollments?.length ? `${c.enrollments.length} vinculada(s)` : t('catechumens.no_class')}
                   </p>
                 </div>
-                <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
                   <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-slate-500">
                     <House className="h-3.5 w-3.5" />
                     Familia
@@ -404,7 +362,7 @@ export default function CatechumensPage() {
 
       {hasMore && (
         <div className="flex justify-center pt-2">
-          <Button variant="outline" size="sm" className="rounded-xl bg-white" onClick={loadMore} disabled={isLoading}>
+          <Button variant="outline" size="sm" className="rounded-sm bg-white" onClick={loadMore} disabled={isLoading}>
             {isLoading && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
             {t('load_more')}
           </Button>

@@ -147,7 +147,7 @@ export default function ParishesPage() {
         )}
 
         {showCreate && (
-          <div className="rounded-xl border bg-card p-4 space-y-3 animate-in fade-in slide-in-from-top-2">
+          <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3 animate-in fade-in slide-in-from-top-2">
             <h3 className="font-medium text-sm">{tp('new_parish')}</h3>
             <div className="flex flex-wrap gap-3 items-end">
               <Input value={newName} onChange={e => setNewName(e.target.value)} className="flex-1 min-w-[200px] h-9" placeholder={`${tp('parish_name')} *`} autoFocus />
@@ -200,7 +200,7 @@ export default function ParishesPage() {
               const isActive = p.active !== false;
               return (
                 <div key={p.id} onClick={() => navigate('/app/parishes/' + p.id)}
-                  className="group rounded-xl border bg-card p-5 cursor-pointer transition-all hover:border-primary/40 hover:shadow-elevation-md hover:-translate-y-0.5">
+                  className="group rounded-sm border border-border/70 bg-white p-5 cursor-pointer transition-all hover:border-primary/40 hover:shadow-elevation-md hover:-translate-y-0.5">
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">

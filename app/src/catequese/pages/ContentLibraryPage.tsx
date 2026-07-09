@@ -28,55 +28,34 @@ import { useActiveParish } from '../../client/hooks/useActiveParish';
 import { cn } from '../../client/utils';
 import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { AppPageHeader, AppPanel, AppMetric } from '../../client/components/brand/AppChrome';
 
 const STATUS_KEYS = ['all', 'DRAFT', 'IN_REVIEW', 'APPROVED', 'PUBLISHED'] as const;
 const PAGE_SIZE = 50;
 
 function SurfaceSection({
   title,
-  icon: Icon,
   children,
   className,
-  tone = 'default',
 }: {
   title: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
   children: ReactNode;
   className?: string;
   tone?: 'default' | 'soft';
 }) {
   return (
-    <section
-      className={cn(
-        'rounded-3xl border p-5 shadow-sm shadow-slate-200/60',
-        tone === 'soft'
-          ? 'border-primary/15 bg-gradient-to-br from-white via-slate-50 to-primary/[0.04]'
-          : 'border-border/70 bg-white/90',
-        className
-      )}
-    >
-      <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
-        <Icon className="h-4 w-4" />
-        <span>{title}</span>
-      </div>
+    <AppPanel className={className}>
+      <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+        {title}
+      </p>
       {children}
-    </section>
+    </AppPanel>
   );
 }
 
-function LibraryMetric({
-  label,
-  value,
-}: {
-  label: string;
-  value: string | number;
-}) {
-  return (
-    <div className="rounded-2xl border border-white/60 bg-white/85 px-4 py-3 shadow-sm shadow-slate-200/60 backdrop-blur">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">{label}</p>
-      <p className="mt-1.5 text-2xl font-bold tracking-tight text-slate-950">{value}</p>
-    </div>
-  );
+function LibraryMetric({ label, value }: { label: string; value: string | number }) {
+  return <AppMetric label={label} value={value} />;
 }
 
 export default function ContentLibraryPage() {
@@ -168,87 +147,90 @@ export default function ContentLibraryPage() {
 
   return (
     <div className="space-y-8">
-      <section className="overflow-hidden rounded-[32px] border border-border/70 bg-[radial-gradient(circle_at_top_left,_rgba(17,60,107,0.10),_transparent_34%),linear-gradient(180deg,_rgba(255,255,255,1),_rgba(248,250,252,0.96))] p-6 shadow-sm shadow-slate-200/70 lg:p-8">
-        <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr] xl:items-start">
-          <div className="space-y-6">
-            <div className="space-y-3">
-              <Badge variant="outline" className="rounded-full border-primary/20 bg-white/80 px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-primary">
-                Curadoria de conteudo
-              </Badge>
-              <div className="space-y-2">
-                <div className="flex flex-wrap items-center gap-3">
-                  <h1 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
-                    {t('title')}
-                  </h1>
-                  {items.length > 0 && (
-                    <span className="rounded-full bg-white/80 px-3 py-1 text-sm font-medium text-slate-500 ring-1 ring-slate-200/70">
-                      {t('library.count_badge', { count: items.length })}
-                    </span>
-                  )}
-                </div>
-                <p className="max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
-                  {t('library.subtitle', { scripts: items.length, activities: totalActivities })}
-                </p>
-              </div>
-            </div>
+      <AppPageHeader
+        eyebrow={t('library.eyebrow', { defaultValue: 'Biblioteca' })}
+        title={t('title')}
+        subtitle={t('library.subtitle', { scripts: items.length, activities: totalActivities })}
+        actions={
+          <>
+            <Button asChild className="h-10 rounded-sm shadow-none">
+              <Link to="/app/content-library/new">
+                <Plus className="mr-2 h-4 w-4" />
+                Criar manualmente
+              </Link>
+            </Button>
+            <Button variant="outline" className="h-10 rounded-sm" asChild>
+              <Link to="/app/ai-hub?mode=create-meeting">
+                <Sparkles className="mr-2 h-4 w-4" />
+                {t('library.generate_ai')}
+              </Link>
+            </Button>
+          </>
+        }
+      />
 
-            <div className="grid gap-3 sm:grid-cols-3">
-              <LibraryMetric label="Conteudos visiveis" value={totalScripts} />
-              <LibraryMetric label="Atividades" value={totalActivities} />
-              <LibraryMetric label="Gerados por IA" value={aiCount} />
-            </div>
+      <div className="grid gap-3 sm:grid-cols-3">
+        <LibraryMetric label={t('library.metric_visible', { defaultValue: 'Conteúdos' })} value={totalScripts} />
+        <LibraryMetric label={t('library.metric_activities', { defaultValue: 'Atividades' })} value={totalActivities} />
+        <LibraryMetric label={t('library.metric_ai', { defaultValue: 'Com IA' })} value={aiCount} />
+      </div>
 
-            <div className="flex flex-wrap gap-3">
-              <Button asChild size="lg" className="h-11 rounded-xl px-5">
-                <Link to="/app/content-library/new"><Plus className="mr-2 h-4 w-4" />Criar manualmente</Link>
-              </Button>
-              <Button size="lg" variant="outline" className="h-11 rounded-xl px-5 bg-white/80" asChild>
-                <Link to="/app/ai-hub?mode=create-meeting"><Sparkles className="mr-2 h-4 w-4" />{t('library.generate_ai')}</Link>
-              </Button>
-            </div>
+      <AppPanel>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              {t('library.filter_type')}
+            </p>
+            <FilterPills
+              options={activityFilterOptions}
+              value={onlyAiGenerated ? 'ai' : onlyWithActivities ? 'activities' : 'all'}
+              onChange={(v) => {
+                setOnlyWithActivities(v === 'activities');
+                setOnlyAiGenerated(v === 'ai');
+              }}
+            />
           </div>
-
-          <div className="space-y-4">
-            <div className="rounded-3xl border border-white/70 bg-white/80 p-4 shadow-sm shadow-slate-200/60 backdrop-blur">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">{t('library.filter_type')}</p>
-                  <FilterPills
-                    options={activityFilterOptions}
-                    value={onlyAiGenerated ? 'ai' : onlyWithActivities ? 'activities' : 'all'}
-                    onChange={(v) => {
-                      setOnlyWithActivities(v === 'activities');
-                      setOnlyAiGenerated(v === 'ai');
-                    }}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">{t('library.filter_status')}</p>
-                  <FilterPills options={statusFilterOptions} value={filter} onChange={setFilter} />
-                </div>
-
-                <SearchInput placeholder={t('library.search_placeholder')} value={search} onChange={(e) => setSearch(e.target.value)} />
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              <Button size="lg" variant="outline" className="h-11 rounded-xl px-4 bg-white/80" onClick={() => setSort((s) => s === 'recent' ? 'az' : 'recent')}>
+          <div className="space-y-2">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              {t('library.filter_status')}
+            </p>
+            <FilterPills options={statusFilterOptions} value={filter} onChange={setFilter} />
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <SearchInput
+              placeholder={t('library.search_placeholder')}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                className="h-10 rounded-sm"
+                onClick={() => setSort((s) => (s === 'recent' ? 'az' : 'recent'))}
+              >
                 <ArrowUpDown className="mr-2 h-4 w-4" />
                 {sort === 'recent' ? 'Recentes' : 'A-Z'}
               </Button>
-              <Button size="lg" variant="outline" className="h-11 rounded-xl px-4 bg-white/80" onClick={() => setView((v) => v === 'grid' ? 'list' : 'grid')}>
+              <Button
+                variant="outline"
+                className="h-10 rounded-sm"
+                onClick={() => setView((v) => (v === 'grid' ? 'list' : 'grid'))}
+              >
                 {view === 'grid' ? <List className="mr-2 h-4 w-4" /> : <LayoutGrid className="mr-2 h-4 w-4" />}
                 {view === 'grid' ? 'Lista' : 'Cards'}
               </Button>
-              <Button size="lg" variant={showDiocese ? 'default' : 'outline'} className="h-11 rounded-xl px-4" onClick={() => setShowDiocese((d) => !d)}>
+              <Button
+                variant={showDiocese ? 'default' : 'outline'}
+                className="h-10 rounded-sm"
+                onClick={() => setShowDiocese((d) => !d)}
+              >
                 <BookMarked className="mr-2 h-4 w-4" />
                 {t('library.diocese')}
               </Button>
             </div>
           </div>
         </div>
-      </section>
+      </AppPanel>
 
       {filtered.length === 0 ? (
         hasFilters ? (
@@ -269,10 +251,10 @@ export default function ContentLibraryPage() {
                   <p className="max-w-2xl text-base leading-relaxed text-slate-600">{t('library.empty_create_desc')}</p>
                 </div>
                 <div className="flex flex-wrap gap-3">
-                  <Button className="h-11 rounded-xl px-5" asChild>
+                  <Button className="h-11 rounded-sm px-5" asChild>
                     <Link to="/app/content-library/new">{t('create')}</Link>
                   </Button>
-                  <Button variant="outline" className="h-11 rounded-xl px-5 bg-white" asChild>
+                  <Button variant="outline" className="h-11 rounded-sm px-5 bg-white" asChild>
                     <Link to="/app/ai-hub?mode=create-meeting">{t('library.generate_ai')}</Link>
                   </Button>
                 </div>
@@ -281,13 +263,13 @@ export default function ContentLibraryPage() {
 
             <SurfaceSection title="Fluxo sugerido" icon={FileText}>
               <div className="space-y-3 text-sm leading-relaxed text-slate-600">
-                <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
                   Crie roteiros base para organizar temas, tempo estimado e publico.
                 </div>
-                <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
                   Adicione atividades para transformar o conteudo em encontro utilizavel.
                 </div>
-                <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
                   Combine criacao manual com IA quando precisar acelerar a preparacao.
                 </div>
               </div>
@@ -295,7 +277,7 @@ export default function ContentLibraryPage() {
           </div>
         )
       ) : view === 'list' ? (
-        <section className="overflow-hidden rounded-3xl border border-border/70 bg-white/90 shadow-sm shadow-slate-200/60">
+        <section className="overflow-hidden rounded-sm border border-border/70 bg-white/90 shadow-sm shadow-slate-200/60">
           <div className="border-b border-border/70 bg-slate-50/80 px-5 py-4">
             <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">{t('library.table_title')}</h3>
           </div>
@@ -340,7 +322,7 @@ export default function ContentLibraryPage() {
             <Link
               key={item.id}
               to={`/app/content-library/${item.id}`}
-              className="group overflow-hidden rounded-3xl border border-border/70 bg-white/90 p-5 shadow-sm shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-300/40"
+              className="group overflow-hidden rounded-sm border border-border/70 bg-white/90 p-5 shadow-sm shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-300/40"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
@@ -369,7 +351,7 @@ export default function ContentLibraryPage() {
               </div>
 
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
                   <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-slate-500">
                     <Clock className="h-3.5 w-3.5" />
                     Duracao
@@ -378,7 +360,7 @@ export default function ContentLibraryPage() {
                     {item.estimatedTime ? t('library.minutes', { count: item.estimatedTime }) : '—'}
                   </p>
                 </div>
-                <div className="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                <div className="rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
                   <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-slate-500">
                     <Puzzle className="h-3.5 w-3.5" />
                     Atividades
@@ -400,7 +382,7 @@ export default function ContentLibraryPage() {
 
       {hasMore && (
         <div className="flex justify-center pt-2">
-          <Button variant="outline" size="sm" className="rounded-xl bg-white" onClick={loadMore} disabled={loading}>
+          <Button variant="outline" size="sm" className="rounded-sm bg-white" onClick={loadMore} disabled={loading}>
             {loading && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
             {tc('load_more')}
           </Button>

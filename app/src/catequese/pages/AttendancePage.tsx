@@ -265,11 +265,13 @@ export default function AttendancePage() {
   return (
     <>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" asChild><Link to={`/app/classes/${classId}`}><ArrowLeft className="h-5 w-5" /></Link></Button>
-            <div>
-              <h1 className="text-2xl font-bold">{t('matrix.title')}</h1>
+        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border/70 pb-6">
+          <div className="flex items-start gap-3">
+            <Button variant="ghost" size="icon" className="rounded-sm" asChild><Link to={`/app/classes/${classId}`}><ArrowLeft className="h-5 w-5" /></Link></Button>
+            <div className="space-y-2">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{t('matrix.eyebrow', { defaultValue: 'Presença' })}</p>
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]" style={{ fontFamily: 'var(--font-brand-display)' }}>{t('matrix.title')}</h1>
+              <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
               <p className="text-sm text-muted-foreground">
                 {t('matrix.subtitle', {
                   catechumens: tcl('catechumens_count', { count: catechumens.length }),
@@ -278,14 +280,14 @@ export default function AttendancePage() {
               </p>
             </div>
           </div>
-          <Button onClick={() => setShowNew(!showNew)}><Plus className="mr-2 h-4 w-4" />{t('matrix.new_meeting')}</Button>
+          <Button className="h-10 rounded-sm shadow-none" onClick={() => setShowNew(!showNew)}><Plus className="mr-2 h-4 w-4" />{t('matrix.new_meeting')}</Button>
         </div>
 
         {showNew && (
-          <div className="rounded-xl border bg-card p-4 flex gap-3">
-            <input placeholder={t('matrix.title_placeholder')} value={newTitle} onChange={e => setNewTitle(e.target.value)} className="flex h-9 flex-1 rounded-md border border-input bg-background px-3 py-1 text-sm" autoFocus />
-            <input type="date" value={newDate} onChange={e => setNewDate(e.target.value)} className="flex h-9 w-36 rounded-md border border-input bg-background px-3 py-1 text-sm" />
-            <Button size="sm" onClick={handleCreateMeeting} disabled={!newTitle}>{tc('create')}</Button>
+          <div className="flex flex-col gap-3 rounded-sm border border-border/70 bg-white p-4 sm:flex-row">
+            <input placeholder={t('matrix.title_placeholder')} value={newTitle} onChange={e => setNewTitle(e.target.value)} className="flex h-10 flex-1 rounded-sm border border-input bg-background px-3 py-1 text-sm" autoFocus />
+            <input type="date" value={newDate} onChange={e => setNewDate(e.target.value)} className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-1 text-sm sm:w-36" />
+            <Button size="sm" className="rounded-sm" onClick={handleCreateMeeting} disabled={!newTitle}>{tc('create')}</Button>
           </div>
         )}
 

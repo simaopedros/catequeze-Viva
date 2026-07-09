@@ -4,8 +4,8 @@ import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Heart, Users, Plus, Phone, MapPin, User, ChevronRight, Search, Loader2 } from 'lucide-react';
 import { Button } from '../../client/components/ui/button';
-import { PageHeader } from '../../client/components/PageHeader';
 import { SearchInput } from '../../client/components/SearchInput';
+import { AppPageHeader, AppPanel } from '../../client/components/brand/AppChrome';
 import {
   Select,
   SelectContent,
@@ -60,34 +60,47 @@ export default function FamiliesPage() {
 
   return (
       <div className="space-y-6">
-        <PageHeader
+        <AppPageHeader
+          eyebrow={t('families.eyebrow', { defaultValue: 'Pastoral' })}
           title={tn('families')}
           subtitle={t('families.subtitle_registered', { count: households?.length || 0 })}
-          count={households ? t('families.count_badge', { count: households.length }) : undefined}
-          filters={
-            <div className="flex flex-col sm:flex-row gap-3">
-              <SearchInput
-                placeholder={t('families.search_placeholder')}
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                containerClassName="max-w-none w-48 flex-none"
-              />
-              <Select value={communityFilter || 'all'} onValueChange={(v) => setCommunityFilter(v === 'all' ? '' : v)}>
-                <SelectTrigger className="w-36 h-9">
-                  <SelectValue placeholder={t('families.all_communities')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t('families.all_communities')}</SelectItem>
-                  {communities.map((c: any) => (
-                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          actions={
+            canCreateFamily ? (
+              <Button asChild className="h-10 rounded-sm shadow-none">
+                <Link to="/app/families/new">
+                  <Plus className="mr-1 h-4 w-4" />
+                  {t('new')}
+                </Link>
+              </Button>
+            ) : undefined
           }
-        >
-          {canCreateFamily && <Button asChild><Link to="/app/families/new"><Plus className="mr-1 h-4 w-4" />{t('new')}</Link></Button>}
-        </PageHeader>
+        />
+        <AppPanel>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <SearchInput
+              placeholder={t('families.search_placeholder')}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              containerClassName="max-w-none w-full sm:w-56 flex-none"
+            />
+            <Select
+              value={communityFilter || 'all'}
+              onValueChange={(v) => setCommunityFilter(v === 'all' ? '' : v)}
+            >
+              <SelectTrigger className="h-10 w-full rounded-sm sm:w-44">
+                <SelectValue placeholder={t('families.all_communities')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('families.all_communities')}</SelectItem>
+                {communities.map((c: any) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </AppPanel>
 
         {filtered.length === 0 ? (
           search || communityFilter ? (

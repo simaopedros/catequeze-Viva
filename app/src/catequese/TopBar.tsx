@@ -227,7 +227,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="sm:hidden h-9 w-9 rounded-xl hover:bg-accent/50 shrink-0"
+              className="sm:hidden h-9 w-9 rounded-sm hover:bg-accent/50 shrink-0"
               onClick={() => setSearchSheetOpen(true)}
             >
               <Search className="h-5 w-5" />
@@ -236,7 +236,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
         )}
 
         {/* Expanded: full input (always on desktop, conditionally on mobile) */}
-        <div className={`flex items-center gap-2 rounded-xl border border-input bg-background px-3 h-9 transition-colors focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20 ${searchExpanded ? 'flex' : 'hidden sm:flex'}`}>
+        <div className={`flex items-center gap-2 rounded-sm border border-input bg-background px-3 h-9 transition-colors focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20 ${searchExpanded ? 'flex' : 'hidden sm:flex'}`}>
           <Search className="h-4 w-4 text-muted-foreground shrink-0" />
           <input
             ref={inputRef}
@@ -266,7 +266,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
 
         {/* Results dropdown */}
         {showDropdown && (
-          <div className="absolute top-full mt-1 left-0 right-0 z-50 rounded-xl border bg-card shadow-lg overflow-hidden">
+          <div className="absolute top-full mt-1 left-0 right-0 z-50 rounded-sm border bg-card shadow-lg overflow-hidden">
             {flatResults.length === 0 ? (
               <div className="px-4 py-6 text-center">
                 <Search className="mx-auto h-5 w-5 text-text-tertiary mb-1" />
@@ -338,7 +338,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
         {/* Notifications with real data */}
         <DropdownMenu open={notifOpen} onOpenChange={setNotifOpen}>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-xl hover:bg-accent/50">
+            <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-sm hover:bg-accent/50">
               <Bell className="h-5 w-5" />
               {unreadCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 h-[18px] min-w-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-overline font-bold px-1 animate-in zoom-in-50 shadow-elevation-xs">

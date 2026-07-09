@@ -250,7 +250,7 @@ export default function SacramentsPage() {
         </div>
 
         {showForm && (
-          <div className="rounded-xl border bg-card p-4 flex flex-col sm:flex-row gap-3">
+          <div className="rounded-sm border border-border/70 bg-white p-4 flex flex-col sm:flex-row gap-3">
             <Select value={selectedCatechumenId || 'none'} onValueChange={(v) => setSelectedCatechumenId(v === 'none' ? '' : v)}>
               <SelectTrigger className="flex-1 h-9">
                 <SelectValue placeholder={t('page.select_catechumen')} />
@@ -292,7 +292,7 @@ export default function SacramentsPage() {
               const sacramentName = j.template?.sacrament?.name;
 
               return (
-                <div key={j.id} className="block rounded-xl border bg-card p-5 shadow-elevation-sm hover:shadow-elevation-md transition-shadow cursor-pointer" onClick={() => navigate(`/app/sacramental-journeys/${j.id}`)}>
+                <div key={j.id} className="block rounded-sm border border-border/70 bg-white p-5 shadow-elevation-sm hover:shadow-elevation-md transition-shadow cursor-pointer" onClick={() => navigate(`/app/sacramental-journeys/${j.id}`)}>
                   <div className="flex items-center justify-between mb-3">
                     <Link
                       to={`/app/sacramental-journeys/${j.id}`}

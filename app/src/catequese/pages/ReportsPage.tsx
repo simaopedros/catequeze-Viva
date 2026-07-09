@@ -139,7 +139,7 @@ export default function ReportsPage() {
         {/* KPIs */}
         <div className="grid gap-4 md:grid-cols-3">
           {[{l:t('kpis.total_enrolled'),v:visibleTotals.totalEnrolled,i:Users,c:'text-primary bg-primary/10'},{l:t('kpis.total_meetings'),v:visibleTotals.totalMeetings,i:Calendar,c:'text-success bg-success/10'},{l:t('kpis.avg_attendance'),v:visibleTotals.avgAttendance+'%',i:TrendingUp,c:'text-warning bg-warning/10'}].map(k=>(
-            <div key={k.l} className="rounded-xl border bg-card p-5 shadow-elevation-sm">
+            <div key={k.l} className="rounded-sm border border-border/70 bg-white p-5 shadow-elevation-sm">
               <div className="flex items-center gap-3"><div className={`rounded-lg p-2 ${k.c}`}><k.i className="h-5 w-5"/></div><div><p className="text-xs text-muted-foreground uppercase">{k.l}</p><p className="text-2xl font-bold">{k.v}</p></div></div>
             </div>
           ))}
@@ -160,7 +160,7 @@ export default function ReportsPage() {
               </div>
             )}
 
-            <div className="rounded-xl border bg-card">
+            <div className="rounded-sm border border-border/70 bg-white">
               <div className="p-4 border-b font-medium flex items-center gap-2"><BarChart3 className="h-4 w-4"/>{t('attendance_by_class')}</div>
               {!classReports.length?<EmptyState icon={BarChart3} title={t('no_classes')} description={t('no_classes_desc')} compact />:
                 <div className="divide-y">{classReports.map((r:any)=>(     
@@ -178,7 +178,7 @@ export default function ReportsPage() {
         )}
 
         {tab==='ranking'&&(
-          <div className="rounded-xl border bg-card">
+          <div className="rounded-sm border border-border/70 bg-white">
             <div className="p-4 border-b font-medium flex items-center gap-2 bg-warning/10"><Trophy className="h-4 w-4 text-warning"/>{t('ranking_title')}</div>
             {!classReports.length?<EmptyState icon={Trophy} title={t('no_data')} description={t('no_frequency_data')} compact />:
               <div className="divide-y">
@@ -201,7 +201,7 @@ export default function ReportsPage() {
         {tab==='grafico'&&(
           <div className="space-y-6">
             {/* Bar Chart */}
-            <div className="rounded-xl border bg-card p-6">
+            <div className="rounded-sm border border-border/70 bg-white p-6">
               <h3 className="font-semibold text-sm mb-4 flex items-center gap-2"><BarChart3 className="h-4 w-4"/>{t('chart_attendance')}</h3>
               {!classReports.length ? <EmptyState icon={BarChart3} title={t('no_chart_data')} compact /> : (
                 <ResponsiveContainer width="100%" height={300}>
@@ -224,7 +224,7 @@ export default function ReportsPage() {
             </div>
 
             {/* Pie Chart */}
-            <div className="rounded-xl border bg-card p-6">
+            <div className="rounded-sm border border-border/70 bg-white p-6">
               <h3 className="font-semibold text-sm mb-4 flex items-center gap-2"><PieChart className="h-4 w-4"/>{t('chart_distribution')}</h3>
               {pieData[0].value + pieData[1].value === 0 ? <EmptyState icon={PieChart} title={t('no_chart_data')} description={t('no_distribution_data')} compact /> : (
                 <ResponsiveContainer width="100%" height={280}>

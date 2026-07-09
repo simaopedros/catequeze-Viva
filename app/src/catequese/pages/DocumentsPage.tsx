@@ -216,7 +216,7 @@ export default function DocumentsPage() {
               const initials = `${c.firstName?.[0] || ''}${c.lastName?.[0] || ''}`.toUpperCase();
 
               return (
-                <div key={c.id} className="rounded-xl border bg-card p-4 space-y-3">
+                <div key={c.id} className="rounded-sm border border-border/70 bg-white p-4 space-y-3">
                   {/* Card header: avatar, name, progress */}
                   <div className="flex items-center gap-3">
                     <Avatar className="h-9 w-9">

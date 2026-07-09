@@ -156,7 +156,7 @@ function SurfaceSection({
   className?: string;
 }) {
   return (
-    <section className={cn('rounded-3xl border border-border/70 bg-white/90 p-5 shadow-sm shadow-slate-200/60', className)}>
+    <section className={cn('rounded-sm border border-border/70 bg-white/90 p-5 shadow-sm shadow-slate-200/60', className)}>
       <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
         <Icon className="h-4 w-4" />
         <span>{title}</span>
@@ -684,7 +684,7 @@ export default function BillingPage() {
         <div className="h-8 w-32 rounded bg-muted" />
         <div className="grid gap-4 md:grid-cols-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-48 rounded-xl bg-muted" />
+            <div key={i} className="h-48 rounded-sm bg-muted" />
           ))}
         </div>
       </div>
@@ -698,7 +698,7 @@ export default function BillingPage() {
   return (
     <>
       <div className="mx-auto max-w-6xl space-y-8">
-        <section className="overflow-hidden rounded-[32px] border border-border/70 bg-[radial-gradient(circle_at_top_left,_rgba(17,60,107,0.10),_transparent_34%),linear-gradient(180deg,_rgba(255,255,255,1),_rgba(248,250,252,0.96))] p-6 shadow-sm shadow-slate-200/70 lg:p-8">
+        <section className="border-b border-border/70 pb-8">
           <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr] xl:items-start">
             <div className="space-y-6">
               <div className="space-y-3">
@@ -715,7 +715,7 @@ export default function BillingPage() {
 
                 <div className="space-y-2">
                   <div className="flex flex-wrap items-center gap-3">
-                    <h1 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
+                    <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]" style={{ fontFamily: 'var(--font-brand-display)' }}>
                       {heroTitle}
                     </h1>
                     {!isConversionMode && (
@@ -752,7 +752,7 @@ export default function BillingPage() {
                 {primaryPlanCard && (isConversionMode || isUpgradeJourney) && (!requestedPlanId || requestedPlanLevelMatches) && (
                   <Button
                     size="lg"
-                    className="h-11 rounded-xl px-5"
+                    className="h-11 rounded-sm px-5"
                     onClick={() => handleUpgrade(primaryPlanCard.planId)}
                     disabled={upgradingPlan === primaryPlanCard.planId}
                   >
@@ -773,7 +773,7 @@ export default function BillingPage() {
                 {!isUpgradeJourney && !isConversionMode && isTrialAccess && (
                   <Button
                     size="lg"
-                    className="h-11 rounded-xl px-5"
+                    className="h-11 rounded-sm px-5"
                     onClick={() => handleUpgrade(effectivePlanId === PaymentPlanId.CatechistFree ? PaymentPlanId.Single : effectivePlanId)}
                     disabled={!!upgradingPlan}
                   >
@@ -793,7 +793,7 @@ export default function BillingPage() {
 
                 {!isUpgradeJourney && !isConversionMode && isPaidActive && !effectivePlan.isFree && isPlanManager && (
                   <>
-                    <Button variant="outline" size="lg" className="h-11 rounded-xl px-5 bg-white/80" onClick={handleManagePayment} disabled={managePaymentLoading}>
+                    <Button variant="outline" size="lg" className="h-11 rounded-sm px-5 bg-white/80" onClick={handleManagePayment} disabled={managePaymentLoading}>
                       {managePaymentLoading ? (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       ) : (
@@ -801,7 +801,7 @@ export default function BillingPage() {
                       )}
                       {managePaymentLoading ? t('redirecting') : t('manage_payment')}
                     </Button>
-                    <Button variant="outline" size="lg" className="h-11 rounded-xl px-5 text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={handleCancel} disabled={cancelling}>
+                    <Button variant="outline" size="lg" className="h-11 rounded-sm px-5 text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={handleCancel} disabled={cancelling}>
                       <XCircle className="mr-2 h-4 w-4" />
                       {cancelling ? t('cancelling') : t('cancel_subscription')}
                     </Button>
@@ -815,7 +815,7 @@ export default function BillingPage() {
               </div>
 
               {requestedPlanId && !requestedPlanLevelMatches && (
-                <div className="rounded-2xl border border-amber-200 bg-amber-50/90 px-4 py-3 text-sm text-amber-800">
+                <div className="rounded-sm border border-amber-200 bg-amber-50/90 px-4 py-3 text-sm text-amber-800">
                   <p>{requestedIsInstitutional ? t('plan_mismatch_institutional') : t('plan_mismatch_personal')}</p>
                   {requestedIsInstitutional && isPersonal && (
                     <Button asChild size="sm" variant="outline" className="mt-3 bg-white">
@@ -826,7 +826,7 @@ export default function BillingPage() {
               )}
 
               {isParishManaged && (
-                <div className="rounded-3xl border border-primary/15 bg-white/85 p-5 shadow-sm shadow-slate-200/60">
+                <div className="rounded-sm border border-primary/15 bg-white/85 p-5 shadow-sm shadow-slate-200/60">
                   <div className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
                     <ShieldCheck className="h-4 w-4" />
                     <span>{t('corporate_plan')}</span>
@@ -853,7 +853,7 @@ export default function BillingPage() {
               )}
 
               {!isPersonal && userPersonalPlanId && (
-                <div className="rounded-2xl border border-border/70 bg-white/75 px-4 py-3 text-sm text-slate-600">
+                <div className="rounded-sm border border-border/70 bg-white/75 px-4 py-3 text-sm text-slate-600">
                   <span className="inline-flex items-center gap-2">
                     <UserIcon className="h-4 w-4 text-slate-400" />
                     {t('your_personal_plan')}:
@@ -864,7 +864,7 @@ export default function BillingPage() {
             </div>
 
             {isConversionMode ? (
-              <div className="rounded-3xl border border-white/70 bg-white/88 p-5 shadow-sm shadow-slate-200/60 backdrop-blur">
+              <div className="rounded-sm border border-white/70 bg-white/88 p-5 shadow-sm shadow-slate-200/60 backdrop-blur">
                 <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
                   <CheckCircle className="h-4 w-4" />
                   <span>{t('conversion_checklist_title')}</span>
@@ -879,7 +879,7 @@ export default function BillingPage() {
                 </div>
               </div>
             ) : isUpgradeJourney ? (
-              <div className="rounded-3xl border border-primary/15 bg-white/88 p-5 shadow-sm shadow-slate-200/60 backdrop-blur">
+              <div className="rounded-sm border border-primary/15 bg-white/88 p-5 shadow-sm shadow-slate-200/60 backdrop-blur">
                 <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
                   <CheckCircle className="h-4 w-4" />
                   <span>{t('upgrade_checklist_title')}</span>
@@ -895,7 +895,7 @@ export default function BillingPage() {
               </div>
             ) : (
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
-                <div className="rounded-3xl border border-white/70 bg-white/85 p-5 shadow-sm shadow-slate-200/60 backdrop-blur">
+                <div className="rounded-sm border border-white/70 bg-white/85 p-5 shadow-sm shadow-slate-200/60 backdrop-blur">
                   <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
                     <TrendingUp className="h-4 w-4" />
                     <span>{t('usage_title')}</span>
@@ -906,11 +906,11 @@ export default function BillingPage() {
                   </div>
                 </div>
 
-                <div className="rounded-3xl border border-white/70 bg-white/85 p-5 shadow-sm shadow-slate-200/60 backdrop-blur">
+                <div className="rounded-sm border border-white/70 bg-white/85 p-5 shadow-sm shadow-slate-200/60 backdrop-blur">
                   <div className="flex items-start gap-4">
                     <div
                       className={cn(
-                        'rounded-2xl p-3',
+                        'rounded-sm p-3',
                         isTrialAccess
                           ? 'bg-amber-100 text-amber-800'
                           : isPaidActive
@@ -960,7 +960,7 @@ export default function BillingPage() {
         </section>
 
         {error && (
-          <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive flex items-center gap-3">
+          <div className="rounded-sm border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive flex items-center gap-3">
             <AlertCircle className="h-5 w-5 flex-shrink-0" />
             {error}
           </div>
@@ -985,12 +985,12 @@ export default function BillingPage() {
                     accent={aiCredits.hasAiAccess ? 'bg-violet-500' : 'bg-slate-500'}
                     ariaLabel={t('ai_credits_quota_label')}
                   />
-                  <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
+                  <div className="flex items-center justify-between rounded-sm bg-slate-50 px-4 py-3 ring-1 ring-slate-200/70">
                     <span className="text-sm text-slate-500">{t('remaining')}</span>
                     <span className="text-sm font-semibold text-slate-950">{aiCredits.creditsLeft} {creditLabel}</span>
                   </div>
                   {aiCredits.creditsLeft <= 10 && (
-                    <div className="space-y-3 rounded-2xl border border-border/70 bg-slate-50/80 p-4">
+                    <div className="space-y-3 rounded-sm border border-border/70 bg-slate-50/80 p-4">
                       <p className="text-sm leading-relaxed text-slate-600">{t('buy_credits_desc')}</p>
                       <div className="flex gap-3">
                         <BuyCreditsButton pack="20" size="sm" variant="outline" label={t('buy_credits_20')} />
@@ -1018,7 +1018,7 @@ export default function BillingPage() {
           <section className="space-y-6">
             {/* Savings CTA: switch from monthly to annual */}
             {canSwitchInterval && isMonthly && annualSavingsAmount ? (
-              <div className="rounded-2xl border-2 border-emerald-300/70 bg-emerald-50 dark:bg-emerald-950/30 p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="rounded-sm border-2 border-emerald-300/70 bg-emerald-50 dark:bg-emerald-950/30 p-5 flex flex-col sm:flex-row sm:items-center gap-4">
                 <div className="flex-1">
                   <p className="font-semibold text-emerald-900 dark:text-emerald-100 flex items-center gap-2">
                     <PiggyBank className="h-4 w-4" /> {t('switch_annual_title')}
@@ -1055,12 +1055,12 @@ export default function BillingPage() {
                   {isConversionMode ? t('conversion_plans_subtitle') : isUpgradeJourney ? t('upgrade_plans_subtitle') : t('pricing_section_subtitle')}
                 </p>
               </div>
-              <div className="inline-flex items-center rounded-2xl border border-border/70 bg-white/90 p-1 shadow-sm shadow-slate-200/60">
+              <div className="inline-flex items-center rounded-sm border border-border/70 bg-white/90 p-1 shadow-sm shadow-slate-200/60">
                 <button
                   type="button"
                   onClick={() => setBillingInterval('monthly')}
                   className={cn(
-                    'rounded-xl px-4 py-2 text-sm font-medium transition-all',
+                    'rounded-sm px-4 py-2 text-sm font-medium transition-all',
                     billingInterval === 'monthly' ? 'bg-slate-950 text-white' : 'text-slate-500 hover:text-slate-900'
                   )}
                 >
@@ -1070,7 +1070,7 @@ export default function BillingPage() {
                   type="button"
                   onClick={() => setBillingInterval('annual')}
                   className={cn(
-                    'rounded-xl px-4 py-2 text-sm font-medium transition-all flex items-center gap-2',
+                    'rounded-sm px-4 py-2 text-sm font-medium transition-all flex items-center gap-2',
                     billingInterval === 'annual' ? 'bg-slate-950 text-white' : 'text-slate-500 hover:text-slate-900'
                   )}
                 >
@@ -1094,7 +1094,7 @@ export default function BillingPage() {
                   <div
                     key={plan.planId}
                     className={cn(
-                      'flex flex-col rounded-3xl border bg-white/90 p-5 shadow-sm shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg',
+                      'flex flex-col rounded-sm border bg-white/90 p-5 shadow-sm shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg',
                       isCurrent
                         ? 'border-slate-950 ring-1 ring-slate-950/10'
                         : (isConversionMode || isUpgradeJourney ? isRecommended : plan.highlight)
@@ -1174,7 +1174,7 @@ export default function BillingPage() {
 
                     {isCurrent && isTrialAccess ? (
                       <Button
-                        className="mt-5 w-full rounded-xl text-sm"
+                        className="mt-5 w-full rounded-sm text-sm"
                         onClick={() => handleUpgrade(plan.planId)}
                         disabled={isUpgrading}
                       >
@@ -1191,20 +1191,20 @@ export default function BillingPage() {
                         )}
                       </Button>
                     ) : isCurrent ? (
-                      <Button variant="outline" className="mt-5 w-full rounded-xl text-sm" disabled>
+                      <Button variant="outline" className="mt-5 w-full rounded-sm text-sm" disabled>
                         {t('current_plan_btn')}
                       </Button>
                     ) : plan.isFree ? (
-                      <Button variant="outline" className="mt-5 w-full rounded-xl text-sm" disabled>
+                      <Button variant="outline" className="mt-5 w-full rounded-sm text-sm" disabled>
                         {t('base_plan_btn')}
                       </Button>
                     ) : plan.planId === PaymentPlanId.Unlimited && !user?.isAdmin && parish?.ownerId !== user?.id && !parish?.dioceseAdmins?.some((da: any) => da.user?.id === user?.id) ? (
-                      <Button variant="outline" className="mt-5 w-full rounded-xl text-sm" disabled title={t('institutional_requires_admin')}>
+                      <Button variant="outline" className="mt-5 w-full rounded-sm text-sm" disabled title={t('institutional_requires_admin')}>
                         {t('institutional_plan_btn')}
                       </Button>
                     ) : (
                       <Button
-                        className="mt-5 w-full rounded-xl text-sm"
+                        className="mt-5 w-full rounded-sm text-sm"
                         variant={(isConversionMode || isUpgradeJourney ? isRecommended : plan.highlight) ? 'default' : 'outline'}
                         onClick={() => handleUpgrade(plan.planId)}
                         disabled={isUpgrading}
