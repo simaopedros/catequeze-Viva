@@ -1,6 +1,5 @@
 import { logger } from '../logger';
 import { SUBSCRIPTION_TRIAL_DAYS } from '../../shared/pricing';
-import { skipIfNotJobWorker } from '../jobs/jobGuard';
 import { Resend } from 'resend';
 
 /**
@@ -58,7 +57,6 @@ export const expireSubscriptionsJob = async (
     };
   },
 ) => {
-  if (skipIfNotJobWorker()) return;
 
   const now = new Date();
   let expiredCount = 0;
@@ -253,6 +251,7 @@ export const expireSubscriptionsJob = async (
     );
   } catch (err: any) {
     logger.error('[subscriptionExpirationJob] Error:', { error: err.message });
+    throw err;
   }
 
   return { expiredCount, remindersSent };

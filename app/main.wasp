@@ -224,69 +224,6 @@ query getDailyStats {
   entities: [User, DailyStats]
 }
 
-job dailyStatsJob {
-  executor: PgBoss,
-  perform: {
-    fn: import { calculateDailyStats } from "@src/analytics/stats"
-  },
-  schedule: {
-    cron: "0 * * * *" // every hour. useful in production
-    // cron: "* * * * *" // every minute. useful for debugging
-  },
-  entities: [User, DailyStats, Logs, PageViewSource]
-}
-
-job aiCreditsResetJob {
-  executor: PgBoss,
-  perform: {
-    fn: import { resetAiCreditsJob } from "@src/server/scripts/aiCreditsResetJob"
-  },
-  schedule: {
-    cron: "5 3 * * *" // daily at 03:05 (staggered from hourly dailyStatsJob @ :00)
-  },
-  entities: [UserAiCredits, User]
-}
-
-job aiCacheCleanupJob {
-  executor: PgBoss,
-  perform: {
-    fn: import { cleanupAiCacheJob } from "@src/server/scripts/aiCacheCleanupJob"
-  },
-  schedule: {
-    cron: "25 3 * * *" // daily at 03:25 (staggered 20min apart)
-  },
-  entities: [AiResponseCache]
-}
-
-job remindersJob {
-  executor: PgBoss,
-  perform: {
-    fn: import { sendRemindersJob } from "@src/server/scripts/remindersJob"
-  },
-  schedule: {
-    cron: "0 7 * * *" // daily at 7am (morning, user-facing)
-  },
-  entities: [Meeting, Notification, Document, User, CatechesisClass]
-}
-
-job sendInviteEmailJob {
-  executor: PgBoss,
-  perform: {
-    fn: import { sendInviteEmailJob } from "@src/server/jobs/sendInviteEmailJob"
-  },
-  entities: [Parish]
-}
-
-job subscriptionExpirationJob {
-  executor: PgBoss,
-  perform: {
-    fn: import { expireSubscriptionsJob } from "@src/server/scripts/subscriptionExpirationJob"
-  },
-  schedule: {
-    cron: "45 3 * * *" // daily at 03:45 (staggered 20min apart)
-  },
-  entities: [User, TenantBilling, Notification, Parish]
-}
 //#endregion
 
 //#region Admin Dashboard
@@ -1299,6 +1236,11 @@ api readinessCheckApi {
   fn: import { healthCheckHandler } from "@src/server/api/healthCheck",
   httpRoute: (GET, "/readyz"),
   entities: [User]
+}
+api maintenanceApi {
+  fn: import { maintenanceHandler } from "@src/server/api/maintenance",
+  httpRoute: (POST, "/api/internal/maintenance"),
+  entities: [User, DailyStats, Logs, PageViewSource, UserAiCredits, AiResponseCache, Meeting, Notification, CatechesisClass, TenantBilling, Parish]
 }
 
 action generateCatechumenUploadToken {

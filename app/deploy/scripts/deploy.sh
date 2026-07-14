@@ -11,7 +11,7 @@ echo "Deploying to $ENV..."
 
 docker compose -f "$COMPOSE_FILE" pull
 docker compose -f "$COMPOSE_FILE" run --rm --entrypoint "npx" server prisma migrate deploy --schema=../db/schema.prisma
-docker compose -f "$COMPOSE_FILE" up -d
+docker compose -f "$COMPOSE_FILE" up -d --remove-orphans
 
 echo "Smoke test (in-container health)..."
 docker compose -f "$COMPOSE_FILE" exec -T server node -e "

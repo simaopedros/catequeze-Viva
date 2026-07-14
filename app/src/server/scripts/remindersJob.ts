@@ -4,10 +4,8 @@
  */
 import { getMeetingReminderNotification, resolveUserLocale } from '../i18n/serverLocale';
 import { logger } from '../logger';
-import { skipIfNotJobWorker } from '../jobs/jobGuard';
 
 export async function sendRemindersJob(_args: any, context: any) {
-  if (skipIfNotJobWorker()) return;
 
   const now = new Date();
   const tomorrow = new Date(now);
@@ -84,6 +82,17 @@ export async function sendRemindersJob(_args: any, context: any) {
       }
 
       for (const userId of userIds) {
+        const reminderMarker = `${meeting.id}:${tomorrow.toISOString().slice(0, 10)}`;
+        const existing = await context.entities.Notification.findFirst({
+          where: {
+            userId,
+            entityType: 'MEETING_REMINDER',
+            entityId: reminderMarker,
+          },
+          select: { id: true },
+        });
+        if (existing) continue;
+
         const locale = userLocales.get(userId) ?? 'pt-BR';
         const { title, body } = getMeetingReminderNotification(
           locale,
@@ -98,6 +107,8 @@ export async function sendRemindersJob(_args: any, context: any) {
             title,
             body,
             link: `/app/classes/${meeting.classId}/attendance`,
+            entityType: 'MEETING_REMINDER',
+            entityId: reminderMarker,
           },
         });
         meetingReminders++;
@@ -110,6 +121,7 @@ export async function sendRemindersJob(_args: any, context: any) {
     logger.info(`[remindersJob] Sent ${meetingReminders} meeting reminders.`);
   } catch (err: any) {
     logger.error('[remindersJob] Error:', { error: err.message });
+    throw err;
   }
 
   return { meetingReminders };

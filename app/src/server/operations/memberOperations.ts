@@ -1,5 +1,4 @@
 import { HttpError } from 'wasp/server';
-import { sendInviteEmailJob } from 'wasp/server/jobs';
 import { requireAuth, writeAuditLog, getDioceseParishIds } from '../auth/helpers';
 import { logger } from '../logger';
 
@@ -78,15 +77,16 @@ async function sendInviteEmail(
 ) {
   if (!to) return;
   const payload = { to, location, role, token };
+  // Persist the invitation even when email is not configured; never block the API on provider configuration.
+  if (process.env.VITEST || process.env.NODE_ENV === 'test' || !process.env.RESEND_API_KEY) {
+    logger.warn('[memberOperations] RESEND_API_KEY ausente; convite salvo sem envio de email.', { to });
+    return;
+  }
   try {
-    await sendInviteEmailJob.submit(payload);
-  } catch (e) {
-    logger.warn('[memberOperations] Fila de convite indisponível, envio síncrono', { error: String(e) });
-    try {
-      await deliverInviteEmail(payload, context);
-    } catch (syncErr) {
-      logger.error('[memberOperations] Erro ao enviar email de convite', { error: String(syncErr) });
-    }
+    await deliverInviteEmail(payload, context);
+  } catch (error) {
+    // The invitation remains persisted even if the email provider is down.
+    logger.error('[memberOperations] Erro ao enviar email de convite', { error: String(error) });
   }
 }
 

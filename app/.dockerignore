@@ -1,0 +1,15 @@
+node_modules
+.wasp
+.git
+.env
+.env.*
+.claude
+CLAUDE.md
+.agents
+.codex
+coverage
+playwright-report
+test-results
+dist
+build
+*.log

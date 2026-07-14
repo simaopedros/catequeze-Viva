@@ -18,22 +18,10 @@ services:
     restart: unless-stopped
     env_file: .env.server
     environment:
-      RUN_JOBS: "false"
       BUNNY_STORAGE_HOSTNAME: "storage.bunnycdn.com"
-      PG_BOSS_NEW_OPTIONS: '{"max":1,"application_name":"catechis-homolog-pgboss"}'
     expose:
       - "3001"
 
-  worker:
-    image: ${IMAGE:-ghcr.io/simaopedros/catequeze-viva:homolog-latest}
-    restart: unless-stopped
-    env_file: .env.server
-    environment:
-      RUN_JOBS: "true"
-      BUNNY_STORAGE_HOSTNAME: "storage.bunnycdn.com"
-      PG_BOSS_NEW_OPTIONS: '{"max":1,"application_name":"catechis-homolog-pgboss"}'
-    depends_on:
-      - server
 
 volumes:
   caddy_data:

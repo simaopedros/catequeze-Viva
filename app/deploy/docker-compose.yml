@@ -18,21 +18,10 @@ services:
     restart: unless-stopped
     env_file: .env.server
     environment:
-      RUN_JOBS: "false"
       NODE_ENV: production
-      PG_BOSS_NEW_OPTIONS: '{"max":2,"application_name":"catechis-prod-pgboss"}'
     expose:
       - "3001"
 
-  worker:
-    image: ${IMAGE:-ghcr.io/simaopedros/catequeze-viva:prod-latest}
-    restart: unless-stopped
-    env_file: .env.server
-    environment:
-      RUN_JOBS: "true"
-      PG_BOSS_NEW_OPTIONS: '{"max":2,"application_name":"catechis-prod-pgboss"}'
-    depends_on:
-      - server
 
 volumes:
   caddy_data:
