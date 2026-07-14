@@ -5,7 +5,6 @@
  */
 import type { Request, Response } from 'express';
 import { getDocumentStorageStatus } from '../storage/documentStorage';
-import { isJobWorkerProcess } from '../jobs/jobGuard';
 import { detectProvider, createAiClient } from '../ai/providers';
 
 let aiStatus: string = 'unknown';
@@ -79,7 +78,7 @@ async function runReadinessCheck(context: any): Promise<{ payload: Record<string
         backend: storage.backend,
         healthy: storage.healthy,
       },
-      jobs: isJobWorkerProcess() ? 'worker' : 'api-only',
+      jobs: 'disabled',
       ai: aiStatus,
       memory: process.memoryUsage(),
     },
@@ -99,7 +98,7 @@ export async function healthCheckHandler(req: Request, res: Response, context: a
         backend: 'unchecked',
         healthy: 'unchecked',
       },
-      jobs: isJobWorkerProcess() ? 'worker' : 'api-only',
+      jobs: 'disabled',
       ai: aiStatus,
       memory: process.memoryUsage(),
     });
