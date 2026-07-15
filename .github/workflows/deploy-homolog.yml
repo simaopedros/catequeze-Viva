@@ -122,4 +122,17 @@ jobs:
             echo "⚠️ CF_ACCESS_CLIENT_ID/SECRET not set — smoke may fail if Cloudflare Access is enabled."
             echo "   See app/docs/CLOUDFLARE_ACCESS.md (Service Token + GitHub secrets)."
           fi
-          HOMOLOG_STAFF_URL=https://homolog.catechis.app HOMOLOG_FAMILY_URL=https://familia-homolog.catechis.app HOMOLOG_API_URL=https://api-homolog.catechis.app SKIP_WEBSERVER=true npx playwright test tests/homologSmoke.spec.ts tests/homologPastoral.spec.ts --reporter=list
+          # Wait for public edge to serve ready SPA (cold CF/cache after recreate).
+          for i in 1 2 3 4 5 6 7 8 9 10; do
+            if curl -fsS --max-time 10 https://homolog.catechis.app/readyz | grep -q '"status":"ok"'; then
+              echo "✅ homolog readyz ok (attempt $i)"
+              break
+            fi
+            echo "⏳ waiting for homolog readyz ($i)..."
+            sleep 6
+          done
+          HOMOLOG_STAFF_URL=https://homolog.catechis.app \
+          HOMOLOG_FAMILY_URL=https://familia-homolog.catechis.app \
+          HOMOLOG_API_URL=https://api-homolog.catechis.app \
+          SKIP_WEBSERVER=true \
+          npx playwright test tests/homologSmoke.spec.ts tests/homologPastoral.spec.ts --reporter=list

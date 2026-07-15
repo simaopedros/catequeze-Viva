@@ -3,8 +3,12 @@ import { test, expect, type Page } from '@playwright/test';
 const STAFF_URL = process.env.HOMOLOG_STAFF_URL || 'https://homolog.catechis.app';
 const FAMILY_URL = process.env.HOMOLOG_FAMILY_URL || 'https://familia-homolog.catechis.app';
 
-/** SPA shell only has noscript until React mounts — wait for real UI after cold deploy. */
-async function waitForSpaHydration(page: Page, pattern: RegExp, timeout = 30_000) {
+/**
+ * SPA shell only has noscript + empty #root until React mounts.
+ * After Docker deploy, first paints can be slow — allow a long cold-start window.
+ */
+async function waitForSpaHydration(page: Page, pattern: RegExp, timeout = 60_000) {
+  await page.waitForSelector('#root', { state: 'attached', timeout });
   await page.waitForFunction(
     () => {
       const root = document.querySelector('#root');
@@ -16,6 +20,9 @@ async function waitForSpaHydration(page: Page, pattern: RegExp, timeout = 30_000
 }
 
 test.describe('Homolog smoke tests', () => {
+  // Cold deploy + CF + large client bundle — default 30s is too tight.
+  test.describe.configure({ timeout: 90_000 });
+
   test('API health check returns ok with all services', async ({ request }) => {
     // /readyz is the deep readiness probe that checks the database.
     // /health is a cheap liveness probe that skips the DB by design.
@@ -29,24 +36,29 @@ test.describe('Homolog smoke tests', () => {
   test('Family portal landing loads with brand content', async ({ page }) => {
     const res = await page.goto(FAMILY_URL, { waitUntil: 'domcontentloaded' });
     expect(res?.ok()).toBeTruthy();
+    // Title is in the static HTML shell (no JS required).
+    await expect(page).toHaveTitle(/catequese|catechis/i);
     await waitForSpaHydration(page, /família|family|portal|catequese|catechis/i);
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 30_000 });
   });
 
   test('Staff portal landing loads', async ({ page }) => {
     const res = await page.goto(STAFF_URL, { waitUntil: 'domcontentloaded' });
     expect(res?.ok()).toBeTruthy();
+    await expect(page).toHaveTitle(/catequese|catechis/i);
     await waitForSpaHydration(page, /catequese|catechis/i);
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 30_000 });
   });
 
   test('Invite code page loads with form', async ({ page }) => {
     const res = await page.goto(`${FAMILY_URL}/convite`, { waitUntil: 'domcontentloaded' });
     expect(res?.ok()).toBeTruthy();
-    // Should have an invite code input
-    await expect(page.locator('#invite-code, input[id="invite-code"]')).toBeVisible({
-      timeout: 15_000,
-    });
+    await waitForSpaHydration(page, /convite|invite|código|code|inserir|portal/i);
+    // Prefer role/label in case id wiring changes; keep id as fallback.
+    const inviteInput = page
+      .locator('#invite-code, input[id="invite-code"], input[placeholder*="abc"]')
+      .first();
+    await expect(inviteInput).toBeVisible({ timeout: 30_000 });
   });
 
   test('OG meta tags present on landing', async ({ page }) => {
