@@ -23,9 +23,8 @@ import { isFamilyPortalHost, familyPortalUrl } from "../shared/portal";
 import { useQuery } from "wasp/client/operations";
 import * as ops from "wasp/client/operations";
 import {
-  getStoredContinuation,
+  clearStoredContinuation,
   redirectToContinuationOrPath,
-  redirectToFamilyContinuation,
 } from "../auth/portalContinuation";
 
 const AIHelperWidget = lazy(() =>
@@ -97,12 +96,14 @@ export function AppShell({ children }: AppShellProps) {
   /**
    * Gate auto-accept: family INVITED memberships must be accepted explicitly
    * via /convite or /convite/continuar — never mass-accepted on AppShell paint.
-   * OAuth/email return: if a server (or cached) AuthContinuation is open, deep-link
-   * to the family host accept UI.
+   * OAuth return: only deep-link when **server** reports a pending continuation.
+   * Stale sessionStorage is cleared when server says pending: false.
    */
   useEffect(() => {
     if (!authUser || continuationRedirectRef.current) return;
     if (location.pathname.startsWith("/convite")) return;
+    // Wait until the pending query has resolved (undefined = still loading)
+    if (pendingContinuation === undefined && getPendingAuthContinuation) return;
 
     if (pendingContinuation?.pending && pendingContinuation.continuationId) {
       continuationRedirectRef.current = true;
@@ -116,10 +117,9 @@ export function AppShell({ children }: AppShellProps) {
       return;
     }
 
-    const stored = getStoredContinuation();
-    if (stored) {
-      continuationRedirectRef.current = true;
-      redirectToFamilyContinuation(stored);
+    // Server is source of truth after auth — do not follow stale storage alone
+    if (pendingContinuation && pendingContinuation.pending === false) {
+      clearStoredContinuation();
     }
   }, [authUser, pendingContinuation, location.pathname]);
 

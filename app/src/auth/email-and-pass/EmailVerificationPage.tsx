@@ -7,16 +7,14 @@ import { useAuth } from "wasp/client/auth";
 import * as ops from "wasp/client/operations";
 import {
   getStoredContinuation,
-  redirectToContinuationOrPath,
-  redirectToFamilyContinuation,
-  rememberContinuation,
+  tryContinuationAfterAuth,
 } from "../portalContinuation";
 import { getPendingInviteToken } from "../inviteTokenStorage";
 import { isFamilyPortalHost } from "../../shared/portal";
 
 /**
  * After email verification, prefer server AuthContinuation deep-link to family host.
- * Falls back to stored continuation / invite token / login link.
+ * Authenticated path uses server pending + revalidated HMAC; does not trust stale storage alone.
  */
 export function EmailVerificationPage() {
   const { t } = useTranslation("auth");
@@ -28,65 +26,51 @@ export function EmailVerificationPage() {
     if (isLoading || redirectedRef.current) return;
 
     const run = async () => {
-      // Prefer authenticated pending continuation after verify logs user in
       if (user) {
-        const getPending = (ops as any).getPendingAuthContinuation;
-        if (typeof getPending === "function") {
+        const redirected = await tryContinuationAfterAuth({
+          inviteToken: getPendingInviteToken(),
+          continuationParams: getStoredContinuation(),
+          ops: ops as any,
+        });
+        if (redirected) {
+          redirectedRef.current = true;
+          return;
+        }
+      } else {
+        // Not logged in yet after verify form: only use create-from-token, not stale storage alone
+        const token = getPendingInviteToken();
+        const createCont = (ops as any).createAuthContinuation;
+        if (token && typeof createCont === "function") {
           try {
-            const pending = await getPending();
-            if (pending?.pending && pending.continuationId) {
+            const cont = await createCont({ token });
+            if (cont?.continuationId && cont.sig && cont.exp) {
               redirectedRef.current = true;
+              const { redirectToContinuationOrPath, rememberContinuation } =
+                await import("../portalContinuation");
+              rememberContinuation({
+                continuationId: cont.continuationId,
+                sig: cont.sig,
+                exp: cont.exp,
+                signedUrl: cont.signedUrl,
+                path: cont.path,
+                invitationId: cont.invitation?.invitationId,
+              });
               redirectToContinuationOrPath({
-                continuationId: pending.continuationId,
-                sig: pending.sig,
-                exp: pending.exp,
-                signedUrl: pending.signedUrl,
-                path: pending.path,
+                continuationId: cont.continuationId,
+                sig: cont.sig,
+                exp: cont.exp,
+                signedUrl: cont.signedUrl,
+                path: cont.path,
               });
               return;
             }
           } catch {
-            /* ignore */
+            /* not a portal invite */
           }
         }
-      }
-
-      const stored = getStoredContinuation();
-      if (stored) {
-        redirectedRef.current = true;
-        redirectToFamilyContinuation(stored);
-        return;
       }
 
       const token = getPendingInviteToken();
-      const createCont = (ops as any).createAuthContinuation;
-      if (token && typeof createCont === "function") {
-        try {
-          const cont = await createCont({ token });
-          if (cont?.continuationId && cont.sig && cont.exp) {
-            rememberContinuation({
-              continuationId: cont.continuationId,
-              sig: cont.sig,
-              exp: cont.exp,
-              signedUrl: cont.signedUrl,
-              path: cont.path,
-              invitationId: cont.invitation?.invitationId,
-            });
-            redirectedRef.current = true;
-            redirectToContinuationOrPath({
-              continuationId: cont.continuationId,
-              sig: cont.sig,
-              exp: cont.exp,
-              signedUrl: cont.signedUrl,
-              path: cont.path,
-            });
-            return;
-          }
-        } catch {
-          /* not a portal invite */
-        }
-      }
-
       if (token) {
         setHint(
           isFamilyPortalHost()

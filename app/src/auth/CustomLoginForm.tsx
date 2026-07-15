@@ -10,12 +10,11 @@ import { Label } from "../client/components/ui/label";
 import { Loader2, Eye, EyeOff, ShieldCheck, ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
 import { getTwoFactorStatus, verifyTwoFactorLogin, beginTwoFactorChallenge } from "wasp/client/operations";
 import { isFamilyPortalHost } from "../shared/portal";
-import { rememberPendingInviteToken, getPendingInviteToken } from "./inviteTokenStorage";
+import { rememberPendingInviteToken } from "./inviteTokenStorage";
 import {
-  getStoredContinuation,
-  redirectToContinuationOrPath,
-  redirectToFamilyContinuation,
   rememberContinuation,
+  tryContinuationAfterAuth,
+  type StoredContinuation,
 } from "./portalContinuation";
 import { GoogleLogo } from "../client/icons/GoogleLogo";
 import {
@@ -28,6 +27,8 @@ type Step = "login" | "twofactor";
 
 type CustomLoginFormProps = {
   inviteToken?: string | null;
+  /** From /entrar?cid=&sig=&exp= so resume works without sessionStorage */
+  continuationParams?: StoredContinuation | null;
 };
 
 function postLoginPath(inviteToken?: string | null): string {
@@ -35,67 +36,10 @@ function postLoginPath(inviteToken?: string | null): string {
   return "/app";
 }
 
-async function tryContinuationRedirect(inviteToken?: string | null): Promise<boolean> {
-  // 1) Cached signed continuation (from invite landing)
-  const stored = getStoredContinuation();
-  if (stored) {
-    redirectToFamilyContinuation(stored);
-    return true;
-  }
-
-  // 2) Server pending continuation for logged-in user
-  const getPending = (ops as any).getPendingAuthContinuation;
-  if (typeof getPending === "function") {
-    try {
-      const pending = await getPending();
-      if (pending?.pending && pending.continuationId) {
-        redirectToContinuationOrPath({
-          continuationId: pending.continuationId,
-          sig: pending.sig,
-          exp: pending.exp,
-          signedUrl: pending.signedUrl,
-          path: pending.path,
-        });
-        return true;
-      }
-    } catch {
-      /* ignore */
-    }
-  }
-
-  // 3) Create continuation from invite token (portal invites)
-  const token = inviteToken || getPendingInviteToken();
-  const createCont = (ops as any).createAuthContinuation;
-  if (token && typeof createCont === "function") {
-    try {
-      const cont = await createCont({ token });
-      if (cont?.continuationId && cont.sig && cont.exp) {
-        rememberContinuation({
-          continuationId: cont.continuationId,
-          sig: cont.sig,
-          exp: cont.exp,
-          signedUrl: cont.signedUrl,
-          path: cont.path,
-          invitationId: cont.invitation?.invitationId,
-        });
-        redirectToContinuationOrPath({
-          continuationId: cont.continuationId,
-          sig: cont.sig,
-          exp: cont.exp,
-          signedUrl: cont.signedUrl,
-          path: cont.path,
-        });
-        return true;
-      }
-    } catch {
-      // Not a portal invite token — fall through to legacy /convite/:token
-    }
-  }
-
-  return false;
-}
-
-export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = {}) {
+export default function CustomLoginForm({
+  inviteToken,
+  continuationParams,
+}: CustomLoginFormProps = {}) {
   const { t } = useTranslation("auth");
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>("login");
@@ -111,13 +55,32 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
     if (inviteToken) {
       rememberPendingInviteToken(inviteToken);
     }
-  }, [inviteToken]);
+    if (continuationParams?.continuationId && continuationParams.sig && continuationParams.exp) {
+      rememberContinuation(continuationParams);
+    }
+  }, [inviteToken, continuationParams]);
+
+  const contQs =
+    continuationParams?.continuationId && continuationParams.sig && continuationParams.exp
+      ? `cid=${encodeURIComponent(continuationParams.continuationId)}&sig=${encodeURIComponent(continuationParams.sig)}&exp=${encodeURIComponent(String(continuationParams.exp))}`
+      : null;
 
   const signupHref = inviteToken
     ? `${isFamilyPortalHost() ? "/criar-conta" : "/signup"}?token=${encodeURIComponent(inviteToken)}`
-    : isFamilyPortalHost()
-      ? "/criar-conta"
-      : "/signup";
+    : contQs
+      ? `${isFamilyPortalHost() ? "/criar-conta" : "/signup"}?${contQs}`
+      : isFamilyPortalHost()
+        ? "/criar-conta"
+        : "/signup";
+
+  const runPostLoginRedirect = async () => {
+    const redirected = await tryContinuationAfterAuth({
+      inviteToken,
+      continuationParams: continuationParams || null,
+      ops: ops as any,
+    });
+    if (!redirected) navigate(postLoginPath(inviteToken));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -141,8 +104,7 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
         await beginTwoFactorChallenge();
         setStep("twofactor");
       } else {
-        const redirected = await tryContinuationRedirect(inviteToken);
-        if (!redirected) navigate(postLoginPath(inviteToken));
+        await runPostLoginRedirect();
       }
     } catch (err: any) {
       console.error("2FA status check failed after successful login:", err);
@@ -162,8 +124,7 @@ export default function CustomLoginForm({ inviteToken }: CustomLoginFormProps = 
     setError("");
     try {
       await verifyTwoFactorLogin({ token: twoFactorToken });
-      const redirected = await tryContinuationRedirect(inviteToken);
-      if (!redirected) navigate(postLoginPath(inviteToken));
+      await runPostLoginRedirect();
     } catch (err: any) {
       setError(err?.message || t("two_factor_error_invalid"));
       setIsLoading(false);

@@ -49,10 +49,24 @@ function requestHost(context: any): string | null {
   return raw ? raw.split(',')[0].trim().split(':')[0] : null;
 }
 
-/** Prefer AUTH_CONTINUATION_SECRET; fall back to common app secrets in non-prod. */
+/**
+ * HMAC key for deep-link signatures.
+ * Production: AUTH_CONTINUATION_SECRET is required (fail closed — never a constant string).
+ * Non-production: may fall back to JWT/SESSION secrets or a dev-only default.
+ */
 export function getAuthContinuationSecret(): string {
   const primary = process.env.AUTH_CONTINUATION_SECRET?.trim();
   if (primary) return primary;
+
+  const isProd = process.env.NODE_ENV === 'production';
+  if (isProd) {
+    // Fail closed: do not sign/verify with a guessable or borrowed key.
+    throw new HttpError(500, 'AUTH_CONTINUATION_SECRET_MISSING', {
+      code: 'AUTH_CONTINUATION_SECRET_MISSING',
+    });
+  }
+
+  // Dev/test only — temporary reuse of other secrets; not for production.
   const fallbacks = [
     process.env.JWT_SECRET,
     process.env.SESSION_SECRET,
@@ -61,10 +75,6 @@ export function getAuthContinuationSecret(): string {
   ];
   for (const f of fallbacks) {
     if (f?.trim()) return f.trim();
-  }
-  if (process.env.NODE_ENV === 'production') {
-    // Still return a deterministic-but-weak value only if misconfigured — callers should set AUTH_CONTINUATION_SECRET.
-    return 'missing-AUTH_CONTINUATION_SECRET-set-me';
   }
   return 'dev-auth-continuation-secret';
 }
@@ -303,8 +313,33 @@ export const getAuthContinuation = async (
 
   const inv = row.portalInvitation;
   if (!inv) throw new HttpError(404, 'Convite não encontrado.');
+  if (inv.status === 'REVOKED') {
+    throw new HttpError(410, 'REVOKED', { code: 'REVOKED' });
+  }
+  if (inv.status === 'ACCEPTED') {
+    throw new HttpError(410, 'ALREADY_USED', { code: 'ALREADY_USED' });
+  }
+  if (inv.expiresAt && new Date() > new Date(inv.expiresAt)) {
+    throw new HttpError(410, 'EXPIRED', { code: 'EXPIRED' });
+  }
+  if (inv.status !== 'PENDING') {
+    throw new HttpError(410, 'ALREADY_USED', { code: 'ALREADY_USED' });
+  }
 
-  // Optionally re-sign for longer client session on same host
+  // Best-effort bind authenticated user so getPending works after login hop
+  if (context.user?.id && !row.userId) {
+    try {
+      await context.entities.AuthContinuation.update({
+        where: { id: row.id },
+        data: { userId: context.user.id },
+      });
+      row.userId = context.user.id;
+    } catch {
+      /* ignore race */
+    }
+  }
+
+  // Re-sign for a fresh 15m window while the row is still valid
   const signed = buildSignedFamilyContinuationUrl(row.id);
   setContinueCookie(context, row.id);
 

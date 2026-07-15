@@ -12,6 +12,8 @@ import { rememberPendingInviteToken } from "./inviteTokenStorage";
 import {
   rememberContinuation,
   getStoredContinuation,
+  continuationSearchParams,
+  type StoredContinuation,
 } from "./portalContinuation";
 import { trackMarketingEvent } from "../client/analytics/marketingAnalytics";
 import * as ops from "wasp/client/operations";
@@ -30,12 +32,15 @@ type CustomSignupFormProps = {
   defaultEmail?: string;
   /** Plan id from Meta Ads / landing CTAs (`?plan=`). */
   intendedPlanId?: string | null;
+  /** From /criar-conta?cid=&sig=&exp= when sessionStorage is empty */
+  continuationParams?: StoredContinuation | null;
 };
 
 export default function CustomSignupForm({
   inviteToken,
   defaultEmail,
   intendedPlanId,
+  continuationParams,
 }: CustomSignupFormProps = {}) {
   const { t } = useTranslation("auth");
   const [email, setEmail] = useState(defaultEmail || "");
@@ -60,6 +65,13 @@ export default function CustomSignupForm({
   };
 
   useEffect(() => {
+    if (
+      continuationParams?.continuationId &&
+      continuationParams.sig &&
+      continuationParams.exp
+    ) {
+      rememberContinuation(continuationParams);
+    }
     if (inviteToken) {
       rememberPendingInviteToken(inviteToken);
       // Ensure server AuthContinuation exists before email-verify / OAuth detour
@@ -83,13 +95,20 @@ export default function CustomSignupForm({
           });
       }
     }
-  }, [inviteToken]);
+  }, [inviteToken, continuationParams]);
+
+  const contQs =
+    continuationParams?.continuationId && continuationParams.sig && continuationParams.exp
+      ? continuationSearchParams(continuationParams)
+      : null;
 
   const loginHref = inviteToken
     ? `${isFamilyPortalHost() ? "/entrar" : "/login"}?token=${encodeURIComponent(inviteToken)}`
-    : isFamilyPortalHost()
-      ? "/entrar"
-      : "/login";
+    : contQs
+      ? `${isFamilyPortalHost() ? "/entrar" : "/login"}?${contQs}`
+      : isFamilyPortalHost()
+        ? "/entrar"
+        : "/login";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

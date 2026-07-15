@@ -53,6 +53,7 @@ import {
   createAuthContinuation,
   getAuthContinuation,
   getPendingAuthContinuation,
+  getAuthContinuationSecret,
   AUTH_CONTINUATION_SIG_TTL_SEC,
 } from '../server/operations/authContinuationOperations';
 
@@ -129,6 +130,8 @@ function baseEntities(overrides: Record<string, any> = {}) {
 describe('HMAC sign/verify', () => {
   beforeEach(() => {
     process.env.AUTH_CONTINUATION_SECRET = 'test-secret-pr5';
+    delete process.env.JWT_SECRET;
+    delete process.env.SESSION_SECRET;
   });
 
   it('signs and verifies continuationId|exp', () => {
@@ -153,6 +156,39 @@ describe('HMAC sign/verify', () => {
     expect(path).toContain(`sig=${sig}`);
     expect(path).toContain(`exp=${exp}`);
     expect(signedUrl).toBe(`https://familia.catechis.app${path}`);
+  });
+
+  it('fail-closed in production when AUTH_CONTINUATION_SECRET is missing', () => {
+    const prev = process.env.NODE_ENV;
+    const prevSecret = process.env.AUTH_CONTINUATION_SECRET;
+    try {
+      process.env.NODE_ENV = 'production';
+      delete process.env.AUTH_CONTINUATION_SECRET;
+      delete process.env.JWT_SECRET;
+      delete process.env.SESSION_SECRET;
+      expect(() => getAuthContinuationSecret()).toThrow(/AUTH_CONTINUATION_SECRET_MISSING/);
+      expect(() => signAuthContinuation('cid-1', Math.floor(Date.now() / 1000) + 60)).toThrow(
+        /AUTH_CONTINUATION_SECRET_MISSING/,
+      );
+    } finally {
+      process.env.NODE_ENV = prev;
+      if (prevSecret) process.env.AUTH_CONTINUATION_SECRET = prevSecret;
+      else process.env.AUTH_CONTINUATION_SECRET = 'test-secret-pr5';
+    }
+  });
+
+  it('does not use JWT_SECRET as production HMAC key', () => {
+    const prev = process.env.NODE_ENV;
+    try {
+      process.env.NODE_ENV = 'production';
+      delete process.env.AUTH_CONTINUATION_SECRET;
+      process.env.JWT_SECRET = 'jwt-only-not-enough';
+      expect(() => getAuthContinuationSecret()).toThrow(/AUTH_CONTINUATION_SECRET_MISSING/);
+    } finally {
+      process.env.NODE_ENV = prev;
+      delete process.env.JWT_SECRET;
+      process.env.AUTH_CONTINUATION_SECRET = 'test-secret-pr5';
+    }
   });
 });
 
@@ -229,6 +265,25 @@ describe('getAuthContinuation', () => {
       id: 'cont-1',
       portalInvitationId: INV_ID,
       consumedAt: new Date(),
+      expiresAt: new Date(Date.now() + 86400000),
+      kind: 'PORTAL_INVITE',
+      tokenHash: TOKEN_HASH,
+      portalInvitation: invitation,
+    });
+    const exp = Math.floor(Date.now() / 1000) + 100;
+    const sig = signAuthContinuation('cont-1', exp);
+    await expect(
+      getAuthContinuation({ cid: 'cont-1', sig, exp }, { entities, req: { headers: {} } }),
+    ).rejects.toMatchObject({ statusCode: 410 });
+  });
+
+  it('410 when invitation not PENDING', async () => {
+    const { entities, contStore, invitation } = baseEntities();
+    invitation.status = 'REVOKED';
+    contStore.push({
+      id: 'cont-1',
+      portalInvitationId: INV_ID,
+      consumedAt: null,
       expiresAt: new Date(Date.now() + 86400000),
       kind: 'PORTAL_INVITE',
       tokenHash: TOKEN_HASH,

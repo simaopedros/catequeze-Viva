@@ -1,7 +1,12 @@
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router";
 import CustomLoginForm from "../../../auth/CustomLoginForm";
 import { useRedirectIfLoggedIn } from "../../../auth/hooks/useRedirectIfLoggedIn";
+import {
+  continuationSearchParams,
+  parseContinuationSearchParams,
+} from "../../../auth/portalContinuation";
 import {
   AppEyebrow,
   AppDisplayTitle,
@@ -13,7 +18,17 @@ export default function FamilyLoginPage() {
   const { t } = useTranslation("family");
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
+  const continuationParams = useMemo(
+    () => parseContinuationSearchParams(searchParams),
+    [searchParams],
+  );
   useRedirectIfLoggedIn();
+
+  const signupTo = token
+    ? `/criar-conta?token=${encodeURIComponent(token)}`
+    : continuationParams
+      ? `/criar-conta?${continuationSearchParams(continuationParams)}`
+      : "/criar-conta";
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -28,20 +43,23 @@ export default function FamilyLoginPage() {
         </div>
 
         <AppPanel className="p-6">
-          <CustomLoginForm inviteToken={token} />
+          <CustomLoginForm
+            inviteToken={token}
+            continuationParams={continuationParams}
+          />
         </AppPanel>
 
         <div className="text-center space-y-2">
           <p className="text-sm text-muted-foreground">
             {t("login.no_account")}{" "}
             <Link
-              to={`/criar-conta${token ? `?token=${token}` : ""}`}
+              to={signupTo}
               className="text-[#071A2D] underline underline-offset-2 font-medium"
             >
               {t("login.create_account")}
             </Link>
           </p>
-          {token && (
+          {(token || continuationParams) && (
             <p className="text-xs text-muted-foreground">
               {t("login.token_hint")}
             </p>

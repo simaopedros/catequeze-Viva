@@ -1,14 +1,20 @@
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
 import CustomLoginForm from "./CustomLoginForm";
 import { AuthPageLayout } from "./AuthPageLayout";
 import { useRedirectIfLoggedIn } from "./hooks/useRedirectIfLoggedIn";
+import { parseContinuationSearchParams } from "./portalContinuation";
 
 export default function Login() {
   useRedirectIfLoggedIn();
   const { t } = useTranslation("auth");
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
+  const continuationParams = useMemo(
+    () => parseContinuationSearchParams(searchParams),
+    [searchParams],
+  );
 
   const points = t("login_panel_points", { returnObjects: true });
   const pointList = Array.isArray(points) ? (points as string[]) : [];
@@ -22,7 +28,7 @@ export default function Login() {
         points: pointList,
       }}
     >
-      <CustomLoginForm inviteToken={token} />
+      <CustomLoginForm inviteToken={token} continuationParams={continuationParams} />
     </AuthPageLayout>
   );
 }

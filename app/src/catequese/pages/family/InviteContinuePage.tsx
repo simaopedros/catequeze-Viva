@@ -254,14 +254,15 @@ export default function InviteContinuePage() {
               <p className="text-sm text-center text-muted-foreground">
                 {t('invite.login_to_accept')}
               </p>
+              {/* Pass full HMAC params so resume works without sessionStorage */}
               <Link
-                to={`/entrar?cid=${encodeURIComponent(cid)}`}
+                to={`/entrar?cid=${encodeURIComponent(cid)}&sig=${encodeURIComponent(sig)}&exp=${encodeURIComponent(exp)}`}
                 className="block h-10 w-full rounded-sm bg-[#071A2D] px-4 py-2 text-center text-sm font-medium text-white"
               >
                 {t('invite.login')}
               </Link>
               <Link
-                to={`/criar-conta?cid=${encodeURIComponent(cid)}`}
+                to={`/criar-conta?cid=${encodeURIComponent(cid)}&sig=${encodeURIComponent(sig)}&exp=${encodeURIComponent(exp)}`}
                 className="block h-10 w-full rounded-sm border border-input bg-background px-4 py-2 text-center text-sm font-medium text-[#071A2D]"
               >
                 {t('invite.signup')}

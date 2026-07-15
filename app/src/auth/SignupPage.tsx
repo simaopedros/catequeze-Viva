@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router";
 import CustomSignupForm from "./CustomSignupForm";
 import { AuthPageLayout } from "./AuthPageLayout";
 import { useRedirectIfLoggedIn } from "./hooks/useRedirectIfLoggedIn";
+import { parseContinuationSearchParams } from "./portalContinuation";
 import {
   setIntendedInterval,
   setIntendedPlan,
@@ -34,6 +35,7 @@ export function Signup() {
   const pointList = Array.isArray(points) ? (points as string[]) : [];
   const planFromAds = searchParams.get("plan");
   const inviteToken = searchParams.get("token");
+  const continuationParams = parseContinuationSearchParams(searchParams);
 
   return (
     <AuthPageLayout
@@ -44,7 +46,11 @@ export function Signup() {
         points: pointList,
       }}
     >
-      <CustomSignupForm intendedPlanId={planFromAds} inviteToken={inviteToken} />
+      <CustomSignupForm
+        intendedPlanId={planFromAds}
+        inviteToken={inviteToken}
+        continuationParams={continuationParams}
+      />
     </AuthPageLayout>
   );
 }

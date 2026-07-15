@@ -4,9 +4,8 @@ import { useAuth } from "wasp/client/auth";
 import { isFamilyPortalHost } from "../../shared/portal";
 import * as ops from "wasp/client/operations";
 import {
-  getStoredContinuation,
-  redirectToContinuationOrPath,
-  redirectToFamilyContinuation,
+  parseContinuationSearchParams,
+  tryContinuationAfterAuth,
 } from "../portalContinuation";
 
 type Options = {
@@ -25,9 +24,10 @@ export function useRedirectIfLoggedIn(options: Options = {}) {
   const ranRef = useRef(false);
 
   useEffect(() => {
-    const justLoggedOut = typeof window !== "undefined"
-      ? window.sessionStorage.getItem(LOGOUT_REDIRECT_GUARD_KEY) === "1"
-      : false;
+    const justLoggedOut =
+      typeof window !== "undefined"
+        ? window.sessionStorage.getItem(LOGOUT_REDIRECT_GUARD_KEY) === "1"
+        : false;
 
     if (justLoggedOut) {
       if (isLoading) return;
@@ -41,31 +41,13 @@ export function useRedirectIfLoggedIn(options: Options = {}) {
     ranRef.current = true;
 
     (async () => {
-      // Server continuation first
-      const getPending = (ops as any).getPendingAuthContinuation;
-      if (typeof getPending === "function") {
-        try {
-          const pending = await getPending();
-          if (pending?.pending && pending.continuationId) {
-            redirectToContinuationOrPath({
-              continuationId: pending.continuationId,
-              sig: pending.sig,
-              exp: pending.exp,
-              signedUrl: pending.signedUrl,
-              path: pending.path,
-            });
-            return;
-          }
-        } catch {
-          /* ignore */
-        }
-      }
-
-      const stored = getStoredContinuation();
-      if (stored) {
-        redirectToFamilyContinuation(stored);
-        return;
-      }
+      const continuationParams = parseContinuationSearchParams(searchParams);
+      const redirected = await tryContinuationAfterAuth({
+        inviteToken: token,
+        continuationParams,
+        ops: ops as any,
+      });
+      if (redirected) return;
 
       if (token) {
         navigate(`/convite/${encodeURIComponent(token)}`, { replace: true });
@@ -74,5 +56,5 @@ export function useRedirectIfLoggedIn(options: Options = {}) {
 
       navigate(redirectTo, { replace: true });
     })();
-  }, [user, isLoading, navigate, redirectTo, token]);
+  }, [user, isLoading, navigate, redirectTo, token, searchParams]);
 }
