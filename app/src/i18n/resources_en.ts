@@ -1821,7 +1821,9 @@ export const common_en = {
         "GUARDIAN": "Guardian",
         "CATECHUMEN": "Catechumen"
       },
-      "consent_unknown": "Could not confirm consent status. The invite can still be sent; the minor still needs authorization to activate."
+      "consent_unknown": "Could not confirm consent status. The invite can still be sent; the minor still needs authorization to activate.",
+      "offline_grant_failed": "Could not record offline authorization. Check coordinator permissions.",
+      "invite_without_grant_hint": "The invite will still be sent, but the minor will need authorization to activate their account."
     }
   } as const;
 

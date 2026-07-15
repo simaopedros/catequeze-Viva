@@ -188,12 +188,45 @@ export function PortalInviteDialog({
 
     setSubmitting(true);
     try {
-      if (needsConsent && offlineGrant && catechumenProfileId) {
-        await grantMinorPortalConsent({
-          catechumenProfileId,
-          source: "STAFF_OFFLINE",
-        });
-        setConsentKnown(true);
+      // Honor offline checkbox whenever checked (including consentKnown === null).
+      // Needs-consent path still hard-blocks when unchecked; unknown path is soft.
+      if (offlineGrant && catechumenProfileId && role === "CATECHUMEN") {
+        try {
+          await grantMinorPortalConsent({
+            catechumenProfileId,
+            source: "STAFF_OFFLINE",
+          });
+          setConsentKnown(true);
+        } catch (grantErr: any) {
+          // When consent is required (known false), do not create invite without grant.
+          if (needsConsent) {
+            toast({
+              title: t("portal_invites.consent_required_title", {
+                defaultValue: "Consentimento necessário",
+              }),
+              description:
+                grantErr?.message ||
+                t("portal_invites.offline_grant_failed", {
+                  defaultValue:
+                    "Não foi possível registrar a autorização offline. Verifique permissões de coordenação.",
+                }),
+              variant: "destructive",
+            });
+            return;
+          }
+          // Consent unknown: warn but still allow invite (accept path enforces consent).
+          toast({
+            title: t("portal_invites.offline_grant_failed", {
+              defaultValue:
+                "Não foi possível registrar a autorização offline. Verifique permissões de coordenação.",
+            }),
+            description: t("portal_invites.invite_without_grant_hint", {
+              defaultValue:
+                "O convite será enviado, mas o menor ainda precisará de autorização para ativar a conta.",
+            }),
+            variant: "destructive",
+          });
+        }
       }
 
       const result = await createPortalInvitation({

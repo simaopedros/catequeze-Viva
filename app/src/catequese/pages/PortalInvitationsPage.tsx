@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   AppPageHeader,
@@ -69,6 +69,11 @@ export default function PortalInvitationsPage() {
     inviteUrl?: string;
     whatsappUrl?: string;
   } | null>(null);
+
+  // Never keep a tokenized invite URL after switching parish/workspace
+  useEffect(() => {
+    setLastShare(null);
+  }, [workspaceId]);
 
   const queryArgs = useMemo(() => {
     if (!workspaceId) return undefined;

@@ -1821,7 +1821,9 @@ export const common_pt_BR = {
         "GUARDIAN": "Responsável",
         "CATECHUMEN": "Catequizando"
       },
-      "consent_unknown": "Não foi possível confirmar o consentimento. O convite pode ser enviado; a ativação do menor continua a exigir autorização."
+      "consent_unknown": "Não foi possível confirmar o consentimento. O convite pode ser enviado; a ativação do menor continua a exigir autorização.",
+      "offline_grant_failed": "Não foi possível registrar a autorização offline. Verifique permissões de coordenação.",
+      "invite_without_grant_hint": "O convite será enviado, mas o menor ainda precisará de autorização para ativar a conta."
     }
   } as const;
 

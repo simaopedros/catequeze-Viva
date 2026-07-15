@@ -553,6 +553,8 @@
       "GUARDIAN": "Responsable",
       "CATECHUMEN": "Catequizando"
     },
-    "consent_unknown": "No se pudo confirmar el consentimiento. La invitación puede enviarse; la activación del menor sigue requiriendo autorización."
+    "consent_unknown": "No se pudo confirmar el consentimiento. La invitación puede enviarse; la activación del menor sigue requiriendo autorización.",
+    "offline_grant_failed": "No se pudo registrar la autorización offline. Compruebe permisos de coordinación.",
+    "invite_without_grant_hint": "La invitación se enviará igualmente, pero el menor seguirá necesitando autorización para activar la cuenta."
   }
 }
