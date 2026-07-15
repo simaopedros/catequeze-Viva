@@ -1437,6 +1437,19 @@ export const common_pt_BR = {
       "subtitle": "Gerencie as autorizações e consentimentos conforme a LGPD.",
       "authorize": "Autorizo",
       "deny": "Nego",
+      "lgpd_section": "Consentimentos (LGPD)",
+      "minor": {
+        "section_title": "Acesso ao portal dos dependentes",
+        "section_desc": "Autorize ou revogue o acesso do menor ao portal da família. A revogação suspende o login do catequizando, sem apagar o histórico.",
+        "authorize": "Autorizar acesso",
+        "revoke": "Revogar",
+        "status_active": "Acesso autorizado",
+        "status_pending": "Aguardando autorização",
+        "source_guardian": "Responsável",
+        "source_staff": "Offline (paróquia)",
+        "grant_success": "Acesso do menor autorizado",
+        "revoke_success": "Acesso do menor revogado"
+      },
       "types": {
         "IMAGE_USAGE": {
           "label": "Uso de imagem",

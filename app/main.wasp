@@ -1490,6 +1490,22 @@ action saveConsent {
   fn: import { saveConsent } from "@src/server/operations/consentOperations",
   entities: [ConsentRecord]
 }
+
+// Minor portal account access (MinorPortalConsent ledger — PR6)
+query listMinorPortalConsents {
+  fn: import { listMinorPortalConsents } from "@src/server/operations/consentOperations",
+  entities: [MinorPortalConsent, CatechumenProfile, GuardianProfile, Membership, Parish, AuditLog]
+}
+
+action grantMinorPortalConsent {
+  fn: import { grantMinorPortalConsent } from "@src/server/operations/consentOperations",
+  entities: [MinorPortalConsent, CatechumenProfile, GuardianProfile, Membership, Parish, AuditLog]
+}
+
+action revokeMinorPortalConsent {
+  fn: import { revokeMinorPortalConsent } from "@src/server/operations/consentOperations",
+  entities: [MinorPortalConsent, CatechumenProfile, GuardianProfile, Membership, Parish, AuditLog]
+}
 //#endregion
 
 

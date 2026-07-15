@@ -1516,6 +1516,19 @@ export const common_en = {
       "subtitle": "Manage authorizations and consents in accordance with data protection law.",
       "authorize": "I authorize",
       "deny": "I deny",
+      "lgpd_section": "Consents (GDPR)",
+      "minor": {
+        "section_title": "Dependents' portal access",
+        "section_desc": "Authorize or revoke a minor's access to the family portal. Revocation suspends the catechumen login without deleting history.",
+        "authorize": "Authorize access",
+        "revoke": "Revoke",
+        "status_active": "Access authorized",
+        "status_pending": "Awaiting authorization",
+        "source_guardian": "Guardian",
+        "source_staff": "Offline (parish)",
+        "grant_success": "Minor access authorized",
+        "revoke_success": "Minor access revoked"
+      },
       "types": {
         "IMAGE_USAGE": {
           "label": "Image usage",
