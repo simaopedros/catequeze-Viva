@@ -1,6 +1,7 @@
 import { HttpError } from 'wasp/server';
 import { requireAuth, writeAuditLog, getDioceseParishIds } from '../auth/helpers';
 import { logger } from '../logger';
+import { isCoordinatorOrAbove } from './sharedScope';
 
 // ── Simple rate limiter for public invite token endpoint ───────────────────
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -726,6 +727,45 @@ export const removeMembership = async (
   return { success: true };
 };
 
+/**
+ * Who may list parish members (full roster):
+ * - platform admin
+ * - PERSONAL owner of the parish
+ * - ACTIVE membership with coordinator-or-above role for that parish
+ * - DIOCESE_ADMIN when the parish is in their diocese
+ *
+ * NEVER: LEAD/ASSISTANT catechist, GUARDIAN, CATECHUMEN, PASTORAL_VIEWER, CONTENT_REVIEWER.
+ */
+export async function assertCanListParishMembers(context: any, parishId: string): Promise<void> {
+  if (!parishId) {
+    throw new HttpError(400, 'parishId é obrigatório.');
+  }
+  if (context.user.isAdmin) return;
+
+  const isPersonalOwner = await context.entities.Parish.findFirst({
+    where: { id: parishId, ownerId: context.user.id, type: 'PERSONAL' },
+    select: { id: true },
+  });
+  if (isPersonalOwner) return;
+
+  const memberships = await context.entities.Membership.findMany({
+    where: { userId: context.user.id, parishId, status: 'ACTIVE' },
+    select: { role: true },
+  });
+  if (memberships.some((m: any) => isCoordinatorOrAbove(m.role))) return;
+
+  const hasDioceseAdmin = await context.entities.Membership.findFirst({
+    where: { userId: context.user.id, status: 'ACTIVE', role: 'DIOCESE_ADMIN' },
+    select: { id: true },
+  });
+  if (hasDioceseAdmin) {
+    const dioceseParishIds = await getDioceseParishIds(context);
+    if (dioceseParishIds.includes(parishId)) return;
+  }
+
+  throw new HttpError(403, 'Sem permissão para listar membros desta paróquia.');
+}
+
 export const listParishMembers = async (
   args: { parishId: string; communityId?: string },
   context: any
@@ -734,18 +774,7 @@ export const listParishMembers = async (
 
   if (!args.parishId) return [];
 
-  if (!context.user.isAdmin) {
-    const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, parishId: args.parishId, status: 'ACTIVE' },
-    });
-    if (!membership) {
-      const isPersonalOwner = await context.entities.Parish.findFirst({
-        where: { id: args.parishId, ownerId: context.user.id, type: 'PERSONAL' },
-        select: { id: true },
-      });
-      if (!isPersonalOwner) throw new HttpError(403, 'Você não pertence a esta paróquia.');
-    }
-  }
+  await assertCanListParishMembers(context, args.parishId);
 
   const where: any = { parishId: args.parishId };
   if (args.communityId) {

@@ -8,12 +8,15 @@ import {
   isManualConversationTypeAllowed,
   sanitizeParticipantUserIds,
 } from './conversationPolicies';
+import { isCoordinatorOrAbove, isCatechist } from './sharedScope';
 
 // ── Role-based hierarchy constants ──────────────────────────────────────────
 
 const STAFF_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'];
+const COORDINATION_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'];
 const CAN_CREATE_GROUP = [...STAFF_ROLES, 'LEAD_CATECHIST'];
 const CAN_CREATE_ANNOUNCEMENT = STAFF_ROLES;
+const FAMILY_ROLES = new Set(['GUARDIAN', 'CATECHUMEN']);
 
 interface ConversationContact {
   [key: string]: any;
@@ -61,22 +64,6 @@ async function getUserParishIds(context: any): Promise<string[]> {
   return ids;
 }
 
-async function getUserRoles(context: any): Promise<string[]> {
-  const memberships = await context.entities.Membership.findMany({
-    where: { userId: context.user.id, status: 'ACTIVE' },
-    select: { role: true, parishId: true },
-  });
-  const roles = memberships.map((m: any) => m.role);
-
-  // DIOCESE_ADMIN: ensure the role is present even for parishes without
-  // direct membership (role comes from the diocese hierarchy).
-  if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
-    if (!roles.includes('DIOCESE_ADMIN')) roles.push('DIOCESE_ADMIN');
-  }
-
-  return roles;
-}
-
 async function getWorkspaceDescriptor(context: any, workspaceId: string): Promise<WorkspaceDescriptor> {
   const workspace = await context.entities.Parish.findUnique({
     where: { id: workspaceId },
@@ -91,6 +78,7 @@ async function getWorkspaceDescriptor(context: any, workspaceId: string): Promis
 function dedupeContacts(contacts: ConversationContact[]): ConversationContact[] {
   const byId = new Map<string, ConversationContact>();
   for (const contact of contacts) {
+    if (!contact?.id) continue;
     if (!byId.has(contact.id)) {
       byId.set(contact.id, contact);
     }
@@ -100,6 +88,229 @@ function dedupeContacts(contacts: ConversationContact[]): ConversationContact[] 
     const right = `${b.firstName || ''} ${b.lastName || ''}`.trim() || b.email || '';
     return left.localeCompare(right, 'pt-BR');
   });
+}
+
+function isFamilyOnlyRoles(roles: string[]): boolean {
+  return roles.length > 0 && roles.every((r) => FAMILY_ROLES.has(r));
+}
+
+function hasStaffLikeRole(roles: string[]): boolean {
+  return roles.some(
+    (r) => isCoordinatorOrAbove(r) || isCatechist(r) || r === 'CONTENT_REVIEWER' || r === 'PASTORAL_VIEWER',
+  );
+}
+
+/** Roles the user holds for a specific workspace (parish-scoped + personal owner). */
+async function getWorkspaceRoles(
+  context: any,
+  workspaceId: string,
+  workspace: WorkspaceDescriptor,
+): Promise<string[]> {
+  const roles: string[] = [];
+  if (workspace.type === 'PERSONAL' && workspace.ownerId === context.user.id) {
+    roles.push('PERSONAL_OWNER');
+  }
+
+  const memberships = await context.entities.Membership.findMany({
+    where: { userId: context.user.id, parishId: workspaceId, status: 'ACTIVE' },
+    select: { role: true },
+  });
+  for (const m of memberships) {
+    roles.push(m.role);
+  }
+
+  if (!roles.includes('DIOCESE_ADMIN')) {
+    const dioceseAdmin = await context.entities.Membership.findFirst({
+      where: { userId: context.user.id, status: 'ACTIVE', role: 'DIOCESE_ADMIN' },
+      select: { id: true },
+    });
+    if (dioceseAdmin) {
+      const dioceseParishIds = await getDioceseParishIds(context);
+      if (dioceseParishIds.includes(workspaceId)) {
+        roles.push('DIOCESE_ADMIN');
+      }
+    }
+  }
+
+  return roles;
+}
+
+async function listCatechumenConversationContacts(
+  context: any,
+  workspaceId: string,
+  isPersonalWorkspace: boolean,
+): Promise<ConversationContact[]> {
+  const catechumenProfile = await context.entities.CatechumenProfile.findFirst({
+    where: { userId: context.user.id },
+    select: { id: true, householdId: true, parishId: true },
+  });
+  if (!catechumenProfile) return [];
+
+  const enrollmentWhere: any = { catechumenProfileId: catechumenProfile.id };
+  if (!isPersonalWorkspace) {
+    enrollmentWhere.class = { parishId: workspaceId };
+  }
+
+  const enrolledClassIds = await context.entities.ClassEnrollment.findMany({
+    where: enrollmentWhere,
+    select: { classId: true },
+  });
+  const classIds = enrolledClassIds.map((e: any) => e.classId);
+
+  // Own class team (catechists)
+  const catechistUsers = classIds.length > 0
+    ? await context.entities.ClassCatechist.findMany({
+        where: { classId: { in: classIds } },
+        select: {
+          user: { select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true } },
+          role: true,
+        },
+        distinct: ['userId'],
+      })
+    : [];
+
+  // Own guardians (same household)
+  let guardianUsers: any[] = [];
+  if (catechumenProfile.householdId) {
+    guardianUsers = await context.entities.GuardianProfile.findMany({
+      where: {
+        householdId: catechumenProfile.householdId,
+        userId: { not: null },
+      },
+      select: {
+        user: { select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true } },
+        userId: true,
+      },
+    });
+  }
+
+  // Peers in the same classes (keep existing catechumen-class allowlist)
+  const otherCatechumenIds = classIds.length > 0
+    ? await context.entities.ClassEnrollment.findMany({
+        where: { classId: { in: classIds }, catechumenProfileId: { not: catechumenProfile.id } },
+        select: { catechumenProfile: { select: { userId: true } } },
+      })
+    : [];
+
+  const otherCatechumenUserIds = otherCatechumenIds
+    .map((e: any) => e.catechumenProfile?.userId)
+    .filter(Boolean) as string[];
+
+  const otherCatechumenUsers = otherCatechumenUserIds.length > 0
+    ? await context.entities.User.findMany({
+        where: { id: { in: otherCatechumenUserIds } },
+        select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true },
+      })
+    : [];
+
+  return dedupeContacts([
+    ...catechistUsers
+      .filter((c: any) => c.user?.id && c.user.id !== context.user.id)
+      .map((c: any) => ({ ...c.user, role: c.role })),
+    ...guardianUsers
+      .filter((g: any) => g.userId && g.userId !== context.user.id && g.user)
+      .map((g: any) => ({ ...g.user, role: 'GUARDIAN' })),
+    ...otherCatechumenUsers
+      .filter((u: any) => u.id !== context.user.id)
+      .map((u: any) => ({ ...u, role: 'CATECHUMEN' })),
+  ]);
+}
+
+/**
+ * Guardian allowlist:
+ * - other guardians of the same household(s)
+ * - catechists of dependents' classes
+ * - authorized coordination (ADMIN/COORDINATOR roles of the parish)
+ * Never: all parish members or all catechumens.
+ */
+async function listGuardianConversationContacts(
+  context: any,
+  workspaceId: string,
+): Promise<ConversationContact[]> {
+  const guardianProfiles = await context.entities.GuardianProfile.findMany({
+    where: {
+      userId: context.user.id,
+      householdId: { not: null },
+      household: { parishId: workspaceId },
+    },
+    select: { householdId: true },
+  });
+
+  let householdIds = guardianProfiles
+    .map((g: any) => g.householdId)
+    .filter(Boolean) as string[];
+
+  // Fallback: legacy profiles without parish-linked household filter
+  if (householdIds.length === 0) {
+    const anyProfile = await context.entities.GuardianProfile.findMany({
+      where: { userId: context.user.id, householdId: { not: null } },
+      select: { householdId: true, household: { select: { parishId: true } } },
+    });
+    householdIds = anyProfile
+      .filter((g: any) => !g.household?.parishId || g.household.parishId === workspaceId)
+      .map((g: any) => g.householdId)
+      .filter(Boolean) as string[];
+  }
+
+  if (householdIds.length === 0) return [];
+
+  const householdGuardians = await context.entities.GuardianProfile.findMany({
+    where: {
+      householdId: { in: householdIds },
+      userId: { not: null },
+    },
+    select: {
+      userId: true,
+      user: { select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true } },
+    },
+  });
+
+  const enrollments = await context.entities.ClassEnrollment.findMany({
+    where: {
+      status: 'ENROLLED',
+      catechumenProfile: { householdId: { in: householdIds } },
+      class: { parishId: workspaceId },
+    },
+    select: { classId: true },
+  });
+  const classIds = Array.from(new Set(enrollments.map((e: any) => e.classId)));
+
+  const catechistUsers = classIds.length > 0
+    ? await context.entities.ClassCatechist.findMany({
+        where: { classId: { in: classIds } },
+        select: {
+          user: { select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true } },
+          role: true,
+        },
+        distinct: ['userId'],
+      })
+    : [];
+
+  const coordinators = await context.entities.Membership.findMany({
+    where: {
+      parishId: workspaceId,
+      status: 'ACTIVE',
+      role: { in: COORDINATION_ROLES },
+      userId: { not: context.user.id },
+    },
+    select: {
+      user: { select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true } },
+      role: true,
+    },
+    distinct: ['userId'],
+  });
+
+  return dedupeContacts([
+    ...householdGuardians
+      .filter((g: any) => g.userId && g.userId !== context.user.id && g.user)
+      .map((g: any) => ({ ...g.user, role: 'GUARDIAN' })),
+    ...catechistUsers
+      .filter((c: any) => c.user?.id && c.user.id !== context.user.id)
+      .map((c: any) => ({ ...c.user, role: c.role })),
+    ...coordinators
+      .filter((m: any) => m.user?.id)
+      .map((m: any) => ({ ...m.user, role: m.role })),
+  ]);
 }
 
 async function listAllowedConversationContactsInternal(
@@ -119,9 +330,6 @@ async function listAllowedConversationContactsInternal(
     await assertCanAccessParish(context, args.workspaceId);
   }
 
-  const roles = await getUserRoles(context);
-  const isCatechumen = roles.includes('CATECHUMEN') && !roles.some((r) => r !== 'CATECHUMEN');
-
   if (context.user.isAdmin && isPersonalWorkspace) {
     const users = await context.entities.User.findMany({
       select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true },
@@ -131,66 +339,23 @@ async function listAllowedConversationContactsInternal(
     return dedupeContacts(users);
   }
 
-  if (isCatechumen) {
-    const catechumenProfile = await context.entities.CatechumenProfile.findFirst({
-      where: { userId: context.user.id },
-      select: { id: true, householdId: true, parishId: true },
-    });
-    if (!catechumenProfile) return [];
+  const roles = context.user.isAdmin
+    ? ['SUPER_ADMIN']
+    : await getWorkspaceRoles(context, args.workspaceId, workspace);
 
-    const enrollmentWhere: any = { catechumenProfileId: catechumenProfile.id };
-    if (!isPersonalWorkspace) {
-      enrollmentWhere.class = { parishId: args.workspaceId };
+  // Pure family roles: restricted allowlists (also enforced on create/send via assertParticipantIdsAllowed)
+  if (!context.user.isAdmin && isFamilyOnlyRoles(roles) && !hasStaffLikeRole(roles)) {
+    if (roles.includes('CATECHUMEN') && !roles.includes('GUARDIAN')) {
+      return listCatechumenConversationContacts(context, args.workspaceId, isPersonalWorkspace);
     }
-
-    const enrolledClassIds = await context.entities.ClassEnrollment.findMany({
-      where: enrollmentWhere,
-      select: { classId: true },
-    });
-    const classIds = enrolledClassIds.map((e: any) => e.classId);
-
-    const catechistUsers = classIds.length > 0
-      ? await context.entities.ClassCatechist.findMany({
-          where: { classId: { in: classIds } },
-          select: {
-            user: { select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true } },
-            role: true,
-          },
-          distinct: ['userId'],
-        })
-      : [];
-
-    let guardianUsers: any[] = [];
-    if (catechumenProfile.householdId) {
-      guardianUsers = await context.entities.GuardianProfile.findMany({
-        where: { householdId: catechumenProfile.householdId },
-        select: { user: { select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true } }, userId: true },
-      });
+    if (roles.includes('GUARDIAN')) {
+      return listGuardianConversationContacts(context, args.workspaceId);
     }
+  }
 
-    const otherCatechumenIds = classIds.length > 0
-      ? await context.entities.ClassEnrollment.findMany({
-          where: { classId: { in: classIds }, catechumenProfileId: { not: catechumenProfile.id } },
-          select: { catechumenProfile: { select: { userId: true } } },
-        })
-      : [];
-
-    const otherCatechumenUserIds = otherCatechumenIds
-      .map((e: any) => e.catechumenProfile?.userId)
-      .filter(Boolean) as string[];
-
-    const otherCatechumenUsers = otherCatechumenUserIds.length > 0
-      ? await context.entities.User.findMany({
-          where: { id: { in: otherCatechumenUserIds } },
-          select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true },
-        })
-      : [];
-
-    return dedupeContacts([
-      ...catechistUsers.map((c: any) => ({ ...c.user, role: c.role })),
-      ...guardianUsers.map((g: any) => ({ ...g.user, role: 'GUARDIAN' })),
-      ...otherCatechumenUsers.map((u: any) => ({ ...u, role: 'CATECHUMEN' })),
-    ]);
+  // Pure catechumen edge: only CATECHUMEN role (legacy path when membership missing staff)
+  if (!context.user.isAdmin && roles.includes('CATECHUMEN') && !hasStaffLikeRole(roles) && !roles.includes('GUARDIAN')) {
+    return listCatechumenConversationContacts(context, args.workspaceId, isPersonalWorkspace);
   }
 
   const parishIds = context.user.isAdmin

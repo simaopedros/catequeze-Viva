@@ -1,6 +1,42 @@
 import { HttpError } from 'wasp/server';
 import { getDioceseParishIds } from '../auth/helpers';
 import { resolveUserLocale } from '../i18n/serverLocale';
+import { isCoordinatorOrAbove } from './sharedScope';
+
+/**
+ * Calendar write capability: platform admin, PERSONAL owner of parishId,
+ * or ACTIVE membership with coordinator-or-above role (incl. DIOCESE_ADMIN scope).
+ * Catechists and family roles (GUARDIAN/CATECHUMEN) are never allowed.
+ */
+export async function assertCanWriteCalendar(context: any, parishId: string): Promise<void> {
+  if (!parishId) {
+    throw new HttpError(400, 'parishId é obrigatório.');
+  }
+  if (context.user.isAdmin) return;
+
+  const personal = await context.entities.Parish.findFirst({
+    where: { id: parishId, ownerId: context.user.id, type: 'PERSONAL' },
+    select: { id: true },
+  });
+  if (personal) return;
+
+  const memberships = await context.entities.Membership.findMany({
+    where: { userId: context.user.id, parishId, status: 'ACTIVE' },
+    select: { role: true },
+  });
+  if (memberships.some((m: any) => isCoordinatorOrAbove(m.role))) return;
+
+  const hasDioceseAdmin = await context.entities.Membership.findFirst({
+    where: { userId: context.user.id, status: 'ACTIVE', role: 'DIOCESE_ADMIN' },
+    select: { id: true },
+  });
+  if (hasDioceseAdmin) {
+    const dioceseParishIds = await getDioceseParishIds(context);
+    if (dioceseParishIds.includes(parishId)) return;
+  }
+
+  throw new HttpError(403, 'Apenas coordenadores podem gerir o calendário litúrgico.');
+}
 
 export const listLiturgicalEvents = async (_args: void, context: any) => {
   if (!context.user) throw new HttpError(401);
@@ -42,6 +78,7 @@ export const listLiturgicalEvents = async (_args: void, context: any) => {
 
 export const createLiturgicalEvent = async (
   args: {
+    parishId: string;
     name: string;
     date: string;
     description?: string;
@@ -55,25 +92,11 @@ export const createLiturgicalEvent = async (
 ) => {
   if (!context.user) throw new HttpError(401);
 
-  const membership = await context.entities.Membership.findFirst({
-    where: { userId: context.user.id, status: 'ACTIVE' },
-    select: { parishId: true, role: true },
-  });
-
-  let parishId = membership?.parishId;
-
-  // Fallback to personal workspace
-  if (!parishId && !context.user.isAdmin) {
-    const personal = await context.entities.Parish.findFirst({
-      where: { ownerId: context.user.id, type: 'PERSONAL' },
-      select: { id: true },
-    });
-    if (personal) parishId = personal.id;
+  if (!args.parishId) {
+    throw new HttpError(400, 'parishId é obrigatório.');
   }
 
-  if (!parishId && !context.user.isAdmin) {
-    throw new HttpError(400, 'Voce nao esta vinculado a nenhuma paroquia.');
-  }
+  await assertCanWriteCalendar(context, args.parishId);
 
   return context.entities.LiturgicalEvent.create({
     data: {
@@ -86,7 +109,7 @@ export const createLiturgicalEvent = async (
       recurring: args.recurring || false,
       recurrenceRule: args.recurrenceRule,
       locale: resolveUserLocale(context.user),
-      parishId: parishId || null,
+      parishId: args.parishId,
     },
   });
 };
@@ -100,19 +123,12 @@ export const deleteLiturgicalEvent = async (args: { id: string }, context: any) 
   });
   if (!event) throw new HttpError(404, 'Evento nao encontrado.');
 
-  if (!context.user.isAdmin) {
-    if (!event.parishId) throw new HttpError(403, 'Apenas admin pode remover eventos globais.');
-    const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, parishId: event.parishId, status: 'ACTIVE' },
-    });
-    // Also check personal workspace ownership
-    const isPersonalOwner = !membership && await context.entities.Parish.findFirst({
-      where: { id: event.parishId, ownerId: context.user.id, type: 'PERSONAL' },
-      select: { id: true },
-    });
-    if (!membership && !isPersonalOwner) {
-      throw new HttpError(403, 'Voce nao tem permissao para remover este evento.');
+  if (!event.parishId) {
+    if (!context.user.isAdmin) {
+      throw new HttpError(403, 'Apenas admin pode remover eventos globais.');
     }
+  } else {
+    await assertCanWriteCalendar(context, event.parishId);
   }
 
   return context.entities.LiturgicalEvent.delete({ where: { id: args.id } });

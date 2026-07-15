@@ -211,8 +211,9 @@ export default function CalendarPage() {
   };
 
   const handleCreate = async () => {
-    if (!name || !eventDate) return;
+    if (!name || !eventDate || !activeParishId) return;
     await createLiturgicalEvent({
+      parishId: activeParishId,
       name,
       date: eventDate,
       description: desc,
