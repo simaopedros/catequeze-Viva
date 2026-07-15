@@ -20,8 +20,13 @@ import { useAuth } from "wasp/client/auth";
 import { ErrorBoundary } from "../client/components/ErrorBoundary";
 import { ShellBase } from "../client/components/ShellBase";
 import { isFamilyPortalHost, familyPortalUrl } from "../shared/portal";
-import { useAction, acceptInvitation } from "wasp/client/operations";
-import { trackMarketingEvent } from "../client/analytics/marketingAnalytics";
+import { useQuery } from "wasp/client/operations";
+import * as ops from "wasp/client/operations";
+import {
+  getStoredContinuation,
+  redirectToContinuationOrPath,
+  redirectToFamilyContinuation,
+} from "../auth/portalContinuation";
 
 const AIHelperWidget = lazy(() =>
   import("./components/AIHelperWidget").then((m) => ({
@@ -55,8 +60,7 @@ export function AppShell({ children }: AppShellProps) {
     allMemberships,
   } = useUserContext();
   const { showTour, completeTour } = useGuidedTour();
-  const acceptInvitationAction = useAction(acceptInvitation);
-  const autoAcceptedRef = useRef(false);
+  const continuationRedirectRef = useRef(false);
 
   const isFamily = useMemo(() => isFamilyPortalHost(), []);
   const isFamilyOnlyRole = userRole === "GUARDIAN" || userRole === "CATECHUMEN";
@@ -70,6 +74,14 @@ export function AppShell({ children }: AppShellProps) {
   // it disappears instead of depending on the protected page wrapper mounting.
   const { data: authUser } = useAuth();
 
+  // Server-side pending AuthContinuation (preferred over sessionStorage)
+  const getPendingAuthContinuation = (ops as any).getPendingAuthContinuation;
+  const { data: pendingContinuation } = useQuery(
+    getPendingAuthContinuation,
+    undefined,
+    { enabled: Boolean(authUser) && Boolean(getPendingAuthContinuation) },
+  );
+
   const isMinimalPath = useMemo(() => {
     const path = location.pathname;
     return path === "/app/onboarding" || path === "/app/select-workspace";
@@ -82,33 +94,34 @@ export function AppShell({ children }: AppShellProps) {
     }
   }, [isLoading, isFetching, isFamilyOnlyRole, hasStaffRole, isFamily]);
 
+  /**
+   * Gate auto-accept: family INVITED memberships must be accepted explicitly
+   * via /convite or /convite/continuar — never mass-accepted on AppShell paint.
+   * OAuth/email return: if a server (or cached) AuthContinuation is open, deep-link
+   * to the family host accept UI.
+   */
   useEffect(() => {
-    if (isLoading || isFetching) return;
-    if (!isFamilyOnlyRole || hasStaffRole) return;
-    if (autoAcceptedRef.current) return;
-    const invited = memberships.filter((m: any) => m.status === "INVITED");
-    if (invited.length === 0) return;
-    autoAcceptedRef.current = true;
-    Promise.all(
-      invited.map((m: any) =>
-        acceptInvitationAction({ membershipId: m.id })
-          .then(() => {
-            trackMarketingEvent("invite_accepted", {
-              role: m.role,
-              parish_id: m.parishId || null,
-              source: "app_shell_auto_accept",
-            });
-          })
-          .catch(() => {}),
-      ),
-    );
-  }, [
-    isLoading,
-    isFetching,
-    isFamilyOnlyRole,
-    memberships,
-    acceptInvitationAction,
-  ]);
+    if (!authUser || continuationRedirectRef.current) return;
+    if (location.pathname.startsWith("/convite")) return;
+
+    if (pendingContinuation?.pending && pendingContinuation.continuationId) {
+      continuationRedirectRef.current = true;
+      redirectToContinuationOrPath({
+        continuationId: pendingContinuation.continuationId,
+        sig: pendingContinuation.sig,
+        exp: pendingContinuation.exp,
+        signedUrl: pendingContinuation.signedUrl,
+        path: pendingContinuation.path,
+      });
+      return;
+    }
+
+    const stored = getStoredContinuation();
+    if (stored) {
+      continuationRedirectRef.current = true;
+      redirectToFamilyContinuation(stored);
+    }
+  }, [authUser, pendingContinuation, location.pathname]);
 
   useEffect(() => {
     if (isLoading || isFetching) return;

@@ -33,6 +33,7 @@ export function Signup() {
   const points = t("signup_panel_points", { returnObjects: true });
   const pointList = Array.isArray(points) ? (points as string[]) : [];
   const planFromAds = searchParams.get("plan");
+  const inviteToken = searchParams.get("token");
 
   return (
     <AuthPageLayout
@@ -43,7 +44,7 @@ export function Signup() {
         points: pointList,
       }}
     >
-      <CustomSignupForm intendedPlanId={planFromAds} />
+      <CustomSignupForm intendedPlanId={planFromAds} inviteToken={inviteToken} />
     </AuthPageLayout>
   );
 }

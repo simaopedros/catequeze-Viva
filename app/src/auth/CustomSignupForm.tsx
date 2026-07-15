@@ -9,7 +9,12 @@ import { Checkbox } from "../client/components/ui/checkbox";
 import { Loader2, Eye, EyeOff, ArrowRight, CheckCircle2, Mail } from "lucide-react";
 import { isFamilyPortalHost } from "../shared/portal";
 import { rememberPendingInviteToken } from "./inviteTokenStorage";
+import {
+  rememberContinuation,
+  getStoredContinuation,
+} from "./portalContinuation";
 import { trackMarketingEvent } from "../client/analytics/marketingAnalytics";
+import * as ops from "wasp/client/operations";
 import {
   trackCompleteRegistration,
   trackLead,
@@ -57,6 +62,26 @@ export default function CustomSignupForm({
   useEffect(() => {
     if (inviteToken) {
       rememberPendingInviteToken(inviteToken);
+      // Ensure server AuthContinuation exists before email-verify / OAuth detour
+      const createCont = (ops as any).createAuthContinuation;
+      if (typeof createCont === "function" && !getStoredContinuation()) {
+        createCont({ token: inviteToken })
+          .then((cont: any) => {
+            if (cont?.continuationId && cont.sig && cont.exp) {
+              rememberContinuation({
+                continuationId: cont.continuationId,
+                sig: cont.sig,
+                exp: cont.exp,
+                signedUrl: cont.signedUrl,
+                path: cont.path,
+                invitationId: cont.invitation?.invitationId,
+              });
+            }
+          })
+          .catch(() => {
+            /* legacy invite token — ok */
+          });
+      }
     }
   }, [inviteToken]);
 

@@ -1,11 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams, useNavigate, Link } from "react-router";
 import { useQuery, useAction } from "wasp/client/operations";
 import * as ops from "wasp/client/operations";
 import { useAuth } from "wasp/client/auth";
 import { Button } from "../../../client/components/ui/button";
-import { clearPendingInviteToken } from "../../../auth/inviteTokenStorage";
+import {
+  clearPendingInviteToken,
+  rememberPendingInviteToken,
+} from "../../../auth/inviteTokenStorage";
+import {
+  rememberContinuation,
+  clearStoredContinuation,
+} from "../../../auth/portalContinuation";
 import { trackMarketingEvent } from "../../../client/analytics/marketingAnalytics";
 import {
   Church,
@@ -23,10 +30,14 @@ import {
 } from "../../../client/components/brand/AppChrome";
 
 const getInvitationByToken = (ops as any).getInvitationByToken;
+const getPortalInvitation = (ops as any).getPortalInvitation;
 const acceptInvitationByTokenAction = (ops as any).acceptInvitationByToken;
+const acceptPortalInvitationAction = (ops as any).acceptPortalInvitation;
+const createAuthContinuationAction = (ops as any).createAuthContinuation;
 
 interface InvitationData {
-  token: string;
+  token?: string;
+  invitationId?: string;
   role: string;
   roleLabel: string;
   parishName: string;
@@ -35,6 +46,7 @@ interface InvitationData {
   emailMasked: string;
   expiresAt: string | null;
   hasAccount: boolean;
+  source?: "legacy" | "portal";
 }
 
 export default function InviteAcceptPage() {
@@ -45,31 +57,107 @@ export default function InviteAcceptPage() {
   const [accepting, setAccepting] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const [error, setError] = useState("");
+  const [portalInvitation, setPortalInvitation] = useState<InvitationData | null>(null);
+  const [portalLoadError, setPortalLoadError] = useState<any>(null);
+  const [portalLoading, setPortalLoading] = useState(false);
 
+  // Legacy PendingInvitation / Membership token path
   const {
     data: rawInvitation,
-    isLoading,
-    error: queryError,
+    isLoading: legacyLoading,
+    error: legacyError,
   } = useQuery(
     getInvitationByToken,
     { token: token || "" },
-    { enabled: !!token },
+    { enabled: !!token && !!getInvitationByToken },
   );
-  const invitation = rawInvitation as InvitationData | null | undefined;
 
-  const acceptAction = useAction(acceptInvitationByTokenAction);
+  // Portal invitation + AuthContinuation (server source of truth)
+  useEffect(() => {
+    if (!token || !getPortalInvitation) return;
+    let cancelled = false;
+    setPortalLoading(true);
+    setPortalLoadError(null);
+
+    (async () => {
+      try {
+        const dto = await getPortalInvitation({ token });
+        if (cancelled || !dto) return;
+        setPortalInvitation({
+          invitationId: dto.invitationId,
+          token,
+          role: dto.role,
+          roleLabel: dto.roleLabel,
+          parishName: dto.parishName,
+          parishId: dto.parishId,
+          parishType: dto.parishType,
+          emailMasked: dto.emailMasked,
+          expiresAt: dto.expiresAt,
+          hasAccount: dto.hasAccount,
+          source: "portal",
+        });
+        rememberPendingInviteToken(token);
+
+        if (createAuthContinuationAction) {
+          try {
+            const cont = await createAuthContinuationAction({ token });
+            if (cont?.continuationId && cont.sig && cont.exp) {
+              rememberContinuation({
+                continuationId: cont.continuationId,
+                sig: cont.sig,
+                exp: cont.exp,
+                signedUrl: cont.signedUrl,
+                path: cont.path,
+                invitationId: cont.invitation?.invitationId || dto.invitationId,
+              });
+            }
+          } catch {
+            /* continuation optional if ops not compiled yet */
+          }
+        }
+      } catch (e) {
+        if (!cancelled) setPortalLoadError(e);
+      } finally {
+        if (!cancelled) setPortalLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
+
+  const legacyInvitation = rawInvitation
+    ? ({ ...(rawInvitation as InvitationData), source: "legacy" as const, token })
+    : null;
+
+  const invitation: InvitationData | null | undefined =
+    portalInvitation || legacyInvitation;
+
+  const isLoading = portalLoading && legacyLoading;
+  const queryError =
+    !invitation && (portalLoadError && legacyError ? legacyError : portalLoadError || legacyError);
+
+  const acceptLegacy = useAction(acceptInvitationByTokenAction);
+  const acceptPortal = useAction(acceptPortalInvitationAction);
 
   const handleAccept = async () => {
     if (!token) return;
     setAccepting(true);
     setError("");
     try {
-      await acceptAction({ token });
+      if (invitation?.source === "portal" && invitation.invitationId && acceptPortalInvitationAction) {
+        await acceptPortal({ invitationId: invitation.invitationId, token });
+      } else {
+        await acceptLegacy({ token });
+      }
       clearPendingInviteToken();
+      clearStoredContinuation();
       trackMarketingEvent("invite_accepted", {
         role: invitation?.role,
         parish_type: invitation?.parishType,
         has_account: Boolean(authUser),
+        source: invitation?.source || "legacy",
       });
       setAccepted(true);
       setTimeout(() => navigate("/app"), 1500);
@@ -80,7 +168,7 @@ export default function InviteAcceptPage() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || (portalLoading && !legacyInvitation && !portalInvitation && !legacyError && !portalLoadError)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
         <Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" />
@@ -89,7 +177,9 @@ export default function InviteAcceptPage() {
   }
 
   if (queryError || !invitation) {
-    const isExpired = (queryError as any)?.statusCode === 410;
+    const isExpired =
+      (queryError as any)?.statusCode === 410 ||
+      /EXPIRED|410/i.test(String((queryError as any)?.message || ""));
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
         <div className="w-full max-w-md text-center space-y-6">
@@ -203,7 +293,6 @@ export default function InviteAcceptPage() {
               )}
             </span>
           </div>
-        </div>
 
         {error && (
           <div className="rounded-sm border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
@@ -249,6 +338,7 @@ export default function InviteAcceptPage() {
             </Link>
           </div>
         )}
+        </div>
       </div>
     </div>
   );

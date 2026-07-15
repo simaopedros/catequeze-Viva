@@ -155,6 +155,11 @@ page FamilyInviteCodePage {
   component: import FamilyInviteCodePage from "@src/catequese/pages/family/FamilyInviteCodePage"
 }
 
+route InviteContinueRoute { path: "/convite/continuar", to: InviteContinuePage }
+page InviteContinuePage {
+  component: import InviteContinuePage from "@src/catequese/pages/family/InviteContinuePage"
+}
+
 route InviteAcceptRoute { path: "/convite/:token", to: InviteAcceptPage }
 page InviteAcceptPage {
   component: import InviteAcceptPage from "@src/catequese/pages/family/InviteAcceptPage"
@@ -600,6 +605,24 @@ action resendPortalInvitation {
 action revokePortalInvitation {
   fn: import { revokePortalInvitation } from "@src/server/operations/portalInvitationOperations",
   entities: [PortalInvitation, Membership, Parish, User, AuditLog]
+}
+
+// AuthContinuation deep-link (family multi-host resume)
+action createAuthContinuation {
+  fn: import { createAuthContinuation } from "@src/server/operations/authContinuationOperations",
+  entities: [AuthContinuation, PortalInvitation, Parish, User]
+  auth: false
+}
+
+query getAuthContinuation {
+  fn: import { getAuthContinuation } from "@src/server/operations/authContinuationOperations",
+  entities: [AuthContinuation, PortalInvitation, Parish]
+  auth: false
+}
+
+query getPendingAuthContinuation {
+  fn: import { getPendingAuthContinuation } from "@src/server/operations/authContinuationOperations",
+  entities: [AuthContinuation, PortalInvitation, Parish, User]
 }
 
 action joinParish {
