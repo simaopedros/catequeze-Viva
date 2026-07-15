@@ -24,6 +24,7 @@ import {
   Shield,
   Circle,
   GraduationCap,
+  Mail,
 } from "lucide-react";
 import {
   getVisibleNavigation,
@@ -48,6 +49,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   parishes: Church,
   communities: Building2,
   families: Heart,
+  family_portal_invites: Mail,
   directory: FolderOpen,
   catechism: ScrollText,
   sacraments: Cross,

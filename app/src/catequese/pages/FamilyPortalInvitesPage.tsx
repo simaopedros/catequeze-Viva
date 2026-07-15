@@ -143,15 +143,7 @@ export default function FamilyPortalInvitesPage() {
           ? { pendingInvitationId: inv.id }
           : { membershipId: inv.id },
       );
-      const token = result?.token as string | undefined;
-      if (token) {
-        const url = inv.inviteUrl?.includes("/convite/")
-          ? inv.inviteUrl.replace(/\/convite\/[^/]+$/, `/convite/${token}`)
-          : null;
-        if (url) {
-          setLastInviteUrl(url);
-        }
-      }
+      if (result?.inviteUrl) setLastInviteUrl(result.inviteUrl);
       toast({ title: tf("portal_invites.resent") });
       await refetch();
     } catch (e: any) {

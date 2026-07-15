@@ -788,6 +788,17 @@ export const resendInvitation = async (
 
   if (!email) throw new HttpError(400, 'Email do destinatário não encontrado.');
 
+  // Persist regenerated token for membership path too
+  if (args.membershipId) {
+    await context.entities.Membership.update({
+      where: { id: args.membershipId },
+      data: {
+        inviteToken: token,
+        inviteTokenExpiresAt: defaultExpiry(),
+      },
+    });
+  }
+
   await sendInviteEmail(context, email, location, role, token);
   await writeAuditLog(context, 'UPDATE', 'PendingInvitation', args.pendingInvitationId || args.membershipId || '', {
     operation: 'MEMBER_INVITE_RESEND',
@@ -796,7 +807,12 @@ export const resendInvitation = async (
     role,
   });
 
-  return { success: true };
+  return {
+    success: true,
+    token,
+    inviteUrl: familyPortalUrl(`/convite/${token}`),
+  };
+}
 };
 
 export const removeMembership = async (
