@@ -10,7 +10,19 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
   const { parishIds, roles, personalWorkspaceId } = await resolveUserScope(context);
 
   if (parishIds.length === 0 && !isAdmin) {
-    return { activeCatechumens: 0, activeClasses: 0, avgAttendance: 0, pendingSacraments: 0, recentAlerts: [], aniversariantes: [], upcomingMeetings: [], reviewQueue: [], myClasses: [] };
+    return {
+      activeCatechumens: 0,
+      activeClasses: 0,
+      avgAttendance: 0,
+      pendingSacraments: 0,
+      recentAlerts: [],
+      aniversariantes: [],
+      upcomingMeetings: [],
+      reviewQueue: [],
+      myClasses: [],
+      hasAnyAttendance: false,
+      hasAnyMeeting: false,
+    };
   }
 
   // Validate args.parishId belongs to user
@@ -172,6 +184,17 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
     where: attendanceWhere,
   });
 
+  // Any meeting created/saved in scope (not only upcoming) — first-value signal
+  const meetingScopeWhere =
+    isCatechistOnly && myClassIds.length > 0
+      ? { classId: { in: myClassIds } }
+      : isAdmin
+        ? {}
+        : { class: whereClause };
+  const anyMeetingCountPromise = context.entities.Meeting.count({
+    where: meetingScopeWhere,
+  });
+
   // Today's meetings
   let todayMeetingsPromise: Promise<any[]>;
   if (roles.includes('LEAD_CATECHIST') || roles.includes('ASSISTANT_CATECHIST')) {
@@ -218,12 +241,14 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
     enrolledCatechumens,
     attendanceTotal,
     attendanceRecordsTotal,
+    anyMeetingCount,
     todayMeetings,
   ] = await Promise.all([
     activeClassesPromise,
     enrolledCatechumensPromise,
     attendanceTotalPromise,
     attendanceRecordsTotalPromise,
+    anyMeetingCountPromise,
     todayMeetingsPromise,
   ]);
 
@@ -268,5 +293,9 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
     todayMeetings,
     reviewQueue,
     myClasses,
+    /** First-value signals — any attendance record, not avg > 0 */
+    hasAnyAttendance: attendanceRecordsTotal > 0,
+    /** Any meeting created/saved in scope (past or future) */
+    hasAnyMeeting: anyMeetingCount > 0,
   };
 };

@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next";
 import { useQuery, getDashboardStats } from "wasp/client/operations";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
@@ -27,29 +26,50 @@ const STAFF_ROLES = [
   "PERSONAL_OWNER",
 ];
 
+/**
+ * Institutional staff dashboard uses its own queries — skip getDashboardStats.
+ * Pure helper for unit tests (enabled flag).
+ */
+export function shouldUseInstitutionalDashboard(args: {
+  workspaceType?: string | null;
+  workspacePlan?: string | null;
+  userRole?: string | null;
+}): boolean {
+  const { workspaceType, workspacePlan, userRole } = args;
+  return (
+    Boolean(workspaceType && INSTITUTIONAL_TYPES.includes(workspaceType)) &&
+    Boolean(workspacePlan && INSTITUTIONAL_PLANS.includes(workspacePlan)) &&
+    Boolean(userRole && STAFF_ROLES.includes(userRole))
+  );
+}
+
 export default function DashboardPage() {
   const { activeParishId } = useActiveParish();
-  const { data: stats, isLoading: loading } = useQuery(
+  const { userRole, isLoading: loadingCtx } = useUserContext();
+  const { workspaceType, workspacePlan } = useActiveWorkspace();
+
+  const isInstitutional = shouldUseInstitutionalDashboard({
+    workspaceType,
+    workspacePlan,
+    userRole,
+  });
+
+  // Avoid fetching common dashboard stats when institutional view does not use them.
+  const { data: stats, isLoading: loadingStats } = useQuery(
     getDashboardStats,
     { parishId: activeParishId || undefined },
     {
+      enabled: !loadingCtx && !isInstitutional,
       staleTime: 60000,
       refetchOnWindowFocus: false,
     },
   );
-  const { userRole, isLoading: loadingCtx } = useUserContext();
-  const { workspaceType, workspacePlan } = useActiveWorkspace();
 
-  if (loading || loadingCtx) {
+  if (loadingCtx || (!isInstitutional && loadingStats)) {
     return <SkeletonPage />;
   }
 
-  // Institutional dashboard for PARISH/DIOCESE workspaces with active institutional plan
-  if (
-    INSTITUTIONAL_TYPES.includes(workspaceType) &&
-    INSTITUTIONAL_PLANS.includes(workspacePlan) &&
-    STAFF_ROLES.includes(userRole)
-  ) {
+  if (isInstitutional) {
     return <InstitutionalDashboard />;
   }
 

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { lazy, Suspense, useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../client/components/ui/button";
 import { Badge } from "../../client/components/ui/badge";
@@ -17,23 +17,13 @@ import {
   AppMetric,
 } from "../../client/components/brand/AppChrome";
 import { EmptyState } from "../../client/components/EmptyState";
+import { ChartSuspenseFallback } from "../../client/components/ChartSuspenseFallback";
 import { useQuery, getReportsOverview } from "wasp/client/operations";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart as RPieChart,
-  Pie,
-  Cell,
-  Legend,
-  LineChart,
-  Line,
-} from "recharts";
+
+const ReportsChartsPanel = lazy(() =>
+  import("./ReportsChartsPanel").then((m) => ({ default: m.ReportsChartsPanel })),
+);
 
 export default function ReportsPage() {
   const { t } = useTranslation("reports");
@@ -444,100 +434,14 @@ export default function ReportsPage() {
       )}
 
       {tab === "grafico" && (
-        <div className="space-y-6">
-          {/* Bar Chart */}
-          <div className="rounded-sm border border-border/70 bg-white p-6">
-            <div className="mb-4 space-y-1.5">
-              <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                <BarChart3 className="h-3.5 w-3.5 text-[#071A2D]" />
-                {t("chart_attendance")}
-              </h3>
-              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
-            </div>
-            {!classReports.length ? (
-              <EmptyState icon={BarChart3} title={t("no_chart_data")} compact />
-            ) : (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart
-                  data={chartData}
-                  margin={{ top: 5, right: 30, left: 0, bottom: 60 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis
-                    dataKey="name"
-                    angle={-35}
-                    textAnchor="end"
-                    height={70}
-                    tick={{ fontSize: 11 }}
-                  />
-                  <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} />
-                  <Tooltip
-                    formatter={(value: any) => [
-                      `${value}%`,
-                      t("attendance_label"),
-                    ]}
-                    labelFormatter={(label: any) => {
-                      const item = chartData.find((d: any) => d.name === label);
-                      return item?.fullName || label;
-                    }}
-                  />
-                  <Bar
-                    dataKey={presentKey}
-                    fill="#071A2D"
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Bar
-                    dataKey={absentKey}
-                    fill="#D39A2B"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </div>
-
-          {/* Pie Chart */}
-          <div className="rounded-sm border border-border/70 bg-white p-6">
-            <div className="mb-4 space-y-1.5">
-              <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                <PieChart className="h-3.5 w-3.5 text-[#071A2D]" />
-                {t("chart_distribution")}
-              </h3>
-              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
-            </div>
-            {pieData[0].value + pieData[1].value === 0 ? (
-              <EmptyState
-                icon={PieChart}
-                title={t("no_chart_data")}
-                description={t("no_distribution_data")}
-                compact
-              />
-            ) : (
-              <ResponsiveContainer width="100%" height={280}>
-                <RPieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={5}
-                    dataKey="value"
-                    label={({ name, percent }: any) =>
-                      `${name} ${(percent * 100).toFixed(0)}%`
-                    }
-                  >
-                    {pieData.map((entry, i) => (
-                      <Cell key={i} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value: any) => [value, t("records")]} />
-                  <Legend />
-                </RPieChart>
-              </ResponsiveContainer>
-            )}
-          </div>
-        </div>
+        <Suspense fallback={<ChartSuspenseFallback height={320} />}>
+          <ReportsChartsPanel
+            chartData={chartData}
+            pieData={pieData}
+            presentKey={presentKey}
+            absentKey={absentKey}
+          />
+        </Suspense>
       )}
     </div>
   );

@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Link, useNavigate } from "react-router";
 import {
   addBibleRef,
@@ -37,7 +45,12 @@ import {
 } from "../../../shared/contentDocument";
 import { uploadContentImage } from "../../../client/utils/contentImageUpload";
 import { ContentDocumentRenderer } from "./ContentDocumentRenderer";
-import { RichContentEditor } from "./RichContentEditor";
+
+/** TipTap editor is heavy — load only when the content workspace mounts. */
+const RichContentEditor = lazy(() =>
+  import("./RichContentEditor").then((m) => ({ default: m.RichContentEditor })),
+);
+
 import {
   BookMarked,
   Clock3,
@@ -969,6 +982,14 @@ export function ContentDocumentWorkspace({
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
         <div className="min-w-0 space-y-4">
+          <Suspense
+            fallback={
+              <div
+                className="min-h-[320px] animate-pulse rounded-sm border border-border/70 bg-muted/30"
+                aria-busy="true"
+              />
+            }
+          >
           <RichContentEditor
             value={documentJson}
             onChange={setDocumentJson}
@@ -998,6 +1019,7 @@ export function ContentDocumentWorkspace({
             saveDisabled={saveState === "saving"}
             onPreview={() => setPreviewOpen(true)}
           />
+          </Suspense>
         </div>
 
         <div className="xl:sticky xl:top-14">

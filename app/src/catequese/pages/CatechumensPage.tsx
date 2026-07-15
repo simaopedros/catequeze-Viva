@@ -263,7 +263,19 @@ export default function CatechumensPage() {
               icon={Search}
               title={t("no_results")}
               description={t("catechumens.adjust_filters")}
-            />
+            >
+              <Button
+                type="button"
+                variant="outline"
+                className="mt-4 h-11 rounded-sm bg-white"
+                onClick={() => {
+                  setSearch("");
+                  setClassFilter("all");
+                }}
+              >
+                {t("clear_filters")}
+              </Button>
+            </EmptyState>
           </SurfaceSection>
         ) : (
           <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
@@ -344,69 +356,75 @@ export default function CatechumensPage() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((c: any) => (
-                  <tr
-                    key={c.id}
-                    className="border-b border-border/60 last:border-0 hover:bg-muted/30 transition-colors"
-                  >
-                    <td className="p-4">
-                      <Link
-                        to={`/app/catechumens/${c.id}`}
-                        className="flex items-center gap-3 hover:text-[#071A2D]"
-                      >
-                        <div
-                          className={`flex h-10 w-10 items-center justify-center rounded-sm text-sm font-semibold overflow-hidden ${
-                            !c.photoUrl
-                              ? AVATAR_COLORS[
-                                  Math.abs(c.firstName?.charCodeAt(0) || 0) %
-                                    AVATAR_COLORS.length
-                                ]
-                              : ""
-                          }`}
+                {filtered.map((c: any) => {
+                  const fullName = `${c.firstName || ""} ${c.lastName || ""}`.trim();
+                  return (
+                    <tr
+                      key={c.id}
+                      className="relative border-b border-border/60 last:border-0 transition-colors hover:bg-muted/30"
+                    >
+                      <td className="p-4">
+                        <Link
+                          to={`/app/catechumens/${c.id}`}
+                          aria-label={fullName}
+                          className="flex min-h-11 items-center gap-3 rounded-sm hover:text-[#071A2D] after:absolute after:inset-0 after:z-0 focus-visible:relative focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
-                          {c.photoUrl ? (
-                            <img
-                              src={c.photoUrl}
-                              className="h-full w-full object-cover"
-                              alt=""
-                            />
-                          ) : (
-                            `${c.firstName?.[0] || ""}${c.lastName?.[0] || ""}`
-                          )}
-                        </div>
-                        <div>
-                          <p
-                            className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                            style={{ fontFamily: "var(--font-brand-display)" }}
+                          <div
+                            className={`flex h-10 w-10 items-center justify-center overflow-hidden rounded-sm text-sm font-semibold ${
+                              !c.photoUrl
+                                ? AVATAR_COLORS[
+                                    Math.abs(c.firstName?.charCodeAt(0) || 0) %
+                                      AVATAR_COLORS.length
+                                  ]
+                                : ""
+                            }`}
                           >
-                            {c.firstName} {c.lastName}
-                          </p>
-                          {c.birthDate && (
-                            <p className="text-overline text-muted-foreground">
-                              <Calendar className="mr-0.5 inline h-3 w-3" />
-                              {formatDateOnly(c.birthDate, i18n.language)}
+                            {c.photoUrl ? (
+                              <img
+                                src={c.photoUrl}
+                                className="h-full w-full object-cover"
+                                alt=""
+                              />
+                            ) : (
+                              `${c.firstName?.[0] || ""}${c.lastName?.[0] || ""}`
+                            )}
+                          </div>
+                          <div>
+                            <p
+                              className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                              style={{
+                                fontFamily: "var(--font-brand-display)",
+                              }}
+                            >
+                              {fullName}
                             </p>
-                          )}
-                        </div>
-                      </Link>
-                    </td>
-                    <td className="p-4 hidden md:table-cell text-sm">
-                      {getAge(c.birthDate)
-                        ? t("catechumens.years_old", {
-                            age: getAge(c.birthDate),
-                          })
-                        : "—"}
-                    </td>
-                    <td className="p-4 hidden md:table-cell text-sm">
-                      {c.household?.name || "—"}
-                    </td>
-                    <td className="p-4 hidden lg:table-cell text-sm">
-                      {c.enrollments
-                        ?.map((e: any) => e.class.name)
-                        .join(", ") || "—"}
-                    </td>
-                  </tr>
-                ))}
+                            {c.birthDate && (
+                              <p className="text-overline text-muted-foreground">
+                                <Calendar className="mr-0.5 inline h-3 w-3" />
+                                {formatDateOnly(c.birthDate, i18n.language)}
+                              </p>
+                            )}
+                          </div>
+                        </Link>
+                      </td>
+                      <td className="p-4 hidden md:table-cell text-sm">
+                        {getAge(c.birthDate)
+                          ? t("catechumens.years_old", {
+                              age: getAge(c.birthDate),
+                            })
+                          : "—"}
+                      </td>
+                      <td className="p-4 hidden md:table-cell text-sm">
+                        {c.household?.name || "—"}
+                      </td>
+                      <td className="p-4 hidden lg:table-cell text-sm">
+                        {c.enrollments
+                          ?.map((e: any) => e.class.name)
+                          .join(", ") || "—"}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -417,7 +435,7 @@ export default function CatechumensPage() {
             <Link
               key={c.id}
               to={`/app/catechumens/${c.id}`}
-              className="group overflow-hidden rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-[#071A2D]/30"
+              className="group overflow-hidden rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-[#071A2D]/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               <div className="flex items-start gap-4">
                 <div

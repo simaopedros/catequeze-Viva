@@ -2,11 +2,11 @@
   "hero": {
     "headline_line1": "Catechesis without lost notebooks, spreadsheets, and WhatsApp threads",
     "headline_line2": "",
-    "subheadline": "In 7 days put your class, attendance, and next meeting in one place. Try it in your real routine.",
-    "badge": "Try 7 days",
-    "cta_primary": "Start your 7 days",
+    "subheadline": "In 7 days put your class, attendance, and next meeting in one place — and see if the week feels clearer.",
+    "badge": "7-day trial",
+    "cta_primary": "Start 7-day trial",
     "cta_secondary": "How it works",
-    "trust_signals": "Works on mobile • Spreadsheet import • Data protected",
+    "trust_signals": "No charge now • No card to start • Works on mobile",
     "cta_secondary_href": "/#como",
     "highlights": [
       "Attendance and follow-up on mobile",
@@ -14,7 +14,7 @@
       "Editorial assistance for meetings and family messages",
       "Family portal in the same system"
     ],
-    "cta_helper": "Start in minutes",
+    "cta_helper": "No charge now · no card to start · organize your class in week one",
     "audience_label": "What is your situation today?",
     "audiences": [
       {
@@ -168,9 +168,9 @@
       "desc": "Set up the class, take attendance, prepare the meeting."
     }
   ],
-  "steps_cta": "Start your 7 days",
-  "pricing_title": "After the trial, pick a plan",
-  "pricing_subtitle": "R$ 29 for a catechist. R$ 99 for parish or diocese. First 7 days with no charge.",
+  "steps_cta": "Start 7-day trial",
+  "pricing_title": "After you see the value, pick a plan",
+  "pricing_subtitle": "R$ 29 for a catechist. R$ 99 for parish or diocese. Start with a 7-day trial — no card and no charge now.",
   "plans": {
     "single": {
       "name": "Single Plan",
@@ -212,7 +212,11 @@
   "faqs": [
     {
       "q": "What can I do in the 7-day trial?",
-      "a": "Organize the class, take attendance on mobile, and prepare the next meeting — the real catechesis workflow."
+      "a": "Organize the class, take attendance on mobile, and prepare the next meeting — the real catechesis workflow. No card and no charge now."
+    },
+    {
+      "q": "Do I need a card for the trial?",
+      "a": "No. The 7-day product trial does not ask for a card. A card is only required if you subscribe to a plan later."
     },
     {
       "q": "Can I start alone as a catechist?",
@@ -232,8 +236,8 @@
     }
   ],
   "cta_title": "Organize catechesis with clarity",
-  "cta_subtitle": "Stop scattering the week across notebooks, spreadsheets, and chats. Try 7 days with your class.",
-  "cta_button": "Start your 7 days",
+  "cta_subtitle": "Stop scattering the week across notebooks, spreadsheets, and chats. Start the 7-day trial with your class — no charge now.",
+  "cta_button": "Start 7-day trial",
   "cta_badge": "Trial",
   "cta_see_plans": "See plans",
   "mock": {
@@ -347,11 +351,11 @@
   "testimonials_title": "Testimonials",
   "testimonials_subtitle": "When we have authorized quotes from catechists and parishes, they will appear here.",
   "testimonials": [],
-  "cta_helper": "Built for catechists and parishes",
+  "cta_helper": "No charge now · no card to start",
   "mobile_cta": {
     "title": "7-day trial",
-    "subtitle": "Organize your class on mobile",
-    "button": "Start your 7 days"
+    "subtitle": "No charge now · no card",
+    "button": "Start 7-day trial"
   },
   "proof": {
     "badge": "Start with confidence",
@@ -417,7 +421,7 @@
   "steps_endowed_title": "You're already here",
   "steps_endowed_desc": "Getting to know the platform",
   "price_trial_badge": "7 free days · No credit card",
-  "price_trial_note": "The trial requires a card (Stripe). No charge for 7 days; cancel before and you pay nothing.",
+  "price_trial_note": "7-day trial with no card and no charge now. If you subscribe later, payment is via Stripe; cancel in time and you are not charged.",
   "comparison": {
     "title": "Stop scattering catechesis across paper, spreadsheets, and WhatsApp",
     "subtitle": "Compare the usual workflow with Catequese Viva on the criteria that matter week to week.",
@@ -459,8 +463,8 @@
       }
     ]
   },
-  "faq_cta": "Start your 7 days",
-  "faq_cta_helper": "Use it with your class this week",
+  "faq_cta": "Start 7-day trial",
+  "faq_cta_helper": "No charge now · use it with your class this week",
   "price_cta_single": "Try Single plan",
   "price_cta_unlimited": "Try Unlimited plan",
   "price_annual_equivalent": "Equals {{price}}/month",

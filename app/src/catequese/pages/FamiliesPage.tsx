@@ -139,7 +139,19 @@ export default function FamiliesPage() {
             icon={Search}
             title={t("families.not_found_search")}
             description={t("catechumens.adjust_filters")}
-          />
+          >
+            <Button
+              type="button"
+              variant="outline"
+              className="mt-4 h-11 rounded-sm bg-white"
+              onClick={() => {
+                setSearch("");
+                setCommunityFilter("");
+              }}
+            >
+              {t("clear_filters")}
+            </Button>
+          </EmptyState>
         ) : (
           <EmptyState
             icon={Heart}
@@ -147,7 +159,7 @@ export default function FamiliesPage() {
             description={t("families.empty_desc")}
           >
             {canCreateFamily && (
-              <Button className="mt-4" asChild>
+              <Button className="mt-4 h-11" asChild>
                 <Link to="/app/families/new">{t("families.register")}</Link>
               </Button>
             )}
@@ -159,7 +171,7 @@ export default function FamiliesPage() {
             <Link
               key={h.id}
               to={`/app/families/${h.id}`}
-              className="group rounded-sm border border-border/70 bg-white p-4 transition-colors hover:border-[#071A2D]/30"
+              className="group min-h-11 rounded-sm border border-border/70 bg-white p-4 transition-colors hover:border-[#071A2D]/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               <div className="flex items-start justify-between mb-2">
                 <h3

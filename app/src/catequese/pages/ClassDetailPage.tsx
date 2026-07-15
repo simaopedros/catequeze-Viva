@@ -56,6 +56,14 @@ import { ConfirmDialog } from "../../client/components/ConfirmDialog";
 import { toast } from "../../client/hooks/use-toast";
 import SendAnnouncementButton from "../components/SendAnnouncementButton";
 import { DetailTabs } from "../../client/components/DetailTabs";
+import { useDetailTab } from "../../client/hooks/useDetailTab";
+
+const CLASS_DETAIL_TABS = [
+  "inscritos",
+  "encontros",
+  "catequistas",
+  "planejamento",
+] as const;
 import { EmptyState } from "../../client/components/EmptyState";
 import { useClassStatusMap } from "../../i18n/useLabels";
 import { useLocale } from "../../i18n/useLocale";
@@ -76,9 +84,7 @@ export default function ClassDetailPage() {
   } = useQuery(getClassDetails, { id: id! });
   const { data: user } = useAuth();
   const { userRole, parishId } = useUserContext();
-  const [tab, setTab] = useState<
-    "inscritos" | "encontros" | "catequistas" | "planejamento"
-  >("inscritos");
+  const [tab, setTab] = useDetailTab(CLASS_DETAIL_TABS, "inscritos");
 
   const isCoordinator = [
     "SUPER_ADMIN",
@@ -673,7 +679,7 @@ export default function ClassDetailPage() {
           ]}
           value={tab}
           onChange={(tabId) => {
-            setTab(tabId as typeof tab);
+            setTab(tabId as (typeof CLASS_DETAIL_TABS)[number]);
             if (tabId === "planejamento" && !monthlyPlan)
               handleLoadMonthlyPlan();
           }}

@@ -3,7 +3,7 @@ import { useCallback, useEffect } from 'react';
 import { useAuth } from 'wasp/client/auth';
 import { updateLocalePreference } from 'wasp/client/operations';
 import { resolveIntlLocale } from './format';
-import i18nInstance from './config';
+import i18nInstance, { ensureLocaleLoaded } from './config';
 
 export type SupportedLocale = 'pt-BR' | 'es' | 'en';
 
@@ -29,8 +29,11 @@ function parseLocale(value: string | null | undefined): SupportedLocale | null {
 }
 
 async function applyLocaleToI18n(locale: SupportedLocale, i18n = i18nInstance) {
+  await ensureLocaleLoaded(locale);
   await i18n.changeLanguage(locale);
-  document.documentElement.lang = locale;
+  if (typeof document !== 'undefined') {
+    document.documentElement.lang = locale;
+  }
 }
 
 export function useLocale() {

@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { Link } from "react-router";
 import { ChevronRight } from "lucide-react";
 import { cn } from "../utils";
 
@@ -41,29 +42,18 @@ export function InteractiveCard({
 }: InteractiveCardProps) {
   const isInteractive = !!(onClick || href);
 
-  const card = (
-    <div
-      className={cn(
-        "group flex items-start gap-3 rounded-sm border border-border/70 bg-white p-5 text-left transition-colors duration-200",
-        isInteractive &&
-          "cursor-pointer hover:border-[#071A2D]/30 hover:bg-muted/20",
-        compact && "gap-2.5 p-4",
-        className,
-      )}
-      onClick={onClick}
-      role={onClick ? "button" : undefined}
-      tabIndex={onClick ? 0 : undefined}
-      onKeyDown={
-        onClick
-          ? (e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                onClick();
-              }
-            }
-          : undefined
-      }
-    >
+  const cardClassName = cn(
+    "group flex items-start gap-3 rounded-sm border border-border/70 bg-white p-5 text-left transition-colors duration-200",
+    isInteractive &&
+      "cursor-pointer hover:border-[#071A2D]/30 hover:bg-muted/20",
+    isInteractive &&
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+    compact && "gap-2.5 p-4",
+    className,
+  );
+
+  const body = (
+    <>
       {Icon && (
         <div
           className={cn(
@@ -97,29 +87,31 @@ export function InteractiveCard({
         {children}
       </div>
       {showArrow && isInteractive && (
-        <ChevronRight className="h-5 w-5 text-muted-foreground/40 shrink-0 mt-0.5 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-muted-foreground motion-reduce:transition-none" />
+        <ChevronRight className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground/40 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-muted-foreground motion-reduce:transition-none" />
       )}
-    </div>
+    </>
   );
 
+  // Prefer a real link for SPA navigation (keyboard + focus + middle-click).
   if (href) {
     return (
-      <a
-        href={href}
-        className="block no-underline"
-        onClick={
-          onClick
-            ? (e) => {
-                e.preventDefault();
-                onClick();
-              }
-            : undefined
-        }
-      >
-        {card}
-      </a>
+      <Link to={href} className={cn(cardClassName, "no-underline")} onClick={onClick}>
+        {body}
+      </Link>
     );
   }
 
-  return card;
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        className={cn(cardClassName, "w-full")}
+        onClick={onClick}
+      >
+        {body}
+      </button>
+    );
+  }
+
+  return <div className={cardClassName}>{body}</div>;
 }

@@ -23,17 +23,27 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
+    },
+    {
+      name: 'mobile-390',
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 390, height: 844 },
+        isMobile: true,
+        hasTouch: true,
+      },
     },
   ],
 
-  webServer: process.env.SKIP_WEBSERVER
-    ? undefined
-    : {
+  // Prefer an already-running app (local dev). Set SKIP_WEBSERVER=0 to force spawn.
+  webServer: process.env.SKIP_WEBSERVER === '0'
+    ? {
         command: 'npx wasp start',
         url: BASE_URL,
-        reuseExistingServer: !process.env.CI,
-        timeout: 120000,
+        reuseExistingServer: true,
+        timeout: 180000,
         cwd: process.cwd(),
-      },
+      }
+    : undefined,
 });

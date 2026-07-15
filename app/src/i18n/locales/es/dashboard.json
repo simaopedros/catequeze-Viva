@@ -7,8 +7,10 @@
   "activation": {
     "eyebrow": "Primeros pasos",
     "title": "Deja tu catequesis lista para el día a día",
-    "progress": "{{done}} de {{total}} hechos",
+    "progress": "{{done}} de {{total}} en el camino al primer valor",
     "dismiss": "Descartar checklist",
+    "next_label": "Próxima acción",
+    "next_cta": "Hacerlo ahora",
     "step_class_title": "Tener un grupo",
     "step_class_desc": "El grupo es el centro de la asistencia y el seguimiento.",
     "step_people_title": "Incluir catequizandos",
@@ -16,7 +18,12 @@
     "step_attendance_title": "Registrar la primera asistencia",
     "step_attendance_desc": "Marca quién vino y mantén el historial del grupo.",
     "step_meeting_title": "Preparar un encuentro",
-    "step_meeting_desc": "Usa el assistência editorial o la biblioteca para el próximo encuentro."
+    "step_meeting_desc": "Crea o guarda el primer encuentro del grupo.",
+    "celebrate_eyebrow": "Primer valor",
+    "celebrate_title": "Ya usaste Catequese Viva de verdad",
+    "celebrate_desc": "Grupo, personas y una acción real (asistencia o encuentro) están en el sistema. Sigue el día a día desde aquí.",
+    "bonus_attendance": "Registrar asistencia también",
+    "bonus_meeting": "Preparar un encuentro también"
   },
   "quick_new_class": "Crear nueva clase",
   "quick_new_catechumen": "Registrar catequizando",

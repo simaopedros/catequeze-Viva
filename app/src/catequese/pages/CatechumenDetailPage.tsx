@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router";
-import { useState, useEffect, useMemo, useRef } from "react";
+import { lazy, Suspense, useState, useEffect, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { AppShell } from "../AppShell";
@@ -27,16 +27,23 @@ import {
   Clock,
   Printer,
 } from "lucide-react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
+import { ChartSuspenseFallback } from "../../client/components/ChartSuspenseFallback";
+import { DetailTabs } from "../../client/components/DetailTabs";
+import { useDetailTab } from "../../client/hooks/useDetailTab";
+
+const MonthlyPresenceBarChart = lazy(() =>
+  import("../components/charts/MonthlyPresenceBarChart").then((m) => ({
+    default: m.MonthlyPresenceBarChart,
+  })),
+);
+
+const CATECHUMEN_DETAIL_TABS = [
+  "overview",
+  "attendance",
+  "sacraments",
+  "documents",
+] as const;
 import {
   AppPageHeader,
   AppMetric,
@@ -864,35 +871,14 @@ function PastoralAnalysisInline({
               <BarChart3 className="h-3 w-3" />
               {t("monthlyPresence")}
             </h4>
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart
+            <Suspense fallback={<ChartSuspenseFallback height={220} />}>
+              <MonthlyPresenceBarChart
                 data={data.monthlyPresence}
-                margin={{ top: 5, right: 12, left: 0, bottom: 20 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="month" tick={{ fontSize: 10 }} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
-                <Tooltip />
-                <Bar
-                  dataKey="present"
-                  stackId="a"
-                  fill="#071A2D"
-                  name={t("present")}
-                />
-                <Bar
-                  dataKey="late"
-                  stackId="a"
-                  fill="#D39A2B"
-                  name={t("late")}
-                />
-                <Bar
-                  dataKey="absent"
-                  stackId="a"
-                  fill="#b91c1c"
-                  name={t("absent")}
-                />
-              </BarChart>
-            </ResponsiveContainer>
+                presentLabel={t("present")}
+                lateLabel={t("late")}
+                absentLabel={t("absent")}
+              />
+            </Suspense>
             <div className="mt-3 overflow-x-auto rounded-sm border border-border/70">
               <table className="w-full text-xs">
                 <thead className="bg-muted/60">
@@ -1057,6 +1043,7 @@ export default function CatechumenDetailPage() {
     "ASSISTANT_CATECHIST",
     "PERSONAL_OWNER",
   ].includes(userRole);
+  const [tab, setTab] = useDetailTab(CATECHUMEN_DETAIL_TABS, "overview");
   const [attendance, setAttendance] = useState<any[]>([]);
   const [report, setReport] = useState<any>(null);
   const [loadingReport, setLoadingReport] = useState(false);
@@ -1411,7 +1398,40 @@ export default function CatechumenDetailPage() {
           </div>
         )}
 
-        {attendance.length > 0 &&
+        <DetailTabs
+          tabs={[
+            {
+              id: "overview",
+              label: t("catechumens.tab_overview", {
+                defaultValue: "Visão geral",
+              }),
+            },
+            {
+              id: "attendance",
+              label: t("catechumens.tab_attendance", {
+                defaultValue: "Presença",
+              }),
+            },
+            {
+              id: "sacraments",
+              label: t("catechumens.tab_sacraments", {
+                defaultValue: "Sacramentos",
+              }),
+            },
+            {
+              id: "documents",
+              label: t("catechumens.tab_documents", {
+                defaultValue: "Documentos",
+              }),
+            },
+          ]}
+          value={tab}
+          onChange={(id) =>
+            setTab(id as (typeof CATECHUMEN_DETAIL_TABS)[number])
+          }
+        />
+
+        {tab === "overview" && attendance.length > 0 &&
           (() => {
             const present = attendance.filter(
               (a: any) => a.status === "PRESENT" || a.status === "LATE",
@@ -1447,6 +1467,7 @@ export default function CatechumenDetailPage() {
             );
           })()}
 
+        {tab === "overview" && (
         <div className="grid gap-4 md:grid-cols-2">
           <div className="rounded-sm border border-border/70 bg-white p-4">
             <div className="mb-2 space-y-1.5">
@@ -1503,8 +1524,9 @@ export default function CatechumenDetailPage() {
             )}
           </div>
         </div>
+        )}
 
-        {attendance.length > 0 && (
+        {tab === "attendance" && attendance.length > 0 && (
           <div className="rounded-sm border border-border/70 bg-white p-4">
             <div className="mb-3 space-y-1.5">
               <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
@@ -1699,7 +1721,7 @@ export default function CatechumenDetailPage() {
           </div>
         )}
 
-        {profile.sacramentalJourneys?.length > 0 && (
+        {tab === "sacraments" && profile.sacramentalJourneys?.length > 0 && (
           <div className="rounded-sm border border-border/70 bg-white p-4">
             <div className="mb-3 space-y-1.5">
               <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
@@ -1783,7 +1805,7 @@ export default function CatechumenDetailPage() {
         )}
 
         {/* Pastoral Analysis Card */}
-        {profile.enrollments?.length > 0 && (
+        {tab === "sacraments" && profile.enrollments?.length > 0 && (
           <div className="rounded-sm border border-border/70 bg-white p-4">
             <div className="mb-3 space-y-1.5">
               <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
@@ -1818,7 +1840,7 @@ export default function CatechumenDetailPage() {
           </div>
         )}
 
-        {profile.documents?.length > 0 && (
+        {tab === "documents" && profile.documents?.length > 0 && (
           <div className="rounded-sm border border-border/70 bg-white p-4">
             <div className="mb-3 space-y-1.5">
               <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
@@ -1856,6 +1878,7 @@ export default function CatechumenDetailPage() {
           </div>
         )}
 
+        {tab === "documents" && (
         <div className="rounded-sm border border-border/70 bg-white p-4">
           <div className="mb-3 space-y-1.5">
             <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
@@ -1926,8 +1949,9 @@ export default function CatechumenDetailPage() {
             </p>
           )}
         </div>
+        )}
 
-        {canEdit && (
+        {tab === "documents" && canEdit && (
           <div className="rounded-sm border border-border/70 bg-white p-4">
             <div className="mb-3 space-y-1.5">
               <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">

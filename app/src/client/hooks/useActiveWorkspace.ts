@@ -1,14 +1,20 @@
-import { useEffect, useCallback, useSyncExternalStore, useMemo } from 'react';
-import { useQuery, listWorkspaces } from 'wasp/client/operations';
-import { useAuth } from 'wasp/client/auth';
-
-const STORAGE_KEY = 'catequese-viva-active-workspace';
-const EVENT_NAME = 'workspace-changed';
+import { useEffect, useCallback, useSyncExternalStore, useMemo } from "react";
+import { useQuery, listWorkspaces } from "wasp/client/operations";
+import { useAuth } from "wasp/client/auth";
+import {
+  getStoredWorkspaceId,
+  setActiveWorkspaceId,
+  workspaceStore,
+} from "./workspaceStore";
+import {
+  invalidateShellContext,
+  SHELL_QUERY_OPTIONS,
+} from "./shellQueryCache";
 
 interface Workspace {
   id: string;
   name: string;
-  type: 'PERSONAL' | 'PARISH' | 'DIOCESE' | 'COMMUNITY';
+  type: "PERSONAL" | "PARISH" | "DIOCESE" | "COMMUNITY";
   role: string;
   plan: string;
   billingStatus?: string | null;
@@ -24,46 +30,16 @@ interface UseActiveWorkspaceReturn {
   workspacePlan: string;
   isPersonal: boolean;
   availableWorkspaces: Workspace[];
+  isLoading: boolean;
   switchWorkspace: (id: string) => void;
 }
 
-function getStoredWorkspaceId(): string {
-  return localStorage.getItem(STORAGE_KEY) || '';
-}
-
-function createWorkspaceStore() {
-  let version = 0;
-  const listeners = new Set<() => void>();
-
-  return {
-    getSnapshot: () => `${getStoredWorkspaceId()}:${version}`,
-    subscribe: (callback: () => void) => {
-      listeners.add(callback);
-      const handler = () => { version++; callback(); };
-      window.addEventListener(EVENT_NAME, handler);
-      const storageHandler = (e: StorageEvent) => {
-        if (e.key === STORAGE_KEY) { version++; callback(); }
-      };
-      window.addEventListener('storage', storageHandler);
-      return () => {
-        listeners.delete(callback);
-        window.removeEventListener(EVENT_NAME, handler);
-        window.removeEventListener('storage', storageHandler);
-      };
-    },
-    notify: () => {
-      version++;
-      listeners.forEach(l => l());
-    },
-  };
-}
-
-const workspaceStore = createWorkspaceStore();
-
 export function useActiveWorkspace(): UseActiveWorkspaceReturn {
-  const { data: workspacesRaw = [], isLoading } = useQuery(listWorkspaces, undefined, {
-    staleTime: 120000,
-    refetchOnWindowFocus: false,
+  const {
+    data: workspacesRaw = [],
+    isLoading,
+  } = useQuery(listWorkspaces, undefined, {
+    ...SHELL_QUERY_OPTIONS,
   });
   const workspaces = workspacesRaw as Workspace[];
   const { data: authUser } = useAuth();
@@ -71,8 +47,9 @@ export function useActiveWorkspace(): UseActiveWorkspaceReturn {
   const snapshot = useSyncExternalStore(
     workspaceStore.subscribe,
     workspaceStore.getSnapshot,
+    () => ":", // SSR / Node snapshot
   );
-  const activeWorkspaceId = snapshot.split(':')[0];
+  const activeWorkspaceId = snapshot.split(":")[0];
 
   // Auto-select personal workspace if none stored
   useEffect(() => {
@@ -82,19 +59,15 @@ export function useActiveWorkspace(): UseActiveWorkspaceReturn {
         const personal = workspaces.find((w: Workspace) => w.isPersonal);
         const firstId = personal?.id || workspaces[0]?.id;
         if (firstId) {
-          localStorage.setItem(STORAGE_KEY, firstId);
-          workspaceStore.notify();
+          setActiveWorkspaceId(firstId);
         }
       } else {
-        // Validate stored workspace still exists
         const exists = workspaces.some((w: Workspace) => w.id === storedId);
         if (!exists) {
           const personal = workspaces.find((w: Workspace) => w.isPersonal);
           const firstId = personal?.id || workspaces[0]?.id;
           if (firstId) {
-            localStorage.setItem(STORAGE_KEY, firstId);
-            localStorage.removeItem('catequese-viva-active-membership');
-            workspaceStore.notify();
+            setActiveWorkspaceId(firstId);
           }
         }
       }
@@ -103,31 +76,43 @@ export function useActiveWorkspace(): UseActiveWorkspaceReturn {
 
   const workspace = useMemo(() => {
     if (!activeWorkspaceId) {
-      // Default to personal workspace
-      return workspaces.find((w: Workspace) => w.isPersonal) || workspaces[0] || null;
+      return (
+        workspaces.find((w: Workspace) => w.isPersonal) ||
+        workspaces[0] ||
+        null
+      );
     }
-    return workspaces.find((w: Workspace) => w.id === activeWorkspaceId) || workspaces[0] || null;
+    return (
+      workspaces.find((w: Workspace) => w.id === activeWorkspaceId) ||
+      workspaces[0] ||
+      null
+    );
   }, [activeWorkspaceId, workspaces]);
 
-  // Get the subscription plan from the workspace (not user)
-  const workspacePlan = workspace?.plan || authUser?.subscriptionPlan || 'catechist_free';
+  const workspacePlan =
+    workspace?.plan || authUser?.subscriptionPlan || "catechist_free";
 
   const switchWorkspace = useCallback((id: string) => {
-    localStorage.setItem(STORAGE_KEY, id);
-    localStorage.removeItem('catequese-viva-active-membership');
-    workspaceStore.notify();
-    window.dispatchEvent(new CustomEvent(EVENT_NAME, { detail: id }));
+    setActiveWorkspaceId(id);
+    // Refresh memberships/roles for the new workspace after switch
+    void invalidateShellContext();
   }, []);
 
   return {
     workspace,
-    workspaceId: workspace?.id || '',
-    workspaceName: workspace?.name || 'Catequese Viva',
-    workspaceType: workspace?.type || 'PERSONAL',
+    workspaceId: workspace?.id || "",
+    workspaceName: workspace?.name || "Catequese Viva",
+    workspaceType: workspace?.type || "PERSONAL",
     workspacePlan,
     isPersonal: workspace?.isPersonal ?? true,
     availableWorkspaces: workspaces as Workspace[],
+    isLoading,
     switchWorkspace,
   };
 }
 
+// Re-export for callers that imported EVENT_NAME / STORAGE_KEY from this module
+export {
+  WORKSPACE_CHANGED_EVENT as WORKSPACE_EVENT_NAME,
+  WORKSPACE_STORAGE_KEY,
+} from "./workspaceStore";

@@ -29,13 +29,52 @@ export const USERS = {
 export const PASSWORD = 'Teste@123';
 
 // ═══ Login ═══════════════════════════════════════════════════════════════════
+/** Remove vanilla-cookieconsent overlay so it cannot block pointer events in e2e. */
+export async function dismissCookieBanner(page: Page) {
+  await page.evaluate(() => {
+    document.getElementById('cc-main')?.remove();
+    document
+      .querySelectorAll('.cm-wrapper, .cm--box, [class*="cm__"]')
+      .forEach((el) => el.remove());
+  }).catch(() => {});
+}
+
 export async function login(page: Page, email: string, password = PASSWORD) {
+  // Prevent cookie banner from mounting during e2e (vanilla-cookieconsent cookie name: cc_cookie)
+  await page.addInitScript(() => {
+    try {
+      document.cookie =
+        'cc_cookie=' +
+        encodeURIComponent(
+          JSON.stringify({
+            categories: ['necessary'],
+            revision: 0,
+            data: null,
+            rfc_cookie: true,
+          }),
+        ) +
+        '; path=/; max-age=31536000; SameSite=Lax';
+    } catch {
+      /* ignore */
+    }
+  });
   await page.goto('/login');
-  // Wait for the login form to be visible
-  await page.waitForSelector('input[type="email"], input[name="email"]', { timeout: 15000 });
+  await page.waitForLoadState('domcontentloaded');
+  await dismissCookieBanner(page);
+  // Email/password form is behind "Continuar com email" (Google-first login UI)
+  const emailField = page.locator('input[type="email"], input[name="email"]');
+  if (!(await emailField.first().isVisible({ timeout: 3000 }).catch(() => false))) {
+    const continueWithEmail = page.getByRole('button', {
+      name: /continuar com e-?mail|continue with e-?mail|continuar con (el )?correo/i,
+    });
+    await continueWithEmail.click({ timeout: 15000 });
+  }
+  await dismissCookieBanner(page);
+  await emailField.first().waitFor({ state: 'visible', timeout: 15000 });
   await page.fill('input[type="email"], input[name="email"]', email);
   await page.fill('input[type="password"], input[name="password"]', password);
-  await page.click('button[type="submit"]');
+  await dismissCookieBanner(page);
+  await page.locator('button[type="submit"]').click({ force: true, timeout: 15000 });
   // Wait for navigation to app
   await page.waitForURL(/\/app|\/workspace-selector/, { timeout: 15000 });
 }

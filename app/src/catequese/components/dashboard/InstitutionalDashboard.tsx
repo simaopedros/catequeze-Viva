@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { lazy, Suspense, useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   useQuery,
@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../client/components/ui/select";
-import { ChartCard } from "../../../client/components/ChartCard";
+import { ChartSuspenseFallback } from "../../../client/components/ChartSuspenseFallback";
 import { formatCurrency, formatNumber } from "../../../i18n/format";
 import { useLocale } from "../../../i18n/useLocale";
 import {
@@ -42,21 +42,12 @@ import {
   ArrowDown,
   Minus,
 } from "lucide-react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
-} from "recharts";
+
+const InstitutionalChartsPanel = lazy(() =>
+  import("./InstitutionalChartsPanel").then((m) => ({
+    default: m.InstitutionalChartsPanel,
+  })),
+);
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -541,127 +532,18 @@ export function InstitutionalDashboard() {
         </div>
       )}
 
-      {/* Charts */}
+      {/* Charts — lazy recharts chunk */}
       {trendChartData.length > 0 && (
-        <div className="grid gap-6 lg:grid-cols-2">
-          {/* Enrollment & Dropout Trend */}
-          <ChartCard title={t("chart_enrollments_vs_dropouts")}>
-            <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={trendChartData}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  className="stroke-muted-foreground/20"
-                />
-                <XAxis
-                  dataKey="name"
-                  tick={{ fontSize: 11 }}
-                  className="text-muted-foreground"
-                />
-                <YAxis
-                  tick={{ fontSize: 11 }}
-                  className="text-muted-foreground"
-                />
-                <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey={enrollmentsKey}
-                  stroke="#2563eb"
-                  strokeWidth={2}
-                  dot={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey={dropoutsKey}
-                  stroke="#b91c1c"
-                  strokeWidth={2}
-                  dot={false}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </ChartCard>
-
-          {/* Attendance Trend */}
-          <ChartCard title={t("chart_attendance_trend")}>
-            <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={trendChartData}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  className="stroke-muted-foreground/20"
-                />
-                <XAxis
-                  dataKey="name"
-                  tick={{ fontSize: 11 }}
-                  className="text-muted-foreground"
-                />
-                <YAxis
-                  tick={{ fontSize: 11 }}
-                  domain={[0, 100]}
-                  className="text-muted-foreground"
-                />
-                <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey={attendanceKey}
-                  stroke="#071A2D"
-                  strokeWidth={2}
-                  dot={false}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </ChartCard>
-
-          {/* Sacramental Funnel */}
-          {funnelData.length > 0 && (
-            <ChartCard title={t("chart_sacramental_funnel")}>
-              <ResponsiveContainer width="100%" height={250}>
-                <PieChart>
-                  <Pie
-                    data={funnelData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={90}
-                    paddingAngle={3}
-                    dataKey="value"
-                  >
-                    {funnelData.map((entry: any, index: number) => (
-                      <Cell key={`cell-${index}`} fill={entry.fill} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            </ChartCard>
-          )}
-
-          {/* Sacramental Milestones Trend */}
-          <ChartCard title={t("chart_milestones_completed")}>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={trendChartData}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  className="stroke-muted-foreground/20"
-                />
-                <XAxis
-                  dataKey="name"
-                  tick={{ fontSize: 11 }}
-                  className="text-muted-foreground"
-                />
-                <YAxis
-                  tick={{ fontSize: 11 }}
-                  className="text-muted-foreground"
-                />
-                <Tooltip />
-                <Bar
-                  dataKey={milestonesKey}
-                  fill="#a855f7"
-                  radius={[4, 4, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartCard>
-        </div>
+        <Suspense fallback={<ChartSuspenseFallback height={280} />}>
+          <InstitutionalChartsPanel
+            trendChartData={trendChartData}
+            funnelData={funnelData}
+            enrollmentsKey={enrollmentsKey}
+            dropoutsKey={dropoutsKey}
+            attendanceKey={attendanceKey}
+            milestonesKey={milestonesKey}
+          />
+        </Suspense>
       )}
 
       {/* Class Comparison Table (only for parish scope) */}

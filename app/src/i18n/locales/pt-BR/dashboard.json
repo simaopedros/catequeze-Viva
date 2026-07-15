@@ -7,8 +7,10 @@
   "activation": {
     "eyebrow": "Primeiros passos",
     "title": "Deixe sua catequese pronta para o dia a dia",
-    "progress": "{{done}} de {{total}} concluídos",
+    "progress": "{{done}} de {{total}} no caminho do primeiro valor",
     "dismiss": "Dispensar checklist",
+    "next_label": "Próxima ação",
+    "next_cta": "Fazer agora",
     "step_class_title": "Ter uma turma",
     "step_class_desc": "A turma é o centro da chamada e do acompanhamento.",
     "step_people_title": "Incluir catequizandos",
@@ -16,7 +18,12 @@
     "step_attendance_title": "Registrar a primeira presença",
     "step_attendance_desc": "Marque quem veio e mantenha o histórico da turma.",
     "step_meeting_title": "Preparar um encontro",
-    "step_meeting_desc": "Use o assistência editorial ou a biblioteca para o próximo encontro."
+    "step_meeting_desc": "Crie ou salve o primeiro encontro da turma.",
+    "celebrate_eyebrow": "Primeiro valor",
+    "celebrate_title": "Você já usou a Catequese Viva de verdade",
+    "celebrate_desc": "Turma, pessoas e uma ação real (presença ou encontro) estão no sistema. Continue o dia a dia daqui.",
+    "bonus_attendance": "Registrar presença também",
+    "bonus_meeting": "Preparar um encontro também"
   },
   "quick_new_class": "Criar nova turma",
   "quick_new_catechumen": "Cadastrar catequizando",

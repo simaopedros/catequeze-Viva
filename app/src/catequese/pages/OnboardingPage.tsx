@@ -34,7 +34,11 @@ import {
   createClass,
   ensurePersonalWorkspace,
 } from "wasp/client/operations";
-import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
+import {
+  trackMarketingEvent,
+  trackOnboardingCompleted,
+} from "../../client/analytics/marketingAnalytics";
+import { invalidateShellContext } from "../../client/hooks/shellQueryCache";
 import { Button } from "../../client/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 
@@ -204,9 +208,33 @@ export default function OnboardingPage() {
     return `/app/billing?plan=${intended}`;
   };
 
+  const emitOnboardingCompleted = (path: string) => {
+    let duration_ms: number | undefined;
+    try {
+      const started = sessionStorage.getItem("cv-onboarding-started-at");
+      if (started) {
+        duration_ms = Date.now() - Number(started);
+      }
+    } catch {
+      /* ignore */
+    }
+    trackOnboardingCompleted({
+      account_type: accountType || "personal",
+      profile: accountType === "manager" ? "institutional" : "personal",
+      path,
+      duration_ms:
+        duration_ms != null && Number.isFinite(duration_ms)
+          ? duration_ms
+          : undefined,
+    });
+    // Refresh memberships/workspaces after onboarding creates parish/class/workspace
+    void invalidateShellContext();
+  };
+
   const handleSecondaryCompletionAction = () => {
     const deferredTarget = getDeferredTarget();
     clearPersisted();
+    emitOnboardingCompleted(deferredTarget || "/app");
     if (deferredTarget) {
       clearIntendedPlan();
       navigate(deferredTarget);
@@ -293,13 +321,30 @@ export default function OnboardingPage() {
 
   const finishPersonal = (count: number) => {
     setCatechumensCount(count);
+    // Milestone: class + people (compat funnel). Full first value needs attendance OR meeting.
     if (count > 0) {
       trackMarketingEvent("activation_completed", {
         account_type: "personal",
         activation_type: "first_class_with_catechumens",
         catechumens: count,
+        milestone: "people",
       });
     }
+    const next =
+      count > 0 && classId
+        ? {
+            to: `/app/classes/${classId}/attendance`,
+            label: t("completion.primary_register_attendance"),
+          }
+        : count <= 0 && classId
+          ? {
+              to: `/app/classes/${classId}`,
+              label: t("completion.primary_add_people"),
+            }
+          : {
+              to: classId ? `/app/classes/${classId}` : "/app/classes",
+              label: t("completion.primary_open_class"),
+            };
     setCompletionData({
       role: "catechist",
       title:
@@ -315,11 +360,8 @@ export default function OnboardingPage() {
         { label: t("summary.class"), value: className || "—" },
         { label: t("summary.catechumens"), value: String(count) },
       ],
-      primaryActionLabel:
-        count > 0
-          ? t("completion.primary_open_class")
-          : t("completion.primary_add_people"),
-      primaryActionTo: classId ? `/app/classes/${classId}` : "/app/classes",
+      primaryActionLabel: next.label,
+      primaryActionTo: next.to,
     });
     setStep("completion");
     clearPersisted();
@@ -468,6 +510,14 @@ export default function OnboardingPage() {
       {step === "welcome" && (
         <WelcomeStep
           onPersonal={() => {
+            try {
+              sessionStorage.setItem(
+                "cv-onboarding-started-at",
+                String(Date.now()),
+              );
+            } catch {
+              /* ignore */
+            }
             trackMarketingEvent("onboarding_started", {
               account_type: "personal",
               intent: "organize_my_class",
@@ -476,6 +526,14 @@ export default function OnboardingPage() {
             setStep("class");
           }}
           onManager={() => {
+            try {
+              sessionStorage.setItem(
+                "cv-onboarding-started-at",
+                String(Date.now()),
+              );
+            } catch {
+              /* ignore */
+            }
             trackMarketingEvent("onboarding_started", {
               account_type: "manager",
               intent: "organize_parish_catechesis",
@@ -584,6 +642,7 @@ export default function OnboardingPage() {
           }}
           onPrimaryAction={() => {
             clearPersisted();
+            emitOnboardingCompleted(completionData.primaryActionTo);
             navigate(completionData.primaryActionTo);
           }}
           onSecondaryAction={handleSecondaryCompletionAction}

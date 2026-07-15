@@ -1,4 +1,11 @@
-import { useQuery, getCurrentUserContext } from 'wasp/client/operations';
+import { useSyncExternalStore } from "react";
+import { useQuery, getCurrentUserContext } from "wasp/client/operations";
+import { SHELL_QUERY_OPTIONS } from "./shellQueryCache";
+import {
+  getStoredWorkspaceId,
+  MEMBERSHIP_STORAGE_KEY,
+  workspaceStore,
+} from "./workspaceStore";
 
 export interface MembershipInfo {
   id: string;
@@ -9,15 +16,6 @@ export interface MembershipInfo {
   communityId: string | null;
   communityName: string | null;
   parishType: string | null;
-}
-
-interface UserContextResult {
-  userId: string;
-  isAdmin: boolean;
-  needsOnboarding: boolean;
-  hasPendingInvitations: boolean;
-  personalWorkspaceId: string | null;
-  memberships: MembershipInfo[];
 }
 
 interface UseUserContextReturn {
@@ -39,78 +37,103 @@ interface UseUserContextReturn {
 }
 
 const ROLE_PRIORITY = [
-  'SUPER_ADMIN', 'DIOCESE_ADMIN',
-  'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR',
-  'PERSONAL_OWNER',
-  'LEAD_CATECHIST', 'ASSISTANT_CATECHIST',
-  'CONTENT_REVIEWER', 'PASTORAL_VIEWER',
-  'GUARDIAN', 'CATECHUMEN',
+  "SUPER_ADMIN",
+  "DIOCESE_ADMIN",
+  "PARISH_COORDINATOR",
+  "COMMUNITY_COORDINATOR",
+  "PERSONAL_OWNER",
+  "LEAD_CATECHIST",
+  "ASSISTANT_CATECHIST",
+  "CONTENT_REVIEWER",
+  "PASTORAL_VIEWER",
+  "GUARDIAN",
+  "CATECHUMEN",
 ];
 
-function pickBestMembership(memberships: MembershipInfo[]): MembershipInfo | undefined {
+function pickBestMembership(
+  memberships: MembershipInfo[],
+): MembershipInfo | undefined {
   if (memberships.length === 0) return undefined;
   return memberships
     .slice()
-    .sort((a, b) => ROLE_PRIORITY.indexOf(a.role) - ROLE_PRIORITY.indexOf(b.role))[0];
-}
-
-function getActiveWorkspaceId(): string | null {
-  try { return localStorage.getItem('catequese-viva-active-workspace'); }
-  catch { return null; }
+    .sort(
+      (a, b) => ROLE_PRIORITY.indexOf(a.role) - ROLE_PRIORITY.indexOf(b.role),
+    )[0];
 }
 
 export function useUserContext(): UseUserContextReturn {
-  const { data, isLoading, isFetching, error } = useQuery(getCurrentUserContext, undefined, {
-    staleTime: 60000,
-    refetchOnWindowFocus: false,
-  });
+  // Same query options as useActiveWorkspace → shared RQ cache entry / no double network.
+  const { data, isLoading, isFetching, error } = useQuery(
+    getCurrentUserContext,
+    undefined,
+    {
+      ...SHELL_QUERY_OPTIONS,
+    },
+  );
 
-  // Wasp auto-generates the query type from the server return type.
-  // Use Record<string,any> so new server fields work before type regeneration.
+  // Re-render when active workspace changes (same store as useActiveWorkspace)
+  const snapshot = useSyncExternalStore(
+    workspaceStore.subscribe,
+    workspaceStore.getSnapshot,
+    () => ":",
+  );
+  const activeWorkspaceId = snapshot.split(":")[0] || getStoredWorkspaceId();
+
   const ctx = (data ?? {}) as Record<string, any>;
-  const allMemberships: MembershipInfo[] = Array.isArray(ctx.memberships) ? ctx.memberships : [];
+  const allMemberships: MembershipInfo[] = Array.isArray(ctx.memberships)
+    ? ctx.memberships
+    : [];
 
-  // Get active workspace ID
-  const activeWorkspaceId = getActiveWorkspaceId();
-
-  // Filter memberships to active workspace only
   const workspaceMemberships = activeWorkspaceId
-    ? allMemberships.filter((m: MembershipInfo) => m.parishId === activeWorkspaceId)
+    ? allMemberships.filter(
+        (m: MembershipInfo) => m.parishId === activeWorkspaceId,
+      )
     : allMemberships;
 
-  // Check if personal workspace is active
-  const isPersonalActive = !!(ctx.personalWorkspaceId && activeWorkspaceId === ctx.personalWorkspaceId);
+  const isPersonalActive = !!(
+    ctx.personalWorkspaceId && activeWorkspaceId === ctx.personalWorkspaceId
+  );
 
-  // Resolve membership: for personal workspace, create a virtual membership
   let effectiveMembership: MembershipInfo | undefined;
   if (isPersonalActive) {
     effectiveMembership = {
-      id: 'virtual-personal',
+      id: "virtual-personal",
       parishId: ctx.personalWorkspaceId,
-      parishName: 'Espaço Pessoal',
-      role: 'PERSONAL_OWNER',
-      status: 'ACTIVE',
+      parishName: "Espaço Pessoal",
+      role: "PERSONAL_OWNER",
+      status: "ACTIVE",
       communityId: null,
       communityName: null,
-      parishType: 'PERSONAL',
+      parishType: "PERSONAL",
     };
   } else {
-    const activeId = localStorage.getItem('catequese-viva-active-membership');
-    const match = activeId ? workspaceMemberships.find((m: MembershipInfo) => m.id === activeId) : null;
+    let activeId: string | null = null;
+    try {
+      activeId = localStorage.getItem(MEMBERSHIP_STORAGE_KEY);
+    } catch {
+      /* ignore */
+    }
+    const match = activeId
+      ? workspaceMemberships.find((m: MembershipInfo) => m.id === activeId)
+      : null;
     effectiveMembership = match || pickBestMembership(workspaceMemberships);
   }
 
   return {
-    userId: ctx.userId ?? '',
+    userId: ctx.userId ?? "",
     isAdmin: ctx.isAdmin ?? false,
     needsOnboarding: ctx.needsOnboarding ?? false,
     hasPendingInvitations: ctx.hasPendingInvitations ?? false,
     personalWorkspaceId: ctx.personalWorkspaceId ?? null,
     memberships: workspaceMemberships,
     allMemberships,
-    userRole: effectiveMembership?.role ?? (isPersonalActive ? 'PERSONAL_OWNER' : ''),
-    parishId: effectiveMembership?.parishId ?? (isPersonalActive ? ctx.personalWorkspaceId : ''),
-    parishName: effectiveMembership?.parishName ?? '',
+    userRole:
+      effectiveMembership?.role ??
+      (isPersonalActive ? "PERSONAL_OWNER" : ""),
+    parishId:
+      effectiveMembership?.parishId ??
+      (isPersonalActive ? ctx.personalWorkspaceId : ""),
+    parishName: effectiveMembership?.parishName ?? "",
     communityId: effectiveMembership?.communityId ?? null,
     communityName: effectiveMembership?.communityName ?? null,
     isLoading,
@@ -118,4 +141,3 @@ export function useUserContext(): UseUserContextReturn {
     error: error as Error | null,
   };
 }
-

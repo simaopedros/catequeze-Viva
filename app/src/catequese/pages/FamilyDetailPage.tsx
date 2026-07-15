@@ -59,6 +59,15 @@ import {
   AppPageHeader,
   AppPanel,
 } from "../../client/components/brand/AppChrome";
+import { DetailTabs } from "../../client/components/DetailTabs";
+import { useDetailTab } from "../../client/hooks/useDetailTab";
+
+const FAMILY_DETAIL_TABS = [
+  "overview",
+  "guardians",
+  "catechumens",
+  "consents",
+] as const;
 
 const RELATIONSHIP_KEYS = [
   { value: "Pai", key: "father" },
@@ -109,6 +118,7 @@ export default function FamilyDetailPage() {
   );
 
   // Edit state
+  const [tab, setTab] = useDetailTab(FAMILY_DETAIL_TABS, "overview");
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState("");
   const [editAddress, setEditAddress] = useState("");
@@ -506,8 +516,37 @@ export default function FamilyDetailPage() {
           )}
         </div>
 
+        <DetailTabs
+          tabs={[
+            {
+              id: "overview",
+              label: t("families.tab_overview", { defaultValue: "Visão geral" }),
+            },
+            {
+              id: "guardians",
+              label: t("families.tab_guardians", {
+                defaultValue: "Responsáveis",
+              }),
+            },
+            {
+              id: "catechumens",
+              label: t("families.tab_catechumens", {
+                defaultValue: "Catequizandos",
+              }),
+            },
+            {
+              id: "consents",
+              label: t("families.tab_consents", {
+                defaultValue: "Consentimentos",
+              }),
+            },
+          ]}
+          value={tab}
+          onChange={(id) => setTab(id as (typeof FAMILY_DETAIL_TABS)[number])}
+        />
+
         {/* Contact info */}
-        {editing ? (
+        {tab === "overview" && editing ? (
           <AppPanel className="space-y-3">
             <h3 className="text-xs font-medium text-muted-foreground uppercase">
               {t("families.edit_address_phone")}
@@ -561,7 +600,7 @@ export default function FamilyDetailPage() {
               />
             </div>
           </AppPanel>
-        ) : (
+        ) : tab === "overview" ? (
           <div className="grid gap-4 md:grid-cols-2">
             {household.address && (
               <AppPanel className="p-4">
@@ -607,9 +646,10 @@ export default function FamilyDetailPage() {
               </div>
             )}
           </div>
-        )}
+        ) : null}
 
         {/* Guardians */}
+        {tab === "guardians" && (
         <div className="rounded-sm border border-border/70 bg-white p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="space-y-1.5">
@@ -698,8 +738,10 @@ export default function FamilyDetailPage() {
             </p>
           )}
         </div>
+        )}
 
         {/* Catechumens */}
+        {tab === "catechumens" && (
         <div className="rounded-sm border border-border/70 bg-white p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="space-y-1.5">
@@ -775,8 +817,10 @@ export default function FamilyDetailPage() {
             </p>
           )}
         </div>
+        )}
 
         {/* Consents */}
+        {tab === "consents" && (
         <div className="rounded-sm border border-border/70 bg-white p-4">
           <div className="mb-3 space-y-1.5">
             <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
@@ -833,6 +877,7 @@ export default function FamilyDetailPage() {
             </p>
           )}
         </div>
+        )}
       </div>
 
       {/* ── Add Guardian Dialog ── */}

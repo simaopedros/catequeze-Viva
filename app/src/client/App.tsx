@@ -22,6 +22,7 @@ import { AppShell } from "../catequese/AppShell";
 import { InstallPrompt } from "./components/InstallPrompt";
 import {
   marketingLandingFromPath,
+  rememberLandingOrigin,
   trackMarketingEvent,
 } from "./analytics/marketingAnalytics";
 import {
@@ -29,8 +30,12 @@ import {
   persistAttributionParams,
   trackPageView,
 } from "./analytics/metaTracking";
-
-import "../i18n/config";
+import { applyLandingRouteMeta } from "../landing-page/routeMeta";
+import i18n, {
+  ensureLocaleLoaded,
+  isLocaleBundleLoaded,
+  normalizeLocale,
+} from "../i18n/config";
 
 const CookieConsentBanner = lazy(() => import("./components/cookie-consent/Banner"));
 
@@ -104,6 +109,22 @@ export default function App() {
   const { t: tNavigation } = useTranslation("navigation");
   const { t: tPublicNav } = useTranslation("publicNav");
   const [offlineDismissed, setOfflineDismissed] = useState(false);
+  // Gate: wait for en/es pack when preferred locale is not pt-BR (pt-BR is eager).
+  const [i18nReady, setI18nReady] = useState(() => {
+    const lng = normalizeLocale(i18n.language) ?? "pt-BR";
+    return isLocaleBundleLoaded(lng);
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+    const lng = normalizeLocale(i18n.language) ?? "pt-BR";
+    void ensureLocaleLoaded(lng).then(() => {
+      if (!cancelled) setI18nReady(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const isFamilyPortal = useMemo(() => isFamilyPortalHost(), []);
 
@@ -183,6 +204,10 @@ export default function App() {
   }, [location.pathname, location.search]);
 
   useEffect(() => {
+    // SPA landing meta first so document.title is route-specific for analytics.
+    // Crawler-first HTML still comes from main.wasp head (SEO follow-up).
+    applyLandingRouteMeta(location.pathname);
+    rememberLandingOrigin(location.pathname);
     trackPageView(location.pathname, document.title);
     const landing = marketingLandingFromPath(location.pathname);
     if (landing) {
@@ -212,6 +237,18 @@ export default function App() {
       };
     }
   }, []);
+
+  if (!i18nReady) {
+    return (
+      <div
+        className="flex min-h-screen items-center justify-center bg-background"
+        aria-busy="true"
+        aria-live="polite"
+      >
+        <div className="h-8 w-8 animate-pulse rounded-sm bg-muted" />
+      </div>
+    );
+  }
 
   return (
     <>

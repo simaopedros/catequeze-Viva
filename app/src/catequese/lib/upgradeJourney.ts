@@ -16,6 +16,8 @@ export type UpgradeJourneySource =
   | "billing_page"
   | "pricing"
   | "onboarding"
+  | "trial_banner"
+  | "post_activation"
   | "direct";
 
 interface BillingJourneyOptions {

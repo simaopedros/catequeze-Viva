@@ -32,8 +32,7 @@ import {
 } from "lucide-react";
 import { useUserContext } from "../client/hooks/useUserContext";
 import {
-  NAV_SECTIONS,
-  filterByRole,
+  getVisibleNavigation,
   type NavItemConfig,
 } from "../shared/navigation";
 import { useQuery, getUnreadMessagesCount } from "wasp/client/operations";
@@ -159,7 +158,7 @@ export function Sidebar() {
     () => new Set(ALL_SECTIONS),
   );
   const { userRole, isAdmin } = useUserContext();
-  const { isPersonal } = useActiveWorkspace();
+  const { workspaceType } = useActiveWorkspace();
   const isVisible = usePageVisibility();
 
   // Fetch unread count for messages — lightweight count query instead of full conversation list
@@ -172,25 +171,11 @@ export function Sidebar() {
 
   const unreadMessagesCount = unreadMessages?.count || 0;
 
-  const mainSections = NAV_SECTIONS.filter((s) => s.section !== "bottom");
-  const bottomSection = NAV_SECTIONS.find((s) => s.section === "bottom");
-
-  // Items only available in institutional parishes
-  const institutionalOnlyItems = [
-    "parishes",
-    "communities",
-    "reports",
-    "admin",
-    "catechetical_years",
-    "consents",
-  ];
-
-  const filterForWorkspace = (items: NavItemConfig[]) => {
-    if (!isPersonal) return items;
-    return items.filter(
-      (item) => !institutionalOnlyItems.includes(item.iconKey),
-    );
-  };
+  const { primary, more, bottom } = getVisibleNavigation({
+    role: userRole,
+    isAdmin,
+    workspaceType,
+  });
 
   const toggleSection = (section: string) => {
     setExpandedSections((prev) => {
@@ -217,86 +202,73 @@ export function Sidebar() {
       </div>
 
       <nav className="no-scrollbar flex-1 overflow-y-auto py-4">
-        {mainSections.map((section) => {
-          const isPrimary = section.section === "primary";
-          const isMore = section.section === "more";
-          let filtered = filterByRole(section.items, userRole, isAdmin);
-          filtered = filterForWorkspace(filtered);
+        {primary.length > 0 && (
+          <div className="space-y-0.5 px-2.5">
+            {primary.map((item) => (
+              <NavItemLink
+                key={item.to}
+                item={item}
+                collapsed={collapsed}
+                badge={
+                  item.iconKey === "messages" ? unreadMessagesCount : undefined
+                }
+              />
+            ))}
+            <div className="my-3 border-t border-[#071A2D]/08" />
+          </div>
+        )}
 
-          if (filtered.length === 0) return null;
+        {more.length > 0 && (
+          <div className="mt-2 first:mt-0 px-3">
+            {!collapsed ? (
+              <button
+                type="button"
+                onClick={() => toggleSection("more")}
+                className="flex w-full items-center justify-between mb-0.5 px-2.5 py-1 rounded-sm hover:bg-accent/50 transition-colors"
+              >
+                <p className="select-none text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  {t("moreSection")}
+                </p>
+                <ChevronDown
+                  className={cn(
+                    "h-3.5 w-3.5 text-muted-foreground/60 transition-transform duration-200",
+                    !expandedSections.has("more") && "-rotate-90",
+                  )}
+                />
+              </button>
+            ) : (
+              <div className="mb-1" />
+            )}
 
-          // Primary section: items always visible, no collapsible header
-          if (isPrimary) {
-            return (
-              <div key={section.section} className="space-y-0.5 px-2.5">
-                {filtered.map((item) => (
+            {(collapsed || expandedSections.has("more")) && (
+              <div
+                className={cn(
+                  "space-y-1 overflow-hidden transition-all duration-200",
+                  collapsed ? "px-2" : "px-2",
+                  !collapsed &&
+                    !expandedSections.has("more") &&
+                    "max-h-0 opacity-0",
+                  !collapsed &&
+                    expandedSections.has("more") &&
+                    "max-h-96 opacity-100",
+                  collapsed && "max-h-96 opacity-100",
+                )}
+              >
+                {more.map((item) => (
                   <NavItemLink
                     key={item.to}
                     item={item}
                     collapsed={collapsed}
-                    badge={
-                      item.iconKey === "messages"
-                        ? unreadMessagesCount
-                        : undefined
-                    }
                   />
                 ))}
-                <div className="my-3 border-t border-[#071A2D]/08" />
               </div>
-            );
-          }
-
-          // More section: collapsible with header
-          const isExpanded = expandedSections.has(section.section);
-          return (
-            <div key={section.section} className="mt-2 first:mt-0 px-3">
-              {!collapsed ? (
-                <button
-                  onClick={() => toggleSection(section.section)}
-                  className="flex w-full items-center justify-between mb-0.5 px-2.5 py-1 rounded-sm hover:bg-accent/50 transition-colors"
-                >
-                  <p className="select-none text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                    {t("moreSection")}
-                  </p>
-                  <ChevronDown
-                    className={cn(
-                      "h-3.5 w-3.5 text-muted-foreground/60 transition-transform duration-200",
-                      !isExpanded && "-rotate-90",
-                    )}
-                  />
-                </button>
-              ) : (
-                <div className="mb-1" />
-              )}
-
-              {(collapsed || isExpanded) && (
-                <div
-                  className={cn(
-                    "space-y-1 overflow-hidden transition-all duration-200",
-                    collapsed ? "px-2" : "px-2",
-                    !collapsed && !isExpanded && "max-h-0 opacity-0",
-                    !collapsed && isExpanded && "max-h-96 opacity-100",
-                    collapsed && "max-h-96 opacity-100",
-                  )}
-                >
-                  {filtered.map((item) => (
-                    <NavItemLink
-                      key={item.to}
-                      item={item}
-                      collapsed={collapsed}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        })}
+            )}
+          </div>
+        )}
       </nav>
 
       <div className="border-t p-2 space-y-1">
-        {filterForWorkspace(
-          filterByRole(bottomSection?.items || [], userRole, isAdmin),
-        ).map((item) => (
+        {bottom.map((item) => (
           <NavItemLink
             key={item.to}
             item={item}

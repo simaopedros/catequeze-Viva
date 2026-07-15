@@ -632,6 +632,10 @@ export const billing_en = {
     "trial_banner_subtitle": "Subscribe to keep classes, attendance, and editorial assistance without interruption.",
     "trial_banner_ends": "Ends on {{date}}.",
     "trial_banner_cta": "View billing",
+    "trial_soft_title": "You've used the essentials — no rush",
+    "trial_soft_subtitle": "{{count}} trial days left. When you're ready, review plans to keep everything in one place.",
+    "trial_soft_cta": "See plans",
+    "trial_soft_dismiss": "Dismiss plan suggestion",
     "trial_topbar_one": "1 trial day left",
     "trial_topbar_other": "{{count}} trial days left",
     "cancel_subscription": "Cancel subscription",
@@ -1924,8 +1928,10 @@ export const dashboard_en = {
     "activation": {
       "eyebrow": "Getting started",
       "title": "Get your catechesis ready for daily use",
-      "progress": "{{done}} of {{total}} done",
+      "progress": "{{done}} of {{total}} on the path to first value",
       "dismiss": "Dismiss checklist",
+      "next_label": "Next action",
+      "next_cta": "Do it now",
       "step_class_title": "Have a class",
       "step_class_desc": "The class is the hub for attendance and follow-up.",
       "step_people_title": "Add catechumens",
@@ -1933,7 +1939,12 @@ export const dashboard_en = {
       "step_attendance_title": "Record first attendance",
       "step_attendance_desc": "Mark who came and keep the class history.",
       "step_meeting_title": "Prepare a session",
-      "step_meeting_desc": "Use the editorial hub or library for the next meeting."
+      "step_meeting_desc": "Create or save the first class meeting.",
+      "celebrate_eyebrow": "First value",
+      "celebrate_title": "You already used Catequese Viva for real",
+      "celebrate_desc": "Class, people, and a real action (attendance or meeting) are in the system. Keep going from here.",
+      "bonus_attendance": "Record attendance too",
+      "bonus_meeting": "Prepare a meeting too"
     },
     "quick_new_class": "Create new class",
     "quick_new_catechumen": "Register catechumen",
@@ -2089,11 +2100,11 @@ export const landing_en = {
     "hero": {
       "headline_line1": "Catechesis without lost notebooks, spreadsheets, and WhatsApp threads",
       "headline_line2": "",
-      "subheadline": "In 7 days put your class, attendance, and next meeting in one place. Try it in your real routine.",
-      "badge": "Try 7 days",
-      "cta_primary": "Start your 7 days",
+      "subheadline": "In 7 days put your class, attendance, and next meeting in one place — and see if the week feels clearer.",
+      "badge": "7-day trial",
+      "cta_primary": "Start 7-day trial",
       "cta_secondary": "How it works",
-      "trust_signals": "Works on mobile • Spreadsheet import • Data protected",
+      "trust_signals": "No charge now • No card to start • Works on mobile",
       "cta_secondary_href": "/#como",
       "highlights": [
         "Attendance and follow-up on mobile",
@@ -2101,7 +2112,7 @@ export const landing_en = {
         "Editorial assistance for meetings and family messages",
         "Family portal in the same system"
       ],
-      "cta_helper": "Start in minutes",
+      "cta_helper": "No charge now · no card to start · organize your class in week one",
       "audience_label": "What is your situation today?",
       "audiences": [
         {
@@ -2255,9 +2266,9 @@ export const landing_en = {
         "desc": "Set up the class, take attendance, prepare the meeting."
       }
     ],
-    "steps_cta": "Start your 7 days",
-    "pricing_title": "After the trial, pick a plan",
-    "pricing_subtitle": "R$ 29 for a catechist. R$ 99 for parish or diocese. First 7 days with no charge.",
+    "steps_cta": "Start 7-day trial",
+    "pricing_title": "After you see the value, pick a plan",
+    "pricing_subtitle": "R$ 29 for a catechist. R$ 99 for parish or diocese. Start with a 7-day trial — no card and no charge now.",
     "plans": {
       "single": {
         "name": "Single Plan",
@@ -2299,7 +2310,11 @@ export const landing_en = {
     "faqs": [
       {
         "q": "What can I do in the 7-day trial?",
-        "a": "Organize the class, take attendance on mobile, and prepare the next meeting — the real catechesis workflow."
+        "a": "Organize the class, take attendance on mobile, and prepare the next meeting — the real catechesis workflow. No card and no charge now."
+      },
+      {
+        "q": "Do I need a card for the trial?",
+        "a": "No. The 7-day product trial does not ask for a card. A card is only required if you subscribe to a plan later."
       },
       {
         "q": "Can I start alone as a catechist?",
@@ -2319,8 +2334,8 @@ export const landing_en = {
       }
     ],
     "cta_title": "Organize catechesis with clarity",
-    "cta_subtitle": "Stop scattering the week across notebooks, spreadsheets, and chats. Try 7 days with your class.",
-    "cta_button": "Start your 7 days",
+    "cta_subtitle": "Stop scattering the week across notebooks, spreadsheets, and chats. Start the 7-day trial with your class — no charge now.",
+    "cta_button": "Start 7-day trial",
     "cta_badge": "Trial",
     "cta_see_plans": "See plans",
     "mock": {
@@ -2434,11 +2449,11 @@ export const landing_en = {
     "testimonials_title": "Testimonials",
     "testimonials_subtitle": "When we have authorized quotes from catechists and parishes, they will appear here.",
     "testimonials": [],
-    "cta_helper": "Built for catechists and parishes",
+    "cta_helper": "No charge now · no card to start",
     "mobile_cta": {
       "title": "7-day trial",
-      "subtitle": "Organize your class on mobile",
-      "button": "Start your 7 days"
+      "subtitle": "No charge now · no card",
+      "button": "Start 7-day trial"
     },
     "proof": {
       "badge": "Start with confidence",
@@ -2504,7 +2519,7 @@ export const landing_en = {
     "steps_endowed_title": "You're already here",
     "steps_endowed_desc": "Getting to know the platform",
     "price_trial_badge": "7 free days · No credit card",
-    "price_trial_note": "The trial requires a card (Stripe). No charge for 7 days; cancel before and you pay nothing.",
+    "price_trial_note": "7-day trial with no card and no charge now. If you subscribe later, payment is via Stripe; cancel in time and you are not charged.",
     "comparison": {
       "title": "Stop scattering catechesis across paper, spreadsheets, and WhatsApp",
       "subtitle": "Compare the usual workflow with Catequese Viva on the criteria that matter week to week.",
@@ -2546,8 +2561,8 @@ export const landing_en = {
         }
       ]
     },
-    "faq_cta": "Start your 7 days",
-    "faq_cta_helper": "Use it with your class this week",
+    "faq_cta": "Start 7-day trial",
+    "faq_cta_helper": "No charge now · use it with your class this week",
     "price_cta_single": "Try Single plan",
     "price_cta_unlimited": "Try Unlimited plan",
     "price_annual_equivalent": "Equals {{price}}/month",
@@ -3151,6 +3166,7 @@ export const navigation_en = {
     "peopleSection": "People & Classes",
     "pedagogySection": "Pedagogy & Planning",
     "pastoralSection": "Communication & Management",
+    "primarySection": "Primary",
     "moreSection": "More",
     "documents": "Documents",
     "consents": "Consents",
@@ -3405,6 +3421,7 @@ export const onboarding_en = {
       "manager_class_desc": "Structure created. Invite the team and keep organizing.",
       "primary_open_class": "Open my class",
       "primary_add_people": "Add catechumens",
+      "primary_register_attendance": "Record first attendance",
       "personal_class_ready_title": "Your class is ready",
       "personal_class_ready_desc": "Class created with catechumens. You can take attendance and follow the journey.",
       "personal_class_empty_title": "Class created",

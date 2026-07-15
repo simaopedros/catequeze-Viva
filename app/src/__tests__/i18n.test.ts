@@ -63,6 +63,27 @@ describe('i18n locale parity', () => {
   });
 });
 
+describe('i18n config dual-safe bootstrap', () => {
+  it('imports config in Node without throw and has pt-BR strings', async () => {
+    const mod = await import('../i18n/config');
+    expect(mod.default).toBeTruthy();
+    const label = mod.default.t('offline_banner', { ns: 'common', lng: 'pt-BR' });
+    expect(typeof label).toBe('string');
+    expect(label).not.toBe('offline_banner');
+    expect(mod.isLocaleBundleLoaded('pt-BR')).toBe(true);
+  });
+
+  it('ensureLocaleLoaded is a no-op for en on server/Node path', async () => {
+    const { ensureLocaleLoaded, isLocaleBundleLoaded } = await import(
+      '../i18n/config'
+    );
+    // In vitest Node, window is undefined → no dynamic import of en/es
+    await ensureLocaleLoaded('en');
+    // en is not auto-loaded on server
+    expect(isLocaleBundleLoaded('en')).toBe(false);
+  });
+});
+
 describe('serverLocale', () => {
   it('resolves user locale with pt-BR fallback', async () => {
     const { resolveUserLocale, getPeriodLabel, getMeetingReminderNotification } =

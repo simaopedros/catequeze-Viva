@@ -7,8 +7,10 @@
   "activation": {
     "eyebrow": "Getting started",
     "title": "Get your catechesis ready for daily use",
-    "progress": "{{done}} of {{total}} done",
+    "progress": "{{done}} of {{total}} on the path to first value",
     "dismiss": "Dismiss checklist",
+    "next_label": "Next action",
+    "next_cta": "Do it now",
     "step_class_title": "Have a class",
     "step_class_desc": "The class is the hub for attendance and follow-up.",
     "step_people_title": "Add catechumens",
@@ -16,7 +18,12 @@
     "step_attendance_title": "Record first attendance",
     "step_attendance_desc": "Mark who came and keep the class history.",
     "step_meeting_title": "Prepare a session",
-    "step_meeting_desc": "Use the editorial hub or library for the next meeting."
+    "step_meeting_desc": "Create or save the first class meeting.",
+    "celebrate_eyebrow": "First value",
+    "celebrate_title": "You already used Catequese Viva for real",
+    "celebrate_desc": "Class, people, and a real action (attendance or meeting) are in the system. Keep going from here.",
+    "bonus_attendance": "Record attendance too",
+    "bonus_meeting": "Prepare a meeting too"
   },
   "quick_new_class": "Create new class",
   "quick_new_catechumen": "Register catechumen",

@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import { CheckCircle2, Circle, X, ArrowRight } from "lucide-react";
+import { CheckCircle2, Circle, X, ArrowRight, PartyPopper } from "lucide-react";
 import { cn } from "../../../client/utils";
 import {
   AppEyebrow,
@@ -9,16 +9,19 @@ import {
   AppGoldRule,
 } from "../../../client/components/brand/AppChrome";
 import { Button } from "../../../client/components/ui/button";
+import {
+  computeActivationFlags,
+  type ActivationStatsInput,
+} from "../../../shared/activation";
+import {
+  trackActivationMilestone,
+  trackFirstValueReached,
+} from "../../../client/analytics/marketingAnalytics";
+import { useActiveWorkspace } from "../../../client/hooks/useActiveWorkspace";
+import { useUserContext } from "../../../client/hooks/useUserContext";
 
 const DISMISS_KEY = "cv-activation-checklist-dismissed";
-
-type ActivationStats = {
-  activeClasses?: number;
-  activeCatechumens?: number;
-  avgAttendance?: number;
-  upcomingMeetings?: unknown[];
-  myClasses?: { id: string; name?: string }[];
-};
+const CELEBRATED_KEY = "cv-first-value-celebrated";
 
 type Step = {
   id: string;
@@ -26,18 +29,23 @@ type Step = {
   title: string;
   description: string;
   to: string;
+  isNext: boolean;
+  isBonus: boolean;
 };
 
 /**
- * First-session guidance after onboarding: class → people → attendance → meeting.
- * Hidden when all steps are complete or the user dismisses it.
+ * Post-onboarding activation: one highlighted next action.
+ * Complete (= hide) when first value is reached:
+ * class + people + (attendance OR meeting).
  */
 export function ActivationChecklist({
   stats,
 }: {
-  stats: ActivationStats | null | undefined;
+  stats: ActivationStatsInput | null | undefined;
 }) {
   const { t } = useTranslation("dashboard");
+  const { workspaceType, isPersonal } = useActiveWorkspace();
+  const { userRole } = useUserContext();
   const [dismissed, setDismissed] = useState(() => {
     try {
       return localStorage.getItem(DISMISS_KEY) === "1";
@@ -45,25 +53,69 @@ export function ActivationChecklist({
       return false;
     }
   });
+  const [celebrated, setCelebrated] = useState(() => {
+    try {
+      return localStorage.getItem(CELEBRATED_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
+  const milestonesSent = useRef<Set<string>>(new Set());
 
-  const firstClassId = stats?.myClasses?.[0]?.id;
-  const hasClasses = (stats?.activeClasses || 0) > 0 || Boolean(firstClassId);
-  const hasPeople = (stats?.activeCatechumens || 0) > 0;
-  const hasAttendance = (stats?.avgAttendance || 0) > 0;
-  const hasMeeting = (stats?.upcomingMeetings?.length || 0) > 0;
+  const flags = useMemo(() => computeActivationFlags(stats), [stats]);
 
-  const steps: Step[] = useMemo(
-    () => [
+  // Path A analytics: milestones + first_value (deduped)
+  useEffect(() => {
+    if (userRole === "GUARDIAN" || userRole === "CATECHUMEN") return;
+
+    const profile =
+      isPersonal || userRole === "PERSONAL_OWNER"
+        ? "personal"
+        : "institutional";
+
+    const maybeMilestone = (id: string, done: boolean) => {
+      if (!done || milestonesSent.current.has(id)) return;
+      milestonesSent.current.add(id);
+      trackActivationMilestone({
+        milestone: id as "class" | "people" | "attendance" | "meeting",
+        profile,
+        workspace_type: workspaceType,
+      });
+    };
+
+    maybeMilestone("class", flags.hasClasses);
+    maybeMilestone("people", flags.hasPeople);
+    maybeMilestone("attendance", flags.hasAnyAttendance);
+    maybeMilestone("meeting", flags.hasAnyMeeting);
+
+    if (flags.firstValueReached) {
+      const path =
+        flags.hasAnyAttendance && flags.hasAnyMeeting
+          ? "both"
+          : flags.hasAnyAttendance
+            ? "attendance"
+            : "meeting";
+      trackFirstValueReached({
+        profile,
+        workspace_type: workspaceType,
+        path,
+      });
+    }
+  }, [flags, isPersonal, userRole, workspaceType]);
+
+  const steps: Step[] = useMemo(() => {
+    const firstClassId = flags.firstClassId;
+    const defs = [
       {
-        id: "class",
-        done: hasClasses,
+        id: "class" as const,
+        done: flags.hasClasses,
         title: t("activation.step_class_title"),
         description: t("activation.step_class_desc"),
         to: firstClassId ? `/app/classes/${firstClassId}` : "/app/classes/new",
       },
       {
-        id: "people",
-        done: hasPeople,
+        id: "people" as const,
+        done: flags.hasPeople,
         title: t("activation.step_people_title"),
         description: t("activation.step_people_desc"),
         to: firstClassId
@@ -71,30 +123,101 @@ export function ActivationChecklist({
           : "/app/catechumens/new",
       },
       {
-        id: "attendance",
-        done: hasAttendance,
+        id: "attendance" as const,
+        done: flags.hasAnyAttendance,
         title: t("activation.step_attendance_title"),
         description: t("activation.step_attendance_desc"),
-        // Attendance lives under the class: /app/classes/:id/attendance
         to: firstClassId
           ? `/app/classes/${firstClassId}/attendance`
           : "/app/classes",
       },
       {
-        id: "meeting",
-        done: hasMeeting,
+        id: "meeting" as const,
+        done: flags.hasAnyMeeting,
         title: t("activation.step_meeting_title"),
         description: t("activation.step_meeting_desc"),
-        to: "/app/ai-hub",
+        to: firstClassId
+          ? `/app/classes/${firstClassId}/meetings`
+          : "/app/ai-hub",
       },
-    ],
-    [firstClassId, hasAttendance, hasClasses, hasMeeting, hasPeople, t],
-  );
+    ];
 
-  const doneCount = steps.filter((s) => s.done).length;
-  const allDone = doneCount === steps.length;
+    return defs.map((s) => ({
+      ...s,
+      isNext: flags.nextStep?.id === s.id,
+      isBonus: flags.bonusStep?.id === s.id,
+    }));
+  }, [flags, t]);
 
-  if (dismissed || allDone) return null;
+  // Progress toward first value: 3 milestones (class, people, action)
+  const foundationDone =
+    (flags.hasClasses ? 1 : 0) +
+    (flags.hasPeople ? 1 : 0) +
+    (flags.hasAnyAttendance || flags.hasAnyMeeting ? 1 : 0);
+  const foundationTotal = 3;
+
+  if (dismissed) return null;
+
+  // Celebrate first value once, then hide
+  if (flags.firstValueReached) {
+    if (celebrated) return null;
+
+    const dismissCelebrate = () => {
+      try {
+        localStorage.setItem(CELEBRATED_KEY, "1");
+        localStorage.setItem(DISMISS_KEY, "1");
+      } catch {
+        /* ignore */
+      }
+      setCelebrated(true);
+      setDismissed(true);
+    };
+
+    return (
+      <section className="rounded-sm border border-[#D39A2B]/40 bg-white p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="space-y-2">
+            <AppEyebrow>{t("activation.celebrate_eyebrow")}</AppEyebrow>
+            <AppDisplayTitle as="h2" className="text-lg sm:text-lg">
+              <span className="inline-flex items-center gap-2">
+                <PartyPopper className="h-5 w-5 text-[#D39A2B]" aria-hidden />
+                {t("activation.celebrate_title")}
+              </span>
+            </AppDisplayTitle>
+            <AppGoldRule className="mt-2" />
+            <p className="text-sm text-muted-foreground">
+              {t("activation.celebrate_desc")}
+            </p>
+            {flags.bonusStep && (
+              <Button asChild className="mt-3 h-11 rounded-sm shadow-none">
+                <Link
+                  to={
+                    steps.find((s) => s.id === flags.bonusStep?.id)?.to ||
+                    "/app"
+                  }
+                >
+                  {flags.bonusStep.id === "meeting"
+                    ? t("activation.bonus_meeting")
+                    : t("activation.bonus_attendance")}
+                  <ArrowRight className="ml-1 h-4 w-4" />
+                </Link>
+              </Button>
+            )}
+          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 shrink-0 text-muted-foreground hover:text-[#071A2D]"
+            onClick={dismissCelebrate}
+            aria-label={t("activation.dismiss")}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      </section>
+    );
+  }
 
   const dismiss = () => {
     try {
@@ -105,20 +228,22 @@ export function ActivationChecklist({
     setDismissed(true);
   };
 
+  const next = steps.find((s) => s.isNext);
+
   return (
     <section className="rounded-sm border border-border/70 bg-white p-5">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <AppEyebrow>{t("activation.eyebrow")}</AppEyebrow>
-          <AppDisplayTitle
-            as="h2"
-            className="mt-1 text-lg sm:text-lg"
-          >
+          <AppDisplayTitle as="h2" className="mt-1 text-lg sm:text-lg">
             {t("activation.title")}
           </AppDisplayTitle>
           <AppGoldRule className="mt-2" />
           <p className="mt-2 text-sm text-muted-foreground">
-            {t("activation.progress", { done: doneCount, total: steps.length })}
+            {t("activation.progress", {
+              done: foundationDone,
+              total: foundationTotal,
+            })}
           </p>
         </div>
         <Button
@@ -133,14 +258,39 @@ export function ActivationChecklist({
         </Button>
       </div>
 
+      {next && (
+        <div className="mb-4 rounded-sm border border-[#071A2D]/15 bg-muted/30 p-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            {t("activation.next_label")}
+          </p>
+          <p
+            className="mt-1 text-base font-semibold tracking-tight text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
+            {next.title}
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">{next.description}</p>
+          <Button asChild className="mt-3 h-11 rounded-sm shadow-none">
+            <Link to={next.to}>
+              {t("activation.next_cta")}
+              <ArrowRight className="ml-1 h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+      )}
+
       <ol className="space-y-1 border-t border-border/70">
         {steps.map((step) => (
           <li key={step.id}>
             <Link
               to={step.to}
               className={cn(
-                "flex items-start gap-3 border-b border-border/60 px-1 py-3 last:border-0 transition-colors",
-                step.done ? "opacity-70" : "hover:bg-muted/20",
+                "flex min-h-11 items-start gap-3 border-b border-border/60 px-1 py-3 last:border-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                step.done
+                  ? "opacity-70"
+                  : step.isNext
+                    ? "bg-muted/20"
+                    : "hover:bg-muted/20",
               )}
             >
               {step.done ? (
@@ -164,7 +314,7 @@ export function ActivationChecklist({
                 >
                   {step.title}
                 </span>
-                {!step.done && (
+                {!step.done && !step.isNext && (
                   <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground">
                     {step.description}
                   </span>

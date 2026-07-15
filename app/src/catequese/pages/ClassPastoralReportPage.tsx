@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { lazy, Suspense, useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams, Link } from "react-router";
 import { Button } from "../../client/components/ui/button";
@@ -9,34 +9,24 @@ import {
 } from "../../client/components/brand/AppChrome";
 import { EmptyState } from "../../client/components/EmptyState";
 import { FilterPills } from "../../client/components/FilterPills";
+import { ChartSuspenseFallback } from "../../client/components/ChartSuspenseFallback";
 import { useQuery, getClassPastoralReport } from "wasp/client/operations";
 import {
   AlertTriangle,
   Trophy,
   BarChart3,
-  PieChart,
   ArrowLeft,
   Gift,
   Star,
-  Calendar,
 } from "lucide-react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart as RPieChart,
-  Pie,
-  Cell,
-  Legend,
-  ComposedChart,
-  Line,
-} from "recharts";
 import { formatDate } from "../../i18n/format";
 import { useLocale } from "../../i18n/useLocale";
+
+const ClassPastoralCharts = lazy(() =>
+  import("../components/charts/ClassPastoralCharts").then((m) => ({
+    default: m.ClassPastoralCharts,
+  })),
+);
 
 const RISK_COLORS = { ALTO: "#b91c1c", MÉDIO: "#D39A2B", BAIXO: "#071A2D" };
 const STATUS_COLORS: Record<string, string> = {
@@ -45,12 +35,6 @@ const STATUS_COLORS: Record<string, string> = {
   TRANSFERRED: "#D39A2B",
   COMPLETED: "#071A2D",
   MOVED_TO_OTHER_CLASS: "#071A2D",
-};
-const ATTENDANCE_COLORS = {
-  present: "#071A2D",
-  late: "#D39A2B",
-  justified: "#071A2D",
-  absent: "#b91c1c",
 };
 const STATUS_LABELS: Record<string, string> = {
   ENROLLED: "Ativo",
@@ -223,161 +207,16 @@ export default function ClassPastoralReportPage() {
         )}
       </div>
 
-      {!data.meetingsWithAttendance?.length ? (
-        <EmptyState icon={Calendar} title={t("noMeetings")} compact />
-      ) : (
-        <>
-          {/* Presences per Meeting Chart */}
-          <div className="rounded-sm border border-border/70 bg-white p-6">
-            <div className="mb-4 space-y-1.5">
-              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                <BarChart3 className="h-4 w-4" />
-                {t("presencesPerMeeting")}
-              </h3>
-              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
-            </div>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart
-                data={meetingsBarData}
-                margin={{ top: 5, right: 20, left: 0, bottom: 60 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis
-                  dataKey="name"
-                  angle={-35}
-                  textAnchor="end"
-                  height={70}
-                  tick={{ fontSize: 11 }}
-                />
-                <YAxis tick={{ fontSize: 11 }} />
-                <Tooltip />
-                <Bar
-                  dataKey={t("present")}
-                  stackId="a"
-                  fill={ATTENDANCE_COLORS.present}
-                />
-                <Bar
-                  dataKey={t("late")}
-                  stackId="a"
-                  fill={ATTENDANCE_COLORS.late}
-                />
-                <Bar
-                  dataKey={t("justified")}
-                  stackId="a"
-                  fill={ATTENDANCE_COLORS.justified}
-                />
-                <Bar
-                  dataKey={t("absent")}
-                  stackId="a"
-                  fill={ATTENDANCE_COLORS.absent}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+      <Suspense fallback={<ChartSuspenseFallback height={320} />}>
+        <ClassPastoralCharts
+          meetingsBarData={meetingsBarData}
+          monthlyData={monthlyData}
+          statusPieData={statusPieData}
+          hasMeetings={Boolean(data.meetingsWithAttendance?.length)}
+        />
+      </Suspense>
 
-          {/* Meetings per Month + Avg Attendance */}
-          <div className="rounded-sm border border-border/70 bg-white p-6">
-            <div className="mb-4 space-y-1.5">
-              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                <BarChart3 className="h-4 w-4" />
-                {t("meetingsPerMonth")}
-              </h3>
-              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
-            </div>
-            {monthlyData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <ComposedChart
-                  data={monthlyData}
-                  margin={{ top: 5, right: 20, left: 0, bottom: 20 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-                  <YAxis
-                    yAxisId="left"
-                    label={{
-                      value: t("meetingsCount"),
-                      angle: -90,
-                      position: "insideLeft",
-                      style: { fontSize: 10 },
-                    }}
-                    tick={{ fontSize: 11 }}
-                  />
-                  <YAxis
-                    yAxisId="right"
-                    orientation="right"
-                    domain={[0, 100]}
-                    label={{
-                      value: t("avgAttendanceLine"),
-                      angle: 90,
-                      position: "insideRight",
-                      style: { fontSize: 10 },
-                    }}
-                    tick={{ fontSize: 11 }}
-                  />
-                  <Tooltip
-                    formatter={(value: any, name: any) => [value, name]}
-                  />
-                  <Bar
-                    yAxisId="left"
-                    dataKey="meetings"
-                    fill="#071A2D"
-                    name={t("monthlyMeetings")}
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="avgAttendance"
-                    stroke="#071A2D"
-                    name={t("avgAttendanceLine")}
-                    strokeWidth={2}
-                    dot={{ r: 4 }}
-                  />
-                </ComposedChart>
-              </ResponsiveContainer>
-            ) : (
-              <EmptyState icon={BarChart3} title={t("noData")} compact />
-            )}
-          </div>
-
-          {/* Status Pie */}
-          <div className="rounded-sm border border-border/70 bg-white p-6">
-            <div className="mb-4 space-y-1.5">
-              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                <PieChart className="h-4 w-4" />
-                {t("classStatus")}
-              </h3>
-              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
-            </div>
-            {statusPieData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={280}>
-                <RPieChart>
-                  <Pie
-                    data={statusPieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={5}
-                    dataKey="value"
-                    label={({ name, percent }: any) =>
-                      `${name} ${(percent * 100).toFixed(0)}%`
-                    }
-                  >
-                    {statusPieData.map((entry: any, i: number) => (
-                      <Cell key={i} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend formatter={(value) => String(value)} />
-                </RPieChart>
-              </ResponsiveContainer>
-            ) : (
-              <EmptyState icon={PieChart} title={t("noData")} compact />
-            )}
-          </div>
-
-          {/* Ranking Table */}
+      {Boolean(data.meetingsWithAttendance?.length) && (
           <div className="rounded-sm border border-border/70 bg-white">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b p-4">
               <span
@@ -518,7 +357,6 @@ export default function ClassPastoralReportPage() {
               </div>
             )}
           </div>
-        </>
       )}
     </div>
   );

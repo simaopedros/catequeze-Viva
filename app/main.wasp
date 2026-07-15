@@ -11,7 +11,7 @@ app OpenSaaS {
     "<link rel='apple-touch-icon' sizes='180x180' href='/icons/apple-touch-icon.png' />",
     "<meta name='theme-color' content='#071A2D' />",
 
-    "<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover' />",
+    "<meta name='viewport' content='width=device-width, initial-scale=1.0, viewport-fit=cover' />",
     "<link rel='manifest' href='/manifest.json' />",
     "<meta name='mobile-web-app-capable' content='yes' />",
     "<meta name='apple-mobile-web-app-capable' content='yes' />",

@@ -325,7 +325,19 @@ export default function ClassesPage() {
             icon={Search}
             title={t("no_filter_results")}
             description={t("no_filter_desc")}
-          />
+          >
+            <Button
+              type="button"
+              variant="outline"
+              className="mt-4 h-11 rounded-sm bg-white"
+              onClick={() => {
+                setSearch("");
+                setFilter("");
+              }}
+            >
+              {tc("clear_filters")}
+            </Button>
+          </EmptyState>
         </SurfaceSection>
       ) : view === "list" ? (
         <section className="overflow-hidden rounded-sm border border-border/70 bg-white/90 ">
@@ -338,25 +350,33 @@ export default function ClassesPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/20 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                  <th className="p-4">{t("table_class")}</th>
-                  <th className="p-4">{t("status")}</th>
-                  <th className="p-4 hidden md:table-cell">{t("enrolled")}</th>
-                  <th className="p-4 hidden md:table-cell">
+                  <th className="p-4" scope="col">
+                    {t("table_class")}
+                  </th>
+                  <th className="p-4" scope="col">
+                    {t("status")}
+                  </th>
+                  <th className="p-4 hidden md:table-cell" scope="col">
+                    {t("enrolled")}
+                  </th>
+                  <th className="p-4 hidden md:table-cell" scope="col">
                     {t("table_schedule")}
                   </th>
-                  <th className="p-4">{tc("actions")}</th>
+                  <th className="p-4" scope="col">
+                    {tc("actions")}
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((cls: any) => (
                   <tr
                     key={cls.id}
-                    className="border-b border-border/60 last:border-0 hover:bg-muted/30 transition-colors"
+                    className="relative border-b border-border/60 last:border-0 transition-colors hover:bg-muted/30"
                   >
                     <td className="p-4">
                       <Link
                         to={`/app/classes/${cls.id}`}
-                        className="text-sm font-semibold tracking-tight text-[#071A2D] hover:text-[#0a2540]"
+                        className="inline-flex min-h-11 items-center rounded-sm text-sm font-semibold tracking-tight text-[#071A2D] after:absolute after:inset-0 after:z-0 hover:text-[#0a2540] focus-visible:relative focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         style={{ fontFamily: "var(--font-brand-display)" }}
                       >
                         {cls.name}
@@ -383,25 +403,31 @@ export default function ClassesPage() {
                       {formatDay(cls.dayOfWeek)}
                       {cls.startTime && ` ${cls.startTime}`}
                     </td>
-                    <td className="p-4">
+                    <td className="relative z-10 p-4">
                       <div className="flex gap-1">
                         <Button
                           size="sm"
                           variant="ghost"
-                          className="h-8 text-xs"
+                          className="h-11 w-11 min-h-11 p-0"
                           asChild
                         >
-                          <Link to={`/app/classes/${cls.id}`}>
+                          <Link
+                            to={`/app/classes/${cls.id}`}
+                            aria-label={t("details")}
+                          >
                             <Edit3 className="h-3.5 w-3.5" />
                           </Link>
                         </Button>
                         <Button
                           size="sm"
                           variant="ghost"
-                          className="h-8 text-xs"
+                          className="h-11 w-11 min-h-11 p-0"
                           asChild
                         >
-                          <Link to={`/app/classes/${cls.id}/attendance`}>
+                          <Link
+                            to={`/app/classes/${cls.id}/attendance`}
+                            aria-label={t("attendance")}
+                          >
                             <ClipboardList className="h-3.5 w-3.5" />
                           </Link>
                         </Button>
@@ -416,7 +442,7 @@ export default function ClassesPage() {
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {filtered.map((cls: any) => (
-            <div
+            <article
               key={cls.id}
               className="group overflow-hidden rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-[#071A2D]/30"
             >
@@ -425,7 +451,7 @@ export default function ClassesPage() {
                   <div className="flex items-start justify-between gap-3">
                     <Link
                       to={`/app/classes/${cls.id}`}
-                      className="block truncate text-lg font-semibold tracking-tight text-[#071A2D] hover:text-[#0a2540]"
+                      className="block truncate rounded-sm text-lg font-semibold tracking-tight text-[#071A2D] hover:text-[#0a2540] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                       style={{ fontFamily: "var(--font-brand-display)" }}
                     >
                       {cls.name}
@@ -516,7 +542,7 @@ export default function ClassesPage() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-9 flex-1 rounded-sm bg-white"
+                  className="h-11 flex-1 rounded-sm bg-white"
                   asChild
                 >
                   <Link to={`/app/classes/${cls.id}/attendance`}>
@@ -527,7 +553,7 @@ export default function ClassesPage() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-9 flex-1 rounded-sm bg-white"
+                  className="h-11 flex-1 rounded-sm bg-white"
                   asChild
                 >
                   <Link to={`/app/classes/${cls.id}`}>
@@ -538,7 +564,7 @@ export default function ClassesPage() {
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="h-9 w-9 rounded-sm px-0"
+                  className="h-11 w-11 rounded-sm px-0"
                   asChild
                 >
                   <Link to={`/app/classes/${cls.id}`} aria-label={t("details")}>
@@ -546,7 +572,7 @@ export default function ClassesPage() {
                   </Link>
                 </Button>
               </div>
-            </div>
+            </article>
           ))}
         </div>
       )}

@@ -632,6 +632,10 @@ export const billing_es = {
     "trial_banner_subtitle": "Suscríbete para mantener grupos, asistencia y asistencia editorial sin interrupción.",
     "trial_banner_ends": "Termina el {{date}}.",
     "trial_banner_cta": "Ver suscripción",
+    "trial_soft_title": "Ya usaste lo esencial — sin prisa",
+    "trial_soft_subtitle": "Quedan {{count}} días de trial. Cuando quieras, revisa los planes para mantener todo en un solo lugar.",
+    "trial_soft_cta": "Ver planes",
+    "trial_soft_dismiss": "Descartar sugerencia de plan",
     "trial_topbar_one": "1 día de prueba",
     "trial_topbar_other": "{{count}} días de prueba",
     "cancel_subscription": "Cancelar suscripción",
@@ -1924,8 +1928,10 @@ export const dashboard_es = {
     "activation": {
       "eyebrow": "Primeros pasos",
       "title": "Deja tu catequesis lista para el día a día",
-      "progress": "{{done}} de {{total}} hechos",
+      "progress": "{{done}} de {{total}} en el camino al primer valor",
       "dismiss": "Descartar checklist",
+      "next_label": "Próxima acción",
+      "next_cta": "Hacerlo ahora",
       "step_class_title": "Tener un grupo",
       "step_class_desc": "El grupo es el centro de la asistencia y el seguimiento.",
       "step_people_title": "Incluir catequizandos",
@@ -1933,7 +1939,12 @@ export const dashboard_es = {
       "step_attendance_title": "Registrar la primera asistencia",
       "step_attendance_desc": "Marca quién vino y mantén el historial del grupo.",
       "step_meeting_title": "Preparar un encuentro",
-      "step_meeting_desc": "Usa el assistência editorial o la biblioteca para el próximo encuentro."
+      "step_meeting_desc": "Crea o guarda el primer encuentro del grupo.",
+      "celebrate_eyebrow": "Primer valor",
+      "celebrate_title": "Ya usaste Catequese Viva de verdad",
+      "celebrate_desc": "Grupo, personas y una acción real (asistencia o encuentro) están en el sistema. Sigue el día a día desde aquí.",
+      "bonus_attendance": "Registrar asistencia también",
+      "bonus_meeting": "Preparar un encuentro también"
     },
     "quick_new_class": "Crear nueva clase",
     "quick_new_catechumen": "Registrar catequizando",
@@ -2089,11 +2100,11 @@ export const landing_es = {
     "hero": {
       "headline_line1": "Tu catequesis sin cuaderno, planilla y WhatsApp perdidos",
       "headline_line2": "",
-      "subheadline": "En 7 días dejas el grupo, la asistencia y el próximo encuentro en el mismo lugar. Pruébalo en tu rutina real.",
-      "badge": "Prueba 7 días",
-      "cta_primary": "Empezar los 7 días",
+      "subheadline": "En 7 días dejas el grupo, la asistencia y el próximo encuentro en el mismo lugar — y ves si la semana queda más clara.",
+      "badge": "Trial de 7 días",
+      "cta_primary": "Empezar trial de 7 días",
       "cta_secondary": "Cómo funciona",
-      "trust_signals": "Funciona en el celular • Importación por planilla • Datos protegidos",
+      "trust_signals": "Sin cobro ahora • Sin tarjeta para empezar • Funciona en el celular",
       "cta_secondary_href": "/#como",
       "highlights": [
         "Asistencia y seguimiento desde el celular",
@@ -2101,7 +2112,7 @@ export const landing_es = {
         "Asistencia editorial para encuentros y mensajes a familias",
         "Portal familiar en el mismo sistema"
       ],
-      "cta_helper": "Empieza en minutos",
+      "cta_helper": "Sin cobro ahora · sin tarjeta para empezar · organiza el grupo en la primera semana",
       "audience_label": "¿Cuál es tu realidad hoy?",
       "audiences": [
         {
@@ -2255,9 +2266,9 @@ export const landing_es = {
         "desc": "Arma el grupo, pasa lista y prepara el encuentro."
       }
     ],
-    "steps_cta": "Empezar los 7 días",
-    "pricing_title": "Después del trial, elige el plan",
-    "pricing_subtitle": "R$ 29 para el catequista. R$ 99 para parroquia o diócesis. Los primeros 7 días sin cobro.",
+    "steps_cta": "Empezar trial de 7 días",
+    "pricing_title": "Después de ver el valor, elige el plan",
+    "pricing_subtitle": "R$ 29 para el catequista. R$ 99 para parroquia o diócesis. Empieza con 7 días de trial — sin tarjeta y sin cobro ahora.",
     "plans": {
       "single": {
         "name": "Plan Único",
@@ -2299,7 +2310,11 @@ export const landing_es = {
     "faqs": [
       {
         "q": "¿Qué puedo hacer en el trial de 7 días?",
-        "a": "Organizar el grupo, pasar lista en el celular y preparar el próximo encuentro — el flujo real de la catequesis."
+        "a": "Organizar el grupo, pasar lista en el celular y preparar el próximo encuentro — el flujo real de la catequesis. Sin tarjeta y sin cobro ahora."
+      },
+      {
+        "q": "¿Necesito tarjeta para el trial?",
+        "a": "No. El product trial de 7 días no pide tarjeta. La tarjeta solo entra si decides suscribirte a un plan después."
       },
       {
         "q": "¿Puedo empezar solo, como catequista?",
@@ -2319,8 +2334,8 @@ export const landing_es = {
       }
     ],
     "cta_title": "Organiza la catequesis con claridad",
-    "cta_subtitle": "Deja de dispersar la semana en cuaderno, planilla y mensajes. Prueba 7 días con tu grupo.",
-    "cta_button": "Empezar los 7 días",
+    "cta_subtitle": "Deja de dispersar la semana en cuaderno, planilla y mensajes. Empieza el trial de 7 días con tu grupo — sin cobro ahora.",
+    "cta_button": "Empezar trial de 7 días",
     "cta_badge": "Trial",
     "cta_see_plans": "Ver planes",
     "mock": {
@@ -2434,11 +2449,11 @@ export const landing_es = {
     "testimonials_title": "Testimonios",
     "testimonials_subtitle": "Cuando tengamos citas autorizadas de catequistas y parroquias, aparecerán aquí.",
     "testimonials": [],
-    "cta_helper": "Hecho para catequistas y parroquias",
+    "cta_helper": "Sin cobro ahora · sin tarjeta para empezar",
     "mobile_cta": {
       "title": "Trial de 7 días",
-      "subtitle": "Organiza el grupo en el celular",
-      "button": "Empezar los 7 días"
+      "subtitle": "Sin cobro ahora · sin tarjeta",
+      "button": "Empezar trial de 7 días"
     },
     "proof": {
       "badge": "Empieza con tranquilidad",
@@ -2504,7 +2519,7 @@ export const landing_es = {
     "steps_endowed_title": "Ya estás aquí",
     "steps_endowed_desc": "Conociendo la plataforma",
     "price_trial_badge": "7 días gratis · Sin tarjeta",
-    "price_trial_note": "El trial exige tarjeta (Stripe). Sin cobro en 7 días; cancela antes y no pagas.",
+    "price_trial_note": "7 días de trial sin tarjeta y sin cobro ahora. Si te suscribes después, el pago es con Stripe; cancela a tiempo y no se cobra.",
     "comparison": {
       "title": "Deja de dispersar la catequesis en papel, planilla y WhatsApp",
       "subtitle": "Compara el flujo habitual con Catequese Viva en los criterios que importan cada semana.",
@@ -2546,8 +2561,8 @@ export const landing_es = {
         }
       ]
     },
-    "faq_cta": "Empezar los 7 días",
-    "faq_cta_helper": "Úsalo con tu grupo esta semana",
+    "faq_cta": "Empezar trial de 7 días",
+    "faq_cta_helper": "Sin cobro ahora · úsalo con tu grupo esta semana",
     "price_cta_single": "Probar Plan Único",
     "price_cta_unlimited": "Probar Plan Ilimitado",
     "price_annual_equivalent": "Equivale a {{price}}/mes",
@@ -3151,6 +3166,7 @@ export const navigation_es = {
     "peopleSection": "Personas & Grupos",
     "pedagogySection": "Pedagogía & Reuniones",
     "pastoralSection": "Comunicación & Gestión",
+    "primarySection": "Principal",
     "moreSection": "Más",
     "documents": "Documentos",
     "consents": "Consentimientos",
@@ -3405,6 +3421,7 @@ export const onboarding_es = {
       "manager_class_desc": "Estructura creada. Invita al equipo y sigue organizando.",
       "primary_open_class": "Abrir mi grupo",
       "primary_add_people": "Añadir catequizandos",
+      "primary_register_attendance": "Registrar la primera asistencia",
       "personal_class_ready_title": "Tu grupo está listo",
       "personal_class_ready_desc": "Grupo creado con catequizandos. Ya puedes registrar asistencia y seguir el camino.",
       "personal_class_empty_title": "Grupo creado",

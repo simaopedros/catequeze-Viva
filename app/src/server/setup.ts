@@ -5,9 +5,13 @@ import { sessionTimeoutMiddleware } from './middleware/sessionTimeout';
 import { logger } from './logger';
 import { probeAiHealth } from './api/healthCheck';
 import { preloadReferenceCache } from './cache/referenceCache';
+import { registerLandingHtmlMeta } from './middleware/landingHtmlMeta';
 
 export const serverSetup: ServerSetupFn = async ({ app, server }) => {
   const MAX_BODY = '2mb';
+
+  // Crawler-facing meta for /, /ia, /presenca, /sistema (when SPA index is on this server)
+  registerLandingHtmlMeta(app);
 
   // ── Sentry (optional) ───────────────────────────────────────────────
   const sentryDsn = process.env.SENTRY_DSN;

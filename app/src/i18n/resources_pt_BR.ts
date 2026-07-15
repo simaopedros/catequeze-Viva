@@ -632,6 +632,10 @@ export const billing_pt_BR = {
     "trial_banner_subtitle": "Assine para manter turmas, presença e assistência editorial sem interrupção.",
     "trial_banner_ends": "Termina em {{date}}.",
     "trial_banner_cta": "Ver assinatura",
+    "trial_soft_title": "Você já usou o essencial — continue com calma",
+    "trial_soft_subtitle": "Ainda restam {{count}} dias de trial. Quando quiser, veja os planos para manter tudo no mesmo lugar.",
+    "trial_soft_cta": "Ver planos",
+    "trial_soft_dismiss": "Dispensar sugestão de plano",
     "trial_topbar_one": "1 dia de teste",
     "trial_topbar_other": "{{count}} dias de teste",
     "cancel_subscription": "Cancelar assinatura",
@@ -1924,8 +1928,10 @@ export const dashboard_pt_BR = {
     "activation": {
       "eyebrow": "Primeiros passos",
       "title": "Deixe sua catequese pronta para o dia a dia",
-      "progress": "{{done}} de {{total}} concluídos",
+      "progress": "{{done}} de {{total}} no caminho do primeiro valor",
       "dismiss": "Dispensar checklist",
+      "next_label": "Próxima ação",
+      "next_cta": "Fazer agora",
       "step_class_title": "Ter uma turma",
       "step_class_desc": "A turma é o centro da chamada e do acompanhamento.",
       "step_people_title": "Incluir catequizandos",
@@ -1933,7 +1939,12 @@ export const dashboard_pt_BR = {
       "step_attendance_title": "Registrar a primeira presença",
       "step_attendance_desc": "Marque quem veio e mantenha o histórico da turma.",
       "step_meeting_title": "Preparar um encontro",
-      "step_meeting_desc": "Use o assistência editorial ou a biblioteca para o próximo encontro."
+      "step_meeting_desc": "Crie ou salve o primeiro encontro da turma.",
+      "celebrate_eyebrow": "Primeiro valor",
+      "celebrate_title": "Você já usou a Catequese Viva de verdade",
+      "celebrate_desc": "Turma, pessoas e uma ação real (presença ou encontro) estão no sistema. Continue o dia a dia daqui.",
+      "bonus_attendance": "Registrar presença também",
+      "bonus_meeting": "Preparar um encontro também"
     },
     "quick_new_class": "Criar nova turma",
     "quick_new_catechumen": "Cadastrar catequizando",
@@ -2089,11 +2100,11 @@ export const landing_pt_BR = {
     "hero": {
       "headline_line1": "Sua catequese sem caderno, planilha e WhatsApp perdidos",
       "headline_line2": "",
-      "subheadline": "Em 7 dias você coloca a turma, a chamada e o próximo encontro no mesmo lugar. Teste na sua realidade.",
-      "badge": "Experimente 7 dias",
-      "cta_primary": "Começar os 7 dias",
+      "subheadline": "Em 7 dias você coloca a turma, a chamada e o próximo encontro no mesmo lugar — e vê se a rotina fica mais clara.",
+      "badge": "Trial de 7 dias",
+      "cta_primary": "Começar trial de 7 dias",
       "cta_secondary": "Como funciona",
-      "trust_signals": "Funciona no celular • Importação por planilha • Dados protegidos",
+      "trust_signals": "Sem cobrança agora • Sem cartão para começar • Funciona no celular",
       "cta_secondary_href": "/#como",
       "highlights": [
         "Chamada e acompanhamento pelo celular",
@@ -2101,7 +2112,7 @@ export const landing_pt_BR = {
         "Assistência editorial para preparar encontros e avisos",
         "Famílias acompanham pelo portal"
       ],
-      "cta_helper": "Comece em minutos",
+      "cta_helper": "Sem cobrança agora · sem cartão para começar · organize a turma na primeira semana",
       "audience_label": "Qual é a sua realidade hoje?",
       "audiences": [
         {
@@ -2152,21 +2163,21 @@ export const landing_pt_BR = {
     "ai_showcase_subtitle": "A Catequese Viva reúne tema, faixa etária e referências católicas para montar um primeiro rascunho que você revisa antes de usar.",
     "ai_showcase_cta": "Ver planos para preparar a próxima turma",
     "features_title": "O essencial para organizar a catequese sem improviso",
-    "features_subtitle": "Tudo o que mais pesa na rotina do catequista e da coordenacao, no mesmo sistema.",
+    "features_subtitle": "Tudo o que mais pesa na rotina do catequista e da coordenação, no mesmo sistema.",
     "features": {
       "attendance": {
-        "title": "Faca a chamada pelo celular e acompanhe faltas sem se perder",
-        "desc": "Marque presenca, atraso e justificativa no encontro e veja o historico da turma sem papel ou planilha.",
-        "b1": "Chamada rapida no celular",
-        "b2": "Importacao de catequizandos por planilha",
-        "b3": "Historico e relatorios de frequencia"
+        "title": "Faça a chamada pelo celular e acompanhe faltas sem se perder",
+        "desc": "Marque presença, atraso e justificativa no encontro e veja o histórico da turma sem papel ou planilha.",
+        "b1": "Chamada rápida no celular",
+        "b2": "Importação de catequizandos por planilha",
+        "b3": "Histórico e relatórios de frequência"
       },
       "ai": {
         "title": "Prepare encontros com assistência editorial e revise tudo antes de usar",
-        "desc": "Crie roteiros, atividades e mensagens para as familias a partir do tema do encontro, sem abrir mao da revisao pastoral.",
+        "desc": "Crie roteiros, atividades e mensagens para as famílias a partir do tema do encontro, sem abrir mão da revisão pastoral.",
         "b1": "Roteiros de encontro com assistência editorial",
         "b2": "Atividades e quizzes para adaptar",
-        "b3": "Mensagens para enviar as familias"
+        "b3": "Mensagens para enviar às famílias"
       },
       "library": {
         "title": "Consulte Bíblia e Catecismo dentro da plataforma",
@@ -2176,9 +2187,9 @@ export const landing_pt_BR = {
         "b3": "Conteúdos salvos para reutilizar e imprimir"
       },
       "family": {
-        "title": "De as familias um jeito simples de acompanhar a caminhada",
-        "desc": "Responsaveis podem ver avisos, justificar faltas e enviar documentos sem depender de recado perdido.",
-        "b1": "Portal da familia por catequizando",
+        "title": "Dê às famílias um jeito simples de acompanhar a caminhada",
+        "desc": "Responsáveis podem ver avisos, justificar faltas e enviar documentos sem depender de recado perdido.",
+        "b1": "Portal da família por catequizando",
         "b2": "Justificativa de faltas online",
         "b3": "Envio de documentos por link seguro"
       },
@@ -2255,9 +2266,9 @@ export const landing_pt_BR = {
         "desc": "Monte a turma, faça a chamada e prepare o encontro."
       }
     ],
-    "steps_cta": "Começar os 7 dias",
-    "pricing_title": "Depois do trial, escolha o plano",
-    "pricing_subtitle": "R$ 29 para o catequista. R$ 99 para paróquia ou diocese. Nos 7 primeiros dias você testa sem cobrança.",
+    "steps_cta": "Começar trial de 7 dias",
+    "pricing_title": "Depois de ver o valor, escolha o plano",
+    "pricing_subtitle": "R$ 29 para o catequista. R$ 99 para paróquia ou diocese. Comece com 7 dias de trial — sem cartão e sem cobrança agora.",
     "plans": {
       "single": {
         "name": "Plano Único",
@@ -2299,7 +2310,11 @@ export const landing_pt_BR = {
     "faqs": [
       {
         "q": "O que eu posso fazer no trial de 7 dias?",
-        "a": "Organizar a turma, registrar presença no celular e preparar o próximo encontro — o fluxo real da catequese."
+        "a": "Organizar a turma, registrar presença no celular e preparar o próximo encontro — o fluxo real da catequese. Sem cartão e sem cobrança agora."
+      },
+      {
+        "q": "Preciso de cartão para o trial?",
+        "a": "Não. O product trial de 7 dias não pede cartão. Cartão só entra se você decidir assinar um plano depois."
       },
       {
         "q": "Posso começar sozinho, como catequista?",
@@ -2319,8 +2334,8 @@ export const landing_pt_BR = {
       }
     ],
     "cta_title": "Organize a catequese com clareza",
-    "cta_subtitle": "Pare de espalhar a rotina em caderno, planilha e mensagens. Experimente 7 dias na sua turma.",
-    "cta_button": "Começar os 7 dias",
+    "cta_subtitle": "Pare de espalhar a rotina em caderno, planilha e mensagens. Comece o trial de 7 dias na sua turma — sem cobrança agora.",
+    "cta_button": "Começar trial de 7 dias",
     "cta_badge": "Trial",
     "cta_see_plans": "Ver planos",
     "mock": {
@@ -2408,7 +2423,7 @@ export const landing_pt_BR = {
       "about": "Sobre",
       "privacy": "Privacidade",
       "terms": "Termos",
-      "contact": "Contacto"
+      "contact": "Contato"
     },
     "ai_showcase_badge": "Veja como o fluxo funciona",
     "trust_title": "Feito para cuidar de dados sensíveis",
@@ -2434,11 +2449,11 @@ export const landing_pt_BR = {
     "testimonials_title": "Depoimentos",
     "testimonials_subtitle": "Quando tivermos autorizações reais de catequistas e paróquias, elas aparecem aqui.",
     "testimonials": [],
-    "cta_helper": "Feito para catequistas e paróquias",
+    "cta_helper": "Sem cobrança agora · sem cartão para começar",
     "mobile_cta": {
       "title": "Trial de 7 dias",
-      "subtitle": "Organize a turma no celular",
-      "button": "Começar os 7 dias"
+      "subtitle": "Sem cobrança agora · sem cartão",
+      "button": "Começar trial de 7 dias"
     },
     "proof": {
       "badge": "Comece com tranquilidade",
@@ -2504,7 +2519,7 @@ export const landing_pt_BR = {
     "steps_endowed_title": "Você já está aqui",
     "steps_endowed_desc": "Conhecendo a plataforma",
     "price_trial_badge": "7 dias grátis · Sem cartão",
-    "price_trial_note": "O trial exige cartão (Stripe). Nos 7 dias não cobramos; cancele antes e não paga.",
+    "price_trial_note": "7 dias de trial sem cartão e sem cobrança agora. Se assinar depois, o pagamento é no Stripe; cancele a tempo e não fica cobrado.",
     "comparison": {
       "title": "Pare de espalhar a catequese em papel, planilha e WhatsApp",
       "subtitle": "Compare o jeito atual com a Catequese Viva em critérios que importam na rotina pastoral.",
@@ -2546,8 +2561,8 @@ export const landing_pt_BR = {
         }
       ]
     },
-    "faq_cta": "Começar os 7 dias",
-    "faq_cta_helper": "Use na sua turma esta semana",
+    "faq_cta": "Começar trial de 7 dias",
+    "faq_cta_helper": "Sem cobrança agora · use na sua turma esta semana",
     "price_cta_single": "Testar Plano Único",
     "price_cta_unlimited": "Testar Plano Ilimitado",
     "price_annual_equivalent": "Equivale a {{price}}/mês",
@@ -2742,7 +2757,7 @@ export const landingPresenca_pt_BR = {
       "badge": "Controle de presença digital",
       "cta_primary": "Começar agora",
       "cta_secondary": "Ver demonstração",
-      "trust_signals": "7 dias sem cartao • Funciona no celular • Cancele quando quiser"
+      "trust_signals": "7 dias sem cartão • Funciona no celular • Cancele quando quiser"
     },
     "features_title": "Controle total de presenças",
     "features_subtitle": "Do registro à justificativa — tudo integrado e em tempo real.",
@@ -2840,7 +2855,7 @@ export const landingSistema_pt_BR = {
       "badge": "Gestão completa para catequese",
       "cta_primary": "Começar agora",
       "cta_secondary": "Ver recursos",
-      "trust_signals": "7 dias sem cartao • Comece em 2 minutos • Cancele quando quiser"
+      "trust_signals": "7 dias sem cartão • Comece em 2 minutos • Cancele quando quiser"
     },
     "features_title": "Tudo para gerir sua catequese",
     "features_order": [
@@ -3151,6 +3166,7 @@ export const navigation_pt_BR = {
     "peopleSection": "Pessoas & Turmas",
     "pedagogySection": "Pedagogia & Encontros",
     "pastoralSection": "Comunicação & Gestão",
+    "primarySection": "Principal",
     "moreSection": "Mais",
     "documents": "Documentos",
     "consents": "Consentimentos",
@@ -3405,6 +3421,7 @@ export const onboarding_pt_BR = {
       "manager_class_desc": "Estrutura criada. Convide a equipe e continue organizando.",
       "primary_open_class": "Abrir minha turma",
       "primary_add_people": "Adicionar catequizandos",
+      "primary_register_attendance": "Registrar a primeira presença",
       "personal_class_ready_title": "Sua turma está pronta",
       "personal_class_ready_desc": "Turma criada e com catequizandos. Você já pode registrar presença e acompanhar a caminhada.",
       "personal_class_empty_title": "Turma criada",

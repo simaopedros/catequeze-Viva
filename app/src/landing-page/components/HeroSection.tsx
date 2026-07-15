@@ -152,14 +152,42 @@ export function HeroSection({
         aspect="natural"
         className={cn(isEditorial && "lg:translate-y-1")}
       >
-        <img
-          src="/landing/hero-mobile-light.png"
-          alt={tr("hero.image_alt")}
-          className="block w-full h-auto"
-          loading="eager"
-          fetchPriority="high"
-          decoding="async"
-        />
+        {/*
+          Hero LCP image: modern formats + srcset. Intrinsic size 1896×867.
+          PNG kept only as last-resort fallback (~425KB); AVIF/WebP are ~10–64KB.
+        */}
+        <picture>
+          <source
+            type="image/avif"
+            srcSet={[
+              "/landing/hero-mobile-light-640.avif 640w",
+              "/landing/hero-mobile-light-960.avif 960w",
+              "/landing/hero-mobile-light-1280.avif 1280w",
+              "/landing/hero-mobile-light-1896.avif 1896w",
+            ].join(", ")}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 560px"
+          />
+          <source
+            type="image/webp"
+            srcSet={[
+              "/landing/hero-mobile-light-640.webp 640w",
+              "/landing/hero-mobile-light-960.webp 960w",
+              "/landing/hero-mobile-light-1280.webp 1280w",
+              "/landing/hero-mobile-light-1896.webp 1896w",
+            ].join(", ")}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 560px"
+          />
+          <img
+            src="/landing/hero-mobile-light.png"
+            alt={tr("hero.image_alt")}
+            width={1896}
+            height={867}
+            className="block h-auto w-full"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+          />
+        </picture>
       </BrowserFrame>
     </div>
   ) : null;
