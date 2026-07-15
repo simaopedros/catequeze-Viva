@@ -34,6 +34,7 @@ import { EmptyState } from "../../client/components/EmptyState";
 import { SkeletonCard } from "../../client/components/Skeletons";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
 import { useUserContext } from "../../client/hooks/useUserContext";
+import { FamilyPortalInviteBanner } from "../components/FamilyPortalInviteBanner";
 
 const PAGE_SIZE = 50;
 
@@ -103,6 +104,7 @@ export default function FamiliesPage() {
           ) : undefined
         }
       />
+      <FamilyPortalInviteBanner />
       <AppPanel>
         <div className="flex flex-col gap-3 sm:flex-row">
           <SearchInput

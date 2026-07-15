@@ -4,7 +4,8 @@ import { Button } from "../../../client/components/ui/button";
 import { Badge } from "../../../client/components/ui/badge";
 import { ConfirmDialog } from "../../../client/components/ConfirmDialog";
 import { AppDisplayTitle } from "../../../client/components/brand/AppChrome";
-import { Users, UserPlus, Mail, Trash2 } from "lucide-react";
+import { Users, UserPlus, Mail, Trash2, Heart } from "lucide-react";
+import { Link } from "react-router";
 import {
   useRoleLabels,
   useMembershipStatusLabels,
@@ -99,6 +100,28 @@ export function ParishMembersTab({
 
   return (
     <div className="space-y-4">
+      <div className="rounded-sm border border-[#D39A2B]/35 bg-[#D39A2B]/[0.08] p-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-2 text-sm">
+          <Heart className="mt-0.5 h-4 w-4 shrink-0 text-[#071A2D]" />
+          <p className="text-muted-foreground">
+            {t("portal_invites.banner_desc", {
+              ns: "family",
+              defaultValue:
+                "Para convidar responsáveis e catequizandos ao Portal da Família, use a central de convites.",
+            })}
+          </p>
+        </div>
+        <Button size="sm" variant="outline" className="h-9 rounded-sm shrink-0" asChild>
+          <Link to="/app/family-invites">
+            <Mail className="mr-1 h-3.5 w-3.5" />
+            {t("portal_invites.banner_cta", {
+              ns: "family",
+              defaultValue: "Convites da família",
+            })}
+          </Link>
+        </Button>
+      </div>
+
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
           {tp("members_count_short", { count: members.length })}

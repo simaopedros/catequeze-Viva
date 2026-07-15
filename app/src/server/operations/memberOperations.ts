@@ -1,6 +1,7 @@
 import { HttpError } from 'wasp/server';
 import { requireAuth, writeAuditLog, getDioceseParishIds } from '../auth/helpers';
 import { logger } from '../logger';
+import { familyPortalUrl } from '../../shared/portal';
 
 // ── Simple rate limiter for public invite token endpoint ───────────────────
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -280,7 +281,11 @@ export const inviteUserToParish = async (
       role: args.role,
       communityId: args.communityId || null,
     });
-    return pending;
+    return {
+      ...pending,
+      inviteUrl: familyPortalUrl(`/convite/${token}`),
+      kind: 'pending' as const,
+    };
   }
 
   // ── Case 2: Existing user → create or update Membership ────────────
@@ -323,7 +328,11 @@ export const inviteUserToParish = async (
       role: args.role,
       communityId: args.communityId || null,
     });
-    return reinvited;
+    return {
+      ...reinvited,
+      inviteUrl: familyPortalUrl(`/convite/${membershipToken}`),
+      kind: 'membership' as const,
+    };
   }
 
   const membership = await context.entities.Membership.create({
@@ -348,7 +357,109 @@ export const inviteUserToParish = async (
     communityId: args.communityId || null,
   });
 
-  return membership;
+  return {
+    ...membership,
+    inviteUrl: familyPortalUrl(`/convite/${membershipToken}`),
+    kind: 'membership' as const,
+  };
+};
+
+const FAMILY_INVITE_ROLES = ['GUARDIAN', 'CATECHUMEN'] as const;
+
+/**
+ * List pending family-portal invites (GUARDIAN / CATECHUMEN) for a parish.
+ * Staff only. Includes PendingInvitation rows and INVITED memberships.
+ */
+export const listFamilyPortalInvitations = async (
+  args: { parishId: string },
+  context: any,
+) => {
+  requireAuth(context.user);
+  if (!args.parishId) throw new HttpError(400, 'parishId é obrigatório.');
+
+  const { assertStaffOperation } = await import('../auth/familySurface');
+  await assertStaffOperation(context, {
+    parishId: args.parishId,
+    message: 'Apenas a equipe pastoral pode ver convites do portal da família.',
+  });
+
+  // Must be allowed to invite family roles
+  const { role: inviterRole } = await resolveInviterRole(context, args.parishId);
+  const assignable = getAssignableRoles(inviterRole, context.user.isAdmin);
+  if (
+    !assignable.includes('GUARDIAN') &&
+    !assignable.includes('CATECHUMEN') &&
+    !context.user.isAdmin
+  ) {
+    throw new HttpError(403, 'Sem permissão para gerir convites da família.');
+  }
+
+  const pending = await context.entities.PendingInvitation.findMany({
+    where: {
+      parishId: args.parishId,
+      role: { in: [...FAMILY_INVITE_ROLES] },
+    },
+    orderBy: { createdAt: 'desc' },
+    take: 100,
+  });
+
+  const memberships = await context.entities.Membership.findMany({
+    where: {
+      parishId: args.parishId,
+      status: 'INVITED',
+      role: { in: [...FAMILY_INVITE_ROLES] },
+    },
+    include: {
+      user: { select: { id: true, email: true, firstName: true, lastName: true } },
+    },
+    orderBy: { createdAt: 'desc' },
+    take: 100,
+  });
+
+  const now = Date.now();
+
+  const fromPending = pending.map((p: any) => {
+    const expired = p.expiresAt && new Date(p.expiresAt).getTime() < now;
+    return {
+      id: p.id,
+      kind: 'pending' as const,
+      email: p.email,
+      role: p.role,
+      status: expired ? 'EXPIRED' : 'PENDING',
+      expiresAt: p.expiresAt,
+      createdAt: p.createdAt,
+      hasAccount: false,
+      inviteUrl: p.token ? familyPortalUrl(`/convite/${p.token}`) : null,
+      displayName: p.email,
+    };
+  });
+
+  const fromMembership = memberships.map((m: any) => {
+    const expired =
+      m.inviteTokenExpiresAt &&
+      new Date(m.inviteTokenExpiresAt).getTime() < now;
+    const email = m.user?.email || '';
+    const name = [m.user?.firstName, m.user?.lastName].filter(Boolean).join(' ');
+    return {
+      id: m.id,
+      kind: 'membership' as const,
+      email,
+      role: m.role,
+      status: expired ? 'EXPIRED' : 'PENDING',
+      expiresAt: m.inviteTokenExpiresAt,
+      createdAt: m.createdAt,
+      hasAccount: true,
+      inviteUrl: m.inviteToken
+        ? familyPortalUrl(`/convite/${m.inviteToken}`)
+        : null,
+      displayName: name || email,
+    };
+  });
+
+  return [...fromPending, ...fromMembership].sort(
+    (a, b) =>
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
 };
 
 /**

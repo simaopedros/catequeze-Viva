@@ -126,6 +126,12 @@ export const NAV_SECTIONS: NavSectionConfig[] = [
       },
       { to: '/app/families', labelKey: 'families', iconKey: 'families', roles: CATECHIST_ROLES },
       {
+        to: '/app/family-invites',
+        labelKey: 'family_portal_invites',
+        iconKey: 'family_portal_invites',
+        roles: CATECHIST_ROLES,
+      },
+      {
         to: '/app/directory',
         labelKey: 'directory',
         iconKey: 'directory',

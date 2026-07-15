@@ -25,6 +25,7 @@ import {
   BarChart3,
   Clock,
   Printer,
+  Mail,
 } from "lucide-react";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
 import { ChartSuspenseFallback } from "../../client/components/ChartSuspenseFallback";
@@ -1358,17 +1359,35 @@ export default function CatechumenDetailPage() {
             subtitle={detailSubtitle || undefined}
             actions={
               canEdit ? (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-10 rounded-sm"
-                  asChild
-                >
-                  <Link to={`/app/catechumens/${id}/edit`}>
-                    <Edit3 className="mr-1 h-3 w-3" />
-                    {t("edit")}
-                  </Link>
-                </Button>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-10 rounded-sm"
+                    asChild
+                  >
+                    <Link
+                      to={`/app/family-invites?role=CATECHUMEN&email=${encodeURIComponent(profile.email || "")}&householdId=${encodeURIComponent(profile.householdId || "")}`}
+                    >
+                      <Mail className="mr-1 h-3 w-3" />
+                      {t("portal_invites.context_catechumen", {
+                        ns: "family",
+                        defaultValue: "Convidar ao portal",
+                      })}
+                    </Link>
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-10 rounded-sm"
+                    asChild
+                  >
+                    <Link to={`/app/catechumens/${id}/edit`}>
+                      <Edit3 className="mr-1 h-3 w-3" />
+                      {t("edit")}
+                    </Link>
+                  </Button>
+                </div>
               ) : undefined
             }
           />

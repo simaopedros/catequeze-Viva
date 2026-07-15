@@ -20,6 +20,7 @@ import {
   Pencil,
   Trash2,
   Copy,
+  Mail,
 } from "lucide-react";
 import {
   useQuery,
@@ -357,7 +358,8 @@ export default function FamilyDetailPage() {
   };
 
   const handleCopyInviteLink = () => {
-    const link = `${window.location.origin}/app/families/${id}`;
+    // Point staff to the family-portal invites hub (not the admin family URL).
+    const link = `${window.location.origin}/app/family-invites`;
     navigator.clipboard.writeText(link);
     trackMarketingEvent("share_clicked", {
       placement: "family_detail_page",
@@ -502,15 +504,33 @@ export default function FamilyDetailPage() {
                 guardians: household.guardians?.length || 0,
               })}
               actions={
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-10 rounded-sm"
-                  onClick={startEditing}
-                >
-                  <Edit3 className="mr-1 h-3 w-3" />
-                  {t("edit")}
-                </Button>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-10 rounded-sm"
+                    asChild
+                  >
+                    <Link
+                      to={`/app/family-invites?role=GUARDIAN&householdId=${id || ""}`}
+                    >
+                      <Mail className="mr-1 h-3 w-3" />
+                      {t("portal_invites.context_family", {
+                        ns: "family",
+                        defaultValue: "Convidar ao portal",
+                      })}
+                    </Link>
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-10 rounded-sm"
+                    onClick={startEditing}
+                  >
+                    <Edit3 className="mr-1 h-3 w-3" />
+                    {t("edit")}
+                  </Button>
+                </div>
               }
             />
           )}
@@ -697,6 +717,24 @@ export default function FamilyDetailPage() {
                       </p>
                     </div>
                     <div className="flex items-center gap-1">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7"
+                        asChild
+                        title={
+                          t("portal_invites.context_guardian", {
+                            ns: "family",
+                            defaultValue: "Convidar ao portal da família",
+                          }) as string
+                        }
+                      >
+                        <Link
+                          to={`/app/family-invites?role=GUARDIAN&email=${encodeURIComponent(g.email || "")}&householdId=${id || ""}`}
+                        >
+                          <Mail className="h-3.5 w-3.5" />
+                        </Link>
+                      </Button>
                       <Button
                         size="icon"
                         variant="ghost"

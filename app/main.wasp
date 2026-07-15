@@ -327,6 +327,12 @@ page AppNewHouseholdPage {
 }
 
 route AppFamiliesRoute { path: "/app/families", to: AppFamiliesPage }
+
+route AppFamilyPortalInvitesRoute { path: "/app/family-invites", to: AppFamilyPortalInvitesPage }
+page AppFamilyPortalInvitesPage {
+  authRequired: true,
+  component: import AppFamilyPortalInvitesPage from "@src/catequese/pages/FamilyPortalInvitesPage"
+}
 page AppFamiliesPage {
   authRequired: true,
   component: import FamiliesPage from "@src/catequese/pages/FamiliesPage"
@@ -557,6 +563,11 @@ action acceptInvitationByToken {
 action resendInvitation {
   fn: import { resendInvitation } from "@src/server/operations/memberOperations",
   entities: [PendingInvitation, Membership, Parish, User, AuditLog]
+}
+
+query listFamilyPortalInvitations {
+  fn: import { listFamilyPortalInvitations } from "@src/server/operations/memberOperations",
+  entities: [PendingInvitation, Membership, User, Parish, AuditLog]
 }
 
 action removeMembership {

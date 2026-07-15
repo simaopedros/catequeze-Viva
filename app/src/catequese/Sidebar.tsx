@@ -29,6 +29,7 @@ import {
   Shield,
   BookOpen,
   ClipboardList,
+  Mail,
 } from "lucide-react";
 import { useUserContext } from "../client/hooks/useUserContext";
 import {
@@ -54,6 +55,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   classes: Users,
   catechumens: GraduationCap,
   families: Heart,
+  family_portal_invites: Mail,
   content_library: Library,
   ai_hub: BookOpen,
   activities: Puzzle,
