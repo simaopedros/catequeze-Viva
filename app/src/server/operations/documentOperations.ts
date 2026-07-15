@@ -7,6 +7,11 @@ import {
   MAX_FILE_SIZE_BYTES,
   validateFileSignature,
 } from '../storage/uploadValidation';
+import {
+  assertDependentInScope,
+  assertHasCapability,
+  resolvePortalScope,
+} from './portalScope';
 
 export const listDocuments = async (_args: void, context: any) => {
   requireAuth(context.user);
@@ -95,39 +100,15 @@ export const listDocuments = async (_args: void, context: any) => {
     });
   }
 
-  // Guardian: only documents of their household dependents
-  if (roles.includes('GUARDIAN')) {
-    const guardian = await context.entities.GuardianProfile.findUnique({
-      where: { userId: context.user.id },
-      select: { householdId: true },
-    });
-    if (!guardian?.householdId) return [];
-
-    const dependents = await context.entities.CatechumenProfile.findMany({
-      where: { householdId: guardian.householdId },
-      select: { id: true },
-    });
-    const dependentIds = dependents.map((d: any) => d.id);
-
+  // Guardian / catechumen: portal scope (dependents or self only)
+  if (roles.includes('GUARDIAN') || roles.includes('CATECHUMEN')) {
+    const portalScope = await resolvePortalScope(context, { surface: 'PORTAL' });
+    if (portalScope.mode !== 'PORTAL' || portalScope.dependentCatechumenIds.length === 0) {
+      return [];
+    }
     return context.entities.Document.findMany({
       where: {
-        catechumenProfileId: { in: dependentIds },
-      },
-      orderBy: { createdAt: 'desc' },
-      include: baseInclude,
-    });
-  }
-
-  // CATECHUMEN: only own documents
-  if (roles.includes('CATECHUMEN')) {
-    const catechumen = await context.entities.CatechumenProfile.findFirst({
-      where: { userId: context.user.id },
-      select: { id: true },
-    });
-
-    return context.entities.Document.findMany({
-      where: {
-        catechumenProfileId: catechumen?.id || '__none__',
+        catechumenProfileId: { in: portalScope.dependentCatechumenIds },
       },
       orderBy: { createdAt: 'desc' },
       include: baseInclude,
@@ -168,25 +149,16 @@ export const uploadDocument = async (
 
     if (effectiveRole && catechistRoles.includes(effectiveRole)) {
       // Allowed
-    } else if (effectiveRole === 'GUARDIAN') {
-      // Guardian: only for catechumens in their household
+    } else if (effectiveRole === 'GUARDIAN' || effectiveRole === 'CATECHUMEN') {
       if (!args.catechumenProfileId) {
         throw new HttpError(403, 'Responsáveis devem selecionar um catequizando da sua família.');
       }
-      const guardian = await context.entities.GuardianProfile.findUnique({
-        where: { userId: context.user.id },
-        select: { householdId: true },
+      const portalScope = await resolvePortalScope(context, {
+        surface: 'PORTAL',
+        preferRole: effectiveRole === 'GUARDIAN' ? 'GUARDIAN' : 'CATECHUMEN',
       });
-      if (!guardian?.householdId) {
-        throw new HttpError(403, 'Perfil de responsável não encontrado.');
-      }
-      const catechumen = await context.entities.CatechumenProfile.findUnique({
-        where: { id: args.catechumenProfileId },
-        select: { householdId: true },
-      });
-      if (!catechumen || catechumen.householdId !== guardian.householdId) {
-        throw new HttpError(403, 'Só pode enviar documentos para catequizandos da sua família.');
-      }
+      assertHasCapability(portalScope, 'UPLOAD_DOCUMENT');
+      assertDependentInScope(portalScope, args.catechumenProfileId);
     } else {
       throw new HttpError(403, 'Sem permissão para enviar documentos.');
     }

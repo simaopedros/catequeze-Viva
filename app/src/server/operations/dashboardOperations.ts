@@ -1,5 +1,6 @@
 import { HttpError } from 'wasp/server';
 import { resolveUserScope } from './sharedScope';
+import { resolvePortalScope } from './portalScope';
 
 const COORDINATOR_OR_ABOVE = [
   'PARISH_COORDINATOR',
@@ -65,6 +66,22 @@ async function resolveMeetingClassScope(params: {
   );
   if (hasCatechist) {
     return { kind: 'classIds', classIds: myClassIds };
+  }
+
+  // Pure family roles: prefer centralized portal scope (dependents + ENROLLED classes)
+  const pureFamily =
+    (roles.includes('GUARDIAN') || roles.includes('CATECHUMEN')) &&
+    !roles.some((r) => (STAFF_ROLES as readonly string[]).includes(r));
+
+  if (pureFamily) {
+    try {
+      const portalScope = await resolvePortalScope(context, { surface: 'PORTAL' });
+      if (portalScope.mode === 'PORTAL') {
+        return { kind: 'classIds', classIds: portalScope.allowedClassIds };
+      }
+    } catch {
+      // Fall through to legacy household/enrollment paths
+    }
   }
 
   // Pure GUARDIAN (no staff roles) — already gated when setting guardianHouseholdId
@@ -149,11 +166,25 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
     roles.includes('GUARDIAN') &&
     !roles.some((r: string) => (STAFF_ROLES as readonly string[]).includes(r))
   ) {
-    const guardianProfile = await context.entities.GuardianProfile.findFirst({
-      where: { userId: context.user.id },
-      select: { householdId: true },
-    });
-    guardianHouseholdId = guardianProfile?.householdId || null;
+    try {
+      const portalScope = await resolvePortalScope(context, {
+        surface: 'PORTAL',
+        parishId: args.parishId,
+        preferRole: 'GUARDIAN',
+      });
+      if (portalScope.mode === 'PORTAL' && portalScope.householdId) {
+        guardianHouseholdId = portalScope.householdId;
+      }
+    } catch {
+      guardianHouseholdId = null;
+    }
+    if (!guardianHouseholdId) {
+      const guardianProfile = await context.entities.GuardianProfile.findFirst({
+        where: { userId: context.user.id },
+        select: { householdId: true },
+      });
+      guardianHouseholdId = guardianProfile?.householdId || null;
+    }
   }
 
   // ─── Phase 2: Independent queries (meetings deferred until class scope known) ─

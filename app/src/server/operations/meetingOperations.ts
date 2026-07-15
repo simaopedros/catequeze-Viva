@@ -1,6 +1,12 @@
 import { HttpError } from 'wasp/server';
 import { MembershipStatus } from '@prisma/client';
 import { logger } from '../logger';
+import {
+  assertClassInScope,
+  assertDependentInScope,
+  assertHasCapability,
+  resolvePortalScope,
+} from './portalScope';
 
 function isCoordinatorOrAbove(role: string | null): boolean {
   if (!role) return false;
@@ -55,26 +61,33 @@ async function assertUserBelongsToClass(context: any, classId: string): Promise<
     return;
   }
 
-  // Guardians: only classes where their dependents are enrolled
-  if (membership.role === 'GUARDIAN') {
-    const guardian = await context.entities.GuardianProfile.findUnique({
-      where: { userId: context.user.id },
-      select: { householdId: true },
+  // Family roles: portal scope (allowedClassIds from ENROLLED dependents/self)
+  if (membership.role === 'GUARDIAN' || membership.role === 'CATECHUMEN') {
+    const portalScope = await resolvePortalScope(context, {
+      surface: 'PORTAL',
+      parishId: classData.parishId,
+      preferRole: membership.role === 'GUARDIAN' ? 'GUARDIAN' : 'CATECHUMEN',
     });
-    if (guardian?.householdId) {
-      const enrollment = await context.entities.ClassEnrollment.findFirst({
-        where: {
-          classId,
-          catechumenProfile: { householdId: guardian.householdId },
-        },
-      });
-      if (enrollment) return;
+    if (portalScope.mode === 'PORTAL' && portalScope.allowedClassIds.includes(classId)) {
+      return;
     }
-    throw new HttpError(403, 'Seus dependentes não estão matriculados nesta turma.');
-  }
-
-  // CATECHUMEN: only classes they're enrolled in
-  if (membership.role === 'CATECHUMEN') {
+    // Legacy fallback if scope empty (profile not linked yet)
+    if (membership.role === 'GUARDIAN') {
+      const guardian = await context.entities.GuardianProfile.findFirst({
+        where: { userId: context.user.id },
+        select: { householdId: true },
+      });
+      if (guardian?.householdId) {
+        const enrollment = await context.entities.ClassEnrollment.findFirst({
+          where: {
+            classId,
+            catechumenProfile: { householdId: guardian.householdId },
+          },
+        });
+        if (enrollment) return;
+      }
+      throw new HttpError(403, 'Seus dependentes não estão matriculados nesta turma.');
+    }
     const enrollment = await context.entities.ClassEnrollment.findFirst({
       where: {
         classId,
@@ -525,16 +538,12 @@ export const justifyAbsence = async (args: { attendanceId: string; note: string 
   if (!attendance) throw new HttpError(404, 'Registro de presença não encontrado.');
 
   if (!context.user.isAdmin) {
-    const guardian = await context.entities.GuardianProfile.findUnique({ where: { userId: context.user.id } });
-    if (!guardian?.householdId) throw new HttpError(403, 'Acesso negado.');
-
-    const catechumen = await context.entities.CatechumenProfile.findUnique({
-      where: { id: attendance.catechumenProfileId },
-      select: { householdId: true },
+    const portalScope = await resolvePortalScope(context, {
+      surface: 'PORTAL',
+      preferRole: 'GUARDIAN',
     });
-    if (catechumen?.householdId !== guardian.householdId) {
-      throw new HttpError(403, 'Você não é responsável por este catequizando.');
-    }
+    assertHasCapability(portalScope, 'JUSTIFY_ABSENCE');
+    assertDependentInScope(portalScope, attendance.catechumenProfileId);
   }
 
   return context.entities.AttendanceRecord.update({
@@ -567,22 +576,16 @@ export const justifyAbsenceByMeeting = async (
     throw new HttpError(400, 'Não é possível justificar falta em encontro cancelado.');
   }
 
-  await assertUserBelongsToClass(context, meeting.classId);
-
   if (!context.user.isAdmin) {
-    const guardian = await context.entities.GuardianProfile.findUnique({
-      where: { userId: context.user.id },
-      select: { householdId: true },
+    const portalScope = await resolvePortalScope(context, {
+      surface: 'PORTAL',
+      preferRole: 'GUARDIAN',
     });
-    if (!guardian?.householdId) throw new HttpError(403, 'Acesso negado.');
-
-    const catechumen = await context.entities.CatechumenProfile.findUnique({
-      where: { id: args.catechumenProfileId },
-      select: { householdId: true },
-    });
-    if (!catechumen || catechumen.householdId !== guardian.householdId) {
-      throw new HttpError(403, 'Você não é responsável por este catequizando.');
-    }
+    assertHasCapability(portalScope, 'JUSTIFY_ABSENCE');
+    assertDependentInScope(portalScope, args.catechumenProfileId);
+    assertClassInScope(portalScope, meeting.classId);
+  } else {
+    await assertUserBelongsToClass(context, meeting.classId);
   }
 
   const enrolled = await context.entities.ClassEnrollment.findFirst({
@@ -757,6 +760,15 @@ export const getMeeting = async (args: { id: string }, context: any): Promise<an
   const role = await getUserRole(context);
   const isStaff = isCatechistOrAbove(role);
   const isAdmin = Boolean(context.user.isAdmin);
+
+  // Family portal: require READ_MEETING capability when pure family role
+  if (!isStaff && !isAdmin && (role === 'GUARDIAN' || role === 'CATECHUMEN')) {
+    const portalScope = await resolvePortalScope(context, {
+      surface: 'PORTAL',
+      preferRole: role === 'GUARDIAN' ? 'GUARDIAN' : 'CATECHUMEN',
+    });
+    assertHasCapability(portalScope, 'READ_MEETING');
+  }
 
   const locationHint =
     meeting.class?.location ||
