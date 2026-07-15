@@ -17,6 +17,14 @@ catechis.app, www.catechis.app {
     reverse_proxy server:3001
   }
 
+  handle /health {
+    reverse_proxy server:3001
+  }
+
+  handle /readyz {
+    reverse_proxy server:3001
+  }
+
   handle {
     root * /srv/web-app
     try_files {path} /index.html
@@ -33,6 +41,14 @@ familia.catechis.app {
   }
 
   handle /operations/* {
+    reverse_proxy server:3001
+  }
+
+  handle /health {
+    reverse_proxy server:3001
+  }
+
+  handle /readyz {
     reverse_proxy server:3001
   }
 

@@ -3,7 +3,7 @@
  *
  * Run with: NODE_ENV=development npx vitest run src/__tests__/family-portal.test.ts
  */
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, vi } from 'vitest';
 import { prisma, USERS, PARISH_SAO_JOSE, makeContext } from './setup';
 
 const itOrSkip = process.env.NODE_ENV === 'development' ? it : it.skip;
@@ -217,16 +217,23 @@ describe('portal utilities', () => {
     expect(url).toContain('/convite/abc123');
   });
 
-  it('familyPortalUrl uses familia-homolog host in homolog env', () => {
+  // FAMILY_PORTAL_HOST is a module-level const read at import time, so changing
+  // process.env at runtime has no effect on the already-imported binding. To test
+  // the env-driven host, re-import the module with the env var set.
+  it('familyPortalUrl uses familia-homolog host in homolog env', async () => {
     const prev = process.env.FAMILY_PORTAL_HOST;
     process.env.FAMILY_PORTAL_HOST = 'familia-homolog.catechis.app';
     try {
-      const url = familyPortalUrl('/convite/token-qa');
+      vi.resetModules();
+      const { familyPortalUrl: familyPortalUrlHomolog } = await import('../shared/portal');
+      const url = familyPortalUrlHomolog('/convite/token-qa');
       expect(url).toContain('familia-homolog.catechis.app');
       expect(url).toContain('/convite/token-qa');
     } finally {
       if (prev === undefined) delete process.env.FAMILY_PORTAL_HOST;
       else process.env.FAMILY_PORTAL_HOST = prev;
+      vi.resetModules();
+      await import('../shared/portal');
     }
   });
 });

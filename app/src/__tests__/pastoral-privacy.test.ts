@@ -78,16 +78,56 @@ describe('Pastoral privacy', () => {
     expect(guardianHouseholdId).toBeTruthy();
     expect(guardianCatechumenId).toBeTruthy();
 
-    const ctx = makeContext('guardian');
-    const report = await getCatechumenAttendanceReport(
-      { catechumenId: guardianCatechumenId! },
-      ctx,
-    );
+    // A personal workspace grants PERSONAL_OWNER (catechist-or-above) via two
+    // paths in getUserParishRoles: (1) Parish.ownerId === guardian, and
+    // (2) a PERSONAL_OWNER membership. Either leaks sensitive signals, so we
+    // neutralize both for the duration of this assertion and restore in finally.
+    const personalParish = await prisma.parish.findFirst({
+      where: { ownerId: USERS.guardian.id, type: 'PERSONAL' },
+      select: { id: true, ownerId: true },
+    });
+    if (personalParish && personalParish.ownerId) {
+      await prisma.parish.update({
+        where: { id: personalParish.id },
+        data: { ownerId: null },
+      });
+    }
+    const ownerMemberships = await prisma.membership.findMany({
+      where: { userId: USERS.guardian.id, role: 'PERSONAL_OWNER' },
+      select: { id: true, parishId: true, role: true, status: true },
+    });
+    if (ownerMemberships.length) {
+      await prisma.membership.deleteMany({
+        where: { id: { in: ownerMemberships.map((m) => m.id) } },
+      });
+    }
 
-    expect(report).not.toBeNull();
-    expect(report!.attendanceRate).toBeGreaterThanOrEqual(0);
-    expect(report!.records.length).toBeGreaterThan(0);
-    expect(report!.riskLevel).toBeNull();
-    expect(report!.maxConsecutiveAbsences).toBeNull();
+    try {
+      const ctx = makeContext('guardian');
+      const report = await getCatechumenAttendanceReport(
+        { catechumenId: guardianCatechumenId! },
+        ctx,
+      );
+
+      expect(report).not.toBeNull();
+      expect(report!.attendanceRate).toBeGreaterThanOrEqual(0);
+      expect(report!.records.length).toBeGreaterThan(0);
+      expect(report!.riskLevel).toBeNull();
+      expect(report!.maxConsecutiveAbsences).toBeNull();
+    } finally {
+      if (personalParish && personalParish.ownerId) {
+        await prisma.parish.update({
+          where: { id: personalParish.id },
+          data: { ownerId: personalParish.ownerId },
+        });
+      }
+      for (const m of ownerMemberships) {
+        await prisma.membership.upsert({
+          where: { id: m.id },
+          update: { userId: USERS.guardian.id, parishId: m.parishId, role: m.role, status: m.status },
+          create: { id: m.id, userId: USERS.guardian.id, parishId: m.parishId, role: m.role, status: m.status },
+        });
+      }
+    }
   });
 });

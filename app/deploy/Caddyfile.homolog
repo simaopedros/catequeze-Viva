@@ -32,6 +32,9 @@ homolog.catechis.app {
   handle /health {
     import homolog_api
   }
+  handle /readyz {
+    import homolog_api
+  }
   handle /payments-webhook {
     import homolog_api
   }
@@ -57,6 +60,9 @@ familia-homolog.catechis.app {
     import homolog_api
   }
   handle /health {
+    import homolog_api
+  }
+  handle /readyz {
     import homolog_api
   }
   handle /payments-webhook {

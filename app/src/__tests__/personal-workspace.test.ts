@@ -180,7 +180,10 @@ describe('Personal Workspace — Real Operations: Classes', () => {
     expect(result).toBeTruthy();
     expect(result.id).toBeTruthy();
     expect(result.parishId).toBe(personalWorkspaceId);
-    expect(result.status).toBe('DRAFT');
+    // New classes are created as ACTIVE (see classOperations.ts: classes start
+    // usable; pause/archive later). The schema default is DRAFT but createClass
+    // explicitly sets ACTIVE.
+    expect(result.status).toBe('ACTIVE');
     testClassId = result.id;
   });
 
@@ -247,9 +250,10 @@ describe('Personal Workspace — ensurePersonalWorkspace operation', () => {
     const { ensurePersonalWorkspace: op } = await import('../server/operations/workspaceOperations');
     const userId = USERS.guardian.id;
 
-    // Clean up any existing personal workspace for this user first
-    await prisma.parish.deleteMany({ where: { ownerId: userId, type: 'PERSONAL' } });
-
+    // ensurePersonalWorkspace is idempotent: it returns the existing personal
+    // workspace if one already exists (other suites may have created it).
+    // Deleting the parish directly would violate Membership_parishId_fkey
+    // (RESTRICT), so we rely on idempotency instead of teardown here.
     const ctx = makeContext('guardian');
     const result = await op(undefined, ctx);
 

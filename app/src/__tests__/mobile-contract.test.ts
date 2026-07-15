@@ -125,10 +125,14 @@ describe('mobile auth contract', () => {
     expect(pendingSessionRes.state.payload.bootstrap).toBeUndefined();
 
     const verifyReq = makeReq({
+      // The API reads the session from req (Authorization header), not from
+      // context.req — mobileAuthTwoFactorVerify rebuilds the context with the
+      // passed req, so the pending session must travel on the request itself.
+      headers: { authorization: `Bearer ${loginRes.state.payload.sessionId}` },
       body: { token: generateTotp(secret) },
     });
     const verifyRes = makeRes();
-    const ctx = { ...makeContext('coordSaoJose'), req: { sessionId: loginRes.state.payload.sessionId } };
+    const ctx = { ...makeContext('coordSaoJose'), req: verifyReq };
     (ctx.user as any).email = USERS.coordSaoJose.email;
 
     await mobileAuthTwoFactorVerify(verifyReq, verifyRes, ctx);
