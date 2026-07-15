@@ -42,6 +42,7 @@ import { ConfirmDialog } from "../../client/components/ConfirmDialog";
 import { toast } from "../../client/hooks/use-toast";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
+import { isFamilyPortalHost } from "../../shared/portal";
 import {
   PLANS,
   type PlanId,
@@ -234,10 +235,33 @@ function UsageRow({
 export default function BillingPage() {
   const { t, i18n } = useTranslation("billing");
   const { t: tp } = useTranslation("public");
+  const navigate = useNavigate();
   const allPlans = useMemo(() => buildPlanCards(t), [t]);
 
   const getPlanDef = (planId: PaymentPlanId): PlanCard =>
     allPlans.find((p) => p.planId === planId) || allPlans[0];
+
+  const {
+    userRole,
+    allMemberships,
+    parishId,
+    isLoading: loadingContext,
+  } = useUserContext();
+  const isFamilyOnlyRole =
+    userRole === "GUARDIAN" || userRole === "CATECHUMEN";
+  const hasStaffMembership = (allMemberships || []).some(
+    (m: { role?: string }) =>
+      m.role && m.role !== "GUARDIAN" && m.role !== "CATECHUMEN",
+  );
+  const shouldRedirectFamilyBilling =
+    isFamilyPortalHost() || (isFamilyOnlyRole && !hasStaffMembership);
+
+  useEffect(() => {
+    if (loadingContext) return;
+    if (shouldRedirectFamilyBilling) {
+      navigate("/app", { replace: true });
+    }
+  }, [loadingContext, shouldRedirectFamilyBilling, navigate]);
 
   const {
     data: stats,
@@ -250,12 +274,11 @@ export default function BillingPage() {
     getSubscriptionDetails,
   );
   const { data: user } = useAuth();
-  const { parishId } = useUserContext();
   const { isPersonal } = useActiveWorkspace();
   const { data: parish, isLoading: loadingParish } = useQuery(
     getParishById,
     { id: parishId },
-    { enabled: !!parishId },
+    { enabled: !!parishId && !shouldRedirectFamilyBilling },
   );
 
   const [billingInterval, setBillingInterval] =
@@ -269,7 +292,6 @@ export default function BillingPage() {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [switchingInterval, setSwitchingInterval] = useState(false);
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const requestedPlan = searchParams.get("plan");
   const gateRequired = searchParams.get("required") === "1";
   const journeySource = searchParams.get("source") ?? "billing_page";

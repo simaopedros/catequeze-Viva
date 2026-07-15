@@ -22,6 +22,7 @@ vi.mock('../server/logger', () => ({
 
 import {
   extractClientMetaFromReq,
+  onAfterSignup,
   sendCompleteRegistrationToMeta,
 } from './hooks';
 
@@ -167,6 +168,131 @@ describe('auth hooks meta tracking', () => {
       prisma: { trackedEvent },
     });
 
+    expect(sendMetaEventMock).not.toHaveBeenCalled();
+  });
+});
+
+describe('onAfterSignup portal trial isolation', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    isMetaCapiConfiguredMock.mockReturnValue(true);
+    sendMetaEventMock.mockResolvedValue({ events_received: 1 });
+  });
+
+  function createPrisma(options?: {
+    pending?: Array<{ id: string; email: string; parishId: string; communityId?: string | null; role: string }>;
+  }) {
+    const userUpdates: any[] = [];
+    return {
+      userUpdates,
+      user: {
+        update: vi.fn(async ({ where, data }: any) => {
+          userUpdates.push({ where, data });
+          return { id: where.id, ...data };
+        }),
+        findMany: vi.fn(async () => []),
+      },
+      pendingInvitation: {
+        findFirst: vi.fn(async ({ where }: any) => {
+          const list = options?.pending || [];
+          const roles = where?.role?.in as string[] | undefined;
+          return (
+            list.find((p) => {
+              if (roles && !roles.includes(p.role)) return false;
+              if (where?.email && p.email !== where.email && where.email !== p.email) {
+                // OR branch with mode insensitive — accept match on any email field
+                if (Array.isArray(where.OR)) {
+                  return where.OR.some((clause: any) => {
+                    if (typeof clause.email === 'string') return clause.email.toLowerCase() === p.email.toLowerCase();
+                    if (clause.email?.equals) return clause.email.equals.toLowerCase() === p.email.toLowerCase();
+                    return false;
+                  });
+                }
+                return false;
+              }
+              return true;
+            }) || null
+          );
+        }),
+        findMany: vi.fn(async ({ where }: any) => {
+          const list = options?.pending || [];
+          if (!where?.email) return list;
+          return list.filter((p) => p.email === where.email);
+        }),
+      },
+      membership: {
+        findFirst: vi.fn(async () => null),
+        findMany: vi.fn(async () => []),
+        create: vi.fn(async ({ data }: any) => data),
+      },
+      trackedEvent: createTrackedEventDelegate(),
+    };
+  }
+
+  it('skips commercial trial and Meta for portal PendingInvitation candidates', async () => {
+    const prisma = createPrisma({
+      pending: [
+        {
+          id: 'pi1',
+          email: 'parent@example.com',
+          parishId: 'parish_1',
+          communityId: null,
+          role: 'GUARDIAN',
+        },
+      ],
+    });
+
+    await onAfterSignup({
+      user: { id: 'user_portal', email: 'parent@example.com' },
+      prisma,
+      req: { headers: { host: 'catechis.app' } },
+    });
+
+    const trialUpdate = prisma.userUpdates.find(
+      (u) => u.data?.subscriptionStatus === 'trialing',
+    );
+    expect(trialUpdate).toBeUndefined();
+    expect(sendMetaEventMock).not.toHaveBeenCalled();
+    expect(prisma.membership.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          role: 'GUARDIAN',
+          status: 'INVITED',
+        }),
+      }),
+    );
+  });
+
+  it('starts commercial trial and Meta for normal product signups', async () => {
+    const prisma = createPrisma({ pending: [] });
+
+    await onAfterSignup({
+      user: { id: 'user_commercial', email: 'catechist@example.com' },
+      prisma,
+      req: { headers: { host: 'catechis.app' } },
+    });
+
+    expect(prisma.userUpdates.some((u) => u.data?.subscriptionStatus === 'trialing')).toBe(
+      true,
+    );
+    expect(sendMetaEventMock).toHaveBeenCalled();
+  });
+
+  it('skips trial when request signals source=portal', async () => {
+    const prisma = createPrisma({ pending: [] });
+
+    await onAfterSignup({
+      user: { id: 'user_signal', email: 'signal@example.com' },
+      prisma,
+      req: {
+        headers: { host: 'catechis.app' },
+        query: { source: 'portal' },
+      },
+    });
+
+    expect(prisma.userUpdates.some((u) => u.data?.subscriptionStatus === 'trialing')).toBe(
+      false,
+    );
     expect(sendMetaEventMock).not.toHaveBeenCalled();
   });
 });

@@ -22,6 +22,10 @@ import {
   SUBSCRIPTION_TRIAL_DAYS,
   type PlanLimits,
 } from "../../shared/planLimits";
+import {
+  healFalseTrialForUserIfNeeded,
+  userHasOnlyFamilyMemberships,
+} from "../../payment/portalBillingIsolation";
 
 export type { PlanLimits } from "../../shared/planLimits";
 
@@ -319,6 +323,28 @@ export async function ensureProductTrial(
   });
   if (!user) {
     throw new HttpError(401);
+  }
+
+  // Family-portal-only users never receive / restore commercial product trials.
+  try {
+    const prisma = {
+      membership: context.entities.Membership,
+      user: context.entities.User,
+    };
+    if (await userHasOnlyFamilyMemberships(prisma, userId)) {
+      await healFalseTrialForUserIfNeeded(prisma, userId);
+      return context.entities.User.findUnique({
+        where: { id: userId },
+        select: {
+          subscriptionStatus: true,
+          subscriptionPlan: true,
+          createdAt: true,
+          paymentProcessorUserId: true,
+        },
+      });
+    }
+  } catch {
+    // Non-fatal — fall through to commercial trial logic.
   }
 
   // Stripe-managed or already paid — leave alone.

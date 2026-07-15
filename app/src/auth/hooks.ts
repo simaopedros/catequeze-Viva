@@ -6,6 +6,10 @@ import { config } from 'wasp/server';
 import { PRODUCT_TRIAL_PLAN_ID } from '../shared/pricing';
 import { isMetaCapiConfigured, sendMetaEvent } from '../payment/meta/metaCapi';
 import { logger } from '../server/logger';
+import {
+  healFalseTrialForUserIfNeeded,
+  isPortalSignupCandidate,
+} from '../payment/portalBillingIsolation';
 
 interface OnAfterSignupArgs {
   user: { id: string; email: string | null };
@@ -17,9 +21,10 @@ interface OnAfterSignupArgs {
 /**
  * Runs right after a new user account is created (any auth method).
  *
- * 1. Starts the no-card product trial (Single entitlements for 7 days).
- * 2. Sends Meta CAPI CompleteRegistration (email + Google OAuth signups).
- * 3. Converts any PendingInvitations addressed to the new user's email into
+ * 1. Detects portal-bound signups (family invite / family host / source=portal).
+ * 2. Starts the no-card product trial only for commercial (non-portal) signups.
+ * 3. Sends Meta CAPI CompleteRegistration only for commercial signups.
+ * 4. Converts any PendingInvitations addressed to the new user's email into
  *    INVITED memberships. Keeps the PendingInvitation records alive so the
  *    token-based accept flow (family portal) still works — they are deleted
  *    only when the user explicitly accepts via acceptInvitationByToken.
@@ -31,32 +36,51 @@ export const onAfterSignup = async ({
 }: OnAfterSignupArgs): Promise<void> => {
   if (!user?.id) return;
 
-  // Product trial: access without Stripe until SUBSCRIPTION_TRIAL_DAYS elapse
-  // (window is measured from User.createdAt in getPersonalPlanId).
+  let portalCandidate = false;
   try {
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        subscriptionStatus: 'trialing',
-        subscriptionPlan: PRODUCT_TRIAL_PLAN_ID,
-      },
-    });
-  } catch {
-    // Non-fatal — ensureProductTrial will heal on first workspace/class action.
-  }
-
-  // Never let Meta tracking break signup; always attempt delivery.
-  try {
-    await sendCompleteRegistrationToMeta({
-      userId: user.id,
-      email: user.email,
+    portalCandidate = await isPortalSignupCandidate({
       prisma,
+      email: user.email,
       req,
     });
-  } catch (error) {
-    logger.error('[meta-capi] CompleteRegistration hook failed', {
+  } catch {
+    portalCandidate = false;
+  }
+
+  // Product trial: commercial signups only. Family/portal candidates never
+  // receive subscriptionStatus=trialing / PRODUCT_TRIAL_PLAN_ID.
+  if (!portalCandidate) {
+    try {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          subscriptionStatus: 'trialing',
+          subscriptionPlan: PRODUCT_TRIAL_PLAN_ID,
+        },
+      });
+    } catch {
+      // Non-fatal — ensureProductTrial will heal on first workspace/class action.
+    }
+  }
+
+  // Never fire commercial Meta CompleteRegistration for portal invite signups.
+  if (!portalCandidate) {
+    try {
+      await sendCompleteRegistrationToMeta({
+        userId: user.id,
+        email: user.email,
+        prisma,
+        req,
+      });
+    } catch (error) {
+      logger.error('[meta-capi] CompleteRegistration hook failed', {
+        userId: user.id,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  } else {
+    logger.info('[auth] portal signup candidate — skipped commercial trial and Meta CompleteRegistration', {
       userId: user.id,
-      error: error instanceof Error ? error.message : String(error),
     });
   }
 
@@ -65,7 +89,13 @@ export const onAfterSignup = async ({
 
   try {
     const pending = await prisma.pendingInvitation.findMany({ where: { email } });
-    if (pending.length === 0) return;
+    if (pending.length === 0) {
+      // Still try healing if somehow marked trialing as family-only later.
+      if (portalCandidate) {
+        await healFalseTrialForUserIfNeeded(prisma, user.id).catch(() => {});
+      }
+      return;
+    }
 
     for (const invitation of pending) {
       const existing = await prisma.membership.findFirst({
@@ -82,6 +112,11 @@ export const onAfterSignup = async ({
           status: 'INVITED',
         },
       });
+    }
+
+    // After family memberships exist, clear any accidental commercial trial.
+    if (portalCandidate) {
+      await healFalseTrialForUserIfNeeded(prisma, user.id).catch(() => {});
     }
   } catch {
     // Non-fatal invite linking

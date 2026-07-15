@@ -27,6 +27,7 @@ import {
 import { trackPricingEvent } from "./pricingEvents";
 import { detectCurrency } from "../shared/currency";
 import { sendInitiateCheckoutToMeta } from "./meta/sendInitiateCheckout";
+import { assertCommercialBillingAllowed } from "./portalBillingIsolation";
 
 export type CheckoutSession = {
   sessionUrl: string | null;
@@ -96,6 +97,8 @@ export const generateCheckoutSession: GenerateCheckoutSession<
   if (!context.user) {
     throw new HttpError(401, "Only authenticated users are allowed to perform this operation");
   }
+
+  await assertCommercialBillingAllowed(context);
 
   const input = validateOrThrow(generateCheckoutSessionSchema, rawInput);
   const { planId: paymentPlanId, interval } = input;
@@ -246,6 +249,9 @@ export const getCustomerPortalUrl: GetCustomerPortalUrl<
   if (!context.user) {
     throw new HttpError(401, "Only authenticated users are allowed to perform this operation");
   }
+
+  await assertCommercialBillingAllowed(context);
+
   return paymentProcessor.fetchCustomerPortalUrl({
     userId: context.user.id,
     prismaUserDelegate: context.entities.User,
@@ -298,6 +304,8 @@ export const cancelSubscription: CancelSubscription<
     throw new HttpError(401, "Only authenticated users are allowed to perform this operation.");
   }
 
+  await assertCommercialBillingAllowed(context);
+
   const user = await context.entities.User.findUnique({
     where: { id: context.user.id },
     select: { id: true, paymentProcessorUserId: true, subscriptionStatus: true },
@@ -339,6 +347,8 @@ export const changeSubscriptionPlan: ChangeSubscriptionPlan<
   if (!context.user) {
     throw new HttpError(401, "Only authenticated users are allowed to perform this operation.");
   }
+
+  await assertCommercialBillingAllowed(context);
 
   const { planId: paymentPlanId, interval } = rawInput;
   const userId = context.user.id;
