@@ -114,9 +114,20 @@ function baseProfile(overrides: Record<string, any> = {}) {
   };
 }
 
+/** Wire prisma.$transaction to entities so grant/revoke run atomically in unit tests. */
+function wireTxn(entities: any) {
+  prismaMock.$transaction.mockImplementation(async (fn: any) =>
+    fn({
+      minorPortalConsent: entities.MinorPortalConsent,
+      membership: entities.Membership,
+    }),
+  );
+  return entities;
+}
+
 function makeEntities(overrides: Record<string, any> = {}) {
   const openConsent: any = null;
-  return {
+  const entities = {
     CatechumenProfile: {
       findUnique: vi.fn().mockResolvedValue(baseProfile()),
       findMany: vi.fn().mockResolvedValue([baseProfile()]),
@@ -157,6 +168,7 @@ function makeEntities(overrides: Record<string, any> = {}) {
     ConsentRecord: { findMany: vi.fn(), findFirst: vi.fn(), create: vi.fn(), update: vi.fn() },
     ...overrides,
   };
+  return wireTxn(entities);
 }
 
 describe('minorConsentStateMachine (pure)', () => {
@@ -190,13 +202,26 @@ describe('grantMinorPortalConsent', () => {
     );
     expect(result.success).toBe(true);
     expect(result.idempotent).toBe(false);
+    expect(prismaMock.$transaction).toHaveBeenCalled();
     expect(entities.MinorPortalConsent.create).toHaveBeenCalled();
     const data = entities.MinorPortalConsent.create.mock.calls[0][0].data;
     expect(data.source).toBe(MINOR_CONSENT_SOURCE.GUARDIAN_PORTAL);
     expect(data.status).toBe('ACTIVE');
     expect(data.termVersion).toBe(PORTAL_CONSENT_POLICY_VERSION);
     expect(data.grantedByGuardianId).toBe('gp-1');
+    expect(data.grantedByUserId).toBe(GUARDIAN_USER);
     expect(writeAuditLog).toHaveBeenCalled();
+  });
+
+  it('ignores client termVersion and stamps server policy', async () => {
+    const entities = makeEntities();
+    await grantMinorPortalConsent(
+      { catechumenProfileId: CP, termVersion: 'client-forged-v99' },
+      guardianCtx(entities),
+    );
+    const data = entities.MinorPortalConsent.create.mock.calls[0][0].data;
+    expect(data.termVersion).toBe(PORTAL_CONSENT_POLICY_VERSION);
+    expect(data.termVersion).not.toBe('client-forged-v99');
   });
 
   it('second grant is idempotent when open consent exists', async () => {
@@ -220,13 +245,46 @@ describe('grantMinorPortalConsent', () => {
     expect(entities.MinorPortalConsent.create).not.toHaveBeenCalled();
   });
 
+  it('idempotent open grant still reports membershipReactivated when suspended healed', async () => {
+    const entities = makeEntities();
+    entities.CatechumenProfile.findUnique.mockResolvedValue(
+      baseProfile({ userId: MINOR_USER }),
+    );
+    entities.MinorPortalConsent.findFirst.mockResolvedValue({
+      id: 'mpc-existing',
+      catechumenProfileId: CP,
+      status: 'ACTIVE',
+      revokedAt: null,
+      source: 'GUARDIAN_PORTAL',
+      termVersion: '1',
+      grantedAt: new Date(),
+    });
+    entities.Membership.findFirst.mockResolvedValue({
+      id: 'm-susp',
+      userId: MINOR_USER,
+      parishId: PARISH,
+      role: 'CATECHUMEN',
+      status: 'SUSPENDED',
+    });
+    const result = await grantMinorPortalConsent(
+      { catechumenProfileId: CP },
+      guardianCtx(entities),
+    );
+    expect(result.idempotent).toBe(true);
+    expect(result.membershipReactivated).toBe(true);
+    expect(entities.Membership.update).toHaveBeenCalledWith({
+      where: { id: 'm-susp' },
+      data: { status: 'ACTIVE' },
+    });
+  });
+
   it('staff STAFF_OFFLINE path sets grantedByUserId and null guardian', async () => {
     const entities = makeEntities();
     entities.GuardianProfile.findFirst.mockResolvedValue(null);
-    entities.Membership.findFirst.mockResolvedValue({
-      role: 'PARISH_COORDINATOR',
-      status: 'ACTIVE',
-    });
+    // auth staff check uses context.entities.Membership; reactivate uses txn membership (same mock)
+    entities.Membership.findFirst
+      .mockResolvedValueOnce({ role: 'PARISH_COORDINATOR', status: 'ACTIVE' })
+      .mockResolvedValueOnce(null);
     const result = await grantMinorPortalConsent(
       { catechumenProfileId: CP, source: 'STAFF_OFFLINE' },
       staffCtx(entities),
@@ -257,20 +315,35 @@ describe('grantMinorPortalConsent', () => {
     ).rejects.toMatchObject({ statusCode: 403 });
   });
 
+  it('guardian of other household cannot grant for catechumen on hh-1', async () => {
+    const entities = makeEntities();
+    // GuardianProfile only matches when householdId = profile.householdId; no match → not staff → 403
+    entities.GuardianProfile.findFirst.mockResolvedValue(null);
+    entities.Membership.findFirst.mockResolvedValue(null);
+    await expect(
+      grantMinorPortalConsent({ catechumenProfileId: CP }, guardianCtx(entities)),
+    ).rejects.toMatchObject({ statusCode: 403 });
+    // Ensure lookup was scoped to catechumen household (not "any" guardian profile)
+    expect(entities.GuardianProfile.findFirst).toHaveBeenCalledWith({
+      where: { userId: GUARDIAN_USER, householdId: HH },
+      select: { id: true },
+    });
+    expect(entities.MinorPortalConsent.create).not.toHaveBeenCalled();
+  });
+
   it('re-grant reactivates SUSPENDED CATECHUMEN membership', async () => {
     const entities = makeEntities();
     entities.CatechumenProfile.findUnique.mockResolvedValue(
       baseProfile({ userId: MINOR_USER }),
     );
-    entities.Membership.findFirst
-      // assertCanManage: guardian path hits GuardianProfile first — Membership only used for reactivate
-      .mockResolvedValueOnce({
-        id: 'm-susp',
-        userId: MINOR_USER,
-        parishId: PARISH,
-        role: 'CATECHUMEN',
-        status: 'SUSPENDED',
-      });
+    // Only membership call is reactivate inside txn (guardian auth uses GuardianProfile)
+    entities.Membership.findFirst.mockResolvedValue({
+      id: 'm-susp',
+      userId: MINOR_USER,
+      parishId: PARISH,
+      role: 'CATECHUMEN',
+      status: 'SUSPENDED',
+    });
     const result = await grantMinorPortalConsent(
       { catechumenProfileId: CP },
       guardianCtx(entities),
@@ -288,7 +361,7 @@ describe('revokeMinorPortalConsent', () => {
     vi.clearAllMocks();
   });
 
-  it('revokes open row and suspends ACTIVE CATECHUMEN membership', async () => {
+  it('revokes open row and suspends ACTIVE CATECHUMEN membership only', async () => {
     const entities = makeEntities();
     entities.CatechumenProfile.findUnique.mockResolvedValue(
       baseProfile({ userId: MINOR_USER }),
@@ -311,6 +384,7 @@ describe('revokeMinorPortalConsent', () => {
 
     expect(result.success).toBe(true);
     expect(result.membershipSuspended).toBe(true);
+    expect(prismaMock.$transaction).toHaveBeenCalled();
     expect(entities.MinorPortalConsent.update).toHaveBeenCalledWith({
       where: { id: 'mpc-1' },
       data: expect.objectContaining({
@@ -327,8 +401,40 @@ describe('revokeMinorPortalConsent', () => {
       },
       data: { status: 'SUSPENDED' },
     });
+    // Suspend filter never targets GUARDIAN / staff roles
+    const suspendWhere = entities.Membership.updateMany.mock.calls[0][0].where;
+    expect(suspendWhere.role).toBe('CATECHUMEN');
+    expect(suspendWhere.role).not.toBe('GUARDIAN');
     // No deletes — history preserved
     expect((entities as any).Membership.delete).toBeUndefined();
+    expect((entities as any).Membership.deleteMany).toBeUndefined();
+  });
+
+  it('revoke does not touch non-CATECHUMEN memberships (filter assertion)', async () => {
+    const entities = makeEntities();
+    entities.CatechumenProfile.findUnique.mockResolvedValue(
+      baseProfile({ userId: MINOR_USER }),
+    );
+    entities.MinorPortalConsent.findFirst.mockResolvedValue({
+      id: 'mpc-1',
+      catechumenProfileId: CP,
+      status: 'ACTIVE',
+      revokedAt: null,
+    });
+    entities.Membership.updateMany.mockResolvedValue({ count: 1 });
+
+    await revokeMinorPortalConsent({ catechumenProfileId: CP }, guardianCtx(entities));
+
+    const calls = entities.Membership.updateMany.mock.calls;
+    expect(calls).toHaveLength(1);
+    expect(calls[0][0].where).toEqual({
+      userId: MINOR_USER,
+      role: 'CATECHUMEN',
+      status: 'ACTIVE',
+      parishId: PARISH,
+    });
+    // Explicitly not suspending GUARDIAN (or any other role)
+    expect(JSON.stringify(calls[0][0])).not.toContain('GUARDIAN');
   });
 
   it('revoke with no open consent is idempotent', async () => {
@@ -340,6 +446,26 @@ describe('revokeMinorPortalConsent', () => {
     );
     expect(result.idempotent).toBe(true);
     expect(entities.MinorPortalConsent.update).not.toHaveBeenCalled();
+  });
+
+  it('guardian of other household cannot revoke for catechumen on hh-1', async () => {
+    const entities = makeEntities();
+    entities.GuardianProfile.findFirst.mockResolvedValue(null);
+    entities.Membership.findFirst.mockResolvedValue(null);
+    entities.MinorPortalConsent.findFirst.mockResolvedValue({
+      id: 'mpc-1',
+      status: 'ACTIVE',
+      revokedAt: null,
+    });
+    await expect(
+      revokeMinorPortalConsent({ catechumenProfileId: CP }, guardianCtx(entities)),
+    ).rejects.toMatchObject({ statusCode: 403 });
+    expect(entities.GuardianProfile.findFirst).toHaveBeenCalledWith({
+      where: { userId: GUARDIAN_USER, householdId: HH },
+      select: { id: true },
+    });
+    expect(entities.MinorPortalConsent.update).not.toHaveBeenCalled();
+    expect(entities.Membership.updateMany).not.toHaveBeenCalled();
   });
 });
 
@@ -414,5 +540,6 @@ describe('grant → revoke → re-grant cycle', () => {
     expect(g2.success).toBe(true);
     expect(g2.membershipReactivated).toBe(true);
     expect(entities.MinorPortalConsent.create).toHaveBeenCalledTimes(2);
+    expect(prismaMock.$transaction.mock.calls.length).toBeGreaterThanOrEqual(3);
   });
 });

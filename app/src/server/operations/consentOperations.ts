@@ -2,7 +2,7 @@
  * Household ConsentRecord (LGPD) + MinorPortalConsent ledger (portal account access).
  * PR6: grant / revoke / list minor portal consent; staff offline path; membership suspend on revoke.
  */
-import { HttpError } from 'wasp/server';
+import { HttpError, prisma } from 'wasp/server';
 import {
   requireAuth,
   resolveGuardianHouseholdIds,
@@ -80,6 +80,30 @@ const STAFF_COORD_ROLES = [
   'PERSONAL_OWNER',
 ] as const;
 
+type CatechumenProfileLite = {
+  id: string;
+  firstName?: string;
+  lastName?: string;
+  birthDate?: Date | null;
+  householdId: string | null;
+  parishId: string | null;
+  userId: string | null;
+};
+
+/** Prisma tx / client surface used inside grant/revoke transactions. */
+type ConsentTx = {
+  minorPortalConsent: {
+    findFirst: (args: any) => Promise<any>;
+    create: (args: any) => Promise<any>;
+    update: (args: any) => Promise<any>;
+  };
+  membership: {
+    findFirst: (args: any) => Promise<any>;
+    update: (args: any) => Promise<any>;
+    updateMany: (args: any) => Promise<{ count: number }>;
+  };
+};
+
 async function loadCatechumenProfile(context: any, catechumenProfileId: string) {
   const profile = await context.entities.CatechumenProfile.findUnique({
     where: { id: catechumenProfileId },
@@ -94,7 +118,7 @@ async function loadCatechumenProfile(context: any, catechumenProfileId: string) 
     },
   });
   if (!profile) throw new HttpError(404, 'Catequizando não encontrado.');
-  return profile;
+  return profile as CatechumenProfileLite;
 }
 
 /**
@@ -156,8 +180,8 @@ async function assertCanManageMinorPortalConsent(
   );
 }
 
-async function findOpenConsent(context: any, catechumenProfileId: string) {
-  return context.entities.MinorPortalConsent.findFirst({
+async function findOpenConsent(db: ConsentTx, catechumenProfileId: string) {
+  return db.minorPortalConsent.findFirst({
     where: {
       catechumenProfileId,
       revokedAt: null,
@@ -169,11 +193,11 @@ async function findOpenConsent(context: any, catechumenProfileId: string) {
 
 /** Reactivate CATECHUMEN membership if suspended after re-grant (preserve history — no delete). */
 async function reactivateSuspendedCatechumenMembership(
-  context: any,
+  db: ConsentTx,
   profile: { userId: string | null; parishId: string | null },
 ) {
   if (!profile.userId || !profile.parishId) return null;
-  const m = await context.entities.Membership.findFirst({
+  const m = await db.membership.findFirst({
     where: {
       userId: profile.userId,
       parishId: profile.parishId,
@@ -182,7 +206,7 @@ async function reactivateSuspendedCatechumenMembership(
     },
   });
   if (!m) return null;
-  return context.entities.Membership.update({
+  return db.membership.update({
     where: { id: m.id },
     data: { status: 'ACTIVE' },
   });
@@ -190,11 +214,10 @@ async function reactivateSuspendedCatechumenMembership(
 
 /** Suspend CATECHUMEN membership on revoke; do not delete (history preserved). */
 async function suspendCatechumenMembership(
-  context: any,
+  db: ConsentTx,
   profile: { userId: string | null; parishId: string | null },
 ) {
   if (!profile.userId) return { count: 0 };
-  // If parish known, only that parish; else all CATECHUMEN ACTIVE for user
   const where: any = {
     userId: profile.userId,
     role: 'CATECHUMEN',
@@ -202,11 +225,10 @@ async function suspendCatechumenMembership(
   };
   if (profile.parishId) where.parishId = profile.parishId;
 
-  const result = await context.entities.Membership.updateMany({
+  return db.membership.updateMany({
     where,
     data: { status: 'SUSPENDED' },
   });
-  return result;
 }
 
 function toConsentDto(row: any) {
@@ -225,6 +247,27 @@ function toConsentDto(row: any) {
   };
 }
 
+/**
+ * Run ledger + membership mutation atomically.
+ * Prefer prisma.$transaction (partial unique + membership stay consistent).
+ * Fallback: sequential context.entities (tests / missing prisma).
+ */
+async function runConsentTransaction<T>(
+  context: any,
+  fn: (db: ConsentTx) => Promise<T>,
+): Promise<T> {
+  const runTx = (prisma as any)?.$transaction;
+  if (typeof runTx === 'function') {
+    return runTx.call(prisma, async (tx: any) => fn(tx as ConsentTx));
+  }
+  // Test / degraded path: map PascalCase entities → camelCase prisma surface
+  const e = context.entities;
+  return fn({
+    minorPortalConsent: e.MinorPortalConsent,
+    membership: e.Membership,
+  });
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // grantMinorPortalConsent
 // ═══════════════════════════════════════════════════════════════════════════
@@ -234,6 +277,7 @@ export const grantMinorPortalConsent = async (
     catechumenProfileId: string;
     /** GUARDIAN_PORTAL (default for guardians) | STAFF_OFFLINE (staff proxy) */
     source?: MinorConsentSource | string;
+    /** @deprecated Ignored — server always stamps PORTAL_CONSENT_POLICY_VERSION */
     termVersion?: string;
   },
   context: any,
@@ -267,74 +311,77 @@ export const grantMinorPortalConsent = async (
     source = MINOR_CONSENT_SOURCE.STAFF_OFFLINE;
   }
 
-  const termVersion = args.termVersion || PORTAL_CONSENT_POLICY_VERSION;
+  // Never trust client termVersion — always stamp server policy
+  const termVersion = PORTAL_CONSENT_POLICY_VERSION;
 
-  // Idempotent: already open grant
-  const existing = await findOpenConsent(context, profile.id);
-  if (existing) {
-    // Still try reactivation if re-grant path after suspend race
-    await reactivateSuspendedCatechumenMembership(context, profile);
-    return {
-      success: true,
-      idempotent: true,
-      consent: toConsentDto(existing),
-      membershipReactivated: false,
-    };
-  }
-
-  const createData: any = {
-    catechumenProfileId: profile.id,
-    termVersion,
-    source,
-    status: 'ACTIVE',
-    grantedAt: new Date(),
-    grantedByGuardianId:
-      source === MINOR_CONSENT_SOURCE.GUARDIAN_PORTAL ? actor.guardianProfileId : null,
-    grantedByUserId:
-      source === MINOR_CONSENT_SOURCE.STAFF_OFFLINE ? context.user.id : context.user.id,
-  };
-  // For guardian path, still record acting user for audit trail
-  if (source === MINOR_CONSENT_SOURCE.GUARDIAN_PORTAL) {
-    createData.grantedByUserId = context.user.id;
-  }
-
-  let created: any;
-  try {
-    created = await context.entities.MinorPortalConsent.create({ data: createData });
-  } catch (err: any) {
-    // Partial unique (one open per catechumen) race → re-fetch
-    const raced = await findOpenConsent(context, profile.id);
-    if (raced) {
+  const txnResult = await runConsentTransaction(context, async (db) => {
+    // Idempotent: already open grant — still heal suspended membership in same txn
+    const existing = await findOpenConsent(db, profile.id);
+    if (existing) {
+      const reactivated = await reactivateSuspendedCatechumenMembership(db, profile);
       return {
-        success: true,
+        consent: existing,
         idempotent: true,
-        consent: toConsentDto(raced),
-        membershipReactivated: false,
+        membershipReactivated: !!reactivated,
       };
     }
-    throw err;
-  }
 
-  const reactivated = await reactivateSuspendedCatechumenMembership(context, profile);
+    const createData = {
+      catechumenProfileId: profile.id,
+      termVersion,
+      source,
+      status: 'ACTIVE' as const,
+      grantedAt: new Date(),
+      grantedByGuardianId:
+        source === MINOR_CONSENT_SOURCE.GUARDIAN_PORTAL ? actor.guardianProfileId : null,
+      grantedByUserId: context.user.id,
+    };
 
-  await writeAuditLog(context, 'APPROVE', 'MinorPortalConsent', created.id, {
+    let created: any;
+    try {
+      created = await db.minorPortalConsent.create({ data: createData });
+    } catch (err: any) {
+      // Partial unique (one open per catechumen) race → re-fetch + heal membership
+      const raced = await findOpenConsent(db, profile.id);
+      if (raced) {
+        const reactivated = await reactivateSuspendedCatechumenMembership(db, profile);
+        return {
+          consent: raced,
+          idempotent: true,
+          membershipReactivated: !!reactivated,
+        };
+      }
+      throw err;
+    }
+
+    const reactivated = await reactivateSuspendedCatechumenMembership(db, profile);
+    return {
+      consent: created,
+      idempotent: false,
+      membershipReactivated: !!reactivated,
+    };
+  });
+
+  await writeAuditLog(context, 'APPROVE', 'MinorPortalConsent', txnResult.consent.id, {
     operation: 'portal_minor_consent_granted',
     catechumenProfileId: profile.id,
     source,
     termVersion,
     parishId: profile.parishId,
+    idempotent: txnResult.idempotent,
   });
   logger.info('portal_minor_consent_granted', {
     catechumenProfileId: profile.id,
     source,
-    consentId: created.id,
+    consentId: txnResult.consent.id,
+    idempotent: txnResult.idempotent,
   });
 
   return {
     success: true,
-    idempotent: false,
-    consent: toConsentDto(created),
-    membershipReactivated: !!reactivated,
+    idempotent: txnResult.idempotent,
+    consent: toConsentDto(txnResult.consent),
+    membershipReactivated: txnResult.membershipReactivated,
   };
 };
 
@@ -357,46 +404,55 @@ export const revokeMinorPortalConsent = async (
   const profile = await loadCatechumenProfile(context, args.catechumenProfileId);
   await assertCanManageMinorPortalConsent(context, profile);
 
-  const open = await findOpenConsent(context, profile.id);
-  if (!open) {
+  const txnResult = await runConsentTransaction(context, async (db) => {
+    const open = await findOpenConsent(db, profile.id);
+    if (!open) {
+      return {
+        consent: null as any,
+        idempotent: true,
+        membershipSuspended: false,
+      };
+    }
+
+    const revoked = await db.minorPortalConsent.update({
+      where: { id: open.id },
+      data: {
+        revokedAt: new Date(),
+        status: 'REVOKED',
+        revokeReason: args.reason?.slice(0, 500) || null,
+      },
+    });
+
+    // Suspend minor portal membership only; preserve attendance/docs/history (no deletes)
+    const susp = await suspendCatechumenMembership(db, profile);
+
     return {
-      success: true,
-      idempotent: true,
-      consent: null,
-      membershipSuspended: false,
+      consent: revoked,
+      idempotent: false,
+      membershipSuspended: (susp?.count ?? 0) > 0,
     };
+  });
+
+  if (txnResult.consent) {
+    await writeAuditLog(context, 'REJECT', 'MinorPortalConsent', txnResult.consent.id, {
+      operation: 'portal_minor_consent_revoked',
+      catechumenProfileId: profile.id,
+      reason: args.reason || null,
+      parishId: profile.parishId,
+      membershipsSuspended: txnResult.membershipSuspended ? 1 : 0,
+    });
+    logger.info('portal_minor_consent_revoked', {
+      catechumenProfileId: profile.id,
+      consentId: txnResult.consent.id,
+      membershipSuspended: txnResult.membershipSuspended,
+    });
   }
-
-  const revoked = await context.entities.MinorPortalConsent.update({
-    where: { id: open.id },
-    data: {
-      revokedAt: new Date(),
-      status: 'REVOKED',
-      revokeReason: args.reason?.slice(0, 500) || null,
-    },
-  });
-
-  // Suspend minor portal membership; preserve attendance/docs/history (no deletes)
-  const susp = await suspendCatechumenMembership(context, profile);
-
-  await writeAuditLog(context, 'REJECT', 'MinorPortalConsent', revoked.id, {
-    operation: 'portal_minor_consent_revoked',
-    catechumenProfileId: profile.id,
-    reason: args.reason || null,
-    parishId: profile.parishId,
-    membershipsSuspended: susp?.count ?? 0,
-  });
-  logger.info('portal_minor_consent_revoked', {
-    catechumenProfileId: profile.id,
-    consentId: revoked.id,
-    membershipsSuspended: susp?.count ?? 0,
-  });
 
   return {
     success: true,
-    idempotent: false,
-    consent: toConsentDto(revoked),
-    membershipSuspended: (susp?.count ?? 0) > 0,
+    idempotent: txnResult.idempotent,
+    consent: toConsentDto(txnResult.consent),
+    membershipSuspended: txnResult.membershipSuspended,
   };
 };
 
