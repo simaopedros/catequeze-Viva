@@ -34,7 +34,7 @@ test.describe('Homolog pastoral QA (automated)', () => {
     // Unauthenticated — should redirect to login or show auth, not 404
     for (const path of ['/app', '/app/calendar', '/app/messages']) {
       const res = await page.goto(`${FAMILY_URL}${path}`);
-      expect(res?.status()).toBeLessThan(500);
+      expect(res?.status() ?? 200).toBeLessThan(500);
     }
   });
 

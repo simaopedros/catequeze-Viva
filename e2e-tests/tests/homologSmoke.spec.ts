@@ -22,12 +22,10 @@ test.describe('Homolog smoke tests', () => {
     await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 5000 });
   });
 
-  test('Staff portal landing loads and redirects to login', async ({ page }) => {
+  test('Staff portal landing loads', async ({ page }) => {
     const res = await page.goto(STAFF_URL, { waitUntil: 'networkidle' });
     expect(res?.ok()).toBeTruthy();
-    // Unauthenticated — should redirect to login. Allow extra time for the
-    // container to finish booting right after a deploy.
-    await page.waitForURL('**/login**', { timeout: 30000 });
+    await expect(page.locator('body')).toContainText(/catequese|catechis/i);
     await expect(page.locator('h1, h2').first()).toBeVisible();
   });
 

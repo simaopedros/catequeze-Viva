@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "wasp/client/auth";
@@ -20,6 +20,17 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
   const navigate = useNavigate();
   const { data: user } = useAuth();
   const { t } = useTranslation("navigation");
+
+  useEffect(() => {
+    const isFamilyRoute =
+      location.pathname === "/app" ||
+      location.pathname === "/app/calendar" ||
+      location.pathname.startsWith("/app/messages");
+
+    if (!isFamilyRoute) {
+      navigate("/app", { replace: true });
+    }
+  }, [location.pathname, navigate]);
 
   const navItems = [
     { to: "/app", icon: Home, label: t("dashboard") },
