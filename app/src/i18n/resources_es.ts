@@ -396,6 +396,7 @@ export const attendance_es = {
     "in_progress": "En curso",
     "synced": "Sincronizada",
     "matrix": {
+      "eyebrow": "Asistencia",
       "title": "Matriz de Asistencia",
       "subtitle": "{{catechumens}} · {{meetings}}",
       "new_meeting": "Nuevo encuentro",
@@ -430,6 +431,46 @@ export const attendance_es = {
       "mark_all_absent_confirm_desc": "¿Realmente desea marcar a todos los {{count}} catecúmenos como AUSENTES en el encuentro \"{{meetingTitle}}\"? Esto sobrescribirá los registros individuales.",
       "bulk_success": "¡Asistencias registradas con éxito!",
       "bulk_partial_error": "Error al registrar la asistencia para {{failedCount}} de {{total}} catecúmenos."
+    },
+    "sheet": {
+      "eyebrow": "Lista",
+      "subtitle": "Un encuentro a la vez",
+      "empty": "Sin encuentros en este grupo",
+      "empty_desc": "Cree un encuentro para registrar asistencia.",
+      "load_error": "No se pudo cargar la lista",
+      "untitled": "Sin título",
+      "progress": "{{registered}} de {{total}} registrados",
+      "switch_meeting": "Cambiar encuentro",
+      "mark_all_present": "Marcar todos presentes",
+      "mark_all_present_title": "¿Marcar todos presentes?",
+      "mark_all_present_desc": "Se actualizarán {{count}} catequizandos. Puede corregir excepciones después.",
+      "filter": "Filtrar",
+      "filter_placeholder": "Buscar catequizando...",
+      "no_matches": "Sin resultados.",
+      "refresh": "Actualizar",
+      "open_history": "Ver historial (matriz)",
+      "back_to_sheet": "Volver a la lista",
+      "history_hint": "Matriz histórica — mejor en escritorio.",
+      "save_error": "Error al guardar: {{message}}",
+      "bulk_ok": "Asistencia actualizada.",
+      "bulk_partial": "{{count}} fallos en el lote.",
+      "sync_saving": "Guardando…",
+      "sync_saved": "Guardado",
+      "sync_error": "Error",
+      "pending_sync": "{{count}} pendiente(s) de sincronización",
+      "pending_sync_row": "Pendiente de sincronización",
+      "data_updated_at": "Datos actualizados el {{time}}",
+      "conflict_use_mine": "Usar mi marca",
+      "conflict_keep_server": "Mantener servidor",
+      "conflict_detail": "Local: {{mine}} · Servidor: {{server}}",
+      "change_status": "Cambiar asistencia de {{name}}",
+      "status": {
+        "PRESENT": "Presente",
+        "ABSENT": "Ausente",
+        "LATE": "Tarde",
+        "JUSTIFIED": "Justificado",
+        "none": "Pendiente"
+      }
     }
   } as const;
 
@@ -898,7 +939,9 @@ export const calendar_es = {
       "Vie",
       "Sáb",
       "Dom"
-    ]
+    ],
+    "view_agenda": "Agenda",
+    "view_month": "Mes"
   } as const;
 
 export const catecheticalYears_es = {
@@ -1416,6 +1459,9 @@ export const common_es = {
     "documents": {
       "title": "Documentos",
       "page_subtitle": "Gestionar documentos de los catecúmenos",
+      "family_page_subtitle": "Documentos de su familia y catecúmenos",
+      "family_empty_title": "Ningún catecúmeno en la familia",
+      "family_empty_hint": "Cuando haya catecúmenos asociados a su cuenta, los documentos aparecerán aquí.",
       "no_catechumen_found": "Ningún catecúmeno encontrado",
       "status_pending": "Pendiente",
       "status_rejected": "Rechazado",
@@ -3047,7 +3093,81 @@ export const meetings_es = {
     "delete_confirm_desc": "Esta acción no se puede deshacer. Los registros de asistencia se eliminarán.",
     "delete_error": "Error al eliminar encuentro.",
     "delete_success": "Encuentro eliminado.",
-    "search_content": "Buscar contenido..."
+    "search_content": "Buscar contenido...",
+    "detail_eyebrow": "Encuentro",
+    "detail_not_found": "Encuentro no encontrado",
+    "detail_not_found_desc": "Este encuentro no existe o no tiene acceso.",
+    "detail_info": "Información",
+    "detail_class": "Grupo",
+    "detail_location": "Lugar",
+    "detail_attendance": "Asistencia",
+    "detail_materials": "Materiales y guion",
+    "detail_notes": "Notas internas",
+    "detail_my_attendance": "Su asistencia",
+    "detail_dependents": "Dependientes en este encuentro",
+    "status": {
+      "NOT_STARTED": "No iniciado",
+      "IN_PROGRESS": "En curso",
+      "COMPLETED": "Completado",
+      "CANCELLED": "Cancelado"
+    },
+    "attendance_status": {
+      "PRESENT": "Presente",
+      "ABSENT": "Ausente",
+      "LATE": "Tarde",
+      "JUSTIFIED": "Justificado",
+      "none": "Aún no registrado"
+    },
+    "attendance_progress": "{{registered}} de {{total}} registrados",
+    "action_start": "Iniciar encuentro",
+    "action_complete": "Completar encuentro",
+    "action_cancel": "Cancelar encuentro",
+    "action_attendance": "Pasar lista",
+    "action_justify": "Justificar ausencia",
+    "justify_note_label": "Motivo de la ausencia",
+    "justify_submit": "Enviar justificación",
+    "justify_success": "Justificación registrada.",
+    "justify_error": "Error al justificar: {{message}}",
+    "status_updated": "Estado del encuentro actualizado.",
+    "open_content": "Abrir contenido completo",
+    "open_calendar": "Ver agenda",
+    "open_messages": "Hablar con la catequesis",
+    "content_opening_prayer": "Oración inicial",
+    "content_main": "Contenido",
+    "content_materials": "Materiales",
+    "content_activity": "Actividad",
+    "encounter": {
+      "focus_kind": {
+        "in_progress": "En curso ahora",
+        "today": "Encuentro de hoy",
+        "upcoming": "Próximo encuentro",
+        "recent": "Encuentro reciente",
+        "none": "Sin encuentro"
+      },
+      "empty_title": "Ningún encuentro en foco",
+      "empty_desc": "Cuando haya encuentros en su grupo, aparecerán aquí con la próxima acción.",
+      "more_actions": "Más acciones",
+      "prep_ready": "Guion: {{title}}",
+      "prep_missing": "Preparación pendiente — sin contenido vinculado.",
+      "material": "Material",
+      "attendance_self": "Asistencia: {{status}}",
+      "cta": {
+        "prepare": "Preparar encuentro",
+        "start": "Iniciar encuentro",
+        "continue_attendance": "Continuar lista",
+        "complete": "Completar encuentro",
+        "view": "Ver encuentro",
+        "justify": "Justificar ausencia",
+        "none_calendar": "Ver agenda"
+      },
+      "secondary": {
+        "roteiro": "Abrir guion",
+        "class": "Ver grupo",
+        "messages": "Avisar a las familias",
+        "attendance": "Lista",
+        "calendar": "Agenda"
+      }
+    }
   } as const;
 
 export const messages_es = {
@@ -3140,7 +3260,10 @@ export const messages_es = {
       "create_group": "Crear grupo ({{count}})"
     },
     "send_error": "Error al enviar mensaje",
-    "leave_error": "Error al salir de la conversación"
+    "leave_error": "Error al salir de la conversación",
+    "pending_send": "Pendiente",
+    "retry_send": "Reenviar",
+    "draft_saved": "Borrador guardado en este dispositivo"
   } as const;
 
 export const navigation_es = {

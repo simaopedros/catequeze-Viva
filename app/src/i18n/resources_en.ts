@@ -396,6 +396,7 @@ export const attendance_en = {
     "in_progress": "In progress",
     "synced": "Synced",
     "matrix": {
+      "eyebrow": "Attendance",
       "title": "Attendance Matrix",
       "subtitle": "{{catechumens}} · {{meetings}}",
       "new_meeting": "New meeting",
@@ -430,6 +431,46 @@ export const attendance_en = {
       "mark_all_absent_confirm_desc": "Do you really want to mark all {{count}} catechumens as ABSENT in the meeting \"{{meetingTitle}}\"? This will overwrite individual records.",
       "bulk_success": "Attendance updated successfully!",
       "bulk_partial_error": "Failed to register attendance for {{failedCount}} out of {{total}} catechumens."
+    },
+    "sheet": {
+      "eyebrow": "Roll call",
+      "subtitle": "One meeting at a time",
+      "empty": "No meetings in this class",
+      "empty_desc": "Create a meeting to record attendance.",
+      "load_error": "Could not load attendance sheet",
+      "untitled": "Untitled",
+      "progress": "{{registered}} of {{total}} recorded",
+      "switch_meeting": "Switch meeting",
+      "mark_all_present": "Mark all present",
+      "mark_all_present_title": "Mark all present?",
+      "mark_all_present_desc": "{{count}} catechumens will be updated. You can fix exceptions next.",
+      "filter": "Filter",
+      "filter_placeholder": "Search catechumen...",
+      "no_matches": "No matches.",
+      "refresh": "Refresh",
+      "open_history": "View history (matrix)",
+      "back_to_sheet": "Back to roll call",
+      "history_hint": "Historical matrix — best on desktop.",
+      "save_error": "Save error: {{message}}",
+      "bulk_ok": "Attendance updated.",
+      "bulk_partial": "{{count}} failures in batch.",
+      "sync_saving": "Saving…",
+      "sync_saved": "Saved",
+      "sync_error": "Error",
+      "pending_sync": "{{count}} pending sync",
+      "pending_sync_row": "Pending sync",
+      "data_updated_at": "Data updated at {{time}}",
+      "conflict_use_mine": "Use my mark",
+      "conflict_keep_server": "Keep server",
+      "conflict_detail": "Local: {{mine}} · Server: {{server}}",
+      "change_status": "Change attendance for {{name}}",
+      "status": {
+        "PRESENT": "Present",
+        "ABSENT": "Absent",
+        "LATE": "Late",
+        "JUSTIFIED": "Justified",
+        "none": "Pending"
+      }
     }
   } as const;
 
@@ -898,7 +939,9 @@ export const calendar_en = {
       "Fri",
       "Sat",
       "Sun"
-    ]
+    ],
+    "view_agenda": "Agenda",
+    "view_month": "Month"
   } as const;
 
 export const catecheticalYears_en = {
@@ -1495,6 +1538,9 @@ export const common_en = {
     "documents": {
       "title": "Documents",
       "page_subtitle": "Manage catechumens' documents",
+      "family_page_subtitle": "Documents for your family and catechumens",
+      "family_empty_title": "No catechumens in your family",
+      "family_empty_hint": "When catechumens are linked to your account, their documents will appear here.",
       "no_catechumen_found": "No catechumen found",
       "status_pending": "Pending",
       "status_rejected": "Rejected",
@@ -3047,7 +3093,81 @@ export const meetings_en = {
     "delete_confirm_desc": "This action cannot be undone. Attendance records will be removed.",
     "delete_error": "Error removing meeting.",
     "delete_success": "Meeting removed.",
-    "search_content": "Search content..."
+    "search_content": "Search content...",
+    "detail_eyebrow": "Meeting",
+    "detail_not_found": "Meeting not found",
+    "detail_not_found_desc": "This meeting does not exist or you do not have access.",
+    "detail_info": "Details",
+    "detail_class": "Class",
+    "detail_location": "Location",
+    "detail_attendance": "Attendance",
+    "detail_materials": "Materials and outline",
+    "detail_notes": "Internal notes",
+    "detail_my_attendance": "Your attendance",
+    "detail_dependents": "Dependents in this meeting",
+    "status": {
+      "NOT_STARTED": "Not started",
+      "IN_PROGRESS": "In progress",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "attendance_status": {
+      "PRESENT": "Present",
+      "ABSENT": "Absent",
+      "LATE": "Late",
+      "JUSTIFIED": "Justified",
+      "none": "Not recorded yet"
+    },
+    "attendance_progress": "{{registered}} of {{total}} recorded",
+    "action_start": "Start meeting",
+    "action_complete": "Complete meeting",
+    "action_cancel": "Cancel meeting",
+    "action_attendance": "Take attendance",
+    "action_justify": "Justify absence",
+    "justify_note_label": "Reason for absence",
+    "justify_submit": "Submit justification",
+    "justify_success": "Justification saved.",
+    "justify_error": "Error justifying: {{message}}",
+    "status_updated": "Meeting status updated.",
+    "open_content": "Open full content",
+    "open_calendar": "View calendar",
+    "open_messages": "Message catechesis",
+    "content_opening_prayer": "Opening prayer",
+    "content_main": "Content",
+    "content_materials": "Materials",
+    "content_activity": "Activity",
+    "encounter": {
+      "focus_kind": {
+        "in_progress": "Happening now",
+        "today": "Today's meeting",
+        "upcoming": "Next meeting",
+        "recent": "Recent meeting",
+        "none": "No meeting"
+      },
+      "empty_title": "No meeting in focus",
+      "empty_desc": "When your class has meetings, they appear here with the next action.",
+      "more_actions": "More actions",
+      "prep_ready": "Outline: {{title}}",
+      "prep_missing": "Preparation pending — no linked content yet.",
+      "material": "Material",
+      "attendance_self": "Attendance: {{status}}",
+      "cta": {
+        "prepare": "Prepare meeting",
+        "start": "Start meeting",
+        "continue_attendance": "Continue attendance",
+        "complete": "Complete meeting",
+        "view": "View meeting",
+        "justify": "Justify absence",
+        "none_calendar": "View calendar"
+      },
+      "secondary": {
+        "roteiro": "Open outline",
+        "class": "View class",
+        "messages": "Message families",
+        "attendance": "Attendance",
+        "calendar": "Calendar"
+      }
+    }
   } as const;
 
 export const messages_en = {
@@ -3140,7 +3260,10 @@ export const messages_en = {
       "create_group": "Create group ({{count}})"
     },
     "send_error": "Error sending message",
-    "leave_error": "Error leaving conversation"
+    "leave_error": "Error leaving conversation",
+    "pending_send": "Pending",
+    "retry_send": "Resend",
+    "draft_saved": "Draft saved on this device"
   } as const;
 
 export const navigation_en = {

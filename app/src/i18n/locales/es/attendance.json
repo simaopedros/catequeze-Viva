@@ -18,6 +18,7 @@
   "in_progress": "En curso",
   "synced": "Sincronizada",
   "matrix": {
+    "eyebrow": "Asistencia",
     "title": "Matriz de Asistencia",
     "subtitle": "{{catechumens}} · {{meetings}}",
     "new_meeting": "Nuevo encuentro",

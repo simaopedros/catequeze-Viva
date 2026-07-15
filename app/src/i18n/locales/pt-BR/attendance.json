@@ -18,6 +18,7 @@
   "in_progress": "Em andamento",
   "synced": "Sincronizada",
   "matrix": {
+    "eyebrow": "Presença",
     "title": "Matriz de Presença",
     "subtitle": "{{catechumens}} · {{meetings}}",
     "new_meeting": "Novo encontro",

@@ -18,6 +18,7 @@
   "in_progress": "In progress",
   "synced": "Synced",
   "matrix": {
+    "eyebrow": "Attendance",
     "title": "Attendance Matrix",
     "subtitle": "{{catechumens}} · {{meetings}}",
     "new_meeting": "New meeting",
