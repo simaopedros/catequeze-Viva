@@ -23,6 +23,7 @@ import {
   Download,
   List,
   LayoutGrid,
+  X,
 } from "lucide-react";
 import {
   useQuery,

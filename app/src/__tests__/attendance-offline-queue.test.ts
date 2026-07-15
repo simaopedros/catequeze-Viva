@@ -28,7 +28,6 @@ describe('attendance offline queue helpers', () => {
         {
           catechumenProfileId: 'c',
           outcome: 'skipped',
-          reason: 'unenrolled',
         },
       ],
       '2026-01-01T00:02:00.000Z',
