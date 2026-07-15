@@ -2,7 +2,12 @@ import { HttpError } from 'wasp/server';
 import { validateOrThrow, createSacramentalJourneySchema, updateMilestoneStatusSchema, updateJourneySchema, createTemplateSchema, updateTemplateSchema, updateMilestoneTemplateSchema, deleteMilestoneTemplateSchema, copyTemplateSchema, publishTemplateSchema } from '../validation';
 import { requireAuth, getEffectiveParishRole, isCoordinatorOrAboveRole, getDioceseParishIds } from '../auth/helpers';
 import { ensureSacramentalJourneyForCatechumen } from '../sacramentHelpers';
-import { resolvePortalScope } from './portalScope';
+import {
+  assertDependentInScope,
+  assertHasCapability,
+  resolvePortalScope,
+  type PortalCapability,
+} from './portalScope';
 
 /** Get all effective parish IDs and roles for the current user, including personal workspace */
 async function getEffectiveParishScope(context: any): Promise<{ parishIds: string[]; roles: string[] }> {
@@ -95,7 +100,8 @@ export const listSacramentalJourneys = async (_args: void, context: any) => {
     });
   }
 
-  // Guardian / catechumen: portal scope dependents (or self)
+  // Family branch only when no staff role already handled above (dual-role: staff wins first).
+  // surface PORTAL intentional until host/cookie surface (PR5).
   if (roles.includes('GUARDIAN') || roles.includes('CATECHUMEN')) {
     const portalScope = await resolvePortalScope(context, {
       surface: 'PORTAL',
@@ -104,6 +110,9 @@ export const listSacramentalJourneys = async (_args: void, context: any) => {
     if (portalScope.mode !== 'PORTAL' || portalScope.dependentCatechumenIds.length === 0) {
       return [];
     }
+    const readCap: PortalCapability =
+      portalScope.role === 'CATECHUMEN' ? 'READ_OWN_PROFILE' : 'READ_DEPENDENT';
+    assertHasCapability(portalScope, readCap);
     return context.entities.SacramentalJourney.findMany({
       where: { catechumenProfileId: { in: portalScope.dependentCatechumenIds } },
       include: baseInclude,
@@ -174,16 +183,17 @@ export const getSacramentalJourney = async (args: { id: string }, context: any) 
     if (enrollment) return journey;
   }
 
-  // Guardian / catechumen: portal scope
+  // Guardian / catechumen: portal scope + capability (staff branches already tried above)
   if (roles.includes('GUARDIAN') || roles.includes('CATECHUMEN')) {
     const portalScope = await resolvePortalScope(context, {
       surface: 'PORTAL',
       preferRole: roles.includes('GUARDIAN') ? 'GUARDIAN' : 'CATECHUMEN',
     });
-    if (
-      portalScope.mode === 'PORTAL' &&
-      portalScope.dependentCatechumenIds.includes(journey.catechumenProfile.id)
-    ) {
+    if (portalScope.mode === 'PORTAL') {
+      const readCap: PortalCapability =
+        portalScope.role === 'CATECHUMEN' ? 'READ_OWN_PROFILE' : 'READ_DEPENDENT';
+      assertHasCapability(portalScope, readCap);
+      assertDependentInScope(portalScope, journey.catechumenProfile.id);
       return journey;
     }
   }

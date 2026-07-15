@@ -18,13 +18,18 @@ vi.mock('wasp/server', () => {
 });
 
 import {
+  assertClassInScope,
   assertDependentInScope,
   assertHasCapability,
+  assertPortalMode,
   assertPortalResolved,
   PORTAL_FORBIDDEN_CAPABILITIES,
+  requirePortalScope,
   resolvePortalScope,
+  resolvePortalScopeOrMixedChoice,
   type PortalScope,
 } from '../server/operations/portalScope';
+import { __test__ as meetingTest } from '../server/operations/meetingOperations';
 
 const PARISH = 'parish-1';
 const PARISH2 = 'parish-2';
@@ -301,6 +306,99 @@ describe('assert helpers', () => {
   it('assertHasCapability allows JUSTIFY_ABSENCE', () => {
     expect(() => assertHasCapability(guardianScope, 'JUSTIFY_ABSENCE')).not.toThrow();
   });
+
+  it('assertClassInScope allows enrolled class', () => {
+    expect(() => assertClassInScope(guardianScope, CLASS1)).not.toThrow();
+  });
+
+  it('assertClassInScope rejects class outside allowedClassIds', () => {
+    try {
+      assertClassInScope(guardianScope, CLASS2);
+      expect.fail('should throw');
+    } catch (e: any) {
+      expect(e.statusCode).toBe(403);
+    }
+  });
+
+  it('assertPortalMode rejects STAFF scope', () => {
+    const staffScope: PortalScope = {
+      ...guardianScope,
+      mode: 'STAFF',
+      role: null,
+      capabilities: [],
+    };
+    try {
+      assertPortalMode(staffScope);
+      expect.fail('should throw');
+    } catch (e: any) {
+      expect(e.statusCode).toBe(403);
+    }
+  });
+});
+
+describe('requirePortalScope / MIXED gate', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('requirePortalScope without surface throws 409 for dual-role user', async () => {
+    const entities = baseEntities({
+      Membership: {
+        findMany: vi.fn().mockResolvedValue([
+          { id: 'm-s', parishId: PARISH, role: 'LEAD_CATECHIST', status: 'ACTIVE' },
+          { id: 'm-g', parishId: PARISH, role: 'GUARDIAN', status: 'ACTIVE' },
+        ]),
+      },
+    });
+
+    await expect(requirePortalScope(ctx({ id: USER }, entities))).rejects.toMatchObject({
+      statusCode: 409,
+    });
+  });
+
+  it('resolvePortalScopeOrMixedChoice throws 409 without surface for dual-role', async () => {
+    const entities = baseEntities({
+      Membership: {
+        findMany: vi.fn().mockResolvedValue([
+          { id: 'm-s', parishId: PARISH, role: 'PARISH_COORDINATOR', status: 'ACTIVE' },
+          { id: 'm-g', parishId: PARISH, role: 'GUARDIAN', status: 'ACTIVE' },
+        ]),
+      },
+    });
+
+    try {
+      await resolvePortalScopeOrMixedChoice(ctx({ id: USER }, entities));
+      expect.fail('should throw');
+    } catch (e: any) {
+      expect(e.statusCode).toBe(409);
+      expect(e.data?.code).toBe('MIXED_NEEDS_CHOICE');
+    }
+  });
+
+  it('requirePortalScope with surface PORTAL succeeds for dual-role', async () => {
+    const entities = baseEntities({
+      Membership: {
+        findMany: vi.fn().mockResolvedValue([
+          { id: 'm-s', parishId: PARISH, role: 'LEAD_CATECHIST', status: 'ACTIVE' },
+          { id: 'm-g', parishId: PARISH, role: 'GUARDIAN', status: 'ACTIVE' },
+        ]),
+      },
+      GuardianProfile: {
+        findFirst: vi.fn().mockResolvedValue({ id: GP, householdId: HH }),
+      },
+      CatechumenProfile: {
+        findMany: vi.fn().mockResolvedValue([{ id: CP1 }]),
+        findFirst: vi.fn().mockResolvedValue(null),
+      },
+      ClassEnrollment: {
+        findMany: vi.fn().mockResolvedValue([{ classId: CLASS1 }]),
+      },
+    });
+
+    const scope = await requirePortalScope(ctx({ id: USER }, entities), { surface: 'PORTAL' });
+    expect(scope.mode).toBe('PORTAL');
+    expect(scope.role).toBe('GUARDIAN');
+  });
 });
 
 describe('resolvePortalScope — parish filter', () => {
@@ -325,5 +423,93 @@ describe('resolvePortalScope — parish filter', () => {
         parishId: PARISH2,
       }),
     ).rejects.toMatchObject({ statusCode: 403 });
+  });
+});
+
+describe('assertUserBelongsToClass — fail closed (Issue 1)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  function classEntities(overrides: Record<string, any> = {}) {
+    return {
+      CatechesisClass: {
+        findUnique: vi.fn().mockResolvedValue({
+          parishId: PARISH,
+          catechists: [],
+        }),
+      },
+      Membership: {
+        findFirst: vi.fn().mockResolvedValue({
+          id: 'm-g',
+          parishId: PARISH,
+          role: 'GUARDIAN',
+          status: 'ACTIVE',
+        }),
+        findMany: vi.fn().mockResolvedValue([
+          { id: 'm-g', parishId: PARISH, role: 'GUARDIAN', status: 'ACTIVE' },
+        ]),
+      },
+      Parish: {
+        findFirst: vi.fn().mockResolvedValue(null),
+        findMany: vi.fn().mockResolvedValue([{ id: PARISH, active: true }]),
+      },
+      GuardianProfile: {
+        findFirst: vi.fn().mockResolvedValue({ id: GP, householdId: HH }),
+      },
+      CatechumenProfile: {
+        findMany: vi.fn().mockResolvedValue([{ id: CP1 }]),
+        findFirst: vi.fn().mockResolvedValue(null),
+      },
+      // Only CLASS1 enrolled in portal scope
+      ClassEnrollment: {
+        findMany: vi.fn().mockResolvedValue([{ classId: CLASS1 }]),
+        findFirst: vi.fn().mockResolvedValue({ id: 'enroll-dropped' }), // would wrongly allow if legacy ran
+      },
+      ...overrides,
+    };
+  }
+
+  it('denies class not in allowedClassIds even if legacy enrollment exists', async () => {
+    const entities = classEntities();
+    await expect(
+      meetingTest.assertUserBelongsToClass(ctx({ id: USER }, entities), CLASS2),
+    ).rejects.toMatchObject({ statusCode: 403 });
+    // Legacy enrollment lookup must NOT run once scope resolved
+    expect(entities.ClassEnrollment.findFirst).not.toHaveBeenCalled();
+  });
+
+  it('allows class present in allowedClassIds', async () => {
+    const entities = classEntities();
+    await expect(
+      meetingTest.assertUserBelongsToClass(ctx({ id: USER }, entities), CLASS1),
+    ).resolves.toBeUndefined();
+  });
+});
+
+describe('ENROLLED-only class ids', () => {
+  it('allowedClassIds come only from ClassEnrollment query (status ENROLLED in where)', async () => {
+    const findMany = vi.fn().mockResolvedValue([{ classId: CLASS1 }]);
+    const entities = baseEntities({
+      Membership: {
+        findMany: vi.fn().mockResolvedValue([
+          { id: 'm-g', parishId: PARISH, role: 'GUARDIAN', status: 'ACTIVE' },
+        ]),
+      },
+      GuardianProfile: {
+        findFirst: vi.fn().mockResolvedValue({ id: GP, householdId: HH }),
+      },
+      CatechumenProfile: {
+        findMany: vi.fn().mockResolvedValue([{ id: CP1 }]),
+        findFirst: vi.fn().mockResolvedValue(null),
+      },
+      ClassEnrollment: { findMany },
+    });
+
+    await resolvePortalScope(ctx({ id: USER }, entities), { surface: 'PORTAL' });
+    expect(findMany).toHaveBeenCalled();
+    const arg = findMany.mock.calls[0][0];
+    expect(arg.where.status).toBe('ENROLLED');
+    expect(arg.where.catechumenProfile).toEqual({ householdId: HH });
   });
 });

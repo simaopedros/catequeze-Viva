@@ -61,45 +61,64 @@ async function assertUserBelongsToClass(context: any, classId: string): Promise<
     return;
   }
 
-  // Family roles: portal scope (allowedClassIds from ENROLLED dependents/self)
+  // Family roles: portal scope only (ENROLLED allowedClassIds). Fail closed when resolved & denied.
   if (membership.role === 'GUARDIAN' || membership.role === 'CATECHUMEN') {
     const portalScope = await resolvePortalScope(context, {
       surface: 'PORTAL',
       parishId: classData.parishId,
       preferRole: membership.role === 'GUARDIAN' ? 'GUARDIAN' : 'CATECHUMEN',
     });
-    if (portalScope.mode === 'PORTAL' && portalScope.allowedClassIds.includes(classId)) {
-      return;
-    }
-    // Legacy fallback if scope empty (profile not linked yet)
-    if (membership.role === 'GUARDIAN') {
-      const guardian = await context.entities.GuardianProfile.findFirst({
-        where: { userId: context.user.id },
-        select: { householdId: true },
-      });
-      if (guardian?.householdId) {
-        const enrollment = await context.entities.ClassEnrollment.findFirst({
-          where: {
-            classId,
-            catechumenProfile: { householdId: guardian.householdId },
-          },
-        });
-        if (enrollment) return;
+    if (portalScope.mode === 'PORTAL') {
+      const profileResolved =
+        membership.role === 'GUARDIAN'
+          ? Boolean(portalScope.guardianProfileId || portalScope.householdId)
+          : Boolean(portalScope.catechumenProfileId);
+
+      if (profileResolved) {
+        // Scope resolved: allow only ENROLLED classes in scope — never widen via legacy
+        assertHasCapability(portalScope, 'READ_MEETING');
+        assertClassInScope(portalScope, classId);
+        return;
       }
-      throw new HttpError(403, 'Seus dependentes não estão matriculados nesta turma.');
+
+      // Profile not linked yet: legacy ENROLLED-only fallback (no non-ENROLLED reopen)
+      if (membership.role === 'GUARDIAN') {
+        const guardian = await context.entities.GuardianProfile.findFirst({
+          where: { userId: context.user.id },
+          select: { householdId: true },
+        });
+        if (guardian?.householdId) {
+          const enrollment = await context.entities.ClassEnrollment.findFirst({
+            where: {
+              classId,
+              status: 'ENROLLED',
+              catechumenProfile: { householdId: guardian.householdId },
+            },
+          });
+          if (enrollment) return;
+        }
+        throw new HttpError(403, 'Seus dependentes não estão matriculados nesta turma.');
+      }
+      const enrollment = await context.entities.ClassEnrollment.findFirst({
+        where: {
+          classId,
+          status: 'ENROLLED',
+          catechumenProfile: { userId: context.user.id },
+        },
+      });
+      if (enrollment) return;
+      throw new HttpError(403, 'Você não está matriculado nesta turma.');
     }
-    const enrollment = await context.entities.ClassEnrollment.findFirst({
-      where: {
-        classId,
-        catechumenProfile: { userId: context.user.id },
-      },
-    });
-    if (enrollment) return;
-    throw new HttpError(403, 'Você não está matriculado nesta turma.');
+    throw new HttpError(403, 'Você não tem acesso a esta turma.');
   }
 
   throw new HttpError(403, 'Você não tem acesso a esta turma.');
 }
+
+/** Exported for unit tests of family class ACL (fail-closed portal scope). */
+export const __test__ = {
+  assertUserBelongsToClass,
+};
 
 export const listMeetings = async (args: { classId: string }, context: any) => {
   if (!context.user) throw new HttpError(401);
@@ -755,20 +774,12 @@ export const getMeeting = async (args: { id: string }, context: any): Promise<an
 
   if (!meeting) throw new HttpError(404, 'Encontro não encontrado.');
 
+  // Family: assertUserBelongsToClass already enforces allowedClassIds + READ_MEETING
   await assertUserBelongsToClass(context, meeting.classId);
 
   const role = await getUserRole(context);
   const isStaff = isCatechistOrAbove(role);
   const isAdmin = Boolean(context.user.isAdmin);
-
-  // Family portal: require READ_MEETING capability when pure family role
-  if (!isStaff && !isAdmin && (role === 'GUARDIAN' || role === 'CATECHUMEN')) {
-    const portalScope = await resolvePortalScope(context, {
-      surface: 'PORTAL',
-      preferRole: role === 'GUARDIAN' ? 'GUARDIAN' : 'CATECHUMEN',
-    });
-    assertHasCapability(portalScope, 'READ_MEETING');
-  }
 
   const locationHint =
     meeting.class?.location ||

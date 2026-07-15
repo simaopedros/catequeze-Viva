@@ -253,27 +253,33 @@ export async function resolvePortalScope(
   let minorPortalAccessBlocked = false;
 
   if (role === 'GUARDIAN') {
-    // Use findFirst / findMany — schema may still be @unique on userId until PR4 multi-household
-    const guardianWhere: Record<string, unknown> = {
-      userId: context.user.id,
-    };
+    // findFirst until PR4 multi-household (@@unique([userId, householdId])).
+    // Prefer: explicit householdId → household on workspace parish → any linked profile.
+    let guardian: { id: string; householdId: string | null } | null = null;
+
     if (householdId) {
-      guardianWhere.householdId = householdId;
-    } else {
-      // Prefer household belonging to this parish when possible
-      guardianWhere.OR = [
-        { household: { parishId: workspaceId } },
-        { householdId: { not: null } },
-      ];
+      guardian = await context.entities.GuardianProfile.findFirst({
+        where: { userId: context.user.id, householdId },
+        select: { id: true, householdId: true },
+      });
     }
 
-    const guardian =
-      (await context.entities.GuardianProfile.findFirst({
-        where: householdId
-          ? { userId: context.user.id, householdId }
-          : { userId: context.user.id },
+    if (!guardian) {
+      guardian = await context.entities.GuardianProfile.findFirst({
+        where: {
+          userId: context.user.id,
+          household: { parishId: workspaceId },
+        },
         select: { id: true, householdId: true },
-      })) || null;
+      });
+    }
+
+    if (!guardian) {
+      guardian = await context.entities.GuardianProfile.findFirst({
+        where: { userId: context.user.id, householdId: { not: null } },
+        select: { id: true, householdId: true },
+      });
+    }
 
     if (guardian) {
       guardianProfileId = guardian.id;
@@ -350,7 +356,8 @@ export async function resolvePortalScope(
     allowedClassIds,
     capabilities: capabilitiesForPortalRole(role),
     minorPortalAccessBlocked,
-    parishSponsoredEssential: true, // family roles: essential ops ignore inactive TenantBilling
+    // Consumed by billing isolation (PR3): essential portal ops ignore inactive TenantBilling
+    parishSponsoredEssential: true,
   };
 }
 
@@ -399,9 +406,11 @@ export function assertClassInScope(scope: PortalScope, classId: string): void {
 }
 
 /**
- * Resolve portal scope for family-facing ops: forces PORTAL when caller did not pass surface,
- * but still returns MIXED → 409 when user has both surfaces and opts.surface was not set.
- * Pass `surface: 'PORTAL'` explicitly for pure portal endpoints.
+ * Resolve and require PORTAL mode.
+ * When `surface` is omitted and the user has staff+family roles → MIXED_NEEDS_CHOICE → 409.
+ * Pass `surface: 'PORTAL'` to force family capabilities for dual-role users (common for
+ * family-only list/write ops until host/cookie surface lands in PR5).
+ * Dual-role staff list/write paths should keep using staff role branches first, not this helper.
  */
 export async function requirePortalScope(
   context: any,
@@ -412,10 +421,28 @@ export async function requirePortalScope(
     surface?: 'PORTAL' | 'STAFF';
   },
 ): Promise<PortalScope> {
-  const scope = await resolvePortalScope(context, {
-    ...opts,
-    surface: opts?.surface ?? 'PORTAL',
-  });
+  const scope = await resolvePortalScope(context, opts);
   assertPortalMode(scope);
+  return scope;
+}
+
+/**
+ * Surface-choice gate for portal bootstrap / shell: never forces PORTAL.
+ * Dual-role users without surface get HTTP 409 MIXED_NEEDS_CHOICE.
+ * Pure family → PORTAL scope; pure staff → throws 403 via assertPortalMode.
+ */
+export async function resolvePortalScopeOrMixedChoice(
+  context: any,
+  opts?: {
+    parishId?: string;
+    householdId?: string;
+    preferRole?: PortalRole;
+  },
+): Promise<PortalScope> {
+  const scope = await resolvePortalScope(context, opts);
+  assertPortalResolved(scope);
+  if (scope.mode === 'STAFF') {
+    throw new HttpError(403, 'Esta operação é exclusiva do portal da família.');
+  }
   return scope;
 }

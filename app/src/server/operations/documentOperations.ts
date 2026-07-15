@@ -11,6 +11,7 @@ import {
   assertDependentInScope,
   assertHasCapability,
   resolvePortalScope,
+  type PortalCapability,
 } from './portalScope';
 
 export const listDocuments = async (_args: void, context: any) => {
@@ -100,12 +101,19 @@ export const listDocuments = async (_args: void, context: any) => {
     });
   }
 
-  // Guardian / catechumen: portal scope (dependents or self only)
+  // Family branch only when no staff role already handled above.
+  // surface PORTAL is intentional for dual-role until host/cookie (PR5); staff branches win first.
   if (roles.includes('GUARDIAN') || roles.includes('CATECHUMEN')) {
-    const portalScope = await resolvePortalScope(context, { surface: 'PORTAL' });
+    const portalScope = await resolvePortalScope(context, {
+      surface: 'PORTAL',
+      preferRole: roles.includes('GUARDIAN') ? 'GUARDIAN' : 'CATECHUMEN',
+    });
     if (portalScope.mode !== 'PORTAL' || portalScope.dependentCatechumenIds.length === 0) {
       return [];
     }
+    const readCap: PortalCapability =
+      portalScope.role === 'CATECHUMEN' ? 'READ_OWN_PROFILE' : 'READ_DEPENDENT';
+    assertHasCapability(portalScope, readCap);
     return context.entities.Document.findMany({
       where: {
         catechumenProfileId: { in: portalScope.dependentCatechumenIds },

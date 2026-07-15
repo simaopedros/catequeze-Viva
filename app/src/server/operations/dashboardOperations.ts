@@ -75,8 +75,11 @@ async function resolveMeetingClassScope(params: {
 
   if (pureFamily) {
     try {
+      // Pure family only (no staff roles). Dual-role users keep catechist/coordinator scope above.
+      // surface PORTAL: intentional collapse until host/cookie surface (PR5).
       const portalScope = await resolvePortalScope(context, { surface: 'PORTAL' });
       if (portalScope.mode === 'PORTAL') {
+        // Empty allowedClassIds is valid (no enrollments) — never fall through to parish-wide
         return { kind: 'classIds', classIds: portalScope.allowedClassIds };
       }
     } catch {
