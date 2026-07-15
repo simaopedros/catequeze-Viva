@@ -58,8 +58,37 @@ function displayName(
 }
 
 /**
+ * Email match for profile lookup: DB-side filter on the invite email.
+ * Profiles may store mixed-case addresses — use case-insensitive equality
+ * (Prisma `mode: 'insensitive'`) so we never scan a truncated parish page.
+ * Still re-normalize in memory to collapse any edge rows that differ only by
+ * whitespace after trim.
+ */
+function emailWhereEqualsNormalized(emailNormalized: string) {
+  return {
+    email: {
+      equals: emailNormalized,
+      mode: 'insensitive' as const,
+    },
+  };
+}
+
+function filterNormalizedEmailMatches<T extends { email?: string | null }>(
+  rows: T[] | null | undefined,
+  emailNormalized: string,
+): T[] {
+  return (rows || []).filter(
+    (p) => p.email && normalizeEmail(p.email) === emailNormalized,
+  );
+}
+
+/**
  * Resolve target profile for a legacy family invite.
  * Unambiguous only when exactly one matching profile exists in the parish.
+ *
+ * IMPORTANT: query by email (case-insensitive) within parish scope — never
+ * `take` a parish page and filter email in memory (false NO_PROFILE / false
+ * unambiguous under multi-class parishes).
  */
 export async function resolveLegacyInviteProfile(
   entities: any,
@@ -80,11 +109,13 @@ export async function resolveLegacyInviteProfile(
   }
 
   const emailNormalized = normalizeEmail(pending.email);
+  const emailEq = emailWhereEqualsNormalized(emailNormalized);
 
   if (pending.role === 'GUARDIAN') {
+    // Full match set for this email in the parish — no artificial take cap.
     const profiles = await entities.GuardianProfile.findMany({
       where: {
-        household: { parishId: pending.parishId },
+        AND: [emailEq, { household: { parishId: pending.parishId } }],
       },
       select: {
         id: true,
@@ -94,12 +125,9 @@ export async function resolveLegacyInviteProfile(
         householdId: true,
         userId: true,
       },
-      take: 50,
     });
 
-    const matches = (profiles || []).filter(
-      (p: any) => p.email && normalizeEmail(p.email) === emailNormalized,
-    );
+    const matches = filterNormalizedEmailMatches(profiles, emailNormalized);
 
     if (matches.length === 0) {
       return {
@@ -139,12 +167,17 @@ export async function resolveLegacyInviteProfile(
     };
   }
 
-  // CATECHUMEN
+  // CATECHUMEN — email-scoped full set in parish (direct parishId or via household)
   const catechumens = await entities.CatechumenProfile.findMany({
     where: {
-      OR: [
-        { parishId: pending.parishId },
-        { household: { parishId: pending.parishId } },
+      AND: [
+        emailEq,
+        {
+          OR: [
+            { parishId: pending.parishId },
+            { household: { parishId: pending.parishId } },
+          ],
+        },
       ],
     },
     select: {
@@ -155,12 +188,9 @@ export async function resolveLegacyInviteProfile(
       householdId: true,
       parishId: true,
     },
-    take: 50,
   });
 
-  const matches = (catechumens || []).filter(
-    (p: any) => p.email && normalizeEmail(p.email) === emailNormalized,
-  );
+  const matches = filterNormalizedEmailMatches(catechumens, emailNormalized);
 
   if (matches.length === 0) {
     return {
@@ -189,6 +219,15 @@ export async function resolveLegacyInviteProfile(
     communityId: pending.communityId ?? null,
     profileDisplayName: displayName(c.firstName, c.lastName, c.email),
   };
+}
+
+function isUniqueConstraintError(err: unknown): boolean {
+  if (!err || typeof err !== 'object') return false;
+  const e = err as { code?: string; meta?: { target?: string[] }; message?: string };
+  if (e.code === 'P2002') return true;
+  // Fallback when Prisma error is wrapped / message-only in tests
+  const msg = String(e.message || err);
+  return /unique constraint|tokenHash/i.test(msg) && /unique|P2002/i.test(msg);
 }
 
 export type MigrateOneResult =
@@ -252,40 +291,62 @@ export async function migrateOnePendingToPortal(
   const now = new Date();
   const status = expiresAt.getTime() < now.getTime() ? 'EXPIRED' : 'PENDING';
 
-  const created = await entities.PortalInvitation.create({
-    data: {
-      id: randomUUID(),
-      parishId: pending.parishId,
-      communityId: resolved.communityId,
-      householdId: resolved.householdId,
-      role: resolved.role,
-      guardianProfileId: resolved.guardianProfileId,
-      catechumenProfileId: resolved.catechumenProfileId,
-      emailNormalized,
-      tokenHash,
-      status,
-      invitedById: pending.invitedById ?? null,
-      expiresAt,
-      lastSentAt: pending.createdAt
-        ? pending.createdAt instanceof Date
-          ? pending.createdAt
-          : new Date(pending.createdAt)
-        : now,
-      resendCount: 0,
-      updatedAt: now,
-    },
-  });
+  try {
+    const created = await entities.PortalInvitation.create({
+      data: {
+        id: randomUUID(),
+        parishId: pending.parishId,
+        communityId: resolved.communityId,
+        householdId: resolved.householdId,
+        role: resolved.role,
+        guardianProfileId: resolved.guardianProfileId,
+        catechumenProfileId: resolved.catechumenProfileId,
+        emailNormalized,
+        tokenHash,
+        status,
+        invitedById: pending.invitedById ?? null,
+        expiresAt,
+        lastSentAt: pending.createdAt
+          ? pending.createdAt instanceof Date
+            ? pending.createdAt
+            : new Date(pending.createdAt)
+          : now,
+        resendCount: 0,
+        updatedAt: now,
+      },
+    });
 
-  return {
-    status: 'migrated',
-    portalInvitationId: created.id,
-    pendingInvitationId: pending.id,
-  };
+    return {
+      status: 'migrated',
+      portalInvitationId: created.id,
+      pendingInvitationId: pending.id,
+    };
+  } catch (err) {
+    // Concurrent dual-read: another request created the same tokenHash first.
+    if (isUniqueConstraintError(err)) {
+      const raced = await entities.PortalInvitation.findUnique({
+        where: { tokenHash },
+        select: { id: true },
+      });
+      if (raced?.id) {
+        return {
+          status: 'skipped_already',
+          portalInvitationId: raced.id,
+          pendingInvitationId: pending.id,
+        };
+      }
+    }
+    throw err;
+  }
 }
 
 /**
  * Enqueue a migration review row (or no-op if entity missing) + optional audit via caller.
  * Never include token in metadata.
+ *
+ * Idempotent: if an open (resolvedAt null) review already exists for the same
+ * pendingInvitationId + reason (or guardianProfileId + reason for orphan
+ * guardians), returns the existing id without creating a duplicate.
  */
 export async function enqueueMigrationReview(
   entities: any,
@@ -303,6 +364,34 @@ export async function enqueueMigrationReview(
   if (!entities?.PortalInviteMigrationReview?.create) {
     return null;
   }
+
+  // Dedupe open reviews for the same pending invite + reason (or orphan guardian).
+  if (entities.PortalInviteMigrationReview.findFirst) {
+    const dedupeWhere: any = {
+      reason: row.reason,
+      resolvedAt: null,
+    };
+    if (row.pendingInvitationId) {
+      dedupeWhere.pendingInvitationId = row.pendingInvitationId;
+    } else if (row.guardianProfileId) {
+      dedupeWhere.guardianProfileId = row.guardianProfileId;
+    }
+
+    if (row.pendingInvitationId || row.guardianProfileId) {
+      try {
+        const existing = await entities.PortalInviteMigrationReview.findFirst({
+          where: dedupeWhere,
+          select: { id: true },
+        });
+        if (existing?.id) {
+          return existing.id as string;
+        }
+      } catch {
+        /* fall through to create */
+      }
+    }
+  }
+
   const created = await entities.PortalInviteMigrationReview.create({
     data: {
       id: randomUUID(),

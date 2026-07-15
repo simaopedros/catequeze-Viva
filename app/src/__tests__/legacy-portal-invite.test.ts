@@ -62,6 +62,7 @@ vi.mock('@prisma/client', () => ({
 }));
 
 import {
+  enqueueMigrationReview,
   findOrMigratePortalInvitationByToken,
   hashPortalInviteToken,
   migrateOnePendingToPortal,
@@ -74,21 +75,28 @@ const GP = 'gp-1';
 const HH = 'hh-1';
 const SECRET_TOKEN = 'legacy-cleartext-token-xyz';
 
+function expectEmailScopedGuardianQuery(findMany: ReturnType<typeof vi.fn>) {
+  expect(findMany).toHaveBeenCalled();
+  const arg = findMany.mock.calls[0][0];
+  expect(arg.take).toBeUndefined();
+  const whereJson = JSON.stringify(arg.where);
+  expect(whereJson).toContain('insensitive');
+  expect(whereJson).toContain('mom@example.com');
+  expect(whereJson).toContain(PARISH);
+}
+
 describe('resolveLegacyInviteProfile', () => {
   it('returns unambiguous when single guardian email match in parish', async () => {
-    const entities = {
-      GuardianProfile: {
-        findMany: vi.fn().mockResolvedValue([
-          {
-            id: GP,
-            email: 'Mom@Example.com',
-            firstName: 'Mom',
-            lastName: 'A',
-            householdId: HH,
-          },
-        ]),
+    const findMany = vi.fn().mockResolvedValue([
+      {
+        id: GP,
+        email: 'Mom@Example.com',
+        firstName: 'Mom',
+        lastName: 'A',
+        householdId: HH,
       },
-    };
+    ]);
+    const entities = { GuardianProfile: { findMany } };
     const r = await resolveLegacyInviteProfile(entities, {
       email: 'mom@example.com',
       parishId: PARISH,
@@ -99,6 +107,54 @@ describe('resolveLegacyInviteProfile', () => {
       expect(r.guardianProfileId).toBe(GP);
       expect(r.householdId).toBe(HH);
     }
+    expectEmailScopedGuardianQuery(findMany);
+  });
+
+  it('queries by email (no parish take-before-filter) so matches outside first page are found', async () => {
+    // Simulates DB returning only email-scoped rows even if parish has 100+ profiles.
+    const findMany = vi.fn().mockResolvedValue([
+      {
+        id: 'gp-late',
+        email: 'late@example.com',
+        firstName: 'Late',
+        lastName: 'Match',
+        householdId: HH,
+      },
+    ]);
+    const entities = { GuardianProfile: { findMany } };
+    const r = await resolveLegacyInviteProfile(entities, {
+      email: 'late@example.com',
+      parishId: PARISH,
+      role: 'GUARDIAN',
+    });
+    expect(r.kind).toBe('unambiguous');
+    if (r.kind === 'unambiguous') {
+      expect(r.guardianProfileId).toBe('gp-late');
+    }
+    const arg = findMany.mock.calls[0][0];
+    expect(arg.take).toBeUndefined();
+    expect(JSON.stringify(arg.where)).toContain('late@example.com');
+  });
+
+  it('counts all same-email matches even when many other profiles exist (no false unambiguous)', async () => {
+    const findMany = vi.fn().mockResolvedValue([
+      { id: 'gp-a', email: 'same@x.com', householdId: 'h1', firstName: 'A', lastName: null },
+      { id: 'gp-b', email: 'same@x.com', householdId: 'h2', firstName: 'B', lastName: null },
+    ]);
+    const entities = { GuardianProfile: { findMany } };
+    const r = await resolveLegacyInviteProfile(entities, {
+      email: 'same@x.com',
+      parishId: PARISH,
+      role: 'GUARDIAN',
+    });
+    expect(r.kind).toBe('ambiguous');
+    if (r.kind === 'ambiguous') {
+      expect(r.reason).toBe('AMBIGUOUS_EMAIL_MULTI_PROFILE');
+      expect(r.candidateIds).toEqual(['gp-a', 'gp-b']);
+    }
+    // Email is in the where clause so we never only see one of two from a page cut-off.
+    expect(JSON.stringify(findMany.mock.calls[0][0].where)).toContain('same@x.com');
+    expect(findMany.mock.calls[0][0].take).toBeUndefined();
   });
 
   it('does not auto-link ambiguous multi-profile email', async () => {
@@ -213,6 +269,85 @@ describe('migrateOnePendingToPortal', () => {
     expect(result.status).toBe('review');
     expect(create).not.toHaveBeenCalled();
   });
+
+  it('on tokenHash unique race re-reads and returns skipped_already (no throw)', async () => {
+    const tokenHash = hashPortalInviteToken(SECRET_TOKEN);
+    const create = vi.fn().mockRejectedValue({ code: 'P2002', meta: { target: ['tokenHash'] } });
+    const findUnique = vi
+      .fn()
+      .mockResolvedValueOnce(null) // pre-create miss
+      .mockResolvedValueOnce({ id: 'inv-winner' }); // post-race re-read
+    const entities = {
+      PortalInvitation: { findUnique, create },
+      GuardianProfile: {
+        findMany: vi.fn().mockResolvedValue([
+          { id: GP, email: 'g@example.com', firstName: 'G', lastName: 'P', householdId: HH },
+        ]),
+      },
+    };
+    const result = await migrateOnePendingToPortal(entities, {
+      id: 'pend-1',
+      email: 'g@example.com',
+      token: SECRET_TOKEN,
+      expiresAt: new Date(Date.now() + 86400000),
+      parishId: PARISH,
+      role: 'GUARDIAN',
+    });
+    expect(result).toEqual({
+      status: 'skipped_already',
+      portalInvitationId: 'inv-winner',
+      pendingInvitationId: 'pend-1',
+    });
+    expect(findUnique).toHaveBeenLastCalledWith({
+      where: { tokenHash },
+      select: { id: true },
+    });
+  });
+});
+
+describe('enqueueMigrationReview dedupe', () => {
+  it('does not create a second open review for same pendingInvitationId + reason', async () => {
+    const create = vi.fn().mockResolvedValue({ id: 'rev-new' });
+    const findFirst = vi.fn().mockResolvedValue({ id: 'rev-existing' });
+    const entities = {
+      PortalInviteMigrationReview: { create, findFirst },
+    };
+    const id1 = await enqueueMigrationReview(entities, {
+      pendingInvitationId: 'pend-amb',
+      reason: 'AMBIGUOUS_EMAIL_MULTI_PROFILE',
+      emailNormalized: 'same@x.com',
+      parishId: PARISH,
+      role: 'GUARDIAN',
+      candidateProfileIds: ['gp-a', 'gp-b'],
+    });
+    expect(id1).toBe('rev-existing');
+    expect(create).not.toHaveBeenCalled();
+    expect(findFirst).toHaveBeenCalledWith({
+      where: {
+        reason: 'AMBIGUOUS_EMAIL_MULTI_PROFILE',
+        resolvedAt: null,
+        pendingInvitationId: 'pend-amb',
+      },
+      select: { id: true },
+    });
+  });
+
+  it('creates when no open review exists', async () => {
+    const create = vi.fn().mockImplementation(async ({ data }: any) => ({ id: data.id }));
+    const findFirst = vi.fn().mockResolvedValue(null);
+    const entities = {
+      PortalInviteMigrationReview: { create, findFirst },
+    };
+    const id = await enqueueMigrationReview(entities, {
+      pendingInvitationId: 'pend-amb',
+      reason: 'NO_PROFILE',
+      emailNormalized: 'x@y.com',
+      parishId: PARISH,
+      role: 'GUARDIAN',
+    });
+    expect(id).toBeTruthy();
+    expect(create).toHaveBeenCalledOnce();
+  });
 });
 
 describe('findOrMigratePortalInvitationByToken dual-read', () => {
@@ -285,6 +420,7 @@ describe('findOrMigratePortalInvitationByToken dual-read', () => {
 
   it('does not migrate ambiguous multi-profile and enqueues review', async () => {
     const reviewCreate = vi.fn().mockResolvedValue({ id: 'rev-1' });
+    const reviewFindFirst = vi.fn().mockResolvedValue(null);
     const entities = {
       PortalInvitation: {
         findUnique: vi.fn().mockResolvedValue(null),
@@ -306,7 +442,7 @@ describe('findOrMigratePortalInvitationByToken dual-read', () => {
           { id: 'gp-b', email: 'same@x.com', householdId: 'h2' },
         ]),
       },
-      PortalInviteMigrationReview: { create: reviewCreate },
+      PortalInviteMigrationReview: { create: reviewCreate, findFirst: reviewFindFirst },
     };
     const found = await findOrMigratePortalInvitationByToken(entities, SECRET_TOKEN);
     expect(found.inv).toBeNull();
@@ -314,6 +450,38 @@ describe('findOrMigratePortalInvitationByToken dual-read', () => {
     const meta = JSON.stringify(reviewCreate.mock.calls[0][0].data);
     expect(meta).not.toContain(SECRET_TOKEN);
     expect(entities.PortalInvitation.create).not.toHaveBeenCalled();
+  });
+
+  it('dedupes review on repeated dual-read of same ambiguous token', async () => {
+    const reviewCreate = vi.fn().mockResolvedValue({ id: 'rev-new' });
+    const reviewFindFirst = vi.fn().mockResolvedValue({ id: 'rev-existing' });
+    const entities = {
+      PortalInvitation: {
+        findUnique: vi.fn().mockResolvedValue(null),
+        create: vi.fn(),
+      },
+      PendingInvitation: {
+        findUnique: vi.fn().mockResolvedValue({
+          id: 'pend-amb',
+          email: 'same@x.com',
+          token: SECRET_TOKEN,
+          expiresAt: new Date(Date.now() + 86400000),
+          parishId: PARISH,
+          role: 'GUARDIAN',
+        }),
+      },
+      GuardianProfile: {
+        findMany: vi.fn().mockResolvedValue([
+          { id: 'gp-a', email: 'same@x.com', householdId: 'h1' },
+          { id: 'gp-b', email: 'same@x.com', householdId: 'h2' },
+        ]),
+      },
+      PortalInviteMigrationReview: { create: reviewCreate, findFirst: reviewFindFirst },
+    };
+    await findOrMigratePortalInvitationByToken(entities, SECRET_TOKEN);
+    await findOrMigratePortalInvitationByToken(entities, SECRET_TOKEN);
+    expect(reviewCreate).not.toHaveBeenCalled();
+    expect(reviewFindFirst).toHaveBeenCalled();
   });
 });
 
