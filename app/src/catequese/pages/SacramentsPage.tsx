@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
-import { AppShell } from "../AppShell";
 import { Button } from "../../client/components/ui/button";
 import { Badge } from "../../client/components/ui/badge";
 import {
@@ -310,16 +309,14 @@ export default function SacramentsPage() {
 
   if (loading)
     return (
-      <AppShell>
-        <div className="space-y-6 animate-pulse">
-          <div className="h-8 w-56 bg-muted rounded" />
-          <div className="grid gap-4 md:grid-cols-2">
-            {[1, 2].map((i) => (
-              <div key={i} className="h-48 rounded-sm bg-muted" />
-            ))}
-          </div>
+      <div className="space-y-6 animate-pulse">
+        <div className="h-8 w-56 bg-muted rounded" />
+        <div className="grid gap-4 md:grid-cols-2">
+          {[1, 2].map((i) => (
+            <div key={i} className="h-48 rounded-sm bg-muted" />
+          ))}
         </div>
-      </AppShell>
+      </div>
     );
 
   return (

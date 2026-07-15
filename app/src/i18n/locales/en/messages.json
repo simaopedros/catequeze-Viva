@@ -62,9 +62,18 @@
     "title_type": "New Conversation",
     "title_contacts": "Select Participants",
     "types": {
-      "direct": { "label": "Direct Message", "desc": "One-to-one chat" },
-      "group": { "label": "Group", "desc": "Group chat" },
-      "announcement": { "label": "Announcement Channel", "desc": "Only coordinators can post" }
+      "direct": {
+        "label": "Direct Message",
+        "desc": "One-to-one chat"
+      },
+      "group": {
+        "label": "Group",
+        "desc": "Group chat"
+      },
+      "announcement": {
+        "label": "Announcement Channel",
+        "desc": "Only coordinators can post"
+      }
     },
     "group_name_placeholder": "Group name...",
     "search_contacts": "Search contacts...",
@@ -77,7 +86,10 @@
     "creating": "Creating...",
     "start_direct": "Start conversation",
     "create_group": "Create group ({{count}})"
-    },
+  },
   "send_error": "Error sending message",
-  "leave_error": "Error leaving conversation"
+  "leave_error": "Error leaving conversation",
+  "pending_send": "Pending",
+  "retry_send": "Resend",
+  "draft_saved": "Draft saved on this device"
 }

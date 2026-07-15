@@ -191,6 +191,9 @@
   "documents": {
     "title": "Documentos",
     "page_subtitle": "Gestionar documentos de los catecúmenos",
+    "family_page_subtitle": "Documentos de su familia y catecúmenos",
+    "family_empty_title": "Ningún catecúmeno en la familia",
+    "family_empty_hint": "Cuando haya catecúmenos asociados a su cuenta, los documentos aparecerán aquí.",
     "no_catechumen_found": "Ningún catecúmeno encontrado",
     "status_pending": "Pendiente",
     "status_rejected": "Rechazado",

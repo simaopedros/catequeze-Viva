@@ -28,6 +28,29 @@
   "event_name": "Event name *",
   "description_optional": "Description (optional)",
   "create_event": "Create event",
-  "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-  "weekdays_short": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+  "months": [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ],
+  "weekdays_short": [
+    "Mon",
+    "Tue",
+    "Wed",
+    "Thu",
+    "Fri",
+    "Sat",
+    "Sun"
+  ],
+  "view_agenda": "Agenda",
+  "view_month": "Month"
 }

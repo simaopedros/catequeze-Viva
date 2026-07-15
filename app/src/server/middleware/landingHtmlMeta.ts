@@ -7,7 +7,7 @@
  * Dev: Vite serves the client on :3000 — crawlers that hit the SPA still get
  * client-side meta after JS; this middleware helps production single-origin deploys.
  */
-import type { Express, Request, Response, NextFunction } from "express";
+import type { Application, Request, Response, NextFunction } from "express";
 import fs from "fs";
 import path from "path";
 import {
@@ -52,7 +52,7 @@ function readIndexHtml(): string | null {
   }
 }
 
-export function registerLandingHtmlMeta(app: Express): void {
+export function registerLandingHtmlMeta(app: Application): void {
   app.use((req: Request, res: Response, next: NextFunction) => {
     if (req.method !== "GET" && req.method !== "HEAD") return next();
 

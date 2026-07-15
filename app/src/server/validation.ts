@@ -114,6 +114,12 @@ export const justifyAbsenceSchema = z.object({
   note: z.string().min(1, 'Justificativa é obrigatória').max(500),
 });
 
+export const justifyAbsenceByMeetingSchema = z.object({
+  meetingId: uuidSchema,
+  catechumenProfileId: uuidSchema,
+  note: z.string().min(3, 'Justificativa é obrigatória').max(500),
+});
+
 // ─── Documents ────────────────────────────────────────────────────────────
 
 export const uploadDocumentSchema = z.object({

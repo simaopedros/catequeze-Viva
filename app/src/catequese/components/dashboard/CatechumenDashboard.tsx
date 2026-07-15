@@ -9,7 +9,9 @@ import {
 } from "../../../client/components/brand/AppChrome";
 import { formatDate } from "../../../i18n/format";
 import { useLocale } from "../../../i18n/useLocale";
-import { GraduationCap, FileText } from "lucide-react";
+import { FileText, Calendar, MessageSquare } from "lucide-react";
+import { EncounterFocusCard } from "./EncounterFocusCard";
+import { useActiveParish } from "../../../client/hooks/useActiveParish";
 
 interface CatechumenDashboardProps {
   stats: any;
@@ -18,7 +20,9 @@ interface CatechumenDashboardProps {
 export function CatechumenDashboard({ stats }: CatechumenDashboardProps) {
   const { t } = useTranslation("common");
   const { t: td } = useTranslation("dashboard");
+  const { t: tn } = useTranslation("navigation");
   const { currentLocale } = useLocale();
+  const { activeParishId } = useActiveParish();
 
   const dateOpts = {
     weekday: "short" as const,
@@ -33,6 +37,8 @@ export function CatechumenDashboard({ stats }: CatechumenDashboardProps) {
         title={t("catechumen_journey")}
         subtitle={t("catechumen_subtitle")}
       />
+
+      <EncounterFocusCard workspaceId={activeParishId} />
 
       <div className="grid gap-3 md:grid-cols-3">
         <AppMetric
@@ -57,33 +63,40 @@ export function CatechumenDashboard({ stats }: CatechumenDashboardProps) {
           </div>
           <div className="divide-y divide-border/70">
             {stats.upcomingMeetings.map((m: any) => (
-              <div
+              <Link
                 key={m.id}
-                className="flex items-center justify-between py-2.5 text-sm"
+                to={`/app/meetings/${m.id}`}
+                className="flex items-center justify-between py-2.5 text-sm transition-colors hover:bg-muted/30 -mx-1 px-1 rounded-sm"
               >
                 <span
                   className="mr-2 truncate text-sm font-semibold tracking-tight text-[#071A2D]"
                   style={{ fontFamily: "var(--font-brand-display)" }}
                 >
-                  {m.class?.name || td("meeting_default")}
+                  {m.title || m.theme || m.class?.name || td("meeting_default")}
                 </span>
                 <span className="shrink-0 text-xs text-muted-foreground">
                   {formatDate(m.date, currentLocale, dateOpts)}
                 </span>
-              </div>
+              </Link>
             ))}
           </div>
         </AppPanel>
       )}
 
       <div className="flex flex-wrap gap-2">
-        <Button asChild variant="outline" className="h-10 rounded-sm">
-          <Link to="/app/sacramental-journeys">
-            <GraduationCap className="mr-2 h-4 w-4" />
-            {td("my_sacramental_journey")}
+        <Button asChild variant="outline" className="h-11 min-h-11 rounded-sm">
+          <Link to="/app/calendar">
+            <Calendar className="mr-2 h-4 w-4" />
+            {tn("calendar")}
           </Link>
         </Button>
-        <Button asChild variant="outline" className="h-10 rounded-sm">
+        <Button asChild variant="outline" className="h-11 min-h-11 rounded-sm">
+          <Link to="/app/messages">
+            <MessageSquare className="mr-2 h-4 w-4" />
+            {tn("messages")}
+          </Link>
+        </Button>
+        <Button asChild variant="outline" className="h-11 min-h-11 rounded-sm">
           <Link to="/app/documents">
             <FileText className="mr-2 h-4 w-4" />
             {td("my_documents")}

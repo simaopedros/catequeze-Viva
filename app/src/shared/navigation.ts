@@ -188,12 +188,13 @@ export const NAV_SECTIONS: NavSectionConfig[] = [
 ];
 
 // ---- Bottom Navigation Items (Mobile) ----
-// Max 4 primary destinations; settings and the rest live under "More"
+// Max 4 primary destinations + "Mais" trigger = 5 slots total.
+// Staff: Início, Turmas, Agenda, Mensagens → rest (catequizandos, biblioteca, docs, …) in sheet.
 export const BOTTOM_NAV_KEYS = [
   'dashboard',
   'classes',
-  'catechumens',
   'calendar',
+  'messages',
 ] as const;
 
 // ---- Role Filtering ----

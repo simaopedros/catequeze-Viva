@@ -52,4 +52,19 @@ test.describe("a11y viewport and bottom sheet", () => {
     await expect(dialog).toBeHidden();
     await expect(moreButton).toBeFocused();
   });
+
+  test("app viewport meta still allows scaling after login", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await login(page, USERS.leadCatechist.email);
+    await page.goto("/app");
+    await page.waitForLoadState("domcontentloaded");
+
+    const metas = page.locator('meta[name="viewport"]');
+    const count = await metas.count();
+    expect(count).toBeGreaterThan(0);
+    for (let i = 0; i < count; i++) {
+      const content = await metas.nth(i).getAttribute("content");
+      expect(content!).not.toMatch(/maximum-scale\s*=\s*1(\.0)?(\s|,|$)/i);
+    }
+  });
 });

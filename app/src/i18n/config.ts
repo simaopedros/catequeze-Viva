@@ -59,10 +59,27 @@ function resolveInitialLocale(): SupportedLocale {
   return detected ?? 'pt-BR';
 }
 
+/** True after first client paint — mutating <html lang> before hydrate causes React mismatch (Wasp layout uses lang="en"). */
+let documentLangSyncEnabled = false;
+
 function syncDocumentLanguage(locale: string) {
-  if (typeof document !== 'undefined') {
+  if (typeof document === 'undefined' || !documentLangSyncEnabled) {
+    return;
+  }
+  if (document.documentElement.lang !== locale) {
     document.documentElement.lang = locale;
   }
+}
+
+/**
+ * Call once from App after mount so languageChanged can update <html lang>
+ * without breaking hydration against Wasp's generated layout (lang="en").
+ */
+export function enableDocumentLanguageSync(locale?: string | null) {
+  if (typeof document === 'undefined') return;
+  documentLangSyncEnabled = true;
+  const resolved = normalizeLocale(locale) ?? normalizeLocale(i18n.language) ?? 'pt-BR';
+  document.documentElement.lang = resolved;
 }
 
 function addLocaleBundles(
@@ -162,7 +179,8 @@ i18n
   });
 
 i18n.on('languageChanged', syncDocumentLanguage);
-syncDocumentLanguage(initialLocale);
+// Intentionally do NOT sync document.lang at module load — that runs before
+// React hydrates Wasp Layout (<html lang="en">) and causes hydration warnings.
 
 export { SUPPORTED_LOCALES, ALL_NS };
 export default i18n;

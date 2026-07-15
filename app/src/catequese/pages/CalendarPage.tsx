@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
 import { Button } from "../../client/components/ui/button";
 import { Badge } from "../../client/components/ui/badge";
 import { Input } from "../../client/components/ui/input";
@@ -20,7 +21,8 @@ import {
   Trash2,
   Calendar,
   Download,
-  X,
+  List,
+  LayoutGrid,
 } from "lucide-react";
 import {
   useQuery,
@@ -31,12 +33,24 @@ import {
   deleteLiturgicalEvent,
 } from "wasp/client/operations";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "../../client/components/ui/sheet";
+import { useUserContext } from "../../client/hooks/useUserContext";
 
 const DEFAULT_COLOR = "#071A2D";
+
+const FAMILY_ROLES = new Set(["GUARDIAN", "CATECHUMEN"]);
 
 export default function CalendarPage() {
   const { t } = useTranslation("calendar");
   const { t: tc } = useTranslation("common");
+  const navigate = useNavigate();
+  const { userRole } = useUserContext();
+  const isFamily = FAMILY_ROLES.has(userRole);
   const months = useMemo(() => {
     const result = t("months", { returnObjects: true });
     return Array.isArray(result)
@@ -73,15 +87,32 @@ export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [mobilePanelOpen, setMobilePanelOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<"month" | "agenda">("month");
+  // Mobile default: agenda (<768). Desktop stays on month unless user overrides.
+  const [viewMode, setViewMode] = useState<"month" | "agenda">(() =>
+    typeof window !== "undefined" && window.innerWidth < 768
+      ? "agenda"
+      : "month",
+  );
+  const [userPickedView, setUserPickedView] = useState(false);
 
   useEffect(() => {
-    const check = () =>
+    const check = () => {
+      if (userPickedView) return;
       setViewMode(window.innerWidth < 768 ? "agenda" : "month");
+    };
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
-  }, []);
+  }, [userPickedView]);
+
+  const setViewModeManual = (mode: "month" | "agenda") => {
+    setUserPickedView(true);
+    setViewMode(mode);
+  };
+
+  const openMeeting = (meetingId: string) => {
+    navigate(`/app/meetings/${meetingId}`);
+  };
 
   const parishFilteredEvents = activeParishId
     ? liturgicalEvents.filter((e: any) => e.parishId === activeParishId)
@@ -256,6 +287,30 @@ export default function CalendarPage() {
         })}
         actions={
           <div className="flex flex-wrap items-center gap-2">
+            <div className="flex rounded-sm border border-border/70 overflow-hidden">
+              <Button
+                type="button"
+                variant={viewMode === "agenda" ? "default" : "ghost"}
+                size="sm"
+                className="h-10 rounded-none px-3 text-xs"
+                onClick={() => setViewModeManual("agenda")}
+                aria-pressed={viewMode === "agenda"}
+                aria-label={t("view_agenda")}
+              >
+                <List className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                type="button"
+                variant={viewMode === "month" ? "default" : "ghost"}
+                size="sm"
+                className="h-10 rounded-none px-3 text-xs"
+                onClick={() => setViewModeManual("month")}
+                aria-pressed={viewMode === "month"}
+                aria-label={t("view_month")}
+              >
+                <LayoutGrid className="h-3.5 w-3.5" />
+              </Button>
+            </div>
             <Button
               variant="outline"
               size="icon"
@@ -282,14 +337,16 @@ export default function CalendarPage() {
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
-            <Button
-              size="sm"
-              className="h-10 rounded-sm text-xs px-3 shadow-none"
-              onClick={() => openNewEventForm()}
-            >
-              <Plus className="mr-1 h-3.5 w-3.5" />
-              {t("add_event")}
-            </Button>
+            {!isFamily && (
+              <Button
+                size="sm"
+                className="h-10 rounded-sm text-xs px-3 shadow-none"
+                onClick={() => openNewEventForm()}
+              >
+                <Plus className="mr-1 h-3.5 w-3.5" />
+                {t("add_event")}
+              </Button>
+            )}
           </div>
         }
       />
@@ -326,6 +383,18 @@ export default function CalendarPage() {
           selectedDay={selectedDay}
           setSelectedDay={setSelectedDay}
           setMobilePanelOpen={setMobilePanelOpen}
+          onOpenEvent={(e) => {
+            if (e.type === "class" && e.id) {
+              openMeeting(e.id);
+            } else {
+              setSelectedDay(
+                new Date(
+                  typeof e.date === "string" ? e.date : e.date,
+                ).getDate(),
+              );
+              setMobilePanelOpen(true);
+            }
+          }}
           t={t}
         />
       ) : (
@@ -351,7 +420,7 @@ export default function CalendarPage() {
               months={months}
               dayEvents={dayEvents}
               upcomingEvents={upcomingEvents}
-              showForm={showForm}
+              showForm={showForm && !isFamily}
               name={name}
               desc={desc}
               eventDate={eventDate}
@@ -367,6 +436,8 @@ export default function CalendarPage() {
               handleDelete={handleDelete}
               eventTypeLabels={eventTypeLabels}
               openNewEventForm={openNewEventForm}
+              onOpenMeeting={openMeeting}
+              allowCreate={!isFamily}
               t={t}
               tc={tc}
             />
@@ -374,63 +445,61 @@ export default function CalendarPage() {
         </div>
       )}
 
-      {/* ── Bottom Sheet Mobile ──────────────────────────────────────── */}
-      {mobilePanelOpen && selectedDay != null && (
-        <div className="lg:hidden fixed inset-0 z-modal flex items-end motion-reduce:transition-none">
-          <div
-            className="absolute inset-0 bg-black/40 transition-opacity"
-            onClick={() => setMobilePanelOpen(false)}
-          />
-          <div className="relative z-10 max-h-[75vh] w-full overflow-y-auto rounded-t-sm border-t border-border/70 bg-white animate-in slide-in-from-bottom-5 duration-300 motion-reduce:animate-none">
-            <div className="sticky top-0 z-10 flex items-center justify-between rounded-t-sm border-b border-border/70 bg-white p-4">
-              <div className="space-y-1.5">
-                <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                  <Calendar className="h-3.5 w-3.5 text-[#071A2D]" />
-                  {t("day_title", { day: selectedDay, month: months[month] })}
-                </h3>
-                <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => setMobilePanelOpen(false)}
-                aria-label={tc("close")}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-            <div className="p-4 space-y-4">
-              <SidePanelContent
-                selectedDay={selectedDay}
-                month={month}
-                year={year}
-                months={months}
-                dayEvents={dayEvents}
-                upcomingEvents={upcomingEvents}
-                showForm={showForm}
-                name={name}
-                desc={desc}
-                eventDate={eventDate}
-                color={color}
-                eventType={eventType}
-                setName={setName}
-                setDesc={setDesc}
-                setEventDate={setEventDate}
-                setColor={setColor}
-                setEventType={setEventType}
-                setShowForm={setShowForm}
-                handleCreate={handleCreate}
-                handleDelete={handleDelete}
-                eventTypeLabels={eventTypeLabels}
-                openNewEventForm={openNewEventForm}
-                t={t}
-                tc={tc}
-              />
-            </div>
+      {/* ── Mobile day panel: Radix Sheet ─────────────────────────────── */}
+      <Sheet
+        open={mobilePanelOpen && selectedDay != null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setMobilePanelOpen(false);
+            setShowForm(false);
+          }
+        }}
+      >
+        <SheetContent
+          side="bottom"
+          className="max-h-[85dvh] overflow-y-auto rounded-t-sm p-0 lg:hidden"
+        >
+          <SheetHeader className="sticky top-0 z-10 border-b border-border/70 bg-white px-4 py-3 text-left">
+            <SheetTitle className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              <Calendar className="h-3.5 w-3.5 text-[#071A2D]" />
+              {selectedDay != null
+                ? t("day_title", { day: selectedDay, month: months[month] })
+                : t("title")}
+            </SheetTitle>
+            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          </SheetHeader>
+          <div className="space-y-4 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+            <SidePanelContent
+              selectedDay={selectedDay}
+              month={month}
+              year={year}
+              months={months}
+              dayEvents={dayEvents}
+              upcomingEvents={upcomingEvents}
+              showForm={showForm && !isFamily}
+              name={name}
+              desc={desc}
+              eventDate={eventDate}
+              color={color}
+              eventType={eventType}
+              setName={setName}
+              setDesc={setDesc}
+              setEventDate={setEventDate}
+              setColor={setColor}
+              setEventType={setEventType}
+              setShowForm={setShowForm}
+              handleCreate={handleCreate}
+              handleDelete={handleDelete}
+              eventTypeLabels={eventTypeLabels}
+              openNewEventForm={openNewEventForm}
+              onOpenMeeting={openMeeting}
+              allowCreate={!isFamily}
+              t={t}
+              tc={tc}
+            />
           </div>
-        </div>
-      )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
@@ -578,6 +647,7 @@ interface AgendaViewProps {
   selectedDay: number | null;
   setSelectedDay: (d: number) => void;
   setMobilePanelOpen: (v: boolean) => void;
+  onOpenEvent: (e: any) => void;
   t: any;
 }
 
@@ -587,9 +657,10 @@ function AgendaView({
   year,
   months,
   eventTypeLabels,
-  selectedDay,
-  setSelectedDay,
-  setMobilePanelOpen,
+  selectedDay: _selectedDay,
+  setSelectedDay: _setSelectedDay,
+  setMobilePanelOpen: _setMobilePanelOpen,
+  onOpenEvent,
   t,
 }: AgendaViewProps) {
   const monthEvents = events
@@ -616,10 +687,7 @@ function AgendaView({
         return (
           <button
             key={e.id}
-            onClick={() => {
-              setSelectedDay(day);
-              setMobilePanelOpen(true);
-            }}
+            onClick={() => onOpenEvent(e)}
             className="w-full rounded-sm border border-border/70 bg-white p-3.5 text-left hover:bg-muted/30 transition-colors flex items-center gap-3 "
           >
             {/* Date block */}
@@ -689,6 +757,8 @@ interface SidePanelProps {
   handleDelete: (id: string) => void;
   eventTypeLabels: Record<string, string>;
   openNewEventForm: (day?: number) => void;
+  onOpenMeeting?: (meetingId: string) => void;
+  allowCreate?: boolean;
   t: any;
   tc: (key: string) => string;
 }
@@ -716,6 +786,8 @@ function SidePanelContent({
   handleDelete,
   eventTypeLabels,
   openNewEventForm,
+  onOpenMeeting,
+  allowCreate = true,
   t,
   tc,
 }: SidePanelProps) {
@@ -743,7 +815,24 @@ function SidePanelContent({
               return (
                 <div
                   key={e.id}
-                  className="flex items-center gap-2.5 rounded-sm p-2 hover:bg-muted/30 transition-colors"
+                  role={e.type === "class" ? "button" : undefined}
+                  tabIndex={e.type === "class" ? 0 : undefined}
+                  onClick={() => {
+                    if (e.type === "class" && onOpenMeeting) onOpenMeeting(e.id);
+                  }}
+                  onKeyDown={(ev) => {
+                    if (
+                      e.type === "class" &&
+                      onOpenMeeting &&
+                      (ev.key === "Enter" || ev.key === " ")
+                    ) {
+                      ev.preventDefault();
+                      onOpenMeeting(e.id);
+                    }
+                  }}
+                  className={`flex items-center gap-2.5 rounded-sm p-2 hover:bg-muted/30 transition-colors ${
+                    e.type === "class" ? "cursor-pointer" : ""
+                  }`}
                 >
                   <div className="flex w-9 shrink-0 flex-col items-center">
                     <span className="text-xs font-semibold tabular-nums text-[#071A2D]">
@@ -805,22 +894,41 @@ function SidePanelContent({
       {dayEvents.length === 0 ? (
         <div className="rounded-sm border border-border/70 bg-white p-6 text-center ">
           <p className="text-sm text-muted-foreground">{t("no_events")}</p>
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-3"
-            onClick={() => openNewEventForm()}
-          >
-            <Plus className="mr-1 h-3.5 w-3.5" />
-            {t("add")}
-          </Button>
+          {allowCreate && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-3"
+              onClick={() => openNewEventForm()}
+            >
+              <Plus className="mr-1 h-3.5 w-3.5" />
+              {t("add")}
+            </Button>
+          )}
         </div>
       ) : (
         <div className="space-y-2">
           {dayEvents.map((e) => (
             <div
               key={e.id}
-              className="flex items-start justify-between rounded-sm border border-border/70 bg-white p-3 hover:bg-muted/20 transition-colors "
+              role={e.type === "class" ? "button" : undefined}
+              tabIndex={e.type === "class" ? 0 : undefined}
+              onClick={() => {
+                if (e.type === "class" && onOpenMeeting) onOpenMeeting(e.id);
+              }}
+              onKeyDown={(ev) => {
+                if (
+                  e.type === "class" &&
+                  onOpenMeeting &&
+                  (ev.key === "Enter" || ev.key === " ")
+                ) {
+                  ev.preventDefault();
+                  onOpenMeeting(e.id);
+                }
+              }}
+              className={`flex items-start justify-between rounded-sm border border-border/70 bg-white p-3 hover:bg-muted/20 transition-colors ${
+                e.type === "class" ? "cursor-pointer" : ""
+              }`}
             >
               <div className="flex items-start gap-2.5 min-w-0">
                 <div
@@ -849,7 +957,10 @@ function SidePanelContent({
                   </Badge>
                 </div>
               </div>
-              <div className="flex gap-0.5 flex-shrink-0 ml-2">
+              <div
+                className="flex gap-0.5 flex-shrink-0 ml-2"
+                onClick={(ev) => ev.stopPropagation()}
+              >
                 <button
                   onClick={() => exportICS(e)}
                   className="text-muted-foreground hover:text-[#071A2D] p-1.5 rounded-sm hover:bg-muted transition-colors"
@@ -857,7 +968,7 @@ function SidePanelContent({
                 >
                   <Download className="h-3.5 w-3.5" />
                 </button>
-                {e.type !== "class" && (
+                {e.type !== "class" && allowCreate && (
                   <button
                     onClick={() => handleDelete(e.id)}
                     className="text-muted-foreground hover:text-destructive p-1.5 rounded-sm hover:bg-destructive/10 transition-colors"
@@ -870,20 +981,22 @@ function SidePanelContent({
             </div>
           ))}
 
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full text-xs font-medium"
-            onClick={() => openNewEventForm()}
-          >
-            <Plus className="mr-1 h-3.5 w-3.5" />
-            {t("new_event")}
-          </Button>
+          {allowCreate && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full text-xs font-medium"
+              onClick={() => openNewEventForm()}
+            >
+              <Plus className="mr-1 h-3.5 w-3.5" />
+              {t("new_event")}
+            </Button>
+          )}
         </div>
       )}
 
       {/* ── Create event form ───────────────────────────────────────────── */}
-      {showForm && (
+      {showForm && allowCreate && (
         <div className="space-y-3 rounded-sm border border-border/70 bg-white p-4">
           <div className="flex items-start justify-between gap-3">
             <div className="space-y-1.5">

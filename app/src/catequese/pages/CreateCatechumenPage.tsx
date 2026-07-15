@@ -199,6 +199,7 @@ export default function CreateCatechumenPage() {
               ref={fileRef}
               type="file"
               accept="image/*"
+              capture="environment"
               onChange={handlePhotoUpload}
               className="hidden"
             />
@@ -325,18 +326,28 @@ export default function CreateCatechumenPage() {
                 )}
               />
 
-              <div className="flex gap-3 pt-4">
-                <Button type="submit" disabled={form.formState.isSubmitting}>
-                  <Save className="mr-2 h-4 w-4" />
-                  {form.formState.isSubmitting ? t("saving") : t("register")}
-                </Button>
-                <Button type="button" variant="outline" asChild>
-                  <Link to="/app/catechumens">{t("cancel")}</Link>
-                </Button>
-              </div>
+              {/* Spacer so sticky bar doesn't cover fields above bottom nav */}
+              <div className="h-20 md:h-4" aria-hidden />
             </form>
           </Form>
         </AppPanel>
+      </div>
+
+      <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-40 border-t border-border/70 bg-white/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-white/80 md:static md:inset-auto md:bottom-auto md:z-auto md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none">
+        <div className="mx-auto flex max-w-lg gap-3 md:pt-2">
+          <Button
+            type="button"
+            className="min-h-11 flex-1"
+            disabled={form.formState.isSubmitting}
+            onClick={form.handleSubmit(onSubmit)}
+          >
+            <Save className="mr-2 h-4 w-4" />
+            {form.formState.isSubmitting ? t("saving") : t("register")}
+          </Button>
+          <Button type="button" variant="outline" className="min-h-11" asChild>
+            <Link to="/app/catechumens">{t("cancel")}</Link>
+          </Button>
+        </div>
       </div>
 
       <CreateHouseholdModal

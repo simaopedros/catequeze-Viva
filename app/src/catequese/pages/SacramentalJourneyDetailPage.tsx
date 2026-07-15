@@ -1,7 +1,6 @@
 import { useParams, Link } from "react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AppShell } from "../AppShell";
 import { Button } from "../../client/components/ui/button";
 import {
   AppDisplayTitle,
@@ -166,24 +165,20 @@ export default function SacramentalJourneyDetailPage() {
 
   if (isLoading) {
     return (
-      <AppShell>
-        <div className="space-y-6 animate-pulse">
-          <div className="h-8 w-64 bg-muted rounded" />
-          <div className="grid gap-4">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="h-20 rounded-sm bg-muted" />
-            ))}
-          </div>
+      <div className="space-y-6 animate-pulse">
+        <div className="h-8 w-64 bg-muted rounded" />
+        <div className="grid gap-4">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="h-20 rounded-sm bg-muted" />
+          ))}
         </div>
-      </AppShell>
+      </div>
     );
   }
 
   if (!journey) {
     return (
-      <AppShell>
-        <div className="p-6 text-destructive">{t("detail.not_found")}</div>
-      </AppShell>
+      <div className="p-6 text-destructive">{t("detail.not_found")}</div>
     );
   }
 

@@ -197,7 +197,8 @@ export default function PublicUploadDocsPage() {
             </label>
             <input
               type="file"
-              accept=".jpg,.jpeg,.png,.pdf"
+              accept="image/*,.jpg,.jpeg,.png,.pdf,application/pdf"
+              capture="environment"
               onChange={(e) => setDocFile(e.target.files?.[0] || null)}
               className="mt-1 flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm file:mr-4 file:rounded-sm file:border-0 file:bg-muted file:px-3 file:py-1 file:text-sm file:font-semibold file:tracking-tight file:text-[#071A2D]"
             />

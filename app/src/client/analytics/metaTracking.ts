@@ -438,9 +438,22 @@ export function buildStartTrialDataLayerEvent(
   });
 }
 
+/** Dedup StrictMode double-mount / rapid remounts of the same path. */
+let lastPageViewKey = "";
+let lastPageViewAt = 0;
+
 export function trackPageView(path?: string, title?: string): void {
+  const pagePath = path ?? (isBrowser() ? window.location.pathname : undefined);
+  const now = Date.now();
+  const key = pagePath ?? "";
+  if (key && key === lastPageViewKey && now - lastPageViewAt < 800) {
+    return;
+  }
+  lastPageViewKey = key;
+  lastPageViewAt = now;
+
   trackMetaStandardEvent("page_view", "PageView", {
-    page_path: path ?? (isBrowser() ? window.location.pathname : undefined),
+    page_path: pagePath,
     page_title: title ?? (isBrowser() ? document.title : undefined),
     page_location: isBrowser() ? window.location.href : undefined,
   });
@@ -487,10 +500,17 @@ export function trackStartTrialBrowser(payload: StartTrialPayload): void {
   );
 }
 
+type WindowWithMetaInit = Window & {
+  /** Survives StrictMode remounts and module HMR better than a module Set. */
+  __catequeseMetaPixelInited?: Record<string, true>;
+};
+
 /**
  * Initialize the native Meta Pixel (fbq) when REACT_APP_META_PIXEL_ID is set.
  * GTM can still load its own Pixel; use the same Pixel ID and event_id for dedup.
  * Returns true if the pixel was (or already is) initialized.
+ *
+ * Never calls fbq('init') twice for the same ID (avoids Meta "Duplicate Pixel ID").
  */
 export function initMetaPixel(): boolean {
   if (!isBrowser()) return false;
@@ -498,8 +518,29 @@ export function initMetaPixel(): boolean {
   const pixelId = getClientMetaPixelId();
   if (!pixelId) return false;
 
+  const w = window as WindowWithMetaInit;
+  w.__catequeseMetaPixelInited = w.__catequeseMetaPixelInited || {};
+  if (w.__catequeseMetaPixelInited[pixelId]) {
+    return true;
+  }
+
+  // Localhost: keep dataLayer only — native fbq is noisy (Duplicate ID + "Ignoring Event")
+  // and GTM often loads the same pixel in parallel.
+  const host = window.location.hostname;
+  if (host === "localhost" || host === "127.0.0.1") {
+    w.__catequeseMetaPixelInited[pixelId] = true;
+    if (import.meta.env.DEV) {
+      console.info(
+        "[meta-pixel] skip native fbq init on localhost (dataLayer still works)",
+      );
+    }
+    return false;
+  }
+
   try {
-    if (typeof window.fbq !== "function") {
+    const hadFbq = typeof window.fbq === "function";
+
+    if (!hadFbq) {
       const fbq = function (...args: unknown[]) {
         const self = fbq as MetaFbq;
         if (self.callMethod) {
@@ -527,7 +568,13 @@ export function initMetaPixel(): boolean {
       document.head.appendChild(script);
     }
 
-    window.fbq!("init", pixelId);
+    // If fbq already existed (GTM / previous init), do not call init again —
+    // Meta logs "Duplicate Pixel ID" and double-counts.
+    if (!hadFbq) {
+      window.fbq!("init", pixelId);
+    }
+
+    w.__catequeseMetaPixelInited[pixelId] = true;
     return true;
   } catch {
     return false;

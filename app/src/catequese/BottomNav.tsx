@@ -4,9 +4,9 @@ import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard,
   Users,
-  GraduationCap,
   Calendar,
   Menu,
+  MessageSquareText,
 } from "lucide-react";
 import { cn } from "../client/utils";
 import { useUserContext } from "../client/hooks/useUserContext";
@@ -19,8 +19,8 @@ import { Sheet, SheetTrigger } from "../client/components/ui/sheet";
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   dashboard: LayoutDashboard,
   classes: Users,
-  catechumens: GraduationCap,
   calendar: Calendar,
+  messages: MessageSquareText,
 };
 
 export function BottomNav() {

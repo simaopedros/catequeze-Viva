@@ -62,9 +62,18 @@
     "title_type": "Nueva Conversación",
     "title_contacts": "Seleccionar Participantes",
     "types": {
-      "direct": { "label": "Mensaje Directo", "desc": "Conversación 1 a 1" },
-      "group": { "label": "Grupo", "desc": "Chat grupal" },
-      "announcement": { "label": "Canal de Avisos", "desc": "Solo coordinadores publican" }
+      "direct": {
+        "label": "Mensaje Directo",
+        "desc": "Conversación 1 a 1"
+      },
+      "group": {
+        "label": "Grupo",
+        "desc": "Chat grupal"
+      },
+      "announcement": {
+        "label": "Canal de Avisos",
+        "desc": "Solo coordinadores publican"
+      }
     },
     "group_name_placeholder": "Nombre del grupo...",
     "search_contacts": "Buscar contactos...",
@@ -77,7 +86,10 @@
     "creating": "Creando...",
     "start_direct": "Iniciar conversación",
     "create_group": "Crear grupo ({{count}})"
-    },
+  },
   "send_error": "Error al enviar mensaje",
-  "leave_error": "Error al salir de la conversación"
+  "leave_error": "Error al salir de la conversación",
+  "pending_send": "Pendiente",
+  "retry_send": "Reenviar",
+  "draft_saved": "Borrador guardado en este dispositivo"
 }

@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { AppShell } from "../AppShell";
 import {
   FileText,
   CheckCircle,
@@ -39,6 +38,7 @@ import {
   useQuery,
   listDocuments,
   listCatechumens,
+  getDashboardStats,
   verifyDocument,
   rejectDocument,
   deleteDocument,
@@ -65,17 +65,73 @@ const COORDINATOR_ROLES = [
   "PERSONAL_OWNER",
 ];
 
+type PersonRow = {
+  id: string;
+  firstName?: string | null;
+  lastName?: string | null;
+};
+
 export default function DocumentsPage() {
   const { t: tc } = useTranslation("common");
   const docTypes = useDocumentTypeLabels(true);
   const { userRole } = useUserContext();
   const isCoordinator = COORDINATOR_ROLES.includes(userRole);
+  const isGuardian = userRole === "GUARDIAN";
+  const isCatechumen = userRole === "CATECHUMEN";
+  const isFamily = isGuardian || isCatechumen;
   const canUpload =
     isCoordinator ||
-    ["LEAD_CATECHIST", "ASSISTANT_CATECHIST", "GUARDIAN"].includes(userRole);
+    [
+      "LEAD_CATECHIST",
+      "ASSISTANT_CATECHIST",
+      "GUARDIAN",
+      "CATECHUMEN",
+    ].includes(userRole);
 
-  const { data: docs = [], isLoading: loading } = useQuery(listDocuments);
-  const { data: catechumens = [] } = useQuery(listCatechumens, { take: 200 });
+  const { data: docs = [], isLoading: loadingDocs } = useQuery(listDocuments);
+  const { data: stats, isLoading: loadingStats } = useQuery(
+    getDashboardStats,
+    {},
+    { enabled: isGuardian },
+  );
+  const { data: staffCatechumens = [], isLoading: loadingStaff } = useQuery(
+    listCatechumens,
+    { take: 200 },
+    { enabled: !isFamily },
+  );
+  const { data: selfProfiles = [], isLoading: loadingSelf } = useQuery(
+    listCatechumens,
+    { take: 5 },
+    { enabled: isCatechumen },
+  );
+
+  const catechumens: PersonRow[] = useMemo(() => {
+    if (isGuardian) {
+      return ((stats as any)?.dependents ?? []).map((d: any) => ({
+        id: d.id,
+        firstName: d.firstName,
+        lastName: d.lastName,
+      }));
+    }
+    if (isCatechumen) {
+      return (selfProfiles as PersonRow[]).map((c) => ({
+        id: c.id,
+        firstName: c.firstName,
+        lastName: c.lastName,
+      }));
+    }
+    return (staffCatechumens as PersonRow[]).map((c) => ({
+      id: c.id,
+      firstName: c.firstName,
+      lastName: c.lastName,
+    }));
+  }, [isGuardian, isCatechumen, stats, selfProfiles, staffCatechumens]);
+
+  const loading =
+    loadingDocs ||
+    (isGuardian && loadingStats) ||
+    (isCatechumen && loadingSelf) ||
+    (!isFamily && loadingStaff);
 
   const [uploadDialog, setUploadDialog] = useState<{
     catechumenId: string;
@@ -95,7 +151,6 @@ export default function DocumentsPage() {
     return map;
   }, [docs]);
 
-  // --- Metrics ---
   const totalSlots = catechumens.length * DOC_TYPE_KEYS.length;
   const metrics = useMemo(() => {
     let verified = 0;
@@ -106,7 +161,7 @@ export default function DocumentsPage() {
       else if (d.status === "PENDING") pending++;
       else if (d.status === "REJECTED") rejected++;
     }
-    const missing = totalSlots - (verified + pending + rejected);
+    const missing = Math.max(0, totalSlots - (verified + pending + rejected));
     return { verified, pending, rejected, missing };
   }, [docs, totalSlots]);
 
@@ -185,18 +240,17 @@ export default function DocumentsPage() {
     }
   };
 
-  if (loading)
+  if (loading) {
     return (
-      <AppShell>
-        <div className="space-y-6">
-          <div className="h-8 w-48 animate-pulse rounded bg-muted" />
-          <SkeletonTable rows={5} />
-        </div>
-      </AppShell>
+      <div className="space-y-6">
+        <div className="h-8 w-48 animate-pulse rounded bg-muted" />
+        <SkeletonTable rows={5} />
+      </div>
     );
+  }
 
   const uploadingCatechumen = uploadDialog
-    ? catechumens.find((c: any) => c.id === uploadDialog.catechumenId)
+    ? catechumens.find((c) => c.id === uploadDialog.catechumenId)
     : null;
 
   return (
@@ -204,7 +258,11 @@ export default function DocumentsPage() {
       <AppPageHeader
         eyebrow={tc("documents.title")}
         title={tc("documents.title")}
-        subtitle={tc("documents.page_subtitle")}
+        subtitle={
+          isFamily
+            ? tc("documents.family_page_subtitle")
+            : tc("documents.page_subtitle")
+        }
       />
 
       {catechumens.length > 0 && (
@@ -225,7 +283,6 @@ export default function DocumentsPage() {
         </div>
       )}
 
-      {/* Upload Dialog */}
       <Dialog
         open={uploadDialog !== null}
         onOpenChange={(open) => {
@@ -262,6 +319,8 @@ export default function DocumentsPage() {
                 </span>
                 <input
                   type="file"
+                  accept="image/*,.pdf,application/pdf"
+                  capture="environment"
                   onChange={handleFileChange}
                   className="hidden"
                 />
@@ -273,7 +332,7 @@ export default function DocumentsPage() {
               </p>
             )}
           </div>
-          <DialogFooter>
+          <DialogFooter className="sticky bottom-0 gap-2 bg-white sm:static">
             <Button variant="outline" onClick={closeUploadDialog}>
               {tc("cancel")}
             </Button>
@@ -285,7 +344,6 @@ export default function DocumentsPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Reject ConfirmDialog */}
       <ConfirmDialog
         open={rejectingId !== null}
         onOpenChange={(open) => {
@@ -298,10 +356,9 @@ export default function DocumentsPage() {
         onConfirm={handleReject}
       />
 
-      {/* Catechumen cards */}
       {catechumens.length > 0 && (
         <div className="space-y-4">
-          {catechumens.map((c: any) => {
+          {catechumens.map((c) => {
             const catechumenDocs = docMap[c.id] || {};
             const docValues = Object.values(catechumenDocs);
             const pendingCount = docValues.filter(
@@ -313,10 +370,9 @@ export default function DocumentsPage() {
             const verifiedCount = docValues.filter(
               (d: any) => d.status === "VERIFIED",
             ).length;
-            const progressPct =
-              totalSlots > 0
-                ? Math.round((verifiedCount / DOC_TYPE_KEYS.length) * 100)
-                : 0;
+            const progressPct = Math.round(
+              (verifiedCount / DOC_TYPE_KEYS.length) * 100,
+            );
             const initials = `${c.firstName?.[0] || ""}${
               c.lastName?.[0] || ""
             }`.toUpperCase();
@@ -326,7 +382,6 @@ export default function DocumentsPage() {
                 key={c.id}
                 className="rounded-sm border border-border/70 bg-white p-4 space-y-3"
               >
-                {/* Card header: avatar, name, progress */}
                 <div className="flex items-center gap-3">
                   <Avatar className="h-9 w-9">
                     <AvatarFallback className="rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-[#071A2D]">
@@ -365,7 +420,6 @@ export default function DocumentsPage() {
                   )}
                 </div>
 
-                {/* Document tiles */}
                 <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                   {DOC_TYPE_KEYS.map((type) => {
                     const label = docTypes[type];
@@ -444,7 +498,7 @@ export default function DocumentsPage() {
                                 <Button
                                   size="icon"
                                   variant="ghost"
-                                  className="h-7 w-7"
+                                  className="h-11 w-11 min-h-11 min-w-11 sm:h-7 sm:w-7 sm:min-h-0 sm:min-w-0"
                                   onClick={() =>
                                     setUploadDialog({
                                       catechumenId: c.id,
@@ -518,7 +572,7 @@ export default function DocumentsPage() {
                                   <Button
                                     size="icon"
                                     variant="ghost"
-                                    className="h-7 w-7"
+                                    className="h-11 w-11 min-h-11 min-w-11 sm:h-7 sm:w-7 sm:min-h-0 sm:min-w-0"
                                     onClick={() =>
                                       setUploadDialog({
                                         catechumenId: c.id,
@@ -540,7 +594,7 @@ export default function DocumentsPage() {
                                 <Button
                                   size="icon"
                                   variant="ghost"
-                                  className="h-7 w-7"
+                                  className="h-11 w-11 min-h-11 min-w-11 sm:h-7 sm:w-7 sm:min-h-0 sm:min-w-0"
                                   onClick={() => handleDelete(doc.id)}
                                 >
                                   <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
@@ -565,8 +619,16 @@ export default function DocumentsPage() {
       {catechumens.length === 0 && (
         <EmptyState
           icon={FileText}
-          title={tc("documents.no_catechumen_found")}
-          description={tc("documents.empty_register_hint")}
+          title={
+            isFamily
+              ? tc("documents.family_empty_title")
+              : tc("documents.no_catechumen_found")
+          }
+          description={
+            isFamily
+              ? tc("documents.family_empty_hint")
+              : tc("documents.empty_register_hint")
+          }
         />
       )}
     </div>

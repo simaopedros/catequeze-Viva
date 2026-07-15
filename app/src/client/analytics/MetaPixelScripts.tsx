@@ -10,6 +10,7 @@ import { initMetaPixel, isMetaPixelConfigured } from "./metaTracking";
 export default function MetaPixelScripts() {
   useEffect(() => {
     if (!isMetaPixelConfigured()) return;
+    // Idempotent — safe under StrictMode double-invoke
     initMetaPixel();
   }, []);
 

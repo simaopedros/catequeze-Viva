@@ -737,7 +737,19 @@ action deleteMeeting {
 
 query getMeeting {
   fn: import { getMeeting } from "@src/server/operations/meetingOperations",
-  entities: [Meeting, ContentItem, CatechesisClass]
+  entities: [
+    Meeting,
+    ContentItem,
+    CatechesisClass,
+    Membership,
+    Parish,
+    ClassCatechist,
+    GuardianProfile,
+    CatechumenProfile,
+    ClassEnrollment,
+    AttendanceRecord,
+    Community
+  ]
 }
 
 query getMeetingAttendance {
@@ -747,7 +759,22 @@ query getMeetingAttendance {
 
 query getClassAttendanceMatrix {
   fn: import { getClassAttendanceMatrix } from "@src/server/operations/meetingOperations",
-  entities: [Meeting, AttendanceRecord, CatechumenProfile, CatechesisClass, Membership]
+  entities: [Meeting, AttendanceRecord, CatechumenProfile, CatechesisClass, Membership, Parish, ClassCatechist]
+}
+
+query getMeetingAttendanceSheet {
+  fn: import { getMeetingAttendanceSheet } from "@src/server/operations/meetingOperations",
+  entities: [
+    Meeting,
+    AttendanceRecord,
+    CatechumenProfile,
+    CatechesisClass,
+    ClassEnrollment,
+    Membership,
+    Parish,
+    ClassCatechist,
+    User
+  ]
 }
 
 query listMeetingsForClasses {
@@ -760,9 +787,39 @@ action saveAttendance {
   entities: [AttendanceRecord, Membership, Meeting, CatechesisClass, ClassEnrollment]
 }
 
+action saveAttendanceBatch {
+  fn: import { saveAttendanceBatch } from "@src/server/operations/meetingOperations",
+  entities: [
+    AttendanceRecord,
+    Membership,
+    Meeting,
+    CatechesisClass,
+    ClassEnrollment,
+    CatechumenProfile,
+    Parish,
+    ClassCatechist,
+    User
+  ]
+}
+
 action justifyAbsence {
   fn: import { justifyAbsence } from "@src/server/operations/meetingOperations",
   entities: [AttendanceRecord, Membership, GuardianProfile, CatechumenProfile]
+}
+
+action justifyAbsenceByMeeting {
+  fn: import { justifyAbsenceByMeeting } from "@src/server/operations/meetingOperations",
+  entities: [
+    AttendanceRecord,
+    Meeting,
+    CatechesisClass,
+    Membership,
+    Parish,
+    ClassCatechist,
+    GuardianProfile,
+    CatechumenProfile,
+    ClassEnrollment
+  ]
 }
 //#endregion
 
@@ -774,6 +831,25 @@ action justifyAbsence {
 query getDashboardStats {
   fn: import { getDashboardStats } from "@src/server/operations/dashboardOperations",
   entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, AttendanceRecord, Meeting, ContentItem, CatechumenProfile, ClassCatechist, Parish, GuardianProfile, Household]
+}
+
+query getEncounterFocus {
+  fn: import { getEncounterFocus } from "@src/server/operations/encounterOperations",
+  entities: [
+    Meeting,
+    AttendanceRecord,
+    CatechesisClass,
+    ClassEnrollment,
+    ClassCatechist,
+    Membership,
+    Parish,
+    GuardianProfile,
+    CatechumenProfile,
+    ContentItem,
+    Household,
+    Community,
+    User
+  ]
 }
 
 query getInstitutionalOverview {
@@ -1367,6 +1443,12 @@ page ContactPublicPage { component: import ContactPage from "@src/catequese/page
 
 route AppMeetingsRoute { path: "/app/classes/:id/meetings", to: AppMeetingsPage }
 page AppMeetingsPage { authRequired: true, component: import MeetingsPage from "@src/catequese/pages/MeetingsPage" }
+
+route AppMeetingDetailRoute { path: "/app/meetings/:id", to: AppMeetingDetailPage }
+page AppMeetingDetailPage {
+  authRequired: true,
+  component: import MeetingDetailPage from "@src/catequese/pages/MeetingDetailPage"
+}
 
 query listCommunities {
   fn: import { listCommunities } from "@src/server/operations/communityOperations",

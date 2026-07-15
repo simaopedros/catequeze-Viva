@@ -34,6 +34,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { ActivationChecklist } from "./ActivationChecklist";
+import { EncounterFocusCard } from "./EncounterFocusCard";
 
 interface CoordinatorDashboardProps {
   stats: any;
@@ -157,6 +158,8 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
           </>
         }
       />
+
+      <EncounterFocusCard workspaceId={activeParishId} />
 
       <div
         data-tour="dashboard-stats"

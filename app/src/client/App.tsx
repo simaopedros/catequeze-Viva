@@ -32,6 +32,7 @@ import {
 } from "./analytics/metaTracking";
 import { applyLandingRouteMeta } from "../landing-page/routeMeta";
 import i18n, {
+  enableDocumentLanguageSync,
   ensureLocaleLoaded,
   isLocaleBundleLoaded,
   normalizeLocale,
@@ -121,6 +122,8 @@ export default function App() {
     void ensureLocaleLoaded(lng).then(() => {
       if (!cancelled) setI18nReady(true);
     });
+    // After hydrate only — Wasp Layout hardcodes <html lang="en">
+    enableDocumentLanguageSync(lng);
     return () => {
       cancelled = true;
     };

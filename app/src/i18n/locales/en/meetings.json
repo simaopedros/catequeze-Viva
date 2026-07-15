@@ -22,5 +22,79 @@
   "delete_confirm_desc": "This action cannot be undone. Attendance records will be removed.",
   "delete_error": "Error removing meeting.",
   "delete_success": "Meeting removed.",
-  "search_content": "Search content..."
+  "search_content": "Search content...",
+  "detail_eyebrow": "Meeting",
+  "detail_not_found": "Meeting not found",
+  "detail_not_found_desc": "This meeting does not exist or you do not have access.",
+  "detail_info": "Details",
+  "detail_class": "Class",
+  "detail_location": "Location",
+  "detail_attendance": "Attendance",
+  "detail_materials": "Materials and outline",
+  "detail_notes": "Internal notes",
+  "detail_my_attendance": "Your attendance",
+  "detail_dependents": "Dependents in this meeting",
+  "status": {
+    "NOT_STARTED": "Not started",
+    "IN_PROGRESS": "In progress",
+    "COMPLETED": "Completed",
+    "CANCELLED": "Cancelled"
+  },
+  "attendance_status": {
+    "PRESENT": "Present",
+    "ABSENT": "Absent",
+    "LATE": "Late",
+    "JUSTIFIED": "Justified",
+    "none": "Not recorded yet"
+  },
+  "attendance_progress": "{{registered}} of {{total}} recorded",
+  "action_start": "Start meeting",
+  "action_complete": "Complete meeting",
+  "action_cancel": "Cancel meeting",
+  "action_attendance": "Take attendance",
+  "action_justify": "Justify absence",
+  "justify_note_label": "Reason for absence",
+  "justify_submit": "Submit justification",
+  "justify_success": "Justification saved.",
+  "justify_error": "Error justifying: {{message}}",
+  "status_updated": "Meeting status updated.",
+  "open_content": "Open full content",
+  "open_calendar": "View calendar",
+  "open_messages": "Message catechesis",
+  "content_opening_prayer": "Opening prayer",
+  "content_main": "Content",
+  "content_materials": "Materials",
+  "content_activity": "Activity",
+  "encounter": {
+    "focus_kind": {
+      "in_progress": "Happening now",
+      "today": "Today's meeting",
+      "upcoming": "Next meeting",
+      "recent": "Recent meeting",
+      "none": "No meeting"
+    },
+    "empty_title": "No meeting in focus",
+    "empty_desc": "When your class has meetings, they appear here with the next action.",
+    "more_actions": "More actions",
+    "prep_ready": "Outline: {{title}}",
+    "prep_missing": "Preparation pending — no linked content yet.",
+    "material": "Material",
+    "attendance_self": "Attendance: {{status}}",
+    "cta": {
+      "prepare": "Prepare meeting",
+      "start": "Start meeting",
+      "continue_attendance": "Continue attendance",
+      "complete": "Complete meeting",
+      "view": "View meeting",
+      "justify": "Justify absence",
+      "none_calendar": "View calendar"
+    },
+    "secondary": {
+      "roteiro": "Open outline",
+      "class": "View class",
+      "messages": "Message families",
+      "attendance": "Attendance",
+      "calendar": "Calendar"
+    }
+  }
 }

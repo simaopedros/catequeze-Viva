@@ -22,10 +22,16 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
   const { t } = useTranslation("navigation");
 
   useEffect(() => {
+    const path = location.pathname;
     const isFamilyRoute =
-      location.pathname === "/app" ||
-      location.pathname === "/app/calendar" ||
-      location.pathname.startsWith("/app/messages");
+      path === "/app" ||
+      path === "/app/calendar" ||
+      path.startsWith("/app/messages") ||
+      path.startsWith("/app/meetings/") ||
+      path === "/app/documents" ||
+      path.startsWith("/app/documents/") ||
+      path === "/app/consents" ||
+      path.startsWith("/app/consents/");
 
     if (!isFamilyRoute) {
       navigate("/app", { replace: true });

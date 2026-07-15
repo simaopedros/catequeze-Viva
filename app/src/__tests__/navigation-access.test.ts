@@ -181,9 +181,16 @@ describe('Workspace filter (UX, not AuthZ)', () => {
 });
 
 describe('getVisibleNavigation SSOT', () => {
-  it('BOTTOM_NAV_KEYS has at most 4 entries (settings in More)', () => {
+  it('BOTTOM_NAV_KEYS has at most 4 entries (settings + rest in More)', () => {
     expect(BOTTOM_NAV_KEYS.length).toBe(4);
     expect(BOTTOM_NAV_KEYS).not.toContain('settings');
+    expect(BOTTOM_NAV_KEYS).not.toContain('catechumens');
+    expect([...BOTTOM_NAV_KEYS]).toEqual([
+      'dashboard',
+      'classes',
+      'calendar',
+      'messages',
+    ]);
   });
 
   it('bottomBar length ≤ 4 and uses only BOTTOM_NAV_KEYS order', () => {
@@ -193,15 +200,16 @@ describe('getVisibleNavigation SSOT', () => {
       workspaceType: 'PARISH',
     });
     expect(nav.bottomBar.length).toBeLessThanOrEqual(4);
+    // + Mais trigger in UI = 5 destinations max
     expect(nav.bottomBar.map((i) => i.iconKey)).toEqual([
       'dashboard',
       'classes',
-      'catechumens',
       'calendar',
+      'messages',
     ]);
   });
 
-  it('sheetItems exclude bottomBar keys', () => {
+  it('sheetItems exclude bottomBar keys and include catechumens/settings', () => {
     const nav = getVisibleNavigation({
       role: 'LEAD_CATECHIST',
       isAdmin: false,
@@ -212,6 +220,9 @@ describe('getVisibleNavigation SSOT', () => {
       expect(barKeys.has(item.iconKey)).toBe(false);
     }
     expect(nav.sheetItems.map((i) => i.iconKey)).toContain('settings');
+    expect(nav.sheetItems.map((i) => i.iconKey)).toContain('catechumens');
+    expect(nav.sheetItems.map((i) => i.iconKey)).toContain('documents');
+    expect(nav.sheetItems.map((i) => i.iconKey)).toContain('billing');
   });
 
   it('PERSONAL workspace hides institutional destinations in all surfaces', () => {
@@ -248,7 +259,7 @@ describe('getVisibleNavigation SSOT', () => {
     expect(nav.sheetItems.map((i) => i.to)).toContain('/admin');
   });
 
-  it('catechumen bottomBar drops classes/catechumens without padding', () => {
+  it('catechumen bottomBar drops classes without padding; keeps messages', () => {
     const nav = getVisibleNavigation({
       role: 'CATECHUMEN',
       isAdmin: false,
@@ -257,6 +268,7 @@ describe('getVisibleNavigation SSOT', () => {
     expect(nav.bottomBar.map((i) => i.iconKey)).toEqual([
       'dashboard',
       'calendar',
+      'messages',
     ]);
   });
 });

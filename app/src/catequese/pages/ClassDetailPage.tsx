@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useParams, Link, useNavigate } from "react-router";
 import { useState, useEffect, useMemo } from "react";
-import { AppShell } from "../AppShell";
 import { Button } from "../../client/components/ui/button";
 import { Badge } from "../../client/components/ui/badge";
 import {
@@ -368,26 +367,20 @@ export default function ClassDetailPage() {
 
   if (loading)
     return (
-      <AppShell>
-        <div className="space-y-6 animate-pulse">
-          <div className="h-8 w-48 bg-muted rounded" />
-          <div className="grid gap-4 md:grid-cols-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-20 rounded-sm bg-muted" />
-            ))}
-          </div>
+      <div className="space-y-6 animate-pulse">
+        <div className="h-8 w-48 bg-muted rounded" />
+        <div className="grid gap-4 md:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-20 rounded-sm bg-muted" />
+          ))}
         </div>
-      </AppShell>
+      </div>
     );
   if (!cls) {
     const errMsg = classError
       ? (classError as any)?.message || String(classError)
       : t("not_found");
-    return (
-      <AppShell>
-        <div className="p-6 text-destructive">{errMsg}</div>
-      </AppShell>
-    );
+    return <div className="p-6 text-destructive">{errMsg}</div>;
   }
 
   const enrolled = cls.enrollments || [];

@@ -2,7 +2,6 @@ import { useParams, Link, useNavigate } from "react-router";
 import { lazy, Suspense, useState, useEffect, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
-import { AppShell } from "../AppShell";
 import { Button } from "../../client/components/ui/button";
 import { Badge } from "../../client/components/ui/badge";
 import {
@@ -1218,19 +1217,17 @@ export default function CatechumenDetailPage() {
   }, [profile, selectedAnalysisClassId]);
   if (loading)
     return (
-      <AppShell>
-        <div className="space-y-6 max-w-2xl mx-auto animate-pulse">
-          <div className="flex items-center gap-4">
-            <div className="h-16 w-16 rounded-sm bg-muted" />
-            <div className="h-8 w-40 bg-muted rounded" />
-          </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-32 rounded-sm bg-muted" />
-            ))}
-          </div>
+      <div className="space-y-6 max-w-2xl mx-auto animate-pulse">
+        <div className="flex items-center gap-4">
+          <div className="h-16 w-16 rounded-sm bg-muted" />
+          <div className="h-8 w-40 bg-muted rounded" />
         </div>
-      </AppShell>
+        <div className="grid gap-4 md:grid-cols-2">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-32 rounded-sm bg-muted" />
+          ))}
+        </div>
+      </div>
     );
   if (queryError) {
     const status = (queryError as any)?.status;
@@ -1257,11 +1254,7 @@ export default function CatechumenDetailPage() {
     );
   }
   if (!profile)
-    return (
-      <AppShell>
-        <div className="p-6 text-destructive">{t("not_found")}</div>
-      </AppShell>
-    );
+    return <div className="p-6 text-destructive">{t("not_found")}</div>;
 
   const getAge = (bd: string) => getAgeFromDate(bd);
   const age = getAge(profile.birthDate);

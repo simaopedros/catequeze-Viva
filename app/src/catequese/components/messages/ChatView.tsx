@@ -2,6 +2,11 @@ import { useState, useRef, useEffect, Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { Send, Reply, CornerDownRight, ChevronDown } from "lucide-react";
 import { cn } from "../../../client/utils";
+import {
+  clearMessageDraft,
+  getMessageDraft,
+  saveMessageDraft,
+} from "../../../client/offline/db";
 
 interface MessageItem {
   id: string;
@@ -23,6 +28,8 @@ interface MessageItem {
     emoji: string;
     user: { id: string; firstName: string | null };
   }[];
+  /** Local-only pending draft shown as not sent */
+  _pending?: boolean;
 }
 
 interface ChatViewProps {
@@ -30,10 +37,11 @@ interface ChatViewProps {
   currentUserId: string;
   conversationTitle: string;
   conversationType: string;
+  conversationId?: string;
   hasMore: boolean;
   isLoading: boolean;
   onLoadMore: () => void;
-  onSendMessage: (content: string, parentId?: string) => void;
+  onSendMessage: (content: string, parentId?: string) => Promise<void> | void;
   isSending: boolean;
 }
 
@@ -99,6 +107,7 @@ export function ChatView({
   currentUserId,
   conversationTitle,
   conversationType,
+  conversationId,
   hasMore,
   isLoading,
   onLoadMore,
@@ -109,16 +118,77 @@ export function ChatView({
   const [input, setInput] = useState("");
   const [replyTo, setReplyTo] = useState<MessageItem | null>(null);
   const [showScrollDown, setShowScrollDown] = useState(false);
+  const [pendingLocal, setPendingLocal] = useState<MessageItem | null>(null);
+  const [draftHint, setDraftHint] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const draftTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Restore draft when opening conversation
+  useEffect(() => {
+    let cancelled = false;
+    setPendingLocal(null);
+    setDraftHint(false);
+    if (!conversationId) {
+      setInput("");
+      return;
+    }
+    getMessageDraft(conversationId).then((d) => {
+      if (cancelled || !d) return;
+      setInput(d.content || "");
+      setDraftHint(Boolean(d.content));
+      if (d.pendingSend && d.content) {
+        setPendingLocal({
+          id: `pending-${conversationId}`,
+          content: d.content,
+          contentType: "TEXT",
+          createdAt: d.updatedAt,
+          sender: {
+            id: currentUserId,
+            firstName: null,
+            lastName: null,
+            avatarUrl: null,
+          },
+          _pending: true,
+        });
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [conversationId, currentUserId]);
+
+  // Debounced draft persist
+  useEffect(() => {
+    if (!conversationId) return;
+    if (draftTimer.current) clearTimeout(draftTimer.current);
+    draftTimer.current = setTimeout(() => {
+      const text = input.trim();
+      if (!text) {
+        void clearMessageDraft(conversationId);
+        setDraftHint(false);
+        return;
+      }
+      void saveMessageDraft({
+        conversationId,
+        content: input,
+        parentId: replyTo?.id,
+        pendingSend: Boolean(pendingLocal),
+      });
+      setDraftHint(true);
+    }, 400);
+    return () => {
+      if (draftTimer.current) clearTimeout(draftTimer.current);
+    };
+  }, [input, conversationId, replyTo?.id, pendingLocal]);
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
     if (!showScrollDown) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages.length]);
+  }, [messages.length, pendingLocal?.id]);
 
   // Track scroll position
   const handleScroll = () => {
@@ -132,13 +202,76 @@ export function ChatView({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
     const text = input.trim();
     if (!text) return;
-    onSendMessage(text, replyTo?.id);
-    setInput("");
-    setReplyTo(null);
-    inputRef.current?.focus();
+
+    // Offline: keep as pending draft — never show as sent
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      if (conversationId) {
+        await saveMessageDraft({
+          conversationId,
+          content: text,
+          parentId: replyTo?.id,
+          pendingSend: true,
+        });
+      }
+      setPendingLocal({
+        id: `pending-${conversationId || "local"}`,
+        content: text,
+        contentType: "TEXT",
+        createdAt: new Date().toISOString(),
+        sender: {
+          id: currentUserId,
+          firstName: null,
+          lastName: null,
+          avatarUrl: null,
+        },
+        _pending: true,
+      });
+      setDraftHint(true);
+      return;
+    }
+
+    try {
+      await onSendMessage(text, replyTo?.id);
+      setInput("");
+      setReplyTo(null);
+      setPendingLocal(null);
+      if (conversationId) await clearMessageDraft(conversationId);
+      setDraftHint(false);
+      inputRef.current?.focus();
+    } catch {
+      // Parent shows toast; keep text for retry
+      if (conversationId) {
+        await saveMessageDraft({
+          conversationId,
+          content: text,
+          parentId: replyTo?.id,
+          pendingSend: true,
+        });
+      }
+      setPendingLocal({
+        id: `pending-${conversationId || "local"}`,
+        content: text,
+        contentType: "TEXT",
+        createdAt: new Date().toISOString(),
+        sender: {
+          id: currentUserId,
+          firstName: null,
+          lastName: null,
+          avatarUrl: null,
+        },
+        _pending: true,
+      });
+    }
+  };
+
+  const retryPending = () => {
+    if (!pendingLocal) return;
+    setInput(pendingLocal.content);
+    setPendingLocal(null);
+    void handleSend();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -157,7 +290,10 @@ export function ChatView({
     }
   }, [input]);
 
-  const dateGroups = groupMessagesByDate(messages);
+  const displayMessages = pendingLocal
+    ? [...messages, pendingLocal]
+    : messages;
+  const dateGroups = groupMessagesByDate(displayMessages);
 
   return (
     <div className="flex flex-col h-full bg-background">
@@ -334,25 +470,46 @@ export function ChatView({
                           isMe ? "text-white/60" : "text-muted-foreground/60",
                         )}
                       >
-                        {formatMessageTime(msg.createdAt, i18n.language)}
+                        {msg._pending
+                          ? t("pending_send", { defaultValue: "Pendente" })
+                          : formatMessageTime(msg.createdAt, i18n.language)}
                       </span>
                     </div>
 
-                    {/* Reply button */}
-                    <div
-                      className={cn(
-                        "opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 mt-0.5",
-                        isMe ? "justify-end mr-1" : "ml-1",
-                      )}
-                    >
-                      <button
-                        onClick={() => setReplyTo(msg)}
-                        className="text-overline text-muted-foreground hover:text-[#071A2D] flex items-center gap-0.5"
+                    {msg._pending ? (
+                      <div
+                        className={cn(
+                          "flex gap-1 mt-0.5",
+                          isMe ? "justify-end mr-1" : "ml-1",
+                        )}
                       >
-                        <Reply className="h-3 w-3" />
-                        {t("reply")}
-                      </button>
-                    </div>
+                        <button
+                          type="button"
+                          onClick={retryPending}
+                          className="inline-flex min-h-11 items-center rounded-sm px-2 text-xs font-medium text-[#071A2D] hover:bg-muted/50"
+                        >
+                          {t("retry_send", { defaultValue: "Reenviar" })}
+                        </button>
+                      </div>
+                    ) : (
+                      /* Reply — always visible on touch (never hover-only) */
+                      <div
+                        className={cn(
+                          "flex gap-1 mt-0.5",
+                          isMe ? "justify-end mr-1" : "ml-1",
+                        )}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setReplyTo(msg)}
+                          className="inline-flex min-h-11 min-w-11 items-center gap-1 rounded-sm px-2 text-xs font-medium text-muted-foreground hover:bg-muted/50 hover:text-[#071A2D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                          aria-label={t("reply")}
+                        >
+                          <Reply className="h-4 w-4 shrink-0" />
+                          <span>{t("reply")}</span>
+                        </button>
+                      </div>
+                    )}
 
                     {/* Reactions */}
                     {msg.reactions && msg.reactions.length > 0 && (
@@ -423,6 +580,11 @@ export function ChatView({
 
       {/* Input area */}
       <div className={cn("p-3 border-t bg-white -sm", replyTo && "pt-0")}>
+        {draftHint && input.trim() && (
+          <p className="mb-1.5 text-overline text-muted-foreground">
+            {t("draft_saved", { defaultValue: "Rascunho guardado neste dispositivo" })}
+          </p>
+        )}
         <div className="flex items-end gap-2">
           <div className="flex-1 relative">
             <textarea
@@ -432,18 +594,20 @@ export function ChatView({
               onKeyDown={handleKeyDown}
               placeholder={t("message_placeholder")}
               rows={1}
-              className="w-full resize-none rounded-sm border border-input bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring min-h-[40px] max-h-[120px]"
+              className="w-full resize-none rounded-sm border border-input bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring min-h-[44px] max-h-[120px]"
             />
           </div>
           <button
-            onClick={handleSend}
+            type="button"
+            onClick={() => void handleSend()}
             disabled={!input.trim() || isSending}
             className={cn(
-              "h-10 w-10 rounded-sm flex items-center justify-center transition-all flex-shrink-0",
+              "h-11 w-11 min-h-11 min-w-11 rounded-sm flex items-center justify-center transition-all flex-shrink-0",
               input.trim()
                 ? "bg-[#071A2D] text-white hover:bg-[#0a2540]"
                 : "bg-muted text-muted-foreground",
             )}
+            aria-label={t("send", { defaultValue: "Enviar" })}
           >
             <Send className={cn("h-4.5 w-4.5", isSending && "animate-pulse")} />
           </button>

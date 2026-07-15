@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useParams, Link } from "react-router";
+import { useParams, Link, useSearchParams } from "react-router";
 import { useState, useEffect, useMemo, useRef, type ReactNode } from "react";
 import { Button } from "../../client/components/ui/button";
 import { cn } from "../../client/utils";
@@ -26,6 +26,22 @@ import { useLocale } from "../../i18n/useLocale";
 import { formatDate } from "../../i18n/format";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
 import { AppPageHeader } from "../../client/components/brand/AppChrome";
+import { MeetingAttendanceSheet } from "../components/attendance/MeetingAttendanceSheet";
+
+/** Match Tailwind `md` — mobile sheet below this width. */
+function useIsMobileSheet() {
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 768 : true,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const apply = () => setIsMobile(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+  return isMobile;
+}
 
 const STATUS_KEYS = ["PRESENT", "LATE", "ABSENT", "JUSTIFIED"] as const;
 const STATUS_COLORS: Record<string, string> = {
@@ -129,9 +145,18 @@ export default function AttendancePage() {
   const { t: tcl } = useTranslation("classes");
   const { currentLocale } = useLocale();
   const { id: classId } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const meetingIdParam = searchParams.get("meetingId");
+  const isMobileSheet = useIsMobileSheet();
+  const [showHistory, setShowHistory] = useState(false);
+
+  // Never load full matrix on operational mobile path (unless history opened)
+  const loadMatrix = !isMobileSheet || showHistory;
+
   const { data: meetings = [], refetch: refetchMeetings } = useQuery(
     getClassAttendanceMatrix,
     { classId: classId! },
+    { enabled: Boolean(classId) && loadMatrix },
   );
   const { data: cls } = useQuery(getClassDetails, { id: classId! });
   const catechumens =
@@ -373,9 +398,58 @@ export default function AttendancePage() {
       : 0;
   };
 
+  // Mobile operational path: single-meeting sheet (no historical matrix payload)
+  if (isMobileSheet && !showHistory) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-start gap-3 border-b border-border/70 pb-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="mt-1 h-11 w-11 shrink-0 rounded-sm"
+            asChild
+          >
+            <Link to={`/app/classes/${classId}`}>
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+          </Button>
+          <AppPageHeader
+            className="min-w-0 flex-1 border-0 pb-0"
+            eyebrow={t("sheet.eyebrow", { defaultValue: "Chamada" })}
+            title={cls?.name || t("title")}
+            subtitle={t("sheet.subtitle")}
+          />
+        </div>
+        <MeetingAttendanceSheet
+          classId={classId!}
+          initialMeetingId={meetingIdParam}
+        />
+        <Button
+          type="button"
+          variant="outline"
+          className="h-11 min-h-11 w-full rounded-sm"
+          onClick={() => setShowHistory(true)}
+        >
+          {t("sheet.open_history")}
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="space-y-6">
+        {isMobileSheet && showHistory && (
+          <Button
+            type="button"
+            variant="outline"
+            className="h-11 min-h-11 rounded-sm"
+            onClick={() => setShowHistory(false)}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            {t("sheet.back_to_sheet")}
+          </Button>
+        )}
         <div className="flex items-start gap-3 border-b border-border/70 pb-6">
           <Button
             variant="ghost"
@@ -537,7 +611,13 @@ export default function AttendancePage() {
               ))}
             </div>
 
-            <div className="overflow-x-auto rounded-sm border border-border/70 bg-white hidden md:block">
+            <div
+              className={cn(
+                "overflow-x-auto rounded-sm border border-border/70 bg-white",
+                // Desktop always; mobile only in history mode
+                isMobileSheet ? (showHistory ? "block" : "hidden") : "block",
+              )}
+            >
               <table className="w-full text-xs">
                 <thead>
                   <tr className="bg-muted/50">
@@ -637,81 +717,12 @@ export default function AttendancePage() {
               </table>
             </div>
 
-            {/* Mobile: stacked card view per catechumen */}
-            <div className="md:hidden space-y-4">
-              {filteredCatechumens.map((cat: any) => {
-                const pct =
-                  meetings.length > 0
-                    ? Math.round(
-                        (Object.values(matrix).filter(
-                          (m) =>
-                            m[cat.id] === "PRESENT" ||
-                            m[cat.id] === "JUSTIFIED",
-                        ).length /
-                          meetings.length) *
-                          100,
-                      )
-                    : 0;
-                return (
-                  <div
-                    key={cat.id}
-                    className="rounded-sm border border-border/70 bg-white p-4 "
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <span
-                        className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
-                        {cat.firstName} {cat.lastName}
-                      </span>
-                      <span
-                        className={cn(
-                          "rounded-sm border border-border/70 px-2 py-0.5 text-sm font-semibold",
-                          pct >= 80
-                            ? "bg-[#071A2D]/08 text-[#071A2D] dark:bg-[#071A2D]/10 dark:text-[#071A2D]"
-                            : pct >= 50
-                              ? "bg-[#D39A2B]/15 text-[#8A6418] dark:bg-[#D39A2B]/15 dark:text-[#D39A2B]"
-                              : "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400",
-                        )}
-                      >
-                        {pct}%
-                      </span>
-                    </div>
-                    <div className="space-y-2">
-                      {meetings.map((m: any) => {
-                        const status = matrix[m.id]?.[cat.id];
-                        const isSaving = saving === `${m.id}-${cat.id}`;
-                        return (
-                          <div
-                            key={m.id}
-                            className="flex items-center justify-between gap-2"
-                          >
-                            <div className="flex-1 min-w-0">
-                              <span className="block truncate text-xs font-semibold tracking-tight text-[#071A2D]">
-                                {formatDate(m.date, currentLocale, {
-                                  day: "2-digit",
-                                  month: "2-digit",
-                                })}
-                              </span>
-                              <span className="text-overline text-muted-foreground truncate block">
-                                {m.title || t("matrix.no_title")}
-                              </span>
-                            </div>
-                            <StatusCell
-                              status={status}
-                              statusOptions={statusOptions}
-                              onMark={(val) => mark(m.id, cat.id, val)}
-                              isSaving={isSaving}
-                              notFilledLabel={t("matrix.not_filled")}
-                            />
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            {/* History on mobile only when user opens matrix; desktop uses table above */}
+            {isMobileSheet && showHistory && (
+              <p className="md:hidden text-xs text-muted-foreground">
+                {t("sheet.history_hint")}
+              </p>
+            )}
           </>
         )}
       </div>

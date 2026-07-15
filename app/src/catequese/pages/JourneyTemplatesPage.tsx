@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AppShell } from "../AppShell";
 import { Button } from "../../client/components/ui/button";
 import { Badge } from "../../client/components/ui/badge";
 import {
@@ -195,14 +194,12 @@ export default function JourneyTemplatesPage() {
 
   if (isLoading) {
     return (
-      <AppShell>
-        <div className="space-y-4 animate-pulse">
-          <div className="h-8 w-56 bg-muted rounded" />
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-24 rounded-sm bg-muted" />
-          ))}
-        </div>
-      </AppShell>
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-56 bg-muted rounded" />
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-24 rounded-sm bg-muted" />
+        ))}
+      </div>
     );
   }
 

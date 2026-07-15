@@ -62,9 +62,18 @@
     "title_type": "Nova Conversa",
     "title_contacts": "Selecionar Participantes",
     "types": {
-      "direct": { "label": "Mensagem Direta", "desc": "Conversa 1-para-1" },
-      "group": { "label": "Grupo", "desc": "Chat em grupo" },
-      "announcement": { "label": "Canal de Avisos", "desc": "Somente coordenadores postam" }
+      "direct": {
+        "label": "Mensagem Direta",
+        "desc": "Conversa 1-para-1"
+      },
+      "group": {
+        "label": "Grupo",
+        "desc": "Chat em grupo"
+      },
+      "announcement": {
+        "label": "Canal de Avisos",
+        "desc": "Somente coordenadores postam"
+      }
     },
     "group_name_placeholder": "Nome do grupo...",
     "search_contacts": "Buscar contatos...",
@@ -77,7 +86,10 @@
     "creating": "Criando...",
     "start_direct": "Iniciar conversa",
     "create_group": "Criar grupo ({{count}})"
-    },
+  },
   "send_error": "Erro ao enviar mensagem",
-  "leave_error": "Erro ao sair da conversa"
+  "leave_error": "Erro ao sair da conversa",
+  "pending_send": "Pendente",
+  "retry_send": "Reenviar",
+  "draft_saved": "Rascunho guardado neste dispositivo"
 }

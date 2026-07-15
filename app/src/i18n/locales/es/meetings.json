@@ -22,5 +22,79 @@
   "delete_confirm_desc": "Esta acción no se puede deshacer. Los registros de asistencia se eliminarán.",
   "delete_error": "Error al eliminar encuentro.",
   "delete_success": "Encuentro eliminado.",
-  "search_content": "Buscar contenido..."
+  "search_content": "Buscar contenido...",
+  "detail_eyebrow": "Encuentro",
+  "detail_not_found": "Encuentro no encontrado",
+  "detail_not_found_desc": "Este encuentro no existe o no tiene acceso.",
+  "detail_info": "Información",
+  "detail_class": "Grupo",
+  "detail_location": "Lugar",
+  "detail_attendance": "Asistencia",
+  "detail_materials": "Materiales y guion",
+  "detail_notes": "Notas internas",
+  "detail_my_attendance": "Su asistencia",
+  "detail_dependents": "Dependientes en este encuentro",
+  "status": {
+    "NOT_STARTED": "No iniciado",
+    "IN_PROGRESS": "En curso",
+    "COMPLETED": "Completado",
+    "CANCELLED": "Cancelado"
+  },
+  "attendance_status": {
+    "PRESENT": "Presente",
+    "ABSENT": "Ausente",
+    "LATE": "Tarde",
+    "JUSTIFIED": "Justificado",
+    "none": "Aún no registrado"
+  },
+  "attendance_progress": "{{registered}} de {{total}} registrados",
+  "action_start": "Iniciar encuentro",
+  "action_complete": "Completar encuentro",
+  "action_cancel": "Cancelar encuentro",
+  "action_attendance": "Pasar lista",
+  "action_justify": "Justificar ausencia",
+  "justify_note_label": "Motivo de la ausencia",
+  "justify_submit": "Enviar justificación",
+  "justify_success": "Justificación registrada.",
+  "justify_error": "Error al justificar: {{message}}",
+  "status_updated": "Estado del encuentro actualizado.",
+  "open_content": "Abrir contenido completo",
+  "open_calendar": "Ver agenda",
+  "open_messages": "Hablar con la catequesis",
+  "content_opening_prayer": "Oración inicial",
+  "content_main": "Contenido",
+  "content_materials": "Materiales",
+  "content_activity": "Actividad",
+  "encounter": {
+    "focus_kind": {
+      "in_progress": "En curso ahora",
+      "today": "Encuentro de hoy",
+      "upcoming": "Próximo encuentro",
+      "recent": "Encuentro reciente",
+      "none": "Sin encuentro"
+    },
+    "empty_title": "Ningún encuentro en foco",
+    "empty_desc": "Cuando haya encuentros en su grupo, aparecerán aquí con la próxima acción.",
+    "more_actions": "Más acciones",
+    "prep_ready": "Guion: {{title}}",
+    "prep_missing": "Preparación pendiente — sin contenido vinculado.",
+    "material": "Material",
+    "attendance_self": "Asistencia: {{status}}",
+    "cta": {
+      "prepare": "Preparar encuentro",
+      "start": "Iniciar encuentro",
+      "continue_attendance": "Continuar lista",
+      "complete": "Completar encuentro",
+      "view": "Ver encuentro",
+      "justify": "Justificar ausencia",
+      "none_calendar": "Ver agenda"
+    },
+    "secondary": {
+      "roteiro": "Abrir guion",
+      "class": "Ver grupo",
+      "messages": "Avisar a las familias",
+      "attendance": "Lista",
+      "calendar": "Agenda"
+    }
+  }
 }

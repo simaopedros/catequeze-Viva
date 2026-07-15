@@ -3,6 +3,8 @@
   "month_events": "{{month}} de {{year}} · {{count}} eventos",
   "event_count": "{{count}} eventos",
   "today": "Hoje",
+  "view_agenda": "Agenda",
+  "view_month": "Mês",
   "add_event": "Evento",
   "filters": {
     "all": "Todos",

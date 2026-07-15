@@ -192,6 +192,9 @@
   "documents": {
     "title": "Documents",
     "page_subtitle": "Manage catechumens' documents",
+    "family_page_subtitle": "Documents for your family and catechumens",
+    "family_empty_title": "No catechumens in your family",
+    "family_empty_hint": "When catechumens are linked to your account, their documents will appear here.",
     "no_catechumen_found": "No catechumen found",
     "status_pending": "Pending",
     "status_rejected": "Rejected",

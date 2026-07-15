@@ -1,10 +1,8 @@
 import {
   ReactNode,
-  useState,
   useEffect,
   useMemo,
   useRef,
-  useCallback,
   lazy,
   Suspense,
 } from "react";
@@ -44,12 +42,9 @@ export function AppShell({ children }: AppShellProps) {
   const { t } = useTranslation("common");
   const location = useLocation();
   const navigate = useNavigate();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
-  const handleMenuToggle = useCallback(
-    () => setMobileMenuOpen((prev) => !prev),
-    [],
-  );
+  // Mobile primary nav is BottomNav (+ Mais sheet). No hamburger drawer —
+  // TopBar keeps context, search, notifications, and profile only.
   const {
     needsOnboarding,
     hasPendingInvitations,
@@ -150,7 +145,6 @@ export function AppShell({ children }: AppShellProps) {
   ]);
 
   useEffect(() => {
-    setMobileMenuOpen(false);
     mainRef.current?.scrollTo(0, 0);
   }, [location.pathname]);
 
@@ -188,18 +182,6 @@ export function AppShell({ children }: AppShellProps) {
         <div className="no-print hidden flex-shrink-0 lg:block">
           <Sidebar />
         </div>
-
-        {mobileMenuOpen && (
-          <>
-            <div
-              className="no-print fixed inset-0 z-modal bg-black/50 backdrop-blur-sm lg:hidden"
-              onClick={() => setMobileMenuOpen(false)}
-            />
-            <nav className="no-print fixed inset-y-0 left-0 z-[501] w-64 overflow-y-auto border-r border-border/70 bg-white lg:hidden animate-in slide-in-from-left-5 duration-200">
-              <Sidebar />
-            </nav>
-          </>
-        )}
 
         <div className="flex flex-1 flex-col overflow-hidden print:overflow-visible">
           <div className="no-print">

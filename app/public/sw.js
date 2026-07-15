@@ -4,13 +4,18 @@
  * Strategies:
  * - App Shell (HTML/CSS/JS/fonts): Cache-First with background update
  * - Static assets (icons/images): Cache-First
- * - API calls: Network-First with cache fallback
+ * - API GET: Network-First with cache fallback (never for mutations)
+ * - Auth + /operations: Network-Only (GET). Non-GET (POST/PUT/PATCH/DELETE)
+ *   are not handled by this SW — browser goes straight to network so Wasp
+ *   operation mutations (attendance batch, etc.) are never cached or SWR'd.
  * - Push notifications: standard Web Push
+ *
+ * PR8 audit: do not add stale-while-revalidate for /operations or attendance writes.
  *
  * Version is derived from CACHE_NAME for easy cache busting on deploy.
  */
 
-const CACHE_VERSION = 'v4';
+const CACHE_VERSION = 'v5';
 const CACHE_NAME = `catequese-viva-${CACHE_VERSION}`;
 const IS_LOCAL_DEV =
   self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1';
@@ -130,8 +135,10 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Mutations must never be cached (attendance queue relies on real server results).
   if (request.method !== 'GET') return;
 
+  // Auth + Wasp operations: network only (no cache fallback for ops reads either).
   if (AUTH_MATCH.test(url.pathname) || OPERATIONS_MATCH.test(url.pathname)) {
     event.respondWith(networkOnly(request));
     return;

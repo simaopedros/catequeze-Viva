@@ -191,6 +191,9 @@
   "documents": {
     "title": "Documentos",
     "page_subtitle": "Gerir documentos dos catequizandos",
+    "family_page_subtitle": "Documentos da sua família e catequizandos",
+    "family_empty_title": "Nenhum catequizando na família",
+    "family_empty_hint": "Quando houver catequizandos associados à sua conta, os documentos aparecerão aqui.",
     "no_catechumen_found": "Nenhum catequizando encontrado",
     "status_pending": "Pendente",
     "status_rejected": "Rejeitado",

@@ -360,7 +360,13 @@ export const listConversations = async (args: { workspaceId?: string } | void, c
 // ── getConversation ─────────────────────────────────────────────────────────
 
 export const getConversation = async (
-  args: { conversationId: string; cursor?: string; take?: number },
+  args: {
+    conversationId: string;
+    cursor?: string;
+    /** Exclusive lower bound — newer messages only. Ignores cursor when set. */
+    since?: string;
+    take?: number;
+  },
   context: any
 ) => {
   requireAuth(context.user);
@@ -391,6 +397,44 @@ export const getConversation = async (
     deletedAt: null,
   };
 
+  const include = {
+    sender: { select: { id: true, firstName: true, lastName: true, avatarUrl: true } },
+    parent: {
+      select: { id: true, content: true, sender: { select: { firstName: true, lastName: true } } },
+    },
+    reactions: {
+      include: { user: { select: { id: true, firstName: true } } },
+    },
+  };
+
+  // Incremental poll: only messages newer than `since` (ascending, max 100)
+  if (args.since) {
+    const sinceDate = new Date(args.since);
+    if (Number.isNaN(+sinceDate)) {
+      throw new HttpError(400, 'Parâmetro since inválido.');
+    }
+    messageWhere.createdAt = { gt: sinceDate };
+    const newer = await context.entities.Message.findMany({
+      where: messageWhere,
+      orderBy: { createdAt: 'asc' },
+      take: Math.min(take, 100),
+      include,
+    });
+
+    await context.entities.ConversationParticipant.updateMany({
+      where: { conversationId, userId: context.user.id },
+      data: { lastReadAt: new Date() },
+    });
+
+    return {
+      conversation,
+      messages: newer,
+      hasMore: false,
+      nextCursor: null,
+      mode: 'since' as const,
+    };
+  }
+
   if (args.cursor) {
     messageWhere.createdAt = { lt: new Date(args.cursor) };
   }
@@ -399,15 +443,7 @@ export const getConversation = async (
     where: messageWhere,
     orderBy: { createdAt: 'desc' },
     take: take + 1, // fetch one extra to check if there are more
-    include: {
-      sender: { select: { id: true, firstName: true, lastName: true, avatarUrl: true } },
-      parent: {
-        select: { id: true, content: true, sender: { select: { firstName: true, lastName: true } } },
-      },
-      reactions: {
-        include: { user: { select: { id: true, firstName: true } } },
-      },
-    },
+    include,
   });
 
   const hasMore = messages.length > take;
@@ -424,6 +460,7 @@ export const getConversation = async (
     messages: messages.reverse(), // oldest first for display
     hasMore,
     nextCursor: hasMore && messages.length > 0 ? messages[0].createdAt.toISOString() : null,
+    mode: args.cursor ? ('older' as const) : ('latest' as const),
   };
 };
 

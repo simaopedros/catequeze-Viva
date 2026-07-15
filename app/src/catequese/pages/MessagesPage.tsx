@@ -71,24 +71,37 @@ export default function MessagesPage() {
   );
   const activeConversationIdRef = useRef<string | null>(activeConversationId);
   const requestVersionRef = useRef(0);
+  const chatDataRef = useRef<any>(null);
 
   useEffect(() => {
     activeConversationIdRef.current = activeConversationId;
   }, [activeConversationId]);
 
+  useEffect(() => {
+    chatDataRef.current = chatData;
+  }, [chatData]);
+
   const loadConversation = useCallback(
-    async (convId: string, cursor?: string) => {
+    async (
+      convId: string,
+      opts?: { cursor?: string; since?: string; quiet?: boolean },
+    ) => {
       const requestVersion = ++requestVersionRef.current;
-      setLoadingChat(true);
-      if (!cursor) {
+      const cursor = opts?.cursor;
+      const since = opts?.since;
+      if (!opts?.quiet) {
+        setLoadingChat(true);
+      }
+      if (!cursor && !since) {
         setConversationError(null);
       }
       try {
         const result = await getConversation({
           conversationId: convId,
           cursor,
+          since,
           take: 50,
-        });
+        } as any);
         if (
           requestVersion !== requestVersionRef.current ||
           activeConversationIdRef.current !== convId
@@ -96,16 +109,39 @@ export default function MessagesPage() {
           return;
         }
 
-        if (cursor) {
+        if (since) {
+          // Merge incremental newer messages by id
+          setChatData((prev: any) => {
+            if (!prev) return { ...result, messages: result.messages };
+            const existingIds = new Set(
+              (prev.messages || []).map((m: any) => m.id),
+            );
+            const added = (result.messages || []).filter(
+              (m: any) => !existingIds.has(m.id),
+            );
+            if (added.length === 0) {
+              return {
+                ...prev,
+                conversation: result.conversation ?? prev.conversation,
+              };
+            }
+            return {
+              ...prev,
+              conversation: result.conversation ?? prev.conversation,
+              messages: [...(prev.messages || []), ...added],
+            };
+          });
+        } else if (cursor) {
           // Prepend older messages
           setChatData((prev: any) => ({
             ...result,
             messages: [...result.messages, ...(prev?.messages || [])],
           }));
+          setChatCursor(result.nextCursor);
         } else {
           setChatData(result);
+          setChatCursor(result.nextCursor);
         }
-        setChatCursor(result.nextCursor);
         setConversationError(null);
         if (!cursor) {
           markConversationRead({ conversationId: convId })
@@ -119,13 +155,16 @@ export default function MessagesPage() {
         ) {
           return;
         }
-        setChatData(null);
-        setChatCursor(null);
-        setConversationError(error?.message || tc("try_again"));
+        if (!since) {
+          setChatData(null);
+          setChatCursor(null);
+          setConversationError(error?.message || tc("try_again"));
+        }
       } finally {
         if (
           requestVersion === requestVersionRef.current &&
-          activeConversationIdRef.current === convId
+          activeConversationIdRef.current === convId &&
+          !opts?.quiet
         ) {
           setLoadingChat(false);
         }
@@ -159,11 +198,23 @@ export default function MessagesPage() {
   const loadConversationRef = useRef(loadConversation);
   loadConversationRef.current = loadConversation;
 
-  // Polling for new messages in active conversation
+  // Poll only for *new* messages (since last known createdAt) — not full reload
   useEffect(() => {
     if (!activeConversationId || !isVisible) return;
     const interval = setInterval(() => {
-      loadConversationRef.current(activeConversationId);
+      const msgs = chatDataRef.current?.messages as any[] | undefined;
+      const last = msgs?.length ? msgs[msgs.length - 1] : null;
+      const since = last?.createdAt
+        ? new Date(last.createdAt).toISOString()
+        : undefined;
+      if (since) {
+        loadConversationRef.current(activeConversationId, {
+          since,
+          quiet: true,
+        });
+      } else {
+        loadConversationRef.current(activeConversationId, { quiet: true });
+      }
     }, 15000);
     return () => clearInterval(interval);
   }, [activeConversationId, isVisible]);
@@ -207,6 +258,7 @@ export default function MessagesPage() {
         description: error?.message || tc("try_again"),
         variant: "destructive",
       });
+      throw error;
     } finally {
       setIsSending(false);
     }
@@ -214,7 +266,7 @@ export default function MessagesPage() {
 
   const handleLoadMore = () => {
     if (activeConversationId && chatCursor) {
-      loadConversation(activeConversationId, chatCursor);
+      loadConversation(activeConversationId, { cursor: chatCursor });
     }
   };
 
@@ -228,7 +280,7 @@ export default function MessagesPage() {
         conversationId: activeConversationId,
         mute: !participant?.mutedAt,
       });
-      loadConversation(activeConversationId);
+      void loadConversation(activeConversationId);
     } catch (e: any) {
       toast({
         title: tc("error"),
@@ -367,6 +419,7 @@ export default function MessagesPage() {
                     <ChatView
                       messages={chatData?.messages || []}
                       currentUserId={user?.id || ""}
+                      conversationId={activeConversationId || undefined}
                       conversationTitle={
                         conversationName || t("default_conversation")
                       }

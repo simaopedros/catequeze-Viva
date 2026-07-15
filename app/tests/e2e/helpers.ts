@@ -61,22 +61,29 @@ export async function login(page: Page, email: string, password = PASSWORD) {
   await page.goto('/login');
   await page.waitForLoadState('domcontentloaded');
   await dismissCookieBanner(page);
+
+  // Already authenticated (warm session) → skip form
+  if (/\/app|\/workspace-selector/.test(page.url())) {
+    return;
+  }
+
   // Email/password form is behind "Continuar com email" (Google-first login UI)
   const emailField = page.locator('input[type="email"], input[name="email"]');
-  if (!(await emailField.first().isVisible({ timeout: 3000 }).catch(() => false))) {
+  if (!(await emailField.first().isVisible({ timeout: 4000 }).catch(() => false))) {
+    // Exact product copy on login page (pt-BR / en)
     const continueWithEmail = page.getByRole('button', {
-      name: /continuar com e-?mail|continue with e-?mail|continuar con (el )?correo/i,
+      name: /Continuar com email|Continue with email|Continuar con correo/i,
     });
     await continueWithEmail.click({ timeout: 15000 });
   }
   await dismissCookieBanner(page);
-  await emailField.first().waitFor({ state: 'visible', timeout: 15000 });
+  await emailField.first().waitFor({ state: 'visible', timeout: 20000 });
   await page.fill('input[type="email"], input[name="email"]', email);
   await page.fill('input[type="password"], input[name="password"]', password);
   await dismissCookieBanner(page);
   await page.locator('button[type="submit"]').click({ force: true, timeout: 15000 });
   // Wait for navigation to app
-  await page.waitForURL(/\/app|\/workspace-selector/, { timeout: 15000 });
+  await page.waitForURL(/\/app|\/workspace-selector/, { timeout: 20000 });
 }
 
 export async function logout(page: Page) {
@@ -128,3 +135,26 @@ export const PARISH_SANTA_MARIA = 'bbbbbbbb-2222-4bbb-b222-bbbbbbbbbbbb';
 export const CLASS_CRISMA = 'test-class-crisma-001';
 export const CLASS_INFANTIL = 'test-class-infantil-001';
 export const CLASS_EUCARISTIA = 'test-class-eucaristia-001';
+
+/** Seeded meetings (`seed_test_data.js`) for encounter mobile e2e */
+export const MEETING_CRISMA_1 = 'test-meeting-crisma-01';
+export const MEETING_CRISMA_2 = 'test-meeting-crisma-02';
+export const MEETING_INFANTIL_1 = 'test-meeting-infantil-01';
+
+/** Enter first available workspace after login (shared by nav / encounter specs). */
+export async function enterFirstWorkspace(page: Page) {
+  if (page.url().includes('workspace') || page.url().includes('select')) {
+    const btn = page
+      .locator(
+        'button:has-text("Catequese"), button:has-text("Meu Espaço"), button:has-text("São José"), a:has-text("Entrar")',
+      )
+      .first();
+    if (await btn.isVisible({ timeout: 5000 }).catch(() => false)) {
+      await btn.click();
+      await page.waitForURL(/\/app/, { timeout: 15000 }).catch(() => {});
+    }
+  }
+  await page.goto('/app');
+  await page.waitForLoadState('domcontentloaded');
+  await dismissCookieBanner(page);
+}

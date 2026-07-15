@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useParams, Link, useNavigate } from "react-router";
 import { useState } from "react";
-import { AppShell } from "../AppShell";
 import { Button } from "../../client/components/ui/button";
 import { Input } from "../../client/components/ui/input";
 import { Label } from "../../client/components/ui/label";
@@ -119,14 +118,7 @@ export default function MeetingsPage() {
     }
   };
 
-  if (loading)
-    return (
-      <AppShell>
-        <div className="p-6">
-          <SkeletonPage />
-        </div>
-      </AppShell>
-    );
+  if (loading) return <SkeletonPage />;
 
   return (
     <div className="space-y-6">
@@ -247,12 +239,13 @@ export default function MeetingsPage() {
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <p
-                    className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                  <Link
+                    to={`/app/meetings/${m.id}`}
+                    className="text-sm font-semibold tracking-tight text-[#071A2D] underline-offset-2 hover:underline"
                     style={{ fontFamily: "var(--font-brand-display)" }}
                   >
                     {m.title || t("no_title")}
-                  </p>
+                  </Link>
                   <p className="text-xs text-muted-foreground flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
                     {formatDate(m.date, currentLocale, {
