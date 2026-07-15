@@ -13,6 +13,7 @@ import { EmptyState } from "../../../client/components/EmptyState";
 import { Button } from "../../../client/components/ui/button";
 import { formatDate } from "../../../i18n/format";
 import { useLocale } from "../../../i18n/useLocale";
+import { useActiveParish } from "../../../client/hooks/useActiveParish";
 import { Calendar, Route, Heart } from "lucide-react";
 import { cn } from "../../../client/utils";
 
@@ -23,11 +24,12 @@ export default function MyJourneyPage() {
   const { t } = useTranslation("common");
   const { t: td } = useTranslation("dashboard");
   const { currentLocale } = useLocale();
+  const { activeParishId } = useActiveParish();
   const [dependentId, setDependentId] = useState<string | undefined>();
 
   const { data, isLoading, error } = useQuery(
     getPortalMyJourney,
-    { dependentId },
+    { dependentId, parishId: activeParishId || undefined },
     { staleTime: 30_000 },
   );
 

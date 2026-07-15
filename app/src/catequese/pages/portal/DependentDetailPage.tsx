@@ -12,6 +12,7 @@ import { Button } from "../../../client/components/ui/button";
 import { Badge } from "../../../client/components/ui/badge";
 import { formatDate } from "../../../i18n/format";
 import { useLocale } from "../../../i18n/useLocale";
+import { useActiveParish } from "../../../client/hooks/useActiveParish";
 import {
   Calendar,
   FileText,
@@ -28,10 +29,11 @@ export default function DependentDetailPage() {
   const { t } = useTranslation("common");
   const { t: td } = useTranslation("dashboard");
   const { currentLocale } = useLocale();
+  const { activeParishId } = useActiveParish();
 
   const { data, isLoading, error } = useQuery(
     getPortalDependentDetail,
-    { id: id! },
+    { id: id!, parishId: activeParishId || undefined },
     { enabled: !!id, staleTime: 30_000 },
   );
 

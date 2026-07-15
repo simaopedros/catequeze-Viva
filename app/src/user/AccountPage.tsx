@@ -1,6 +1,8 @@
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from 'wasp/client/auth';
 import { Link as WaspRouterLink, routes } from 'wasp/client/router';
+import { useNavigate } from 'react-router';
 import type { User } from 'wasp/entities';
 import { getCustomerPortalUrl, useQuery } from 'wasp/client/operations';
 import {
@@ -25,13 +27,40 @@ import {
   getProductTrialDaysLeft,
   getProductTrialEndsAt,
 } from '../shared/pricing';
+import { isFamilyPortalHost } from '../shared/portal';
+
+const FAMILY_ONLY_ROLES = new Set(['GUARDIAN', 'CATECHUMEN']);
 
 export default function AccountPage() {
   const { t } = useTranslation('account');
   const { data: user } = useAuth();
-  const { parishName: ctxParishName } = useUserContext();
+  const {
+    parishName: ctxParishName,
+    userRole,
+    allMemberships,
+    isLoading: loadingCtx,
+  } = useUserContext();
+  const navigate = useNavigate();
+
+  const membershipRoles = (allMemberships || []).map((m) => m.role);
+  const pureFamily =
+    membershipRoles.length > 0 &&
+    membershipRoles.every((r) => FAMILY_ONLY_ROLES.has(r)) &&
+    (!userRole || FAMILY_ONLY_ROLES.has(userRole));
+
+  // Family portal / pure family roles: never show commercial billing account UI
+  useEffect(() => {
+    if (isFamilyPortalHost() || pureFamily) {
+      navigate('/app/account', { replace: true });
+    }
+  }, [navigate, pureFamily]);
 
   if (!user) return null;
+
+  // Avoid flash of billing UI while redirecting family users
+  if (isFamilyPortalHost() || (!loadingCtx && pureFamily)) {
+    return null;
+  }
 
   return (
       <div className="max-w-2xl mx-auto space-y-6">

@@ -192,17 +192,19 @@ async function loadUpcomingMeetings(
   return meetings.map(mapMeeting);
 }
 
+const pendingDocWhere = (catechumenIds: string[]) => ({
+  catechumenProfileId: { in: catechumenIds },
+  verifiedAt: null,
+  rejectedAt: null,
+});
+
 async function loadPendingDocuments(
   context: any,
   catechumenIds: string[],
 ): Promise<PortalDocumentSummary[]> {
   if (catechumenIds.length === 0) return [];
   const docs = await context.entities.Document.findMany({
-    where: {
-      catechumenProfileId: { in: catechumenIds },
-      verifiedAt: null,
-      rejectedAt: null,
-    },
+    where: pendingDocWhere(catechumenIds),
     orderBy: { createdAt: 'desc' },
     take: 20,
     select: {
@@ -222,6 +224,18 @@ async function loadPendingDocuments(
       .filter(Boolean)
       .join(' '),
   }));
+}
+
+/** Exact pending count (not capped by list take: 20). */
+async function countPendingDocuments(context: any, catechumenIds: string[]): Promise<number> {
+  if (catechumenIds.length === 0) return 0;
+  if (!context.entities.Document?.count) {
+    const list = await loadPendingDocuments(context, catechumenIds);
+    return list.length;
+  }
+  return context.entities.Document.count({
+    where: pendingDocWhere(catechumenIds),
+  });
 }
 
 async function loadMessagesSummary(context: any): Promise<PortalMessagesSummary> {
@@ -408,15 +422,23 @@ export const getGuardianPortalDashboard = async (
   const docIds = a.dependentId ? focusIds : scope.dependentCatechumenIds;
   const progressIds = a.dependentId ? focusIds : scope.dependentCatechumenIds;
 
-  const [dependents, upcomingMeetings, pendingDocuments, messages, sacramentalProgress, consents] =
-    await Promise.all([
-      loadDependents(context, scope.dependentCatechumenIds),
-      loadUpcomingMeetings(context, classIds, 5),
-      loadPendingDocuments(context, docIds),
-      loadMessagesSummary(context),
-      loadSacramentalProgress(context, progressIds),
-      loadConsentSummary(context, scope),
-    ]);
+  const [
+    dependents,
+    upcomingMeetings,
+    pendingDocuments,
+    pendingDocumentCount,
+    messages,
+    sacramentalProgress,
+    consents,
+  ] = await Promise.all([
+    loadDependents(context, scope.dependentCatechumenIds),
+    loadUpcomingMeetings(context, classIds, 5),
+    loadPendingDocuments(context, docIds),
+    countPendingDocuments(context, docIds),
+    loadMessagesSummary(context),
+    loadSacramentalProgress(context, progressIds),
+    loadConsentSummary(context, scope),
+  ]);
 
   return {
     role: 'GUARDIAN',
@@ -431,7 +453,7 @@ export const getGuardianPortalDashboard = async (
     nextMeeting: upcomingMeetings[0] || null,
     upcomingMeetings,
     pendingDocuments,
-    pendingDocumentCount: pendingDocuments.length,
+    pendingDocumentCount,
     consents,
     messages,
     sacramentalProgress,
@@ -463,14 +485,21 @@ export const getCatechumenPortalDashboard = async (
     ? [scope.catechumenProfileId]
     : scope.dependentCatechumenIds;
 
-  const [dependents, upcomingMeetings, pendingDocuments, messages, sacramentalProgress] =
-    await Promise.all([
-      loadDependents(context, ids),
-      loadUpcomingMeetings(context, scope.allowedClassIds, 5),
-      loadPendingDocuments(context, ids),
-      loadMessagesSummary(context),
-      loadSacramentalProgress(context, ids),
-    ]);
+  const [
+    dependents,
+    upcomingMeetings,
+    pendingDocuments,
+    pendingDocumentCount,
+    messages,
+    sacramentalProgress,
+  ] = await Promise.all([
+    loadDependents(context, ids),
+    loadUpcomingMeetings(context, scope.allowedClassIds, 5),
+    loadPendingDocuments(context, ids),
+    countPendingDocuments(context, ids),
+    loadMessagesSummary(context),
+    loadSacramentalProgress(context, ids),
+  ]);
 
   return {
     role: 'CATECHUMEN',
@@ -484,7 +513,7 @@ export const getCatechumenPortalDashboard = async (
     nextMeeting: upcomingMeetings[0] || null,
     upcomingMeetings,
     pendingDocuments,
-    pendingDocumentCount: pendingDocuments.length,
+    pendingDocumentCount,
     messages,
     sacramentalProgress,
   };

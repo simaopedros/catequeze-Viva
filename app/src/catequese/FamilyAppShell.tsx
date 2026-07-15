@@ -125,7 +125,8 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
               </span>
             </div>
             <div className="flex items-center gap-2">
-              {user && <UserDropdown user={user} />}
+              {/* Portal variant: never link commercial AccountRoute (/account) — only /app/account */}
+              {user && <UserDropdown user={user} variant="portal" />}
             </div>
           </div>
         </header>
