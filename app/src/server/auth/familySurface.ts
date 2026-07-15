@@ -78,8 +78,10 @@ export async function loadActiveRoles(
   });
   const roles = rows.map((r: { role: string }) => r.role);
 
-  // Personal workspace owners may lack a Membership row or only hold family
-  // roles on other parishes — still treat ownership as staff for that parish.
+  // Only when scoping to a specific parish: treat personal-workspace ownership as
+  // staff for THAT parish (legacy rows may lack Membership.PERSONAL_OWNER).
+  // Do NOT inject ownership globally — a pure GUARDIAN who already owns a
+  // PERSONAL parish (data drift) must still fail assertNotFamilyOnlyUser.
   if (parishId) {
     const personal = await context.entities.Parish.findFirst({
       where: {
@@ -90,14 +92,6 @@ export async function loadActiveRoles(
       select: { id: true },
     });
     if (personal && !roles.includes('PERSONAL_OWNER')) {
-      roles.push('PERSONAL_OWNER');
-    }
-  } else {
-    const ownsPersonal = await context.entities.Parish.findFirst({
-      where: { ownerId: context.user.id, type: 'PERSONAL' },
-      select: { id: true },
-    });
-    if (ownsPersonal && !roles.includes('PERSONAL_OWNER')) {
       roles.push('PERSONAL_OWNER');
     }
   }
@@ -149,7 +143,11 @@ export async function assertNotFamilyOnlyUser(
   if (!context.user) throw new HttpError(401);
   if (context.user.isAdmin) return;
   const roles = await loadActiveRoles(context);
-  if (rolesAreFamilyOnly(roles)) {
+  // Ignore PERSONAL_OWNER when classifying pure family accounts.
+  // Guardians who already own a PERSONAL parish (data drift) must still be blocked
+  // from staff-only flows (e.g. ensurePersonalWorkspace).
+  const pastoralRoles = roles.filter((r) => r !== 'PERSONAL_OWNER');
+  if (rolesAreFamilyOnly(pastoralRoles)) {
     throw new HttpError(
       403,
       message ||
