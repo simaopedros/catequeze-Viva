@@ -39,10 +39,15 @@ test.describe('Homolog pastoral QA (automated)', () => {
   });
 
   test('B4: staff billing not served on family host', async ({ page }) => {
-    const res = await page.goto(`${FAMILY_URL}/app/billing`);
-    // Family portal should not expose billing UI (redirect or 404, not 200 billing page)
-    const url = page.url();
-    expect(url).not.toContain('homolog.catechis.app/app/billing');
+    await page.goto(`${FAMILY_URL}/app/billing`, { waitUntil: 'domcontentloaded' });
+    // Must stay on family host — never jump to staff homolog.
+    // Note: "familia-homolog.catechis.app" contains the substring "homolog.catechis.app",
+    // so compare hostnames, not a bare includes() on the full URL.
+    const staffHost = new URL(STAFF_URL).hostname;
+    const familyHost = new URL(FAMILY_URL).hostname;
+    const landed = new URL(page.url());
+    expect(landed.hostname).toBe(familyHost);
+    expect(landed.hostname).not.toBe(staffHost);
   });
 
   test('C2: public upload-docs route returns SPA (not 404)', async ({ page }) => {
