@@ -54,18 +54,21 @@ export default function DashboardPage() {
     userRole,
   });
 
-  // Avoid fetching common dashboard stats when institutional view does not use them.
+  // Portal roles fetch their own DTOs via getGuardian/CatechumenPortalDashboard
+  const isPortalRole = userRole === "GUARDIAN" || userRole === "CATECHUMEN";
+
+  // Avoid fetching common dashboard stats when institutional or portal view does not use them.
   const { data: stats, isLoading: loadingStats } = useQuery(
     getDashboardStats,
     { parishId: activeParishId || undefined },
     {
-      enabled: !loadingCtx && !isInstitutional,
+      enabled: !loadingCtx && !isInstitutional && !isPortalRole,
       staleTime: 60000,
       refetchOnWindowFocus: false,
     },
   );
 
-  if (loadingCtx || (!isInstitutional && loadingStats)) {
+  if (loadingCtx || (!isInstitutional && !isPortalRole && loadingStats)) {
     return <SkeletonPage />;
   }
 
@@ -73,9 +76,15 @@ export default function DashboardPage() {
     return <InstitutionalDashboard />;
   }
 
+  // Family portal: dedicated components call portal dashboard ops (PR9)
+  if (userRole === "GUARDIAN") {
+    return <GuardianDashboard />;
+  }
+  if (userRole === "CATECHUMEN") {
+    return <CatechumenDashboard />;
+  }
+
   const roleDashboards: Record<string, React.ComponentType<{ stats: any }>> = {
-    GUARDIAN: GuardianDashboard,
-    CATECHUMEN: CatechumenDashboard,
     CONTENT_REVIEWER: ReviewerDashboard,
     PASTORAL_VIEWER: PastoralDashboard,
   };

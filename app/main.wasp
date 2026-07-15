@@ -1457,11 +1457,47 @@ action submitActivity {
   entities: [ActivitySubmission, Activity, ContentItem, CatechumenProfile, Membership, Parish, ClassEnrollment, ClassCatechist, CatechesisClass]
 }
 
-// ⚠️ Deprecated — guardian dashboard uses getDashboardStats instead. Remove after 2026-12.
-// query getGuardianDashboard {
-//   fn: import { getGuardianDashboard } from "@src/server/operations/guardianOperations",
-//   entities: [GuardianProfile, CatechumenProfile, AttendanceRecord, Meeting, Document]
-// }
+// Portal dashboards (PR9) — minimal DTOs via resolvePortalScope
+query getGuardianPortalDashboard {
+  fn: import { getGuardianPortalDashboard } from "@src/server/operations/portalDashboardOperations",
+  entities: [
+    Membership, Parish, GuardianProfile, CatechumenProfile, Household,
+    ClassEnrollment, Meeting, Document, AttendanceRecord, SacramentalJourney,
+    SacramentalMilestone, SacramentalMilestoneTemplate, SacramentalJourneyTemplate,
+    ConsentRecord, MinorPortalConsent, ConversationParticipant, Message
+  ]
+}
+
+query getCatechumenPortalDashboard {
+  fn: import { getCatechumenPortalDashboard } from "@src/server/operations/portalDashboardOperations",
+  entities: [
+    Membership, Parish, GuardianProfile, CatechumenProfile, Household,
+    ClassEnrollment, Meeting, Document, AttendanceRecord, SacramentalJourney,
+    SacramentalMilestone, SacramentalMilestoneTemplate, SacramentalJourneyTemplate,
+    ConversationParticipant, Message
+  ]
+}
+
+query getPortalDependentDetail {
+  fn: import { getPortalDependentDetail } from "@src/server/operations/portalDashboardOperations",
+  entities: [
+    Membership, Parish, GuardianProfile, CatechumenProfile, Household,
+    ClassEnrollment, Meeting, Document, AttendanceRecord, SacramentalJourney,
+    SacramentalMilestone, SacramentalMilestoneTemplate, SacramentalJourneyTemplate
+  ]
+}
+
+query getPortalMyJourney {
+  fn: import { getPortalMyJourney } from "@src/server/operations/portalDashboardOperations",
+  entities: [
+    Membership, Parish, GuardianProfile, CatechumenProfile, Household,
+    ClassEnrollment, Meeting, SacramentalJourney, SacramentalMilestone,
+    SacramentalMilestoneTemplate, SacramentalJourneyTemplate
+  ]
+}
+
+// Legacy helper (not registered as query; portal uses getGuardianPortalDashboard)
+// getGuardianDashboard remains in guardianOperations for dual-read / scripts
 //#endregion
 
 
@@ -1484,6 +1520,19 @@ page AppConsentPage { authRequired: true, component: import ConsentPage from "@s
 // Portal invitation admin center (staff)
 route AppPortalInvitationsRoute { path: "/app/portal-invitations", to: AppPortalInvitationsPage }
 page AppPortalInvitationsPage { authRequired: true, component: import PortalInvitationsPage from "@src/catequese/pages/PortalInvitationsPage" }
+// Portal-owned pages (PR9) — not staff catechumen/family admin pages
+route AppDependentDetailRoute { path: "/app/dependents/:id", to: AppDependentDetailPage }
+page AppDependentDetailPage {
+  authRequired: true,
+  component: import DependentDetailPage from "@src/catequese/pages/portal/DependentDetailPage"
+}
+
+route AppMyJourneyRoute { path: "/app/my-journey", to: AppMyJourneyPage }
+page AppMyJourneyPage {
+  component: import MyJourneyPage from "@src/catequese/pages/portal/MyJourneyPage"
+route AppPortalAccountRoute { path: "/app/account", to: AppPortalAccountPage }
+page AppPortalAccountPage {
+  component: import PortalAccountPage from "@src/catequese/pages/portal/PortalAccountPage"
 
 query listConsents {
   fn: import { listConsents } from "@src/server/operations/consentOperations",

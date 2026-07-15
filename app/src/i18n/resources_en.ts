@@ -3383,6 +3383,9 @@ export const navigation_en = {
       "sacramental_journeys": "Sacrament"
     },
     "family_label": "Family",
+    "my_journey": "Journey",
+    "account": "Account",
+    "more": "More",
     "search_module": {
       "catechumen": "Catechumens",
       "class": "Classes",

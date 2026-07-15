@@ -3383,6 +3383,9 @@ export const navigation_pt_BR = {
       "sacramental_journeys": "Sacramento"
     },
     "family_label": "Família",
+    "my_journey": "Jornada",
+    "account": "Conta",
+    "more": "Mais",
     "search_module": {
       "catechumen": "Catequizandos",
       "class": "Turmas",
