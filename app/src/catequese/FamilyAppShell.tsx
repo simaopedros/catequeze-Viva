@@ -26,6 +26,7 @@ import {
 import { signOut } from "../client/analytics/himetrica";
 import { isFamilyPortalHost } from "../shared/portal";
 import { cn } from "../client/utils";
+import { useUnreadNotificationCount } from "../client/hooks/useUnreadNotificationCount";
 
 interface FamilyAppShellProps {
   children: ReactNode;
@@ -52,6 +53,7 @@ function isFamilyRoute(path: string): boolean {
  * Simplified app shell for the family portal (guardians & catechumens).
  * No sidebar, no admin links, no billing — just the essentials.
  * Bottom nav: Início · Agenda · Mensagens · Mais (docs, consents, journey, account, logout).
+ * Mobile: safe-area insets, ≥44px touch targets, offline-friendly layout.
  */
 export function FamilyAppShell({ children }: FamilyAppShellProps) {
   const location = useLocation();
@@ -61,6 +63,10 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
   const { t: tt } = useTranslation("topbar");
   const [moreOpen, setMoreOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [isOffline, setIsOffline] = useState(
+    typeof navigator !== "undefined" ? !navigator.onLine : false,
+  );
+  const unread = useUnreadNotificationCount();
 
   useEffect(() => {
     if (!isFamilyRoute(location.pathname)) {
@@ -68,10 +74,21 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
     }
   }, [location.pathname, navigate]);
 
+  useEffect(() => {
+    const onOffline = () => setIsOffline(true);
+    const onOnline = () => setIsOffline(false);
+    window.addEventListener("offline", onOffline);
+    window.addEventListener("online", onOnline);
+    return () => {
+      window.removeEventListener("offline", onOffline);
+      window.removeEventListener("online", onOnline);
+    };
+  }, []);
+
   const navItems = [
     { to: "/app", icon: Home, label: t("dashboard") },
     { to: "/app/calendar", icon: Calendar, label: t("calendar") },
-    { to: "/app/messages", icon: MessageSquare, label: t("messages") },
+    { to: "/app/messages", icon: MessageSquare, label: t("messages"), badge: unread },
   ];
 
   const moreItems = [
@@ -111,16 +128,16 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
 
   return (
     <TwoFactorGate>
-      <div className="flex min-h-screen flex-col bg-background">
+      <div className="safe-left safe-right flex min-h-screen flex-col bg-background">
         {/* Top bar */}
         <header
           className="sticky top-0 z-sticky border-b border-border/70 bg-white"
           style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
         >
-          <div className="flex h-14 items-center justify-between px-4">
-            <div className="flex items-center gap-3">
+          <div className="flex h-14 min-h-11 items-center justify-between px-4">
+            <div className="flex min-w-0 items-center gap-3">
               <BrandLockup compact hideBadge />
-              <span className="text-[11px] px-2 py-0.5 rounded-sm border border-border/70 bg-muted/30 text-muted-foreground font-semibold uppercase tracking-[0.12em]">
+              <span className="hidden text-[11px] px-2 py-0.5 rounded-sm border border-border/70 bg-muted/30 text-muted-foreground font-semibold uppercase tracking-[0.12em] xs:inline sm:inline">
                 {t("family_label")}
               </span>
             </div>
@@ -129,13 +146,25 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
               {user && <UserDropdown user={user} variant="portal" />}
             </div>
           </div>
+          {isOffline && (
+            <div
+              role="status"
+              className="bg-amber-50 px-4 py-2 text-center text-xs font-medium text-amber-900 border-t border-amber-100"
+            >
+              {t("offline_banner", {
+                defaultValue: "Sem ligação — algumas ações podem falhar.",
+              })}
+            </div>
+          )}
         </header>
 
         {/* Content */}
         <main
           className="no-overscroll scroll-touch flex-1 bg-background p-4 md:p-6"
           style={{
-            paddingBottom: "calc(5rem + env(safe-area-inset-bottom, 0px))",
+            paddingBottom: "calc(5.5rem + env(safe-area-inset-bottom, 0px))",
+            paddingLeft: "max(1rem, env(safe-area-inset-left, 0px))",
+            paddingRight: "max(1rem, env(safe-area-inset-right, 0px))",
           }}
         >
           {children}
@@ -145,14 +174,18 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
         <Sheet open={moreOpen} onOpenChange={setMoreOpen}>
           <nav
             className="fixed bottom-0 left-0 right-0 z-sticky border-t border-border/70 bg-white md:hidden"
-            style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+            style={{
+              paddingBottom: "env(safe-area-inset-bottom, 0px)",
+              paddingLeft: "env(safe-area-inset-left, 0px)",
+              paddingRight: "env(safe-area-inset-right, 0px)",
+            }}
             aria-label={t("primarySection", { defaultValue: "Principal" })}
           >
             <div
               className="grid items-center"
               style={{
                 gridTemplateColumns: "repeat(4, 1fr)",
-                height: "calc(4rem + env(safe-area-inset-bottom, 0px))",
+                minHeight: "calc(4rem + env(safe-area-inset-bottom, 0px))",
               }}
             >
               {navItems.map((item) => {
@@ -165,14 +198,21 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
                     type="button"
                     onClick={() => navigate(item.to)}
                     className={cn(
-                      "flex h-full min-h-11 flex-col items-center justify-center gap-0.5 px-1 text-overline font-medium transition-colors",
+                      "touch-target flex h-full min-h-11 w-full flex-col items-center justify-center gap-0.5 px-1 text-overline font-medium transition-colors",
                       isActive
                         ? "text-[#071A2D]"
                         : "text-muted-foreground hover:text-[#071A2D]",
                     )}
                     aria-current={isActive ? "page" : undefined}
                   >
-                    <item.icon className="h-5 w-5" />
+                    <span className="relative">
+                      <item.icon className="h-5 w-5" aria-hidden />
+                      {typeof item.badge === "number" && item.badge > 0 && (
+                        <span className="absolute -right-2 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#071A2D] px-1 text-[10px] font-semibold text-white">
+                          {item.badge > 9 ? "9+" : item.badge}
+                        </span>
+                      )}
+                    </span>
                     <span className={isActive ? "text-[#071A2D]" : ""}>
                       {item.label}
                     </span>
@@ -183,21 +223,27 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
                 <button
                   type="button"
                   className={cn(
-                    "flex h-full min-h-11 flex-col items-center justify-center gap-0.5 px-1 text-overline font-medium transition-colors",
+                    "touch-target flex h-full min-h-11 w-full flex-col items-center justify-center gap-0.5 px-1 text-overline font-medium transition-colors",
                     moreActive || moreOpen
                       ? "text-[#071A2D]"
                       : "text-muted-foreground hover:text-[#071A2D]",
                   )}
                   aria-label={t("moreSection")}
                 >
-                  <Menu className="h-5 w-5" />
+                  <Menu className="h-5 w-5" aria-hidden />
                   <span>{t("moreSection")}</span>
                 </button>
               </SheetTrigger>
             </div>
           </nav>
 
-          <SheetContent side="bottom" className="rounded-t-lg pb-safe">
+          <SheetContent
+            side="bottom"
+            className="rounded-t-lg"
+            style={{
+              paddingBottom: "calc(1rem + env(safe-area-inset-bottom, 0px))",
+            }}
+          >
             <SheetHeader className="text-left">
               <SheetTitle
                 className="text-base font-semibold tracking-tight text-[#071A2D]"
@@ -217,13 +263,13 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
                     type="button"
                     onClick={() => go(item.to)}
                     className={cn(
-                      "flex min-h-11 items-center gap-3 rounded-sm px-3 py-2.5 text-sm font-medium transition-colors",
+                      "touch-target flex min-h-11 items-center gap-3 rounded-sm px-3 py-2.5 text-sm font-medium transition-colors",
                       active
                         ? "bg-muted/50 text-[#071A2D]"
                         : "text-[#071A2D] hover:bg-muted/40",
                     )}
                   >
-                    <item.icon className="h-5 w-5 shrink-0" />
+                    <item.icon className="h-5 w-5 shrink-0" aria-hidden />
                     {item.label}
                   </button>
                 );
@@ -233,9 +279,9 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
                 type="button"
                 onClick={handleSignOut}
                 disabled={isSigningOut}
-                className="flex min-h-11 items-center gap-3 rounded-sm px-3 py-2.5 text-sm font-medium text-[#071A2D] hover:bg-muted/40"
+                className="touch-target flex min-h-11 items-center gap-3 rounded-sm px-3 py-2.5 text-sm font-medium text-[#071A2D] hover:bg-muted/40 disabled:opacity-60"
               >
-                <LogOut className="h-5 w-5 shrink-0" />
+                <LogOut className="h-5 w-5 shrink-0" aria-hidden />
                 {tt("sign_out")}
               </button>
             </div>
@@ -243,16 +289,19 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
         </Sheet>
 
         {/* Desktop quick links (md+) */}
-        <div className="hidden border-t border-border/70 bg-white md:block">
+        <div
+          className="hidden border-t border-border/70 bg-white md:block"
+          style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+        >
           <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-2 px-4 py-3">
             {[...navItems, ...moreItems].map((item) => (
               <button
                 key={item.to}
                 type="button"
                 onClick={() => navigate(item.to)}
-                className="inline-flex min-h-11 items-center gap-2 rounded-sm border border-border/70 px-3 py-2 text-sm font-medium text-[#071A2D] hover:bg-muted/40"
+                className="touch-target inline-flex min-h-11 items-center gap-2 rounded-sm border border-border/70 px-3 py-2 text-sm font-medium text-[#071A2D] hover:bg-muted/40"
               >
-                <item.icon className="h-4 w-4" />
+                <item.icon className="h-4 w-4" aria-hidden />
                 {item.label}
               </button>
             ))}

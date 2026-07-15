@@ -14,6 +14,8 @@ import {
   revokeMinorPortalConsent,
 } from "wasp/client/operations";
 import { toast } from "../../client/hooks/use-toast";
+import { EmptyState } from "../../client/components/EmptyState";
+import { SkeletonPage } from "../../client/components/Skeletons";
 
 const CONSENT_TYPE_KEYS = [
   "IMAGE_USAGE",
@@ -38,6 +40,8 @@ export default function ConsentPage() {
   const [consents, setConsents] = useState<Record<string, boolean>>({});
   const [minors, setMinors] = useState<MinorRow[]>([]);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const consentTypes = useMemo(
     () =>
@@ -57,7 +61,9 @@ export default function ConsentPage() {
         map[c.type] = c.granted;
       });
       setConsents(map);
+      setLoadError(null);
     } catch (e: any) {
+      setLoadError(e?.message || t("error_loading"));
       toast({
         title: t("error_loading"),
         description: e.message,
@@ -77,9 +83,40 @@ export default function ConsentPage() {
   }, []);
 
   useEffect(() => {
-    loadConsents();
-    loadMinors();
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      await Promise.all([loadConsents(), loadMinors()]);
+      if (!cancelled) setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [loadConsents, loadMinors]);
+
+  if (loading) return <SkeletonPage />;
+
+  if (loadError) {
+    return (
+      <EmptyState
+        icon={Shield}
+        title={t("error_loading")}
+        description={loadError}
+      >
+        <Button
+          className="touch-target min-h-11"
+          onClick={() => {
+            setLoading(true);
+            Promise.all([loadConsents(), loadMinors()]).finally(() =>
+              setLoading(false),
+            );
+          }}
+        >
+          {t("try_again", { defaultValue: "Tentar novamente" })}
+        </Button>
+      </EmptyState>
+    );
+  }
 
   const toggle = async (type: string, granted: boolean) => {
     try {

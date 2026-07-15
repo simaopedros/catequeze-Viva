@@ -26,7 +26,13 @@ export default function PortalAccountPage() {
   const { parishName: ctxParishName, userRole } = useUserContext();
   const [isSigningOut, setIsSigningOut] = useState(false);
 
-  if (!user) return null;
+  if (!user) {
+    return (
+      <div className="mx-auto max-w-lg space-y-6 py-8 text-center text-sm text-muted-foreground">
+        {t("loading", { defaultValue: "A carregar conta…" })}
+      </div>
+    );
+  }
 
   const handleSignOut = async () => {
     setIsSigningOut(true);

@@ -578,51 +578,51 @@ action updateMembershipRole {
 
 action createPortalInvitation {
   fn: import { createPortalInvitation } from "@src/server/operations/portalInvitationOperations",
-  entities: [PortalInvitation, Membership, User, Parish, Community, Household, GuardianProfile, CatechumenProfile, AuditLog, MinorPortalConsent]
+  entities: [PortalInvitation, Membership, User, Parish, Community, Household, GuardianProfile, CatechumenProfile, AuditLog, MinorPortalConsent, Notification]
 }
 
 query listPortalInvitations {
   fn: import { listPortalInvitations } from "@src/server/operations/portalInvitationOperations",
-  entities: [PortalInvitation, Membership, Parish, User, GuardianProfile, CatechumenProfile]
+  entities: [PortalInvitation, Membership, Parish, User, GuardianProfile, CatechumenProfile, Notification]
 }
 
 query getPortalInvitation {
   fn: import { getPortalInvitation } from "@src/server/operations/portalInvitationOperations",
-  entities: [PortalInvitation, PendingInvitation, User, Parish, GuardianProfile, CatechumenProfile, MinorPortalConsent, PortalInviteMigrationReview, AuditLog]
+  entities: [PortalInvitation, PendingInvitation, User, Parish, GuardianProfile, CatechumenProfile, MinorPortalConsent, PortalInviteMigrationReview, AuditLog, Notification]
   auth: false
 }
 
 action acceptPortalInvitation {
   fn: import { acceptPortalInvitation } from "@src/server/operations/portalInvitationOperations",
-  entities: [PortalInvitation, PendingInvitation, Membership, User, GuardianProfile, CatechumenProfile, MinorPortalConsent, AuthContinuation, AuditLog, Household, PortalInviteMigrationReview]
+  entities: [PortalInvitation, PendingInvitation, Membership, User, GuardianProfile, CatechumenProfile, MinorPortalConsent, AuthContinuation, AuditLog, Household, PortalInviteMigrationReview, Notification]
 }
 
 action resendPortalInvitation {
   fn: import { resendPortalInvitation } from "@src/server/operations/portalInvitationOperations",
-  entities: [PortalInvitation, Membership, Parish, User, AuditLog]
+  entities: [PortalInvitation, Membership, Parish, User, AuditLog, Notification]
 }
 
 action revokePortalInvitation {
   fn: import { revokePortalInvitation } from "@src/server/operations/portalInvitationOperations",
-  entities: [PortalInvitation, Membership, Parish, User, AuditLog]
+  entities: [PortalInvitation, Membership, Parish, User, AuditLog, Notification]
 }
 
 // AuthContinuation deep-link (family multi-host resume)
 action createAuthContinuation {
   fn: import { createAuthContinuation } from "@src/server/operations/authContinuationOperations",
-  entities: [AuthContinuation, PortalInvitation, Parish, User]
+  entities: [AuthContinuation, PortalInvitation, Parish, User, Notification]
   auth: false
 }
 
 query getAuthContinuation {
   fn: import { getAuthContinuation } from "@src/server/operations/authContinuationOperations",
-  entities: [AuthContinuation, PortalInvitation, Parish]
+  entities: [AuthContinuation, PortalInvitation, Parish, Notification]
   auth: false
 }
 
 query getPendingAuthContinuation {
   fn: import { getPendingAuthContinuation } from "@src/server/operations/authContinuationOperations",
-  entities: [AuthContinuation, PortalInvitation, Parish, User]
+  entities: [AuthContinuation, PortalInvitation, Parish, User, Notification]
 }
 
 action joinParish {
@@ -695,7 +695,7 @@ action enrollCatechumen {
 
 action archiveClass {
   fn: import { archiveClass } from "@src/server/operations/classOperations",
-  entities: [CatechesisClass, Membership, Meeting, Parish]
+  entities: [CatechesisClass, Membership, Meeting, Parish, Notification]
 }
 
 action cancelEnrollment {
@@ -712,7 +712,7 @@ query listCatechumens {
 
 query getCatechumenProfile {
   fn: import { getCatechumenProfile } from "@src/server/operations/catechumenOperations",
-  entities: [CatechumenProfile, Membership, GuardianProfile, ClassEnrollment, ClassCatechist, CatechesisClass, Household, Document, Parish]
+  entities: [CatechumenProfile, Membership, GuardianProfile, ClassEnrollment, ClassCatechist, CatechesisClass, Household, Document, Parish, Notification]
 }
 
 action createCatechumen {
@@ -727,7 +727,7 @@ action updateCatechumen {
 
 action deleteCatechumen {
   fn: import { deleteCatechumen } from "@src/server/operations/catechumenOperations",
-  entities: [CatechumenProfile, Membership, GuardianProfile, ClassEnrollment, ClassCatechist, CatechesisClass, Household, AttendanceRecord, ActivitySubmission, SacramentalJourney, SacramentalMilestone, Document, Parish, AuditLog]
+  entities: [CatechumenProfile, Membership, GuardianProfile, ClassEnrollment, ClassCatechist, CatechesisClass, Household, AttendanceRecord, ActivitySubmission, SacramentalJourney, SacramentalMilestone, Document, Parish, AuditLog, Notification]
 }
 //#endregion
 
@@ -773,22 +773,22 @@ page AppAttendancePage {
 
 query listMeetings {
   fn: import { listMeetings } from "@src/server/operations/meetingOperations",
-  entities: [Meeting, CatechesisClass, Membership]
+  entities: [Meeting, CatechesisClass, Membership, Notification]
 }
 
 action createMeeting {
   fn: import { createMeeting } from "@src/server/operations/meetingOperations",
-  entities: [Meeting, Membership, CatechesisClass]
+  entities: [Meeting, Membership, CatechesisClass, Notification]
 }
 
 action updateMeeting {
   fn: import { updateMeeting } from "@src/server/operations/meetingOperations",
-  entities: [Meeting, CatechesisClass, Membership, ContentItem]
+  entities: [Meeting, CatechesisClass, Membership, ContentItem, Notification]
 }
 
 action deleteMeeting {
   fn: import { deleteMeeting } from "@src/server/operations/meetingOperations",
-  entities: [Meeting, AttendanceRecord, CatechesisClass, Membership, Parish]
+  entities: [Meeting, AttendanceRecord, CatechesisClass, Membership, Parish, Notification]
 }
 
 query getMeeting {
@@ -810,12 +810,12 @@ query getMeeting {
 
 query getMeetingAttendance {
   fn: import { getMeetingAttendance } from "@src/server/operations/meetingOperations",
-  entities: [AttendanceRecord, CatechumenProfile, Meeting, CatechesisClass, Membership]
+  entities: [AttendanceRecord, CatechumenProfile, Meeting, CatechesisClass, Membership, Notification]
 }
 
 query getClassAttendanceMatrix {
   fn: import { getClassAttendanceMatrix } from "@src/server/operations/meetingOperations",
-  entities: [Meeting, AttendanceRecord, CatechumenProfile, CatechesisClass, Membership, Parish, ClassCatechist]
+  entities: [Meeting, AttendanceRecord, CatechumenProfile, CatechesisClass, Membership, Parish, ClassCatechist, Notification]
 }
 
 query getMeetingAttendanceSheet {
@@ -835,12 +835,12 @@ query getMeetingAttendanceSheet {
 
 query listMeetingsForClasses {
   fn: import { listMeetingsForClasses } from "@src/server/operations/meetingOperations",
-  entities: [Meeting, CatechesisClass, Membership]
+  entities: [Meeting, CatechesisClass, Membership, Notification]
 }
 
 action saveAttendance {
   fn: import { saveAttendance } from "@src/server/operations/meetingOperations",
-  entities: [AttendanceRecord, Membership, Meeting, CatechesisClass, ClassEnrollment]
+  entities: [AttendanceRecord, Membership, Meeting, CatechesisClass, ClassEnrollment, Notification]
 }
 
 action saveAttendanceBatch {
@@ -860,7 +860,7 @@ action saveAttendanceBatch {
 
 action justifyAbsence {
   fn: import { justifyAbsence } from "@src/server/operations/meetingOperations",
-  entities: [AttendanceRecord, Membership, GuardianProfile, CatechumenProfile]
+  entities: [AttendanceRecord, Membership, GuardianProfile, CatechumenProfile, Notification]
 }
 
 action justifyAbsenceByMeeting {
@@ -886,7 +886,7 @@ action justifyAbsenceByMeeting {
 //#region Catequese Viva - Dashboard Operations
 query getDashboardStats {
   fn: import { getDashboardStats } from "@src/server/operations/dashboardOperations",
-  entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, AttendanceRecord, Meeting, ContentItem, CatechumenProfile, ClassCatechist, Parish, GuardianProfile, Household]
+  entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, AttendanceRecord, Meeting, ContentItem, CatechumenProfile, ClassCatechist, Parish, GuardianProfile, Household, Notification]
 }
 
 query getEncounterFocus {
@@ -910,17 +910,17 @@ query getEncounterFocus {
 
 query getInstitutionalOverview {
   fn: import { getInstitutionalOverview } from "@src/server/operations/institutionalDashboardOperations",
-  entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, SacramentalJourney, AttendanceRecord, Meeting, ContentItem, CatechumenProfile, ClassCatechist, Parish, Community, TenantBilling, Document, ConsentRecord, MessageCampaign, MessageRecipient, UserTwoFactor, Diocese]
+  entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, SacramentalJourney, AttendanceRecord, Meeting, ContentItem, CatechumenProfile, ClassCatechist, Parish, Community, TenantBilling, Document, ConsentRecord, MessageCampaign, MessageRecipient, UserTwoFactor, Diocese, Notification]
 }
 
 query getInstitutionalTrends {
   fn: import { getInstitutionalTrends } from "@src/server/operations/institutionalDashboardOperations",
-  entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, SacramentalJourney, AttendanceRecord, Meeting, CatechumenProfile, Parish, Community, UserTwoFactor, Diocese]
+  entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, SacramentalJourney, AttendanceRecord, Meeting, CatechumenProfile, Parish, Community, UserTwoFactor, Diocese, Notification]
 }
 
 query getInstitutionalAlerts {
   fn: import { getInstitutionalAlerts } from "@src/server/operations/institutionalDashboardOperations",
-  entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, SacramentalJourney, AttendanceRecord, Meeting, CatechumenProfile, ClassCatechist, Parish, Community, TenantBilling, ConsentRecord, UserTwoFactor, Diocese]
+  entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, SacramentalJourney, AttendanceRecord, Meeting, CatechumenProfile, ClassCatechist, Parish, Community, TenantBilling, ConsentRecord, UserTwoFactor, Diocese, Notification]
 }
 //#endregion
 
@@ -938,7 +938,7 @@ query listContentItems {
 
 query getContentItem {
   fn: import { getContentItem } from "@src/server/operations/contentOperations",
-  entities: [ContentItem, ContentVersion, Activity, Meeting, User, ContentBibleReference, ContentCatechismReference, ContentDirectoryReference, BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, Membership]
+  entities: [ContentItem, ContentVersion, Activity, Meeting, User, ContentBibleReference, ContentCatechismReference, ContentDirectoryReference, BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, Membership, Notification]
 }
 
 action createContentItem {
@@ -948,7 +948,7 @@ action createContentItem {
 
 action deleteContentItem {
   fn: import { deleteContentItem } from "@src/server/operations/contentOperations",
-  entities: [ContentItem, Membership, Meeting, Activity, ContentVersion, Parish]
+  entities: [ContentItem, Membership, Meeting, Activity, ContentVersion, Parish, Notification]
 }
 
 action updateContentStatus {
@@ -1071,17 +1071,17 @@ action publishTemplate {
 //#region Catequese Viva - Reports
 query getReportsOverview {
   fn: import { getReportsOverview } from "@src/server/operations/reportOperations",
-  entities: [CatechesisClass, Meeting, AttendanceRecord, Membership]
+  entities: [CatechesisClass, Meeting, AttendanceRecord, Membership, Notification]
 }
 
 query getClassPastoralReport {
   fn: import { getClassPastoralReport } from "@src/server/operations/pastoralReportOperations",
-  entities: [CatechesisClass, ClassEnrollment, CatechumenProfile, Meeting, AttendanceRecord, ClassCatechist, User, Membership, Parish, GuardianProfile, CatechumenBirthdayGift, AuditLog]
+  entities: [CatechesisClass, ClassEnrollment, CatechumenProfile, Meeting, AttendanceRecord, ClassCatechist, User, Membership, Parish, GuardianProfile, CatechumenBirthdayGift, AuditLog, Notification]
 }
 
 query getCatechumenPastoralAnalysis {
   fn: import { getCatechumenPastoralAnalysis } from "@src/server/operations/pastoralReportOperations",
-  entities: [CatechesisClass, ClassEnrollment, CatechumenProfile, Meeting, AttendanceRecord, ClassCatechist, User, Membership, Parish, GuardianProfile, CatechumenBirthdayGift, AuditLog]
+  entities: [CatechesisClass, ClassEnrollment, CatechumenProfile, Meeting, AttendanceRecord, ClassCatechist, User, Membership, Parish, GuardianProfile, CatechumenBirthdayGift, AuditLog, Notification]
 }
 
 query listUpcomingBirthdays {
@@ -1123,27 +1123,27 @@ page AppDocumentsPage {
 
 query listDocuments {
   fn: import { listDocuments } from "@src/server/operations/documentOperations",
-  entities: [Document, Membership, CatechesisClass, ClassEnrollment]
+  entities: [Document, Membership, CatechesisClass, ClassEnrollment, Notification]
 }
 
 action uploadDocument {
   fn: import { uploadDocument } from "@src/server/operations/documentOperations",
-  entities: [Document, Membership, CatechesisClass, ClassEnrollment]
+  entities: [Document, Membership, CatechesisClass, ClassEnrollment, Notification]
 }
 
 action verifyDocument {
   fn: import { verifyDocument } from "@src/server/operations/documentOperations",
-  entities: [Document, Membership]
+  entities: [Document, Membership, Notification]
 }
 
 action rejectDocument {
   fn: import { rejectDocument } from "@src/server/operations/documentOperations",
-  entities: [Document, Membership]
+  entities: [Document, Membership, Notification]
 }
 
 action deleteDocument {
   fn: import { deleteDocument } from "@src/server/operations/documentOperations",
-  entities: [Document, AuditLog]
+  entities: [Document, AuditLog, Notification]
 }
 
 api serveDocument {
@@ -1151,14 +1151,14 @@ api serveDocument {
   middlewareConfigFn: import { serveDocumentMiddleware } from "@src/server/api/documents",
   auth: true,
   httpRoute: (GET, "/api/documents/:id"),
-  entities: [Document, CatechumenProfile, Membership, Parish, ClassCatechist, ClassEnrollment, GuardianProfile]
+  entities: [Document, CatechumenProfile, Membership, Parish, ClassCatechist, ClassEnrollment, GuardianProfile, Notification]
 }
 
 api publicUploadDocument {
   fn: import { publicUploadDocument } from "@src/server/api/publicUpload",
   middlewareConfigFn: import { publicUploadMiddleware } from "@src/server/api/publicUpload",
   httpRoute: (POST, "/api/upload-document"),
-  entities: [Document, CatechumenProfile]
+  entities: [Document, CatechumenProfile, Notification]
 }
 
 api authenticatedDocumentUpload {
@@ -1166,7 +1166,7 @@ api authenticatedDocumentUpload {
   middlewareConfigFn: import { authenticatedDocumentUploadMiddleware } from "@src/server/api/authenticatedDocumentUpload",
   auth: true,
   httpRoute: (POST, "/api/documents/upload"),
-  entities: [Document, Membership, GuardianProfile, CatechumenProfile, Parish]
+  entities: [Document, Membership, GuardianProfile, CatechumenProfile, Parish, Notification]
 }
 
 api uploadContentImage {
@@ -1329,7 +1329,7 @@ api mobileServeDocument {
   middlewareConfigFn: import { serveDocumentMiddleware } from "@src/server/api/documents",
   auth: true,
   httpRoute: (GET, "/mobile/documents/:id"),
-  entities: [Document, CatechumenProfile, Membership, Parish, ClassCatechist, ClassEnrollment, GuardianProfile]
+  entities: [Document, CatechumenProfile, Membership, Parish, ClassCatechist, ClassEnrollment, GuardianProfile, Notification]
 }
 
 api mobileDocumentUpload {
@@ -1337,7 +1337,7 @@ api mobileDocumentUpload {
   middlewareConfigFn: import { authenticatedDocumentUploadMiddleware } from "@src/server/api/authenticatedDocumentUpload",
   auth: true,
   httpRoute: (POST, "/mobile/documents/upload"),
-  entities: [Document, Membership, GuardianProfile, CatechumenProfile, Parish]
+  entities: [Document, Membership, GuardianProfile, CatechumenProfile, Parish, Notification]
 }
 //#endregion
 
@@ -1377,7 +1377,7 @@ query getCatechumenByUploadToken {
 
 action uploadDocumentWithToken {
   fn: import { uploadDocumentWithToken } from "@src/server/operations/uploadTokenOperations",
-  entities: [Document, CatechumenProfile]
+  entities: [Document, CatechumenProfile, Notification]
 }
 //#endregion
 
@@ -1772,7 +1772,7 @@ action generateMeetingWithAi {
 
 action generateAnnualPlanning {
   fn: import { generateAnnualPlanning } from "@src/server/operations/aiOperations",
-  entities: [Meeting, CatechesisClass, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
+  entities: [Meeting, CatechesisClass, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage, Notification]
 }
 
 action chatWithAi {
@@ -1832,7 +1832,7 @@ query getMessageReadReceipts {
 
 query getCatechumenAttendanceReport {
   fn: import { getCatechumenAttendanceReport } from "@src/server/operations/catechumenReportOperations",
-  entities: [CatechumenProfile, ClassEnrollment, AttendanceRecord, Meeting, Membership, GuardianProfile, ClassCatechist, UserTwoFactor, Parish]
+  entities: [CatechumenProfile, ClassEnrollment, AttendanceRecord, Meeting, Membership, GuardianProfile, ClassCatechist, UserTwoFactor, Parish, Notification]
 }
 
 query semanticSearchBible {
@@ -1842,7 +1842,7 @@ query semanticSearchBible {
 
 query getMonthlyPlan {
   fn: import { getMonthlyPlan } from "@src/server/operations/monthlyPlanOperations",
-  entities: [Meeting, CatechesisClass, ContentItem, AttendanceRecord, Membership, ClassCatechist, ClassEnrollment, GuardianProfile, UserTwoFactor]
+  entities: [Meeting, CatechesisClass, ContentItem, AttendanceRecord, Membership, ClassCatechist, ClassEnrollment, GuardianProfile, UserTwoFactor, Notification]
 }
 
 query listDioceseSharedContent {
@@ -1852,7 +1852,7 @@ query listDioceseSharedContent {
 
 query getClassComparison {
   fn: import { getClassComparison } from "@src/server/operations/classComparisonOperations",
-  entities: [CatechesisClass, ClassEnrollment, Meeting, AttendanceRecord, Membership, UserTwoFactor, Parish]
+  entities: [CatechesisClass, ClassEnrollment, Meeting, AttendanceRecord, Membership, UserTwoFactor, Parish, Notification]
 }
 
 action generateActivityForMeeting {
@@ -1962,7 +1962,7 @@ query getPedagogicalHooks {
 
 query globalSearch {
   fn: import { globalSearch } from "@src/server/operations/searchOperations",
-  entities: [CatechumenProfile, CatechesisClass, ContentItem, BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, Household, SacramentalJourney, Document, Parish, Community, Membership]
+  entities: [CatechumenProfile, CatechesisClass, ContentItem, BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, Household, SacramentalJourney, Document, Parish, Community, Membership, Notification]
 }
 
 query listCatechismByCategory {

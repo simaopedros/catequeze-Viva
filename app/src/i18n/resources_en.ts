@@ -3386,6 +3386,7 @@ export const navigation_en = {
     "my_journey": "Journey",
     "account": "Account",
     "more": "More",
+    "offline_banner": "You're offline — some actions may fail.",
     "search_module": {
       "catechumen": "Catechumens",
       "class": "Classes",

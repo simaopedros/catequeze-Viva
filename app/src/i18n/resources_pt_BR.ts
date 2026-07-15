@@ -3386,6 +3386,7 @@ export const navigation_pt_BR = {
     "my_journey": "Jornada",
     "account": "Conta",
     "more": "Mais",
+    "offline_banner": "Sem ligação — algumas ações podem falhar.",
     "search_module": {
       "catechumen": "Catequizandos",
       "class": "Turmas",

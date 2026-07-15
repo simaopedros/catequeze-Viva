@@ -8,6 +8,11 @@ import {
   resolvePortalScope,
 } from './portalScope';
 import { resolveGuardianHouseholdIds } from '../auth/helpers';
+import {
+  notifyJustificationResponse,
+  notifyJustificationSubmitted,
+  notifyMeetingChange,
+} from './portalNotifications';
 
 function isCoordinatorOrAbove(role: string | null): boolean {
   if (!role) return false;
@@ -516,7 +521,7 @@ export const saveAttendance = async (args: any, context: any) => {
   // Verificar pertencimento à turma através do meeting
   const meeting = await context.entities.Meeting.findUnique({
     where: { id: args.meetingId },
-    select: { classId: true },
+    select: { classId: true, title: true },
   });
   if (!meeting) throw new HttpError(404, 'Encontro não encontrado.');
   await assertUserBelongsToClass(context, meeting.classId);
@@ -532,18 +537,34 @@ export const saveAttendance = async (args: any, context: any) => {
     where: { meetingId: args.meetingId, catechumenProfileId: args.catechumenProfileId },
   });
 
-  if (existing) {
-    return context.entities.AttendanceRecord.update({
-      where: { id: existing.id },
-      data: { status: args.status, note: args.note, recordedById: context.user.id },
+  const saved = existing
+    ? await context.entities.AttendanceRecord.update({
+        where: { id: existing.id },
+        data: { status: args.status, note: args.note, recordedById: context.user.id },
+      })
+    : await context.entities.AttendanceRecord.create({
+        data: {
+          meetingId: args.meetingId,
+          catechumenProfileId: args.catechumenProfileId,
+          status: args.status,
+          note: args.note,
+          recordedById: context.user.id,
+        },
+      });
+
+  // Notify family on JUSTIFIED / ABSENT staff response
+  if (args.status === 'JUSTIFIED' || args.status === 'ABSENT') {
+    void notifyJustificationResponse(context, {
+      attendanceId: saved.id,
+      meetingId: args.meetingId,
+      meetingTitle: meeting.title || 'Encontro',
+      status: args.status,
+      catechumenProfileId: args.catechumenProfileId,
+      actorUserId: context.user.id,
     });
   }
-  return context.entities.AttendanceRecord.create({
-    data: {
-      meetingId: args.meetingId, catechumenProfileId: args.catechumenProfileId,
-      status: args.status, note: args.note, recordedById: context.user.id,
-    },
-  });
+
+  return saved;
 };
 
 export const justifyAbsence = async (args: { attendanceId: string; note: string }, context: any) => {
@@ -552,7 +573,12 @@ export const justifyAbsence = async (args: { attendanceId: string; note: string 
   // Verificar se o attendance record existe e o usuário é guardian do catequizando
   const attendance = await context.entities.AttendanceRecord.findUnique({
     where: { id: args.attendanceId },
-    select: { catechumenProfileId: true },
+    select: {
+      catechumenProfileId: true,
+      meetingId: true,
+      meeting: { select: { id: true, classId: true, title: true } },
+      catechumenProfile: { select: { firstName: true, lastName: true } },
+    },
   });
   if (!attendance) throw new HttpError(404, 'Registro de presença não encontrado.');
 
@@ -565,10 +591,28 @@ export const justifyAbsence = async (args: { attendanceId: string; note: string 
     assertDependentInScope(portalScope, attendance.catechumenProfileId);
   }
 
-  return context.entities.AttendanceRecord.update({
+  const updated = await context.entities.AttendanceRecord.update({
     where: { id: args.attendanceId },
     data: { status: 'JUSTIFIED', note: args.note },
   });
+
+  const whoName =
+    [attendance.catechumenProfile?.firstName, attendance.catechumenProfile?.lastName]
+      .filter(Boolean)
+      .join(' ')
+      .trim() || 'Catequizando';
+  if (attendance.meeting) {
+    void notifyJustificationSubmitted(context, {
+      attendanceId: updated.id,
+      meetingId: attendance.meeting.id,
+      classId: attendance.meeting.classId,
+      meetingTitle: attendance.meeting.title || 'Encontro',
+      whoName,
+      actorUserId: context.user.id,
+    });
+  }
+
+  return updated;
 };
 
 /**
@@ -588,7 +632,7 @@ export const justifyAbsenceByMeeting = async (
 
   const meeting = await context.entities.Meeting.findUnique({
     where: { id: args.meetingId },
-    select: { id: true, classId: true, status: true },
+    select: { id: true, classId: true, status: true, title: true },
   });
   if (!meeting) throw new HttpError(404, 'Encontro não encontrado.');
   if (meeting.status === 'CANCELLED') {
@@ -626,22 +670,38 @@ export const justifyAbsenceByMeeting = async (
     },
   });
 
-  if (existing) {
-    return context.entities.AttendanceRecord.update({
-      where: { id: existing.id },
-      data: { status: 'JUSTIFIED', note, recordedById: context.user.id },
-    });
-  }
+  const saved = existing
+    ? await context.entities.AttendanceRecord.update({
+        where: { id: existing.id },
+        data: { status: 'JUSTIFIED', note, recordedById: context.user.id },
+      })
+    : await context.entities.AttendanceRecord.create({
+        data: {
+          meetingId: args.meetingId,
+          catechumenProfileId: args.catechumenProfileId,
+          status: 'JUSTIFIED',
+          note,
+          recordedById: context.user.id,
+        },
+      });
 
-  return context.entities.AttendanceRecord.create({
-    data: {
-      meetingId: args.meetingId,
-      catechumenProfileId: args.catechumenProfileId,
-      status: 'JUSTIFIED',
-      note,
-      recordedById: context.user.id,
-    },
+  const profile = await context.entities.CatechumenProfile.findUnique({
+    where: { id: args.catechumenProfileId },
+    select: { firstName: true, lastName: true },
   });
+  const whoName =
+    [profile?.firstName, profile?.lastName].filter(Boolean).join(' ').trim() ||
+    'Catequizando';
+  void notifyJustificationSubmitted(context, {
+    attendanceId: saved.id,
+    meetingId: meeting.id,
+    classId: meeting.classId,
+    meetingTitle: meeting.title || 'Encontro',
+    whoName,
+    actorUserId: context.user.id,
+  });
+
+  return saved;
 };
 
 /** Server-enforced meeting status transitions (staff only). */
@@ -669,7 +729,7 @@ export const updateMeeting = async (args: any, context: any) => {
 
   const meeting = await context.entities.Meeting.findUnique({
     where: { id: args.id },
-    select: { classId: true, status: true },
+    select: { classId: true, status: true, title: true, date: true },
   });
   if (!meeting) throw new HttpError(404, 'Encontro não encontrado.');
 
@@ -709,13 +769,37 @@ export const updateMeeting = async (args: any, context: any) => {
     data.date = new Date(data.date);
   }
 
-  return context.entities.Meeting.update({
+  const dateChanged =
+    data.date instanceof Date &&
+    meeting.date &&
+    data.date.getTime() !== new Date(meeting.date).getTime();
+  const statusChanged =
+    args.status !== undefined && args.status !== meeting.status;
+  const cancelled = args.status === 'CANCELLED';
+  const titleChanged =
+    typeof args.title === 'string' && args.title !== meeting.title;
+  const shouldNotify = cancelled || dateChanged || titleChanged || statusChanged;
+
+  const updated = await context.entities.Meeting.update({
     where: { id },
     data,
     include: {
       content: { select: { id: true, title: true, theme: true } },
     },
   });
+
+  if (shouldNotify) {
+    void notifyMeetingChange(context, {
+      meetingId: updated.id,
+      classId: meeting.classId,
+      title: updated.title || meeting.title || 'Encontro',
+      date: updated.date ? new Date(updated.date) : new Date(meeting.date),
+      cancelled,
+      actorUserId: context.user.id,
+    });
+  }
+
+  return updated;
 };
 
 function shapeContentForRole(content: any, isStaff: boolean) {

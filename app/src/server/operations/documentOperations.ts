@@ -13,6 +13,10 @@ import {
   resolvePortalScope,
   type PortalCapability,
 } from './portalScope';
+import {
+  notifyDocumentDecision,
+  notifyDocumentPendingReview,
+} from './portalNotifications';
 
 export const listDocuments = async (_args: void, context: any) => {
   requireAuth(context.user);
@@ -220,6 +224,14 @@ export const uploadDocument = async (
     },
   });
 
+  // Notify parish coordinators of pending review
+  void notifyDocumentPendingReview(context, {
+    documentId: created.id,
+    documentName: created.name,
+    parishId,
+    catechumenProfileId: args.catechumenProfileId || null,
+  });
+
   return {
     id: created.id,
     name: created.name,
@@ -236,9 +248,12 @@ export const verifyDocument = async (args: { id: string }, context: any) => {
     where: { id: args.id },
     select: {
       id: true,
+      name: true,
       uploadedById: true,
+      catechumenProfileId: true,
       catechumenProfile: {
         select: {
+          id: true,
           parishId: true,
           household: { select: { parishId: true } },
           enrollments: { select: { class: { select: { parishId: true } } } },
@@ -303,6 +318,14 @@ export const verifyDocument = async (args: { id: string }, context: any) => {
     await syncDocumentMilestones(context, args.id, document.catechumenProfile, 'APPROVED');
   }
 
+  void notifyDocumentDecision(context, {
+    documentId: document.id,
+    documentName: document.name || 'Documento',
+    decision: 'VERIFIED',
+    uploadedById: document.uploadedById,
+    catechumenProfileId: document.catechumenProfileId,
+  });
+
   return updated;
 };
 
@@ -313,6 +336,7 @@ export const rejectDocument = async (args: { id: string; reason?: string }, cont
     where: { id: args.id },
     select: {
       id: true,
+      name: true,
       uploadedById: true,
       catechumenProfileId: true,
       catechumenProfile: { select: { id: true } },
@@ -369,6 +393,15 @@ export const rejectDocument = async (args: { id: string; reason?: string }, cont
   if (document.catechumenProfile) {
     await syncDocumentMilestones(context, args.id, document.catechumenProfile, 'REJECTED');
   }
+
+  void notifyDocumentDecision(context, {
+    documentId: document.id,
+    documentName: document.name || 'Documento',
+    decision: 'REJECTED',
+    reason: args.reason || null,
+    uploadedById: document.uploadedById,
+    catechumenProfileId: document.catechumenProfileId,
+  });
 
   return updated;
 };

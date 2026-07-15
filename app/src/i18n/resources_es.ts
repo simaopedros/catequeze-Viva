@@ -3386,6 +3386,7 @@ export const navigation_es = {
     "my_journey": "Camino",
     "account": "Cuenta",
     "more": "Más",
+    "offline_banner": "Sin conexión — algunas acciones pueden fallar.",
     "search_module": {
       "catechumen": "Catecúmenos",
       "class": "Grupos",

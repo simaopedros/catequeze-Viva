@@ -16,6 +16,11 @@ import {
   findOrMigratePortalInvitationByToken,
   hashPortalInviteToken as hashLegacyToken,
 } from '../portal/legacyPortalInvite';
+  notifyMinorConsentRequested,
+  notifyPortalInviteAccepted,
+  notifyPortalInviteCreated,
+  notifyPortalInviteExpired,
+} from './portalNotifications';
 
 // ── Rate limits (memberOperations pattern) ─────────────────────────────────
 
@@ -433,6 +438,15 @@ export const createPortalInvitation = async (
     logger.error('[portalInvitation] Erro ao enviar email de convite', { error: String(error) });
   }
 
+  // In-app notification if invitee already has an account
+  void notifyPortalInviteCreated(context, {
+    invitationId: created.id,
+    emailNormalized,
+    parishName: location,
+    roleLabel: roleLabel(args.role),
+    invitePath: `/convite/${token}`,
+  });
+
   await writeAuditLog(context, 'CREATE', 'PortalInvitation', created.id, {
     operation: 'PORTAL_INVITE_CREATE',
     parishId: args.parishId,
@@ -530,6 +544,12 @@ export const getPortalInvitation = async (
       await context.entities.PortalInvitation.update({
         where: { id: inv.id },
         data: { status: 'EXPIRED' },
+      });
+      void notifyPortalInviteExpired(context, {
+        invitationId: inv.id,
+        invitedById: inv.invitedById,
+        emailNormalized: inv.emailNormalized,
+        parishName: inv.parish?.name || 'a paróquia',
       });
     } catch {
       /* best-effort */
@@ -641,6 +661,12 @@ export const acceptPortalInvitation = async (
       where: { id: invPre.id },
       data: { status: 'EXPIRED' },
     });
+    void notifyPortalInviteExpired(context, {
+      invitationId: invPre.id,
+      invitedById: invPre.invitedById,
+      emailNormalized: invPre.emailNormalized,
+      parishName: 'a paróquia',
+    });
     throw new HttpError(410, 'EXPIRED', { code: 'EXPIRED' });
   }
   if (invPre.status !== 'PENDING') {
@@ -678,6 +704,14 @@ export const acceptPortalInvitation = async (
             return name || (g.email ? maskEmail(g.email) : 'Responsável');
           });
         }
+        const minorName =
+          [profile.firstName, profile.lastName].filter(Boolean).join(' ').trim() ||
+          'o catequizando';
+        void notifyMinorConsentRequested(context, {
+          catechumenProfileId: profile.id,
+          catechumenName: minorName,
+          householdId: profile.householdId,
+        });
         throw new HttpError(403, 'MINOR_CONSENT_REQUIRED', {
           code: 'MINOR_CONSENT_REQUIRED',
           catechumenProfileId: profile.id,
@@ -863,6 +897,17 @@ export const acceptPortalInvitation = async (
       invitationId: result.invitationId,
       parishId: result.parishId,
       role: result.role,
+    });
+
+    const acceptorName =
+      [context.user.firstName, context.user.lastName].filter(Boolean).join(' ').trim() ||
+      context.user.email ||
+      'Utilizador';
+    void notifyPortalInviteAccepted(context, {
+      invitationId: result.invitationId,
+      invitedById: invPre.invitedById,
+      acceptorName,
+      roleLabel: roleLabel(result.role),
     });
   }
 
