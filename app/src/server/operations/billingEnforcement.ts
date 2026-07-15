@@ -326,6 +326,7 @@ export async function ensureProductTrial(
   }
 
   // Family-portal-only users never receive / restore commercial product trials.
+  // On membership lookup failure: fail closed — do NOT restore commercial trial.
   try {
     const prisma = {
       membership: context.entities.Membership,
@@ -333,7 +334,7 @@ export async function ensureProductTrial(
     };
     if (await userHasOnlyFamilyMemberships(prisma, userId)) {
       await healFalseTrialForUserIfNeeded(prisma, userId);
-      return context.entities.User.findUnique({
+      const healed = await context.entities.User.findUnique({
         where: { id: userId },
         select: {
           subscriptionStatus: true,
@@ -342,9 +343,16 @@ export async function ensureProductTrial(
           paymentProcessorUserId: true,
         },
       });
+      if (!healed) {
+        throw new HttpError(401);
+      }
+      return healed;
     }
-  } catch {
-    // Non-fatal — fall through to commercial trial logic.
+  } catch (error) {
+    if (error instanceof HttpError) throw error;
+    // Membership lookup (or heal) failed — leave the user row unchanged.
+    // Never fall through into trial restore for an unknown family/portal user.
+    return user;
   }
 
   // Stripe-managed or already paid — leave alone.

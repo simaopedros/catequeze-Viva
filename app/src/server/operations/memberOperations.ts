@@ -2,6 +2,7 @@ import { HttpError } from 'wasp/server';
 import { requireAuth, writeAuditLog, getDioceseParishIds } from '../auth/helpers';
 import { logger } from '../logger';
 import { isCoordinatorOrAbove } from './sharedScope';
+import { healFalseTrialAfterInviteAccept } from '../../payment/portalBillingIsolation';
 
 // ── Simple rate limiter for public invite token endpoint ───────────────────
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -427,6 +428,10 @@ export const acceptInvitation = async (
   }
 
   await writeAuditLog(context, 'CREATE', 'Membership', membership.id, { operation: 'MEMBER_ACCEPT' });
+
+  // Clear false commercial product trials if this user is now family-only.
+  await healFalseTrialAfterInviteAccept(context);
+
   return updated;
 };
 
@@ -542,6 +547,8 @@ export const acceptInvitationByToken = async (
     await linkProfile(context, invitation.role);
     await context.entities.PendingInvitation.delete({ where: { id: invitation.id } });
     await writeAuditLog(context, 'CREATE', 'Membership', membership.id, { operation: 'MEMBER_ACCEPT_TOKEN' });
+    await healFalseTrialAfterInviteAccept(context);
+
     return membership;
   }
 
@@ -570,6 +577,8 @@ export const acceptInvitationByToken = async (
   }
   await linkProfile(context, m.role);
   await writeAuditLog(context, 'CREATE', 'Membership', m.id, { operation: 'MEMBER_ACCEPT_TOKEN' });
+  await healFalseTrialAfterInviteAccept(context);
+
   return updated;
 };
 

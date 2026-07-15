@@ -1,11 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { HttpError } from 'wasp/server';
 import {
   assertCommercialBillingAllowed,
   extractPortalSignupSignalsFromReq,
   healFalseCommercialTrials,
   isPortalSignupCandidate,
+  MembershipLookupError,
   normalizeEmail,
+  shouldSkipCommercialMeta,
   userHasOnlyFamilyMemberships,
 } from './portalBillingIsolation';
 
@@ -16,6 +17,14 @@ vi.mock('wasp/server', () => ({
       super(message);
       this.statusCode = statusCode;
     }
+  },
+}));
+
+vi.mock('../server/logger', () => ({
+  logger: {
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
   },
 }));
 
@@ -52,7 +61,16 @@ describe('portalBillingIsolation', () => {
     ).toEqual({ isFamilyHost: false, sourcePortal: true });
   });
 
-  it('isPortalSignupCandidate via PendingInvitation GUARDIAN/CATECHUMEN', async () => {
+  it('normalizes cookie source case-insensitively', () => {
+    expect(
+      extractPortalSignupSignalsFromReq({
+        cookies: { portal_source: 'PORTAL' },
+        headers: { host: 'catechis.app' },
+      }),
+    ).toEqual({ isFamilyHost: false, sourcePortal: true });
+  });
+
+  it('isPortalSignupCandidate via non-expired PendingInvitation GUARDIAN/CATECHUMEN', async () => {
     const prisma = {
       pendingInvitation: {
         findFirst: vi.fn().mockResolvedValue({ id: 'pi_1' }),
@@ -67,10 +85,17 @@ describe('portalBillingIsolation', () => {
       }),
     ).resolves.toBe(true);
 
-    expect(prisma.pendingInvitation.findFirst).toHaveBeenCalled();
+    expect(prisma.pendingInvitation.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          expiresAt: expect.objectContaining({ gt: expect.any(Date) }),
+          role: { in: ['GUARDIAN', 'CATECHUMEN'] },
+        }),
+      }),
+    );
   });
 
-  it('isPortalSignupCandidate false for commercial signup without signals', async () => {
+  it('isPortalSignupCandidate false when only expired family invites exist', async () => {
     const prisma = {
       pendingInvitation: {
         findFirst: vi.fn().mockResolvedValue(null),
@@ -80,10 +105,51 @@ describe('portalBillingIsolation', () => {
     await expect(
       isPortalSignupCandidate({
         prisma,
-        email: 'coord@example.com',
+        email: 'parent@example.com',
         req: { headers: { host: 'catechis.app' } },
       }),
     ).resolves.toBe(false);
+  });
+
+  it('shouldSkipCommercialMeta ignores spoofable source=portal alone', async () => {
+    const prisma = {
+      pendingInvitation: {
+        findFirst: vi.fn().mockResolvedValue(null),
+      },
+    };
+
+    await expect(
+      shouldSkipCommercialMeta({
+        prisma,
+        email: 'ads@example.com',
+        req: {
+          headers: { host: 'catechis.app' },
+          query: { source: 'portal' },
+        },
+      }),
+    ).resolves.toBe(false);
+
+    // Trial candidate still true via source signal:
+    await expect(
+      isPortalSignupCandidate({
+        prisma,
+        email: 'ads@example.com',
+        req: {
+          headers: { host: 'catechis.app' },
+          query: { source: 'portal' },
+        },
+      }),
+    ).resolves.toBe(true);
+  });
+
+  it('shouldSkipCommercialMeta true for family host', async () => {
+    await expect(
+      shouldSkipCommercialMeta({
+        prisma: {},
+        email: 'parent@example.com',
+        req: { headers: { host: 'familia.catechis.app' } },
+      }),
+    ).resolves.toBe(true);
   });
 
   it('userHasOnlyFamilyMemberships is true only when all roles are family', async () => {
@@ -102,12 +168,39 @@ describe('portalBillingIsolation', () => {
     await expect(userHasOnlyFamilyMemberships(prisma, 'u1')).resolves.toBe(false);
   });
 
+  it('userHasOnlyFamilyMemberships throws MembershipLookupError on DB failure', async () => {
+    const prisma = {
+      membership: {
+        findMany: vi.fn().mockRejectedValue(new Error('db down')),
+      },
+    };
+
+    await expect(userHasOnlyFamilyMemberships(prisma, 'u1')).rejects.toBeInstanceOf(
+      MembershipLookupError,
+    );
+  });
+
   it('assertCommercialBillingAllowed throws 403 for family-only users', async () => {
     const context = {
       user: { id: 'family_user' },
       entities: {
         Membership: {
           findMany: vi.fn().mockResolvedValue([{ role: 'GUARDIAN' }]),
+        },
+      },
+    };
+
+    await expect(assertCommercialBillingAllowed(context)).rejects.toMatchObject({
+      statusCode: 403,
+    });
+  });
+
+  it('assertCommercialBillingAllowed fails closed (403) on membership DB errors', async () => {
+    const context = {
+      user: { id: 'unknown_user' },
+      entities: {
+        Membership: {
+          findMany: vi.fn().mockRejectedValue(new Error('db down')),
         },
       },
     };

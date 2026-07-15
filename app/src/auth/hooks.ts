@@ -9,6 +9,8 @@ import { logger } from '../server/logger';
 import {
   healFalseTrialForUserIfNeeded,
   isPortalSignupCandidate,
+  PORTAL_FAMILY_ROLES,
+  shouldSkipCommercialMeta,
 } from '../payment/portalBillingIsolation';
 
 interface OnAfterSignupArgs {
@@ -23,11 +25,10 @@ interface OnAfterSignupArgs {
  *
  * 1. Detects portal-bound signups (family invite / family host / source=portal).
  * 2. Starts the no-card product trial only for commercial (non-portal) signups.
- * 3. Sends Meta CAPI CompleteRegistration only for commercial signups.
- * 4. Converts any PendingInvitations addressed to the new user's email into
- *    INVITED memberships. Keeps the PendingInvitation records alive so the
- *    token-based accept flow (family portal) still works — they are deleted
- *    only when the user explicitly accepts via acceptInvitationByToken.
+ * 3. Sends Meta CAPI CompleteRegistration only for commercial signups
+ *    (Meta skip uses invitation/family host — not spoofable source alone).
+ * 4. Converts non-expired PendingInvitations into INVITED memberships.
+ * 5. Heals false commercial trials when family memberships are linked.
  */
 export const onAfterSignup = async ({
   user,
@@ -37,14 +38,23 @@ export const onAfterSignup = async ({
   if (!user?.id) return;
 
   let portalCandidate = false;
+  let detectionFailed = false;
   try {
     portalCandidate = await isPortalSignupCandidate({
       prisma,
       email: user.email,
       req,
     });
-  } catch {
-    portalCandidate = false;
+  } catch (error) {
+    detectionFailed = true;
+    // Fail closed for trial isolation when email is present and detection threw:
+    // skip commercial trial rather than granting one to a possible portal user.
+    portalCandidate = Boolean(user.email);
+    logger.warn('[auth] portal signup detection failed — fail-closed for trial isolation', {
+      userId: user.id,
+      emailPresent: Boolean(user.email),
+      error: error instanceof Error ? error.message : String(error),
+    });
   }
 
   // Product trial: commercial signups only. Family/portal candidates never
@@ -63,8 +73,26 @@ export const onAfterSignup = async ({
     }
   }
 
-  // Never fire commercial Meta CompleteRegistration for portal invite signups.
-  if (!portalCandidate) {
+  // Meta: skip only for invitation / family host (not open source=portal alone).
+  // On detection failure with email, also skip commercial conversion (fail closed).
+  let skipMeta = detectionFailed && Boolean(user.email);
+  if (!skipMeta) {
+    try {
+      skipMeta = await shouldSkipCommercialMeta({
+        prisma,
+        email: user.email,
+        req,
+      });
+    } catch (error) {
+      skipMeta = Boolean(user.email);
+      logger.warn('[auth] Meta skip check failed — fail-closed (no commercial CompleteRegistration)', {
+        userId: user.id,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  if (!skipMeta) {
     try {
       await sendCompleteRegistrationToMeta({
         userId: user.id,
@@ -79,7 +107,15 @@ export const onAfterSignup = async ({
       });
     }
   } else {
-    logger.info('[auth] portal signup candidate — skipped commercial trial and Meta CompleteRegistration', {
+    logger.info('[auth] portal-bound signup — skipped Meta CompleteRegistration', {
+      userId: user.id,
+      portalCandidate,
+      detectionFailed,
+    });
+  }
+
+  if (portalCandidate && !detectionFailed) {
+    logger.info('[auth] portal signup candidate — skipped commercial product trial', {
       userId: user.id,
     });
   }
@@ -87,13 +123,17 @@ export const onAfterSignup = async ({
   const email = user?.email;
   if (!email) return;
 
+  let linkedFamilyInvite = false;
   try {
-    const pending = await prisma.pendingInvitation.findMany({ where: { email } });
+    const now = new Date();
+    const pending = await prisma.pendingInvitation.findMany({
+      where: {
+        email,
+        expiresAt: { gt: now },
+      },
+    });
     if (pending.length === 0) {
-      // Still try healing if somehow marked trialing as family-only later.
-      if (portalCandidate) {
-        await healFalseTrialForUserIfNeeded(prisma, user.id).catch(() => {});
-      }
+      await healFalseTrialForUserIfNeeded(prisma, user.id).catch(() => {});
       return;
     }
 
@@ -112,14 +152,19 @@ export const onAfterSignup = async ({
           status: 'INVITED',
         },
       });
+
+      if (PORTAL_FAMILY_ROLES.includes(invitation.role)) {
+        linkedFamilyInvite = true;
+      }
     }
 
-    // After family memberships exist, clear any accidental commercial trial.
-    if (portalCandidate) {
+    // Always heal when family memberships were linked (or portal candidate path).
+    if (linkedFamilyInvite || portalCandidate) {
       await healFalseTrialForUserIfNeeded(prisma, user.id).catch(() => {});
     }
   } catch {
-    // Non-fatal invite linking
+    // Non-fatal invite linking — still attempt heal best-effort.
+    await healFalseTrialForUserIfNeeded(prisma, user.id).catch(() => {});
   }
 };
 

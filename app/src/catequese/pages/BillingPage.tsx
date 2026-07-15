@@ -253,8 +253,10 @@ export default function BillingPage() {
     (m: { role?: string }) =>
       m.role && m.role !== "GUARDIAN" && m.role !== "CATECHUMEN",
   );
+  // Dual-role staff on familia.* keep billing access; pure family roles redirect.
   const shouldRedirectFamilyBilling =
-    isFamilyPortalHost() || (isFamilyOnlyRole && !hasStaffMembership);
+    !hasStaffMembership &&
+    (isFamilyPortalHost() || isFamilyOnlyRole);
 
   useEffect(() => {
     if (loadingContext) return;

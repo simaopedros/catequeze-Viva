@@ -3,14 +3,30 @@
  *
  * Family portal users (GUARDIAN / CATECHUMEN) must never own commercial
  * product trials or hit Stripe checkout. PortalInvitation is not available
- * yet — detect candidates via PendingInvitation roles + request signals.
+ * yet — detect candidates via non-expired PendingInvitation roles + request signals.
+ *
+ * Fail-closed policy:
+ * - Commercial billing mutations deny access when membership lookup fails.
+ * - ensureProductTrial does not restore a commercial trial when membership
+ *   lookup fails (returns the user row unchanged).
  */
 
 import { HttpError } from 'wasp/server';
 import { FAMILY_PORTAL_ROLES, isFamilyPortalHost } from '../shared/portal';
 import { PaymentPlanId } from './plans';
+import { logger } from '../server/logger';
 
 export const PORTAL_FAMILY_ROLES = FAMILY_PORTAL_ROLES as readonly string[];
+
+export class MembershipLookupError extends Error {
+  constructor(message: string, options?: { cause?: unknown }) {
+    super(message);
+    this.name = 'MembershipLookupError';
+    if (options?.cause !== undefined) {
+      (this as Error & { cause?: unknown }).cause = options.cause;
+    }
+  }
+}
 
 export function normalizeEmail(email: string | null | undefined): string | null {
   if (!email || typeof email !== 'string') return null;
@@ -21,6 +37,10 @@ export function normalizeEmail(email: string | null | undefined): string | null 
 /**
  * Extract host / query / cookie signals from the Express-style signup request.
  * Used only as interim signals until AuthContinuation / PortalInvitation exist.
+ *
+ * Note: open `source=portal` query/cookie can be spoofed. That is acceptable for
+ * **trial skip** (spoofer loses product trial). Meta CompleteRegistration skip
+ * should prefer invitation or family host — see `shouldSkipCommercialMeta`.
  */
 export function extractPortalSignupSignalsFromReq(req: unknown): {
   isFamilyHost: boolean;
@@ -46,9 +66,9 @@ export function extractPortalSignupSignalsFromReq(req: unknown): {
 
   const querySource = stringParam(request.query?.source) || stringParam(request.query?.signupSource);
   const cookieSource =
-    request.cookies?.source
-    || request.cookies?.signup_source
-    || request.cookies?.portal_source;
+    stringParam(request.cookies?.source)
+    || stringParam(request.cookies?.signup_source)
+    || stringParam(request.cookies?.portal_source);
   const urlBlob = `${request.originalUrl || ''} ${request.url || ''}`;
   const sourcePortal =
     querySource === 'portal'
@@ -73,8 +93,67 @@ function stringParam(value: unknown): string | null {
   return null;
 }
 
+/** Prisma filter: invitation still valid (expiresAt is required on the model). */
+export function pendingInvitationNotExpiredWhere(now = new Date()) {
+  return { expiresAt: { gt: now } };
+}
+
+/**
+ * Non-expired PendingInvitation for family roles matching email.
+ * Throws on unexpected DB errors (callers decide fail-open vs fail-closed).
+ */
+export async function hasNonExpiredFamilyPendingInvitation(args: {
+  prisma: any;
+  email: string | null | undefined;
+}): Promise<boolean> {
+  const email = normalizeEmail(args.email);
+  if (!email || !args.prisma?.pendingInvitation) {
+    return false;
+  }
+
+  const notExpired = pendingInvitationNotExpiredWhere();
+  const roleFilter = { role: { in: [...PORTAL_FAMILY_ROLES] } };
+
+  try {
+    const pending = await args.prisma.pendingInvitation.findFirst({
+      where: {
+        ...roleFilter,
+        ...notExpired,
+        OR: [
+          { email },
+          { email: args.email },
+          { email: { equals: email, mode: 'insensitive' } },
+        ],
+      },
+      select: { id: true },
+    });
+    return Boolean(pending);
+  } catch (primaryError) {
+    // Fallback without mode:insensitive (e.g. unexpected delegate).
+    try {
+      const pending = await args.prisma.pendingInvitation.findFirst({
+        where: {
+          email: args.email || email,
+          ...roleFilter,
+          ...notExpired,
+        },
+        select: { id: true },
+      });
+      return Boolean(pending);
+    } catch (fallbackError) {
+      throw new MembershipLookupError(
+        'Failed to load PendingInvitation for portal signup detection',
+        { cause: fallbackError ?? primaryError },
+      );
+    }
+  }
+}
+
 /**
  * Interim portal signup candidate detection (design: a + c; b = PortalInvitation later).
+ * Non-expired family PendingInvitation, family host, or source=portal signals.
+ *
+ * Throws MembershipLookupError if invitation lookup fails after fallbacks.
  */
 export async function isPortalSignupCandidate(args: {
   prisma: any;
@@ -86,45 +165,36 @@ export async function isPortalSignupCandidate(args: {
     return true;
   }
 
-  const email = normalizeEmail(args.email);
-  if (!email || !args.prisma?.pendingInvitation) {
-    return false;
-  }
+  return hasNonExpiredFamilyPendingInvitation({
+    prisma: args.prisma,
+    email: args.email,
+  });
+}
 
-  try {
-    // Prefer case-insensitive match (Postgres + Prisma).
-    const pending = await args.prisma.pendingInvitation.findFirst({
-      where: {
-        role: { in: [...PORTAL_FAMILY_ROLES] },
-        OR: [
-          { email },
-          { email: args.email },
-          { email: { equals: email, mode: 'insensitive' } },
-        ],
-      },
-      select: { id: true },
-    });
-    return Boolean(pending);
-  } catch {
-    // Fallback without mode:insensitive (e.g. unexpected delegate).
-    try {
-      const pending = await args.prisma.pendingInvitation.findFirst({
-        where: {
-          email: args.email || email,
-          role: { in: [...PORTAL_FAMILY_ROLES] },
-        },
-        select: { id: true },
-      });
-      return Boolean(pending);
-    } catch {
-      return false;
-    }
-  }
+/**
+ * Meta CompleteRegistration should not fire for real portal-bound signups.
+ * Uses invitation + family host only — open `source=portal` query alone is
+ * spoofable and must not suppress ad conversion tracking.
+ */
+export async function shouldSkipCommercialMeta(args: {
+  prisma: any;
+  email: string | null | undefined;
+  req?: unknown;
+}): Promise<boolean> {
+  const signals = extractPortalSignupSignalsFromReq(args.req);
+  if (signals.isFamilyHost) return true;
+  return hasNonExpiredFamilyPendingInvitation({
+    prisma: args.prisma,
+    email: args.email,
+  });
 }
 
 /**
  * True when the user has at least one family membership and no non-family membership.
  * Users with zero memberships are NOT family-only (commercial / onboarding path).
+ *
+ * **Fail closed for callers:** throws MembershipLookupError on DB errors so
+ * billing mutations can deny access and ensureProductTrial can avoid re-applying trial.
  */
 export async function userHasOnlyFamilyMemberships(
   prisma: any,
@@ -146,13 +216,17 @@ export async function userHasOnlyFamilyMemberships(
     return memberships.every((m: { role: string }) =>
       PORTAL_FAMILY_ROLES.includes(m.role),
     );
-  } catch {
-    return false;
+  } catch (error) {
+    throw new MembershipLookupError(
+      'Failed to load memberships for portal billing isolation',
+      { cause: error },
+    );
   }
 }
 
 /**
  * Whether commercial billing ops must be blocked for this user.
+ * Rethrows membership lookup failures (fail closed upstream).
  */
 export async function isPortalBillingBlockedUser(args: {
   prisma: any;
@@ -168,12 +242,25 @@ export async function assertCommercialBillingAllowed(
     throw new HttpError(401, 'Only authenticated users are allowed to perform this operation');
   }
 
-  const blocked = await isPortalBillingBlockedUser({
-    prisma: {
-      membership: context.entities.Membership,
-    },
-    userId: context.user.id,
-  });
+  let blocked: boolean;
+  try {
+    blocked = await isPortalBillingBlockedUser({
+      prisma: {
+        membership: context.entities.Membership,
+      },
+      userId: context.user.id,
+    });
+  } catch (error) {
+    logger.error('[billing] membership lookup failed — denying commercial billing (fail-closed)', {
+      userId: context.user.id,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    // Fail closed: never allow checkout / portal when we cannot prove the user is commercial.
+    throw new HttpError(
+      403,
+      'Assinatura comercial não está disponível no momento. Tente novamente ou contacte o suporte.',
+    );
+  }
 
   if (blocked) {
     throw new HttpError(
@@ -254,4 +341,28 @@ export async function healFalseTrialForUserIfNeeded(
 ): Promise<boolean> {
   const result = await healFalseCommercialTrials(prisma, { userId, limit: 1 });
   return result.healed > 0;
+}
+
+/**
+ * Best-effort heal after invite accept. Never throws to callers.
+ */
+export async function healFalseTrialAfterInviteAccept(
+  context: { entities: any; user?: { id: string } | null },
+): Promise<void> {
+  const userId = context.user?.id;
+  if (!userId) return;
+  try {
+    await healFalseTrialForUserIfNeeded(
+      {
+        user: context.entities.User,
+        membership: context.entities.Membership,
+      },
+      userId,
+    );
+  } catch (error) {
+    logger.warn('[billing] heal after invite accept failed (non-fatal)', {
+      userId,
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
 }

@@ -278,7 +278,7 @@ describe('onAfterSignup portal trial isolation', () => {
     expect(sendMetaEventMock).toHaveBeenCalled();
   });
 
-  it('skips trial when request signals source=portal', async () => {
+  it('skips trial when request signals source=portal but still fires Meta (spoofable signal)', async () => {
     const prisma = createPrisma({ pending: [] });
 
     await onAfterSignup({
@@ -288,6 +288,22 @@ describe('onAfterSignup portal trial isolation', () => {
         headers: { host: 'catechis.app' },
         query: { source: 'portal' },
       },
+    });
+
+    // Open source=portal skips product trial (hurts spoofer) but must not suppress ad CAPI.
+    expect(prisma.userUpdates.some((u) => u.data?.subscriptionStatus === 'trialing')).toBe(
+      false,
+    );
+    expect(sendMetaEventMock).toHaveBeenCalled();
+  });
+
+  it('skips Meta on family portal host without invitation', async () => {
+    const prisma = createPrisma({ pending: [] });
+
+    await onAfterSignup({
+      user: { id: 'user_family_host', email: 'fam@example.com' },
+      prisma,
+      req: { headers: { host: 'familia.catechis.app' } },
     });
 
     expect(prisma.userUpdates.some((u) => u.data?.subscriptionStatus === 'trialing')).toBe(
