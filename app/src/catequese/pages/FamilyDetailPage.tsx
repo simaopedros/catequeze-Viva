@@ -19,7 +19,7 @@ import {
   Plus,
   Pencil,
   Trash2,
-  Copy,
+  Mail,
 } from "lucide-react";
 import {
   useQuery,
@@ -36,7 +36,7 @@ import { toast } from "../../client/hooks/use-toast";
 import PhoneMaskInput from "../../client/components/PhoneMaskInput";
 import { useViaCep } from "../../client/hooks/useViaCep";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
-import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
+import { PortalInviteDialog } from "../components/PortalInviteDialog";
 import {
   Dialog,
   DialogContent,
@@ -150,6 +150,9 @@ export default function FamilyDetailPage() {
   const [confirmRemoveOpen, setConfirmRemoveOpen] = useState(false);
   const [removingGuardian, setRemovingGuardian] = useState<any>(null);
   const [removingGuardianLoading, setRemovingGuardianLoading] = useState(false);
+
+  // Portal invite (guardian)
+  const [inviteGuardian, setInviteGuardian] = useState<any>(null);
 
   // Add/Remove catechumen state
   const { data: allCatechumens = [] } = useQuery(listCatechumens, {
@@ -354,16 +357,6 @@ export default function FamilyDetailPage() {
     } finally {
       setRemovingGuardianLoading(false);
     }
-  };
-
-  const handleCopyInviteLink = () => {
-    const link = `${window.location.origin}/app/families/${id}`;
-    navigator.clipboard.writeText(link);
-    trackMarketingEvent("share_clicked", {
-      placement: "family_detail_page",
-      method: "copy_link",
-    });
-    toast({ title: t("detail_link_copied") || "Link copiado!" });
   };
 
   const openAddCatechumenDialog = () => {
@@ -701,13 +694,12 @@ export default function FamilyDetailPage() {
                         size="icon"
                         variant="ghost"
                         className="h-7 w-7"
-                        onClick={handleCopyInviteLink}
-                        title={
-                          t("families.copy_invite_link") ||
-                          "Copiar link de convite"
-                        }
+                        onClick={() => setInviteGuardian(g)}
+                        title={t("portal_invites.invite_guardian_title", {
+                          defaultValue: "Convidar responsável",
+                        })}
                       >
-                        <Copy className="h-3.5 w-3.5" />
+                        <Mail className="h-3.5 w-3.5" />
                       </Button>
                       <Button
                         size="icon"
@@ -1181,6 +1173,24 @@ export default function FamilyDetailPage() {
         onConfirm={handleRemoveCatechumen}
         loading={removingCatechumenLoading}
       />
+
+      {inviteGuardian && household?.parishId && (
+        <PortalInviteDialog
+          open={!!inviteGuardian}
+          onOpenChange={(o) => {
+            if (!o) setInviteGuardian(null);
+          }}
+          role="GUARDIAN"
+          parishId={household.parishId}
+          guardianProfileId={inviteGuardian.id}
+          householdId={household.id}
+          communityId={household.communityId}
+          profileName={getGuardianDisplayName(inviteGuardian)}
+          defaultEmail={
+            inviteGuardian.user?.email || inviteGuardian.email || ""
+          }
+        />
+      )}
     </>
   );
 }

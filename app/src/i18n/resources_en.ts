@@ -1516,19 +1516,6 @@ export const common_en = {
       "subtitle": "Manage authorizations and consents in accordance with data protection law.",
       "authorize": "I authorize",
       "deny": "I deny",
-      "lgpd_section": "Consents (GDPR)",
-      "minor": {
-        "section_title": "Dependents' portal access",
-        "section_desc": "Authorize or revoke a minor's access to the family portal. Revocation suspends the catechumen login without deleting history.",
-        "authorize": "Authorize access",
-        "revoke": "Revoke",
-        "status_active": "Access authorized",
-        "status_pending": "Awaiting authorization",
-        "source_guardian": "Guardian",
-        "source_staff": "Offline (parish)",
-        "grant_success": "Minor access authorized",
-        "revoke_success": "Minor access revoked"
-      },
       "types": {
         "IMAGE_USAGE": {
           "label": "Image usage",
@@ -1779,7 +1766,63 @@ export const common_en = {
     "install_description": "Add to your home screen for quick access and offline use.",
     "install_button": "Install",
     "offline_title": "No connection",
-    "offline_description": "You are offline. Check your connection and try again."
+    "offline_description": "You are offline. Check your connection and try again.",
+    "portal_invites": {
+      "invite_guardian_title": "Invite guardian",
+      "invite_catechumen_title": "Invite to portal",
+      "invite_for_profile": "Send a family portal invite to {{name}}.",
+      "invite_desc": "The invitee will receive an email with the link. You can also copy the link or share it on WhatsApp.",
+      "invalid_email": "Enter a valid email.",
+      "missing_parish": "Active parish not found.",
+      "consent_required_title": "Consent required",
+      "consent_required_desc": "Minors need guardian authorization or parish offline grant before inviting.",
+      "created_success": "Invitation created",
+      "created_success_desc": "Email sent when possible. Copy the link or share on WhatsApp.",
+      "email_role_conflict": "This email is already linked to another portal role in this parish.",
+      "create_error": "Could not create invitation",
+      "link_copied": "Link copied",
+      "copy_failed": "Could not copy the link.",
+      "success_hint": "The full link is shown only once. Save or share it now.",
+      "copy_link": "Copy link",
+      "share_whatsapp": "WhatsApp",
+      "minor_notice_title": "Minor catechumen",
+      "checking_consent": "Checking consent…",
+      "consent_ok": "An active portal access authorization already exists.",
+      "minor_notice_desc": "Without guardian consent the minor cannot activate their account. Record parish offline authorization or ask the guardian to authorize under Consents.",
+      "staff_offline_checkbox": "Record parish offline authorization and send the invite",
+      "send": "Send invite",
+      "center_title": "Portal invitation center",
+      "center_subtitle": "Track pending, accepted, expired and revoked invites. Resend, revoke or share on WhatsApp after resend.",
+      "refresh": "Refresh",
+      "filter_all": "All",
+      "last_share_title": "Last resend link",
+      "load_error": "Error loading invitations.",
+      "empty": "No invitations in this filter.",
+      "unnamed_profile": "Unnamed profile",
+      "expires": "Expires",
+      "resends": "{{count}} resend(s)",
+      "resend": "Resend",
+      "revoke": "Revoke",
+      "resend_success": "Invitation resent",
+      "resend_error": "Failed to resend",
+      "revoke_success": "Invitation revoked",
+      "revoke_error": "Failed to revoke",
+      "revoke_confirm_title": "Revoke invitation?",
+      "revoke_confirm_desc": "The link will stop working. You can create a new invite later.",
+      "no_link_available": "Full link is only available after create or resend.",
+      "select_workspace": "Select a parish/workspace.",
+      "status": {
+        "PENDING": "Pending",
+        "ACCEPTED": "Accepted",
+        "EXPIRED": "Expired",
+        "REVOKED": "Revoked"
+      },
+      "role": {
+        "GUARDIAN": "Guardian",
+        "CATECHUMEN": "Catechumen"
+      },
+      "consent_unknown": "Could not confirm consent status. The invite can still be sent; the minor still needs authorization to activate."
+    }
   } as const;
 
 export const components_en = {
@@ -3350,7 +3393,8 @@ export const navigation_en = {
       "document": "Documents",
       "parish": "Parishes",
       "community": "Communities"
-    }
+    },
+    "portal_invitations": "Portal invites"
   } as const;
 
 export const onboarding_en = {

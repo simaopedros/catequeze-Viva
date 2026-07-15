@@ -1481,6 +1481,10 @@ page TermsPublicPage { component: import TermsPage from "@src/catequese/pages/Te
 route AppConsentRoute { path: "/app/consents", to: AppConsentPage }
 page AppConsentPage { authRequired: true, component: import ConsentPage from "@src/catequese/pages/ConsentPage" }
 
+// Portal invitation admin center (staff)
+route AppPortalInvitationsRoute { path: "/app/portal-invitations", to: AppPortalInvitationsPage }
+page AppPortalInvitationsPage { authRequired: true, component: import PortalInvitationsPage from "@src/catequese/pages/PortalInvitationsPage" }
+
 query listConsents {
   fn: import { listConsents } from "@src/server/operations/consentOperations",
   entities: [ConsentRecord]

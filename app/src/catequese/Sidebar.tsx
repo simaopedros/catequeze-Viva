@@ -29,6 +29,7 @@ import {
   Shield,
   BookOpen,
   ClipboardList,
+  Mail,
 } from "lucide-react";
 import { useUserContext } from "../client/hooks/useUserContext";
 import {
@@ -70,6 +71,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   billing: CreditCard,
   consents: FileCheck,
   catechetical_years: CalendarRange,
+  portal_invitations: Mail,
   admin: Shield,
 };
 

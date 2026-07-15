@@ -25,11 +25,13 @@ import {
   BarChart3,
   Clock,
   Printer,
+  Mail,
 } from "lucide-react";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
 import { ChartSuspenseFallback } from "../../client/components/ChartSuspenseFallback";
 import { DetailTabs } from "../../client/components/DetailTabs";
 import { useDetailTab } from "../../client/hooks/useDetailTab";
+import { PortalInviteDialog } from "../components/PortalInviteDialog";
 
 const MonthlyPresenceBarChart = lazy(() =>
   import("../components/charts/MonthlyPresenceBarChart").then((m) => ({
@@ -1063,6 +1065,7 @@ export default function CatechumenDetailPage() {
   const [selectedAnalysisClassId, setSelectedAnalysisClassId] = useState<
     string | null
   >(null);
+  const [portalInviteOpen, setPortalInviteOpen] = useState(false);
 
   const docTypeLabels = useMemo(() => {
     const labels: Record<string, string> = {};
@@ -1358,17 +1361,30 @@ export default function CatechumenDetailPage() {
             subtitle={detailSubtitle || undefined}
             actions={
               canEdit ? (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-10 rounded-sm"
-                  asChild
-                >
-                  <Link to={`/app/catechumens/${id}/edit`}>
-                    <Edit3 className="mr-1 h-3 w-3" />
-                    {t("edit")}
-                  </Link>
-                </Button>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-10 rounded-sm"
+                    onClick={() => setPortalInviteOpen(true)}
+                  >
+                    <Mail className="mr-1 h-3 w-3" />
+                    {t("portal_invites.invite_catechumen_title", {
+                      defaultValue: "Convidar para o portal",
+                    })}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-10 rounded-sm"
+                    asChild
+                  >
+                    <Link to={`/app/catechumens/${id}/edit`}>
+                      <Edit3 className="mr-1 h-3 w-3" />
+                      {t("edit")}
+                    </Link>
+                  </Button>
+                </div>
               ) : undefined
             }
           />
@@ -2021,6 +2037,21 @@ export default function CatechumenDetailPage() {
         description={t("catechumens.delete_confirm_desc")}
         confirmLabel={t("delete")}
       />
+
+      {profile && (profile.parishId || workspaceId) && (
+        <PortalInviteDialog
+          open={portalInviteOpen}
+          onOpenChange={setPortalInviteOpen}
+          role="CATECHUMEN"
+          parishId={profile.parishId || workspaceId!}
+          catechumenProfileId={profile.id}
+          householdId={profile.householdId}
+          communityId={profile.household?.communityId}
+          profileName={`${profile.firstName || ""} ${profile.lastName || ""}`.trim()}
+          defaultEmail={profile.email || profile.user?.email || ""}
+          birthDate={profile.birthDate}
+        />
+      )}
     </>
   );
 }

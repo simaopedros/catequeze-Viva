@@ -69,5 +69,6 @@
     "document": "Documents",
     "parish": "Parishes",
     "community": "Communities"
-  }
+  },
+  "portal_invitations": "Portal invites"
 }

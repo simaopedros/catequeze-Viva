@@ -1437,19 +1437,6 @@ export const common_pt_BR = {
       "subtitle": "Gerencie as autorizações e consentimentos conforme a LGPD.",
       "authorize": "Autorizo",
       "deny": "Nego",
-      "lgpd_section": "Consentimentos (LGPD)",
-      "minor": {
-        "section_title": "Acesso ao portal dos dependentes",
-        "section_desc": "Autorize ou revogue o acesso do menor ao portal da família. A revogação suspende o login do catequizando, sem apagar o histórico.",
-        "authorize": "Autorizar acesso",
-        "revoke": "Revogar",
-        "status_active": "Acesso autorizado",
-        "status_pending": "Aguardando autorização",
-        "source_guardian": "Responsável",
-        "source_staff": "Offline (paróquia)",
-        "grant_success": "Acesso do menor autorizado",
-        "revoke_success": "Acesso do menor revogado"
-      },
       "types": {
         "IMAGE_USAGE": {
           "label": "Uso de imagem",
@@ -1779,7 +1766,63 @@ export const common_pt_BR = {
     "install_description": "Adicione à tela inicial para acesso rápido e offline.",
     "install_button": "Instalar",
     "offline_title": "Sem conexão",
-    "offline_description": "Você está offline. Verifique sua conexão e tente novamente."
+    "offline_description": "Você está offline. Verifique sua conexão e tente novamente.",
+    "portal_invites": {
+      "invite_guardian_title": "Convidar responsável",
+      "invite_catechumen_title": "Convidar para o portal",
+      "invite_for_profile": "Enviar convite do portal para {{name}}.",
+      "invite_desc": "O convidado receberá um e-mail com o link. Você também poderá copiar o link ou partilhar no WhatsApp.",
+      "invalid_email": "Informe um e-mail válido.",
+      "missing_parish": "Paróquia ativa não encontrada.",
+      "consent_required_title": "Consentimento necessário",
+      "consent_required_desc": "Menores precisam de autorização do responsável ou registro offline da paróquia antes do convite.",
+      "created_success": "Convite criado",
+      "created_success_desc": "E-mail enviado quando possível. Copie o link ou partilhe no WhatsApp.",
+      "email_role_conflict": "Este e-mail já está vinculado a outro papel no portal desta paróquia.",
+      "create_error": "Não foi possível criar o convite",
+      "link_copied": "Link copiado",
+      "copy_failed": "Não foi possível copiar o link.",
+      "success_hint": "O link completo só é mostrado uma vez. Guarde-o ou partilhe agora.",
+      "copy_link": "Copiar link",
+      "share_whatsapp": "WhatsApp",
+      "minor_notice_title": "Catequizando menor de idade",
+      "checking_consent": "A verificar consentimento…",
+      "consent_ok": "Já existe autorização ativa para acesso ao portal.",
+      "minor_notice_desc": "Sem consentimento do responsável, o menor não consegue ativar a conta. Registre autorização offline da paróquia ou peça ao responsável para autorizar em Consentimentos.",
+      "staff_offline_checkbox": "Registrar autorização offline da paróquia e enviar o convite",
+      "send": "Enviar convite",
+      "center_title": "Central de convites do portal",
+      "center_subtitle": "Acompanhe convites pendentes, aceites, expirados e revogados. Reenvie, revogue ou partilhe no WhatsApp após reenvio.",
+      "refresh": "Atualizar",
+      "filter_all": "Todos",
+      "last_share_title": "Link do último reenvio",
+      "load_error": "Erro ao carregar convites.",
+      "empty": "Nenhum convite neste filtro.",
+      "unnamed_profile": "Perfil sem nome",
+      "expires": "Expira",
+      "resends": "{{count}} reenvio(s)",
+      "resend": "Reenviar",
+      "revoke": "Revogar",
+      "resend_success": "Convite reenviado",
+      "resend_error": "Falha ao reenviar",
+      "revoke_success": "Convite revogado",
+      "revoke_error": "Falha ao revogar",
+      "revoke_confirm_title": "Revogar convite?",
+      "revoke_confirm_desc": "O link deixa de ser válido. Pode criar um novo convite depois.",
+      "no_link_available": "Link completo só está disponível após criar ou reenviar o convite.",
+      "select_workspace": "Selecione uma paróquia/espaço de trabalho.",
+      "status": {
+        "PENDING": "Pendente",
+        "ACCEPTED": "Aceite",
+        "EXPIRED": "Expirado",
+        "REVOKED": "Revogado"
+      },
+      "role": {
+        "GUARDIAN": "Responsável",
+        "CATECHUMEN": "Catequizando"
+      },
+      "consent_unknown": "Não foi possível confirmar o consentimento. O convite pode ser enviado; a ativação do menor continua a exigir autorização."
+    }
   } as const;
 
 export const components_pt_BR = {
@@ -3350,7 +3393,8 @@ export const navigation_pt_BR = {
       "document": "Documentos",
       "parish": "Paróquias",
       "community": "Comunidades"
-    }
+    },
+    "portal_invitations": "Convites do portal"
   } as const;
 
 export const onboarding_pt_BR = {
