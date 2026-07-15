@@ -16,6 +16,7 @@ import {
   findOrMigratePortalInvitationByToken,
   hashPortalInviteToken as hashLegacyToken,
 } from '../portal/legacyPortalInvite';
+import {
   notifyMinorConsentRequested,
   notifyPortalInviteAccepted,
   notifyPortalInviteCreated,
