@@ -129,8 +129,7 @@ export function AppMetric({
         {label}
       </p>
       <p
-        className="mt-1.5 text-2xl font-semibold tracking-tight tabular-nums text-[#071A2D]"
-        style={{ fontFamily: "var(--font-brand-display)" }}
+        className="mt-1.5 font-sans text-2xl font-semibold tracking-tight tabular-nums text-[#071A2D]"
       >
         {value}
       </p>

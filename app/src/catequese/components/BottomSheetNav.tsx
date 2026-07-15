@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { NavLink } from "react-router";
 import { useTranslation } from "react-i18next";
 import { cn } from "../../client/utils";
@@ -10,6 +10,18 @@ import {
   BookMarked,
   MessageSquareText,
   Calendar,
+  Feather,
+  Church,
+  Building2,
+  Heart,
+  FolderOpen,
+  ScrollText,
+  Cross,
+  ClipboardList,
+  FileText,
+  BarChart3,
+  Settings,
+  CreditCard,
 } from "lucide-react";
 import { NAV_SECTIONS, filterByRole } from "../../shared/navigation";
 import { useUserContext } from "../../client/hooks/useUserContext";
@@ -20,6 +32,19 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   catechumens: Users,
   content_library: BookMarked,
   calendar: Calendar,
+  ai_hub: Feather,
+  bible: BookMarked,
+  parishes: Church,
+  communities: Building2,
+  families: Heart,
+  directory: FolderOpen,
+  catechism: ScrollText,
+  sacraments: Cross,
+  journey_templates: ClipboardList,
+  documents: FileText,
+  reports: BarChart3,
+  settings: Settings,
+  billing: CreditCard,
   messages: MessageSquareText,
 };
 
@@ -32,6 +57,15 @@ export function BottomSheetNav({ open, onClose }: BottomSheetNavProps) {
   const { t } = useTranslation("navigation");
   const { userRole, isAdmin } = useUserContext();
 
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open, onClose]);
+
   if (!open) return null;
 
   return (
@@ -43,7 +77,7 @@ export function BottomSheetNav({ open, onClose }: BottomSheetNavProps) {
       />
 
       {/* Sheet */}
-      <div className="fixed inset-x-0 bottom-0 z-50 max-h-[70vh] overflow-y-auto rounded-t-sm border-t border-border/70 bg-white transition-transform duration-300 lg:hidden">
+      <div role="dialog" aria-modal="true" aria-label={t("moreSection")} className="fixed inset-x-0 bottom-0 z-50 max-h-[70vh] overflow-y-auto rounded-t-sm border-t border-border/70 bg-white transition-transform duration-300 lg:hidden">
         {/* Handle */}
         <div className="sticky top-0 border-b border-border/70 bg-white pt-3 pb-2 flex justify-center border-b">
           <div className="h-1 w-10 rounded-sm bg-muted-foreground/30" />

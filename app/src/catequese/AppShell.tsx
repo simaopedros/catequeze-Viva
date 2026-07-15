@@ -208,7 +208,7 @@ export function AppShell({ children }: AppShellProps) {
                 <div className="flex h-14 items-center border-b border-border/70 bg-white px-4" />
               }
             >
-              <TopBar onMenuToggle={handleMenuToggle} />
+              <TopBar />
             </ErrorBoundary>
             <ProductTrialBanner />
           </div>

@@ -257,7 +257,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
       }}
     >
       {/* Mobile menu toggle — hidden when search expanded */}
-      {!searchExpanded && (
+      {onMenuToggle && !searchExpanded && (
         <Button
           variant="ghost"
           size="icon"
