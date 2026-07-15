@@ -23,11 +23,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../../client/components/ui/dropdown-menu";
+import { isFamilyPortalHost } from "../../../shared/portal";
+import { useFamilyPortalSurface } from "../../../client/hooks/useFamilyPortalSurface";
 
 interface EncounterFocusCardProps {
   workspaceId?: string | null;
   /** When false, skip query (e.g. institutional dashboard). Default true. */
   enabled?: boolean;
+  /** Force family surface even off familia host (e.g. pure guardian). */
+  forceFamilySurface?: boolean;
 }
 
 const STATUS_VARIANT: Record<
@@ -43,16 +47,21 @@ const STATUS_VARIANT: Record<
 export function EncounterFocusCard({
   workspaceId,
   enabled = true,
+  forceFamilySurface = false,
 }: EncounterFocusCardProps) {
   const { t } = useTranslation("meetings");
   const { currentLocale } = useLocale();
   const [dependentId, setDependentId] = useState<string | undefined>(undefined);
+  const { isFamilyPortal, surfaceArg } = useFamilyPortalSurface();
+  const familyMode = isFamilyPortal || forceFamilySurface;
 
   const { data, isLoading, error } = useQuery(
     getEncounterFocus,
     {
       workspaceId: workspaceId || undefined,
       dependentId,
+      // Wasp ops never receive Host — family host must declare surface.
+      ...(familyMode ? { surface: "PORTAL" as const } : surfaceArg),
     },
     {
       enabled,
@@ -79,7 +88,43 @@ export function EncounterFocusCard({
   }
 
   const meeting = data.meeting;
-  const ctaLabel = t(data.primaryCta.labelKey, {
+  // Hard client filter: never show catechist roll-call / prep on family surface.
+  const staffCtaActions = new Set([
+    "CONTINUE_ATTENDANCE",
+    "PREPARE",
+    "START",
+    "COMPLETE",
+  ]);
+  const isStaffCta =
+    staffCtaActions.has(String(data.primaryCta?.action || "")) ||
+    String(data.primaryCta?.href || "").includes("/attendance") ||
+    String(data.primaryCta?.href || "").includes("/classes/");
+  const primaryCta =
+    familyMode && isStaffCta
+      ? {
+          action: "VIEW" as const,
+          href: meeting ? `/app/meetings/${meeting.id}` : "/app/calendar",
+          labelKey: "encounter.cta.view",
+        }
+      : data.primaryCta;
+  const secondaryActions = familyMode
+    ? (data.secondaryActions || []).filter(
+        (a: any) =>
+          a.id !== "attendance" &&
+          a.id !== "class" &&
+          a.id !== "roteiro" &&
+          !String(a.href || "").includes("/attendance") &&
+          !String(a.href || "").includes("/classes/"),
+      )
+    : data.secondaryActions || [];
+  // Staff-only fields (class roster counts, prep status)
+  const showStaffPrep = !familyMode && Boolean(data.preparation);
+  const showAttendanceSummary =
+    !familyMode ||
+    (data.attendanceSummary &&
+      (data.attendanceSummary.myStatus != null ||
+        data.attendanceSummary.totalActive === 1));
+  const ctaLabel = t(primaryCta.labelKey, {
     defaultValue: t("encounter.cta.view"),
   });
 
@@ -95,7 +140,7 @@ export function EncounterFocusCard({
           </AppEyebrow>
           <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
         </div>
-        {data.secondaryActions?.length > 0 && (
+        {secondaryActions.length > 0 && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -108,7 +153,7 @@ export function EncounterFocusCard({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {data.secondaryActions.map((a: any) => (
+              {secondaryActions.map((a: any) => (
                 <DropdownMenuItem key={a.id} asChild>
                   <Link to={a.href}>
                     {t(a.labelKey, { defaultValue: a.id })}
@@ -157,9 +202,9 @@ export function EncounterFocusCard({
           <p className="text-sm text-muted-foreground">
             {t("encounter.empty_desc")}
           </p>
-          {data.primaryCta.action !== "NONE" || data.primaryCta.href ? (
+          {primaryCta.action !== "NONE" || primaryCta.href ? (
             <Button asChild className="h-11 min-h-11 w-full rounded-sm sm:w-auto">
-              <Link to={data.primaryCta.href}>
+              <Link to={primaryCta.href}>
                 {ctaLabel}
                 <ChevronRight className="ml-1 h-4 w-4" />
               </Link>
@@ -220,7 +265,7 @@ export function EncounterFocusCard({
             )}
           </dl>
 
-          {data.attendanceSummary && (
+          {showAttendanceSummary && data.attendanceSummary && (
             <p className="text-sm text-muted-foreground">
               {data.attendanceSummary.myStatus != null ||
               data.attendanceSummary.totalActive === 1
@@ -241,7 +286,7 @@ export function EncounterFocusCard({
             </p>
           )}
 
-          {data.preparation && roleShowsPrep(data) && (
+          {showStaffPrep && data.preparation && (
             <p className="text-xs text-muted-foreground">
               {data.preparation.hasContent
                 ? t("encounter.prep_ready", {
@@ -266,7 +311,7 @@ export function EncounterFocusCard({
               asChild
               className="h-11 min-h-11 w-full rounded-sm shadow-none sm:w-auto sm:min-w-[12rem]"
             >
-              <Link to={data.primaryCta.href}>
+              <Link to={primaryCta.href}>
                 {ctaLabel}
                 <ChevronRight className="ml-1 h-4 w-4" />
               </Link>
@@ -278,6 +323,3 @@ export function EncounterFocusCard({
   );
 }
 
-function roleShowsPrep(data: any): boolean {
-  return Boolean(data?.preparation);
-}

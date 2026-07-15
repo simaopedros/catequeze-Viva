@@ -32,6 +32,37 @@ export function isFamilyPortalHost(hostname?: string): boolean {
 }
 
 /**
+ * Extract hostname from a Wasp/Express-like request (server operations).
+ * Prefers x-forwarded-host (proxy) then host.
+ */
+export function hostFromRequest(req?: {
+  headers?: Record<string, string | string[] | undefined>;
+} | null): string {
+  if (!req?.headers) return '';
+  const raw =
+    req.headers['x-forwarded-host'] ??
+    req.headers['x-forwarded-Host'] ??
+    req.headers.host ??
+    req.headers.Host ??
+    '';
+  const value = Array.isArray(raw) ? raw[0] : raw;
+  return String(value || '')
+    .split(',')[0]
+    .trim()
+    .split(':')[0]
+    .toLowerCase();
+}
+
+/** True when the operation request targets the family portal host. */
+export function isFamilyPortalRequest(context?: {
+  req?: { headers?: Record<string, string | string[] | undefined> };
+  request?: { headers?: Record<string, string | string[] | undefined> };
+} | null): boolean {
+  const req = context?.req ?? context?.request ?? null;
+  return isFamilyPortalHost(hostFromRequest(req));
+}
+
+/**
  * Build a full URL for a path on the family portal.
  */
 export function familyPortalUrl(path: string): string {

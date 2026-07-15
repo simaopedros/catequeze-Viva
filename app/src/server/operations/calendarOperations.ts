@@ -50,13 +50,33 @@ export const createLiturgicalEvent = async (
     type?: string;
     recurring?: boolean;
     recurrenceRule?: string;
+    parishId?: string;
   },
   context: any
 ) => {
   if (!context.user) throw new HttpError(401);
 
+  const { assertStaffOperation } = await import('../auth/familySurface');
+  await assertStaffOperation(context, {
+    parishId: args.parishId,
+    message: 'Apenas a equipe pastoral pode criar eventos no calendário.',
+  });
+
   const membership = await context.entities.Membership.findFirst({
-    where: { userId: context.user.id, status: 'ACTIVE' },
+    where: {
+      userId: context.user.id,
+      status: 'ACTIVE',
+      ...(args.parishId ? { parishId: args.parishId } : {}),
+      role: {
+        in: [
+          'SUPER_ADMIN',
+          'DIOCESE_ADMIN',
+          'PARISH_COORDINATOR',
+          'COMMUNITY_COORDINATOR',
+          'PERSONAL_OWNER',
+        ],
+      },
+    },
     select: { parishId: true, role: true },
   });
 
@@ -100,10 +120,29 @@ export const deleteLiturgicalEvent = async (args: { id: string }, context: any) 
   });
   if (!event) throw new HttpError(404, 'Evento nao encontrado.');
 
+  const { assertStaffOperation } = await import('../auth/familySurface');
+  await assertStaffOperation(context, {
+    parishId: event.parishId,
+    message: 'Apenas a equipe pastoral pode remover eventos do calendário.',
+  });
+
   if (!context.user.isAdmin) {
     if (!event.parishId) throw new HttpError(403, 'Apenas admin pode remover eventos globais.');
     const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, parishId: event.parishId, status: 'ACTIVE' },
+      where: {
+        userId: context.user.id,
+        parishId: event.parishId,
+        status: 'ACTIVE',
+        role: {
+          in: [
+            'SUPER_ADMIN',
+            'DIOCESE_ADMIN',
+            'PARISH_COORDINATOR',
+            'COMMUNITY_COORDINATOR',
+            'PERSONAL_OWNER',
+          ],
+        },
+      },
     });
     // Also check personal workspace ownership
     const isPersonalOwner = !membership && await context.entities.Parish.findFirst({

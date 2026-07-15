@@ -6,6 +6,10 @@ import {
   type EncounterFocus,
   type FocusKind,
 } from '../../shared/encounter';
+import {
+  isFamilySurface,
+  rolesAreFamilyOnly,
+} from '../auth/familySurface';
 
 const COORDINATOR_OR_ABOVE = [
   'PARISH_COORDINATOR',
@@ -37,6 +41,7 @@ async function resolveFocusClassScope(params: {
   userId: string;
   dependentId?: string;
   context: any;
+  surface?: string | null;
 }): Promise<{
   scope: ClassScope;
   guardianHouseholdId: string | null;
@@ -44,8 +49,16 @@ async function resolveFocusClassScope(params: {
   dependents: Array<{ id: string; firstName: string; lastName: string }>;
   selectedDependent: { id: string; firstName: string; lastName: string } | null;
 }> {
-  const { isAdmin, roles, parishIds, workspaceId, userId, dependentId, context } =
-    params;
+  const {
+    isAdmin,
+    roles,
+    parishIds,
+    workspaceId,
+    userId,
+    dependentId,
+    context,
+    surface,
+  } = params;
 
   const parishWhere = workspaceId
     ? { parishId: workspaceId }
@@ -53,15 +66,18 @@ async function resolveFocusClassScope(params: {
       ? {}
       : { parishId: { in: parishIds } };
 
-  const hasCoordinator = roles.some((r) =>
-    (COORDINATOR_OR_ABOVE as readonly string[]).includes(r),
-  );
-  const hasCatechist = roles.some((r) =>
-    (CATECHIST_ROLES as readonly string[]).includes(r),
-  );
-  const isStaff = isAdmin || hasCoordinator || hasCatechist;
+  // Family surface: explicit PORTAL arg (client host), pure family roles, or host when available.
+  // Wasp ops do NOT receive req — client must pass surface: 'PORTAL' on familia.*.
+  const forceFamilySurface =
+    isFamilySurface({ context, roles, surface }) || rolesAreFamilyOnly(roles);
+  const hasCoordinator =
+    !forceFamilySurface &&
+    roles.some((r) => (COORDINATOR_OR_ABOVE as readonly string[]).includes(r));
+  const hasCatechist =
+    !forceFamilySurface &&
+    roles.some((r) => (CATECHIST_ROLES as readonly string[]).includes(r));
 
-  // Dependents list for pure guardians
+  // Dependents list for pure guardians (or any guardian on family portal)
   let guardianHouseholdId: string | null = null;
   let dependents: Array<{ id: string; firstName: string; lastName: string }> = [];
   let selectedDependent: {
@@ -72,9 +88,14 @@ async function resolveFocusClassScope(params: {
 
   const pureGuardian =
     roles.includes('GUARDIAN') &&
-    !roles.some((r) => (STAFF_ROLES as readonly string[]).includes(r));
+    (forceFamilySurface ||
+      !roles.some((r) => (STAFF_ROLES as readonly string[]).includes(r)));
 
-  if (pureGuardian) {
+  const treatAsGuardian =
+    roles.includes('GUARDIAN') &&
+    (forceFamilySurface || pureGuardian);
+
+  if (treatAsGuardian) {
     const guardian = await context.entities.GuardianProfile.findFirst({
       where: { userId },
       select: { householdId: true },
@@ -99,6 +120,62 @@ async function resolveFocusClassScope(params: {
         selectedDependent = dependents[0];
       }
     }
+  }
+
+  // Family portal surface: guardian / catechumen only — never staff roll-call CTAs.
+  if (forceFamilySurface || treatAsGuardian) {
+    if (treatAsGuardian && guardianHouseholdId) {
+      const enrollmentWhere: any = {
+        status: 'ENROLLED',
+        catechumenProfile: selectedDependent
+          ? { id: selectedDependent.id, householdId: guardianHouseholdId }
+          : { householdId: guardianHouseholdId },
+      };
+      const enrollments = await context.entities.ClassEnrollment.findMany({
+        where: enrollmentWhere,
+        select: { classId: true },
+      });
+      const classIds = [
+        ...new Set(enrollments.map((e: { classId: string }) => e.classId)),
+      ] as string[];
+      return {
+        scope: { kind: 'classIds', classIds },
+        guardianHouseholdId,
+        roleKind: 'guardian',
+        dependents,
+        selectedDependent,
+      };
+    }
+
+    if (roles.includes('CATECHUMEN')) {
+      const enrollments = await context.entities.ClassEnrollment.findMany({
+        where: {
+          status: 'ENROLLED',
+          catechumenProfile: { userId },
+        },
+        select: { classId: true },
+      });
+      return {
+        scope: {
+          kind: 'classIds',
+          classIds: [
+            ...new Set(enrollments.map((e: { classId: string }) => e.classId)),
+          ] as string[],
+        },
+        guardianHouseholdId: null,
+        roleKind: 'catechumen',
+        dependents: [],
+        selectedDependent: null,
+      };
+    }
+
+    return {
+      scope: { kind: 'classIds', classIds: [] },
+      guardianHouseholdId,
+      roleKind: roles.includes('GUARDIAN') ? 'guardian' : 'other',
+      dependents,
+      selectedDependent,
+    };
   }
 
   if (isAdmin) {
@@ -130,29 +207,6 @@ async function resolveFocusClassScope(params: {
       scope: { kind: 'classIds', classIds: links.map((l: any) => l.classId) },
       guardianHouseholdId,
       roleKind: 'staff',
-      dependents,
-      selectedDependent,
-    };
-  }
-
-  if (pureGuardian && guardianHouseholdId) {
-    const enrollmentWhere: any = {
-      status: 'ENROLLED',
-      catechumenProfile: selectedDependent
-        ? { id: selectedDependent.id, householdId: guardianHouseholdId }
-        : { householdId: guardianHouseholdId },
-    };
-    const enrollments = await context.entities.ClassEnrollment.findMany({
-      where: enrollmentWhere,
-      select: { classId: true },
-    });
-    const classIds = [
-      ...new Set(enrollments.map((e: { classId: string }) => e.classId)),
-    ] as string[];
-    return {
-      scope: { kind: 'classIds', classIds },
-      guardianHouseholdId,
-      roleKind: 'guardian',
       dependents,
       selectedDependent,
     };
@@ -206,7 +260,12 @@ function emptyFocus(partial?: Partial<EncounterFocus>): EncounterFocus {
 }
 
 export const getEncounterFocus = async (
-  args: { workspaceId?: string; dependentId?: string } = {},
+  args: {
+    workspaceId?: string;
+    dependentId?: string;
+    /** Client family host MUST pass 'PORTAL' — Wasp ops have no Host header. */
+    surface?: 'PORTAL' | 'STAFF' | string;
+  } = {},
   context: any,
 ): Promise<EncounterFocus> => {
   if (!context.user) throw new HttpError(401);
@@ -239,6 +298,7 @@ export const getEncounterFocus = async (
     userId: context.user.id,
     dependentId: args.dependentId,
     context,
+    surface: args.surface,
   });
 
   const meetings = await context.entities.Meeting.findMany({

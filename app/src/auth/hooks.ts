@@ -31,36 +31,77 @@ export const onAfterSignup = async ({
 }: OnAfterSignupArgs): Promise<void> => {
   if (!user?.id) return;
 
-  // Product trial: access without Stripe until SUBSCRIPTION_TRIAL_DAYS elapse
-  // (window is measured from User.createdAt in getPersonalPlanId).
-  try {
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        subscriptionStatus: 'trialing',
-        subscriptionPlan: PRODUCT_TRIAL_PLAN_ID,
-      },
-    });
-  } catch {
-    // Non-fatal — ensureProductTrial will heal on first workspace/class action.
-  }
-
-  // Never let Meta tracking break signup; always attempt delivery.
-  try {
-    await sendCompleteRegistrationToMeta({
-      userId: user.id,
-      email: user.email,
-      prisma,
-      req,
-    });
-  } catch (error) {
-    logger.error('[meta-capi] CompleteRegistration hook failed', {
-      userId: user.id,
-      error: error instanceof Error ? error.message : String(error),
-    });
-  }
-
   const email = user?.email;
+
+  // Detect family/portal invite signup BEFORE commercial trial / Meta conversion.
+  let isFamilyPortalSignup = false;
+  if (email) {
+    try {
+      const pendingFamily = await prisma.pendingInvitation.findFirst({
+        where: {
+          email,
+          role: { in: ['GUARDIAN', 'CATECHUMEN'] },
+          expiresAt: { gt: new Date() },
+        },
+        select: { id: true },
+      });
+      isFamilyPortalSignup = Boolean(pendingFamily);
+    } catch {
+      /* non-fatal */
+    }
+  }
+  // Host signal when available
+  try {
+    const headers = (req as any)?.headers || {};
+    const host = String(
+      headers['x-forwarded-host'] || headers.host || '',
+    )
+      .split(',')[0]
+      .trim()
+      .toLowerCase();
+    if (
+      host.startsWith('familia.') ||
+      host.startsWith('familia-') ||
+      host.includes('familia')
+    ) {
+      isFamilyPortalSignup = true;
+    }
+  } catch {
+    /* ignore */
+  }
+
+  // Product trial: NEVER for family portal invitees (sponsored access).
+  if (!isFamilyPortalSignup) {
+    try {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          subscriptionStatus: 'trialing',
+          subscriptionPlan: PRODUCT_TRIAL_PLAN_ID,
+        },
+      });
+    } catch {
+      // Non-fatal — ensureProductTrial will heal on first workspace/class action.
+    }
+  }
+
+  // Never fire commercial Meta conversion for family portal signups.
+  if (!isFamilyPortalSignup) {
+    try {
+      await sendCompleteRegistrationToMeta({
+        userId: user.id,
+        email: user.email,
+        prisma,
+        req,
+      });
+    } catch (error) {
+      logger.error('[meta-capi] CompleteRegistration hook failed', {
+        userId: user.id,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
   if (!email) return;
 
   try {

@@ -97,6 +97,12 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     throw new HttpError(401, "Only authenticated users are allowed to perform this operation");
   }
 
+  const { assertNotFamilyOnlyUser } = await import("../server/auth/familySurface");
+  await assertNotFamilyOnlyUser(
+    context,
+    "O Portal da Família não inclui cobrança ou assinatura.",
+  );
+
   const input = validateOrThrow(generateCheckoutSessionSchema, rawInput);
   const { planId: paymentPlanId, interval } = input;
   const userId = context.user.id;
@@ -246,6 +252,11 @@ export const getCustomerPortalUrl: GetCustomerPortalUrl<
   if (!context.user) {
     throw new HttpError(401, "Only authenticated users are allowed to perform this operation");
   }
+  const { assertNotFamilyOnlyUser } = await import("../server/auth/familySurface");
+  await assertNotFamilyOnlyUser(
+    context,
+    "O Portal da Família não inclui cobrança ou assinatura.",
+  );
   return paymentProcessor.fetchCustomerPortalUrl({
     userId: context.user.id,
     prismaUserDelegate: context.entities.User,
@@ -297,6 +308,11 @@ export const cancelSubscription: CancelSubscription<
   if (!context.user) {
     throw new HttpError(401, "Only authenticated users are allowed to perform this operation.");
   }
+  const { assertNotFamilyOnlyUser } = await import("../server/auth/familySurface");
+  await assertNotFamilyOnlyUser(
+    context,
+    "O Portal da Família não inclui cobrança ou assinatura.",
+  );
 
   const user = await context.entities.User.findUnique({
     where: { id: context.user.id },
@@ -339,6 +355,11 @@ export const changeSubscriptionPlan: ChangeSubscriptionPlan<
   if (!context.user) {
     throw new HttpError(401, "Only authenticated users are allowed to perform this operation.");
   }
+  const { assertNotFamilyOnlyUser } = await import("../server/auth/familySurface");
+  await assertNotFamilyOnlyUser(
+    context,
+    "O Portal da Família não inclui cobrança ou assinatura.",
+  );
 
   const { planId: paymentPlanId, interval } = rawInput;
   const userId = context.user.id;

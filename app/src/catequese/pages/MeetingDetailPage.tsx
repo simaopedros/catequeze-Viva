@@ -31,6 +31,7 @@ import {
   Ban,
   MessageSquare,
 } from "lucide-react";
+import { isFamilyPortalHost } from "../../shared/portal";
 
 const STATUS_VARIANT: Record<
   string,
@@ -56,8 +57,14 @@ export default function MeetingDetailPage() {
     isLoading,
     error,
     refetch,
-  } = useQuery(getMeeting, { id: id! }, { enabled: Boolean(id) });
-  // Role-shaped DTO has optional profile fields not expressible as a single Wasp type
+  } = useQuery(
+    getMeeting,
+    {
+      id: id!,
+      ...(isFamilyPortalHost() ? { surface: "PORTAL" as const } : {}),
+    },
+    { enabled: Boolean(id) },
+  );  // Role-shaped DTO has optional profile fields not expressible as a single Wasp type
   const meeting = meetingRaw as any;
 
   const [justifyFor, setJustifyFor] = useState<string | null>(null);
@@ -142,27 +149,31 @@ export default function MeetingDetailPage() {
     );
   }
 
+  const onFamilyPortal = isFamilyPortalHost();
   const perms = meeting.permissions || {
     canEdit: false,
     canTakeAttendance: false,
     canChangeStatus: false,
     canJustify: false,
   };
+  // Never show roll-call ("Fazer chamada") on the family portal surface.
+  const canTakeAttendance = !onFamilyPortal && Boolean(perms.canTakeAttendance);
+  const canChangeStatus = !onFamilyPortal && Boolean(perms.canChangeStatus);
 
   const primaryStaffAction =
-    perms.canChangeStatus && meeting.status === "NOT_STARTED"
+    canChangeStatus && meeting.status === "NOT_STARTED"
       ? {
           label: t("action_start"),
           onClick: () => changeStatus("IN_PROGRESS"),
           icon: Play,
         }
-      : perms.canChangeStatus && meeting.status === "IN_PROGRESS"
+      : canChangeStatus && meeting.status === "IN_PROGRESS"
         ? {
             label: t("action_complete"),
             onClick: () => changeStatus("COMPLETED"),
             icon: CheckCircle2,
           }
-        : perms.canTakeAttendance
+        : canTakeAttendance
           ? {
               label: t("action_attendance"),
               href: `/app/classes/${meeting.class.id}/attendance?meetingId=${meeting.id}`,
@@ -264,7 +275,7 @@ export default function MeetingDetailPage() {
           )}
         </dl>
 
-        {perms.canChangeStatus && meeting.status !== "CANCELLED" && (
+        {canChangeStatus && meeting.status !== "CANCELLED" && (
           <div className="flex flex-wrap gap-2 pt-2 border-t border-border/70">
             {meeting.status === "NOT_STARTED" && (
               <Button
@@ -298,7 +309,7 @@ export default function MeetingDetailPage() {
                 {t("action_cancel")}
               </Button>
             )}
-            {perms.canTakeAttendance && (
+            {canTakeAttendance && (
               <Button asChild variant="outline" className="h-11 min-h-11 rounded-sm">
                 <Link
                   to={`/app/classes/${meeting.class.id}/attendance?meetingId=${meeting.id}`}

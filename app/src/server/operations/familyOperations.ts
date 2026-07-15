@@ -44,6 +44,35 @@ export const listHouseholds = async (_args: { communityId?: string; take?: numbe
   const search = args.search?.trim();
   if (!context.user) throw new HttpError(401);
 
+  // Family-only users: only their own household(s), never parish directory.
+  const { rolesAreFamilyOnly, loadActiveRoles } = await import('../auth/familySurface');
+  const roles = await loadActiveRoles(context);
+  if (rolesAreFamilyOnly(roles)) {
+    const guardians = await context.entities.GuardianProfile.findMany({
+      where: { userId: context.user.id },
+      select: { householdId: true },
+    });
+    const ids = guardians
+      .map((g: { householdId: string | null }) => g.householdId)
+      .filter(Boolean) as string[];
+    if (ids.length === 0) return [];
+    return context.entities.Household.findMany({
+      where: { id: { in: ids } },
+      include: {
+        guardians: {
+          include: {
+            user: {
+              select: { id: true, email: true, firstName: true, lastName: true },
+            },
+          },
+        },
+        catechumens: { select: { id: true, firstName: true, lastName: true } },
+        community: { select: { id: true, name: true } },
+        _count: { select: { catechumens: true } },
+      },
+    });
+  }
+
   const includeOpts = {
     guardians: {
       include: { user: { select: { id: true, email: true, firstName: true, lastName: true } } },
@@ -83,17 +112,17 @@ export const listHouseholds = async (_args: { communityId?: string; take?: numbe
     where: { userId: context.user.id, status: 'ACTIVE' },
     select: { role: true },
   });
-  const roles = membershipRoles.map((m: any) => m.role);
+  const staffRoles = membershipRoles.map((m: any) => m.role);
 
   // Add PERSONAL_OWNER if user has personal workspace
   const personalCheck = await context.entities.Parish.findFirst({
     where: { ownerId: context.user.id, type: 'PERSONAL' },
     select: { id: true },
   });
-  if (personalCheck) roles.push('PERSONAL_OWNER');
+  if (personalCheck) staffRoles.push('PERSONAL_OWNER');
 
   // Coordinator or above (including PERSONAL_OWNER): all households in their parishes
-  if (roles.some((r: string) => isCoordinatorOrAbove(r))) {
+  if (staffRoles.some((r: string) => isCoordinatorOrAbove(r))) {
     const where: any = { parishId: { in: parishIds } };
     if (args.communityId) where.communityId = args.communityId;
     return context.entities.Household.findMany({
@@ -106,7 +135,10 @@ export const listHouseholds = async (_args: { communityId?: string; take?: numbe
   }
 
   // GUARDIAN: only return the guardian's own household
-  if (roles.includes('GUARDIAN') && !roles.some((r: string) => isCoordinatorOrAbove(r) || isCatechist(r))) {
+  if (
+    staffRoles.includes('GUARDIAN') &&
+    !staffRoles.some((r: string) => isCoordinatorOrAbove(r) || isCatechist(r))
+  ) {
     const guardianProfile = await context.entities.GuardianProfile.findFirst({
       where: { userId: context.user.id },
       select: { householdId: true },
@@ -124,7 +156,8 @@ export const listHouseholds = async (_args: { communityId?: string; take?: numbe
   }
 
   // Assistant catechist only (no coordinator, no lead): restrict to assisted classes
-  const isStrictAssistant = !roles.includes('LEAD_CATECHIST') && roles.includes('ASSISTANT_CATECHIST');
+  const isStrictAssistant =
+    !staffRoles.includes('LEAD_CATECHIST') && staffRoles.includes('ASSISTANT_CATECHIST');
 
   if (isStrictAssistant) {
     const assistedClasses = await context.entities.ClassCatechist.findMany({
@@ -160,7 +193,7 @@ export const listHouseholds = async (_args: { communityId?: string; take?: numbe
   }
 
   // Lead catechist or general catechetical role: households in their parishes
-  if (roles.includes('LEAD_CATECHIST') || roles.includes('ASSISTANT_CATECHIST')) {
+  if (staffRoles.includes('LEAD_CATECHIST') || staffRoles.includes('ASSISTANT_CATECHIST')) {
     const where: any = { parishId: { in: parishIds } };
     if (args.communityId) where.communityId = args.communityId;
     return context.entities.Household.findMany({

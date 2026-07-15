@@ -734,16 +734,40 @@ export const listParishMembers = async (
 
   if (!args.parishId) return [];
 
+  const { assertStaffOperation } = await import('../auth/familySurface');
+  await assertStaffOperation(context, {
+    parishId: args.parishId,
+    message: 'O diretório de membros é exclusivo da equipe pastoral.',
+  });
+
   if (!context.user.isAdmin) {
     const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, parishId: args.parishId, status: 'ACTIVE' },
+      where: {
+        userId: context.user.id,
+        parishId: args.parishId,
+        status: 'ACTIVE',
+        role: {
+          in: [
+            'SUPER_ADMIN',
+            'DIOCESE_ADMIN',
+            'PARISH_COORDINATOR',
+            'COMMUNITY_COORDINATOR',
+            'PERSONAL_OWNER',
+          ],
+        },
+      },
     });
     if (!membership) {
       const isPersonalOwner = await context.entities.Parish.findFirst({
         where: { id: args.parishId, ownerId: context.user.id, type: 'PERSONAL' },
         select: { id: true },
       });
-      if (!isPersonalOwner) throw new HttpError(403, 'Você não pertence a esta paróquia.');
+      if (!isPersonalOwner) {
+        throw new HttpError(
+          403,
+          'Apenas coordenadores podem listar membros da paróquia.',
+        );
+      }
     }
   }
 

@@ -38,7 +38,7 @@ export function GuardianDashboard({ stats }: GuardianDashboardProps) {
         subtitle={t("guardian_subtitle")}
       />
 
-      <EncounterFocusCard workspaceId={activeParishId} />
+      <EncounterFocusCard workspaceId={activeParishId} forceFamilySurface />
 
       {hasDependents ? (
         <div className="grid gap-3 md:grid-cols-2">

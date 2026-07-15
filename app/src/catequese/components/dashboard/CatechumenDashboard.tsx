@@ -38,7 +38,7 @@ export function CatechumenDashboard({ stats }: CatechumenDashboardProps) {
         subtitle={t("catechumen_subtitle")}
       />
 
-      <EncounterFocusCard workspaceId={activeParishId} />
+      <EncounterFocusCard workspaceId={activeParishId} forceFamilySurface />
 
       <div className="grid gap-3 md:grid-cols-3">
         <AppMetric

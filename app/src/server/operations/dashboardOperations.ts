@@ -101,12 +101,21 @@ async function resolveMeetingClassScope(params: {
   return { kind: 'classIds', classIds: [] };
 }
 
-export const getDashboardStats = async (args: { parishId?: string }, context: any) => {
+export const getDashboardStats = async (
+  args: { parishId?: string; surface?: string },
+  context: any,
+) => {
   if (!context.user) throw new HttpError(401);
 
   const isAdmin = context.user.isAdmin;
 
   const { parishIds, roles } = await resolveUserScope(context);
+  const { isFamilySurface, rolesAreFamilyOnly } = await import(
+    '../auth/familySurface'
+  );
+  const familySurface =
+    isFamilySurface({ context, roles, surface: args.surface }) ||
+    rolesAreFamilyOnly(roles);
 
   if (parishIds.length === 0 && !isAdmin) {
     return {
@@ -143,17 +152,155 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
       (COORDINATOR_OR_ABOVE as readonly string[]).includes(r),
     );
 
-  // GUARDIAN: scope stats to the guardian's household, not the whole parish
+  // Family surface OR pure GUARDIAN: scope to household only (never parish-wide KPIs)
   let guardianHouseholdId: string | null = null;
   if (
-    roles.includes('GUARDIAN') &&
-    !roles.some((r: string) => (STAFF_ROLES as readonly string[]).includes(r))
+    familySurface ||
+    (roles.includes('GUARDIAN') &&
+      !roles.some((r: string) => (STAFF_ROLES as readonly string[]).includes(r)))
   ) {
-    const guardianProfile = await context.entities.GuardianProfile.findFirst({
-      where: { userId: context.user.id },
-      select: { householdId: true },
-    });
-    guardianHouseholdId = guardianProfile?.householdId || null;
+    if (roles.includes('GUARDIAN') || familySurface) {
+      const guardianProfile = await context.entities.GuardianProfile.findFirst({
+        where: { userId: context.user.id },
+        select: { householdId: true },
+      });
+      guardianHouseholdId = guardianProfile?.householdId || null;
+    }
+  }
+
+  // Family DTO: never leak parish-wide admin stats to the client payload.
+  if (familySurface) {
+    const emptyFamily = {
+      activeCatechumens: 0,
+      activeClasses: 0,
+      avgAttendance: 0,
+      pendingSacraments: 0,
+      recentAlerts: [],
+      aniversariantes: [],
+      upcomingMeetings: [] as any[],
+      todayMeetings: [] as any[],
+      reviewQueue: [],
+      myClasses: [],
+      hasAnyAttendance: false,
+      hasAnyMeeting: false,
+      dependents: [] as any[],
+      familySurface: true,
+    };
+
+    if (guardianHouseholdId) {
+      const dependents = await context.entities.CatechumenProfile.findMany({
+        where: { householdId: guardianHouseholdId },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          birthDate: true,
+          enrollments: {
+            where: { status: 'ENROLLED' },
+            select: { class: { select: { id: true, name: true } } },
+          },
+        },
+        orderBy: { firstName: 'asc' },
+      });
+      const classIds = [
+        ...new Set(
+          dependents.flatMap((d: any) =>
+            (d.enrollments || []).map((e: any) => e.class?.id).filter(Boolean),
+          ),
+        ),
+      ] as string[];
+      const now = new Date();
+      const upcomingMeetings =
+        classIds.length === 0
+          ? []
+          : await context.entities.Meeting.findMany({
+              where: {
+                classId: { in: classIds },
+                date: { gte: now },
+                status: { not: 'CANCELLED' },
+              },
+              orderBy: { date: 'asc' },
+              take: 5,
+              select: {
+                id: true,
+                title: true,
+                theme: true,
+                date: true,
+                status: true,
+                class: { select: { id: true, name: true } },
+              },
+            });
+      const birthdays = dependents
+        .filter((d: any) => d.birthDate)
+        .map((d: any) => ({
+          id: d.id,
+          firstName: d.firstName,
+          lastName: d.lastName,
+          birthDate: d.birthDate,
+        }));
+      return {
+        ...emptyFamily,
+        activeCatechumens: dependents.length,
+        upcomingMeetings,
+        aniversariantes: birthdays,
+        dependents,
+        hasAnyMeeting: upcomingMeetings.length > 0,
+      };
+    }
+
+    if (roles.includes('CATECHUMEN')) {
+      const own = await context.entities.CatechumenProfile.findFirst({
+        where: { userId: context.user.id },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          enrollments: {
+            where: { status: 'ENROLLED' },
+            select: { classId: true, class: { select: { id: true, name: true } } },
+          },
+        },
+      });
+      const classIds = (own?.enrollments || []).map((e: any) => e.classId);
+      const now = new Date();
+      const upcomingMeetings =
+        classIds.length === 0
+          ? []
+          : await context.entities.Meeting.findMany({
+              where: {
+                classId: { in: classIds },
+                date: { gte: now },
+                status: { not: 'CANCELLED' },
+              },
+              orderBy: { date: 'asc' },
+              take: 5,
+              select: {
+                id: true,
+                title: true,
+                theme: true,
+                date: true,
+                status: true,
+                class: { select: { id: true, name: true } },
+              },
+            });
+      return {
+        ...emptyFamily,
+        upcomingMeetings,
+        hasAnyMeeting: upcomingMeetings.length > 0,
+        dependents: own
+          ? [
+              {
+                id: own.id,
+                firstName: own.firstName,
+                lastName: own.lastName,
+                enrollments: own.enrollments,
+              },
+            ]
+          : [],
+      };
+    }
+
+    return emptyFamily;
   }
 
   // ─── Phase 2: Independent queries (meetings deferred until class scope known) ─

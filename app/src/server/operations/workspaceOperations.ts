@@ -23,6 +23,12 @@ const MANAGER_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'CO
 export const ensurePersonalWorkspace = async (_args: void, context: any) => {
   if (!context.user) throw new HttpError(401);
 
+  const { assertNotFamilyOnlyUser } = await import('../auth/familySurface');
+  await assertNotFamilyOnlyUser(
+    context,
+    'Contas do Portal da Família não criam workspace pessoal.',
+  );
+
   // Heal product trial so first-class creation during onboarding is not blocked.
   await ensureProductTrial(context, context.user.id);
 

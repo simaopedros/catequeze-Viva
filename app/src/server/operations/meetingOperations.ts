@@ -1,6 +1,12 @@
 import { HttpError } from 'wasp/server';
 import { MembershipStatus } from '@prisma/client';
 import { logger } from '../logger';
+import {
+  isFamilyPortalRole,
+  isFamilySurface,
+  loadActiveRoles,
+  rolesAreFamilyOnly,
+} from '../auth/familySurface';
 
 function isCoordinatorOrAbove(role: string | null): boolean {
   if (!role) return false;
@@ -11,17 +17,52 @@ function isCatechistOrAbove(role: string): boolean {
   return isCoordinatorOrAbove(role) || ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST'].includes(role);
 }
 
-async function getUserRole(context: any): Promise<string> {
-  if (context.user?.isAdmin) return 'SUPER_ADMIN';
-  const m = await context.entities.Membership.findFirst({
-    where: { userId: context.user.id, status: MembershipStatus.ACTIVE },
-  });
-  return m?.role || '';
+const STAFF_ROLE_RANK = [
+  'SUPER_ADMIN',
+  'DIOCESE_ADMIN',
+  'PARISH_COORDINATOR',
+  'COMMUNITY_COORDINATOR',
+  'PERSONAL_OWNER',
+  'LEAD_CATECHIST',
+  'ASSISTANT_CATECHIST',
+];
+
+async function getUserRole(
+  context: any,
+  parishId?: string | null,
+  surface?: string | null,
+): Promise<string> {
+  if (context.user?.isAdmin && surface !== 'PORTAL') return 'SUPER_ADMIN';
+  const roles = await loadActiveRoles(context, parishId);
+  if (
+    isFamilySurface({ context, roles, surface }) ||
+    rolesAreFamilyOnly(roles)
+  ) {
+    if (roles.includes('GUARDIAN')) return 'GUARDIAN';
+    if (roles.includes('CATECHUMEN')) return 'CATECHUMEN';
+    return roles.find(isFamilyPortalRole) || 'GUARDIAN';
+  }
+  if (!roles.length) return '';
+  let best = roles[0];
+  let bestRank = STAFF_ROLE_RANK.indexOf(best);
+  if (bestRank < 0) bestRank = 999;
+  for (const role of roles) {
+    const r = STAFF_ROLE_RANK.indexOf(role);
+    if (r >= 0 && r < bestRank) {
+      best = role;
+      bestRank = r;
+    }
+  }
+  return best || '';
 }
 
 /** Verifica se o usuário pertence à turma (por parish ou como catequista) */
 async function assertUserBelongsToClass(context: any, classId: string): Promise<void> {
   if (context.user?.isAdmin) return;
+
+  if (!context.entities?.CatechesisClass) {
+    throw new HttpError(500, 'Entidade de turma indisponível nesta operação.');
+  }
 
   const classData = await context.entities.CatechesisClass.findUnique({
     where: { id: classId },
@@ -30,62 +71,104 @@ async function assertUserBelongsToClass(context: any, classId: string): Promise<
 
   if (!classData) throw new HttpError(404, 'Turma não encontrada.');
 
-  // Verificar membership na paróquia da turma
-  const membership = await context.entities.Membership.findFirst({
-    where: { userId: context.user.id, parishId: classData.parishId, status: MembershipStatus.ACTIVE },
+  // All ACTIVE memberships on this parish (multi-role safe)
+  const memberships = await context.entities.Membership.findMany({
+    where: {
+      userId: context.user.id,
+      parishId: classData.parishId,
+      status: MembershipStatus.ACTIVE,
+    },
+    select: { role: true },
   });
 
-  if (!membership) {
-    // Allow personal workspace owner
+  if (!memberships.length) {
     const isPersonalOwner = await context.entities.Parish.findFirst({
       where: { id: classData.parishId, ownerId: context.user.id, type: 'PERSONAL' },
       select: { id: true },
     });
-    if (isPersonalOwner) return; // Personal owner has full access
+    if (isPersonalOwner) return;
     throw new HttpError(403, 'Você não pertence a esta paróquia.');
   }
 
-  // Coordenadores: acesso a qualquer turma da paróquia
-  if (isCoordinatorOrAbove(membership.role)) return;
+  const roles = memberships.map((m: { role: string }) => m.role);
 
-  // Catequistas: verificar se pertencem à turma
-  if (isCatechistOrAbove(membership.role)) {
-    const isClassCatechist = classData.catechists.some((cc: any) => cc.userId === context.user.id);
-    if (!isClassCatechist) throw new HttpError(403, 'Você não é catequista desta turma.');
-    return;
+  if (roles.some((r: string) => isCoordinatorOrAbove(r))) return;
+
+  if (roles.some((r: string) => isCatechistOrAbove(r))) {
+    const isClassCatechist = classData.catechists.some(
+      (cc: any) => cc.userId === context.user.id,
+    );
+    if (isClassCatechist) return;
+    // Fall through: may also be guardian of enrolled dependents
   }
 
-  // Guardians: only classes where their dependents are enrolled
-  if (membership.role === 'GUARDIAN') {
-    const guardian = await context.entities.GuardianProfile.findUnique({
+  if (roles.includes('GUARDIAN')) {
+    const guardians = await context.entities.GuardianProfile.findMany({
       where: { userId: context.user.id },
       select: { householdId: true },
     });
-    if (guardian?.householdId) {
+    const householdIds = guardians
+      .map((g: { householdId: string | null }) => g.householdId)
+      .filter(Boolean) as string[];
+    if (householdIds.length) {
       const enrollment = await context.entities.ClassEnrollment.findFirst({
         where: {
           classId,
-          catechumenProfile: { householdId: guardian.householdId },
+          status: 'ENROLLED',
+          catechumenProfile: { householdId: { in: householdIds } },
         },
       });
       if (enrollment) return;
     }
-    throw new HttpError(403, 'Seus dependentes não estão matriculados nesta turma.');
   }
 
-  // CATECHUMEN: only classes they're enrolled in
-  if (membership.role === 'CATECHUMEN') {
+  if (roles.includes('CATECHUMEN')) {
     const enrollment = await context.entities.ClassEnrollment.findFirst({
       where: {
         classId,
+        status: 'ENROLLED',
         catechumenProfile: { userId: context.user.id },
       },
     });
     if (enrollment) return;
-    throw new HttpError(403, 'Você não está matriculado nesta turma.');
   }
 
   throw new HttpError(403, 'Você não tem acesso a esta turma.');
+}
+
+/** Staff-only ops: class roster / attendance sheet / matrix */
+async function assertCanTakeAttendance(
+  context: any,
+  classId: string,
+  surface?: string | null,
+): Promise<void> {
+  await assertUserBelongsToClass(context, classId);
+  const classData = await context.entities.CatechesisClass.findUnique({
+    where: { id: classId },
+    select: { parishId: true, catechists: { select: { userId: true } } },
+  });
+  if (!classData) throw new HttpError(404, 'Turma não encontrada.');
+
+  const roles = await loadActiveRoles(context, classData.parishId);
+  if (
+    isFamilySurface({ context, roles, surface }) ||
+    rolesAreFamilyOnly(roles)
+  ) {
+    throw new HttpError(
+      403,
+      'Lista de presença completa é exclusiva da equipe pastoral.',
+    );
+  }
+
+  if (context.user.isAdmin) return;
+  if (roles.some(isCoordinatorOrAbove)) return;
+  if (roles.some((r) => isCatechistOrAbove(r))) {
+    const ok = classData.catechists.some(
+      (cc: any) => cc.userId === context.user.id,
+    );
+    if (ok) return;
+  }
+  throw new HttpError(403, 'Apenas catequistas da turma podem gerir a chamada.');
 }
 
 export const listMeetings = async (args: { classId: string }, context: any) => {
@@ -124,16 +207,18 @@ export const createMeeting = async (args: any, context: any) => {
   }
 };
 
-export const getMeetingAttendance = async (args: { meetingId: string }, context: any) => {
+export const getMeetingAttendance = async (
+  args: { meetingId: string; surface?: string },
+  context: any,
+) => {
   if (!context.user) throw new HttpError(401);
 
-  // Verificar acesso ao meeting através da turma
   const meeting = await context.entities.Meeting.findUnique({
     where: { id: args.meetingId },
     select: { classId: true },
   });
   if (!meeting) throw new HttpError(404, 'Encontro não encontrado.');
-  await assertUserBelongsToClass(context, meeting.classId);
+  await assertCanTakeAttendance(context, meeting.classId, args.surface);
 
   return context.entities.AttendanceRecord.findMany({
     where: { meetingId: args.meetingId },
@@ -143,13 +228,12 @@ export const getMeetingAttendance = async (args: { meetingId: string }, context:
   });
 };
 
-export const getClassAttendanceMatrix = async (args: { classId: string }, context: any) => {
+export const getClassAttendanceMatrix = async (
+  args: { classId: string; surface?: string },
+  context: any,
+) => {
   if (!context.user) throw new HttpError(401);
-  const role = await getUserRole(context);
-  if (!isCatechistOrAbove(role)) {
-    throw new HttpError(403, 'Apenas catequistas e coordenadores podem ver a matriz de presença.');
-  }
-  await assertUserBelongsToClass(context, args.classId);
+  await assertCanTakeAttendance(context, args.classId, args.surface);
 
   return context.entities.Meeting.findMany({
     where: { classId: args.classId },
@@ -172,17 +256,12 @@ const MAX_BATCH_CHANGES = 100;
  * Staff-only — never return full roster to GUARDIAN/CATECHUMEN.
  */
 export const getMeetingAttendanceSheet = async (
-  args: { classId: string; meetingId?: string },
+  args: { classId: string; meetingId?: string; surface?: string },
   context: any,
 ): Promise<any> => {
   if (!context.user) throw new HttpError(401);
-  const role = await getUserRole(context);
-  if (!isCatechistOrAbove(role)) {
-    throw new HttpError(403, 'Apenas catequistas e coordenadores podem ver a folha de chamada.');
-  }
   if (!args.classId) throw new HttpError(400, 'classId é obrigatório.');
-
-  await assertUserBelongsToClass(context, args.classId);
+  await assertCanTakeAttendance(context, args.classId, args.surface);
 
   const siblingMeetings = await context.entities.Meeting.findMany({
     where: { classId: args.classId },
@@ -732,7 +811,10 @@ function shapeContentForRole(content: any, isStaff: boolean) {
   };
 }
 
-export const getMeeting = async (args: { id: string }, context: any): Promise<any> => {
+export const getMeeting = async (
+  args: { id: string; surface?: string },
+  context: any,
+): Promise<any> => {
   if (!context.user) throw new HttpError(401);
 
   const meeting = await context.entities.Meeting.findUnique({
@@ -754,9 +836,14 @@ export const getMeeting = async (args: { id: string }, context: any): Promise<an
 
   await assertUserBelongsToClass(context, meeting.classId);
 
-  const role = await getUserRole(context);
+  const classParish = await context.entities.CatechesisClass.findUnique({
+    where: { id: meeting.classId },
+    select: { parishId: true },
+  });
+  const role = await getUserRole(context, classParish?.parishId, args.surface);
+  // After getUserRole family-surface resolution, only catechist+ roles are staff.
   const isStaff = isCatechistOrAbove(role);
-  const isAdmin = Boolean(context.user.isAdmin);
+  const isAdmin = Boolean(context.user.isAdmin) && isStaff;
 
   const locationHint =
     meeting.class?.location ||
