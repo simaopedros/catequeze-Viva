@@ -1,10 +1,24 @@
 /**
  * portal-dashboard.test.ts — PR9: guardian/catechumen portal dashboard DTOs
  * use resolvePortalScope and never expose parish-wide pastoral stats.
+ * No NODE_ENV gate — always runs in CI.
  *
  * Run: npx vitest run src/__tests__/portal-dashboard.test.ts
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+vi.mock('wasp/server', () => {
+  class HttpError extends Error {
+    statusCode: number;
+    constructor(statusCode: number, message?: string) {
+      super(message ?? String(statusCode));
+      this.statusCode = statusCode;
+      this.name = 'HttpError';
+    }
+  }
+  return { HttpError, prisma: {} };
+});
+
 import {
   getGuardianPortalDashboard,
   getCatechumenPortalDashboard,

@@ -91,11 +91,12 @@
     "i18n:build": "node scripts/build-i18n.mjs",
     "i18n:check": "node scripts/build-i18n.mjs --check",
     "test": "vitest run",
-    "test:unit": "vitest run src/__tests__/totp.test.ts src/__tests__/i18n.test.ts src/__tests__/currency.test.ts",
+    "test:unit": "vitest run src/__tests__/totp.test.ts src/__tests__/i18n.test.ts src/__tests__/currency.test.ts src/__tests__/family-portal.test.ts src/__tests__/portal-authz-p0.test.ts src/__tests__/portal-scope.test.ts src/__tests__/portal-invitation.test.ts src/__tests__/minor-portal-consent.test.ts src/__tests__/portal-dashboard.test.ts src/__tests__/portal-notifications.test.ts",
     "test:integration": "NODE_ENV=development vitest run --exclude src/__tests__/totp.test.ts",
     "test:e2e": "playwright test",
     "test:e2e:landing": "playwright test tests/e2e/landing-funnel.spec.ts tests/e2e/a11y-viewport.spec.ts --project=chromium",
     "test:e2e:nav": "playwright test tests/e2e/nav-parity.spec.ts --project=chromium",
+    "test:e2e:portal": "playwright test tests/e2e/portal-invite.spec.ts tests/e2e/portal-viewport-smoke.spec.ts --project=chromium",
     "lighthouse:landings": "node scripts/lighthouse-landings.mjs"
   },
   "overrides": {

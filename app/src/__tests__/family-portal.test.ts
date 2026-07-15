@@ -1,188 +1,115 @@
 /**
- * family-portal.test.ts — Tests for the Family Portal, invitation system, and onboarding fixes.
+ * family-portal.test.ts — Pure unit coverage for portal host utils + legacy invite/join authz.
  *
- * Run with: NODE_ENV=development npx vitest run src/__tests__/family-portal.test.ts
+ * Integration fluff that required NODE_ENV=development + live DB was retired in PR11.
+ * PortalInvitation create/accept matrix lives in portal-invitation.test.ts.
+ * Authz P0 / scope / consent / dashboards / notifications have their own portal-*.test.ts files.
+ *
+ * Always runs in CI (no NODE_ENV gate).
  */
-import { describe, it, expect, beforeAll, vi } from 'vitest';
-import { prisma, USERS, PARISH_SAO_JOSE, makeContext } from './setup';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const itOrSkip = process.env.NODE_ENV === 'development' ? it : it.skip;
-
-// ── UserContext tests ───────────────────────────────────────────────────────
-
-import { getCurrentUserContext } from '../server/operations/userContext';
-
-describe('getCurrentUserContext', () => {
-  // We test with an admin context since getCurrentUserContext needs a real user
-  const adminCtx = makeContext('admin');
-
-  itOrSkip('returns needsOnboarding=false for admin', async () => {
-    // Admin always has access via isAdmin flag — override context
-    const ctx = { user: { id: USERS.admin.id, isAdmin: true }, entities: prisma };
-    const result = await getCurrentUserContext(undefined as any, ctx);
-    expect(result.needsOnboarding).toBe(false);
-  });
-
-  itOrSkip('returns hasPendingInvitations flag', async () => {
-    const ctx = { user: { id: USERS.guardian.id, isAdmin: false, email: USERS.guardian.email }, entities: prisma };
-    const result = await getCurrentUserContext(undefined as any, ctx);
-    expect(typeof result.hasPendingInvitations).toBe('boolean');
-  });
-
-  itOrSkip('returns memberships with correct fields', async () => {
-    const ctx = { user: { id: USERS.coordSaoJose.id, isAdmin: false, email: USERS.coordSaoJose.email }, entities: prisma };
-    const result = await getCurrentUserContext(undefined as any, ctx);
-    expect(Array.isArray(result.memberships)).toBe(true);
-    if (result.memberships.length > 0) {
-      const m = result.memberships[0];
-      expect(m).toHaveProperty('id');
-      expect(m).toHaveProperty('parishId');
-      expect(m).toHaveProperty('role');
-      expect(m).toHaveProperty('status');
+vi.mock('wasp/server', () => {
+  class HttpError extends Error {
+    statusCode: number;
+    constructor(statusCode: number, message?: string) {
+      super(message ?? String(statusCode));
+      this.statusCode = statusCode;
+      this.name = 'HttpError';
     }
-  });
+  }
+  return { HttpError, prisma: {} };
 });
 
-// ── joinParish tests ────────────────────────────────────────────────────────
+vi.mock('../server/auth/helpers', () => {
+  class HttpError extends Error {
+    statusCode: number;
+    constructor(statusCode: number, message?: string) {
+      super(message ?? String(statusCode));
+      this.statusCode = statusCode;
+    }
+  }
+  return {
+    requireAuth: (user: any) => {
+      if (!user) throw new HttpError(401);
+    },
+    getDioceseParishIds: vi.fn(async () => [] as string[]),
+    writeAuditLog: vi.fn(async () => undefined),
+  };
+});
+
+vi.mock('../server/jobs/inviteEmailUtils', () => ({
+  deliverInviteEmail: vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.mock('../server/logger', () => ({
+  logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
+}));
 
 import { joinParish } from '../server/operations/joinParish';
-
-describe('joinParish', () => {
-  itOrSkip('rejects self-join to institutional parish without invitation', async () => {
-    const ctx = makeContext('guardian');
-    try {
-      await joinParish({ parishId: PARISH_SAO_JOSE, role: 'GUARDIAN' }, ctx);
-      // If it doesn't throw, the guardian might already have a membership — check
-      const membership = await prisma.membership.findFirst({
-        where: { userId: USERS.guardian.id, parishId: PARISH_SAO_JOSE },
-      });
-      // If membership exists, it's because the seed already created one — skip test
-      if (!membership) {
-        expect.unreachable('Should have thrown 403');
-      }
-    } catch (e: any) {
-      const code = e.statusCode || e.status || 0;
-      expect([403, 404]).toContain(code);
-    }
-  });
-
-  itOrSkip('rejects privileged role self-assignment', async () => {
-    const ctx = makeContext('guardian');
-    try {
-      await joinParish({ parishId: PARISH_SAO_JOSE, role: 'PARISH_COORDINATOR' }, ctx);
-      expect.unreachable('Should have thrown');
-    } catch (e: any) {
-      expect(e.statusCode || e.status).toBe(403);
-    }
-  });
-});
-
-// ── Member operations: catechist invite permissions ─────────────────────────
-
 import { inviteUserToParish, resendInvitation } from '../server/operations/memberOperations';
+import {
+  isFamilyPortalHost,
+  isFamilyPortalRole,
+  familyPortalUrl,
+  staffPortalUrl,
+  FAMILY_PORTAL_ROLES,
+} from '../shared/portal';
 
-describe('inviteUserToParish', () => {
-  const leadCtx = makeContext('leadCatechist');
-  const coordCtx = makeContext('coordSaoJose');
+const PARISH = 'parish-inst-1';
+const USER = 'user-1';
 
-  itOrSkip('allows LEAD_CATECHIST to invite GUARDIAN', async () => {
-    try {
-      const result = await inviteUserToParish({
-        email: 'test_guardian_invite@test.com',
-        parishId: PARISH_SAO_JOSE,
-        role: 'GUARDIAN',
-      }, leadCtx);
-      expect(result).toBeTruthy();
-      await prisma.pendingInvitation.deleteMany({
-        where: { email: 'test_guardian_invite@test.com' },
-      });
-    } catch (e: any) {
-      // Could fail if lead catechist is not a member of this parish in seed data
-      const code = e.statusCode || e.status;
-      if (code) expect([400, 403]).toContain(code);
-      // Otherwise just ensure the error is an HttpError-like object
-      expect(e.message || e.statusCode || e.status).toBeTruthy();
-    }
-  });
+function ctx(user: any, entities: any) {
+  return { user, entities };
+}
 
-  itOrSkip('allows LEAD_CATECHIST to invite CATECHUMEN', async () => {
-    try {
-      const result = await inviteUserToParish({
-        email: 'test_catechumen_invite@test.com',
-        parishId: PARISH_SAO_JOSE,
-        role: 'CATECHUMEN',
-      }, leadCtx);
-      expect(result).toBeTruthy();
-      await prisma.pendingInvitation.deleteMany({
-        where: { email: 'test_catechumen_invite@test.com' },
-      });
-    } catch (e: any) {
-      const code = e.statusCode || e.status;
-      if (code) expect([400, 403]).toContain(code);
-      expect(e.message || e.statusCode || e.status).toBeTruthy();
-    }
-  });
-
-  itOrSkip('prevents LEAD_CATECHIST from inviting PARISH_COORDINATOR', async () => {
-    try {
-      await inviteUserToParish({
-        email: 'test_escalation@example.com',
-        parishId: PARISH_SAO_JOSE,
-        role: 'PARISH_COORDINATOR',
-      }, leadCtx);
-      expect.unreachable('Should have thrown 403');
-    } catch (e: any) {
-      expect(e.statusCode || e.status).toBe(403);
-    }
-  });
-
-  itOrSkip('allows coordinator to invite any role', async () => {
-    try {
-      const result = await inviteUserToParish({
-        email: 'test_coord_invite@test.com',
-        parishId: PARISH_SAO_JOSE,
-        role: 'LEAD_CATECHIST',
-      }, coordCtx);
-      expect(result).toBeTruthy();
-      await prisma.pendingInvitation.deleteMany({
-        where: { email: 'test_coord_invite@test.com' },
-      });
-    } catch (e: any) {
-      const code = e.statusCode || e.status;
-      if (code) expect([400, 403]).toContain(code);
-      expect(e.message || e.statusCode || e.status).toBeTruthy();
-    }
-  });
-});
-
-describe('resendInvitation', () => {
-  const coordCtx = makeContext('coordSaoJose');
-
-  itOrSkip('requires pendingInvitationId or membershipId', async () => {
-    try {
-      await resendInvitation({}, coordCtx);
-      expect.unreachable('Should have thrown 400');
-    } catch (e: any) {
-      expect(e.statusCode || e.status).toBe(400);
-    }
-  });
-
-  itOrSkip('returns 404 for non-existent invitation', async () => {
-    try {
-      await resendInvitation(
-        { pendingInvitationId: 'non-existent-id-00000000' },
-        coordCtx,
-      );
-      expect.unreachable('Should have thrown 404');
-    } catch (e: any) {
-      expect(e.statusCode || e.status).toBe(404);
-    }
-  });
-});
+function baseEntities(overrides: Record<string, any> = {}) {
+  return {
+    Membership: {
+      findFirst: vi.fn().mockResolvedValue(null),
+      findMany: vi.fn().mockResolvedValue([]),
+      findUnique: vi.fn().mockResolvedValue(null),
+      create: vi.fn(),
+      update: vi.fn(),
+    },
+    Parish: {
+      findUnique: vi.fn().mockResolvedValue({
+        id: PARISH,
+        name: 'Paróquia Teste',
+        ownerId: null,
+        type: 'PARISH',
+      }),
+      findFirst: vi.fn().mockResolvedValue(null),
+    },
+    Community: {
+      findUnique: vi.fn().mockResolvedValue(null),
+    },
+    User: {
+      findUnique: vi.fn().mockResolvedValue(null),
+    },
+    PendingInvitation: {
+      findUnique: vi.fn().mockResolvedValue(null),
+      create: vi.fn(async ({ data }: any) => ({ id: 'pend-1', ...data })),
+      update: vi.fn(async ({ data }: any) => ({ id: 'pend-1', ...data })),
+      deleteMany: vi.fn(),
+    },
+    GuardianProfile: {
+      findFirst: vi.fn().mockResolvedValue(null),
+      create: vi.fn(),
+    },
+    CatechumenProfile: {
+      findFirst: vi.fn().mockResolvedValue(null),
+      create: vi.fn(),
+      updateMany: vi.fn(),
+    },
+    Household: {
+      findFirst: vi.fn().mockResolvedValue(null),
+    },
+    ...overrides,
+  };
+}
 
 // ── portal.ts utility tests ─────────────────────────────────────────────────
-
-import { isFamilyPortalHost, isFamilyPortalRole, familyPortalUrl } from '../shared/portal';
 
 describe('portal utilities', () => {
   it('isFamilyPortalHost detects familia subdomain', () => {
@@ -197,6 +124,7 @@ describe('portal utilities', () => {
   });
 
   it('isFamilyPortalRole identifies family roles', () => {
+    expect(FAMILY_PORTAL_ROLES).toEqual(['GUARDIAN', 'CATECHUMEN']);
     expect(isFamilyPortalRole('GUARDIAN')).toBe(true);
     expect(isFamilyPortalRole('CATECHUMEN')).toBe(true);
     expect(isFamilyPortalRole('PARISH_COORDINATOR')).toBe(false);
@@ -215,6 +143,12 @@ describe('portal utilities', () => {
   it('familyPortalUrl normalizes paths without leading slash', () => {
     const url = familyPortalUrl('convite/abc123');
     expect(url).toContain('/convite/abc123');
+  });
+
+  it('staffPortalUrl builds staff host URLs', () => {
+    const url = staffPortalUrl('/app/members');
+    expect(url).toContain('/app/members');
+    expect(url.startsWith('https://')).toBe(true);
   });
 
   // FAMILY_PORTAL_HOST is a module-level const read at import time, so changing
@@ -238,47 +172,233 @@ describe('portal utilities', () => {
   });
 });
 
-// ── Token operations ────────────────────────────────────────────────────────
+// ── joinParish authz (unit, mocked entities) ────────────────────────────────
 
-import { getInvitationByToken, acceptInvitationByToken } from '../server/operations/memberOperations';
-
-describe('getInvitationByToken', () => {
-  // Token field requires prisma generate after schema migration — skip until DB is migrated
-  const itToken = process.env.NODE_ENV === 'development' ? it.skip : it.skip;
-
-  itToken('returns 404 for non-existent token', async () => {
-    const ctx = makeContext('admin');
-    try {
-      await getInvitationByToken({ token: 'non-existent-token-00000000' }, ctx);
-      expect.unreachable('Should have thrown 404');
-    } catch (e: any) {
-      expect(e.statusCode || e.status).toBe(404);
-    }
+describe('joinParish authz', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
-  itToken('returns invitation data for valid token (requires db migration)', async () => {
-    // Pending: requires prisma generate after schema migration to add `token` field
-    expect(true).toBe(true);
+  it('rejects unauthenticated', async () => {
+    const entities = baseEntities();
+    await expect(
+      joinParish({ parishId: PARISH }, ctx(null, entities)),
+    ).rejects.toMatchObject({ statusCode: 401 });
   });
 
-  itToken('returns 410 for expired token (requires db migration)', async () => {
-    // Pending: requires prisma generate after schema migration to add `token` field
-    expect(true).toBe(true);
+  it('rejects missing parishId', async () => {
+    const entities = baseEntities();
+    await expect(
+      joinParish({ parishId: '' }, ctx({ id: USER }, entities)),
+    ).rejects.toMatchObject({ statusCode: 400 });
+  });
+
+  it('rejects self-join to institutional parish without invitation', async () => {
+    const entities = baseEntities({
+      Parish: {
+        findUnique: vi.fn().mockResolvedValue({
+          id: PARISH,
+          name: 'São José',
+          ownerId: null,
+          type: 'PARISH',
+        }),
+      },
+      Membership: {
+        findFirst: vi.fn().mockResolvedValue(null),
+      },
+    });
+    await expect(
+      joinParish({ parishId: PARISH, role: 'GUARDIAN' }, ctx({ id: USER }, entities)),
+    ).rejects.toMatchObject({ statusCode: 403 });
+  });
+
+  it('rejects privileged role self-assignment when not owner', async () => {
+    const entities = baseEntities({
+      Parish: {
+        findUnique: vi.fn().mockResolvedValue({
+          id: PARISH,
+          name: 'São José',
+          ownerId: 'other-owner',
+          type: 'PARISH',
+        }),
+      },
+    });
+    await expect(
+      joinParish(
+        { parishId: PARISH, role: 'PARISH_COORDINATOR' },
+        ctx({ id: USER }, entities),
+      ),
+    ).rejects.toMatchObject({ statusCode: 403 });
+  });
+
+  it('activates existing INVITED membership on institutional parish', async () => {
+    const entities = baseEntities({
+      Parish: {
+        findUnique: vi.fn().mockResolvedValue({
+          id: PARISH,
+          name: 'São José',
+          ownerId: null,
+          type: 'PARISH',
+        }),
+      },
+      Membership: {
+        findFirst: vi.fn().mockResolvedValue({
+          id: 'm-inv',
+          status: 'INVITED',
+          role: 'GUARDIAN',
+        }),
+        update: vi.fn(async ({ data }: any) => ({
+          id: 'm-inv',
+          status: data.status,
+          role: 'GUARDIAN',
+        })),
+      },
+    });
+    const result = await joinParish(
+      { parishId: PARISH, role: 'GUARDIAN' },
+      ctx({ id: USER }, entities),
+    );
+    expect(result.status).toBe('ACTIVE');
+    expect(entities.Membership.update).toHaveBeenCalled();
   });
 });
 
-describe('acceptInvitationByToken', () => {
-  const itToken = process.env.NODE_ENV === 'development' ? it.skip : it.skip;
+// ── inviteUserToParish role matrix (unit) ───────────────────────────────────
 
-  itToken('returns 401 for unauthenticated request', async () => {
-    try {
-      await acceptInvitationByToken(
-        { token: 'some-token' },
-        { user: null, entities: prisma },
-      );
-      expect.unreachable('Should have thrown 401');
-    } catch (e: any) {
-      expect([401, 403]).toContain(e.statusCode || e.status);
-    }
+describe('inviteUserToParish role matrix', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    process.env.VITEST = 'true';
+  });
+
+  function leadEntities() {
+    return baseEntities({
+      Membership: {
+        findFirst: vi.fn().mockResolvedValue({ role: 'LEAD_CATECHIST', status: 'ACTIVE' }),
+        findMany: vi.fn().mockResolvedValue([]),
+        findUnique: vi.fn().mockResolvedValue(null),
+        create: vi.fn(),
+        update: vi.fn(),
+      },
+    });
+  }
+
+  function coordEntities() {
+    return baseEntities({
+      Membership: {
+        findFirst: vi.fn().mockResolvedValue({ role: 'PARISH_COORDINATOR', status: 'ACTIVE' }),
+        findMany: vi.fn().mockResolvedValue([]),
+        findUnique: vi.fn().mockResolvedValue(null),
+        create: vi.fn(),
+        update: vi.fn(),
+      },
+    });
+  }
+
+  it('allows LEAD_CATECHIST to invite GUARDIAN', async () => {
+    const entities = leadEntities();
+    const result = await inviteUserToParish(
+      {
+        email: 'test_guardian_invite@test.com',
+        parishId: PARISH,
+        role: 'GUARDIAN',
+      },
+      ctx({ id: USER, isAdmin: false }, entities),
+    );
+    expect(result).toBeTruthy();
+    expect(entities.PendingInvitation.create).toHaveBeenCalled();
+  });
+
+  it('allows LEAD_CATECHIST to invite CATECHUMEN', async () => {
+    const entities = leadEntities();
+    const result = await inviteUserToParish(
+      {
+        email: 'test_catechumen_invite@test.com',
+        parishId: PARISH,
+        role: 'CATECHUMEN',
+      },
+      ctx({ id: USER, isAdmin: false }, entities),
+    );
+    expect(result).toBeTruthy();
+    expect(entities.PendingInvitation.create).toHaveBeenCalled();
+  });
+
+  it('prevents LEAD_CATECHIST from inviting PARISH_COORDINATOR', async () => {
+    const entities = leadEntities();
+    await expect(
+      inviteUserToParish(
+        {
+          email: 'test_escalation@example.com',
+          parishId: PARISH,
+          role: 'PARISH_COORDINATOR',
+        },
+        ctx({ id: USER, isAdmin: false }, entities),
+      ),
+    ).rejects.toMatchObject({ statusCode: 403 });
+  });
+
+  it('allows coordinator to invite LEAD_CATECHIST', async () => {
+    const entities = coordEntities();
+    const result = await inviteUserToParish(
+      {
+        email: 'test_coord_invite@test.com',
+        parishId: PARISH,
+        role: 'LEAD_CATECHIST',
+      },
+      ctx({ id: USER, isAdmin: false }, entities),
+    );
+    expect(result).toBeTruthy();
+    expect(entities.PendingInvitation.create).toHaveBeenCalled();
+  });
+
+  it('rejects non-inviter role (GUARDIAN)', async () => {
+    const entities = baseEntities({
+      Membership: {
+        findFirst: vi.fn().mockResolvedValue({ role: 'GUARDIAN', status: 'ACTIVE' }),
+      },
+      Parish: {
+        findUnique: vi.fn().mockResolvedValue({ id: PARISH, name: 'X', ownerId: null, type: 'PARISH' }),
+        findFirst: vi.fn().mockResolvedValue(null),
+      },
+    });
+    await expect(
+      inviteUserToParish(
+        { email: 'x@y.com', parishId: PARISH, role: 'CATECHUMEN' },
+        ctx({ id: USER, isAdmin: false }, entities),
+      ),
+    ).rejects.toMatchObject({ statusCode: 403 });
+  });
+});
+
+// ── resendInvitation validation (unit) ──────────────────────────────────────
+
+describe('resendInvitation', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    process.env.VITEST = 'true';
+  });
+
+  it('requires pendingInvitationId or membershipId', async () => {
+    const entities = baseEntities();
+    await expect(
+      resendInvitation({}, ctx({ id: USER, isAdmin: false }, entities)),
+    ).rejects.toMatchObject({ statusCode: 400 });
+  });
+
+  it('returns 404 for non-existent invitation', async () => {
+    const entities = baseEntities({
+      PendingInvitation: {
+        findUnique: vi.fn().mockResolvedValue(null),
+      },
+      Membership: {
+        findFirst: vi.fn().mockResolvedValue({ role: 'PARISH_COORDINATOR', status: 'ACTIVE' }),
+      },
+    });
+    await expect(
+      resendInvitation(
+        { pendingInvitationId: 'non-existent-id-00000000' },
+        ctx({ id: USER, isAdmin: false }, entities),
+      ),
+    ).rejects.toMatchObject({ statusCode: 404 });
   });
 });
