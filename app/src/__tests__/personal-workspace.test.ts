@@ -246,15 +246,26 @@ describe('Personal Workspace — getParishById access', () => {
 
 describe('Personal Workspace — ensurePersonalWorkspace operation', () => {
 
+  it('rejects pure GUARDIAN (family portal) accounts', async () => {
+    const { ensurePersonalWorkspace: op } = await import(
+      '../server/operations/workspaceOperations'
+    );
+    const ctx = makeContext('guardian');
+    await expect(op(undefined, ctx)).rejects.toMatchObject({
+      statusCode: 403,
+    });
+  });
+
   it('creates workspace with type=PERSONAL and correct ownerId', async () => {
-    const { ensurePersonalWorkspace: op } = await import('../server/operations/workspaceOperations');
-    const userId = USERS.guardian.id;
+    const { ensurePersonalWorkspace: op } = await import(
+      '../server/operations/workspaceOperations'
+    );
+    // Catechists (not family-only) may create personal workspace.
+    const userId = USERS.leadCatechist.id;
 
     // ensurePersonalWorkspace is idempotent: it returns the existing personal
     // workspace if one already exists (other suites may have created it).
-    // Deleting the parish directly would violate Membership_parishId_fkey
-    // (RESTRICT), so we rely on idempotency instead of teardown here.
-    const ctx = makeContext('guardian');
+    const ctx = makeContext('leadCatechist');
     const result = await op(undefined, ctx);
 
     expect(result).toBeTruthy();
@@ -265,25 +276,28 @@ describe('Personal Workspace — ensurePersonalWorkspace operation', () => {
   });
 
   it('names workspace "Catequese de {firstName}"', async () => {
-    const { ensurePersonalWorkspace: op } = await import('../server/operations/workspaceOperations');
+    const { ensurePersonalWorkspace: op } = await import(
+      '../server/operations/workspaceOperations'
+    );
 
-    // The 'guardian' user has firstName — check seed data
     const user = await prisma.user.findUnique({
-      where: { id: USERS.guardian.id },
+      where: { id: USERS.leadCatechist.id },
       select: { firstName: true },
     });
 
-    const ctx = makeContext('guardian');
+    const ctx = makeContext('leadCatechist');
     const result = await op(undefined, ctx);
 
     const expectedName = `Catequese de ${user?.firstName || 'Catequista'}`;
     // Idempotency may return a workspace created by an earlier suite.
-    expect([expectedName, "Personal Workspace Test"]).toContain(result.name);
+    expect([expectedName, 'Personal Workspace Test']).toContain(result.name);
   });
 
   it('is idempotent — second call returns same workspace', async () => {
-    const { ensurePersonalWorkspace: op } = await import('../server/operations/workspaceOperations');
-    const ctx = makeContext('guardian');
+    const { ensurePersonalWorkspace: op } = await import(
+      '../server/operations/workspaceOperations'
+    );
+    const ctx = makeContext('leadCatechist');
 
     const first = await op(undefined, ctx);
     const second = await op(undefined, ctx);
@@ -291,9 +305,8 @@ describe('Personal Workspace — ensurePersonalWorkspace operation', () => {
     expect(second.id).toBe(first.id);
     expect(second.name).toBe(first.name);
 
-    // Verify only one PERSONAL workspace exists for this user
     const count = await prisma.parish.count({
-      where: { ownerId: USERS.guardian.id, type: 'PERSONAL' },
+      where: { ownerId: USERS.leadCatechist.id, type: 'PERSONAL' },
     });
     expect(count).toBe(1);
   });
