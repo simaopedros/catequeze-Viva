@@ -95,6 +95,7 @@ function getGuardianAvatarLetter(g: any): string {
 
 export default function FamilyDetailPage() {
   const { t } = useTranslation("common");
+  const { t: tf } = useTranslation("family");
   const { id } = useParams<{ id: string }>();
   const relationshipOptions = useMemo(
     () =>
@@ -515,10 +516,7 @@ export default function FamilyDetailPage() {
                       to={`/app/family-invites?role=GUARDIAN&householdId=${id || ""}`}
                     >
                       <Mail className="mr-1 h-3 w-3" />
-                      {t("portal_invites.context_family", {
-                        ns: "family",
-                        defaultValue: "Convidar ao portal",
-                      })}
+                      {tf("portal_invites.context_family")}
                     </Link>
                   </Button>
                   <Button
@@ -722,12 +720,7 @@ export default function FamilyDetailPage() {
                         variant="ghost"
                         className="h-7 w-7"
                         asChild
-                        title={
-                          t("portal_invites.context_guardian", {
-                            ns: "family",
-                            defaultValue: "Convidar ao portal da família",
-                          }) as string
-                        }
+                        title={tf("portal_invites.context_guardian")}
                       >
                         <Link
                           to={`/app/family-invites?role=GUARDIAN&email=${encodeURIComponent(g.email || "")}&householdId=${id || ""}`}

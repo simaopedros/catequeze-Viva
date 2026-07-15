@@ -44,6 +44,7 @@ export function ParishMembersTab({
 }: ParishMembersTabProps) {
   const { t } = useTranslation("common");
   const { t: tp } = useTranslation("parishes");
+  const { t: tf } = useTranslation("family");
   const roleLabels = useRoleLabels();
   const statusLabels = useMembershipStatusLabels();
   const inviteRoles = useMemo(
@@ -104,20 +105,13 @@ export function ParishMembersTab({
         <div className="flex items-start gap-2 text-sm">
           <Heart className="mt-0.5 h-4 w-4 shrink-0 text-[#071A2D]" />
           <p className="text-muted-foreground">
-            {t("portal_invites.banner_desc", {
-              ns: "family",
-              defaultValue:
-                "Para convidar responsáveis e catequizandos ao Portal da Família, use a central de convites.",
-            })}
+            {tf("portal_invites.banner_desc")}
           </p>
         </div>
         <Button size="sm" variant="outline" className="h-9 rounded-sm shrink-0" asChild>
           <Link to="/app/family-invites">
             <Mail className="mr-1 h-3.5 w-3.5" />
-            {t("portal_invites.banner_cta", {
-              ns: "family",
-              defaultValue: "Convites da família",
-            })}
+            {tf("portal_invites.banner_cta")}
           </Link>
         </Button>
       </div>

@@ -1025,6 +1025,7 @@ export default function CatechumenDetailPage() {
   const { t } = useTranslation("common");
   const { t: tp } = useTranslation("parishes");
   const { t: tpa } = useTranslation("pastoralAnalysis");
+  const { t: tf } = useTranslation("family");
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { userRole } = useUserContext();
@@ -1370,10 +1371,7 @@ export default function CatechumenDetailPage() {
                       to={`/app/family-invites?role=CATECHUMEN&email=${encodeURIComponent(profile.email || "")}&householdId=${encodeURIComponent(profile.householdId || "")}`}
                     >
                       <Mail className="mr-1 h-3 w-3" />
-                      {t("portal_invites.context_catechumen", {
-                        ns: "family",
-                        defaultValue: "Convidar ao portal",
-                      })}
+                      {tf("portal_invites.context_catechumen")}
                     </Link>
                   </Button>
                   <Button
