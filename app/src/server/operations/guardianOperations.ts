@@ -1,19 +1,30 @@
 import { HttpError } from 'wasp/server';
+import { resolveGuardianHouseholdIds, resolveGuardianProfileForUser } from '../auth/helpers';
 
-export const getGuardianDashboard = async (_args: void, context: any) => {
+export const getGuardianDashboard = async (
+  _args: { householdId?: string; parishId?: string } | void,
+  context: any,
+) => {
   if (!context.user) throw new HttpError(401);
 
-  // Multi-household: userId is no longer globally unique
-  const guardian = await context.entities.GuardianProfile.findFirst({
-    where: { userId: context.user.id },
+  const args = _args || {};
+  // Multi-household: prefer opts.householdId → parish household → stable first
+  const guardian = await resolveGuardianProfileForUser(context, context.user.id, {
+    householdId: args.householdId || null,
+    parishId: args.parishId || null,
   });
 
-  if (!guardian?.householdId) {
-    return { dependents: [], nextMeetings: [], recentAttendance: [] };
+  // When no single preference, aggregate dependents across all households
+  const householdIds = args.householdId || args.parishId
+    ? (guardian?.householdId ? [guardian.householdId] : [])
+    : await resolveGuardianHouseholdIds(context, context.user.id);
+
+  if (householdIds.length === 0) {
+    return { dependents: [], nextMeetings: [], recentAttendance: [], householdIds: [] };
   }
 
   const dependents = await context.entities.CatechumenProfile.findMany({
-    where: { householdId: guardian.householdId },
+    where: { householdId: { in: householdIds } },
     include: {
       enrollments: {
         include: {
@@ -62,5 +73,12 @@ export const getGuardianDashboard = async (_args: void, context: any) => {
     },
   });
 
-  return { dependents, nextMeetings, recentAttendance, pendingDocs };
+  return {
+    dependents,
+    nextMeetings,
+    recentAttendance,
+    pendingDocs,
+    householdIds,
+    guardianProfileId: guardian?.id ?? null,
+  };
 };

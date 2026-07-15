@@ -1,6 +1,11 @@
 import { HttpError, prisma } from 'wasp/server';
 import { MembershipStatus, CatechistAssignmentRole } from '@prisma/client';
-import { assertCanAccessCatechumenProfile, requireAuth, writeAuditLog } from '../auth/helpers';
+import {
+  assertCanAccessCatechumenProfile,
+  requireAuth,
+  writeAuditLog,
+  resolveGuardianHouseholdIds,
+} from '../auth/helpers';
 import { resolveUserScope, isCoordinatorOrAbove, isCatechist } from './sharedScope';
 import { deleteDocumentFile } from '../storage/documentStorage';
 
@@ -113,10 +118,11 @@ export const listCatechumens = async (_args: { take?: number; skip?: number; sea
   }
 
   if (roles.includes('GUARDIAN')) {
-    const guardian = await context.entities.GuardianProfile.findFirst({ where: { userId: context.user.id } });
-    if (guardian?.householdId) {
+    // Multi-household: list dependents across all linked households
+    const householdIds = await resolveGuardianHouseholdIds(context, context.user.id);
+    if (householdIds.length > 0) {
       return context.entities.CatechumenProfile.findMany({
-        where: buildWhere({ householdId: guardian.householdId }),
+        where: buildWhere({ householdId: { in: householdIds } }),
         orderBy,
         take,
         skip,

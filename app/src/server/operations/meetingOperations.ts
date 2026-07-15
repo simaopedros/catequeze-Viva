@@ -7,6 +7,7 @@ import {
   assertHasCapability,
   resolvePortalScope,
 } from './portalScope';
+import { resolveGuardianHouseholdIds } from '../auth/helpers';
 
 function isCoordinatorOrAbove(role: string | null): boolean {
   if (!role) return false;
@@ -83,16 +84,15 @@ async function assertUserBelongsToClass(context: any, classId: string): Promise<
 
       // Profile not linked yet: legacy ENROLLED-only fallback (no non-ENROLLED reopen)
       if (membership.role === 'GUARDIAN') {
-        const guardian = await context.entities.GuardianProfile.findFirst({
-          where: { userId: context.user.id },
-          select: { householdId: true },
+        const householdIds = await resolveGuardianHouseholdIds(context, context.user.id, {
+          parishId: membership.parishId || null,
         });
-        if (guardian?.householdId) {
+        if (householdIds.length > 0) {
           const enrollment = await context.entities.ClassEnrollment.findFirst({
             where: {
               classId,
               status: 'ENROLLED',
-              catechumenProfile: { householdId: guardian.householdId },
+              catechumenProfile: { householdId: { in: householdIds } },
             },
           });
           if (enrollment) return;
@@ -863,15 +863,14 @@ export const getMeeting = async (args: { id: string }, context: any): Promise<an
         }>
       | undefined;
 
-    const guardian = await context.entities.GuardianProfile.findFirst({
-      where: { userId: context.user.id },
-      select: { householdId: true },
+    const householdIds = await resolveGuardianHouseholdIds(context, context.user.id, {
+      parishId: meeting.class?.parishId || meeting.parishId || null,
     });
 
-    if (guardian?.householdId) {
+    if (householdIds.length > 0) {
       const dependents = await context.entities.CatechumenProfile.findMany({
         where: {
-          householdId: guardian.householdId,
+          householdId: { in: householdIds },
           enrollments: {
             some: { classId: meeting.classId, status: 'ENROLLED' },
           },

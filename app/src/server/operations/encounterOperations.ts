@@ -1,5 +1,6 @@
 import { HttpError } from 'wasp/server';
 import { resolveUserScope } from './sharedScope';
+import { resolveGuardianHouseholdIds } from '../auth/helpers';
 import {
   pickFocusMeeting,
   buildPrimaryCta,
@@ -75,15 +76,14 @@ async function resolveFocusClassScope(params: {
     !roles.some((r) => (STAFF_ROLES as readonly string[]).includes(r));
 
   if (pureGuardian) {
-    const guardian = await context.entities.GuardianProfile.findFirst({
-      where: { userId },
-      select: { householdId: true },
+    const householdIds = await resolveGuardianHouseholdIds(context, userId, {
+      parishId: (args as any)?.parishId || null,
     });
-    guardianHouseholdId = guardian?.householdId || null;
-    if (guardianHouseholdId) {
+    guardianHouseholdId = householdIds[0] || null;
+    if (householdIds.length > 0) {
       dependents = await context.entities.CatechumenProfile.findMany({
         where: {
-          householdId: guardianHouseholdId,
+          householdId: { in: householdIds },
           enrollments: { some: { status: 'ENROLLED' } },
         },
         select: { id: true, firstName: true, lastName: true },

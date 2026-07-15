@@ -1,6 +1,7 @@
 import { HttpError } from 'wasp/server';
 import { resolveUserScope } from './sharedScope';
 import { resolvePortalScope } from './portalScope';
+import { resolveGuardianHouseholdIds } from '../auth/helpers';
 
 const COORDINATOR_OR_ABOVE = [
   'PARISH_COORDINATOR',
@@ -182,11 +183,11 @@ export const getDashboardStats = async (args: { parishId?: string }, context: an
       guardianHouseholdId = null;
     }
     if (!guardianHouseholdId) {
-      const guardianProfile = await context.entities.GuardianProfile.findFirst({
-        where: { userId: context.user.id },
-        select: { householdId: true },
+      // Multi-household: prefer households on the active parish, then any linked
+      const householdIds = await resolveGuardianHouseholdIds(context, context.user.id, {
+        parishId: args.parishId || null,
       });
-      guardianHouseholdId = guardianProfile?.householdId || null;
+      guardianHouseholdId = householdIds[0] || null;
     }
   }
 

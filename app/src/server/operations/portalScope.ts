@@ -6,6 +6,7 @@
  * ADMIN_CALENDAR, LIST_PARISH_MEMBERS, or BILLING.
  */
 import { HttpError } from 'wasp/server';
+import { resolveGuardianProfileForUser } from '../auth/helpers';
 
 export type PortalCapability =
   | 'READ_DEPENDENT'
@@ -253,33 +254,12 @@ export async function resolvePortalScope(
   let minorPortalAccessBlocked = false;
 
   if (role === 'GUARDIAN') {
-    // findFirst until PR4 multi-household (@@unique([userId, householdId])).
-    // Prefer: explicit householdId → household on workspace parish → any linked profile.
-    let guardian: { id: string; householdId: string | null } | null = null;
-
-    if (householdId) {
-      guardian = await context.entities.GuardianProfile.findFirst({
-        where: { userId: context.user.id, householdId },
-        select: { id: true, householdId: true },
-      });
-    }
-
-    if (!guardian) {
-      guardian = await context.entities.GuardianProfile.findFirst({
-        where: {
-          userId: context.user.id,
-          household: { parishId: workspaceId },
-        },
-        select: { id: true, householdId: true },
-      });
-    }
-
-    if (!guardian) {
-      guardian = await context.entities.GuardianProfile.findFirst({
-        where: { userId: context.user.id, householdId: { not: null } },
-        select: { id: true, householdId: true },
-      });
-    }
+    // Multi-household: prefer explicit householdId → parish household → stable first (createdAt ASC).
+    // Shared helper documents the same order for list/export paths outside portal scope.
+    const guardian = await resolveGuardianProfileForUser(context, context.user.id, {
+      householdId,
+      parishId: workspaceId,
+    });
 
     if (guardian) {
       guardianProfileId = guardian.id;

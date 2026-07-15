@@ -1,6 +1,6 @@
 import { HttpError } from 'wasp/server';
 import { CatechistAssignmentRole } from '@prisma/client';
-import { getDioceseParishIds } from '../auth/helpers';
+import { getDioceseParishIds, resolveGuardianHouseholdIds } from '../auth/helpers';
 
 function isCoordinatorOrAbove(role: string): boolean {
   return ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(role);
@@ -105,14 +105,11 @@ export const listHouseholds = async (_args: { communityId?: string; take?: numbe
     });
   }
 
-  // GUARDIAN: only return the guardian's own household
+  // GUARDIAN: all linked households (multi-household)
   if (roles.includes('GUARDIAN') && !roles.some((r: string) => isCoordinatorOrAbove(r) || isCatechist(r))) {
-    const guardianProfile = await context.entities.GuardianProfile.findFirst({
-      where: { userId: context.user.id },
-      select: { householdId: true },
-    });
-    if (!guardianProfile?.householdId) return [];
-    const where: any = { id: guardianProfile.householdId };
+    const householdIds = await resolveGuardianHouseholdIds(context, context.user.id);
+    if (householdIds.length === 0) return [];
+    const where: any = { id: { in: householdIds } };
     if (args.communityId) where.communityId = args.communityId;
     return context.entities.Household.findMany({
       where: buildWhere(where),

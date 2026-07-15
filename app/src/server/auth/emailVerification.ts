@@ -96,9 +96,12 @@ export async function assertEmailVerifiedForPortalAccept(
       });
     }
 
-    // Accept only when bound to this user, or bind unresolvable in pure unit tests
-    // that mock findAuthIdentity without Auth tables (boundUserId === null).
-    if (boundUserId === user.id || boundUserId === null) {
+    // Production: require Auth.userId bind. Unit tests / missing Auth tables
+    // (boundUserId === null) only allowed outside production.
+    if (boundUserId === user.id) {
+      return;
+    }
+    if (boundUserId === null && process.env.NODE_ENV !== 'production') {
       return;
     }
   }

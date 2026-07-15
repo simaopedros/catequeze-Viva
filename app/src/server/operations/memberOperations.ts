@@ -400,13 +400,29 @@ export const acceptInvitation = async (
         } as any);
       }
     }
-    // 2) Fallback: look up by userId
+    // 2) Fallback: look up by userId (prefer household already on this parish when known)
     if (!guardianProfile) {
-      guardianProfile = await context.entities.GuardianProfile.findFirst({
-        where: { userId: context.user.id },
-      } as any);
+      const parishId = membership.parishId;
+      if (parishId) {
+        guardianProfile = await context.entities.GuardianProfile.findFirst({
+          where: {
+            userId: context.user.id,
+            householdId: { not: null },
+            household: { parishId },
+          },
+          orderBy: { createdAt: 'asc' },
+        } as any);
+      }
+      if (!guardianProfile) {
+        guardianProfile = await context.entities.GuardianProfile.findFirst({
+          where: { userId: context.user.id, householdId: { not: null } },
+          orderBy: { createdAt: 'asc' },
+        } as any);
+      }
     }
     // 3) Create a minimal profile if nothing exists
+    // Note: portal invites (PortalInvitation) always target a specific profile+household;
+    // this legacy PendingInvitation path may create a household-less profile for staff invites only.
     if (!guardianProfile) {
       await (context.entities.GuardianProfile as any).create({
         data: {
@@ -596,9 +612,13 @@ async function linkProfile(context: any, role: string) {
       }
     }
     if (!guardianProfile) {
-      guardianProfile = await context.entities.GuardianProfile.findFirst({ where: { userId: context.user.id } } as any);
+      guardianProfile = await context.entities.GuardianProfile.findFirst({
+        where: { userId: context.user.id, householdId: { not: null } },
+        orderBy: { createdAt: 'asc' },
+      } as any);
     }
     if (!guardianProfile) {
+      // Legacy staff invite path only; PortalInvitation accept links invitation.guardianProfileId.
       await (context.entities.GuardianProfile as any).create({
         data: { userId: context.user.id, email: userEmail, relationship: 'Pai / Mãe' },
       });

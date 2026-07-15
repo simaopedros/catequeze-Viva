@@ -3,7 +3,12 @@ import { verifyPassword, hashPassword } from 'wasp/auth/password';
 import { createProviderId, findAuthIdentity, getProviderDataWithPassword, updateAuthIdentityProviderData } from 'wasp/auth/utils';
 import type { EmailProviderData } from 'wasp/auth/utils';
 
-import { requireAuth, writeAuditLog, getDioceseParishIds } from '../auth/helpers';
+import {
+  requireAuth,
+  writeAuditLog,
+  getDioceseParishIds,
+  resolveGuardianHouseholdIds,
+} from '../auth/helpers';
 import { z } from 'zod';
 import { validateOrThrow } from '../validation';
 
@@ -102,7 +107,7 @@ export const updateUserProfile = async (args: any, context: any) => {
 export const requestDataExport = async (_args: any, context: any) => {
   requireAuth(context.user);
 
-  const [user, memberships, guardianProfile] = await Promise.all([
+  const [user, memberships, guardianHouseholdIds] = await Promise.all([
     context.entities.User.findUnique({
       where: { id: context.user.id },
       select: { id: true, email: true, firstName: true, lastName: true, phone: true, locale: true, createdAt: true },
@@ -111,14 +116,19 @@ export const requestDataExport = async (_args: any, context: any) => {
       where: { userId: context.user.id },
       include: { parish: { select: { name: true } } },
     }),
-    context.entities.GuardianProfile.findFirst({ where: { userId: context.user.id } }),
+    // Multi-household: export request covers all guardian households, not one arbitrary profile
+    resolveGuardianHouseholdIds(context, context.user.id),
   ]);
 
-  await writeAuditLog(context, 'EXPORT', 'User', context.user.id, { operation: 'DATA_EXPORT' });
+  await writeAuditLog(context, 'EXPORT', 'User', context.user.id, {
+    operation: 'DATA_EXPORT',
+    guardianHouseholdIds,
+  });
   return {
     success: true,
     message: 'Solicitação de exportação registrada. Você receberá seus dados por email.',
     exportedAt: new Date().toISOString(),
+    guardianHouseholdCount: guardianHouseholdIds.length,
   };
 };
 

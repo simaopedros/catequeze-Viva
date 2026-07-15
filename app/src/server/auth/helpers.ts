@@ -47,6 +47,112 @@ export function pickHighestPrivilegeRole(roles: Array<string | null | undefined>
   return best;
 }
 
+// ─── Multi-household GuardianProfile resolution ────────────────────────────
+// After PR4, one User may own several GuardianProfiles (@@unique([userId, householdId])).
+// Never use bare findFirst({ userId }) without preference order.
+//
+// Preference for a *single* profile (dashboard, consent write):
+//   1. opts.householdId (explicit portal / UI selection)
+//   2. profile whose Household.parishId = opts.parishId (active workspace)
+//   3. any linked profile with householdId, ordered by createdAt ASC (stable)
+//
+// For *list / access* paths, use resolveGuardianHouseholdIds which returns all
+// householdIds (or the preferred single one when opts.householdId is set).
+
+export type ResolveGuardianOpts = {
+  householdId?: string | null;
+  parishId?: string | null;
+};
+
+export type ResolvedGuardianProfile = {
+  id: string;
+  householdId: string | null;
+};
+
+/**
+ * Resolve one GuardianProfile for the user with documented multi-household order.
+ * Accept/invite paths must continue to target invitation.guardianProfileId /
+ * invitation.householdId explicitly — not this helper.
+ */
+export async function resolveGuardianProfileForUser(
+  context: any,
+  userId: string,
+  opts?: ResolveGuardianOpts,
+): Promise<ResolvedGuardianProfile | null> {
+  const entities = context.entities?.GuardianProfile;
+  if (!entities) return null;
+
+  const householdId = opts?.householdId || null;
+  const parishId = opts?.parishId || null;
+
+  if (householdId) {
+    const exact = await entities.findFirst({
+      where: { userId, householdId },
+      select: { id: true, householdId: true },
+    });
+    if (exact) return exact;
+  }
+
+  if (parishId) {
+    const onParish = await entities.findFirst({
+      where: {
+        userId,
+        householdId: { not: null },
+        household: { parishId },
+      },
+      orderBy: { createdAt: 'asc' },
+      select: { id: true, householdId: true },
+    });
+    if (onParish) return onParish;
+  }
+
+  const anyLinked = await entities.findFirst({
+    where: { userId, householdId: { not: null } },
+    orderBy: { createdAt: 'asc' },
+    select: { id: true, householdId: true },
+  });
+  return anyLinked;
+}
+
+/**
+ * Household IDs the user may act on as guardian.
+ * - If opts.householdId set and owned → only that household (scope selection).
+ * - Else if opts.parishId set → all households linked on that parish.
+ * - Else → all non-null householdIds for the user (multi-household list).
+ */
+export async function resolveGuardianHouseholdIds(
+  context: any,
+  userId: string,
+  opts?: ResolveGuardianOpts,
+): Promise<string[]> {
+  const entities = context.entities?.GuardianProfile;
+  if (!entities) return [];
+
+  if (opts?.householdId) {
+    const owned = await entities.findFirst({
+      where: { userId, householdId: opts.householdId },
+      select: { householdId: true },
+    });
+    return owned?.householdId ? [owned.householdId] : [];
+  }
+
+  const where: any = { userId, householdId: { not: null } };
+  if (opts?.parishId) {
+    where.household = { parishId: opts.parishId };
+  }
+
+  const rows = await entities.findMany({
+    where,
+    select: { householdId: true },
+    orderBy: { createdAt: 'asc' },
+  });
+  const ids: string[] = [];
+  for (const r of rows) {
+    if (r.householdId && !ids.includes(r.householdId)) ids.push(r.householdId);
+  }
+  return ids;
+}
+
 // ─── Personal Workspace Helpers ────────────────────────────────────────────
 
 /**

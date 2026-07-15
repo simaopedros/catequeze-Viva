@@ -1,6 +1,12 @@
 import { HttpError } from 'wasp/server';
 import { validateOrThrow, createClassSchema, updateClassSchema } from '../validation';
-import { requireClassAccess, getEffectiveParishRole, isCoordinatorOrAboveRole, getDioceseParishIds } from '../auth/helpers';
+import {
+  requireClassAccess,
+  getEffectiveParishRole,
+  isCoordinatorOrAboveRole,
+  getDioceseParishIds,
+  resolveGuardianHouseholdIds,
+} from '../auth/helpers';
 import { ClassStatus, CatechistAssignmentRole, EnrollmentStatus, MembershipStatus } from '@prisma/client';
 import { assertCanCreateClass, assertCanEnrollCatechumen } from './billingEnforcement';
 import { ensurePersonalWorkspace } from './workspaceOperations';
@@ -137,10 +143,13 @@ export const listClasses = async (_args: { communityId?: string; workspaceId?: s
   }
 
   if (roles.includes('GUARDIAN')) {
-    const guardian = await context.entities.GuardianProfile.findFirst({ where: { userId: context.user.id } });
-    if (guardian?.householdId) {
+    // Multi-household: all households for this user (or parish-scoped if workspace known)
+    const householdIds = await resolveGuardianHouseholdIds(context, context.user.id, {
+      parishId: (args as any).parishId || null,
+    });
+    if (householdIds.length > 0) {
       const catechumens = await context.entities.CatechumenProfile.findMany({
-        where: { householdId: guardian.householdId },
+        where: { householdId: { in: householdIds } },
         select: { id: true },
       });
       const catechumenIds = catechumens.map((c: any) => c.id);
@@ -336,15 +345,15 @@ export const getClassDetails = async (args: { id: string }, context: any) => {
       }));
     }
 
-    // Guardians: only classes where their dependents are enrolled
+    // Guardians: only classes where their dependents are enrolled (all households)
     let isGuardianOfEnrolled = false;
     if (!isCoordinator && !isCatechistOfClass) {
-      const guardian = await context.entities.GuardianProfile.findFirst({ where: { userId: context.user.id } });
-      if (guardian?.householdId) {
+      const householdIds = await resolveGuardianHouseholdIds(context, context.user.id);
+      if (householdIds.length > 0) {
         const enrolled = await context.entities.ClassEnrollment.findFirst({
           where: {
             classId: args.id,
-            catechumenProfile: { householdId: guardian.householdId },
+            catechumenProfile: { householdId: { in: householdIds } },
           },
         });
         isGuardianOfEnrolled = !!enrolled;
