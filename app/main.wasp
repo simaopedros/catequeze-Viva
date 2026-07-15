@@ -588,13 +588,13 @@ query listPortalInvitations {
 
 query getPortalInvitation {
   fn: import { getPortalInvitation } from "@src/server/operations/portalInvitationOperations",
-  entities: [PortalInvitation, User, Parish, GuardianProfile, CatechumenProfile, MinorPortalConsent]
+  entities: [PortalInvitation, PendingInvitation, User, Parish, GuardianProfile, CatechumenProfile, MinorPortalConsent, PortalInviteMigrationReview, AuditLog]
   auth: false
 }
 
 action acceptPortalInvitation {
   fn: import { acceptPortalInvitation } from "@src/server/operations/portalInvitationOperations",
-  entities: [PortalInvitation, Membership, User, GuardianProfile, CatechumenProfile, MinorPortalConsent, AuthContinuation, AuditLog, Household]
+  entities: [PortalInvitation, PendingInvitation, Membership, User, GuardianProfile, CatechumenProfile, MinorPortalConsent, AuthContinuation, AuditLog, Household, PortalInviteMigrationReview]
 }
 
 action resendPortalInvitation {

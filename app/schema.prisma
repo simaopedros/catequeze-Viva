@@ -369,6 +369,7 @@ model Parish {
   catechumens          CatechumenProfile[]
   pendingInvitations   PendingInvitation[]
   portalInvitations    PortalInvitation[]
+  portalInviteMigrationReviews PortalInviteMigrationReview[]
 }
 enum CommunityType {
   CHAPEL
@@ -756,6 +757,29 @@ model PortalInvitation {
   @@index([guardianProfileId])
   @@index([catechumenProfileId])
   @@index([expiresAt])
+}
+
+/// Review queue for ambiguous legacy family invite migration (PR8).
+/// Never store plaintext tokens here — only ids / reasons / candidate profile ids JSON.
+model PortalInviteMigrationReview {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  resolvedAt DateTime?
+
+  pendingInvitationId String?
+  guardianProfileId   String?
+  reason              String // AMBIGUOUS_EMAIL_MULTI_PROFILE | NO_PROFILE | GUARDIAN_NO_HOUSEHOLD | GUARDIAN_USERID_WITHOUT_HOUSEHOLD | ...
+  emailNormalized     String?
+  parishId            String?
+  parish              Parish? @relation(fields: [parishId], references: [id], onDelete: SetNull)
+  role                String?
+  candidateProfileIds String? // JSON string[] of profile ids — no auto-link
+  notes               String?
+
+  @@index([reason, createdAt])
+  @@index([parishId])
+  @@index([pendingInvitationId])
+  @@index([resolvedAt])
 }
 
 /// Append-only ledger for minor portal account access consent (grant/revoke APIs in PR6).

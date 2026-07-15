@@ -2,7 +2,7 @@
  * PortalInvitation APIs — create / list / get / accept / resend / revoke.
  * Token plaintext is returned only once on create/resend for email/WhatsApp delivery.
  */
-import { createHash, randomBytes, randomUUID } from 'crypto';
+import { randomBytes, randomUUID } from 'crypto';
 import { HttpError, prisma } from 'wasp/server';
 import { requireAuth, writeAuditLog, getDioceseParishIds } from '../auth/helpers';
 import { logger } from '../logger';
@@ -12,6 +12,10 @@ import {
   assertEmailVerifiedForPortalAccept,
   normalizeEmail,
 } from '../auth/emailVerification';
+import {
+  findOrMigratePortalInvitationByToken,
+  hashPortalInviteToken as hashLegacyToken,
+} from '../portal/legacyPortalInvite';
 
 // ── Rate limits (memberOperations pattern) ─────────────────────────────────
 
@@ -49,7 +53,8 @@ function clientIp(context: any): string {
 // ── Token helpers ──────────────────────────────────────────────────────────
 
 export function hashPortalInviteToken(token: string): string {
-  return createHash('sha256').update(token, 'utf8').digest('hex');
+  // Same algorithm as dual-read / migration (sha256 hex).
+  return hashLegacyToken(token);
 }
 
 export function generatePortalInviteToken(): string {
@@ -495,6 +500,10 @@ export const listPortalInvitations = async (
  * Public get: **requires token** (secret possession).
  * invitationId alone is not accepted on this public query — staff use list;
  * authenticated invitees use accept with invitationId after email match.
+ *
+ * Dual-read (PR8): PortalInvitation by sha256(token), else PendingInvitation.token
+ * (in memory only — never logged). Unambiguous legacy rows are hashed into PortalInvitation.
+ * Ambiguous multi-profile emails are not auto-linked (review queue).
  */
 export const getPortalInvitation = async (
   args: { token?: string; invitationId?: string },
@@ -506,15 +515,11 @@ export const getPortalInvitation = async (
     throw new HttpError(400, 'token é obrigatório.');
   }
 
-  const tokenHash = hashPortalInviteToken(args.token);
-  const inv = await context.entities.PortalInvitation.findUnique({
-    where: { tokenHash },
-    include: {
-      parish: { select: { id: true, name: true, type: true } },
-    },
-  });
-
+  // Do not log args.token anywhere.
+  const found = await findOrMigratePortalInvitationByToken(context.entities, args.token);
+  const inv = found.inv;
   if (!inv) throw new HttpError(404, 'Convite não encontrado.');
+
   // If invitationId is also provided, ensure it matches the token target (no id-only leak path).
   if (args.invitationId && args.invitationId !== inv.id) {
     throw new HttpError(404, 'Convite não encontrado.');
@@ -594,18 +599,22 @@ export const acceptPortalInvitation = async (
     throw new HttpError(403, 'EMAIL_NOT_VERIFIED', { code: 'EMAIL_NOT_VERIFIED' });
   }
 
-  const tokenHash = args.token ? hashPortalInviteToken(args.token) : null;
-
-  // Pre-load for minor consent check outside transaction path that needs zero writes
+  // Pre-load for minor consent check outside transaction path that needs zero writes.
+  // Dual-read: invitationId (portal only) or token (portal hash, then legacy PendingInvitation).
   let invPre: any = null;
+  let tokenHash: string | null = null;
   if (args.invitationId) {
     invPre = await context.entities.PortalInvitation.findUnique({
       where: { id: args.invitationId },
     });
-  } else if (tokenHash) {
-    invPre = await context.entities.PortalInvitation.findUnique({
-      where: { tokenHash },
-    });
+  } else if (args.token) {
+    // Never log args.token
+    tokenHash = hashPortalInviteToken(args.token);
+    const found = await findOrMigratePortalInvitationByToken(context.entities, args.token);
+    invPre = found.inv;
+    if (invPre) {
+      tokenHash = invPre.tokenHash || tokenHash;
+    }
   }
 
   if (!invPre) throw new HttpError(404, 'Convite não encontrado.');
@@ -679,10 +688,13 @@ export const acceptPortalInvitation = async (
   }
 
   const result = await prisma.$transaction(async (tx: any) => {
-    // Lock-ish: only transition PENDING → ACCEPTED if still PENDING
-    const locked = args.invitationId
-      ? await tx.portalInvitation.findUnique({ where: { id: args.invitationId } })
-      : await tx.portalInvitation.findUnique({ where: { tokenHash: tokenHash! } });
+    // Lock-ish: only transition PENDING → ACCEPTED if still PENDING.
+    // Prefer id (works after dual-read lazy migrate); fall back to tokenHash.
+    const locked = invPre.id
+      ? await tx.portalInvitation.findUnique({ where: { id: invPre.id } })
+      : args.invitationId
+        ? await tx.portalInvitation.findUnique({ where: { id: args.invitationId } })
+        : await tx.portalInvitation.findUnique({ where: { tokenHash: tokenHash! } });
 
     if (!locked) throw new HttpError(404, 'Convite não encontrado.');
     if (locked.status === 'ACCEPTED' && locked.acceptedById === context.user.id) {
