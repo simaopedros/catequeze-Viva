@@ -1974,7 +1974,7 @@ export const dashboard_pt_BR = {
     "activation": {
       "eyebrow": "Primeiros passos",
       "title": "Deixe sua catequese pronta para o dia a dia",
-      "progress": "{{done}} de {{total}} no caminho do primeiro valor",
+      "progress": "{{done}} de {{total}} na configuração inicial",
       "dismiss": "Dispensar checklist",
       "next_label": "Próxima ação",
       "next_cta": "Fazer agora",
@@ -1986,9 +1986,9 @@ export const dashboard_pt_BR = {
       "step_attendance_desc": "Marque quem veio e mantenha o histórico da turma.",
       "step_meeting_title": "Preparar um encontro",
       "step_meeting_desc": "Crie ou salve o primeiro encontro da turma.",
-      "celebrate_eyebrow": "Primeiro valor",
-      "celebrate_title": "Você já usou a Catequese Viva de verdade",
-      "celebrate_desc": "Turma, pessoas e uma ação real (presença ou encontro) estão no sistema. Continue o dia a dia daqui.",
+      "celebrate_eyebrow": "Pronto para o dia a dia",
+      "celebrate_title": "Sua catequese já está em andamento",
+      "celebrate_desc": "Você já tem turma, catequizandos e pelo menos uma presença ou encontro registrados. Pode seguir o ritmo da paróquia por aqui.",
       "bonus_attendance": "Registrar presença também",
       "bonus_meeting": "Preparar um encontro também"
     },

@@ -1974,7 +1974,7 @@ export const dashboard_en = {
     "activation": {
       "eyebrow": "Getting started",
       "title": "Get your catechesis ready for daily use",
-      "progress": "{{done}} of {{total}} on the path to first value",
+      "progress": "{{done}} of {{total}} through initial setup",
       "dismiss": "Dismiss checklist",
       "next_label": "Next action",
       "next_cta": "Do it now",
@@ -1986,9 +1986,9 @@ export const dashboard_en = {
       "step_attendance_desc": "Mark who came and keep the class history.",
       "step_meeting_title": "Prepare a session",
       "step_meeting_desc": "Create or save the first class meeting.",
-      "celebrate_eyebrow": "First value",
-      "celebrate_title": "You already used Catequese Viva for real",
-      "celebrate_desc": "Class, people, and a real action (attendance or meeting) are in the system. Keep going from here.",
+      "celebrate_eyebrow": "Ready for daily use",
+      "celebrate_title": "Your catechesis is already underway",
+      "celebrate_desc": "You already have a class, catechumens, and at least one attendance record or meeting. Keep the parish rhythm from here.",
       "bonus_attendance": "Record attendance too",
       "bonus_meeting": "Prepare a meeting too"
     },
