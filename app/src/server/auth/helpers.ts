@@ -6,6 +6,47 @@ import { COORDINATOR_ROLES } from './roles';
 export { withRlsContext } from '../middleware/rls';
 export { COORDINATOR_ROLES, ADMIN_ROLES, userHasAdminMembership } from './roles';
 
+// ─── Multi-role membership (same user×parish, different roles) ─────────────
+// After PR4, a user may hold e.g. LEAD_CATECHIST + GUARDIAN on one parish.
+// Privilege rank: higher = more pastoral power. Family roles rank lowest for
+// "effective staff role" resolution so mixed memberships never demote staff.
+
+/** Lower index = higher privilege. Roles not listed fall below family roles. */
+export const ROLE_PRIVILEGE_RANK: string[] = [
+  'SUPER_ADMIN',
+  'DIOCESE_ADMIN',
+  'PARISH_COORDINATOR',
+  'COMMUNITY_COORDINATOR',
+  'PERSONAL_OWNER',
+  'LEAD_CATECHIST',
+  'ASSISTANT_CATECHIST',
+  'CONTENT_REVIEWER',
+  'PASTORAL_VIEWER',
+  'GUARDIAN',
+  'CATECHUMEN',
+];
+
+export function privilegeRank(role: string | null | undefined): number {
+  if (!role) return Number.MAX_SAFE_INTEGER;
+  const idx = ROLE_PRIVILEGE_RANK.indexOf(role);
+  return idx === -1 ? ROLE_PRIVILEGE_RANK.length : idx;
+}
+
+/** Picks the highest-privilege role from a list (staff beats GUARDIAN/CATECHUMEN). */
+export function pickHighestPrivilegeRole(roles: Array<string | null | undefined>): string | null {
+  let best: string | null = null;
+  let bestRank = Number.MAX_SAFE_INTEGER;
+  for (const r of roles) {
+    if (!r) continue;
+    const rank = privilegeRank(r);
+    if (rank < bestRank) {
+      bestRank = rank;
+      best = r;
+    }
+  }
+  return best;
+}
+
 // ─── Personal Workspace Helpers ────────────────────────────────────────────
 
 /**
@@ -28,36 +69,59 @@ export async function getUserParishIds(context: any): Promise<string[]> {
   return ids;
 }
 
+/**
+ * One entry per parish with the **highest-privilege** ACTIVE role
+ * (so LEAD_CATECHIST + GUARDIAN → LEAD_CATECHIST, not first-row-wins).
+ */
 export async function getUserParishRoles(context: any): Promise<{ parishId: string; role: string }[]> {
-  const result: { parishId: string; role: string }[] = [];
+  const byParish = new Map<string, string[]>();
   const personal = await context.entities.Parish.findFirst({
     where: { ownerId: context.user.id, type: 'PERSONAL' },
     select: { id: true },
   });
-  if (personal) result.push({ parishId: personal.id, role: 'PERSONAL_OWNER' });
+  if (personal) byParish.set(personal.id, ['PERSONAL_OWNER']);
+
   const memberships = await context.entities.Membership.findMany({
     where: { userId: context.user.id, status: MembershipStatus.ACTIVE },
     select: { parishId: true, role: true },
   });
   for (const m of memberships) {
-    if (!result.some(r => r.parishId == m.parishId)) {
-      result.push({ parishId: m.parishId, role: m.role });
-    }
+    const list = byParish.get(m.parishId) || [];
+    list.push(m.role);
+    byParish.set(m.parishId, list);
+  }
+
+  const result: { parishId: string; role: string }[] = [];
+  for (const [parishId, roles] of byParish) {
+    const role = pickHighestPrivilegeRole(roles);
+    if (role) result.push({ parishId, role });
   }
   return result;
 }
 
+/**
+ * All ACTIVE roles for (user, parish) — multi-role aware.
+ */
+export async function getActiveParishRoles(context: any, parishId: string): Promise<string[]> {
+  const memberships = await context.entities.Membership.findMany({
+    where: { userId: context.user.id, parishId, status: MembershipStatus.ACTIVE },
+    select: { role: true },
+  });
+  return memberships.map((m: { role: string }) => m.role);
+}
+
+/**
+ * Highest-privilege ACTIVE role for the parish (staff preferred over family).
+ */
 export async function getEffectiveParishRole(context: any, parishId: string): Promise<string | null> {
   const personal = await context.entities.Parish.findFirst({
     where: { id: parishId, ownerId: context.user.id, type: 'PERSONAL' },
     select: { id: true },
   });
   if (personal) return 'PERSONAL_OWNER';
-  const membership = await context.entities.Membership.findFirst({
-    where: { userId: context.user.id, parishId, status: MembershipStatus.ACTIVE },
-    select: { role: true },
-  });
-  if (membership) return membership.role;
+  const roles = await getActiveParishRoles(context, parishId);
+  const best = pickHighestPrivilegeRole(roles);
+  if (best) return best;
   if (await requireDioceseAccess(context, parishId)) return 'DIOCESE_ADMIN';
   return null;
 }
@@ -429,21 +493,19 @@ export async function assertCanAccessClass(
 
   if (context.user.isAdmin) return { parishId: classData.parishId };
 
-  const membership = await context.entities.Membership.findFirst({
-    where: {
-      userId: context.user.id,
-      parishId: classData.parishId,
-      status: MembershipStatus.ACTIVE,
-    },
-    select: { role: true },
-  });
+  // Multi-role: load all ACTIVE roles so GUARDIAN sibling row cannot hide staff.
+  const parishRoles = await getActiveParishRoles(context, classData.parishId);
+  const effectiveRole = pickHighestPrivilegeRole(parishRoles);
 
-  if (membership && COORDINATOR_ROLES.includes(membership.role)) {
+  if (effectiveRole && COORDINATOR_ROLES.includes(effectiveRole as any)) {
     return { parishId: classData.parishId };
   }
 
   const isClassCatechist = classData.catechists.some((cc: { userId: string }) => cc.userId === context.user.id);
-  if (isClassCatechist && membership && ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST'].includes(membership.role)) {
+  const hasCatechistRole = parishRoles.some((r) =>
+    ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST'].includes(r),
+  );
+  if (isClassCatechist && hasCatechistRole) {
     return { parishId: classData.parishId };
   }
 

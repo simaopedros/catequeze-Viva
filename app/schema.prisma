@@ -706,6 +706,11 @@ enum PortalInviteStatus {
   REVOKED
 }
 
+enum MinorPortalConsentStatus {
+  ACTIVE
+  REVOKED
+}
+
 /// Staff → family portal invite with hashed token (plaintext never stored).
 model PortalInvitation {
   id        String   @id @default(uuid())
@@ -772,8 +777,8 @@ model MinorPortalConsent {
   grantedAt     DateTime  @default(now())
   revokedAt     DateTime?
   revokeReason  String?
-  /// ACTIVE when revokedAt is null; REVOKED when set (derived; stored for query ease)
-  status        String    @default("ACTIVE")
+  /// Must stay in sync with revokedAt (PR6 grant/revoke); partial unique uses revokedAt IS NULL
+  status        MinorPortalConsentStatus @default(ACTIVE)
 
   @@index([catechumenProfileId, grantedAt])
   @@index([catechumenProfileId, revokedAt])

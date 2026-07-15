@@ -250,6 +250,8 @@ export const createPortalInvitation = async (
   context: any,
 ) => {
   requireAuth(context.user);
+  // In-memory rate limit per staff user+parish (not shared across Node instances).
+  checkRateLimit(`create-portal-inv:${context.user.id}:${args.parishId}`, RATE_LIMIT_MAX);
 
   if (!args.parishId || !args.role || !args.email) {
     throw new HttpError(400, 'parishId, role e email são obrigatórios.');
@@ -283,7 +285,8 @@ export const createPortalInvitation = async (
     if (!profile.householdId) {
       throw new HttpError(400, 'HOUSEHOLD_REQUIRED');
     }
-    if (profile.household?.parishId && profile.household.parishId !== args.parishId) {
+    // Hard tenant check: household must be attached to the invite parish.
+    if (!profile.household?.parishId || profile.household.parishId !== args.parishId) {
       throw new HttpError(400, 'Perfil não pertence a esta paróquia.');
     }
     guardianProfileId = profile.id;
@@ -304,10 +307,14 @@ export const createPortalInvitation = async (
         firstName: true,
         lastName: true,
         birthDate: true,
+        household: { select: { parishId: true } },
       },
     });
     if (!profile) throw new HttpError(404, 'Perfil de catequizando não encontrado.');
-    if (profile.parishId && profile.parishId !== args.parishId) {
+    // Hard tenant check: catechumen parishId or household.parishId must match.
+    const profileParish =
+      profile.parishId || (profile as any).household?.parishId || null;
+    if (!profileParish || profileParish !== args.parishId) {
       throw new HttpError(400, 'Perfil não pertence a esta paróquia.');
     }
     catechumenProfileId = profile.id;
@@ -484,35 +491,34 @@ export const listPortalInvitations = async (
 // getPortalInvitation (public, rate-limited)
 // ═══════════════════════════════════════════════════════════════════════════
 
+/**
+ * Public get: **requires token** (secret possession).
+ * invitationId alone is not accepted on this public query — staff use list;
+ * authenticated invitees use accept with invitationId after email match.
+ */
 export const getPortalInvitation = async (
   args: { token?: string; invitationId?: string },
   context: any,
 ) => {
   checkRateLimit(`get-portal-inv:${clientIp(context)}`);
 
-  if (!args.token && !args.invitationId) {
-    throw new HttpError(400, 'token ou invitationId é obrigatório.');
+  if (!args.token) {
+    throw new HttpError(400, 'token é obrigatório.');
   }
 
-  let inv: any = null;
-  if (args.token) {
-    const tokenHash = hashPortalInviteToken(args.token);
-    inv = await context.entities.PortalInvitation.findUnique({
-      where: { tokenHash },
-      include: {
-        parish: { select: { id: true, name: true, type: true } },
-      },
-    });
-  } else {
-    inv = await context.entities.PortalInvitation.findUnique({
-      where: { id: args.invitationId },
-      include: {
-        parish: { select: { id: true, name: true, type: true } },
-      },
-    });
-  }
+  const tokenHash = hashPortalInviteToken(args.token);
+  const inv = await context.entities.PortalInvitation.findUnique({
+    where: { tokenHash },
+    include: {
+      parish: { select: { id: true, name: true, type: true } },
+    },
+  });
 
   if (!inv) throw new HttpError(404, 'Convite não encontrado.');
+  // If invitationId is also provided, ensure it matches the token target (no id-only leak path).
+  if (args.invitationId && args.invitationId !== inv.id) {
+    throw new HttpError(404, 'Convite não encontrado.');
+  }
 
   if (inv.status === 'PENDING' && inv.expiresAt && new Date() > new Date(inv.expiresAt)) {
     try {
@@ -713,13 +719,18 @@ export const acceptPortalInvitation = async (
         }
       }
       if (!cp.userId) {
-        try {
-          await tx.catechumenProfile.update({
+        const linked = await tx.catechumenProfile.updateMany({
+          where: { id: cp.id, userId: null },
+          data: { userId: context.user.id },
+        });
+        if (linked.count === 0) {
+          const again = await tx.catechumenProfile.findUnique({
             where: { id: cp.id },
-            data: { userId: context.user.id },
+            select: { userId: true },
           });
-        } catch {
-          throw new HttpError(409, 'PROFILE_ALREADY_LINKED', { code: 'PROFILE_ALREADY_LINKED' });
+          if (again?.userId !== context.user.id) {
+            throw new HttpError(409, 'PROFILE_ALREADY_LINKED', { code: 'PROFILE_ALREADY_LINKED' });
+          }
         }
       }
     }
@@ -737,13 +748,18 @@ export const acceptPortalInvitation = async (
         throw new HttpError(409, 'PROFILE_ALREADY_LINKED', { code: 'PROFILE_ALREADY_LINKED' });
       }
       if (!gp.userId) {
-        try {
-          await tx.guardianProfile.update({
+        const linked = await tx.guardianProfile.updateMany({
+          where: { id: gp.id, userId: null },
+          data: { userId: context.user.id },
+        });
+        if (linked.count === 0) {
+          const again = await tx.guardianProfile.findUnique({
             where: { id: gp.id },
-            data: { userId: context.user.id },
+            select: { userId: true },
           });
-        } catch {
-          throw new HttpError(409, 'PROFILE_ALREADY_LINKED', { code: 'PROFILE_ALREADY_LINKED' });
+          if (again?.userId !== context.user.id) {
+            throw new HttpError(409, 'PROFILE_ALREADY_LINKED', { code: 'PROFILE_ALREADY_LINKED' });
+          }
         }
       }
     }
@@ -760,7 +776,7 @@ export const acceptPortalInvitation = async (
     if (membership) {
       if (membership.status === 'ACTIVE') {
         // idempotent membership
-      } else {
+      } else if (membership.status === 'INVITED') {
         membership = await tx.membership.update({
           where: { id: membership.id },
           data: {
@@ -769,6 +785,19 @@ export const acceptPortalInvitation = async (
             inviteToken: null,
             inviteTokenExpiresAt: null,
           },
+        });
+      } else if (membership.status === 'SUSPENDED') {
+        // Do not auto-reactivate deliberate suspensions via invite accept.
+        throw new HttpError(403, 'MEMBERSHIP_SUSPENDED', {
+          code: 'MEMBERSHIP_SUSPENDED',
+          membershipId: membership.id,
+        });
+      } else {
+        // INACTIVE / unknown: require staff re-invite path; do not silently reopen.
+        throw new HttpError(403, 'MEMBERSHIP_INACTIVE', {
+          code: 'MEMBERSHIP_INACTIVE',
+          membershipId: membership.id,
+          status: membership.status,
         });
       }
     } else {
@@ -816,12 +845,14 @@ export const acceptPortalInvitation = async (
     };
   });
 
-  await writeAuditLog(context, 'CREATE', 'Membership', result.membershipId || result.invitationId, {
-    operation: 'MEMBER_ACCEPT_PORTAL',
-    invitationId: result.invitationId,
-    parishId: result.parishId,
-    role: result.role,
-  });
+  if (!result.idempotent) {
+    await writeAuditLog(context, 'CREATE', 'Membership', result.membershipId || result.invitationId, {
+      operation: 'MEMBER_ACCEPT_PORTAL',
+      invitationId: result.invitationId,
+      parishId: result.parishId,
+      role: result.role,
+    });
+  }
 
   return result;
 };
@@ -842,6 +873,10 @@ export const resendPortalInvitation = async (
     include: { parish: { select: { name: true } } },
   });
   if (!inv) throw new HttpError(404, 'Convite não encontrado.');
+
+  // In-memory rate limit per staff user+parish (not shared across Node instances).
+  checkRateLimit(`resend-portal-inv:${context.user.id}:${inv.parishId}`, RATE_LIMIT_MAX);
+
   if (inv.status !== 'PENDING') {
     throw new HttpError(400, 'Apenas convites PENDING podem ser reenviados.');
   }

@@ -7,6 +7,9 @@ CREATE TYPE "PortalInviteRole" AS ENUM ('GUARDIAN', 'CATECHUMEN');
 -- CreateEnum
 CREATE TYPE "PortalInviteStatus" AS ENUM ('PENDING', 'ACCEPTED', 'EXPIRED', 'REVOKED');
 
+-- CreateEnum
+CREATE TYPE "MinorPortalConsentStatus" AS ENUM ('ACTIVE', 'REVOKED');
+
 -- Drop global unique on GuardianProfile.userId (multi-household)
 DROP INDEX IF EXISTS "GuardianProfile_userId_key";
 
@@ -16,17 +19,28 @@ CREATE UNIQUE INDEX "GuardianProfile_userId_householdId_key"
   ON "GuardianProfile"("userId", "householdId");
 
 -- Dedupe Membership rows that would violate (userId, parishId, role) before unique index.
--- Keep the most recently updated row per triple.
+-- Keep the newest by updatedAt, then createdAt, then id (stable tie-break).
+-- Ops: SELECT "userId","parishId","role", COUNT(*) FROM "Membership" GROUP BY 1,2,3 HAVING COUNT(*)>1;
 DELETE FROM "Membership" m
-USING "Membership" m2
-WHERE m."userId" = m2."userId"
-  AND m."parishId" = m2."parishId"
-  AND m."role" = m2."role"
-  AND m."id" < m2."id";
+WHERE m."id" IN (
+  SELECT "id" FROM (
+    SELECT
+      "id",
+      ROW_NUMBER() OVER (
+        PARTITION BY "userId", "parishId", "role"
+        ORDER BY "updatedAt" DESC, "createdAt" DESC, "id" DESC
+      ) AS rn
+    FROM "Membership"
+  ) ranked
+  WHERE ranked.rn > 1
+);
 
 -- Mixed staff + family roles on same parish
 CREATE UNIQUE INDEX "Membership_userId_parishId_role_key"
   ON "Membership"("userId", "parishId", "role");
+
+-- Note: GuardianProfile composite unique allows multiple (NULL, householdId) and (userId, NULL)
+-- rows under PostgreSQL NULLS DISTINCT semantics — unlinked profiles intentionally unconstrained.
 
 -- CreateTable PortalInvitation
 CREATE TABLE "PortalInvitation" (
@@ -65,7 +79,7 @@ CREATE TABLE "MinorPortalConsent" (
     "grantedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "revokedAt" TIMESTAMP(3),
     "revokeReason" TEXT,
-    "status" TEXT NOT NULL DEFAULT 'ACTIVE',
+    "status" "MinorPortalConsentStatus" NOT NULL DEFAULT 'ACTIVE',
 
     CONSTRAINT "MinorPortalConsent_pkey" PRIMARY KEY ("id")
 );

@@ -138,6 +138,7 @@ function baseEntities(overrides: Record<string, any> = {}) {
         lastName: 'Silva',
         birthDate: new Date('2015-01-01'),
         userId: null,
+        household: { parishId: PARISH },
       }),
       findFirst: vi.fn().mockResolvedValue(null),
     },
@@ -205,10 +206,26 @@ describe('assertEmailVerifiedForPortalAccept', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     delete process.env.SKIP_EMAIL_VERIFICATION_IN_DEV;
+    // Default: no owned identities from Auth join (empty array) so fallback path runs
+    prismaMock.$queryRaw.mockResolvedValue([]);
   });
 
-  it('allows when email identity is verified', async () => {
-    findAuthIdentity.mockResolvedValue({ providerData: '{}' });
+  it('allows when email identity is verified (fallback findAuthIdentity)', async () => {
+    findAuthIdentity.mockResolvedValue({ providerData: '{}', authId: 'auth-1' });
+    getProviderDataWithPassword.mockReturnValue({ isEmailVerified: true });
+    await expect(
+      assertEmailVerifiedForPortalAccept({ id: USER, email: 'a@b.com' }),
+    ).resolves.toBeUndefined();
+  });
+
+  it('allows when owned identity is verified email for user', async () => {
+    prismaMock.$queryRaw.mockResolvedValue([
+      {
+        providerName: 'email',
+        providerUserId: 'a@b.com',
+        providerData: JSON.stringify({ isEmailVerified: true }),
+      },
+    ]);
     getProviderDataWithPassword.mockReturnValue({ isEmailVerified: true });
     await expect(
       assertEmailVerifiedForPortalAccept({ id: USER, email: 'a@b.com' }),
@@ -229,9 +246,11 @@ describe('assertEmailVerifiedForPortalAccept', () => {
     ).rejects.toMatchObject({ statusCode: 403, message: 'EMAIL_NOT_VERIFIED' });
   });
 
-  it('allows OAuth-only when no email identity but non-email provider exists', async () => {
+  it('allows OAuth-only when owned non-email provider exists for userId', async () => {
     findAuthIdentity.mockResolvedValue(null);
-    prismaMock.$queryRaw.mockResolvedValue([{ providerName: 'google' }]);
+    prismaMock.$queryRaw.mockResolvedValue([
+      { providerName: 'google', providerUserId: 'g-1', providerData: '{}' },
+    ]);
     await expect(
       assertEmailVerifiedForPortalAccept({ id: USER, email: 'oauth@example.com' }),
     ).resolves.toBeUndefined();
@@ -252,6 +271,18 @@ describe('assertEmailVerifiedForPortalAccept', () => {
     await expect(
       assertEmailVerifiedForPortalAccept({ id: USER, email: null }),
     ).resolves.toBeUndefined();
+    process.env.NODE_ENV = prev;
+  });
+
+  it('ignores SKIP_EMAIL_VERIFICATION_IN_DEV in production', async () => {
+    process.env.SKIP_EMAIL_VERIFICATION_IN_DEV = 'true';
+    const prev = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'production';
+    findAuthIdentity.mockResolvedValue(null);
+    prismaMock.$queryRaw.mockResolvedValue([]);
+    await expect(
+      assertEmailVerifiedForPortalAccept({ id: USER, email: 'x@y.com' }),
+    ).rejects.toMatchObject({ statusCode: 403, message: 'EMAIL_NOT_VERIFIED' });
     process.env.NODE_ENV = prev;
   });
 });
@@ -493,9 +524,9 @@ describe('acceptPortalInvitation matrix', () => {
           userId: null,
           householdId: HH,
         }),
-        update: vi.fn().mockResolvedValue({}),
+        updateMany: vi.fn().mockResolvedValue({ count: 1 }),
       },
-      catechumenProfile: { findUnique: vi.fn(), update: vi.fn() },
+      catechumenProfile: { findUnique: vi.fn(), updateMany: vi.fn() },
       minorPortalConsent: { findFirst: vi.fn() },
       membership: {
         findFirst: vi.fn().mockResolvedValue(null), // no GUARDIAN row yet (staff may exist separately)
@@ -534,6 +565,11 @@ describe('acceptPortalInvitation matrix', () => {
     expect(tx.membership.findFirst).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({ role: 'GUARDIAN' }),
+      }),
+    );
+    expect(tx.guardianProfile.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: GP, userId: null },
       }),
     );
   });
@@ -585,5 +621,253 @@ describe('acceptPortalInvitation matrix', () => {
     expect(result.idempotent).toBe(true);
     expect(result.success).toBe(true);
     expect(prismaMock.$transaction).not.toHaveBeenCalled();
+  });
+
+  it('rejects EXPIRED / REVOKED / ALREADY_USED (other user)', async () => {
+    const base = {
+      parishId: PARISH,
+      role: 'GUARDIAN',
+      emailNormalized: 'g@example.com',
+      guardianProfileId: GP,
+      expiresAt: new Date(Date.now() + 86400000),
+    };
+    for (const [status, code] of [
+      ['REVOKED', 'REVOKED'],
+      ['ACCEPTED', 'ALREADY_USED'],
+    ] as const) {
+      const entities = baseEntities({
+        PortalInvitation: {
+          findUnique: vi.fn().mockResolvedValue({
+            ...base,
+            id: `inv-${status}`,
+            status,
+            acceptedById: status === 'ACCEPTED' ? 'other-user' : null,
+          }),
+        },
+      });
+      await expect(
+        acceptPortalInvitation(
+          { invitationId: `inv-${status}` },
+          staffCtx(entities, { email: 'g@example.com', id: 'me' }),
+        ),
+      ).rejects.toMatchObject({ message: code });
+    }
+
+    const expiredEntities = baseEntities({
+      PortalInvitation: {
+        findUnique: vi.fn().mockResolvedValue({
+          ...base,
+          id: 'inv-exp',
+          status: 'PENDING',
+          expiresAt: new Date(Date.now() - 1000),
+          acceptedById: null,
+        }),
+        update: vi.fn().mockResolvedValue({}),
+      },
+    });
+    await expect(
+      acceptPortalInvitation(
+        { invitationId: 'inv-exp' },
+        staffCtx(expiredEntities, { email: 'g@example.com', id: 'me' }),
+      ),
+    ).rejects.toMatchObject({ message: 'EXPIRED' });
+  });
+
+  it('rejects PROFILE_ALREADY_LINKED for guardian profile of another user', async () => {
+    const inv = {
+      id: 'inv-linked',
+      parishId: PARISH,
+      role: 'GUARDIAN',
+      emailNormalized: 'g@example.com',
+      status: 'PENDING',
+      expiresAt: new Date(Date.now() + 86400000),
+      guardianProfileId: GP,
+      catechumenProfileId: null,
+      acceptedById: null,
+      communityId: null,
+    };
+    const tx = {
+      portalInvitation: {
+        findUnique: vi.fn().mockResolvedValue(inv),
+        updateMany: vi.fn(),
+      },
+      guardianProfile: {
+        findUnique: vi.fn().mockResolvedValue({
+          id: GP,
+          userId: 'someone-else',
+          householdId: HH,
+        }),
+        updateMany: vi.fn(),
+      },
+      catechumenProfile: { findUnique: vi.fn(), updateMany: vi.fn() },
+      minorPortalConsent: { findFirst: vi.fn() },
+      membership: { findFirst: vi.fn(), create: vi.fn(), update: vi.fn() },
+      authContinuation: { updateMany: vi.fn() },
+    };
+    prismaMock.$transaction.mockImplementation(async (fn: any) => fn(tx));
+    const entities = baseEntities({
+      PortalInvitation: { findUnique: vi.fn().mockResolvedValue(inv) },
+    });
+    await expect(
+      acceptPortalInvitation(
+        { invitationId: inv.id },
+        staffCtx(entities, { email: 'g@example.com', id: 'me' }),
+      ),
+    ).rejects.toMatchObject({ message: 'PROFILE_ALREADY_LINKED' });
+  });
+
+  it('accepts adult CATECHUMEN by token (hash path) with consent N/A', async () => {
+    const token = 'adult-token-xyz';
+    const tokenHash = hashPortalInviteToken(token);
+    const adultBirth = new Date();
+    adultBirth.setFullYear(adultBirth.getFullYear() - 20);
+    const inv = {
+      id: 'inv-adult',
+      parishId: PARISH,
+      role: 'CATECHUMEN',
+      emailNormalized: 'adult@example.com',
+      status: 'PENDING',
+      expiresAt: new Date(Date.now() + 86400000),
+      guardianProfileId: null,
+      catechumenProfileId: CP,
+      acceptedById: null,
+      communityId: null,
+      tokenHash,
+    };
+    const tx = {
+      portalInvitation: {
+        findUnique: vi.fn().mockResolvedValue(inv),
+        updateMany: vi.fn().mockResolvedValue({ count: 1 }),
+      },
+      catechumenProfile: {
+        findUnique: vi.fn().mockResolvedValue({
+          id: CP,
+          userId: null,
+          birthDate: adultBirth,
+          householdId: HH,
+        }),
+        updateMany: vi.fn().mockResolvedValue({ count: 1 }),
+      },
+      guardianProfile: { findUnique: vi.fn(), updateMany: vi.fn() },
+      minorPortalConsent: { findFirst: vi.fn() },
+      membership: {
+        findFirst: vi.fn().mockResolvedValue(null),
+        create: vi.fn().mockResolvedValue({ id: 'm-cat', role: 'CATECHUMEN', status: 'ACTIVE' }),
+        update: vi.fn(),
+      },
+      authContinuation: { updateMany: vi.fn().mockResolvedValue({ count: 0 }) },
+    };
+    prismaMock.$transaction.mockImplementation(async (fn: any) => fn(tx));
+
+    const entities = baseEntities({
+      PortalInvitation: {
+        findUnique: vi.fn().mockResolvedValue(inv),
+      },
+      CatechumenProfile: {
+        findUnique: vi.fn().mockResolvedValue({
+          id: CP,
+          userId: null,
+          birthDate: adultBirth,
+          householdId: HH,
+          firstName: 'Adult',
+          lastName: 'User',
+        }),
+      },
+    });
+
+    const result = await acceptPortalInvitation(
+      { token },
+      staffCtx(entities, { email: 'adult@example.com', id: 'adult-user' }),
+    );
+    expect(result.success).toBe(true);
+    expect(result.role).toBe('CATECHUMEN');
+    expect(tx.membership.create).toHaveBeenCalled();
+    expect(tx.catechumenProfile.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: CP, userId: null },
+      }),
+    );
+  });
+
+  it('does not reactivate SUSPENDED same-role membership', async () => {
+    const inv = {
+      id: 'inv-susp',
+      parishId: PARISH,
+      role: 'GUARDIAN',
+      emailNormalized: 'g@example.com',
+      status: 'PENDING',
+      expiresAt: new Date(Date.now() + 86400000),
+      guardianProfileId: GP,
+      catechumenProfileId: null,
+      acceptedById: null,
+      communityId: null,
+    };
+    const tx = {
+      portalInvitation: {
+        findUnique: vi.fn().mockResolvedValue(inv),
+        updateMany: vi.fn(),
+      },
+      guardianProfile: {
+        findUnique: vi.fn().mockResolvedValue({ id: GP, userId: 'guardian-user', householdId: HH }),
+        updateMany: vi.fn(),
+      },
+      catechumenProfile: { findUnique: vi.fn(), updateMany: vi.fn() },
+      minorPortalConsent: { findFirst: vi.fn() },
+      membership: {
+        findFirst: vi.fn().mockResolvedValue({
+          id: 'm-susp',
+          status: 'SUSPENDED',
+          role: 'GUARDIAN',
+        }),
+        create: vi.fn(),
+        update: vi.fn(),
+      },
+      authContinuation: { updateMany: vi.fn() },
+    };
+    prismaMock.$transaction.mockImplementation(async (fn: any) => fn(tx));
+    const entities = baseEntities({
+      PortalInvitation: { findUnique: vi.fn().mockResolvedValue(inv) },
+    });
+    await expect(
+      acceptPortalInvitation(
+        { invitationId: inv.id },
+        staffCtx(entities, { email: 'g@example.com', id: 'guardian-user' }),
+      ),
+    ).rejects.toMatchObject({ message: 'MEMBERSHIP_SUSPENDED' });
+    expect(tx.membership.update).not.toHaveBeenCalled();
+  });
+});
+
+describe('getPortalInvitation public access', () => {
+  it('rejects invitationId-only without token', async () => {
+    const entities = baseEntities();
+    await expect(
+      getPortalInvitation({ invitationId: 'inv-1' }, { entities, req: { headers: {} } }),
+    ).rejects.toMatchObject({ statusCode: 400, message: 'token é obrigatório.' });
+  });
+
+  it('never leaks emailNormalized in JSON', async () => {
+    const token = 'secret-tok';
+    const tokenHash = hashPortalInviteToken(token);
+    const entities = baseEntities({
+      PortalInvitation: {
+        findUnique: vi.fn().mockResolvedValue({
+          id: 'inv-1',
+          parishId: PARISH,
+          role: 'GUARDIAN',
+          emailNormalized: 'secret@example.com',
+          tokenHash,
+          status: 'PENDING',
+          expiresAt: new Date(Date.now() + 86400000),
+          guardianProfileId: GP,
+          catechumenProfileId: null,
+          parish: { id: PARISH, name: 'Paróquia', type: 'PARISH' },
+        }),
+      },
+      User: { findUnique: vi.fn().mockResolvedValue(null) },
+    });
+    const dto = await getPortalInvitation({ token }, { entities, req: { headers: {} } });
+    expect(JSON.stringify(dto)).not.toContain('emailNormalized');
+    expect(JSON.stringify(dto)).not.toContain('secret@example.com');
   });
 });
