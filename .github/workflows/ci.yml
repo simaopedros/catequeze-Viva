@@ -102,7 +102,7 @@ jobs:
           SMTP_PASSWORD: ci_test
           GOOGLE_CLIENT_ID: ci_test
           GOOGLE_CLIENT_SECRET: ci_test
-        run: wasp db seed
+        run: node seed_test_data.js
 
       - name: Run integration tests
         env:

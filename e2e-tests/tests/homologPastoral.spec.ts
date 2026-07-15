@@ -56,7 +56,9 @@ test.describe('Homolog pastoral QA (automated)', () => {
   });
 
   test('API health via same-origin staff proxy', async ({ request }) => {
-    const res = await request.get(`${STAFF_URL}/health`);
+    // /readyz is the deep readiness probe that checks the database.
+    // /health is a cheap liveness probe that skips the DB by design.
+    const res = await request.get(`${STAFF_URL}/readyz`);
     expect(res.ok()).toBeTruthy();
     const body = await res.json();
     expect(body.status).toBe('ok');

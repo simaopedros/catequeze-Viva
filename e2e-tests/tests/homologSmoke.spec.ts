@@ -5,7 +5,9 @@ const FAMILY_URL = process.env.HOMOLOG_FAMILY_URL || 'https://familia-homolog.ca
 
 test.describe('Homolog smoke tests', () => {
   test('API health check returns ok with all services', async ({ request }) => {
-    const res = await request.get(`${STAFF_URL}/health`);
+    // /readyz is the deep readiness probe that checks the database.
+    // /health is a cheap liveness probe that skips the DB by design.
+    const res = await request.get(`${STAFF_URL}/readyz`);
     expect(res.ok()).toBeTruthy();
     const body = await res.json();
     expect(body.status).toBe('ok');
@@ -21,10 +23,11 @@ test.describe('Homolog smoke tests', () => {
   });
 
   test('Staff portal landing loads and redirects to login', async ({ page }) => {
-    const res = await page.goto(STAFF_URL);
+    const res = await page.goto(STAFF_URL, { waitUntil: 'networkidle' });
     expect(res?.ok()).toBeTruthy();
-    // Unauthenticated — should redirect to login
-    await page.waitForURL('**/login**', { timeout: 10000 });
+    // Unauthenticated — should redirect to login. Allow extra time for the
+    // container to finish booting right after a deploy.
+    await page.waitForURL('**/login**', { timeout: 30000 });
     await expect(page.locator('h1, h2').first()).toBeVisible();
   });
 
@@ -41,6 +44,7 @@ test.describe('Homolog smoke tests', () => {
     expect(ogTitle).toBeTruthy();
     const ogImage = await page.locator('meta[property="og:image"]').getAttribute('content');
     expect(ogImage).toBeTruthy();
-    expect(ogImage).toContain('og-image');
+    // og:image must be a valid absolute URL (asset path may change).
+    expect(ogImage).toMatch(/^https?:\/\//);
   });
 });
