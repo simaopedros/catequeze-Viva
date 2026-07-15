@@ -2,10 +2,10 @@ import { ReactNode, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useAuth } from "wasp/client/auth";
 import {
+  getInstitutionalPlanId,
+  getWorkspaceEffectivePlan,
   hasPersonalAccess,
-  isBillingActive,
   isOnProductTrial,
-  resolvePlanId,
 } from "../../shared/pricing";
 import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
 import { buildBillingJourneyHref } from "../lib/upgradeJourney";
@@ -24,6 +24,12 @@ interface WorkspaceBilling {
   trialEndsAt?: string | Date | null;
 }
 
+/**
+ * Access for staff/pastoral workspaces.
+ * Personal: Single (paid) or product trial.
+ * Institutional parish: TenantBilling Single, Unlimited, or active product trial
+ * (not only Unlimited — family invites and pastoral tools require this).
+ */
 function workspaceHasAccess(
   isPersonal: boolean,
   user:
@@ -35,24 +41,33 @@ function workspaceHasAccess(
     | null
     | undefined,
   billing: WorkspaceBilling | null | undefined,
+  parishType?: string | null,
 ): boolean {
   if (isPersonal) {
     return hasPersonalAccess(user) || isOnProductTrial(user);
   }
-  if (!billing || !billing.status || !billing.plan) return false;
-  // TenantBilling TRIAL/ACTIVE/PAST_DUE — not Stripe user subscription statuses
-  if (
-    !isBillingActive({
+  if (billing?.plan && billing?.status) {
+    const planId = getInstitutionalPlanId({
       plan: billing.plan,
       status: billing.status,
       trialEndsAt: billing.trialEndsAt,
-    })
-  ) {
-    return false;
+    });
+    if (planId === "single" || planId === "unlimited") return true;
   }
-  const resolved = resolvePlanId(billing.plan);
-  // Unlimited paid/trial, or Single product trial on institutional parish
-  return resolved === "unlimited" || resolved === "single";
+  // Fallback through the shared effective-plan resolver (handles free sentinel trial).
+  const effective = getWorkspaceEffectivePlan({
+    user,
+    parishType: parishType || "PARISH",
+    billing:
+      billing?.plan && billing?.status
+        ? {
+            plan: billing.plan,
+            status: billing.status,
+            trialEndsAt: billing.trialEndsAt,
+          }
+        : null,
+  });
+  return effective.plan === "single" || effective.plan === "unlimited";
 }
 
 export function SubscriptionGate({ children }: { children: ReactNode }) {
@@ -75,7 +90,12 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
           null,
       }
     : null;
-  const hasAccess = workspaceHasAccess(isPersonal, user, workspaceBilling);
+  const hasAccess = workspaceHasAccess(
+    isPersonal,
+    user,
+    workspaceBilling,
+    workspace?.type ?? (isPersonal ? "PERSONAL" : "PARISH"),
+  );
 
   useEffect(() => {
     if (user === undefined) return;

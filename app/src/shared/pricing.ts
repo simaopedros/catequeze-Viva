@@ -545,18 +545,32 @@ export function getEffectiveBillingPlan(billing: BillingInfo | null | undefined)
   return resolved.toUpperCase();
 }
 
-/** Whether an institutional workspace has paid access via TenantBilling. */
+/**
+ * Whether an institutional workspace has usable access via TenantBilling.
+ *
+ * Grants access for:
+ * - Unlimited (and legacy institutional aliases that resolve to unlimited)
+ * - Single (product trial on parish TenantBilling uses SINGLE entitlements)
+ * - Active TRIAL that still stores free sentinel (maps to Single via getEffectiveBillingPlan)
+ *
+ * Free / canceled / expired trial → false.
+ * Note: only Unlimited is an "umbrella" institutional license (isInstitutionalPlan);
+ * Single still unlocks the same pastoral tools (including family invites) under limits.
+ */
 export function hasInstitutionalAccess(billing: BillingInfo | null | undefined): boolean {
-  if (!isBillingActive(billing)) return false;
-  const resolved = resolvePlanId(billing?.plan ?? '');
-  return resolved === 'unlimited';
+  return getInstitutionalPlanId(billing) != null;
 }
 
-/** Resolve the institutional plan from TenantBilling (or null if free). */
+/**
+ * Resolve the effective plan for an institutional workspace from TenantBilling.
+ * Returns `unlimited` or `single` when billing is active; null if free/blocked.
+ */
 export function getInstitutionalPlanId(billing: BillingInfo | null | undefined): PlanId | null {
   if (!isBillingActive(billing)) return null;
-  const resolved = resolvePlanId(billing?.plan ?? '');
-  if (resolved && (INSTITUTIONAL_PLAN_IDS as readonly string[]).includes(resolved)) {
+  // getEffectiveBillingPlan maps TRIAL + free sentinel → SINGLE
+  const effective = getEffectiveBillingPlan(billing);
+  const resolved = resolvePlanId(effective);
+  if (resolved === 'unlimited' || resolved === 'single') {
     return resolved;
   }
   return null;
@@ -598,22 +612,23 @@ export function getWorkspaceEffectivePlan(opts: {
 
   // Institutional workspace — resolve by coverage order
 
-  // 1. Parish own billing (takes priority over diocese umbrella)
+  // 1. Parish own billing (takes priority over diocese umbrella).
+  // Single + Unlimited both unlock pastoral tools (invites, classes, etc.).
   if (billing && isBillingActive(billing)) {
     const plan = getInstitutionalPlanId(billing);
     if (plan) {
+      // Product trial on parish TenantBilling (often plan=SINGLE or free sentinel).
+      if (billing.status === 'TRIAL') {
+        return { plan, source: 'trial', billingInfo: billing };
+      }
       return { plan, source: 'institutional', billingInfo: billing };
-    }
-    // Active TRIAL with free sentinel → Single product trial
-    if (billing.status === 'TRIAL') {
-      return { plan: PRODUCT_TRIAL_PLAN_ID, source: 'trial', billingInfo: billing };
     }
   }
 
   // 2. Diocese umbrella (fallback when parish has no billing)
   if (dioceseBilling && isBillingActive(dioceseBilling)) {
-    const resolved = resolvePlanId(dioceseBilling.plan ?? '');
-    if (resolved === 'unlimited') {
+    const umbrella = getInstitutionalPlanId(dioceseBilling);
+    if (umbrella === 'unlimited') {
       return {
         plan: 'unlimited',
         source: 'institutional',

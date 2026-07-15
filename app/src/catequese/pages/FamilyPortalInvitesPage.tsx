@@ -386,7 +386,11 @@ export default function FamilyPortalInvitesPage() {
                         ) : (
                           <Heart className="h-3.5 w-3.5" />
                         )}
-                        {roleLabels[inv.role] || inv.role}
+                        {inv.role === "GUARDIAN"
+                          ? roleLabels.GUARDIAN
+                          : inv.role === "CATECHUMEN"
+                            ? roleLabels.CATECHUMEN
+                            : String(inv.role ?? "")}
                       </span>
                     </td>
                     <td className="px-3 py-3">

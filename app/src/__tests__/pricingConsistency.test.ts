@@ -360,8 +360,19 @@ describe('hasInstitutionalAccess', () => {
     expect(hasInstitutionalAccess({ plan: 'CATECHIST_FREE', status: 'ACTIVE' })).toBe(false);
   });
 
-  it('false for SINGLE (personal plan)', () => {
-    expect(hasInstitutionalAccess({ plan: 'SINGLE', status: 'ACTIVE' })).toBe(false);
+  it('true for ACTIVE SINGLE (parish TenantBilling / product trial entitlements)', () => {
+    expect(hasInstitutionalAccess({ plan: 'SINGLE', status: 'ACTIVE' })).toBe(true);
+  });
+
+  it('true for TRIAL with free sentinel (maps to Single)', () => {
+    const future = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    expect(
+      hasInstitutionalAccess({
+        plan: 'CATECHIST_FREE',
+        status: 'TRIAL',
+        trialEndsAt: future,
+      }),
+    ).toBe(true);
   });
 
   it('false for CANCELED', () => {
@@ -374,12 +385,27 @@ describe('getInstitutionalPlanId', () => {
     expect(getInstitutionalPlanId({ plan: 'UNLIMITED', status: 'ACTIVE' })).toBe('unlimited');
   });
 
+  it('returns single for parish Single entitlements', () => {
+    expect(getInstitutionalPlanId({ plan: 'SINGLE', status: 'ACTIVE' })).toBe('single');
+  });
+
   it('returns unlimited for legacy DIOCESE', () => {
     expect(getInstitutionalPlanId({ plan: 'DIOCESE', status: 'ACTIVE' })).toBe('unlimited');
   });
 
-  it('returns null for CATECHIST_FREE', () => {
+  it('returns null for CATECHIST_FREE when not on trial', () => {
     expect(getInstitutionalPlanId({ plan: 'CATECHIST_FREE', status: 'ACTIVE' })).toBeNull();
+  });
+
+  it('returns single for TRIAL free sentinel', () => {
+    const future = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    expect(
+      getInstitutionalPlanId({
+        plan: 'CATECHIST_FREE',
+        status: 'TRIAL',
+        trialEndsAt: future,
+      }),
+    ).toBe('single');
   });
 
   it('returns null for CANCELED', () => {
@@ -440,6 +466,16 @@ describe('getWorkspaceEffectivePlan', () => {
     });
     expect(result.plan).toBe('single');
     expect(result.source).toBe('trial');
+  });
+
+  it('institutional workspace with ACTIVE single billing unlocks pastoral tools', () => {
+    const result = getWorkspaceEffectivePlan({
+      user: { subscriptionStatus: null, subscriptionPlan: null },
+      parishType: 'PARISH',
+      billing: { plan: 'SINGLE', status: 'ACTIVE' },
+    });
+    expect(result.plan).toBe('single');
+    expect(result.source).toBe('institutional');
   });
 
   it('personal product trial returns single with trial source', () => {

@@ -328,6 +328,9 @@ export default function BillingPage() {
             : PaymentPlanId.Single;
       } else if (instPlan === "unlimited") {
         effectivePlanId = PaymentPlanId.Unlimited;
+      } else if (instPlan === "single") {
+        // Parish TenantBilling on Single (trial conversion or single entitlements)
+        effectivePlanId = PaymentPlanId.Single;
       }
     }
   } else if (hasPersonalPlan && user?.subscriptionPlan) {

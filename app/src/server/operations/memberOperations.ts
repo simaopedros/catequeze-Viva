@@ -2,6 +2,11 @@ import { HttpError } from 'wasp/server';
 import { requireAuth, writeAuditLog, getDioceseParishIds } from '../auth/helpers';
 import { logger } from '../logger';
 import { familyPortalUrl } from '../../shared/portal';
+import {
+  ALLOWED_INVITER_ROLES,
+  pickBestInviterRole,
+} from '../../shared/inviterRoles';
+import { deliverInviteEmail } from '../jobs/inviteEmailUtils';
 
 // ── Simple rate limiter for public invite token endpoint ───────────────────
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -51,16 +56,7 @@ function getAssignableRoles(actorRole: string | null | undefined, isPlatformAdmi
   return ROLE_ASSIGNMENT_HIERARCHY[actorRole || ''] || [];
 }
 
-/** Roles that are allowed to invite members in a parish. */
-const ALLOWED_INVITER_ROLES = [
-  'SUPER_ADMIN', 'DIOCESE_ADMIN',
-  'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR',
-  'LEAD_CATECHIST', 'ASSISTANT_CATECHIST',
-];
-
 // ── Helpers ────────────────────────────────────────────────────────────────
-
-import { deliverInviteEmail } from '../jobs/inviteEmailUtils';
 
 /** Invitation expires 30 days from now. */
 function defaultExpiry(): Date {
@@ -116,25 +112,29 @@ async function resolveInviterRole(context: any, parishId: string): Promise<{ rol
   });
   if (isPersonalOwner) return { role: 'PERSONAL_OWNER', isPersonalOwner: true };
 
-  const membership = await context.entities.Membership.findFirst({
+  // Multi-role: never use findFirst alone — a GUARDIAN row can hide LEAD_CATECHIST.
+  const memberships = await context.entities.Membership.findMany({
     where: { userId: context.user.id, parishId, status: 'ACTIVE' },
     select: { role: true },
   });
-  if (!membership || !ALLOWED_INVITER_ROLES.includes(membership.role)) {
-    // DIOCESE_ADMIN: allow managing any parish in the diocese
-    const dioceseMembership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, status: 'ACTIVE', role: 'DIOCESE_ADMIN' },
-      select: { parishId: true },
-    });
-    if (dioceseMembership) {
-      const dioceseParishIds = await getDioceseParishIds(context);
-      if (dioceseParishIds.includes(parishId)) {
-        return { role: 'DIOCESE_ADMIN', isPersonalOwner: false };
-      }
-    }
-    throw new HttpError(403, 'Apenas coordenadores e catequistas podem convidar membros.');
+  const roles = memberships.map((m: { role: string }) => m.role);
+  const best = pickBestInviterRole(roles);
+  if (best && (ALLOWED_INVITER_ROLES as readonly string[]).includes(best)) {
+    return { role: best, isPersonalOwner: best === 'PERSONAL_OWNER' };
   }
-  return { role: membership.role, isPersonalOwner: false };
+
+  // DIOCESE_ADMIN: allow managing any parish in the diocese
+  const dioceseMembership = await context.entities.Membership.findFirst({
+    where: { userId: context.user.id, status: 'ACTIVE', role: 'DIOCESE_ADMIN' },
+    select: { parishId: true },
+  });
+  if (dioceseMembership) {
+    const dioceseParishIds = await getDioceseParishIds(context);
+    if (dioceseParishIds.includes(parishId)) {
+      return { role: 'DIOCESE_ADMIN', isPersonalOwner: false };
+    }
+  }
+  throw new HttpError(403, 'Apenas coordenadores e catequistas podem convidar membros.');
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -812,7 +812,6 @@ export const resendInvitation = async (
     token,
     inviteUrl: familyPortalUrl(`/convite/${token}`),
   };
-}
 };
 
 export const removeMembership = async (

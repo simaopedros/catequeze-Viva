@@ -76,7 +76,33 @@ export async function loadActiveRoles(
     },
     select: { role: true },
   });
-  return rows.map((r: { role: string }) => r.role);
+  const roles = rows.map((r: { role: string }) => r.role);
+
+  // Personal workspace owners may lack a Membership row or only hold family
+  // roles on other parishes — still treat ownership as staff for that parish.
+  if (parishId) {
+    const personal = await context.entities.Parish.findFirst({
+      where: {
+        id: parishId,
+        ownerId: context.user.id,
+        type: 'PERSONAL',
+      },
+      select: { id: true },
+    });
+    if (personal && !roles.includes('PERSONAL_OWNER')) {
+      roles.push('PERSONAL_OWNER');
+    }
+  } else {
+    const ownsPersonal = await context.entities.Parish.findFirst({
+      where: { ownerId: context.user.id, type: 'PERSONAL' },
+      select: { id: true },
+    });
+    if (ownsPersonal && !roles.includes('PERSONAL_OWNER')) {
+      roles.push('PERSONAL_OWNER');
+    }
+  }
+
+  return roles;
 }
 
 export async function assertStaffOperation(
