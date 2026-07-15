@@ -78,7 +78,8 @@ export const listLiturgicalEvents = async (_args: void, context: any) => {
 
 export const createLiturgicalEvent = async (
   args: {
-    parishId: string;
+    /** Required for non-admins. Platform admins may omit for global (parishId null) events. */
+    parishId?: string;
     name: string;
     date: string;
     description?: string;
@@ -93,7 +94,24 @@ export const createLiturgicalEvent = async (
   if (!context.user) throw new HttpError(401);
 
   if (!args.parishId) {
-    throw new HttpError(400, 'parishId é obrigatório.');
+    // Global liturgical events: platform admin only (delete already special-cases parishId null).
+    if (!context.user.isAdmin) {
+      throw new HttpError(400, 'parishId é obrigatório.');
+    }
+    return context.entities.LiturgicalEvent.create({
+      data: {
+        name: args.name,
+        date: new Date(args.date),
+        description: args.description,
+        endDate: args.endDate ? new Date(args.endDate) : null,
+        color: args.color || '#6366f1',
+        type: args.type || 'liturgical',
+        recurring: args.recurring || false,
+        recurrenceRule: args.recurrenceRule,
+        locale: resolveUserLocale(context.user),
+        parishId: null,
+      },
+    });
   }
 
   await assertCanWriteCalendar(context, args.parishId);

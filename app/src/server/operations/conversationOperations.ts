@@ -140,10 +140,25 @@ async function listCatechumenConversationContacts(
   workspaceId: string,
   isPersonalWorkspace: boolean,
 ): Promise<ConversationContact[]> {
-  const catechumenProfile = await context.entities.CatechumenProfile.findFirst({
-    where: { userId: context.user.id },
+  // Prefer profile tied to this workspace (parish / household / enrollments).
+  let catechumenProfile = await context.entities.CatechumenProfile.findFirst({
+    where: {
+      userId: context.user.id,
+      OR: [
+        { parishId: workspaceId },
+        { household: { parishId: workspaceId } },
+        { enrollments: { some: { class: { parishId: workspaceId } } } },
+      ],
+    },
     select: { id: true, householdId: true, parishId: true },
   });
+  // Legacy / personal: fall back to any linked profile only when workspace is personal.
+  if (!catechumenProfile && isPersonalWorkspace) {
+    catechumenProfile = await context.entities.CatechumenProfile.findFirst({
+      where: { userId: context.user.id },
+      select: { id: true, householdId: true, parishId: true },
+    });
+  }
   if (!catechumenProfile) return [];
 
   const enrollmentWhere: any = { catechumenProfileId: catechumenProfile.id };
@@ -343,19 +358,27 @@ async function listAllowedConversationContactsInternal(
     ? ['SUPER_ADMIN']
     : await getWorkspaceRoles(context, args.workspaceId, workspace);
 
-  // Pure family roles: restricted allowlists (also enforced on create/send via assertParticipantIdsAllowed)
-  if (!context.user.isAdmin && isFamilyOnlyRoles(roles) && !hasStaffLikeRole(roles)) {
-    if (roles.includes('CATECHUMEN') && !roles.includes('GUARDIAN')) {
+  // Decision tree (fail-closed for empty/unclassified roles):
+  // 1) pure family → restricted guardian or catechumen allowlist
+  // 2) catechumen without staff → catechumen allowlist
+  // 3) staff-like / admin → parish-wide dump
+  // 4) else → empty (never parish-wide by default)
+  //
+  // createConversation / addConversationParticipant re-check via assertParticipantIdsAllowed
+  // (same allowlist). sendMessage only checks existing conversation participation.
+  if (!context.user.isAdmin) {
+    if (isFamilyOnlyRoles(roles)) {
+      if (roles.includes('GUARDIAN')) {
+        return listGuardianConversationContacts(context, args.workspaceId);
+      }
       return listCatechumenConversationContacts(context, args.workspaceId, isPersonalWorkspace);
     }
-    if (roles.includes('GUARDIAN')) {
-      return listGuardianConversationContacts(context, args.workspaceId);
+    if (roles.includes('CATECHUMEN') && !hasStaffLikeRole(roles)) {
+      return listCatechumenConversationContacts(context, args.workspaceId, isPersonalWorkspace);
     }
-  }
-
-  // Pure catechumen edge: only CATECHUMEN role (legacy path when membership missing staff)
-  if (!context.user.isAdmin && roles.includes('CATECHUMEN') && !hasStaffLikeRole(roles) && !roles.includes('GUARDIAN')) {
-    return listCatechumenConversationContacts(context, args.workspaceId, isPersonalWorkspace);
+    if (!hasStaffLikeRole(roles)) {
+      return [];
+    }
   }
 
   const parishIds = context.user.isAdmin

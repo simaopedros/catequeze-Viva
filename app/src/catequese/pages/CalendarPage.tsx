@@ -41,6 +41,7 @@ import {
   SheetTitle,
 } from "../../client/components/ui/sheet";
 import { useUserContext } from "../../client/hooks/useUserContext";
+import { toast } from "../../client/hooks/use-toast";
 
 const DEFAULT_COLOR = "#071A2D";
 
@@ -49,6 +50,7 @@ const FAMILY_ROLES = new Set(["GUARDIAN", "CATECHUMEN"]);
 export default function CalendarPage() {
   const { t } = useTranslation("calendar");
   const { t: tc } = useTranslation("common");
+  const { t: tp } = useTranslation("parishes");
   const navigate = useNavigate();
   const { userRole } = useUserContext();
   const isFamily = FAMILY_ROLES.has(userRole);
@@ -211,7 +213,15 @@ export default function CalendarPage() {
   };
 
   const handleCreate = async () => {
-    if (!name || !eventDate || !activeParishId) return;
+    if (!name || !eventDate) return;
+    if (!activeParishId) {
+      toast({
+        title: tc("error"),
+        description: tp("select_parish_hint"),
+        variant: "destructive",
+      });
+      return;
+    }
     await createLiturgicalEvent({
       parishId: activeParishId,
       name,

@@ -51,9 +51,16 @@ import {
   createLiturgicalEvent,
   deleteLiturgicalEvent,
 } from '../server/operations/calendarOperations';
-import { getContactsForConversation } from '../server/operations/conversationOperations';
+import {
+  getContactsForConversation,
+  createConversation,
+} from '../server/operations/conversationOperations';
 import { isCoordinatorOrAbove, isCatechist } from '../server/operations/sharedScope';
-import { getDioceseParishIds, assertCanAccessParish } from '../server/auth/helpers';
+import {
+  getDioceseParishIds,
+  assertCanAccessParish,
+  getEffectiveParishRole,
+} from '../server/auth/helpers';
 
 const PARISH = 'parish-1';
 const USER = 'user-1';
@@ -91,9 +98,14 @@ function baseEntities(overrides: Record<string, any> = {}) {
     User: {
       findMany: vi.fn().mockResolvedValue([]),
     },
-    Conversation: {},
+    Conversation: {
+      findFirst: vi.fn().mockResolvedValue(null),
+      create: vi.fn(async ({ data }: any) => ({ id: 'conv-1', ...data })),
+    },
     ConversationParticipant: {},
-    Message: {},
+    Message: {
+      create: vi.fn().mockResolvedValue({}),
+    },
     ...overrides,
   };
 }
@@ -222,14 +234,28 @@ describe('calendar write authorization', () => {
     (getDioceseParishIds as any).mockResolvedValue([]);
   });
 
-  it('requires parishId on create', async () => {
+  it('requires parishId on create for non-admins', async () => {
     const entities = baseEntities();
     await expect(
       createLiturgicalEvent(
         { name: 'X', date: '2026-01-01' } as any,
-        ctx({ id: USER, isAdmin: true }, entities),
+        ctx({ id: USER, isAdmin: false }, entities),
       ),
     ).rejects.toMatchObject({ statusCode: 400 });
+  });
+
+  it('allows platform admin to create global events without parishId', async () => {
+    const entities = baseEntities();
+    const created = await createLiturgicalEvent(
+      { name: 'Global feast', date: '2026-12-25' },
+      ctx({ id: USER, isAdmin: true }, entities),
+    );
+    expect(created.parishId).toBeNull();
+    expect(entities.LiturgicalEvent.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ parishId: null, name: 'Global feast' }),
+      }),
+    );
   });
 
   it('allows coordinator to create with explicit parishId', async () => {
@@ -465,5 +491,161 @@ describe('conversation contact allowlists (family)', () => {
 
     expect(ids).toEqual(['parent-1', 'peer-1', 'teacher-1'].sort());
     expect(ids).not.toContain('should-not-appear');
+  });
+
+  it('returns empty contacts when workspace roles are empty (fail-closed)', async () => {
+    // Access mock succeeds but no membership roles → must not parish-wide dump.
+    (assertCanAccessParish as any).mockResolvedValue('UNKNOWN');
+    const entities = baseEntities({
+      Parish: {
+        findUnique: vi.fn().mockResolvedValue({ id: PARISH, type: 'PARISH', ownerId: null }),
+        findFirst: vi.fn().mockResolvedValue(null),
+      },
+      Membership: {
+        findMany: vi.fn().mockResolvedValue([]), // no roles for workspace
+        findFirst: vi.fn().mockResolvedValue(null),
+      },
+    });
+
+    const contacts = await getContactsForConversation(
+      { workspaceId: PARISH },
+      ctx({ id: USER, isAdmin: false }, entities),
+    );
+    expect(contacts).toEqual([]);
+    // Staff dump would query parish members without userId filter on the caller role query —
+    // ensure we never opened the wide membership dump for other users.
+    const membershipCalls = (entities.Membership.findMany as any).mock.calls;
+    const wideDump = membershipCalls.some(
+      (call: any[]) => call[0]?.where?.parishId?.in || call[0]?.where?.userId?.not,
+    );
+    expect(wideDump).toBe(false);
+  });
+
+  it('createConversation rejects non-allowlisted participant for GUARDIAN (403)', async () => {
+    (assertCanAccessParish as any).mockResolvedValue('GUARDIAN');
+    (getEffectiveParishRole as any).mockResolvedValue('GUARDIAN');
+
+    const membershipFindMany = vi.fn(async (args: any) => {
+      if (args?.where?.userId === USER && args?.where?.parishId === PARISH) {
+        return [{ role: 'GUARDIAN' }];
+      }
+      if (args?.where?.role?.in) {
+        return [
+          {
+            user: { id: 'coord-1', firstName: 'Coord', lastName: 'Y', email: 'c@y.com', avatarUrl: null },
+            role: 'PARISH_COORDINATOR',
+          },
+        ];
+      }
+      return [];
+    });
+
+    const entities = baseEntities({
+      Parish: {
+        findUnique: vi.fn().mockResolvedValue({ id: PARISH, type: 'PARISH', ownerId: null }),
+        findFirst: vi.fn().mockResolvedValue(null),
+      },
+      Membership: {
+        findMany: membershipFindMany,
+        findFirst: vi.fn().mockResolvedValue(null),
+      },
+      GuardianProfile: {
+        findMany: vi.fn(async (args: any) => {
+          if (args?.where?.userId === USER) return [{ householdId: 'hh-1' }];
+          return [
+            {
+              userId: 'co-guardian',
+              user: {
+                id: 'co-guardian',
+                firstName: 'Co',
+                lastName: 'G',
+                email: 'g@x.com',
+                avatarUrl: null,
+              },
+            },
+          ];
+        }),
+      },
+      ClassEnrollment: { findMany: vi.fn().mockResolvedValue([]) },
+      ClassCatechist: { findMany: vi.fn().mockResolvedValue([]) },
+      Conversation: {
+        findFirst: vi.fn().mockResolvedValue(null),
+        create: vi.fn(),
+      },
+    });
+
+    await expect(
+      createConversation(
+        {
+          type: 'DIRECT',
+          parishId: PARISH,
+          participantUserIds: ['stranger-not-allowed'],
+        },
+        ctx({ id: USER, isAdmin: false }, entities),
+      ),
+    ).rejects.toMatchObject({ statusCode: 403 });
+    expect(entities.Conversation.create).not.toHaveBeenCalled();
+  });
+
+  it('createConversation allows allowlisted co-guardian for GUARDIAN', async () => {
+    (assertCanAccessParish as any).mockResolvedValue('GUARDIAN');
+    (getEffectiveParishRole as any).mockResolvedValue('GUARDIAN');
+
+    const membershipFindMany = vi.fn(async (args: any) => {
+      if (args?.where?.userId === USER && args?.where?.parishId === PARISH) {
+        return [{ role: 'GUARDIAN' }];
+      }
+      if (args?.where?.role?.in) return [];
+      return [];
+    });
+
+    const entities = baseEntities({
+      Parish: {
+        findUnique: vi.fn().mockResolvedValue({ id: PARISH, type: 'PARISH', ownerId: null }),
+        findFirst: vi.fn().mockResolvedValue(null),
+      },
+      Membership: {
+        findMany: membershipFindMany,
+        findFirst: vi.fn().mockResolvedValue(null),
+      },
+      GuardianProfile: {
+        findMany: vi.fn(async (args: any) => {
+          if (args?.where?.userId === USER) return [{ householdId: 'hh-1' }];
+          return [
+            {
+              userId: 'co-guardian',
+              user: {
+                id: 'co-guardian',
+                firstName: 'Co',
+                lastName: 'G',
+                email: 'g@x.com',
+                avatarUrl: null,
+              },
+            },
+          ];
+        }),
+      },
+      ClassEnrollment: { findMany: vi.fn().mockResolvedValue([]) },
+      ClassCatechist: { findMany: vi.fn().mockResolvedValue([]) },
+      Conversation: {
+        findFirst: vi.fn().mockResolvedValue(null),
+        create: vi.fn(async ({ data }: any) => ({
+          id: 'conv-1',
+          ...data,
+          participants: [],
+        })),
+      },
+    });
+
+    const conv = await createConversation(
+      {
+        type: 'DIRECT',
+        parishId: PARISH,
+        participantUserIds: ['co-guardian'],
+      },
+      ctx({ id: USER, isAdmin: false }, entities),
+    );
+    expect(conv.id).toBe('conv-1');
+    expect(entities.Conversation.create).toHaveBeenCalled();
   });
 });
