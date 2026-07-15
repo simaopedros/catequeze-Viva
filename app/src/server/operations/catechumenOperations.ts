@@ -113,7 +113,7 @@ export const listCatechumens = async (_args: { take?: number; skip?: number; sea
   }
 
   if (roles.includes('GUARDIAN')) {
-    const guardian = await context.entities.GuardianProfile.findUnique({ where: { userId: context.user.id } });
+    const guardian = await context.entities.GuardianProfile.findFirst({ where: { userId: context.user.id } });
     if (guardian?.householdId) {
       return context.entities.CatechumenProfile.findMany({
         where: buildWhere({ householdId: guardian.householdId }),

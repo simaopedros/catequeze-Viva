@@ -146,16 +146,16 @@ export async function serveDocument(req: Request, res: Response, context: any) {
         // Guardian: only documents of their household dependents
         if (!authorized && roles.includes('GUARDIAN')) {
           if (doc.catechumenProfileId) {
-            const guardian = await entities.GuardianProfile.findUnique({
-              where: { userId: user.id },
+            const catechumen = await entities.CatechumenProfile.findUnique({
+              where: { id: doc.catechumenProfileId },
               select: { householdId: true },
             });
-            if (guardian?.householdId) {
-              const catechumen = await entities.CatechumenProfile.findUnique({
-                where: { id: doc.catechumenProfileId },
+            if (catechumen?.householdId) {
+              const guardian = await entities.GuardianProfile.findFirst({
+                where: { userId: user.id, householdId: catechumen.householdId },
                 select: { householdId: true },
               });
-              if (catechumen?.householdId === guardian.householdId) {
+              if (guardian) {
                 authorized = true;
               }
             }

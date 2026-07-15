@@ -111,7 +111,7 @@ export const requestDataExport = async (_args: any, context: any) => {
       where: { userId: context.user.id },
       include: { parish: { select: { name: true } } },
     }),
-    context.entities.GuardianProfile.findUnique({ where: { userId: context.user.id } }),
+    context.entities.GuardianProfile.findFirst({ where: { userId: context.user.id } }),
   ]);
 
   await writeAuditLog(context, 'EXPORT', 'User', context.user.id, { operation: 'DATA_EXPORT' });

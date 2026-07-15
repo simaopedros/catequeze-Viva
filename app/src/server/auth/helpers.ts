@@ -355,14 +355,19 @@ export async function assertCanAccessCatechumenProfile(
 
   // Guardian and catechumen self-access: only checked when user has NO management role.
   if (roles.includes('GUARDIAN')) {
-    const guardian = await context.entities.GuardianProfile.findUnique({
-      where: { userId: context.user.id },
-    });
+    // Multi-household: match any guardian profile sharing the catechumen's household
     const catechumen = await context.entities.CatechumenProfile.findUnique({
       where: { id: catechumenId },
       select: { householdId: true },
     });
-    if (!catechumen || catechumen.householdId !== guardian?.householdId) {
+    if (!catechumen?.householdId) {
+      throw new HttpError(403, 'Você não tem acesso a este catequizando.');
+    }
+    const guardian = await context.entities.GuardianProfile.findFirst({
+      where: { userId: context.user.id, householdId: catechumen.householdId },
+      select: { id: true },
+    });
+    if (!guardian) {
       throw new HttpError(403, 'Você não tem acesso a este catequizando.');
     }
     return;
@@ -442,15 +447,16 @@ export async function assertCanAccessClass(
     return { parishId: classData.parishId };
   }
 
-  const guardian = await context.entities.GuardianProfile.findUnique({
-    where: { userId: context.user.id },
+  const guardians = await context.entities.GuardianProfile.findMany({
+    where: { userId: context.user.id, householdId: { not: null } },
     select: { householdId: true },
   });
-  if (guardian?.householdId) {
+  const householdIds = guardians.map((g: { householdId: string | null }) => g.householdId).filter(Boolean);
+  if (householdIds.length > 0) {
     const enrolled = await context.entities.ClassEnrollment.findFirst({
       where: {
         classId,
-        catechumenProfile: { householdId: guardian.householdId },
+        catechumenProfile: { householdId: { in: householdIds } },
       },
     });
     if (enrolled) return { parishId: classData.parishId };

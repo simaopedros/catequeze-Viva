@@ -569,6 +569,39 @@ action updateMembershipRole {
   entities: [Membership]
 }
 
+// ── Portal invitations (family portal P1) ────────────────────────────────
+
+action createPortalInvitation {
+  fn: import { createPortalInvitation } from "@src/server/operations/portalInvitationOperations",
+  entities: [PortalInvitation, Membership, User, Parish, Community, Household, GuardianProfile, CatechumenProfile, AuditLog, MinorPortalConsent]
+}
+
+query listPortalInvitations {
+  fn: import { listPortalInvitations } from "@src/server/operations/portalInvitationOperations",
+  entities: [PortalInvitation, Membership, Parish, User, GuardianProfile, CatechumenProfile]
+}
+
+query getPortalInvitation {
+  fn: import { getPortalInvitation } from "@src/server/operations/portalInvitationOperations",
+  entities: [PortalInvitation, User, Parish, GuardianProfile, CatechumenProfile, MinorPortalConsent]
+  auth: false
+}
+
+action acceptPortalInvitation {
+  fn: import { acceptPortalInvitation } from "@src/server/operations/portalInvitationOperations",
+  entities: [PortalInvitation, Membership, User, GuardianProfile, CatechumenProfile, MinorPortalConsent, AuthContinuation, AuditLog, Household]
+}
+
+action resendPortalInvitation {
+  fn: import { resendPortalInvitation } from "@src/server/operations/portalInvitationOperations",
+  entities: [PortalInvitation, Membership, Parish, User, AuditLog]
+}
+
+action revokePortalInvitation {
+  fn: import { revokePortalInvitation } from "@src/server/operations/portalInvitationOperations",
+  entities: [PortalInvitation, Membership, Parish, User, AuditLog]
+}
+
 action joinParish {
   fn: import { joinParish } from "@src/server/operations/joinParish",
   entities: [Membership, Parish, User]

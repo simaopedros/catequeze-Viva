@@ -137,7 +137,7 @@ export const listClasses = async (_args: { communityId?: string; workspaceId?: s
   }
 
   if (roles.includes('GUARDIAN')) {
-    const guardian = await context.entities.GuardianProfile.findUnique({ where: { userId: context.user.id } });
+    const guardian = await context.entities.GuardianProfile.findFirst({ where: { userId: context.user.id } });
     if (guardian?.householdId) {
       const catechumens = await context.entities.CatechumenProfile.findMany({
         where: { householdId: guardian.householdId },
@@ -339,7 +339,7 @@ export const getClassDetails = async (args: { id: string }, context: any) => {
     // Guardians: only classes where their dependents are enrolled
     let isGuardianOfEnrolled = false;
     if (!isCoordinator && !isCatechistOfClass) {
-      const guardian = await context.entities.GuardianProfile.findUnique({ where: { userId: context.user.id } });
+      const guardian = await context.entities.GuardianProfile.findFirst({ where: { userId: context.user.id } });
       if (guardian?.householdId) {
         const enrolled = await context.entities.ClassEnrollment.findFirst({
           where: {

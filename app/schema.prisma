@@ -279,12 +279,16 @@ model User {
   reviewedContent     ContentItem[]      @relation("ContentReviewer")
   createdSessions     CollaborativeSession[] @relation("CollaborativeSessionCreator")
   auditLogs           AuditLog[]
-  guardianProfile     GuardianProfile?
+  // Multi-household: one User may be guardian of several families
+  guardianProfiles    GuardianProfile[]
   catechistOfClasses  ClassCatechist[]
   recordedAttendances AttendanceRecord[]
   createdCampaigns    MessageCampaign[]
   receivedMessages    MessageRecipient[]
   uploadedDocuments   Document[]
+  minorPortalConsentsGranted MinorPortalConsent[] @relation("MinorPortalConsentGrantedByUser")
+  portalInvitationsAccepted  PortalInvitation[]   @relation("PortalInvitationAcceptedBy")
+  authContinuations          AuthContinuation[]
 
   // Communication Hub relations
   createdConversations    Conversation[]              @relation("ConversationCreator")
@@ -364,6 +368,7 @@ model Parish {
   messageTemplates     MessageTemplate[]
   catechumens          CatechumenProfile[]
   pendingInvitations   PendingInvitation[]
+  portalInvitations    PortalInvitation[]
 }
 enum CommunityType {
   CHAPEL
@@ -402,6 +407,7 @@ model Community {
   classes        CatechesisClass[]
   households     Household[]
   pendingInvitations PendingInvitation[]
+  portalInvitations  PortalInvitation[]
 
   @@index([parishId])
 }
@@ -426,6 +432,8 @@ model Membership {
   inviteToken          String?   @unique
   inviteTokenExpiresAt DateTime?
 
+  // Allow mixed roles same parish (e.g. LEAD_CATECHIST + GUARDIAN)
+  @@unique([userId, parishId, role])
   @@index([userId, parishId])
   @@index([userId, status])
   @@index([parishId])
@@ -610,6 +618,7 @@ model Household {
   guardians   GuardianProfile[]
   catechumens CatechumenProfile[]
   consents    ConsentRecord[]
+  portalInvitations PortalInvitation[]
 
   @@index([parishId])
   @@index([communityId])
@@ -621,7 +630,8 @@ model GuardianProfile {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  userId String? @unique
+  // Multi-household: uniqueness is (userId, householdId), not global userId
+  userId String?
   user   User?   @relation(fields: [userId], references: [id])
 
   email        String?
@@ -633,6 +643,10 @@ model GuardianProfile {
   phone        String?
   relationship String? // mother, father, guardian, etc.
 
+  portalInvitations    PortalInvitation[]
+  minorPortalConsents  MinorPortalConsent[] @relation("MinorPortalConsentGrantedByGuardian")
+
+  @@unique([userId, householdId])
   @@index([householdId])
   @@index([userId])
   @@index([email])
@@ -668,11 +682,122 @@ model CatechumenProfile {
 
   birthdayGifts CatechumenBirthdayGift[]
 
+  portalInvitations   PortalInvitation[]
+  minorPortalConsents MinorPortalConsent[]
+
   @@index([householdId])
   @@index([userId])
   @@index([parishId])
   @@index([email])
   @@index([parishId, firstName, lastName])
+}
+
+// ─── Family portal invitations & minor consent (P1) ───────────────────────────
+
+enum PortalInviteRole {
+  GUARDIAN
+  CATECHUMEN
+}
+
+enum PortalInviteStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  REVOKED
+}
+
+/// Staff → family portal invite with hashed token (plaintext never stored).
+model PortalInvitation {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  parishId    String
+  parish      Parish @relation(fields: [parishId], references: [id], onDelete: Cascade)
+  communityId String?
+  community   Community? @relation(fields: [communityId], references: [id], onDelete: SetNull)
+
+  // Required for GUARDIAN; optional for CATECHUMEN (derived from profile when present)
+  householdId String?
+  household   Household? @relation(fields: [householdId], references: [id], onDelete: SetNull)
+
+  role PortalInviteRole
+
+  guardianProfileId   String?
+  guardianProfile     GuardianProfile? @relation(fields: [guardianProfileId], references: [id], onDelete: SetNull)
+  catechumenProfileId String?
+  catechumenProfile   CatechumenProfile? @relation(fields: [catechumenProfileId], references: [id], onDelete: SetNull)
+
+  emailNormalized String
+  tokenHash       String @unique
+
+  status PortalInviteStatus @default(PENDING)
+
+  invitedById  String?
+  expiresAt    DateTime
+  acceptedAt   DateTime?
+  acceptedById String?
+  acceptedBy   User?     @relation("PortalInvitationAcceptedBy", fields: [acceptedById], references: [id], onDelete: SetNull)
+  lastSentAt   DateTime?
+  resendCount  Int       @default(0)
+
+  shortCodeHash String? @unique
+
+  authContinuations AuthContinuation[]
+
+  @@index([emailNormalized, status])
+  @@index([parishId, status])
+  @@index([householdId, status])
+  @@index([guardianProfileId])
+  @@index([catechumenProfileId])
+  @@index([expiresAt])
+}
+
+/// Append-only ledger for minor portal account access consent (grant/revoke APIs in PR6).
+model MinorPortalConsent {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  catechumenProfileId String
+  catechumenProfile   CatechumenProfile @relation(fields: [catechumenProfileId], references: [id], onDelete: Cascade)
+
+  grantedByGuardianId String?
+  grantedByGuardian   GuardianProfile? @relation("MinorPortalConsentGrantedByGuardian", fields: [grantedByGuardianId], references: [id], onDelete: SetNull)
+  grantedByUserId     String?
+  grantedByUser       User?            @relation("MinorPortalConsentGrantedByUser", fields: [grantedByUserId], references: [id], onDelete: SetNull)
+
+  /// Alias design field: termVersion / policyVersion of accepted consent text
+  termVersion   String
+  source        String // GUARDIAN_PORTAL | STAFF_OFFLINE
+  grantedAt     DateTime  @default(now())
+  revokedAt     DateTime?
+  revokeReason  String?
+  /// ACTIVE when revokedAt is null; REVOKED when set (derived; stored for query ease)
+  status        String    @default("ACTIVE")
+
+  @@index([catechumenProfileId, grantedAt])
+  @@index([catechumenProfileId, revokedAt])
+  @@index([catechumenProfileId, status])
+}
+
+/// Server-side post-auth continuation for multi-host invite flow (deep-link + cookie in PR5).
+model AuthContinuation {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  kind               String // PORTAL_INVITE
+  portalInvitationId String
+  portalInvitation   PortalInvitation @relation(fields: [portalInvitationId], references: [id], onDelete: Cascade)
+  tokenHash          String // challenge: proves client saw original token
+  consumedAt         DateTime?
+  userId             String?
+  user               User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdFromHost    String?
+
+  @@index([portalInvitationId])
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 // ─── Birthdays ──────────────────────────────────────────────────────────────────

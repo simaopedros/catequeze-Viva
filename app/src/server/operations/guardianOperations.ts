@@ -3,7 +3,8 @@ import { HttpError } from 'wasp/server';
 export const getGuardianDashboard = async (_args: void, context: any) => {
   if (!context.user) throw new HttpError(401);
 
-  const guardian = await context.entities.GuardianProfile.findUnique({
+  // Multi-household: userId is no longer globally unique
+  const guardian = await context.entities.GuardianProfile.findFirst({
     where: { userId: context.user.id },
   });
 

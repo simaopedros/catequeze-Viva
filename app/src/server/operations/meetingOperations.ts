@@ -863,7 +863,7 @@ export const getMeeting = async (args: { id: string }, context: any): Promise<an
         }>
       | undefined;
 
-    const guardian = await context.entities.GuardianProfile.findUnique({
+    const guardian = await context.entities.GuardianProfile.findFirst({
       where: { userId: context.user.id },
       select: { householdId: true },
     });

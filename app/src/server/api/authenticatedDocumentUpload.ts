@@ -112,14 +112,16 @@ export async function authenticatedDocumentUpload(
         if (!catechumenProfileId) {
           return res.status(403).json({ error: 'Responsáveis devem selecionar um catequizando da família.' });
         }
-        const guardian = await entities.GuardianProfile.findUnique({
-          where: { userId: user.id },
-          select: { householdId: true },
-        });
         const catechumen = await entities.CatechumenProfile.findUnique({
           where: { id: catechumenProfileId },
           select: { householdId: true },
         });
+        const guardian = catechumen?.householdId
+          ? await entities.GuardianProfile.findFirst({
+              where: { userId: user.id, householdId: catechumen.householdId },
+              select: { householdId: true },
+            })
+          : null;
         if (!guardian?.householdId || catechumen?.householdId !== guardian.householdId) {
           return res.status(403).json({ error: 'Só pode enviar documentos para catequizandos da sua família.' });
         }
