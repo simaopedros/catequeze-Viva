@@ -1,6 +1,6 @@
 import { ChevronDown, LogOut, User } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
-import { signOut } from '../client/analytics/himetrica';
+import { signOut } from '../client/auth/signOut';
 import { Link as WaspRouterLink } from 'wasp/client/router';
 import { type User as UserEntity } from 'wasp/entities';
 import { userMenuItems } from './constants';

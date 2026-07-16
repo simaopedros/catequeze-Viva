@@ -19,6 +19,7 @@ function clearClientSessionState(): void {
   }
 }
 
+/** Clear local workspace session keys then Wasp logout. */
 export async function signOut(): Promise<void> {
   clearClientSessionState();
   await logout();

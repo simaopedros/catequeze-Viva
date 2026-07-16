@@ -4,18 +4,6 @@ import starlightBlog from "starlight-blog";
 
 import tailwind from "@astrojs/tailwind";
 
-const himetricaApiKey = process.env.PUBLIC_HIMETRICA_API_KEY;
-const himetricaScripts = himetricaApiKey
-  ? ['tracker', 'vitals', 'errors'].map((name) => ({
-      tag: 'script',
-      attrs: {
-        defer: true,
-        src: `https://cdn.himetrica.com/${name}.js`,
-        'data-api-key': himetricaApiKey,
-      },
-    }))
-  : [];
-
 // https://astro.build/config
 export default defineConfig({
   site: "https://your-site.com",
@@ -29,9 +17,7 @@ export default defineConfig({
         src: "/src/assets/logo.webp",
         alt: "Your SaaS",
       },
-      head: [
-        ...himetricaScripts,
-      ],
+      head: [],
       editLink: {
         baseUrl: "https://github.com/<your-repo>",
       },

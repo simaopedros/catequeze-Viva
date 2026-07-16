@@ -23,14 +23,9 @@ export type EventProperties = Record<
   string | number | boolean | null | undefined
 >;
 
-type HimetricaClient = {
-  track?: (event: string, properties?: EventProperties) => void;
-};
-
 declare global {
   interface Window {
     dataLayer: unknown[];
-    himetrica?: HimetricaClient;
     plausible?: (event: string, options?: { props?: EventProperties }) => void;
   }
 }
@@ -64,7 +59,7 @@ const ONBOARDING_COMPLETED_KEY = "cv-onboarding-completed-sent";
 /**
  * Send one privacy-safe event to every configured browser analytics provider.
  *
- * Path A only: dataLayer / Himetrica / Plausible. Does NOT write PricingEvent
+ * Path A only: dataLayer / Plausible. Does NOT write PricingEvent
  * or update the admin funnel dashboard (that uses payment trackPricingEvent).
  */
 export function trackMarketingEvent(
@@ -78,11 +73,6 @@ export function trackMarketingEvent(
 
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({ event, ...safeProperties });
-  try {
-    window.himetrica?.track?.(event, safeProperties);
-  } catch {
-    /* ignore provider errors */
-  }
   try {
     // Only call when Plausible script exposed the tracker (avoids bad CORS stubs).
     if (typeof window.plausible === "function") {

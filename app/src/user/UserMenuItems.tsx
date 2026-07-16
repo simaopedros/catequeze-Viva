@@ -1,6 +1,6 @@
 import { LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { signOut } from '../client/analytics/himetrica';
+import { signOut } from '../client/auth/signOut';
 import { Link as WaspRouterLink } from 'wasp/client/router';
 import { type User } from 'wasp/entities';
 import { userMenuItems } from './constants';

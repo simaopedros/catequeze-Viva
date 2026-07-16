@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { login } from "wasp/client/auth";
 import { googleSignInUrl } from "wasp/client/auth";
-import { signOut } from "../client/analytics/himetrica";
+import { signOut } from "../client/auth/signOut";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "../client/components/ui/button";

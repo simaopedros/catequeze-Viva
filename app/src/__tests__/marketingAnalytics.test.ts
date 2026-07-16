@@ -18,7 +18,6 @@ describe("marketing funnel Path A", () => {
     localStorage.clear();
     sessionStorage.clear();
     window.dataLayer = [];
-    window.himetrica = { track: vi.fn() };
     window.plausible = vi.fn();
   });
 
@@ -40,17 +39,13 @@ describe("marketing funnel Path A", () => {
     expect(marketingLandingFromPath("/app")).toBeNull();
   });
 
-  it("pushes to dataLayer, himetrica and plausible", () => {
+  it("pushes to dataLayer and plausible", () => {
     trackMarketingEvent("primary_cta_clicked", {
       landing: "general",
       placement: "hero",
     });
     expect(window.dataLayer.some((e: any) => e.event === "primary_cta_clicked")).toBe(
       true,
-    );
-    expect(window.himetrica?.track).toHaveBeenCalledWith(
-      "primary_cta_clicked",
-      expect.objectContaining({ landing: "general" }),
     );
     expect(window.plausible).toHaveBeenCalled();
   });
