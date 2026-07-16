@@ -185,7 +185,8 @@ export const NAV_SECTIONS: NavSectionConfig[] = [
     section: 'bottom',
     items: [
       { to: '/app/settings', labelKey: 'settings', iconKey: 'settings', roles: ALL_ROLES },
-      { to: '/app/billing', labelKey: 'billing', iconKey: 'billing', roles: CATECHIST_ROLES },
+      // Only coordinators / personal owners manage payment — not invited catechists.
+      { to: '/app/billing', labelKey: 'billing', iconKey: 'billing', roles: STAFF_ROLES },
       { to: '/app/consents', labelKey: 'consents', iconKey: 'consents', roles: ['GUARDIAN'] },
       {
         to: '/app/catechetical-years',

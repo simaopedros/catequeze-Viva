@@ -53,9 +53,10 @@ describe('Navigation Role Filtering', () => {
       expect(paths).toContain('/app/team');
     });
 
-    it('does NOT see admin or parishes', () => {
+    it('does NOT see admin, parishes, or billing', () => {
       expect(paths).not.toContain('/admin');
       expect(paths).not.toContain('/app/parishes');
+      expect(paths).not.toContain('/app/billing');
     });
 
     it('sees bible, directory, catechism', () => {
@@ -74,8 +75,9 @@ describe('Navigation Role Filtering', () => {
       expect(paths).toContain('/app/families');
     });
 
-    it('does NOT see admin', () => {
+    it('does NOT see admin or billing', () => {
       expect(paths).not.toContain('/admin');
+      expect(paths).not.toContain('/app/billing');
     });
   });
 
@@ -223,6 +225,16 @@ describe('getVisibleNavigation SSOT', () => {
     expect(nav.sheetItems.map((i) => i.iconKey)).toContain('settings');
     expect(nav.sheetItems.map((i) => i.iconKey)).toContain('catechumens');
     expect(nav.sheetItems.map((i) => i.iconKey)).toContain('documents');
+    // Invited catechists do not manage payment
+    expect(nav.sheetItems.map((i) => i.iconKey)).not.toContain('billing');
+  });
+
+  it('parish coordinator sheet includes billing', () => {
+    const nav = getVisibleNavigation({
+      role: 'PARISH_COORDINATOR',
+      isAdmin: false,
+      workspaceType: 'PARISH',
+    });
     expect(nav.sheetItems.map((i) => i.iconKey)).toContain('billing');
   });
 

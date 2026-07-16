@@ -52,6 +52,7 @@ import {
 } from "../../shared/planLimits";
 import { PlanLimitBanner } from "../components/PlanLimitBanner";
 import { handlePlanLimitError } from "../lib/planLimitToast";
+import { canManageWorkspaceBilling } from "../../shared/billingAccess";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
 import { toast } from "../../client/hooks/use-toast";
 import SendAnnouncementButton from "../components/SendAnnouncementButton";
@@ -83,7 +84,7 @@ export default function ClassDetailPage() {
     refetch: refetchClass,
   } = useQuery(getClassDetails, { id: id! });
   const { data: user } = useAuth();
-  const { userRole, parishId } = useUserContext();
+  const { userRole, parishId, isAdmin } = useUserContext();
   const [tab, setTab] = useDetailTab(CLASS_DETAIL_TABS, "inscritos");
 
   const isCoordinator = [
@@ -107,6 +108,10 @@ export default function ClassDetailPage() {
     { enabled: tab === "inscritos" && canEnroll },
   );
   const { availableParishes, isPersonal } = useActiveParish();
+  const canManageBilling = canManageWorkspaceBilling(userRole, {
+    isPersonalOwner: isPersonal,
+    isAdmin,
+  });
   const { data: parishCatechists = [] } = useQuery(
     listParishCatechists,
     { parishId: cls?.parish?.id || "" },
@@ -839,6 +844,7 @@ export default function ClassDetailPage() {
                   userPlan={effectivePlan}
                   isParishManaged={isParishManaged}
                   isPersonalWorkspace={isPersonal}
+                  canManageBilling={canManageBilling}
                 />
               </div>
             ) : (

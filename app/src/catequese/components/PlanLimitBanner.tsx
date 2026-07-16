@@ -32,6 +32,8 @@ interface PlanLimitBannerProps {
   /** Compact inline pill for headers and dense toolbars. */
   compact?: boolean;
   isPersonalWorkspace?: boolean;
+  /** When false (invited catechist/assistant), hide upgrade CTAs. */
+  canManageBilling?: boolean;
 }
 
 const LIMIT_LABEL_MAP: Record<string, string> = {
@@ -52,6 +54,7 @@ export function PlanLimitBanner({
   variant: variantOverride,
   compact,
   isPersonalWorkspace,
+  canManageBilling = true,
 }: PlanLimitBannerProps) {
   const { t } = useTranslation("billing");
   const plan = userPlan || "catechist_free";
@@ -81,9 +84,12 @@ export function PlanLimitBanner({
     reason: journeyReason,
   });
 
+  // Invited collaborators never get "upgrade your plan" — contact coordinator.
+  const forceManagedNotice = !canManageBilling;
+
   const variant: PlanLimitVariant =
     variantOverride ||
-    (isParishManaged
+    (isParishManaged || forceManagedNotice
       ? "managed_workspace_notice"
       : type === "ai_credits"
         ? "credits_exhausted"
@@ -116,7 +122,11 @@ export function PlanLimitBanner({
     defaultValue: t("upgrade_journey.generic.cta"),
   });
 
-  const showAction = !isParishManaged && variant !== "managed_workspace_notice";
+  const showAction =
+    canManageBilling &&
+    !isParishManaged &&
+    !forceManagedNotice &&
+    variant !== "managed_workspace_notice";
   const Icon = variant === "managed_workspace_notice" ? Building2 : Info;
 
   if (compact) {

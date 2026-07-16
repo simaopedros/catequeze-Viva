@@ -42,6 +42,7 @@ import { ConfirmDialog } from "../../client/components/ConfirmDialog";
 import { toast } from "../../client/hooks/use-toast";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
+import { canManageWorkspaceBilling } from "../../shared/billingAccess";
 import {
   PLANS,
   type PlanId,
@@ -240,8 +241,20 @@ export default function BillingPage() {
     allPlans.find((p) => p.planId === planId) || allPlans[0];
 
   const { data: user } = useAuth();
-  const { parishId } = useUserContext();
-  const { isPersonal, workspaceId } = useActiveWorkspace();
+  const { parishId, userRole, isAdmin } = useUserContext();
+  const { isPersonal, workspaceId, workspace } = useActiveWorkspace();
+  const canManageBilling = canManageWorkspaceBilling(
+    workspace?.role || userRole,
+    { isPersonalOwner: isPersonal, isAdmin },
+  );
+
+  // Collaborators are not payers — keep them out of the billing UI.
+  useEffect(() => {
+    if (!canManageBilling) {
+      navigate("/app", { replace: true });
+    }
+  }, [canManageBilling, navigate]);
+
   // Scope usage to the active workspace so plan quotas match create-class limits
   // (getDashboardStats without parishId aggregates every parish the user can access).
   const usageParishId = parishId || workspaceId || undefined;

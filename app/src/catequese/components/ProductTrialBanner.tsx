@@ -14,6 +14,8 @@ import {
 } from "../../shared/pricing";
 import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
+import { useUserContext } from "../../client/hooks/useUserContext";
+import { canManageWorkspaceBilling } from "../../shared/billingAccess";
 import { Button } from "../../client/components/ui/button";
 import { cn } from "../../client/utils";
 import {
@@ -36,6 +38,7 @@ export function ProductTrialBanner() {
   const { t, i18n } = useTranslation("billing");
   const { data: user } = useAuth();
   const { isPersonal, workspace, workspacePlan } = useActiveWorkspace();
+  const { userRole, isAdmin } = useUserContext();
   const { activeParishId } = useActiveParish();
   const location = useLocation();
   const [softDismissed, setSoftDismissed] = useState(() => {
@@ -46,11 +49,18 @@ export function ProductTrialBanner() {
     }
   });
 
+  const isBillingManager = canManageWorkspaceBilling(
+    workspace?.role || userRole,
+    { isPersonalOwner: isPersonal, isAdmin },
+  );
+
   const onBillingOrOnboarding =
     location.pathname.startsWith("/app/billing") ||
     location.pathname.startsWith("/app/onboarding");
 
-  const personalTrial = isPersonal && isOnProductTrial(user);
+  // Invited catechists/auxiliars must never see trial/upgrade chrome.
+  const personalTrial =
+    isBillingManager && isPersonal && isOnProductTrial(user);
   const instBilling =
     !isPersonal && workspace?.billingStatus
       ? {
@@ -62,7 +72,7 @@ export function ProductTrialBanner() {
         }
       : null;
   const institutionalTrial = Boolean(
-    instBilling && isOnInstitutionalTrial(instBilling),
+    isBillingManager && instBilling && isOnInstitutionalTrial(instBilling),
   );
   const onTrial = personalTrial || institutionalTrial;
 

@@ -25,6 +25,7 @@ import { SkeletonCard } from "../../client/components/Skeletons";
 import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { getPlanLimits } from "../../shared/planLimits";
+import { canManageWorkspaceBilling } from "../../shared/billingAccess";
 import { PlanLimitBanner } from "../components/PlanLimitBanner";
 import { useClassFilters, useClassStatusMap } from "../../i18n/useLabels";
 import { useLocale } from "../../i18n/useLocale";
@@ -99,8 +100,12 @@ export default function ClassesPage() {
   const { data: classes, isLoading } = useQuery(listClasses, {
     workspaceId,
   } as any);
-  const { userRole } = useUserContext();
+  const { userRole, isAdmin } = useUserContext();
   const canCreateClass = userRole !== "ASSISTANT_CATECHIST";
+  const canManageBilling = canManageWorkspaceBilling(userRole, {
+    isPersonalOwner: isPersonal,
+    isAdmin,
+  });
   const [filter, setFilter] = useState("");
   const [search, setSearch] = useState("");
   const [view, setView] = useState<"grid" | "list">("grid");
@@ -232,6 +237,7 @@ export default function ClassesPage() {
               userPlan={effectivePlan}
               isParishManaged={!isPersonal}
               isPersonalWorkspace={isPersonal}
+              canManageBilling={canManageBilling}
               compact
             />
           )}
@@ -291,6 +297,7 @@ export default function ClassesPage() {
                   userPlan={effectivePlan}
                   isParishManaged={!isPersonal}
                   isPersonalWorkspace={isPersonal}
+                  canManageBilling={canManageBilling}
                 />
               ) : canCreateClass ? (
                 <div className="flex flex-wrap gap-3">

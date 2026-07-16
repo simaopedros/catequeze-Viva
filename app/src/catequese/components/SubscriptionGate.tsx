@@ -7,7 +7,9 @@ import {
   hasPersonalAccess,
   isOnProductTrial,
 } from "../../shared/pricing";
+import { canManageWorkspaceBilling } from "../../shared/billingAccess";
 import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
+import { useUserContext } from "../../client/hooks/useUserContext";
 import { buildBillingJourneyHref } from "../lib/upgradeJourney";
 import { PaymentPlanId } from "../../payment/plans";
 
@@ -26,9 +28,9 @@ interface WorkspaceBilling {
 
 /**
  * Access for staff/pastoral workspaces.
- * Personal: Single (paid) or product trial.
- * Institutional parish: TenantBilling Single, Unlimited, or active product trial
- * (not only Unlimited — family invites and pastoral tools require this).
+ * Personal owners: Single (paid) or product trial.
+ * Institutional: TenantBilling or effective plan.
+ * Invited catechists/auxiliars: never pay — inherit host workspace access.
  */
 function workspaceHasAccess(
   isPersonal: boolean,
@@ -42,7 +44,14 @@ function workspaceHasAccess(
     | undefined,
   billing: WorkspaceBilling | null | undefined,
   parishType?: string | null,
+  opts?: { isBillingManager?: boolean },
 ): boolean {
+  // Collaborators (lead/assistant, etc.) are guests of the workspace plan —
+  // do not gate them on their own User.subscription*.
+  if (opts?.isBillingManager === false) {
+    return true;
+  }
+
   if (isPersonal) {
     return hasPersonalAccess(user) || isOnProductTrial(user);
   }
@@ -54,7 +63,6 @@ function workspaceHasAccess(
     });
     if (planId === "single" || planId === "unlimited") return true;
   }
-  // Fallback through the shared effective-plan resolver (handles free sentinel trial).
   const effective = getWorkspaceEffectivePlan({
     user,
     parishType: parishType || "PARISH",
@@ -73,12 +81,18 @@ function workspaceHasAccess(
 export function SubscriptionGate({ children }: { children: ReactNode }) {
   const { data: user } = useAuth();
   const { isPersonal, workspace } = useActiveWorkspace();
+  const { userRole, isAdmin } = useUserContext();
   const location = useLocation();
   const navigate = useNavigate();
   const [checked, setChecked] = useState(false);
 
   const alwaysAccessible = ALWAYS_ACCESSIBLE.some((p) =>
     location.pathname.startsWith(p),
+  );
+
+  const isBillingManager = canManageWorkspaceBilling(
+    workspace?.role || userRole,
+    { isPersonalOwner: isPersonal, isAdmin },
   );
 
   const workspaceBilling: WorkspaceBilling | null = workspace
@@ -95,6 +109,7 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
     user,
     workspaceBilling,
     workspace?.type ?? (isPersonal ? "PERSONAL" : "PARISH"),
+    { isBillingManager },
   );
 
   useEffect(() => {
@@ -103,7 +118,8 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
       setChecked(true);
       return;
     }
-    if (!hasAccess) {
+    // Never send invited collaborators to billing — they are not payers.
+    if (!hasAccess && isBillingManager) {
       navigate(
         buildBillingJourneyHref({
           planId: isPersonal ? PaymentPlanId.Single : PaymentPlanId.Unlimited,
@@ -116,10 +132,17 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
       return;
     }
     setChecked(true);
-  }, [user, hasAccess, alwaysAccessible, navigate, isPersonal]);
+  }, [
+    user,
+    hasAccess,
+    alwaysAccessible,
+    navigate,
+    isPersonal,
+    isBillingManager,
+  ]);
 
   if (user === undefined) return null;
-  if (!alwaysAccessible && !hasAccess) return null;
+  if (!alwaysAccessible && !hasAccess && isBillingManager) return null;
   if (!checked) return null;
 
   return <>{children}</>;
