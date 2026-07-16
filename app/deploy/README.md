@@ -31,4 +31,21 @@ deploy/
 | `DATABASE_URL` | Neon | Neon (mesmo) |
 | `COOKIE_DOMAIN` | `.catechis.app` | idem |
 
+### Segredos
+
+- Use apenas **placeholders** nos ficheiros `*.example`. O `.env.server` real deve existir **só no VPS** (ou num secret manager).
+- Se credenciais reais já foram commitadas num exemplo, **rode as chaves** (OpenAI, DB, JWT, email, Stripe, storage, OAuth) e considere limpeza do histórico Git.
+
+### Caddy e `/api/*`
+
+Os domínios SPA (`catechis.app`, `familia.catechis.app`) **devem** ter `handle /api/*` a encaminhar para `server:3001` **antes** do fallback da SPA. Sem isto, `POST /api/chat-stream` devolve `index.html` e o Assistente Teológico falha com resposta vazia.
+
+Após alterar o Caddyfile em produção:
+
+```bash
+docker compose -f docker-compose.yml up -d --force-recreate caddy
+```
+
+O `scripts/deploy.sh` recusa deploy se o Caddyfile ativo não contiver `handle /api/*`.
+
 Ver também: `docs/PROVISIONING.md`, `docs/HOMOLOG.md`, `docs/BACKUP.md`

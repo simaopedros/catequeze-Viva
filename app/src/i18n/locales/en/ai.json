@@ -210,6 +210,7 @@
     "theological_assistant": "Theological Assistant",
     "catholic_ai": "Catholic editorial assistance • Catequese Viva",
     "empty_response": "Empty editorial assistance response.",
+    "infra_error": "Infrastructure error: the chat did not receive an SSE stream. The /api/* route may not be proxied to the server. Contact support if this persists.",
     "view_history": "View chat history",
     "open_copilot": "Open editorial assistance"
   }

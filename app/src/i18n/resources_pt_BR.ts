@@ -371,6 +371,7 @@ export const ai_pt_BR = {
       "theological_assistant": "Assistente Teológico",
       "catholic_ai": "Assistência católica • Catequese Viva",
       "empty_response": "Resposta vazia da assistência editorial.",
+      "infra_error": "Erro de infraestrutura: o chat não recebeu um stream SSE. A rota /api/* pode não estar a ser encaminhada para o servidor. Contacte o suporte se o problema continuar.",
       "view_history": "Ver histórico de conversas",
       "open_copilot": "Abrir assistência editorial"
     }

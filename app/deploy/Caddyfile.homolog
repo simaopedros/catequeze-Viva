@@ -13,6 +13,8 @@
     header_up X-Real-IP {remote_host}
     header_up X-Forwarded-For {remote_host}
     header_up X-Forwarded-Proto https
+    # Flush immediately so Server-Sent Events reach the browser as they are written.
+    flush_interval -1
   }
 }
 

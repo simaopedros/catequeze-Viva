@@ -23,6 +23,10 @@ import {
   AppEyebrow,
   AppGoldRule,
 } from "../../client/components/brand/AppChrome";
+import {
+  isInfrastructureChatError,
+  validateChatStreamResponse,
+} from "../lib/chatStreamClient";
 
 interface Message {
   role: "user" | "assistant";
@@ -111,6 +115,18 @@ export function AIHelperWidget() {
         throw new Error(backendError || `HTTP ${response.status}`);
       }
 
+      // Reject SPA HTML / unexpected JSON that some reverse proxies return as 200.
+      const precheck = validateChatStreamResponse(response);
+      if (!precheck.ok) {
+        throw new Error(
+          precheck.kind === "html" ||
+            precheck.kind === "json" ||
+            precheck.kind === "content_type"
+            ? ta("widget.infra_error")
+            : precheck.message,
+        );
+      }
+
       const reader = response.body?.getReader();
       if (!reader) throw new Error(ta("widget.error_streaming"));
 
@@ -176,6 +192,9 @@ export function AIHelperWidget() {
       const isConfigError =
         e?.message?.includes("IA não configurado") ||
         e?.message?.includes("assistência editorial não configurado");
+      const isInfraError =
+        isInfrastructureChatError(e?.message) ||
+        e?.message === ta("widget.infra_error");
       const errorMsg = isCreditError
         ? creditsLeft != null && creditsLeft <= 0
           ? ta("widget.no_credits")
@@ -184,11 +203,13 @@ export function AIHelperWidget() {
           ? e.message
           : isConfigError
             ? e.message
-            : e?.message?.includes("Plano")
-              ? e.message.includes("/app/billing")
-                ? e.message
-                : ta("widget.upgrade_required")
-              : ta("widget.generic_error");
+            : isInfraError
+              ? ta("widget.infra_error")
+              : e?.message?.includes("Plano")
+                ? e.message.includes("/app/billing")
+                  ? e.message
+                  : ta("widget.upgrade_required")
+                : ta("widget.generic_error");
 
       // Show contextual notice instead of raw error
       setMessages((prev) => {

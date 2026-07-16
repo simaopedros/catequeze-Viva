@@ -100,6 +100,32 @@ export async function chatStreamHandler(req: Request, res: Response, context: an
     }
   }
 
+  // Cache lookup before opening the stream (no AI provider required for hits).
+  const cached = !conversationId
+    ? await getCachedResponse(context.entities, message)
+    : null;
+
+  // Validate AI provider/model BEFORE opening the SSE stream so misconfiguration
+  // returns a clear HTTP 503 JSON body instead of an empty 200 event-stream.
+  let client: ReturnType<typeof createAiClient> | null = null;
+  let model: string | null = null;
+  if (!cached) {
+    try {
+      ({ client, model } = getAiClientOrThrow());
+    } catch (err: any) {
+      const status =
+        typeof err?.statusCode === 'number'
+          ? err.statusCode
+          : typeof err?.status === 'number'
+            ? err.status
+            : 503;
+      res.status(status).json({
+        error: err?.message || 'Serviço de assistência editorial não configurado.',
+      });
+      return;
+    }
+  }
+
   // ── All validations passed — open SSE stream ──
 
   // Set SSE headers
@@ -111,8 +137,6 @@ export async function chatStreamHandler(req: Request, res: Response, context: an
   });
 
   try {
-    // Check cache (skip if continuing a conversation)
-    const cached = !conversationId ? await getCachedResponse(context.entities, message) : null;
     if (cached) {
       res.write(`data: ${JSON.stringify({ chunk: cached })}\n\n`);
       res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
@@ -120,8 +144,7 @@ export async function chatStreamHandler(req: Request, res: Response, context: an
       return;
     }
 
-    const { client, model } = getAiClientOrThrow();
-    const stream = await aiCompletionStream(client, model, {
+    const stream = await aiCompletionStream(client!, model!, {
       messages: [
         { role: 'system', content: CHAT_SYSTEM_PROMPT },
         { role: 'user', content: message },

@@ -239,19 +239,27 @@ export default function BillingPage() {
   const getPlanDef = (planId: PaymentPlanId): PlanCard =>
     allPlans.find((p) => p.planId === planId) || allPlans[0];
 
+  const { data: user } = useAuth();
+  const { parishId } = useUserContext();
+  const { isPersonal, workspaceId } = useActiveWorkspace();
+  // Scope usage to the active workspace so plan quotas match create-class limits
+  // (getDashboardStats without parishId aggregates every parish the user can access).
+  const usageParishId = parishId || workspaceId || undefined;
+
   const {
     data: stats,
     isLoading: loading,
     refetch: refetchStats,
-  } = useQuery(getDashboardStats);
+  } = useQuery(
+    getDashboardStats,
+    { parishId: usageParishId },
+    { enabled: Boolean(usageParishId) },
+  );
   const { data: aiCredits, refetch: refetchCredits } =
     useQuery(getAiCreditsStatus);
   const { data: subscriptionDetails, refetch: refetchSubscription } = useQuery(
     getSubscriptionDetails,
   );
-  const { data: user } = useAuth();
-  const { parishId } = useUserContext();
-  const { isPersonal } = useActiveWorkspace();
   const { data: parish, isLoading: loadingParish } = useQuery(
     getParishById,
     { id: parishId },
