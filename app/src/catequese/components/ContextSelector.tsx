@@ -110,7 +110,12 @@ export function ContextSelector() {
           <Button
             variant="ghost"
             size="sm"
-            className="flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-[#071A2D] border border-input rounded-sm px-2.5 sm:px-3 py-1.5 h-9 max-w-[160px] sm:max-w-[240px] xl:max-w-[280px]"
+            className="relative flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-[#071A2D] border border-input rounded-sm px-2.5 sm:px-3 py-1.5 h-9 max-w-[160px] sm:max-w-[240px] xl:max-w-[280px]"
+            aria-label={
+              pendingCount > 0
+                ? tc("pending_invite.banner_many", { count: pendingCount })
+                : undefined
+            }
           >
             {wsIcon(workspaceType || "PERSONAL")}
             <span
@@ -126,6 +131,15 @@ export function ContextSelector() {
                   {currentRoleLabel}
                 </span>
               </>
+            )}
+            {pendingCount > 0 && (
+              <span
+                data-testid="workspace-pending-invite-badge"
+                className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-[#D39A2B] px-1.5 text-[11px] font-bold leading-none text-[#071A2D]"
+                title={tc("pending_invite.view_cta")}
+              >
+                {pendingCount > 9 ? "9+" : pendingCount}
+              </span>
             )}
             <ChevronDown className="h-3.5 w-3.5 opacity-60 shrink-0" />
           </Button>
@@ -233,26 +247,22 @@ export function ContextSelector() {
             </div>
           )}
           <div className="border-t mt-2 pt-2 space-y-0.5">
-            {(hasPendingInvitations || pendingCount > 0) && (
+            {pendingCount > 0 && (
               <button
+                type="button"
                 onClick={() => navigate("/app/select-workspace")}
-                className="w-full flex items-center gap-2 text-xs font-medium text-[#071A2D] px-2 py-1.5 rounded-sm hover:bg-[#D39A2B]/15 transition-colors text-left"
+                className="w-full flex items-center gap-2 text-xs font-semibold text-[#071A2D] px-2 py-2 rounded-sm bg-[#D39A2B]/12 hover:bg-[#D39A2B]/20 border border-[#D39A2B]/35 transition-colors text-left"
                 data-testid="context-pending-invites"
               >
                 <Mail className="h-3.5 w-3.5 shrink-0" />
-                <span className="flex-1">
-                  {pendingCount > 1
-                    ? tc("pending_invite.banner_many", { count: pendingCount })
-                    : tc("pending_invite.view_cta")}
+                <span className="flex-1 min-w-0">
+                  {pendingCount === 1
+                    ? tc("pending_invite.view_cta")
+                    : tc("pending_invite.banner_many", { count: pendingCount })}
                 </span>
-                {pendingCount > 0 && (
-                  <Badge
-                    variant="outline"
-                    className="h-5 min-w-5 justify-center border-[#D39A2B]/50 bg-[#D39A2B]/15 text-overline text-[#071A2D]"
-                  >
-                    {pendingCount}
-                  </Badge>
-                )}
+                <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-[#D39A2B] px-1.5 text-[11px] font-bold text-[#071A2D]">
+                  {pendingCount > 9 ? "9+" : pendingCount}
+                </span>
               </button>
             )}
             <button
