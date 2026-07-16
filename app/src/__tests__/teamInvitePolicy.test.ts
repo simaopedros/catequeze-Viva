@@ -37,6 +37,14 @@ describe('getAssignableRoles matrix', () => {
     expect(canInviteTeamRoles('ASSISTANT_CATECHIST')).toBe(false);
   });
 
+  it('personal workspace owner may invite catechist and assistant (trial/single)', () => {
+    const roles = getAssignableRoles('PERSONAL_OWNER', false);
+    expect(roles).toContain('LEAD_CATECHIST');
+    expect(roles).toContain('ASSISTANT_CATECHIST');
+    expect(roles).toContain('GUARDIAN');
+    expect(canInviteTeamRoles('PERSONAL_OWNER')).toBe(true);
+  });
+
   it('user without inviter role has empty assignable list', () => {
     expect(getAssignableRoles('GUARDIAN', false)).toEqual([]);
     expect(getAssignableRoles(null, false)).toEqual([]);

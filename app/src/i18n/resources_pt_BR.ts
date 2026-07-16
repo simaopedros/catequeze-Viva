@@ -1795,6 +1795,7 @@ export const common_pt_BR = {
       "status_pending": "Pendente",
       "status_expired": "Expirado",
       "select_class": "Selecione a turma",
+      "select_class_optional": "Turma (opcional)",
       "class_required": "Informe a turma ao convidar catequistas ou auxiliares.",
       "select_workspace": "Selecione um espaço"
     }

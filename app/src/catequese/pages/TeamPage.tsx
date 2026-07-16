@@ -135,7 +135,12 @@ export default function TeamPage() {
 
   const handleInvite = async () => {
     if (!activeParishId || !inviteEmail.trim() || !effectiveInviteRole) return;
-    if (needsClass && !inviteClassId && permissions?.actorRole === "LEAD_CATECHIST") {
+    // Only institutional lead catechists must pick a class; personal owners may invite freely.
+    if (
+      needsClass &&
+      !inviteClassId &&
+      permissions?.actorRole === "LEAD_CATECHIST"
+    ) {
       setInviteMsg(t("team.class_required"));
       setInviteMsgIsError(true);
       return;
@@ -322,13 +327,20 @@ export default function TeamPage() {
                   </option>
                 ))}
               </select>
-              {needsClass && (
+              {needsClass &&
+                (permissions?.actorRole === "LEAD_CATECHIST" ||
+                  (classes as any[]).length > 0) && (
                 <select
                   value={inviteClassId}
                   onChange={(e) => setInviteClassId(e.target.value)}
                   className="h-9 rounded-sm border border-input bg-background px-3 text-sm min-w-[160px]"
+                  required={permissions?.actorRole === "LEAD_CATECHIST"}
                 >
-                  <option value="">{t("team.select_class")}</option>
+                  <option value="">
+                    {permissions?.actorRole === "LEAD_CATECHIST"
+                      ? t("team.select_class")
+                      : t("team.select_class_optional")}
+                  </option>
                   {(classes as any[]).map((c: any) => (
                     <option key={c.id} value={c.id}>
                       {c.name}

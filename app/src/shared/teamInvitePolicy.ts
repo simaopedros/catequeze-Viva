@@ -77,7 +77,16 @@ export const ROLE_ASSIGNMENT_HIERARCHY: Record<string, string[]> = {
   ],
   LEAD_CATECHIST: ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'GUARDIAN', 'CATECHUMEN'],
   ASSISTANT_CATECHIST: ['GUARDIAN', 'CATECHUMEN'],
-  PERSONAL_OWNER: ['GUARDIAN', 'CATECHUMEN'],
+  // Personal workspace owner (single/trial catechist) may invite team + family.
+  // Subscription tier does not restrict invite roles — plan limits apply elsewhere.
+  PERSONAL_OWNER: [
+    'LEAD_CATECHIST',
+    'ASSISTANT_CATECHIST',
+    'GUARDIAN',
+    'CATECHUMEN',
+    'CONTENT_REVIEWER',
+    'PASTORAL_VIEWER',
+  ],
 };
 
 export type InviteEmailDelivery = 'sent' | 'not_configured' | 'failed';
@@ -153,6 +162,22 @@ export function canInviteTeamRoles(actorRole: string | null | undefined): boolea
     actorRole === 'DIOCESE_ADMIN' ||
     actorRole === 'PARISH_COORDINATOR' ||
     actorRole === 'COMMUNITY_COORDINATOR' ||
-    actorRole === 'LEAD_CATECHIST'
+    actorRole === 'LEAD_CATECHIST' ||
+    actorRole === 'PERSONAL_OWNER'
+  );
+}
+
+/** Roles that may attach invites to any class in the workspace (not only classes they lead). */
+export function canInviteToAnyClassInWorkspace(
+  actorRole: string | null | undefined,
+  isPlatformAdmin: boolean,
+): boolean {
+  if (isPlatformAdmin) return true;
+  return (
+    actorRole === 'SUPER_ADMIN' ||
+    actorRole === 'DIOCESE_ADMIN' ||
+    actorRole === 'PARISH_COORDINATOR' ||
+    actorRole === 'COMMUNITY_COORDINATOR' ||
+    actorRole === 'PERSONAL_OWNER'
   );
 }

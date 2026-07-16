@@ -1795,6 +1795,7 @@ export const common_es = {
       "status_pending": "Pendiente",
       "status_expired": "Expirada",
       "select_class": "Seleccione el grupo",
+      "select_class_optional": "Grupo (opcional)",
       "class_required": "Indique el grupo al invitar catequistas o auxiliares.",
       "select_workspace": "Seleccione un espacio"
     }

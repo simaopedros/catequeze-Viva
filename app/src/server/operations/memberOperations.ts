@@ -14,6 +14,7 @@ import {
   ROLE_ASSIGNMENT_HIERARCHY,
   getAssignableRoles,
   canViewTeamArea,
+  canInviteToAnyClassInWorkspace,
   normalizeInviteEmail,
   resolveClassAssignmentRole,
   TEAM_ROLES_NEEDING_CLASS_FOR_LEAD,
@@ -260,6 +261,7 @@ export const inviteUserToParish = async (
     args.role === 'LEAD_CATECHIST' || args.role === 'ASSISTANT_CATECHIST';
 
   if (inviterRole === 'LEAD_CATECHIST' && isTeamRole) {
+    // Lead catechist (institutional) may only invite team into classes they lead.
     if (!classId) {
       throw new HttpError(
         400,
@@ -283,24 +285,32 @@ export const inviteUserToParish = async (
     if (!classData || classData.parishId !== args.parishId) {
       throw new HttpError(400, 'A turma não pertence a esta paróquia.');
     }
-    // Coordinators may invite into any class of the parish
-    if (
-      inviterRole === 'SUPER_ADMIN' ||
-      inviterRole === 'DIOCESE_ADMIN' ||
-      inviterRole === 'PARISH_COORDINATOR' ||
-      inviterRole === 'COMMUNITY_COORDINATOR' ||
-      context.user.isAdmin
-    ) {
+    // Coordinators + personal workspace owner may invite into any class of the workspace
+    if (canInviteToAnyClassInWorkspace(inviterRole, context.user.isAdmin)) {
       className = classData.name;
       classAssignmentRole = resolveClassAssignmentRole({
         parishRole: args.role,
         explicit: args.classAssignmentRole || null,
       });
     } else {
-      throw new HttpError(403, 'Sem permissão para convidar para esta turma.');
+      // Lead of this specific class (e.g. multi-role edge cases)
+      try {
+        const asLead = await assertLeadOfClass(
+          context,
+          classId,
+          context.user.id,
+        );
+        className = asLead.name;
+        classAssignmentRole = resolveClassAssignmentRole({
+          parishRole: args.role,
+          explicit: args.classAssignmentRole || null,
+        });
+      } catch {
+        throw new HttpError(403, 'Sem permissão para convidar para esta turma.');
+      }
     }
   } else if (args.role === 'ASSISTANT_CATECHIST' && !classId) {
-    // Assistant without class is allowed for coordinators (general membership)
+    // Without class: general parish membership (coordinator / personal owner)
     classAssignmentRole = null;
   }
 

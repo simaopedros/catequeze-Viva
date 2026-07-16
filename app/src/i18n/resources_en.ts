@@ -1795,6 +1795,7 @@ export const common_en = {
       "status_pending": "Pending",
       "status_expired": "Expired",
       "select_class": "Select class",
+      "select_class_optional": "Class (optional)",
       "class_required": "Select a class when inviting catechists or assistants.",
       "select_workspace": "Select a workspace"
     }
