@@ -499,6 +499,31 @@
   "install_button": "Instalar",
   "offline_title": "Sin conexión",
   "offline_description": "Estás sin conexión. Verifica tu conexión e inténtalo de nuevo.",
-  "try_again": "Intentar de nuevo"
+  "try_again": "Intentar de nuevo",
+  "team": {
+    "title": "Equipo",
+    "subtitle": "{{members}} miembros activos · {{pending}} invitaciones pendientes",
+    "invite_member": "Invitar miembro del equipo",
+    "invite_sent": "Invitación enviada por correo.",
+    "invite_saved": "Invitación guardada.",
+    "email_not_configured": "Invitación guardada, pero el envío de correo no está configurado. Copia el enlace abajo.",
+    "email_failed": "Invitación guardada, pero el correo falló. Copia el enlace abajo para compartir.",
+    "link_copied": "¡Enlace copiado!",
+    "copy_link": "Copiar enlace",
+    "resend": "Reenviar",
+    "cancel_invite": "Cancelar invitación",
+    "cancel_invite_confirm": "¿Cancelar esta invitación pendiente? La persona ya no podrá aceptarla.",
+    "invite_cancelled": "Invitación cancelada.",
+    "pending_invites": "Invitaciones pendientes",
+    "no_pending": "No hay invitaciones de equipo pendientes.",
+    "active_members": "Miembros activos",
+    "class_community": "Grupo / Comunidad",
+    "expires": "Validez",
+    "status_pending": "Pendiente",
+    "status_expired": "Expirada",
+    "select_class": "Seleccione el grupo",
+    "class_required": "Indique el grupo al invitar catequistas o auxiliares.",
+    "select_workspace": "Seleccione un espacio"
+  }
 }
 

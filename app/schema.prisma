@@ -432,10 +432,9 @@ model Membership {
   @@index([inviteToken])
 }
 
-// Invitation for an email address that does not yet have a User account.
-// Converted into a Membership (status INVITED) the first time that email signs
-// up — avoids creating an orphaned placeholder User that would also collide
-// with the unique email/username constraints at signup time.
+// Unaccepted invitation for an email (with or without an existing User account).
+// Converted into an ACTIVE Membership on accept. Optional class link is applied
+// after membership activation (assistant/collaborator on the class).
 model PendingInvitation {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
@@ -454,10 +453,19 @@ model PendingInvitation {
   role        UserRole  @default(PASTORAL_VIEWER)
   invitedById String?
 
+  /// Optional class to link on accept (catechist/assistant team invites).
+  classId String?
+  class   CatechesisClass? @relation(fields: [classId], references: [id], onDelete: SetNull)
+
+  /// Class assignment role applied on accept (ASSISTANT / LEAD). LEAD_CATECHIST
+  /// parish role invited into a class becomes ASSISTANT collaborator, not LEAD.
+  classAssignmentRole CatechistAssignmentRole?
+
   @@unique([email, parishId])
   @@index([email])
   @@index([parishId])
   @@index([token])
+  @@index([classId])
 }
 
 // ─── Catechetical Year ────────────────────────────────────────────────────────
@@ -539,12 +547,13 @@ model CatechesisClass {
   communityId String?
   community   Community? @relation(fields: [communityId], references: [id])
 
-  catechists       ClassCatechist[]
-  enrollments      ClassEnrollment[]
-  meetings         Meeting[]
-  campaigns        MessageCampaign[]
-  liturgicalEvents LiturgicalEvent[]
-  conversations    Conversation[]
+  catechists           ClassCatechist[]
+  enrollments          ClassEnrollment[]
+  meetings             Meeting[]
+  campaigns            MessageCampaign[]
+  liturgicalEvents     LiturgicalEvent[]
+  conversations        Conversation[]
+  pendingInvitations   PendingInvitation[]
 
   @@index([parishId])
   @@index([communityId])

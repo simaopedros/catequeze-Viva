@@ -500,6 +500,31 @@
   "install_button": "Install",
   "offline_title": "No connection",
   "offline_description": "You are offline. Check your connection and try again.",
-  "try_again": "Try again"
+  "try_again": "Try again",
+  "team": {
+    "title": "Team",
+    "subtitle": "{{members}} active members · {{pending}} pending invites",
+    "invite_member": "Invite team member",
+    "invite_sent": "Invitation email sent.",
+    "invite_saved": "Invitation saved.",
+    "email_not_configured": "Invitation saved, but email is not configured. Copy the link below.",
+    "email_failed": "Invitation saved, but email failed. Copy the link below to share.",
+    "link_copied": "Link copied!",
+    "copy_link": "Copy link",
+    "resend": "Resend",
+    "cancel_invite": "Cancel invite",
+    "cancel_invite_confirm": "Cancel this pending invitation? The person will no longer be able to accept it.",
+    "invite_cancelled": "Invitation cancelled.",
+    "pending_invites": "Pending invitations",
+    "no_pending": "No pending team invitations.",
+    "active_members": "Active members",
+    "class_community": "Class / Community",
+    "expires": "Expires",
+    "status_pending": "Pending",
+    "status_expired": "Expired",
+    "select_class": "Select class",
+    "class_required": "Select a class when inviting catechists or assistants.",
+    "select_workspace": "Select a workspace"
+  }
 }
 

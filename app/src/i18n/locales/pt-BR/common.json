@@ -500,6 +500,31 @@
   "install_button": "Instalar",
   "offline_title": "Sem conexão",
   "offline_description": "Você está offline. Verifique sua conexão e tente novamente.",
-  "try_again": "Tentar novamente"
+  "try_again": "Tentar novamente",
+  "team": {
+    "title": "Equipe",
+    "subtitle": "{{members}} membros ativos · {{pending}} convites pendentes",
+    "invite_member": "Convidar membro da equipe",
+    "invite_sent": "Convite enviado por email.",
+    "invite_saved": "Convite salvo.",
+    "email_not_configured": "Convite salvo, mas o envio de email não está configurado. Copie o link abaixo.",
+    "email_failed": "Convite salvo, mas o email falhou. Copie o link abaixo para partilhar.",
+    "link_copied": "Link copiado!",
+    "copy_link": "Copiar link",
+    "resend": "Reenviar",
+    "cancel_invite": "Cancelar convite",
+    "cancel_invite_confirm": "Cancelar este convite pendente? A pessoa deixará de poder aceitá-lo.",
+    "invite_cancelled": "Convite cancelado.",
+    "pending_invites": "Convites pendentes",
+    "no_pending": "Nenhum convite de equipe pendente.",
+    "active_members": "Membros ativos",
+    "class_community": "Turma / Comunidade",
+    "expires": "Validade",
+    "status_pending": "Pendente",
+    "status_expired": "Expirado",
+    "select_class": "Selecione a turma",
+    "class_required": "Informe a turma ao convidar catequistas ou auxiliares.",
+    "select_workspace": "Selecione um espaço"
+  }
 }
 

@@ -1134,6 +1134,11 @@ export const classes_en = {
       "role_assistant": "Assistant",
       "role_lead_catechist": "Lead Catechist",
       "role_coordinator": "Coordinator",
+      "invite_by_email": "Invite by email (not yet in the parish)",
+      "invite_email_placeholder": "email@example.com",
+      "send_invite": "Send invite",
+      "invite_email_sent": "Invitation sent!",
+      "invite_saved_copy_link": "Invitation saved — copy the link if email was not delivered",
       "loading_planning": "Loading planning...",
       "meetings_this_month": "{{count}} meetings this month",
       "no_meetings_this_month": "No meetings scheduled for this month.",
@@ -1766,7 +1771,32 @@ export const common_en = {
     "install_description": "Add to your home screen for quick access and offline use.",
     "install_button": "Install",
     "offline_title": "No connection",
-    "offline_description": "You are offline. Check your connection and try again."
+    "offline_description": "You are offline. Check your connection and try again.",
+    "team": {
+      "title": "Team",
+      "subtitle": "{{members}} active members · {{pending}} pending invites",
+      "invite_member": "Invite team member",
+      "invite_sent": "Invitation email sent.",
+      "invite_saved": "Invitation saved.",
+      "email_not_configured": "Invitation saved, but email is not configured. Copy the link below.",
+      "email_failed": "Invitation saved, but email failed. Copy the link below to share.",
+      "link_copied": "Link copied!",
+      "copy_link": "Copy link",
+      "resend": "Resend",
+      "cancel_invite": "Cancel invite",
+      "cancel_invite_confirm": "Cancel this pending invitation? The person will no longer be able to accept it.",
+      "invite_cancelled": "Invitation cancelled.",
+      "pending_invites": "Pending invitations",
+      "no_pending": "No pending team invitations.",
+      "active_members": "Active members",
+      "class_community": "Class / Community",
+      "expires": "Expires",
+      "status_pending": "Pending",
+      "status_expired": "Expired",
+      "select_class": "Select class",
+      "class_required": "Select a class when inviting catechists or assistants.",
+      "select_workspace": "Select a workspace"
+    }
   } as const;
 
 export const components_en = {
@@ -3319,6 +3349,7 @@ export const navigation_en = {
     "classes": "Classes",
     "catechumens": "Catechumens",
     "families": "Families",
+    "team": "Team",
     "family_portal_invites": "Family portal invites",
     "content_library": "Library",
     "ai_hub": "Editorial assistance",

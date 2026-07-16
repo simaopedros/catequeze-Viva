@@ -84,74 +84,110 @@ import { inviteUserToParish, resendInvitation } from '../server/operations/membe
 describe('inviteUserToParish', () => {
   const leadCtx = makeContext('leadCatechist');
   const coordCtx = makeContext('coordSaoJose');
+  const auxCtx = makeContext('assistantCatechist');
 
   itOrSkip('allows LEAD_CATECHIST to invite GUARDIAN', async () => {
-    try {
-      const result = await inviteUserToParish({
-        email: 'test_guardian_invite@test.com',
+    const email = `test_guardian_invite_${Date.now()}@test.com`;
+    const result = await inviteUserToParish(
+      {
+        email,
         parishId: PARISH_SAO_JOSE,
         role: 'GUARDIAN',
-      }, leadCtx);
-      expect(result).toBeTruthy();
-      await prisma.pendingInvitation.deleteMany({
-        where: { email: 'test_guardian_invite@test.com' },
-      });
-    } catch (e: any) {
-      // Could fail if lead catechist is not a member of this parish in seed data
-      const code = e.statusCode || e.status;
-      if (code) expect([400, 403]).toContain(code);
-      // Otherwise just ensure the error is an HttpError-like object
-      expect(e.message || e.statusCode || e.status).toBeTruthy();
-    }
+      },
+      leadCtx,
+    );
+    expect(result).toBeTruthy();
+    expect(result.kind).toBe('pending');
+    expect(result.emailDelivery).toBeDefined();
+    expect(result.inviteUrl).toContain('/convite/');
+    await prisma.pendingInvitation.deleteMany({ where: { email } });
   });
 
   itOrSkip('allows LEAD_CATECHIST to invite CATECHUMEN', async () => {
-    try {
-      const result = await inviteUserToParish({
-        email: 'test_catechumen_invite@test.com',
+    const email = `test_catechumen_invite_${Date.now()}@test.com`;
+    const result = await inviteUserToParish(
+      {
+        email,
         parishId: PARISH_SAO_JOSE,
         role: 'CATECHUMEN',
-      }, leadCtx);
-      expect(result).toBeTruthy();
-      await prisma.pendingInvitation.deleteMany({
-        where: { email: 'test_catechumen_invite@test.com' },
-      });
-    } catch (e: any) {
-      const code = e.statusCode || e.status;
-      if (code) expect([400, 403]).toContain(code);
-      expect(e.message || e.statusCode || e.status).toBeTruthy();
-    }
+      },
+      leadCtx,
+    );
+    expect(result).toBeTruthy();
+    await prisma.pendingInvitation.deleteMany({ where: { email } });
   });
 
   itOrSkip('prevents LEAD_CATECHIST from inviting PARISH_COORDINATOR', async () => {
-    try {
-      await inviteUserToParish({
-        email: 'test_escalation@example.com',
-        parishId: PARISH_SAO_JOSE,
-        role: 'PARISH_COORDINATOR',
-      }, leadCtx);
-      expect.unreachable('Should have thrown 403');
-    } catch (e: any) {
-      expect(e.statusCode || e.status).toBe(403);
-    }
+    await expect(
+      inviteUserToParish(
+        {
+          email: 'test_escalation@example.com',
+          parishId: PARISH_SAO_JOSE,
+          role: 'PARISH_COORDINATOR',
+        },
+        leadCtx,
+      ),
+    ).rejects.toMatchObject({ statusCode: 403 });
   });
 
-  itOrSkip('allows coordinator to invite any role', async () => {
-    try {
-      const result = await inviteUserToParish({
-        email: 'test_coord_invite@test.com',
+  itOrSkip('prevents ASSISTANT from inviting LEAD_CATECHIST', async () => {
+    await expect(
+      inviteUserToParish(
+        {
+          email: 'test_aux_team@example.com',
+          parishId: PARISH_SAO_JOSE,
+          role: 'LEAD_CATECHIST',
+        },
+        auxCtx,
+      ),
+    ).rejects.toMatchObject({ statusCode: 403 });
+  });
+
+  itOrSkip('allows coordinator to invite LEAD_CATECHIST without class', async () => {
+    const email = `test_coord_invite_${Date.now()}@test.com`;
+    const result = await inviteUserToParish(
+      {
+        email,
         parishId: PARISH_SAO_JOSE,
         role: 'LEAD_CATECHIST',
-      }, coordCtx);
-      expect(result).toBeTruthy();
-      await prisma.pendingInvitation.deleteMany({
-        where: { email: 'test_coord_invite@test.com' },
-      });
-    } catch (e: any) {
-      const code = e.statusCode || e.status;
-      if (code) expect([400, 403]).toContain(code);
-      expect(e.message || e.statusCode || e.status).toBeTruthy();
-    }
+      },
+      coordCtx,
+    );
+    expect(result).toBeTruthy();
+    expect(result.inviteUrl).toContain('catechis.app');
+    expect(result.inviteUrl).not.toContain('familia.');
+    await prisma.pendingInvitation.deleteMany({ where: { email } });
+  });
+
+  itOrSkip('normalizes email casing and spaces', async () => {
+    const email = `  MixCase.Invite_${Date.now()}@Example.COM `;
+    const result = await inviteUserToParish(
+      {
+        email,
+        parishId: PARISH_SAO_JOSE,
+        role: 'GUARDIAN',
+      },
+      coordCtx,
+    );
+    expect(result.email).toBe(email.trim().toLowerCase());
+    await prisma.pendingInvitation.deleteMany({
+      where: { email: result.email },
+    });
+  });
+
+  itOrSkip('idempotent re-invite updates pending invitation', async () => {
+    const email = `test_reinvite_${Date.now()}@test.com`;
+    const first = await inviteUserToParish(
+      { email, parishId: PARISH_SAO_JOSE, role: 'GUARDIAN' },
+      coordCtx,
+    );
+    const second = await inviteUserToParish(
+      { email, parishId: PARISH_SAO_JOSE, role: 'CATECHUMEN' },
+      coordCtx,
+    );
+    expect(first.id).toBe(second.id);
+    expect(second.role).toBe('CATECHUMEN');
+    await prisma.pendingInvitation.deleteMany({ where: { email: second.email } });
   });
 });
 
@@ -243,8 +279,7 @@ describe('portal utilities', () => {
 import { getInvitationByToken, acceptInvitationByToken } from '../server/operations/memberOperations';
 
 describe('getInvitationByToken', () => {
-  // Token field requires prisma generate after schema migration — skip until DB is migrated
-  const itToken = process.env.NODE_ENV === 'development' ? it.skip : it.skip;
+  const itToken = process.env.NODE_ENV === 'development' ? it : it.skip;
 
   itToken('returns 404 for non-existent token', async () => {
     const ctx = makeContext('admin');

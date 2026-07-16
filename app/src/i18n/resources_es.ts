@@ -1134,6 +1134,11 @@ export const classes_es = {
       "role_assistant": "Auxiliar",
       "role_lead_catechist": "Catequista Resp.",
       "role_coordinator": "Coordinador",
+      "invite_by_email": "Invitar por correo (aún no está en la parroquia)",
+      "invite_email_placeholder": "correo@ejemplo.com",
+      "send_invite": "Enviar invitación",
+      "invite_email_sent": "¡Invitación enviada!",
+      "invite_saved_copy_link": "Invitación guardada — copia el enlace si el correo no se entregó",
       "loading_planning": "Cargando planificación...",
       "meetings_this_month": "{{count}} encuentros este mes",
       "no_meetings_this_month": "Ningún encuentro programado para este mes.",
@@ -1766,7 +1771,32 @@ export const common_es = {
     "install_description": "Agregue a la pantalla de inicio para acceso rápido y sin conexión.",
     "install_button": "Instalar",
     "offline_title": "Sin conexión",
-    "offline_description": "Estás sin conexión. Verifica tu conexión e inténtalo de nuevo."
+    "offline_description": "Estás sin conexión. Verifica tu conexión e inténtalo de nuevo.",
+    "team": {
+      "title": "Equipo",
+      "subtitle": "{{members}} miembros activos · {{pending}} invitaciones pendientes",
+      "invite_member": "Invitar miembro del equipo",
+      "invite_sent": "Invitación enviada por correo.",
+      "invite_saved": "Invitación guardada.",
+      "email_not_configured": "Invitación guardada, pero el envío de correo no está configurado. Copia el enlace abajo.",
+      "email_failed": "Invitación guardada, pero el correo falló. Copia el enlace abajo para compartir.",
+      "link_copied": "¡Enlace copiado!",
+      "copy_link": "Copiar enlace",
+      "resend": "Reenviar",
+      "cancel_invite": "Cancelar invitación",
+      "cancel_invite_confirm": "¿Cancelar esta invitación pendiente? La persona ya no podrá aceptarla.",
+      "invite_cancelled": "Invitación cancelada.",
+      "pending_invites": "Invitaciones pendientes",
+      "no_pending": "No hay invitaciones de equipo pendientes.",
+      "active_members": "Miembros activos",
+      "class_community": "Grupo / Comunidad",
+      "expires": "Validez",
+      "status_pending": "Pendiente",
+      "status_expired": "Expirada",
+      "select_class": "Seleccione el grupo",
+      "class_required": "Indique el grupo al invitar catequistas o auxiliares.",
+      "select_workspace": "Seleccione un espacio"
+    }
   } as const;
 
 export const components_es = {
@@ -3319,6 +3349,7 @@ export const navigation_es = {
     "classes": "Grupos",
     "catechumens": "Catecúmenos",
     "families": "Familias",
+    "team": "Equipo",
     "family_portal_invites": "Invitaciones de familia",
     "content_library": "Biblioteca",
     "ai_hub": "Asistencia editorial",

@@ -471,7 +471,7 @@ export default function OnboardingPage() {
           ? t("completion.primary_invite_catechist")
           : t("completion.primary_create_class"),
         primaryActionTo: details?.className
-          ? `/app/parishes/${parishId}/members`
+          ? `/app/team`
           : "/app/classes/new",
       });
       setStep("completion");

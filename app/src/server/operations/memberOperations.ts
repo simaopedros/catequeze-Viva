@@ -1,17 +1,30 @@
 import { HttpError } from 'wasp/server';
 import { requireAuth, writeAuditLog, getDioceseParishIds } from '../auth/helpers';
 import { logger } from '../logger';
-import { familyPortalUrl } from '../../shared/portal';
+import {
+  familyPortalUrl,
+  staffPortalUrl,
+  isFamilyPortalRole,
+} from '../../shared/portal';
 import {
   ALLOWED_INVITER_ROLES,
   pickBestInviterRole,
 } from '../../shared/inviterRoles';
+import {
+  ROLE_ASSIGNMENT_HIERARCHY,
+  getAssignableRoles,
+  canViewTeamArea,
+  normalizeInviteEmail,
+  resolveClassAssignmentRole,
+  TEAM_ROLES_NEEDING_CLASS_FOR_LEAD,
+  type InviteEmailDelivery,
+} from '../../shared/teamInvitePolicy';
 import { deliverInviteEmail } from '../jobs/inviteEmailUtils';
 
 // ── Simple rate limiter for public invite token endpoint ───────────────────
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT_MAX = 10; // max attempts per minute
-const RATE_LIMIT_WINDOW = 60_000; // 1 minute
+const RATE_LIMIT_MAX = 10;
+const RATE_LIMIT_WINDOW = 60_000;
 
 function checkRateLimit(ip: string): void {
   const now = Date.now();
@@ -24,7 +37,6 @@ function checkRateLimit(ip: string): void {
   } else {
     rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW });
   }
-  // Cleanup old entries periodically
   if (rateLimitMap.size > 1000) {
     for (const [k, v] of rateLimitMap) {
       if (v.resetAt <= now) rateLimitMap.delete(k);
@@ -32,38 +44,17 @@ function checkRateLimit(ip: string): void {
   }
 }
 
-// ── Role hierarchy ────────────────────────────────────────────────────────
-
-/**
- * Which roles each role is allowed to assign (to invite or to promote others to).
- * A role can never assign a role at or above its own level — this prevents
- * privilege escalation through invitations or role changes.
- */
-const ROLE_ASSIGNMENT_HIERARCHY: Record<string, string[]> = {
-  SUPER_ADMIN: ['DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'GUARDIAN', 'CATECHUMEN', 'CONTENT_REVIEWER', 'PASTORAL_VIEWER'],
-  DIOCESE_ADMIN: ['PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'GUARDIAN', 'CATECHUMEN', 'CONTENT_REVIEWER', 'PASTORAL_VIEWER'],
-  PARISH_COORDINATOR: ['COMMUNITY_COORDINATOR', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'GUARDIAN', 'CATECHUMEN', 'CONTENT_REVIEWER', 'PASTORAL_VIEWER'],
-  COMMUNITY_COORDINATOR: ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'GUARDIAN', 'CATECHUMEN', 'CONTENT_REVIEWER', 'PASTORAL_VIEWER'],
-  // Catechists can invite guardians and catechumens into their parish
-  LEAD_CATECHIST: ['GUARDIAN', 'CATECHUMEN'],
-  ASSISTANT_CATECHIST: ['GUARDIAN', 'CATECHUMEN'],
-  PERSONAL_OWNER: ['GUARDIAN', 'CATECHUMEN'],
-};
-
-/** Returns the set of roles the given actor may assign to other members. */
-function getAssignableRoles(actorRole: string | null | undefined, isPlatformAdmin: boolean): string[] {
-  if (isPlatformAdmin || actorRole === 'SUPER_ADMIN') return ROLE_ASSIGNMENT_HIERARCHY.SUPER_ADMIN;
-  return ROLE_ASSIGNMENT_HIERARCHY[actorRole || ''] || [];
-}
-
-// ── Helpers ────────────────────────────────────────────────────────────────
-
 /** Invitation expires 30 days from now. */
 function defaultExpiry(): Date {
   return new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 }
 
-// ── Send invite email (via PgBoss queue, sync fallback) ───────────────────
+function inviteUrlForRole(role: string, token: string): string {
+  const path = `/convite/${token}`;
+  return isFamilyPortalRole(role) ? familyPortalUrl(path) : staffPortalUrl(path);
+}
+
+// ── Send invite email ──────────────────────────────────────────────────────
 
 async function sendInviteEmail(
   context: any,
@@ -71,19 +62,25 @@ async function sendInviteEmail(
   location: string,
   role: string,
   token: string,
-) {
-  if (!to) return;
-  const payload = { to, location, role, token };
-  // Persist the invitation even when email is not configured; never block the API on provider configuration.
-  if (process.env.VITEST || process.env.NODE_ENV === 'test' || !process.env.RESEND_API_KEY) {
-    logger.warn('[memberOperations] RESEND_API_KEY ausente; convite salvo sem envio de email.', { to });
-    return;
+): Promise<InviteEmailDelivery> {
+  if (!to) return 'failed';
+  if (process.env.VITEST || process.env.NODE_ENV === 'test') {
+    return 'sent';
+  }
+  if (!process.env.RESEND_API_KEY) {
+    logger.warn('[memberOperations] RESEND_API_KEY ausente; convite salvo sem envio de email.', {
+      to,
+    });
+    return 'not_configured';
   }
   try {
-    await deliverInviteEmail(payload, context);
+    await deliverInviteEmail({ to, location, role, token }, context);
+    return 'sent';
   } catch (error) {
-    // The invitation remains persisted even if the email provider is down.
-    logger.error('[memberOperations] Erro ao enviar email de convite', { error: String(error) });
+    logger.error('[memberOperations] Erro ao enviar email de convite', {
+      error: String(error),
+    });
+    return 'failed';
   }
 }
 
@@ -103,7 +100,10 @@ function roleLabel(role: string): string {
 
 // ── Resolve inviter role ───────────────────────────────────────────────────
 
-async function resolveInviterRole(context: any, parishId: string): Promise<{ role: string; isPersonalOwner: boolean }> {
+async function resolveInviterRole(
+  context: any,
+  parishId: string,
+): Promise<{ role: string; isPersonalOwner: boolean }> {
   if (context.user.isAdmin) return { role: 'SUPER_ADMIN', isPersonalOwner: false };
 
   const isPersonalOwner = await context.entities.Parish.findFirst({
@@ -112,7 +112,6 @@ async function resolveInviterRole(context: any, parishId: string): Promise<{ rol
   });
   if (isPersonalOwner) return { role: 'PERSONAL_OWNER', isPersonalOwner: true };
 
-  // Multi-role: never use findFirst alone — a GUARDIAN row can hide LEAD_CATECHIST.
   const memberships = await context.entities.Membership.findMany({
     where: { userId: context.user.id, parishId, status: 'ACTIVE' },
     select: { role: true },
@@ -123,7 +122,6 @@ async function resolveInviterRole(context: any, parishId: string): Promise<{ rol
     return { role: best, isPersonalOwner: best === 'PERSONAL_OWNER' };
   }
 
-  // DIOCESE_ADMIN: allow managing any parish in the diocese
   const dioceseMembership = await context.entities.Membership.findFirst({
     where: { userId: context.user.id, status: 'ACTIVE', role: 'DIOCESE_ADMIN' },
     select: { parishId: true },
@@ -137,6 +135,75 @@ async function resolveInviterRole(context: any, parishId: string): Promise<{ rol
   throw new HttpError(403, 'Apenas coordenadores e catequistas podem convidar membros.');
 }
 
+async function assertCanViewTeam(context: any, parishId: string): Promise<string> {
+  if (context.user.isAdmin) return 'SUPER_ADMIN';
+
+  const isPersonalOwner = await context.entities.Parish.findFirst({
+    where: { id: parishId, ownerId: context.user.id, type: 'PERSONAL' },
+    select: { id: true },
+  });
+  if (isPersonalOwner) return 'PERSONAL_OWNER';
+
+  const memberships = await context.entities.Membership.findMany({
+    where: { userId: context.user.id, parishId, status: 'ACTIVE' },
+    select: { role: true },
+  });
+  const roles = memberships.map((m: { role: string }) => m.role);
+  const best = pickBestInviterRole(roles);
+  if (best && canViewTeamArea(best, false)) return best;
+
+  const dioceseMembership = await context.entities.Membership.findFirst({
+    where: { userId: context.user.id, status: 'ACTIVE', role: 'DIOCESE_ADMIN' },
+    select: { parishId: true },
+  });
+  if (dioceseMembership) {
+    const dioceseParishIds = await getDioceseParishIds(context);
+    if (dioceseParishIds.includes(parishId)) return 'DIOCESE_ADMIN';
+  }
+
+  throw new HttpError(403, 'Sem permissão para ver a equipe desta paróquia.');
+}
+
+async function assertLeadOfClass(
+  context: any,
+  classId: string,
+  userId: string,
+): Promise<{ parishId: string; name: string }> {
+  const classData = await context.entities.CatechesisClass.findUnique({
+    where: { id: classId },
+    select: { id: true, parishId: true, name: true },
+  });
+  if (!classData) throw new HttpError(404, 'Turma não encontrada.');
+
+  const lead = await context.entities.ClassCatechist.findFirst({
+    where: { classId, userId, role: 'LEAD' },
+  });
+  if (!lead) {
+    throw new HttpError(
+      403,
+      'Somente o catequista responsável desta turma pode convidar para ela.',
+    );
+  }
+  return classData;
+}
+
+async function ensureClassAssignment(
+  context: any,
+  classId: string,
+  userId: string,
+  assignmentRole: 'LEAD' | 'ASSISTANT',
+): Promise<void> {
+  const existing = await context.entities.ClassCatechist.findFirst({
+    where: { classId, userId },
+  });
+  if (existing) return;
+  // Never replace LEAD via invite accept — collaborators are ASSISTANT only.
+  const role = assignmentRole === 'LEAD' ? 'ASSISTANT' : assignmentRole;
+  await context.entities.ClassCatechist.create({
+    data: { classId, userId, role },
+  });
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // Operations
 // ═══════════════════════════════════════════════════════════════════════════
@@ -145,17 +212,31 @@ async function resolveInviterRole(context: any, parishId: string): Promise<{ rol
  * Invite a user (by email) to a parish.
  *
  * - Coordinators can invite any role below them.
- * - Catechists (LEAD / ASSISTANT) can invite only GUARDIAN and CATECHUMEN.
- * - PERSONAL_OWNER can invite GUARDIAN and CATECHUMEN.
+ * - Lead catechist can invite LEAD_CATECHIST / ASSISTANT_CATECHIST (for their classes)
+ *   plus GUARDIAN / CATECHUMEN.
+ * - Assistant catechist can invite only GUARDIAN and CATECHUMEN.
+ * - Unaccepted invites are stored in PendingInvitation (even if the email already has an account).
  */
 export const inviteUserToParish = async (
-  args: { email: string; parishId: string; role: string; communityId?: string; householdId?: string },
-  context: any
+  args: {
+    email: string;
+    parishId: string;
+    role: string;
+    communityId?: string;
+    householdId?: string;
+    classId?: string;
+    classAssignmentRole?: 'LEAD' | 'ASSISTANT';
+  },
+  context: any,
 ) => {
   requireAuth(context.user);
 
-  const { role: inviterRole } = await resolveInviterRole(context, args.parishId);
+  const email = normalizeInviteEmail(args.email);
+  if (!email || !email.includes('@')) {
+    throw new HttpError(400, 'Email inválido.');
+  }
 
+  const { role: inviterRole } = await resolveInviterRole(context, args.parishId);
   const assignableRoles = getAssignableRoles(inviterRole, context.user.isAdmin);
   if (!assignableRoles.includes(args.role)) {
     throw new HttpError(403, `Você não tem permissão para atribuir o papel "${args.role}".`);
@@ -171,10 +252,90 @@ export const inviteUserToParish = async (
     }
   }
 
-  const invitedUser = await context.entities.User.findUnique({
-    where: { email: args.email },
-    select: { id: true, email: true },
-  });
+  let classId: string | null = args.classId || null;
+  let classAssignmentRole: 'LEAD' | 'ASSISTANT' | null = null;
+  let className = '';
+
+  const isTeamRole =
+    args.role === 'LEAD_CATECHIST' || args.role === 'ASSISTANT_CATECHIST';
+
+  if (inviterRole === 'LEAD_CATECHIST' && isTeamRole) {
+    if (!classId) {
+      throw new HttpError(
+        400,
+        'Informe a turma ao convidar catequistas ou auxiliares.',
+      );
+    }
+    const classData = await assertLeadOfClass(context, classId, context.user.id);
+    if (classData.parishId !== args.parishId) {
+      throw new HttpError(400, 'A turma não pertence a esta paróquia.');
+    }
+    className = classData.name;
+    classAssignmentRole = resolveClassAssignmentRole({
+      parishRole: args.role,
+      explicit: args.classAssignmentRole || null,
+    });
+  } else if (classId && isTeamRole) {
+    const classData = await context.entities.CatechesisClass.findUnique({
+      where: { id: classId },
+      select: { id: true, parishId: true, name: true },
+    });
+    if (!classData || classData.parishId !== args.parishId) {
+      throw new HttpError(400, 'A turma não pertence a esta paróquia.');
+    }
+    // Coordinators may invite into any class of the parish
+    if (
+      inviterRole === 'SUPER_ADMIN' ||
+      inviterRole === 'DIOCESE_ADMIN' ||
+      inviterRole === 'PARISH_COORDINATOR' ||
+      inviterRole === 'COMMUNITY_COORDINATOR' ||
+      context.user.isAdmin
+    ) {
+      className = classData.name;
+      classAssignmentRole = resolveClassAssignmentRole({
+        parishRole: args.role,
+        explicit: args.classAssignmentRole || null,
+      });
+    } else {
+      throw new HttpError(403, 'Sem permissão para convidar para esta turma.');
+    }
+  } else if (args.role === 'ASSISTANT_CATECHIST' && !classId) {
+    // Assistant without class is allowed for coordinators (general membership)
+    classAssignmentRole = null;
+  }
+
+  if (
+    inviterRole === 'LEAD_CATECHIST' &&
+    (TEAM_ROLES_NEEDING_CLASS_FOR_LEAD as readonly string[]).includes(args.role) &&
+    !classId
+  ) {
+    throw new HttpError(400, 'Informe a turma ao convidar membros da equipe.');
+  }
+
+  // Case-insensitive lookup (emails are normalized on write; legacy rows may differ)
+  const invitedUser =
+    (await context.entities.User.findUnique({
+      where: { email },
+      select: { id: true, email: true },
+    })) ||
+    (await context.entities.User.findFirst({
+      where: { email: { equals: email, mode: 'insensitive' } },
+      select: { id: true, email: true },
+    }));
+
+  // Active member cannot be re-invited
+  if (invitedUser) {
+    const active = await context.entities.Membership.findFirst({
+      where: {
+        userId: invitedUser.id,
+        parishId: args.parishId,
+        status: 'ACTIVE',
+      },
+    });
+    if (active) {
+      throw new HttpError(400, 'Usuário já é membro desta paróquia.');
+    }
+  }
 
   const parish = await context.entities.Parish.findUnique({
     where: { id: args.parishId },
@@ -188,179 +349,142 @@ export const inviteUserToParish = async (
     });
     communityName = comm?.name || '';
   }
-  const location = communityName ? parish?.name + ' / ' + communityName : parish?.name || 'a paróquia';
+  const locationParts = [parish?.name || 'a paróquia'];
+  if (communityName) locationParts.push(communityName);
+  if (className) locationParts.push(className);
+  const location = locationParts.join(' / ');
 
-  // ── Case 1: No account yet → create PendingInvitation ──────────────
-  if (!invitedUser) {
-    const token = crypto.randomUUID();
-    const expiresAt = defaultExpiry();
+  const token = crypto.randomUUID();
+  const expiresAt = defaultExpiry();
 
-    const existingPending = await context.entities.PendingInvitation.findUnique({
-      where: { email_parishId: { email: args.email, parishId: args.parishId } },
-    });
-    const pending = existingPending
-      ? await context.entities.PendingInvitation.update({
-          where: { id: existingPending.id },
-          data: {
-            role: args.role as any,
-            communityId: args.communityId || null,
-            invitedById: context.user.id,
-            token,
-            expiresAt,
-          },
-        })
-      : await context.entities.PendingInvitation.create({
-          data: {
-            email: args.email,
-            parishId: args.parishId,
-            communityId: args.communityId || null,
-            role: args.role as any,
-            invitedById: context.user.id,
-            token,
-            expiresAt,
-          },
+  const existingPending = await context.entities.PendingInvitation.findUnique({
+    where: { email_parishId: { email, parishId: args.parishId } },
+  });
+
+  const pendingData = {
+    role: args.role as any,
+    communityId: args.communityId || null,
+    invitedById: context.user.id,
+    token,
+    expiresAt,
+    classId,
+    classAssignmentRole: classAssignmentRole as any,
+  };
+
+  const pending = existingPending
+    ? await context.entities.PendingInvitation.update({
+        where: { id: existingPending.id },
+        data: pendingData,
+      })
+    : await context.entities.PendingInvitation.create({
+        data: {
+          email,
+          parishId: args.parishId,
+          ...pendingData,
+        },
+      });
+
+  // Pre-create family profiles when householdId is provided
+  if (args.householdId && (args.role === 'GUARDIAN' || args.role === 'CATECHUMEN')) {
+    try {
+      if (args.role === 'GUARDIAN') {
+        let existingG = await context.entities.GuardianProfile.findFirst({
+          where: { email, householdId: args.householdId },
         });
-
-    await sendInviteEmail(context, args.email, location, args.role, token);
-
-    // Pre-create profile linked to household when householdId is provided
-    if (args.householdId && (args.role === 'GUARDIAN' || args.role === 'CATECHUMEN')) {
-      try {
-        if (args.role === 'GUARDIAN') {
-          // First, try to find an existing profile in this household without email
-          // (coordinator may have added it via family page before inviting)
-          let existingG = await context.entities.GuardianProfile.findFirst({
-            where: { email: args.email, householdId: args.householdId },
+        if (!existingG) {
+          const unnamedG = await (context.entities.GuardianProfile as any).findFirst({
+            where: { householdId: args.householdId, email: null, userId: null },
+            orderBy: { createdAt: 'asc' },
           });
-          if (!existingG) {
-            // Try to find a profile without email in this household and update it
-            const unnamedG = await (context.entities.GuardianProfile as any).findFirst({
-              where: { householdId: args.householdId, email: null, userId: null },
-              orderBy: { createdAt: 'asc' },
+          if (unnamedG) {
+            await (context.entities.GuardianProfile as any).update({
+              where: { id: unnamedG.id },
+              data: { email },
             });
-            if (unnamedG) {
-              await (context.entities.GuardianProfile as any).update({
-                where: { id: unnamedG.id },
-                data: { email: args.email },
-              });
-              existingG = unnamedG;
-            }
-          }
-          if (!existingG) {
-            await (context.entities.GuardianProfile as any).create({
-              data: {
-                email: args.email,
-                householdId: args.householdId,
-                relationship: 'Pai / Mãe',
-              },
-            });
-          }
-        } else if (args.role === 'CATECHUMEN') {
-          const existingC = await context.entities.CatechumenProfile.findFirst({
-            where: { email: args.email, householdId: args.householdId },
-          });
-          if (!existingC) {
-            await context.entities.CatechumenProfile.create({
-              data: {
-                email: args.email,
-                firstName: args.email.split('@')[0],
-                lastName: '',
-                householdId: args.householdId,
-                parishId: args.parishId,
-              },
-            });
+            existingG = unnamedG;
           }
         }
-      } catch (_) { /* non-critical */ }
+        if (!existingG) {
+          await (context.entities.GuardianProfile as any).create({
+            data: {
+              email,
+              householdId: args.householdId,
+              relationship: 'Pai / Mãe',
+            },
+          });
+        }
+      } else if (args.role === 'CATECHUMEN') {
+        const existingC = await context.entities.CatechumenProfile.findFirst({
+          where: { email, householdId: args.householdId },
+        });
+        if (!existingC) {
+          await context.entities.CatechumenProfile.create({
+            data: {
+              email,
+              firstName: email.split('@')[0],
+              lastName: '',
+              householdId: args.householdId,
+              parishId: args.parishId,
+            },
+          });
+        }
+      }
+    } catch (_) {
+      /* non-critical */
     }
-
-    await writeAuditLog(context, 'CREATE', 'PendingInvitation', pending.id, {
-      operation: 'MEMBER_INVITE',
-      parishId: args.parishId,
-      invitedEmail: args.email,
-      role: args.role,
-      communityId: args.communityId || null,
-    });
-    return {
-      ...pending,
-      inviteUrl: familyPortalUrl(`/convite/${token}`),
-      kind: 'pending' as const,
-    };
   }
 
-  // ── Case 2: Existing user → create or update Membership ────────────
-  const existing = await context.entities.Membership.findFirst({
-    where: { userId: invitedUser.id, parishId: args.parishId },
-  });
-
-  const membershipToken = crypto.randomUUID();
-  const tokenExpiresAt = defaultExpiry();
-
-  if (existing) {
-    if (existing.status === 'ACTIVE') {
-      throw new HttpError(400, 'Usuário já é membro desta paróquia.');
-    }
-    if (existing.status === 'INVITED') {
-      // Regenerate token and re-send email
-      await context.entities.Membership.update({
-        where: { id: existing.id },
-        data: { inviteToken: membershipToken, inviteTokenExpiresAt: tokenExpiresAt },
-      });
-      await sendInviteEmail(context, invitedUser.email, location, args.role, membershipToken);
-      throw new HttpError(400, 'Convite já enviado para este usuário. Um novo email foi reenviado.');
-    }
-    // INACTIVE/SUSPENDED — re-invite
-    const reinvited = await context.entities.Membership.update({
-      where: { id: existing.id },
-      data: {
+  // Legacy: if an INVITED membership exists for this user, refresh its token for compatibility
+  // but the canonical store is PendingInvitation.
+  if (invitedUser) {
+    const legacyInvited = await context.entities.Membership.findFirst({
+      where: {
+        userId: invitedUser.id,
+        parishId: args.parishId,
         status: 'INVITED',
-        role: args.role as any,
-        communityId: args.communityId || null,
-        inviteToken: membershipToken,
-        inviteTokenExpiresAt: tokenExpiresAt,
       },
     });
-    await sendInviteEmail(context, invitedUser.email, location, args.role, membershipToken);
-    await writeAuditLog(context, 'CREATE', 'Membership', reinvited.id, {
-      operation: 'MEMBER_INVITE',
-      parishId: args.parishId,
-      invitedUserId: invitedUser.id,
-      role: args.role,
-      communityId: args.communityId || null,
-    });
-    return {
-      ...reinvited,
-      inviteUrl: familyPortalUrl(`/convite/${membershipToken}`),
-      kind: 'membership' as const,
-    };
+    if (legacyInvited) {
+      await context.entities.Membership.update({
+        where: { id: legacyInvited.id },
+        data: {
+          role: args.role as any,
+          communityId: args.communityId || null,
+          inviteToken: token,
+          inviteTokenExpiresAt: expiresAt,
+        },
+      });
+    } else {
+      // Inactive/suspended: keep row but do not create new INVITED membership —
+      // accept path will reactivate via PendingInvitation.
+    }
   }
 
-  const membership = await context.entities.Membership.create({
-    data: {
-      userId: invitedUser.id,
-      parishId: args.parishId,
-      communityId: args.communityId || null,
-      role: args.role as any,
-      status: 'INVITED',
-      inviteToken: membershipToken,
-      inviteTokenExpiresAt: tokenExpiresAt,
-    },
-  });
+  const emailDelivery = await sendInviteEmail(
+    context,
+    email,
+    location,
+    args.role,
+    token,
+  );
 
-  await sendInviteEmail(context, invitedUser.email, location, args.role, membershipToken);
-
-  await writeAuditLog(context, 'CREATE', 'Membership', membership.id, {
+  await writeAuditLog(context, 'CREATE', 'PendingInvitation', pending.id, {
     operation: 'MEMBER_INVITE',
     parishId: args.parishId,
-    invitedUserId: invitedUser.id,
+    invitedEmail: email,
     role: args.role,
     communityId: args.communityId || null,
+    classId,
+    classAssignmentRole,
+    emailDelivery,
   });
 
   return {
-    ...membership,
-    inviteUrl: familyPortalUrl(`/convite/${membershipToken}`),
-    kind: 'membership' as const,
+    ...pending,
+    inviteUrl: inviteUrlForRole(args.role, token),
+    kind: 'pending' as const,
+    hasAccount: Boolean(invitedUser),
+    emailDelivery,
   };
 };
 
@@ -368,7 +492,6 @@ const FAMILY_INVITE_ROLES = ['GUARDIAN', 'CATECHUMEN'] as const;
 
 /**
  * List pending family-portal invites (GUARDIAN / CATECHUMEN) for a parish.
- * Staff only. Includes PendingInvitation rows and INVITED memberships.
  */
 export const listFamilyPortalInvitations = async (
   args: { parishId: string },
@@ -383,7 +506,6 @@ export const listFamilyPortalInvitations = async (
     message: 'Apenas a equipe pastoral pode ver convites do portal da família.',
   });
 
-  // Must be allowed to invite family roles
   const { role: inviterRole } = await resolveInviterRole(context, args.parishId);
   const assignable = getAssignableRoles(inviterRole, context.user.isAdmin);
   if (
@@ -403,6 +525,7 @@ export const listFamilyPortalInvitations = async (
     take: 100,
   });
 
+  // Legacy INVITED memberships still shown until fully migrated
   const memberships = await context.entities.Membership.findMany({
     where: {
       parishId: args.parishId,
@@ -417,6 +540,7 @@ export const listFamilyPortalInvitations = async (
   });
 
   const now = Date.now();
+  const pendingEmails = new Set(pending.map((p: any) => normalizeInviteEmail(p.email)));
 
   const fromPending = pending.map((p: any) => {
     const expired = p.expiresAt && new Date(p.expiresAt).getTime() < now;
@@ -429,37 +553,215 @@ export const listFamilyPortalInvitations = async (
       expiresAt: p.expiresAt,
       createdAt: p.createdAt,
       hasAccount: false,
-      inviteUrl: p.token ? familyPortalUrl(`/convite/${p.token}`) : null,
+      inviteUrl: p.token ? inviteUrlForRole(p.role, p.token) : null,
       displayName: p.email,
     };
   });
 
-  const fromMembership = memberships.map((m: any) => {
-    const expired =
-      m.inviteTokenExpiresAt &&
-      new Date(m.inviteTokenExpiresAt).getTime() < now;
-    const email = m.user?.email || '';
-    const name = [m.user?.firstName, m.user?.lastName].filter(Boolean).join(' ');
-    return {
-      id: m.id,
-      kind: 'membership' as const,
-      email,
-      role: m.role,
-      status: expired ? 'EXPIRED' : 'PENDING',
-      expiresAt: m.inviteTokenExpiresAt,
-      createdAt: m.createdAt,
-      hasAccount: true,
-      inviteUrl: m.inviteToken
-        ? familyPortalUrl(`/convite/${m.inviteToken}`)
-        : null,
-      displayName: name || email,
-    };
-  });
+  const fromMembership = memberships
+    .filter((m: any) => {
+      const em = normalizeInviteEmail(m.user?.email || '');
+      return em && !pendingEmails.has(em);
+    })
+    .map((m: any) => {
+      const expired =
+        m.inviteTokenExpiresAt &&
+        new Date(m.inviteTokenExpiresAt).getTime() < now;
+      const email = m.user?.email || '';
+      const name = [m.user?.firstName, m.user?.lastName].filter(Boolean).join(' ');
+      return {
+        id: m.id,
+        kind: 'membership' as const,
+        email,
+        role: m.role,
+        status: expired ? 'EXPIRED' : 'PENDING',
+        expiresAt: m.inviteTokenExpiresAt,
+        createdAt: m.createdAt,
+        hasAccount: true,
+        inviteUrl: m.inviteToken ? inviteUrlForRole(m.role, m.inviteToken) : null,
+        displayName: name || email,
+      };
+    });
 
   return [...fromPending, ...fromMembership].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
+};
+
+/**
+ * Aggregated team view: active team members + pending invites + caller permissions.
+ */
+export const getParishTeam = async (
+  args: { parishId: string; communityId?: string },
+  context: any,
+) => {
+  requireAuth(context.user);
+  if (!args.parishId) throw new HttpError(400, 'parishId é obrigatório.');
+
+  const actorRole = await assertCanViewTeam(context, args.parishId);
+  const assignableRoles = getAssignableRoles(actorRole, context.user.isAdmin);
+
+  const memberWhere: any = {
+    parishId: args.parishId,
+    status: 'ACTIVE',
+    role: {
+      notIn: ['GUARDIAN', 'CATECHUMEN'],
+    },
+  };
+  if (args.communityId) memberWhere.communityId = args.communityId;
+
+  const members = await context.entities.Membership.findMany({
+    where: memberWhere,
+    include: {
+      user: { select: { id: true, email: true, firstName: true, lastName: true } },
+      community: { select: { id: true, name: true } },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  // Class assignments for displayed members
+  const userIds = members.map((m: any) => m.userId);
+  let classLinks: any[] = [];
+  if (userIds.length > 0 && context.entities.ClassCatechist) {
+    classLinks = await context.entities.ClassCatechist.findMany({
+      where: { userId: { in: userIds } },
+      include: {
+        class: {
+          select: { id: true, name: true, parishId: true },
+        },
+      },
+    });
+    classLinks = classLinks.filter((c: any) => c.class?.parishId === args.parishId);
+  }
+
+  const classesByUser = new Map<string, { id: string; name: string; role: string }[]>();
+  for (const link of classLinks) {
+    const list = classesByUser.get(link.userId) || [];
+    list.push({
+      id: link.class.id,
+      name: link.class.name,
+      role: link.role,
+    });
+    classesByUser.set(link.userId, list);
+  }
+
+  const pendingWhere: any = {
+    parishId: args.parishId,
+    role: { notIn: [...FAMILY_INVITE_ROLES] },
+  };
+  if (args.communityId) pendingWhere.communityId = args.communityId;
+
+  const pending = await context.entities.PendingInvitation.findMany({
+    where: pendingWhere,
+    include: {
+      community: { select: { id: true, name: true } },
+      class: { select: { id: true, name: true } },
+    },
+    orderBy: { createdAt: 'desc' },
+    take: 100,
+  });
+
+  // Legacy INVITED team memberships without PendingInvitation
+  const legacyInvited = await context.entities.Membership.findMany({
+    where: {
+      parishId: args.parishId,
+      status: 'INVITED',
+      role: { notIn: [...FAMILY_INVITE_ROLES] },
+    },
+    include: {
+      user: { select: { id: true, email: true, firstName: true, lastName: true } },
+      community: { select: { id: true, name: true } },
+    },
+    orderBy: { createdAt: 'desc' },
+    take: 50,
+  });
+
+  const now = Date.now();
+  const pendingEmails = new Set(
+    pending.map((p: any) => normalizeInviteEmail(p.email)),
+  );
+
+  const invitations = [
+    ...pending.map((p: any) => {
+      const expired = p.expiresAt && new Date(p.expiresAt).getTime() < now;
+      return {
+        id: p.id,
+        kind: 'pending' as const,
+        email: p.email,
+        role: p.role,
+        status: expired ? 'EXPIRED' : 'PENDING',
+        expiresAt: p.expiresAt,
+        createdAt: p.createdAt,
+        community: p.community,
+        class: p.class
+          ? {
+              id: p.class.id,
+              name: p.class.name,
+              assignmentRole: p.classAssignmentRole,
+            }
+          : null,
+        inviteUrl: p.token ? inviteUrlForRole(p.role, p.token) : null,
+        displayName: p.email,
+      };
+    }),
+    ...legacyInvited
+      .filter((m: any) => {
+        const em = normalizeInviteEmail(m.user?.email || '');
+        return em && !pendingEmails.has(em);
+      })
+      .map((m: any) => {
+        const expired =
+          m.inviteTokenExpiresAt &&
+          new Date(m.inviteTokenExpiresAt).getTime() < now;
+        const email = m.user?.email || '';
+        const name = [m.user?.firstName, m.user?.lastName]
+          .filter(Boolean)
+          .join(' ');
+        return {
+          id: m.id,
+          kind: 'membership' as const,
+          email,
+          role: m.role,
+          status: expired ? 'EXPIRED' : 'PENDING',
+          expiresAt: m.inviteTokenExpiresAt,
+          createdAt: m.createdAt,
+          community: m.community,
+          class: null,
+          inviteUrl: m.inviteToken
+            ? inviteUrlForRole(m.role, m.inviteToken)
+            : null,
+          displayName: name || email,
+        };
+      }),
+  ].sort(
     (a, b) =>
       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
+
+  return {
+    members: members.map((m: any) => ({
+      id: m.id,
+      userId: m.userId,
+      role: m.role,
+      status: m.status,
+      community: m.community,
+      user: m.user,
+      classes: classesByUser.get(m.userId) || [],
+    })),
+    invitations,
+    permissions: {
+      actorRole,
+      assignableRoles,
+      canInvite: assignableRoles.length > 0,
+      canManageRoles: [
+        'SUPER_ADMIN',
+        'DIOCESE_ADMIN',
+        'PARISH_COORDINATOR',
+        'COMMUNITY_COORDINATOR',
+      ].includes(actorRole) || context.user.isAdmin,
+      canCancelInvites: assignableRoles.length > 0,
+    },
+  };
 };
 
 /**
@@ -467,7 +769,7 @@ export const listFamilyPortalInvitations = async (
  */
 export const acceptInvitation = async (
   args: { membershipId: string },
-  context: any
+  context: any,
 ) => {
   requireAuth(context.user);
 
@@ -477,88 +779,55 @@ export const acceptInvitation = async (
   });
 
   if (!membership) throw new HttpError(404, 'Convite não encontrado.');
-  if (membership.userId !== context.user.id) throw new HttpError(403, 'Este convite não é para você.');
-  if (membership.status !== 'INVITED') throw new HttpError(400, 'Este convite já foi processado.');
+  if (membership.userId !== context.user.id) {
+    throw new HttpError(403, 'Este convite não é para você.');
+  }
+  if (membership.status === 'ACTIVE') {
+    return membership; // idempotent
+  }
+  if (membership.status !== 'INVITED') {
+    throw new HttpError(400, 'Este convite já foi processado.');
+  }
 
   const updated = await context.entities.Membership.update({
     where: { id: args.membershipId },
     data: { status: 'ACTIVE', inviteToken: null, inviteTokenExpiresAt: null },
   });
 
-  // Delete any PendingInvitation for this user+parish to avoid loop
   if (context.user.email && context.entities.PendingInvitation) {
     await context.entities.PendingInvitation.deleteMany({
-      where: { email: context.user.email, parishId: membership.parishId },
+      where: {
+        email: normalizeInviteEmail(context.user.email),
+        parishId: membership.parishId,
+      },
     });
   }
 
-  // Auto-link profile for GUARDIAN and CATECHUMEN roles
-  if (membership.role === 'GUARDIAN') {
-    const userEmail = context.user.email;
-    // 1) Try to find a GuardianProfile pre-created by the coordinator with this email
-    let guardianProfile: any = null;
-    if (userEmail) {
-      guardianProfile = await context.entities.GuardianProfile.findFirst({
-        where: { email: userEmail },
-      } as any);
-      if (guardianProfile) {
-        // Link the user account to the pre-existing profile, preserving householdId
-        await context.entities.GuardianProfile.update({
-          where: { id: guardianProfile.id },
-          data: { userId: context.user.id },
-        } as any);
-      }
-    }
-    // 2) Fallback: look up by userId
-    if (!guardianProfile) {
-      guardianProfile = await context.entities.GuardianProfile.findFirst({
-        where: { userId: context.user.id },
-      } as any);
-    }
-    // 3) Create a minimal profile if nothing exists
-    if (!guardianProfile) {
-      await (context.entities.GuardianProfile as any).create({
-        data: {
-          userId: context.user.id,
-          email: userEmail,
-          relationship: 'Pai / Mãe',
-        },
-      });
-    }
-  } else if (membership.role === 'CATECHUMEN') {
-    // Link existing CatechumenProfile (created by coordinator) to this user
-    const userEmail = context.user.email;
-    if (userEmail) {
-      await context.entities.CatechumenProfile.updateMany({
-        where: { email: userEmail, userId: null },
-        data: { userId: context.user.id },
-      });
-    }
-  }
-
-  await writeAuditLog(context, 'CREATE', 'Membership', membership.id, { operation: 'MEMBER_ACCEPT' });
+  await linkProfile(context, membership.role);
+  await writeAuditLog(context, 'CREATE', 'Membership', membership.id, {
+    operation: 'MEMBER_ACCEPT',
+  });
   return updated;
 };
 
 /**
  * Public query: get invitation details by token.
- * Returns parish name, role, expiry, and whether the invited email already has an account.
  */
 export const getInvitationByToken = async (
   args: { token: string },
-  context: any
+  context: any,
 ) => {
-  // Rate limit to prevent token enumeration
-  const ip = (context.req?.headers?.['x-forwarded-for'] as string)?.split(',')[0]?.trim()
-    || (context.req?.socket?.remoteAddress as string)
-    || 'unknown';
+  const ip =
+    (context.req?.headers?.['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
+    (context.req?.socket?.remoteAddress as string) ||
+    'unknown';
   checkRateLimit(ip);
 
-  // 1) Try PendingInvitation (for emails without accounts yet)
   let invitation = await context.entities.PendingInvitation.findUnique({
     where: { token: args.token },
     include: {
       parish: { select: { id: true, name: true, type: true } },
+      class: { select: { id: true, name: true } },
     },
   });
 
@@ -566,10 +835,16 @@ export const getInvitationByToken = async (
     if (invitation.expiresAt && new Date() > new Date(invitation.expiresAt)) {
       throw new HttpError(410, 'Este convite expirou.');
     }
-    const existingUser = await context.entities.User.findUnique({
-      where: { email: invitation.email },
-      select: { id: true },
-    });
+    const invEmail = normalizeInviteEmail(invitation.email);
+    const existingUser =
+      (await context.entities.User.findUnique({
+        where: { email: invEmail },
+        select: { id: true },
+      })) ||
+      (await context.entities.User.findFirst({
+        where: { email: { equals: invEmail, mode: 'insensitive' } },
+        select: { id: true },
+      }));
     return {
       token: invitation.token,
       role: invitation.role,
@@ -578,13 +853,15 @@ export const getInvitationByToken = async (
       parishId: invitation.parishId,
       parishType: invitation.parish.type,
       emailMasked: maskEmail(invitation.email),
-      inviteEmail: !existingUser ? invitation.email : undefined,
+      inviteEmail: !existingUser ? invEmail : undefined,
       expiresAt: invitation.expiresAt?.toISOString() ?? null,
       hasAccount: !!existingUser,
+      portal: isFamilyPortalRole(invitation.role) ? 'family' : 'staff',
+      className: invitation.class?.name ?? null,
     };
   }
 
-  // 2) Try Membership (for existing users with INVITED status)
+  // Legacy Membership token
   const membership = await context.entities.Membership.findFirst({
     where: { inviteToken: args.token, status: 'INVITED' },
     include: {
@@ -594,7 +871,10 @@ export const getInvitationByToken = async (
   });
 
   if (!membership) throw new HttpError(404, 'Convite não encontrado.');
-  if (membership.inviteTokenExpiresAt && new Date() > new Date(membership.inviteTokenExpiresAt)) {
+  if (
+    membership.inviteTokenExpiresAt &&
+    new Date() > new Date(membership.inviteTokenExpiresAt)
+  ) {
     throw new HttpError(410, 'Este convite expirou.');
   }
 
@@ -608,20 +888,23 @@ export const getInvitationByToken = async (
     emailMasked: maskEmail(membership.user?.email || ''),
     expiresAt: membership.inviteTokenExpiresAt?.toISOString() ?? null,
     hasAccount: true,
+    portal: isFamilyPortalRole(membership.role) ? 'family' : 'staff',
+    className: null,
   };
 };
 
 /**
- * Authenticated action: accept an invitation by token.
- * Works for both PendingInvitation (new users) and Membership (existing users).
+ * Authenticated action: accept invitation by token (idempotent + transactional steps).
  */
 export const acceptInvitationByToken = async (
   args: { token: string },
-  context: any
+  context: any,
 ) => {
   requireAuth(context.user);
 
-  // 1) Try PendingInvitation
+  const userEmail = normalizeInviteEmail(context.user.email || '');
+
+  // 1) PendingInvitation (canonical)
   let invitation: any = await context.entities.PendingInvitation.findUnique({
     where: { token: args.token },
   });
@@ -630,38 +913,87 @@ export const acceptInvitationByToken = async (
     if (invitation.expiresAt && new Date() > new Date(invitation.expiresAt)) {
       throw new HttpError(410, 'Este convite expirou.');
     }
-    if (invitation.email.toLowerCase() !== context.user.email?.toLowerCase()) {
+    if (normalizeInviteEmail(invitation.email) !== userEmail) {
       throw new HttpError(403, 'Este convite é para outro endereço de email.');
     }
-    // Activate or create membership
+
     const existing = await context.entities.Membership.findFirst({
       where: { userId: context.user.id, parishId: invitation.parishId },
     });
+
     let membership: any;
-    if (existing) {
+    if (existing?.status === 'ACTIVE') {
+      // Idempotent re-accept: ensure class link, remove invite
+      membership = existing;
+    } else if (existing) {
       membership = await context.entities.Membership.update({
         where: { id: existing.id },
-        data: { status: 'ACTIVE', inviteToken: null, inviteTokenExpiresAt: null },
+        data: {
+          status: 'ACTIVE',
+          role: invitation.role,
+          communityId: invitation.communityId,
+          inviteToken: null,
+          inviteTokenExpiresAt: null,
+        },
       });
     } else {
       membership = await context.entities.Membership.create({
-        data: { userId: context.user.id, parishId: invitation.parishId, communityId: invitation.communityId, role: invitation.role, status: 'ACTIVE' },
+        data: {
+          userId: context.user.id,
+          parishId: invitation.parishId,
+          communityId: invitation.communityId,
+          role: invitation.role,
+          status: 'ACTIVE',
+        },
       });
     }
-    // Link profiles and clean up
+
+    if (invitation.classId && invitation.classAssignmentRole) {
+      await ensureClassAssignment(
+        context,
+        invitation.classId,
+        context.user.id,
+        invitation.classAssignmentRole,
+      );
+    } else if (invitation.classId) {
+      const resolved = resolveClassAssignmentRole({
+        parishRole: invitation.role,
+      });
+      if (resolved) {
+        await ensureClassAssignment(
+          context,
+          invitation.classId,
+          context.user.id,
+          resolved,
+        );
+      }
+    }
+
     await linkProfile(context, invitation.role);
-    await context.entities.PendingInvitation.delete({ where: { id: invitation.id } });
-    await writeAuditLog(context, 'CREATE', 'Membership', membership.id, { operation: 'MEMBER_ACCEPT_TOKEN' });
+    await context.entities.PendingInvitation.delete({
+      where: { id: invitation.id },
+    });
+    await writeAuditLog(context, 'CREATE', 'Membership', membership.id, {
+      operation: 'MEMBER_ACCEPT_TOKEN',
+      classId: invitation.classId || null,
+    });
     return membership;
   }
 
-  // 2) Try Membership inviteToken
+  // 2) Legacy Membership inviteToken
   const m = await context.entities.Membership.findFirst({
-    where: { inviteToken: args.token, status: 'INVITED' },
+    where: { inviteToken: args.token },
     include: { user: { select: { email: true } } },
   });
   if (!m) throw new HttpError(404, 'Convite não encontrado.');
-  if (m.user?.email?.toLowerCase() !== context.user.email?.toLowerCase()) {
+  if (m.status === 'ACTIVE') {
+    // Idempotent
+    return m;
+  }
+  if (m.status !== 'INVITED') {
+    throw new HttpError(400, 'Este convite já foi processado.');
+  }
+  if (normalizeInviteEmail(m.user?.email || '') !== userEmail) {
     throw new HttpError(403, 'Este convite é para outro endereço de email.');
   }
   if (m.inviteTokenExpiresAt && new Date() > new Date(m.inviteTokenExpiresAt)) {
@@ -672,23 +1004,26 @@ export const acceptInvitationByToken = async (
     where: { id: m.id },
     data: { status: 'ACTIVE', inviteToken: null, inviteTokenExpiresAt: null },
   });
-  // Also delete any matching PendingInvitation
-  if (context.user.email && context.entities.PendingInvitation) {
+  if (userEmail && context.entities.PendingInvitation) {
     await context.entities.PendingInvitation.deleteMany({
-      where: { email: context.user.email, parishId: m.parishId },
+      where: { email: userEmail, parishId: m.parishId },
     });
   }
   await linkProfile(context, m.role);
-  await writeAuditLog(context, 'CREATE', 'Membership', m.id, { operation: 'MEMBER_ACCEPT_TOKEN' });
+  await writeAuditLog(context, 'CREATE', 'Membership', m.id, {
+    operation: 'MEMBER_ACCEPT_TOKEN',
+  });
   return updated;
 };
 
 async function linkProfile(context: any, role: string) {
-  const userEmail = context.user.email;
+  const userEmail = normalizeInviteEmail(context.user.email || '');
   if (role === 'GUARDIAN') {
     let guardianProfile: any = null;
     if (userEmail) {
-      guardianProfile = await context.entities.GuardianProfile.findFirst({ where: { email: userEmail } } as any);
+      guardianProfile = await context.entities.GuardianProfile.findFirst({
+        where: { email: userEmail },
+      } as any);
       if (guardianProfile) {
         await context.entities.GuardianProfile.update({
           where: { id: guardianProfile.id },
@@ -697,11 +1032,17 @@ async function linkProfile(context: any, role: string) {
       }
     }
     if (!guardianProfile) {
-      guardianProfile = await context.entities.GuardianProfile.findFirst({ where: { userId: context.user.id } } as any);
+      guardianProfile = await context.entities.GuardianProfile.findFirst({
+        where: { userId: context.user.id },
+      } as any);
     }
     if (!guardianProfile) {
       await (context.entities.GuardianProfile as any).create({
-        data: { userId: context.user.id, email: userEmail, relationship: 'Pai / Mãe' },
+        data: {
+          userId: context.user.id,
+          email: userEmail || null,
+          relationship: 'Pai / Mãe',
+        },
       });
     }
   } else if (role === 'CATECHUMEN') {
@@ -715,13 +1056,11 @@ async function linkProfile(context: any, role: string) {
 }
 
 /**
- * Resend an invitation email (renews token and expiry).
- * Allowed for: coordinators (any invitation), catechists (only GUARDIAN/CATECHUMEN),
- * and personal workspace owners.
+ * Resend an invitation email (renews token and expiry). Idempotent success after send.
  */
 export const resendInvitation = async (
   args: { pendingInvitationId?: string; membershipId?: string },
-  context: any
+  context: any,
 ) => {
   requireAuth(context.user);
 
@@ -734,34 +1073,38 @@ export const resendInvitation = async (
   let parishId: string;
   let location: string;
   let token: string;
+  let inviteId: string;
 
   if (args.pendingInvitationId) {
     const inv = await context.entities.PendingInvitation.findUnique({
       where: { id: args.pendingInvitationId },
-      include: { parish: { select: { name: true } } },
+      include: {
+        parish: { select: { name: true } },
+        class: { select: { name: true } },
+      },
     });
     if (!inv) throw new HttpError(404, 'Convite pendente não encontrado.');
 
-    // Check permission
     const { role: inviterRole } = await resolveInviterRole(context, inv.parishId);
     const allowed = getAssignableRoles(inviterRole, context.user.isAdmin);
     if (!allowed.includes(inv.role)) {
       throw new HttpError(403, 'Você não tem permissão para reenviar este convite.');
     }
 
-    // Regenerate token and expiry
     token = crypto.randomUUID();
     await context.entities.PendingInvitation.update({
       where: { id: inv.id },
       data: { token, expiresAt: defaultExpiry() },
     });
 
-    email = inv.email;
+    email = normalizeInviteEmail(inv.email);
     role = inv.role;
     parishId = inv.parishId;
-    location = inv.parish.name;
+    location = inv.class?.name
+      ? `${inv.parish.name} / ${inv.class.name}`
+      : inv.parish.name;
+    inviteId = inv.id;
   } else {
-    // membershipId
     const membership = await context.entities.Membership.findUnique({
       where: { id: args.membershipId },
       include: {
@@ -773,23 +1116,22 @@ export const resendInvitation = async (
       throw new HttpError(404, 'Convite não encontrado ou já processado.');
     }
 
-    const { role: inviterRole } = await resolveInviterRole(context, membership.parishId);
+    const { role: inviterRole } = await resolveInviterRole(
+      context,
+      membership.parishId,
+    );
     const allowed = getAssignableRoles(inviterRole, context.user.isAdmin);
     if (!allowed.includes(membership.role)) {
       throw new HttpError(403, 'Você não tem permissão para reenviar este convite.');
     }
 
     token = crypto.randomUUID();
-    email = membership.user?.email || null;
+    email = normalizeInviteEmail(membership.user?.email || '');
     role = membership.role;
     parishId = membership.parishId;
     location = membership.parish.name;
-  }
+    inviteId = membership.id;
 
-  if (!email) throw new HttpError(400, 'Email do destinatário não encontrado.');
-
-  // Persist regenerated token for membership path too
-  if (args.membershipId) {
     await context.entities.Membership.update({
       where: { id: args.membershipId },
       data: {
@@ -799,24 +1141,107 @@ export const resendInvitation = async (
     });
   }
 
-  await sendInviteEmail(context, email, location, role, token);
-  await writeAuditLog(context, 'UPDATE', 'PendingInvitation', args.pendingInvitationId || args.membershipId || '', {
-    operation: 'MEMBER_INVITE_RESEND',
-    parishId,
+  if (!email) throw new HttpError(400, 'Email do destinatário não encontrado.');
+
+  const emailDelivery = await sendInviteEmail(
+    context,
     email,
+    location,
     role,
-  });
+    token,
+  );
+
+  await writeAuditLog(
+    context,
+    'UPDATE',
+    'PendingInvitation',
+    inviteId,
+    {
+      operation: 'MEMBER_INVITE_RESEND',
+      parishId,
+      email,
+      role,
+      emailDelivery,
+    },
+  );
 
   return {
     success: true,
     token,
-    inviteUrl: familyPortalUrl(`/convite/${token}`),
+    inviteUrl: inviteUrlForRole(role, token),
+    emailDelivery,
   };
+};
+
+/**
+ * Cancel a pending invitation (PendingInvitation or legacy INVITED membership).
+ */
+export const cancelInvitation = async (
+  args: { pendingInvitationId?: string; membershipId?: string },
+  context: any,
+) => {
+  requireAuth(context.user);
+
+  if (!args.pendingInvitationId && !args.membershipId) {
+    throw new HttpError(400, 'Informe pendingInvitationId ou membershipId.');
+  }
+
+  if (args.pendingInvitationId) {
+    const inv = await context.entities.PendingInvitation.findUnique({
+      where: { id: args.pendingInvitationId },
+    });
+    if (!inv) throw new HttpError(404, 'Convite não encontrado.');
+
+    const { role: inviterRole } = await resolveInviterRole(context, inv.parishId);
+    const allowed = getAssignableRoles(inviterRole, context.user.isAdmin);
+    if (!allowed.includes(inv.role) && !context.user.isAdmin) {
+      throw new HttpError(403, 'Você não tem permissão para cancelar este convite.');
+    }
+
+    await context.entities.PendingInvitation.delete({ where: { id: inv.id } });
+    await writeAuditLog(context, 'DELETE', 'PendingInvitation', inv.id, {
+      operation: 'MEMBER_INVITE_CANCEL',
+      parishId: inv.parishId,
+      email: inv.email,
+      role: inv.role,
+    });
+    return { success: true };
+  }
+
+  const membership = await context.entities.Membership.findUnique({
+    where: { id: args.membershipId },
+  });
+  if (!membership || membership.status !== 'INVITED') {
+    throw new HttpError(404, 'Convite não encontrado ou já processado.');
+  }
+
+  const { role: inviterRole } = await resolveInviterRole(
+    context,
+    membership.parishId,
+  );
+  const allowed = getAssignableRoles(inviterRole, context.user.isAdmin);
+  if (!allowed.includes(membership.role) && !context.user.isAdmin) {
+    throw new HttpError(403, 'Você não tem permissão para cancelar este convite.');
+  }
+
+  await context.entities.Membership.update({
+    where: { id: membership.id },
+    data: {
+      status: 'INACTIVE',
+      inviteToken: null,
+      inviteTokenExpiresAt: null,
+    },
+  });
+  await writeAuditLog(context, 'DELETE', 'Membership', membership.id, {
+    operation: 'MEMBER_INVITE_CANCEL',
+    parishId: membership.parishId,
+  });
+  return { success: true };
 };
 
 export const removeMembership = async (
   args: { membershipId: string },
-  context: any
+  context: any,
 ) => {
   requireAuth(context.user);
 
@@ -829,15 +1254,28 @@ export const removeMembership = async (
 
   if (!context.user.isAdmin && membership.userId !== context.user.id) {
     const isPersonalOwner = await context.entities.Parish.findFirst({
-      where: { id: membership.parishId, ownerId: context.user.id, type: 'PERSONAL' },
+      where: {
+        id: membership.parishId,
+        ownerId: context.user.id,
+        type: 'PERSONAL',
+      },
       select: { id: true },
     });
     if (!isPersonalOwner) {
       const userMembership = await context.entities.Membership.findFirst({
-        where: { userId: context.user.id, parishId: membership.parishId, status: 'ACTIVE' },
+        where: {
+          userId: context.user.id,
+          parishId: membership.parishId,
+          status: 'ACTIVE',
+        },
         select: { role: true },
       });
-      const allowedRoles = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'];
+      const allowedRoles = [
+        'SUPER_ADMIN',
+        'DIOCESE_ADMIN',
+        'PARISH_COORDINATOR',
+        'COMMUNITY_COORDINATOR',
+      ];
       if (!userMembership || !allowedRoles.includes(userMembership.role)) {
         throw new HttpError(403, 'Apenas coordenadores podem remover membros.');
       }
@@ -848,54 +1286,24 @@ export const removeMembership = async (
     where: { id: args.membershipId },
     data: { status: 'INACTIVE' },
   });
-  await writeAuditLog(context, 'DELETE', 'Membership', membership.id, { operation: 'MEMBER_REMOVE' });
+  await writeAuditLog(context, 'DELETE', 'Membership', membership.id, {
+    operation: 'MEMBER_REMOVE',
+  });
   return { success: true };
 };
 
+/**
+ * List parish members (team area). Accessible to coordinators and catechists.
+ */
 export const listParishMembers = async (
   args: { parishId: string; communityId?: string },
-  context: any
+  context: any,
 ) => {
   requireAuth(context.user);
 
   if (!args.parishId) return [];
 
-  const { assertStaffOperation } = await import('../auth/familySurface');
-  await assertStaffOperation(context, {
-    parishId: args.parishId,
-    message: 'O diretório de membros é exclusivo da equipe pastoral.',
-  });
-
-  if (!context.user.isAdmin) {
-    const membership = await context.entities.Membership.findFirst({
-      where: {
-        userId: context.user.id,
-        parishId: args.parishId,
-        status: 'ACTIVE',
-        role: {
-          in: [
-            'SUPER_ADMIN',
-            'DIOCESE_ADMIN',
-            'PARISH_COORDINATOR',
-            'COMMUNITY_COORDINATOR',
-            'PERSONAL_OWNER',
-          ],
-        },
-      },
-    });
-    if (!membership) {
-      const isPersonalOwner = await context.entities.Parish.findFirst({
-        where: { id: args.parishId, ownerId: context.user.id, type: 'PERSONAL' },
-        select: { id: true },
-      });
-      if (!isPersonalOwner) {
-        throw new HttpError(
-          403,
-          'Apenas coordenadores podem listar membros da paróquia.',
-        );
-      }
-    }
-  }
+  await assertCanViewTeam(context, args.parishId);
 
   const where: any = { parishId: args.parishId };
   if (args.communityId) {
@@ -905,7 +1313,9 @@ export const listParishMembers = async (
   return context.entities.Membership.findMany({
     where,
     include: {
-      user: { select: { id: true, email: true, firstName: true, lastName: true } },
+      user: {
+        select: { id: true, email: true, firstName: true, lastName: true },
+      },
       community: { select: { id: true, name: true } },
     },
     orderBy: { createdAt: 'desc' },
@@ -914,7 +1324,7 @@ export const listParishMembers = async (
 
 export const updateMembershipRole = async (
   args: { membershipId: string; role: string },
-  context: any
+  context: any,
 ) => {
   if (!context.user) throw new HttpError(401);
 
@@ -925,13 +1335,21 @@ export const updateMembershipRole = async (
   if (!membership) throw new HttpError(404, 'Membro não encontrado.');
 
   const userMembership = await context.entities.Membership.findFirst({
-    where: { userId: context.user.id, parishId: membership.parishId, status: 'ACTIVE' },
+    where: {
+      userId: context.user.id,
+      parishId: membership.parishId,
+      status: 'ACTIVE',
+    },
   });
 
   const isAdmin = context.user.isAdmin;
   const userRole = userMembership?.role;
 
-  const canManage = isAdmin || userRole === 'SUPER_ADMIN' || userRole === 'DIOCESE_ADMIN' || userRole === 'PARISH_COORDINATOR';
+  const canManage =
+    isAdmin ||
+    userRole === 'SUPER_ADMIN' ||
+    userRole === 'DIOCESE_ADMIN' ||
+    userRole === 'PARISH_COORDINATOR';
   if (!canManage) throw new HttpError(403, 'Sem permissão para alterar permissões.');
 
   const allowedRoles = getAssignableRoles(userRole, isAdmin);
@@ -945,6 +1363,9 @@ export const updateMembershipRole = async (
     data: { role: args.role as any },
   });
 };
+
+// Re-export hierarchy for tests / UI alignment
+export { ROLE_ASSIGNMENT_HIERARCHY, getAssignableRoles };
 
 // ── Utility ────────────────────────────────────────────────────────────────
 

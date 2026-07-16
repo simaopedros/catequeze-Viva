@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../../client/components/ui/button";
 import { Badge } from "../../../client/components/ui/badge";
@@ -11,90 +11,29 @@ import {
   useMembershipStatusLabels,
 } from "../../../i18n/useLabels";
 
-const INVITE_ROLE_KEYS = [
-  "PARISH_COORDINATOR",
-  "COMMUNITY_COORDINATOR",
-  "LEAD_CATECHIST",
-  "ASSISTANT_CATECHIST",
-  "GUARDIAN",
-  "CATECHUMEN",
-  "CONTENT_REVIEWER",
-  "PASTORAL_VIEWER",
-] as const;
-
 interface ParishMembersTabProps {
   members: any[];
-  communities: any[];
-  households: any[];
-  onInvite: (
-    email: string,
-    role: string,
-    communityId: string,
-    householdId: string,
-  ) => Promise<{ msg: string; isError: boolean }>;
   onRemove: (membershipId: string) => Promise<void>;
 }
 
-export function ParishMembersTab({
-  members,
-  communities,
-  households,
-  onInvite,
-  onRemove,
-}: ParishMembersTabProps) {
+/**
+ * Summary tab on parish detail. Invite/manage team is canonical on /app/team;
+ * family portal invites stay on /app/family-invites.
+ */
+export function ParishMembersTab({ members, onRemove }: ParishMembersTabProps) {
   const { t } = useTranslation("common");
   const { t: tp } = useTranslation("parishes");
   const { t: tf } = useTranslation("family");
   const roleLabels = useRoleLabels();
   const statusLabels = useMembershipStatusLabels();
-  const inviteRoles = useMemo(
-    () =>
-      INVITE_ROLE_KEYS.map((value) => ({ value, label: roleLabels[value] })),
-    [roleLabels],
-  );
-  const [showInvite, setShowInvite] = useState(false);
-  const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState("GUARDIAN");
-  const [inviteCommunityId, setInviteCommunityId] = useState("");
-  const [inviteHouseholdId, setInviteHouseholdId] = useState("");
-  const [inviting, setInviting] = useState(false);
-  const [inviteMsg, setInviteMsg] = useState("");
-  const [inviteMsgIsError, setInviteMsgIsError] = useState(false);
   const [removeTarget, setRemoveTarget] = useState<string | null>(null);
-
-  const handleInvite = async () => {
-    if (!inviteEmail) return;
-    setInviting(true);
-    setInviteMsg("");
-    setInviteMsgIsError(false);
-    try {
-      const result = await onInvite(
-        inviteEmail,
-        inviteRole,
-        inviteCommunityId,
-        inviteHouseholdId,
-      );
-      setInviteMsg(result.msg || tp("invite_sent"));
-      setInviteMsgIsError(result.isError);
-      if (!result.isError) {
-        setInviteEmail("");
-        setInviteCommunityId("");
-        setInviteHouseholdId("");
-        setShowInvite(false);
-      }
-    } catch (e: any) {
-      setInviteMsg(e.message || t("error_invite"));
-      setInviteMsgIsError(true);
-    }
-    setInviting(false);
-  };
 
   const handleRemove = async () => {
     if (!removeTarget) return;
     try {
       await onRemove(removeTarget);
-    } catch (e: any) {
-      // error handled by parent
+    } catch {
+      // parent surfaces error
     }
     setRemoveTarget(null);
   };
@@ -102,6 +41,21 @@ export function ParishMembersTab({
   return (
     <div className="space-y-4">
       <div className="rounded-sm border border-[#D39A2B]/35 bg-[#D39A2B]/[0.08] p-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-2 text-sm">
+          <Users className="mt-0.5 h-4 w-4 shrink-0 text-[#071A2D]" />
+          <p className="text-muted-foreground">
+            {t("team.subtitle", { members: members.length, pending: 0 })}
+          </p>
+        </div>
+        <Button size="sm" variant="outline" className="h-9 rounded-sm shrink-0" asChild>
+          <Link to="/app/team">
+            <UserPlus className="mr-1 h-3.5 w-3.5" />
+            {t("team.title")}
+          </Link>
+        </Button>
+      </div>
+
+      <div className="rounded-sm border border-border/70 bg-muted/20 p-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-2 text-sm">
           <Heart className="mt-0.5 h-4 w-4 shrink-0 text-[#071A2D]" />
           <p className="text-muted-foreground">
@@ -120,86 +74,13 @@ export function ParishMembersTab({
         <p className="text-sm text-muted-foreground">
           {tp("members_count_short", { count: members.length })}
         </p>
-        <Button size="sm" onClick={() => setShowInvite(!showInvite)}>
-          <UserPlus className="mr-1 h-4 w-4" />
-          {tp("invite")}
+        <Button size="sm" asChild>
+          <Link to="/app/team">
+            <UserPlus className="mr-1 h-4 w-4" />
+            {tp("invite")}
+          </Link>
         </Button>
       </div>
-
-      {showInvite && (
-        <div className="space-y-3 rounded-sm border border-border/70 bg-white p-4">
-          <div className="space-y-1.5">
-            <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              {tp("invite_member")}
-            </h3>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <input
-              value={inviteEmail}
-              onChange={(e) => setInviteEmail(e.target.value)}
-              className="flex-1 min-w-[200px] h-9 rounded-sm border border-input bg-background px-3 text-sm"
-              placeholder={t("families.email_placeholder")}
-              type="email"
-            />
-            <select
-              value={inviteRole}
-              onChange={(e) => setInviteRole(e.target.value)}
-              className="h-9 rounded-sm border border-input bg-background px-3 text-sm"
-            >
-              {inviteRoles.map((r) => (
-                <option key={r.value} value={r.value}>
-                  {r.label}
-                </option>
-              ))}
-            </select>
-            <select
-              value={inviteCommunityId}
-              onChange={(e) => setInviteCommunityId(e.target.value)}
-              className="h-9 rounded-sm border border-input bg-background px-3 text-sm"
-            >
-              <option value="">{tp("all_parish")}</option>
-              {communities.map((c: any) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-            {(inviteRole === "GUARDIAN" || inviteRole === "CATECHUMEN") && (
-              <select
-                value={inviteHouseholdId}
-                onChange={(e) => setInviteHouseholdId(e.target.value)}
-                className="h-9 rounded-sm border border-input bg-background px-3 text-sm min-w-[180px]"
-              >
-                <option value="">{tp("no_family_later")}</option>
-                {households.map((h: any) => (
-                  <option key={h.id} value={h.id}>
-                    {h.name}
-                  </option>
-                ))}
-              </select>
-            )}
-            <Button
-              size="sm"
-              onClick={handleInvite}
-              disabled={inviting || !inviteEmail}
-            >
-              <Mail className="mr-1 h-3 w-3" />
-              {inviting ? "..." : tp("send")}
-            </Button>
-          </div>
-          {inviteMsg && (
-            <p
-              className={
-                "text-xs " +
-                (inviteMsgIsError ? "text-destructive" : "text-[#071A2D]")
-              }
-            >
-              {inviteMsg}
-            </p>
-          )}
-        </div>
-      )}
 
       {members.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">

@@ -55,7 +55,7 @@ export const USERS = {
 export function makeContext(userKey: keyof typeof USERS) {
   const u = USERS[userKey];
   return {
-    user: { id: u.id, isAdmin: u.isAdmin },
+    user: { id: u.id, isAdmin: u.isAdmin, email: u.email },
     entities: prisma,
   };
 }

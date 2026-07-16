@@ -119,12 +119,21 @@ export default function FamilyPortalInvitesPage() {
         role,
         parish_id: activeParishId,
         source: "family_portal_invites_page",
+        email_delivery: result?.emailDelivery,
       });
-      toast({ title: t("invite_sent") });
-      setEmail("");
+      const delivery = result?.emailDelivery as string | undefined;
+      if (delivery === "not_configured" || delivery === "failed") {
+        toast({
+          title: t("team.email_failed"),
+          description: url ? t("team.copy_link") : undefined,
+          variant: "destructive",
+        });
+      } else {
+        toast({ title: t("invite_sent") });
+        setEmail("");
+      }
       await refetch();
     } catch (e: any) {
-      // resend path throws 400 with message when already invited
       toast({
         title: e.message || t("error_invite"),
         variant: "destructive",
@@ -144,7 +153,15 @@ export default function FamilyPortalInvitesPage() {
           : { membershipId: inv.id },
       );
       if (result?.inviteUrl) setLastInviteUrl(result.inviteUrl);
-      toast({ title: tf("portal_invites.resent") });
+      const delivery = result?.emailDelivery as string | undefined;
+      if (delivery === "not_configured" || delivery === "failed") {
+        toast({
+          title: t("team.email_failed"),
+          variant: "destructive",
+        });
+      } else {
+        toast({ title: tf("portal_invites.resent") });
+      }
       await refetch();
     } catch (e: any) {
       toast({

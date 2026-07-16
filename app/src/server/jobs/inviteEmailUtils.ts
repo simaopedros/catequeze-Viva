@@ -1,7 +1,13 @@
-import { FAMILY_PORTAL_HOST } from '../../shared/portal';
+import {
+  FAMILY_PORTAL_HOST,
+  STAFF_PORTAL_HOST,
+  isFamilyPortalRole,
+} from '../../shared/portal';
 
-export function inviteLink(token: string): string {
-  return `https://${FAMILY_PORTAL_HOST}/convite/${token}`;
+export function inviteLink(token: string, role?: string): string {
+  const host =
+    role && !isFamilyPortalRole(role) ? STAFF_PORTAL_HOST : FAMILY_PORTAL_HOST;
+  return `https://${host}/convite/${token}`;
 }
 
 export function roleLabel(role: string): string {
@@ -39,7 +45,7 @@ export async function deliverInviteEmail(
       body: [
         `Você foi convidado(a) para participar de "${payload.location}" como ${label}.`,
         '',
-        `Para aceitar, acesse: ${inviteLink(payload.token)}`,
+        `Para aceitar, acesse: ${inviteLink(payload.token, payload.role)}`,
         '',
         'Este convite expira em 30 dias.',
         '',

@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { Button } from "../../client/components/ui/button";
 import {
   Church,
-  MapPin,
   Users,
   Building2,
   Settings,
@@ -17,13 +16,11 @@ import {
   useQuery,
   getParishById,
   listCommunities,
-  listHouseholds,
   listParishMembers,
   updateParish,
   deleteParish,
   createCommunity,
   updateCommunity,
-  inviteUserToParish,
   removeMembership,
 } from "wasp/client/operations";
 import { ParishInfoTab } from "../components/parish/ParishInfoTab";
@@ -32,7 +29,6 @@ import { AppPageHeader } from "../../client/components/brand/AppChrome";
 import { ParishMembersTab } from "../components/parish/ParishMembersTab";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
 import { toast } from "../../client/hooks/use-toast";
-import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
 
 type Tab = "info" | "communities" | "members";
 
@@ -53,9 +49,6 @@ export default function ParishDetailPage() {
   const { data: members = [] } = useQuery(listParishMembers, {
     parishId: parishId!,
   });
-  const { data: households = [] } = useQuery(listHouseholds, {
-    parishId: parishId!,
-  } as any);
   const [error, setError] = useState("");
   const [tab, setTab] = useState<Tab>("info");
 
@@ -147,38 +140,6 @@ export default function ParishDetailPage() {
         description: e.message || t("try_again"),
         variant: "destructive",
       });
-    }
-  };
-
-  const handleInvite = async (
-    email: string,
-    role: string,
-    communityId: string,
-    householdId: string,
-  ): Promise<{ msg: string; isError: boolean }> => {
-    try {
-      await inviteUserToParish({
-        email,
-        parishId: pid,
-        role,
-        communityId: communityId || undefined,
-        householdId: householdId || undefined,
-      });
-      trackMarketingEvent("invite_sent", {
-        role,
-        placement: "parish_detail_page",
-        has_community: Boolean(communityId),
-        has_household: Boolean(householdId),
-      });
-      toast({ title: tp("invite_sent") });
-      return { msg: tp("invite_sent"), isError: false };
-    } catch (e: any) {
-      toast({
-        title: tp("invite_send_error"),
-        description: e.message || t("try_again"),
-        variant: "destructive",
-      });
-      return { msg: e.message || tp("invite_send_error"), isError: true };
     }
   };
 
@@ -345,9 +306,6 @@ export default function ParishDetailPage() {
         {tab === "members" && (
           <ParishMembersTab
             members={members}
-            communities={communities}
-            households={households}
-            onInvite={handleInvite}
             onRemove={handleRemoveMember}
           />
         )}

@@ -55,6 +55,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   classes: Users,
   catechumens: GraduationCap,
   families: Heart,
+  team: Users,
   family_portal_invites: Mail,
   content_library: Library,
   ai_hub: BookOpen,

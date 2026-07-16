@@ -39,6 +39,7 @@ import {
   removeCatechistFromClass,
   listParishCatechists,
   getMonthlyPlan,
+  inviteUserToParish,
 } from "wasp/client/operations";
 import { useAuth } from "wasp/client/auth";
 import { useUserContext } from "../../client/hooks/useUserContext";
@@ -122,6 +123,14 @@ export default function ClassDetailPage() {
   const [showAddCatechist, setShowAddCatechist] = useState(false);
   const [addUserId, setAddUserId] = useState("");
   const [addingCatechist, setAddingCatechist] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState<"LEAD_CATECHIST" | "ASSISTANT_CATECHIST">(
+    "ASSISTANT_CATECHIST",
+  );
+  const [invitingByEmail, setInvitingByEmail] = useState(false);
+  const [lastClassInviteUrl, setLastClassInviteUrl] = useState<string | null>(
+    null,
+  );
 
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState("");
@@ -327,6 +336,41 @@ export default function ClassDetailPage() {
       });
     } finally {
       setAddingCatechist(false);
+    }
+  };
+
+  const handleInviteCatechistByEmail = async () => {
+    if (!inviteEmail.trim() || !cls?.parish?.id) return;
+    setInvitingByEmail(true);
+    setLastClassInviteUrl(null);
+    try {
+      const result: any = await inviteUserToParish({
+        email: inviteEmail.trim(),
+        parishId: cls.parish.id,
+        role: inviteRole,
+        classId: id!,
+      });
+      if (result?.inviteUrl) setLastClassInviteUrl(result.inviteUrl);
+      const delivery = result?.emailDelivery as string | undefined;
+      if (delivery === "sent") {
+        toast({ title: t("detail.invite_email_sent") });
+      } else if (delivery === "not_configured" || delivery === "failed") {
+        toast({
+          title: t("detail.invite_saved_copy_link"),
+          variant: "destructive",
+        });
+      } else {
+        toast({ title: t("detail.invite_email_sent") });
+      }
+      setInviteEmail("");
+    } catch (e: any) {
+      toast({
+        title: t("detail.error"),
+        description: e.message || t("detail.add_error"),
+        variant: "destructive",
+      });
+    } finally {
+      setInvitingByEmail(false);
     }
   };
 
@@ -982,6 +1026,73 @@ export default function ClassDetailPage() {
                   <p className="text-xs text-muted-foreground mt-1">
                     {t("detail.all_catechists_linked")}
                   </p>
+                )}
+                {canManageCatechists && (
+                  <div className="mt-3 space-y-2 rounded-sm border border-dashed border-border/70 bg-muted/20 p-3">
+                    <p className="text-xs font-medium text-muted-foreground">
+                      {t("detail.invite_by_email")}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      <input
+                        type="email"
+                        value={inviteEmail}
+                        onChange={(e) => setInviteEmail(e.target.value)}
+                        placeholder={t("detail.invite_email_placeholder")}
+                        className="flex-1 min-w-[180px] h-9 rounded-sm border border-input bg-background px-3 text-sm"
+                      />
+                      <select
+                        value={inviteRole}
+                        onChange={(e) =>
+                          setInviteRole(
+                            e.target.value as
+                              | "LEAD_CATECHIST"
+                              | "ASSISTANT_CATECHIST",
+                          )
+                        }
+                        className="h-9 rounded-sm border border-input bg-background px-3 text-sm"
+                      >
+                        <option value="ASSISTANT_CATECHIST">
+                          {t("detail.role_assistant")}
+                        </option>
+                        <option value="LEAD_CATECHIST">
+                          {t("detail.role_lead_catechist")}
+                        </option>
+                      </select>
+                      <Button
+                        size="sm"
+                        onClick={handleInviteCatechistByEmail}
+                        disabled={!inviteEmail.trim() || invitingByEmail}
+                      >
+                        {invitingByEmail
+                          ? tc("loading")
+                          : t("detail.send_invite")}
+                      </Button>
+                    </div>
+                    {lastClassInviteUrl && (
+                      <div className="flex flex-wrap items-center gap-2 text-xs">
+                        <span className="truncate text-muted-foreground flex-1 min-w-0">
+                          {lastClassInviteUrl}
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-8"
+                          onClick={async () => {
+                            try {
+                              await navigator.clipboard.writeText(
+                                lastClassInviteUrl,
+                              );
+                              toast({ title: tc("team.link_copied") });
+                            } catch {
+                              /* ignore */
+                            }
+                          }}
+                        >
+                          {tc("team.copy_link")}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             )}

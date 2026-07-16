@@ -384,11 +384,15 @@ export const getDashboardStats = async (
       })
     : Promise.resolve([]);
 
-  // Admin-only counts
-  const totalUsersPromise = isAdmin ? context.entities.User.count() : Promise.resolve(undefined);
-  const totalParishesPromise = isAdmin
-    ? context.entities.Parish.count()
-    : Promise.resolve(undefined);
+  // Admin-only counts (User must be declared on getDashboardStats entities in main.wasp)
+  const totalUsersPromise =
+    isAdmin && context.entities.User
+      ? context.entities.User.count()
+      : Promise.resolve(undefined);
+  const totalParishesPromise =
+    isAdmin && context.entities.Parish
+      ? context.entities.Parish.count()
+      : Promise.resolve(undefined);
 
   // ─── Resolve Phase 2 ────────────────────────────────────────────────────────
   const [

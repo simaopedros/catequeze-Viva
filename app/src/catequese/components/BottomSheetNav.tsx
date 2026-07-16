@@ -49,6 +49,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   parishes: Church,
   communities: Building2,
   families: Heart,
+  team: Users,
   family_portal_invites: Mail,
   directory: FolderOpen,
   catechism: ScrollText,

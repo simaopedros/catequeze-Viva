@@ -46,10 +46,11 @@ describe('Navigation Role Filtering', () => {
   describe('LEAD_CATECHIST', () => {
     const paths = visiblePaths('LEAD_CATECHIST');
 
-    it('sees families and classes', () => {
+    it('sees families, classes, and team', () => {
       expect(paths).toContain('/app/families');
       expect(paths).toContain('/app/classes');
       expect(paths).toContain('/app/catechumens');
+      expect(paths).toContain('/app/team');
     });
 
     it('does NOT see admin or parishes', () => {

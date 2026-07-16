@@ -1134,6 +1134,11 @@ export const classes_pt_BR = {
       "role_assistant": "Auxiliar",
       "role_lead_catechist": "Catequista Resp.",
       "role_coordinator": "Coordenador",
+      "invite_by_email": "Convidar por email (ainda não está na paróquia)",
+      "invite_email_placeholder": "email@exemplo.com",
+      "send_invite": "Enviar convite",
+      "invite_email_sent": "Convite enviado!",
+      "invite_saved_copy_link": "Convite salvo — copie o link se o email não for entregue",
       "loading_planning": "Carregando planejamento...",
       "meetings_this_month": "{{count}} encontros este mês",
       "no_meetings_this_month": "Nenhum encontro agendado para este mês.",
@@ -1766,7 +1771,32 @@ export const common_pt_BR = {
     "install_description": "Adicione à tela inicial para acesso rápido e offline.",
     "install_button": "Instalar",
     "offline_title": "Sem conexão",
-    "offline_description": "Você está offline. Verifique sua conexão e tente novamente."
+    "offline_description": "Você está offline. Verifique sua conexão e tente novamente.",
+    "team": {
+      "title": "Equipe",
+      "subtitle": "{{members}} membros ativos · {{pending}} convites pendentes",
+      "invite_member": "Convidar membro da equipe",
+      "invite_sent": "Convite enviado por email.",
+      "invite_saved": "Convite salvo.",
+      "email_not_configured": "Convite salvo, mas o envio de email não está configurado. Copie o link abaixo.",
+      "email_failed": "Convite salvo, mas o email falhou. Copie o link abaixo para partilhar.",
+      "link_copied": "Link copiado!",
+      "copy_link": "Copiar link",
+      "resend": "Reenviar",
+      "cancel_invite": "Cancelar convite",
+      "cancel_invite_confirm": "Cancelar este convite pendente? A pessoa deixará de poder aceitá-lo.",
+      "invite_cancelled": "Convite cancelado.",
+      "pending_invites": "Convites pendentes",
+      "no_pending": "Nenhum convite de equipe pendente.",
+      "active_members": "Membros ativos",
+      "class_community": "Turma / Comunidade",
+      "expires": "Validade",
+      "status_pending": "Pendente",
+      "status_expired": "Expirado",
+      "select_class": "Selecione a turma",
+      "class_required": "Informe a turma ao convidar catequistas ou auxiliares.",
+      "select_workspace": "Selecione um espaço"
+    }
   } as const;
 
 export const components_pt_BR = {
@@ -3319,6 +3349,7 @@ export const navigation_pt_BR = {
     "classes": "Turmas",
     "catechumens": "Catequizandos",
     "families": "Famílias",
+    "team": "Equipe",
     "family_portal_invites": "Convites da família",
     "content_library": "Biblioteca",
     "ai_hub": "Assistência editorial",

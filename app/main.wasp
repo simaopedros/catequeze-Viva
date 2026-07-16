@@ -540,29 +540,39 @@ query listParishMembers {
   entities: [Membership, User, Community, Parish]
 }
 
+query getParishTeam {
+  fn: import { getParishTeam } from "@src/server/operations/memberOperations",
+  entities: [Membership, User, Community, Parish, PendingInvitation, ClassCatechist, CatechesisClass]
+}
+
 action inviteUserToParish {
   fn: import { inviteUserToParish } from "@src/server/operations/memberOperations",
-  entities: [Membership, User, Parish, Community, AuditLog, PendingInvitation, GuardianProfile, CatechumenProfile, Household]
+  entities: [Membership, User, Parish, Community, AuditLog, PendingInvitation, GuardianProfile, CatechumenProfile, Household, CatechesisClass, ClassCatechist]
 }
 
 action acceptInvitation {
   fn: import { acceptInvitation } from "@src/server/operations/memberOperations",
-  entities: [Membership, AuditLog, GuardianProfile, CatechumenProfile]
+  entities: [Membership, AuditLog, GuardianProfile, CatechumenProfile, PendingInvitation]
 }
 
 query getInvitationByToken {
   fn: import { getInvitationByToken } from "@src/server/operations/memberOperations",
-  entities: [PendingInvitation, User, Parish]
+  entities: [PendingInvitation, User, Parish, Membership, CatechesisClass]
 }
 
 action acceptInvitationByToken {
   fn: import { acceptInvitationByToken } from "@src/server/operations/memberOperations",
-  entities: [PendingInvitation, Membership, GuardianProfile, CatechumenProfile, AuditLog]
+  entities: [PendingInvitation, Membership, GuardianProfile, CatechumenProfile, AuditLog, ClassCatechist, CatechesisClass]
 }
 
 action resendInvitation {
   fn: import { resendInvitation } from "@src/server/operations/memberOperations",
-  entities: [PendingInvitation, Membership, Parish, User, AuditLog]
+  entities: [PendingInvitation, Membership, Parish, User, AuditLog, CatechesisClass]
+}
+
+action cancelInvitation {
+  fn: import { cancelInvitation } from "@src/server/operations/memberOperations",
+  entities: [PendingInvitation, Membership, Parish, AuditLog]
 }
 
 query listFamilyPortalInvitations {
@@ -572,7 +582,7 @@ query listFamilyPortalInvitations {
 
 action removeMembership {
   fn: import { removeMembership } from "@src/server/operations/memberOperations",
-  entities: [Membership, AuditLog]
+  entities: [Membership, AuditLog, Parish]
 }
 
 action updateMembershipRole {
@@ -841,7 +851,7 @@ action justifyAbsenceByMeeting {
 //#region Catequese Viva - Dashboard Operations
 query getDashboardStats {
   fn: import { getDashboardStats } from "@src/server/operations/dashboardOperations",
-  entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, AttendanceRecord, Meeting, ContentItem, CatechumenProfile, ClassCatechist, Parish, GuardianProfile, Household]
+  entities: [User, Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, AttendanceRecord, Meeting, ContentItem, CatechumenProfile, ClassCatechist, Parish, GuardianProfile, Household]
 }
 
 query getEncounterFocus {
@@ -1360,6 +1370,9 @@ page AppParishesPage { authRequired: true, component: import ParishesPage from "
 
 route AppParishMembersRoute { path: "/app/parishes/:id/members", to: AppParishMembersPage }
 page AppParishMembersPage { authRequired: true, component: import ParishMembersPage from "@src/catequese/pages/ParishMembersPage" }
+
+route AppTeamRoute { path: "/app/team", to: AppTeamPage }
+page AppTeamPage { authRequired: true, component: import TeamPage from "@src/catequese/pages/TeamPage" }
 
 route AppCommunitiesRoute { path: "/app/communities", to: AppCommunitiesPage }
 page AppCommunitiesPage { authRequired: true, component: import CommunitiesPage from "@src/catequese/pages/CommunitiesPage" }
