@@ -116,23 +116,60 @@ jobs:
           CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
         run: |
+          set -euo pipefail
           npm ci
           npx playwright install chromium
           if [[ -z "${CF_ACCESS_CLIENT_ID:-}" || -z "${CF_ACCESS_CLIENT_SECRET:-}" ]]; then
             echo "⚠️ CF_ACCESS_CLIENT_ID/SECRET not set — smoke may fail if Cloudflare Access is enabled."
             echo "   See app/docs/CLOUDFLARE_ACCESS.md (Service Token + GitHub secrets)."
           fi
-          # Wait for public edge to serve ready SPA (cold CF/cache after recreate).
+
+          CF_HDRS=()
+          if [[ -n "${CF_ACCESS_CLIENT_ID:-}" && -n "${CF_ACCESS_CLIENT_SECRET:-}" ]]; then
+            CF_HDRS=(-H "CF-Access-Client-Id: ${CF_ACCESS_CLIENT_ID}" -H "CF-Access-Client-Secret: ${CF_ACCESS_CLIENT_SECRET}")
+          fi
+
+          # Wait for API readiness (fail under ~1 min, not multi-minute loops later).
+          ready=0
           for i in 1 2 3 4 5 6 7 8 9 10; do
-            if curl -fsS --max-time 10 https://homolog.catechis.app/readyz | grep -q '"status":"ok"'; then
+            if curl -fsS --max-time 10 "${CF_HDRS[@]}" https://homolog.catechis.app/readyz | grep -q '"status":"ok"'; then
               echo "✅ homolog readyz ok (attempt $i)"
+              ready=1
               break
             fi
             echo "⏳ waiting for homolog readyz ($i)..."
-            sleep 6
+            sleep 5
           done
+          if [[ "$ready" != "1" ]]; then
+            echo "❌ homolog readyz never became ok"
+            exit 1
+          fi
+
+          # Warm HTML + main JS bundle on both hosts (proves SPA extract, heats CDN).
+          warm_host() {
+            local origin="$1"
+            local html asset
+            html=$(curl -fsS --max-time 15 "${CF_HDRS[@]}" "${origin}/")
+            echo "$html" | grep -q 'id="root"' || { echo "❌ ${origin}: #root missing"; exit 1; }
+            asset=$(echo "$html" | grep -oE '/assets/index-[^"]+\.js' | head -1 || true)
+            if [[ -z "$asset" ]]; then
+              echo "❌ ${origin}: module asset path missing"
+              exit 1
+            fi
+            curl -fsS --max-time 20 -o /dev/null "${CF_HDRS[@]}" "${origin}${asset}"
+            echo "✅ warmed ${origin}${asset}"
+          }
+          warm_host "https://homolog.catechis.app"
+          warm_host "https://familia-homolog.catechis.app"
+
+          # Smoke first (fast gate), then pastoral QA. Max ~8–10 min with 1 retry.
           HOMOLOG_STAFF_URL=https://homolog.catechis.app \
           HOMOLOG_FAMILY_URL=https://familia-homolog.catechis.app \
           HOMOLOG_API_URL=https://api-homolog.catechis.app \
           SKIP_WEBSERVER=true \
-          npx playwright test tests/homologSmoke.spec.ts tests/homologPastoral.spec.ts --reporter=list
+          npx playwright test \
+            tests/homologSmoke.spec.ts \
+            tests/homologPastoral.spec.ts \
+            --reporter=list \
+            --retries=1 \
+            --timeout=60000

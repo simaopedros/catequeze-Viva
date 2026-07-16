@@ -11,12 +11,12 @@ export default defineConfig({
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
-  /* Retry on CI only — homolog cold-start SPA flakes benefit from a second chance */
-  retries: process.env.CI ? 2 : 0,
+  /* One retry only — more retries turned homolog smoke into 20+ minute jobs */
+  retries: process.env.CI ? 1 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
-  /* Homolog smoke/family host can exceed default 30s after Docker deploy */
-  timeout: process.env.HOMOLOG_STAFF_URL || process.env.CI ? 180_000 : 60_000,
+  /* Fail-fast: smoke should not sit 3 minutes on empty #root */
+  timeout: 60_000,
 
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {

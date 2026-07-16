@@ -14,12 +14,25 @@ test.describe('Homolog pastoral QA (automated)', () => {
   });
 
   test('B6: /convite accepts manual code navigation', async ({ page }) => {
-    await page.goto(`${FAMILY_URL}/convite`);
-    await expect(page.locator('#invite-code, input[id="invite-code"]')).toBeVisible();
+    test.setTimeout(60_000);
+    await page.goto(`${FAMILY_URL}/convite`, {
+      waitUntil: 'domcontentloaded',
+      timeout: 30_000,
+    });
+    const inviteInput = page.locator('#invite-code, input[id="invite-code"]');
+    // One reload only — avoid multi-minute cold-start loops.
+    try {
+      await expect(inviteInput.first()).toBeVisible({ timeout: 30_000 });
+    } catch {
+      await page.reload({ waitUntil: 'domcontentloaded', timeout: 30_000 });
+      await expect(inviteInput.first()).toBeVisible({ timeout: 30_000 });
+    }
     const testToken = 'qa-test-token-placeholder';
-    await page.fill('#invite-code', testToken);
-    await page.getByRole('button', { name: /aceitar|accept/i }).click();
-    await page.waitForURL(`**/convite/${encodeURIComponent(testToken)}`);
+    await inviteInput.first().fill(testToken);
+    await page.getByRole('button', { name: /aceitar|accept|aceptar/i }).click();
+    await page.waitForURL(`**/convite/${encodeURIComponent(testToken)}`, {
+      timeout: 15_000,
+    });
   });
 
   test('B1 paths: criar-conta and entrar load with token param', async ({ page }) => {
