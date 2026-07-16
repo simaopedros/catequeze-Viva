@@ -444,29 +444,40 @@ export const inviteUserToParish = async (
     }
   }
 
-  // Legacy: if an INVITED membership exists for this user, refresh its token for compatibility
-  // but the canonical store is PendingInvitation.
+  // Existing account: also materialize Membership INVITED so /select-workspace
+  // lists the invite (PendingInvitation alone caused /app ↔ select-workspace loops).
   if (invitedUser) {
-    const legacyInvited = await context.entities.Membership.findFirst({
+    const existingMembership = await context.entities.Membership.findFirst({
       where: {
         userId: invitedUser.id,
         parishId: args.parishId,
-        status: 'INVITED',
       },
     });
-    if (legacyInvited) {
-      await context.entities.Membership.update({
-        where: { id: legacyInvited.id },
+    if (existingMembership) {
+      if (existingMembership.status !== 'ACTIVE') {
+        await context.entities.Membership.update({
+          where: { id: existingMembership.id },
+          data: {
+            status: 'INVITED',
+            role: args.role as any,
+            communityId: args.communityId || null,
+            inviteToken: token,
+            inviteTokenExpiresAt: expiresAt,
+          },
+        });
+      }
+    } else {
+      await context.entities.Membership.create({
         data: {
-          role: args.role as any,
+          userId: invitedUser.id,
+          parishId: args.parishId,
           communityId: args.communityId || null,
+          role: args.role as any,
+          status: 'INVITED',
           inviteToken: token,
           inviteTokenExpiresAt: expiresAt,
         },
       });
-    } else {
-      // Inactive/suspended: keep row but do not create new INVITED membership —
-      // accept path will reactivate via PendingInvitation.
     }
   }
 
@@ -804,12 +815,47 @@ export const acceptInvitation = async (
     data: { status: 'ACTIVE', inviteToken: null, inviteTokenExpiresAt: null },
   });
 
-  if (context.user.email && context.entities.PendingInvitation) {
+  // Apply class link from matching PendingInvitation (team invites).
+  const email = normalizeInviteEmail(context.user.email || '');
+  if (email && context.entities.PendingInvitation) {
+    let pendingForParish: any = null;
+    try {
+      pendingForParish = await context.entities.PendingInvitation.findFirst({
+        where: {
+          parishId: membership.parishId,
+          OR: [
+            { email },
+            { email: { equals: email, mode: 'insensitive' } },
+          ],
+        },
+      });
+    } catch {
+      pendingForParish = await context.entities.PendingInvitation.findFirst({
+        where: { parishId: membership.parishId, email },
+      });
+    }
+    if (pendingForParish?.classId) {
+      const assignment =
+        pendingForParish.classAssignmentRole ||
+        resolveClassAssignmentRole({ parishRole: membership.role });
+      if (assignment) {
+        await ensureClassAssignment(
+          context,
+          pendingForParish.classId,
+          context.user.id,
+          assignment,
+        );
+      }
+    }
     await context.entities.PendingInvitation.deleteMany({
       where: {
-        email: normalizeInviteEmail(context.user.email),
         parishId: membership.parishId,
+        OR: [{ email }, { email: { equals: email, mode: 'insensitive' } }],
       },
+    }).catch(async () => {
+      await context.entities.PendingInvitation.deleteMany({
+        where: { email, parishId: membership.parishId },
+      });
     });
   }
 

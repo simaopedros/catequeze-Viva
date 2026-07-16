@@ -1,6 +1,5 @@
-import { HttpError } from 'wasp/server';
-import { UserRole, MembershipStatus } from '@prisma/client';
 import { getDioceseParishIds } from '../auth/helpers';
+import { normalizeInviteEmail } from '../../shared/teamInvitePolicy';
 
 type UserContextResult = {
   userId: string;
@@ -20,6 +19,71 @@ type UserContextResult = {
   }[];
 };
 
+/**
+ * Turn PendingInvitation rows for this email into Membership INVITED rows so
+ * the workspace selector can list and accept them. Keeps PendingInvitation for
+ * token-based accept until the user accepts.
+ */
+async function materializePendingInvitations(context: any): Promise<void> {
+  const rawEmail = context.user?.email;
+  if (!rawEmail || !context.user?.id) return;
+  const email = normalizeInviteEmail(rawEmail);
+
+  let pending: any[] = [];
+  try {
+    pending = await context.entities.PendingInvitation.findMany({
+      where: {
+        OR: [
+          { email },
+          { email: { equals: email, mode: 'insensitive' } },
+        ],
+      },
+    });
+  } catch {
+    pending = await context.entities.PendingInvitation.findMany({
+      where: { email },
+    });
+  }
+  if (!pending.length) return;
+
+  for (const invitation of pending) {
+    try {
+      const existing = await context.entities.Membership.findFirst({
+        where: { userId: context.user.id, parishId: invitation.parishId },
+      });
+      if (existing?.status === 'ACTIVE') continue;
+      if (existing) {
+        if (existing.status !== 'INVITED') {
+          await context.entities.Membership.update({
+            where: { id: existing.id },
+            data: {
+              status: 'INVITED',
+              role: invitation.role,
+              communityId: invitation.communityId ?? null,
+              inviteToken: invitation.token,
+              inviteTokenExpiresAt: invitation.expiresAt,
+            },
+          });
+        }
+        continue;
+      }
+      await context.entities.Membership.create({
+        data: {
+          userId: context.user.id,
+          parishId: invitation.parishId,
+          communityId: invitation.communityId ?? null,
+          role: invitation.role,
+          status: 'INVITED',
+          inviteToken: invitation.token,
+          inviteTokenExpiresAt: invitation.expiresAt,
+        },
+      });
+    } catch {
+      /* non-fatal per invite */
+    }
+  }
+}
+
 export const getCurrentUserContext = async (
   _args: void,
   context: any
@@ -27,6 +91,9 @@ export const getCurrentUserContext = async (
   if (!context.user) {
     return { userId: '', isAdmin: false, needsOnboarding: false, hasPendingInvitations: false, personalWorkspaceId: null, memberships: [] };
   }
+
+  // Ensure team/family invites for existing accounts appear as INVITED memberships
+  await materializePendingInvitations(context);
 
   // Fetch both ACTIVE and INVITED memberships
   const memberships = await context.entities.Membership.findMany({
@@ -41,11 +108,26 @@ export const getCurrentUserContext = async (
     },
   });
 
-  // Check for PendingInvitation (email that signed up but hasn't been converted yet)
-  const pendingInvitations = await context.entities.PendingInvitation.findMany({
-    where: { email: context.user.email },
-    select: { id: true },
-  });
+  const email = normalizeInviteEmail(context.user.email || '');
+  let pendingInvitations: { id: string }[] = [];
+  if (email) {
+    try {
+      pendingInvitations = await context.entities.PendingInvitation.findMany({
+        where: {
+          OR: [
+            { email },
+            { email: { equals: email, mode: 'insensitive' } },
+          ],
+        },
+        select: { id: true },
+      });
+    } catch {
+      pendingInvitations = await context.entities.PendingInvitation.findMany({
+        where: { email },
+        select: { id: true },
+      });
+    }
+  }
 
   // Find personal workspace
   const personalWorkspace = await context.entities.Parish.findFirst({
@@ -93,7 +175,10 @@ export const getCurrentUserContext = async (
     }
   }
 
-  const hasPendingInvitations = invitedMemberships.length > 0 || pendingInvitations.length > 0;
+  // Drive the selector off memberships that can be accepted in UI.
+  // Bare PendingInvitation without INVITED rows used to force a redirect loop
+  // (selector auto-skipped personal-only → /app → select-workspace again).
+  const hasPendingInvitations = invitedMemberships.length > 0;
 
   return {
     userId: context.user.id,
@@ -105,7 +190,10 @@ export const getCurrentUserContext = async (
     // INVITED memberships mean the user should go to workspace selector instead.
     needsOnboarding: context.user.isAdmin
       ? false
-      : activeMemberships.length === 0 && invitedMemberships.length === 0 && pendingInvitations.length === 0 && !personalWorkspace,
+      : activeMemberships.length === 0 &&
+        invitedMemberships.length === 0 &&
+        pendingInvitations.length === 0 &&
+        !personalWorkspace,
     memberships: result,
   };
 };

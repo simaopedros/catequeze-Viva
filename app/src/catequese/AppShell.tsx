@@ -110,6 +110,11 @@ export function AppShell({ children }: AppShellProps) {
     acceptInvitationAction,
   ]);
 
+  const hasActiveMembership = useMemo(
+    () => (memberships || []).some((m: any) => m.status === "ACTIVE"),
+    [memberships],
+  );
+
   useEffect(() => {
     if (isLoading || isFetching) return;
     const path = location.pathname;
@@ -117,9 +122,13 @@ export function AppShell({ children }: AppShellProps) {
       navigate("/app");
       return;
     }
+    // Only force the selector when the user has invites and NO active workspace
+    // yet. If they already have personal/active membership, never trap them —
+    // invites alone used to loop /app ↔ /select-workspace.
     if (
       !isFamilyOnlyRole &&
       hasPendingInvitations &&
+      !hasActiveMembership &&
       !path.includes("/select-workspace") &&
       !path.includes("/onboarding")
     ) {
@@ -139,6 +148,7 @@ export function AppShell({ children }: AppShellProps) {
     isFetching,
     needsOnboarding,
     hasPendingInvitations,
+    hasActiveMembership,
     isFamilyOnlyRole,
     location.pathname,
     navigate,

@@ -105,14 +105,40 @@ export const onAfterSignup = async ({
   if (!email) return;
 
   try {
-    const pending = await prisma.pendingInvitation.findMany({ where: { email } });
+    const normalized = String(email).trim().toLowerCase();
+    let pending = await prisma.pendingInvitation.findMany({
+      where: { email: normalized },
+    });
+    if (pending.length === 0) {
+      try {
+        pending = await prisma.pendingInvitation.findMany({
+          where: { email: { equals: normalized, mode: 'insensitive' } },
+        });
+      } catch {
+        /* ignore */
+      }
+    }
     if (pending.length === 0) return;
 
     for (const invitation of pending) {
       const existing = await prisma.membership.findFirst({
         where: { userId: user.id, parishId: invitation.parishId },
       });
-      if (existing) continue;
+      if (existing) {
+        if (existing.status !== 'ACTIVE' && existing.status !== 'INVITED') {
+          await prisma.membership.update({
+            where: { id: existing.id },
+            data: {
+              status: 'INVITED',
+              role: invitation.role,
+              communityId: invitation.communityId ?? null,
+              inviteToken: invitation.token,
+              inviteTokenExpiresAt: invitation.expiresAt,
+            },
+          });
+        }
+        continue;
+      }
 
       await prisma.membership.create({
         data: {
@@ -121,6 +147,8 @@ export const onAfterSignup = async ({
           communityId: invitation.communityId ?? null,
           role: invitation.role,
           status: 'INVITED',
+          inviteToken: invitation.token,
+          inviteTokenExpiresAt: invitation.expiresAt,
         },
       });
     }

@@ -228,30 +228,8 @@ export default function App() {
     registerServiceWorker();
   }, []);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    // Plausible is optional; skip if already injected or domain not brand host.
-    const domain =
-      (import.meta.env.REACT_APP_PLAUSIBLE_DOMAIN as string | undefined)?.trim() ||
-      "catechis.app";
-    if (document.querySelector(`script[data-domain="${domain}"][src*="plausible"]`)) {
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = "https://plausible.io/js/script.js";
-    script.defer = true;
-    script.setAttribute("data-domain", domain);
-    script.onerror = () => {
-      // Ad-blockers / network — never crash the app
-      script.remove();
-    };
-    document.head.appendChild(script);
-    return () => {
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
-    };
-  }, []);
+  // Plausible intentionally not loaded — CORS / missing site noise in prod console.
+  // Marketing events still go to dataLayer / GTM when configured.
 
   if (!i18nReady) {
     return (

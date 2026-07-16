@@ -108,12 +108,21 @@ export const listWorkspaces = async (_args: void, context: any) => {
     select: { id: true, name: true, type: true },
   });
 
-  // Parish workspaces from memberships (ACTIVE and INVITED)
+  // Parish workspaces from memberships (ACTIVE and INVITED).
+  // Include PERSONAL parishes when the user is INVITED (team invite into someone
+  // else's personal workspace) — previously only PARISH/DIOCESE/COMMUNITY were listed,
+  // so invites into PERSONAL never appeared and the selector auto-skipped into a loop.
   const memberships = await context.entities.Membership.findMany({
     where: {
       userId: context.user.id,
       status: { in: ['ACTIVE', 'INVITED'] },
-      parish: { type: { in: ['PARISH', 'DIOCESE', 'COMMUNITY'] }, active: true },
+      parish: {
+        active: true,
+        OR: [
+          { type: { in: ['PARISH', 'DIOCESE', 'COMMUNITY'] } },
+          { type: 'PERSONAL', NOT: { ownerId: context.user.id } },
+        ],
+      },
     },
     select: {
       id: true,

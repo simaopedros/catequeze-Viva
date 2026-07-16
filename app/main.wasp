@@ -552,7 +552,7 @@ action inviteUserToParish {
 
 action acceptInvitation {
   fn: import { acceptInvitation } from "@src/server/operations/memberOperations",
-  entities: [Membership, AuditLog, GuardianProfile, CatechumenProfile, PendingInvitation]
+  entities: [Membership, AuditLog, GuardianProfile, CatechumenProfile, PendingInvitation, ClassCatechist, CatechesisClass]
 }
 
 query getInvitationByToken {

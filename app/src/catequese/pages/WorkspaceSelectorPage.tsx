@@ -92,9 +92,14 @@ export default function WorkspaceSelectorPage() {
     }
   }, [userRole, navigate]);
 
-  // Auto-skip: if user has only 1 workspace, go directly to /app
+  // Auto-skip: single workspace only when there is nothing pending to accept.
+  // Otherwise /app ↔ /select-workspace loops (personal only + pending invite).
   useEffect(() => {
     if (loadingWorkspaces) return;
+    const hasInvited = workspaces.some(
+      (w: Workspace) => w.membershipStatus === "INVITED",
+    );
+    if (hasInvited) return;
     if (workspaces.length === 1) {
       const ws = workspaces[0];
       localStorage.setItem("catequese-viva-active-workspace", ws.id);
@@ -154,8 +159,14 @@ export default function WorkspaceSelectorPage() {
   const handleAccept = async (membershipId: string) => {
     setAccepting(membershipId);
     try {
+      const invitedWs = workspaces.find(
+        (w: Workspace) => w.membershipId === membershipId,
+      );
       await acceptAction({ membershipId });
       await refetch();
+      if (invitedWs) {
+        handleEnter(invitedWs.id);
+      }
     } catch (e: any) {
       // ignore — error is shown by the wasp framework
     } finally {
