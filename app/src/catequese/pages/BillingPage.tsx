@@ -240,6 +240,7 @@ export default function BillingPage() {
   const getPlanDef = (planId: PaymentPlanId): PlanCard =>
     allPlans.find((p) => p.planId === planId) || allPlans[0];
 
+  const navigate = useNavigate();
   const { data: user } = useAuth();
   const { parishId, userRole, isAdmin } = useUserContext();
   const { isPersonal, workspaceId, workspace } = useActiveWorkspace();
@@ -290,7 +291,6 @@ export default function BillingPage() {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [switchingInterval, setSwitchingInterval] = useState(false);
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const requestedPlan = searchParams.get("plan");
   const gateRequired = searchParams.get("required") === "1";
   const journeySource = searchParams.get("source") ?? "billing_page";

@@ -202,7 +202,6 @@ export function AppShell({ children }: AppShellProps) {
             >
               <TopBar />
             </ErrorBoundary>
-            <PendingInviteBanner />
             <ProductTrialBanner />
           </div>
           <main
