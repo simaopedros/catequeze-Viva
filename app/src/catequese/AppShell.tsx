@@ -14,7 +14,6 @@ import { BottomNav } from "./BottomNav";
 import { TwoFactorGate } from "./components/TwoFactorGate";
 import { SubscriptionGate } from "./components/SubscriptionGate";
 import { ProductTrialBanner } from "./components/ProductTrialBanner";
-import { PendingInviteBanner } from "./components/PendingInviteBanner";
 import { FamilyAppShell } from "./FamilyAppShell";
 import { useUserContext } from "../client/hooks/useUserContext";
 import { useAuth } from "wasp/client/auth";
