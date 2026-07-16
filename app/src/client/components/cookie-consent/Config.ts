@@ -77,10 +77,17 @@ const getConfig = () => {
             label: i18n.t("analytics_label", { ns: "cookie" }),
             onAccept: () => {
               try {
-                const GA_ANALYTICS_ID = import.meta.env
-                  .REACT_APP_GOOGLE_ANALYTICS_ID;
-                if (!GA_ANALYTICS_ID || !GA_ANALYTICS_ID.length) {
-                  throw new Error("Google Analytics ID is missing");
+                // GTM is loaded separately (index.html / GoogleTagScripts). GA gtag
+                // is optional — never throw if REACT_APP_GOOGLE_ANALYTICS_ID is unset.
+                const GA_ANALYTICS_ID = String(
+                  import.meta.env.REACT_APP_GOOGLE_ANALYTICS_ID || "",
+                ).trim();
+                if (
+                  !GA_ANALYTICS_ID ||
+                  GA_ANALYTICS_ID === "G-..." ||
+                  !GA_ANALYTICS_ID.startsWith("G-")
+                ) {
+                  return;
                 }
                 window.dataLayer = window.dataLayer || [];
                 function gtag(..._args: unknown[]) {
@@ -89,12 +96,17 @@ const getConfig = () => {
                 gtag("js", new Date());
                 gtag("config", GA_ANALYTICS_ID);
 
+                const already = document.querySelector(
+                  `script[src*="googletagmanager.com/gtag/js?id=${GA_ANALYTICS_ID}"]`,
+                );
+                if (already) return;
+
                 const script = document.createElement("script");
                 script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ANALYTICS_ID}`;
                 script.async = true;
                 document.body.appendChild(script);
               } catch (error) {
-                console.error(error);
+                console.error("[cookie-consent] analytics accept failed", error);
               }
             },
             onReject: () => {},

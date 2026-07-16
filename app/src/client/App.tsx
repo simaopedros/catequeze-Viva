@@ -229,16 +229,28 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const script = document.createElement("script");
-      script.src = "https://plausible.io/js/script.js";
-      script.defer = true;
-      script.setAttribute("data-domain", "catechis.app");
-      document.head.appendChild(script);
-      return () => {
-        document.head.removeChild(script);
-      };
+    if (typeof window === "undefined") return;
+    // Plausible is optional; skip if already injected or domain not brand host.
+    const domain =
+      (import.meta.env.REACT_APP_PLAUSIBLE_DOMAIN as string | undefined)?.trim() ||
+      "catechis.app";
+    if (document.querySelector(`script[data-domain="${domain}"][src*="plausible"]`)) {
+      return;
     }
+    const script = document.createElement("script");
+    script.src = "https://plausible.io/js/script.js";
+    script.defer = true;
+    script.setAttribute("data-domain", domain);
+    script.onerror = () => {
+      // Ad-blockers / network — never crash the app
+      script.remove();
+    };
+    document.head.appendChild(script);
+    return () => {
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
   }, []);
 
   if (!i18nReady) {

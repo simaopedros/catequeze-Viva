@@ -84,7 +84,10 @@ export function trackMarketingEvent(
     /* ignore provider errors */
   }
   try {
-    window.plausible?.(event, { props: safeProperties });
+    // Only call when Plausible script exposed the tracker (avoids bad CORS stubs).
+    if (typeof window.plausible === "function") {
+      window.plausible(event, { props: safeProperties });
+    }
   } catch {
     /* ignore provider errors */
   }
