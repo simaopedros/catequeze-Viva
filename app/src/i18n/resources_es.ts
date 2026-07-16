@@ -1798,6 +1798,13 @@ export const common_es = {
       "select_class_optional": "Grupo (opcional)",
       "class_required": "Indique el grupo al invitar catequistas o auxiliares.",
       "select_workspace": "Seleccione un espacio"
+    },
+    "pending_invite": {
+      "banner_one": "Tienes una invitación pendiente a {{name}}",
+      "banner_many": "Tienes {{count}} invitaciones pendientes",
+      "banner_hint": "Acepta para entrar en el espacio y empezar a colaborar.",
+      "view_cta": "Ver y aceptar",
+      "a_workspace": "un espacio"
     }
   } as const;
 
@@ -4095,6 +4102,7 @@ export const public_es = {
       "personal_plan_hint": "· Plan personal",
       "personal_pending": "El espacio personal se creará al completar el onboarding.",
       "pending_invites": "Invitaciones Pendientes",
+      "pending_invites_subtitle": "Acepta una invitación para entrar al espacio y colaborar con el equipo.",
       "invited_as": "Fuiste invitado(a) como {{role}}",
       "accepting": "Aceptando...",
       "accept": "Aceptar",

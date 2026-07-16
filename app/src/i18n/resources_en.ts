@@ -1798,6 +1798,13 @@ export const common_en = {
       "select_class_optional": "Class (optional)",
       "class_required": "Select a class when inviting catechists or assistants.",
       "select_workspace": "Select a workspace"
+    },
+    "pending_invite": {
+      "banner_one": "You have a pending invite to {{name}}",
+      "banner_many": "You have {{count}} pending invites",
+      "banner_hint": "Accept to join the workspace and start collaborating.",
+      "view_cta": "View and accept",
+      "a_workspace": "a workspace"
     }
   } as const;
 
@@ -4095,6 +4102,7 @@ export const public_en = {
       "personal_plan_hint": "· Personal plan",
       "personal_pending": "Personal space will be created when you complete onboarding.",
       "pending_invites": "Pending Invitations",
+      "pending_invites_subtitle": "Accept an invite to join the workspace and collaborate with the team.",
       "invited_as": "You were invited as {{role}}",
       "accepting": "Accepting...",
       "accept": "Accept",

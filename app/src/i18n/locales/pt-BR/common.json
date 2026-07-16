@@ -526,6 +526,13 @@
     "select_class_optional": "Turma (opcional)",
     "class_required": "Informe a turma ao convidar catequistas ou auxiliares.",
     "select_workspace": "Selecione um espaço"
+  },
+  "pending_invite": {
+    "banner_one": "Tem um convite pendente para {{name}}",
+    "banner_many": "Tem {{count}} convites pendentes",
+    "banner_hint": "Aceite para entrar no espaço e começar a colaborar.",
+    "view_cta": "Ver e aceitar",
+    "a_workspace": "um espaço"
   }
 }
 

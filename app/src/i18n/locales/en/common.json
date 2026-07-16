@@ -526,6 +526,13 @@
     "select_class_optional": "Class (optional)",
     "class_required": "Select a class when inviting catechists or assistants.",
     "select_workspace": "Select a workspace"
+  },
+  "pending_invite": {
+    "banner_one": "You have a pending invite to {{name}}",
+    "banner_many": "You have {{count}} pending invites",
+    "banner_hint": "Accept to join the workspace and start collaborating.",
+    "view_cta": "View and accept",
+    "a_workspace": "a workspace"
   }
 }
 

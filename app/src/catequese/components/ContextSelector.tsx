@@ -7,6 +7,7 @@ import {
   Building2,
   Shield,
   Check,
+  Mail,
 } from "lucide-react";
 import { Button } from "../../client/components/ui/button";
 import { Badge } from "../../client/components/ui/badge";
@@ -19,10 +20,12 @@ import {
 import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
 import { useActiveMembership } from "../../client/hooks/useActiveMembership";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
+import { useUserContext } from "../../client/hooks/useUserContext";
 import { useRoleLabels } from "../../i18n/useLabels";
 
 export function ContextSelector() {
   const { t } = useTranslation("topbar");
+  const { t: tc } = useTranslation("common");
   const navigate = useNavigate();
   const roleLabels = useRoleLabels();
   const {
@@ -35,6 +38,10 @@ export function ContextSelector() {
   const { activeMembership, availableMemberships, switchMembership } =
     useActiveMembership();
   const { activeParishName, switchParish } = useActiveParish();
+  const { hasPendingInvitations, allMemberships } = useUserContext();
+  const pendingCount = (allMemberships || []).filter(
+    (m) => m.status === "INVITED",
+  ).length;
 
   const hasWorkspaces = availableWorkspaces.length > 0;
   const hasMultipleRoles = availableMemberships.length > 1;
@@ -225,7 +232,29 @@ export function ContextSelector() {
               })}
             </div>
           )}
-          <div className="border-t mt-2 pt-2">
+          <div className="border-t mt-2 pt-2 space-y-0.5">
+            {(hasPendingInvitations || pendingCount > 0) && (
+              <button
+                onClick={() => navigate("/app/select-workspace")}
+                className="w-full flex items-center gap-2 text-xs font-medium text-[#071A2D] px-2 py-1.5 rounded-sm hover:bg-[#D39A2B]/15 transition-colors text-left"
+                data-testid="context-pending-invites"
+              >
+                <Mail className="h-3.5 w-3.5 shrink-0" />
+                <span className="flex-1">
+                  {pendingCount > 1
+                    ? tc("pending_invite.banner_many", { count: pendingCount })
+                    : tc("pending_invite.view_cta")}
+                </span>
+                {pendingCount > 0 && (
+                  <Badge
+                    variant="outline"
+                    className="h-5 min-w-5 justify-center border-[#D39A2B]/50 bg-[#D39A2B]/15 text-overline text-[#071A2D]"
+                  >
+                    {pendingCount}
+                  </Badge>
+                )}
+              </button>
+            )}
             <button
               onClick={() => navigate("/app/select-workspace")}
               className="w-full text-xs text-muted-foreground hover:text-[#071A2D] px-2 py-1.5 rounded-sm hover:bg-accent transition-colors text-left"

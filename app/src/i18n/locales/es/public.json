@@ -90,6 +90,7 @@
     "personal_plan_hint": "· Plan personal",
     "personal_pending": "El espacio personal se creará al completar el onboarding.",
     "pending_invites": "Invitaciones Pendientes",
+    "pending_invites_subtitle": "Acepta una invitación para entrar al espacio y colaborar con el equipo.",
     "invited_as": "Fuiste invitado(a) como {{role}}",
     "accepting": "Aceptando...",
     "accept": "Aceptar",

@@ -280,16 +280,71 @@ export default function WorkspaceSelectorPage() {
                 {t("workspace.app_name")}
               </AppEyebrow>
               <AppDisplayTitle className="text-center">
-                {t("workspace.title")}
+                {pendingInvitations.length > 0
+                  ? t("workspace.pending_invites")
+                  : t("workspace.title")}
               </AppDisplayTitle>
               <AppGoldRule className="mx-auto" />
               <p className="text-sm text-muted-foreground">
-                {t("workspace.subtitle")}
+                {pendingInvitations.length > 0
+                  ? t("workspace.pending_invites_subtitle")
+                  : t("workspace.subtitle")}
               </p>
             </div>
 
+            {/* Pending Invitations — first so invitees see accept immediately */}
+            {pendingInvitations.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground px-1 flex items-center gap-1.5">
+                  <Mail className="h-3.5 w-3.5" />
+                  {t("workspace.pending_invites")}
+                </h3>
+                {pendingInvitations.map((ws: Workspace) => (
+                  <div
+                    key={ws.id}
+                    data-testid={`pending-invite-${ws.id}`}
+                    className="rounded-sm border-2 border-[#D39A2B]/45 bg-[#D39A2B]/[0.08] p-5 flex flex-col gap-3 sm:flex-row sm:items-center"
+                  >
+                    <div className="flex min-w-0 flex-1 items-start gap-4">
+                      <div className="rounded-sm border border-[#D39A2B]/35 bg-white p-3">
+                        <Church className="h-6 w-6 text-[#071A2D]" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p
+                          className="text-lg font-semibold tracking-tight text-[#071A2D]"
+                          style={{ fontFamily: "var(--font-brand-display)" }}
+                        >
+                          {ws.name}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {t("workspace.invited_as", {
+                            role: roleLabel(ws.role, t),
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={() => handleAccept(ws.membershipId!)}
+                      disabled={
+                        !ws.membershipId || accepting === ws.membershipId
+                      }
+                      className="h-10 gap-1.5 rounded-sm shadow-none shrink-0"
+                    >
+                      <Check className="h-4 w-4" />
+                      {accepting === ws.membershipId
+                        ? t("workspace.accepting")
+                        : t("workspace.accept")}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* Continue where you left off — shown when user has been here before */}
-            {lastUsed && workspaces.length > 1 && (
+            {lastUsed &&
+              lastUsed.membershipStatus !== "INVITED" &&
+              workspaces.length > 1 && (
               <div className="space-y-3">
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground px-1 flex items-center gap-1.5">
                   <History className="h-3.5 w-3.5" />
@@ -412,50 +467,6 @@ export default function WorkspaceSelectorPage() {
                 </div>
               )}
             </div>
-
-            {/* Pending Invitations */}
-            {pendingInvitations.length > 0 && (
-              <div className="space-y-3">
-                <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground px-1 flex items-center gap-1.5">
-                  <Mail className="h-3.5 w-3.5" />
-                  {t("workspace.pending_invites")}
-                </h3>
-                {pendingInvitations.map((ws: Workspace) => (
-                  <div
-                    key={ws.id}
-                    className="rounded-sm border-2 border-warning/30 bg-warning/5 p-5 flex items-center gap-4"
-                  >
-                    <div className="rounded-sm bg-warning/10 p-3">
-                      <Church className="h-6 w-6 text-warning" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p
-                        className="text-lg font-semibold tracking-tight text-[#071A2D]"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
-                        {ws.name}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {t("workspace.invited_as", {
-                          role: roleLabel(ws.role, t),
-                        })}
-                      </p>
-                    </div>
-                    <Button
-                      size="sm"
-                      onClick={() => handleAccept(ws.membershipId!)}
-                      disabled={accepting === ws.membershipId}
-                      className="gap-1.5"
-                    >
-                      <Check className="h-4 w-4" />
-                      {accepting === ws.membershipId
-                        ? t("workspace.accepting")
-                        : t("workspace.accept")}
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            )}
 
             {/* Managed institutional workspaces */}
             {(managed.length > 0 || manageDioceses.length > 0) && (

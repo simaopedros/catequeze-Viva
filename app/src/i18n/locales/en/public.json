@@ -90,6 +90,7 @@
     "personal_plan_hint": "· Personal plan",
     "personal_pending": "Personal space will be created when you complete onboarding.",
     "pending_invites": "Pending Invitations",
+    "pending_invites_subtitle": "Accept an invite to join the workspace and collaborate with the team.",
     "invited_as": "You were invited as {{role}}",
     "accepting": "Accepting...",
     "accept": "Accept",
