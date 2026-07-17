@@ -11,7 +11,7 @@
 import { config } from "wasp/server";
 import { extractClientMetaFromReq } from "../../auth/hooks";
 import { logger } from "../../server/logger";
-import { SUBSCRIPTION_TRIAL_DAYS } from "../../shared/pricing";
+
 import { isMetaCapiConfigured, sendMetaEvent } from "./metaCapi";
 
 export interface SendInitiateCheckoutToMetaArgs {
@@ -86,9 +86,8 @@ export async function sendInitiateCheckoutToMeta(
   const clientMeta = extractClientMetaFromReq(args.req);
   const fbc = args.fbc?.trim() || fbcFromFbclid(args.fbclid);
   const contentCategory = args.contentCategory ?? "subscription";
-  const trialDays =
-    args.trialDays ??
-    (contentCategory === "ai_credits" ? 0 : SUBSCRIPTION_TRIAL_DAYS);
+  // Prefer explicit remaining days from checkout; never invent a full second trial.
+  const trialDays = args.trialDays ?? 0;
 
   try {
     const responseJson = await sendMetaEvent({

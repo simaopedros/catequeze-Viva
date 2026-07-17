@@ -91,5 +91,10 @@
   "leave_error": "Erro ao sair da conversa",
   "pending_send": "Pendente",
   "retry_send": "Reenviar",
-  "draft_saved": "Rascunho guardado neste dispositivo"
+  "draft_saved": "Rascunho guardado neste dispositivo",
+  "offline_banner": "Está offline. As mensagens serão enviadas quando a ligação voltar.",
+  "online_again": "Ligação restabelecida",
+  "load_error_title": "Não foi possível carregar a conversa",
+  "back_to_list": "Voltar às conversas",
+  "network_error": "Erro de rede"
 }

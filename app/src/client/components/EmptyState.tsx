@@ -69,11 +69,11 @@ export function EmptyState({
       >
         {Icon && (
           <div className="mb-3 rounded-sm border border-border/70 bg-muted/30 p-3">
-            <Icon className="h-5 w-5 text-[#071A2D]" />
+            <Icon className="h-5 w-5 text-brand-ink" />
           </div>
         )}
         <p
-          className="text-body-sm font-semibold tracking-tight text-[#071A2D]"
+          className="text-body-sm font-semibold tracking-tight text-brand-ink"
           style={{ fontFamily: "var(--font-brand-display)" }}
         >
           {title}
@@ -91,22 +91,22 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center",
+        "flex flex-col items-center justify-center rounded-sm border border-border/70 bg-surface-elevated p-12 text-center",
         className,
       )}
     >
       {Icon && (
         <div className="mb-4 rounded-sm border border-border/70 bg-muted/30 p-4">
-          <Icon className="h-8 w-8 text-[#071A2D]" />
+          <Icon className="h-8 w-8 text-brand-ink" />
         </div>
       )}
       <h3
-        className="text-lg font-semibold tracking-tight text-[#071A2D]"
+        className="text-lg font-semibold tracking-tight text-brand-ink"
         style={{ fontFamily: "var(--font-brand-display)" }}
       >
         {title}
       </h3>
-      <div className="mx-auto mt-2 h-px w-8 bg-[#D39A2B]" aria-hidden />
+      <div className="mx-auto mt-2 h-px w-8 bg-brand-gold" aria-hidden />
       {description && (
         <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
           {description}

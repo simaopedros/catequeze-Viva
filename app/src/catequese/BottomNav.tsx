@@ -7,6 +7,8 @@ import {
   Calendar,
   Menu,
   MessageSquareText,
+  GraduationCap,
+  BarChart3,
 } from "lucide-react";
 import { cn } from "../client/utils";
 import { useUserContext } from "../client/hooks/useUserContext";
@@ -21,6 +23,8 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   classes: Users,
   calendar: Calendar,
   messages: MessageSquareText,
+  catechumens: GraduationCap,
+  reports: BarChart3,
 };
 
 export function BottomNav() {
@@ -50,7 +54,7 @@ export function BottomNav() {
   return (
     <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
       <nav
-        className="lg:hidden fixed bottom-0 left-0 right-0 z-sticky border-t border-border/70 bg-white"
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-sticky border-t border-border/70 bg-surface-elevated"
         style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
         aria-label={t("primarySection", { defaultValue: "Primary" })}
       >
@@ -58,7 +62,7 @@ export function BottomNav() {
           className="grid items-center"
           style={{
             gridTemplateColumns: `repeat(${visible.length + 1}, 1fr)`,
-            height: "calc(3.5rem + env(safe-area-inset-bottom, 0px))",
+            height: "calc(var(--height-bottom-nav, 3.5rem) + env(safe-area-inset-bottom, 0px))",
           }}
         >
           {visible.map((item) => {
@@ -75,8 +79,8 @@ export function BottomNav() {
                   cn(
                     "flex h-full min-h-11 flex-col items-center justify-center gap-0.5 px-0.5 text-overline font-medium transition-colors",
                     isActive
-                      ? "text-[#071A2D]"
-                      : "text-muted-foreground hover:text-[#071A2D]",
+                      ? "text-brand-ink"
+                      : "text-muted-foreground hover:text-brand-ink",
                   )
                 }
               >
@@ -91,7 +95,7 @@ export function BottomNav() {
               aria-haspopup="dialog"
               aria-expanded={sheetOpen}
               aria-controls="bottom-sheet-nav"
-              className="relative flex h-full min-h-11 flex-col items-center justify-center gap-0.5 text-overline font-medium text-muted-foreground transition-colors hover:text-[#071A2D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="relative flex h-full min-h-11 flex-col items-center justify-center gap-0.5 text-overline font-medium text-muted-foreground transition-colors hover:text-brand-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               <Menu className="h-5 w-5" />
               <span>{t("more", { ns: "common" })}</span>

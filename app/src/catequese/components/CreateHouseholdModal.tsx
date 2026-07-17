@@ -11,6 +11,7 @@ import {
 import { createHousehold } from "wasp/client/operations";
 import PhoneMaskInput from "../../client/components/PhoneMaskInput";
 import { useViaCep } from "../../client/hooks/useViaCep";
+import { useActiveParish } from "../../client/hooks/useActiveParish";
 
 interface CreateHouseholdModalProps {
   isOpen: boolean;
@@ -24,6 +25,7 @@ export default function CreateHouseholdModal({
   onCreated,
 }: CreateHouseholdModalProps) {
   const { t } = useTranslation("common");
+  const { activeParishId } = useActiveParish();
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [cep, setCep] = useState("");
@@ -76,6 +78,7 @@ export default function CreateHouseholdModal({
         name,
         address: address || undefined,
         phone: phone || undefined,
+        parishId: activeParishId || undefined,
       });
       onCreated(household.id, household.name);
       onClose();

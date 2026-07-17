@@ -92,13 +92,13 @@ function getAvatarInitials(name: string): string {
 function getAvatarColor(type: string): string {
   switch (type) {
     case "DIRECT":
-      return "bg-[#071A2D]";
+      return "bg-brand-ink";
     case "GROUP":
-      return "bg-[#0a2540]";
+      return "bg-brand-ink-soft";
     case "CLASS_CHAT":
-      return "bg-[#8A6418]";
+      return "bg-brand-gold-muted";
     case "ANNOUNCEMENT":
-      return "bg-[#D39A2B]";
+      return "bg-brand-gold";
     default:
       return "bg-muted-foreground";
   }
@@ -172,20 +172,25 @@ export function ConversationList({
   });
 
   return (
-    <div className="flex h-full flex-col border-r border-border/70 bg-white">
+    <div className="flex h-full flex-col border-r border-border/70 bg-surface-elevated">
       <div className="space-y-2 border-b border-border/70 p-3">
-        <div className="flex items-center justify-between">
-          <div className="space-y-1.5">
+        <div className="flex items-center justify-between gap-2">
+          <div className="min-w-0 space-y-1.5">
             <AppEyebrow>{t("conversations")}</AppEyebrow>
-            <AppDisplayTitle as="h2" className="text-base sm:text-base text-[#071A2D]">
+            <AppDisplayTitle
+              as="h2"
+              className="text-base text-brand-ink sm:text-base"
+            >
               {t("title")}
             </AppDisplayTitle>
             <AppGoldRule className="w-8" />
           </div>
           <button
+            type="button"
             onClick={onNewConversation}
-            className="flex h-8 w-8 items-center justify-center rounded-sm bg-[#071A2D] text-white transition-colors hover:bg-[#0a2540]"
+            className="flex h-11 w-11 min-h-11 min-w-11 items-center justify-center rounded-sm bg-brand-ink text-white transition-colors hover:bg-brand-ink-soft"
             title={t("new_conversation")}
+            aria-label={t("new_conversation")}
           >
             <span className="text-lg leading-none">+</span>
           </button>
@@ -198,20 +203,21 @@ export function ConversationList({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t("search_conversations")}
-            className="h-9 w-full rounded-sm border border-input bg-background pl-8 pr-3 text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+            className="h-11 min-h-11 w-full rounded-sm border border-input bg-background pl-8 pr-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
           />
         </div>
 
         <div className="flex gap-1 overflow-x-auto pb-0.5 scrollbar-none">
           {FILTER_OPTIONS.map((opt) => (
             <button
+              type="button"
               key={opt.value}
               onClick={() => setFilter(opt.value)}
               className={cn(
-                "whitespace-nowrap rounded-sm px-2.5 py-1 text-overline font-medium transition-colors",
+                "min-h-9 whitespace-nowrap rounded-sm px-2.5 py-1.5 text-overline font-medium transition-colors",
                 filter === opt.value
-                  ? "bg-[#071A2D] text-white"
-                  : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-[#071A2D]",
+                  ? "bg-brand-ink text-white"
+                  : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-brand-ink",
               )}
             >
               {opt.label}
@@ -227,18 +233,19 @@ export function ConversationList({
             <ConversationSkeleton key={i} />
           ))
         ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-48 px-6 text-center">
-            <MessageSquareText className="mb-2 h-8 w-8 text-[#071A2D]/40" />
+          <div className="flex h-48 flex-col items-center justify-center px-6 text-center">
+            <MessageSquareText className="mb-2 h-8 w-8 text-brand-ink/40" />
             <p
-              className="text-xs font-semibold tracking-tight text-[#071A2D]"
+              className="text-xs font-semibold tracking-tight text-brand-ink"
               style={{ fontFamily: "var(--font-brand-display)" }}
             >
               {search ? t("no_conversation_found") : t("no_conversations_yet")}
             </p>
             {!search && (
               <button
+                type="button"
                 onClick={onNewConversation}
-                className="mt-2 text-xs text-[#071A2D] hover:underline"
+                className="mt-2 min-h-11 text-xs text-brand-ink hover:underline"
               >
                 {t("start_conversation")}
               </button>
@@ -252,13 +259,14 @@ export function ConversationList({
 
             return (
               <button
+                type="button"
                 key={conv.id}
                 onClick={() => onSelect(conv.id)}
                 className={cn(
-                  "w-full flex items-center gap-3 px-3 py-2.5 text-left transition-all",
+                  "flex min-h-14 w-full items-center gap-3 px-3 py-2.5 text-left transition-all",
                   isActive
-                    ? "border-l-2 border-l-[#071A2D] bg-[#071A2D]/05"
-                    : "hover:bg-muted/40 border-l-2 border-l-transparent",
+                    ? "border-l-2 border-l-brand-ink bg-brand-ink/5"
+                    : "border-l-2 border-l-transparent hover:bg-muted/40",
                 )}
               >
                 {/* Avatar */}
@@ -280,7 +288,7 @@ export function ConversationList({
                   <div className="flex items-center justify-between gap-1">
                     <span
                       className={cn(
-                        "truncate text-sm tracking-tight text-[#071A2D]",
+                        "truncate text-sm tracking-tight text-brand-ink",
                         conv.unreadCount > 0 ? "font-semibold" : "font-medium",
                       )}
                       style={{ fontFamily: "var(--font-brand-display)" }}
@@ -302,7 +310,7 @@ export function ConversationList({
                       className={cn(
                         "truncate text-xs",
                         conv.unreadCount > 0
-                          ? "font-medium text-[#071A2D]"
+                          ? "font-medium text-brand-ink"
                           : "text-muted-foreground",
                       )}
                     >
@@ -310,7 +318,7 @@ export function ConversationList({
                         <>
                           {conv.lastMessage.sender.firstName &&
                             conv.type !== "DIRECT" && (
-                              <span className="font-semibold text-[#071A2D]/80">
+                              <span className="font-semibold text-brand-ink/80">
                                 {conv.lastMessage.sender.firstName}:{" "}
                               </span>
                             )}
@@ -321,7 +329,7 @@ export function ConversationList({
                       )}
                     </p>
                     {conv.unreadCount > 0 && (
-                      <span className="flex-shrink-0 h-4.5 min-w-[18px] flex items-center justify-center rounded-sm bg-[#071A2D] text-white text-overline font-semibold px-1">
+                      <span className="flex h-4.5 min-w-[18px] flex-shrink-0 items-center justify-center rounded-sm bg-brand-ink px-1 text-overline font-semibold text-white">
                         {conv.unreadCount > 99 ? "99+" : conv.unreadCount}
                       </span>
                     )}

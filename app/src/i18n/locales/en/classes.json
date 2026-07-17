@@ -166,5 +166,11 @@
     "confirm_remove_catechist_title": "Remove catechist",
     "confirm_remove_catechist_desc": "Are you sure you want to remove this catechist from the class?",
     "error": "Error"
-  }
+  },
+  "no_schedule": "No schedule",
+  "first_classes": "First classes",
+  "suggested_structure": "Suggested structure",
+  "suggested_1": "Set stage, schedule, and lead catechist for each class.",
+  "suggested_2": "Register catechumens to track attendance, meetings, and progress.",
+  "suggested_3": "Use editorial assistance to prepare meetings with more consistency."
 }

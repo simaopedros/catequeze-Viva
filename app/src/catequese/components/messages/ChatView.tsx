@@ -120,10 +120,46 @@ export function ChatView({
   const [showScrollDown, setShowScrollDown] = useState(false);
   const [pendingLocal, setPendingLocal] = useState<MessageItem | null>(null);
   const [draftHint, setDraftHint] = useState(false);
+  const [isOffline, setIsOffline] = useState(
+    () => typeof navigator !== "undefined" && !navigator.onLine,
+  );
+  /** Extra bottom inset when virtual keyboard is open (visualViewport) */
+  const [keyboardInset, setKeyboardInset] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const draftTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const onOnline = () => setIsOffline(false);
+    const onOffline = () => setIsOffline(true);
+    window.addEventListener("online", onOnline);
+    window.addEventListener("offline", onOffline);
+    return () => {
+      window.removeEventListener("online", onOnline);
+      window.removeEventListener("offline", onOffline);
+    };
+  }, []);
+
+  // Keep composer above the virtual keyboard on mobile
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const update = () => {
+      const inset = Math.max(
+        0,
+        window.innerHeight - vv.height - vv.offsetTop,
+      );
+      setKeyboardInset(inset > 40 ? inset : 0);
+    };
+    update();
+    vv.addEventListener("resize", update);
+    vv.addEventListener("scroll", update);
+    return () => {
+      vv.removeEventListener("resize", update);
+      vv.removeEventListener("scroll", update);
+    };
+  }, []);
 
   // Restore draft when opening conversation
   useEffect(() => {
@@ -296,12 +332,28 @@ export function ChatView({
   const dateGroups = groupMessagesByDate(displayMessages);
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div
+      className="flex h-full flex-col bg-background"
+      style={
+        keyboardInset > 0
+          ? { paddingBottom: keyboardInset }
+          : undefined
+      }
+    >
+      {isOffline && (
+        <div
+          role="status"
+          className="border-b border-warning/30 bg-warning/10 px-3 py-2 text-center text-xs font-medium text-brand-ink"
+        >
+          {t("offline_banner")}
+        </div>
+      )}
+
       {/* Messages area */}
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto px-4 py-3 space-y-1 scrollbar-thin relative"
+        className="relative flex-1 space-y-1 overflow-y-auto scroll-touch px-4 py-3 scrollbar-thin"
       >
         {/* Load more */}
         {hasMore && (
@@ -309,7 +361,7 @@ export function ChatView({
             <button
               onClick={onLoadMore}
               disabled={isLoading}
-              className="text-xs text-[#071A2D] hover:underline disabled:opacity-50"
+              className="text-xs text-brand-ink hover:underline disabled:opacity-50"
             >
               {isLoading ? t("new_dialog.loading_contacts") : t("load_older")}
             </button>
@@ -320,15 +372,15 @@ export function ChatView({
         {messages.length === 0 && !isLoading && (
           <div className="flex h-full flex-col items-center justify-center py-16 text-center">
             <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-sm border border-border/70 bg-muted/30">
-              <Send className="h-7 w-7 text-[#071A2D]" />
+              <Send className="h-7 w-7 text-brand-ink" />
             </div>
             <h3
-              className="mb-1 text-sm font-semibold tracking-tight text-[#071A2D]"
+              className="mb-1 text-sm font-semibold tracking-tight text-brand-ink"
               style={{ fontFamily: "var(--font-brand-display)" }}
             >
               {t("chat_start_title")}
             </h3>
-            <div className="mx-auto mb-2 h-px w-8 bg-[#D39A2B]" aria-hidden />
+            <div className="mx-auto mb-2 h-px w-8 bg-brand-gold" aria-hidden />
             <p className="max-w-[240px] text-xs text-muted-foreground">
               {t("chat_start_desc")}
             </p>
@@ -409,7 +461,7 @@ export function ChatView({
                 >
                   {/* Avatar */}
                   {!isMe && !isConsecutive ? (
-                    <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-[#071A2D] text-overline font-semibold text-white">
+                    <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-brand-ink text-overline font-semibold text-white">
                       {getSenderInitials(msg.sender)}
                     </div>
                   ) : !isMe ? (
@@ -440,12 +492,12 @@ export function ChatView({
                         className={cn(
                           "mb-1 ml-1 flex items-center gap-1.5 rounded-sm border-l-2 px-2 py-1 text-overline",
                           isMe
-                            ? "border-l-[#071A2D]/40 bg-muted/30 text-muted-foreground"
+                            ? "border-l-brand-ink/40 bg-muted/30 text-muted-foreground"
                             : "bg-muted/40 border-l-muted-foreground/30 text-muted-foreground",
                         )}
                       >
                         <CornerDownRight className="h-2.5 w-2.5 flex-shrink-0" />
-                        <span className="font-semibold tracking-tight text-[#071A2D]">
+                        <span className="font-semibold tracking-tight text-brand-ink">
                           {msg.parent.sender.firstName}
                         </span>
                         <span className="truncate">{msg.parent.content}</span>
@@ -457,7 +509,7 @@ export function ChatView({
                       className={cn(
                         "relative rounded-sm px-3.5 py-2 text-sm",
                         isMe
-                          ? "rounded-br-sm bg-[#071A2D] text-white"
+                          ? "rounded-br-sm bg-brand-ink text-white"
                           : "rounded-bl-sm border border-border/70 bg-white",
                       )}
                     >
@@ -486,7 +538,7 @@ export function ChatView({
                         <button
                           type="button"
                           onClick={retryPending}
-                          className="inline-flex min-h-11 items-center rounded-sm px-2 text-xs font-medium text-[#071A2D] hover:bg-muted/50"
+                          className="inline-flex min-h-11 items-center rounded-sm px-2 text-xs font-medium text-brand-ink hover:bg-muted/50"
                         >
                           {t("retry_send", { defaultValue: "Reenviar" })}
                         </button>
@@ -502,7 +554,7 @@ export function ChatView({
                         <button
                           type="button"
                           onClick={() => setReplyTo(msg)}
-                          className="inline-flex min-h-11 min-w-11 items-center gap-1 rounded-sm px-2 text-xs font-medium text-muted-foreground hover:bg-muted/50 hover:text-[#071A2D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                          className="inline-flex min-h-11 min-w-11 items-center gap-1 rounded-sm px-2 text-xs font-medium text-muted-foreground hover:bg-muted/50 hover:text-brand-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                           aria-label={t("reply")}
                         >
                           <Reply className="h-4 w-4 shrink-0" />
@@ -558,9 +610,9 @@ export function ChatView({
       {/* Reply indicator */}
       {replyTo && (
         <div className="mx-4 mb-0 flex items-center gap-2 rounded-t-sm border border-b-0 border-border/70 bg-muted/50 px-3 py-2">
-          <Reply className="h-3.5 w-3.5 text-[#071A2D] flex-shrink-0" />
+          <Reply className="h-3.5 w-3.5 text-brand-ink flex-shrink-0" />
           <div className="flex-1 min-w-0">
-            <p className="text-overline font-semibold text-[#071A2D]">
+            <p className="text-overline font-semibold text-brand-ink">
               {[replyTo.sender.firstName, replyTo.sender.lastName]
                 .filter(Boolean)
                 .join(" ")}
@@ -571,22 +623,32 @@ export function ChatView({
           </div>
           <button
             onClick={() => setReplyTo(null)}
-            className="text-muted-foreground hover:text-[#071A2D] text-xs"
+            className="text-muted-foreground hover:text-brand-ink text-xs"
           >
             ✕
           </button>
         </div>
       )}
 
-      {/* Input area */}
-      <div className={cn("p-3 border-t bg-white -sm", replyTo && "pt-0")}>
+      {/* Composer — sits above keyboard via visualViewport inset on parent */}
+      <div
+        className={cn(
+          "sticky bottom-0 z-10 border-t border-border/70 bg-surface-elevated p-3",
+          replyTo && "pt-0",
+        )}
+        style={{
+          paddingBottom: "max(0.75rem, env(safe-area-inset-bottom, 0px))",
+        }}
+      >
         {draftHint && input.trim() && (
           <p className="mb-1.5 text-overline text-muted-foreground">
-            {t("draft_saved", { defaultValue: "Rascunho guardado neste dispositivo" })}
+            {t("draft_saved", {
+              defaultValue: "Rascunho guardado neste dispositivo",
+            })}
           </p>
         )}
         <div className="flex items-end gap-2">
-          <div className="flex-1 relative">
+          <div className="relative flex-1">
             <textarea
               ref={inputRef}
               value={input}
@@ -594,7 +656,8 @@ export function ChatView({
               onKeyDown={handleKeyDown}
               placeholder={t("message_placeholder")}
               rows={1}
-              className="w-full resize-none rounded-sm border border-input bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring min-h-[44px] max-h-[120px]"
+              enterKeyHint="send"
+              className="max-h-[120px] min-h-11 w-full resize-none rounded-sm border border-input bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
           <button
@@ -602,9 +665,9 @@ export function ChatView({
             onClick={() => void handleSend()}
             disabled={!input.trim() || isSending}
             className={cn(
-              "h-11 w-11 min-h-11 min-w-11 rounded-sm flex items-center justify-center transition-all flex-shrink-0",
+              "flex h-11 w-11 min-h-11 min-w-11 flex-shrink-0 items-center justify-center rounded-sm transition-all",
               input.trim()
-                ? "bg-[#071A2D] text-white hover:bg-[#0a2540]"
+                ? "bg-brand-ink text-white hover:bg-brand-ink-soft"
                 : "bg-muted text-muted-foreground",
             )}
             aria-label={t("send", { defaultValue: "Enviar" })}

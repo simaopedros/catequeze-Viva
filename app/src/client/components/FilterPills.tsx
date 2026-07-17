@@ -46,8 +46,8 @@ export function FilterPills({
             "shrink-0 snap-start whitespace-nowrap rounded-sm px-3 py-1.5 text-xs font-medium transition-colors",
             "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
             value === opt.value
-              ? "bg-[#071A2D] text-white"
-              : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-[#071A2D]",
+              ? "bg-brand-ink text-white"
+              : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-brand-ink",
           )}
         >
           {opt.label}

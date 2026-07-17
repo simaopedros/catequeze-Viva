@@ -473,103 +473,72 @@ export default function ClassDetailPage() {
           <Button
             variant="ghost"
             size="icon"
-            className="mt-1 shrink-0 rounded-sm"
+            className="mt-1 h-11 w-11 min-h-11 min-w-11 shrink-0 rounded-sm"
             asChild
           >
-            <Link to="/app/classes">
+            <Link to="/app/classes" aria-label={tc("back")}>
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>
           <AppPageHeader
             className="min-w-0 flex-1 border-0 pb-0"
-            eyebrow="Turma"
+            eyebrow={t("title")}
             title={cls.name}
             subtitle={classSubtitle}
-            actions={
-              <>
-                {canManageClass &&
-                  statusOpts
+            primaryAction={{
+              label: t("attendance"),
+              href: `/app/classes/${id}/attendance`,
+            }}
+            secondaryActions={[
+              {
+                label: t("detail.tabs.meetings"),
+                href: `/app/classes/${id}/meetings`,
+              },
+              {
+                label: t("indicators"),
+                href: `/app/classes/${id}/reports`,
+              },
+              {
+                label: chatting ? tc("loading") : t("detail.chat"),
+                onClick: handleOpenChat,
+                disabled: chatting,
+              },
+              ...(canManageClass
+                ? statusOpts
                     .filter((s) => s.status !== cls.status)
-                    .map((s) => (
-                      <Button
-                        key={s.status}
-                        size="sm"
-                        className="h-10 rounded-sm"
-                        variant={s.variant}
-                        onClick={() => handleStatus(s.status)}
-                      >
-                        {s.label}
-                      </Button>
-                    ))}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-10 rounded-sm"
-                  onClick={handleOpenChat}
-                  disabled={chatting}
-                >
-                  <MessageCircle className="mr-1 h-3 w-3" />
-                  {chatting ? tc("loading") : t("detail.chat")}
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="sm"
-                  className="h-10 rounded-sm"
-                >
-                  <Link to={`/app/classes/${id}/attendance`}>
-                    <ClipboardList className="mr-1 h-3 w-3" />
-                    {t("attendance")}
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="sm"
-                  className="h-10 rounded-sm"
-                >
-                  <Link to={`/app/classes/${id}/meetings`}>
-                    <Calendar className="mr-1 h-3 w-3" />
-                    {t("detail.tabs.meetings")}
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="sm"
-                  className="h-10 rounded-sm"
-                >
-                  <Link to={`/app/classes/${id}/reports`}>
-                    <BarChart3 className="mr-1 h-3 w-3" />
-                    {t("indicators")}
-                  </Link>
-                </Button>
-                {canManageClass && (
-                  <SendAnnouncementButton classId={id!} className={cls.name} />
-                )}
-              </>
-            }
+                    .map((s) => ({
+                      label: s.label,
+                      onClick: () => handleStatus(s.status),
+                    }))
+                : []),
+            ]}
           />
         </div>
 
-        <div className="grid gap-3 md:grid-cols-4">
-          <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+        {canManageClass && (
+          <div className="flex flex-wrap gap-2">
+            <SendAnnouncementButton classId={id!} className={cls.name} />
+          </div>
+        )}
+
+        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
+          <div className="rounded-sm border border-border/70 bg-surface-elevated px-4 py-3">
+            <p className="text-[11px] font-medium tracking-wide text-muted-foreground">
               {t("location")}
             </p>
             <p
-              className="mt-1.5 text-sm font-semibold tracking-tight text-[#071A2D]"
+              className="mt-1.5 text-sm font-semibold tracking-tight text-brand-ink"
               style={{ fontFamily: "var(--font-brand-display)" }}
             >
               {cls.location || "—"}
             </p>
           </div>
-          <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <div className="rounded-sm border border-border/70 bg-surface-elevated px-4 py-3">
+            <p className="text-[11px] font-medium tracking-wide text-muted-foreground">
               {t("schedule")}
             </p>
             <p
-              className="mt-1.5 text-sm font-semibold tracking-tight text-[#071A2D]"
+              className="mt-1.5 text-sm font-semibold tracking-tight text-brand-ink"
               style={{ fontFamily: "var(--font-brand-display)" }}
             >
               {t(`days_long.${cls.dayOfWeek}`) || cls.dayOfWeek} {cls.startTime}
@@ -579,23 +548,22 @@ export default function ClassDetailPage() {
           <AppMetric
             label={t("enrolled")}
             value={`${enrolledIds.length}/${cls.maxCapacity}`}
-            className="bg-white"
           />
           <AppMetric
             label={t("attendance")}
             value={`${attendanceRate}%`}
-            className="bg-white"
+            href={`/app/classes/${id}/attendance`}
           />
         </div>
 
         {editing ? (
-          <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3">
+          <div className="rounded-sm border border-border/70 bg-surface-elevated p-4 space-y-3">
             <div className="space-y-1.5">
               <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 <Pencil className="h-3.5 w-3.5" />
                 {t("detail.edit_class")}
               </p>
-              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+              <div className="h-px w-8 bg-brand-gold" aria-hidden />
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="sm:col-span-2">
@@ -754,7 +722,7 @@ export default function ClassDetailPage() {
                 ) : null}
               </EmptyState>
             ) : (
-              <div className="grid gap-2 overflow-x-auto">
+              <div className="grid gap-2">
                 {enrolled.map((e: any) => {
                   const journeys =
                     e.catechumenProfile?.sacramentalJourneys || [];
@@ -774,13 +742,13 @@ export default function ClassDetailPage() {
                   const journeyBadge = relevantJourney ? (
                     <Badge
                       variant={pct === 100 ? "default" : "outline"}
-                      className="text-overline gap-1"
+                      className="gap-1 text-overline"
                     >
                       <Cross className="h-3 w-3" />
                       {done}/{total}
                     </Badge>
                   ) : cls.sacrament ? (
-                    <span className="text-overline text-muted-foreground flex items-center gap-1">
+                    <span className="flex items-center gap-1 text-overline text-muted-foreground">
                       <Cross className="h-3 w-3 opacity-50" />
                       {t("detail.no_journey")}
                     </span>
@@ -789,19 +757,19 @@ export default function ClassDetailPage() {
                   return (
                     <div
                       key={e.id}
-                      className="flex items-center justify-between rounded-sm border border-border/70 bg-white p-3"
+                      className="flex min-h-14 items-center justify-between gap-2 rounded-sm border border-border/70 bg-surface-elevated p-3"
                     >
-                      <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex min-w-0 flex-1 items-center gap-3">
                         <Link
                           to={`/app/catechumens/${e.catechumenProfile?.id}`}
-                          className="flex min-w-0 items-center gap-3 hover:text-[#071A2D]"
+                          className="flex min-h-11 min-w-0 flex-1 items-center gap-3 rounded-sm hover:text-brand-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         >
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-[#071A2D]">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-brand-ink">
                             {e.catechumenProfile?.firstName?.[0]}
                             {e.catechumenProfile?.lastName?.[0]}
                           </div>
                           <span
-                            className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+                            className="truncate text-sm font-semibold tracking-tight text-brand-ink"
                             style={{ fontFamily: "var(--font-brand-display)" }}
                           >
                             {e.catechumenProfile?.firstName}{" "}
@@ -811,22 +779,22 @@ export default function ClassDetailPage() {
                         {relevantJourney ? (
                           <Link
                             to={`/app/sacramental-journeys/${relevantJourney.id}`}
-                            className="flex-shrink-0"
+                            className="shrink-0"
                           >
                             {journeyBadge}
                           </Link>
                         ) : (
                           journeyBadge && (
-                            <span className="flex-shrink-0">
-                              {journeyBadge}
-                            </span>
+                            <span className="shrink-0">{journeyBadge}</span>
                           )
                         )}
                       </div>
                       {canEnroll && (
                         <button
+                          type="button"
                           onClick={() => handleUnenroll(e.id)}
-                          className="text-muted-foreground hover:text-destructive p-1 flex-shrink-0"
+                          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm text-muted-foreground hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                          aria-label={tc("delete")}
                         >
                           <XCircle className="h-4 w-4" />
                         </button>
@@ -857,21 +825,21 @@ export default function ClassDetailPage() {
                         count: available.length,
                       })}
                     </h3>
-                    <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                    <div className="h-px w-8 bg-brand-gold" aria-hidden />
                   </div>
                   <div className="grid gap-2">
                     {available.map((c: any) => (
                       <div
                         key={c.id}
-                        className="flex items-center justify-between rounded-sm border border-border/70 bg-white p-3"
+                        className="flex items-center justify-between rounded-sm border border-border/70 bg-surface-elevated p-3"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-[#071A2D]">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-brand-ink">
                             {c.firstName?.[0]}
                             {c.lastName?.[0]}
                           </div>
                           <span
-                            className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                            className="text-sm font-semibold tracking-tight text-brand-ink"
                             style={{ fontFamily: "var(--font-brand-display)" }}
                           >
                             {c.firstName} {c.lastName}
@@ -880,6 +848,7 @@ export default function ClassDetailPage() {
                         <Button
                           size="sm"
                           variant="outline"
+                          className="h-11 min-h-11 shrink-0 rounded-sm"
                           onClick={() => handleEnroll(c.id)}
                         >
                           <UserPlus className="mr-1 h-3 w-3" />
@@ -923,55 +892,61 @@ export default function ClassDetailPage() {
                 {cls.meetings.map((m: any) => (
                   <div
                     key={m.id}
-                    className="flex items-center justify-between rounded-sm border border-border/70 bg-white p-3"
+                    className="flex flex-col gap-3 rounded-sm border border-border/70 bg-surface-elevated p-3 sm:flex-row sm:items-center sm:justify-between"
                   >
-                    <div>
+                    <div className="min-w-0">
                       <p
-                        className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                        className="text-sm font-semibold tracking-tight text-brand-ink"
                         style={{ fontFamily: "var(--font-brand-display)" }}
                       >
                         {m.title || t("detail.no_title")}
                       </p>
-                      <div className="flex items-center gap-2">
-                        <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <div className="mt-1 flex flex-wrap items-center gap-2">
+                        <p className="flex items-center gap-1 text-xs text-muted-foreground">
                           <Calendar className="h-3 w-3" />
                           {formatDate(m.date, currentLocale)}
                         </p>
-                        {m.content && (
+                        {m.content ? (
                           <Link
                             to={`/app/content-library/${m.content.id}`}
-                            className="flex items-center gap-1 text-xs font-medium text-[#071A2D] underline-offset-2 hover:underline"
+                            className="flex min-h-9 items-center gap-1 text-xs font-medium text-brand-ink underline-offset-2 hover:underline"
                           >
                             <BookOpen className="h-3 w-3" />
                             {m.content.title}
                           </Link>
-                        )}
-                        {!m.content && (
-                          <span className="text-xs text-muted-foreground italic">
+                        ) : (
+                          <span className="text-xs italic text-muted-foreground">
                             {t("detail.no_material")}
                           </span>
                         )}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <Badge variant="outline" className="text-overline">
                         {t("detail.attendance_records", {
                           count: m._count?.attendance || 0,
                         })}
                       </Badge>
-                      <Link
-                        to={`/app/classes/${id}/attendance`}
-                        className="text-xs font-medium text-[#071A2D] underline-offset-2 hover:underline"
-                      >
-                        {t("attendance")}
-                      </Link>
+                      <Button size="sm" className="h-11 min-h-11 rounded-sm" asChild>
+                        <Link
+                          to={`/app/classes/${id}/attendance?meetingId=${m.id}`}
+                        >
+                          <ClipboardList className="mr-1 h-3.5 w-3.5" />
+                          {t("attendance")}
+                        </Link>
+                      </Button>
                     </div>
                   </div>
                 ))}
               </div>
             )}
             {canManageClass && (
-              <Button className="mt-4" size="sm" asChild variant="outline">
+              <Button
+                className="mt-4 h-11 min-h-11"
+                size="sm"
+                asChild
+                variant="outline"
+              >
                 <Link to={`/app/classes/${id}/meetings`}>
                   <Calendar className="mr-1 h-3 w-3" />
                   {t("detail.manage_meetings")}
@@ -995,7 +970,7 @@ export default function ClassDetailPage() {
                     {t("detail.add_catechist")}
                   </Button>
                 ) : (
-                  <div className="flex items-center gap-2 rounded-sm border border-border/70 bg-white p-3">
+                  <div className="flex items-center gap-2 rounded-sm border border-border/70 bg-surface-elevated p-3">
                     <select
                       value={addUserId}
                       onChange={(e) => setAddUserId(e.target.value)}
@@ -1111,7 +1086,7 @@ export default function ClassDetailPage() {
                 description={t("detail.no_catechists_desc")}
               />
             ) : (
-              <div className="grid gap-2 overflow-x-auto">
+              <div className="grid gap-2 ">
                 {cls.catechists.map((cc: any) => {
                   const canRemove =
                     isCoordinator ||
@@ -1120,16 +1095,16 @@ export default function ClassDetailPage() {
                   return (
                     <div
                       key={cc.id}
-                      className="flex items-center justify-between rounded-sm border border-border/70 bg-white p-3"
+                      className="flex items-center justify-between rounded-sm border border-border/70 bg-surface-elevated p-3"
                     >
                       <div className="flex items-center gap-2 min-w-0">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-[#071A2D] flex-shrink-0">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-brand-ink flex-shrink-0">
                           {cc.user?.firstName?.[0]}
                           {cc.user?.lastName?.[0]}
                         </div>
                         <div className="min-w-0">
                           <p
-                            className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+                            className="truncate text-sm font-semibold tracking-tight text-brand-ink"
                             style={{
                               fontFamily: "var(--font-brand-display)",
                             }}
@@ -1153,8 +1128,9 @@ export default function ClassDetailPage() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                            className="h-11 w-11 min-h-11 min-w-11 text-muted-foreground hover:text-destructive"
                             onClick={() => setRemoveCatechistTarget(cc.userId)}
+                            aria-label={tc("delete")}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -1178,12 +1154,12 @@ export default function ClassDetailPage() {
             ) : monthlyPlan ? (
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="rounded-sm border border-border/70 bg-muted/30 p-2 text-[#071A2D]">
+                  <div className="rounded-sm border border-border/70 bg-muted/30 p-2 text-brand-ink">
                     <Calendar className="h-5 w-5" />
                   </div>
                   <div>
                     <h3
-                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                      className="text-sm font-semibold tracking-tight text-brand-ink"
                       style={{ fontFamily: "var(--font-brand-display)" }}
                     >
                       {formatDate(
@@ -1209,7 +1185,7 @@ export default function ClassDetailPage() {
                     {monthlyPlan.weeks?.map((week: any, wi: number) => (
                       <div
                         key={wi}
-                        className="rounded-sm border border-border/70 bg-white p-3"
+                        className="rounded-sm border border-border/70 bg-surface-elevated p-3"
                       >
                         <p className="text-xs font-medium text-muted-foreground mb-2">
                           {t("detail.week_of", {
@@ -1236,7 +1212,7 @@ export default function ClassDetailPage() {
                                   })}
                                 </Badge>
                                 <span
-                                  className="font-semibold tracking-tight text-[#071A2D]"
+                                  className="font-semibold tracking-tight text-brand-ink"
                                   style={{
                                     fontFamily: "var(--font-brand-display)",
                                   }}
@@ -1258,7 +1234,7 @@ export default function ClassDetailPage() {
                 )}
 
                 {monthlyPlan.availableContent?.length > 0 && (
-                  <div className="rounded-sm border border-border/70 bg-white p-3">
+                  <div className="rounded-sm border border-border/70 bg-surface-elevated p-3">
                     <h4 className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1">
                       <BookOpen className="h-3 w-3" />
                       {t("detail.available_content")}
@@ -1270,7 +1246,7 @@ export default function ClassDetailPage() {
                           <Link
                             key={c.id}
                             to={`/app/content-library/${c.id}`}
-                            className="rounded-sm border border-border/70 bg-muted/30 px-2 py-1 text-xs transition-colors hover:border-[#071A2D]/30"
+                            className="rounded-sm border border-border/70 bg-muted/30 px-2 py-1 text-xs transition-colors hover:border-brand-ink/30"
                           >
                             {c.title}
                           </Link>

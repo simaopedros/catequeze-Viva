@@ -19,6 +19,7 @@ import {
   Feather,
   MessageCircle,
   Trash2,
+  ClipboardList,
 } from "lucide-react";
 import {
   AppPageHeader,
@@ -126,59 +127,63 @@ export default function MeetingsPage() {
         eyebrow={t("title")}
         title={t("title")}
         subtitle={t("subtitle")}
-        actions={
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" asChild className="h-10 rounded-sm">
-              <Link to={`/app/classes/${classId}`}>{tc("back")}</Link>
-            </Button>
-            {canManageMeetings && (
-              <Button
-                className="h-10 rounded-sm shadow-none"
-                onClick={() => setShowForm(!showForm)}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                {t("new")}
-              </Button>
-            )}
-          </div>
+        primaryAction={
+          canManageMeetings
+            ? {
+                label: t("new"),
+                onClick: () => setShowForm(!showForm),
+              }
+            : undefined
         }
+        secondaryActions={[
+          {
+            label: tcl("attendance"),
+            href: `/app/classes/${classId}/attendance`,
+          },
+          {
+            label: tc("back"),
+            href: `/app/classes/${classId}`,
+          },
+        ]}
       />
 
       {showForm && (
         <AppPanel className="space-y-3">
           <div className="space-y-1.5">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            <p className="text-[11px] font-medium tracking-wide text-muted-foreground">
               {t("new")}
             </p>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            <div className="h-px w-8 bg-brand-gold" aria-hidden />
           </div>
-          <div className="flex gap-3">
-            <div className="flex-1 space-y-1.5">
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="min-w-0 flex-1 space-y-1.5">
               <Label htmlFor="meetingTitle">{t("meeting_title")}</Label>
               <Input
                 id="meetingTitle"
+                className="h-11 min-h-11"
                 placeholder={t("meeting_title")}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 sm:w-44">
               <Label htmlFor="meetingDate">{t("date")}</Label>
               <Input
                 id="meetingDate"
                 type="date"
+                className="h-11 min-h-11"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
               />
             </div>
           </div>
-          <div className="flex gap-3 items-center">
-            <div className="flex-1 space-y-1.5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+            <div className="min-w-0 flex-1 space-y-1.5">
               <Input
                 placeholder={t("search_content")}
                 value={contentSearch}
                 onChange={(e) => setContentSearch(e.target.value)}
-                className="h-9"
+                className="h-11 min-h-11"
               />
               <Select
                 value={selectedContentId || "none"}
@@ -186,7 +191,7 @@ export default function MeetingsPage() {
                   setSelectedContentId(v === "none" ? "" : v)
                 }
               >
-                <SelectTrigger className="h-9">
+                <SelectTrigger className="h-11 min-h-11">
                   <SelectValue placeholder={t("no_content")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -213,7 +218,7 @@ export default function MeetingsPage() {
               </Select>
             </div>
             <Button
-              className="h-10 rounded-sm"
+              className="h-11 min-h-11 w-full rounded-sm sm:w-auto"
               onClick={handleCreate}
               disabled={!title && !selectedContentId}
             >
@@ -233,20 +238,24 @@ export default function MeetingsPage() {
       ) : (
         <div className="space-y-3">
           {meetings.map((m: any) => (
-            <div
+            <article
               key={m.id}
-              className="rounded-sm border border-border/70 bg-white p-4 space-y-2"
+              className="relative space-y-3 rounded-sm border border-border/70 bg-surface-elevated p-4"
             >
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <Link
-                    to={`/app/meetings/${m.id}`}
-                    className="text-sm font-semibold tracking-tight text-[#071A2D] underline-offset-2 hover:underline"
+              <Link
+                to={`/app/meetings/${m.id}`}
+                className="absolute inset-0 z-0 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                aria-label={m.title || t("no_title")}
+              />
+              <div className="relative z-[1] flex items-start justify-between gap-3 pointer-events-none">
+                <div className="min-w-0 flex-1">
+                  <p
+                    className="text-sm font-semibold tracking-tight text-brand-ink"
                     style={{ fontFamily: "var(--font-brand-display)" }}
                   >
                     {m.title || t("no_title")}
-                  </Link>
-                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                  </p>
+                  <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
                     <Calendar className="h-3 w-3" />
                     {formatDate(m.date, currentLocale, {
                       weekday: "long",
@@ -256,46 +265,39 @@ export default function MeetingsPage() {
                     })}
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-overline">
-                    {t("attendance_count", {
-                      count: m._count?.attendance || 0,
-                    })}
-                  </Badge>
-                  <Link
-                    to={`/app/classes/${classId}/attendance`}
-                    className="text-xs font-medium text-[#071A2D] underline-offset-2 hover:underline"
-                  >
-                    {tcl("attendance")}
-                  </Link>
-                </div>
+                <Badge variant="outline" className="shrink-0 text-overline">
+                  {t("attendance_count", {
+                    count: m._count?.attendance || 0,
+                  })}
+                </Badge>
               </div>
 
               {m.content ? (
-                <div className="flex items-center gap-2 rounded-sm border border-border/70 bg-muted/30 p-2 text-xs">
-                  <BookOpen className="h-3 w-3 text-[#071A2D]" />
+                <div className="relative z-[1] flex items-center gap-2 rounded-sm border border-border/70 bg-muted/30 p-2 text-xs pointer-events-auto">
+                  <BookOpen className="h-3 w-3 text-brand-ink" />
                   <Link
                     to={`/app/content-library/${m.content.id}`}
-                    className="font-medium text-[#071A2D] underline-offset-2 hover:underline"
+                    className="font-medium text-brand-ink underline-offset-2 hover:underline"
                   >
                     {m.content.title}
                   </Link>
                   <button
+                    type="button"
                     onClick={() => handleLinkContent(m.id, null)}
-                    className="ml-auto text-muted-foreground hover:text-destructive text-overline"
+                    className="ml-auto min-h-11 px-2 text-overline text-muted-foreground hover:text-destructive"
                   >
                     {t("unlink")}
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center gap-2">
+                <div className="relative z-[1] flex items-center gap-2 pointer-events-auto">
                   <Select
                     onValueChange={(v) => {
                       if (v !== "none") handleLinkContent(m.id, v);
                     }}
                     defaultValue="none"
                   >
-                    <SelectTrigger className="h-8 text-xs min-w-[180px]">
+                    <SelectTrigger className="h-11 min-h-11 min-w-0 flex-1 text-xs sm:min-w-[180px]">
                       <SelectValue placeholder={t("link_content")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -310,11 +312,23 @@ export default function MeetingsPage() {
                 </div>
               )}
 
-              <div className="flex gap-2 pt-1">
+              <div className="relative z-[1] flex flex-wrap gap-2 border-t border-border/60 pt-3 pointer-events-auto">
                 <Button
                   size="sm"
-                  variant="ghost"
-                  className="text-xs h-7"
+                  className="h-11 min-h-11 flex-1 rounded-sm shadow-none sm:flex-none"
+                  asChild
+                >
+                  <Link
+                    to={`/app/classes/${classId}/attendance?meetingId=${m.id}`}
+                  >
+                    <ClipboardList className="mr-1.5 h-3.5 w-3.5" />
+                    {tcl("attendance")}
+                  </Link>
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-11 min-h-11 rounded-sm"
                   onClick={() =>
                     navigate(
                       `/app/ai-hub?mode=generate-activity&meetingId=${
@@ -339,7 +353,7 @@ export default function MeetingsPage() {
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="text-xs h-7"
+                  className="h-11 min-h-11 text-xs"
                   onClick={() =>
                     navigate(
                       `/app/ai-hub?mode=generate-whatsapp&meetingId=${
@@ -365,7 +379,7 @@ export default function MeetingsPage() {
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="text-xs h-7 text-destructive hover:text-destructive"
+                    className="h-11 min-h-11 text-xs text-destructive hover:text-destructive"
                     onClick={() => setDeleteTarget(m.id)}
                   >
                     <Trash2 className="mr-1 h-3 w-3" />
@@ -373,7 +387,7 @@ export default function MeetingsPage() {
                   </Button>
                 )}
               </div>
-            </div>
+            </article>
           ))}
         </div>
       )}

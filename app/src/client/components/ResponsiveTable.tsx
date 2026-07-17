@@ -1,5 +1,6 @@
 import { type ReactNode } from "react";
 import { cn } from "../utils";
+import type { MobileCardField } from "../../shared/uiPresentation";
 
 export interface ResponsiveTableColumn<T> {
   key: string;
@@ -10,6 +11,8 @@ export interface ResponsiveTableColumn<T> {
   render: (item: T) => ReactNode;
   /** Optional: render as a card label in mobile view */
   cardLabel?: string;
+  /** Hide this column from the default mobile field list */
+  hideOnMobile?: boolean;
 }
 
 interface ResponsiveTableProps<T> {
@@ -19,34 +22,47 @@ interface ResponsiveTableProps<T> {
   getRowKey: (item: T, index: number) => string | number;
   /** Optional: mobile card header (e.g., name + status badge) */
   renderCardHeader?: (item: T) => ReactNode;
+  /**
+   * Explicit mobile card body. Prefer this over auto field list for
+   * operational lists (name, status, next action, 1–2 meta fields).
+   */
+  renderMobileCard?: (item: T) => ReactNode;
+  /** Structured mobile fields when renderMobileCard is not provided */
+  mobileFields?: MobileCardField<T, ReactNode>[];
   /** Optional: what to show when data is empty */
   emptyMessage?: string;
   /** Classes for the wrapper */
   className?: string;
   /** Classes for the table element (desktop) */
   tableClassName?: string;
-  /** Row click */
+  /** Row click — whole card/row is the target */
   onRowClick?: (item: T) => void;
+  /** When true, mobile cards omit per-field labels (use for dense lists) */
+  compactMobile?: boolean;
 }
 
 /**
- * Responsive table that shows standard HTML table on desktop (≥768px)
- * and stacked cards on mobile (<768px).
+ * Responsive table: desktop HTML table; mobile cards/lists.
+ * Pass `renderMobileCard` for designed mobile presentation;
+ * reserve horizontal scroll for genuinely comparative tables only.
  */
 export function ResponsiveTable<T>({
   columns,
   data,
   getRowKey,
   renderCardHeader,
+  renderMobileCard,
+  mobileFields,
   emptyMessage,
   className,
   tableClassName,
   onRowClick,
+  compactMobile,
 }: ResponsiveTableProps<T>) {
   if (data.length === 0 && emptyMessage) {
     return (
       <div
-        className="py-12 text-center text-sm font-semibold tracking-tight text-[#071A2D]"
+        className="py-12 text-center text-sm font-semibold tracking-tight text-brand-ink"
         style={{ fontFamily: "var(--font-brand-display)" }}
       >
         {emptyMessage}
@@ -54,12 +70,14 @@ export function ResponsiveTable<T>({
     );
   }
 
+  const defaultMobileColumns = columns.filter((c) => !c.hideOnMobile);
+
   return (
     <>
       {/* Desktop: standard table */}
       <div
         className={cn(
-          "hidden md:block overflow-x-auto rounded-sm border border-border/70 bg-white",
+          "hidden md:block overflow-x-auto rounded-sm border border-border/70 bg-surface-elevated",
           className,
         )}
       >
@@ -70,7 +88,7 @@ export function ResponsiveTable<T>({
                 <th
                   key={col.key}
                   className={cn(
-                    "whitespace-nowrap p-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground",
+                    "whitespace-nowrap p-3 text-left text-[11px] font-medium tracking-wide text-muted-foreground",
                     col.headerClassName,
                   )}
                 >
@@ -103,36 +121,92 @@ export function ResponsiveTable<T>({
         </table>
       </div>
 
-      {/* Mobile: stacked cards */}
-      <div className={cn("md:hidden space-y-3", className)}>
-        {data.map((item, idx) => (
-          <div
-            key={getRowKey(item, idx)}
-            className={cn(
-              "rounded-sm border border-border/70 bg-white p-4 ",
-              onRowClick &&
-                "cursor-pointer active:scale-[0.98] transition-transform",
-            )}
-            onClick={() => onRowClick?.(item)}
-          >
-            {renderCardHeader && (
-              <div className="mb-3 pb-3 border-b">{renderCardHeader(item)}</div>
-            )}
-            <dl className="space-y-2">
-              {columns.map((col) => (
-                <div
-                  key={col.key}
-                  className="flex justify-between items-start gap-2"
-                >
-                  <dt className="text-xs text-muted-foreground shrink-0">
-                    {col.cardLabel || col.header}
-                  </dt>
-                  <dd className="text-sm text-right">{col.render(item)}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        ))}
+      {/* Mobile: designed cards / expandable rows */}
+      <div className={cn("md:hidden space-y-3", className)} role="list">
+        {data.map((item, idx) => {
+          const interactive = Boolean(onRowClick);
+          return (
+            <div
+              key={getRowKey(item, idx)}
+              role="listitem"
+              className={cn(
+                "rounded-sm border border-border/70 bg-surface-elevated p-4",
+                interactive &&
+                  "cursor-pointer active:scale-[0.99] transition-transform motion-reduce:transition-none motion-reduce:active:scale-100",
+                interactive &&
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              )}
+              onClick={() => onRowClick?.(item)}
+              onKeyDown={
+                interactive
+                  ? (e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        onRowClick?.(item);
+                      }
+                    }
+                  : undefined
+              }
+              tabIndex={interactive ? 0 : undefined}
+            >
+              {renderMobileCard ? (
+                renderMobileCard(item)
+              ) : (
+                <>
+                  {renderCardHeader && (
+                    <div className="mb-3 border-b border-border/60 pb-3">
+                      {renderCardHeader(item)}
+                    </div>
+                  )}
+                  {mobileFields ? (
+                    <dl className="space-y-2">
+                      {mobileFields.map((field) => (
+                        <div
+                          key={field.key}
+                          className={cn(
+                            "flex justify-between gap-2",
+                            field.prominence === "title" && "flex-col items-start",
+                          )}
+                        >
+                          {field.label && !compactMobile && (
+                            <dt className="shrink-0 text-xs text-muted-foreground">
+                              {field.label}
+                            </dt>
+                          )}
+                          <dd
+                            className={cn(
+                              "text-sm text-right",
+                              field.prominence === "title" &&
+                                "text-left text-base font-semibold text-brand-ink",
+                            )}
+                          >
+                            {field.render(item)}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                  ) : (
+                    <dl className="space-y-2">
+                      {defaultMobileColumns.map((col) => (
+                        <div
+                          key={col.key}
+                          className="flex items-start justify-between gap-2"
+                        >
+                          {!compactMobile && (
+                            <dt className="shrink-0 text-xs text-muted-foreground">
+                              {col.cardLabel || col.header}
+                            </dt>
+                          )}
+                          <dd className="text-sm text-right">{col.render(item)}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  )}
+                </>
+              )}
+            </div>
+          );
+        })}
       </div>
     </>
   );

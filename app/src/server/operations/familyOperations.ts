@@ -37,11 +37,24 @@ async function getParishIds(context: any): Promise<string[]> {
   return ids;
 }
 
-export const listHouseholds = async (_args: { communityId?: string; take?: number; skip?: number; search?: string } | void, context: any) => {
+export const listHouseholds = async (
+  _args:
+    | {
+        communityId?: string;
+        /** When set, scope results to this workspace (must be in user's accessible parishes). */
+        parishId?: string;
+        take?: number;
+        skip?: number;
+        search?: string;
+      }
+    | void,
+  context: any,
+) => {
   const args = _args || {};
   const take = args.take;
   const skip = args.skip || 0;
   const search = args.search?.trim();
+  const requestedParishId = args.parishId?.trim() || undefined;
   if (!context.user) throw new HttpError(401);
 
   // Family-only users: only their own household(s), never parish directory.
@@ -94,6 +107,7 @@ export const listHouseholds = async (_args: { communityId?: string; take?: numbe
 
   if (context.user.isAdmin) {
     const whereAdmin: any = {};
+    if (requestedParishId) whereAdmin.parishId = requestedParishId;
     if (args.communityId) whereAdmin.communityId = args.communityId;
     return context.entities.Household.findMany({
       where: buildWhere(whereAdmin),
@@ -106,6 +120,12 @@ export const listHouseholds = async (_args: { communityId?: string; take?: numbe
 
   const parishIds = await getParishIds(context);
   if (parishIds.length === 0) return [];
+
+  // Scope to active workspace when requested (must be an accessible parish)
+  const scopedParishIds =
+    requestedParishId && parishIds.includes(requestedParishId)
+      ? [requestedParishId]
+      : parishIds;
 
   // Check user roles for filtering
   const membershipRoles = await context.entities.Membership.findMany({
@@ -121,9 +141,9 @@ export const listHouseholds = async (_args: { communityId?: string; take?: numbe
   });
   if (personalCheck) staffRoles.push('PERSONAL_OWNER');
 
-  // Coordinator or above (including PERSONAL_OWNER): all households in their parishes
+  // Coordinator or above (including PERSONAL_OWNER): households in scoped parishes
   if (staffRoles.some((r: string) => isCoordinatorOrAbove(r))) {
-    const where: any = { parishId: { in: parishIds } };
+    const where: any = { parishId: { in: scopedParishIds } };
     if (args.communityId) where.communityId = args.communityId;
     return context.entities.Household.findMany({
       where: buildWhere(where),
@@ -192,9 +212,9 @@ export const listHouseholds = async (_args: { communityId?: string; take?: numbe
     });
   }
 
-  // Lead catechist or general catechetical role: households in their parishes
+  // Lead catechist or general catechetical role: households in scoped workspace
   if (staffRoles.includes('LEAD_CATECHIST') || staffRoles.includes('ASSISTANT_CATECHIST')) {
-    const where: any = { parishId: { in: parishIds } };
+    const where: any = { parishId: { in: scopedParishIds } };
     if (args.communityId) where.communityId = args.communityId;
     return context.entities.Household.findMany({
       where: buildWhere(where),
@@ -205,7 +225,7 @@ export const listHouseholds = async (_args: { communityId?: string; take?: numbe
     });
   }
 
-  const where: any = { parishId: { in: parishIds } };
+  const where: any = { parishId: { in: scopedParishIds } };
   if (args.communityId) where.communityId = args.communityId;
   return context.entities.Household.findMany({
     where: buildWhere(where),

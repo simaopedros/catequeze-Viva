@@ -3,9 +3,17 @@
  *
  * Zoom at 200% is a manual/CSS check; Playwright asserts the meta does not
  * pin maximum-scale so browsers can scale.
+ * Also checks reduced-motion media query is honored by layout (no crash).
  */
 import { test, expect } from "@playwright/test";
-import { login, USERS } from "./helpers";
+import {
+  login,
+  USERS,
+  enterFirstWorkspace,
+  assertNoHorizontalOverflow,
+  dismissCookieBanner,
+  bottomMoreButton,
+} from "./helpers";
 
 test.describe("a11y viewport and bottom sheet", () => {
   test("public page viewport meta allows user scaling", async ({ page }) => {
@@ -36,7 +44,7 @@ test.describe("a11y viewport and bottom sheet", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await login(page, USERS.leadCatechist.email);
 
-    const moreButton = page.getByRole("button", { name: /mais|more/i });
+    const moreButton = bottomMoreButton(page);
     await expect(moreButton).toBeVisible({ timeout: 15000 });
     await moreButton.click();
 
@@ -66,5 +74,32 @@ test.describe("a11y viewport and bottom sheet", () => {
       const content = await metas.nth(i).getAttribute("content");
       expect(content!).not.toMatch(/maximum-scale\s*=\s*1(\.0)?(\s|,|$)/i);
     }
+  });
+
+  test("app shell has no horizontal overflow at 320px", async ({ page }) => {
+    // Login at a stable phone size, then shrink (avoids login form layout races at 320)
+    await page.setViewportSize({ width: 390, height: 844 });
+    await login(page, USERS.leadCatechist.email);
+    await enterFirstWorkspace(page);
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.goto("/app");
+    await page.waitForLoadState("domcontentloaded");
+    await dismissCookieBanner(page);
+    await page.waitForTimeout(400);
+    await assertNoHorizontalOverflow(page, 8);
+  });
+
+  test("prefers-reduced-motion does not break dashboard", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await login(page, USERS.leadCatechist.email);
+    await enterFirstWorkspace(page);
+    await page.goto("/app");
+    await page.waitForLoadState("domcontentloaded");
+    await dismissCookieBanner(page);
+    await expect(page.locator("#main-content, main").first()).toBeVisible({
+      timeout: 15000,
+    });
+    await assertNoHorizontalOverflow(page, 4);
   });
 });

@@ -471,7 +471,14 @@ export const attendance_en = {
         "LATE": "Late",
         "JUSTIFIED": "Justified",
         "none": "Pending"
-      }
+      },
+      "undo": "Undo",
+      "undo_last": "Undo last mark",
+      "leave_unsaved_title": "Unsaved attendance",
+      "leave_unsaved_desc": "You have pending changes that may not be synced yet. Leave anyway?",
+      "progress_pct": "{{pct}}% complete",
+      "complete_banner": "Attendance complete for this meeting",
+      "history_collapsed": "History"
     }
   } as const;
 
@@ -942,7 +949,10 @@ export const calendar_en = {
       "Sun"
     ],
     "view_agenda": "Agenda",
-    "view_month": "Month"
+    "view_month": "Month",
+    "prev_period": "Previous period",
+    "next_period": "Next period",
+    "create_primary": "New event"
   } as const;
 
 export const catecheticalYears_en = {
@@ -1154,7 +1164,13 @@ export const classes_en = {
       "confirm_remove_catechist_title": "Remove catechist",
       "confirm_remove_catechist_desc": "Are you sure you want to remove this catechist from the class?",
       "error": "Error"
-    }
+    },
+    "no_schedule": "No schedule",
+    "first_classes": "First classes",
+    "suggested_structure": "Suggested structure",
+    "suggested_1": "Set stage, schedule, and lead catechist for each class.",
+    "suggested_2": "Register catechumens to track attendance, meetings, and progress.",
+    "suggested_3": "Use editorial assistance to prepare meetings with more consistency."
   } as const;
 
 export const collaborative_en = {
@@ -1725,7 +1741,19 @@ export const common_en = {
       },
       "detail_access_denied": "You don't have access to this catechumen.",
       "detail_load_error": "Error loading catechumen.",
-      "back_to_list": "Back to list"
+      "back_to_list": "Back to list",
+      "table_view": "Table",
+      "cards_view": "Cards",
+      "suggested_flow": "Suggested flow",
+      "first_registrations": "First registrations",
+      "flow_1": "Register name, birth date, and guardians to start follow-up.",
+      "flow_2": "Link the catechumen to a class for meetings and attendance.",
+      "flow_3": "Keep the record updated for sacraments, communication, and pastoral progress.",
+      "linked_classes": "{{count}} linked",
+      "family_label": "Family",
+      "family_unlinked": "Not linked",
+      "next_enroll": "Enroll in a class",
+      "view_profile": "Open profile"
     },
     "global_search_placeholder": "Search catechumens, classes, content, Bible...",
     "two_factor_code_placeholder": "6-digit code",
@@ -1805,7 +1833,12 @@ export const common_en = {
       "banner_hint": "Accept to join the workspace and start collaborating.",
       "view_cta": "View and accept",
       "a_workspace": "a workspace"
-    }
+    },
+    "view_table": "Table",
+    "view_cards": "Cards",
+    "leave_form_title": "Unsaved changes",
+    "leave_form_desc": "You have changes that have not been saved yet. Leave anyway?",
+    "leave_anyway": "Leave without saving"
   } as const;
 
 export const components_en = {
@@ -2123,7 +2156,18 @@ export const dashboard_en = {
     "kpi_read_rate": "Read rate",
     "kpi_plan": "Plan",
     "kpi_status": "Status",
-    "kpi_trial_days_remaining": "Days until trial ends"
+    "kpi_trial_days_remaining": "Days until trial ends",
+    "first_steps": "First steps",
+    "how_to_start": "How to start",
+    "how_to_start_1": "Create a class with stage, meeting days, and leaders.",
+    "how_to_start_2": "Register or import catechumens and place them in classes.",
+    "how_to_start_3": "Use editorial assistance to prepare your first meetings.",
+    "empty_class_card_desc": "Create your first class to organize meetings, attendance, and follow-up.",
+    "empty_catechumen_card_desc": "After the class, register catechumens to begin the pastoral journey.",
+    "registration_section": "Registration",
+    "attention_now": "What needs your attention now",
+    "import_catechumens": "Import catechumens",
+    "metrics_secondary": "Indicators"
   } as const;
 
 export const family_en = {
@@ -3350,7 +3394,12 @@ export const messages_en = {
     "leave_error": "Error leaving conversation",
     "pending_send": "Pending",
     "retry_send": "Resend",
-    "draft_saved": "Draft saved on this device"
+    "draft_saved": "Draft saved on this device",
+    "offline_banner": "You are offline. Messages will send when connection returns.",
+    "online_again": "Back online",
+    "load_error_title": "Could not load conversation",
+    "back_to_list": "Back to conversations",
+    "network_error": "Network error"
   } as const;
 
 export const navigation_en = {
@@ -3375,7 +3424,10 @@ export const navigation_en = {
     "communities": "Communities",
     "onboarding": "Onboarding",
     "managementSection": "Management",
-    "peopleSection": "People & Classes",
+    "peopleSection": "People",
+    "contentSection": "Content",
+    "operationSection": "Operations",
+    "settingsSection": "Settings",
     "pedagogySection": "Pedagogy & Planning",
     "pastoralSection": "Communication & Management",
     "primarySection": "Primary",

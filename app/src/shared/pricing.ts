@@ -454,10 +454,11 @@ export function hasPersonalAccess(
 /** True while the user is on the no-card product trial (not a paid Stripe sub). */
 export function isOnProductTrial(
   user: UserSubscriptionFields | null | undefined,
+  now: Date = new Date(),
 ): boolean {
   return (
     isProductTrialStatus(user?.subscriptionStatus) &&
-    isProductTrialWindowOpen(user?.createdAt)
+    isProductTrialWindowOpen(user?.createdAt, now)
   );
 }
 
@@ -479,7 +480,7 @@ export function getProductTrialDaysLeft(
   user: UserSubscriptionFields | null | undefined,
   now: Date = new Date(),
 ): number | null {
-  if (!isOnProductTrial(user)) return null;
+  if (!isOnProductTrial(user, now)) return null;
   const endsAt = getProductTrialEndsAt(user?.createdAt);
   if (!endsAt) return null;
   return Math.max(0, Math.ceil((endsAt.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)));
@@ -498,14 +499,17 @@ export interface BillingInfo {
  * ACTIVE always grants access. TRIAL grants access until trialEndsAt.
  * PAST_DUE grants access (grace period).
  */
-export function isBillingActive(billing: BillingInfo | null | undefined): boolean {
+export function isBillingActive(
+  billing: BillingInfo | null | undefined,
+  now: Date = new Date(),
+): boolean {
   if (!billing) return false;
   if (billing.status === 'ACTIVE' || billing.status === 'PAST_DUE') return true;
   if (billing.status === 'TRIAL' && billing.trialEndsAt) {
     const trialEnd = typeof billing.trialEndsAt === 'string'
       ? new Date(billing.trialEndsAt)
       : billing.trialEndsAt;
-    return trialEnd >= new Date();
+    return trialEnd >= now;
   }
   return false;
 }
@@ -513,15 +517,18 @@ export function isBillingActive(billing: BillingInfo | null | undefined): boolea
 /** Institutional TenantBilling on TRIAL that is still within trialEndsAt. */
 export function isOnInstitutionalTrial(
   billing: BillingInfo | null | undefined,
+  now: Date = new Date(),
 ): boolean {
-  return Boolean(billing && billing.status === 'TRIAL' && isBillingActive(billing));
+  return Boolean(
+    billing && billing.status === 'TRIAL' && isBillingActive(billing, now),
+  );
 }
 
 export function getInstitutionalTrialDaysLeft(
   billing: BillingInfo | null | undefined,
   now: Date = new Date(),
 ): number | null {
-  if (!isOnInstitutionalTrial(billing) || !billing?.trialEndsAt) return null;
+  if (!isOnInstitutionalTrial(billing, now) || !billing?.trialEndsAt) return null;
   const endsAt =
     typeof billing.trialEndsAt === 'string'
       ? new Date(billing.trialEndsAt)

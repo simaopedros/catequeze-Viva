@@ -30,6 +30,30 @@
   "event_name": "Nome do evento *",
   "description_optional": "Descrição (opcional)",
   "create_event": "Criar evento",
-  "months": ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"],
-  "weekdays_short": ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
+  "months": [
+    "Janeiro",
+    "Fevereiro",
+    "Março",
+    "Abril",
+    "Maio",
+    "Junho",
+    "Julho",
+    "Agosto",
+    "Setembro",
+    "Outubro",
+    "Novembro",
+    "Dezembro"
+  ],
+  "weekdays_short": [
+    "Seg",
+    "Ter",
+    "Qua",
+    "Qui",
+    "Sex",
+    "Sáb",
+    "Dom"
+  ],
+  "prev_period": "Período anterior",
+  "next_period": "Período seguinte",
+  "create_primary": "Novo evento"
 }

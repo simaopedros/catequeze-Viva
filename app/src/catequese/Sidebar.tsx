@@ -35,6 +35,7 @@ import { useUserContext } from "../client/hooks/useUserContext";
 import {
   getVisibleNavigation,
   type NavItemConfig,
+  type VisibleNavGroup,
 } from "../shared/navigation";
 import { useQuery, getUnreadMessagesCount } from "wasp/client/operations";
 import { useActiveWorkspace } from "../client/hooks/useActiveWorkspace";
@@ -76,9 +77,6 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   admin: Shield,
 };
 
-// ---- Section label keys for collapse state initialization ----
-const ALL_SECTIONS = ["more"];
-
 interface NavItemProps {
   item: NavItemConfig;
   collapsed: boolean;
@@ -92,7 +90,6 @@ function NavItemLink({
   const { t } = useTranslation("navigation");
   const Icon = ICON_MAP[item.iconKey];
 
-  // Map iconKey to data-tour attributes for the guided tour
   const tourMap: Record<string, string> = {
     classes: "sidebar-classes",
     ai_hub: "sidebar-ai",
@@ -110,8 +107,8 @@ function NavItemLink({
         cn(
           "relative flex w-full items-center justify-between rounded-sm px-2.5 py-2 text-sm font-medium transition-colors duration-150",
           isActive
-            ? "bg-[#071A2D]/[0.06] text-[#071A2D] border-l-2 border-[#D39A2B]"
-            : "border-l-2 border-transparent text-muted-foreground hover:bg-muted/50 hover:text-[#071A2D]",
+            ? "bg-brand-ink/[0.06] text-brand-ink border-l-2 border-brand-gold"
+            : "border-l-2 border-transparent text-muted-foreground hover:bg-muted/50 hover:text-brand-ink",
           collapsed && "justify-center px-2",
           "motion-reduce:transition-none",
         )
@@ -122,12 +119,12 @@ function NavItemLink({
         {!collapsed && <span>{t(item.labelKey)}</span>}
       </div>
       {!collapsed && badge !== undefined && badge > 0 && (
-        <span className="h-4.5 min-w-[18px] flex items-center justify-center rounded-sm bg-[#071A2D] text-white text-overline font-semibold px-1">
+        <span className="h-4.5 min-w-[18px] flex items-center justify-center rounded-sm bg-brand-ink text-white text-overline font-semibold px-1">
           {badge > 99 ? "99+" : badge}
         </span>
       )}
       {collapsed && badge !== undefined && badge > 0 && (
-        <span className="absolute right-1 top-1 h-2 w-2 rounded-sm bg-[#D39A2B] ring-2 ring-background" />
+        <span className="absolute right-1 top-1 h-2 w-2 rounded-sm bg-brand-gold ring-2 ring-background" />
       )}
     </NavLink>
   );
@@ -153,18 +150,89 @@ function NavItemLink({
   return link;
 }
 
-export function Sidebar() {
+function NavGroupBlock({
+  group,
+  collapsed,
+  expanded,
+  onToggle,
+  unreadMessagesCount,
+}: {
+  group: VisibleNavGroup;
+  collapsed: boolean;
+  expanded: boolean;
+  onToggle: () => void;
+  unreadMessagesCount: number;
+}) {
   const { t } = useTranslation("navigation");
+  const showHeader = group.collapsible && !collapsed;
+  const showItems = !group.collapsible || collapsed || expanded;
+
+  return (
+    <div className="mt-2 first:mt-0 px-2.5">
+      {showHeader && (
+        <button
+          type="button"
+          onClick={onToggle}
+          className="mb-0.5 flex min-h-9 w-full items-center justify-between rounded-sm px-2.5 py-1 transition-colors hover:bg-accent/50"
+        >
+          <p className="select-none text-[11px] font-medium tracking-wide text-muted-foreground">
+            {t(group.labelKey)}
+          </p>
+          <ChevronDown
+            className={cn(
+              "h-3.5 w-3.5 text-muted-foreground/60 transition-transform duration-200 motion-reduce:transition-none",
+              !expanded && "-rotate-90",
+            )}
+          />
+        </button>
+      )}
+      {!group.collapsible && !collapsed && (
+        <p className="mb-1 select-none px-2.5 text-[11px] font-medium tracking-wide text-muted-foreground">
+          {t(group.labelKey)}
+        </p>
+      )}
+
+      {showItems && (
+        <div
+          className={cn(
+            "space-y-0.5 overflow-hidden transition-all duration-200 motion-reduce:transition-none",
+            group.collapsible &&
+              !collapsed &&
+              !expanded &&
+              "max-h-0 opacity-0",
+            group.collapsible &&
+              !collapsed &&
+              expanded &&
+              "max-h-[32rem] opacity-100",
+          )}
+        >
+          {group.items.map((item) => (
+            <NavItemLink
+              key={item.to}
+              item={item}
+              collapsed={collapsed}
+              badge={
+                item.iconKey === "messages" ? unreadMessagesCount : undefined
+              }
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function Sidebar() {
   const { t: tc } = useTranslation("common");
   const [collapsed, setCollapsed] = useState(false);
+  // Secondary groups start collapsed to reduce cognitive load; operation stays open.
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    () => new Set(ALL_SECTIONS),
+    () => new Set(["people"]),
   );
   const { userRole, isAdmin } = useUserContext();
   const { workspaceType } = useActiveWorkspace();
   const isVisible = usePageVisibility();
 
-  // Fetch unread count for messages — lightweight count query instead of full conversation list
   const { data: unreadMessages } = useQuery(getUnreadMessagesCount, undefined, {
     enabled: (!!userRole || isAdmin) && isVisible,
     refetchInterval: isVisible ? 120000 : false,
@@ -174,7 +242,7 @@ export function Sidebar() {
 
   const unreadMessagesCount = unreadMessages?.count || 0;
 
-  const { primary, more, bottom } = getVisibleNavigation({
+  const { groups } = getVisibleNavigation({
     role: userRole,
     isAdmin,
     workspaceType,
@@ -195,95 +263,34 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "flex h-full flex-col border-r border-[#071A2D]/10 bg-white transition-all duration-200",
+        "flex h-full flex-col border-r border-brand-ink/10 bg-surface-elevated transition-all duration-200",
         collapsed ? "w-16" : "w-60",
       )}
     >
-      <div className="flex h-14 items-center border-b border-[#071A2D]/08 px-3">
+      <div className="flex h-14 items-center border-b border-brand-ink/08 px-3">
         {!collapsed && <BrandLockup compact hideBadge className="max-w-full" />}
         {collapsed && <BrandMark className="mx-auto h-8 w-8" />}
       </div>
 
-      <nav className="no-scrollbar flex-1 overflow-y-auto py-4">
-        {primary.length > 0 && (
-          <div className="space-y-0.5 px-2.5">
-            {primary.map((item) => (
-              <NavItemLink
-                key={item.to}
-                item={item}
-                collapsed={collapsed}
-                badge={
-                  item.iconKey === "messages" ? unreadMessagesCount : undefined
-                }
-              />
-            ))}
-            <div className="my-3 border-t border-[#071A2D]/08" />
-          </div>
-        )}
-
-        {more.length > 0 && (
-          <div className="mt-2 first:mt-0 px-3">
-            {!collapsed ? (
-              <button
-                type="button"
-                onClick={() => toggleSection("more")}
-                className="flex w-full items-center justify-between mb-0.5 px-2.5 py-1 rounded-sm hover:bg-accent/50 transition-colors"
-              >
-                <p className="select-none text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                  {t("moreSection")}
-                </p>
-                <ChevronDown
-                  className={cn(
-                    "h-3.5 w-3.5 text-muted-foreground/60 transition-transform duration-200",
-                    !expandedSections.has("more") && "-rotate-90",
-                  )}
-                />
-              </button>
-            ) : (
-              <div className="mb-1" />
-            )}
-
-            {(collapsed || expandedSections.has("more")) && (
-              <div
-                className={cn(
-                  "space-y-1 overflow-hidden transition-all duration-200",
-                  collapsed ? "px-2" : "px-2",
-                  !collapsed &&
-                    !expandedSections.has("more") &&
-                    "max-h-0 opacity-0",
-                  !collapsed &&
-                    expandedSections.has("more") &&
-                    "max-h-96 opacity-100",
-                  collapsed && "max-h-96 opacity-100",
-                )}
-              >
-                {more.map((item) => (
-                  <NavItemLink
-                    key={item.to}
-                    item={item}
-                    collapsed={collapsed}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+      <nav className="no-scrollbar flex-1 overflow-y-auto py-3">
+        {groups.map((group) => (
+          <NavGroupBlock
+            key={group.id}
+            group={group}
+            collapsed={collapsed}
+            expanded={
+              !group.collapsible || expandedSections.has(group.id)
+            }
+            onToggle={() => toggleSection(group.id)}
+            unreadMessagesCount={unreadMessagesCount}
+          />
+        ))}
       </nav>
 
       <div className="border-t p-2 space-y-1">
-        {bottom.map((item) => (
-          <NavItemLink
-            key={item.to}
-            item={item}
-            collapsed={collapsed}
-            badge={
-              item.iconKey === "messages" ? unreadMessagesCount : undefined
-            }
-          />
-        ))}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="flex w-full items-center gap-3 rounded-sm px-3 py-2 text-sm text-muted-foreground hover:bg-accent"
+          className="flex min-h-11 w-full items-center gap-3 rounded-sm px-3 py-2 text-sm text-muted-foreground hover:bg-accent"
           aria-label={collapsed ? tc("expand_menu") : tc("collapse_menu")}
         >
           {collapsed ? (

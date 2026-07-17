@@ -3,7 +3,6 @@ import { config } from "wasp/server";
 import type { CreateCheckoutSessionTrackingArgs } from "../paymentProcessor";
 import { stripeClient } from "./stripeClient";
 import { getCheckoutTrialConfig } from "./trialConfig";
-import { SUBSCRIPTION_TRIAL_DAYS } from "../../shared/pricing";
 
 /**
  * Returns a Stripe customer for the given User email, creating a customer if none exist.
@@ -31,6 +30,8 @@ interface CreateStripeCheckoutSessionParams {
   userId: string;
   mode: Stripe.Checkout.Session.Mode;
   tracking?: CreateCheckoutSessionTrackingArgs;
+  /** Remaining free trial days for subscription mode (0 = no Stripe trial). */
+  trialPeriodDays?: number;
 }
 
 function cleanObject<T extends Record<string, unknown>>(value: T): T {
@@ -61,7 +62,10 @@ function toStripeMetadata(tracking?: CreateCheckoutSessionTrackingArgs): Stripe.
     price_id: tracking.priceId,
     value: tracking.value,
     currency: tracking.currency,
-    trial_days: SUBSCRIPTION_TRIAL_DAYS,
+    trial_days:
+      tracking.trialDays !== undefined && tracking.trialDays !== null
+        ? tracking.trialDays
+        : 0,
   });
 
   const entries = Object.entries(metadata).map(([key, value]) => [key, String(value).slice(0, 500)]);
@@ -74,10 +78,14 @@ export function createStripeCheckoutSession({
   userId,
   mode,
   tracking,
+  trialPeriodDays = 0,
 }: CreateStripeCheckoutSessionParams): Promise<Stripe.Checkout.Session> {
+  const resolvedTrialDays =
+    mode === "subscription" ? Math.max(0, Math.floor(trialPeriodDays)) : 0;
   const trackingMetadata = toStripeMetadata({
     ...tracking,
     priceId: tracking?.priceId ?? priceId,
+    trialDays: tracking?.trialDays ?? resolvedTrialDays,
   });
   const metadata = {
     ...trackingMetadata,
@@ -97,7 +105,7 @@ export function createStripeCheckoutSession({
     success_url: `${config.frontendUrl}/obrigado?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${config.frontendUrl}/app/billing?status=canceled`,
     metadata,
-    ...getCheckoutTrialConfig(mode, metadata),
+    ...getCheckoutTrialConfig(mode, metadata, resolvedTrialDays),
     allow_promotion_codes: true,
     invoice_creation: getInvoiceCreationConfig(mode),
   });

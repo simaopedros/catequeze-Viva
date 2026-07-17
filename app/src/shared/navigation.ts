@@ -1,13 +1,28 @@
 // ---- Navigation Item Config (without icon component — icons mapped per component) ----
+import {
+  NAV_GROUP_LABEL_KEYS,
+  type NavGroupId,
+} from "./uiPresentation";
+
 export interface NavItemConfig {
   to: string;
   labelKey: string; // i18n key from 'navigation' namespace
   roles: string[];
   iconKey: string; // string identifier for icon mapping
+  groupId: NavGroupId;
 }
 
 export interface NavSectionConfig {
   section: string;
+  items: NavItemConfig[];
+}
+
+export interface NavGroupConfig {
+  id: NavGroupId;
+  /** i18n key under navigation namespace */
+  labelKey: string;
+  /** Operation group stays open; others collapsible */
+  collapsible: boolean;
   items: NavItemConfig[];
 }
 
@@ -18,197 +33,365 @@ export type WorkspaceNavContext = {
   workspaceType?: string | null;
 };
 
+export type VisibleNavGroup = {
+  id: NavGroupId;
+  labelKey: string;
+  collapsible: boolean;
+  items: NavItemConfig[];
+};
+
 export type VisibleNavigation = {
+  /** @deprecated Prefer `groups` — operation items only (compat) */
   primary: NavItemConfig[];
+  /** @deprecated Prefer `groups` — non-settings secondary items (compat) */
   more: NavItemConfig[];
+  /** Settings / bottom utilities */
   bottom: NavItemConfig[];
   all: NavItemConfig[];
-  /** Up to 4 items from BOTTOM_NAV_KEYS after role+workspace filters; no padding */
+  /** Up to 4 items after role+workspace filters; no padding */
   bottomBar: NavItemConfig[];
-  /** (primary ∪ more ∪ bottom) − bottomBar, section order preserved */
+  /** (all) − bottomBar, group order preserved */
   sheetItems: NavItemConfig[];
+  /** Task-oriented groups for sidebar + More sheet */
+  groups: VisibleNavGroup[];
+  /** Sheet items already bucketed by group (excludes bottomBar keys) */
+  sheetGroups: VisibleNavGroup[];
 };
 
 // ---- Role Constants ----
 const ALL_ROLES = [
-  'SUPER_ADMIN',
-  'DIOCESE_ADMIN',
-  'PARISH_COORDINATOR',
-  'COMMUNITY_COORDINATOR',
-  'LEAD_CATECHIST',
-  'ASSISTANT_CATECHIST',
-  'GUARDIAN',
-  'CATECHUMEN',
-  'CONTENT_REVIEWER',
-  'PASTORAL_VIEWER',
-  'PERSONAL_OWNER',
+  "SUPER_ADMIN",
+  "DIOCESE_ADMIN",
+  "PARISH_COORDINATOR",
+  "COMMUNITY_COORDINATOR",
+  "LEAD_CATECHIST",
+  "ASSISTANT_CATECHIST",
+  "GUARDIAN",
+  "CATECHUMEN",
+  "CONTENT_REVIEWER",
+  "PASTORAL_VIEWER",
+  "PERSONAL_OWNER",
 ];
 
 const STAFF_ROLES = [
-  'SUPER_ADMIN',
-  'DIOCESE_ADMIN',
-  'PARISH_COORDINATOR',
-  'COMMUNITY_COORDINATOR',
-  'PERSONAL_OWNER',
+  "SUPER_ADMIN",
+  "DIOCESE_ADMIN",
+  "PARISH_COORDINATOR",
+  "COMMUNITY_COORDINATOR",
+  "PERSONAL_OWNER",
 ];
 const CATECHIST_ROLES = [
   ...STAFF_ROLES,
-  'LEAD_CATECHIST',
-  'ASSISTANT_CATECHIST',
-  'PERSONAL_OWNER',
+  "LEAD_CATECHIST",
+  "ASSISTANT_CATECHIST",
+  "PERSONAL_OWNER",
 ];
-const VIEWER_ROLES = [...CATECHIST_ROLES, 'PASTORAL_VIEWER', 'CONTENT_REVIEWER'];
-const LEARNER_ROLES = [...VIEWER_ROLES, 'GUARDIAN', 'CATECHUMEN'];
+const VIEWER_ROLES = [...CATECHIST_ROLES, "PASTORAL_VIEWER", "CONTENT_REVIEWER"];
+const LEARNER_ROLES = [...VIEWER_ROLES, "GUARDIAN", "CATECHUMEN"];
+
+const COORDINATOR_ROLES = new Set([
+  "SUPER_ADMIN",
+  "DIOCESE_ADMIN",
+  "PARISH_COORDINATOR",
+  "COMMUNITY_COORDINATOR",
+  "PERSONAL_OWNER",
+]);
+
+const CATECHIST_ONLY_ROLES = new Set([
+  "LEAD_CATECHIST",
+  "ASSISTANT_CATECHIST",
+]);
 
 /**
  * Hidden in PERSONAL workspace chrome (sidebar / bottom / More sheet).
  * Navigation filter is UX only — server access-control remains authoritative.
  */
 export const PERSONAL_HIDDEN_ICON_KEYS = new Set([
-  'parishes',
-  'communities',
-  'catechetical_years',
-  'reports',
+  "parishes",
+  "communities",
+  "catechetical_years",
+  "reports",
 ]);
 
-// ---- Sidebar Navigation Sections ----
-// Primary section: daily-use items, always visible without a section header.
-// More section: secondary items, collapsed by default under "More".
-// Bottom section: always-visible utilities at the sidebar bottom.
-export const NAV_SECTIONS: NavSectionConfig[] = [
+function item(
+  partial: Omit<NavItemConfig, "groupId"> & { groupId: NavGroupId },
+): NavItemConfig {
+  return partial;
+}
+
+// ---- Task-oriented navigation groups ----
+// Order = discovery hierarchy. Authorization remains server-side.
+export const NAV_GROUPS: NavGroupConfig[] = [
   {
-    section: 'primary',
+    id: "operation",
+    labelKey: NAV_GROUP_LABEL_KEYS.operation,
+    collapsible: false,
     items: [
-      { to: '/app', labelKey: 'dashboard', iconKey: 'dashboard', roles: LEARNER_ROLES },
-      { to: '/app/classes', labelKey: 'classes', iconKey: 'classes', roles: VIEWER_ROLES },
-      {
-        to: '/app/catechumens',
-        labelKey: 'catechumens',
-        iconKey: 'catechumens',
-        roles: [...VIEWER_ROLES, 'GUARDIAN'],
-      },
-      {
-        to: '/app/content-library',
-        labelKey: 'content_library',
-        iconKey: 'content_library',
-        roles: [...CATECHIST_ROLES, 'CONTENT_REVIEWER'],
-      },
-      {
-        to: '/app/ai-hub',
-        labelKey: 'ai_hub',
-        iconKey: 'ai_hub',
-        roles: [...CATECHIST_ROLES, 'CONTENT_REVIEWER'],
-      },
-      { to: '/app/calendar', labelKey: 'calendar', iconKey: 'calendar', roles: LEARNER_ROLES },
-      {
-        to: '/app/bible',
-        labelKey: 'bible',
-        iconKey: 'bible',
-        roles: [...LEARNER_ROLES, 'CONTENT_REVIEWER'],
-      },
-      {
-        to: '/app/messages',
-        labelKey: 'messages',
-        iconKey: 'messages',
-        roles: [...CATECHIST_ROLES, 'GUARDIAN', 'CATECHUMEN'],
-      },
+      item({
+        to: "/app",
+        labelKey: "dashboard",
+        iconKey: "dashboard",
+        roles: LEARNER_ROLES,
+        groupId: "operation",
+      }),
+      item({
+        to: "/app/classes",
+        labelKey: "classes",
+        iconKey: "classes",
+        roles: VIEWER_ROLES,
+        groupId: "operation",
+      }),
+      item({
+        to: "/app/calendar",
+        labelKey: "calendar",
+        iconKey: "calendar",
+        roles: LEARNER_ROLES,
+        groupId: "operation",
+      }),
+      item({
+        to: "/app/messages",
+        labelKey: "messages",
+        iconKey: "messages",
+        roles: [...CATECHIST_ROLES, "GUARDIAN", "CATECHUMEN"],
+        groupId: "operation",
+      }),
     ],
   },
   {
-    section: 'more',
+    id: "people",
+    labelKey: NAV_GROUP_LABEL_KEYS.people,
+    collapsible: true,
     items: [
-      { to: '/app/parishes', labelKey: 'parishes', iconKey: 'parishes', roles: STAFF_ROLES },
-      {
-        to: '/app/communities',
-        labelKey: 'communities',
-        iconKey: 'communities',
+      item({
+        to: "/app/catechumens",
+        labelKey: "catechumens",
+        iconKey: "catechumens",
+        roles: [...VIEWER_ROLES, "GUARDIAN"],
+        groupId: "people",
+      }),
+      item({
+        to: "/app/families",
+        labelKey: "families",
+        iconKey: "families",
         roles: CATECHIST_ROLES,
-      },
-      { to: '/app/families', labelKey: 'families', iconKey: 'families', roles: CATECHIST_ROLES },
-      {
-        to: '/app/team',
-        labelKey: 'team',
-        iconKey: 'team',
+        groupId: "people",
+      }),
+      item({
+        to: "/app/team",
+        labelKey: "team",
+        iconKey: "team",
         roles: CATECHIST_ROLES,
-      },
-      {
-        to: '/app/family-invites',
-        labelKey: 'family_portal_invites',
-        iconKey: 'family_portal_invites',
+        groupId: "people",
+      }),
+      item({
+        to: "/app/family-invites",
+        labelKey: "family_portal_invites",
+        iconKey: "family_portal_invites",
         roles: CATECHIST_ROLES,
-      },
-      {
-        to: '/app/directory',
-        labelKey: 'directory',
-        iconKey: 'directory',
-        roles: [...LEARNER_ROLES, 'CONTENT_REVIEWER'],
-      },
-      {
-        to: '/app/catechism',
-        labelKey: 'catechism',
-        iconKey: 'catechism',
-        roles: [...LEARNER_ROLES, 'CONTENT_REVIEWER'],
-      },
-      {
-        to: '/app/sacramental-journeys',
-        labelKey: 'sacraments',
-        iconKey: 'sacraments',
+        groupId: "people",
+      }),
+    ],
+  },
+  {
+    id: "content",
+    labelKey: NAV_GROUP_LABEL_KEYS.content,
+    collapsible: true,
+    items: [
+      item({
+        to: "/app/content-library",
+        labelKey: "content_library",
+        iconKey: "content_library",
+        roles: [...CATECHIST_ROLES, "CONTENT_REVIEWER"],
+        groupId: "content",
+      }),
+      item({
+        to: "/app/ai-hub",
+        labelKey: "ai_hub",
+        iconKey: "ai_hub",
+        roles: [...CATECHIST_ROLES, "CONTENT_REVIEWER"],
+        groupId: "content",
+      }),
+      item({
+        to: "/app/bible",
+        labelKey: "bible",
+        iconKey: "bible",
+        roles: [...LEARNER_ROLES, "CONTENT_REVIEWER"],
+        groupId: "content",
+      }),
+      item({
+        to: "/app/catechism",
+        labelKey: "catechism",
+        iconKey: "catechism",
+        roles: [...LEARNER_ROLES, "CONTENT_REVIEWER"],
+        groupId: "content",
+      }),
+      item({
+        to: "/app/directory",
+        labelKey: "directory",
+        iconKey: "directory",
+        roles: [...LEARNER_ROLES, "CONTENT_REVIEWER"],
+        groupId: "content",
+      }),
+      item({
+        to: "/app/sacramental-journeys",
+        labelKey: "sacraments",
+        iconKey: "sacraments",
         roles: [
           ...STAFF_ROLES,
-          'LEAD_CATECHIST',
-          'GUARDIAN',
-          'CATECHUMEN',
-          'PASTORAL_VIEWER',
+          "LEAD_CATECHIST",
+          "GUARDIAN",
+          "CATECHUMEN",
+          "PASTORAL_VIEWER",
         ],
-      },
-      {
-        to: '/app/journey-templates',
-        labelKey: 'journey_templates',
-        iconKey: 'journey_templates',
-        roles: [...STAFF_ROLES, 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST'],
-      },
-      {
-        to: '/app/documents',
-        labelKey: 'documents',
-        iconKey: 'documents',
-        roles: [...CATECHIST_ROLES, 'GUARDIAN'],
-      },
-      {
-        to: '/app/reports',
-        labelKey: 'reports',
-        iconKey: 'reports',
-        roles: [...STAFF_ROLES, 'PASTORAL_VIEWER'],
-      },
+        groupId: "content",
+      }),
+      item({
+        to: "/app/journey-templates",
+        labelKey: "journey_templates",
+        iconKey: "journey_templates",
+        roles: [...STAFF_ROLES, "LEAD_CATECHIST", "ASSISTANT_CATECHIST"],
+        groupId: "content",
+      }),
+      item({
+        to: "/app/documents",
+        labelKey: "documents",
+        iconKey: "documents",
+        roles: [...CATECHIST_ROLES, "GUARDIAN"],
+        groupId: "content",
+      }),
     ],
   },
   {
-    section: 'bottom',
+    id: "management",
+    labelKey: NAV_GROUP_LABEL_KEYS.management,
+    collapsible: true,
     items: [
-      { to: '/app/settings', labelKey: 'settings', iconKey: 'settings', roles: ALL_ROLES },
-      // Only coordinators / personal owners manage payment — not invited catechists.
-      { to: '/app/billing', labelKey: 'billing', iconKey: 'billing', roles: STAFF_ROLES },
-      { to: '/app/consents', labelKey: 'consents', iconKey: 'consents', roles: ['GUARDIAN'] },
-      {
-        to: '/app/catechetical-years',
-        labelKey: 'catechetical_years',
-        iconKey: 'catechetical_years',
+      item({
+        to: "/app/parishes",
+        labelKey: "parishes",
+        iconKey: "parishes",
+        roles: STAFF_ROLES,
+        groupId: "management",
+      }),
+      item({
+        to: "/app/communities",
+        labelKey: "communities",
+        iconKey: "communities",
+        roles: CATECHIST_ROLES,
+        groupId: "management",
+      }),
+      item({
+        to: "/app/reports",
+        labelKey: "reports",
+        iconKey: "reports",
+        roles: [...STAFF_ROLES, "PASTORAL_VIEWER"],
+        groupId: "management",
+      }),
+      item({
+        to: "/app/catechetical-years",
+        labelKey: "catechetical_years",
+        iconKey: "catechetical_years",
         roles: [...STAFF_ROLES],
-      },
-      // roles: [] — only included when isAdmin (see filterByRole)
-      { to: '/admin', labelKey: 'admin', iconKey: 'admin', roles: [] },
+        groupId: "management",
+      }),
     ],
+  },
+  {
+    id: "settings",
+    labelKey: NAV_GROUP_LABEL_KEYS.settings,
+    collapsible: true,
+    items: [
+      item({
+        to: "/app/settings",
+        labelKey: "settings",
+        iconKey: "settings",
+        roles: ALL_ROLES,
+        groupId: "settings",
+      }),
+      // Only coordinators / personal owners manage payment — not invited catechists.
+      item({
+        to: "/app/billing",
+        labelKey: "billing",
+        iconKey: "billing",
+        roles: STAFF_ROLES,
+        groupId: "settings",
+      }),
+      item({
+        to: "/app/consents",
+        labelKey: "consents",
+        iconKey: "consents",
+        roles: ["GUARDIAN"],
+        groupId: "settings",
+      }),
+      // roles: [] — only included when isAdmin (see filterByRole)
+      item({
+        to: "/admin",
+        labelKey: "admin",
+        iconKey: "admin",
+        roles: [],
+        groupId: "settings",
+      }),
+    ],
+  },
+];
+
+/** Flat sections derived for legacy consumers (primary / more / bottom) */
+export const NAV_SECTIONS: NavSectionConfig[] = [
+  {
+    section: "primary",
+    items: NAV_GROUPS.find((g) => g.id === "operation")?.items ?? [],
+  },
+  {
+    section: "more",
+    items: [
+      ...(NAV_GROUPS.find((g) => g.id === "people")?.items ?? []),
+      ...(NAV_GROUPS.find((g) => g.id === "content")?.items ?? []),
+      ...(NAV_GROUPS.find((g) => g.id === "management")?.items ?? []),
+    ],
+  },
+  {
+    section: "bottom",
+    items: NAV_GROUPS.find((g) => g.id === "settings")?.items ?? [],
   },
 ];
 
 // ---- Bottom Navigation Items (Mobile) ----
 // Max 4 primary destinations + "Mais" trigger = 5 slots total.
-// Staff: Início, Turmas, Agenda, Mensagens → rest (catequizandos, biblioteca, docs, …) in sheet.
+/** Default staff/catechist bar (frequency-first) */
 export const BOTTOM_NAV_KEYS = [
-  'dashboard',
-  'classes',
-  'calendar',
-  'messages',
+  "dashboard",
+  "classes",
+  "calendar",
+  "messages",
 ] as const;
+
+/**
+ * Role-aware bottom bar keys.
+ * - Catechist: Início, Turmas, Agenda, Mensagens
+ * - Coordination: Início, Turmas, Agenda, Pessoas (catechumens)
+ * - Family portal: Início, Agenda, Mensagens (+ catechumens for guardian)
+ */
+export function getBottomNavKeysForRole(role: string, isAdmin: boolean): string[] {
+  if (isAdmin) {
+    return ["dashboard", "classes", "calendar", "messages"];
+  }
+  if (COORDINATOR_ROLES.has(role) || role === "PERSONAL_OWNER") {
+    return ["dashboard", "classes", "calendar", "catechumens"];
+  }
+  if (CATECHIST_ONLY_ROLES.has(role)) {
+    return ["dashboard", "classes", "calendar", "messages"];
+  }
+  if (role === "GUARDIAN") {
+    return ["dashboard", "calendar", "messages", "catechumens"];
+  }
+  if (role === "CATECHUMEN") {
+    return ["dashboard", "calendar", "messages"];
+  }
+  if (role === "PASTORAL_VIEWER" || role === "CONTENT_REVIEWER") {
+    return ["dashboard", "classes", "calendar", "reports"].filter(Boolean);
+  }
+  return [...BOTTOM_NAV_KEYS];
+}
 
 // ---- Role Filtering ----
 // NOTE: Navigation filter is not AuthZ. Hiding a path in the UI does not
@@ -224,7 +407,7 @@ export function filterByRole(
   // PERSONAL_OWNER sees everything a coordinator sees (defensive for items
   // that list only PARISH_COORDINATOR without PERSONAL_OWNER).
   const effectiveRole =
-    userRole === 'PERSONAL_OWNER' ? 'PARISH_COORDINATOR' : userRole;
+    userRole === "PERSONAL_OWNER" ? "PARISH_COORDINATOR" : userRole;
 
   return items.filter(
     (i) => i.roles.includes(effectiveRole) || i.roles.includes(userRole),
@@ -235,7 +418,7 @@ export function filterByWorkspace(
   items: NavItemConfig[],
   workspaceType?: string | null,
 ): NavItemConfig[] {
-  if (workspaceType !== 'PERSONAL') return items;
+  if (workspaceType !== "PERSONAL") return items;
   return items.filter((i) => !PERSONAL_HIDDEN_ICON_KEYS.has(i.iconKey));
 }
 
@@ -246,30 +429,56 @@ export function getVisibleNavigation(
   ctx: WorkspaceNavContext,
 ): VisibleNavigation {
   const apply = (items: NavItemConfig[]) =>
-    filterByWorkspace(filterByRole(items, ctx.role, ctx.isAdmin), ctx.workspaceType);
+    filterByWorkspace(
+      filterByRole(items, ctx.role, ctx.isAdmin),
+      ctx.workspaceType,
+    );
 
-  const primarySection = NAV_SECTIONS.find((s) => s.section === 'primary');
-  const moreSection = NAV_SECTIONS.find((s) => s.section === 'more');
-  const bottomSection = NAV_SECTIONS.find((s) => s.section === 'bottom');
+  const groups: VisibleNavGroup[] = NAV_GROUPS.map((g) => ({
+    id: g.id,
+    labelKey: g.labelKey,
+    collapsible: g.collapsible,
+    items: apply(g.items),
+  })).filter((g) => g.items.length > 0);
 
-  const primary = apply(primarySection?.items ?? []);
-  const more = apply(moreSection?.items ?? []);
-  const bottom = apply(bottomSection?.items ?? []);
-  const all = [...primary, ...more, ...bottom];
+  const primary = groups.find((g) => g.id === "operation")?.items ?? [];
+  const more = groups
+    .filter((g) => g.id !== "operation" && g.id !== "settings")
+    .flatMap((g) => g.items);
+  const bottom = groups.find((g) => g.id === "settings")?.items ?? [];
+  const all = groups.flatMap((g) => g.items);
 
+  const bottomKeys = getBottomNavKeysForRole(ctx.role, ctx.isAdmin);
   const bottomBar: NavItemConfig[] = [];
-  for (const key of BOTTOM_NAV_KEYS) {
-    const item = ALL_NAV_ITEMS.find((i) => i.iconKey === key);
-    if (!item) continue;
-    const [visible] = apply([item]);
+  for (const key of bottomKeys) {
+    const found = ALL_NAV_ITEMS.find((i) => i.iconKey === key);
+    if (!found) continue;
+    const [visible] = apply([found]);
     if (visible) bottomBar.push(visible);
   }
+  // Cap at 4
+  if (bottomBar.length > 4) bottomBar.length = 4;
 
   const barKeys = new Set(bottomBar.map((i) => i.iconKey));
   const sheetItems = all.filter((i) => !barKeys.has(i.iconKey));
+  const sheetGroups: VisibleNavGroup[] = groups
+    .map((g) => ({
+      ...g,
+      items: g.items.filter((i) => !barKeys.has(i.iconKey)),
+    }))
+    .filter((g) => g.items.length > 0);
 
-  return { primary, more, bottom, all, bottomBar, sheetItems };
+  return {
+    primary,
+    more,
+    bottom,
+    all,
+    bottomBar,
+    sheetItems,
+    groups,
+    sheetGroups,
+  };
 }
 
 // ---- Flatten all items for lookup ----
-export const ALL_NAV_ITEMS: NavItemConfig[] = NAV_SECTIONS.flatMap((s) => s.items);
+export const ALL_NAV_ITEMS: NavItemConfig[] = NAV_GROUPS.flatMap((g) => g.items);

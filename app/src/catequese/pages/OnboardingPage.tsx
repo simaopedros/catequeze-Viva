@@ -413,6 +413,8 @@ export default function OnboardingPage() {
         new CustomEvent("workspace-changed", { detail: parishId }),
       );
 
+      let createdClassId: string | undefined;
+
       if (details?.yearName && details?.yearStart && details?.yearEnd) {
         const result = await completeCoordinatorOnboarding({
           parishName: parish.name,
@@ -424,6 +426,7 @@ export default function OnboardingPage() {
           className: details.className,
           skipClass: !details.className,
         });
+        createdClassId = result?.classId;
         if (!result.existingParishId && details.className && result.classId) {
           const { updateClass } = await import("wasp/client/operations");
           try {
@@ -450,6 +453,19 @@ export default function OnboardingPage() {
         });
       }
 
+      // Primary CTA → first pastoral value (class / attendance), not invite-only
+      const primary = details?.className
+        ? {
+            label: t("completion.primary_register_attendance"),
+            to: createdClassId
+              ? `/app/classes/${createdClassId}/attendance`
+              : "/app/classes",
+          }
+        : {
+            label: t("completion.primary_create_class"),
+            to: "/app/classes/new",
+          };
+
       setCompletionData({
         role: "coordinator",
         title: details?.className
@@ -467,12 +483,8 @@ export default function OnboardingPage() {
             value: details?.className || t("summary.create_later"),
           },
         ],
-        primaryActionLabel: details?.className
-          ? t("completion.primary_invite_catechist")
-          : t("completion.primary_create_class"),
-        primaryActionTo: details?.className
-          ? `/app/team`
-          : "/app/classes/new",
+        primaryActionLabel: primary.label,
+        primaryActionTo: primary.to,
       });
       setStep("completion");
       clearPersisted();
@@ -500,7 +512,7 @@ export default function OnboardingPage() {
         <button
           type="button"
           onClick={goBack}
-          className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-[#071A2D]"
+          className="mb-6 inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-brand-ink"
         >
           <ChevronLeft className="h-4 w-4" />
           {t("back_clean")}
@@ -583,11 +595,11 @@ export default function OnboardingPage() {
               {diocese && (
                 <div className="flex items-center gap-3 border border-border/70 px-4 py-3 rounded-sm">
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    <p className="text-[11px] font-medium tracking-wide text-muted-foreground">
                       {t("diocese_selected")}
                     </p>
                     <p
-                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                      className="text-sm font-semibold tracking-tight text-brand-ink"
                       style={{ fontFamily: "var(--font-brand-display)" }}
                     >
                       {diocese.name}

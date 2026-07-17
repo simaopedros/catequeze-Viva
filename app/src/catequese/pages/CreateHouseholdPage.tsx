@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
@@ -9,6 +9,7 @@ import { ArrowLeft, Save, Loader2 } from "lucide-react";
 import { createHousehold } from "wasp/client/operations";
 import PhoneMaskInput from "../../client/components/PhoneMaskInput";
 import { useViaCep } from "../../client/hooks/useViaCep";
+import { useUnsavedChangesGuard } from "../../client/hooks/useUnsavedChangesGuard";
 import {
   createHouseholdSchema,
   type CreateHouseholdValues,
@@ -25,15 +26,22 @@ import {
   AppPageHeader,
   AppPanel,
 } from "../../client/components/brand/AppChrome";
+import { ConfirmDialog } from "../../client/components/ConfirmDialog";
+import { useActiveParish } from "../../client/hooks/useActiveParish";
 
 export default function CreateHouseholdPage() {
   const { t } = useTranslation("common");
   const navigate = useNavigate();
+  const { activeParishId } = useActiveParish();
 
   const form = useForm<CreateHouseholdValues>({
     resolver: zodResolver(createHouseholdSchema),
     defaultValues: { name: "", address: "", phone: "" },
   });
+
+  const leaveGuard = useUnsavedChangesGuard(
+    form.formState.isDirty && !form.formState.isSubmitting,
+  );
 
   const cep = form.watch("address");
   const { data: cepData, loading: cepLoading } = useViaCep(cep || "");
@@ -46,7 +54,7 @@ export default function CreateHouseholdPage() {
         cepData.city && `- ${cepData.city}/${cepData.state}`,
       ].filter(Boolean);
       if (parts.length > 0) {
-        form.setValue("address", parts.join(" "));
+        form.setValue("address", parts.join(" "), { shouldDirty: true });
       }
     }
   }, [cepData, form]);
@@ -57,7 +65,10 @@ export default function CreateHouseholdPage() {
         name: values.name,
         address: values.address || undefined,
         phone: values.phone || undefined,
+        // Bind new family to the workspace currently selected in the shell
+        parishId: activeParishId || undefined,
       });
+      form.reset(values);
       navigate("/app/families");
     } catch (err: any) {
       form.setError("root", {
@@ -65,6 +76,9 @@ export default function CreateHouseholdPage() {
       });
     }
   };
+
+  const goBack = () =>
+    leaveGuard.confirmLeave(() => navigate("/app/families"));
 
   return (
     <div className="mx-auto max-w-lg space-y-8">
@@ -75,13 +89,12 @@ export default function CreateHouseholdPage() {
           <Button
             variant="outline"
             size="sm"
-            className="h-10 rounded-sm"
-            asChild
+            className="h-10 min-h-11 rounded-sm"
+            type="button"
+            onClick={goBack}
           >
-            <Link to="/app/families">
-              <ArrowLeft className="mr-1 h-4 w-4" />
-              {t("back")}
-            </Link>
+            <ArrowLeft className="mr-1 h-4 w-4" />
+            {t("back")}
           </Button>
         }
       />
@@ -153,18 +166,42 @@ export default function CreateHouseholdPage() {
               )}
             />
 
-            <div className="flex gap-3 pt-4">
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                <Save className="mr-2 h-4 w-4" />
-                {form.formState.isSubmitting ? t("saving") : t("register")}
-              </Button>
-              <Button type="button" variant="outline" asChild>
-                <Link to="/app/families">{t("cancel")}</Link>
-              </Button>
-            </div>
+            <div className="h-20 md:h-4" aria-hidden />
           </form>
         </Form>
       </AppPanel>
+
+      <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-40 border-t border-border/70 bg-white/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-white/80 md:static md:inset-auto md:bottom-auto md:z-auto md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none">
+        <div className="mx-auto flex max-w-lg gap-3 md:pt-2">
+          <Button
+            type="button"
+            className="min-h-11 flex-1 rounded-sm"
+            disabled={form.formState.isSubmitting}
+            onClick={form.handleSubmit(onSubmit)}
+          >
+            <Save className="mr-2 h-4 w-4" />
+            {form.formState.isSubmitting ? t("saving") : t("register")}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="min-h-11 rounded-sm"
+            onClick={goBack}
+          >
+            {t("cancel")}
+          </Button>
+        </div>
+      </div>
+
+      <ConfirmDialog
+        open={leaveGuard.dialogOpen}
+        onOpenChange={leaveGuard.setDialogOpen}
+        title={t("leave_form_title")}
+        description={t("leave_form_desc")}
+        confirmLabel={t("leave_anyway")}
+        variant="destructive"
+        onConfirm={leaveGuard.onConfirmLeave}
+      />
     </div>
   );
 }

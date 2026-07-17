@@ -46,8 +46,8 @@ function useIsMobileSheet() {
 const STATUS_KEYS = ["PRESENT", "LATE", "ABSENT", "JUSTIFIED"] as const;
 const STATUS_COLORS: Record<string, string> = {
   PRESENT:
-    "border-[#071A2D]/25 bg-[#071A2D]/08 text-[#071A2D] hover:bg-[#071A2D]/12",
-  LATE: "border-[#D39A2B]/40 bg-[#D39A2B]/12 text-[#8A6418] hover:bg-[#D39A2B]/18",
+    "border-brand-ink/25 bg-brand-ink/8 text-brand-ink hover:bg-brand-ink/12",
+  LATE: "border-brand-gold/40 bg-brand-gold/12 text-brand-gold-muted hover:bg-brand-gold/18",
   ABSENT:
     "border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/15",
   JUSTIFIED:
@@ -117,7 +117,7 @@ function StatusCell({
         {st ? st.label : <Minus className="h-3 w-3" />}
       </button>
       {open && (
-        <div className="absolute z-50 left-1/2 -translate-x-1/2 mt-1 rounded-sm border border-border/70 bg-white p-1 shadow-sm flex flex-col gap-0.5 min-w-[100px]">
+        <div className="absolute z-50 left-1/2 -translate-x-1/2 mt-1 rounded-sm border border-border/70 bg-surface-elevated p-1 shadow-sm flex flex-col gap-0.5 min-w-[100px]">
           {statusOptions.map((opt) => (
             <button
               key={opt.key}
@@ -401,15 +401,15 @@ export default function AttendancePage() {
   // Mobile operational path: single-meeting sheet (no historical matrix payload)
   if (isMobileSheet && !showHistory) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 pb-2">
         <div className="flex items-start gap-3 border-b border-border/70 pb-4">
           <Button
             variant="ghost"
             size="icon"
-            className="mt-1 h-11 w-11 shrink-0 rounded-sm"
+            className="mt-1 h-11 w-11 min-h-11 min-w-11 shrink-0 rounded-sm"
             asChild
           >
-            <Link to={`/app/classes/${classId}`}>
+            <Link to={`/app/classes/${classId}`} aria-label={tc("back")}>
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>
@@ -424,14 +424,23 @@ export default function AttendancePage() {
           classId={classId!}
           initialMeetingId={meetingIdParam}
         />
-        <Button
-          type="button"
-          variant="outline"
-          className="h-11 min-h-11 w-full rounded-sm"
-          onClick={() => setShowHistory(true)}
-        >
-          {t("sheet.open_history")}
-        </Button>
+        {/* History is secondary — does not compete with the live roll call */}
+        <details className="rounded-sm border border-border/70 bg-muted/20">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between px-4 py-3 text-sm font-medium text-muted-foreground">
+            <span>{t("sheet.history_collapsed")}</span>
+            <span className="text-xs">{t("sheet.history_hint")}</span>
+          </summary>
+          <div className="border-t border-border/60 px-4 py-3">
+            <Button
+              type="button"
+              variant="outline"
+              className="h-11 min-h-11 w-full rounded-sm"
+              onClick={() => setShowHistory(true)}
+            >
+              {t("sheet.open_history")}
+            </Button>
+          </div>
+        </details>
       </div>
     );
   }

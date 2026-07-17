@@ -28,6 +28,7 @@ export const stripePaymentProcessor: PaymentProcessor = {
     interval,
     prismaUserDelegate,
     tracking,
+    trialPeriodDays = 0,
   }: CreateCheckoutSessionArgs) => {
     const customer = await ensureStripeCustomer(userEmail);
 
@@ -37,14 +38,19 @@ export const stripePaymentProcessor: PaymentProcessor = {
     );
 
     const priceId = requireStripePriceId(paymentPlan, interval);
+    const mode = paymentPlanEffectToStripeCheckoutSessionMode(paymentPlan.effect);
+    const resolvedTrialDays =
+      mode === "subscription" ? Math.max(0, Math.floor(trialPeriodDays)) : 0;
     const checkoutSession = await createStripeCheckoutSession({
       customerId: customer.id,
       userId,
       priceId,
-      mode: paymentPlanEffectToStripeCheckoutSessionMode(paymentPlan.effect),
+      mode,
+      trialPeriodDays: resolvedTrialDays,
       tracking: {
         ...tracking,
         priceId: tracking?.priceId ?? priceId,
+        trialDays: tracking?.trialDays ?? resolvedTrialDays,
       },
     });
 

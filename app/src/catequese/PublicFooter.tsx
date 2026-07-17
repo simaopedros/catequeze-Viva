@@ -20,7 +20,7 @@ export function PublicFooter({
   const { currentLocale, setLocale, supportedLocales } = useLocale();
 
   return (
-    <footer className="bg-[#071A2D] text-[#E8EEF5]">
+    <footer data-landing-footer className="bg-brand-ink text-[#E8EEF5]">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="grid gap-10 py-14 sm:py-16 md:grid-cols-12 md:gap-8">
           <div className="md:col-span-5 space-y-4">

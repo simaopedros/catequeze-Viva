@@ -22,8 +22,8 @@ import {
   resolvePlanIdOrFree,
   type PlanId,
   PLANS,
-  SUBSCRIPTION_TRIAL_DAYS,
 } from "../shared/pricing";
+import { resolveStripeCheckoutTrialDays } from "./stripe/trialConfig";
 import { trackPricingEvent } from "./pricingEvents";
 import { detectCurrency } from "../shared/currency";
 import { sendInitiateCheckoutToMeta } from "./meta/sendInitiateCheckout";
@@ -143,7 +143,11 @@ export const generateCheckoutSession: GenerateCheckoutSession<
   const isInstitutionalPlan = INSTITUTIONAL_PLAN_IDS.includes(paymentPlanId);
   const freshUser = await context.entities.User.findUnique({
     where: { id: userId },
-    select: { subscriptionStatus: true, subscriptionPlan: true },
+    select: {
+      subscriptionStatus: true,
+      subscriptionPlan: true,
+      createdAt: true,
+    },
   });
   const hasActiveSub = isSubscriptionActiveLike(freshUser?.subscriptionStatus);
   if (hasActiveSub && !isInstitutionalPlan) {
@@ -158,6 +162,29 @@ export const generateCheckoutSession: GenerateCheckoutSession<
   const currency = input.currency ?? detectCurrency();
   const isCreditsPlan = paymentPlan.effect.kind === "credits";
 
+  // Only remaining product/institutional free days — never a second full 7-day Stripe trial.
+  let institutionalBilling: {
+    plan: string;
+    status: string;
+    trialEndsAt?: Date | null;
+  } | null = null;
+  if (!isCreditsPlan && isInstitutionalPlan) {
+    const ownedParish = await context.entities.Parish.findFirst({
+      where: { ownerId: userId, type: { not: "PERSONAL" } },
+      select: {
+        billing: { select: { plan: true, status: true, trialEndsAt: true } },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    institutionalBilling = ownedParish?.billing ?? null;
+  }
+
+  const trialPeriodDays = resolveStripeCheckoutTrialDays({
+    isCredits: isCreditsPlan,
+    user: freshUser,
+    institutionalBilling,
+  });
+
   let session;
   try {
     const result = await paymentProcessor.createCheckoutSession({
@@ -166,12 +193,14 @@ export const generateCheckoutSession: GenerateCheckoutSession<
       paymentPlan,
       interval,
       prismaUserDelegate: context.entities.User,
+      trialPeriodDays,
       tracking: {
         priceId: input.priceId,
         planId: paymentPlanId,
         planName,
         value: checkoutValue,
         currency,
+        trialDays: trialPeriodDays,
         initiateCheckoutEventId: input.initiate_checkout_event_id,
         fbp: input.fbp,
         fbc: input.fbc,
@@ -219,7 +248,7 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     currency,
     priceId: input.priceId,
     contentCategory: isCreditsPlan ? "ai_credits" : "subscription",
-    trialDays: isCreditsPlan ? 0 : SUBSCRIPTION_TRIAL_DAYS,
+    trialDays: trialPeriodDays,
     fbp: input.fbp,
     fbc: input.fbc,
     fbclid: input.fbclid,

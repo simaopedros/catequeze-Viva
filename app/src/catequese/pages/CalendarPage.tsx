@@ -42,7 +42,7 @@ import {
 } from "../../client/components/ui/sheet";
 import { useUserContext } from "../../client/hooks/useUserContext";
 
-const DEFAULT_COLOR = "#071A2D";
+const DEFAULT_COLOR = "#071A2D"; // brand ink — charts/ICS only
 
 const FAMILY_ROLES = new Set(["GUARDIAN", "CATECHUMEN"]);
 
@@ -286,74 +286,83 @@ export default function CalendarPage() {
           year,
           count: monthCount,
         })}
-        actions={
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex rounded-sm border border-border/70 overflow-hidden">
-              <Button
-                type="button"
-                variant={viewMode === "agenda" ? "default" : "ghost"}
-                size="sm"
-                className="h-10 rounded-none px-3 text-xs"
-                onClick={() => setViewModeManual("agenda")}
-                aria-pressed={viewMode === "agenda"}
-                aria-label={t("view_agenda")}
-              >
-                <List className="h-3.5 w-3.5" />
-              </Button>
-              <Button
-                type="button"
-                variant={viewMode === "month" ? "default" : "ghost"}
-                size="sm"
-                className="h-10 rounded-none px-3 text-xs"
-                onClick={() => setViewModeManual("month")}
-                aria-pressed={viewMode === "month"}
-                aria-label={t("view_month")}
-              >
-                <LayoutGrid className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-10 w-10 rounded-sm"
-              onClick={() => setCurrentDate(new Date(year, month - 1, 1))}
-              aria-label="Mês anterior"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-10 rounded-sm text-xs px-3"
-              onClick={() => setCurrentDate(new Date())}
-            >
-              {t("today")}
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-10 w-10 rounded-sm"
-              onClick={() => setCurrentDate(new Date(year, month + 1, 1))}
-              aria-label="Mês seguinte"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            {!isFamily && (
-              <Button
-                size="sm"
-                className="h-10 rounded-sm text-xs px-3 shadow-none"
-                onClick={() => openNewEventForm()}
-              >
-                <Plus className="mr-1 h-3.5 w-3.5" />
-                {t("add_event")}
-              </Button>
-            )}
-          </div>
+        primaryAction={
+          !isFamily
+            ? {
+                label: t("create_primary"),
+                onClick: () => openNewEventForm(),
+              }
+            : undefined
         }
+        secondaryActions={[
+          {
+            label: t("view_agenda"),
+            onClick: () => setViewModeManual("agenda"),
+          },
+          {
+            label: t("view_month"),
+            onClick: () => setViewModeManual("month"),
+          },
+        ]}
       />
 
+      {/* Period + view — one-hand friendly, sticky on mobile */}
+      <div className="sticky top-0 z-10 -mx-1 flex flex-wrap items-center gap-2 border-b border-border/60 bg-background/95 px-1 py-2 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:static sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none">
+        <div className="flex flex-1 items-center gap-1.5 sm:flex-none">
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-11 w-11 min-h-11 min-w-11 rounded-sm"
+            onClick={() => setCurrentDate(new Date(year, month - 1, 1))}
+            aria-label={t("prev_period")}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            className="h-11 min-h-11 flex-1 rounded-sm px-3 text-sm font-medium sm:flex-none"
+            onClick={() => setCurrentDate(new Date())}
+          >
+            {t("today")}
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-11 w-11 min-h-11 min-w-11 rounded-sm"
+            onClick={() => setCurrentDate(new Date(year, month + 1, 1))}
+            aria-label={t("next_period")}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+        <div className="flex overflow-hidden rounded-sm border border-border/70">
+          <Button
+            type="button"
+            variant={viewMode === "agenda" ? "default" : "ghost"}
+            className="h-11 min-h-11 rounded-none px-3"
+            onClick={() => setViewModeManual("agenda")}
+            aria-pressed={viewMode === "agenda"}
+            aria-label={t("view_agenda")}
+          >
+            <List className="mr-1.5 h-4 w-4" />
+            <span className="text-xs sm:text-sm">{t("view_agenda")}</span>
+          </Button>
+          <Button
+            type="button"
+            variant={viewMode === "month" ? "default" : "ghost"}
+            className="h-11 min-h-11 rounded-none px-3"
+            onClick={() => setViewModeManual("month")}
+            aria-pressed={viewMode === "month"}
+            aria-label={t("view_month")}
+          >
+            <LayoutGrid className="mr-1.5 h-4 w-4" />
+            <span className="text-xs sm:text-sm">{t("view_month")}</span>
+          </Button>
+        </div>
+      </div>
+
       {/* ── Filtros ──────────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-3 flex-wrap">
+      <div className="flex flex-wrap items-center gap-3">
         <FilterPills
           options={filterOptions.map((f) => ({ value: f.v, label: f.l }))}
           value={typeFilter}
@@ -362,7 +371,7 @@ export default function CalendarPage() {
           clearValue="all"
         />
         {activeFilterCount > 0 && (
-          <span className="text-overline text-text-tertiary hidden sm:inline-flex items-center gap-1 shrink-0 ml-auto">
+          <span className="ml-auto hidden shrink-0 items-center gap-1 text-overline text-text-tertiary sm:inline-flex">
             <Calendar className="h-3 w-3" />
             {t("month_events", {
               month: months[month],
@@ -460,14 +469,14 @@ export default function CalendarPage() {
           side="bottom"
           className="max-h-[85dvh] overflow-y-auto rounded-t-sm p-0 lg:hidden"
         >
-          <SheetHeader className="sticky top-0 z-10 border-b border-border/70 bg-white px-4 py-3 text-left">
-            <SheetTitle className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              <Calendar className="h-3.5 w-3.5 text-[#071A2D]" />
+          <SheetHeader className="sticky top-0 z-10 border-b border-border/70 bg-surface-elevated px-4 py-3 text-left">
+            <SheetTitle className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-muted-foreground">
+              <Calendar className="h-3.5 w-3.5 text-brand-ink" />
               {selectedDay != null
                 ? t("day_title", { day: selectedDay, month: months[month] })
                 : t("title")}
             </SheetTitle>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            <div className="h-px w-8 bg-brand-gold" aria-hidden />
           </SheetHeader>
           <div className="space-y-4 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
             <SidePanelContent
@@ -533,13 +542,13 @@ function MonthGrid({
   const isWeekend = (dow: number) => dow >= 5;
 
   return (
-    <div className="lg:col-span-2 rounded-sm border border-border/70 bg-white overflow-hidden ">
+    <div className="lg:col-span-2 overflow-hidden rounded-sm border border-border/70 bg-surface-elevated">
       {/* Weekday headers */}
-      <div className="grid grid-cols-7 bg-muted/40 border-b">
+      <div className="grid grid-cols-7 border-b bg-muted/40">
         {weekdays.map((d, i) => (
           <div
             key={d}
-            className={`p-2 text-center text-xs font-semibold uppercase tracking-wide ${
+            className={`p-2 text-center text-xs font-medium tracking-wide ${
               isWeekend(i)
                 ? "text-muted-foreground/60"
                 : "text-muted-foreground"
@@ -576,9 +585,9 @@ function MonthGrid({
                 events.length > 0 ? `, ${events.length} events` : ""
               }`}
               aria-current={today ? "date" : undefined}
-              className={`p-1.5 sm:p-2 border-t border-l text-left transition-colors flex flex-col focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset focus-visible:z-10 ${
+              className={`flex min-h-11 flex-col border-l border-t p-1.5 text-left transition-colors focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:min-h-[90px] sm:p-2 ${
                 isSelected
-                  ? "z-[1] bg-muted/40 ring-1 ring-inset ring-[#071A2D]/30"
+                  ? "z-[1] bg-muted/40 ring-1 ring-inset ring-brand-ink/30"
                   : isWeekend(dow)
                     ? "bg-muted/15 hover:bg-muted/30"
                     : "hover:bg-muted/20"
@@ -586,12 +595,12 @@ function MonthGrid({
             >
               {/* Day number */}
               <span
-                className={`inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-sm text-xs font-semibold tabular-nums sm:h-6 sm:w-6 sm:text-sm ${
+                className={`inline-flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-sm text-xs font-semibold tabular-nums sm:h-6 sm:w-6 sm:text-sm ${
                   today
-                    ? "bg-[#071A2D] text-white"
+                    ? "bg-brand-ink text-white"
                     : isWeekend(dow)
                       ? "text-muted-foreground/60"
-                      : "text-[#071A2D]"
+                      : "text-brand-ink"
                 }`}
               >
                 {day}
@@ -679,7 +688,7 @@ function AgendaView({
   }
 
   return (
-    <div className="space-y-2 max-h-[calc(100vh-280px)] overflow-y-auto">
+    <div className="max-h-[calc(100dvh-16rem)] space-y-2 overflow-y-auto scroll-touch pb-4">
       {monthEvents.map((e) => {
         const eventDate = new Date(
           typeof e.date === "string" ? e.date : e.date,
@@ -689,28 +698,23 @@ function AgendaView({
           <button
             key={e.id}
             onClick={() => onOpenEvent(e)}
-            className="w-full rounded-sm border border-border/70 bg-white p-3.5 text-left hover:bg-muted/30 transition-colors flex items-center gap-3 "
+            className="flex min-h-14 w-full items-center gap-3 rounded-sm border border-border/70 bg-surface-elevated p-3.5 text-left transition-colors hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            {/* Date block */}
-            <div className="flex h-11 w-11 flex-shrink-0 flex-col items-center justify-center rounded-sm border border-border/70 bg-white">
-              <span className="text-sm font-semibold leading-none tabular-nums text-[#071A2D]">
+            <div className="flex h-11 w-11 flex-shrink-0 flex-col items-center justify-center rounded-sm border border-border/70 bg-surface-elevated">
+              <span className="text-sm font-semibold leading-none tabular-nums text-brand-ink">
                 {day}
               </span>
-              <span className="text-overline text-muted-foreground mt-0.5">
+              <span className="mt-0.5 text-overline text-muted-foreground">
                 {months[month].slice(0, 3)}
               </span>
             </div>
-
-            {/* Color bar */}
             <div
-              className="w-1.5 h-9 rounded-full flex-shrink-0"
+              className="h-9 w-1.5 flex-shrink-0 rounded-full"
               style={{ background: e.color || DEFAULT_COLOR }}
             />
-
-            {/* Content */}
             <div className="min-w-0 flex-1">
               <p
-                className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+                className="truncate text-sm font-semibold tracking-tight text-brand-ink"
                 style={{ fontFamily: "var(--font-brand-display)" }}
               >
                 {e.name}
@@ -720,12 +724,11 @@ function AgendaView({
                   </span>
                 )}
               </p>
-              <p className="text-overline text-muted-foreground mt-0.5">
+              <p className="mt-0.5 text-overline text-muted-foreground">
                 {eventTypeLabels[e.type] || e.type}
               </p>
             </div>
-
-            <ChevronRight className="h-4 w-4 text-muted-foreground/50 flex-shrink-0" />
+            <ChevronRight className="h-4 w-4 flex-shrink-0 text-muted-foreground/50" />
           </button>
         );
       })}
@@ -795,13 +798,13 @@ function SidePanelContent({
   /* ── No day selected ── show upcoming events ──────────────────────── */
   if (!selectedDay) {
     return (
-      <div className="space-y-3 rounded-sm border border-border/70 bg-white p-4">
+      <div className="space-y-3 rounded-sm border border-border/70 bg-surface-elevated p-4">
         <div className="space-y-1.5">
           <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            <Calendar className="h-3.5 w-3.5 text-[#071A2D]" />
+            <Calendar className="h-3.5 w-3.5 text-brand-ink" />
             {t("upcoming_events")}
           </h3>
-          <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          <div className="h-px w-8 bg-brand-gold" aria-hidden />
         </div>
         {upcomingEvents.length === 0 ? (
           <p className="text-xs text-muted-foreground py-2 text-center">
@@ -836,7 +839,7 @@ function SidePanelContent({
                   }`}
                 >
                   <div className="flex w-9 shrink-0 flex-col items-center">
-                    <span className="text-xs font-semibold tabular-nums text-[#071A2D]">
+                    <span className="text-xs font-semibold tabular-nums text-brand-ink">
                       {eventDate.getDate()}
                     </span>
                     <span className="text-overline text-muted-foreground">
@@ -849,7 +852,7 @@ function SidePanelContent({
                   />
                   <div className="min-w-0">
                     <p
-                      className="truncate text-xs font-semibold tracking-tight text-[#071A2D]"
+                      className="truncate text-xs font-semibold tracking-tight text-brand-ink"
                       style={{ fontFamily: "var(--font-brand-display)" }}
                     >
                       {e.name}
@@ -876,14 +879,14 @@ function SidePanelContent({
   return (
     <>
       {/* Day header card */}
-      <div className="rounded-sm border border-border/70 bg-white p-4">
+      <div className="rounded-sm border border-border/70 bg-surface-elevated p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-1.5">
             <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              <Calendar className="h-3.5 w-3.5 text-[#071A2D]" />
+              <Calendar className="h-3.5 w-3.5 text-brand-ink" />
               {t("day_title", { day: selectedDay, month: months[month] })}
             </h3>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            <div className="h-px w-8 bg-brand-gold" aria-hidden />
           </div>
           <Badge variant="outline" className="rounded-sm text-overline">
             {dayEvents.length === 0 ? "0" : String(dayEvents.length)}
@@ -893,7 +896,7 @@ function SidePanelContent({
 
       {/* Event list */}
       {dayEvents.length === 0 ? (
-        <div className="rounded-sm border border-border/70 bg-white p-6 text-center ">
+        <div className="rounded-sm border border-border/70 bg-surface-elevated p-6 text-center ">
           <p className="text-sm text-muted-foreground">{t("no_events")}</p>
           {allowCreate && (
             <Button
@@ -927,7 +930,7 @@ function SidePanelContent({
                   onOpenMeeting(e.id);
                 }
               }}
-              className={`flex items-start justify-between rounded-sm border border-border/70 bg-white p-3 hover:bg-muted/20 transition-colors ${
+              className={`flex items-start justify-between rounded-sm border border-border/70 bg-surface-elevated p-3 hover:bg-muted/20 transition-colors ${
                 e.type === "class" ? "cursor-pointer" : ""
               }`}
             >
@@ -938,7 +941,7 @@ function SidePanelContent({
                 />
                 <div className="min-w-0">
                   <p
-                    className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+                    className="truncate text-sm font-semibold tracking-tight text-brand-ink"
                     style={{ fontFamily: "var(--font-brand-display)" }}
                   >
                     {e.name}
@@ -964,7 +967,7 @@ function SidePanelContent({
               >
                 <button
                   onClick={() => exportICS(e)}
-                  className="text-muted-foreground hover:text-[#071A2D] p-1.5 rounded-sm hover:bg-muted transition-colors"
+                  className="text-muted-foreground hover:text-brand-ink p-1.5 rounded-sm hover:bg-muted transition-colors"
                   aria-label="Exportar .ics"
                 >
                   <Download className="h-3.5 w-3.5" />
@@ -998,14 +1001,14 @@ function SidePanelContent({
 
       {/* ── Create event form ───────────────────────────────────────────── */}
       {showForm && allowCreate && (
-        <div className="space-y-3 rounded-sm border border-border/70 bg-white p-4">
+        <div className="space-y-3 rounded-sm border border-border/70 bg-surface-elevated p-4">
           <div className="flex items-start justify-between gap-3">
             <div className="space-y-1.5">
               <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                <Plus className="h-3.5 w-3.5 text-[#071A2D]" />
+                <Plus className="h-3.5 w-3.5 text-brand-ink" />
                 {t("new_event")}
               </h3>
-              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+              <div className="h-px w-8 bg-brand-gold" aria-hidden />
             </div>
             <Button
               variant="ghost"
@@ -1064,7 +1067,7 @@ function SidePanelContent({
               />
               <label
                 htmlFor="event-color-picker"
-                className="flex items-center justify-center h-9 w-9 rounded-sm border border-input cursor-pointer hover:border-[#071A2D]/40 transition-colors "
+                className="flex items-center justify-center h-9 w-9 rounded-sm border border-input cursor-pointer hover:border-brand-ink/40 transition-colors "
                 style={{ background: color }}
                 aria-label="Cor do evento"
               >

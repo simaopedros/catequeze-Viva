@@ -372,7 +372,19 @@
     },
     "detail_access_denied": "Você não tem acesso a este catequizando.",
     "detail_load_error": "Erro ao carregar catequizando.",
-    "back_to_list": "Voltar para lista"
+    "back_to_list": "Voltar para lista",
+    "table_view": "Tabela",
+    "cards_view": "Cartões",
+    "suggested_flow": "Fluxo sugerido",
+    "first_registrations": "Primeiros cadastros",
+    "flow_1": "Cadastre nome, data de nascimento e responsáveis para iniciar o acompanhamento.",
+    "flow_2": "Vincule o catequizando a uma turma para organizar encontros e presença.",
+    "flow_3": "Mantenha a ficha atualizada para sacramentos, comunicação e progresso pastoral.",
+    "linked_classes": "{{count}} vinculada(s)",
+    "family_label": "Família",
+    "family_unlinked": "Não vinculada",
+    "next_enroll": "Matricular em uma turma",
+    "view_profile": "Abrir ficha"
   },
   "families": {
     "subtitle_registered": "{{count}} famílias cadastradas",
@@ -385,7 +397,7 @@
     "count": "{{count}} família(s)",
     "catechumens_count": "{{count}} catequizandos",
     "guardians_count": "{{count}} responsáveis",
-    "no_guardians": "Sem responsáveis",
+    "no_guardians": "Nenhum responsável vinculado.",
     "not_found": "Família não encontrada.",
     "summary": "{{catechumens}} catequizandos · {{guardians}} responsáveis",
     "edit_address_phone": "Editar Endereço e Telefone",
@@ -395,7 +407,6 @@
     "community": "Comunidade",
     "guardians_title": "Responsáveis",
     "add": "Adicionar",
-    "no_guardians": "Nenhum responsável vinculado.",
     "catechumens_title": "Catequizandos",
     "no_catechumens": "Nenhum catequizando.",
     "consents_title": "Consentimentos (LGPD)",
@@ -500,7 +511,6 @@
   "install_button": "Instalar",
   "offline_title": "Sem conexão",
   "offline_description": "Você está offline. Verifique sua conexão e tente novamente.",
-  "try_again": "Tentar novamente",
   "team": {
     "title": "Equipe",
     "subtitle": "{{members}} membros ativos · {{pending}} convites pendentes",
@@ -533,6 +543,10 @@
     "banner_hint": "Aceite para entrar no espaço e começar a colaborar.",
     "view_cta": "Ver e aceitar",
     "a_workspace": "um espaço"
-  }
+  },
+  "view_table": "Tabela",
+  "view_cards": "Cartões",
+  "leave_form_title": "Alterações não salvas",
+  "leave_form_desc": "Você tem alterações que ainda não foram salvas. Sair mesmo assim?",
+  "leave_anyway": "Sair sem salvar"
 }
-

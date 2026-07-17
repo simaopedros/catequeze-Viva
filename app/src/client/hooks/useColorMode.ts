@@ -1,17 +1,21 @@
 import { useEffect } from "react";
-import useLocalStorage from "./useLocalStorage";
 
-export default function useColorMode() {
-  const [colorMode, setColorMode] = useLocalStorage("color-theme", "light");
-
+/**
+ * Light theme is the only officially supported color scheme for this stage.
+ * Always force light; ignore any stored dark preference.
+ */
+export default function useColorMode(): ["light", (mode: string) => void] {
   useEffect(() => {
-    const className = "dark";
-    const bodyClass = window.document.body.classList;
+    const root = window.document.documentElement;
+    const body = window.document.body;
+    root.classList.remove("dark");
+    body.classList.remove("dark");
+    try {
+      localStorage.setItem("color-theme", "light");
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
-    colorMode === "dark"
-      ? bodyClass.add(className)
-      : bodyClass.remove(className);
-  }, [colorMode]);
-
-  return [colorMode, setColorMode];
+  return ["light", () => {}];
 }

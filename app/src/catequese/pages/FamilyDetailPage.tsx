@@ -62,6 +62,7 @@ import {
 } from "../../client/components/brand/AppChrome";
 import { DetailTabs } from "../../client/components/DetailTabs";
 import { useDetailTab } from "../../client/hooks/useDetailTab";
+import { useActiveParish } from "../../client/hooks/useActiveParish";
 
 const FAMILY_DETAIL_TABS = [
   "overview",
@@ -105,11 +106,26 @@ export default function FamilyDetailPage() {
       })),
     [t],
   );
+  const { activeParishId } = useActiveParish();
   const { data: allHouseholds = [], isLoading: loading } = useQuery(
     listHouseholds,
-    { take: 200 },
+    {
+      take: 200,
+      // Prefer active workspace so multi-parish users still resolve this family
+      parishId: activeParishId || undefined,
+    } as any,
   );
-  const household = allHouseholds?.find((h: any) => h.id === id);
+  // Fallback without parish scope if not found (deep link / workspace mismatch)
+  const { data: allHouseholdsFallback = [] } = useQuery(
+    listHouseholds,
+    { take: 200 } as any,
+    {
+      enabled: !loading && Boolean(id) && !allHouseholds?.some((h: any) => h.id === id),
+    },
+  );
+  const household =
+    allHouseholds?.find((h: any) => h.id === id) ||
+    allHouseholdsFallback?.find((h: any) => h.id === id);
   const [savingConsent, setSavingConsent] = useState<string | null>(null);
   const translateRelationship = useCallback(
     (value: string | undefined) => {
@@ -154,12 +170,15 @@ export default function FamilyDetailPage() {
   const [removingGuardianLoading, setRemovingGuardianLoading] = useState(false);
 
   // Add/Remove catechumen state
-  const { data: allCatechumens = [] } = useQuery(listCatechumens, {
-    take: 200,
-  });
   const [addCatechumenDialogOpen, setAddCatechumenDialogOpen] = useState(false);
   const [selectedCatechumenId, setSelectedCatechumenId] = useState("");
   const [linkingCatechumen, setLinkingCatechumen] = useState(false);
+  // Load candidates on catechumens tab or when dialog is open
+  const { data: allCatechumens = [], isLoading: loadingCatechumens } = useQuery(
+    listCatechumens,
+    { take: 500 },
+    { enabled: addCatechumenDialogOpen || tab === "catechumens" },
+  );
 
   const [confirmRemoveCatechumenOpen, setConfirmRemoveCatechumenOpen] =
     useState(false);
@@ -169,12 +188,30 @@ export default function FamilyDetailPage() {
   const [removingCatechumenLoading, setRemovingCatechumenLoading] =
     useState(false);
 
+  /**
+   * Catechumens available to link: no household yet, and compatible with this
+   * family's parish. Many profiles have parishId null until enrolled — those
+   * must still appear (same as /app/catechumens list logic).
+   */
   const unlinkedCatechumens = useMemo(() => {
-    return allCatechumens.filter(
-      (c: any) =>
-        !c.householdId &&
-        (!household?.parishId || c.parishId === household.parishId),
-    );
+    const parishId = household?.parishId as string | null | undefined;
+    return allCatechumens.filter((c: any) => {
+      if (c.householdId) return false;
+      if (!parishId) return true;
+      // Same parish on profile
+      if (c.parishId === parishId || c.parish?.id === parishId) return true;
+      // Enrolled in a class of this parish
+      if (
+        c.enrollments?.some(
+          (e: any) => e.class?.parishId === parishId,
+        )
+      ) {
+        return true;
+      }
+      // No parish set yet — eligible to attach to this family
+      if (!c.parishId) return true;
+      return false;
+    });
   }, [allCatechumens, household]);
 
   // Start editing: copy current values into edit fields
@@ -1157,17 +1194,23 @@ export default function FamilyDetailPage() {
                   />
                 </SelectTrigger>
                 <SelectContent>
-                  {unlinkedCatechumens.map((c: any) => (
-                    <SelectItem key={c.id} value={c.id}>
-                      {c.firstName} {c.lastName} (
-                      {c.birthDate
-                        ? formatDateOnly(c.birthDate, "pt-BR")
-                        : "Sem data de nascimento"}
-                      )
-                    </SelectItem>
-                  ))}
-                  {unlinkedCatechumens.length === 0 && (
-                    <div className="p-2 text-sm text-muted-foreground text-center">
+                  {loadingCatechumens && (
+                    <div className="flex items-center justify-center gap-2 p-3 text-sm text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      {t("loading")}
+                    </div>
+                  )}
+                  {!loadingCatechumens &&
+                    unlinkedCatechumens.map((c: any) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.firstName} {c.lastName}
+                        {c.birthDate
+                          ? ` (${formatDateOnly(c.birthDate, "pt-BR")})`
+                          : ""}
+                      </SelectItem>
+                    ))}
+                  {!loadingCatechumens && unlinkedCatechumens.length === 0 && (
+                    <div className="p-3 text-center text-sm text-muted-foreground">
                       {t("families.no_unlinked_catechumens")}
                     </div>
                   )}

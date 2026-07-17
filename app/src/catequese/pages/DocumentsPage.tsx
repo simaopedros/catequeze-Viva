@@ -263,6 +263,22 @@ export default function DocumentsPage() {
             ? tc("documents.family_page_subtitle")
             : tc("documents.page_subtitle")
         }
+        primaryAction={
+          canUpload && catechumens.length > 0
+            ? {
+                label: tc("upload"),
+                onClick: () => {
+                  const first = catechumens[0];
+                  if (first) {
+                    setUploadDialog({
+                      catechumenId: first.id,
+                      docType: DOC_TYPE_KEYS[0],
+                    });
+                  }
+                },
+              }
+            : undefined
+        }
       />
 
       {catechumens.length > 0 && (
@@ -309,7 +325,7 @@ export default function DocumentsPage() {
               <label className="flex flex-col items-center gap-2 cursor-pointer">
                 <FileUp className="h-8 w-8 text-muted-foreground" />
                 <span
-                  className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                  className="text-sm font-semibold tracking-tight text-brand-ink"
                   style={{ fontFamily: "var(--font-brand-display)" }}
                 >
                   {tc("documents.select_file")}
@@ -332,7 +348,7 @@ export default function DocumentsPage() {
               </p>
             )}
           </div>
-          <DialogFooter className="sticky bottom-0 gap-2 bg-white sm:static">
+          <DialogFooter className="sticky bottom-0 gap-2 bg-surface-elevated sm:static">
             <Button variant="outline" onClick={closeUploadDialog}>
               {tc("cancel")}
             </Button>
@@ -380,17 +396,17 @@ export default function DocumentsPage() {
             return (
               <div
                 key={c.id}
-                className="rounded-sm border border-border/70 bg-white p-4 space-y-3"
+                className="rounded-sm border border-border/70 bg-surface-elevated p-4 space-y-3"
               >
                 <div className="flex items-center gap-3">
                   <Avatar className="h-9 w-9">
-                    <AvatarFallback className="rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-[#071A2D]">
+                    <AvatarFallback className="rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-brand-ink">
                       {initials || "?"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <p
-                      className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+                      className="truncate text-sm font-semibold tracking-tight text-brand-ink"
                       style={{ fontFamily: "var(--font-brand-display)" }}
                     >
                       {c.firstName} {c.lastName}
@@ -469,7 +485,7 @@ export default function DocumentsPage() {
                             className={`h-4 w-4 flex-shrink-0 ${statusVisual.color}`}
                           />
                           <span
-                            className="truncate text-xs font-semibold tracking-tight text-[#071A2D]"
+                            className="truncate text-xs font-semibold tracking-tight text-brand-ink"
                             style={{ fontFamily: "var(--font-brand-display)" }}
                           >
                             {label}

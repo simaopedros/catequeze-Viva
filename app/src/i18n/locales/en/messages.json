@@ -91,5 +91,10 @@
   "leave_error": "Error leaving conversation",
   "pending_send": "Pending",
   "retry_send": "Resend",
-  "draft_saved": "Draft saved on this device"
+  "draft_saved": "Draft saved on this device",
+  "offline_banner": "You are offline. Messages will send when connection returns.",
+  "online_again": "Back online",
+  "load_error_title": "Could not load conversation",
+  "back_to_list": "Back to conversations",
+  "network_error": "Network error"
 }

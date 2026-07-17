@@ -117,5 +117,16 @@
   "kpi_read_rate": "Tasa de lectura",
   "kpi_plan": "Plan",
   "kpi_status": "Estado",
-  "kpi_trial_days_remaining": "Días para fin del trial"
+  "kpi_trial_days_remaining": "Días para fin del trial",
+  "first_steps": "Primeros pasos",
+  "how_to_start": "Cómo empezar",
+  "how_to_start_1": "Cree el grupo con etapa, días de encuentro y responsables.",
+  "how_to_start_2": "Registre o importe catecúmenos y asígnelos a los grupos.",
+  "how_to_start_3": "Use la asistencia editorial para preparar los primeros encuentros.",
+  "empty_class_card_desc": "Cree su primer grupo para organizar encuentros, asistencia y seguimiento.",
+  "empty_catechumen_card_desc": "Después del grupo, registre a los catecúmenos para iniciar el camino pastoral.",
+  "registration_section": "Registro",
+  "attention_now": "Qué necesita su atención ahora",
+  "import_catechumens": "Importar catecúmenos",
+  "metrics_secondary": "Indicadores"
 }

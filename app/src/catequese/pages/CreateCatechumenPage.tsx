@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
@@ -13,6 +13,7 @@ import {
 } from "wasp/client/operations";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
 import { toast } from "../../client/hooks/use-toast";
+import { useUnsavedChangesGuard } from "../../client/hooks/useUnsavedChangesGuard";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import CreateHouseholdModal from "../components/CreateHouseholdModal";
 import {
@@ -33,6 +34,7 @@ import {
   AppPanel,
   AppDisplayTitle,
 } from "../../client/components/brand/AppChrome";
+import { ConfirmDialog } from "../../client/components/ConfirmDialog";
 
 function compressImage(file: File): Promise<string> {
   return new Promise((resolve) => {
@@ -103,6 +105,10 @@ export default function CreateCatechumenPage() {
     },
   });
 
+  const leaveGuard = useUnsavedChangesGuard(
+    (form.formState.isDirty || !!photo) && !form.formState.isSubmitting,
+  );
+
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -120,6 +126,8 @@ export default function CreateCatechumenPage() {
         photoUrl: photo || undefined,
         householdId: values.householdId || undefined,
       });
+      form.reset(values);
+      setPhoto("");
       toast({ title: t("catechumens.created_success") });
       navigate(`/app/catechumens/${result.id}`);
     } catch (err: any) {
@@ -128,6 +136,9 @@ export default function CreateCatechumenPage() {
       });
     }
   };
+
+  const goBack = () =>
+    leaveGuard.confirmLeave(() => navigate("/app/catechumens"));
 
   if (!canManage) {
     return (
@@ -160,13 +171,12 @@ export default function CreateCatechumenPage() {
             <Button
               variant="outline"
               size="sm"
-              className="h-10 rounded-sm"
-              asChild
+              className="h-10 min-h-11 rounded-sm"
+              type="button"
+              onClick={goBack}
             >
-              <Link to="/app/catechumens">
-                <ArrowLeft className="mr-1 h-4 w-4" />
-                {t("back")}
-              </Link>
+              <ArrowLeft className="mr-1 h-4 w-4" />
+              {t("back")}
             </Button>
           }
         />
@@ -344,8 +354,13 @@ export default function CreateCatechumenPage() {
             <Save className="mr-2 h-4 w-4" />
             {form.formState.isSubmitting ? t("saving") : t("register")}
           </Button>
-          <Button type="button" variant="outline" className="min-h-11" asChild>
-            <Link to="/app/catechumens">{t("cancel")}</Link>
+          <Button
+            type="button"
+            variant="outline"
+            className="min-h-11"
+            onClick={goBack}
+          >
+            {t("cancel")}
           </Button>
         </div>
       </div>
@@ -354,9 +369,19 @@ export default function CreateCatechumenPage() {
         isOpen={showCreateHouseholdModal}
         onClose={() => setShowCreateHouseholdModal(false)}
         onCreated={(newHouseholdId, _householdName) => {
-          form.setValue("householdId", newHouseholdId);
+          form.setValue("householdId", newHouseholdId, { shouldDirty: true });
           refetchHouseholds();
         }}
+      />
+
+      <ConfirmDialog
+        open={leaveGuard.dialogOpen}
+        onOpenChange={leaveGuard.setDialogOpen}
+        title={t("leave_form_title")}
+        description={t("leave_form_desc")}
+        confirmLabel={t("leave_anyway")}
+        variant="destructive"
+        onConfirm={leaveGuard.onConfirmLeave}
       />
     </>
   );

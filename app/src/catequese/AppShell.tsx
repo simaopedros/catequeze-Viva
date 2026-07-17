@@ -209,7 +209,8 @@ export function AppShell({ children }: AppShellProps) {
             ref={mainRef}
             className="no-overscroll scroll-touch flex-1 overflow-y-auto bg-background p-4 print:overflow-visible print:bg-white print:p-0 md:p-6"
             style={{
-              paddingBottom: "calc(4rem + env(safe-area-inset-bottom, 0px))",
+              paddingBottom:
+                "calc(var(--height-bottom-nav, 3.5rem) + env(safe-area-inset-bottom, 0px) + 0.5rem)",
             }}
           >
             <div key={location.pathname} className="content-transition print:contents">

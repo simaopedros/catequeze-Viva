@@ -92,6 +92,13 @@
       "LATE": "Atrasado",
       "JUSTIFIED": "Justificado",
       "none": "Pendente"
-    }
+    },
+    "undo": "Desfazer",
+    "undo_last": "Desfazer última marcação",
+    "leave_unsaved_title": "Presença por sincronizar",
+    "leave_unsaved_desc": "Há alterações pendentes que podem não estar sincronizadas. Sair mesmo assim?",
+    "progress_pct": "{{pct}}% concluído",
+    "complete_banner": "Chamada completa para este encontro",
+    "history_collapsed": "Histórico"
   }
 }

@@ -48,10 +48,18 @@ export default function FamiliesPage() {
   const [communityFilter, setCommunityFilter] = useState("");
   const [pages, setPages] = useState(1);
 
-  const { data: households = [], isLoading } = useQuery(listHouseholds, {
-    take: PAGE_SIZE * pages,
-    search: search || undefined,
-  });
+  // Scope list to the active workspace on the server — avoids "N cadastradas"
+  // with an empty list when the user has memberships in multiple parishes.
+  const { data: households = [], isLoading } = useQuery(
+    listHouseholds,
+    {
+      take: PAGE_SIZE * pages,
+      search: search || undefined,
+      parishId: activeParishId || undefined,
+      communityId: communityFilter || undefined,
+    } as any,
+    { enabled: true },
+  );
   const { data: communities = [] } = useQuery(
     listCommunities,
     activeParishId
@@ -59,15 +67,13 @@ export default function FamiliesPage() {
       : ({ parishId: undefined } as any),
   );
 
+  // Server already scopes by parish/community; keep a defensive client filter
+  // only for community (in case of stale cache mid-switch).
   const filtered = useMemo(() => {
     if (!households || households.length === 0) return [];
-    let result = [...households];
-    if (activeParishId)
-      result = result.filter((h: any) => h.parishId === activeParishId);
-    if (communityFilter)
-      result = result.filter((h: any) => h.communityId === communityFilter);
-    return result;
-  }, [households, activeParishId, communityFilter]);
+    if (!communityFilter) return households;
+    return households.filter((h: any) => h.communityId === communityFilter);
+  }, [households, communityFilter]);
 
   const hasMore = households.length === PAGE_SIZE * pages;
   const loadMore = useCallback(() => setPages((p) => p + 1), []);
@@ -85,52 +91,72 @@ export default function FamiliesPage() {
     );
   }
 
+  const hasFilters = Boolean(search || communityFilter);
+
   return (
     <div className="space-y-6">
       <AppPageHeader
         eyebrow={t("families.eyebrow", { defaultValue: "Pastoral" })}
         title={tn("families")}
         subtitle={t("families.subtitle_registered", {
-          count: households?.length || 0,
+          count: filtered.length,
         })}
-        actions={
-          canCreateFamily ? (
-            <Button asChild className="h-10 rounded-sm shadow-none">
-              <Link to="/app/families/new">
-                <Plus className="mr-1 h-4 w-4" />
-                {t("new")}
-              </Link>
-            </Button>
-          ) : undefined
+        primaryAction={
+          canCreateFamily
+            ? { label: t("new"), href: "/app/families/new" }
+            : undefined
         }
       />
       <FamilyPortalInviteBanner />
-      <AppPanel>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <SearchInput
-            placeholder={t("families.search_placeholder")}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            containerClassName="max-w-none w-full sm:w-56 flex-none"
-          />
-          <Select
-            value={communityFilter || "all"}
-            onValueChange={(v) => setCommunityFilter(v === "all" ? "" : v)}
-          >
-            <SelectTrigger className="h-10 w-full rounded-sm sm:w-44">
-              <SelectValue placeholder={t("families.all_communities")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">
-                {t("families.all_communities")}
-              </SelectItem>
-              {communities.map((c: any) => (
-                <SelectItem key={c.id} value={c.id}>
-                  {c.name}
+      <AppPanel density="compact">
+        <div className="space-y-3">
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="min-w-0 flex-1">
+              <SearchInput
+                placeholder={t("families.search_placeholder")}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                containerClassName="max-w-none w-full"
+              />
+            </div>
+            <Select
+              value={communityFilter || "all"}
+              onValueChange={(v) => setCommunityFilter(v === "all" ? "" : v)}
+            >
+              <SelectTrigger className="h-11 min-h-11 w-full rounded-sm sm:w-44">
+                <SelectValue placeholder={t("families.all_communities")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">
+                  {t("families.all_communities")}
                 </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+                {communities.map((c: any) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+            <p className="text-muted-foreground">
+              {t("families.count", { count: filtered.length })}
+            </p>
+            {hasFilters && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-9 min-h-9 rounded-sm text-brand-ink"
+                onClick={() => {
+                  setSearch("");
+                  setCommunityFilter("");
+                }}
+              >
+                {t("clear_filters")}
+              </Button>
+            )}
+          </div>
         </div>
       </AppPanel>
 
@@ -145,7 +171,7 @@ export default function FamiliesPage() {
             <Button
               type="button"
               variant="outline"
-              className="mt-4 h-11 rounded-sm bg-white"
+              className="mt-4 h-11 rounded-sm bg-surface-elevated"
               onClick={() => {
                 setSearch("");
                 setCommunityFilter("");
@@ -173,42 +199,32 @@ export default function FamiliesPage() {
             <Link
               key={h.id}
               to={`/app/families/${h.id}`}
-              className="group min-h-11 rounded-sm border border-border/70 bg-white p-4 transition-colors hover:border-[#071A2D]/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="group min-h-11 rounded-sm border border-border/70 bg-surface-elevated p-4 transition-colors hover:border-brand-ink/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
-              <div className="flex items-start justify-between mb-2">
+              <div className="mb-2 flex items-start justify-between gap-2">
                 <h3
-                  className="text-sm font-semibold tracking-tight text-[#071A2D] group-hover:text-[#0a2540]"
+                  className="text-sm font-semibold tracking-tight text-brand-ink group-hover:text-brand-ink-soft"
                   style={{ fontFamily: "var(--font-brand-display)" }}
                 >
                   {h.name}
                 </h3>
-                <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-opacity group-hover:opacity-100 sm:opacity-0" />
               </div>
               {h.address ? (
-                <p className="text-overline text-muted-foreground flex items-center gap-1 mb-1">
+                <p className="mb-1 flex items-center gap-1 text-overline text-muted-foreground">
                   <MapPin className="h-3 w-3" />
                   {h.address}
                 </p>
-              ) : (
-                <p className="text-overline text-muted-foreground/60 flex items-center gap-1 mb-1">
-                  <MapPin className="h-3 w-3" />
-                  Sem endereço
-                </p>
-              )}
+              ) : null}
               {h.phone ? (
-                <p className="text-overline text-muted-foreground flex items-center gap-1 mb-2">
+                <p className="mb-2 flex items-center gap-1 text-overline text-muted-foreground">
                   <Phone className="h-3 w-3" />
                   {h.phone}
                 </p>
-              ) : (
-                <p className="text-overline text-muted-foreground/60 flex items-center gap-1 mb-2">
-                  <Phone className="h-3 w-3" />
-                  Sem telefone
-                </p>
-              )}
-              <div className="flex items-center gap-4 border-t pt-2 text-overline">
+              ) : null}
+              <div className="flex items-center gap-4 border-t border-border/60 pt-2 text-overline">
                 <span
-                  className="flex items-center gap-1 font-semibold tracking-tight text-[#071A2D]"
+                  className="flex items-center gap-1 font-semibold tracking-tight text-brand-ink"
                   style={{ fontFamily: "var(--font-brand-display)" }}
                 >
                   <Users className="h-3 w-3" />
@@ -223,7 +239,7 @@ export default function FamiliesPage() {
                   </span>
                 ) : (
                   <span
-                    className="flex items-center gap-1 font-semibold tracking-tight text-[#071A2D]"
+                    className="flex items-center gap-1 font-semibold tracking-tight text-brand-ink"
                     style={{ fontFamily: "var(--font-brand-display)" }}
                   >
                     <User className="h-3 w-3" />
@@ -254,9 +270,6 @@ export default function FamiliesPage() {
           ))}
         </div>
       )}
-      <p className="text-xs text-muted-foreground">
-        {t("families.count", { count: filtered.length })}
-      </p>
       {hasMore && (
         <div className="flex justify-center pt-2">
           <Button

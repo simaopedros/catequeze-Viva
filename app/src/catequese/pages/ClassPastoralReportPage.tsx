@@ -146,22 +146,19 @@ export default function ClassPastoralReportPage() {
         subtitle={`${data.className} · ${data.catechistNames
           .slice(0, 3)
           .join(", ")}${data.catechistNames.length > 3 ? "..." : ""}`}
-        actions={
-          <Button
-            asChild
-            variant="outline"
-            size="sm"
-            className="h-10 rounded-sm"
-          >
-            <Link to={`/app/classes/${id}`}>
-              <ArrowLeft className="mr-1 h-3 w-3" />
-              {tc("back")}
-            </Link>
-          </Button>
-        }
+        primaryAction={{
+          label: tc("back"),
+          href: `/app/classes/${id}`,
+        }}
+        secondaryActions={[
+          {
+            label: tc("attendance") || "Presença",
+            href: `/app/classes/${id}/attendance`,
+          },
+        ]}
       />
 
-      <div className="grid gap-3 md:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
         <AppMetric
           label={t("activeCatechumens")}
           value={data.totalActiveCatechumens}
@@ -175,13 +172,13 @@ export default function ClassPastoralReportPage() {
       </div>
 
       {/* Upcoming Birthdays */}
-      <div className="rounded-sm border border-border/70 bg-white p-5">
+      <div className="rounded-sm border border-border/70 bg-surface-elevated p-4 sm:p-5">
         <div className="mb-3 space-y-1.5">
-          <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <h3 className="flex items-center gap-1.5 text-[11px] font-medium tracking-wide text-muted-foreground">
             <Gift className="h-4 w-4 text-warning" />
             {t("upcomingBirthdays")}
           </h3>
-          <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          <div className="h-px w-8 bg-brand-gold" aria-hidden />
         </div>
         {!data.upcomingBirthdays.length ? (
           <p className="text-sm text-muted-foreground">
@@ -217,58 +214,136 @@ export default function ClassPastoralReportPage() {
       </Suspense>
 
       {Boolean(data.meetingsWithAttendance?.length) && (
-          <div className="rounded-sm border border-border/70 bg-white">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b p-4">
-              <span
-                className="flex items-center gap-2 font-semibold tracking-tight text-[#071A2D]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
-                <Trophy className="h-4 w-4 text-[#D39A2B]" />
-                {t("ranking")}
-              </span>
-              <FilterPills
-                options={[
-                  { value: "all", label: t("allStatuses") },
-                  { value: "enrolled", label: t("active") },
-                  { value: "dropped", label: t("dropped") },
-                  { value: "transferred", label: t("transferred") },
-                ]}
-                value={rankingFilter}
-                onChange={setRankingFilter}
-              />
-            </div>
-            {!filteredRanking.length ? (
-              <EmptyState icon={Trophy} title={t("noData")} compact />
-            ) : (
-              <div className="overflow-x-auto">
+        <div className="rounded-sm border border-border/70 bg-surface-elevated">
+          <div className="flex flex-col gap-3 border-b border-border/70 p-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+            <span
+              className="flex items-center gap-2 font-semibold tracking-tight text-brand-ink"
+              style={{ fontFamily: "var(--font-brand-display)" }}
+            >
+              <Trophy className="h-4 w-4 text-brand-gold" />
+              {t("ranking")}
+            </span>
+            <FilterPills
+              options={[
+                { value: "all", label: t("allStatuses") },
+                { value: "enrolled", label: t("active") },
+                { value: "dropped", label: t("dropped") },
+                { value: "transferred", label: t("transferred") },
+              ]}
+              value={rankingFilter}
+              onChange={setRankingFilter}
+            />
+          </div>
+          {!filteredRanking.length ? (
+            <EmptyState icon={Trophy} title={t("noData")} compact />
+          ) : (
+            <>
+              {/* Mobile ranking cards */}
+              <div className="divide-y divide-border/60 md:hidden">
+                {filteredRanking.map((r: any, i: number) => (
+                  <div
+                    key={r.catechumenId}
+                    className={`space-y-2 p-4 ${
+                      r.riskLevel === "ALTO" &&
+                      r.enrollmentStatus === "ENROLLED"
+                        ? "bg-destructive/5"
+                        : i < 3
+                          ? "bg-brand-gold/[0.04]"
+                          : ""
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <span
+                          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border text-xs font-semibold tabular-nums ${
+                            i < 3
+                              ? "border-brand-gold/40 bg-brand-gold/10 text-brand-ink"
+                              : "border-border/70 bg-muted/30 text-muted-foreground"
+                          }`}
+                        >
+                          {i + 1}
+                        </span>
+                        <div className="min-w-0">
+                          <p
+                            className="truncate font-semibold tracking-tight text-brand-ink"
+                            style={{
+                              fontFamily: "var(--font-brand-display)",
+                            }}
+                          >
+                            {r.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {STATUS_LABELS[r.enrollmentStatus] ||
+                              r.enrollmentStatus}
+                          </p>
+                        </div>
+                      </div>
+                      <span className="shrink-0 text-base font-semibold tabular-nums text-brand-ink">
+                        {r.attendanceRate}%
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-4 gap-2 text-center text-xs">
+                      <div>
+                        <p className="text-muted-foreground">{t("present")}</p>
+                        <p className="font-semibold tabular-nums">
+                          {r.presentCount}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">{t("late")}</p>
+                        <p className="font-semibold tabular-nums">
+                          {r.lateCount}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">{t("absent")}</p>
+                        <p className="font-semibold tabular-nums">
+                          {r.absentCount}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">
+                          {t("consecutiveAbsences")}
+                        </p>
+                        <p className="font-semibold tabular-nums">
+                          {r.consecutiveAbsences}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop table */}
+              <div className="hidden overflow-x-auto md:block">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b bg-muted/30">
-                      <th className="text-left p-3 font-medium text-xs uppercase">
+                      <th className="p-3 text-left text-xs font-medium tracking-wide">
                         {t("rank")}
                       </th>
-                      <th className="text-left p-3 font-medium text-xs uppercase">
+                      <th className="p-3 text-left text-xs font-medium tracking-wide">
                         {tc("name")}
                       </th>
-                      <th className="text-center p-3 font-medium text-xs uppercase">
+                      <th className="p-3 text-center text-xs font-medium tracking-wide">
                         {t("present")}
                       </th>
-                      <th className="text-center p-3 font-medium text-xs uppercase">
+                      <th className="p-3 text-center text-xs font-medium tracking-wide">
                         {t("late")}
                       </th>
-                      <th className="text-center p-3 font-medium text-xs uppercase">
+                      <th className="p-3 text-center text-xs font-medium tracking-wide">
                         {t("justified")}
                       </th>
-                      <th className="text-center p-3 font-medium text-xs uppercase">
+                      <th className="p-3 text-center text-xs font-medium tracking-wide">
                         {t("absent")}
                       </th>
-                      <th className="text-center p-3 font-medium text-xs uppercase">
+                      <th className="p-3 text-center text-xs font-medium tracking-wide">
                         {t("validTotal")}
                       </th>
-                      <th className="text-center p-3 font-medium text-xs uppercase">
+                      <th className="p-3 text-center text-xs font-medium tracking-wide">
                         {t("rate")}
                       </th>
-                      <th className="text-center p-3 font-medium text-xs uppercase">
+                      <th className="p-3 text-center text-xs font-medium tracking-wide">
                         {t("consecutiveAbsences")}
                       </th>
                     </tr>
@@ -282,7 +357,7 @@ export default function ClassPastoralReportPage() {
                           r.enrollmentStatus === "ENROLLED"
                             ? "bg-destructive/5"
                             : i < 3
-                              ? "bg-[#D39A2B]/[0.04]"
+                              ? "bg-brand-gold/[0.04]"
                               : ""
                         }
                       >
@@ -290,7 +365,7 @@ export default function ClassPastoralReportPage() {
                           <span
                             className={`inline-flex h-7 min-w-7 items-center justify-center rounded-sm border px-1.5 text-xs font-semibold tabular-nums ${
                               i < 3
-                                ? "border-[#D39A2B]/40 bg-[#D39A2B]/10 text-[#071A2D]"
+                                ? "border-brand-gold/40 bg-brand-gold/10 text-brand-ink"
                                 : "border-border/70 bg-muted/30 text-muted-foreground"
                             }`}
                             style={
@@ -305,7 +380,7 @@ export default function ClassPastoralReportPage() {
                         <td className="p-3">
                           <div className="flex items-center gap-2">
                             <span
-                              className="font-semibold tracking-tight text-[#071A2D]"
+                              className="font-semibold tracking-tight text-brand-ink"
                               style={{
                                 fontFamily: "var(--font-brand-display)",
                               }}
@@ -314,7 +389,7 @@ export default function ClassPastoralReportPage() {
                             </span>
                             <Badge
                               variant="outline"
-                              className="text-[10px] px-1.5 py-0"
+                              className="px-1.5 py-0 text-[10px]"
                               style={{
                                 color:
                                   RISK_COLORS[
@@ -342,7 +417,7 @@ export default function ClassPastoralReportPage() {
                           {r.totalValidMeetings}
                         </td>
                         <td
-                          className="p-3 text-center font-semibold tabular-nums tracking-tight text-[#071A2D]"
+                          className="p-3 text-center font-semibold tabular-nums tracking-tight text-brand-ink"
                           style={{ fontFamily: "var(--font-brand-display)" }}
                         >
                           {r.attendanceRate}%
@@ -355,8 +430,9 @@ export default function ClassPastoralReportPage() {
                   </tbody>
                 </table>
               </div>
-            )}
-          </div>
+            </>
+          )}
+        </div>
       )}
     </div>
   );

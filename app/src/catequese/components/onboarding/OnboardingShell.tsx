@@ -39,9 +39,9 @@ export function OnboardingShell({
   );
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex min-h-screen flex-col bg-surface-elevated">
       {/* Mobile top bar */}
-      <header className="border-b border-[#071A2D]/08 bg-white lg:hidden">
+      <header className="border-b border-brand-ink/08 bg-surface-elevated lg:hidden">
         <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4">
           <Link to="/">
             <BrandLockup compact hideBadge />
@@ -52,7 +52,7 @@ export function OnboardingShell({
         </div>
         <div className="h-0.5 w-full bg-border/60">
           <div
-            className="h-full bg-[#D39A2B] transition-all duration-300"
+            className="h-full bg-brand-gold transition-all duration-300 motion-reduce:transition-none"
             style={{
               width: `${((currentIdx + 1) / Math.max(steps.length, 1)) * 100}%`,
             }}
@@ -62,7 +62,7 @@ export function OnboardingShell({
 
       <div className="flex flex-1">
         {/* Desktop rail */}
-        <aside className="relative hidden w-[min(38%,22rem)] shrink-0 flex-col justify-between bg-[#071A2D] px-8 py-10 text-[#E8EEF5] lg:flex xl:w-[24rem] xl:px-10">
+        <aside className="relative hidden w-[min(38%,22rem)] shrink-0 flex-col justify-between bg-brand-ink px-8 py-10 text-[#E8EEF5] lg:flex xl:w-[24rem] xl:px-10">
           <div
             className="pointer-events-none absolute inset-0 opacity-[0.07]"
             style={{

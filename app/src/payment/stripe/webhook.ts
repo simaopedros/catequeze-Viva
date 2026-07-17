@@ -776,7 +776,9 @@ function normalizeMetadata(
 
 function parseTrialDays(rawTrialDays?: string): number {
   const parsed = Number.parseInt(rawTrialDays || "", 10);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : SUBSCRIPTION_TRIAL_DAYS;
+  // Prefer explicit metadata from checkout (remaining days). Missing/invalid → 0
+  // so we never invent a second full trial for analytics.
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
 }
 
 function isTrialingSubscription(subscription: Stripe.Subscription): boolean {

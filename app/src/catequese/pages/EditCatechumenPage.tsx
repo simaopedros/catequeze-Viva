@@ -1,14 +1,16 @@
-import { useParams, Link, useNavigate } from "react-router";
-import { useState, useEffect, useRef } from "react";
+import { useParams, useNavigate } from "react-router";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../client/components/ui/button";
 import {
   AppPageHeader,
   AppPanel,
 } from "../../client/components/brand/AppChrome";
+import { ConfirmDialog } from "../../client/components/ConfirmDialog";
 import { ArrowLeft, Save, Camera } from "lucide-react";
 import { getCatechumenProfile, updateCatechumen } from "wasp/client/operations";
 import { toast } from "../../client/hooks/use-toast";
+import { useUnsavedChangesGuard } from "../../client/hooks/useUnsavedChangesGuard";
 
 function compressImage(file: File): Promise<string> {
   return new Promise((resolve) => {
@@ -47,6 +49,12 @@ export default function EditCatechumenPage() {
   const [lastName, setLastName] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [photo, setPhoto] = useState("");
+  const [baseline, setBaseline] = useState<{
+    firstName: string;
+    lastName: string;
+    birthDate: string;
+    photo: string;
+  } | null>(null);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -59,12 +67,19 @@ export default function EditCatechumenPage() {
         setError("");
         const p = await getCatechumenProfile({ id: id! });
         if (p) {
-          setFirstName(p.firstName || "");
-          setLastName(p.lastName || "");
-          setBirthDate(
-            p.birthDate ? new Date(p.birthDate).toISOString().slice(0, 10) : "",
-          );
-          setPhoto(p.photoUrl || "");
+          const next = {
+            firstName: p.firstName || "",
+            lastName: p.lastName || "",
+            birthDate: p.birthDate
+              ? new Date(p.birthDate).toISOString().slice(0, 10)
+              : "",
+            photo: p.photoUrl || "",
+          };
+          setFirstName(next.firstName);
+          setLastName(next.lastName);
+          setBirthDate(next.birthDate);
+          setPhoto(next.photo);
+          setBaseline(next);
         }
       } catch (e: any) {
         setError(e.message || t("error_generic"));
@@ -73,6 +88,18 @@ export default function EditCatechumenPage() {
       }
     })();
   }, [id, t]);
+
+  const isDirty = useMemo(() => {
+    if (!baseline) return false;
+    return (
+      firstName !== baseline.firstName ||
+      lastName !== baseline.lastName ||
+      birthDate !== baseline.birthDate ||
+      photo !== baseline.photo
+    );
+  }, [baseline, firstName, lastName, birthDate, photo]);
+
+  const leaveGuard = useUnsavedChangesGuard(isDirty && !saving);
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -92,6 +119,7 @@ export default function EditCatechumenPage() {
         birthDate: birthDate || undefined,
         photoUrl: photo || undefined,
       });
+      setBaseline({ firstName, lastName, birthDate, photo });
       toast({ title: t("catechumens.updated_success") });
       navigate(`/app/catechumens/${id}`);
     } catch (e: any) {
@@ -103,6 +131,9 @@ export default function EditCatechumenPage() {
     }
     setSaving(false);
   };
+
+  const goBack = () =>
+    leaveGuard.confirmLeave(() => navigate(`/app/catechumens/${id}`));
 
   return (
     <div className="mx-auto max-w-lg space-y-8">
@@ -126,13 +157,12 @@ export default function EditCatechumenPage() {
               <Button
                 variant="outline"
                 size="sm"
-                className="h-10 rounded-sm"
-                asChild
+                className="h-10 min-h-11 rounded-sm"
+                type="button"
+                onClick={goBack}
               >
-                <Link to={`/app/catechumens/${id}`}>
-                  <ArrowLeft className="mr-1 h-4 w-4" />
-                  {t("back")}
-                </Link>
+                <ArrowLeft className="mr-1 h-4 w-4" />
+                {t("back")}
               </Button>
             }
           />
@@ -216,13 +246,28 @@ export default function EditCatechumenPage() {
                 <Save className="mr-1 h-4 w-4" />
                 {saving ? t("saving") : t("save")}
               </Button>
-              <Button variant="outline" className="min-h-11" asChild>
-                <Link to={`/app/catechumens/${id}`}>{t("cancel")}</Link>
+              <Button
+                variant="outline"
+                className="min-h-11"
+                type="button"
+                onClick={goBack}
+              >
+                {t("cancel")}
               </Button>
             </div>
           </div>
         </>
       )}
+
+      <ConfirmDialog
+        open={leaveGuard.dialogOpen}
+        onOpenChange={leaveGuard.setDialogOpen}
+        title={t("leave_form_title")}
+        description={t("leave_form_desc")}
+        confirmLabel={t("leave_anyway")}
+        variant="destructive"
+        onConfirm={leaveGuard.onConfirmLeave}
+      />
     </div>
   );
 }

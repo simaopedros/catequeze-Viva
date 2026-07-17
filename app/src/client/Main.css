@@ -77,6 +77,22 @@
   --color-brand-primary: hsl(var(--primary));
   --color-brand-warm: hsl(var(--secondary));
   --color-brand-support: hsl(var(--accent));
+  /* Explicit brand hex aliases (institutional ink + gold) */
+  --color-brand-ink: #071A2D;
+  --color-brand-ink-soft: #0a2540;
+  --color-brand-gold: #D39A2B;
+  --color-brand-gold-muted: #8A6418;
+
+  /* Mobile chrome & control sizing */
+  --height-touch-min: 2.75rem; /* 44px */
+  --height-control-comfortable: 2.75rem;
+  --height-control-compact: 2.25rem;
+  --height-bottom-nav: 3.5rem;
+  --height-top-bar: 3.5rem;
+  --width-content-narrow: 40rem;
+  --width-content-page: 70rem;
+  --width-content-wide: 80rem;
+  --spacing-mobile-chrome-pad: calc(var(--height-bottom-nav) + env(safe-area-inset-bottom, 0px));
 
   --color-info: hsl(var(--info));
   --color-info-foreground: hsl(var(--info-foreground));
@@ -296,7 +312,9 @@
   }
 }
 
-/* ── CSS custom properties (light and dark) ────────────────────────── */
+/* ── CSS custom properties ─────────────────────────────────────────── */
+/* Product stage: light theme is the officially supported scheme.
+   `.dark` tokens remain for legacy admin snippets only — do not expand dark UX. */
 
 @layer base {
   :root {
@@ -448,6 +466,21 @@
   min-height: 44px;
 }
 
+/* Pad main content so fixed bottom nav + safe area never cover CTAs */
+@utility pad-mobile-chrome {
+  padding-bottom: calc(var(--height-bottom-nav, 3.5rem) + env(safe-area-inset-bottom, 0px) + 1rem);
+}
+
+/* Sticky form footer above bottom nav + keyboard-safe */
+@utility sticky-form-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: var(--z-sticky, 100);
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+  background: hsl(var(--background));
+  border-top: 1px solid hsl(var(--border) / 0.7);
+}
+
 /* Smooth native-like scrolling */
 @utility scroll-touch {
   -webkit-overflow-scrolling: touch;
@@ -459,12 +492,25 @@
   scrollbar-width: none;
 }
 
+/* Account for top bar + bottom nav + safe areas on mobile */
 @utility chat-height {
-  @apply h-[calc(100vh-8.125rem)] lg:h-[calc(100vh-5.625rem)];
+  height: calc(
+    100dvh - var(--height-top-bar, 3.5rem) - var(--height-bottom-nav, 3.5rem) -
+      env(safe-area-inset-bottom, 0px) - 1rem
+  );
+  @media (min-width: 1024px) {
+    height: calc(100dvh - 5.625rem);
+  }
 }
 
 @utility inbox-height {
-  @apply h-[calc(100vh-8.125rem)] lg:h-[calc(100vh-5.625rem)];
+  height: calc(
+    100dvh - var(--height-top-bar, 3.5rem) - var(--height-bottom-nav, 3.5rem) -
+      env(safe-area-inset-bottom, 0px) - 1rem
+  );
+  @media (min-width: 1024px) {
+    height: calc(100dvh - 5.625rem);
+  }
 }
 
 /* ── Third-party libraries ─────────────────────────────────────────── */

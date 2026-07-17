@@ -247,7 +247,7 @@ export default function TeamPage() {
   if (isLoading) {
     return (
       <div className="flex justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" />
+        <Loader2 className="h-8 w-8 animate-spin text-brand-ink" />
       </div>
     );
   }
@@ -274,17 +274,13 @@ export default function TeamPage() {
             members: members.length,
             pending: invitations.length,
           })}
-          actions={
-            canInvite ? (
-              <Button
-                size="sm"
-                className="h-10 rounded-sm shadow-none"
-                onClick={() => setShowInvite(!showInvite)}
-              >
-                <UserPlus className="mr-1 h-4 w-4" />
-                {tp("invite")}
-              </Button>
-            ) : undefined
+          primaryAction={
+            canInvite
+              ? {
+                  label: tp("invite"),
+                  onClick: () => setShowInvite(!showInvite),
+                }
+              : undefined
           }
         />
 
@@ -294,20 +290,20 @@ export default function TeamPage() {
               <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 {t("team.invite_member")}
               </h3>
-              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+              <div className="h-px w-8 bg-brand-gold" aria-hidden />
             </div>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <input
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
-                className="flex-1 min-w-[200px] h-9 rounded-sm border border-input bg-background px-3 text-sm"
+                className="h-11 min-h-11 min-w-0 flex-1 rounded-sm border border-input bg-background px-3 text-sm sm:min-w-[200px]"
                 placeholder={t("families.email_placeholder")}
                 type="email"
               />
               <select
                 value={effectiveInviteRole}
                 onChange={(e) => setInviteRole(e.target.value)}
-                className="h-9 rounded-sm border border-input bg-background px-3 text-sm"
+                className="h-11 min-h-11 rounded-sm border border-input bg-background px-3 text-sm"
               >
                 {inviteRoleOptions.map((r) => (
                   <option key={r.value} value={r.value}>
@@ -318,7 +314,7 @@ export default function TeamPage() {
               <select
                 value={inviteCommunityId}
                 onChange={(e) => setInviteCommunityId(e.target.value)}
-                className="h-9 rounded-sm border border-input bg-background px-3 text-sm"
+                className="h-11 min-h-11 rounded-sm border border-input bg-background px-3 text-sm"
               >
                 <option value="">{tp("all_parish")}</option>
                 {(communities as any[]).map((c: any) => (
@@ -333,7 +329,7 @@ export default function TeamPage() {
                 <select
                   value={inviteClassId}
                   onChange={(e) => setInviteClassId(e.target.value)}
-                  className="h-9 rounded-sm border border-input bg-background px-3 text-sm min-w-[160px]"
+                  className="h-11 min-h-11 min-w-[160px] rounded-sm border border-input bg-background px-3 text-sm"
                   required={permissions?.actorRole === "LEAD_CATECHIST"}
                 >
                   <option value="">
@@ -349,7 +345,7 @@ export default function TeamPage() {
                 </select>
               )}
               <Button
-                size="sm"
+                className="h-11 min-h-11 w-full rounded-sm sm:w-auto"
                 onClick={handleInvite}
                 disabled={inviting || !inviteEmail.trim()}
               >
@@ -361,7 +357,7 @@ export default function TeamPage() {
               <p
                 className={
                   "text-xs " +
-                  (inviteMsgIsError ? "text-destructive" : "text-[#071A2D]")
+                  (inviteMsgIsError ? "text-destructive" : "text-brand-ink")
                 }
               >
                 {inviteMsg}
@@ -396,26 +392,89 @@ export default function TeamPage() {
               {t("team.no_pending")}
             </p>
           ) : (
-            <div className="rounded-sm border border-border/70 bg-white overflow-hidden">
+            <>
+            <div className="space-y-3 md:hidden">
+              {invitations.map((inv: any) => (
+                <div
+                  key={`${inv.kind}-${inv.id}`}
+                  className="space-y-2 rounded-sm border border-border/70 bg-surface-elevated p-4"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="font-semibold text-brand-ink">
+                      {inv.displayName || inv.email}
+                    </p>
+                    <Badge variant="outline" className="shrink-0 text-xs">
+                      {roleLabels[inv.role as keyof typeof roleLabels] ||
+                        inv.role}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {inv.class?.name || inv.community?.name || "—"}
+                    {inv.expiresAt
+                      ? ` · ${formatDate(inv.expiresAt, currentLocale)}`
+                      : ""}
+                  </p>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {inv.inviteUrl && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-11 min-h-11"
+                        onClick={() => copyText(inv.inviteUrl)}
+                      >
+                        <Copy className="mr-1 h-3.5 w-3.5" />
+                        {t("team.copy_link")}
+                      </Button>
+                    )}
+                    {canInvite && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-11 min-h-11"
+                        disabled={resendingId === inv.id}
+                        onClick={() => handleResend(inv)}
+                      >
+                        <RefreshCw className="mr-1 h-3.5 w-3.5" />
+                        {t("team.resend")}
+                      </Button>
+                    )}
+                    {canInvite && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-11 min-h-11 text-destructive"
+                        onClick={() =>
+                          setCancelTarget({ id: inv.id, kind: inv.kind })
+                        }
+                      >
+                        <Ban className="mr-1 h-3.5 w-3.5" />
+                        {t("team.cancel_invite")}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="hidden overflow-hidden rounded-sm border border-border/70 bg-surface-elevated md:block">
               <table className="w-full text-sm">
-                <thead className="bg-muted/50 border-b">
+                <thead className="border-b bg-muted/50">
                   <tr>
-                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    <th className="px-4 py-3 text-left text-[11px] font-medium tracking-wide text-muted-foreground">
                       {tp("email")}
                     </th>
-                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    <th className="px-4 py-3 text-left text-[11px] font-medium tracking-wide text-muted-foreground">
                       {tp("role")}
                     </th>
-                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    <th className="px-4 py-3 text-left text-[11px] font-medium tracking-wide text-muted-foreground">
                       {t("team.class_community")}
                     </th>
-                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    <th className="px-4 py-3 text-left text-[11px] font-medium tracking-wide text-muted-foreground">
                       {t("team.expires")}
                     </th>
-                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    <th className="px-4 py-3 text-left text-[11px] font-medium tracking-wide text-muted-foreground">
                       {tp("status")}
                     </th>
-                    <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    <th className="px-4 py-3 text-right text-[11px] font-medium tracking-wide text-muted-foreground">
                       {tp("actions")}
                     </th>
                   </tr>
@@ -426,7 +485,7 @@ export default function TeamPage() {
                       key={`${inv.kind}-${inv.id}`}
                       className="border-b last:border-0 hover:bg-muted/30"
                     >
-                      <td className="px-4 py-3 font-medium text-[#071A2D]">
+                      <td className="px-4 py-3 font-medium text-brand-ink">
                         {inv.displayName || inv.email}
                       </td>
                       <td className="px-4 py-3">
@@ -435,12 +494,10 @@ export default function TeamPage() {
                             inv.role}
                         </Badge>
                       </td>
-                      <td className="px-4 py-3 text-muted-foreground text-xs">
-                        {inv.class?.name ||
-                          inv.community?.name ||
-                          "—"}
+                      <td className="px-4 py-3 text-xs text-muted-foreground">
+                        {inv.class?.name || inv.community?.name || "—"}
                       </td>
-                      <td className="px-4 py-3 text-muted-foreground text-xs">
+                      <td className="px-4 py-3 text-xs text-muted-foreground">
                         {inv.expiresAt
                           ? formatDate(inv.expiresAt, currentLocale)
                           : "—"}
@@ -452,7 +509,7 @@ export default function TeamPage() {
                             {t("team.status_expired")}
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-xs text-[#071A2D]">
+                          <span className="inline-flex items-center gap-1 text-xs text-brand-ink">
                             <Clock className="h-3 w-3" />
                             {t("team.status_pending")}
                           </span>
@@ -464,7 +521,7 @@ export default function TeamPage() {
                             <Button
                               size="icon"
                               variant="ghost"
-                              className="h-8 w-8"
+                              className="h-11 w-11"
                               title={t("team.copy_link")}
                               onClick={() => copyText(inv.inviteUrl)}
                             >
@@ -475,7 +532,7 @@ export default function TeamPage() {
                             <Button
                               size="icon"
                               variant="ghost"
-                              className="h-8 w-8"
+                              className="h-11 w-11"
                               title={t("team.resend")}
                               disabled={resendingId === inv.id}
                               onClick={() => handleResend(inv)}
@@ -492,7 +549,7 @@ export default function TeamPage() {
                             <Button
                               size="icon"
                               variant="ghost"
-                              className="h-8 w-8 text-destructive"
+                              className="h-11 w-11 text-destructive"
                               title={t("team.cancel_invite")}
                               onClick={() =>
                                 setCancelTarget({
@@ -511,6 +568,7 @@ export default function TeamPage() {
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </section>
 
@@ -527,127 +585,234 @@ export default function TeamPage() {
               description={tp("no_members_desc")}
             />
           ) : (
-            <div className="rounded-sm border border-border/70 bg-white overflow-hidden">
-              <table className="w-full text-sm">
-                <thead className="bg-muted/50 border-b">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                      {tp("name")}
-                    </th>
-                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                      {tp("email")}
-                    </th>
-                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                      {t("team.class_community")}
-                    </th>
-                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                      {tp("role")}
-                    </th>
-                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                      {tp("status")}
-                    </th>
-                    <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                      {tp("actions")}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {members.map((m: any) => {
-                    const status =
-                      statusLabels[m.status as keyof typeof statusLabels] ||
-                      statusLabels.ACTIVE;
-                    const classNames = (m.classes || [])
-                      .map((c: any) => c.name)
-                      .join(", ");
-                    return (
-                      <tr
-                        key={m.id}
-                        className="border-b last:border-0 hover:bg-muted/30"
-                      >
-                        <td
-                          className="px-4 py-3 font-semibold tracking-tight text-[#071A2D]"
-                          style={{ fontFamily: "var(--font-brand-display)" }}
-                        >
-                          {[m.user?.firstName, m.user?.lastName]
-                            .filter(Boolean)
-                            .join(" ") ||
-                            m.user?.email?.split("@")[0] ||
-                            "—"}
-                        </td>
-                        <td className="px-4 py-3 text-muted-foreground">
-                          {m.user?.email || "—"}
-                        </td>
-                        <td className="px-4 py-3 text-muted-foreground text-xs">
-                          {classNames || m.community?.name || "—"}
-                        </td>
-                        <td className="px-4 py-3">
-                          {canManageRoles ? (
-                            <select
-                              value={m.role}
-                              onChange={async (e) => {
-                                try {
-                                  await updateMembershipRole({
-                                    membershipId: m.id,
-                                    role: e.target.value,
-                                  });
-                                  refetch();
-                                } catch (err: any) {
-                                  toast({
-                                    title: err.message || tp("error_update"),
-                                    variant: "destructive",
-                                  });
-                                }
-                              }}
-                              className="h-8 rounded-sm border border-input bg-background px-2 text-xs"
-                            >
-                              {Object.entries(roleLabels)
-                                .filter(
-                                  ([key]) =>
-                                    assignableRoles.includes(key) ||
-                                    key === m.role,
-                                )
-                                .map(([key, label]) => (
-                                  <option key={key} value={key}>
-                                    {label}
-                                  </option>
-                                ))}
-                            </select>
-                          ) : (
-                            <Badge variant="outline" className="text-xs">
-                              {roleLabels[m.role as keyof typeof roleLabels] ||
-                                m.role}
-                            </Badge>
-                          )}
-                        </td>
-                        <td className="px-4 py-3">
-                          <span
-                            className={
-                              "inline-flex items-center rounded-sm px-2 py-0.5 text-xs font-medium " +
-                              status.color
-                            }
+            <>
+              {/* Mobile cards */}
+              <div className="space-y-3 md:hidden">
+                {members.map((m: any) => {
+                  const status =
+                    statusLabels[m.status as keyof typeof statusLabels] ||
+                    statusLabels.ACTIVE;
+                  const classNames = (m.classes || [])
+                    .map((c: any) => c.name)
+                    .join(", ");
+                  const displayName =
+                    [m.user?.firstName, m.user?.lastName]
+                      .filter(Boolean)
+                      .join(" ") ||
+                    m.user?.email?.split("@")[0] ||
+                    "—";
+                  return (
+                    <div
+                      key={m.id}
+                      className="space-y-3 rounded-sm border border-border/70 bg-surface-elevated p-4"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p
+                            className="truncate font-semibold tracking-tight text-brand-ink"
+                            style={{
+                              fontFamily: "var(--font-brand-display)",
+                            }}
                           >
-                            <CheckCircle2 className="mr-1 h-3 w-3" />
-                            {status.label}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          {canManageRoles && (
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              className="h-8 w-8 text-destructive"
-                              onClick={() => setRemoveTarget(m.id)}
+                            {displayName}
+                          </p>
+                          <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                            {m.user?.email || "—"}
+                          </p>
+                        </div>
+                        <span
+                          className={
+                            "inline-flex shrink-0 items-center rounded-sm px-2 py-0.5 text-xs font-medium " +
+                            status.color
+                          }
+                        >
+                          {status.label}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {classNames || m.community?.name || "—"}
+                      </p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        {canManageRoles ? (
+                          <select
+                            value={m.role}
+                            onChange={async (e) => {
+                              try {
+                                await updateMembershipRole({
+                                  membershipId: m.id,
+                                  role: e.target.value,
+                                });
+                                refetch();
+                              } catch (err: any) {
+                                toast({
+                                  title: err.message || tp("error_update"),
+                                  variant: "destructive",
+                                });
+                              }
+                            }}
+                            className="h-11 min-h-11 flex-1 rounded-sm border border-input bg-background px-2 text-sm"
+                          >
+                            {Object.entries(roleLabels)
+                              .filter(
+                                ([key]) =>
+                                  assignableRoles.includes(key) ||
+                                  key === m.role,
+                              )
+                              .map(([key, label]) => (
+                                <option key={key} value={key}>
+                                  {label}
+                                </option>
+                              ))}
+                          </select>
+                        ) : (
+                          <Badge variant="outline" className="text-xs">
+                            {roleLabels[m.role as keyof typeof roleLabels] ||
+                              m.role}
+                          </Badge>
+                        )}
+                        {canManageRoles && (
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-11 w-11 min-h-11 min-w-11 text-destructive"
+                            onClick={() => setRemoveTarget(m.id)}
+                            aria-label={tp("member_remove_title")}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Desktop table */}
+              <div className="hidden overflow-hidden rounded-sm border border-border/70 bg-surface-elevated md:block">
+                <table className="w-full text-sm">
+                  <thead className="border-b bg-muted/50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-[11px] font-medium tracking-wide text-muted-foreground">
+                        {tp("name")}
+                      </th>
+                      <th className="px-4 py-3 text-left text-[11px] font-medium tracking-wide text-muted-foreground">
+                        {tp("email")}
+                      </th>
+                      <th className="px-4 py-3 text-left text-[11px] font-medium tracking-wide text-muted-foreground">
+                        {t("team.class_community")}
+                      </th>
+                      <th className="px-4 py-3 text-left text-[11px] font-medium tracking-wide text-muted-foreground">
+                        {tp("role")}
+                      </th>
+                      <th className="px-4 py-3 text-left text-[11px] font-medium tracking-wide text-muted-foreground">
+                        {tp("status")}
+                      </th>
+                      <th className="px-4 py-3 text-right text-[11px] font-medium tracking-wide text-muted-foreground">
+                        {tp("actions")}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {members.map((m: any) => {
+                      const status =
+                        statusLabels[m.status as keyof typeof statusLabels] ||
+                        statusLabels.ACTIVE;
+                      const classNames = (m.classes || [])
+                        .map((c: any) => c.name)
+                        .join(", ");
+                      return (
+                        <tr
+                          key={m.id}
+                          className="border-b last:border-0 hover:bg-muted/30"
+                        >
+                          <td
+                            className="px-4 py-3 font-semibold tracking-tight text-brand-ink"
+                            style={{
+                              fontFamily: "var(--font-brand-display)",
+                            }}
+                          >
+                            {[m.user?.firstName, m.user?.lastName]
+                              .filter(Boolean)
+                              .join(" ") ||
+                              m.user?.email?.split("@")[0] ||
+                              "—"}
+                          </td>
+                          <td className="px-4 py-3 text-muted-foreground">
+                            {m.user?.email || "—"}
+                          </td>
+                          <td className="px-4 py-3 text-xs text-muted-foreground">
+                            {classNames || m.community?.name || "—"}
+                          </td>
+                          <td className="px-4 py-3">
+                            {canManageRoles ? (
+                              <select
+                                value={m.role}
+                                onChange={async (e) => {
+                                  try {
+                                    await updateMembershipRole({
+                                      membershipId: m.id,
+                                      role: e.target.value,
+                                    });
+                                    refetch();
+                                  } catch (err: any) {
+                                    toast({
+                                      title: err.message || tp("error_update"),
+                                      variant: "destructive",
+                                    });
+                                  }
+                                }}
+                                className="h-9 rounded-sm border border-input bg-background px-2 text-xs"
+                              >
+                                {Object.entries(roleLabels)
+                                  .filter(
+                                    ([key]) =>
+                                      assignableRoles.includes(key) ||
+                                      key === m.role,
+                                  )
+                                  .map(([key, label]) => (
+                                    <option key={key} value={key}>
+                                      {label}
+                                    </option>
+                                  ))}
+                              </select>
+                            ) : (
+                              <Badge variant="outline" className="text-xs">
+                                {roleLabels[
+                                  m.role as keyof typeof roleLabels
+                                ] || m.role}
+                              </Badge>
+                            )}
+                          </td>
+                          <td className="px-4 py-3">
+                            <span
+                              className={
+                                "inline-flex items-center rounded-sm px-2 py-0.5 text-xs font-medium " +
+                                status.color
+                              }
                             >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </Button>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                              <CheckCircle2 className="mr-1 h-3 w-3" />
+                              {status.label}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            {canManageRoles && (
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-11 w-11 text-destructive"
+                                onClick={() => setRemoveTarget(m.id)}
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </section>
       </div>

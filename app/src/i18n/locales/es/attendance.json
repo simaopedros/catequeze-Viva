@@ -92,6 +92,13 @@
       "LATE": "Tarde",
       "JUSTIFIED": "Justificado",
       "none": "Pendiente"
-    }
+    },
+    "undo": "Deshacer",
+    "undo_last": "Deshacer última marca",
+    "leave_unsaved_title": "Asistencia sin guardar",
+    "leave_unsaved_desc": "Hay cambios pendientes que pueden no estar sincronizados. ¿Salir de todos modos?",
+    "progress_pct": "{{pct}}% completo",
+    "complete_banner": "Asistencia completa para este encuentro",
+    "history_collapsed": "Historial"
   }
 }

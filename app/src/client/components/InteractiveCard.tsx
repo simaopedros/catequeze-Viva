@@ -43,9 +43,9 @@ export function InteractiveCard({
   const isInteractive = !!(onClick || href);
 
   const cardClassName = cn(
-    "group flex items-start gap-3 rounded-sm border border-border/70 bg-white p-5 text-left transition-colors duration-200",
+    "group flex items-start gap-3 rounded-sm border border-border/70 bg-surface-elevated p-5 text-left transition-colors duration-200",
     isInteractive &&
-      "cursor-pointer hover:border-[#071A2D]/30 hover:bg-muted/20",
+      "cursor-pointer hover:border-brand-ink/30 hover:bg-muted/20",
     isInteractive &&
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
     compact && "gap-2.5 p-4",
@@ -57,7 +57,7 @@ export function InteractiveCard({
       {Icon && (
         <div
           className={cn(
-            "flex shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]",
+            "flex shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-brand-ink",
             compact ? "h-8 w-8" : "h-10 w-10",
           )}
         >

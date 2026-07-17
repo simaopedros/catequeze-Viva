@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { ArrowRight } from "lucide-react";
 import { useLandingText } from "../hooks/useLandingText";
 import { Button } from "../../client/components/ui/button";
@@ -22,6 +22,11 @@ export function HeroSection({
   variant?: "editorial" | "centered";
 }) {
   const tr = useLandingText(ns);
+  const [searchParams] = useSearchParams();
+  const campaign =
+    searchParams.get("utm_campaign") ||
+    searchParams.get("campaign") ||
+    undefined;
   const isEditorial = variant === "editorial";
   const ctaClassName = responsiveCtas
     ? "h-auto min-h-12 w-full px-6 text-center leading-snug whitespace-normal sm:w-auto sm:min-w-[220px] sm:px-8"
@@ -54,6 +59,7 @@ export function HeroSection({
               landing: ns,
               placement: "hero",
               destination: "/signup",
+              campaign: campaign || null,
             })
           }
         >
@@ -71,7 +77,7 @@ export function HeroSection({
         >
           {trustParts.map((part) => (
             <li key={part} className="inline-flex items-center gap-1.5">
-              <span className="h-1 w-1 rounded-full bg-[#D39A2B]" aria-hidden />
+              <span className="h-1 w-1 rounded-full bg-brand-gold" aria-hidden />
               {part}
             </li>
           ))}

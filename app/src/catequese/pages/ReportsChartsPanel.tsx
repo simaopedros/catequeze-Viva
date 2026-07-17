@@ -35,13 +35,13 @@ export function ReportsChartsPanel({
 
   return (
     <div className="space-y-6">
-      <div className="rounded-sm border border-border/70 bg-white p-6">
+      <div className="rounded-sm border border-border/70 bg-surface-elevated p-4 sm:p-6">
         <div className="mb-4 space-y-1.5">
-          <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            <BarChart3 className="h-3.5 w-3.5 text-[#071A2D]" />
+          <h3 className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-muted-foreground">
+            <BarChart3 className="h-3.5 w-3.5 text-brand-ink" />
             {t("chart_attendance")}
           </h3>
-          <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          <div className="h-px w-8 bg-brand-gold" aria-hidden />
         </div>
         {!chartData.length ? (
           <EmptyState icon={BarChart3} title={t("no_chart_data")} compact />
@@ -77,13 +77,13 @@ export function ReportsChartsPanel({
         )}
       </div>
 
-      <div className="rounded-sm border border-border/70 bg-white p-6">
+      <div className="rounded-sm border border-border/70 bg-surface-elevated p-4 sm:p-6">
         <div className="mb-4 space-y-1.5">
-          <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            <PieChart className="h-3.5 w-3.5 text-[#071A2D]" />
+          <h3 className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-muted-foreground">
+            <PieChart className="h-3.5 w-3.5 text-brand-ink" />
             {t("chart_distribution")}
           </h3>
-          <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          <div className="h-px w-8 bg-brand-gold" aria-hidden />
         </div>
         {pieData[0].value + pieData[1].value === 0 ? (
           <EmptyState

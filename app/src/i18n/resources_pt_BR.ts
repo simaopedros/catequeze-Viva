@@ -471,7 +471,14 @@ export const attendance_pt_BR = {
         "LATE": "Atrasado",
         "JUSTIFIED": "Justificado",
         "none": "Pendente"
-      }
+      },
+      "undo": "Desfazer",
+      "undo_last": "Desfazer última marcação",
+      "leave_unsaved_title": "Presença por sincronizar",
+      "leave_unsaved_desc": "Há alterações pendentes que podem não estar sincronizadas. Sair mesmo assim?",
+      "progress_pct": "{{pct}}% concluído",
+      "complete_banner": "Chamada completa para este encontro",
+      "history_collapsed": "Histórico"
     }
   } as const;
 
@@ -942,7 +949,10 @@ export const calendar_pt_BR = {
       "Sex",
       "Sáb",
       "Dom"
-    ]
+    ],
+    "prev_period": "Período anterior",
+    "next_period": "Período seguinte",
+    "create_primary": "Novo evento"
   } as const;
 
 export const catecheticalYears_pt_BR = {
@@ -1154,7 +1164,13 @@ export const classes_pt_BR = {
       "confirm_remove_catechist_title": "Remover catequista",
       "confirm_remove_catechist_desc": "Tem certeza que deseja remover este catequista da turma?",
       "error": "Erro"
-    }
+    },
+    "no_schedule": "Sin horario",
+    "first_classes": "Primeros grupos",
+    "suggested_structure": "Estructura sugerida",
+    "suggested_1": "Defina etapa, horario y catequista principal para cada grupo.",
+    "suggested_2": "Registre catecúmenos para seguir asistencia, encuentros y progreso.",
+    "suggested_3": "Use la asistencia editorial para preparar encuentros con más consistencia."
   } as const;
 
 export const collaborative_pt_BR = {
@@ -1646,7 +1662,19 @@ export const common_pt_BR = {
       },
       "detail_access_denied": "Você não tem acesso a este catequizando.",
       "detail_load_error": "Erro ao carregar catequizando.",
-      "back_to_list": "Voltar para lista"
+      "back_to_list": "Voltar para lista",
+      "table_view": "Tabela",
+      "cards_view": "Cartões",
+      "suggested_flow": "Fluxo sugerido",
+      "first_registrations": "Primeiros cadastros",
+      "flow_1": "Cadastre nome, data de nascimento e responsáveis para iniciar o acompanhamento.",
+      "flow_2": "Vincule o catequizando a uma turma para organizar encontros e presença.",
+      "flow_3": "Mantenha a ficha atualizada para sacramentos, comunicação e progresso pastoral.",
+      "linked_classes": "{{count}} vinculada(s)",
+      "family_label": "Família",
+      "family_unlinked": "Não vinculada",
+      "next_enroll": "Matricular em uma turma",
+      "view_profile": "Abrir ficha"
     },
     "families": {
       "subtitle_registered": "{{count}} famílias cadastradas",
@@ -1805,7 +1833,12 @@ export const common_pt_BR = {
       "banner_hint": "Aceite para entrar no espaço e começar a colaborar.",
       "view_cta": "Ver e aceitar",
       "a_workspace": "um espaço"
-    }
+    },
+    "view_table": "Tabela",
+    "view_cards": "Cartões",
+    "leave_form_title": "Alterações não salvas",
+    "leave_form_desc": "Você tem alterações que ainda não foram salvas. Sair mesmo assim?",
+    "leave_anyway": "Sair sem salvar"
   } as const;
 
 export const components_pt_BR = {
@@ -2123,7 +2156,18 @@ export const dashboard_pt_BR = {
     "kpi_read_rate": "Taxa de leitura",
     "kpi_plan": "Plano",
     "kpi_status": "Status",
-    "kpi_trial_days_remaining": "Dias para fim do trial"
+    "kpi_trial_days_remaining": "Dias para fim do trial",
+    "first_steps": "Primeiros passos",
+    "how_to_start": "Como começar",
+    "how_to_start_1": "Crie a turma com etapa, dias de encontro e responsáveis.",
+    "how_to_start_2": "Cadastre ou importe catequizandos e distribua nas turmas.",
+    "how_to_start_3": "Use a assistência editorial para montar os primeiros encontros.",
+    "empty_class_card_desc": "Crie sua primeira turma para organizar encontros, presença e acompanhamento.",
+    "empty_catechumen_card_desc": "Depois da turma, cadastre os catequizandos para começar a jornada pastoral.",
+    "registration_section": "Cadastro",
+    "attention_now": "O que precisa da sua atenção agora",
+    "import_catechumens": "Importar catequizandos",
+    "metrics_secondary": "Indicadores"
   } as const;
 
 export const family_pt_BR = {
@@ -3350,7 +3394,12 @@ export const messages_pt_BR = {
     "leave_error": "Erro ao sair da conversa",
     "pending_send": "Pendente",
     "retry_send": "Reenviar",
-    "draft_saved": "Rascunho guardado neste dispositivo"
+    "draft_saved": "Rascunho guardado neste dispositivo",
+    "offline_banner": "Está offline. As mensagens serão enviadas quando a ligação voltar.",
+    "online_again": "Ligação restabelecida",
+    "load_error_title": "Não foi possível carregar a conversa",
+    "back_to_list": "Voltar às conversas",
+    "network_error": "Erro de rede"
   } as const;
 
 export const navigation_pt_BR = {
@@ -3375,7 +3424,10 @@ export const navigation_pt_BR = {
     "communities": "Comunidades",
     "onboarding": "Configuração Inicial",
     "managementSection": "Gestão",
-    "peopleSection": "Pessoas & Turmas",
+    "peopleSection": "Pessoas",
+    "contentSection": "Conteúdo",
+    "operationSection": "Operação",
+    "settingsSection": "Configurações",
     "pedagogySection": "Pedagogia & Encontros",
     "pastoralSection": "Comunicação & Gestão",
     "primarySection": "Principal",

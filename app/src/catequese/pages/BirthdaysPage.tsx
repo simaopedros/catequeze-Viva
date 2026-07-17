@@ -14,7 +14,7 @@ import {
   toggleBirthdayGift,
   listClasses,
 } from "wasp/client/operations";
-import { Gift, Download, Cake } from "lucide-react";
+import { Gift, Cake } from "lucide-react";
 import { formatDate } from "../../i18n/format";
 import { useLocale } from "../../i18n/useLocale";
 
@@ -76,17 +76,12 @@ export default function BirthdaysPage() {
         subtitle={t("subtitle", {
           defaultValue: "Acompanhe aniversários e brindes da catequese.",
         })}
-        actions={
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-10 rounded-sm"
-            onClick={handleExportCSV}
-          >
-            <Download className="mr-1 h-3 w-3" />
-            {t("exportList")}
-          </Button>
-        }
+        primaryAction={{
+          label: t("exportList"),
+          onClick: handleExportCSV,
+          ariaLabel: t("exportList"),
+        }}
+        secondaryActions={[]}
       />
 
       <FilterPills
@@ -101,7 +96,7 @@ export default function BirthdaysPage() {
 
       {classes.length > 1 && (
         <select
-          className="rounded-sm border border-border/70 bg-white px-3 py-2 text-sm w-full max-w-xs"
+          className="min-h-11 w-full max-w-xs rounded-sm border border-border/70 bg-white px-3 py-2 text-sm"
           value={classFilter}
           onChange={(e) => setClassFilter(e.target.value)}
         >
@@ -128,38 +123,40 @@ export default function BirthdaysPage() {
             {birthdays.map((b: any) => (
               <div
                 key={b.catechumenId}
-                className="flex items-center justify-between p-4"
+                className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"
               >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#D39A2B]">
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#D39A2B]">
                     <Cake className="h-4 w-4" />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p
-                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                      className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
                       style={{ fontFamily: "var(--font-brand-display)" }}
                     >
                       {b.name}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {t("turningAge", { age: b.age })} ·{" "}
-                      {formatDate(b.nextBirthday, currentLocale)} ·{" "}
+                      {formatDate(b.nextBirthday, currentLocale)}
+                    </p>
+                    {b.className ? (
                       <Badge
                         variant="outline"
-                        className="rounded-sm px-1 text-[10px]"
+                        className="mt-1 rounded-sm px-1.5 text-[10px]"
                       >
                         {b.className}
                       </Badge>
-                    </p>
+                    ) : null}
                   </div>
                 </div>
                 <Button
                   size="sm"
-                  className="h-9 rounded-sm"
+                  className="min-h-11 w-full rounded-sm sm:w-auto"
                   variant={b.giftDelivered ? "default" : "outline"}
                   onClick={() => handleToggleGift(b.catechumenId)}
                 >
-                  <Gift className="mr-1 h-3 w-3" />
+                  <Gift className="mr-1 h-3.5 w-3.5" />
                   {b.giftDelivered ? t("markUndelivered") : t("markDelivered")}
                 </Button>
               </div>

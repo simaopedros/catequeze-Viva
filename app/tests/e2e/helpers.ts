@@ -36,11 +36,16 @@ export async function dismissCookieBanner(page: Page) {
     document
       .querySelectorAll('.cm-wrapper, .cm--box, [class*="cm__"]')
       .forEach((el) => el.remove());
+    // Guided tour full-screen overlay (blocks bottom nav taps)
+    document
+      .querySelectorAll('.fixed.inset-0.z-\\[100\\], .fixed.inset-0[class*="z-[100]"]')
+      .forEach((el) => el.remove());
+    document.querySelectorAll('[data-tour-overlay]').forEach((el) => el.remove());
   }).catch(() => {});
 }
 
 export async function login(page: Page, email: string, password = PASSWORD) {
-  // Prevent cookie banner from mounting during e2e (vanilla-cookieconsent cookie name: cc_cookie)
+  // Prevent cookie banner + guided tour overlay from blocking e2e clicks
   await page.addInitScript(() => {
     try {
       document.cookie =
@@ -54,6 +59,9 @@ export async function login(page: Page, email: string, password = PASSWORD) {
           }),
         ) +
         '; path=/; max-age=31536000; SameSite=Lax';
+      localStorage.setItem('catequese-tour-seen', 'true');
+      localStorage.setItem('cv-soft-upgrade-dismissed', '1');
+      localStorage.setItem('cv-activation-checklist-dismissed', '1');
     } catch {
       /* ignore */
     }
@@ -156,5 +164,129 @@ export async function enterFirstWorkspace(page: Page) {
   }
   await page.goto('/app');
   await page.waitForLoadState('domcontentloaded');
+  await dismissCookieBanner(page);
+}
+
+// ═══ UX / layout assertions ═════════════════════════════════════════════════
+
+/** Acceptance viewports from the UI/UX brief */
+export const UX_VIEWPORTS = [
+  { name: 'iphone-se', width: 320, height: 568 },
+  { name: 'android-360', width: 360, height: 800 },
+  { name: 'iphone-14', width: 390, height: 844 },
+  { name: 'ipad-portrait', width: 768, height: 1024 },
+  { name: 'laptop', width: 1280, height: 800 },
+  { name: 'desktop', width: 1440, height: 900 },
+] as const;
+
+/**
+ * Fail if document width exceeds viewport by more than `slackPx`
+ * (involuntary horizontal scroll).
+ */
+export async function assertNoHorizontalOverflow(
+  page: Page,
+  slackPx = 2,
+): Promise<void> {
+  const metrics = await page.evaluate(() => {
+    const doc = document.documentElement;
+    const body = document.body;
+    return {
+      clientWidth: doc.clientWidth,
+      scrollWidth: Math.max(doc.scrollWidth, body?.scrollWidth || 0),
+      innerWidth: window.innerWidth,
+    };
+  });
+  expect(
+    metrics.scrollWidth,
+    `horizontal overflow: scrollWidth=${metrics.scrollWidth} clientWidth=${metrics.clientWidth}`,
+  ).toBeLessThanOrEqual(metrics.clientWidth + slackPx);
+}
+
+/**
+ * Sample visible interactive controls in mobile bottom nav / main sheet
+ * and assert min height ~44 CSS px. Skips skip-links and off-screen nodes.
+ */
+export async function assertPrimaryTouchTargets(
+  page: Page,
+  opts?: { min?: number; sample?: number },
+): Promise<void> {
+  const min = opts?.min ?? 40;
+  const sample = opts?.sample ?? 12;
+  const undersized = await page.evaluate(
+    ({ minSize, sampleSize }) => {
+      // Prefer operational chrome: fixed bottom nav + main content primary buttons
+      const roots = [
+        document.querySelector('nav.fixed'),
+        document.querySelector('main'),
+        document.querySelector('#main-content'),
+      ].filter(Boolean) as Element[];
+      const nodes: Element[] = [];
+      for (const root of roots) {
+        nodes.push(
+          ...Array.from(
+            root.querySelectorAll(
+              'a[href], button:not([disabled]), [role="button"]',
+            ),
+          ),
+        );
+      }
+      const bad: string[] = [];
+      let checked = 0;
+      for (const el of nodes) {
+        if (checked >= sampleSize) break;
+        const href = el.getAttribute('href') || '';
+        if (href.startsWith('#')) continue; // skip links
+        const style = window.getComputedStyle(el);
+        if (
+          style.display === 'none' ||
+          style.visibility === 'hidden' ||
+          style.pointerEvents === 'none'
+        ) {
+          continue;
+        }
+        const r = el.getBoundingClientRect();
+        if (r.width < 8 || r.height < 8) continue;
+        if (r.bottom < 0 || r.top > window.innerHeight) continue;
+        checked++;
+        // Height matters most for thumb targets in lists
+        if (r.height + 0.5 < minSize) {
+          const label =
+            (el as HTMLElement).innerText?.trim().slice(0, 40) ||
+            el.getAttribute('aria-label') ||
+            el.tagName;
+          bad.push(
+            `${label} (${Math.round(r.width)}×${Math.round(r.height)})`,
+          );
+        }
+      }
+      return { checked, bad };
+    },
+    { minSize: min, sampleSize: sample },
+  );
+  expect(
+    undersized.bad.length,
+    `undersized targets: ${undersized.bad.join('; ')}`,
+  ).toBeLessThanOrEqual(2);
+}
+
+/** Mobile bottom "Mais" trigger (not header overflow menus). */
+export function bottomMoreButton(page: Page) {
+  return page.locator('[aria-controls="bottom-sheet-nav"]').first();
+}
+
+/** Mobile bottom nav (fixed; sidebar is hidden on small screens). */
+export function mobileBottomNav(page: Page) {
+  return page.locator('nav.fixed').filter({
+    has: page.locator('[aria-controls="bottom-sheet-nav"]'),
+  });
+}
+
+/** Wait for main app chrome after login */
+export async function waitForAppShell(page: Page) {
+  await page
+    .locator('#main-content, main, [data-tour="dashboard-stats"]')
+    .first()
+    .waitFor({ state: 'visible', timeout: 20000 })
+    .catch(() => {});
   await dismissCookieBanner(page);
 }

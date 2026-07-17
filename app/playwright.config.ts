@@ -34,6 +34,16 @@ export default defineConfig({
         hasTouch: true,
       },
     },
+    // Narrow phone — overflow-sensitive (used selectively via grep or full suite)
+    {
+      name: 'mobile-320',
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 320, height: 568 },
+        isMobile: true,
+        hasTouch: true,
+      },
+    },
   ],
 
   // Prefer an already-running app (local dev). Set SKIP_WEBSERVER=0 to force spawn.

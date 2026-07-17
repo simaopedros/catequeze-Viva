@@ -471,7 +471,14 @@ export const attendance_es = {
         "LATE": "Tarde",
         "JUSTIFIED": "Justificado",
         "none": "Pendiente"
-      }
+      },
+      "undo": "Deshacer",
+      "undo_last": "Deshacer última marca",
+      "leave_unsaved_title": "Asistencia sin guardar",
+      "leave_unsaved_desc": "Hay cambios pendientes que pueden no estar sincronizados. ¿Salir de todos modos?",
+      "progress_pct": "{{pct}}% completo",
+      "complete_banner": "Asistencia completa para este encuentro",
+      "history_collapsed": "Historial"
     }
   } as const;
 
@@ -942,7 +949,10 @@ export const calendar_es = {
       "Dom"
     ],
     "view_agenda": "Agenda",
-    "view_month": "Mes"
+    "view_month": "Mes",
+    "prev_period": "Periodo anterior",
+    "next_period": "Periodo siguiente",
+    "create_primary": "Nuevo evento"
   } as const;
 
 export const catecheticalYears_es = {
@@ -1154,7 +1164,13 @@ export const classes_es = {
       "confirm_remove_catechist_title": "Quitar catequista",
       "confirm_remove_catechist_desc": "¿Está seguro de que desea quitar este catequista del grupo?",
       "error": "Error"
-    }
+    },
+    "no_schedule": "Sin horario",
+    "first_classes": "Primeros grupos",
+    "suggested_structure": "Estructura sugerida",
+    "suggested_1": "Defina etapa, horario y catequista principal para cada grupo.",
+    "suggested_2": "Registre catecúmenos para seguir asistencia, encuentros y progreso.",
+    "suggested_3": "Use la asistencia editorial para preparar encuentros con más consistencia."
   } as const;
 
 export const collaborative_es = {
@@ -1646,7 +1662,19 @@ export const common_es = {
       },
       "detail_access_denied": "No tienes acceso a este catecúmeno.",
       "detail_load_error": "Error al cargar catecúmeno.",
-      "back_to_list": "Volver a la lista"
+      "back_to_list": "Volver a la lista",
+      "table_view": "Tabla",
+      "cards_view": "Tarjetas",
+      "suggested_flow": "Flujo sugerido",
+      "first_registrations": "Primeros registros",
+      "flow_1": "Registre nombre, fecha de nacimiento y responsables para iniciar el seguimiento.",
+      "flow_2": "Vincule al catecúmeno a un grupo para encuentros y asistencia.",
+      "flow_3": "Mantenga la ficha actualizada para sacramentos, comunicación y progreso pastoral.",
+      "linked_classes": "{{count}} vinculada(s)",
+      "family_label": "Familia",
+      "family_unlinked": "Sin vincular",
+      "next_enroll": "Inscribir en un grupo",
+      "view_profile": "Abrir perfil"
     },
     "families": {
       "subtitle_registered": "{{count}} familias registradas",
@@ -1805,7 +1833,12 @@ export const common_es = {
       "banner_hint": "Acepta para entrar en el espacio y empezar a colaborar.",
       "view_cta": "Ver y aceptar",
       "a_workspace": "un espacio"
-    }
+    },
+    "view_table": "Tabla",
+    "view_cards": "Tarjetas",
+    "leave_form_title": "Cambios no guardados",
+    "leave_form_desc": "Tiene cambios que aún no se han guardado. ¿Salir de todos modos?",
+    "leave_anyway": "Salir sin guardar"
   } as const;
 
 export const components_es = {
@@ -2123,7 +2156,18 @@ export const dashboard_es = {
     "kpi_read_rate": "Tasa de lectura",
     "kpi_plan": "Plan",
     "kpi_status": "Estado",
-    "kpi_trial_days_remaining": "Días para fin del trial"
+    "kpi_trial_days_remaining": "Días para fin del trial",
+    "first_steps": "Primeros pasos",
+    "how_to_start": "Cómo empezar",
+    "how_to_start_1": "Cree el grupo con etapa, días de encuentro y responsables.",
+    "how_to_start_2": "Registre o importe catecúmenos y asígnelos a los grupos.",
+    "how_to_start_3": "Use la asistencia editorial para preparar los primeros encuentros.",
+    "empty_class_card_desc": "Cree su primer grupo para organizar encuentros, asistencia y seguimiento.",
+    "empty_catechumen_card_desc": "Después del grupo, registre a los catecúmenos para iniciar el camino pastoral.",
+    "registration_section": "Registro",
+    "attention_now": "Qué necesita su atención ahora",
+    "import_catechumens": "Importar catecúmenos",
+    "metrics_secondary": "Indicadores"
   } as const;
 
 export const family_es = {
@@ -3350,7 +3394,12 @@ export const messages_es = {
     "leave_error": "Error al salir de la conversación",
     "pending_send": "Pendiente",
     "retry_send": "Reenviar",
-    "draft_saved": "Borrador guardado en este dispositivo"
+    "draft_saved": "Borrador guardado en este dispositivo",
+    "offline_banner": "Está sin conexión. Los mensajes se enviarán al reconectar.",
+    "online_again": "Conexión restablecida",
+    "load_error_title": "No se pudo cargar la conversación",
+    "back_to_list": "Volver a conversaciones",
+    "network_error": "Error de red"
   } as const;
 
 export const navigation_es = {
@@ -3375,7 +3424,10 @@ export const navigation_es = {
     "communities": "Comunidades",
     "onboarding": "Configuración Inicial",
     "managementSection": "Gestión",
-    "peopleSection": "Personas & Grupos",
+    "peopleSection": "Personas",
+    "contentSection": "Contenido",
+    "operationSection": "Operación",
+    "settingsSection": "Configuración",
     "pedagogySection": "Pedagogía & Reuniones",
     "pastoralSection": "Comunicación & Gestión",
     "primarySection": "Principal",

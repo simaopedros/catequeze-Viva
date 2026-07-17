@@ -191,29 +191,17 @@ export default function ReportsPage() {
         subtitle={t("subtitle", {
           defaultValue: "Presença, ranking e visão consolidada das turmas.",
         })}
-        actions={
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-10 rounded-sm"
-              onClick={handleExportCSV}
-            >
-              <Download className="mr-1 h-3 w-3" />
-              {t("export_csv")}
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-10 rounded-sm"
-              disabled
-              title={t("pdf_soon")}
-            >
-              <FileText className="mr-1 h-3 w-3" />
-              {t("export_pdf")}
-            </Button>
-          </div>
-        }
+        primaryAction={{
+          label: t("export_csv"),
+          onClick: handleExportCSV,
+        }}
+        secondaryActions={[
+          {
+            label: t("export_pdf"),
+            onClick: () => {},
+            disabled: true,
+          },
+        ]}
       />
       <FilterPills
         className="mt-0"
@@ -243,17 +231,23 @@ export default function ReportsPage() {
       />
 
       {/* Period filter */}
-      <FilterPills
-        options={[
-          { value: "all", label: t("periods.all") },
-          { value: "month", label: t("periods.month") },
-          { value: "quarter", label: t("periods.quarter") },
-        ]}
-        value={period}
-        onChange={setPeriod}
-      />
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <FilterPills
+          options={[
+            { value: "all", label: t("periods.all") },
+            { value: "month", label: t("periods.month") },
+            { value: "quarter", label: t("periods.quarter") },
+          ]}
+          value={period}
+          onChange={setPeriod}
+        />
+        <p className="text-sm text-muted-foreground">
+          {classReports.length}{" "}
+          {classReports.length === 1 ? t("tabs.attendance") : t("title")}
+        </p>
+      </div>
 
-      <div className="grid gap-3 md:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-3">
         <AppMetric
           label={t("kpis.total_enrolled")}
           value={visibleTotals.totalEnrolled}
@@ -273,11 +267,11 @@ export default function ReportsPage() {
           {/* Risk alert */}
           {riskClasses.length > 0 && (
             <div className="rounded-sm border border-destructive/30 bg-destructive/10 p-4">
-              <h3 className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-destructive">
+              <h3 className="mb-2 flex items-center gap-2 text-[11px] font-medium tracking-wide text-destructive">
                 <AlertTriangle className="h-3.5 w-3.5" />
                 {t("dropout_title")}
               </h3>
-              <p className="text-xs text-destructive/90 mb-2">
+              <p className="mb-2 text-xs text-destructive/90">
                 {t("dropout_desc")}
               </p>
               <div className="flex flex-wrap gap-2">
@@ -294,8 +288,8 @@ export default function ReportsPage() {
             </div>
           )}
 
-          <div className="rounded-sm border border-border/70 bg-white">
-            <div className="flex items-center gap-2 border-b border-border/70 p-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <div className="rounded-sm border border-border/70 bg-surface-elevated">
+            <div className="flex items-center gap-2 border-b border-border/70 p-4 text-[11px] font-medium tracking-wide text-muted-foreground">
               <BarChart3 className="h-4 w-4" />
               {t("attendance_by_class")}
             </div>
@@ -307,15 +301,15 @@ export default function ReportsPage() {
                 compact
               />
             ) : (
-              <div className="divide-y">
+              <div className="divide-y divide-border/60">
                 {classReports.map((r: any) => (
                   <div
                     key={r.id}
-                    className="p-4 flex items-center justify-between"
+                    className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"
                   >
-                    <div className="flex-1">
+                    <div className="min-w-0 flex-1">
                       <p
-                        className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                        className="text-sm font-semibold tracking-tight text-brand-ink"
                         style={{ fontFamily: "var(--font-brand-display)" }}
                       >
                         {r.name}
@@ -327,28 +321,32 @@ export default function ReportsPage() {
                         })}
                       </p>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className="w-10 text-right text-sm font-semibold tabular-nums text-[#071A2D]">
-                        {r.attendanceRate}%
-                      </span>
-                      <div className="h-1.5 w-28 rounded-sm bg-muted">
+                    <div className="flex min-w-0 flex-1 flex-col gap-1.5 sm:max-w-xs sm:items-end">
+                      <div className="flex items-center justify-between gap-3 sm:w-full sm:justify-end">
+                        <span className="text-sm font-semibold tabular-nums text-brand-ink">
+                          {r.attendanceRate}%
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {t("present_absent", {
+                            present: r.presentCount,
+                            absent: r.absentCount,
+                          })}
+                        </span>
+                      </div>
+                      <div className="h-2 w-full rounded-sm bg-muted sm:w-40">
                         <div
-                          className={`h-1.5 rounded-sm ${
+                          className={`h-2 rounded-sm ${
                             r.attendanceRate >= 70
                               ? "bg-success"
                               : r.attendanceRate >= 40
                                 ? "bg-warning"
                                 : "bg-destructive"
                           }`}
-                          style={{ width: r.attendanceRate + "%" }}
+                          style={{
+                            width: `${Math.min(100, r.attendanceRate)}%`,
+                          }}
                         />
                       </div>
-                      <span className="text-xs text-muted-foreground w-16 text-right">
-                        {t("present_absent", {
-                          present: r.presentCount,
-                          absent: r.absentCount,
-                        })}
-                      </span>
                     </div>
                   </div>
                 ))}
@@ -359,8 +357,8 @@ export default function ReportsPage() {
       )}
 
       {tab === "ranking" && (
-        <div className="rounded-sm border border-border/70 bg-white">
-          <div className="flex items-center gap-2 border-b border-border/70 bg-muted/20 p-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+        <div className="rounded-sm border border-border/70 bg-surface-elevated">
+          <div className="flex items-center gap-2 border-b border-border/70 bg-muted/20 p-4 text-[11px] font-medium tracking-wide text-muted-foreground">
             <Trophy className="h-4 w-4 text-warning" />
             {t("ranking_title")}
           </div>
@@ -372,21 +370,21 @@ export default function ReportsPage() {
               compact
             />
           ) : (
-            <div className="divide-y">
+            <div className="divide-y divide-border/60">
               {[...classReports]
                 .sort((a: any, b: any) => b.attendanceRate - a.attendanceRate)
                 .map((r: any, i: number) => (
                   <div
                     key={r.id}
-                    className={`flex items-center justify-between p-4 ${
-                      i < 3 ? "bg-[#D39A2B]/[0.04]" : ""
+                    className={`flex items-center justify-between gap-3 p-4 ${
+                      i < 3 ? "bg-brand-gold/[0.04]" : ""
                     }`}
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
                       <span
-                        className={`flex h-8 w-8 items-center justify-center rounded-sm border text-sm font-semibold tabular-nums ${
+                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border text-sm font-semibold tabular-nums ${
                           i < 3
-                            ? "border-[#D39A2B]/40 bg-[#D39A2B]/10 text-[#071A2D]"
+                            ? "border-brand-gold/40 bg-brand-gold/10 text-brand-ink"
                             : "border-border/70 bg-muted/30 text-muted-foreground"
                         }`}
                         style={
@@ -399,7 +397,7 @@ export default function ReportsPage() {
                       </span>
                       <div>
                         <p
-                          className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                          className="text-sm font-semibold tracking-tight text-brand-ink"
                           style={{ fontFamily: "var(--font-brand-display)" }}
                         >
                           {r.name}
@@ -410,7 +408,7 @@ export default function ReportsPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-lg font-semibold tabular-nums text-[#071A2D]">
+                      <span className="text-lg font-semibold tabular-nums text-brand-ink">
                         {r.attendanceRate}%
                       </span>
                       <div className="h-1.5 w-24 rounded-sm bg-muted">

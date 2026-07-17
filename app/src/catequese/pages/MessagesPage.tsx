@@ -327,14 +327,15 @@ export default function MessagesPage() {
 
   return (
     <>
-      <div className="chat-height mx-auto flex max-w-7xl overflow-hidden rounded-sm border border-border/70 bg-white">
+      {/* Mobile: list OR chat as distinct full screens; desktop: split pane */}
+      <div className="chat-height mx-auto flex max-w-7xl overflow-hidden rounded-sm border border-border/70 bg-surface-elevated">
         {/* Conversation list - hidden on mobile when chat is open */}
         <div
           className={cn(
-            "w-80 flex-shrink-0 border-r transition-all",
+            "w-80 flex-shrink-0 border-r border-border/70 transition-all",
             isMobileChat
               ? "hidden md:flex md:flex-col"
-              : "flex flex-col w-full md:w-80",
+              : "flex w-full flex-col md:w-80",
           )}
         >
           <ConversationList
@@ -347,10 +348,10 @@ export default function MessagesPage() {
           />
         </div>
 
-        {/* Chat area */}
+        {/* Chat area — exclusive screen on mobile when open */}
         <div
           className={cn(
-            "flex-1 flex flex-col min-w-0",
+            "flex min-w-0 flex-1 flex-col",
             !isMobileChat && !activeConversationId ? "hidden md:flex" : "flex",
           )}
         >
@@ -358,22 +359,24 @@ export default function MessagesPage() {
           (loadingChat || activeConv || conversationError) ? (
             <>
               {/* Chat header */}
-              <div className="flex items-center gap-3 border-b border-border/70 bg-white px-4 py-3">
+              <div className="flex items-center gap-2 border-b border-border/70 bg-surface-elevated px-3 py-2 sm:gap-3 sm:px-4 sm:py-3">
                 <button
+                  type="button"
                   onClick={handleBackToList}
-                  className="flex h-8 w-8 items-center justify-center rounded-sm hover:bg-muted md:hidden"
+                  className="flex h-11 w-11 min-h-11 min-w-11 items-center justify-center rounded-sm hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:hidden"
+                  aria-label={t("back_to_list")}
                 >
-                  <ArrowLeft className="h-4 w-4" />
+                  <ArrowLeft className="h-5 w-5" />
                 </button>
 
                 <div className="min-w-0 flex-1 space-y-0.5">
                   <h2
-                    className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+                    className="truncate text-sm font-semibold tracking-tight text-brand-ink"
                     style={{ fontFamily: "var(--font-brand-display)" }}
                   >
                     {conversationName || t("default_conversation")}
                   </h2>
-                  <div className="h-px w-6 bg-[#D39A2B]" aria-hidden />
+                  <div className="h-px w-6 bg-brand-gold" aria-hidden />
                   <p className="text-overline text-muted-foreground">
                     {activeConv?.type === "DIRECT"
                       ? t("direct_chat")
@@ -386,25 +389,29 @@ export default function MessagesPage() {
 
                 <div className="flex items-center gap-1">
                   <button
+                    type="button"
                     onClick={handleMute}
-                    className="flex h-8 w-8 items-center justify-center rounded-sm transition-colors hover:bg-muted"
+                    className="flex h-11 w-11 min-h-11 min-w-11 items-center justify-center rounded-sm transition-colors hover:bg-muted"
                     title={myParticipant?.mutedAt ? t("unmute") : t("mute")}
+                    aria-label={myParticipant?.mutedAt ? t("unmute") : t("mute")}
                   >
                     <BellOff
                       className={cn(
                         "h-4 w-4",
-                        myParticipant?.mutedAt && "text-[#071A2D]",
+                        myParticipant?.mutedAt && "text-brand-ink",
                       )}
                     />
                   </button>
                   {activeConv?.type !== "DIRECT" && (
                     <button
+                      type="button"
                       onClick={() => setShowDetails(!showDetails)}
                       className={cn(
-                        "flex h-8 w-8 items-center justify-center rounded-sm transition-colors hover:bg-muted",
+                        "flex h-11 w-11 min-h-11 min-w-11 items-center justify-center rounded-sm transition-colors hover:bg-muted",
                         showDetails && "bg-muted",
                       )}
                       title={t("details")}
+                      aria-label={t("details")}
                     >
                       <Info className="h-4 w-4" />
                     </button>
@@ -437,48 +444,52 @@ export default function MessagesPage() {
                       <MessageSquareText className="h-7 w-7 text-destructive" />
                     </div>
                     <h3
-                      className="mb-1 text-base font-semibold tracking-tight text-[#071A2D]"
+                      className="mb-1 text-base font-semibold tracking-tight text-brand-ink"
                       style={{ fontFamily: "var(--font-brand-display)" }}
                     >
-                      {t("title")}
+                      {t("load_error_title")}
                     </h3>
-                    <div className="mx-auto mb-2 h-px w-8 bg-[#D39A2B]" aria-hidden />
+                    <div
+                      className="mx-auto mb-2 h-px w-8 bg-brand-gold"
+                      aria-hidden
+                    />
                     <p className="mb-4 max-w-sm text-sm text-muted-foreground">
-                      {conversationError || tc("try_again")}
+                      {conversationError || t("network_error")}
                     </p>
                     <button
+                      type="button"
                       onClick={() =>
                         activeConversationId &&
                         loadConversation(activeConversationId)
                       }
-                      className="rounded-sm bg-[#071A2D] px-4 py-2 text-sm font-medium text-white hover:bg-[#0a2540]"
+                      className="h-11 min-h-11 rounded-sm bg-brand-ink px-4 text-sm font-medium text-white hover:bg-brand-ink-soft"
                     >
                       {tc("try_again")}
                     </button>
                   </div>
                 )}
 
-                {/* Details sidebar */}
+                {/* Details sidebar (desktop); sheet-like panel on large mobile */}
                 {showDetails && activeConv?.type !== "DIRECT" && (
-                  <div className="hidden w-64 overflow-y-auto border-l border-border/70 bg-white p-4 animate-in slide-in-from-right-2 duration-200 lg:block">
+                  <div className="hidden w-64 animate-in slide-in-from-right-2 overflow-y-auto border-l border-border/70 bg-surface-elevated p-4 duration-200 lg:block">
                     <div className="mb-3 space-y-1.5">
-                      <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      <h3 className="text-[11px] font-medium tracking-wide text-muted-foreground">
                         {t("participants")}
                       </h3>
-                      <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                      <div className="h-px w-8 bg-brand-gold" aria-hidden />
                     </div>
                     <div className="space-y-2">
                       {activeConv.participants.map((p: any) => (
                         <div key={p.id} className="flex items-center gap-2.5">
-                          <div className="h-7 w-7 rounded-sm bg-[#071A2D] flex items-center justify-center text-white text-overline font-semibold flex-shrink-0">
+                          <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-sm bg-brand-ink text-overline font-semibold text-white">
                             {[p.user.firstName?.[0], p.user.lastName?.[0]]
                               .filter(Boolean)
                               .join("")
                               .toUpperCase() || "?"}
                           </div>
-                          <div className="flex-1 min-w-0">
+                          <div className="min-w-0 flex-1">
                             <p
-                              className="truncate text-xs font-semibold tracking-tight text-[#071A2D]"
+                              className="truncate text-xs font-semibold tracking-tight text-brand-ink"
                               style={{
                                 fontFamily: "var(--font-brand-display)",
                               }}
@@ -487,7 +498,7 @@ export default function MessagesPage() {
                                 .filter(Boolean)
                                 .join(" ") || p.user.email}
                             </p>
-                            <p className="text-overline text-muted-foreground capitalize">
+                            <p className="text-overline capitalize text-muted-foreground">
                               {p.role.toLowerCase()}
                             </p>
                           </div>
@@ -495,11 +506,11 @@ export default function MessagesPage() {
                       ))}
                     </div>
 
-                    {/* Leave group */}
                     {activeConv.type !== "DIRECT" && (
                       <button
+                        type="button"
                         onClick={handleLeave}
-                        className="mt-6 flex w-full items-center gap-2 rounded-sm px-2 py-2 text-xs text-destructive transition-colors hover:bg-destructive/5 hover:text-destructive/80"
+                        className="mt-6 flex min-h-11 w-full items-center gap-2 rounded-sm px-2 py-2 text-xs text-destructive transition-colors hover:bg-destructive/5 hover:text-destructive/80"
                       >
                         <LogOut className="h-3.5 w-3.5" />
                         {t("leave_group")}
@@ -510,10 +521,10 @@ export default function MessagesPage() {
               </div>
             </>
           ) : (
-            /* Empty state */
+            /* Empty state — desktop hub only */
             <div className="flex flex-1 flex-col items-center justify-center px-6 py-8 text-center">
               <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-sm border border-border/70 bg-muted/30">
-                <MessageSquareText className="h-7 w-7 text-[#071A2D]" />
+                <MessageSquareText className="h-7 w-7 text-brand-ink" />
               </div>
               <div className="space-y-2.5">
                 <AppEyebrow className="text-center">{t("title")}</AppEyebrow>
@@ -526,11 +537,10 @@ export default function MessagesPage() {
                 {t("hub_desc")}
               </p>
 
-              {/* Use case examples */}
-              <div className="grid gap-2 w-full max-w-xs mb-5">
-                <div className="rounded-sm border border-border/70 bg-white p-2.5 text-left text-xs">
+              <div className="mb-5 grid w-full max-w-xs gap-2">
+                <div className="rounded-sm border border-border/70 bg-surface-elevated p-2.5 text-left text-xs">
                   <span
-                    className="font-semibold tracking-tight text-[#071A2D]"
+                    className="font-semibold tracking-tight text-brand-ink"
                     style={{ fontFamily: "var(--font-brand-display)" }}
                   >
                     {t("use_case_class")}
@@ -539,9 +549,9 @@ export default function MessagesPage() {
                     {t("use_case_class_desc")}
                   </p>
                 </div>
-                <div className="rounded-sm border border-border/70 bg-white p-2.5 text-left text-xs">
+                <div className="rounded-sm border border-border/70 bg-surface-elevated p-2.5 text-left text-xs">
                   <span
-                    className="font-semibold tracking-tight text-[#071A2D]"
+                    className="font-semibold tracking-tight text-brand-ink"
                     style={{ fontFamily: "var(--font-brand-display)" }}
                   >
                     {t("use_case_notice")}
@@ -550,9 +560,9 @@ export default function MessagesPage() {
                     {t("use_case_notice_desc")}
                   </p>
                 </div>
-                <div className="rounded-sm border border-border/70 bg-white p-2.5 text-left text-xs">
+                <div className="rounded-sm border border-border/70 bg-surface-elevated p-2.5 text-left text-xs">
                   <span
-                    className="font-semibold tracking-tight text-[#071A2D]"
+                    className="font-semibold tracking-tight text-brand-ink"
                     style={{ fontFamily: "var(--font-brand-display)" }}
                   >
                     {t("use_case_direct")}
@@ -564,8 +574,9 @@ export default function MessagesPage() {
               </div>
 
               <button
+                type="button"
                 onClick={() => setShowNewDialog(true)}
-                className="rounded-sm bg-[#071A2D] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#0a2540]"
+                className="h-11 min-h-11 rounded-sm bg-brand-ink px-5 text-sm font-medium text-white transition-colors hover:bg-brand-ink-soft"
               >
                 {t("start_conversation")}
               </button>

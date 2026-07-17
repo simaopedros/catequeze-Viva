@@ -372,7 +372,19 @@
     },
     "detail_access_denied": "No tienes acceso a este catecúmeno.",
     "detail_load_error": "Error al cargar catecúmeno.",
-    "back_to_list": "Volver a la lista"
+    "back_to_list": "Volver a la lista",
+    "table_view": "Tabla",
+    "cards_view": "Tarjetas",
+    "suggested_flow": "Flujo sugerido",
+    "first_registrations": "Primeros registros",
+    "flow_1": "Registre nombre, fecha de nacimiento y responsables para iniciar el seguimiento.",
+    "flow_2": "Vincule al catecúmeno a un grupo para encuentros y asistencia.",
+    "flow_3": "Mantenga la ficha actualizada para sacramentos, comunicación y progreso pastoral.",
+    "linked_classes": "{{count}} vinculada(s)",
+    "family_label": "Familia",
+    "family_unlinked": "Sin vincular",
+    "next_enroll": "Inscribir en un grupo",
+    "view_profile": "Abrir perfil"
   },
   "families": {
     "subtitle_registered": "{{count}} familias registradas",
@@ -499,7 +511,6 @@
   "install_button": "Instalar",
   "offline_title": "Sin conexión",
   "offline_description": "Estás sin conexión. Verifica tu conexión e inténtalo de nuevo.",
-  "try_again": "Intentar de nuevo",
   "team": {
     "title": "Equipo",
     "subtitle": "{{members}} miembros activos · {{pending}} invitaciones pendientes",
@@ -532,6 +543,10 @@
     "banner_hint": "Acepta para entrar en el espacio y empezar a colaborar.",
     "view_cta": "Ver y aceptar",
     "a_workspace": "un espacio"
-  }
+  },
+  "view_table": "Tabla",
+  "view_cards": "Tarjetas",
+  "leave_form_title": "Cambios no guardados",
+  "leave_form_desc": "Tiene cambios que aún no se han guardado. ¿Salir de todos modos?",
+  "leave_anyway": "Salir sin guardar"
 }
-

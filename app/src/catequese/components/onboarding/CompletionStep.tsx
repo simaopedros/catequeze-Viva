@@ -51,7 +51,7 @@ export function CompletionStep({
               {item.label}
             </dt>
             <dd
-              className="text-right text-sm font-semibold tracking-tight text-[#071A2D]"
+              className="text-right text-sm font-semibold tracking-tight text-brand-ink"
               style={{ fontFamily: "var(--font-brand-display)" }}
             >
               {item.value}
@@ -64,10 +64,12 @@ export function CompletionStep({
         {t("completion.next_step_hint")}
       </p>
 
-      <div className="flex flex-col gap-2.5">
+      <div
+        className="flex flex-col gap-2.5 sticky-form-actions -mx-1 px-1 pt-3 sm:static sm:border-0 sm:bg-transparent sm:p-0"
+      >
         <Button
           onClick={onPrimaryAction}
-          className="h-11 w-full rounded-sm shadow-none"
+          className="h-11 min-h-11 w-full rounded-sm shadow-none"
         >
           {summary.primaryActionLabel}
           <ArrowRight className="ml-1 h-4 w-4" />
@@ -76,7 +78,7 @@ export function CompletionStep({
           type="button"
           variant="outline"
           onClick={onSecondaryAction}
-          className="h-11 w-full rounded-sm"
+          className="h-11 min-h-11 w-full rounded-sm"
         >
           {summary.secondaryActionLabel || t("completion.go_dashboard")}
         </Button>

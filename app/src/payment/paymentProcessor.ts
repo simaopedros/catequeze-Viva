@@ -11,6 +11,8 @@ export interface CreateCheckoutSessionTrackingArgs {
   planName?: string;
   value?: number;
   currency?: string;
+  /** Remaining product/institutional trial days to pass to Stripe (0 = no trial). */
+  trialDays?: number;
   initiateCheckoutEventId?: string;
   fbp?: string;
   fbc?: string;
@@ -33,6 +35,11 @@ export interface CreateCheckoutSessionArgs {
   interval?: 'monthly' | 'annual';
   prismaUserDelegate: PrismaClient["user"];
   tracking?: CreateCheckoutSessionTrackingArgs;
+  /**
+   * Stripe subscription trial days (remaining free window only).
+   * Defaults to 0 when omitted — never invent a second full trial.
+   */
+  trialPeriodDays?: number;
 }
 
 export interface FetchCustomerPortalUrlArgs {

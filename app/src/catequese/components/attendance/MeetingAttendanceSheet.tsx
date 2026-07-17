@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router";
+import { useNavigate } from "react-router";
 import {
   useQuery,
   getMeetingAttendanceSheet,
@@ -12,6 +12,7 @@ import { Badge } from "../../../client/components/ui/badge";
 import { ConfirmDialog } from "../../../client/components/ConfirmDialog";
 import { EmptyState } from "../../../client/components/EmptyState";
 import { toast } from "../../../client/hooks/use-toast";
+import { useUnsavedChangesGuard } from "../../../client/hooks/useUnsavedChangesGuard";
 import { useLocale } from "../../../i18n/useLocale";
 import { formatDate } from "../../../i18n/format";
 import {
@@ -24,6 +25,7 @@ import {
   Loader2,
   Minus,
   Search,
+  Undo2,
   Users,
   X,
 } from "lucide-react";
@@ -35,6 +37,12 @@ import {
 } from "../../../client/offline/db";
 
 const STATUS_CYCLE = ["PRESENT", "LATE", "ABSENT", "JUSTIFIED"] as const;
+
+type UndoEntry = {
+  catechumenProfileId: string;
+  previous: string | null;
+  next: string;
+};
 
 type SyncState =
   | "idle"
@@ -72,6 +80,8 @@ export function MeetingAttendanceSheet({
   const [bulkOpen, setBulkOpen] = useState(false);
   const [bulkSaving, setBulkSaving] = useState(false);
   const [cachedPayload, setCachedPayload] = useState<any | null>(null);
+  const [undoStack, setUndoStack] = useState<UndoEntry[]>([]);
+  const navigate = useNavigate();
 
   const offline = useAttendanceOfflineQueue(meetingId);
 
@@ -163,7 +173,30 @@ export function MeetingAttendanceSheet({
     }, 1500);
   };
 
-  const markOne = async (catechumenProfileId: string, status: string) => {
+  const progressPct =
+    summary.total > 0
+      ? Math.round((summary.registered / summary.total) * 100)
+      : 0;
+  const isComplete =
+    summary.total > 0 && summary.registered >= summary.total;
+
+  const hasUnsyncedWork =
+    offline.pendingCount > 0 ||
+    Object.values(rowSync).some((s) => s === "saving" || s === "pending");
+
+  const leaveGuard = useUnsavedChangesGuard(hasUnsyncedWork);
+
+  const markOne = async (
+    catechumenProfileId: string,
+    status: string,
+    opts?: { skipUndo?: boolean },
+  ) => {
+    const previous = localStatus[catechumenProfileId] ?? null;
+    if (!opts?.skipUndo && previous !== status) {
+      setUndoStack((stack) =>
+        [...stack, { catechumenProfileId, previous, next: status }].slice(-20),
+      );
+    }
     setLocalStatus((prev) => ({ ...prev, [catechumenProfileId]: status }));
     setRowSync((prev) => ({ ...prev, [catechumenProfileId]: "saving" }));
     const mid = sheet?.meeting?.id || meetingId;
@@ -228,6 +261,30 @@ export function MeetingAttendanceSheet({
       : -1;
     const next = STATUS_CYCLE[(idx + 1) % STATUS_CYCLE.length];
     void markOne(catechumenProfileId, next);
+  };
+
+  const undoLast = () => {
+    setUndoStack((stack) => {
+      if (stack.length === 0) return stack;
+      const last = stack[stack.length - 1];
+      if (last.previous) {
+        void markOne(last.catechumenProfileId, last.previous, {
+          skipUndo: true,
+        });
+      } else {
+        // No prior status — restore local empty state (server row may remain)
+        setLocalStatus((prev) => ({
+          ...prev,
+          [last.catechumenProfileId]: null,
+        }));
+        setRowSync((prev) => ({
+          ...prev,
+          [last.catechumenProfileId]: "idle",
+        }));
+      }
+      toast({ title: t("sheet.undo_last") });
+      return stack.slice(0, -1);
+    });
   };
 
   const markAllPresent = async () => {
@@ -398,11 +455,11 @@ export function MeetingAttendanceSheet({
       <div className="sticky top-0 z-20 -mx-1 space-y-3 border-b border-border/70 bg-background/95 px-1 pb-3 pt-1 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            <p className="text-[11px] font-medium tracking-wide text-muted-foreground">
               {meeting.class?.name}
             </p>
             <h2
-              className="truncate text-base font-semibold tracking-tight text-[#071A2D]"
+              className="truncate text-base font-semibold tracking-tight text-brand-ink"
               style={{ fontFamily: "var(--font-brand-display)" }}
             >
               {meeting.title || meeting.theme || t("sheet.untitled")}
@@ -444,13 +501,58 @@ export function MeetingAttendanceSheet({
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-sm font-medium tabular-nums text-[#071A2D]">
-            {t("sheet.progress", {
+        {/* Progress */}
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm font-medium tabular-nums text-brand-ink">
+              {t("sheet.progress", {
+                registered: summary.registered,
+                total: summary.total,
+              })}
+            </p>
+            <span className="text-xs tabular-nums text-muted-foreground">
+              {t("sheet.progress_pct", { pct: progressPct })}
+            </span>
+          </div>
+          <div
+            className="h-2 w-full overflow-hidden rounded-sm bg-muted"
+            role="progressbar"
+            aria-valuenow={progressPct}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={t("sheet.progress", {
               registered: summary.registered,
               total: summary.total,
             })}
-          </p>
+          >
+            <div
+              className={cn(
+                "h-full rounded-sm transition-[width] duration-300 motion-reduce:transition-none",
+                isComplete ? "bg-brand-ink" : "bg-brand-gold",
+              )}
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
+          {isComplete && (
+            <p className="flex items-center gap-1.5 text-xs font-medium text-brand-ink">
+              <Check className="h-3.5 w-3.5" />
+              {t("sheet.complete_banner")}
+            </p>
+          )}
+        </div>
+
+        <div className="flex items-center justify-between gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            className="h-11 min-h-11 rounded-sm"
+            disabled={undoStack.length === 0 || readOnly}
+            onClick={undoLast}
+            aria-label={t("sheet.undo_last")}
+          >
+            <Undo2 className="mr-1.5 h-4 w-4" />
+            {t("sheet.undo")}
+          </Button>
           <Button
             type="button"
             variant="outline"
@@ -464,7 +566,7 @@ export function MeetingAttendanceSheet({
         </div>
 
         {switcherOpen && (
-          <div className="max-h-48 overflow-y-auto rounded-sm border border-border/70 bg-white p-1">
+          <div className="max-h-48 overflow-y-auto rounded-sm border border-border/70 bg-surface-elevated p-1">
             {(sheet.siblingMeetings || []).map((s: any) => (
               <button
                 key={s.id}
@@ -472,12 +574,13 @@ export function MeetingAttendanceSheet({
                 className={cn(
                   "flex w-full min-h-11 items-center justify-between rounded-sm px-3 py-2 text-left text-sm motion-reduce:transition-none",
                   s.id === meeting.id
-                    ? "bg-[#071A2D]/08 font-semibold text-[#071A2D]"
+                    ? "bg-brand-ink/8 font-semibold text-brand-ink"
                     : "hover:bg-muted/40",
                 )}
                 onClick={() => {
                   setMeetingId(s.id);
                   setSwitcherOpen(false);
+                  setUndoStack([]);
                 }}
               >
                 <span className="truncate">
@@ -547,7 +650,7 @@ export function MeetingAttendanceSheet({
               <div className="flex items-center gap-3">
                 <div className="min-w-0 flex-1">
                   <p
-                    className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
+                    className="truncate text-sm font-semibold tracking-tight text-brand-ink"
                     style={{ fontFamily: "var(--font-brand-display)" }}
                   >
                     {p.firstName} {p.lastName}
@@ -632,11 +735,16 @@ export function MeetingAttendanceSheet({
       )}
 
       <div className="mt-4 flex flex-wrap gap-2 border-t border-border/70 pt-4">
-        <Button asChild variant="outline" className="h-11 min-h-11 rounded-sm">
-          <Link to={`/app/classes/${classId}`}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            {tc("back")}
-          </Link>
+        <Button
+          type="button"
+          variant="outline"
+          className="h-11 min-h-11 rounded-sm"
+          onClick={() =>
+            leaveGuard.confirmLeave(() => navigate(`/app/classes/${classId}`))
+          }
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          {tc("back")}
         </Button>
         <Button
           type="button"
@@ -670,6 +778,16 @@ export function MeetingAttendanceSheet({
         onConfirm={markAllPresent}
         loading={bulkSaving}
       />
+
+      <ConfirmDialog
+        open={leaveGuard.dialogOpen}
+        onOpenChange={leaveGuard.setDialogOpen}
+        title={t("sheet.leave_unsaved_title")}
+        description={t("sheet.leave_unsaved_desc")}
+        confirmLabel={tc("leave_anyway")}
+        variant="destructive"
+        onConfirm={leaveGuard.onConfirmLeave}
+      />
     </div>
   );
 }
@@ -684,9 +802,9 @@ function statusIcon(st: string | null | undefined) {
 
 function statusButtonClass(st: string | null | undefined) {
   if (st === "PRESENT")
-    return "border-[#071A2D]/25 bg-[#071A2D]/08 text-[#071A2D]";
+    return "border-brand-ink/25 bg-brand-ink/8 text-brand-ink";
   if (st === "LATE")
-    return "border-[#D39A2B]/40 bg-[#D39A2B]/12 text-[#8A6418]";
+    return "border-brand-gold/40 bg-brand-gold/12 text-brand-gold-muted";
   if (st === "ABSENT")
     return "border-destructive/30 bg-destructive/10 text-destructive";
   if (st === "JUSTIFIED")

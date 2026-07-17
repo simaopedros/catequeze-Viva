@@ -52,5 +52,8 @@
     "Dom"
   ],
   "view_agenda": "Agenda",
-  "view_month": "Mes"
+  "view_month": "Mes",
+  "prev_period": "Periodo anterior",
+  "next_period": "Periodo siguiente",
+  "create_primary": "Nuevo evento"
 }

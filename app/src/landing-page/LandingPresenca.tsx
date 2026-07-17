@@ -1,11 +1,8 @@
 import { lazy } from "react";
-import { PublicFooter } from "../catequese/PublicFooter";
-import { PublicNavbar } from "../catequese/PublicNavbar";
 import { FaqSection } from "./components/FaqSection";
 import { HeroSection } from "./components/HeroSection";
+import { LandingShell } from "./components/LandingShell";
 import { LazySection } from "./components/LazySection";
-import { MobileStickyCta } from "./components/MobileStickyCta";
-import { useRouteDocumentMeta } from "./hooks/useRouteDocumentMeta";
 
 const CtaSection = lazy(() =>
   import("./components/CtaSection").then((m) => ({ default: m.CtaSection })),
@@ -35,51 +32,44 @@ const StepsSection = lazy(() =>
 const NS = "landingPresenca";
 
 /**
- * Google Ads landing: presença / chamada.
- * Product demo (features attendance-first) before pricing.
+ * Google Ads: presença / chamada.
+ * Attendance-first demo before pricing.
  */
 export default function LandingPresenca() {
-  useRouteDocumentMeta();
-
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <PublicNavbar />
-      <main className="flex-1">
-        <HeroSection ns={NS} variant="centered" />
-        <LazySection>
-          <FeaturesSection
-            ns={NS}
-            order={[
-              "attendance",
-              "family-portal",
-              "dashboard",
-              "ai-planner",
-              "library",
-              "sacraments",
-            ]}
-          />
-        </LazySection>
-        <LazySection>
-          <ProofSection ns={NS} />
-        </LazySection>
-        <LazySection>
-          <PricingPreviewSection ns={NS} />
-        </LazySection>
-        <LazySection>
-          <PersonasSection ns={NS} />
-        </LazySection>
-        <LazySection>
-          <StepsSection ns={NS} />
-        </LazySection>
-        <LazySection>
-          <FaqSection ns={NS} />
-        </LazySection>
-        <LazySection>
-          <CtaSection ns={NS} />
-        </LazySection>
-      </main>
-      <PublicFooter />
-      <MobileStickyCta ns={NS} />
-    </div>
+    <LandingShell ns={NS}>
+      <HeroSection ns={NS} variant="centered" responsiveCtas />
+      <LazySection>
+        <FeaturesSection
+          ns={NS}
+          order={[
+            "attendance",
+            "family-portal",
+            "dashboard",
+            "ai-planner",
+            "library",
+            "sacraments",
+          ]}
+        />
+      </LazySection>
+      <LazySection>
+        <ProofSection ns={NS} />
+      </LazySection>
+      <LazySection>
+        <PricingPreviewSection ns={NS} />
+      </LazySection>
+      <LazySection>
+        <PersonasSection ns={NS} />
+      </LazySection>
+      <LazySection>
+        <StepsSection ns={NS} responsiveCtas />
+      </LazySection>
+      <LazySection>
+        <FaqSection ns={NS} />
+      </LazySection>
+      <LazySection>
+        <CtaSection ns={NS} responsiveCtas />
+      </LazySection>
+    </LandingShell>
   );
 }

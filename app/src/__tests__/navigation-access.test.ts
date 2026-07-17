@@ -196,14 +196,13 @@ describe('getVisibleNavigation SSOT', () => {
     ]);
   });
 
-  it('bottomBar length ≤ 4 and uses only BOTTOM_NAV_KEYS order', () => {
+  it('catechist bottomBar: Início, Turmas, Agenda, Mensagens', () => {
     const nav = getVisibleNavigation({
       role: 'LEAD_CATECHIST',
       isAdmin: false,
       workspaceType: 'PARISH',
     });
     expect(nav.bottomBar.length).toBeLessThanOrEqual(4);
-    // + Mais trigger in UI = 5 destinations max
     expect(nav.bottomBar.map((i) => i.iconKey)).toEqual([
       'dashboard',
       'classes',
@@ -212,7 +211,39 @@ describe('getVisibleNavigation SSOT', () => {
     ]);
   });
 
-  it('sheetItems exclude bottomBar keys and include catechumens/settings', () => {
+  it('coordinator bottomBar: Início, Turmas, Agenda, Pessoas', () => {
+    const nav = getVisibleNavigation({
+      role: 'PARISH_COORDINATOR',
+      isAdmin: false,
+      workspaceType: 'PARISH',
+    });
+    expect(nav.bottomBar.map((i) => i.iconKey)).toEqual([
+      'dashboard',
+      'classes',
+      'calendar',
+      'catechumens',
+    ]);
+  });
+
+  it('groups are task-oriented (operation, people, content, management, settings)', () => {
+    const nav = getVisibleNavigation({
+      role: 'PARISH_COORDINATOR',
+      isAdmin: false,
+      workspaceType: 'PARISH',
+    });
+    const ids = nav.groups.map((g) => g.id);
+    expect(ids[0]).toBe('operation');
+    expect(ids).toContain('people');
+    expect(ids).toContain('content');
+    expect(ids).toContain('management');
+    expect(ids).toContain('settings');
+    expect(nav.groups.find((g) => g.id === 'operation')?.collapsible).toBe(
+      false,
+    );
+    expect(nav.groups.find((g) => g.id === 'people')?.collapsible).toBe(true);
+  });
+
+  it('sheetItems exclude bottomBar keys and include settings/documents', () => {
     const nav = getVisibleNavigation({
       role: 'LEAD_CATECHIST',
       isAdmin: false,
@@ -227,6 +258,20 @@ describe('getVisibleNavigation SSOT', () => {
     expect(nav.sheetItems.map((i) => i.iconKey)).toContain('documents');
     // Invited catechists do not manage payment
     expect(nav.sheetItems.map((i) => i.iconKey)).not.toContain('billing');
+  });
+
+  it('sheetGroups match group order and exclude bottomBar', () => {
+    const nav = getVisibleNavigation({
+      role: 'LEAD_CATECHIST',
+      isAdmin: false,
+      workspaceType: 'PARISH',
+    });
+    const barKeys = new Set(nav.bottomBar.map((i) => i.iconKey));
+    for (const g of nav.sheetGroups) {
+      for (const item of g.items) {
+        expect(barKeys.has(item.iconKey)).toBe(false);
+      }
+    }
   });
 
   it('parish coordinator sheet includes billing', () => {
@@ -262,7 +307,7 @@ describe('getVisibleNavigation SSOT', () => {
     expect(nav.sheetItems.map((i) => i.iconKey)).toContain('parishes');
   });
 
-  it('isAdmin includes /admin in bottom section', () => {
+  it('isAdmin includes /admin in settings group', () => {
     const nav = getVisibleNavigation({
       role: '',
       isAdmin: true,
@@ -282,6 +327,20 @@ describe('getVisibleNavigation SSOT', () => {
       'dashboard',
       'calendar',
       'messages',
+    ]);
+  });
+
+  it('guardian bottomBar includes catechumens for family portal', () => {
+    const nav = getVisibleNavigation({
+      role: 'GUARDIAN',
+      isAdmin: false,
+      workspaceType: 'PARISH',
+    });
+    expect(nav.bottomBar.map((i) => i.iconKey)).toEqual([
+      'dashboard',
+      'calendar',
+      'messages',
+      'catechumens',
     ]);
   });
 });

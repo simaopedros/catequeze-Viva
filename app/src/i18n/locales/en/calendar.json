@@ -52,5 +52,8 @@
     "Sun"
   ],
   "view_agenda": "Agenda",
-  "view_month": "Month"
+  "view_month": "Month",
+  "prev_period": "Previous period",
+  "next_period": "Next period",
+  "create_primary": "New event"
 }

@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../../client/components/ui/button";
@@ -8,6 +8,7 @@ import { ArrowLeft, Save } from "lucide-react";
 import { createClass } from "wasp/client/operations";
 import { handlePlanLimitError } from "../lib/planLimitToast";
 import { toast } from "../../client/hooks/use-toast";
+import { useUnsavedChangesGuard } from "../../client/hooks/useUnsavedChangesGuard";
 import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
 import {
   createClassSchema,
@@ -25,6 +26,7 @@ import {
   AppPageHeader,
   AppPanel,
 } from "../../client/components/brand/AppChrome";
+import { ConfirmDialog } from "../../client/components/ConfirmDialog";
 
 export default function CreateClassPage() {
   const { t } = useTranslation("classes");
@@ -44,12 +46,17 @@ export default function CreateClassPage() {
     },
   });
 
+  const leaveGuard = useUnsavedChangesGuard(
+    form.formState.isDirty && !form.formState.isSubmitting,
+  );
+
   const onSubmit = async (values: CreateClassValues) => {
     try {
       await createClass({
         ...values,
         parishId: workspaceId,
       });
+      form.reset(values);
       toast({ title: t("created_success") });
       navigate("/app/classes");
     } catch (err: any) {
@@ -64,6 +71,9 @@ export default function CreateClassPage() {
     }
   };
 
+  const goBack = () =>
+    leaveGuard.confirmLeave(() => navigate("/app/classes"));
+
   return (
     <div className="mx-auto max-w-lg space-y-8">
       <AppPageHeader
@@ -73,13 +83,12 @@ export default function CreateClassPage() {
           <Button
             variant="outline"
             size="sm"
-            className="h-10 rounded-sm"
-            asChild
+            className="h-10 min-h-11 rounded-sm"
+            type="button"
+            onClick={goBack}
           >
-            <Link to="/app/classes">
-              <ArrowLeft className="mr-1 h-4 w-4" />
-              {tc("back")}
-            </Link>
+            <ArrowLeft className="mr-1 h-4 w-4" />
+            {tc("back")}
           </Button>
         }
       />
@@ -189,27 +198,42 @@ export default function CreateClassPage() {
               )}
             />
 
-            <div className="flex gap-3 pt-4">
-              <Button
-                type="submit"
-                className="h-10 rounded-sm shadow-none"
-                disabled={form.formState.isSubmitting}
-              >
-                <Save className="mr-2 h-4 w-4" />
-                {form.formState.isSubmitting ? tc("loading") : t("create")}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                className="h-10 rounded-sm"
-                asChild
-              >
-                <Link to="/app/classes">{tc("cancel")}</Link>
-              </Button>
-            </div>
+            <div className="h-20 md:h-4" aria-hidden />
           </form>
         </Form>
       </AppPanel>
+
+      <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-40 border-t border-border/70 bg-white/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-white/80 md:static md:inset-auto md:bottom-auto md:z-auto md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none">
+        <div className="mx-auto flex max-w-lg gap-3 md:pt-2">
+          <Button
+            type="button"
+            className="min-h-11 flex-1 rounded-sm shadow-none"
+            disabled={form.formState.isSubmitting}
+            onClick={form.handleSubmit(onSubmit)}
+          >
+            <Save className="mr-2 h-4 w-4" />
+            {form.formState.isSubmitting ? tc("loading") : t("create")}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="min-h-11 rounded-sm"
+            onClick={goBack}
+          >
+            {tc("cancel")}
+          </Button>
+        </div>
+      </div>
+
+      <ConfirmDialog
+        open={leaveGuard.dialogOpen}
+        onOpenChange={leaveGuard.setDialogOpen}
+        title={tc("leave_form_title")}
+        description={tc("leave_form_desc")}
+        confirmLabel={tc("leave_anyway")}
+        variant="destructive"
+        onConfirm={leaveGuard.onConfirmLeave}
+      />
     </div>
   );
 }

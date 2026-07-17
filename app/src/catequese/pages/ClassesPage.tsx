@@ -1,27 +1,30 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, listClasses } from "wasp/client/operations";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import {
   Plus,
   Users,
-  BookOpen,
   ClipboardList,
-  Edit3,
-  LayoutGrid,
-  List,
   Clock,
   Search,
   User,
-  ArrowRight,
-  CheckCircle2,
+  MoreHorizontal,
+  X,
 } from "lucide-react";
 import { Button } from "../../client/components/ui/button";
 import { Badge } from "../../client/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../client/components/ui/dropdown-menu";
 import { FilterPills } from "../../client/components/FilterPills";
 import { SearchInput } from "../../client/components/SearchInput";
 import { EmptyState } from "../../client/components/EmptyState";
 import { SkeletonCard } from "../../client/components/Skeletons";
+import { ResponsiveTable } from "../../client/components/ResponsiveTable";
 import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { getPlanLimits } from "../../shared/planLimits";
@@ -31,64 +34,14 @@ import { useClassFilters, useClassStatusMap } from "../../i18n/useLabels";
 import { useLocale } from "../../i18n/useLocale";
 import { formatDate } from "../../i18n/format";
 import { cn } from "../../client/utils";
-import type { LucideIcon } from "lucide-react";
-import type { ReactNode } from "react";
 import {
   AppDisplayTitle,
   AppPageHeader,
   AppPanel,
+  AppMetric,
+  AppEyebrow,
+  AppGoldRule,
 } from "../../client/components/brand/AppChrome";
-
-function SurfaceSection({
-  title,
-  children,
-  className,
-}: {
-  title: string;
-  icon?: LucideIcon;
-  children: ReactNode;
-  className?: string;
-  tone?: "default" | "soft";
-}) {
-  return (
-    <section
-      className={cn(
-        "rounded-sm border border-border/70 bg-white p-5",
-        className,
-      )}
-    >
-      <div className="mb-4 space-y-1.5">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          {title}
-        </p>
-        <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
-      </div>
-      {children}
-    </section>
-  );
-}
-
-function ClassMetric({
-  label,
-  value,
-}: {
-  label: string;
-  value: string | number;
-}) {
-  return (
-    <div className="rounded-sm border border-border/70 px-4 py-3">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-        {label}
-      </p>
-      <p
-        className="mt-1.5 text-2xl font-semibold tracking-tight tabular-nums text-[#071A2D]"
-        style={{ fontFamily: "var(--font-brand-display)" }}
-      >
-        {value}
-      </p>
-    </div>
-  );
-}
 
 export default function ClassesPage() {
   const { t } = useTranslation("classes");
@@ -96,6 +49,7 @@ export default function ClassesPage() {
   const classFilters = useClassFilters();
   const classStatusMap = useClassStatusMap();
   const { currentLocale } = useLocale();
+  const navigate = useNavigate();
   const { workspaceId, workspacePlan, isPersonal } = useActiveWorkspace();
   const { data: classes, isLoading } = useQuery(listClasses, {
     workspaceId,
@@ -131,8 +85,10 @@ export default function ClassesPage() {
 
   const activeCount = filtered.filter((c: any) => c.status === "ACTIVE").length;
   const draftCount = filtered.filter((c: any) => c.status === "DRAFT").length;
-  const activeLabel = classStatusMap.ACTIVE?.label || "Ativas";
-  const draftLabel = classStatusMap.DRAFT?.label || "Rascunho";
+  const activeLabel = classStatusMap.ACTIVE?.label || t("active");
+  const draftLabel = classStatusMap.DRAFT?.label || t("status");
+
+  const hasFilters = Boolean(search || filter);
 
   const filterOptions = useMemo(
     () =>
@@ -158,6 +114,35 @@ export default function ClassesPage() {
     return d.toDateString() === today.toDateString();
   };
 
+  const clearFilters = () => {
+    setSearch("");
+    setFilter("");
+  };
+
+  const scheduleLabel = (cls: any) => {
+    if (cls.dayOfWeek != null && cls.dayOfWeek !== "") {
+      return `${formatDay(cls.dayOfWeek)}${
+        cls.startTime ? ` ${cls.startTime}` : ""
+      }`;
+    }
+    return t("no_schedule");
+  };
+
+  const nextActionLabel = (cls: any) => {
+    if (cls.meetings?.[0] && isToday(cls.meetings[0].date)) {
+      return t("meeting_today");
+    }
+    if (cls.meetings?.[0]) {
+      return t("next_meeting", {
+        date: formatDate(cls.meetings[0].date, currentLocale, {
+          day: "2-digit",
+          month: "2-digit",
+        }),
+      });
+    }
+    return t("attendance");
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -180,56 +165,68 @@ export default function ClassesPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <AppPageHeader
         eyebrow={t("eyebrow")}
         title={t("title")}
         subtitle={t("subtitle")}
-        actions={
-          <>
-            {canCreateClass && !isClassLimitReached && (
-              <Button asChild className="h-10 rounded-sm shadow-none">
-                <Link to="/app/classes/new">
-                  <Plus className="mr-2 h-4 w-4" />
-                  {t("new_class")}
-                </Link>
-              </Button>
-            )}
-            <Button
-              variant="outline"
-              className="h-10 rounded-sm"
-              onClick={() => setView((v) => (v === "grid" ? "list" : "grid"))}
-              aria-label={view === "grid" ? t("view_list") : t("view_grid")}
-            >
-              {view === "grid" ? (
-                <List className="mr-2 h-4 w-4" />
-              ) : (
-                <LayoutGrid className="mr-2 h-4 w-4" />
-              )}
-              {view === "grid" ? t("view_list") : t("view_grid")}
-            </Button>
-          </>
+        primaryAction={
+          canCreateClass && !isClassLimitReached
+            ? { label: t("new_class"), href: "/app/classes/new" }
+            : undefined
         }
+        secondaryActions={[
+          {
+            label: view === "grid" ? t("view_list") : t("view_grid"),
+            onClick: () => setView((v) => (v === "grid" ? "list" : "grid")),
+          },
+        ]}
       />
 
       <div className="grid gap-3 sm:grid-cols-3">
-        <ClassMetric label={t("metrics_visible")} value={filtered.length} />
-        <ClassMetric label={activeLabel} value={activeCount} />
-        <ClassMetric label={draftLabel} value={draftCount} />
+        <AppMetric label={t("metrics_visible")} value={filtered.length} />
+        <AppMetric label={activeLabel} value={activeCount} />
+        <AppMetric label={draftLabel} value={draftCount} />
       </div>
 
-      <AppPanel>
-        <div className="space-y-4">
-          <FilterPills
-            options={filterOptions}
-            value={filter}
-            onChange={setFilter}
-          />
-          <SearchInput
-            placeholder={t("search_placeholder")}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+      <AppPanel density="compact">
+        <div className="space-y-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="min-w-0 flex-1">
+              <SearchInput
+                placeholder={t("search_placeholder")}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            <FilterPills
+              options={filterOptions}
+              value={filter}
+              onChange={setFilter}
+              onClear={() => setFilter("")}
+              clearValue=""
+            />
+          </div>
+
+          {/* Active filters + result count (always visible on mobile) */}
+          <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+            <p className="text-muted-foreground">
+              {t("found_count", { count: filtered.length })}
+            </p>
+            {hasFilters && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-9 min-h-9 gap-1 rounded-sm text-brand-ink"
+                onClick={clearFilters}
+              >
+                <X className="h-3.5 w-3.5" />
+                {tc("clear_filters")}
+              </Button>
+            )}
+          </div>
+
           {isClassLimitReached && (
             <PlanLimitBanner
               type="class_limit"
@@ -244,50 +241,35 @@ export default function ClassesPage() {
         </div>
       </AppPanel>
 
-      {filtered.length === 0 && !search ? (
+      {filtered.length === 0 && !search && !filter ? (
         <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-          <SurfaceSection
-            title="Primeiras turmas"
-            icon={CheckCircle2}
-            tone="soft"
-            className="p-6 lg:p-8"
-          >
+          <AppPanel className="p-6 lg:p-8">
             <div className="space-y-6">
               <div className="space-y-2">
-                <AppDisplayTitle as="h2">
-                  {t("no_classes")}
-                </AppDisplayTitle>
-                <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+                <AppEyebrow>{t("first_classes")}</AppEyebrow>
+                <AppDisplayTitle as="h2">{t("no_classes")}</AppDisplayTitle>
+                <AppGoldRule />
                 <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
                   {t("no_classes_desc")}
                 </p>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-sm border border-border/70 bg-white px-4 py-4">
-                  <p
-                    className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
-                    1. {t("empty_step1")}
-                  </p>
-                </div>
-                <div className="rounded-sm border border-border/70 bg-white px-4 py-4">
-                  <p
-                    className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
-                    2. {t("empty_step2")}
-                  </p>
-                </div>
-                <div className="rounded-sm border border-border/70 bg-white px-4 py-4">
-                  <p
-                    className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
-                    3. {t("empty_step3")}
-                  </p>
-                </div>
+                {[t("empty_step1"), t("empty_step2"), t("empty_step3")].map(
+                  (step, i) => (
+                    <div
+                      key={i}
+                      className="rounded-sm border border-border/70 bg-surface-elevated px-4 py-4"
+                    >
+                      <p
+                        className="text-sm font-semibold tracking-tight text-brand-ink"
+                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      >
+                        {i + 1}. {step}
+                      </p>
+                    </div>
+                  ),
+                )}
               </div>
 
               {isClassLimitReached ? (
@@ -300,33 +282,36 @@ export default function ClassesPage() {
                   canManageBilling={canManageBilling}
                 />
               ) : canCreateClass ? (
-                <div className="flex flex-wrap gap-3">
-                  <Button className="h-11 rounded-sm px-5" asChild>
-                    <Link to="/app/classes/new">{t("create")}</Link>
-                  </Button>
-                </div>
+                <Button className="h-11 min-h-11 rounded-sm px-5" asChild>
+                  <Link to="/app/classes/new">
+                    <Plus className="mr-2 h-4 w-4" />
+                    {t("create")}
+                  </Link>
+                </Button>
               ) : null}
             </div>
-          </SurfaceSection>
+          </AppPanel>
 
-          <SurfaceSection title="Estrutura sugerida" icon={BookOpen}>
+          <AppPanel>
+            <div className="mb-4 space-y-1.5">
+              <AppEyebrow>{t("suggested_structure")}</AppEyebrow>
+              <AppGoldRule className="w-8" />
+            </div>
             <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
-              <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
-                Defina etapa, horario e catequista principal para cada turma.
+              <div className="rounded-sm border border-border/70 bg-surface-elevated px-4 py-3">
+                {t("suggested_1")}
               </div>
-              <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
-                Cadastre os catequizandos para acompanhar presenca, encontros e
-                progresso.
+              <div className="rounded-sm border border-border/70 bg-surface-elevated px-4 py-3">
+                {t("suggested_2")}
               </div>
-              <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
-                Use a assistência editorial para preparar os encontros com
-                mais consistência.
+              <div className="rounded-sm border border-border/70 bg-surface-elevated px-4 py-3">
+                {t("suggested_3")}
               </div>
             </div>
-          </SurfaceSection>
+          </AppPanel>
         </div>
       ) : filtered.length === 0 ? (
-        <SurfaceSection title="Busca" icon={Search} tone="soft">
+        <AppPanel>
           <EmptyState
             compact
             icon={Search}
@@ -336,220 +321,184 @@ export default function ClassesPage() {
             <Button
               type="button"
               variant="outline"
-              className="mt-4 h-11 rounded-sm bg-white"
-              onClick={() => {
-                setSearch("");
-                setFilter("");
-              }}
+              className="mt-4 h-11 min-h-11 rounded-sm"
+              onClick={clearFilters}
             >
               {tc("clear_filters")}
             </Button>
           </EmptyState>
-        </SurfaceSection>
+        </AppPanel>
       ) : view === "list" ? (
-        <section className="overflow-hidden rounded-sm border border-border/70 bg-white/90 ">
-          <div className="border-b border-border/70 bg-muted/30 px-5 py-4">
-            <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-              {t("table_class")}
-            </h3>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b bg-muted/20 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                  <th className="p-4" scope="col">
-                    {t("table_class")}
-                  </th>
-                  <th className="p-4" scope="col">
-                    {t("status")}
-                  </th>
-                  <th className="p-4 hidden md:table-cell" scope="col">
-                    {t("enrolled")}
-                  </th>
-                  <th className="p-4 hidden md:table-cell" scope="col">
-                    {t("table_schedule")}
-                  </th>
-                  <th className="p-4" scope="col">
-                    {tc("actions")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((cls: any) => (
-                  <tr
-                    key={cls.id}
-                    className="relative border-b border-border/60 last:border-0 transition-colors hover:bg-muted/30"
+        <ResponsiveTable
+          data={filtered}
+          getRowKey={(cls: any) => cls.id}
+          onRowClick={(cls: any) => navigate(`/app/classes/${cls.id}`)}
+          columns={[
+            {
+              key: "name",
+              header: t("table_class"),
+              render: (cls: any) => (
+                <span
+                  className="font-semibold tracking-tight text-brand-ink"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
+                  {cls.name}
+                </span>
+              ),
+            },
+            {
+              key: "status",
+              header: t("status"),
+              render: (cls: any) => (
+                <Badge
+                  variant={
+                    classStatusMap[cls.status as keyof typeof classStatusMap]
+                      ?.variant || "secondary"
+                  }
+                  className="text-overline"
+                >
+                  {classStatusMap[cls.status as keyof typeof classStatusMap]
+                    ?.label || cls.status}
+                </Badge>
+              ),
+            },
+            {
+              key: "enrolled",
+              header: t("enrolled"),
+              hideOnMobile: true,
+              render: (cls: any) => cls._count?.enrollments || 0,
+            },
+            {
+              key: "schedule",
+              header: t("table_schedule"),
+              hideOnMobile: true,
+              render: (cls: any) => (
+                <span className="text-muted-foreground">
+                  {scheduleLabel(cls)}
+                </span>
+              ),
+            },
+            {
+              key: "actions",
+              header: tc("actions"),
+              render: (cls: any) => (
+                <div
+                  className="relative z-10 flex gap-1"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-11 w-11 min-h-11 p-0"
+                    asChild
                   >
-                    <td className="p-4">
-                      <Link
-                        to={`/app/classes/${cls.id}`}
-                        className="inline-flex min-h-11 items-center rounded-sm text-sm font-semibold tracking-tight text-[#071A2D] after:absolute after:inset-0 after:z-0 hover:text-[#0a2540] focus-visible:relative focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
-                        {cls.name}
-                      </Link>
-                    </td>
-                    <td className="p-4">
-                      <Badge
-                        variant={
-                          classStatusMap[
-                            cls.status as keyof typeof classStatusMap
-                          ]?.variant || "secondary"
-                        }
-                        className="text-overline"
-                      >
-                        {classStatusMap[
-                          cls.status as keyof typeof classStatusMap
-                        ]?.label || cls.status}
-                      </Badge>
-                    </td>
-                    <td className="p-4 hidden md:table-cell text-sm">
-                      {cls._count?.enrollments || 0}
-                    </td>
-                    <td className="p-4 hidden md:table-cell text-sm text-muted-foreground">
-                      {formatDay(cls.dayOfWeek)}
-                      {cls.startTime && ` ${cls.startTime}`}
-                    </td>
-                    <td className="relative z-10 p-4">
-                      <div className="flex gap-1">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-11 w-11 min-h-11 p-0"
-                          asChild
-                        >
-                          <Link
-                            to={`/app/classes/${cls.id}`}
-                            aria-label={t("details")}
-                          >
-                            <Edit3 className="h-3.5 w-3.5" />
-                          </Link>
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-11 w-11 min-h-11 p-0"
-                          asChild
-                        >
-                          <Link
-                            to={`/app/classes/${cls.id}/attendance`}
-                            aria-label={t("attendance")}
-                          >
-                            <ClipboardList className="h-3.5 w-3.5" />
-                          </Link>
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
+                    <Link
+                      to={`/app/classes/${cls.id}/attendance`}
+                      aria-label={t("attendance")}
+                    >
+                      <ClipboardList className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              ),
+            },
+          ]}
+          renderMobileCard={(cls: any) => (
+            <ClassMobileCard
+              cls={cls}
+              statusLabel={
+                classStatusMap[cls.status as keyof typeof classStatusMap]
+                  ?.label || cls.status
+              }
+              statusVariant={
+                classStatusMap[cls.status as keyof typeof classStatusMap]
+                  ?.variant || "secondary"
+              }
+              schedule={scheduleLabel(cls)}
+              nextAction={nextActionLabel(cls)}
+              enrolledLabel={t("enrolled")}
+              attendanceLabel={t("attendance")}
+              detailsLabel={t("details")}
+            />
+          )}
+        />
       ) : (
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {filtered.map((cls: any) => (
             <article
               key={cls.id}
-              className="group overflow-hidden rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-[#071A2D]/30"
+              className="group relative overflow-hidden rounded-sm border border-border/70 bg-surface-elevated p-5 transition-colors hover:border-brand-ink/30"
             >
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-start justify-between gap-3">
-                    <Link
-                      to={`/app/classes/${cls.id}`}
-                      className="block truncate rounded-sm text-lg font-semibold tracking-tight text-[#071A2D] hover:text-[#0a2540] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              <Link
+                to={`/app/classes/${cls.id}`}
+                className="absolute inset-0 z-0 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                aria-label={cls.name}
+              />
+              <div className="relative z-[1] pointer-events-none">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <p
+                      className="truncate text-lg font-semibold tracking-tight text-brand-ink group-hover:text-brand-ink-soft"
                       style={{ fontFamily: "var(--font-brand-display)" }}
                     >
                       {cls.name}
-                    </Link>
-                    <Badge
-                      variant={
-                        classStatusMap[
-                          cls.status as keyof typeof classStatusMap
-                        ]?.variant || "secondary"
-                      }
-                      className="ml-2 shrink-0 text-overline"
-                    >
-                      {
-                        classStatusMap[
-                          cls.status as keyof typeof classStatusMap
-                        ]?.label
-                      }
-                    </Badge>
-                  </div>
-                  {cls.stage && (
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {cls.stage.name}
-                      {cls.parish?.name && ` · ${cls.parish.name}`}
                     </p>
-                  )}
+                    {cls.stage && (
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {cls.stage.name}
+                        {cls.parish?.name && ` · ${cls.parish.name}`}
+                      </p>
+                    )}
+                  </div>
+                  <Badge
+                    variant={
+                      classStatusMap[cls.status as keyof typeof classStatusMap]
+                        ?.variant || "secondary"
+                    }
+                    className="ml-2 shrink-0 text-overline"
+                  >
+                    {
+                      classStatusMap[cls.status as keyof typeof classStatusMap]
+                        ?.label
+                    }
+                  </Badge>
                 </div>
-              </div>
 
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
-                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                  <span className="inline-flex items-center gap-1.5">
                     <Users className="h-3.5 w-3.5" />
-                    {t("enrolled")}
-                  </div>
-                  <p
-                    className="mt-1 text-lg font-semibold tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
-                    {cls._count?.enrollments || 0}
-                  </p>
-                </div>
-                <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
-                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                    {cls._count?.enrollments || 0} {t("enrolled").toLowerCase()}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
                     <Clock className="h-3.5 w-3.5" />
-                    {t("table_schedule")}
+                    {scheduleLabel(cls)}
+                  </span>
+                </div>
+
+                {cls.leadCatechist && (
+                  <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+                    <User className="h-4 w-4" />
+                    <span>{cls.leadCatechist.firstName}</span>
                   </div>
-                  <p
-                    className="mt-1 text-sm font-semibold tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
-                    {cls.dayOfWeek != null && cls.dayOfWeek !== ""
-                      ? `${formatDay(cls.dayOfWeek)}${
-                          cls.startTime ? ` ${cls.startTime}` : ""
-                        }`
-                      : "Sem horario"}
-                  </p>
-                </div>
-              </div>
+                )}
 
-              {cls.leadCatechist && (
-                <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  <span>{cls.leadCatechist.firstName}</span>
-                </div>
-              )}
-
-              {cls.meetings?.[0] && (
                 <div
                   className={cn(
-                    "mt-4 rounded-sm px-4 py-3 text-sm font-medium",
-                    isToday(cls.meetings[0].date)
-                      ? "border border-[#071A2D]/20 bg-muted/30 font-semibold tracking-tight text-[#071A2D]"
-                      : "border border-border/70 bg-muted/30 text-muted-foreground",
+                    "mt-4 rounded-sm px-3 py-2.5 text-sm font-medium",
+                    cls.meetings?.[0] && isToday(cls.meetings[0].date)
+                      ? "border border-brand-ink/20 bg-muted/30 font-semibold text-brand-ink"
+                      : "border border-border/70 bg-muted/20 text-muted-foreground",
                   )}
                 >
-                  {isToday(cls.meetings[0].date)
-                    ? t("meeting_today")
-                    : t("next_meeting", {
-                        date: formatDate(cls.meetings[0].date, currentLocale, {
-                          day: "2-digit",
-                          month: "2-digit",
-                        }),
-                      })}
+                  {nextActionLabel(cls)}
                 </div>
-              )}
+              </div>
 
-              <div className="mt-5 flex gap-2 border-t border-border/60 pt-4">
+              {/* Primary CTA + overflow — re-enable pointer events */}
+              <div className="relative z-[1] mt-4 flex gap-2 border-t border-border/60 pt-4 pointer-events-auto">
                 <Button
                   size="sm"
-                  variant="outline"
-                  className="h-11 flex-1 rounded-sm bg-white"
+                  className="h-11 min-h-11 flex-1 rounded-sm shadow-none"
                   asChild
                 >
                   <Link to={`/app/classes/${cls.id}/attendance`}>
@@ -557,36 +506,93 @@ export default function ClassesPage() {
                     {t("attendance")}
                   </Link>
                 </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-11 flex-1 rounded-sm bg-white"
-                  asChild
-                >
-                  <Link to={`/app/classes/${cls.id}`}>
-                    <Edit3 className="mr-2 h-3.5 w-3.5" />
-                    {t("details")}
-                  </Link>
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-11 w-11 rounded-sm px-0"
-                  asChild
-                >
-                  <Link to={`/app/classes/${cls.id}`} aria-label={t("details")}>
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-11 w-11 min-h-11 rounded-sm px-0"
+                      aria-label={tc("actions")}
+                    >
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem asChild>
+                      <Link to={`/app/classes/${cls.id}`}>{t("details")}</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to={`/app/classes/${cls.id}/attendance`}>
+                        {t("attendance")}
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </article>
           ))}
         </div>
       )}
+    </div>
+  );
+}
 
+function ClassMobileCard({
+  cls,
+  statusLabel,
+  statusVariant,
+  schedule,
+  nextAction,
+  enrolledLabel,
+  attendanceLabel,
+  detailsLabel,
+}: {
+  cls: any;
+  statusLabel: string;
+  statusVariant: any;
+  schedule: string;
+  nextAction: string;
+  enrolledLabel: string;
+  attendanceLabel: string;
+  detailsLabel: string;
+}) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-start justify-between gap-2">
+        <p
+          className="text-base font-semibold text-brand-ink"
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
+          {cls.name}
+        </p>
+        <Badge variant={statusVariant} className="shrink-0 text-overline">
+          {statusLabel}
+        </Badge>
+      </div>
       <p className="text-sm text-muted-foreground">
-        {t("found_count", { count: filtered.length })}
+        {cls._count?.enrollments || 0} {enrolledLabel.toLowerCase()} ·{" "}
+        {schedule}
       </p>
+      <p className="text-sm font-medium text-brand-ink">{nextAction}</p>
+      <div
+        className="flex gap-2 pt-1"
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        <Button size="sm" className="h-10 min-h-10 flex-1 rounded-sm" asChild>
+          <Link to={`/app/classes/${cls.id}/attendance`}>
+            {attendanceLabel}
+          </Link>
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          className="h-10 min-h-10 rounded-sm"
+          asChild
+        >
+          <Link to={`/app/classes/${cls.id}`}>{detailsLabel}</Link>
+        </Button>
+      </div>
     </div>
   );
 }

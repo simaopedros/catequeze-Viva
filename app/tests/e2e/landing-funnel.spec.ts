@@ -2,7 +2,7 @@
  * PR14 — Public landings: CTAs, pricing order signals, SPA meta, multi-viewport.
  */
 import { test, expect, type Page } from "@playwright/test";
-import { dismissCookieBanner } from "./helpers";
+import { dismissCookieBanner, assertNoHorizontalOverflow } from "./helpers";
 
 const LANDINGS = [
   { path: "/", campaign: "main", expectPricing: true },
@@ -96,6 +96,7 @@ test.describe("landing multi-viewport smoke", () => {
       await expect(hero).toBeVisible({ timeout: 15000 });
       const cta = page.locator("[data-landing-hero] a[href*='signup']").first();
       await expect(cta).toBeVisible();
+      await assertNoHorizontalOverflow(page, 4);
     });
   }
 });

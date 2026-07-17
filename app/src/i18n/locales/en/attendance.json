@@ -92,6 +92,13 @@
       "LATE": "Late",
       "JUSTIFIED": "Justified",
       "none": "Pending"
-    }
+    },
+    "undo": "Undo",
+    "undo_last": "Undo last mark",
+    "leave_unsaved_title": "Unsaved attendance",
+    "leave_unsaved_desc": "You have pending changes that may not be synced yet. Leave anyway?",
+    "progress_pct": "{{pct}}% complete",
+    "complete_banner": "Attendance complete for this meeting",
+    "history_collapsed": "History"
   }
 }

@@ -166,5 +166,11 @@
     "confirm_remove_catechist_title": "Remover catequista",
     "confirm_remove_catechist_desc": "Tem certeza que deseja remover este catequista da turma?",
     "error": "Erro"
-  }
+  },
+  "no_schedule": "Sin horario",
+  "first_classes": "Primeros grupos",
+  "suggested_structure": "Estructura sugerida",
+  "suggested_1": "Defina etapa, horario y catequista principal para cada grupo.",
+  "suggested_2": "Registre catecúmenos para seguir asistencia, encuentros y progreso.",
+  "suggested_3": "Use la asistencia editorial para preparar encuentros con más consistencia."
 }

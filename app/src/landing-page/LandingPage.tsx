@@ -1,10 +1,7 @@
 import { lazy, Suspense } from "react";
-import { PublicFooter } from "../catequese/PublicFooter";
-import { PublicNavbar } from "../catequese/PublicNavbar";
 import { FaqSection } from "./components/FaqSection";
 import { HeroSection } from "./components/HeroSection";
-import { MobileStickyCta } from "./components/MobileStickyCta";
-import { useRouteDocumentMeta } from "./hooks/useRouteDocumentMeta";
+import { LandingShell } from "./components/LandingShell";
 
 const OutcomesSection = lazy(() =>
   import("./components/OutcomesSection").then((m) => ({
@@ -31,28 +28,21 @@ const SectionFallback = () => (
 );
 
 /**
- * Main landing: trial-first hero → value → verifiable proof → pricing.
- * No fabricated testimonials; prices only after value is shown.
+ * Main landing: promise → value → proof → price → CTA.
+ * Preserves editorial composition; shared shell prevents chrome drift.
  */
 export default function LandingPage() {
-  useRouteDocumentMeta();
-
   return (
-    <div className="min-h-screen flex flex-col bg-background text-[#071A2D]">
-      <PublicNavbar />
-      <main className="flex-1">
-        <HeroSection responsiveCtas variant="editorial" />
-        <Suspense fallback={<SectionFallback />}>
-          <OutcomesSection />
-          <StepsSection responsiveCtas />
-          <ProofSection />
-          <PricingPreviewSection />
-          <FaqSection />
-          <CtaSection responsiveCtas />
-        </Suspense>
-      </main>
-      <PublicFooter />
-      <MobileStickyCta />
-    </div>
+    <LandingShell ns="landing">
+      <HeroSection responsiveCtas variant="editorial" />
+      <Suspense fallback={<SectionFallback />}>
+        <OutcomesSection />
+        <StepsSection responsiveCtas />
+        <ProofSection />
+        <PricingPreviewSection />
+        <FaqSection />
+        <CtaSection responsiveCtas />
+      </Suspense>
+    </LandingShell>
   );
 }

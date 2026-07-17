@@ -48,6 +48,8 @@ export const listCatechumens = async (_args: { take?: number; skip?: number; sea
   if (parishIds.length === 0) return [];
 
   // Coordinator and above (including PERSONAL_OWNER): see all catechumens in parish
+  // Also include profiles with no parish yet (common before first enrollment / family link)
+  // so they can be assigned to a household in the workspace.
   if (roles.some((r: string) => isCoordinatorOrAbove(r))) {
     return context.entities.CatechumenProfile.findMany({
       where: buildWhere({
@@ -55,6 +57,12 @@ export const listCatechumens = async (_args: { take?: number; skip?: number; sea
           { enrollments: { some: { class: { parishId: { in: parishIds } } } } },
           { household: { parishId: { in: parishIds } } },
           { parishId: { in: parishIds } },
+          {
+            AND: [
+              { parishId: null },
+              { householdId: null },
+            ],
+          },
         ],
       }),
       orderBy,
