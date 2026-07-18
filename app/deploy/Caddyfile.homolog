@@ -20,7 +20,7 @@
 
 homolog.catechis.app {
   tls internal
-  encode gzip
+  encode zstd gzip
 
   handle /auth/* {
     import homolog_api
@@ -41,8 +41,24 @@ homolog.catechis.app {
     import homolog_api
   }
 
+  # Hashed Vite assets — immutable long cache
+  handle /assets/* {
+    root * /srv/web-app
+    header Cache-Control "public, max-age=31536000, immutable"
+    file_server
+  }
+
+  # Static public assets
+  @static path /landing/* /icons/* /brand/* /favicon.svg /favicon.ico /manifest.json /public-banner.webp /sw.js
+  handle @static {
+    root * /srv/web-app
+    header Cache-Control "public, max-age=86400"
+    file_server
+  }
+
   handle {
     root * /srv/web-app
+    header Cache-Control "public, max-age=0, must-revalidate"
     try_files {path} /index.html
     file_server
   }
@@ -50,7 +66,7 @@ homolog.catechis.app {
 
 familia-homolog.catechis.app {
   tls internal
-  encode gzip
+  encode zstd gzip
 
   handle /auth/* {
     import homolog_api
@@ -71,8 +87,15 @@ familia-homolog.catechis.app {
     import homolog_api
   }
 
+  handle /assets/* {
+    root * /srv/web-app
+    header Cache-Control "public, max-age=31536000, immutable"
+    file_server
+  }
+
   handle {
     root * /srv/web-app
+    header Cache-Control "public, max-age=0, must-revalidate"
     try_files {path} /index.html
     file_server
   }

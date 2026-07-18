@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
+/* Fonts loaded via <link rel=preload/stylesheet> in main.wasp head — avoid @import FOIT */
 @import "tailwindcss";
 
 @plugin "@tailwindcss/forms";

@@ -1,0 +1,22 @@
+[
+  {
+    "path": "/",
+    "error": "lighthouse failed",
+    "status": null
+  },
+  {
+    "path": "/ia",
+    "error": "lighthouse failed",
+    "status": null
+  },
+  {
+    "path": "/presenca",
+    "error": "lighthouse failed",
+    "status": null
+  },
+  {
+    "path": "/sistema",
+    "error": "lighthouse failed",
+    "status": null
+  }
+]

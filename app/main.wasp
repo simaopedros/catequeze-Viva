@@ -6,8 +6,8 @@ app OpenSaaS {
   title: "Catequese Viva",
 
   head: [
+    // Favicon — prefer small SVG; avoid large ICO on critical path
     "<link rel='icon' type='image/svg+xml' href='/favicon.svg' />",
-    "<link rel='alternate icon' href='/favicon.ico' />",
     "<link rel='apple-touch-icon' sizes='180x180' href='/icons/apple-touch-icon.png' />",
     "<meta name='theme-color' content='#071A2D' />",
 
@@ -17,6 +17,15 @@ app OpenSaaS {
     "<meta name='apple-mobile-web-app-capable' content='yes' />",
     "<meta name='apple-mobile-web-app-status-bar-style' content='black-translucent' />",
     "<meta name='apple-mobile-web-app-title' content='Catequese Viva' />",
+
+    // Fonts: preconnect + non-blocking stylesheet (no CSS @import)
+    // Note: head tags are converted to React; use camelCase attrs Wasp/React accept.
+    "<link rel='preconnect' href='https://fonts.googleapis.com' />",
+    "<link rel='preconnect' href='https://fonts.gstatic.com' crossOrigin='anonymous' />",
+    "<link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap' />",
+
+    // LCP hero (mobile-first): discover image before JS hydrates
+    "<link rel='preload' as='image' type='image/avif' href='/landing/hero-mobile-light-640.avif' fetchPriority='high' />",
 
     "<meta name='description' content='Organize sua turma, prepare encontros e acompanhe famílias no mesmo fluxo pastoral — sem depender de papel, planilha e improviso.' />",
     "<meta name='author' content='Catequese Viva' />",
@@ -216,65 +225,65 @@ query getDailyStats {
 
 //#endregion
 
-//#region Admin Dashboard
+//#region Admin Dashboard (lazy wrappers — keep admin code out of public bundle)
 route AdminRoute { path: "/admin", to: AnalyticsDashboardPage }
 page AnalyticsDashboardPage {
   authRequired: true,
-  component: import AnalyticsDashboardPage from "@src/admin/dashboards/analytics/AnalyticsDashboardPage"
+  component: import AnalyticsDashboardPage from "@src/admin/lazy/AnalyticsDashboardPage"
 }
 
 route AdminUsersRoute { path: "/admin/users", to: AdminUsersPage }
 page AdminUsersPage {
   authRequired: true,
-  component: import AdminUsers from "@src/admin/dashboards/users/UsersDashboardPage"
+  component: import AdminUsers from "@src/admin/lazy/AdminUsers"
 }
 
 route AdminUserDetailRoute { path: "/admin/users/:id", to: AdminUserDetailPage }
 page AdminUserDetailPage {
   authRequired: true,
-  component: import AdminUserDetail from "@src/admin/dashboards/users/UserDetailPage"
+  component: import AdminUserDetail from "@src/admin/lazy/AdminUserDetail"
 }
 
 route AdminParishesRoute { path: "/admin/parishes", to: AdminParishesPage }
 page AdminParishesPage {
   authRequired: true,
-  component: import AdminParishes from "@src/admin/dashboards/parishes/ParishesPage"
+  component: import AdminParishes from "@src/admin/lazy/AdminParishes"
 }
 
 route AdminParishDetailRoute { path: "/admin/parishes/:id", to: AdminParishDetailPage }
 page AdminParishDetailPage {
   authRequired: true,
-  component: import AdminParishDetail from "@src/admin/dashboards/parishes/ParishDetailPage"
+  component: import AdminParishDetail from "@src/admin/lazy/AdminParishDetail"
 }
 
 route AdminAnalyticsRoute { path: "/admin/analytics", to: AdminAnalyticsPage }
 page AdminAnalyticsPage {
   authRequired: true,
-  component: import AdminAnalytics from "@src/admin/dashboards/analytics/AnalyticsPage"
+  component: import AdminAnalytics from "@src/admin/lazy/AdminAnalytics"
 }
 
 route AdminBillingRoute { path: "/admin/billing", to: AdminBillingPage }
 page AdminBillingPage {
   authRequired: true,
-  component: import AdminBilling from "@src/admin/dashboards/billing/BillingPage"
+  component: import AdminBilling from "@src/admin/lazy/AdminBilling"
 }
 
 route AdminSupportRoute { path: "/admin/support", to: AdminSupportPage }
 page AdminSupportPage {
   authRequired: true,
-  component: import AdminSupport from "@src/admin/dashboards/support/SupportInboxPage"
+  component: import AdminSupport from "@src/admin/lazy/AdminSupport"
 }
 
 route AdminAuditRoute { path: "/admin/audit", to: AdminAuditPage }
 page AdminAuditPage {
   authRequired: true,
-  component: import AdminAudit from "@src/admin/dashboards/audit/AuditLogPage"
+  component: import AdminAudit from "@src/admin/lazy/AdminAudit"
 }
 
 route AdminSystemRoute { path: "/admin/system", to: AdminSystemPage }
 page AdminSystemPage {
   authRequired: true,
-  component: import AdminSystem from "@src/admin/dashboards/system/SystemHealthPage"
+  component: import AdminSystem from "@src/admin/lazy/AdminSystem"
 }
 
 //#region Catequese Viva App Routes
@@ -464,6 +473,12 @@ page AppOnboardingPage {
 query getCurrentUserContext {
   fn: import { getCurrentUserContext } from "@src/server/operations/userContext",
   entities: [User, Membership, Parish, Community, PendingInvitation]
+}
+
+// Shell bootstrap: userContext + workspaces in one round-trip
+query getAppBootstrap {
+  fn: import { getAppBootstrap } from "@src/server/operations/userContext",
+  entities: [User, Membership, Parish, Community, PendingInvitation, TenantBilling, Diocese]
 }
 
 query listParishes {

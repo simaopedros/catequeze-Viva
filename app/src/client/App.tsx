@@ -15,10 +15,15 @@ import {
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
 import GoogleTagScripts from "./analytics/GoogleTagScripts";
-import MetaPixelScripts from "./analytics/MetaPixelScripts";
 import { isFamilyPortalHost } from "../shared/portal";
-import FamilyLandingPage from "../catequese/pages/family/FamilyLandingPage";
-import { AppShell } from "../catequese/AppShell";
+// Family landing is public-host only — code-split so staff landing does not pay for it
+const FamilyLandingPage = lazy(
+  () => import("../catequese/pages/family/FamilyLandingPage"),
+);
+// AppShell is authenticated-only — keep out of pure marketing first paint when possible
+const AppShell = lazy(() =>
+  import("../catequese/AppShell").then((m) => ({ default: m.AppShell })),
+);
 import { InstallPrompt } from "./components/InstallPrompt";
 import {
   marketingLandingFromPath,
@@ -67,6 +72,19 @@ function registerServiceWorker() {
     return;
   }
 
+  // One-time reload when a JS chunk 404s after deploy (stale SW cache)
+  navigator.serviceWorker.addEventListener("message", (event) => {
+    if (event.data?.type !== "CHUNK_CACHE_MISS") return;
+    const key = "sw-chunk-reload";
+    try {
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, "1");
+      window.location.reload();
+    } catch {
+      window.location.reload();
+    }
+  });
+
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("/sw.js", { scope: "/" }).then(
       (registration) => {
@@ -84,6 +102,8 @@ function registerServiceWorker() {
               navigator.serviceWorker.controller
             ) {
               console.log("[SW] New version available");
+              // Activate new SW; next navigation gets fresh assets
+              newWorker.postMessage?.({ type: "SKIP_WAITING" });
             }
           });
         });
@@ -264,16 +284,38 @@ export default function App() {
       {isFamilyPortal && location.pathname === "/" ? (
         <div className="min-h-screen bg-background text-[#071A2D]">
           <ErrorBoundary>
-            <FamilyLandingPage />
+            <Suspense
+              fallback={
+                <div
+                  className="flex min-h-screen items-center justify-center"
+                  aria-busy="true"
+                >
+                  <div className="h-8 w-8 animate-pulse rounded-sm bg-muted" />
+                </div>
+              }
+            >
+              <FamilyLandingPage />
+            </Suspense>
           </ErrorBoundary>
         </div>
       ) : (
         <div className="min-h-screen bg-background text-[#071A2D]">
           <ErrorBoundary>
             {isAppRoute ? (
-              <AppShell>
-                <Outlet />
-              </AppShell>
+              <Suspense
+                fallback={
+                  <div
+                    className="flex min-h-screen items-center justify-center"
+                    aria-busy="true"
+                  >
+                    <div className="h-8 w-8 animate-pulse rounded-sm bg-muted" />
+                  </div>
+                }
+              >
+                <AppShell>
+                  <Outlet />
+                </AppShell>
+              </Suspense>
             ) : isAdminDashboard ? (
               <Outlet />
             ) : (
@@ -294,8 +336,8 @@ export default function App() {
         <CookieConsentBanner />
       </Suspense>
       <InstallPrompt />
+      {/* GTM only — Meta Pixel must live inside GTM to avoid double-loading */}
       <GoogleTagScripts />
-      <MetaPixelScripts />
     </>
   );
 }

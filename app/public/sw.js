@@ -15,7 +15,7 @@
  * Version is derived from CACHE_NAME for easy cache busting on deploy.
  */
 
-const CACHE_VERSION = 'v5';
+const CACHE_VERSION = 'v6';
 const CACHE_NAME = `catequese-viva-${CACHE_VERSION}`;
 const IS_LOCAL_DEV =
   self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1';
@@ -156,6 +156,34 @@ self.addEventListener('fetch', (event) => {
 
   if (request.mode === 'navigate') {
     event.respondWith(networkFirst(request).catch(() => cacheFirst(request)));
+    return;
+  }
+
+  // Hashed JS/CSS chunks: cache-first, but recover once on 404 after deploy
+  if (/\.(?:js|css)$/.test(url.pathname) || url.pathname.startsWith('/assets/')) {
+    event.respondWith(
+      (async () => {
+        try {
+          const cached = await openCache().then((c) => c.match(request));
+          if (cached) return cached;
+          const response = await fetch(request);
+          if (response.ok) {
+            const cache = await openCache();
+            cache.put(request, response.clone());
+          }
+          // Stale chunk after deploy — signal client to reload once
+          if (response.status === 404 && request.destination === 'script') {
+            const clients = await self.clients.matchAll({ type: 'window' });
+            clients.forEach((client) =>
+              client.postMessage({ type: 'CHUNK_CACHE_MISS', url: request.url }),
+            );
+          }
+          return response;
+        } catch {
+          return cacheFirst(request);
+        }
+      })(),
+    );
     return;
   }
 

@@ -1,7 +1,8 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useQuery, listCatechumens } from "wasp/client/operations";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
+import useDebounce from "../../client/hooks/useDebounce";
 import {
   Calendar,
   Search,
@@ -92,15 +93,25 @@ export default function CatechumensPage() {
     "PERSONAL_OWNER",
   ].includes(userRole);
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 400);
   const [classFilter, setClassFilter] = useState("");
   const [view, setView] = useState<"cards" | "table">("cards");
   const [pages, setPages] = useState(1);
+
+  // Reset pagination when search/filter changes — avoid re-reading prior pages only
+  // is a larger cursor migration; for now reset pages on filter change.
+  useEffect(() => {
+    setPages(1);
+  }, [debouncedSearch, classFilter, activeParishId]);
+
+  const serverSearch =
+    debouncedSearch.trim().length >= 2 ? debouncedSearch.trim() : undefined;
 
   const { data: catechumens = [], isLoading } = useQuery(
     listCatechumens,
     {
       take: PAGE_SIZE * pages,
-      search: search || undefined,
+      search: serverSearch,
       workspaceId: activeParishId || undefined,
     } as any,
     { enabled: Boolean(activeParishId) },

@@ -17,85 +17,37 @@ type UserContextResult = {
     communityName: string | null;
     parishType: string | null;
   }[];
+  /** Pending invitations not yet accepted (read-only; no writes on context load). */
+  pendingInvitations: {
+    id: string;
+    parishId: string;
+    parishName: string | null;
+    role: string;
+    token: string | null;
+    expiresAt: string | null;
+  }[];
 };
 
 /**
- * Turn PendingInvitation rows for this email into Membership INVITED rows so
- * the workspace selector can list and accept them. Keeps PendingInvitation for
- * token-based accept until the user accepts.
+ * Read-only user context for the app shell.
+ * Does NOT materialize PendingInvitation into Membership (writes belong to accept action).
  */
-async function materializePendingInvitations(context: any): Promise<void> {
-  const rawEmail = context.user?.email;
-  if (!rawEmail || !context.user?.id) return;
-  const email = normalizeInviteEmail(rawEmail);
-
-  let pending: any[] = [];
-  try {
-    pending = await context.entities.PendingInvitation.findMany({
-      where: {
-        OR: [
-          { email },
-          { email: { equals: email, mode: 'insensitive' } },
-        ],
-      },
-    });
-  } catch {
-    pending = await context.entities.PendingInvitation.findMany({
-      where: { email },
-    });
-  }
-  if (!pending.length) return;
-
-  for (const invitation of pending) {
-    try {
-      const existing = await context.entities.Membership.findFirst({
-        where: { userId: context.user.id, parishId: invitation.parishId },
-      });
-      if (existing?.status === 'ACTIVE') continue;
-      if (existing) {
-        if (existing.status !== 'INVITED') {
-          await context.entities.Membership.update({
-            where: { id: existing.id },
-            data: {
-              status: 'INVITED',
-              role: invitation.role,
-              communityId: invitation.communityId ?? null,
-              inviteToken: invitation.token,
-              inviteTokenExpiresAt: invitation.expiresAt,
-            },
-          });
-        }
-        continue;
-      }
-      await context.entities.Membership.create({
-        data: {
-          userId: context.user.id,
-          parishId: invitation.parishId,
-          communityId: invitation.communityId ?? null,
-          role: invitation.role,
-          status: 'INVITED',
-          inviteToken: invitation.token,
-          inviteTokenExpiresAt: invitation.expiresAt,
-        },
-      });
-    } catch {
-      /* non-fatal per invite */
-    }
-  }
-}
-
 export const getCurrentUserContext = async (
   _args: void,
-  context: any
+  context: any,
 ): Promise<UserContextResult> => {
   if (!context.user) {
-    return { userId: '', isAdmin: false, needsOnboarding: false, hasPendingInvitations: false, personalWorkspaceId: null, memberships: [] };
+    return {
+      userId: '',
+      isAdmin: false,
+      needsOnboarding: false,
+      hasPendingInvitations: false,
+      personalWorkspaceId: null,
+      memberships: [],
+      pendingInvitations: [],
+    };
   }
 
-  // Ensure team/family invites for existing accounts appear as INVITED memberships
-  await materializePendingInvitations(context);
-
-  // Fetch both ACTIVE and INVITED memberships
   const memberships = await context.entities.Membership.findMany({
     where: {
       userId: context.user.id,
@@ -109,27 +61,37 @@ export const getCurrentUserContext = async (
   });
 
   const email = normalizeInviteEmail(context.user.email || '');
-  let pendingInvitations: { id: string }[] = [];
+  let pendingRows: any[] = [];
   if (email) {
     try {
-      pendingInvitations = await context.entities.PendingInvitation.findMany({
+      pendingRows = await context.entities.PendingInvitation.findMany({
         where: {
-          OR: [
-            { email },
-            { email: { equals: email, mode: 'insensitive' } },
-          ],
+          OR: [{ email }, { email: { equals: email, mode: 'insensitive' } }],
         },
-        select: { id: true },
+        select: {
+          id: true,
+          parishId: true,
+          role: true,
+          token: true,
+          expiresAt: true,
+          parish: { select: { name: true } },
+        },
       });
     } catch {
-      pendingInvitations = await context.entities.PendingInvitation.findMany({
+      pendingRows = await context.entities.PendingInvitation.findMany({
         where: { email },
-        select: { id: true },
+        select: {
+          id: true,
+          parishId: true,
+          role: true,
+          token: true,
+          expiresAt: true,
+          parish: { select: { name: true } },
+        },
       });
     }
   }
 
-  // Find personal workspace
   const personalWorkspace = await context.entities.Parish.findFirst({
     where: { ownerId: context.user.id, type: 'PERSONAL' },
     select: { id: true },
@@ -138,7 +100,6 @@ export const getCurrentUserContext = async (
   const activeMemberships = memberships.filter((m: any) => m.status === 'ACTIVE');
   const invitedMemberships = memberships.filter((m: any) => m.status === 'INVITED');
 
-  // Build the memberships result array
   const result: UserContextResult['memberships'] = memberships.map((m: any) => ({
     id: m.id,
     parishId: m.parishId,
@@ -150,8 +111,28 @@ export const getCurrentUserContext = async (
     parishType: m.parish.type,
   }));
 
-  // DIOCESE_ADMIN: add virtual memberships for all parishes in the diocese
-  if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN' && m.status === 'ACTIVE')) {
+  // Surface pending invites as virtual INVITED memberships for selector UI (no DB write)
+  const existingParishIds = new Set(result.map((m) => m.parishId));
+  for (const inv of pendingRows) {
+    if (existingParishIds.has(inv.parishId)) continue;
+    result.push({
+      id: `pending-inv-${inv.id}`,
+      parishId: inv.parishId,
+      parishName: inv.parish?.name || 'Convite pendente',
+      role: inv.role,
+      status: 'INVITED',
+      communityId: null,
+      communityName: null,
+      parishType: null,
+    });
+    existingParishIds.add(inv.parishId);
+  }
+
+  if (
+    memberships.some(
+      (m: any) => m.role === 'DIOCESE_ADMIN' && m.status === 'ACTIVE',
+    )
+  ) {
     const dioceseParishIds = await getDioceseParishIds(context);
     const existingIds = new Set(result.map((m: any) => m.parishId));
     const missingIds = dioceseParishIds.filter((id: string) => !existingIds.has(id));
@@ -175,25 +156,42 @@ export const getCurrentUserContext = async (
     }
   }
 
-  // Drive the selector off memberships that can be accepted in UI.
-  // Bare PendingInvitation without INVITED rows used to force a redirect loop
-  // (selector auto-skipped personal-only → /app → select-workspace again).
-  const hasPendingInvitations = invitedMemberships.length > 0;
+  const hasPendingInvitations =
+    invitedMemberships.length > 0 || pendingRows.length > 0;
 
   return {
     userId: context.user.id,
     isAdmin: context.user.isAdmin,
     personalWorkspaceId: personalWorkspace?.id || null,
     hasPendingInvitations,
-    // User needs onboarding only if they have zero memberships (any status)
-    // AND zero pending invitations AND no personal workspace.
-    // INVITED memberships mean the user should go to workspace selector instead.
     needsOnboarding: context.user.isAdmin
       ? false
       : activeMemberships.length === 0 &&
         invitedMemberships.length === 0 &&
-        pendingInvitations.length === 0 &&
+        pendingRows.length === 0 &&
         !personalWorkspace,
     memberships: result,
+    pendingInvitations: pendingRows.map((inv: any) => ({
+      id: inv.id,
+      parishId: inv.parishId,
+      parishName: inv.parish?.name ?? null,
+      role: inv.role,
+      token: inv.token ?? null,
+      expiresAt: inv.expiresAt ? new Date(inv.expiresAt).toISOString() : null,
+    })),
   };
+};
+
+/**
+ * Single shell bootstrap: user context + workspaces in one logical query
+ * (shared React Query key on the client).
+ */
+export const getAppBootstrap = async (_args: void, context: any) => {
+  // Static import at call-site would cycle; listWorkspaces is pure relative to this module.
+  const { listWorkspaces } = await import('./workspaceOperations');
+  const [userContext, workspaces] = await Promise.all([
+    getCurrentUserContext(undefined as void, context),
+    listWorkspaces(undefined as void, context),
+  ]);
+  return { userContext, workspaces };
 };

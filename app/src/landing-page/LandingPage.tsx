@@ -1,48 +1,47 @@
-import { lazy, Suspense } from "react";
 import { FaqSection } from "./components/FaqSection";
 import { HeroSection } from "./components/HeroSection";
 import { LandingShell } from "./components/LandingShell";
+import { LazySection } from "./components/LazySection";
 
-const OutcomesSection = lazy(() =>
+const loadOutcomes = () =>
   import("./components/OutcomesSection").then((m) => ({
     default: m.OutcomesSection,
-  })),
-);
-const StepsSection = lazy(() =>
-  import("./components/StepsSection").then((m) => ({ default: m.StepsSection })),
-);
-const ProofSection = lazy(() =>
-  import("./components/ProofSection").then((m) => ({ default: m.ProofSection })),
-);
-const PricingPreviewSection = lazy(() =>
+  }));
+const loadSteps = () =>
+  import("./components/StepsSection").then((m) => ({
+    default: function Steps() {
+      return <m.StepsSection responsiveCtas />;
+    },
+  }));
+const loadProof = () =>
+  import("./components/ProofSection").then((m) => ({
+    default: m.ProofSection,
+  }));
+const loadPricing = () =>
   import("./components/PricingPreviewSection").then((m) => ({
     default: m.PricingPreviewSection,
-  })),
-);
-const CtaSection = lazy(() =>
-  import("./components/CtaSection").then((m) => ({ default: m.CtaSection })),
-);
-
-const SectionFallback = () => (
-  <div className="mx-4 h-20 animate-pulse rounded-sm bg-muted/30" aria-hidden />
-);
+  }));
+const loadCta = () =>
+  import("./components/CtaSection").then((m) => ({
+    default: function Cta() {
+      return <m.CtaSection responsiveCtas />;
+    },
+  }));
 
 /**
  * Main landing: promise → value → proof → price → CTA.
- * Preserves editorial composition; shared shell prevents chrome drift.
+ * Below-fold sections mount near viewport with independent Suspense boundaries.
  */
 export default function LandingPage() {
   return (
     <LandingShell ns="landing">
       <HeroSection responsiveCtas variant="editorial" />
-      <Suspense fallback={<SectionFallback />}>
-        <OutcomesSection />
-        <StepsSection responsiveCtas />
-        <ProofSection />
-        <PricingPreviewSection />
-        <FaqSection />
-        <CtaSection responsiveCtas />
-      </Suspense>
+      <LazySection loader={loadOutcomes} />
+      <LazySection loader={loadSteps} />
+      <LazySection loader={loadProof} />
+      <LazySection loader={loadPricing} />
+      <FaqSection />
+      <LazySection loader={loadCta} />
     </LandingShell>
   );
 }

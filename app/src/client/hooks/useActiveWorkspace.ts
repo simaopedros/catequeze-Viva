@@ -6,10 +6,7 @@ import {
   setActiveWorkspaceId,
   workspaceStore,
 } from "./workspaceStore";
-import {
-  invalidateShellContext,
-  SHELL_QUERY_OPTIONS,
-} from "./shellQueryCache";
+import { SHELL_QUERY_OPTIONS } from "./shellQueryCache";
 
 interface Workspace {
   id: string;
@@ -93,9 +90,9 @@ export function useActiveWorkspace(): UseActiveWorkspaceReturn {
     workspace?.plan || authUser?.subscriptionPlan || "catechist_free";
 
   const switchWorkspace = useCallback((id: string) => {
+    // Local-only switch — memberships already include all workspaces.
+    // Invalidate shell only after real membership/onboarding/billing mutations.
     setActiveWorkspaceId(id);
-    // Refresh memberships/roles for the new workspace after switch
-    void invalidateShellContext();
   }, []);
 
   return {

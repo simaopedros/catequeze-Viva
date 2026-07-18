@@ -1,6 +1,7 @@
 import { HttpError } from 'wasp/server';
 import {
   resolveEffectiveBilling,
+  resolveAllEffectiveBilling,
   getEffectiveBillingPlan,
   isBillingActive,
   ensureProductTrial,
@@ -158,29 +159,64 @@ export const listWorkspaces = async (_args: void, context: any) => {
     });
   }
 
-  // Then parish/diocese workspaces
-  const seenIds = new Set([personalWorkspace?.id]);
+  // Then parish/diocese workspaces — batch billing (no N+1 resolveEffectiveBilling)
+  const seenIds = new Set<string | undefined>([personalWorkspace?.id]);
+  const membershipParishIds = memberships
+    .map((m: any) => m.parish?.id)
+    .filter((id: string | undefined): id is string => !!id && !seenIds.has(id));
+
+  // DIOCESE_ADMIN: collect extra parish IDs first, then one batch for all
+  let dioceseExtraParishes: any[] = [];
+  if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
+    const dioceseParishIds = await getDioceseParishIds(context);
+    const missing = dioceseParishIds.filter((id: string) => !seenIds.has(id) && !membershipParishIds.includes(id));
+    if (missing.length > 0) {
+      dioceseExtraParishes = await context.entities.Parish.findMany({
+        where: { id: { in: missing }, active: true },
+        select: {
+          id: true,
+          name: true,
+          type: true,
+          ownerId: true,
+          dioceseId: true,
+          diocese: { select: { id: true, name: true } },
+        },
+      });
+    }
+  }
+
+  const allBillingIds = [
+    ...new Set([
+      ...membershipParishIds,
+      ...dioceseExtraParishes.map((p: any) => p.id),
+    ]),
+  ];
+  const billingByParish = await resolveAllEffectiveBilling(context, allBillingIds);
+
+  // Own TenantBilling rows in one query for inheritance flags
+  const ownBillings =
+    allBillingIds.length > 0
+      ? await context.entities.TenantBilling.findMany({
+          where: { parishId: { in: allBillingIds } },
+          select: { parishId: true, plan: true, status: true, trialEndsAt: true },
+        })
+      : [];
+  const ownByParish = new Map(
+    ownBillings.map((b: any) => [b.parishId, b]),
+  );
+
   for (const m of memberships) {
     if (!m.parish || seenIds.has(m.parish.id)) continue;
     seenIds.add(m.parish.id);
 
-    // Resolve the effective plan exactly like the server enforcement does
-    // (includes diocese/owner inheritance, downgrades inactive billing to free).
-    // Returned plan is normalized to lowercase so the UI label maps resolve.
-    const billing = await resolveEffectiveBilling(context, m.parish.id);
+    const billing = (billingByParish.get(m.parish.id) as any) ?? null;
     const billingStatus: string | null = billing?.status ?? null;
     const plan = getEffectiveBillingPlan(billing).toLowerCase();
-
-    // The plan is inherited (from diocese/owner umbrella) when the parish has no
-    // active billing record of its own but still resolves to an active plan.
-    const ownBilling = await context.entities.TenantBilling.findUnique({
-      where: { parishId: m.parish.id },
-      select: { plan: true, status: true, trialEndsAt: true },
-    });
+    const ownBilling = (ownByParish.get(m.parish.id) as any) ?? null;
     const ownActive = isBillingActive(ownBilling);
     const planInherited = plan !== 'catechist_free' && !ownActive;
-
-    const isManager = m.parish.ownerId === context.user.id || MANAGER_ROLES.includes(m.role);
+    const isManager =
+      m.parish.ownerId === context.user.id || MANAGER_ROLES.includes(m.role);
 
     workspaces.push({
       id: m.parish.id,
@@ -200,55 +236,32 @@ export const listWorkspaces = async (_args: void, context: any) => {
     });
   }
 
-  // DIOCESE_ADMIN: include all parishes in the diocese, even without a direct
-  // membership. Mirrors listParishes behavior so /app/select-workspace shows
-  // every parish the admin can manage.
-  if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
-    const dioceseParishIds = await getDioceseParishIds(context);
-    for (const parishId of dioceseParishIds) {
-      if (seenIds.has(parishId)) continue;
-      seenIds.add(parishId);
+  for (const parish of dioceseExtraParishes) {
+    if (seenIds.has(parish.id)) continue;
+    seenIds.add(parish.id);
 
-      const parish = await context.entities.Parish.findUnique({
-        where: { id: parishId },
-        select: {
-          id: true,
-          name: true,
-          type: true,
-          ownerId: true,
-          dioceseId: true,
-          diocese: { select: { id: true, name: true } },
-        },
-      });
-      if (!parish) continue;
+    const billing = (billingByParish.get(parish.id) as any) ?? null;
+    const billingStatus: string | null = billing?.status ?? null;
+    const plan = getEffectiveBillingPlan(billing).toLowerCase();
+    const ownBilling = (ownByParish.get(parish.id) as any) ?? null;
+    const ownActive = isBillingActive(ownBilling);
+    const planInherited = plan !== 'catechist_free' && !ownActive;
 
-      const billing = await resolveEffectiveBilling(context, parish.id);
-      const billingStatus: string | null = billing?.status ?? null;
-      const plan = getEffectiveBillingPlan(billing).toLowerCase();
-
-      const ownBilling = await context.entities.TenantBilling.findUnique({
-        where: { parishId: parish.id },
-        select: { plan: true, status: true, trialEndsAt: true },
-      });
-      const ownActive = isBillingActive(ownBilling);
-      const planInherited = plan !== 'catechist_free' && !ownActive;
-
-      workspaces.push({
-        id: parish.id,
-        name: parish.name,
-        type: parish.type,
-        role: 'DIOCESE_ADMIN',
-        plan,
-        billingStatus,
-        isPersonal: false,
-        membershipStatus: 'ACTIVE',
-        membershipId: null,
-        dioceseId: parish.dioceseId ?? null,
-        dioceseName: parish.diocese?.name ?? null,
-        planInherited,
-        isManager: true,
-      });
-    }
+    workspaces.push({
+      id: parish.id,
+      name: parish.name,
+      type: parish.type,
+      role: 'DIOCESE_ADMIN',
+      plan,
+      billingStatus,
+      isPersonal: false,
+      membershipStatus: 'ACTIVE',
+      membershipId: null,
+      dioceseId: parish.dioceseId ?? null,
+      dioceseName: parish.diocese?.name ?? null,
+      planInherited,
+      isManager: true,
+    });
   }
 
   return workspaces;
