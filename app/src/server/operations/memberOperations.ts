@@ -10,6 +10,7 @@ import {
   ALLOWED_INVITER_ROLES,
   pickBestInviterRole,
 } from '../../shared/inviterRoles';
+import { requireWorkspaceAccess, isCatechist } from './sharedScope';
 import {
   ROLE_ASSIGNMENT_HIERARCHY,
   getAssignableRoles,
@@ -623,7 +624,6 @@ export const getParishTeam = async (
   requireAuth(context.user);
   if (!args.parishId) throw new HttpError(400, 'parishId é obrigatório.');
 
-  const { requireWorkspaceAccess, isCatechist } = await import('./sharedScope');
   const access = await requireWorkspaceAccess(context, args.parishId);
 
   // Use workspace-local role only (never elevated from another workspace)

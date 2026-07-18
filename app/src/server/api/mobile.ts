@@ -19,6 +19,11 @@ import { listMeetings, getMeeting, saveAttendance } from '../operations/meetingO
 import { listDocuments } from '../operations/documentOperations';
 import { listConversations, getConversation, sendMessage } from '../operations/conversationOperations';
 import { verifyTwoFactorLogin, assertTwoFactorSessionVerified } from '../operations/twoFactorOperations';
+import {
+  assertNotLocked,
+  recordAuthFailure,
+  clearAuthFailures,
+} from '../security/authAttemptGuard';
 import { authenticatedDocumentUpload } from './authenticatedDocumentUpload';
 import { serveDocument } from './documents';
 
@@ -160,11 +165,6 @@ export async function mobileAuthLogin(req: Request, res: Response, _context: any
 
   const ip = req.ip || req.socket?.remoteAddress || 'unknown';
   const emailKey = String(args.email || '').toLowerCase();
-  const {
-    assertNotLocked,
-    recordAuthFailure,
-    clearAuthFailures,
-  } = await import('../security/authAttemptGuard');
 
   try {
     assertNotLocked(`mobile-login:ip:${ip}`);

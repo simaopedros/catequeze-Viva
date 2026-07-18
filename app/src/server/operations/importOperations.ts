@@ -1,5 +1,9 @@
 import { HttpError } from 'wasp/server';
 import { COORDINATOR_ROLES, getDioceseParishIds } from '../auth/helpers';
+import {
+  MAX_CSV_IMPORT_CHARS,
+  MAX_CSV_IMPORT_ROWS,
+} from '../security/csvSafety';
 
 const IMPORT_ROLES = [...COORDINATOR_ROLES, 'LEAD_CATECHIST'];
 
@@ -69,9 +73,6 @@ export const importCatechumensCSV = async (
 
   const parishId = await resolveImportParish(context, args);
 
-  const { MAX_CSV_IMPORT_ROWS, MAX_CSV_IMPORT_CHARS } = await import(
-    '../security/csvSafety'
-  );
   if (args.csvData.length > MAX_CSV_IMPORT_CHARS) {
     throw new HttpError(
       400,

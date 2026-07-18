@@ -1,6 +1,7 @@
 import { HttpError } from 'wasp/server';
 import { writeAuditLog, getDioceseParishIds, requireDioceseAccess } from '../auth/helpers';
 import { assertCanCreateParish, resolveEffectiveBilling, resolveAllEffectiveBilling, resolveNewParishBilling } from './billingEnforcement';
+import { requireWorkspaceAccess } from './sharedScope';
 
 /**
  * Determines whether a parish is already "claimed" by someone other than the
@@ -290,7 +291,6 @@ export const updateParish = async (
   // Only platform admin, personal owner, or coordinator-or-above in THIS workspace
   // may change parish data / deactivate. Guardians, catechumens, viewers, catechists: 403.
   if (!context.user.isAdmin) {
-    const { requireWorkspaceAccess } = await import('./sharedScope');
     const access = await requireWorkspaceAccess(context, args.id);
     if (!access.canManageParish && access.role !== 'PERSONAL_OWNER') {
       throw new HttpError(

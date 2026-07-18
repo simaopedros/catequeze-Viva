@@ -2,6 +2,8 @@ import { HttpError } from 'wasp/server';
 import * as z from 'zod';
 import { requireAuth, getUserMembership, COORDINATOR_ROLES, getDioceseParishIds } from '../auth/helpers';
 import { validateOrThrow } from '../validation';
+import { requireWorkspaceAccess } from './sharedScope';
+import { escapeCsvCell } from '../security/csvSafety';
 
 // ─── Shared schemas ─────────────────────────────────────────────────────
 
@@ -141,7 +143,6 @@ export const listMessageCampaigns = async (
   }
 
   if (!context.user.isAdmin) {
-    const { requireWorkspaceAccess } = await import('./sharedScope');
     await requireWorkspaceAccess(context, workspaceId);
   }
 
@@ -169,7 +170,6 @@ export const exportReport = async (
   }
 
   if (workspaceId && !context.user.isAdmin) {
-    const { requireWorkspaceAccess } = await import('./sharedScope');
     await requireWorkspaceAccess(context, workspaceId);
   }
 
@@ -185,7 +185,6 @@ export const exportReport = async (
   });
 
   // Escape formula-like names for safe CSV consumption
-  const { escapeCsvCell } = await import('../security/csvSafety');
   return rows.map((r: any) => ({
     id: r.id,
     name: escapeCsvCell(r.name),

@@ -33,7 +33,23 @@ RUN mkdir -p .wasp/out/db/migrations && cp -a migrations/. .wasp/out/db/migratio
 
 # Build server (Prisma generate + Rollup bundle)
 WORKDIR /app/.wasp/out/server
-RUN npm install && npx prisma generate --schema='../db/schema.prisma' && npm run bundle
+# Wasp rollup uses output.file; dynamic import() creates multi-chunk output and fails.
+# Force inlineDynamicImports so server stays a single bundle (required for deploy).
+RUN npm install \
+  && npx prisma generate --schema='../db/schema.prisma' \
+  && node -e "\
+const fs=require('fs');\
+const p='rollup.config.js';\
+let s=fs.readFileSync(p,'utf8');\
+if (!s.includes('inlineDynamicImports')) {\
+  s=s.replace(/format:\\s*'es',/, \"format: 'es',\\n      inlineDynamicImports: true,\");\
+  fs.writeFileSync(p,s);\
+  console.log('[docker] rollup.config.js: enabled inlineDynamicImports');\
+} else {\
+  console.log('[docker] rollup.config.js: inlineDynamicImports already set');\
+}\
+" \
+  && npm run bundle
 
 # Build client (Wasp 0.22: vite runs from project root → .wasp/out/web-app/build)
 WORKDIR /app

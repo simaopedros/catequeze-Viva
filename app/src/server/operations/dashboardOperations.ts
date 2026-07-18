@@ -1,5 +1,6 @@
 import { HttpError } from 'wasp/server';
-import { resolveUserScope } from './sharedScope';
+import { resolveUserScope, requireWorkspaceAccess } from './sharedScope';
+import { isFamilySurface, rolesAreFamilyOnly } from '../auth/familySurface';
 
 const COORDINATOR_OR_ABOVE = [
   'PARISH_COORDINATOR',
@@ -112,11 +113,9 @@ export const getDashboardStats = async (
     args.parishId?.trim() || args.workspaceId?.trim() || undefined;
 
   // Prefer workspace-scoped role when parish/workspace is provided
-  let workspaceAccess: Awaited<
-    ReturnType<typeof import('./sharedScope').requireWorkspaceAccess>
-  > | null = null;
+  let workspaceAccess: Awaited<ReturnType<typeof requireWorkspaceAccess>> | null =
+    null;
   if (requestedWorkspace && !isAdmin) {
-    const { requireWorkspaceAccess } = await import('./sharedScope');
     workspaceAccess = await requireWorkspaceAccess(context, requestedWorkspace);
   } else if (requestedWorkspace && isAdmin) {
     workspaceAccess = {
@@ -137,9 +136,6 @@ export const getDashboardStats = async (
     ? [workspaceAccess.role]
     : globalRoles;
 
-  const { isFamilySurface, rolesAreFamilyOnly } = await import(
-    '../auth/familySurface'
-  );
   const familySurface =
     isFamilySurface({ context, roles, surface: args.surface }) ||
     rolesAreFamilyOnly(roles);

@@ -1,5 +1,5 @@
 import { HttpError } from 'wasp/server';
-import { resolveUserScope } from './sharedScope';
+import { resolveUserScope, resolveWorkspaceAccess } from './sharedScope';
 import {
   pickFocusMeeting,
   buildPrimaryCta,
@@ -278,7 +278,6 @@ export const getEncounterFocus = async (
 
   if (args.workspaceId) {
     if (!isAdmin) {
-      const { resolveWorkspaceAccess } = await import('./sharedScope');
       const access = await resolveWorkspaceAccess(context, args.workspaceId, {
         required: false,
       });

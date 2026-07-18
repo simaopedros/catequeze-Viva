@@ -2,6 +2,7 @@ import { HttpError } from 'wasp/server';
 import { validateOrThrow, createSacramentalJourneySchema, updateMilestoneStatusSchema, updateJourneySchema, createTemplateSchema, updateTemplateSchema, updateMilestoneTemplateSchema, deleteMilestoneTemplateSchema, copyTemplateSchema, publishTemplateSchema } from '../validation';
 import { requireAuth, getEffectiveParishRole, isCoordinatorOrAboveRole, getDioceseParishIds } from '../auth/helpers';
 import { ensureSacramentalJourneyForCatechumen } from '../sacramentHelpers';
+import { requireWorkspaceAccess } from './sharedScope';
 
 /**
  * @deprecated Prefer resolveWorkspaceAccess for authorization.
@@ -68,7 +69,6 @@ export const listSacramentalJourneys = async (
 
   if (!workspaceId) return [];
 
-  const { requireWorkspaceAccess } = await import('./sharedScope');
   const access = await requireWorkspaceAccess(context, workspaceId);
   const parishId = access.workspaceId;
 
