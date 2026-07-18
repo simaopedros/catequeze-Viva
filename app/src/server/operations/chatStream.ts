@@ -100,9 +100,15 @@ export async function chatStreamHandler(req: Request, res: Response, context: an
     }
   }
 
+  const cacheScope = {
+    userId: context.user.id,
+    workspaceId: null as string | null,
+    model: null as string | null,
+  };
+
   // Cache lookup before opening the stream (no AI provider required for hits).
   const cached = !conversationId
-    ? await getCachedResponse(context.entities, message)
+    ? await getCachedResponse(context.entities, message, cacheScope)
     : null;
 
   // Validate AI provider/model BEFORE opening the SSE stream so misconfiguration
@@ -162,10 +168,13 @@ export async function chatStreamHandler(req: Request, res: Response, context: an
       }
     }
 
-    // Cache the full response (only for standalone queries)
+    // Cache the full response (only for standalone queries), scoped per user
     if (fullResponse) {
       if (!conversationId) {
-        setCachedResponse(context.entities, message, fullResponse).catch(() => {});
+        cacheScope.model = model;
+        setCachedResponse(context.entities, message, fullResponse, cacheScope).catch(
+          () => {},
+        );
       }
       await incrementDailyUsage(context.entities, context.user.id, CHAT_DAILY_COST);
     }

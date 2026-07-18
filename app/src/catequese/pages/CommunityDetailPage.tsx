@@ -22,6 +22,7 @@ import {
 } from "wasp/client/operations";
 import { useCommunityTypeLabels } from "../../i18n/useLabels";
 import { AppPageHeader } from "../../client/components/brand/AppChrome";
+import { useActiveParish } from "../../client/hooks/useActiveParish";
 
 const AVATAR_COLORS = ["border border-border/70 bg-muted/30 text-[#071A2D]"];
 
@@ -31,19 +32,31 @@ export default function CommunityDetailPage() {
   const typeLabels = useCommunityTypeLabels();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { activeParishId } = useActiveParish();
   const { data: communities = [], isLoading: loading } = useQuery(
     listCommunities,
-    { parishId: "" } as any,
+    { parishId: activeParishId || undefined } as any,
+    { enabled: Boolean(activeParishId) },
   );
   const community = communities.find((c: any) => c.id === id);
+  const workspaceId = community?.parishId || activeParishId || undefined;
 
-  const { data: classes = [] } = useQuery(listClasses, {
-    communityId: id!,
-  } as any);
-  const { data: households = [] } = useQuery(listHouseholds, {
-    communityId: id!,
-    parishId: community?.parishId,
-  } as any);
+  const { data: classes = [] } = useQuery(
+    listClasses,
+    {
+      communityId: id!,
+      workspaceId,
+    } as any,
+    { enabled: Boolean(id && workspaceId) },
+  );
+  const { data: households = [] } = useQuery(
+    listHouseholds,
+    {
+      communityId: id!,
+      parishId: workspaceId,
+    } as any,
+    { enabled: Boolean(id && workspaceId) },
+  );
 
   const [tab, setTab] = useState<"turmas" | "familias" | "catequistas">(
     "turmas",

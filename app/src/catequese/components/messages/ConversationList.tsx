@@ -72,7 +72,6 @@ function getConversationName(
     if (other)
       return (
         [other.user.firstName, other.user.lastName].filter(Boolean).join(" ") ||
-        other.user.email ||
         t("default_user")
       );
   }

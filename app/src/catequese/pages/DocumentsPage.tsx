@@ -45,6 +45,7 @@ import {
 } from "wasp/client/operations";
 import { uploadDocumentMultipart } from "../../client/utils/documentUpload";
 import { useUserContext } from "../../client/hooks/useUserContext";
+import { useActiveParish } from "../../client/hooks/useActiveParish";
 import { toast } from "../../client/hooks/use-toast";
 import { useDocumentTypeLabels } from "../../i18n/useLabels";
 
@@ -88,21 +89,26 @@ export default function DocumentsPage() {
       "CATECHUMEN",
     ].includes(userRole);
 
-  const { data: docs = [], isLoading: loadingDocs } = useQuery(listDocuments);
+  const { activeParishId } = useActiveParish();
+  const { data: docs = [], isLoading: loadingDocs } = useQuery(
+    listDocuments,
+    { workspaceId: activeParishId || undefined } as any,
+    { enabled: Boolean(activeParishId) },
+  );
   const { data: stats, isLoading: loadingStats } = useQuery(
     getDashboardStats,
-    {},
-    { enabled: isGuardian },
+    { parishId: activeParishId || undefined } as any,
+    { enabled: isGuardian && Boolean(activeParishId) },
   );
   const { data: staffCatechumens = [], isLoading: loadingStaff } = useQuery(
     listCatechumens,
-    { take: 200 },
-    { enabled: !isFamily },
+    { take: 200, workspaceId: activeParishId || undefined } as any,
+    { enabled: !isFamily && Boolean(activeParishId) },
   );
   const { data: selfProfiles = [], isLoading: loadingSelf } = useQuery(
     listCatechumens,
-    { take: 5 },
-    { enabled: isCatechumen },
+    { take: 5, workspaceId: activeParishId || undefined } as any,
+    { enabled: isCatechumen && Boolean(activeParishId) },
   );
 
   const catechumens: PersonRow[] = useMemo(() => {

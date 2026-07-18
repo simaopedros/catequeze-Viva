@@ -67,20 +67,14 @@ async function runReadinessCheck(context: any): Promise<{ payload: Record<string
   const storage = await getDocumentStorageStatus();
   const status = dbStatus === 'ok' && storage.healthy ? 'ok' : 'degraded';
 
+  // Minimal readiness payload — no process memory or internal AI diagnostics
   return {
     payload: {
       status,
       mode: 'ready',
       timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-      database: dbStatus,
-      storage: {
-        backend: storage.backend,
-        healthy: storage.healthy,
-      },
-      jobs: 'disabled',
-      ai: aiStatus,
-      memory: process.memoryUsage(),
+      database: dbStatus === 'ok' ? 'ok' : 'error',
+      storage: storage.healthy ? 'ok' : 'error',
     },
     httpStatus: status === 'ok' ? 200 : 503,
   };
@@ -92,15 +86,6 @@ export async function healthCheckHandler(req: Request, res: Response, context: a
       status: 'ok',
       mode: 'live',
       timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-      database: 'skipped',
-      storage: {
-        backend: 'unchecked',
-        healthy: 'unchecked',
-      },
-      jobs: 'disabled',
-      ai: aiStatus,
-      memory: process.memoryUsage(),
     });
     return;
   }

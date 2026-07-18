@@ -1,11 +1,16 @@
 import { HttpError } from 'wasp/server';
 import { validateOrThrow, createClassSchema, updateClassSchema } from '../validation';
-import { requireClassAccess, getEffectiveParishRole, isCoordinatorOrAboveRole, getDioceseParishIds } from '../auth/helpers';
+import { requireClassAccess, getEffectiveParishRole, isCoordinatorOrAboveRole } from '../auth/helpers';
 import { ClassStatus, CatechistAssignmentRole, EnrollmentStatus, MembershipStatus } from '@prisma/client';
 import { assertCanCreateClass, assertCanEnrollCatechumen } from './billingEnforcement';
 import { ensurePersonalWorkspace } from './workspaceOperations';
 import { ensureSacramentalJourneyForCatechumen } from '../sacramentHelpers';
 import { logger } from '../logger';
+import {
+  requireWorkspaceAccess,
+  classWhereForAccess,
+  isCatechist as isCatechistRole,
+} from './sharedScope';
 
 // isCoordinatorOrAbove now delegates to the auth helper which includes PERSONAL_OWNER
 function isCoordinatorOrAbove(role: string | null): boolean {
@@ -14,197 +19,126 @@ function isCoordinatorOrAbove(role: string | null): boolean {
 }
 
 function isCatechist(role: string): boolean {
-  return ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST'].includes(role);
+  return isCatechistRole(role);
 }
 
-export const listClasses = async (_args: { communityId?: string; workspaceId?: string; take?: number; skip?: number } | void, context: any) => {
+const classListInclude = {
+  parish: { select: { id: true, name: true } },
+  community: { select: { id: true, name: true } },
+  stage: { select: { id: true, name: true } },
+  sacrament: { select: { id: true, name: true } },
+  catechists: {
+    include: {
+      user: { select: { id: true, firstName: true, lastName: true, email: true } },
+    },
+  },
+  _count: { select: { enrollments: true, meetings: true } },
+};
+
+export const listClasses = async (
+  _args: { communityId?: string; workspaceId?: string; take?: number; skip?: number } | void,
+  context: any,
+) => {
   const args = _args || {};
   const take = args.take ?? 50;
   const skip = args.skip ?? 0;
   if (!context.user) throw new HttpError(401);
 
-  if (context.user.isAdmin) {
+  const workspaceId = args.workspaceId?.trim() || undefined;
+
+  // Platform admin without workspace filter: all classes (optional community)
+  if (context.user.isAdmin && !workspaceId) {
     const whereAdmin: any = {};
     if (args.communityId) whereAdmin.communityId = args.communityId;
-    if (args.workspaceId) whereAdmin.parishId = args.workspaceId;
     return context.entities.CatechesisClass.findMany({
       where: whereAdmin,
       orderBy: { name: 'asc' },
       take,
       skip,
-      include: {
-        parish: { select: { id: true, name: true } },
-        community: { select: { id: true, name: true } },
-        stage: { select: { id: true, name: true } },
-        sacrament: { select: { id: true, name: true } },
-        catechists: { include: { user: { select: { id: true, firstName: true, lastName: true, email: true } } } },
-        _count: { select: { enrollments: true, meetings: true } },
-      },
+      include: classListInclude,
     });
   }
 
-  // Check if user has a personal workspace to include
-  let personalParishId: string | null = null;
-  if (args.workspaceId) {
-    // Filter by specific workspace
-    const personalCheck = await context.entities.Parish.findFirst({
-      where: { id: args.workspaceId, ownerId: context.user.id, type: 'PERSONAL' },
-      select: { id: true },
-    });
-    if (personalCheck) personalParishId = personalCheck.id;
-  }
+  // Contextual pages must pass the active workspace
+  const access = workspaceId
+    ? await requireWorkspaceAccess(context, workspaceId)
+    : null;
 
-  const memberships = await context.entities.Membership.findMany({
-    where: { userId: context.user.id, status: MembershipStatus.ACTIVE },
-    select: { parishId: true, role: true },
-  });
-
-  // Filter memberships by workspaceId if provided
-  const relevantMemberships = args.workspaceId
-    ? memberships.filter((m: { parishId: string; role: string }) => m.parishId === args.workspaceId)
-    : memberships;
-
-  // DIOCESE_ADMIN: if filtering by workspace and no direct membership found,
-  // check diocese access and add a virtual coordinator-level entry.
-  if (args.workspaceId && relevantMemberships.length === 0 && !personalParishId) {
-    const dioceseAdminMembership = memberships.find((m: any) => m.role === 'DIOCESE_ADMIN');
-    if (dioceseAdminMembership) {
-      const dioceseParishIds = await getDioceseParishIds(context);
-      if (dioceseParishIds.includes(args.workspaceId)) {
-        relevantMemberships.push({ parishId: args.workspaceId, role: 'DIOCESE_ADMIN' } as any);
-      }
-    }
-  }
-
-  if (relevantMemberships.length === 0 && !personalParishId) return [];
-
-  const roles = relevantMemberships.map((m: any) => m.role);
-  const parishIds = relevantMemberships.map((m: any) => m.parishId);
-  if (personalParishId) parishIds.push(personalParishId);
-
-  // Include classes owned via personal workspace
-  const whereParishIds = [...new Set(parishIds)];
-
-  if (roles.some((r: string) => isCoordinatorOrAbove(r))) {
-    const whereCoords: any = { parishId: { in: whereParishIds } };
-    if (args.communityId) whereCoords.communityId = args.communityId;
-    return context.entities.CatechesisClass.findMany({
-      where: whereCoords,
-      orderBy: { name: 'asc' },
-      take,
-      skip,
-      include: {
-        parish: { select: { id: true, name: true } },
-        community: { select: { id: true, name: true } },
-        stage: { select: { id: true, name: true } },
-        sacrament: { select: { id: true, name: true } },
-        catechists: { include: { user: { select: { id: true, firstName: true, lastName: true, email: true } } } },
-        _count: { select: { enrollments: true, meetings: true } },
-      },
-    });
-  }
-
-  if (roles.some((r: string) => isCatechist(r))) {
-    const myClasses = await context.entities.ClassCatechist.findMany({
-      where: { userId: context.user.id },
-      select: { classId: true },
-    });
-    const classIds = myClasses.map((cc: any) => cc.classId);
-    const whereCatechist: any = {
-      id: { in: classIds },
-    };
-    if (args.communityId) {
-      whereCatechist.AND = [
-        { id: { in: classIds } },
-        { communityId: args.communityId },
-      ];
-      delete whereCatechist.id;
-    }
-    return context.entities.CatechesisClass.findMany({
-      where: whereCatechist,
-      orderBy: { name: 'asc' },
-      take,
-      skip,
-      include: {
-        parish: { select: { id: true, name: true } },
-        community: { select: { id: true, name: true } },
-        stage: { select: { id: true, name: true } },
-        sacrament: { select: { id: true, name: true } },
-        catechists: { include: { user: { select: { id: true, firstName: true, lastName: true, email: true } } } },
-        _count: { select: { enrollments: true, meetings: true } },
-      },
-    });
-  }
-
-  if (roles.includes('GUARDIAN')) {
-    const guardian = await context.entities.GuardianProfile.findUnique({ where: { userId: context.user.id } });
-    if (guardian?.householdId) {
-      const catechumens = await context.entities.CatechumenProfile.findMany({
-        where: { householdId: guardian.householdId },
-        select: { id: true },
-      });
-      const catechumenIds = catechumens.map((c: any) => c.id);
-      const enrollments = await context.entities.ClassEnrollment.findMany({
-        where: { catechumenProfileId: { in: catechumenIds } },
-        select: { classId: true },
-      });
-      const classIds = enrollments.map((e: any) => e.classId);
-      const whereGuardian: any = { id: { in: classIds } };
-      if (args.communityId) whereGuardian.communityId = args.communityId;
-      return context.entities.CatechesisClass.findMany({
-        where: whereGuardian,
-        orderBy: { name: 'asc' },
-        take,
-        skip,
-        include: {
-          parish: { select: { id: true, name: true } },
-          community: { select: { id: true, name: true } },
-          stage: { select: { id: true, name: true } },
-          sacrament: { select: { id: true, name: true } },
-          catechists: { include: { user: { select: { id: true, firstName: true, lastName: true, email: true } } } },
-          _count: { select: { enrollments: true, meetings: true } },
-        },
-      });
-    }
+  if (!access) {
+    // No workspaceId: only return empty for non-admin (force client to scope)
     return [];
   }
 
-  if (roles.includes('CATECHUMEN')) {
-    // CATECHUMEN should see classes they're enrolled in
+  const extra: any = {};
+  if (args.communityId) extra.communityId = args.communityId;
+
+  // Coordinator / pastoral viewer / personal owner / diocese admin: whole parish
+  if (access.allowedClassIds === 'ALL') {
+    return context.entities.CatechesisClass.findMany({
+      where: classWhereForAccess(access, extra),
+      orderBy: { name: 'asc' },
+      take,
+      skip,
+      include: classListInclude,
+    });
+  }
+
+  // Catechist: only assigned classes in this workspace
+  if (access.isCatechist) {
+    if (access.allowedClassIds.length === 0) return [];
+    return context.entities.CatechesisClass.findMany({
+      where: classWhereForAccess(access, extra),
+      orderBy: { name: 'asc' },
+      take,
+      skip,
+      include: classListInclude,
+    });
+  }
+
+  // Guardian: classes of household catechumens within this workspace
+  if (access.role === 'GUARDIAN') {
+    const guardian = await context.entities.GuardianProfile.findUnique({
+      where: { userId: context.user.id },
+    });
+    if (!guardian?.householdId) return [];
+    const catechumens = await context.entities.CatechumenProfile.findMany({
+      where: { householdId: guardian.householdId },
+      select: { id: true },
+    });
+    const catechumenIds = catechumens.map((c: any) => c.id);
+    const enrollments = await context.entities.ClassEnrollment.findMany({
+      where: { catechumenProfileId: { in: catechumenIds } },
+      select: { classId: true },
+    });
+    const classIds = enrollments.map((e: any) => e.classId);
+    if (classIds.length === 0) return [];
+    const whereGuardian: any = {
+      id: { in: classIds },
+      parishId: access.workspaceId,
+      ...extra,
+    };
+    return context.entities.CatechesisClass.findMany({
+      where: whereGuardian,
+      orderBy: { name: 'asc' },
+      take,
+      skip,
+      include: classListInclude,
+    });
+  }
+
+  // Catechumen: own enrollments in this workspace
+  if (access.role === 'CATECHUMEN') {
     const enrollments = await context.entities.ClassEnrollment.findMany({
       where: {
-        catechumenProfile: {
-          userId: context.user.id,
-        },
+        catechumenProfile: { userId: context.user.id },
+        class: { parishId: access.workspaceId },
       },
       select: { classId: true },
     });
     const classIds = enrollments.map((e: any) => e.classId);
-    if (classIds.length > 0) {
-      const whereCatechumen: any = { id: { in: classIds } };
-      if (args.communityId) whereCatechumen.communityId = args.communityId;
-      return context.entities.CatechesisClass.findMany({
-        where: whereCatechumen,
-        orderBy: { name: 'asc' },
-        take,
-        skip,
-        include: {
-          parish: { select: { id: true, name: true } },
-          community: { select: { id: true, name: true } },
-          stage: { select: { id: true, name: true } },
-          _count: { select: { enrollments: true, meetings: true } },
-        },
-      });
-    }
-    return [];
-  }
-
-  // Pastoral viewer: read-only access to parish classes
-  if (roles.includes('PASTORAL_VIEWER')) {
-    const whereViewer: any = { parishId: { in: whereParishIds } };
-    if (args.communityId) whereViewer.communityId = args.communityId;
+    if (classIds.length === 0) return [];
     return context.entities.CatechesisClass.findMany({
-      where: whereViewer,
+      where: { id: { in: classIds }, parishId: access.workspaceId, ...extra },
       orderBy: { name: 'asc' },
       take,
       skip,
@@ -212,27 +146,6 @@ export const listClasses = async (_args: { communityId?: string; workspaceId?: s
         parish: { select: { id: true, name: true } },
         community: { select: { id: true, name: true } },
         stage: { select: { id: true, name: true } },
-        sacrament: { select: { id: true, name: true } },
-        _count: { select: { enrollments: true, meetings: true } },
-      },
-    });
-  }
-
-  // Personal workspace owner: has full access to their workspace classes
-  if (personalParishId) {
-    const wherePersonal: any = { parishId: { in: whereParishIds } };
-    if (args.communityId) wherePersonal.communityId = args.communityId;
-    return context.entities.CatechesisClass.findMany({
-      where: wherePersonal,
-      orderBy: { name: 'asc' },
-      take,
-      skip,
-      include: {
-        parish: { select: { id: true, name: true } },
-        community: { select: { id: true, name: true } },
-        stage: { select: { id: true, name: true } },
-        sacrament: { select: { id: true, name: true } },
-        catechists: { include: { user: { select: { id: true, firstName: true, lastName: true, email: true } } } },
         _count: { select: { enrollments: true, meetings: true } },
       },
     });

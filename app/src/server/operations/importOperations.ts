@@ -69,8 +69,24 @@ export const importCatechumensCSV = async (
 
   const parishId = await resolveImportParish(context, args);
 
+  const { MAX_CSV_IMPORT_ROWS, MAX_CSV_IMPORT_CHARS } = await import(
+    '../security/csvSafety'
+  );
+  if (args.csvData.length > MAX_CSV_IMPORT_CHARS) {
+    throw new HttpError(
+      400,
+      `CSV demasiado grande (máx. ${MAX_CSV_IMPORT_CHARS} caracteres).`,
+    );
+  }
+
   const lines = args.csvData.trim().split('\n');
   if (lines.length < 1) throw new HttpError(400, 'CSV vazio.');
+  if (lines.length - 1 > MAX_CSV_IMPORT_ROWS) {
+    throw new HttpError(
+      400,
+      `CSV com demasiadas linhas (máx. ${MAX_CSV_IMPORT_ROWS}).`,
+    );
+  }
 
   const header = lines[0].toLowerCase().replace(/\s/g, '');
   const dataLines = lines.slice(1);

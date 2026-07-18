@@ -124,44 +124,73 @@ export const listCatecheticalYears = async (_args: void, context: any) => {
   });
 };
 
-/** List message campaigns scoped to the user's parishes or own creations. */
-export const listMessageCampaigns = async (_args: void, context: any) => {
+/** List message campaigns for the active workspace only (never by createdById across contexts). */
+export const listMessageCampaigns = async (
+  args: { workspaceId?: string; parishId?: string } | void,
+  context: any,
+) => {
   requireAuth(context.user);
 
-  if (context.user.isAdmin) {
-    return context.entities.MessageCampaign.findMany({ orderBy: { createdAt: 'desc' }, take: 20 });
+  const workspaceId =
+    args && typeof args === 'object'
+      ? (args as any).workspaceId?.trim() || (args as any).parishId?.trim()
+      : undefined;
+
+  if (!workspaceId) {
+    throw new HttpError(400, 'workspaceId é obrigatório.');
   }
 
-  const parishIds = await getEffectiveParishIds(context);
-  if (parishIds.length === 0) return [];
+  if (!context.user.isAdmin) {
+    const { requireWorkspaceAccess } = await import('./sharedScope');
+    await requireWorkspaceAccess(context, workspaceId);
+  }
 
   return context.entities.MessageCampaign.findMany({
-    where: {
-      OR: [
-        { parishId: { in: parishIds } },
-        { createdById: context.user.id },
-      ],
-    },
+    where: { parishId: workspaceId },
     orderBy: { createdAt: 'desc' },
     take: 20,
   });
 };
 
-/** Server-side CSV export: classes with enrollment counts, scoped by parish. */
-export const exportReport = async (_args: void, context: any) => {
+/** Server-side CSV export: classes with enrollment counts, scoped to one workspace. */
+export const exportReport = async (
+  args: { workspaceId?: string; parishId?: string } | void,
+  context: any,
+) => {
   requireAuth(context.user);
 
-  let whereClause: any = { status: 'ACTIVE' };
-  if (!context.user.isAdmin) {
-    const parishIds = await getEffectiveParishIds(context);
-    if (parishIds.length === 0) return [];
-    whereClause.parishId = { in: parishIds };
+  const workspaceId =
+    args && typeof args === 'object'
+      ? (args as any).workspaceId?.trim() || (args as any).parishId?.trim()
+      : undefined;
+
+  if (!workspaceId && !context.user.isAdmin) {
+    throw new HttpError(400, 'workspaceId é obrigatório.');
   }
 
-  return context.entities.CatechesisClass.findMany({
+  if (workspaceId && !context.user.isAdmin) {
+    const { requireWorkspaceAccess } = await import('./sharedScope');
+    await requireWorkspaceAccess(context, workspaceId);
+  }
+
+  const whereClause: any = {
+    status: 'ACTIVE',
+    ...(workspaceId ? { parishId: workspaceId } : {}),
+  };
+
+  const rows = await context.entities.CatechesisClass.findMany({
     where: whereClause,
     select: { id: true, name: true, _count: { select: { enrollments: true } } },
+    take: 5000,
   });
+
+  // Escape formula-like names for safe CSV consumption
+  const { escapeCsvCell } = await import('../security/csvSafety');
+  return rows.map((r: any) => ({
+    id: r.id,
+    name: escapeCsvCell(r.name),
+    enrollmentCount: r._count?.enrollments ?? 0,
+  }));
 };
 
 // ─── Actions ────────────────────────────────────────────────────────────

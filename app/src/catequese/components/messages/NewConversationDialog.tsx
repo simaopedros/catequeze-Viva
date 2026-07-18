@@ -24,9 +24,19 @@ interface Contact {
   id: string;
   firstName: string | null;
   lastName: string | null;
-  email: string | null;
+  displayName?: string;
+  maskedEmail?: string | null;
+  /** @deprecated server no longer returns full email */
+  email?: string | null;
   avatarUrl: string | null;
   role?: string;
+}
+
+function contactLabel(c: Contact): string {
+  if (c.displayName) return c.displayName;
+  const name = [c.firstName, c.lastName].filter(Boolean).join(" ").trim();
+  if (name) return name;
+  return c.maskedEmail || c.email || "";
 }
 
 interface NewConversationDialogProps {
@@ -107,7 +117,7 @@ export function NewConversationDialog({
 
   const filteredContacts = contacts.filter((c) => {
     if (!search) return true;
-    const name = [c.firstName, c.lastName, c.email]
+    const name = [contactLabel(c), c.maskedEmail, c.role]
       .filter(Boolean)
       .join(" ")
       .toLowerCase();
@@ -251,7 +261,7 @@ export function NewConversationDialog({
                         key={id}
                         className="flex items-center gap-1 rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5 text-xs font-semibold tracking-tight text-[#071A2D]"
                       >
-                        {c.firstName || c.email}
+                        {contactLabel(c) || c.firstName}
                         <button
                           onClick={() => toggleContact(id)}
                           className="hover:text-destructive"
@@ -279,10 +289,7 @@ export function NewConversationDialog({
               ) : (
                 filteredContacts.map((c) => {
                   const isSelected = selected.has(c.id);
-                  const name =
-                    [c.firstName, c.lastName].filter(Boolean).join(" ") ||
-                    c.email ||
-                    t("default_user");
+                  const name = contactLabel(c) || t("default_user");
                   return (
                     <button
                       key={c.id}
@@ -303,7 +310,9 @@ export function NewConversationDialog({
                           {name}
                         </p>
                         <p className="text-overline text-muted-foreground truncate">
-                          {c.role ? roleLabel(c.role) : c.email}
+                          {c.role
+                            ? roleLabel(c.role)
+                            : c.maskedEmail || null}
                         </p>
                       </div>
                       <div

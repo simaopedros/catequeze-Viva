@@ -81,8 +81,11 @@ export default function CalendarPage() {
   const { activeParishId } = useActiveParish();
   const { data: liturgicalEvents = [], isLoading: loadingLiturgical } =
     useQuery(listLiturgicalEvents);
-  const { data: classes = [], isLoading: loadingClasses } =
-    useQuery(listClasses);
+  const { data: classes = [], isLoading: loadingClasses } = useQuery(
+    listClasses,
+    { workspaceId: activeParishId || undefined } as any,
+    { enabled: Boolean(activeParishId) },
+  );
   const [meetings, setMeetings] = useState<any[]>([]);
   const [loadingMeetings, setLoadingMeetings] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());

@@ -102,14 +102,41 @@ async function resolveMeetingClassScope(params: {
 }
 
 export const getDashboardStats = async (
-  args: { parishId?: string; surface?: string },
+  args: { parishId?: string; workspaceId?: string; surface?: string },
   context: any,
 ) => {
   if (!context.user) throw new HttpError(401);
 
   const isAdmin = context.user.isAdmin;
+  const requestedWorkspace =
+    args.parishId?.trim() || args.workspaceId?.trim() || undefined;
 
-  const { parishIds, roles } = await resolveUserScope(context);
+  // Prefer workspace-scoped role when parish/workspace is provided
+  let workspaceAccess: Awaited<
+    ReturnType<typeof import('./sharedScope').requireWorkspaceAccess>
+  > | null = null;
+  if (requestedWorkspace && !isAdmin) {
+    const { requireWorkspaceAccess } = await import('./sharedScope');
+    workspaceAccess = await requireWorkspaceAccess(context, requestedWorkspace);
+  } else if (requestedWorkspace && isAdmin) {
+    workspaceAccess = {
+      workspaceId: requestedWorkspace,
+      role: 'SUPER_ADMIN',
+      isPlatformAdmin: true,
+      isCoordinatorOrAbove: true,
+      isCatechist: false,
+      canManageParish: true,
+      allowedClassIds: 'ALL',
+      membershipId: null,
+    };
+  }
+
+  const { parishIds, roles: globalRoles } = await resolveUserScope(context);
+  // Local roles for this workspace only (never elevate via other memberships)
+  const roles = workspaceAccess
+    ? [workspaceAccess.role]
+    : globalRoles;
+
   const { isFamilySurface, rolesAreFamilyOnly } = await import(
     '../auth/familySurface'
   );
@@ -134,18 +161,14 @@ export const getDashboardStats = async (
     };
   }
 
-  // Validate args.parishId belongs to user
-  if (args.parishId && !isAdmin && !parishIds.includes(args.parishId)) {
-    throw new HttpError(403, 'Voce nao tem acesso a esta paroquia.');
-  }
-
-  const whereClause = args.parishId
-    ? { parishId: args.parishId }
+  const whereClause = requestedWorkspace
+    ? { parishId: requestedWorkspace }
     : isAdmin
       ? {}
       : { parishId: { in: parishIds } };
 
   // Catechists: scope attendance stats to their own classes, not whole parish
+  // Use workspace-local role only (PARISH_COORDINATOR in another parish must not elevate)
   const isCatechistOnly =
     !isAdmin &&
     !roles.some((r: string) =>
@@ -306,7 +329,12 @@ export const getDashboardStats = async (
   // ─── Phase 2: Independent queries (meetings deferred until class scope known) ─
 
   const myClassLinksPromise = context.entities.ClassCatechist.findMany({
-    where: { userId: context.user.id },
+    where: {
+      userId: context.user.id,
+      ...(requestedWorkspace
+        ? { class: { parishId: requestedWorkspace } }
+        : {}),
+    },
     include: {
       class: {
         include: {

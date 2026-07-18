@@ -1,10 +1,19 @@
 import { HttpError, prisma } from 'wasp/server';
 import { MembershipStatus, CatechistAssignmentRole } from '@prisma/client';
 import { assertCanAccessCatechumenProfile, requireAuth, writeAuditLog } from '../auth/helpers';
-import { resolveUserScope, isCoordinatorOrAbove, isCatechist } from './sharedScope';
+import {
+  requireWorkspaceAccess,
+  isCoordinatorOrAbove,
+  isCatechist,
+} from './sharedScope';
 import { deleteDocumentFile } from '../storage/documentStorage';
 
-export const listCatechumens = async (_args: { take?: number; skip?: number; search?: string } | void, context: any) => {
+export const listCatechumens = async (
+  _args:
+    | { take?: number; skip?: number; search?: string; workspaceId?: string }
+    | void,
+  context: any,
+) => {
   const args = _args || {};
   const take = args.take;
   const skip = args.skip || 0;
@@ -33,7 +42,9 @@ export const listCatechumens = async (_args: { take?: number; skip?: number; sea
     };
   };
 
-  if (context.user.isAdmin) {
+  const workspaceId = args.workspaceId?.trim() || undefined;
+
+  if (context.user.isAdmin && !workspaceId) {
     return context.entities.CatechumenProfile.findMany({
       where: buildWhere({}),
       orderBy,
@@ -43,25 +54,21 @@ export const listCatechumens = async (_args: { take?: number; skip?: number; sea
     });
   }
 
-  const { parishIds, roles } = await resolveUserScope(context);
+  if (!workspaceId) return [];
 
-  if (parishIds.length === 0) return [];
+  const access = await requireWorkspaceAccess(context, workspaceId);
+  const parishId = access.workspaceId;
 
-  // Coordinator and above (including PERSONAL_OWNER): see all catechumens in parish
-  // Also include profiles with no parish yet (common before first enrollment / family link)
-  // so they can be assigned to a household in the workspace.
-  if (roles.some((r: string) => isCoordinatorOrAbove(r))) {
+  // Coordinator and above: catechumens in this parish only (never other workspaces)
+  if (access.isCoordinatorOrAbove || access.role === 'PASTORAL_VIEWER') {
     return context.entities.CatechumenProfile.findMany({
       where: buildWhere({
         OR: [
-          { enrollments: { some: { class: { parishId: { in: parishIds } } } } },
-          { household: { parishId: { in: parishIds } } },
-          { parishId: { in: parishIds } },
+          { enrollments: { some: { class: { parishId } } } },
+          { household: { parishId } },
+          { parishId },
           {
-            AND: [
-              { parishId: null },
-              { householdId: null },
-            ],
+            AND: [{ parishId: null }, { householdId: null }],
           },
         ],
       }),
@@ -72,20 +79,23 @@ export const listCatechumens = async (_args: { take?: number; skip?: number; sea
     });
   }
 
-  // Lead catechist: only catechumens enrolled in their assigned classes
-  if (roles.includes('LEAD_CATECHIST')) {
-    const myClasses = await context.entities.ClassCatechist.findMany({
-      where: { userId: context.user.id },
-      select: { classId: true },
-    });
-    const classIds = myClasses.map((cc: any) => cc.classId);
+  // Catechist: only enrolled in ClassCatechist-linked classes in this workspace
+  if (access.isCatechist) {
+    const classIds =
+      access.allowedClassIds === 'ALL' ? [] : access.allowedClassIds;
     if (classIds.length === 0) return [];
 
     const enrollments = await context.entities.ClassEnrollment.findMany({
       where: { classId: { in: classIds } },
       select: { catechumenProfileId: true },
     });
-    const enrolledIds = enrollments.map((e: any) => e.catechumenProfileId);
+    const enrolledIds = [
+      ...new Set(
+        enrollments
+          .map((e: any) => e.catechumenProfileId)
+          .filter(Boolean) as string[],
+      ),
+    ];
     if (enrolledIds.length === 0) return [];
 
     return context.entities.CatechumenProfile.findMany({
@@ -97,31 +107,10 @@ export const listCatechumens = async (_args: { take?: number; skip?: number; sea
     });
   }
 
-  // Assistant catechist: only see catechumens enrolled in their assigned classes
-  if (roles.includes('ASSISTANT_CATECHIST')) {
-    const myClasses = await context.entities.ClassCatechist.findMany({
-      where: { userId: context.user.id, role: CatechistAssignmentRole.ASSISTANT },
-      select: { classId: true },
+  if (access.role === 'GUARDIAN') {
+    const guardian = await context.entities.GuardianProfile.findUnique({
+      where: { userId: context.user.id },
     });
-    const classIds = myClasses.map((cc: any) => cc.classId);
-    if (classIds.length === 0) return [];
-    const enrollments = await context.entities.ClassEnrollment.findMany({
-      where: { classId: { in: classIds } },
-      select: { catechumenProfileId: true },
-    });
-    const enrolledIds = enrollments.map((e: any) => e.catechumenProfileId);
-
-    return context.entities.CatechumenProfile.findMany({
-      where: buildWhere({ id: { in: enrolledIds } }),
-      orderBy,
-      take,
-      skip,
-      include,
-    });
-  }
-
-  if (roles.includes('GUARDIAN')) {
-    const guardian = await context.entities.GuardianProfile.findUnique({ where: { userId: context.user.id } });
     if (guardian?.householdId) {
       return context.entities.CatechumenProfile.findMany({
         where: buildWhere({ householdId: guardian.householdId }),
@@ -134,7 +123,7 @@ export const listCatechumens = async (_args: { take?: number; skip?: number; sea
     return [];
   }
 
-  if (roles.includes('CATECHUMEN')) {
+  if (access.role === 'CATECHUMEN') {
     return context.entities.CatechumenProfile.findMany({
       where: buildWhere({ userId: context.user.id }),
       orderBy,
@@ -259,14 +248,6 @@ export const deleteCatechumen = async (args: { id: string }, context: any) => {
 
   await assertCanAccessCatechumenProfile(context, args.id);
 
-  if (!context.user.isAdmin) {
-    const { roles } = await resolveUserScope(context);
-    const canManage = roles.some((role: string) => isCoordinatorOrAbove(role) || isCatechist(role));
-    if (!canManage) {
-      throw new HttpError(403, 'Apenas coordenadores e catequistas podem excluir catequizandos.');
-    }
-  }
-
   const catechumen = await context.entities.CatechumenProfile.findUnique({
     where: { id: args.id },
     select: {
@@ -274,11 +255,38 @@ export const deleteCatechumen = async (args: { id: string }, context: any) => {
       parishId: true,
       documents: { select: { id: true, s3Key: true } },
       sacramentalJourneys: { select: { id: true } },
+      enrollments: { select: { class: { select: { parishId: true } } } },
+      household: { select: { parishId: true } },
     },
   });
 
   if (!catechumen) {
     throw new HttpError(404, 'Catequizando não encontrado.');
+  }
+
+  if (!context.user.isAdmin) {
+    // Authorize manage permission in the catechumen's workspace only
+    const parishCandidates = [
+      catechumen.parishId,
+      catechumen.household?.parishId,
+      ...(catechumen.enrollments || []).map(
+        (e: any) => e.class?.parishId,
+      ),
+    ].filter(Boolean) as string[];
+    let canManage = false;
+    for (const pid of [...new Set(parishCandidates)]) {
+      const access = await requireWorkspaceAccess(context, pid).catch(() => null);
+      if (
+        access &&
+        (access.isCoordinatorOrAbove || access.isCatechist)
+      ) {
+        canManage = true;
+        break;
+      }
+    }
+    if (!canManage) {
+      throw new HttpError(403, 'Apenas coordenadores e catequistas podem excluir catequizandos.');
+    }
   }
 
   const documentKeys = catechumen.documents

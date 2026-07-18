@@ -1,4 +1,11 @@
-import { getDioceseParishIds } from '../auth/helpers';
+import { HttpError } from 'wasp/server';
+import {
+  getDioceseParishIds,
+  isCoordinatorOrAboveRole,
+  isCatechistOrAboveRole,
+} from '../auth/helpers';
+
+// ─── Legacy multi-workspace scope (prefer resolveWorkspaceAccess) ───────────
 
 interface ResolvedScope {
   memberships: { parishId: string; role: string }[];
@@ -9,6 +16,10 @@ interface ResolvedScope {
 
 const scopeCache = new WeakMap<object, ResolvedScope>();
 
+/**
+ * @deprecated Prefer resolveWorkspaceAccess — this merges roles across workspaces
+ * and must not be used for authorization decisions.
+ */
 export async function resolveUserScope(context: any): Promise<ResolvedScope> {
   const cacheKey = context.entities;
   const cached = scopeCache.get(cacheKey);
@@ -55,9 +66,216 @@ export async function resolveUserScope(context: any): Promise<ResolvedScope> {
 }
 
 export function isCoordinatorOrAbove(role: string): boolean {
-  return ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(role);
+  return isCoordinatorOrAboveRole(role);
 }
 
 export function isCatechist(role: string): boolean {
   return ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST'].includes(role);
 }
+
+// ─── Workspace-scoped authorization (single source of truth) ────────────────
+
+export type ClassScope = 'ALL' | string[];
+
+export type WorkspaceAccess = {
+  workspaceId: string;
+  /** Role effective only inside this workspace — never mixed with other workspaces. */
+  role: string;
+  isPlatformAdmin: boolean;
+  isCoordinatorOrAbove: boolean;
+  isCatechist: boolean;
+  canManageParish: boolean;
+  /**
+   * Class IDs the actor may see/manage in this workspace.
+   * 'ALL' = whole parish (coordinators, personal owners, diocese admins, platform admin).
+   * Empty array = membership only, no class data (e.g. catechist without ClassCatechist).
+   */
+  allowedClassIds: ClassScope;
+  membershipId: string | null;
+};
+
+const workspaceAccessCache = new WeakMap<object, Map<string, WorkspaceAccess>>();
+
+function getWorkspaceCache(context: any): Map<string, WorkspaceAccess> {
+  let map = workspaceAccessCache.get(context);
+  if (!map) {
+    map = new Map();
+    workspaceAccessCache.set(context, map);
+  }
+  return map;
+}
+
+/**
+ * Resolve authorization for a single workspace.
+ * Roles from other workspaces are ignored — never combined.
+ * Membership grants entry; for catechists, ClassCatechist further scopes data.
+ */
+export async function resolveWorkspaceAccess(
+  context: any,
+  workspaceId: string | undefined | null,
+  options?: { required?: boolean },
+): Promise<WorkspaceAccess | null> {
+  if (!context.user) throw new HttpError(401);
+
+  const required = options?.required !== false;
+  const id = typeof workspaceId === 'string' ? workspaceId.trim() : '';
+
+  if (!id) {
+    if (required) throw new HttpError(400, 'workspaceId é obrigatório.');
+    return null;
+  }
+
+  const cache = getWorkspaceCache(context);
+  const hit = cache.get(id);
+  if (hit) return hit;
+
+  // Platform admin: full access without membership
+  if (context.user.isAdmin) {
+    const access: WorkspaceAccess = {
+      workspaceId: id,
+      role: 'SUPER_ADMIN',
+      isPlatformAdmin: true,
+      isCoordinatorOrAbove: true,
+      isCatechist: false,
+      canManageParish: true,
+      allowedClassIds: 'ALL',
+      membershipId: null,
+    };
+    cache.set(id, access);
+    return access;
+  }
+
+  // Personal workspace owner
+  const personal = await context.entities.Parish.findFirst({
+    where: { id, ownerId: context.user.id, type: 'PERSONAL' },
+    select: { id: true },
+  });
+  if (personal) {
+    const access: WorkspaceAccess = {
+      workspaceId: id,
+      role: 'PERSONAL_OWNER',
+      isPlatformAdmin: false,
+      isCoordinatorOrAbove: true,
+      isCatechist: false,
+      canManageParish: true,
+      allowedClassIds: 'ALL',
+      membershipId: null,
+    };
+    cache.set(id, access);
+    return access;
+  }
+
+  // Membership in THIS workspace only (never pick a "best" role from others)
+  const membership = await context.entities.Membership.findFirst({
+    where: {
+      userId: context.user.id,
+      parishId: id,
+      status: 'ACTIVE',
+    },
+    select: { id: true, role: true },
+  });
+
+  let role: string | null = membership?.role ?? null;
+  let membershipId: string | null = membership?.id ?? null;
+
+  // Diocese admin may access parishes in their diocese without direct membership
+  if (!role) {
+    const dioceseAdmin = await context.entities.Membership.findFirst({
+      where: {
+        userId: context.user.id,
+        status: 'ACTIVE',
+        role: 'DIOCESE_ADMIN',
+      },
+      select: { id: true },
+    });
+    if (dioceseAdmin) {
+      const dioceseParishIds = await getDioceseParishIds(context);
+      if (dioceseParishIds.includes(id)) {
+        role = 'DIOCESE_ADMIN';
+        membershipId = dioceseAdmin.id;
+      }
+    }
+  }
+
+  if (!role) {
+    if (required) {
+      throw new HttpError(403, 'Você não tem acesso a este workspace.');
+    }
+    return null;
+  }
+
+  const coordinator = isCoordinatorOrAboveRole(role);
+  let allowedClassIds: ClassScope = 'ALL';
+
+  if (coordinator) {
+    allowedClassIds = 'ALL';
+  } else if (isCatechist(role)) {
+    // Class-level isolation: only classes assigned via ClassCatechist in this parish
+    const links = await context.entities.ClassCatechist.findMany({
+      where: {
+        userId: context.user.id,
+        class: { parishId: id },
+      },
+      select: { classId: true },
+    });
+    allowedClassIds = links.map((l: { classId: string }) => l.classId);
+  } else if (role === 'PASTORAL_VIEWER' || role === 'CONTENT_REVIEWER') {
+    allowedClassIds = 'ALL';
+  } else {
+    // GUARDIAN / CATECHUMEN / others: no parish-wide class list by default
+    allowedClassIds = [];
+  }
+
+  const access: WorkspaceAccess = {
+    workspaceId: id,
+    role,
+    isPlatformAdmin: false,
+    isCoordinatorOrAbove: coordinator,
+    isCatechist: isCatechist(role),
+    canManageParish: coordinator,
+    allowedClassIds,
+    membershipId,
+  };
+  cache.set(id, access);
+  return access;
+}
+
+/** Require access; throws 400/403. */
+export async function requireWorkspaceAccess(
+  context: any,
+  workspaceId: string | undefined | null,
+): Promise<WorkspaceAccess> {
+  const access = await resolveWorkspaceAccess(context, workspaceId, {
+    required: true,
+  });
+  return access!;
+}
+
+export function classIdsFilter(scope: ClassScope): string[] | null {
+  if (scope === 'ALL') return null;
+  return scope;
+}
+
+/** Prisma where fragment for classes visible in this workspace. */
+export function classWhereForAccess(access: WorkspaceAccess, extra?: Record<string, unknown>) {
+  if (access.allowedClassIds === 'ALL') {
+    return { parishId: access.workspaceId, ...extra };
+  }
+  return {
+    parishId: access.workspaceId,
+    id: { in: access.allowedClassIds },
+    ...extra,
+  };
+}
+
+export function isStaffRole(role: string): boolean {
+  return (
+    isCoordinatorOrAboveRole(role) ||
+    isCatechist(role) ||
+    role === 'PASTORAL_VIEWER' ||
+    role === 'CONTENT_REVIEWER' ||
+    role === 'SUPER_ADMIN'
+  );
+}
+
+export { isCatechistOrAboveRole };

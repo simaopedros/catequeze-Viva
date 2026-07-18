@@ -96,10 +96,15 @@ export default function CatechumensPage() {
   const [view, setView] = useState<"cards" | "table">("cards");
   const [pages, setPages] = useState(1);
 
-  const { data: catechumens = [], isLoading } = useQuery(listCatechumens, {
-    take: PAGE_SIZE * pages,
-    search: search || undefined,
-  });
+  const { data: catechumens = [], isLoading } = useQuery(
+    listCatechumens,
+    {
+      take: PAGE_SIZE * pages,
+      search: search || undefined,
+      workspaceId: activeParishId || undefined,
+    } as any,
+    { enabled: Boolean(activeParishId) },
+  );
 
   const classNames = useMemo(() => {
     if (!catechumens || catechumens.length === 0) return [];

@@ -1,102 +1,129 @@
 import { HttpError, prisma } from 'wasp/server';
+import { logAudit } from '../audit';
+import { requirePlatformAdmin } from '../auth/helpers';
 
+/**
+ * Parish migration — platform administrators only.
+ * Requires explicit confirmation of source and destination IDs.
+ * Atomic transaction + full audit trail. Does not grant non-admins
+ * the ability to capture a foreign parish.
+ */
 export const executeParishMigration = async (
-  args: { sourceParishId: string; targetParishId: string },
-  context: any
-): Promise<{ success: boolean; migrated: { classes: number; households: number; catechumens: number; members: number } }> => {
+  args: {
+    sourceParishId: string;
+    targetParishId: string;
+    /** Must equal sourceParishId — explicit confirmation of origin. */
+    confirmSourceParishId: string;
+    /** Must equal targetParishId — explicit confirmation of destination. */
+    confirmTargetParishId: string;
+    /** Must be the literal CONFIRM_MIGRATE */
+    confirmation: string;
+  },
+  context: any,
+): Promise<{
+  success: boolean;
+  migrated: {
+    classes: number;
+    households: number;
+    catechumens: number;
+    members: number;
+  };
+}> => {
   if (!context.user) throw new HttpError(401);
+  requirePlatformAdmin(context.user);
 
+  if (!args.sourceParishId || !args.targetParishId) {
+    throw new HttpError(400, 'Origem e destino são obrigatórios.');
+  }
   if (args.sourceParishId === args.targetParishId) {
-    throw new HttpError(400, 'As paróquias de origem e destino devem ser diferentes.');
+    throw new HttpError(
+      400,
+      'As paróquias de origem e destino devem ser diferentes.',
+    );
+  }
+  if (args.confirmSourceParishId !== args.sourceParishId) {
+    throw new HttpError(
+      400,
+      'Confirmação de origem inválida. confira confirmSourceParishId.',
+    );
+  }
+  if (args.confirmTargetParishId !== args.targetParishId) {
+    throw new HttpError(
+      400,
+      'Confirmação de destino inválida. confira confirmTargetParishId.',
+    );
+  }
+  if (args.confirmation !== 'CONFIRM_MIGRATE') {
+    throw new HttpError(
+      400,
+      'Confirmação inválida. Envie confirmation: "CONFIRM_MIGRATE".',
+    );
   }
 
-  // Authorization: must be admin OR coordinator of the target parish
-  if (!context.user.isAdmin) {
-    const isPersonalOwner = await context.entities.Parish.findFirst({
-      where: { id: args.targetParishId, ownerId: context.user.id, type: 'PERSONAL' },
-      select: { id: true },
-    });
-    if (!isPersonalOwner) {
-      const membership = await context.entities.Membership.findFirst({
-        where: { userId: context.user.id, parishId: args.targetParishId, status: 'ACTIVE', role: 'PARISH_COORDINATOR' },
-      });
-      if (!membership) {
-        throw new HttpError(403, 'Apenas o coordenador da paróquia de destino ou um administrador pode executar a migração.');
-      }
-    }
-  }
-
-  // Verify both parishes exist
   const [source, target] = await Promise.all([
-    context.entities.Parish.findUnique({ where: { id: args.sourceParishId } }),
-    context.entities.Parish.findUnique({ where: { id: args.targetParishId } }),
+    context.entities.Parish.findUnique({
+      where: { id: args.sourceParishId },
+      select: { id: true, name: true, active: true },
+    }),
+    context.entities.Parish.findUnique({
+      where: { id: args.targetParishId },
+      select: { id: true, name: true, active: true },
+    }),
   ]);
   if (!source) throw new HttpError(404, 'Paróquia de origem não encontrada.');
   if (!target) throw new HttpError(404, 'Paróquia de destino não encontrada.');
 
-  // Run atomic migration in a transaction
   const result = await prisma.$transaction(async (tx: any) => {
-    // 1. Migrate classes
     const classesResult = await tx.CatechesisClass.updateMany({
       where: { parishId: args.sourceParishId },
       data: { parishId: args.targetParishId },
     });
 
-    // 2. Migrate households
     const householdsResult = await tx.Household.updateMany({
       where: { parishId: args.sourceParishId },
       data: { parishId: args.targetParishId },
     });
 
-    // 3. Migrate content items
     await tx.ContentItem.updateMany({
       where: { parishId: args.sourceParishId },
       data: { parishId: args.targetParishId },
     });
 
-    // 4. Migrate sacramental journey templates
     await tx.SacramentalJourneyTemplate.updateMany({
       where: { parishId: args.sourceParishId },
       data: { parishId: args.targetParishId },
     });
 
-    // 5. Migrate message campaigns
     await tx.MessageCampaign.updateMany({
       where: { parishId: args.sourceParishId },
       data: { parishId: args.targetParishId },
     });
 
-    // 6. Migrate liturgical events
     await tx.LiturgicalEvent.updateMany({
       where: { parishId: args.sourceParishId },
       data: { parishId: args.targetParishId },
     });
 
-    // 7. Migrate conversations
     await tx.Conversation.updateMany({
       where: { parishId: args.sourceParishId },
       data: { parishId: args.targetParishId },
     });
 
-    // 8. Migrate message templates
     await tx.MessageTemplate.updateMany({
       where: { parishId: args.sourceParishId },
       data: { parishId: args.targetParishId },
     });
 
-    // 9. Migrate catechetical years
     await tx.CatecheticalYear.updateMany({
       where: { parishId: args.sourceParishId },
       data: { parishId: args.targetParishId },
     });
 
-    // 10. Migrate communities
     await tx.Community.updateMany({
       where: { parishId: args.sourceParishId },
       data: { parishId: args.targetParishId },
     });
 
-    // 11. Migrate memberships
     let migratedMembers = 0;
     const sourceMembers = await tx.Membership.findMany({
       where: { parishId: args.sourceParishId },
@@ -104,9 +131,14 @@ export const executeParishMigration = async (
     });
 
     const rolePriority: Record<string, number> = {
-      PARISH_COORDINATOR: 4, COMMUNITY_COORDINATOR: 3, LEAD_CATECHIST: 2,
-      ASSISTANT_CATECHIST: 1, GUARDIAN: 0, PASTORAL_VIEWER: 0,
-      CONTENT_REVIEWER: 0, CATECHUMEN: 0,
+      PARISH_COORDINATOR: 4,
+      COMMUNITY_COORDINATOR: 3,
+      LEAD_CATECHIST: 2,
+      ASSISTANT_CATECHIST: 1,
+      GUARDIAN: 0,
+      PASTORAL_VIEWER: 0,
+      CONTENT_REVIEWER: 0,
+      CATECHUMEN: 0,
     };
 
     for (const member of sourceMembers) {
@@ -115,7 +147,9 @@ export const executeParishMigration = async (
       });
 
       if (existing) {
-        if ((rolePriority[member.role] ?? 0) > (rolePriority[existing.role] ?? 0)) {
+        if (
+          (rolePriority[member.role] ?? 0) > (rolePriority[existing.role] ?? 0)
+        ) {
           await tx.Membership.update({
             where: { id: existing.id },
             data: { role: member.role },
@@ -131,7 +165,6 @@ export const executeParishMigration = async (
       }
     }
 
-    // 12. Archive the source parish
     await tx.Parish.update({
       where: { id: args.sourceParishId },
       data: { active: false },
@@ -142,6 +175,22 @@ export const executeParishMigration = async (
       households: householdsResult.count,
       members: migratedMembers,
     };
+  });
+
+  await logAudit(context.entities, {
+    action: 'UPDATE',
+    entityType: 'ParishMigration',
+    entityId: args.sourceParishId,
+    userId: context.user.id,
+    parishId: args.targetParishId,
+    metadata: {
+      operation: 'PARISH_MIGRATE',
+      sourceParishId: args.sourceParishId,
+      targetParishId: args.targetParishId,
+      sourceName: source.name,
+      targetName: target.name,
+      migrated: result,
+    },
   });
 
   return {

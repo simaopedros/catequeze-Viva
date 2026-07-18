@@ -104,8 +104,11 @@ export default function ClassDetailPage() {
 
   const { data: allCatechumens = [] } = useQuery(
     listCatechumens,
-    { take: 200 },
-    { enabled: tab === "inscritos" && canEnroll },
+    {
+      take: 200,
+      workspaceId: cls?.parish?.id || undefined,
+    } as any,
+    { enabled: tab === "inscritos" && canEnroll && Boolean(cls?.parish?.id) },
   );
   const { availableParishes, isPersonal } = useActiveParish();
   const canManageBilling = canManageWorkspaceBilling(userRole, {

@@ -271,18 +271,34 @@ export const getEncounterFocus = async (
   if (!context.user) throw new HttpError(401);
 
   const isAdmin = Boolean(context.user.isAdmin);
-  const { parishIds, roles } = await resolveUserScope(context);
+
+  // Prefer single-workspace authorization (never merge roles across tenants)
+  let roles: string[] = [];
+  let parishIds: string[] = [];
+
+  if (args.workspaceId) {
+    if (!isAdmin) {
+      const { resolveWorkspaceAccess } = await import('./sharedScope');
+      const access = await resolveWorkspaceAccess(context, args.workspaceId, {
+        required: false,
+      });
+      if (!access) {
+        throw new HttpError(403, 'Sem acesso a este espaço de trabalho.');
+      }
+      roles = [access.role];
+      parishIds = [args.workspaceId];
+    } else {
+      roles = ['SUPER_ADMIN'];
+      parishIds = [args.workspaceId];
+    }
+  } else {
+    const scope = await resolveUserScope(context);
+    roles = scope.roles;
+    parishIds = scope.parishIds;
+  }
 
   if (parishIds.length === 0 && !isAdmin) {
     return emptyFocus();
-  }
-
-  if (
-    args.workspaceId &&
-    !isAdmin &&
-    !parishIds.includes(args.workspaceId)
-  ) {
-    throw new HttpError(403, 'Sem acesso a este espaço de trabalho.');
   }
 
   const {

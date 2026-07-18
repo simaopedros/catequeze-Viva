@@ -1,13 +1,26 @@
 import { describe, expect, it } from 'vitest';
 import {
+  buildDisplayName,
   canAddParticipantsToConversation,
   canRemoveParticipantsFromConversation,
   getConversationScopeType,
   isManualConversationTypeAllowed,
+  maskEmail,
   sanitizeParticipantUserIds,
 } from '../server/operations/conversationPolicies';
 
 describe('conversationPolicies', () => {
+  it('masks emails and builds display names without full email', () => {
+    expect(maskEmail('alice@example.com')).toBe('al***@example.com');
+    expect(maskEmail(null)).toBeNull();
+    expect(
+      buildDisplayName({ firstName: 'Ana', lastName: 'Silva', email: 'a@b.com' }),
+    ).toBe('Ana Silva');
+    expect(
+      buildDisplayName({ firstName: null, lastName: null, email: 'x@y.com' }),
+    ).toBe('x***@y.com');
+  });
+
   it('sanitizes participant ids by trimming, deduping, and removing the sender', () => {
     expect(
       sanitizeParticipantUserIds('me', [' user-a ', 'me', 'user-a', '', 'user-b']),

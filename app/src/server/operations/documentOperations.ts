@@ -8,49 +8,44 @@ import {
   validateFileSignature,
 } from '../storage/uploadValidation';
 
-export const listDocuments = async (_args: void, context: any) => {
+import { requireWorkspaceAccess } from './sharedScope';
+
+export const listDocuments = async (
+  _args: { workspaceId?: string } | void,
+  context: any,
+) => {
   requireAuth(context.user);
+  const args = _args || {};
+  const workspaceId = args.workspaceId?.trim() || undefined;
 
   const baseInclude = {
     catechumenProfile: { select: { id: true, firstName: true, lastName: true } },
     uploadedBy: { select: { id: true, firstName: true, lastName: true } },
   };
 
-  // Admin: all documents
-  if (context.user.isAdmin) {
+  // Admin without workspace: all documents
+  if (context.user.isAdmin && !workspaceId) {
     return context.entities.Document.findMany({
       orderBy: { createdAt: 'desc' },
       include: baseInclude,
     });
   }
 
-  const memberships = await context.entities.Membership.findMany({
-    where: { userId: context.user.id, status: 'ACTIVE' },
-    select: { parishId: true, role: true },
-  });
-  if (memberships.length === 0) return [];
+  if (!workspaceId) return [];
 
-  const roles = memberships.map((m: any) => m.role);
-  const parishIds = memberships.map((m: any) => m.parishId);
+  const access = await requireWorkspaceAccess(context, workspaceId);
+  const parishId = access.workspaceId;
 
-  // DIOCESE_ADMIN: include all parishes in the diocese
-  if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
-    const dioceseParishIds = await getDioceseParishIds(context);
-    for (const id of dioceseParishIds) {
-      if (!parishIds.includes(id)) parishIds.push(id);
-    }
-  }
-
-  // Coordinator and above: all documents from parish
-  if (roles.some((r: string) => ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(r))) {
+  // Coordinator+: documents of catechumens / members in this parish only
+  if (access.isCoordinatorOrAbove || access.role === 'PASTORAL_VIEWER') {
     const parishMembers = await context.entities.Membership.findMany({
-      where: { parishId: { in: parishIds } },
+      where: { parishId },
       select: { userId: true },
     });
     const parishUserIds = parishMembers.map((m: any) => m.userId);
 
     const parishClasses = await context.entities.CatechesisClass.findMany({
-      where: { parishId: { in: parishIds } },
+      where: { parishId },
       select: { id: true },
     });
     const classIds = parishClasses.map((c: any) => c.id);
@@ -59,7 +54,9 @@ export const listDocuments = async (_args: void, context: any) => {
       where: { classId: { in: classIds } },
       select: { catechumenProfileId: true },
     });
-    const parishCatechumenIds = parishEnrollments.map((e: any) => e.catechumenProfileId);
+    const parishCatechumenIds = parishEnrollments.map(
+      (e: any) => e.catechumenProfileId,
+    );
 
     return context.entities.Document.findMany({
       where: {
@@ -73,13 +70,11 @@ export const listDocuments = async (_args: void, context: any) => {
     });
   }
 
-  // Catechist: only documents of catechumens in their classes
-  if (roles.includes('LEAD_CATECHIST') || roles.includes('ASSISTANT_CATECHIST')) {
-    const myClasses = await context.entities.ClassCatechist.findMany({
-      where: { userId: context.user.id },
-      select: { classId: true },
-    });
-    const classIds = myClasses.map((cc: any) => cc.classId);
+  // Catechist: only documents of catechumens in allowed classes (this workspace)
+  if (access.isCatechist) {
+    const classIds =
+      access.allowedClassIds === 'ALL' ? [] : access.allowedClassIds;
+    if (classIds.length === 0) return [];
     const enrollments = await context.entities.ClassEnrollment.findMany({
       where: { classId: { in: classIds } },
       select: { catechumenProfileId: true },
@@ -87,16 +82,14 @@ export const listDocuments = async (_args: void, context: any) => {
     const catechumenIds = enrollments.map((e: any) => e.catechumenProfileId);
 
     return context.entities.Document.findMany({
-      where: {
-        catechumenProfileId: { in: catechumenIds },
-      },
+      where: { catechumenProfileId: { in: catechumenIds } },
       orderBy: { createdAt: 'desc' },
       include: baseInclude,
     });
   }
 
   // Guardian: only documents of their household dependents
-  if (roles.includes('GUARDIAN')) {
+  if (access.role === 'GUARDIAN') {
     const guardian = await context.entities.GuardianProfile.findUnique({
       where: { userId: context.user.id },
       select: { householdId: true },
@@ -110,25 +103,21 @@ export const listDocuments = async (_args: void, context: any) => {
     const dependentIds = dependents.map((d: any) => d.id);
 
     return context.entities.Document.findMany({
-      where: {
-        catechumenProfileId: { in: dependentIds },
-      },
+      where: { catechumenProfileId: { in: dependentIds } },
       orderBy: { createdAt: 'desc' },
       include: baseInclude,
     });
   }
 
   // CATECHUMEN: only own documents
-  if (roles.includes('CATECHUMEN')) {
+  if (access.role === 'CATECHUMEN') {
     const catechumen = await context.entities.CatechumenProfile.findFirst({
       where: { userId: context.user.id },
       select: { id: true },
     });
 
     return context.entities.Document.findMany({
-      where: {
-        catechumenProfileId: catechumen?.id || '__none__',
-      },
+      where: { catechumenProfileId: catechumen?.id || '__none__' },
       orderBy: { createdAt: 'desc' },
       include: baseInclude,
     });

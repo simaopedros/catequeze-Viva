@@ -3,7 +3,10 @@ import { validateOrThrow, createSacramentalJourneySchema, updateMilestoneStatusS
 import { requireAuth, getEffectiveParishRole, isCoordinatorOrAboveRole, getDioceseParishIds } from '../auth/helpers';
 import { ensureSacramentalJourneyForCatechumen } from '../sacramentHelpers';
 
-/** Get all effective parish IDs and roles for the current user, including personal workspace */
+/**
+ * @deprecated Prefer resolveWorkspaceAccess for authorization.
+ * Still used by some journey mutations pending full workspace scoping.
+ */
 async function getEffectiveParishScope(context: any): Promise<{ parishIds: string[]; roles: string[] }> {
   const memberships = await context.entities.Membership.findMany({
     where: { userId: context.user.id, status: 'ACTIVE' },
@@ -21,7 +24,6 @@ async function getEffectiveParishScope(context: any): Promise<{ parishIds: strin
     if (!roles.includes('PERSONAL_OWNER')) roles.push('PERSONAL_OWNER');
   }
 
-  // DIOCESE_ADMIN: include all parishes in the diocese
   if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
     const dioceseParishIds = await getDioceseParishIds(context);
     for (const id of dioceseParishIds) {
@@ -35,8 +37,13 @@ async function getEffectiveParishScope(context: any): Promise<{ parishIds: strin
 
 // ─── List Sacramental Journeys ────────────────────────────────────────────────
 
-export const listSacramentalJourneys = async (_args: void, context: any) => {
+export const listSacramentalJourneys = async (
+  _args: { workspaceId?: string } | void,
+  context: any,
+) => {
   requireAuth(context.user);
+  const args = _args || {};
+  const workspaceId = args.workspaceId?.trim() || undefined;
 
   const baseInclude = {
     catechumenProfile: {
@@ -55,33 +62,33 @@ export const listSacramentalJourneys = async (_args: void, context: any) => {
     },
   };
 
-  if (context.user.isAdmin) {
+  if (context.user.isAdmin && !workspaceId) {
     return context.entities.SacramentalJourney.findMany({ include: baseInclude });
   }
 
-  const { parishIds, roles } = await getEffectiveParishScope(context);
-  if (parishIds.length === 0) return [];
+  if (!workspaceId) return [];
 
-  // Coordinator+PersonalOwner: see all journeys in their parishes (via enrollments or direct parish)
-  if (roles.some((r: string) => isCoordinatorOrAboveRole(r))) {
+  const { requireWorkspaceAccess } = await import('./sharedScope');
+  const access = await requireWorkspaceAccess(context, workspaceId);
+  const parishId = access.workspaceId;
+
+  // Coordinator+PersonalOwner: journeys in this parish only
+  if (access.isCoordinatorOrAbove) {
     return context.entities.SacramentalJourney.findMany({
       where: {
         OR: [
-          { catechumenProfile: { enrollments: { some: { class: { parishId: { in: parishIds } } } } } },
-          { catechumenProfile: { parishId: { in: parishIds } } },
+          { catechumenProfile: { enrollments: { some: { class: { parishId } } } } },
+          { catechumenProfile: { parishId } },
         ],
       },
       include: baseInclude,
     });
   }
 
-  // Catechist: see journeys of their students
-  if (roles.includes('LEAD_CATECHIST') || roles.includes('ASSISTANT_CATECHIST')) {
-    const myClasses = await context.entities.ClassCatechist.findMany({
-      where: { userId: context.user.id },
-      select: { classId: true },
-    });
-    const classIds = myClasses.map((cc: any) => cc.classId);
+  // Catechist: journeys of students in allowed classes (this workspace)
+  if (access.isCatechist) {
+    const classIds =
+      access.allowedClassIds === 'ALL' ? [] : access.allowedClassIds;
     if (classIds.length === 0) return [];
     const enrollments = await context.entities.ClassEnrollment.findMany({
       where: { classId: { in: classIds } },
@@ -95,7 +102,7 @@ export const listSacramentalJourneys = async (_args: void, context: any) => {
   }
 
   // Guardian: see journeys of their dependents
-  if (roles.includes('GUARDIAN')) {
+  if (access.role === 'GUARDIAN') {
     const guardian = await context.entities.GuardianProfile.findUnique({ where: { userId: context.user.id } });
     if (!guardian?.householdId) return [];
     const dependents = await context.entities.CatechumenProfile.findMany({
@@ -110,7 +117,7 @@ export const listSacramentalJourneys = async (_args: void, context: any) => {
   }
 
   // Catechumen: see own journeys
-  if (roles.includes('CATECHUMEN')) {
+  if (access.role === 'CATECHUMEN') {
     const catechumen = await context.entities.CatechumenProfile.findFirst({
       where: { userId: context.user.id },
       select: { id: true },

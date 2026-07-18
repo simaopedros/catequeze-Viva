@@ -1,41 +1,9 @@
 import { HttpError } from 'wasp/server';
-import { CatechistAssignmentRole } from '@prisma/client';
-import { getDioceseParishIds } from '../auth/helpers';
-
-function isCoordinatorOrAbove(role: string): boolean {
-  return ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(role);
-}
-
-function isCatechist(role: string): boolean {
-  return ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST'].includes(role);
-}
-
-async function getParishIds(context: any): Promise<string[]> {
-  const memberships = await context.entities.Membership.findMany({
-    where: { userId: context.user.id, status: 'ACTIVE' },
-    select: { parishId: true, role: true },
-  });
-  const ids = memberships.map((m: any) => m.parishId);
-
-  // Include personal workspace
-  const personal = await context.entities.Parish.findFirst({
-    where: { ownerId: context.user.id, type: 'PERSONAL' },
-    select: { id: true },
-  });
-  if (personal && !ids.includes(personal.id)) {
-    ids.push(personal.id);
-  }
-
-  // DIOCESE_ADMIN: include all parishes in the diocese
-  if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
-    const dioceseParishIds = await getDioceseParishIds(context);
-    for (const id of dioceseParishIds) {
-      if (!ids.includes(id)) ids.push(id);
-    }
-  }
-
-  return ids;
-}
+import {
+  requireWorkspaceAccess,
+  isCoordinatorOrAbove,
+  isCatechist,
+} from './sharedScope';
 
 export const listHouseholds = async (
   _args:
@@ -43,6 +11,7 @@ export const listHouseholds = async (
         communityId?: string;
         /** When set, scope results to this workspace (must be in user's accessible parishes). */
         parishId?: string;
+        workspaceId?: string;
         take?: number;
         skip?: number;
         search?: string;
@@ -54,7 +23,8 @@ export const listHouseholds = async (
   const take = args.take;
   const skip = args.skip || 0;
   const search = args.search?.trim();
-  const requestedParishId = args.parishId?.trim() || undefined;
+  const requestedParishId =
+    args.parishId?.trim() || args.workspaceId?.trim() || undefined;
   if (!context.user) throw new HttpError(401);
 
   // Family-only users: only their own household(s), never parish directory.
@@ -105,9 +75,8 @@ export const listHouseholds = async (
     };
   };
 
-  if (context.user.isAdmin) {
+  if (context.user.isAdmin && !requestedParishId) {
     const whereAdmin: any = {};
-    if (requestedParishId) whereAdmin.parishId = requestedParishId;
     if (args.communityId) whereAdmin.communityId = args.communityId;
     return context.entities.Household.findMany({
       where: buildWhere(whereAdmin),
@@ -118,35 +87,17 @@ export const listHouseholds = async (
     });
   }
 
-  const parishIds = await getParishIds(context);
-  if (parishIds.length === 0) return [];
+  if (!requestedParishId) return [];
 
-  // Scope to active workspace when requested (must be an accessible parish)
-  const scopedParishIds =
-    requestedParishId && parishIds.includes(requestedParishId)
-      ? [requestedParishId]
-      : parishIds;
+  const access = await requireWorkspaceAccess(context, requestedParishId);
+  const parishId = access.workspaceId;
+  const extra: any = { parishId };
+  if (args.communityId) extra.communityId = args.communityId;
 
-  // Check user roles for filtering
-  const membershipRoles = await context.entities.Membership.findMany({
-    where: { userId: context.user.id, status: 'ACTIVE' },
-    select: { role: true },
-  });
-  const staffRoles = membershipRoles.map((m: any) => m.role);
-
-  // Add PERSONAL_OWNER if user has personal workspace
-  const personalCheck = await context.entities.Parish.findFirst({
-    where: { ownerId: context.user.id, type: 'PERSONAL' },
-    select: { id: true },
-  });
-  if (personalCheck) staffRoles.push('PERSONAL_OWNER');
-
-  // Coordinator or above (including PERSONAL_OWNER): households in scoped parishes
-  if (staffRoles.some((r: string) => isCoordinatorOrAbove(r))) {
-    const where: any = { parishId: { in: scopedParishIds } };
-    if (args.communityId) where.communityId = args.communityId;
+  // Coordinator / pastoral: all households in this workspace only
+  if (access.isCoordinatorOrAbove || access.role === 'PASTORAL_VIEWER') {
     return context.entities.Household.findMany({
-      where: buildWhere(where),
+      where: buildWhere(extra),
       orderBy: { name: 'asc' },
       take,
       skip,
@@ -154,17 +105,14 @@ export const listHouseholds = async (
     });
   }
 
-  // GUARDIAN: only return the guardian's own household
-  if (
-    staffRoles.includes('GUARDIAN') &&
-    !staffRoles.some((r: string) => isCoordinatorOrAbove(r) || isCatechist(r))
-  ) {
+  // GUARDIAN: only own household
+  if (access.role === 'GUARDIAN') {
     const guardianProfile = await context.entities.GuardianProfile.findFirst({
       where: { userId: context.user.id },
       select: { householdId: true },
     });
     if (!guardianProfile?.householdId) return [];
-    const where: any = { id: guardianProfile.householdId };
+    const where: any = { id: guardianProfile.householdId, parishId };
     if (args.communityId) where.communityId = args.communityId;
     return context.entities.Household.findMany({
       where: buildWhere(where),
@@ -175,33 +123,31 @@ export const listHouseholds = async (
     });
   }
 
-  // Assistant catechist only (no coordinator, no lead): restrict to assisted classes
-  const isStrictAssistant =
-    !staffRoles.includes('LEAD_CATECHIST') && staffRoles.includes('ASSISTANT_CATECHIST');
-
-  if (isStrictAssistant) {
-    const assistedClasses = await context.entities.ClassCatechist.findMany({
-      where: { userId: context.user.id, role: CatechistAssignmentRole.ASSISTANT },
-      select: { classId: true },
-    });
-    const classIds = assistedClasses.map((cc: any) => cc.classId);
+  // Catechist: households of catechumens in allowed classes only (not whole parish)
+  if (access.isCatechist) {
+    const classIds =
+      access.allowedClassIds === 'ALL' ? [] : access.allowedClassIds;
     if (classIds.length === 0) return [];
 
     const enrollments = await context.entities.ClassEnrollment.findMany({
       where: { classId: { in: classIds }, catechumenProfileId: { not: null } },
       select: { catechumenProfileId: true },
     });
-    const catechumenIds = [...new Set(enrollments.map((e: any) => e.catechumenProfileId))];
+    const catechumenIds = [
+      ...new Set(enrollments.map((e: any) => e.catechumenProfileId).filter(Boolean)),
+    ];
     if (catechumenIds.length === 0) return [];
 
     const profiles = await context.entities.CatechumenProfile.findMany({
       where: { id: { in: catechumenIds }, householdId: { not: null } },
       select: { householdId: true },
     });
-    const householdIds = [...new Set(profiles.map((p: any) => p.householdId))];
+    const householdIds = [
+      ...new Set(profiles.map((p: any) => p.householdId).filter(Boolean)),
+    ];
     if (householdIds.length === 0) return [];
 
-    const where: any = { id: { in: householdIds } };
+    const where: any = { id: { in: householdIds }, parishId };
     if (args.communityId) where.communityId = args.communityId;
     return context.entities.Household.findMany({
       where: buildWhere(where),
@@ -212,28 +158,7 @@ export const listHouseholds = async (
     });
   }
 
-  // Lead catechist or general catechetical role: households in scoped workspace
-  if (staffRoles.includes('LEAD_CATECHIST') || staffRoles.includes('ASSISTANT_CATECHIST')) {
-    const where: any = { parishId: { in: scopedParishIds } };
-    if (args.communityId) where.communityId = args.communityId;
-    return context.entities.Household.findMany({
-      where: buildWhere(where),
-      orderBy: { name: 'asc' },
-      take,
-      skip,
-      include: includeOpts,
-    });
-  }
-
-  const where: any = { parishId: { in: scopedParishIds } };
-  if (args.communityId) where.communityId = args.communityId;
-  return context.entities.Household.findMany({
-    where: buildWhere(where),
-    orderBy: { name: 'asc' },
-    take,
-    skip,
-    include: includeOpts,
-  });
+  return [];
 };
 
 export const createHousehold = async (

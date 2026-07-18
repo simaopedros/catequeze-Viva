@@ -24,6 +24,7 @@ import { useAuth } from "wasp/client/auth";
 import { cn } from "../../client/utils";
 import { toast } from "../../client/hooks/use-toast";
 import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
+import { setActiveWorkspaceId } from "../../client/hooks/workspaceStore";
 import { usePageVisibility } from "../../client/hooks/usePageVisibility";
 import {
   AppDisplayTitle,
@@ -98,6 +99,7 @@ export default function MessagesPage() {
       try {
         const result = await getConversation({
           conversationId: convId,
+          workspaceId: workspaceId || undefined,
           cursor,
           since,
           take: 50,
@@ -170,8 +172,16 @@ export default function MessagesPage() {
         }
       }
     },
-    [refetchConvs, tc],
+    [refetchConvs, tc, workspaceId],
   );
+
+  // Notification deep-links may include ?w=workspaceId — align active workspace
+  useEffect(() => {
+    const w = searchParams.get("w");
+    if (w && w !== workspaceId) {
+      setActiveWorkspaceId(w);
+    }
+  }, [searchParams, workspaceId]);
 
   useEffect(() => {
     const conversationIdFromUrl = searchParams.get("c") || null;

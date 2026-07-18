@@ -6,6 +6,25 @@ export function sanitizeParticipantUserIds(currentUserId: string, participantUse
   return [...new Set(participantUserIds.map((id) => id.trim()).filter(Boolean))].filter((id) => id !== currentUserId);
 }
 
+/** Never expose full email in contact DTOs. */
+export function maskEmail(email: string | null | undefined): string | null {
+  if (!email || !email.includes('@')) return null;
+  const [local, domain] = email.split('@');
+  if (!local || !domain) return null;
+  const visible = local.slice(0, Math.min(2, local.length));
+  return `${visible}***@${domain}`;
+}
+
+export function buildDisplayName(user: {
+  firstName?: string | null;
+  lastName?: string | null;
+  email?: string | null;
+}): string {
+  const name = [user.firstName, user.lastName].filter(Boolean).join(' ').trim();
+  if (name) return name;
+  return maskEmail(user.email) || 'Usuário';
+}
+
 export function getConversationScopeType(args: { classId?: string; communityId?: string }): ConversationScopeType {
   if (args.classId) return 'CLASS';
   if (args.communityId) return 'COMMUNITY';

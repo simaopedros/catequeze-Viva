@@ -91,9 +91,15 @@ export default function SacramentsPage() {
     userRole,
   );
 
-  const { data: catechumens = [] } = useQuery(listCatechumens, { take: 200 });
+  const { data: catechumens = [] } = useQuery(
+    listCatechumens,
+    { take: 200, workspaceId: activeParishId || undefined } as any,
+    { enabled: Boolean(activeParishId) },
+  );
   const { data: journeys = [], isLoading: loading } = useQuery(
     listSacramentalJourneys,
+    { workspaceId: activeParishId || undefined } as any,
+    { enabled: Boolean(activeParishId) },
   );
   const [showForm, setShowForm] = useState(false);
   const [selectedCatechumenId, setSelectedCatechumenId] = useState("");

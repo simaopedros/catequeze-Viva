@@ -417,15 +417,17 @@ export const changeSubscriptionPlan: ChangeSubscriptionPlan<
     const subscription = await stripeClient.subscriptions.retrieve(stripeSubscriptionId);
     const itemId = subscription.items.data[0]?.id;
 
+    // Request plan change on Stripe only. Do NOT grant the new plan locally —
+    // subscriptionPlan is updated exclusively by the signed Stripe webhook after
+    // payment/invoice confirmation (prevents free upgrades on unpaid change).
     await stripeClient.subscriptions.update(stripeSubscriptionId, {
       items: [{ id: itemId, price: priceId }],
       proration_behavior: 'always_invoice',
-      metadata: { fromPlan: user.subscriptionStatus || '', toPlan: paymentPlanId },
-    });
-
-    await context.entities.User.update({
-      where: { id: userId },
-      data: { subscriptionPlan: paymentPlanId },
+      metadata: {
+        fromPlan: user.subscriptionStatus || '',
+        toPlan: paymentPlanId,
+        requestedBy: userId,
+      },
     });
   } catch (err: any) {
     console.error("Failed to change subscription plan:", err?.message || err);

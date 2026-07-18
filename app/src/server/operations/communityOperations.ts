@@ -1,33 +1,34 @@
 import { HttpError } from 'wasp/server';
-import { getDioceseParishIds } from '../auth/helpers';
+import { requireWorkspaceAccess } from './sharedScope';
 
-export const listCommunities = async (args: { parishId?: string }, context: any) => {
+export const listCommunities = async (
+  args: { parishId?: string; workspaceId?: string },
+  context: any,
+) => {
   if (!context.user) throw new HttpError(401);
 
-  const where: any = {};
-  if (args.parishId) {
-    where.parishId = args.parishId;
-  } else if (!context.user.isAdmin) {
-    const memberships = await context.entities.Membership.findMany({
-      where: { userId: context.user.id, status: 'ACTIVE' },
-      select: { parishId: true, role: true },
-    });
-    const parishIds = memberships.map((m: any) => m.parishId);
+  const parishId = (args.parishId || args.workspaceId || '').trim();
 
-    // DIOCESE_ADMIN: include all parishes in the diocese
-    if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
-      const dioceseParishIds = await getDioceseParishIds(context);
-      for (const id of dioceseParishIds) {
-        if (!parishIds.includes(id)) parishIds.push(id);
-      }
+  // Platform admin may list all when no parish is specified
+  if (!parishId) {
+    if (context.user.isAdmin) {
+      return context.entities.Community.findMany({
+        orderBy: { name: 'asc' },
+        include: {
+          parish: { select: { id: true, name: true } },
+          _count: { select: { memberships: true } },
+        },
+      });
     }
-
-    if (parishIds.length === 0) return [];
-    where.parishId = { in: parishIds };
+    // Non-admin must pass parishId — refuse arbitrary cross-tenant dump
+    throw new HttpError(400, 'parishId é obrigatório.');
   }
 
+  // Validate access to the requested parish (403 if arbitrary / other workspace)
+  await requireWorkspaceAccess(context, parishId);
+
   return context.entities.Community.findMany({
-    where,
+    where: { parishId },
     orderBy: { name: 'asc' },
     include: {
       parish: { select: { id: true, name: true } },

@@ -1,19 +1,32 @@
 import { HttpError } from 'wasp/server';
-import { getUserParishRoles, isCoordinatorOrAboveRole } from '../auth/helpers';
+import { requireWorkspaceAccess } from './sharedScope';
 
-export const getReportsOverview = async (_args: void, context: any) => {
+export const getReportsOverview = async (
+  _args: { workspaceId?: string; parishId?: string } | void,
+  context: any,
+) => {
   if (!context.user) throw new HttpError(401);
 
-  const parishRoles = await getUserParishRoles(context);
-  const roles = parishRoles.map(r => r.role);
+  const args = _args || {};
+  const workspaceId =
+    args.workspaceId?.trim() || args.parishId?.trim() || undefined;
 
-  // Only coordinators (and PERSONAL_OWNER) can access reports
-  if (!context.user.isAdmin && !roles.some((r: string) => isCoordinatorOrAboveRole(r))) {
-    throw new HttpError(403, 'Apenas coordenadores podem aceder a relatorios.');
+  if (!workspaceId && !context.user.isAdmin) {
+    throw new HttpError(400, 'workspaceId é obrigatório.');
   }
 
-  const parishIds = parishRoles.map(r => r.parishId);
-  const whereClause = context.user.isAdmin ? {} : { parishId: { in: parishIds } };
+  let whereClause: Record<string, unknown> = {};
+
+  if (workspaceId) {
+    const access = await requireWorkspaceAccess(context, workspaceId);
+    // Only coordinators (and PERSONAL_OWNER / diocese admin) for parish reports
+    if (!access.isCoordinatorOrAbove && !context.user.isAdmin) {
+      throw new HttpError(403, 'Apenas coordenadores podem aceder a relatorios.');
+    }
+    whereClause = { parishId: access.workspaceId };
+  } else if (!context.user.isAdmin) {
+    throw new HttpError(403, 'Apenas coordenadores podem aceder a relatorios.');
+  }
 
   // Classes with attendance stats
   const classes = await context.entities.CatechesisClass.findMany({

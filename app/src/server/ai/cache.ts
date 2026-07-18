@@ -1,44 +1,67 @@
 /**
- * AI Response Cache — avoids repeated API calls for common theological questions.
+ * AI Response Cache — scoped by user + workspace + model + prompt version.
  *
- * Uses SHA256 hash of the normalized prompt as cache key.
- * TTL: 30 days from creation.
+ * Never stores full prompt text (only opaque hash). TTL reduced to 7 days.
  */
 import crypto from 'crypto';
 
-const CACHE_TTL_DAYS = 30;
+const CACHE_TTL_DAYS = 7;
+const PROMPT_VERSION = process.env.AI_PROMPT_VERSION || 'v1';
 
 function normalizePrompt(prompt: string): string {
   return prompt.toLowerCase().trim().replace(/\s+/g, ' ');
 }
 
-function hashPrompt(prompt: string): string {
-  return crypto.createHash('sha256').update(normalizePrompt(prompt)).digest('hex');
+export function buildAiCacheHash(params: {
+  prompt: string;
+  userId?: string | null;
+  workspaceId?: string | null;
+  model?: string | null;
+}): string {
+  const material = [
+    params.userId || 'anon',
+    params.workspaceId || 'global',
+    params.model || 'default',
+    PROMPT_VERSION,
+    normalizePrompt(params.prompt),
+  ].join('|');
+  return crypto.createHash('sha256').update(material).digest('hex');
 }
 
 /**
- * Check if a cached response exists for the given prompt.
- * Increments hitCount and returns the cached response if found and not expired.
+ * Check if a cached response exists for the given prompt+scope.
  */
 export async function getCachedResponse(
   entities: any,
   prompt: string,
+  scope?: {
+    userId?: string | null;
+    workspaceId?: string | null;
+    model?: string | null;
+  },
 ): Promise<string | null> {
-  const promptHash = hashPrompt(prompt);
+  // Free-form unscoped global cache is disabled for privacy.
+  if (!scope?.userId) return null;
+
+  const promptHash = buildAiCacheHash({
+    prompt,
+    userId: scope.userId,
+    workspaceId: scope.workspaceId,
+    model: scope.model,
+  });
   const cacheEntry = await entities.AiResponseCache.findUnique({
     where: { promptHash },
   });
 
   if (!cacheEntry) return null;
 
-  // Check if expired
   if (new Date(cacheEntry.expiresAt) < new Date()) {
-    // Delete expired entry asynchronously (fire-and-forget)
-    entities.AiResponseCache.delete({ where: { id: cacheEntry.id } }).catch(() => {});
+    entities.AiResponseCache.delete({ where: { id: cacheEntry.id } }).catch(
+      () => {},
+    );
     return null;
   }
 
-  // Update hit count
   await entities.AiResponseCache.update({
     where: { id: cacheEntry.id },
     data: { hitCount: { increment: 1 } },
@@ -48,16 +71,26 @@ export async function getCachedResponse(
 }
 
 /**
- * Store a response in the cache.
- * @param prompt — the original user prompt
- * @param response — the AI-generated response to cache
+ * Store a response in the scoped cache. promptPreview is never full text.
  */
 export async function setCachedResponse(
   entities: any,
   prompt: string,
   response: string,
+  scope?: {
+    userId?: string | null;
+    workspaceId?: string | null;
+    model?: string | null;
+  },
 ): Promise<void> {
-  const promptHash = hashPrompt(prompt);
+  if (!scope?.userId) return;
+
+  const promptHash = buildAiCacheHash({
+    prompt,
+    userId: scope.userId,
+    workspaceId: scope.workspaceId,
+    model: scope.model,
+  });
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + CACHE_TTL_DAYS);
 
@@ -65,23 +98,20 @@ export async function setCachedResponse(
     where: { promptHash },
     update: {
       response,
-      promptPreview: prompt.substring(0, 200),
+      // Opaque marker only — no plaintext prompt storage
+      promptPreview: `[scoped:${PROMPT_VERSION}]`,
       hitCount: { increment: 1 },
       expiresAt,
     },
     create: {
       promptHash,
       response,
-      promptPreview: prompt.substring(0, 200),
+      promptPreview: `[scoped:${PROMPT_VERSION}]`,
       expiresAt,
     },
   });
 }
 
-/**
- * Clean up expired cache entries.
- * Called periodically (e.g., via PgBoss job).
- */
 export async function cleanupExpiredCache(entities: any): Promise<number> {
   const result = await entities.AiResponseCache.deleteMany({
     where: {

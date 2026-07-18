@@ -1332,7 +1332,7 @@ api maintenanceApi {
 
 action generateCatechumenUploadToken {
   fn: import { generateCatechumenUploadToken } from "@src/server/operations/uploadTokenOperations",
-  entities: [CatechumenProfile, Membership]
+  entities: [CatechumenProfile, Membership, Parish, ClassEnrollment, ClassCatechist, CatechesisClass, Household, AuditLog]
 }
 
 query getCatechumenByUploadToken {
@@ -1507,17 +1507,17 @@ action sendMessageEmail {
 //#region Communication Hub - Conversations
 query listConversations {
   fn: import { listConversations } from "@src/server/operations/conversationOperations",
-  entities: [Conversation, ConversationParticipant, Message, User, Membership, Parish, CatechesisClass, Community]
+  entities: [Conversation, ConversationParticipant, Message, User, Membership, Parish, CatechesisClass, Community, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist, Household]
 }
 
 query getUnreadMessagesCount {
   fn: import { getUnreadMessagesCount } from "@src/server/operations/conversationOperations",
-  entities: [ConversationParticipant, Message]
+  entities: [ConversationParticipant, Message, Conversation, Parish, Membership, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist, Household]
 }
 
 query getConversation {
   fn: import { getConversation } from "@src/server/operations/conversationOperations",
-  entities: [Conversation, ConversationParticipant, Message, MessageReaction, User, CatechesisClass, Community]
+  entities: [Conversation, ConversationParticipant, Message, MessageReaction, User, CatechesisClass, Community, Parish, Membership, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist, Household]
 }
 
 action createConversation {
@@ -1527,12 +1527,12 @@ action createConversation {
 
 action sendMessage {
   fn: import { sendMessage } from "@src/server/operations/conversationOperations",
-  entities: [Conversation, ConversationParticipant, Message, Notification, User]
+  entities: [Conversation, ConversationParticipant, Message, Notification, User, Parish, Membership, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist, Household]
 }
 
 action markConversationRead {
   fn: import { markConversationRead } from "@src/server/operations/conversationOperations",
-  entities: [ConversationParticipant, Notification]
+  entities: [ConversationParticipant, Notification, Conversation, Parish, Membership, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist, Household]
 }
 
 action addConversationParticipant {
@@ -1542,17 +1542,17 @@ action addConversationParticipant {
 
 action removeConversationParticipant {
   fn: import { removeConversationParticipant } from "@src/server/operations/conversationOperations",
-  entities: [Conversation, ConversationParticipant]
+  entities: [Conversation, ConversationParticipant, Parish, Membership, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist, Household]
 }
 
 action muteConversation {
   fn: import { muteConversation } from "@src/server/operations/conversationOperations",
-  entities: [Conversation, ConversationParticipant]
+  entities: [Conversation, ConversationParticipant, Parish, Membership, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist, Household]
 }
 
 action getOrCreateClassChat {
   fn: import { getOrCreateClassChat } from "@src/server/operations/conversationOperations",
-  entities: [Conversation, ConversationParticipant, CatechesisClass, CatechumenProfile, Membership, ClassEnrollment, Message, Parish, GuardianProfile, Household]
+  entities: [Conversation, ConversationParticipant, CatechesisClass, CatechumenProfile, Membership, ClassEnrollment, Message, Parish, GuardianProfile, Household, ClassCatechist]
 }
 
 query getContactsForConversation {

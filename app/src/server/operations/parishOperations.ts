@@ -223,11 +223,13 @@ export const createParish = async (
       throw new HttpError(403, PARISH_INVITE_REQUIRED_MESSAGE);
     }
 
+    // Ignore any client-supplied role — owners always start as PARISH_COORDINATOR.
+    // SUPER_ADMIN / DIOCESE_ADMIN are assigned only via administrative flows.
     await context.entities.Membership.create({
       data: {
         userId: context.user.id,
         parishId: existing.id,
-        role: args.role || 'PARISH_COORDINATOR',
+        role: 'PARISH_COORDINATOR',
         status: 'ACTIVE',
       },
     });
@@ -251,11 +253,12 @@ export const createParish = async (
     },
   });
 
+  // Client-supplied role is intentionally ignored (privilege escalation fix).
   await context.entities.Membership.create({
     data: {
       userId: context.user.id,
       parishId: parish.id,
-      role: args.role || 'PARISH_COORDINATOR',
+      role: 'PARISH_COORDINATOR',
       status: 'ACTIVE',
     },
   });
@@ -284,31 +287,35 @@ export const updateParish = async (
 ): Promise<{ success: boolean }> => {
   if (!context.user) throw new HttpError(401);
 
+  // Only platform admin, personal owner, or coordinator-or-above in THIS workspace
+  // may change parish data / deactivate. Guardians, catechumens, viewers, catechists: 403.
   if (!context.user.isAdmin) {
-    const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, parishId: args.id, status: 'ACTIVE' },
-    });
-    if (!membership) {
-      // Allow personal workspace owner (no Membership record)
-      const isPersonalOwner = await context.entities.Parish.findFirst({
-        where: { id: args.id, ownerId: context.user.id, type: 'PERSONAL' },
-        select: { id: true },
-      });
-      if (!isPersonalOwner) {
-        const isDioceseAdmin = await requireDioceseAccess(context, args.id);
-        if (!isDioceseAdmin) throw new HttpError(403);
-      }
+    const { requireWorkspaceAccess } = await import('./sharedScope');
+    const access = await requireWorkspaceAccess(context, args.id);
+    if (!access.canManageParish && access.role !== 'PERSONAL_OWNER') {
+      throw new HttpError(
+        403,
+        'Apenas coordenadores ou administradores deste workspace podem alterar a paróquia.',
+      );
+    }
+    // Non-admins cannot flip active without coordinator rights (already checked)
+    if (args.active === false && !access.canManageParish) {
+      throw new HttpError(403, 'Sem permissão para desativar esta paróquia.');
     }
   }
 
   const { id, ...data } = args;
   await context.entities.Parish.update({ where: { id }, data });
-  await writeAuditLog(context, 'UPDATE', 'Parish', args.id, { parishId: args.id, operation: 'PARISH_UPDATE' });
+  await writeAuditLog(context, 'UPDATE', 'Parish', args.id, {
+    parishId: args.id,
+    operation: 'PARISH_UPDATE',
+    fields: Object.keys(data),
+  });
   return { success: true };
 };
 
 const DELETE_CONFIRMATION = 'DELETAR';
-const DELETE_AUTHORIZED_ROLES = ['PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'DIOCESE_ADMIN', 'SUPER_ADMIN'];
+const DELETE_AUTHORIZED_ROLES = ['PARISH_COORDINATOR', 'DIOCESE_ADMIN', 'SUPER_ADMIN', 'PERSONAL_OWNER'];
 
 /**
  * Archive (soft-delete) a parish: marks it inactive so it disappears from the

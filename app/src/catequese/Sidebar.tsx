@@ -230,15 +230,19 @@ export function Sidebar() {
     () => new Set(["people"]),
   );
   const { userRole, isAdmin } = useUserContext();
-  const { workspaceType } = useActiveWorkspace();
+  const { workspaceType, workspaceId } = useActiveWorkspace();
   const isVisible = usePageVisibility();
 
-  const { data: unreadMessages } = useQuery(getUnreadMessagesCount, undefined, {
-    enabled: (!!userRole || isAdmin) && isVisible,
-    refetchInterval: isVisible ? 120000 : false,
-    staleTime: 60000,
-    refetchOnWindowFocus: false,
-  });
+  const { data: unreadMessages } = useQuery(
+    getUnreadMessagesCount,
+    workspaceId ? ({ workspaceId } as any) : undefined,
+    {
+      enabled: (!!userRole || isAdmin) && !!workspaceId && isVisible,
+      refetchInterval: isVisible ? 120000 : false,
+      staleTime: 60000,
+      refetchOnWindowFocus: false,
+    },
+  );
 
   const unreadMessagesCount = unreadMessages?.count || 0;
 

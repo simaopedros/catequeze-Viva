@@ -309,10 +309,17 @@ export const chatWithAi = async (
     throw new HttpError(402, 'Plano sem acesso ao assistente teológico. Faça upgrade para Catequista editorial ou Paróquia.');
   }
 
+  const promptText = sanitizePrompt(args.message);
+  const cacheScope = {
+    userId: context.user.id,
+    workspaceId: (args as any).workspaceId || null,
+    model: null as string | null,
+  };
+
   // Check cache first (only for standalone questions, not conversation continuations)
   let cached: string | null = null;
   if (!args.conversationId) {
-    cached = await getCachedResponse(context.entities, sanitizePrompt(args.message));
+    cached = await getCachedResponse(context.entities, promptText, cacheScope);
   }
 
   let reply: string;
@@ -320,11 +327,12 @@ export const chatWithAi = async (
     reply = cached;
   } else {
     const { client, model } = await getAiClient();
+    cacheScope.model = model;
 
     const response = await aiCompletion(client, model, {
       messages: [
         { role: 'system', content: CHAT_SYSTEM_PROMPT },
-        { role: 'user', content: sanitizePrompt(args.message) },
+        { role: 'user', content: promptText },
       ],
       temperature: 0.7,
       maxTokens: 2048,
@@ -333,9 +341,9 @@ export const chatWithAi = async (
 
     reply = response.content;
 
-    // Cache the response for future queries (standalone only)
+    // Cache the response for future queries (standalone only), scoped per user
     if (!args.conversationId) {
-      setCachedResponse(context.entities, sanitizePrompt(args.message), reply).catch(() => {});
+      setCachedResponse(context.entities, promptText, reply, cacheScope).catch(() => {});
     }
   }
 

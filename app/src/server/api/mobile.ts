@@ -158,22 +158,46 @@ export async function mobileAuthLogin(req: Request, res: Response, _context: any
   ensureValidEmail(args);
   ensurePasswordIsPresent(args);
 
+  const ip = req.ip || req.socket?.remoteAddress || 'unknown';
+  const emailKey = String(args.email || '').toLowerCase();
+  const {
+    assertNotLocked,
+    recordAuthFailure,
+    clearAuthFailures,
+  } = await import('../security/authAttemptGuard');
+
+  try {
+    assertNotLocked(`mobile-login:ip:${ip}`);
+    assertNotLocked(`mobile-login:email:${emailKey}`);
+  } catch (e: any) {
+    throw new HttpError(429, e.message || 'Muitas tentativas de login.');
+  }
+
   const providerId = createProviderId('email', args.email);
   const authIdentity = await findAuthIdentity(providerId);
   if (!authIdentity) {
+    recordAuthFailure(`mobile-login:ip:${ip}`);
+    recordAuthFailure(`mobile-login:email:${emailKey}`);
     throw createInvalidCredentialsError();
   }
 
   const providerData = getProviderDataWithPassword<'email'>(authIdentity.providerData);
   if (!providerData.isEmailVerified) {
+    recordAuthFailure(`mobile-login:ip:${ip}`);
+    recordAuthFailure(`mobile-login:email:${emailKey}`);
     throw createInvalidCredentialsError();
   }
 
   try {
     await verifyPassword(providerData.hashedPassword, args.password);
   } catch {
+    recordAuthFailure(`mobile-login:ip:${ip}`);
+    recordAuthFailure(`mobile-login:email:${emailKey}`);
     throw createInvalidCredentialsError();
   }
+
+  clearAuthFailures(`mobile-login:ip:${ip}`);
+  clearAuthFailures(`mobile-login:email:${emailKey}`);
 
   const auth = await findAuthWithUserBy({ id: authIdentity.authId });
   if (!auth) {

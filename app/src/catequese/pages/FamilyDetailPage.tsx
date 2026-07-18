@@ -115,14 +115,8 @@ export default function FamilyDetailPage() {
       parishId: activeParishId || undefined,
     } as any,
   );
-  // Fallback without parish scope if not found (deep link / workspace mismatch)
-  const { data: allHouseholdsFallback = [] } = useQuery(
-    listHouseholds,
-    { take: 200 } as any,
-    {
-      enabled: !loading && Boolean(id) && !allHouseholds?.some((h: any) => h.id === id),
-    },
-  );
+  // Without workspace scope the server returns [] for non-admin — no unscoped dump.
+  const allHouseholdsFallback: any[] = [];
   const household =
     allHouseholds?.find((h: any) => h.id === id) ||
     allHouseholdsFallback?.find((h: any) => h.id === id);
@@ -176,8 +170,12 @@ export default function FamilyDetailPage() {
   // Load candidates on catechumens tab or when dialog is open
   const { data: allCatechumens = [], isLoading: loadingCatechumens } = useQuery(
     listCatechumens,
-    { take: 500 },
-    { enabled: addCatechumenDialogOpen || tab === "catechumens" },
+    { take: 500, workspaceId: activeParishId || undefined } as any,
+    {
+      enabled:
+        (addCatechumenDialogOpen || tab === "catechumens") &&
+        Boolean(activeParishId),
+    },
   );
 
   const [confirmRemoveCatechumenOpen, setConfirmRemoveCatechumenOpen] =

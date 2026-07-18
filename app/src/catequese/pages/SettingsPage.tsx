@@ -61,11 +61,13 @@ export default function SettingsPage() {
   // Export
   const [exporting, setExporting] = useState(false);
   const [exportMsg, setExportMsg] = useState("");
-  // Migration
+  // Migration (platform admin only)
   const [migrating, setMigrating] = useState(false);
   const [migrationMsg, setMigrationMsg] = useState("");
   const [migrationError, setMigrationError] = useState(false);
   const [sourceParishId, setSourceParishId] = useState("");
+  const [targetParishId, setTargetParishId] = useState("");
+  const [migrationConfirm, setMigrationConfirm] = useState("");
   const { data: userParishes = [] } = useQuery(listParishes);
 
   // Profile form (manual since it uses PhoneMaskInput which doesn't support ref)
@@ -129,17 +131,18 @@ export default function SettingsPage() {
   };
 
   const handleMigration = async () => {
-    if (!sourceParishId) return;
-    const coordinatorParish = userParishes.find(
-      (p: any) => p._count?.memberships > 0,
-    );
-    if (!coordinatorParish) {
-      setMigrationMsg(t("not_coordinator"));
+    if (!sourceParishId || !targetParishId) return;
+    if (sourceParishId === targetParishId) {
+      setMigrationMsg(t("different_parishes"));
       setMigrationError(true);
       return;
     }
-    if (sourceParishId === coordinatorParish.id) {
-      setMigrationMsg(t("different_parishes"));
+    if (migrationConfirm !== "CONFIRM_MIGRATE") {
+      setMigrationMsg(
+        t("migration_confirm_required", {
+          defaultValue: 'Digite CONFIRM_MIGRATE para confirmar a migração.',
+        }),
+      );
       setMigrationError(true);
       return;
     }
@@ -150,7 +153,10 @@ export default function SettingsPage() {
     try {
       const result = await executeParishMigration({
         sourceParishId,
-        targetParishId: coordinatorParish.id,
+        targetParishId,
+        confirmSourceParishId: sourceParishId,
+        confirmTargetParishId: targetParishId,
+        confirmation: "CONFIRM_MIGRATE",
       });
       setMigrationMsg(
         t("migration_success", {
@@ -161,6 +167,8 @@ export default function SettingsPage() {
       );
       setMigrationError(false);
       setSourceParishId("");
+      setTargetParishId("");
+      setMigrationConfirm("");
     } catch (e: any) {
       setMigrationMsg(e.message || t("migration_error"));
       setMigrationError(true);
@@ -363,14 +371,19 @@ export default function SettingsPage() {
         </Button>
       </AppPanel>
 
-      {/* Migration — only for coordinators */}
-      {userRole === "PARISH_COORDINATOR" && (
+      {/* Migration — platform admin only (capture-parish vulnerability fix) */}
+      {user?.isAdmin && (
         <AppPanel className="space-y-4">
           <AppEyebrow className="flex items-center gap-2">
             <GitMerge className="h-3.5 w-3.5" />
             {t("migration")}
           </AppEyebrow>
-          <p className="text-xs text-muted-foreground">{t("migration_desc")}</p>
+          <p className="text-xs text-muted-foreground">
+            {t("migration_desc", {
+              defaultValue:
+                "Somente administrador da plataforma. Confirme origem e destino explicitamente.",
+            })}
+          </p>
           <div>
             <label htmlFor="source-parish" className="text-xs font-medium">
               {t("source_parish")}
@@ -392,6 +405,41 @@ export default function SettingsPage() {
                 ))}
             </select>
           </div>
+          <div>
+            <label htmlFor="target-parish" className="text-xs font-medium">
+              {t("target_parish", { defaultValue: "Paróquia de destino" })}
+            </label>
+            <select
+              id="target-parish"
+              value={targetParishId}
+              onChange={(e) => setTargetParishId(e.target.value)}
+              className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
+            >
+              <option value="">{t("select_parish")}</option>
+              {userParishes
+                .filter((p: any) => p.active && p.id !== sourceParishId)
+                .map((p: any) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                    {p.city ? ` — ${p.city}/${p.state}` : ""}
+                  </option>
+                ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="migration-confirm" className="text-xs font-medium">
+              {t("migration_confirm_label", {
+                defaultValue: 'Digite CONFIRM_MIGRATE',
+              })}
+            </label>
+            <Input
+              id="migration-confirm"
+              value={migrationConfirm}
+              onChange={(e) => setMigrationConfirm(e.target.value)}
+              className="mt-1 rounded-sm"
+              autoComplete="off"
+            />
+          </div>
           {migrationMsg && (
             <p
               className={`text-xs flex items-center gap-1 ${
@@ -410,7 +458,12 @@ export default function SettingsPage() {
             size="sm"
             variant="outline"
             onClick={handleMigration}
-            disabled={migrating || !sourceParishId}
+            disabled={
+              migrating ||
+              !sourceParishId ||
+              !targetParishId ||
+              migrationConfirm !== "CONFIRM_MIGRATE"
+            }
           >
             <RefreshCw
               className={`mr-1 h-3 w-3 ${migrating ? "animate-spin" : ""}`}

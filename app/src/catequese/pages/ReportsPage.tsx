@@ -29,7 +29,11 @@ export default function ReportsPage() {
   const { t } = useTranslation("reports");
   const { t: tc } = useTranslation("common");
   const { activeParishId } = useActiveParish();
-  const { data, isLoading: loading } = useQuery(getReportsOverview);
+  const { data, isLoading: loading } = useQuery(
+    getReportsOverview,
+    { workspaceId: activeParishId || undefined } as any,
+    { enabled: Boolean(activeParishId) },
+  );
   const [tab, setTab] = useState<"presenca" | "ranking" | "grafico">(
     "presenca",
   );

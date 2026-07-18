@@ -1,91 +1,70 @@
 import { Prisma } from '@prisma/client';
 import { HttpError, prisma } from 'wasp/server';
-import { assertCanAccessParish, assertCanAccessClass, getDioceseParishIds, getEffectiveParishRole, requireAuth } from '../auth/helpers';
+import { assertCanAccessClass, requireAuth } from '../auth/helpers';
 import {
+  buildDisplayName,
   canAddParticipantsToConversation,
   canRemoveParticipantsFromConversation,
   getConversationScopeType,
   isManualConversationTypeAllowed,
+  maskEmail,
   sanitizeParticipantUserIds,
 } from './conversationPolicies';
+import {
+  requireWorkspaceAccess,
+  resolveWorkspaceAccess,
+  type WorkspaceAccess,
+} from './sharedScope';
+
+export { maskEmail, buildDisplayName } from './conversationPolicies';
 
 // ── Role-based hierarchy constants ──────────────────────────────────────────
 
-const STAFF_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'];
+const STAFF_ROLES = [
+  'SUPER_ADMIN',
+  'DIOCESE_ADMIN',
+  'PARISH_COORDINATOR',
+  'COMMUNITY_COORDINATOR',
+  'PERSONAL_OWNER',
+];
 const CAN_CREATE_GROUP = [...STAFF_ROLES, 'LEAD_CATECHIST'];
 const CAN_CREATE_ANNOUNCEMENT = STAFF_ROLES;
 
-interface ConversationContact {
+export interface ConversationContact {
+  // Index signature required for Wasp SuperJSON Payload
   [key: string]: any;
   id: string;
   firstName: string | null;
   lastName: string | null;
-  email: string | null;
+  displayName: string;
+  /** Full email is never returned. Only present when name is empty. */
+  maskedEmail: string | null;
   avatarUrl: string | null;
   role?: string;
 }
 
-interface WorkspaceDescriptor {
-  [key: string]: any;
-  id: string;
-  type: string;
-  ownerId: string | null;
-}
-
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
-async function getUserParishIds(context: any): Promise<string[]> {
-  const memberships = await context.entities.Membership.findMany({
-    where: { userId: context.user.id, status: 'ACTIVE' },
-    select: { parishId: true, role: true },
-  });
-  const ids = memberships.map((m: any) => m.parishId);
-
-  // Include personal workspace
-  const personal = await context.entities.Parish.findFirst({
-    where: { ownerId: context.user.id, type: 'PERSONAL' },
-    select: { id: true },
-  });
-  if (personal && !ids.includes(personal.id)) {
-    ids.push(personal.id);
-  }
-
-  // DIOCESE_ADMIN: include all parishes in the diocese
-  if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
-    const dioceseParishIds = await getDioceseParishIds(context);
-    for (const id of dioceseParishIds) {
-      if (!ids.includes(id)) ids.push(id);
-    }
-  }
-
-  return ids;
-}
-
-async function getUserRoles(context: any): Promise<string[]> {
-  const memberships = await context.entities.Membership.findMany({
-    where: { userId: context.user.id, status: 'ACTIVE' },
-    select: { role: true, parishId: true },
-  });
-  const roles = memberships.map((m: any) => m.role);
-
-  // DIOCESE_ADMIN: ensure the role is present even for parishes without
-  // direct membership (role comes from the diocese hierarchy).
-  if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
-    if (!roles.includes('DIOCESE_ADMIN')) roles.push('DIOCESE_ADMIN');
-  }
-
-  return roles;
-}
-
-async function getWorkspaceDescriptor(context: any, workspaceId: string): Promise<WorkspaceDescriptor> {
-  const workspace = await context.entities.Parish.findUnique({
-    where: { id: workspaceId },
-    select: { id: true, type: true, ownerId: true },
-  });
-  if (!workspace) {
-    throw new HttpError(404, 'Espaço de trabalho não encontrado.');
-  }
-  return workspace;
+function toContactDTO(
+  user: {
+    id: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    email?: string | null;
+    avatarUrl?: string | null;
+  },
+  role?: string,
+): ConversationContact {
+  const name = [user.firstName, user.lastName].filter(Boolean).join(' ').trim();
+  return {
+    id: user.id,
+    firstName: user.firstName ?? null,
+    lastName: user.lastName ?? null,
+    displayName: buildDisplayName(user),
+    maskedEmail: name ? null : maskEmail(user.email),
+    avatarUrl: user.avatarUrl ?? null,
+    ...(role ? { role } : {}),
+  };
 }
 
 function dedupeContacts(contacts: ConversationContact[]): ConversationContact[] {
@@ -95,131 +74,280 @@ function dedupeContacts(contacts: ConversationContact[]): ConversationContact[] 
       byId.set(contact.id, contact);
     }
   }
-  return Array.from(byId.values()).sort((a, b) => {
-    const left = `${a.firstName || ''} ${a.lastName || ''}`.trim() || a.email || '';
-    const right = `${b.firstName || ''} ${b.lastName || ''}`.trim() || b.email || '';
-    return left.localeCompare(right, 'pt-BR');
-  });
+  return Array.from(byId.values()).sort((a, b) =>
+    a.displayName.localeCompare(b.displayName, 'pt-BR'),
+  );
 }
 
-async function listAllowedConversationContactsInternal(
-  args: { workspaceId: string },
-  context: any
-): Promise<ConversationContact[]> {
+const USER_SELECT = {
+  id: true,
+  firstName: true,
+  lastName: true,
+  email: true,
+  avatarUrl: true,
+} as const;
+
+/**
+ * Whether the user currently has a valid relationship with the workspace
+ * (membership, personal ownership, diocese admin scope, or platform admin).
+ * Does not grant elevated roles across workspaces.
+ */
+export async function userHasValidWorkspaceRelation(
+  context: any,
+  userId: string,
+  workspaceId: string,
+): Promise<boolean> {
+  if (!workspaceId) return false;
+
+  const workspace = await context.entities.Parish.findUnique({
+    where: { id: workspaceId },
+    select: { id: true, type: true, ownerId: true },
+  });
+  if (!workspace) return false;
+
+  if (workspace.type === 'PERSONAL' && workspace.ownerId === userId) {
+    return true;
+  }
+
+  const membership = await context.entities.Membership.findFirst({
+    where: { userId, parishId: workspaceId, status: 'ACTIVE' },
+    select: { id: true },
+  });
+  if (membership) return true;
+
+  // Guardians / catechumens linked only via household or profile
+  const guardian = await context.entities.GuardianProfile.findFirst({
+    where: { userId, household: { parishId: workspaceId } },
+    select: { id: true },
+  });
+  if (guardian) return true;
+
+  const catechumen = await context.entities.CatechumenProfile.findFirst({
+    where: {
+      userId,
+      OR: [
+        { parishId: workspaceId },
+        { household: { parishId: workspaceId } },
+        { enrollments: { some: { class: { parishId: workspaceId } } } },
+      ],
+    },
+    select: { id: true },
+  });
+  if (catechumen) return true;
+
+  // Class catechist without membership edge cases
+  const classLink = await context.entities.ClassCatechist.findFirst({
+    where: { userId, class: { parishId: workspaceId } },
+    select: { id: true },
+  });
+  if (classLink) return true;
+
+  return false;
+}
+
+/**
+ * Load conversation, verify participation + current workspace relation.
+ * Optional activeWorkspaceId must match conversation.parishId.
+ */
+async function assertCanAccessConversation(
+  context: any,
+  conversationId: string,
+  activeWorkspaceId?: string | null,
+): Promise<{
+  conversation: any;
+  participant: any;
+}> {
   requireAuth(context.user);
 
-  if (!args.workspaceId) {
-    throw new HttpError(400, 'workspaceId é obrigatório.');
+  if (!conversationId) {
+    throw new HttpError(400, 'conversationId é obrigatório.');
   }
 
-  const workspace = await getWorkspaceDescriptor(context, args.workspaceId);
-  const isPersonalWorkspace = workspace.type === 'PERSONAL' || workspace.ownerId === context.user.id;
-
-  if (!context.user.isAdmin) {
-    await assertCanAccessParish(context, args.workspaceId);
-  }
-
-  const roles = await getUserRoles(context);
-  const isCatechumen = roles.includes('CATECHUMEN') && !roles.some((r) => r !== 'CATECHUMEN');
-
-  if (context.user.isAdmin && isPersonalWorkspace) {
-    const users = await context.entities.User.findMany({
-      select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true },
-      take: 200,
-      orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }],
-    });
-    return dedupeContacts(users);
-  }
-
-  if (isCatechumen) {
-    const catechumenProfile = await context.entities.CatechumenProfile.findFirst({
-      where: { userId: context.user.id },
-      select: { id: true, householdId: true, parishId: true },
-    });
-    if (!catechumenProfile) return [];
-
-    const enrollmentWhere: any = { catechumenProfileId: catechumenProfile.id };
-    if (!isPersonalWorkspace) {
-      enrollmentWhere.class = { parishId: args.workspaceId };
-    }
-
-    const enrolledClassIds = await context.entities.ClassEnrollment.findMany({
-      where: enrollmentWhere,
-      select: { classId: true },
-    });
-    const classIds = enrolledClassIds.map((e: any) => e.classId);
-
-    const catechistUsers = classIds.length > 0
-      ? await context.entities.ClassCatechist.findMany({
-          where: { classId: { in: classIds } },
-          select: {
-            user: { select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true } },
-            role: true,
+  const conversation = await context.entities.Conversation.findUnique({
+    where: { id: conversationId },
+    include: {
+      participants: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              avatarUrl: true,
+            },
           },
-          distinct: ['userId'],
-        })
-      : [];
+        },
+      },
+      class: { select: { id: true, name: true } },
+      community: { select: { id: true, name: true } },
+    },
+  });
 
-    let guardianUsers: any[] = [];
-    if (catechumenProfile.householdId) {
-      guardianUsers = await context.entities.GuardianProfile.findMany({
-        where: { householdId: catechumenProfile.householdId },
-        select: { user: { select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true } }, userId: true },
-      });
-    }
-
-    const otherCatechumenIds = classIds.length > 0
-      ? await context.entities.ClassEnrollment.findMany({
-          where: { classId: { in: classIds }, catechumenProfileId: { not: catechumenProfile.id } },
-          select: { catechumenProfile: { select: { userId: true } } },
-        })
-      : [];
-
-    const otherCatechumenUserIds = otherCatechumenIds
-      .map((e: any) => e.catechumenProfile?.userId)
-      .filter(Boolean) as string[];
-
-    const otherCatechumenUsers = otherCatechumenUserIds.length > 0
-      ? await context.entities.User.findMany({
-          where: { id: { in: otherCatechumenUserIds } },
-          select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true },
-        })
-      : [];
-
-    return dedupeContacts([
-      ...catechistUsers.map((c: any) => ({ ...c.user, role: c.role })),
-      ...guardianUsers.map((g: any) => ({ ...g.user, role: 'GUARDIAN' })),
-      ...otherCatechumenUsers.map((u: any) => ({ ...u, role: 'CATECHUMEN' })),
-    ]);
+  if (!conversation) {
+    throw new HttpError(404, 'Conversa não encontrada.');
   }
 
-  const parishIds = context.user.isAdmin
-    ? [args.workspaceId]
-    : isPersonalWorkspace
-      ? await getUserParishIds(context)
-      : [args.workspaceId];
-  if (parishIds.length === 0) return [];
+  const participant = conversation.participants.find(
+    (p: any) => p.userId === context.user.id,
+  );
 
+  if (!participant && !context.user.isAdmin) {
+    throw new HttpError(403, 'Você não participa desta conversa.');
+  }
+
+  // Conversations without parishId cannot be safely scoped — block non-admin
+  if (!conversation.parishId) {
+    if (!context.user.isAdmin) {
+      throw new HttpError(
+        403,
+        'Esta conversa não está vinculada a um workspace válido.',
+      );
+    }
+  } else {
+    if (activeWorkspaceId && activeWorkspaceId !== conversation.parishId) {
+      throw new HttpError(
+        403,
+        'Esta conversa não pertence ao workspace ativo.',
+      );
+    }
+
+    // Platform admin may inspect any conversation; others need a current
+    // relation to the conversation workspace (membership, family, class…).
+    if (!context.user.isAdmin) {
+      const stillLinked = await userHasValidWorkspaceRelation(
+        context,
+        context.user.id,
+        conversation.parishId,
+      );
+      if (!stillLinked) {
+        throw new HttpError(
+          403,
+          'Você não tem mais vínculo válido com o workspace desta conversa.',
+        );
+      }
+    }
+  }
+
+  return { conversation, participant: participant || null };
+}
+
+async function listCatechistScopedContacts(
+  context: any,
+  access: WorkspaceAccess,
+): Promise<ConversationContact[]> {
+  const classIds =
+    access.allowedClassIds === 'ALL' ? null : access.allowedClassIds;
+  if (classIds && classIds.length === 0) return [];
+
+  const classFilter = classIds
+    ? { classId: { in: classIds } }
+    : { class: { parishId: access.workspaceId } };
+
+  const colleagues = await context.entities.ClassCatechist.findMany({
+    where: {
+      ...classFilter,
+      userId: { not: context.user.id },
+      class: { parishId: access.workspaceId },
+    },
+    select: {
+      user: { select: USER_SELECT },
+      role: true,
+    },
+    distinct: ['userId'],
+  });
+
+  const enrollments = await context.entities.ClassEnrollment.findMany({
+    where: {
+      status: 'ENROLLED',
+      ...(classIds
+        ? { classId: { in: classIds } }
+        : { class: { parishId: access.workspaceId } }),
+    },
+    select: {
+      catechumenProfile: {
+        select: {
+          userId: true,
+          user: { select: USER_SELECT },
+          household: {
+            select: {
+              guardians: {
+                select: {
+                  userId: true,
+                  user: { select: USER_SELECT },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const contacts: ConversationContact[] = [];
+  for (const c of colleagues) {
+    if (c.user) contacts.push(toContactDTO(c.user, c.role));
+  }
+  for (const e of enrollments) {
+    const profile = e.catechumenProfile;
+    if (profile?.userId && profile.user && profile.userId !== context.user.id) {
+      contacts.push(toContactDTO(profile.user, 'CATECHUMEN'));
+    }
+    for (const g of profile?.household?.guardians || []) {
+      if (g.userId && g.user && g.userId !== context.user.id) {
+        contacts.push(toContactDTO(g.user, 'GUARDIAN'));
+      }
+    }
+  }
+
+  // Coordinators of the same parish (not cross-workspace)
+  if (access.isCatechist) {
+    const coords = await context.entities.Membership.findMany({
+      where: {
+        parishId: access.workspaceId,
+        status: 'ACTIVE',
+        role: {
+          in: [
+            'PARISH_COORDINATOR',
+            'COMMUNITY_COORDINATOR',
+            'DIOCESE_ADMIN',
+            'PERSONAL_OWNER',
+          ],
+        },
+        userId: { not: context.user.id },
+      },
+      select: { user: { select: USER_SELECT }, role: true },
+      distinct: ['userId'],
+    });
+    for (const m of coords) {
+      if (m.user) contacts.push(toContactDTO(m.user, m.role));
+    }
+  }
+
+  return dedupeContacts(contacts);
+}
+
+async function listCoordinatorScopedContacts(
+  context: any,
+  workspaceId: string,
+): Promise<ConversationContact[]> {
   const memberships = await context.entities.Membership.findMany({
     where: {
-      parishId: { in: parishIds },
+      parishId: workspaceId,
       status: 'ACTIVE',
       userId: { not: context.user.id },
     },
     select: {
-      user: { select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true } },
+      user: { select: USER_SELECT },
       role: true,
     },
     distinct: ['userId'],
   });
 
   const guardianProfiles = await context.entities.GuardianProfile.findMany({
-    where: {
-      household: { parishId: { in: parishIds } },
-    },
+    where: { household: { parishId: workspaceId } },
     select: {
       userId: true,
-      user: { select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true } },
+      user: { select: USER_SELECT },
     },
   });
 
@@ -227,82 +355,320 @@ async function listAllowedConversationContactsInternal(
     where: {
       userId: { not: null },
       OR: [
-        { parishId: { in: parishIds } },
-        { household: { parishId: { in: parishIds } } },
-        { enrollments: { some: { class: { parishId: { in: parishIds } } } } },
+        { parishId: workspaceId },
+        { household: { parishId: workspaceId } },
+        { enrollments: { some: { class: { parishId: workspaceId } } } },
       ],
     },
     select: {
       userId: true,
-      user: { select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true } },
+      user: { select: USER_SELECT },
     },
   });
 
   return dedupeContacts([
-    ...memberships.map((m: any) => ({ ...m.user, role: m.role })),
+    ...memberships
+      .filter((m: any) => m.user)
+      .map((m: any) => toContactDTO(m.user, m.role)),
     ...guardianProfiles
-      .filter((guardian: any) => guardian.userId && guardian.userId !== context.user.id)
-      .map((guardian: any) => ({ ...guardian.user, role: 'GUARDIAN' })),
+      .filter(
+        (g: any) => g.userId && g.user && g.userId !== context.user.id,
+      )
+      .map((g: any) => toContactDTO(g.user, 'GUARDIAN')),
     ...catechumenProfiles
-      .filter((catechumen: any) => catechumen.userId && catechumen.userId !== context.user.id)
-      .map((catechumen: any) => ({ ...catechumen.user, role: 'CATECHUMEN' })),
+      .filter(
+        (c: any) => c.userId && c.user && c.userId !== context.user.id,
+      )
+      .map((c: any) => toContactDTO(c.user, 'CATECHUMEN')),
   ]);
+}
+
+async function listCatechumenScopedContacts(
+  context: any,
+  workspaceId: string,
+): Promise<ConversationContact[]> {
+  const catechumenProfile = await context.entities.CatechumenProfile.findFirst({
+    where: {
+      userId: context.user.id,
+      OR: [
+        { parishId: workspaceId },
+        { household: { parishId: workspaceId } },
+        { enrollments: { some: { class: { parishId: workspaceId } } } },
+      ],
+    },
+    select: { id: true, householdId: true },
+  });
+  if (!catechumenProfile) return [];
+
+  const enrolledClassIds = await context.entities.ClassEnrollment.findMany({
+    where: {
+      catechumenProfileId: catechumenProfile.id,
+      class: { parishId: workspaceId },
+    },
+    select: { classId: true },
+  });
+  const classIds = enrolledClassIds.map((e: any) => e.classId);
+
+  const catechistUsers =
+    classIds.length > 0
+      ? await context.entities.ClassCatechist.findMany({
+          where: { classId: { in: classIds } },
+          select: {
+            user: { select: USER_SELECT },
+            role: true,
+          },
+          distinct: ['userId'],
+        })
+      : [];
+
+  let guardianUsers: any[] = [];
+  if (catechumenProfile.householdId) {
+    guardianUsers = await context.entities.GuardianProfile.findMany({
+      where: {
+        householdId: catechumenProfile.householdId,
+        household: { parishId: workspaceId },
+      },
+      select: { user: { select: USER_SELECT }, userId: true },
+    });
+  }
+
+  const otherCatechumenIds =
+    classIds.length > 0
+      ? await context.entities.ClassEnrollment.findMany({
+          where: {
+            classId: { in: classIds },
+            catechumenProfileId: { not: catechumenProfile.id },
+          },
+          select: {
+            catechumenProfile: { select: { userId: true, user: { select: USER_SELECT } } },
+          },
+        })
+      : [];
+
+  return dedupeContacts([
+    ...catechistUsers
+      .filter((c: any) => c.user && c.user.id !== context.user.id)
+      .map((c: any) => toContactDTO(c.user, c.role)),
+    ...guardianUsers
+      .filter((g: any) => g.user && g.userId !== context.user.id)
+      .map((g: any) => toContactDTO(g.user, 'GUARDIAN')),
+    ...otherCatechumenIds
+      .filter(
+        (e: any) =>
+          e.catechumenProfile?.userId &&
+          e.catechumenProfile.user &&
+          e.catechumenProfile.userId !== context.user.id,
+      )
+      .map((e: any) => toContactDTO(e.catechumenProfile.user, 'CATECHUMEN')),
+  ]);
+}
+
+async function listGuardianScopedContacts(
+  context: any,
+  workspaceId: string,
+): Promise<ConversationContact[]> {
+  const guardian = await context.entities.GuardianProfile.findFirst({
+    where: {
+      userId: context.user.id,
+      household: { parishId: workspaceId },
+    },
+    select: {
+      householdId: true,
+      household: {
+        select: {
+          catechumens: {
+            select: {
+              id: true,
+              userId: true,
+              user: { select: USER_SELECT },
+              enrollments: {
+                where: { status: 'ENROLLED', class: { parishId: workspaceId } },
+                select: { classId: true },
+              },
+            },
+          },
+          guardians: {
+            select: { userId: true, user: { select: USER_SELECT } },
+          },
+        },
+      },
+    },
+  });
+  if (!guardian) return [];
+
+  const classIds = [
+    ...new Set(
+      (guardian.household?.catechumens || []).flatMap((c: any) =>
+        (c.enrollments || []).map((e: any) => e.classId),
+      ),
+    ),
+  ] as string[];
+
+  const catechists =
+    classIds.length > 0
+      ? await context.entities.ClassCatechist.findMany({
+          where: { classId: { in: classIds } },
+          select: { user: { select: USER_SELECT }, role: true },
+          distinct: ['userId'],
+        })
+      : [];
+
+  const contacts: ConversationContact[] = [];
+  for (const c of catechists) {
+    if (c.user && c.user.id !== context.user.id) {
+      contacts.push(toContactDTO(c.user, c.role));
+    }
+  }
+  for (const cat of guardian.household?.catechumens || []) {
+    if (cat.userId && cat.user && cat.userId !== context.user.id) {
+      contacts.push(toContactDTO(cat.user, 'CATECHUMEN'));
+    }
+  }
+  for (const g of guardian.household?.guardians || []) {
+    if (g.userId && g.user && g.userId !== context.user.id) {
+      contacts.push(toContactDTO(g.user, 'GUARDIAN'));
+    }
+  }
+
+  return dedupeContacts(contacts);
+}
+
+/**
+ * Contacts for the conversation picker — strictly the requested workspace.
+ * Platform admins do NOT receive the global user table.
+ */
+async function listAllowedConversationContactsInternal(
+  args: { workspaceId: string },
+  context: any,
+): Promise<ConversationContact[]> {
+  requireAuth(context.user);
+
+  if (!args.workspaceId) {
+    throw new HttpError(400, 'workspaceId é obrigatório.');
+  }
+
+  // Platform admin: treat as coordinator of the requested workspace only
+  // (no global User dump).
+  let access: WorkspaceAccess;
+  if (context.user.isAdmin) {
+    access = {
+      workspaceId: args.workspaceId,
+      role: 'SUPER_ADMIN',
+      isPlatformAdmin: true,
+      isCoordinatorOrAbove: true,
+      isCatechist: false,
+      canManageParish: true,
+      allowedClassIds: 'ALL',
+      membershipId: null,
+    };
+  } else {
+    access = await requireWorkspaceAccess(context, args.workspaceId);
+  }
+
+  // Family / pure catechumen paths use relation-based scopes when membership role is limited
+  if (!access.isPlatformAdmin) {
+    if (access.role === 'CATECHUMEN') {
+      return listCatechumenScopedContacts(context, access.workspaceId);
+    }
+    if (access.role === 'GUARDIAN') {
+      return listGuardianScopedContacts(context, access.workspaceId);
+    }
+    if (access.isCatechist && !access.isCoordinatorOrAbove) {
+      return listCatechistScopedContacts(context, access);
+    }
+  }
+
+  // Coordinators, personal owners, diocese admins, platform admin (workspace-only)
+  return listCoordinatorScopedContacts(context, access.workspaceId);
 }
 
 async function assertParticipantIdsAllowed(
   context: any,
   workspaceId: string,
-  participantUserIds: string[]
+  participantUserIds: string[],
 ): Promise<string[]> {
-  const sanitizedIds = sanitizeParticipantUserIds(context.user.id, participantUserIds);
-  const contacts = await listAllowedConversationContactsInternal({ workspaceId }, context);
+  const sanitizedIds = sanitizeParticipantUserIds(
+    context.user.id,
+    participantUserIds,
+  );
+  const contacts = await listAllowedConversationContactsInternal(
+    { workspaceId },
+    context,
+  );
   const allowedIds = new Set(contacts.map((contact) => contact.id));
   const invalidIds = sanitizedIds.filter((id) => !allowedIds.has(id));
 
   if (invalidIds.length > 0) {
-    throw new HttpError(403, 'Um ou mais participantes não pertencem ao escopo permitido desta conversa.');
+    throw new HttpError(
+      403,
+      'Um ou mais participantes não pertencem ao escopo permitido desta conversa.',
+    );
   }
 
   return sanitizedIds;
 }
 
-async function assertParticipant(context: any, conversationId: string): Promise<any> {
-  const participant = await context.entities.ConversationParticipant.findUnique({
-    where: { conversationId_userId: { conversationId, userId: context.user.id } },
-  });
-  if (!participant && !context.user.isAdmin) {
-    throw new HttpError(403, 'Você não participa desta conversa.');
+function messageNotificationLink(
+  conversationId: string,
+  parishId: string | null | undefined,
+): string {
+  if (parishId) {
+    return `/app/messages?c=${conversationId}&w=${parishId}`;
   }
-  return participant;
+  return `/app/messages?c=${conversationId}`;
 }
 
 // ── listConversations ───────────────────────────────────────────────────────
 
-export const listConversations = async (args: { workspaceId?: string } | void, context: any) => {
+export const listConversations = async (
+  args: { workspaceId?: string } | void,
+  context: any,
+) => {
   requireAuth(context.user);
-  const workspaceId = (args && typeof args === 'object' && 'workspaceId' in args) ? (args as any).workspaceId : undefined;
+  const workspaceId =
+    args && typeof args === 'object' && 'workspaceId' in args
+      ? (args as { workspaceId?: string }).workspaceId
+      : undefined;
 
-  let isPersonalWorkspace = false;
-  if (workspaceId) {
-    const workspace = await getWorkspaceDescriptor(context, workspaceId);
-    if (!context.user.isAdmin) {
-      await assertCanAccessParish(context, workspaceId);
-    }
-    isPersonalWorkspace = workspace.type === 'PERSONAL' || workspace.ownerId === context.user.id;
+  if (!workspaceId?.trim()) {
+    throw new HttpError(400, 'workspaceId é obrigatório.');
   }
 
+  if (!context.user.isAdmin) {
+    // Allow family/guardian entry via relation even without staff membership
+    const access = await resolveWorkspaceAccess(context, workspaceId, {
+      required: false,
+    });
+    if (!access) {
+      const linked = await userHasValidWorkspaceRelation(
+        context,
+        context.user.id,
+        workspaceId,
+      );
+      if (!linked) {
+        throw new HttpError(403, 'Você não tem acesso a este workspace.');
+      }
+    }
+  }
+
+  // Always filter by Conversation.parishId — including personal workspaces.
+  // Direct messages belong to the workspace they were created in.
   const conversations = await context.entities.Conversation.findMany({
     where: {
+      parishId: workspaceId,
       participants: { some: { userId: context.user.id } },
-      // Personal workspace: only DIRECT conversations
-      ...(isPersonalWorkspace ? { type: 'DIRECT' } : {}),
-      // Filter by workspace if specified
-      ...(workspaceId && !isPersonalWorkspace ? { parishId: workspaceId } : {}),
     },
     include: {
       participants: {
         include: {
-          user: { select: { id: true, firstName: true, lastName: true, avatarUrl: true } },
+          user: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              avatarUrl: true,
+            },
+          },
         },
       },
       messages: {
@@ -310,7 +676,9 @@ export const listConversations = async (args: { workspaceId?: string } | void, c
         orderBy: { createdAt: 'desc' },
         take: 1,
         include: {
-          sender: { select: { id: true, firstName: true, lastName: true } },
+          sender: {
+            select: { id: true, firstName: true, lastName: true },
+          },
         },
       },
       class: { select: { id: true, name: true } },
@@ -319,42 +687,51 @@ export const listConversations = async (args: { workspaceId?: string } | void, c
     orderBy: { updatedAt: 'desc' },
   });
 
-  // Compute unread counts for each conversation
-  const withUnread = conversations.map((conv: any) => {
-    const myParticipant = conv.participants.find((p: any) => p.userId === context.user.id);
+  // Drop conversations where the actor no longer has a valid workspace relation
+  const stillLinked = context.user.isAdmin
+    ? true
+    : await userHasValidWorkspaceRelation(
+        context,
+        context.user.id,
+        workspaceId,
+      );
+  const scoped = stillLinked ? conversations : [];
+
+  const withUnread = scoped.map((conv: any) => {
+    const myParticipant = conv.participants.find(
+      (p: any) => p.userId === context.user.id,
+    );
     const lastReadAt = myParticipant?.lastReadAt || new Date(0);
     const lastMessage = conv.messages[0] || null;
 
     return {
       ...conv,
       lastMessage,
-      // unreadCount will be computed via a separate efficient query below
       _lastReadAt: lastReadAt,
     };
   });
 
-  // Batch compute unread counts — single query instead of N individual counts
   const convIds = withUnread.map((c: any) => c.id);
-  const allMessages = convIds.length > 0
-    ? await context.entities.Message.findMany({
-        where: {
-          conversationId: { in: convIds },
-          senderId: { not: context.user.id },
-          deletedAt: null,
-        },
-        select: { conversationId: true, createdAt: true },
-      })
-    : [];
+  const allMessages =
+    convIds.length > 0
+      ? await context.entities.Message.findMany({
+          where: {
+            conversationId: { in: convIds },
+            senderId: { not: context.user.id },
+            deletedAt: null,
+          },
+          select: { conversationId: true, createdAt: true },
+        })
+      : [];
 
-  const results = withUnread.map((conv: any) => {
+  return withUnread.map((conv: any) => {
     const unreadCount = allMessages.filter(
-      (m: any) => m.conversationId === conv.id && m.createdAt > conv._lastReadAt
+      (m: any) =>
+        m.conversationId === conv.id && m.createdAt > conv._lastReadAt,
     ).length;
     const { _lastReadAt, messages, ...rest } = conv;
     return { ...rest, lastMessage: conv.lastMessage, unreadCount };
   });
-
-  return results;
 };
 
 // ── getConversation ─────────────────────────────────────────────────────────
@@ -362,35 +739,21 @@ export const listConversations = async (args: { workspaceId?: string } | void, c
 export const getConversation = async (
   args: {
     conversationId: string;
+    workspaceId?: string;
     cursor?: string;
     /** Exclusive lower bound — newer messages only. Ignores cursor when set. */
     since?: string;
     take?: number;
   },
-  context: any
+  context: any,
 ) => {
-  requireAuth(context.user);
+  const { conversation } = await assertCanAccessConversation(
+    context,
+    args.conversationId,
+    args.workspaceId,
+  );
 
   const conversationId = args.conversationId;
-  if (!conversationId) throw new HttpError(400, 'conversationId é obrigatório.');
-
-  await assertParticipant(context, conversationId);
-
-  const conversation = await context.entities.Conversation.findUnique({
-    where: { id: conversationId },
-    include: {
-      participants: {
-        include: {
-          user: { select: { id: true, firstName: true, lastName: true, avatarUrl: true } },
-        },
-      },
-      class: { select: { id: true, name: true } },
-      community: { select: { id: true, name: true } },
-    },
-  });
-
-  if (!conversation) throw new HttpError(404, 'Conversa não encontrada.');
-
   const take = Math.min(args.take || 50, 100);
   const messageWhere: any = {
     conversationId,
@@ -398,16 +761,26 @@ export const getConversation = async (
   };
 
   const include = {
-    sender: { select: { id: true, firstName: true, lastName: true, avatarUrl: true } },
+    sender: {
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        avatarUrl: true,
+      },
+    },
     parent: {
-      select: { id: true, content: true, sender: { select: { firstName: true, lastName: true } } },
+      select: {
+        id: true,
+        content: true,
+        sender: { select: { firstName: true, lastName: true } },
+      },
     },
     reactions: {
       include: { user: { select: { id: true, firstName: true } } },
     },
   };
 
-  // Incremental poll: only messages newer than `since` (ascending, max 100)
   if (args.since) {
     const sinceDate = new Date(args.since);
     if (Number.isNaN(+sinceDate)) {
@@ -442,14 +815,13 @@ export const getConversation = async (
   const messages = await context.entities.Message.findMany({
     where: messageWhere,
     orderBy: { createdAt: 'desc' },
-    take: take + 1, // fetch one extra to check if there are more
+    take: take + 1,
     include,
   });
 
   const hasMore = messages.length > take;
   if (hasMore) messages.pop();
 
-  // Mark as read
   await context.entities.ConversationParticipant.updateMany({
     where: { conversationId, userId: context.user.id },
     data: { lastReadAt: new Date() },
@@ -457,9 +829,12 @@ export const getConversation = async (
 
   return {
     conversation,
-    messages: messages.reverse(), // oldest first for display
+    messages: messages.reverse(),
     hasMore,
-    nextCursor: hasMore && messages.length > 0 ? messages[0].createdAt.toISOString() : null,
+    nextCursor:
+      hasMore && messages.length > 0
+        ? messages[0].createdAt.toISOString()
+        : null,
     mode: args.cursor ? ('older' as const) : ('latest' as const),
   };
 };
@@ -475,7 +850,7 @@ export const createConversation = async (
     classId?: string;
     communityId?: string;
   },
-  context: any
+  context: any,
 ) => {
   requireAuth(context.user);
 
@@ -484,72 +859,138 @@ export const createConversation = async (
     throw new HttpError(400, 'parishId é obrigatório para criar a conversa.');
   }
   if (args.type === 'CLASS_CHAT') {
-    throw new HttpError(400, 'Chats de turma devem ser criados via ação específica.');
+    throw new HttpError(
+      400,
+      'Chats de turma devem ser criados via ação específica.',
+    );
   }
 
-  const workspace = await getWorkspaceDescriptor(context, args.parishId);
-  if (!context.user.isAdmin) {
-    await assertCanAccessParish(context, args.parishId);
-  }
-  const isPersonalWorkspace = workspace.type === 'PERSONAL' || workspace.ownerId === context.user.id;
-
-  if (!isManualConversationTypeAllowed(args.type as 'DIRECT' | 'GROUP' | 'ANNOUNCEMENT', isPersonalWorkspace)) {
-    throw new HttpError(400, 'Este tipo de conversa não é permitido no espaço de trabalho atual.');
-  }
-
-  const effectiveRole = context.user.isAdmin ? 'SUPER_ADMIN' : await getEffectiveParishRole(context, args.parishId);
-
-  // Validate conversation type permissions
-  if (args.type === 'ANNOUNCEMENT') {
-    if (!effectiveRole) {
-      throw new HttpError(403, 'Você não tem acesso a este espaço.');
+  let access: WorkspaceAccess;
+  if (context.user.isAdmin) {
+    access = {
+      workspaceId: args.parishId,
+      role: 'SUPER_ADMIN',
+      isPlatformAdmin: true,
+      isCoordinatorOrAbove: true,
+      isCatechist: false,
+      canManageParish: true,
+      allowedClassIds: 'ALL',
+      membershipId: null,
+    };
+  } else {
+    const resolved = await resolveWorkspaceAccess(context, args.parishId, {
+      required: false,
+    });
+    if (!resolved) {
+      const linked = await userHasValidWorkspaceRelation(
+        context,
+        userId,
+        args.parishId,
+      );
+      if (!linked) {
+        throw new HttpError(403, 'Você não tem acesso a este workspace.');
+      }
+      access = {
+        workspaceId: args.parishId,
+        role: 'GUARDIAN',
+        isPlatformAdmin: false,
+        isCoordinatorOrAbove: false,
+        isCatechist: false,
+        canManageParish: false,
+        allowedClassIds: [],
+        membershipId: null,
+      };
+    } else {
+      access = resolved;
     }
+  }
+
+  const workspace = await context.entities.Parish.findUnique({
+    where: { id: args.parishId },
+    select: { id: true, type: true, ownerId: true },
+  });
+  if (!workspace) {
+    throw new HttpError(404, 'Espaço de trabalho não encontrado.');
+  }
+  const isPersonalWorkspace = workspace.type === 'PERSONAL';
+
+  if (
+    !isManualConversationTypeAllowed(
+      args.type as 'DIRECT' | 'GROUP' | 'ANNOUNCEMENT',
+      isPersonalWorkspace,
+    )
+  ) {
+    throw new HttpError(
+      400,
+      'Este tipo de conversa não é permitido no espaço de trabalho atual.',
+    );
+  }
+
+  const effectiveRole = access.role;
+
+  if (args.type === 'ANNOUNCEMENT') {
     if (!context.user.isAdmin && !CAN_CREATE_ANNOUNCEMENT.includes(effectiveRole)) {
-      throw new HttpError(403, 'Apenas coordenadores podem criar canais de aviso.');
+      throw new HttpError(
+        403,
+        'Apenas coordenadores podem criar canais de aviso.',
+      );
     }
   }
 
   if (args.type === 'GROUP') {
-    if (!effectiveRole) {
-      throw new HttpError(403, 'Você não tem acesso a este espaço.');
-    }
     if (!context.user.isAdmin && !CAN_CREATE_GROUP.includes(effectiveRole)) {
       throw new HttpError(403, 'Você não tem permissão para criar grupos.');
     }
   }
 
-  const participantUserIds = await assertParticipantIdsAllowed(context, args.parishId, args.participantUserIds);
+  const participantUserIds = await assertParticipantIdsAllowed(
+    context,
+    args.parishId,
+    args.participantUserIds,
+  );
   if (participantUserIds.length === 0) {
     throw new HttpError(400, 'Selecione ao menos um participante.');
   }
 
   if (args.type === 'DIRECT') {
     if (participantUserIds.length !== 1) {
-      throw new HttpError(400, 'Conversa direta deve ter exatamente 1 outro participante.');
+      throw new HttpError(
+        400,
+        'Conversa direta deve ter exatamente 1 outro participante.',
+      );
     }
 
-    // Check if DM already exists between these users
     const otherUserId = participantUserIds[0];
-    const existing = await context.entities.Conversation.findFirst({
+    // Reuse only when same workspace + exact participant set (2 people)
+    const candidates = await context.entities.Conversation.findMany({
       where: {
         type: 'DIRECT',
-        ...(isPersonalWorkspace ? {} : { parishId: args.parishId }),
+        parishId: args.parishId,
         AND: [
           { participants: { some: { userId } } },
           { participants: { some: { userId: otherUserId } } },
         ],
       },
+      include: {
+        participants: { select: { userId: true } },
+      },
     });
 
-    if (existing) return existing;
+    const exact = candidates.find((c: any) => {
+      const ids = new Set(c.participants.map((p: any) => p.userId));
+      return ids.size === 2 && ids.has(userId) && ids.has(otherUserId);
+    });
+    if (exact) return exact;
   } else if (!args.title?.trim()) {
     throw new HttpError(400, 'Título é obrigatório para este tipo de conversa.');
   }
 
   const participantsData = [
     { userId, role: 'OWNER' as const },
-    ...participantUserIds
-      .map((id: string) => ({ userId: id, role: 'MEMBER' as const })),
+    ...participantUserIds.map((id: string) => ({
+      userId: id,
+      role: 'MEMBER' as const,
+    })),
   ];
 
   const conversation = await context.entities.Conversation.create({
@@ -568,13 +1009,19 @@ export const createConversation = async (
     include: {
       participants: {
         include: {
-          user: { select: { id: true, firstName: true, lastName: true, avatarUrl: true } },
+          user: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              avatarUrl: true,
+            },
+          },
         },
       },
     },
   });
 
-  // Create system message for group/announcement creation
   if (args.type !== 'DIRECT') {
     await context.entities.Message.create({
       data: {
@@ -597,8 +1044,9 @@ export const sendMessage = async (
     content: string;
     contentType?: 'TEXT' | 'HTML' | 'IMAGE' | 'FILE';
     parentId?: string;
+    workspaceId?: string;
   },
-  context: any
+  context: any,
 ) => {
   requireAuth(context.user);
 
@@ -612,29 +1060,37 @@ export const sendMessage = async (
     throw new HttpError(400, 'Mensagem muito longa (máximo 10.000 caracteres).');
   }
 
-  const participant = await assertParticipant(context, conversationId);
+  const { conversation, participant } = await assertCanAccessConversation(
+    context,
+    conversationId,
+    args.workspaceId,
+  );
 
-  // READONLY participants cannot send messages
   if (participant?.role === 'READONLY') {
-    throw new HttpError(403, 'Você não tem permissão para enviar mensagens nesta conversa.');
+    throw new HttpError(
+      403,
+      'Você não tem permissão para enviar mensagens nesta conversa.',
+    );
   }
 
-  // Validate ANNOUNCEMENT: only OWNER/ADMIN can post
-  const conversation = await context.entities.Conversation.findUnique({
-    where: { id: conversationId },
-    select: { type: true },
-  });
-
-  if (conversation?.type === 'ANNOUNCEMENT' && !['OWNER', 'ADMIN'].includes(participant?.role)) {
-    throw new HttpError(403, 'Apenas administradores podem postar em canais de aviso.');
+  if (
+    conversation?.type === 'ANNOUNCEMENT' &&
+    !['OWNER', 'ADMIN'].includes(participant?.role) &&
+    !context.user.isAdmin
+  ) {
+    throw new HttpError(
+      403,
+      'Apenas administradores podem postar em canais de aviso.',
+    );
   }
 
-  // Validate parentId if provided
   if (parentId) {
     const parentMsg = await context.entities.Message.findFirst({
       where: { id: parentId, conversationId },
     });
-    if (!parentMsg) throw new HttpError(400, 'Mensagem pai não encontrada nesta conversa.');
+    if (!parentMsg) {
+      throw new HttpError(400, 'Mensagem pai não encontrada nesta conversa.');
+    }
   }
 
   const message = await context.entities.Message.create({
@@ -646,26 +1102,34 @@ export const sendMessage = async (
       parentId: parentId || undefined,
     },
     include: {
-      sender: { select: { id: true, firstName: true, lastName: true, avatarUrl: true } },
+      sender: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          avatarUrl: true,
+        },
+      },
       parent: {
-        select: { id: true, content: true, sender: { select: { firstName: true, lastName: true } } },
+        select: {
+          id: true,
+          content: true,
+          sender: { select: { firstName: true, lastName: true } },
+        },
       },
     },
   });
 
-  // Update conversation updatedAt
   await context.entities.Conversation.update({
     where: { id: conversationId },
     data: { updatedAt: new Date() },
   });
 
-  // Mark as read for sender
   await context.entities.ConversationParticipant.updateMany({
     where: { conversationId, userId: context.user.id },
     data: { lastReadAt: new Date() },
   });
 
-  // Create notifications for other participants
   const participants = await context.entities.ConversationParticipant.findMany({
     where: {
       conversationId,
@@ -675,8 +1139,11 @@ export const sendMessage = async (
     select: { userId: true },
   });
 
-  const senderName = [context.user.firstName, context.user.lastName].filter(Boolean).join(' ') || 'Usuário';
-  const preview = content.length > 80 ? content.substring(0, 80) + '…' : content;
+  const senderName =
+    [context.user.firstName, context.user.lastName].filter(Boolean).join(' ') ||
+    'Usuário';
+  const preview =
+    content.length > 80 ? content.substring(0, 80) + '…' : content;
 
   if (participants.length > 0) {
     await context.entities.Notification.createMany({
@@ -685,7 +1152,7 @@ export const sendMessage = async (
         type: 'MESSAGE',
         title: senderName,
         body: preview,
-        link: `/app/messages?c=${conversationId}`,
+        link: messageNotificationLink(conversationId, conversation.parishId),
         entityType: 'Message',
         entityId: message.id,
       })),
@@ -698,23 +1165,29 @@ export const sendMessage = async (
 // ── markConversationRead ────────────────────────────────────────────────────
 
 export const markConversationRead = async (
-  args: { conversationId: string },
-  context: any
+  args: { conversationId: string; workspaceId?: string },
+  context: any,
 ) => {
   requireAuth(context.user);
-  await assertParticipant(context, args.conversationId);
+  await assertCanAccessConversation(
+    context,
+    args.conversationId,
+    args.workspaceId,
+  );
 
   await context.entities.ConversationParticipant.updateMany({
     where: { conversationId: args.conversationId, userId: context.user.id },
     data: { lastReadAt: new Date() },
   });
 
-  // Clear message notifications for this conversation
   await context.entities.Notification.deleteMany({
     where: {
       userId: context.user.id,
       type: 'MESSAGE',
-      link: `/app/messages?c=${args.conversationId}`,
+      OR: [
+        { link: { startsWith: `/app/messages?c=${args.conversationId}` } },
+        { link: `/app/messages?c=${args.conversationId}` },
+      ],
       readAt: null,
     },
   });
@@ -725,37 +1198,60 @@ export const markConversationRead = async (
 // ── addConversationParticipant ──────────────────────────────────────────────
 
 export const addConversationParticipant = async (
-  args: { conversationId: string; userId: string; role?: 'ADMIN' | 'MEMBER' | 'READONLY' },
-  context: any
+  args: {
+    conversationId: string;
+    userId: string;
+    role?: 'ADMIN' | 'MEMBER' | 'READONLY';
+    workspaceId?: string;
+  },
+  context: any,
 ) => {
   requireAuth(context.user);
 
-  const myParticipant = await assertParticipant(context, args.conversationId);
-  const conversation = await context.entities.Conversation.findUnique({
-    where: { id: args.conversationId },
-    select: { type: true, parishId: true },
-  });
-  if (!conversation) throw new HttpError(404, 'Conversa não encontrada.');
+  const { conversation, participant: myParticipant } =
+    await assertCanAccessConversation(
+      context,
+      args.conversationId,
+      args.workspaceId,
+    );
 
-  // Only OWNER/ADMIN can add participants
-  if (!context.user.isAdmin && !['OWNER', 'ADMIN'].includes(myParticipant?.role)) {
-    throw new HttpError(403, 'Apenas administradores podem adicionar participantes.');
+  if (
+    !context.user.isAdmin &&
+    !['OWNER', 'ADMIN'].includes(myParticipant?.role)
+  ) {
+    throw new HttpError(
+      403,
+      'Apenas administradores podem adicionar participantes.',
+    );
   }
   if (!canAddParticipantsToConversation(conversation.type)) {
-    throw new HttpError(400, 'Esta conversa não permite adicionar participantes manualmente.');
+    throw new HttpError(
+      400,
+      'Esta conversa não permite adicionar participantes manualmente.',
+    );
   }
   if (!conversation.parishId) {
-    throw new HttpError(400, 'A conversa não está vinculada a um espaço válido.');
+    throw new HttpError(
+      400,
+      'A conversa não está vinculada a um espaço válido.',
+    );
   }
 
-  // Check if target user exists
-  const targetUser = await context.entities.User.findUnique({ where: { id: args.userId } });
+  const targetUser = await context.entities.User.findUnique({
+    where: { id: args.userId },
+  });
   if (!targetUser) throw new HttpError(404, 'Usuário não encontrado.');
-  await assertParticipantIdsAllowed(context, conversation.parishId, [args.userId]);
+  await assertParticipantIdsAllowed(context, conversation.parishId, [
+    args.userId,
+  ]);
 
-  // Upsert to handle re-adding
   const participant = await context.entities.ConversationParticipant.upsert({
-    where: { conversationId_userId: { conversationId: args.conversationId, userId: args.userId } },
+    where: {
+      conversationId_userId: {
+        conversationId: args.conversationId,
+        userId: args.userId,
+      },
+    },
     update: { role: args.role || 'MEMBER' },
     create: {
       conversationId: args.conversationId,
@@ -764,8 +1260,9 @@ export const addConversationParticipant = async (
     },
   });
 
-  // System message
-  const addedName = [targetUser.firstName, targetUser.lastName].filter(Boolean).join(' ') || 'Usuário';
+  const addedName =
+    [targetUser.firstName, targetUser.lastName].filter(Boolean).join(' ') ||
+    'Usuário';
   await context.entities.Message.create({
     data: {
       conversationId: args.conversationId,
@@ -781,36 +1278,54 @@ export const addConversationParticipant = async (
 // ── removeConversationParticipant ───────────────────────────────────────────
 
 export const removeConversationParticipant = async (
-  args: { conversationId: string; userId: string },
-  context: any
+  args: {
+    conversationId: string;
+    userId: string;
+    workspaceId?: string;
+  },
+  context: any,
 ) => {
   requireAuth(context.user);
 
-  const myParticipant = await assertParticipant(context, args.conversationId);
-  const conversation = await context.entities.Conversation.findUnique({
-    where: { id: args.conversationId },
-    select: {
-      type: true,
-      participants: { select: { userId: true, role: true } },
-    },
-  });
-  if (!conversation) throw new HttpError(404, 'Conversa não encontrada.');
+  const { conversation, participant: myParticipant } =
+    await assertCanAccessConversation(
+      context,
+      args.conversationId,
+      args.workspaceId,
+    );
 
-  // Can remove self (leave) or OWNER/ADMIN can remove others
   const isSelf = args.userId === context.user.id;
   if (!canRemoveParticipantsFromConversation(conversation.type, isSelf)) {
-    throw new HttpError(400, 'Esta conversa não permite esta remoção de participante.');
+    throw new HttpError(
+      400,
+      'Esta conversa não permite esta remoção de participante.',
+    );
   }
-  if (!isSelf && !context.user.isAdmin && !['OWNER', 'ADMIN'].includes(myParticipant?.role)) {
-    throw new HttpError(403, 'Apenas administradores podem remover participantes.');
+  if (
+    !isSelf &&
+    !context.user.isAdmin &&
+    !['OWNER', 'ADMIN'].includes(myParticipant?.role)
+  ) {
+    throw new HttpError(
+      403,
+      'Apenas administradores podem remover participantes.',
+    );
   }
 
   if (['OWNER', 'ADMIN'].includes(myParticipant?.role) && isSelf) {
     const remainingManagers = conversation.participants.filter(
-      (participant: any) => participant.userId !== context.user.id && ['OWNER', 'ADMIN'].includes(participant.role)
+      (p: any) =>
+        p.userId !== context.user.id &&
+        ['OWNER', 'ADMIN'].includes(p.role),
     );
-    if (remainingManagers.length === 0 && conversation.participants.length > 1) {
-      throw new HttpError(400, 'Promova outro administrador antes de sair desta conversa.');
+    if (
+      remainingManagers.length === 0 &&
+      conversation.participants.length > 1
+    ) {
+      throw new HttpError(
+        400,
+        'Promova outro administrador antes de sair desta conversa.',
+      );
     }
   }
 
@@ -824,11 +1339,19 @@ export const removeConversationParticipant = async (
 // ── muteConversation ────────────────────────────────────────────────────────
 
 export const muteConversation = async (
-  args: { conversationId: string; mute: boolean },
-  context: any
+  args: {
+    conversationId: string;
+    mute: boolean;
+    workspaceId?: string;
+  },
+  context: any,
 ) => {
   requireAuth(context.user);
-  await assertParticipant(context, args.conversationId);
+  await assertCanAccessConversation(
+    context,
+    args.conversationId,
+    args.workspaceId,
+  );
 
   await context.entities.ConversationParticipant.updateMany({
     where: { conversationId: args.conversationId, userId: context.user.id },
@@ -840,17 +1363,53 @@ export const muteConversation = async (
 
 // ── getUnreadMessagesCount ─────────────────────────────────────────────────
 
-export const getUnreadMessagesCount = async (_args: void, context: any) => {
+export const getUnreadMessagesCount = async (
+  args: { workspaceId?: string } | void,
+  context: any,
+) => {
   requireAuth(context.user);
 
-  const participations = await context.entities.ConversationParticipant.findMany({
-    where: { userId: context.user.id },
-    select: { conversationId: true, lastReadAt: true },
-  });
+  const workspaceId =
+    args && typeof args === 'object' && 'workspaceId' in args
+      ? (args as { workspaceId?: string }).workspaceId
+      : undefined;
 
-  if (participations.length === 0) return { count: 0 };
+  const participations = await context.entities.ConversationParticipant.findMany(
+    {
+      where: {
+        userId: context.user.id,
+        ...(workspaceId
+          ? { conversation: { parishId: workspaceId } }
+          : {}),
+      },
+      select: {
+        conversationId: true,
+        lastReadAt: true,
+        conversation: { select: { parishId: true } },
+      },
+    },
+  );
 
-  const conditions = participations.map((p: any) => ({
+  // Only count conversations with a valid current workspace link
+  const eligible: { conversationId: string; lastReadAt: Date | null }[] = [];
+  for (const p of participations) {
+    const parishId = p.conversation?.parishId;
+    if (!parishId) continue;
+    if (context.user.isAdmin) {
+      eligible.push(p);
+      continue;
+    }
+    const ok = await userHasValidWorkspaceRelation(
+      context,
+      context.user.id,
+      parishId,
+    );
+    if (ok) eligible.push(p);
+  }
+
+  if (eligible.length === 0) return { count: 0 };
+
+  const conditions = eligible.map((p) => ({
     conversationId: p.conversationId,
     createdAt: { gt: p.lastReadAt || new Date(0) },
   }));
@@ -868,7 +1427,10 @@ export const getUnreadMessagesCount = async (_args: void, context: any) => {
 
 // ── getContactsForConversation ──────────────────────────────────────────────
 
-export const getContactsForConversation = async (args: { workspaceId: string }, context: any) => {
+export const getContactsForConversation = async (
+  args: { workspaceId: string },
+  context: any,
+) => {
   return listAllowedConversationContactsInternal(args, context);
 };
 
@@ -876,14 +1438,13 @@ export const getContactsForConversation = async (args: { workspaceId: string }, 
 
 export const getOrCreateClassChat = async (
   args: { classId: string },
-  context: any
+  context: any,
 ) => {
   requireAuth(context.user);
 
   const { classId } = args;
   if (!classId) throw new HttpError(400, 'classId é obrigatório.');
 
-  // Verify user has access to this class
   const classData = await context.entities.CatechesisClass.findUnique({
     where: { id: classId },
     select: {
@@ -897,28 +1458,16 @@ export const getOrCreateClassChat = async (
 
   await assertCanAccessClass(context, classId);
 
-  let membership: any = null;
+  let membershipRole: string | null = null;
   if (!context.user.isAdmin) {
-    membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, parishId: classData.parishId, status: 'ACTIVE' },
-      select: { role: true },
-    });
-    if (!membership) {
-      const isPersonalOwner = await context.entities.Parish.findFirst({
-        where: { id: classData.parishId, ownerId: context.user.id, type: 'PERSONAL' },
-        select: { id: true },
-      });
-      if (!isPersonalOwner) {
-        throw new HttpError(403, 'Você não pertence a esta paróquia.');
-      }
-      membership = { role: 'PERSONAL_OWNER' };
-    }
+    const access = await requireWorkspaceAccess(context, classData.parishId);
+    membershipRole = access.role;
+  } else {
+    membershipRole = 'SUPER_ADMIN';
   }
 
-  // Gather participants: catechists + guardians of enrolled catechumens
   const catechistUserIds = classData.catechists.map((cc: any) => cc.userId);
 
-  // Get guardians via enrollments
   const enrollments = await context.entities.ClassEnrollment.findMany({
     where: { classId, status: 'ENROLLED' },
     select: {
@@ -946,23 +1495,40 @@ export const getOrCreateClassChat = async (
     }
   }
 
-  // Determine creator role and authorization based on the class scope
   const isCatechist = catechistUserIds.includes(context.user.id);
-  const isCoordinator = !!membership && ['PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'DIOCESE_ADMIN', 'SUPER_ADMIN', 'PERSONAL_OWNER'].includes(membership.role);
+  const isCoordinator =
+    !!membershipRole &&
+    [
+      'PARISH_COORDINATOR',
+      'COMMUNITY_COORDINATOR',
+      'DIOCESE_ADMIN',
+      'SUPER_ADMIN',
+      'PERSONAL_OWNER',
+    ].includes(membershipRole);
   if (!context.user.isAdmin && !isCatechist && !isCoordinator) {
-    throw new HttpError(403, 'Apenas catequistas da turma ou coordenadores podem abrir este chat.');
+    throw new HttpError(
+      403,
+      'Apenas catequistas da turma ou coordenadores podem abrir este chat.',
+    );
   }
-  const creatorRole = (isCatechist || isCoordinator || context.user.isAdmin) ? ('OWNER' as const) : ('MEMBER' as const);
+  const creatorRole =
+    isCatechist || isCoordinator || context.user.isAdmin
+      ? ('OWNER' as const)
+      : ('MEMBER' as const);
 
-  // Combine unique participant IDs
-  const allParticipantIds = [...new Set([...catechistUserIds, ...guardianUserIds, context.user.id])];
-  const participantsData = allParticipantIds.map((userId) => ({
-    userId,
-    role: userId === context.user.id ? creatorRole : ('MEMBER' as const),
+  const allParticipantIds = [
+    ...new Set([...catechistUserIds, ...guardianUserIds, context.user.id]),
+  ];
+  const participantsData = allParticipantIds.map((uid) => ({
+    userId: uid,
+    role: uid === context.user.id ? creatorRole : ('MEMBER' as const),
   }));
 
   if (participantsData.length === 0) {
-    throw new HttpError(400, 'Não há participantes disponíveis para criar o chat da turma.');
+    throw new HttpError(
+      400,
+      'Não há participantes disponíveis para criar o chat da turma.',
+    );
   }
 
   const conversation = await prisma.$transaction(async (tx: any) => {
@@ -973,9 +1539,18 @@ export const getOrCreateClassChat = async (
 
     if (existing) {
       await tx.ConversationParticipant.upsert({
-        where: { conversationId_userId: { conversationId: existing.id, userId: context.user.id } },
+        where: {
+          conversationId_userId: {
+            conversationId: existing.id,
+            userId: context.user.id,
+          },
+        },
         update: { role: creatorRole },
-        create: { conversationId: existing.id, userId: context.user.id, role: creatorRole },
+        create: {
+          conversationId: existing.id,
+          userId: context.user.id,
+          role: creatorRole,
+        },
       });
       return { conversationId: existing.id, created: false };
     }
@@ -1007,18 +1582,33 @@ export const getOrCreateClassChat = async (
 
       return { conversationId: createdConversation.id, created: true };
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
         const concurrentConversation = await tx.Conversation.findFirst({
           where: { type: 'CLASS_CHAT', classId },
           select: { id: true },
         });
         if (concurrentConversation) {
           await tx.ConversationParticipant.upsert({
-            where: { conversationId_userId: { conversationId: concurrentConversation.id, userId: context.user.id } },
+            where: {
+              conversationId_userId: {
+                conversationId: concurrentConversation.id,
+                userId: context.user.id,
+              },
+            },
             update: { role: creatorRole },
-            create: { conversationId: concurrentConversation.id, userId: context.user.id, role: creatorRole },
+            create: {
+              conversationId: concurrentConversation.id,
+              userId: context.user.id,
+              role: creatorRole,
+            },
           });
-          return { conversationId: concurrentConversation.id, created: false };
+          return {
+            conversationId: concurrentConversation.id,
+            created: false,
+          };
         }
       }
       throw error;

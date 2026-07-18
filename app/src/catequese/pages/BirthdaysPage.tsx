@@ -17,6 +17,7 @@ import {
 import { Gift, Cake } from "lucide-react";
 import { formatDate } from "../../i18n/format";
 import { useLocale } from "../../i18n/useLocale";
+import { useActiveParish } from "../../client/hooks/useActiveParish";
 
 export default function BirthdaysPage() {
   const { t } = useTranslation("birthdays");
@@ -24,7 +25,12 @@ export default function BirthdaysPage() {
   const { currentLocale } = useLocale();
   const [days, setDays] = useState("30");
   const [classFilter, setClassFilter] = useState("");
-  const { data: classesData } = useQuery(listClasses);
+  const { activeParishId } = useActiveParish();
+  const { data: classesData } = useQuery(
+    listClasses,
+    { workspaceId: activeParishId || undefined } as any,
+    { enabled: Boolean(activeParishId) },
+  );
   const { data: birthdays, isLoading } = useQuery(listUpcomingBirthdays, {
     classId: classFilter || undefined,
     days: parseInt(days),

@@ -611,6 +611,10 @@ export const listFamilyPortalInvitations = async (
 
 /**
  * Aggregated team view: active team members + pending invites + caller permissions.
+ *
+ * Coordinators/admins: parish-wide team.
+ * Catechists: only members who share at least one class; class DTO limited to
+ * shared classes; invites limited to classes they can administer.
  */
 export const getParishTeam = async (
   args: { parishId: string; communityId?: string },
@@ -619,8 +623,40 @@ export const getParishTeam = async (
   requireAuth(context.user);
   if (!args.parishId) throw new HttpError(400, 'parishId é obrigatório.');
 
-  const actorRole = await assertCanViewTeam(context, args.parishId);
+  const { requireWorkspaceAccess, isCatechist } = await import('./sharedScope');
+  const access = await requireWorkspaceAccess(context, args.parishId);
+
+  // Use workspace-local role only (never elevated from another workspace)
+  const actorRole =
+    context.user.isAdmin
+      ? 'SUPER_ADMIN'
+      : access.role === 'PERSONAL_OWNER'
+        ? 'PERSONAL_OWNER'
+        : access.role;
+
+  if (!canViewTeamArea(actorRole, context.user.isAdmin)) {
+    throw new HttpError(403, 'Sem permissão para ver a equipe desta paróquia.');
+  }
+
   const assignableRoles = getAssignableRoles(actorRole, context.user.isAdmin);
+  const isCatechistViewer = isCatechist(actorRole) && !access.isCoordinatorOrAbove;
+
+  // Classes this catechist may see / administer invites for
+  let myClassIds: string[] = [];
+  let leadClassIds: string[] = [];
+  if (isCatechistViewer) {
+    myClassIds =
+      access.allowedClassIds === 'ALL' ? [] : [...access.allowedClassIds];
+    const leadLinks = await context.entities.ClassCatechist.findMany({
+      where: {
+        userId: context.user.id,
+        role: 'LEAD',
+        class: { parishId: args.parishId },
+      },
+      select: { classId: true },
+    });
+    leadClassIds = leadLinks.map((l: { classId: string }) => l.classId);
+  }
 
   const memberWhere: any = {
     parishId: args.parishId,
@@ -631,7 +667,7 @@ export const getParishTeam = async (
   };
   if (args.communityId) memberWhere.communityId = args.communityId;
 
-  const members = await context.entities.Membership.findMany({
+  let members = await context.entities.Membership.findMany({
     where: memberWhere,
     include: {
       user: { select: { id: true, email: true, firstName: true, lastName: true } },
@@ -640,19 +676,44 @@ export const getParishTeam = async (
     orderBy: { createdAt: 'desc' },
   });
 
-  // Class assignments for displayed members
+  // Class assignments for displayed members — always scoped to this parish
   const userIds = members.map((m: any) => m.userId);
   let classLinks: any[] = [];
   if (userIds.length > 0 && context.entities.ClassCatechist) {
     classLinks = await context.entities.ClassCatechist.findMany({
-      where: { userId: { in: userIds } },
+      where: {
+        userId: { in: userIds },
+        class: { parishId: args.parishId },
+      },
       include: {
         class: {
           select: { id: true, name: true, parishId: true },
         },
       },
     });
-    classLinks = classLinks.filter((c: any) => c.class?.parishId === args.parishId);
+  }
+
+  // Catechist: only colleagues who share at least one class
+  if (isCatechistViewer) {
+    if (myClassIds.length === 0) {
+      // Membership alone does not grant parish-wide team visibility
+      members = members.filter((m: any) => m.userId === context.user.id);
+      classLinks = [];
+    } else {
+      const myClassSet = new Set(myClassIds);
+      const colleagueIds = new Set<string>([context.user.id]);
+      for (const link of classLinks) {
+        if (myClassSet.has(link.classId)) {
+          colleagueIds.add(link.userId);
+        }
+      }
+      members = members.filter((m: any) => colleagueIds.has(m.userId));
+      // Only shared class links in the DTO
+      classLinks = classLinks.filter(
+        (c: any) =>
+          myClassSet.has(c.classId) && colleagueIds.has(c.userId),
+      );
+    }
   }
 
   const classesByUser = new Map<string, { id: string; name: string; role: string }[]>();
@@ -672,7 +733,7 @@ export const getParishTeam = async (
   };
   if (args.communityId) pendingWhere.communityId = args.communityId;
 
-  const pending = await context.entities.PendingInvitation.findMany({
+  let pending = await context.entities.PendingInvitation.findMany({
     where: pendingWhere,
     include: {
       community: { select: { id: true, name: true } },
@@ -682,8 +743,18 @@ export const getParishTeam = async (
     take: 100,
   });
 
+  // Catechists only see invites for classes they lead (or no class + they can invite)
+  if (isCatechistViewer) {
+    const leadSet = new Set(leadClassIds);
+    pending = pending.filter((p: any) => {
+      if (p.classId) return leadSet.has(p.classId);
+      // Invites without class: only if actor can invite parish-wide (they cannot)
+      return false;
+    });
+  }
+
   // Legacy INVITED team memberships without PendingInvitation
-  const legacyInvited = await context.entities.Membership.findMany({
+  let legacyInvited = await context.entities.Membership.findMany({
     where: {
       parishId: args.parishId,
       status: 'INVITED',
@@ -696,6 +767,11 @@ export const getParishTeam = async (
     orderBy: { createdAt: 'desc' },
     take: 50,
   });
+
+  // Catechists should not see legacy parish-wide invites
+  if (isCatechistViewer) {
+    legacyInvited = [];
+  }
 
   const now = Date.now();
   const pendingEmails = new Set(
@@ -774,12 +850,14 @@ export const getParishTeam = async (
       actorRole,
       assignableRoles,
       canInvite: assignableRoles.length > 0,
-      canManageRoles: [
-        'SUPER_ADMIN',
-        'DIOCESE_ADMIN',
-        'PARISH_COORDINATOR',
-        'COMMUNITY_COORDINATOR',
-      ].includes(actorRole) || context.user.isAdmin,
+      canManageRoles:
+        [
+          'SUPER_ADMIN',
+          'DIOCESE_ADMIN',
+          'PARISH_COORDINATOR',
+          'COMMUNITY_COORDINATOR',
+          'PERSONAL_OWNER',
+        ].includes(actorRole) || context.user.isAdmin,
       canCancelInvites: assignableRoles.length > 0,
     },
   };
