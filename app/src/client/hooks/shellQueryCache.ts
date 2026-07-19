@@ -1,10 +1,10 @@
 /**
- * Shared React Query options for AppShell identity queries.
- * Keeps useUserContext + listWorkspaces aligned and provides invalidation
- * after workspace switch / onboarding.
+ * Shared React Query options for AppShell identity.
+ * Prefer getAppBootstrap so context + workspaces share one network request.
  */
 import {
   queryClientInitialized,
+  getAppBootstrap,
   getCurrentUserContext,
   listWorkspaces,
 } from "wasp/client/operations";
@@ -19,7 +19,6 @@ export const SHELL_QUERY_OPTIONS = {
   staleTime: SHELL_CONTEXT_STALE_MS,
   cacheTime: SHELL_CONTEXT_CACHE_MS,
   refetchOnWindowFocus: false,
-  // Same query key + options ⇒ multiple hooks share one network request.
 } as const;
 
 function queryKeyOf(fn: { queryCacheKey?: string[] }): string[] {
@@ -27,22 +26,21 @@ function queryKeyOf(fn: { queryCacheKey?: string[] }): string[] {
 }
 
 /**
- * Mark user-context + workspace list stale and refetch active observers.
- * Call after workspace switch, onboarding completion, membership changes.
+ * Invalidate shell bootstrap (and legacy keys if still observed).
+ * Call after membership/onboarding/billing mutations — not on local workspace switch.
  */
 export async function invalidateShellContext(): Promise<void> {
   if (typeof window === "undefined") return;
   try {
     const queryClient = await queryClientInitialized;
     const keys = [
+      queryKeyOf(getAppBootstrap as { queryCacheKey?: string[] }),
       queryKeyOf(getCurrentUserContext as { queryCacheKey?: string[] }),
       queryKeyOf(listWorkspaces as { queryCacheKey?: string[] }),
     ].filter((k) => k.length > 0);
 
     await Promise.all(
-      keys.map((queryKey) =>
-        queryClient.invalidateQueries({ queryKey }),
-      ),
+      keys.map((queryKey) => queryClient.invalidateQueries({ queryKey })),
     );
   } catch {
     /* query client may not be ready in tests */

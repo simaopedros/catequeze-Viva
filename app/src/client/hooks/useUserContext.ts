@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { useQuery, getCurrentUserContext } from "wasp/client/operations";
+import { useQuery, getAppBootstrap } from "wasp/client/operations";
 import { SHELL_QUERY_OPTIONS } from "./shellQueryCache";
 import {
   getStoredWorkspaceId,
@@ -61,17 +61,19 @@ function pickBestMembership(
     )[0];
 }
 
+/**
+ * User/membership context for the shell.
+ * Shares getAppBootstrap query with useActiveWorkspace (one network round-trip).
+ */
 export function useUserContext(): UseUserContextReturn {
-  // Same query options as useActiveWorkspace → shared RQ cache entry / no double network.
   const { data, isLoading, isFetching, error } = useQuery(
-    getCurrentUserContext,
+    getAppBootstrap,
     undefined,
     {
       ...SHELL_QUERY_OPTIONS,
     },
   );
 
-  // Re-render when active workspace changes (same store as useActiveWorkspace)
   const snapshot = useSyncExternalStore(
     workspaceStore.subscribe,
     workspaceStore.getSnapshot,
@@ -79,7 +81,7 @@ export function useUserContext(): UseUserContextReturn {
   );
   const activeWorkspaceId = snapshot.split(":")[0] || getStoredWorkspaceId();
 
-  const ctx = (data ?? {}) as Record<string, any>;
+  const ctx = ((data as any)?.userContext ?? {}) as Record<string, any>;
   const allMemberships: MembershipInfo[] = Array.isArray(ctx.memberships)
     ? ctx.memberships
     : [];

@@ -2,9 +2,8 @@ import { lazy, Suspense, useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   useQuery,
-  getInstitutionalOverview,
-  getInstitutionalTrends,
-  getInstitutionalAlerts,
+  getInstitutionalDashboardCore,
+  getInstitutionalDashboardInsights,
   getClassComparison,
   listCommunities,
 } from "wasp/client/operations";
@@ -287,43 +286,57 @@ export function InstitutionalDashboard() {
     !!queryScopeId && (scope !== "community" || !!selectedCommunityId);
 
   const {
-    data: overview,
+    data: core,
     isLoading: loadingOverview,
+    isFetching: fetchingCore,
     error: overviewError,
   } = useQuery(
-    getInstitutionalOverview,
+    getInstitutionalDashboardCore,
     { scope, scopeId: queryScopeId, period },
-    { enabled: queriesEnabled },
+    {
+      enabled: queriesEnabled,
+      // Keep prior KPIs visible while period/scope changes
+      keepPreviousData: true as any,
+    },
   );
 
+  const overview = core?.overview;
+  // Critical alerts from core; full list arrives with insights
+  const coreAlerts = core?.alerts;
+
+  // Insights (trends + full alerts) after core is available — not blocking KPIs
   const {
-    data: trends,
+    data: insights,
     isLoading: loadingTrends,
     error: trendsError,
   } = useQuery(
-    getInstitutionalTrends,
+    getInstitutionalDashboardInsights,
     { scope, scopeId: queryScopeId, period },
-    { enabled: queriesEnabled },
+    {
+      enabled: queriesEnabled && !!core,
+      keepPreviousData: true,
+    },
   );
 
-  const {
-    data: alerts,
-    isLoading: loadingAlerts,
-    error: alertsError,
-  } = useQuery(
-    getInstitutionalAlerts,
-    { scope, scopeId: queryScopeId, period },
-    { enabled: queriesEnabled },
-  );
+  const trends = insights?.trends;
+  const alerts = insights?.alerts ?? coreAlerts;
+  const loadingAlerts = loadingOverview && !coreAlerts;
+  const alertsError = overviewError || trendsError;
 
+  // Class comparison only for parish scope — defer until core ready
   const { data: comparison } = useQuery(
     getClassComparison,
     {
       parishId:
         scope === "parish" ? queryScopeId : parishIdForCommunities || "",
     },
-    { enabled: scope === "parish" && !!queryScopeId },
+    {
+      enabled: scope === "parish" && !!queryScopeId && !!core,
+      keepPreviousData: true,
+    },
   );
+
+
 
   const enrollmentsKey = t("chart_enrollments");
   const dropoutsKey = t("chart_dropouts");
@@ -415,13 +428,18 @@ export function InstitutionalDashboard() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" aria-busy={fetchingCore || loadingTrends}>
       <AppPageHeader
         eyebrow={t("institutional_title")}
         title={t("institutional_title")}
         subtitle={t(`period_label_${period}`)}
         actions={
           <div className="flex flex-wrap items-center gap-2">
+            {(fetchingCore || loadingTrends) && overview ? (
+              <span className="text-overline text-muted-foreground animate-pulse">
+                …
+              </span>
+            ) : null}
             <div className="flex rounded-sm border border-border/70 bg-muted/30 p-0.5">
               {scopeOptions.map((opt) => (
                 <button

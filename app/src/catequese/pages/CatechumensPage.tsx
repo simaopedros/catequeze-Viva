@@ -96,26 +96,48 @@ export default function CatechumensPage() {
   const debouncedSearch = useDebounce(search, 400);
   const [classFilter, setClassFilter] = useState("");
   const [view, setView] = useState<"cards" | "table">("cards");
-  const [pages, setPages] = useState(1);
-
-  // Reset pagination when search/filter changes — avoid re-reading prior pages only
-  // is a larger cursor migration; for now reset pages on filter change.
-  useEffect(() => {
-    setPages(1);
-  }, [debouncedSearch, classFilter, activeParishId]);
+  /** Accumulated pages — never re-fetch earlier pages when loading more */
+  const [items, setItems] = useState<any[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [cursor, setCursor] = useState<string | null>(null);
 
   const serverSearch =
     debouncedSearch.trim().length >= 2 ? debouncedSearch.trim() : undefined;
 
-  const { data: catechumens = [], isLoading } = useQuery(
+  // Reset accumulation when filters/workspace change
+  useEffect(() => {
+    setItems([]);
+    setNextCursor(null);
+    setCursor(null);
+  }, [debouncedSearch, classFilter, activeParishId]);
+
+  const { data: pageData, isLoading, isFetching } = useQuery(
     listCatechumens,
     {
-      take: PAGE_SIZE * pages,
+      take: PAGE_SIZE,
+      paginated: true,
+      cursor: cursor || undefined,
       search: serverSearch,
       workspaceId: activeParishId || undefined,
     } as any,
     { enabled: Boolean(activeParishId) },
   );
+
+  useEffect(() => {
+    if (!pageData || typeof pageData !== "object" || !("items" in pageData)) {
+      return;
+    }
+    const page = pageData as { items: any[]; nextCursor: string | null };
+    setItems((prev) => {
+      if (!cursor) return page.items;
+      const seen = new Set(prev.map((p) => p.id));
+      const appended = page.items.filter((p) => !seen.has(p.id));
+      return [...prev, ...appended];
+    });
+    setNextCursor(page.nextCursor);
+  }, [pageData, cursor]);
+
+  const catechumens = items;
 
   const classNames = useMemo(() => {
     if (!catechumens || catechumens.length === 0) return [];
@@ -129,16 +151,6 @@ export default function CatechumensPage() {
   const filtered = useMemo(() => {
     if (!catechumens || catechumens.length === 0) return [];
     let result = [...catechumens];
-    if (activeParishId) {
-      result = result.filter(
-        (c: any) =>
-          c.enrollments?.some(
-            (e: any) => e.class?.parishId === activeParishId,
-          ) ||
-          c.household?.parishId === activeParishId ||
-          (!c.enrollments?.length && !c.household?.parishId),
-      );
-    }
     if (classFilter && classFilter !== "all") {
       result = result.filter(
         (c: any) =>
@@ -146,7 +158,7 @@ export default function CatechumensPage() {
       );
     }
     return result;
-  }, [catechumens, classFilter, activeParishId]);
+  }, [catechumens, classFilter]);
 
   const enrolledCount = filtered.filter(
     (c: any) => c.enrollments && c.enrollments.length > 0,
@@ -155,12 +167,14 @@ export default function CatechumensPage() {
     (c: any) => !c.enrollments || c.enrollments.length === 0,
   ).length;
 
-  const hasMore = catechumens.length === PAGE_SIZE * pages;
-  const loadMore = useCallback(() => setPages((p) => p + 1), []);
+  const hasMore = Boolean(nextCursor);
+  const loadMore = useCallback(() => {
+    if (nextCursor && !isFetching) setCursor(nextCursor);
+  }, [nextCursor, isFetching]);
 
   const hasFilters = !!(search || (classFilter && classFilter !== "all"));
 
-  if (isLoading) {
+  if (isLoading && items.length === 0) {
     return (
       <div className="space-y-6">
         <div className="h-8 w-44 animate-pulse rounded bg-muted" />

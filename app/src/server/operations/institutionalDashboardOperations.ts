@@ -837,3 +837,52 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
 
   return alerts;
 };
+
+// ─── Composite: above-the-fold core (KPIs + critical alerts) ─────────────────
+
+/**
+ * Single round-trip for above-the-fold dashboard: overview KPIs + high-severity alerts.
+ * Replaces separate getInstitutionalOverview + getInstitutionalAlerts on first paint.
+ */
+export const getInstitutionalDashboardCore = async (
+  args: ScopeArgs,
+  context: any,
+) => {
+  if (!context.user) throw new HttpError(401);
+  await assertTwoFactorSessionVerified(context);
+
+  // Auth/scope resolved once per sub-call today; parallel still halves client RTT.
+  const [overview, alerts] = await Promise.all([
+    getInstitutionalOverview(args, context),
+    getInstitutionalAlerts(args, context),
+  ]);
+
+  const criticalAlerts = alerts.filter(
+    (a) => a.severity === 'critical' || a.severity === 'high',
+  );
+
+  return {
+    overview,
+    alerts: criticalAlerts.slice(0, 8),
+    alertCount: alerts.length,
+  };
+};
+
+/**
+ * Secondary insights: trends (+ full alert list for deeper panel).
+ * Load when charts approach viewport / after core settles.
+ */
+export const getInstitutionalDashboardInsights = async (
+  args: ScopeArgs,
+  context: any,
+) => {
+  if (!context.user) throw new HttpError(401);
+  await assertTwoFactorSessionVerified(context);
+
+  const [trends, alerts] = await Promise.all([
+    getInstitutionalTrends(args, context),
+    getInstitutionalAlerts(args, context),
+  ]);
+
+  return { trends, alerts };
+};

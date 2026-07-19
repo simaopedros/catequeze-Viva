@@ -8,30 +8,102 @@ import {
 } from './sharedScope';
 import { deleteDocumentFile } from '../storage/documentStorage';
 
+type ListCatechumensArgs = {
+  take?: number;
+  skip?: number;
+  search?: string;
+  workspaceId?: string;
+  /** Opaque cursor from previous page (name-order). */
+  cursor?: string | null;
+  /**
+   * When true (or when cursor is set), returns { items, nextCursor }.
+   * Legacy callers without paginated keep array shape for mobile/API.
+   */
+  paginated?: boolean;
+};
+
+function encodeCatechumenCursor(row: {
+  firstName: string | null;
+  lastName: string | null;
+  id: string;
+}): string {
+  return Buffer.from(
+    JSON.stringify({
+      f: row.firstName || '',
+      l: row.lastName || '',
+      i: row.id,
+    }),
+    'utf8',
+  ).toString('base64url');
+}
+
+function decodeCatechumenCursor(cursor: string): {
+  f: string;
+  l: string;
+  i: string;
+} | null {
+  try {
+    const raw = JSON.parse(
+      Buffer.from(cursor, 'base64url').toString('utf8'),
+    );
+    if (typeof raw?.i !== 'string') return null;
+    return { f: raw.f || '', l: raw.l || '', i: raw.i };
+  } catch {
+    return null;
+  }
+}
+
+function applyCursorWhere(baseWhere: any, cursor: string | null | undefined) {
+  if (!cursor) return baseWhere;
+  const c = decodeCatechumenCursor(cursor);
+  if (!c) return baseWhere;
+  const after = {
+    OR: [
+      { firstName: { gt: c.f } },
+      { AND: [{ firstName: c.f }, { lastName: { gt: c.l } }] },
+      {
+        AND: [{ firstName: c.f }, { lastName: c.l }, { id: { gt: c.i } }],
+      },
+    ],
+  };
+  if (!baseWhere || Object.keys(baseWhere).length === 0) return after;
+  return { AND: [baseWhere, after] };
+}
+
+/** Returns array (legacy) or { items, nextCursor } when paginated/cursor. */
 export const listCatechumens = async (
-  _args:
-    | { take?: number; skip?: number; search?: string; workspaceId?: string }
-    | void,
+  _args: ListCatechumensArgs | void,
   context: any,
-) => {
+): Promise<any> => {
   const args = _args || {};
-  const take = args.take;
-  const skip = args.skip || 0;
+  const useCursorPage = Boolean(args.paginated || args.cursor);
+  const pageSize = Math.min(Math.max(args.take || 50, 1), 100);
+  const take = useCursorPage ? pageSize + 1 : args.take;
+  const skip = useCursorPage ? 0 : args.skip || 0;
   const search = args.search?.trim();
   if (!context.user) throw new HttpError(401);
 
-  const orderBy: any = [{ firstName: 'asc' }, { lastName: 'asc' }];
+  const orderBy: any = [
+    { firstName: 'asc' },
+    { lastName: 'asc' },
+    { id: 'asc' },
+  ];
   const include = {
     parish: { select: { id: true, name: true } },
     household: { select: { id: true, name: true, parishId: true } },
-    enrollments: { include: { class: { select: { id: true, name: true, parishId: true } } } },
+    enrollments: {
+      include: {
+        class: { select: { id: true, name: true, parishId: true } },
+      },
+    },
   };
 
   const buildWhere = (baseWhere: any) => {
-    if (!search) return baseWhere;
+    let where = applyCursorWhere(baseWhere, args.cursor);
+    if (!search) return where;
     return {
       AND: [
-        baseWhere,
+        where,
         {
           OR: [
             { firstName: { contains: search, mode: 'insensitive' as const } },
@@ -42,26 +114,44 @@ export const listCatechumens = async (
     };
   };
 
+  const wrapResult = (rows: any[]) => {
+    if (!useCursorPage) return rows;
+    const hasMore = rows.length > pageSize;
+    const items = hasMore ? rows.slice(0, pageSize) : rows;
+    const last = items[items.length - 1];
+    return {
+      items,
+      nextCursor:
+        hasMore && last
+          ? encodeCatechumenCursor({
+              firstName: last.firstName,
+              lastName: last.lastName,
+              id: last.id,
+            })
+          : null,
+    };
+  };
+
   const workspaceId = args.workspaceId?.trim() || undefined;
 
   if (context.user.isAdmin && !workspaceId) {
-    return context.entities.CatechumenProfile.findMany({
+    const rows = await context.entities.CatechumenProfile.findMany({
       where: buildWhere({}),
       orderBy,
       take,
       skip,
       include,
     });
+    return wrapResult(rows);
   }
 
-  if (!workspaceId) return [];
+  if (!workspaceId) return useCursorPage ? { items: [], nextCursor: null } : [];
 
   const access = await requireWorkspaceAccess(context, workspaceId);
   const parishId = access.workspaceId;
 
-  // Coordinator and above: catechumens in this parish only (never other workspaces)
   if (access.isCoordinatorOrAbove || access.role === 'PASTORAL_VIEWER') {
-    return context.entities.CatechumenProfile.findMany({
+    const rows = await context.entities.CatechumenProfile.findMany({
       where: buildWhere({
         OR: [
           { enrollments: { some: { class: { parishId } } } },
@@ -77,13 +167,15 @@ export const listCatechumens = async (
       skip,
       include,
     });
+    return wrapResult(rows);
   }
 
-  // Catechist: only enrolled in ClassCatechist-linked classes in this workspace
   if (access.isCatechist) {
     const classIds =
       access.allowedClassIds === 'ALL' ? [] : access.allowedClassIds;
-    if (classIds.length === 0) return [];
+    if (classIds.length === 0) {
+      return useCursorPage ? { items: [], nextCursor: null } : [];
+    }
 
     const enrollments = await context.entities.ClassEnrollment.findMany({
       where: { classId: { in: classIds } },
@@ -96,15 +188,18 @@ export const listCatechumens = async (
           .filter(Boolean) as string[],
       ),
     ];
-    if (enrolledIds.length === 0) return [];
+    if (enrolledIds.length === 0) {
+      return useCursorPage ? { items: [], nextCursor: null } : [];
+    }
 
-    return context.entities.CatechumenProfile.findMany({
+    const rows = await context.entities.CatechumenProfile.findMany({
       where: buildWhere({ id: { in: enrolledIds } }),
       orderBy,
       take,
       skip,
       include,
     });
+    return wrapResult(rows);
   }
 
   if (access.role === 'GUARDIAN') {
@@ -112,28 +207,30 @@ export const listCatechumens = async (
       where: { userId: context.user.id },
     });
     if (guardian?.householdId) {
-      return context.entities.CatechumenProfile.findMany({
+      const rows = await context.entities.CatechumenProfile.findMany({
         where: buildWhere({ householdId: guardian.householdId }),
         orderBy,
         take,
         skip,
         include,
       });
+      return wrapResult(rows);
     }
-    return [];
+    return useCursorPage ? { items: [], nextCursor: null } : [];
   }
 
   if (access.role === 'CATECHUMEN') {
-    return context.entities.CatechumenProfile.findMany({
+    const rows = await context.entities.CatechumenProfile.findMany({
       where: buildWhere({ userId: context.user.id }),
       orderBy,
       take,
       skip,
       include,
     });
+    return wrapResult(rows);
   }
 
-  return [];
+  return useCursorPage ? { items: [], nextCursor: null } : [];
 };
 
 export const getCatechumenProfile = async (args: { id: string }, context: any) => {

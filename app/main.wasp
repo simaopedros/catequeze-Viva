@@ -902,6 +902,17 @@ query getInstitutionalAlerts {
   fn: import { getInstitutionalAlerts } from "@src/server/operations/institutionalDashboardOperations",
   entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, SacramentalJourney, AttendanceRecord, Meeting, CatechumenProfile, ClassCatechist, Parish, Community, TenantBilling, ConsentRecord, UserTwoFactor, Diocese]
 }
+
+// Composite dashboard: fewer client round-trips (core above fold, insights deferred)
+query getInstitutionalDashboardCore {
+  fn: import { getInstitutionalDashboardCore } from "@src/server/operations/institutionalDashboardOperations",
+  entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, SacramentalJourney, AttendanceRecord, Meeting, ContentItem, CatechumenProfile, ClassCatechist, Parish, Community, TenantBilling, Document, ConsentRecord, MessageCampaign, MessageRecipient, UserTwoFactor, Diocese]
+}
+
+query getInstitutionalDashboardInsights {
+  fn: import { getInstitutionalDashboardInsights } from "@src/server/operations/institutionalDashboardOperations",
+  entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, SacramentalJourney, AttendanceRecord, Meeting, CatechumenProfile, ClassCatechist, Parish, Community, TenantBilling, ConsentRecord, UserTwoFactor, Diocese]
+}
 //#endregion
 
 

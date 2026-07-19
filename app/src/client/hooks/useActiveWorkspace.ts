@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useSyncExternalStore, useMemo } from "react";
-import { useQuery, listWorkspaces } from "wasp/client/operations";
+import { useQuery, getAppBootstrap } from "wasp/client/operations";
 import { useAuth } from "wasp/client/auth";
 import {
   getStoredWorkspaceId,
@@ -31,24 +31,24 @@ interface UseActiveWorkspaceReturn {
   switchWorkspace: (id: string) => void;
 }
 
+/**
+ * Active workspace selection.
+ * Shares getAppBootstrap with useUserContext — no second listWorkspaces request.
+ */
 export function useActiveWorkspace(): UseActiveWorkspaceReturn {
-  const {
-    data: workspacesRaw = [],
-    isLoading,
-  } = useQuery(listWorkspaces, undefined, {
+  const { data, isLoading } = useQuery(getAppBootstrap, undefined, {
     ...SHELL_QUERY_OPTIONS,
   });
-  const workspaces = workspacesRaw as Workspace[];
+  const workspaces = ((data as any)?.workspaces ?? []) as Workspace[];
   const { data: authUser } = useAuth();
 
   const snapshot = useSyncExternalStore(
     workspaceStore.subscribe,
     workspaceStore.getSnapshot,
-    () => ":", // SSR / Node snapshot
+    () => ":",
   );
   const activeWorkspaceId = snapshot.split(":")[0];
 
-  // Auto-select personal workspace if none stored
   useEffect(() => {
     if (!isLoading && workspaces.length > 0) {
       const storedId = getStoredWorkspaceId();
@@ -90,8 +90,7 @@ export function useActiveWorkspace(): UseActiveWorkspaceReturn {
     workspace?.plan || authUser?.subscriptionPlan || "catechist_free";
 
   const switchWorkspace = useCallback((id: string) => {
-    // Local-only switch — memberships already include all workspaces.
-    // Invalidate shell only after real membership/onboarding/billing mutations.
+    // Local only — bootstrap already has all memberships/workspaces
     setActiveWorkspaceId(id);
   }, []);
 
@@ -102,13 +101,12 @@ export function useActiveWorkspace(): UseActiveWorkspaceReturn {
     workspaceType: workspace?.type || "PERSONAL",
     workspacePlan,
     isPersonal: workspace?.isPersonal ?? true,
-    availableWorkspaces: workspaces as Workspace[],
+    availableWorkspaces: workspaces,
     isLoading,
     switchWorkspace,
   };
 }
 
-// Re-export for callers that imported EVENT_NAME / STORAGE_KEY from this module
 export {
   WORKSPACE_CHANGED_EVENT as WORKSPACE_EVENT_NAME,
   WORKSPACE_STORAGE_KEY,
