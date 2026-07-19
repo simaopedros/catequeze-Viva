@@ -11,6 +11,13 @@ import {
   classWhereForAccess,
   isCatechist as isCatechistRole,
 } from './sharedScope';
+import {
+  emptyPage,
+  mergeWhere,
+  nameIdCursorWhere,
+  pageParams,
+  wrapNameIdPage,
+} from './listCursor';
 
 // isCoordinatorOrAbove now delegates to the auth helper which includes PERSONAL_OWNER
 function isCoordinatorOrAbove(role: string | null): boolean {
@@ -35,28 +42,56 @@ const classListInclude = {
   _count: { select: { enrollments: true, meetings: true } },
 };
 
+/** Returns array (legacy) or { items, nextCursor } when paginated/cursor. */
 export const listClasses = async (
-  _args: { communityId?: string; workspaceId?: string; take?: number; skip?: number } | void,
+  _args:
+    | {
+        communityId?: string;
+        workspaceId?: string;
+        take?: number;
+        skip?: number;
+        search?: string;
+        status?: string;
+        cursor?: string | null;
+        paginated?: boolean;
+      }
+    | void,
   context: any,
-) => {
+): Promise<any> => {
   const args = _args || {};
-  const take = args.take ?? 50;
-  const skip = args.skip ?? 0;
+  const { useCursorPage, pageSize, take, skip } = pageParams(args);
+  const search = args.search?.trim();
   if (!context.user) throw new HttpError(401);
 
   const workspaceId = args.workspaceId?.trim() || undefined;
+
+  const withSearchStatusCursor = (base: any) => {
+    let where = mergeWhere(base, nameIdCursorWhere(args.cursor));
+    const and: any[] = [];
+    if (where && Object.keys(where).length) and.push(where);
+    if (search) {
+      and.push({ name: { contains: search, mode: 'insensitive' as const } });
+    }
+    if (args.status) {
+      and.push({ status: args.status });
+    }
+    if (and.length === 0) return {};
+    if (and.length === 1) return and[0];
+    return { AND: and };
+  };
 
   // Platform admin without workspace filter: all classes (optional community)
   if (context.user.isAdmin && !workspaceId) {
     const whereAdmin: any = {};
     if (args.communityId) whereAdmin.communityId = args.communityId;
-    return context.entities.CatechesisClass.findMany({
-      where: whereAdmin,
-      orderBy: { name: 'asc' },
-      take,
+    const rows = await context.entities.CatechesisClass.findMany({
+      where: withSearchStatusCursor(whereAdmin),
+      orderBy: [{ name: 'asc' }, { id: 'asc' }],
+      take: take ?? 50,
       skip,
       include: classListInclude,
     });
+    return wrapNameIdPage(rows, pageSize, useCursorPage);
   }
 
   // Contextual pages must pass the active workspace
@@ -65,8 +100,7 @@ export const listClasses = async (
     : null;
 
   if (!access) {
-    // No workspaceId: only return empty for non-admin (force client to scope)
-    return [];
+    return emptyPage(useCursorPage);
   }
 
   const extra: any = {};
@@ -74,25 +108,27 @@ export const listClasses = async (
 
   // Coordinator / pastoral viewer / personal owner / diocese admin: whole parish
   if (access.allowedClassIds === 'ALL') {
-    return context.entities.CatechesisClass.findMany({
-      where: classWhereForAccess(access, extra),
-      orderBy: { name: 'asc' },
-      take,
+    const rows = await context.entities.CatechesisClass.findMany({
+      where: withSearchStatusCursor(classWhereForAccess(access, extra)),
+      orderBy: [{ name: 'asc' }, { id: 'asc' }],
+      take: take ?? 50,
       skip,
       include: classListInclude,
     });
+    return wrapNameIdPage(rows, pageSize, useCursorPage);
   }
 
   // Catechist: only assigned classes in this workspace
   if (access.isCatechist) {
-    if (access.allowedClassIds.length === 0) return [];
-    return context.entities.CatechesisClass.findMany({
-      where: classWhereForAccess(access, extra),
-      orderBy: { name: 'asc' },
-      take,
+    if (access.allowedClassIds.length === 0) return emptyPage(useCursorPage);
+    const rows = await context.entities.CatechesisClass.findMany({
+      where: withSearchStatusCursor(classWhereForAccess(access, extra)),
+      orderBy: [{ name: 'asc' }, { id: 'asc' }],
+      take: take ?? 50,
       skip,
       include: classListInclude,
     });
+    return wrapNameIdPage(rows, pageSize, useCursorPage);
   }
 
   // Guardian: classes of household catechumens within this workspace
@@ -100,7 +136,7 @@ export const listClasses = async (
     const guardian = await context.entities.GuardianProfile.findUnique({
       where: { userId: context.user.id },
     });
-    if (!guardian?.householdId) return [];
+    if (!guardian?.householdId) return emptyPage(useCursorPage);
     const catechumens = await context.entities.CatechumenProfile.findMany({
       where: { householdId: guardian.householdId },
       select: { id: true },
@@ -111,19 +147,20 @@ export const listClasses = async (
       select: { classId: true },
     });
     const classIds = enrollments.map((e: any) => e.classId);
-    if (classIds.length === 0) return [];
+    if (classIds.length === 0) return emptyPage(useCursorPage);
     const whereGuardian: any = {
       id: { in: classIds },
       parishId: access.workspaceId,
       ...extra,
     };
-    return context.entities.CatechesisClass.findMany({
-      where: whereGuardian,
-      orderBy: { name: 'asc' },
-      take,
+    const rows = await context.entities.CatechesisClass.findMany({
+      where: withSearchStatusCursor(whereGuardian),
+      orderBy: [{ name: 'asc' }, { id: 'asc' }],
+      take: take ?? 50,
       skip,
       include: classListInclude,
     });
+    return wrapNameIdPage(rows, pageSize, useCursorPage);
   }
 
   // Catechumen: own enrollments in this workspace
@@ -136,11 +173,15 @@ export const listClasses = async (
       select: { classId: true },
     });
     const classIds = enrollments.map((e: any) => e.classId);
-    if (classIds.length === 0) return [];
-    return context.entities.CatechesisClass.findMany({
-      where: { id: { in: classIds }, parishId: access.workspaceId, ...extra },
-      orderBy: { name: 'asc' },
-      take,
+    if (classIds.length === 0) return emptyPage(useCursorPage);
+    const rows = await context.entities.CatechesisClass.findMany({
+      where: withSearchStatusCursor({
+        id: { in: classIds },
+        parishId: access.workspaceId,
+        ...extra,
+      }),
+      orderBy: [{ name: 'asc' }, { id: 'asc' }],
+      take: take ?? 50,
       skip,
       include: {
         parish: { select: { id: true, name: true } },
@@ -149,9 +190,10 @@ export const listClasses = async (
         _count: { select: { enrollments: true, meetings: true } },
       },
     });
+    return wrapNameIdPage(rows, pageSize, useCursorPage);
   }
 
-  return [];
+  return emptyPage(useCursorPage);
 };
 
 export const createClass = async (args: any, context: any) => {

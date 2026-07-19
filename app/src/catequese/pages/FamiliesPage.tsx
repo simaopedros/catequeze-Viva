@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import {
   useQuery,
   listHouseholds,
@@ -34,6 +34,7 @@ import { EmptyState } from "../../client/components/EmptyState";
 import { SkeletonCard } from "../../client/components/Skeletons";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
 import { useUserContext } from "../../client/hooks/useUserContext";
+import useDebounce from "../../client/hooks/useDebounce";
 import { FamilyPortalInviteBanner } from "../components/FamilyPortalInviteBanner";
 
 const PAGE_SIZE = 50;
@@ -45,40 +46,62 @@ export default function FamiliesPage() {
   const { userRole } = useUserContext();
   const canCreateFamily = userRole !== "ASSISTANT_CATECHIST";
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 400);
   const [communityFilter, setCommunityFilter] = useState("");
-  const [pages, setPages] = useState(1);
+  const [items, setItems] = useState<any[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [cursor, setCursor] = useState<string | null>(null);
 
-  // Scope list to the active workspace on the server — avoids "N cadastradas"
-  // with an empty list when the user has memberships in multiple parishes.
-  const { data: households = [], isLoading } = useQuery(
+  const serverSearch =
+    debouncedSearch.trim().length >= 2 ? debouncedSearch.trim() : undefined;
+
+  useEffect(() => {
+    setItems([]);
+    setNextCursor(null);
+    setCursor(null);
+  }, [debouncedSearch, communityFilter, activeParishId]);
+
+  const { data: pageData, isLoading, isFetching } = useQuery(
     listHouseholds,
     {
-      take: PAGE_SIZE * pages,
-      search: search || undefined,
+      take: PAGE_SIZE,
+      paginated: true,
+      cursor: cursor || undefined,
+      search: serverSearch,
       parishId: activeParishId || undefined,
       communityId: communityFilter || undefined,
     } as any,
-    { enabled: true },
+    { enabled: Boolean(activeParishId) },
   );
+
+  useEffect(() => {
+    if (!pageData || typeof pageData !== "object" || !("items" in pageData)) {
+      return;
+    }
+    const page = pageData as { items: any[]; nextCursor: string | null };
+    setItems((prev) => {
+      if (!cursor) return page.items;
+      const seen = new Set(prev.map((p) => p.id));
+      return [...prev, ...page.items.filter((p) => !seen.has(p.id))];
+    });
+    setNextCursor(page.nextCursor);
+  }, [pageData, cursor]);
+
   const { data: communities = [] } = useQuery(
     listCommunities,
     activeParishId
       ? { parishId: activeParishId }
       : ({ parishId: undefined } as any),
+    { enabled: Boolean(activeParishId) },
   );
 
-  // Server already scopes by parish/community; keep a defensive client filter
-  // only for community (in case of stale cache mid-switch).
-  const filtered = useMemo(() => {
-    if (!households || households.length === 0) return [];
-    if (!communityFilter) return households;
-    return households.filter((h: any) => h.communityId === communityFilter);
-  }, [households, communityFilter]);
+  const filtered = items;
+  const hasMore = Boolean(nextCursor);
+  const loadMore = useCallback(() => {
+    if (nextCursor && !isFetching) setCursor(nextCursor);
+  }, [nextCursor, isFetching]);
 
-  const hasMore = households.length === PAGE_SIZE * pages;
-  const loadMore = useCallback(() => setPages((p) => p + 1), []);
-
-  if (isLoading) {
+  if (isLoading && items.length === 0) {
     return (
       <div className="space-y-6">
         <div className="h-8 w-32 animate-pulse rounded bg-muted" />
@@ -278,7 +301,7 @@ export default function FamiliesPage() {
             onClick={loadMore}
             disabled={isLoading}
           >
-            {isLoading && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
+            {isFetching && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
             {t("load_more")}
           </Button>
         </div>

@@ -4,7 +4,15 @@ import {
   isCoordinatorOrAbove,
   isCatechist,
 } from './sharedScope';
+import {
+  emptyPage,
+  mergeWhere,
+  nameIdCursorWhere,
+  pageParams,
+  wrapNameIdPage,
+} from './listCursor';
 
+/** Returns array (legacy) or { items, nextCursor } when paginated/cursor. */
 export const listHouseholds = async (
   _args:
     | {
@@ -15,20 +23,23 @@ export const listHouseholds = async (
         take?: number;
         skip?: number;
         search?: string;
+        cursor?: string | null;
+        paginated?: boolean;
       }
     | void,
   context: any,
-) => {
+): Promise<any> => {
   const args = _args || {};
-  const take = args.take;
-  const skip = args.skip || 0;
+  const { useCursorPage, pageSize, take, skip } = pageParams(args);
   const search = args.search?.trim();
   const requestedParishId =
     args.parishId?.trim() || args.workspaceId?.trim() || undefined;
   if (!context.user) throw new HttpError(401);
 
   // Family-only users: only their own household(s), never parish directory.
-  const { rolesAreFamilyOnly, loadActiveRoles } = await import('../auth/familySurface');
+  const { rolesAreFamilyOnly, loadActiveRoles } = await import(
+    '../auth/familySurface'
+  );
   const roles = await loadActiveRoles(context);
   if (rolesAreFamilyOnly(roles)) {
     const guardians = await context.entities.GuardianProfile.findMany({
@@ -38,27 +49,49 @@ export const listHouseholds = async (
     const ids = guardians
       .map((g: { householdId: string | null }) => g.householdId)
       .filter(Boolean) as string[];
-    if (ids.length === 0) return [];
-    return context.entities.Household.findMany({
-      where: { id: { in: ids } },
+    if (ids.length === 0) return emptyPage(useCursorPage);
+    const rows = await context.entities.Household.findMany({
+      where: mergeWhere(
+        { id: { in: ids } },
+        nameIdCursorWhere(args.cursor),
+      ),
       include: {
         guardians: {
           include: {
             user: {
-              select: { id: true, email: true, firstName: true, lastName: true },
+              select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+              },
             },
           },
         },
-        catechumens: { select: { id: true, firstName: true, lastName: true } },
+        catechumens: {
+          select: { id: true, firstName: true, lastName: true },
+        },
         community: { select: { id: true, name: true } },
         _count: { select: { catechumens: true } },
       },
+      orderBy: [{ name: 'asc' }, { id: 'asc' }],
+      take: useCursorPage ? pageSize + 1 : undefined,
     });
+    return wrapNameIdPage(rows, pageSize, useCursorPage);
   }
 
   const includeOpts = {
     guardians: {
-      include: { user: { select: { id: true, email: true, firstName: true, lastName: true } } },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
     },
     catechumens: { select: { id: true, firstName: true, lastName: true } },
     community: { select: { id: true, name: true } },
@@ -66,10 +99,11 @@ export const listHouseholds = async (
   };
 
   const buildWhere = (baseWhere: any) => {
-    if (!search) return baseWhere;
+    let where = mergeWhere(baseWhere, nameIdCursorWhere(args.cursor));
+    if (!search) return where;
     return {
       AND: [
-        baseWhere,
+        where,
         { name: { contains: search, mode: 'insensitive' as const } },
       ],
     };
@@ -78,16 +112,17 @@ export const listHouseholds = async (
   if (context.user.isAdmin && !requestedParishId) {
     const whereAdmin: any = {};
     if (args.communityId) whereAdmin.communityId = args.communityId;
-    return context.entities.Household.findMany({
+    const rows = await context.entities.Household.findMany({
       where: buildWhere(whereAdmin),
-      orderBy: { name: 'asc' },
+      orderBy: [{ name: 'asc' }, { id: 'asc' }],
       take,
       skip,
       include: includeOpts,
     });
+    return wrapNameIdPage(rows, pageSize, useCursorPage);
   }
 
-  if (!requestedParishId) return [];
+  if (!requestedParishId) return emptyPage(useCursorPage);
 
   const access = await requireWorkspaceAccess(context, requestedParishId);
   const parishId = access.workspaceId;
@@ -96,13 +131,14 @@ export const listHouseholds = async (
 
   // Coordinator / pastoral: all households in this workspace only
   if (access.isCoordinatorOrAbove || access.role === 'PASTORAL_VIEWER') {
-    return context.entities.Household.findMany({
+    const rows = await context.entities.Household.findMany({
       where: buildWhere(extra),
-      orderBy: { name: 'asc' },
+      orderBy: [{ name: 'asc' }, { id: 'asc' }],
       take,
       skip,
       include: includeOpts,
     });
+    return wrapNameIdPage(rows, pageSize, useCursorPage);
   }
 
   // GUARDIAN: only own household
@@ -111,32 +147,35 @@ export const listHouseholds = async (
       where: { userId: context.user.id },
       select: { householdId: true },
     });
-    if (!guardianProfile?.householdId) return [];
+    if (!guardianProfile?.householdId) return emptyPage(useCursorPage);
     const where: any = { id: guardianProfile.householdId, parishId };
     if (args.communityId) where.communityId = args.communityId;
-    return context.entities.Household.findMany({
+    const rows = await context.entities.Household.findMany({
       where: buildWhere(where),
-      orderBy: { name: 'asc' },
+      orderBy: [{ name: 'asc' }, { id: 'asc' }],
       take,
       skip,
       include: includeOpts,
     });
+    return wrapNameIdPage(rows, pageSize, useCursorPage);
   }
 
   // Catechist: households of catechumens in allowed classes only (not whole parish)
   if (access.isCatechist) {
     const classIds =
       access.allowedClassIds === 'ALL' ? [] : access.allowedClassIds;
-    if (classIds.length === 0) return [];
+    if (classIds.length === 0) return emptyPage(useCursorPage);
 
     const enrollments = await context.entities.ClassEnrollment.findMany({
       where: { classId: { in: classIds }, catechumenProfileId: { not: null } },
       select: { catechumenProfileId: true },
     });
     const catechumenIds = [
-      ...new Set(enrollments.map((e: any) => e.catechumenProfileId).filter(Boolean)),
+      ...new Set(
+        enrollments.map((e: any) => e.catechumenProfileId).filter(Boolean),
+      ),
     ];
-    if (catechumenIds.length === 0) return [];
+    if (catechumenIds.length === 0) return emptyPage(useCursorPage);
 
     const profiles = await context.entities.CatechumenProfile.findMany({
       where: { id: { in: catechumenIds }, householdId: { not: null } },
@@ -145,20 +184,21 @@ export const listHouseholds = async (
     const householdIds = [
       ...new Set(profiles.map((p: any) => p.householdId).filter(Boolean)),
     ];
-    if (householdIds.length === 0) return [];
+    if (householdIds.length === 0) return emptyPage(useCursorPage);
 
     const where: any = { id: { in: householdIds }, parishId };
     if (args.communityId) where.communityId = args.communityId;
-    return context.entities.Household.findMany({
+    const rows = await context.entities.Household.findMany({
       where: buildWhere(where),
-      orderBy: { name: 'asc' },
+      orderBy: [{ name: 'asc' }, { id: 'asc' }],
       take,
       skip,
       include: includeOpts,
     });
+    return wrapNameIdPage(rows, pageSize, useCursorPage);
   }
 
-  return [];
+  return emptyPage(useCursorPage);
 };
 
 export const createHousehold = async (

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, listClasses } from "wasp/client/operations";
 import { Link, useNavigate } from "react-router";
@@ -11,7 +11,9 @@ import {
   User,
   MoreHorizontal,
   X,
+  Loader2,
 } from "lucide-react";
+import useDebounce from "../../client/hooks/useDebounce";
 import { Button } from "../../client/components/ui/button";
 import { Badge } from "../../client/components/ui/badge";
 import {
@@ -43,6 +45,8 @@ import {
   AppGoldRule,
 } from "../../client/components/brand/AppChrome";
 
+const PAGE_SIZE = 50;
+
 export default function ClassesPage() {
   const { t } = useTranslation("classes");
   const { t: tc } = useTranslation("common");
@@ -51,9 +55,6 @@ export default function ClassesPage() {
   const { currentLocale } = useLocale();
   const navigate = useNavigate();
   const { workspaceId, workspacePlan, isPersonal } = useActiveWorkspace();
-  const { data: classes, isLoading } = useQuery(listClasses, {
-    workspaceId,
-  } as any);
   const { userRole, isAdmin } = useUserContext();
   const canCreateClass = userRole !== "ASSISTANT_CATECHIST";
   const canManageBilling = canManageWorkspaceBilling(userRole, {
@@ -62,26 +63,57 @@ export default function ClassesPage() {
   });
   const [filter, setFilter] = useState("");
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 400);
   const [view, setView] = useState<"grid" | "list">("grid");
+  const [items, setItems] = useState<any[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [cursor, setCursor] = useState<string | null>(null);
+
+  const serverSearch =
+    debouncedSearch.trim().length >= 2 ? debouncedSearch.trim() : undefined;
+
+  useEffect(() => {
+    setItems([]);
+    setNextCursor(null);
+    setCursor(null);
+  }, [debouncedSearch, filter, workspaceId]);
+
+  const { data: pageData, isLoading, isFetching } = useQuery(
+    listClasses,
+    {
+      workspaceId,
+      take: PAGE_SIZE,
+      paginated: true,
+      cursor: cursor || undefined,
+      search: serverSearch,
+      status: filter || undefined,
+    } as any,
+    { enabled: Boolean(workspaceId) },
+  );
+
+  useEffect(() => {
+    if (!pageData || typeof pageData !== "object" || !("items" in pageData)) {
+      return;
+    }
+    const page = pageData as { items: any[]; nextCursor: string | null };
+    setItems((prev) => {
+      if (!cursor) return page.items;
+      const seen = new Set(prev.map((p) => p.id));
+      return [...prev, ...page.items.filter((p) => !seen.has(p.id))];
+    });
+    setNextCursor(page.nextCursor);
+  }, [pageData, cursor]);
+
+  const classes = items;
+  const filtered = classes;
 
   const effectivePlan = workspacePlan || "catechist_free";
   const limits = getPlanLimits(effectivePlan);
-  const activeClassesCount = classes
-    ? classes.filter((c: any) => c.status !== "ARCHIVED").length
-    : 0;
+  const activeClassesCount = classes.filter(
+    (c: any) => c.status !== "ARCHIVED",
+  ).length;
   const isClassLimitReached =
     limits.maxClasses !== null && activeClassesCount >= limits.maxClasses;
-
-  const filtered = useMemo(() => {
-    if (!classes) return [];
-    let result = [...classes];
-    if (filter) result = result.filter((c: any) => c.status === filter);
-    if (search)
-      result = result.filter((c: any) =>
-        c.name.toLowerCase().includes(search.toLowerCase()),
-      );
-    return result;
-  }, [classes, filter, search]);
 
   const activeCount = filtered.filter((c: any) => c.status === "ACTIVE").length;
   const draftCount = filtered.filter((c: any) => c.status === "DRAFT").length;
@@ -89,14 +121,18 @@ export default function ClassesPage() {
   const draftLabel = classStatusMap.DRAFT?.label || t("status");
 
   const hasFilters = Boolean(search || filter);
+  const hasMore = Boolean(nextCursor);
+  const loadMore = useCallback(() => {
+    if (nextCursor && !isFetching) setCursor(nextCursor);
+  }, [nextCursor, isFetching]);
 
   const filterOptions = useMemo(
     () =>
       classFilters.map((f) => ({
         value: f.status,
         label:
-          f.status === "" && classes
-            ? `${f.label} (${classes.length})`
+          f.status === "" && classes.length
+            ? `${f.label} (${classes.length}+)`
             : f.label,
       })),
     [classFilters, classes],
@@ -143,7 +179,7 @@ export default function ClassesPage() {
     return t("attendance");
   };
 
-  if (isLoading) {
+  if (isLoading && items.length === 0) {
     return (
       <div className="space-y-6">
         <div className="h-8 w-40 animate-pulse rounded bg-muted" />
@@ -531,6 +567,23 @@ export default function ClassesPage() {
               </div>
             </article>
           ))}
+        </div>
+      )}
+
+      {hasMore && (
+        <div className="flex justify-center pt-2">
+          <Button
+            type="button"
+            variant="outline"
+            className="h-11 rounded-sm"
+            onClick={loadMore}
+            disabled={isFetching}
+          >
+            {isFetching && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            {tc("load_more", { defaultValue: "Carregar mais" })}
+          </Button>
         </div>
       )}
     </div>
