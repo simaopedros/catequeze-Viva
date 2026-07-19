@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useParams, Link, useNavigate } from "react-router";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "../../client/components/ui/button";
 import { Input } from "../../client/components/ui/input";
 import { Label } from "../../client/components/ui/label";
@@ -20,6 +20,7 @@ import {
   MessageCircle,
   Trash2,
   ClipboardList,
+  Loader2,
 } from "lucide-react";
 import {
   AppPageHeader,
@@ -58,12 +59,60 @@ export default function MeetingsPage() {
     "ASSISTANT_CATECHIST",
     "PERSONAL_OWNER",
   ].includes(userRole);
+  const PAGE_SIZE = 40;
+  const [meetingItems, setMeetingItems] = useState<any[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [cursor, setCursor] = useState<string | null>(null);
+
+  useEffect(() => {
+    setMeetingItems([]);
+    setNextCursor(null);
+    setCursor(null);
+  }, [classId]);
+
   const {
-    data: meetings = [],
+    data: pageData,
     isLoading: loading,
+    isFetching,
     refetch: refetchMeetings,
-  } = useQuery(listMeetings, { classId: classId! });
-  const { data: contentItems = [] } = useQuery(listContentItems, { take: 100 });
+  } = useQuery(
+    listMeetings,
+    {
+      classId: classId!,
+      take: PAGE_SIZE,
+      paginated: true,
+      cursor: cursor || undefined,
+    } as any,
+    { enabled: Boolean(classId) },
+  );
+
+  useEffect(() => {
+    if (!pageData || typeof pageData !== "object" || !("items" in pageData)) {
+      return;
+    }
+    const page = pageData as { items: any[]; nextCursor: string | null };
+    setMeetingItems((prev) => {
+      if (!cursor) return page.items;
+      const seen = new Set(prev.map((p) => p.id));
+      return [...prev, ...page.items.filter((p) => !seen.has(p.id))];
+    });
+    setNextCursor(page.nextCursor);
+  }, [pageData, cursor]);
+
+  const meetings = meetingItems;
+  const hasMore = Boolean(nextCursor);
+  const loadMore = useCallback(() => {
+    if (nextCursor && !isFetching) setCursor(nextCursor);
+  }, [nextCursor, isFetching]);
+
+  // Content picker for linking — limited page, not full library dump
+  const { data: contentPage } = useQuery(listContentItems, {
+    take: 50,
+    paginated: true,
+  } as any);
+  const contentItems = Array.isArray(contentPage)
+    ? contentPage
+    : (contentPage as any)?.items || [];
   const [showForm, setShowForm] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [contentSearch, setContentSearch] = useState("");
@@ -83,6 +132,9 @@ export default function MeetingsPage() {
       setTitle("");
       setSelectedContentId("");
       setShowForm(false);
+      setCursor(null);
+      setMeetingItems([]);
+      setNextCursor(null);
       refetchMeetings();
     } catch (e: any) {
       toast({
@@ -96,6 +148,9 @@ export default function MeetingsPage() {
     try {
       await deleteMeeting({ id: deleteTarget });
       toast({ title: t("delete_success") });
+      setCursor(null);
+      setMeetingItems([]);
+      setNextCursor(null);
       refetchMeetings();
     } catch (e: any) {
       toast({
@@ -391,6 +446,24 @@ export default function MeetingsPage() {
           ))}
         </div>
       )}
+
+      {hasMore && (
+        <div className="flex justify-center pt-2">
+          <Button
+            type="button"
+            variant="outline"
+            className="h-11 rounded-sm"
+            onClick={loadMore}
+            disabled={isFetching}
+          >
+            {isFetching && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            {tc("load_more", { defaultValue: "Carregar mais" })}
+          </Button>
+        </div>
+      )}
+
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(v) => {

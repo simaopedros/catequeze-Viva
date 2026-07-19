@@ -1,6 +1,7 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
+import useDebounce from "../../client/hooks/useDebounce";
 import { Button } from "../../client/components/ui/button";
 import { Badge } from "../../client/components/ui/badge";
 import { FilterPills } from "../../client/components/FilterPills";
@@ -85,14 +86,11 @@ function LibraryMetric({
 export default function ContentLibraryPage() {
   const { t } = useTranslation("content");
   const { t: tc } = useTranslation("common");
-  const [pages, setPages] = useState(1);
-  const { data: items = [], isLoading: loading } = useQuery(listContentItems, {
-    take: PAGE_SIZE * pages,
-  });
   const { data: dioceseItems = [] } = useQuery(listDioceseSharedContent);
   const { activeParishId } = useActiveParish();
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 400);
   const [filter, setFilter] = useState<string>("all");
   const [view, setView] = useState<"grid" | "list">("grid");
   const [sort, setSort] = useState<"recent" | "az">("recent");
@@ -103,6 +101,44 @@ export default function ContentLibraryPage() {
   const [onlyAiGenerated, setOnlyAiGenerated] = useState(
     searchParams.get("filter") === "ai",
   );
+  const [items, setItems] = useState<any[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [cursor, setCursor] = useState<string | null>(null);
+
+  const serverSearch =
+    debouncedSearch.trim().length >= 2 ? debouncedSearch.trim() : undefined;
+
+  useEffect(() => {
+    setItems([]);
+    setNextCursor(null);
+    setCursor(null);
+  }, [debouncedSearch, filter, activeParishId]);
+
+  const { data: pageData, isLoading: loading, isFetching } = useQuery(
+    listContentItems,
+    {
+      take: PAGE_SIZE,
+      paginated: true,
+      cursor: cursor || undefined,
+      search: serverSearch,
+      status: filter !== "all" ? filter : undefined,
+      workspaceId: activeParishId || undefined,
+    } as any,
+    { enabled: true },
+  );
+
+  useEffect(() => {
+    if (!pageData || typeof pageData !== "object" || !("items" in pageData)) {
+      return;
+    }
+    const page = pageData as { items: any[]; nextCursor: string | null };
+    setItems((prev) => {
+      if (!cursor) return page.items;
+      const seen = new Set(prev.map((p) => p.id));
+      return [...prev, ...page.items.filter((p) => !seen.has(p.id))];
+    });
+    setNextCursor(page.nextCursor);
+  }, [pageData, cursor]);
 
   const statusLabel = (status: string) => {
     const map: Record<string, string> = {
@@ -207,8 +243,10 @@ export default function ContentLibraryPage() {
     onlyWithActivities ||
     onlyAiGenerated
   );
-  const hasMore = items.length === PAGE_SIZE * pages;
-  const loadMore = useCallback(() => setPages((p) => p + 1), []);
+  const hasMore = Boolean(nextCursor);
+  const loadMore = useCallback(() => {
+    if (nextCursor && !isFetching) setCursor(nextCursor);
+  }, [nextCursor, isFetching]);
 
   if (loading) {
     return (
@@ -588,9 +626,9 @@ export default function ContentLibraryPage() {
             size="sm"
             className="rounded-sm bg-white"
             onClick={loadMore}
-            disabled={loading}
+            disabled={isFetching}
           >
-            {loading && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
+            {isFetching && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
             {tc("load_more")}
           </Button>
         </div>

@@ -14,6 +14,13 @@ import {
   createEmptyContentDocument,
   parseContentDocument,
 } from "../../shared/contentDocument";
+import {
+  dateIdCursorWhere,
+  emptyPage,
+  mergeWhere,
+  pageParams,
+  wrapDateIdPage,
+} from "./listCursor";
 
 function normalizeDocumentJson(
   value: string | null | undefined,
@@ -39,40 +46,81 @@ function normalizeDocumentJson(
   );
 }
 
+/** Returns array (legacy) or { items, nextCursor } when paginated/cursor. */
 export const listContentItems = async (
-  _args: { take?: number; skip?: number } | void,
+  _args:
+    | {
+        take?: number;
+        skip?: number;
+        search?: string;
+        status?: string;
+        workspaceId?: string;
+        cursor?: string | null;
+        paginated?: boolean;
+      }
+    | void,
   context: any,
-) => {
+): Promise<any> => {
   const args = _args || {};
-  const take = args.take ?? 50;
-  const skip = args.skip ?? 0;
+  const { useCursorPage, pageSize, take, skip } = pageParams(args);
+  const search = args.search?.trim();
   if (!context.user) throw new HttpError(401);
 
-  if (context.user.isAdmin) {
-    return context.entities.ContentItem.findMany({
-      orderBy: { updatedAt: "desc" },
-      take,
+  const include = {
+    createdBy: { select: { id: true, firstName: true, lastName: true } },
+    _count: { select: { activities: true, meetings: true } },
+  };
+  const orderBy = [{ updatedAt: "desc" as const }, { id: "desc" as const }];
+
+  const buildWhere = (base: any) => {
+    let where = mergeWhere(base, dateIdCursorWhere(args.cursor, "updatedAt"));
+    const and: any[] = [];
+    if (where && Object.keys(where).length) and.push(where);
+    if (search) {
+      and.push({
+        OR: [
+          { title: { contains: search, mode: "insensitive" as const } },
+          { theme: { contains: search, mode: "insensitive" as const } },
+        ],
+      });
+    }
+    if (args.status && args.status !== "all") {
+      and.push({ status: args.status });
+    }
+    if (and.length === 0) return {};
+    if (and.length === 1) return and[0];
+    return { AND: and };
+  };
+
+  if (context.user.isAdmin && !args.workspaceId) {
+    const rows = await context.entities.ContentItem.findMany({
+      where: buildWhere({}),
+      orderBy,
+      take: take ?? 50,
       skip,
-      include: {
-        createdBy: { select: { id: true, firstName: true, lastName: true } },
-        _count: { select: { activities: true, meetings: true } },
-      },
+      include,
     });
+    return wrapDateIdPage(rows, pageSize, useCursorPage, "updatedAt");
   }
 
-  const parishIds = await getParishIds(context);
-  if (parishIds.length === 0) return [];
+  // Prefer explicit workspace; fall back to all accessible parishes
+  let parishFilter: any;
+  if (args.workspaceId?.trim()) {
+    parishFilter = { parishId: args.workspaceId.trim() };
+  } else {
+    const parishIds = await getParishIds(context);
+    if (parishIds.length === 0) return emptyPage(useCursorPage);
+    parishFilter = { parishId: { in: parishIds } };
+  }
 
-  return context.entities.ContentItem.findMany({
-    where: { parishId: { in: parishIds } },
-    orderBy: { updatedAt: "desc" },
-    take,
+  const rows = await context.entities.ContentItem.findMany({
+    where: buildWhere(parishFilter),
+    orderBy,
+    take: take ?? 50,
     skip,
-    include: {
-      createdBy: { select: { id: true, firstName: true, lastName: true } },
-      _count: { select: { activities: true, meetings: true } },
-    },
+    include,
   });
+  return wrapDateIdPage(rows, pageSize, useCursorPage, "updatedAt");
 };
 
 export const getContentItem = async (args: { id: string }, context: any) => {

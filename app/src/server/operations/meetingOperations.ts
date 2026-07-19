@@ -7,6 +7,12 @@ import {
   loadActiveRoles,
   rolesAreFamilyOnly,
 } from '../auth/familySurface';
+import {
+  dateIdCursorWhere,
+  mergeWhere,
+  pageParams,
+  wrapDateIdPage,
+} from './listCursor';
 
 function isCoordinatorOrAbove(role: string | null): boolean {
   if (!role) return false;
@@ -171,18 +177,39 @@ async function assertCanTakeAttendance(
   throw new HttpError(403, 'Apenas catequistas da turma podem gerir a chamada.');
 }
 
-export const listMeetings = async (args: { classId: string }, context: any) => {
+/** Returns array (legacy) or { items, nextCursor } when paginated/cursor. */
+export const listMeetings = async (
+  args: {
+    classId: string;
+    take?: number;
+    skip?: number;
+    cursor?: string | null;
+    paginated?: boolean;
+  },
+  context: any,
+): Promise<any> => {
   if (!context.user) throw new HttpError(401);
+  if (!args.classId) throw new HttpError(400, 'classId é obrigatório.');
   await assertUserBelongsToClass(context, args.classId);
 
-  return context.entities.Meeting.findMany({
-    where: { classId: args.classId },
-    orderBy: { date: 'desc' },
+  const { useCursorPage, pageSize, take, skip } = pageParams(args);
+  const where = mergeWhere(
+    { classId: args.classId },
+    dateIdCursorWhere(args.cursor, 'date'),
+  );
+
+  const rows = await context.entities.Meeting.findMany({
+    where,
+    orderBy: [{ date: 'desc' }, { id: 'desc' }],
+    take: useCursorPage ? pageSize + 1 : take,
+    skip: useCursorPage ? 0 : skip,
     include: {
       content: { select: { id: true, title: true } },
       _count: { select: { attendance: true } },
     },
   });
+
+  return wrapDateIdPage(rows, pageSize, useCursorPage, 'date');
 };
 
 export const createMeeting = async (args: any, context: any) => {
