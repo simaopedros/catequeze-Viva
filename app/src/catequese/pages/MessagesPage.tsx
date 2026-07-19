@@ -31,6 +31,12 @@ import {
   AppEyebrow,
   AppGoldRule,
 } from "../../client/components/brand/AppChrome";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "../../client/components/ui/sheet";
 
 export default function MessagesPage() {
   const { t } = useTranslation("messages");
@@ -403,7 +409,9 @@ export default function MessagesPage() {
                     onClick={handleMute}
                     className="flex h-11 w-11 min-h-11 min-w-11 items-center justify-center rounded-sm transition-colors hover:bg-muted"
                     title={myParticipant?.mutedAt ? t("unmute") : t("mute")}
-                    aria-label={myParticipant?.mutedAt ? t("unmute") : t("mute")}
+                    aria-label={
+                      myParticipant?.mutedAt ? t("unmute") : t("mute")
+                    }
                   >
                     <BellOff
                       className={cn(
@@ -594,6 +602,54 @@ export default function MessagesPage() {
           )}
         </div>
       </div>
+      <Sheet open={showDetails} onOpenChange={setShowDetails}>
+        <SheetContent
+          side="bottom"
+          className="max-h-[80dvh] overflow-y-auto lg:hidden"
+        >
+          <SheetHeader className="pr-10 text-left">
+            <SheetTitle>{t("details")}</SheetTitle>
+          </SheetHeader>
+          <div className="mt-4 space-y-2">
+            {activeConv?.participants?.map((participant: any) => (
+              <div
+                key={participant.id}
+                className="flex min-h-14 items-center gap-3 rounded-sm border border-border/70 px-3 py-2"
+              >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-brand-ink text-xs font-semibold text-white">
+                  {[
+                    participant.user.firstName?.[0],
+                    participant.user.lastName?.[0],
+                  ]
+                    .filter(Boolean)
+                    .join("")
+                    .toUpperCase() || "?"}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-brand-ink">
+                    {[participant.user.firstName, participant.user.lastName]
+                      .filter(Boolean)
+                      .join(" ") || participant.user.email}
+                  </p>
+                  <p className="text-xs capitalize text-muted-foreground">
+                    {participant.role.toLowerCase()}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+          {activeConv?.type !== "DIRECT" && (
+            <button
+              type="button"
+              onClick={handleLeave}
+              className="mt-6 flex min-h-11 w-full items-center justify-center gap-2 rounded-sm border border-destructive/30 px-4 text-sm font-semibold text-destructive hover:bg-destructive/5"
+            >
+              <LogOut className="h-4 w-4" />
+              {t("leave_group")}
+            </button>
+          )}
+        </SheetContent>
+      </Sheet>
 
       {/* New conversation dialog */}
       <NewConversationDialog

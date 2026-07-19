@@ -110,18 +110,17 @@ export function ContextSelector() {
           <Button
             variant="ghost"
             size="sm"
-            className="relative flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-[#071A2D] border border-input rounded-sm px-2.5 sm:px-3 py-1.5 h-9 max-w-[160px] sm:max-w-[240px] xl:max-w-[280px]"
+            className="relative flex h-11 min-w-0 max-w-[150px] items-center gap-1.5 rounded-sm border border-transparent px-1.5 text-muted-foreground hover:bg-accent/50 hover:text-brand-ink min-[360px]:max-w-[180px] sm:max-w-[240px] sm:gap-2 sm:border-input sm:px-3 xl:max-w-[280px]"
             aria-label={
               pendingCount > 0
                 ? tc("pending_invite.banner_many", { count: pendingCount })
                 : undefined
             }
           >
-            {wsIcon(workspaceType || "PERSONAL")}
-            <span
-              className="min-w-0 truncate text-sm font-semibold tracking-tight text-[#071A2D]"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <span className="hidden sm:inline-flex">
+              {wsIcon(workspaceType || "PERSONAL")}
+            </span>
+            <span className="min-w-0 truncate text-sm font-semibold tracking-tight text-brand-ink">
               {workspaceName}
             </span>
             {currentRoleLabel && (
@@ -286,13 +285,12 @@ export function ContextSelector() {
           <Button
             variant="ghost"
             size="sm"
-            className="flex gap-2 items-center hover:bg-accent/50 text-muted-foreground hover:text-[#071A2D] border border-input rounded-sm px-2.5 sm:px-3 py-1.5 h-9 max-w-[160px] sm:max-w-[240px] xl:max-w-[280px]"
+            className="flex h-11 min-w-0 max-w-[150px] items-center gap-1.5 rounded-sm border border-transparent px-1.5 text-muted-foreground hover:bg-accent/50 hover:text-brand-ink min-[360px]:max-w-[180px] sm:max-w-[240px] sm:gap-2 sm:border-input sm:px-3 xl:max-w-[280px]"
           >
-            <Church className="h-4 w-4 shrink-0 text-[#071A2D]" />
-            <span
-              className="min-w-0 truncate text-sm font-semibold tracking-tight text-[#071A2D]"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <span className="hidden sm:inline-flex">
+              <Church className="h-4 w-4 shrink-0 text-brand-ink" />
+            </span>
+            <span className="min-w-0 truncate text-sm font-semibold tracking-tight text-brand-ink">
               {activeParishName}
             </span>
             <span className="text-xs text-muted-foreground hidden sm:inline">

@@ -278,44 +278,58 @@ export const getInstitutionalManageContext = async (_args: void, context: any) =
 
   const dioceseIds = new Set<string>();
 
-  const adminMemberships = await context.entities.Membership.findMany({
-    where: { userId: context.user.id, role: 'DIOCESE_ADMIN', status: 'ACTIVE' },
-    select: { parish: { select: { dioceseId: true } } },
-  });
+  const [adminMemberships, ownedParishes, freshUser] = await Promise.all([
+    context.entities.Membership.findMany({
+      where: { userId: context.user.id, role: 'DIOCESE_ADMIN', status: 'ACTIVE' },
+      select: { parish: { select: { dioceseId: true } } },
+    }),
+    context.entities.Parish.findMany({
+      where: { ownerId: context.user.id, dioceseId: { not: null } },
+      select: { dioceseId: true },
+    }),
+    // Fetch fresh user from DB — context.user may be stale (cached at login)
+    context.entities.User.findUnique({
+      where: { id: context.user.id },
+      select: { subscriptionStatus: true, subscriptionPlan: true },
+    }),
+  ]);
+
   for (const m of adminMemberships) {
     if (m.parish?.dioceseId) dioceseIds.add(m.parish.dioceseId);
   }
-
-  const ownedParishes = await context.entities.Parish.findMany({
-    where: { ownerId: context.user.id, dioceseId: { not: null } },
-    select: { dioceseId: true },
-  });
   for (const p of ownedParishes) {
     if (p.dioceseId) dioceseIds.add(p.dioceseId);
   }
 
-  const dioceses: any[] = [];
-  for (const dioceseId of dioceseIds) {
-    const diocese = await context.entities.Diocese.findUnique({
-      where: { id: dioceseId },
-      select: { id: true, name: true },
-    });
-    if (!diocese) continue;
-    const dioceseBilling = await context.entities.TenantBilling.findUnique({
-      where: { dioceseId },
-      select: { plan: true, status: true, trialEndsAt: true },
-    });
-    // Unlimited covers diocese; DIOCESE kept for pre-migration data.
-    const licensed = !!dioceseBilling && isBillingActive(dioceseBilling)
-      && (dioceseBilling.plan === 'UNLIMITED' || dioceseBilling.plan === 'DIOCESE');
-    dioceses.push({ id: diocese.id, name: diocese.name, licensed });
-  }
+  const dioceseIdList = [...dioceseIds];
+  let dioceses: any[] = [];
 
-  // Fetch fresh user from DB — context.user may be stale (cached at login)
-  const freshUser = await context.entities.User.findUnique({
-    where: { id: context.user.id },
-    select: { subscriptionStatus: true, subscriptionPlan: true },
-  });
+  if (dioceseIdList.length > 0) {
+    const [dioceseRows, billingRows] = await Promise.all([
+      context.entities.Diocese.findMany({
+        where: { id: { in: dioceseIdList } },
+        select: { id: true, name: true },
+      }),
+      context.entities.TenantBilling.findMany({
+        where: { dioceseId: { in: dioceseIdList } },
+        select: { dioceseId: true, plan: true, status: true, trialEndsAt: true },
+      }),
+    ]);
+
+    const billingByDiocese = new Map(
+      billingRows.map((b: any) => [b.dioceseId, b]),
+    );
+
+    dioceses = dioceseRows.map((diocese: any) => {
+      const dioceseBilling = billingByDiocese.get(diocese.id) as any;
+      // Unlimited covers diocese; DIOCESE kept for pre-migration data.
+      const licensed =
+        !!dioceseBilling &&
+        isBillingActive(dioceseBilling) &&
+        (dioceseBilling.plan === 'UNLIMITED' || dioceseBilling.plan === 'DIOCESE');
+      return { id: diocese.id, name: diocese.name, licensed };
+    });
+  }
 
   const ownerActive = isSubscriptionActiveLike(freshUser?.subscriptionStatus);
   const ownerPlanRaw = (freshUser?.subscriptionPlan || '').toLowerCase();

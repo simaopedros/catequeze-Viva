@@ -40,7 +40,7 @@
   "trial_banner_ends": "Termina em {{date}}.",
   "trial_banner_cta": "Ver assinatura",
   "trial_soft_title": "Você já usou o essencial — continue com calma",
-  "trial_soft_subtitle": "Ainda restam {{count}} dias de trial. Quando quiser, veja os planos para manter tudo no mesmo lugar.",
+  "trial_soft_subtitle": "Ainda restam {{count}} dias de teste gratuito. Quando quiser, veja os planos para manter tudo no mesmo lugar.",
   "trial_soft_cta": "Ver planos",
   "trial_soft_dismiss": "Dispensar sugestão de plano",
   "trial_topbar_one": "1 dia de teste",

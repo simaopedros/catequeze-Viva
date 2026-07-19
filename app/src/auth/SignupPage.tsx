@@ -10,6 +10,7 @@ import {
   type BillingInterval,
 } from "../catequese/lib/intendedPlan";
 import { resolvePlanId } from "../shared/pricing";
+import { rememberFunnelIntent } from "../client/analytics/marketingAnalytics";
 
 export function Signup() {
   useRedirectIfLoggedIn();
@@ -28,11 +29,24 @@ export function Signup() {
     if (intervalParam === "monthly" || intervalParam === "annual") {
       setIntendedInterval(intervalParam as BillingInterval);
     }
+    rememberFunnelIntent({
+      campaign: searchParams.get("campaign"),
+      intendedPlan: planId,
+      billingInterval: intervalParam,
+    });
   }, [searchParams]);
 
   const points = t("signup_panel_points", { returnObjects: true });
   const pointList = Array.isArray(points) ? (points as string[]) : [];
   const planFromAds = searchParams.get("plan");
+  const intervalFromAds = searchParams.get("interval");
+  const selectedPlanLabel = planFromAds
+    ? t(`signup_plan_${planFromAds}`, { defaultValue: planFromAds })
+    : undefined;
+  const billingIntervalLabel =
+    intervalFromAds === "monthly" || intervalFromAds === "annual"
+      ? t(`signup_interval_${intervalFromAds}`)
+      : undefined;
 
   return (
     <AuthPageLayout
@@ -43,7 +57,11 @@ export function Signup() {
         points: pointList,
       }}
     >
-      <CustomSignupForm intendedPlanId={planFromAds} />
+      <CustomSignupForm
+        intendedPlanId={planFromAds}
+        selectedPlanLabel={selectedPlanLabel}
+        billingIntervalLabel={billingIntervalLabel}
+      />
     </AuthPageLayout>
   );
 }

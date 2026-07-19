@@ -11,6 +11,10 @@ import {
   trackMarketingEvent,
   trackFirstValueReached,
   trackOnboardingCompleted,
+  rememberFunnelIntent,
+  getFunnelEventContext,
+  trackMobileEvent,
+  trackFunnelEvent,
 } from "../client/analytics/marketingAnalytics";
 
 describe("marketing funnel Path A", () => {
@@ -29,6 +33,10 @@ describe("marketing funnel Path A", () => {
     expect(MARKETING_EVENT_NAMES).toContain("landing_viewed");
     expect(MARKETING_EVENT_NAMES).toContain("signup_completed");
     expect(MARKETING_EVENT_NAMES).toContain("activation_completed");
+    expect(MARKETING_EVENT_NAMES).toContain("signup_error");
+    expect(MARKETING_EVENT_NAMES).toContain("onboarding_resumed");
+    expect(MARKETING_EVENT_NAMES).toContain("mobile_primary_action_clicked");
+    expect(MARKETING_EVENT_NAMES).toContain("first_attendance_saved");
   });
 
   it("maps campaign paths", () => {
@@ -44,9 +52,9 @@ describe("marketing funnel Path A", () => {
       landing: "general",
       placement: "hero",
     });
-    expect(window.dataLayer.some((e: any) => e.event === "primary_cta_clicked")).toBe(
-      true,
-    );
+    expect(
+      window.dataLayer.some((e: any) => e.event === "primary_cta_clicked"),
+    ).toBe(true);
     expect(window.plausible).toHaveBeenCalled();
   });
 
@@ -54,6 +62,47 @@ describe("marketing funnel Path A", () => {
     rememberLandingOrigin("/ia");
     rememberLandingOrigin("/presenca");
     expect(getLandingOrigin()).toBe("ai");
+  });
+  it("adds viewport and route context to mobile events", () => {
+    window.history.replaceState({}, "", "/app/classes");
+    trackMobileEvent("mobile_filter_opened", {
+      role: "LEAD_CATECHIST",
+      source: "classes",
+    });
+
+    expect(window.dataLayer.at(-1)).toMatchObject({
+      event: "mobile_filter_opened",
+      route: "/app/classes",
+      role: "LEAD_CATECHIST",
+      source: "classes",
+      viewport_width: expect.any(Number),
+      viewport_height: expect.any(Number),
+    });
+  });
+
+  it("preserves campaign and plan context across funnel events", () => {
+    rememberLandingOrigin("/presenca");
+    rememberFunnelIntent({
+      campaign: "google-presenca",
+      intendedPlan: "catechist_single",
+      billingInterval: "annual",
+    });
+
+    expect(getFunnelEventContext({ method: "google" })).toMatchObject({
+      landing: "attendance",
+      campaign: "google-presenca",
+      intendedPlan: "catechist_single",
+      billingInterval: "annual",
+      method: "google",
+    });
+
+    trackFunnelEvent("signup_method_selected", { method: "google" });
+    expect(window.dataLayer.at(-1)).toMatchObject({
+      event: "signup_method_selected",
+      campaign: "google-presenca",
+      intendedPlan: "catechist_single",
+      method: "google",
+    });
   });
 
   it("dedupes first_value_reached", () => {

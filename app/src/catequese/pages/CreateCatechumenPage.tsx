@@ -35,6 +35,7 @@ import {
   AppDisplayTitle,
 } from "../../client/components/brand/AppChrome";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
+import { MobileActionBar } from "../../client/components/MobileActionBar";
 
 function compressImage(file: File): Promise<string> {
   return new Promise((resolve) => {
@@ -163,7 +164,7 @@ export default function CreateCatechumenPage() {
 
   return (
     <>
-      <div className="mx-auto max-w-lg space-y-8">
+      <div className="mobile-action-padding mx-auto max-w-lg space-y-5 sm:space-y-8">
         <AppPageHeader
           eyebrow={t("catechumens.new_title")}
           title={t("catechumens.new_title")}
@@ -182,16 +183,22 @@ export default function CreateCatechumenPage() {
         />
 
         {form.formState.errors.root && (
-          <div className="rounded-sm bg-destructive/10 p-3 text-sm text-destructive">
+          <div
+            className="rounded-sm bg-destructive/10 p-3 text-sm text-destructive"
+            role="alert"
+            aria-live="assertive"
+          >
             {form.formState.errors.root.message}
           </div>
         )}
 
         <AppPanel className="space-y-6">
           <div className="flex flex-col items-center gap-3">
-            <div
-              className="relative w-24 h-24 rounded-sm overflow-hidden bg-muted border border-dashed border-border/70 cursor-pointer"
+            <button
+              type="button"
+              className="relative h-24 w-24 cursor-pointer overflow-hidden rounded-sm border border-dashed border-border/70 bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               onClick={() => fileRef.current?.click()}
+              aria-label={t("catechumens.add_photo")}
             >
               {photo ? (
                 <img
@@ -204,7 +211,7 @@ export default function CreateCatechumenPage() {
                   <Camera className="h-8 w-8" />
                 </div>
               )}
-            </div>
+            </button>
             <input
               ref={fileRef}
               type="file"
@@ -231,6 +238,7 @@ export default function CreateCatechumenPage() {
                         <Input
                           placeholder={t("catechumens.first_name_placeholder")}
                           {...field}
+                          autoComplete="given-name"
                         />
                       </FormControl>
                       <FormMessage />
@@ -248,6 +256,7 @@ export default function CreateCatechumenPage() {
                         <Input
                           placeholder={t("catechumens.last_name_placeholder")}
                           {...field}
+                          autoComplete="family-name"
                         />
                       </FormControl>
                       <FormMessage />
@@ -281,6 +290,7 @@ export default function CreateCatechumenPage() {
                         type="email"
                         placeholder={t("email_placeholder")}
                         {...field}
+                        autoComplete="email"
                       />
                     </FormControl>
                     <FormMessage />
@@ -297,7 +307,7 @@ export default function CreateCatechumenPage() {
                     <FormControl>
                       <select
                         {...field}
-                        className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm"
+                        className="flex h-12 min-h-12 w-full rounded-sm border border-input bg-background px-3 py-2 text-base md:h-11 md:min-h-11 md:text-sm"
                       >
                         <option value="">{t("catechumens.no_family")}</option>
                         {filteredHouseholds.map((h: any) => (
@@ -335,35 +345,18 @@ export default function CreateCatechumenPage() {
                   </FormItem>
                 )}
               />
-
-              {/* Spacer so sticky bar doesn't cover fields above bottom nav */}
-              <div className="h-20 md:h-4" aria-hidden />
             </form>
           </Form>
         </AppPanel>
       </div>
 
-      <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-40 border-t border-border/70 bg-white/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-white/80 md:static md:inset-auto md:bottom-auto md:z-auto md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none">
-        <div className="mx-auto flex max-w-lg gap-3 md:pt-2">
-          <Button
-            type="button"
-            className="min-h-11 flex-1"
-            disabled={form.formState.isSubmitting}
-            onClick={form.handleSubmit(onSubmit)}
-          >
-            <Save className="mr-2 h-4 w-4" />
-            {form.formState.isSubmitting ? t("saving") : t("register")}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="min-h-11"
-            onClick={goBack}
-          >
-            {t("cancel")}
-          </Button>
-        </div>
-      </div>
+      <MobileActionBar
+        label={form.formState.isSubmitting ? t("saving") : t("register")}
+        loading={form.formState.isSubmitting}
+        disabled={form.formState.isSubmitting}
+        onClick={form.handleSubmit(onSubmit)}
+        icon={<Save className="mr-2 h-4 w-4" />}
+      />
 
       <CreateHouseholdModal
         isOpen={showCreateHouseholdModal}

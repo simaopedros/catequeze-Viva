@@ -146,10 +146,7 @@ export function ChatView({
     const vv = window.visualViewport;
     if (!vv) return;
     const update = () => {
-      const inset = Math.max(
-        0,
-        window.innerHeight - vv.height - vv.offsetTop,
-      );
+      const inset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
       setKeyboardInset(inset > 40 ? inset : 0);
     };
     update();
@@ -326,19 +323,13 @@ export function ChatView({
     }
   }, [input]);
 
-  const displayMessages = pendingLocal
-    ? [...messages, pendingLocal]
-    : messages;
+  const displayMessages = pendingLocal ? [...messages, pendingLocal] : messages;
   const dateGroups = groupMessagesByDate(displayMessages);
 
   return (
     <div
       className="flex h-full flex-col bg-background"
-      style={
-        keyboardInset > 0
-          ? { paddingBottom: keyboardInset }
-          : undefined
-      }
+      style={keyboardInset > 0 ? { paddingBottom: keyboardInset } : undefined}
     >
       {isOffline && (
         <div
@@ -471,7 +462,7 @@ export function ChatView({
                   {/* Bubble */}
                   <div
                     className={cn(
-                      "max-w-[70%] min-w-[60px]",
+                      "max-w-[82%] min-w-[60px] sm:max-w-[70%]",
                       isMe && "items-end",
                     )}
                   >
@@ -600,7 +591,10 @@ export function ChatView({
         <div className="absolute bottom-24 right-6 z-10">
           <button
             onClick={scrollToBottom}
-            className="flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 bg-white hover:bg-muted"
+            className="flex h-11 w-11 items-center justify-center rounded-sm border border-border/70 bg-white hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label={t("scroll_to_bottom", {
+              defaultValue: "Ir para o final",
+            })}
           >
             <ChevronDown className="h-4 w-4" />
           </button>
@@ -623,7 +617,10 @@ export function ChatView({
           </div>
           <button
             onClick={() => setReplyTo(null)}
-            className="text-muted-foreground hover:text-brand-ink text-xs"
+            className="flex h-11 w-11 items-center justify-center rounded-sm text-xs text-muted-foreground hover:bg-muted hover:text-brand-ink"
+            aria-label={t("cancel_reply", {
+              defaultValue: "Cancelar resposta",
+            })}
           >
             ✕
           </button>

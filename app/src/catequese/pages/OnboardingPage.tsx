@@ -102,6 +102,7 @@ export default function OnboardingPage() {
   const navigate = useNavigate();
 
   const persisted = useMemo(() => loadPersisted(), []);
+  const resumed = Boolean(persisted.step && persisted.step !== "welcome");
   const [step, setStep] = useState<Step>(persisted.step || "welcome");
   const [accountType, setAccountType] = useState<AccountType>(
     persisted.accountType || null,
@@ -124,6 +125,31 @@ export default function OnboardingPage() {
     useState<CompletionSummary | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (resumed) {
+      trackMarketingEvent("onboarding_resumed", {
+        account_type: persisted.accountType,
+        step: persisted.step,
+      });
+    }
+  }, []); // Track persisted resume once.
+
+  useEffect(() => {
+    trackMarketingEvent("onboarding_step_viewed", {
+      account_type: accountType,
+      step,
+    });
+  }, [accountType, step]);
+
+  useEffect(() => {
+    if (error) {
+      trackMarketingEvent("onboarding_step_error", {
+        account_type: accountType,
+        step,
+      });
+    }
+  }, [accountType, error, step]);
 
   useEffect(() => {
     if (step === "welcome") return;
@@ -323,6 +349,11 @@ export default function OnboardingPage() {
     setCatechumensCount(count);
     // Milestone: class + people (compat funnel). Full first value needs attendance OR meeting.
     if (count > 0) {
+      trackMarketingEvent("first_people_added", {
+        account_type: "personal",
+        count,
+        source: "onboarding",
+      });
       trackMarketingEvent("activation_completed", {
         account_type: "personal",
         activation_type: "first_class_with_catechumens",
@@ -507,6 +538,7 @@ export default function OnboardingPage() {
       error={error}
       saving={saving}
       savingLabel={t("configuring")}
+      resumedLabel={resumed ? t("resume_banner") : undefined}
     >
       {showBack && (
         <button
@@ -568,8 +600,16 @@ export default function OnboardingPage() {
         <CatechumensSetupStep
           classId={classId}
           className={className}
+          initialCount={catechumensCount}
+          onCountChange={setCatechumensCount}
           onContinue={(count) => finishPersonal(count)}
-          onSkip={() => finishPersonal(0)}
+          onSkip={() => {
+            trackMarketingEvent("onboarding_skipped", {
+              account_type: "personal",
+              step: "catechumens",
+            });
+            finishPersonal(0);
+          }}
         />
       )}
 

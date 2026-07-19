@@ -3,11 +3,15 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { useQuery, useAction } from "wasp/client/operations";
 import {
-  listWorkspaces,
+  getAppBootstrap,
   getInstitutionalManageContext,
   acceptInvitation,
 } from "wasp/client/operations";
 import { useUserContext } from "../../client/hooks/useUserContext";
+import {
+  SHELL_QUERY_OPTIONS,
+  invalidateShellContext,
+} from "../../client/hooks/shellQueryCache";
 import { Button } from "../../client/components/ui/button";
 import {
   User,
@@ -72,13 +76,26 @@ function workspaceIcon(type: Workspace["type"]) {
 
 export default function WorkspaceSelectorPage() {
   const { t } = useTranslation("public");
+  // Share getAppBootstrap with AppShell / useUserContext — no second listWorkspaces
+  // round-trip when navigating from the rest of the app.
   const {
-    data: workspaces = [],
+    data: bootstrap,
     isLoading: loadingWorkspaces,
-    refetch,
-  } = useQuery(listWorkspaces);
+    refetch: refetchBootstrap,
+  } = useQuery(getAppBootstrap, undefined, {
+    ...SHELL_QUERY_OPTIONS,
+  });
+  const workspaces = ((bootstrap as any)?.workspaces ?? []) as Workspace[];
+  // Manage context is secondary UI (create under diocese / license). Do not
+  // block the main workspace list on this query.
   const { data: manageContext, isLoading: loadingContext } = useQuery(
     getInstitutionalManageContext,
+    undefined,
+    {
+      staleTime: SHELL_QUERY_OPTIONS.staleTime,
+      cacheTime: SHELL_QUERY_OPTIONS.cacheTime,
+      refetchOnWindowFocus: false,
+    },
   );
   const acceptAction = useAction(acceptInvitation);
   const navigate = useNavigate();
@@ -163,7 +180,8 @@ export default function WorkspaceSelectorPage() {
         (w: Workspace) => w.membershipId === membershipId,
       );
       await acceptAction({ membershipId });
-      await refetch();
+      await invalidateShellContext();
+      await refetchBootstrap();
       if (invitedWs) {
         handleEnter(invitedWs.id);
       }
@@ -264,8 +282,8 @@ export default function WorkspaceSelectorPage() {
   return (
     <div className="min-h-screen flex items-center justify-center border border-border/70 bg-muted/30 p-4">
       <div className="w-full max-w-lg space-y-6">
-        {/* Loading state */}
-        {loadingWorkspaces || loadingContext ? (
+        {/* Only wait for workspaces (shared bootstrap). Manage context fills in after. */}
+        {loadingWorkspaces ? (
           <div className="text-center py-16 space-y-4">
             <div className="inline-flex rounded-sm border border-border/70 border border-border/70 bg-muted/30 p-4">
               <Loader2 className="h-8 w-8 text-muted-foreground animate-pulse" />
@@ -469,7 +487,9 @@ export default function WorkspaceSelectorPage() {
             </div>
 
             {/* Managed institutional workspaces */}
-            {(managed.length > 0 || manageDioceses.length > 0) && (
+            {(managed.length > 0 ||
+              manageDioceses.length > 0 ||
+              (!loadingContext && canCreateUnderOwnerPlan)) && (
               <div className="space-y-4">
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground px-1 flex items-center gap-1.5">
                   <ShieldCheck className="h-3.5 w-3.5" />
@@ -491,17 +511,23 @@ export default function WorkspaceSelectorPage() {
                           <Building2 className="h-4 w-4" />
                           {group.name}
                         </div>
-                        <span
-                          className={`text-overline px-2 py-0.5 rounded-sm font-medium ${
-                            licensed
-                              ? "bg-[#071A2D]/10 text-[#071A2D]"
-                              : "bg-muted text-muted-foreground"
-                          }`}
-                        >
-                          {licensed
-                            ? t("workspace.diocese_license_active")
-                            : t("workspace.diocese_license_inactive")}
-                        </span>
+                        {loadingContext && manageDioceses.length === 0 ? (
+                          <span className="text-overline px-2 py-0.5 rounded-sm font-medium bg-muted text-muted-foreground">
+                            …
+                          </span>
+                        ) : (
+                          <span
+                            className={`text-overline px-2 py-0.5 rounded-sm font-medium ${
+                              licensed
+                                ? "bg-[#071A2D]/10 text-[#071A2D]"
+                                : "bg-muted text-muted-foreground"
+                            }`}
+                          >
+                            {licensed
+                              ? t("workspace.diocese_license_active")
+                              : t("workspace.diocese_license_inactive")}
+                          </span>
+                        )}
                       </div>
                       {group.items.map((ws) =>
                         renderWorkspaceCard(ws, {
@@ -601,6 +627,7 @@ export default function WorkspaceSelectorPage() {
             {!personal &&
               pendingInvitations.length === 0 &&
               institutional.length === 0 &&
+              !loadingContext &&
               manageDioceses.length === 0 && (
                 <div className="rounded-sm border-2 border-dashed border-warning/50 bg-warning/5 p-6 text-center space-y-3">
                   <p className="text-sm text-muted-foreground">

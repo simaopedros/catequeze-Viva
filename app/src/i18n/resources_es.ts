@@ -604,7 +604,19 @@ export const auth_es = {
       "Retoma la organización del grupo en segundos",
       "Registra asistencia en el celular",
       "Prepara el próximo encuentro con tranquilidad"
-    ]
+    ],
+    "signup_plan_single": "Plan Esencial",
+    "signup_plan_unlimited": "Plan Completo",
+    "signup_interval_monthly": "facturación mensual",
+    "signup_interval_annual": "facturación anual",
+    "signup_context_no_card": "7 días gratis, sin tarjeta",
+    "signup_context_change": "Cambiar",
+    "signup_success_next_steps": "Próximos pasos",
+    "signup_success_step_1": "Revisa tu bandeja de entrada y la carpeta de spam.",
+    "signup_success_step_2": "Abre el enlace de confirmación enviado a tu correo.",
+    "signup_success_step_3": "Continúa configurando tu primer grupo.",
+    "signup_password_rule_length": "Al menos 8 caracteres",
+    "signup_password_rule_match": "Las contraseñas coinciden"
   } as const;
 
 export const bible_es = {
@@ -1838,7 +1850,8 @@ export const common_es = {
     "view_cards": "Tarjetas",
     "leave_form_title": "Cambios no guardados",
     "leave_form_desc": "Tiene cambios que aún no se han guardado. ¿Salir de todos modos?",
-    "leave_anyway": "Salir sin guardar"
+    "leave_anyway": "Salir sin guardar",
+    "more_actions": "Más acciones"
   } as const;
 
 export const components_es = {
@@ -2167,7 +2180,13 @@ export const dashboard_es = {
     "registration_section": "Registro",
     "attention_now": "Qué necesita su atención ahora",
     "import_catechumens": "Importar catecúmenos",
-    "metrics_secondary": "Indicadores"
+    "metrics_secondary": "Indicadores",
+    "mobile": {
+      "none_registered": "Ninguno",
+      "no_attendance": "Sin registros",
+      "all_clear": "Todo al día",
+      "no_catechumens": "Sin catecúmenos"
+    }
   } as const;
 
 export const family_es = {
@@ -2833,7 +2852,11 @@ export const landingIa_es = {
       "badge": "Asistencia teológicamente entrenada",
       "cta_primary": "Probar la asistencia editorial",
       "cta_secondary": "Ver cómo funciona",
-      "trust_signals": "Plan Único o Ilimitado • Base teológica CNBB • Cancela cuando quieras"
+      "trust_signals": "Plan Único o Ilimitado • Base teológica CNBB • Cancela cuando quieras",
+      "visual_title": "Guion del encuentro",
+      "visual_item_1": "Indica tema y grupo de edad",
+      "visual_item_2": "Revisa referencias católicas",
+      "visual_item_3": "Adapta y dirige el encuentro"
     },
     "features_title": "Asistencia que entiende de catequesis",
     "features_subtitle": "Entrenada con la Biblia CNBB, el Catecismo y el Directorio para la Catequesis.",
@@ -2934,7 +2957,11 @@ export const landingPresenca_es = {
       "badge": "Control de asistencia digital",
       "cta_primary": "Comenzar ahora",
       "cta_secondary": "Ver demo",
-      "trust_signals": "Plan Único o Ilimitado • Funciona en el celular • Pago con Stripe"
+      "trust_signals": "Plan Único o Ilimitado • Funciona en el celular • Pago con Stripe",
+      "visual_title": "Asistencia en el móvil",
+      "visual_item_1": "Marca el grupo rápidamente",
+      "visual_item_2": "Registra justificaciones",
+      "visual_item_3": "Sincroniza al volver internet"
     },
     "features_title": "Control total de asistencias",
     "features_subtitle": "Del registro a la justificación — todo integrado y en tiempo real.",
@@ -3032,7 +3059,11 @@ export const landingSistema_es = {
       "badge": "Gestión completa para catequesis",
       "cta_primary": "Empezar ahora",
       "cta_secondary": "Ver recursos",
-      "trust_signals": "Plan Único o Ilimitado • Empieza en 2 minutos • Cancela cuando quieras"
+      "trust_signals": "Plan Único o Ilimitado • Empieza en 2 minutos • Cancela cuando quieras",
+      "visual_title": "Visión de coordinación",
+      "visual_item_1": "Grupos y equipos en un panel",
+      "visual_item_2": "Indicadores de asistencia",
+      "visual_item_3": "Próximas acciones pastorales"
     },
     "features_title": "Todo para gestionar su catequesis",
     "features_order": [
@@ -3297,7 +3328,9 @@ export const meetings_es = {
         "messages": "Avisar a las familias",
         "attendance": "Lista",
         "calendar": "Agenda"
-      }
+      },
+      "next_label": "Próximo encuentro",
+      "empty_mobile": "No hay encuentros programados."
     }
   } as const;
 
@@ -3826,8 +3859,18 @@ export const onboarding_es = {
       "added_count": "{{count}} en el grupo",
       "continue": "Terminar con {{count}} en el grupo",
       "skip": "Terminar sin añadir ahora",
-      "skip_hint": "La asistencia quedará vacía hasta que incluyas a alguien."
-    }
+      "skip_hint": "La asistencia quedará vacía hasta que incluyas a alguien.",
+      "preview_valid": "{{count}} válidas",
+      "preview_duplicate": "{{count}} duplicadas",
+      "preview_invalid": "{{count}} inválidas",
+      "row_valid": "Lista",
+      "row_duplicate": "Duplicada",
+      "row_invalid": "Fila inválida",
+      "confirm_import": "Confirmar y añadir",
+      "retry_failed": "Reintentar {{count}} fallos",
+      "partial_error": "No se añadieron {{count}} filas. Las demás se conservaron."
+    },
+    "resume_banner": "Continuando desde donde lo dejaste."
   } as const;
 
 export const parishes_es = {
@@ -4526,8 +4569,11 @@ export const topbar_es = {
     "sign_out": "Cerrar sesión",
     "current_user": "Usuario",
     "language": "Idioma",
-    "theme": "Tema",
-    "context": "Espacio y perfil"
+    "context": "Espacio y perfil",
+    "search": "Abrir búsqueda",
+    "clearSearch": "Limpiar búsqueda",
+    "closeSearch": "Cerrar búsqueda",
+    "user_menu": "Abrir menú de usuario"
   } as const;
 
 export const tour_es = {

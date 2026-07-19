@@ -41,7 +41,7 @@ import {
 } from "../client/components/ui/dropdown-menu";
 import { cn } from "../client/utils";
 import { ContextSelector } from "./components/ContextSelector";
-import { SearchSheet } from "./components/SearchSheet";
+import { MobileSearchDialog } from "./components/MobileSearchDialog";
 import {
   isOnProductTrial,
   getProductTrialDaysLeft,
@@ -171,11 +171,14 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
   );
 
   // Group results by module
-  const grouped = results.reduce<Record<string, any[]>>((acc, r: any) => {
-    if (!acc[r.module]) acc[r.module] = [];
-    acc[r.module].push(r);
-    return acc;
-  }, {});
+  const grouped = (results as any[]).reduce<Record<string, any[]>>(
+    (acc, r: any) => {
+      if (!acc[r.module]) acc[r.module] = [];
+      acc[r.module].push(r);
+      return acc;
+    },
+    {},
+  );
 
   const moduleNames = Object.keys(grouped);
   const flatResults = moduleNames.flatMap((m) => grouped[m]);
@@ -282,8 +285,9 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="sm:hidden h-9 w-9 rounded-sm hover:bg-accent/50 shrink-0"
+              className="sm:hidden h-11 w-11 rounded-sm hover:bg-accent/50 shrink-0"
               onClick={() => setSearchSheetOpen(true)}
+              aria-label={tTop("search")}
             >
               <Search className="h-5 w-5" />
             </Button>
@@ -333,7 +337,8 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                 setSelectedIndex(0);
                 inputRef.current?.focus();
               }}
-              className="text-muted-foreground hover:text-[#071A2D] shrink-0"
+              className="flex h-11 w-11 items-center justify-center text-muted-foreground hover:text-brand-ink shrink-0"
+              aria-label={tTop("clearSearch")}
             >
               <X className="h-4 w-4" />
             </button>
@@ -345,7 +350,8 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                 setSearchExpanded(false);
                 setQuery("");
               }}
-              className="sm:hidden text-muted-foreground hover:text-[#071A2D] shrink-0 ml-1"
+              className="sm:hidden flex h-11 w-11 items-center justify-center text-muted-foreground hover:text-brand-ink shrink-0 ml-1"
+              aria-label={tTop("closeSearch")}
             >
               <X className="h-4 w-4" />
             </button>
@@ -368,7 +374,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                   const Icon = MODULE_ICONS[module] || Search;
                   return (
                     <div key={module}>
-                      <div className="flex items-center gap-2 border-y border-border/70 bg-muted/40 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      <div className="flex items-center gap-2 border-y border-border/70 bg-muted/40 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                         <Icon className="h-3 w-3" />
                         {getModuleLabel(module)}
                       </div>
@@ -389,12 +395,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                           >
                             <Icon className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
                             <div className="min-w-0 flex-1">
-                              <p
-                                className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
-                                style={{
-                                  fontFamily: "var(--font-brand-display)",
-                                }}
-                              >
+                              <p className="truncate text-sm font-semibold tracking-tight text-brand-ink">
                                 {item.label}
                               </p>
                               <p className="text-xs text-muted-foreground truncate">
@@ -431,11 +432,11 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
 
       {/* Right section — hidden when search expanded on mobile */}
       {!searchExpanded && (
-        <div className="ml-auto flex items-center gap-1.5 sm:gap-2 min-w-0">
+        <div className="ml-auto flex min-w-0 items-center gap-1 sm:gap-2">
           {onTrial && (
             <Link
               to="/app/billing"
-              className="hidden items-center gap-1.5 rounded-sm border border-border/70 bg-muted/30 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#071A2D] transition-colors hover:bg-muted/50 sm:inline-flex"
+              className="hidden items-center gap-1.5 rounded-sm border border-border/70 bg-muted/30 px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-brand-ink transition-colors hover:bg-muted/50 sm:inline-flex"
               title={tBilling("trial_status_title")}
             >
               <Clock className="h-3 w-3 shrink-0" aria-hidden />
@@ -453,7 +454,8 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="relative h-9 w-9 rounded-sm hover:bg-accent/50"
+                className="relative h-11 w-11 rounded-sm hover:bg-accent/50"
+                aria-label={tTop("notifications")}
               >
                 <Bell className="h-5 w-5" />
                 {unreadCount > 0 && (
@@ -463,7 +465,10 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                 )}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80 p-0">
+            <DropdownMenuContent
+              align="end"
+              className="w-[min(20rem,calc(100vw-1rem))] p-0"
+            >
               <div className="flex items-center justify-between px-3 py-2 border-b">
                 <span className="text-xs font-semibold text-muted-foreground">
                   {tTop("notifications")}
@@ -471,7 +476,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                 {unreadCount > 0 && (
                   <button
                     onClick={handleMarkAllRead}
-                    className="text-overline text-[#071A2D] hover:underline"
+                    className="min-h-11 rounded-sm px-2 text-xs font-semibold text-brand-ink hover:bg-muted hover:underline"
                   >
                     {tTop("markAllRead")}
                   </button>
@@ -495,7 +500,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                         key={n.id}
                         onClick={() => handleNotifClick(n)}
                         className={cn(
-                          "w-full flex items-start gap-2.5 px-3 py-2.5 text-left transition-colors hover:bg-muted/50",
+                          "flex min-h-14 w-full items-start gap-2.5 px-3 py-2.5 text-left transition-colors hover:bg-muted/50",
                           !n.readAt && "bg-muted/30",
                         )}
                       >
@@ -503,7 +508,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                           className={cn(
                             "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-sm",
                             !n.readAt
-                              ? "bg-[#071A2D] text-white"
+                              ? "bg-brand-ink text-white"
                               : "bg-muted text-muted-foreground",
                           )}
                         >
@@ -514,10 +519,9 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                             className={cn(
                               "truncate text-xs tracking-tight",
                               !n.readAt
-                                ? "font-semibold text-[#071A2D]"
-                                : "font-medium text-[#071A2D]/80",
+                                ? "font-semibold text-brand-ink"
+                                : "font-medium text-brand-ink/80",
                             )}
-                            style={{ fontFamily: "var(--font-brand-display)" }}
                           >
                             {n.title}
                           </p>
@@ -531,7 +535,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
                           </p>
                         </div>
                         {!n.readAt && (
-                          <div className="mt-1.5 h-2 w-2 shrink-0 rounded-sm bg-[#D39A2B]" />
+                          <div className="mt-1.5 h-2 w-2 shrink-0 rounded-sm bg-brand-gold" />
                         )}
                       </button>
                     );
@@ -542,14 +546,18 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
           </DropdownMenu>
 
           {/* User dropdown — contains lang, theme, profile links, logout */}
-          {user && <UserDropdown user={user} />}
+          {user && (
+            <div className="hidden sm:block">
+              <UserDropdown user={user} />
+            </div>
+          )}
         </div>
       )}
 
       {/* Mobile search sheet */}
-      <SearchSheet
+      <MobileSearchDialog
         open={searchSheetOpen}
-        onClose={() => setSearchSheetOpen(false)}
+        onOpenChange={setSearchSheetOpen}
         query={query}
         onQueryChange={(q) => {
           setQuery(q);
@@ -558,7 +566,6 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
         results={debouncedQuery.length >= 3 ? results || [] : []}
         isLoading={isLoading}
         onSelect={handleSelect}
-        currentLocale={currentLocale}
       />
     </header>
   );

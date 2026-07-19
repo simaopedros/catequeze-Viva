@@ -26,6 +26,9 @@
   "sign_out": "Sign out",
   "current_user": "User",
   "language": "Language",
-  "theme": "Theme",
-  "context": "Workspace & role"
+  "context": "Workspace & role",
+  "search": "Open search",
+  "clearSearch": "Clear search",
+  "closeSearch": "Close search",
+  "user_menu": "Open user menu"
 }

@@ -140,19 +140,16 @@ export function ProductTrialBanner() {
   if (mode === "soft") {
     return (
       <div
-        className="border-b border-border/70 bg-muted/30 px-4 py-3"
+        className="border-b border-border/70 bg-muted/30 px-3 py-2.5 sm:px-4 sm:py-3"
         role="status"
       >
-        <div className="mx-auto flex max-w-5xl items-start gap-3 rounded-sm border border-border/70 bg-white p-4">
+        <div className="mx-auto flex max-w-5xl items-start gap-3 rounded-sm border border-border/70 bg-white p-3 sm:p-4">
           <Sparkles
             className="mt-0.5 h-5 w-5 shrink-0 text-[#D39A2B]"
             aria-hidden
           />
           <div className="min-w-0 flex-1 space-y-1">
-            <p
-              className="text-sm font-semibold tracking-tight text-[#071A2D]"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <p className="text-sm font-semibold tracking-tight text-brand-ink">
               {t("trial_soft_title")}
             </p>
             <p className="text-xs leading-relaxed text-muted-foreground">
@@ -165,7 +162,7 @@ export function ProductTrialBanner() {
               asChild
               size="sm"
               variant="outline"
-              className="mt-2 h-9 rounded-sm"
+              className="mt-2 h-11 min-h-11 rounded-sm"
             >
               <Link to={billingHref}>
                 {t("trial_soft_cta")}
@@ -177,7 +174,7 @@ export function ProductTrialBanner() {
             type="button"
             variant="ghost"
             size="icon"
-            className="h-8 w-8 shrink-0 text-muted-foreground"
+            className="h-11 w-11 shrink-0 text-muted-foreground"
             onClick={dismissSoft}
             aria-label={t("trial_soft_dismiss")}
           >
@@ -221,7 +218,7 @@ export function ProductTrialBanner() {
         asChild
         size="sm"
         variant="outline"
-        className="h-8 shrink-0 rounded-sm border border-border/70 bg-[#071A2D] text-white hover:bg-[#0a2540]"
+        className="h-11 min-h-11 shrink-0 rounded-sm border border-border/70 bg-brand-ink text-white hover:bg-brand-ink-soft"
       >
         <Link to={billingHref}>
           {t("trial_banner_cta")}

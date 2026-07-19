@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { createCatechumen, enrollCatechumen } from "wasp/client/operations";
 import { Button } from "../../../client/components/ui/button";
@@ -14,12 +14,20 @@ import {
 import { trackMarketingEvent } from "../../../client/analytics/marketingAnalytics";
 
 type AddedPerson = { id: string; firstName: string; lastName: string };
+type ParsedRow = {
+  line: number;
+  fn: string;
+  ln: string;
+  status: "valid" | "duplicate" | "invalid";
+};
 
 interface CatechumensSetupStepProps {
   classId: string;
   className: string;
   onContinue: (count: number) => void;
   onSkip: () => void;
+  initialCount?: number;
+  onCountChange?: (count: number) => void;
 }
 
 export function CatechumensSetupStep({
@@ -27,8 +35,11 @@ export function CatechumensSetupStep({
   className,
   onContinue,
   onSkip,
+  initialCount = 0,
+  onCountChange,
 }: CatechumensSetupStepProps) {
   const { t } = useTranslation("onboarding");
+  const [previouslyAdded] = useState(initialCount);
   const [mode, setMode] = useState<"manual" | "bulk" | "file">("manual");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -36,6 +47,13 @@ export function CatechumensSetupStep({
   const [added, setAdded] = useState<AddedPerson[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [previewRows, setPreviewRows] = useState<ParsedRow[]>([]);
+  const [failedRows, setFailedRows] = useState<ParsedRow[]>([]);
+  const totalCount = previouslyAdded + added.length;
+
+  useEffect(() => {
+    onCountChange?.(totalCount);
+  }, [onCountChange, totalCount]);
 
   const addOne = async (fn: string, ln: string) => {
     const profile = await createCatechumen({
@@ -46,65 +64,75 @@ export function CatechumensSetupStep({
     return { id: profile.id as string, firstName: fn, lastName: ln || "" };
   };
 
-  /** Parse CSV/TSV or "name, last" lines into first/last pairs. */
-  const parseNameLines = (text: string): { fn: string; ln: string }[] => {
-    const rows: { fn: string; ln: string }[] = [];
-    for (const raw of text.split(/\r?\n/)) {
+  /** Parse CSV/TSV or pasted names and classify before any write. */
+  const parseNameLines = (text: string): ParsedRow[] => {
+    const seen = new Set(
+      added.map((person) =>
+        `${person.firstName} ${person.lastName}`.trim().toLocaleLowerCase(),
+      ),
+    );
+    const rows: ParsedRow[] = [];
+    text.split(/\r?\n/).forEach((raw, index) => {
       const line = raw.trim();
-      if (!line) continue;
-      // Skip header-ish rows
+      if (!line) return;
       if (
         /^(nome|name|first|primeiro)/i.test(line) &&
         /sobrenome|last|surname/i.test(line)
-      ) {
-        continue;
-      }
+      )
+        return;
       const parts = line
         .split(/[,;\t]/)
-        .map((p) => p.trim())
+        .map((part) => part.trim())
         .filter(Boolean);
-      if (parts.length === 0) continue;
-      if (parts.length === 1) {
-        const words = parts[0].split(/\s+/);
-        rows.push({
-          fn: words[0] || parts[0],
-          ln: words.slice(1).join(" ") || "",
-        });
-      } else {
-        rows.push({ fn: parts[0], ln: parts.slice(1).join(" ") });
-      }
-    }
+      const words = (parts[0] || "").split(/\s+/).filter(Boolean);
+      const fn = parts.length > 1 ? parts[0] : words[0] || "";
+      const ln =
+        parts.length > 1 ? parts.slice(1).join(" ") : words.slice(1).join(" ");
+      const key = `${fn} ${ln}`.trim().toLocaleLowerCase();
+      const invalid = fn.length < 2 || /[<>]/.test(line);
+      const duplicate = !invalid && seen.has(key);
+      rows.push({
+        line: index + 1,
+        fn,
+        ln,
+        status: invalid ? "invalid" : duplicate ? "duplicate" : "valid",
+      });
+      if (!invalid) seen.add(key);
+    });
     return rows;
   };
 
-  const enrollParsed = async (
-    rows: { fn: string; ln: string }[],
-    method: string,
-  ) => {
-    if (rows.length === 0) {
+  const enrollParsed = async (rows: ParsedRow[], method: string) => {
+    const validRows = rows.filter((row) => row.status === "valid");
+    if (validRows.length === 0) {
       setError(t("catechumens_setup.bulk_empty"));
       return;
     }
     setLoading(true);
     setError("");
     const created: AddedPerson[] = [];
-    try {
-      for (const row of rows) {
-        const person = await addOne(row.fn, row.ln);
-        created.push(person);
+    const failed: ParsedRow[] = [];
+    for (const row of validRows) {
+      try {
+        created.push(await addOne(row.fn, row.ln));
+      } catch {
+        failed.push(row);
       }
+    }
+    if (created.length) {
       setAdded((prev) => [...prev, ...created]);
       trackMarketingEvent("onboarding_step_completed", {
         step: "catechumens_bulk_added",
         method,
         count: created.length,
       });
-    } catch (err: any) {
-      setError(err?.message || t("catechumens_setup.add_error"));
-      if (created.length) setAdded((prev) => [...prev, ...created]);
-    } finally {
-      setLoading(false);
     }
+    setFailedRows(failed);
+    setPreviewRows(failed);
+    if (failed.length) {
+      setError(t("catechumens_setup.partial_error", { count: failed.length }));
+    }
+    setLoading(false);
   };
 
   const handleFile = async (file: File | null) => {
@@ -120,7 +148,8 @@ export function CatechumensSetupStep({
     }
     try {
       const text = await file.text();
-      await enrollParsed(parseNameLines(text), "csv_file");
+      setPreviewRows(parseNameLines(text));
+      setFailedRows([]);
     } catch {
       setError(t("catechumens_setup.file_read_error"));
     }
@@ -151,21 +180,23 @@ export function CatechumensSetupStep({
     }
   };
 
-  const handleBulkAdd = async () => {
-    const rows = parseNameLines(bulkText);
-    await enrollParsed(rows, "bulk_text");
-    if (rows.length) setBulkText("");
+  const handleBulkAdd = () => {
+    setPreviewRows(parseNameLines(bulkText));
+    setFailedRows([]);
+    setError("");
   };
 
   const handleContinue = () => {
-    onContinue(added.length);
+    onContinue(totalCount);
   };
 
   return (
     <div className="space-y-7">
       <div className="space-y-3">
         <AppEyebrow>{t("catechumens_setup.eyebrow")}</AppEyebrow>
-        <AppDisplayTitle as="h2">{t("catechumens_setup.title")}</AppDisplayTitle>
+        <AppDisplayTitle as="h2">
+          {t("catechumens_setup.title")}
+        </AppDisplayTitle>
         <AppGoldRule />
         <p className="text-sm leading-relaxed text-muted-foreground">
           {t("catechumens_setup.subtitle", { className })}
@@ -173,7 +204,11 @@ export function CatechumensSetupStep({
       </div>
 
       {error && (
-        <div className="rounded-sm border border-destructive/25 bg-destructive/5 px-3 py-2.5 text-sm text-destructive">
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="rounded-sm border border-destructive/25 bg-destructive/5 px-3 py-2.5 text-sm text-destructive"
+        >
           {error}
         </div>
       )}
@@ -191,11 +226,12 @@ export function CatechumensSetupStep({
             type="button"
             onClick={() => setMode(id)}
             className={cn(
-              "flex-1 rounded-sm py-2 text-xs font-medium transition-colors",
+              "min-h-11 flex-1 rounded-sm px-2 py-2 text-xs font-medium transition-colors",
               mode === id
-                ? "bg-[#071A2D] text-white"
-                : "text-muted-foreground hover:text-[#071A2D]",
+                ? "bg-brand-ink text-white"
+                : "text-muted-foreground hover:text-brand-ink",
             )}
+            aria-pressed={mode === id}
           >
             {t(`catechumens_setup.${key}`)}
           </button>
@@ -235,7 +271,7 @@ export function CatechumensSetupStep({
             type="submit"
             variant="outline"
             disabled={loading}
-            className="h-10 w-full rounded-sm"
+            className="h-11 w-full rounded-sm"
           >
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -269,7 +305,7 @@ export function CatechumensSetupStep({
             variant="outline"
             disabled={loading}
             onClick={handleBulkAdd}
-            className="h-10 w-full rounded-sm"
+            className="h-11 w-full rounded-sm"
           >
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -292,7 +328,7 @@ export function CatechumensSetupStep({
             accept=".csv,.txt,.tsv,text/csv,text/plain"
             disabled={loading}
             onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
-            className="block w-full text-sm text-muted-foreground file:mr-3 file:rounded-sm file:border-0 file:bg-[#071A2D] file:px-3 file:py-2 file:text-xs file:font-medium file:text-white"
+            className="block w-full text-sm text-muted-foreground file:mr-3 file:rounded-sm file:border-0 file:bg-brand-ink file:px-3 file:py-2 file:text-xs file:font-medium file:text-white"
           />
           <p className="text-xs text-muted-foreground">
             {t("catechumens_setup.file_hint")}
@@ -305,10 +341,81 @@ export function CatechumensSetupStep({
           )}
         </div>
       )}
-      {added.length > 0 && (
+      {previewRows.length > 0 && (
+        <div
+          className="space-y-3 rounded-sm border border-border/70 bg-muted/20 p-4"
+          aria-live="polite"
+        >
+          <div className="flex flex-wrap gap-2 text-xs">
+            <span className="rounded-full bg-success/10 px-2 py-1 text-success">
+              {t("catechumens_setup.preview_valid", {
+                count: previewRows.filter((row) => row.status === "valid")
+                  .length,
+              })}
+            </span>
+            <span className="rounded-full bg-warning/10 px-2 py-1 text-warning-foreground">
+              {t("catechumens_setup.preview_duplicate", {
+                count: previewRows.filter((row) => row.status === "duplicate")
+                  .length,
+              })}
+            </span>
+            <span className="rounded-full bg-destructive/10 px-2 py-1 text-destructive">
+              {t("catechumens_setup.preview_invalid", {
+                count: previewRows.filter((row) => row.status === "invalid")
+                  .length,
+              })}
+            </span>
+          </div>
+          <ul className="max-h-40 space-y-1 overflow-y-auto text-sm">
+            {previewRows.map((row) => (
+              <li
+                key={`${row.line}-${row.fn}-${row.ln}`}
+                className="flex items-center justify-between gap-3 border-t border-border/50 py-2 first:border-0"
+              >
+                <span className="truncate">
+                  {row.fn} {row.ln}
+                </span>
+                <span className="shrink-0 text-xs text-muted-foreground">
+                  {t(`catechumens_setup.row_${row.status}`)}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <Button
+            type="button"
+            className="h-11 w-full rounded-sm"
+            disabled={
+              loading || !previewRows.some((row) => row.status === "valid")
+            }
+            onClick={() =>
+              void enrollParsed(
+                previewRows,
+                mode === "file"
+                  ? "csv_file"
+                  : failedRows.length
+                    ? "retry_failed"
+                    : "bulk_text",
+              )
+            }
+          >
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Plus className="h-4 w-4" />
+            )}
+            {failedRows.length
+              ? t("catechumens_setup.retry_failed", {
+                  count: failedRows.length,
+                })
+              : t("catechumens_setup.confirm_import")}
+          </Button>
+        </div>
+      )}
+
+      {totalCount > 0 && (
         <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground">
-            {t("catechumens_setup.added_count", { count: added.length })}
+            {t("catechumens_setup.added_count", { count: totalCount })}
           </p>
           <ul className="max-h-40 space-y-1 overflow-y-auto border-t border-border/60 pt-2">
             {added.map((p) => (
@@ -316,10 +423,7 @@ export function CatechumensSetupStep({
                 key={p.id}
                 className="flex items-center justify-between py-1.5 text-sm"
               >
-                <span
-                  className="font-semibold tracking-tight text-[#071A2D]"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
+                <span className="font-semibold tracking-tight text-brand-ink">
                   {p.firstName} {p.lastName}
                 </span>
               </li>
@@ -332,21 +436,21 @@ export function CatechumensSetupStep({
         <Button
           type="button"
           onClick={handleContinue}
-          disabled={loading || added.length === 0}
+          disabled={loading || totalCount === 0}
           className="h-11 w-full rounded-sm shadow-none"
         >
-          {t("catechumens_setup.continue", { count: added.length })}
+          {t("catechumens_setup.continue", { count: totalCount })}
           <ArrowRight className="ml-1 h-4 w-4" />
         </Button>
         <button
           type="button"
           onClick={onSkip}
           disabled={loading}
-          className="py-2 text-center text-sm text-muted-foreground transition-colors hover:text-[#071A2D]"
+          className="py-2 text-center text-sm text-muted-foreground transition-colors hover:text-brand-ink"
         >
           {t("catechumens_setup.skip")}
         </button>
-        {added.length === 0 && (
+        {totalCount === 0 && (
           <p className="text-center text-xs text-muted-foreground">
             {t("catechumens_setup.skip_hint")}
           </p>

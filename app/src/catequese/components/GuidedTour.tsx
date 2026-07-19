@@ -56,6 +56,8 @@ export function GuidedTour({ onComplete }: GuidedTourProps) {
     if (el) {
       const rect = el.getBoundingClientRect();
       setTargetRect(rect);
+    } else {
+      setTargetRect(null);
     }
   }, [step.target]);
 
@@ -69,7 +71,7 @@ export function GuidedTour({ onComplete }: GuidedTourProps) {
     };
   }, [updateTargetRect]);
 
-  if (dismissed) return null;
+  if (dismissed || !targetRect) return null;
 
   const isLastStep = currentStep === steps.length - 1;
 
@@ -147,43 +149,48 @@ export function GuidedTour({ onComplete }: GuidedTourProps) {
 
       {targetRect && (
         <div
-          className="pointer-events-none fixed z-[101] rounded-sm ring-4 ring-[#071A2D] ring-offset-2 transition-all duration-300"
+          className="pointer-events-none fixed z-[101] rounded-sm ring-4 ring-brand-ink ring-offset-2 transition-all duration-300"
           style={overlayStyle}
         />
       )}
 
       <div
-        className="fixed z-[102] w-80 rounded-sm border border-border/70 bg-white p-5 transition-all duration-300"
+        className="fixed z-[102] w-[min(20rem,calc(100vw-1.5rem))] rounded-sm border border-border/70 bg-white p-5 transition-all duration-300"
         style={tooltipStyle}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="guided-tour-title"
       >
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <span className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
             {t("stepOf", { current: currentStep + 1, total: steps.length })}
           </span>
           <button
             onClick={handleDismiss}
-            className="text-muted-foreground hover:text-[#071A2D]"
+            className="flex h-11 w-11 items-center justify-center rounded-sm text-muted-foreground hover:bg-muted hover:text-brand-ink"
+            aria-label={t("close", { ns: "common" })}
           >
             <X className="h-4 w-4" />
           </button>
         </div>
         <h3
-          className="mb-1 text-lg font-semibold tracking-tight text-[#071A2D]"
+          id="guided-tour-title"
+          className="mb-1 text-lg font-semibold tracking-tight text-brand-ink"
           style={{ fontFamily: "var(--font-brand-display)" }}
         >
           {step.title}
         </h3>
-        <div className="mb-3 h-px w-8 bg-[#D39A2B]" aria-hidden />
+        <div className="mb-3 h-px w-8 bg-brand-gold" aria-hidden />
         <p className="text-sm text-muted-foreground mb-4">{step.description}</p>
         <div className="flex items-center justify-between">
           <button
             onClick={handlePrev}
             disabled={currentStep === 0}
-            className="text-sm text-muted-foreground hover:text-[#071A2D] disabled:opacity-30 flex items-center gap-1"
+            className="flex min-h-11 items-center gap-1 rounded-sm px-2 text-sm text-muted-foreground hover:bg-muted hover:text-brand-ink disabled:opacity-30"
           >
             <ChevronLeft className="h-4 w-4" /> {t("previous")}
           </button>
-          <Button size="sm" onClick={handleNext} className="gap-1">
+          <Button size="sm" onClick={handleNext} className="min-h-11 gap-1">
             {isLastStep ? t("start") : t("next")}
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -198,7 +205,12 @@ export function useGuidedTour() {
 
   useEffect(() => {
     const seen = localStorage.getItem("catequese-tour-seen");
-    if (seen) return;
+    const firstValueReached =
+      localStorage.getItem("cv-first-value-sent") === "1";
+    const isMobile = window.matchMedia("(max-width: 1023px)").matches;
+    // Mobile uses contextual guidance only. The broad desktop tour is delayed
+    // until the user has already reached the first pastoral value.
+    if (seen || !firstValueReached || isMobile) return;
 
     const tryShow = () => {
       // Defer tour until cookie consent has been handled.

@@ -16,6 +16,8 @@ export type PagePrimaryAction = {
   disabled?: boolean;
   /** data-tour / analytics hooks */
   testId?: string;
+  /** Where the action originated for mobile activation analytics */
+  analyticsSource?: string;
 };
 
 /** Secondary action (desktop row or mobile overflow menu) */
@@ -23,6 +25,8 @@ export type PageSecondaryAction = PagePrimaryAction & {
   /** Destructive actions should sit last / isolated */
   destructive?: boolean;
   iconKey?: string;
+  /** Keep presentation-only controls out of the mobile action hierarchy */
+  desktopOnly?: boolean;
 };
 
 /**
@@ -55,6 +59,15 @@ export type MobileCardField<T, Node = unknown> = {
   prominence?: "title" | "status" | "meta" | "action";
 };
 
+/** Persistence feedback used by forms, attendance and offline workflows. */
+export type PersistenceState =
+  | "idle"
+  | "saving"
+  | "saved"
+  | "queued"
+  | "syncing"
+  | "error";
+
 /** Navigation group for discovery hierarchy (not AuthZ) */
 export type NavGroupId =
   | "operation"
@@ -85,6 +98,7 @@ export const mobileChrome = {
   touchTargetMin: 44,
   bottomNavHeight: 56,
   topBarHeight: 56,
+  actionBarHeight: 68,
   safeAreaBottom: "env(safe-area-inset-bottom, 0px)",
   safeAreaTop: "env(safe-area-inset-top, 0px)",
 } as const;
@@ -93,7 +107,7 @@ export const mobileChrome = {
 export const controlHeights = {
   comfortable: 44,
   compact: 36,
-  input: 44,
+  input: 48,
 } as const;
 
 /** Content max widths */

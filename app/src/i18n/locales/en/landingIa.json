@@ -6,7 +6,11 @@
     "badge": "Theologically trained AI",
     "cta_primary": "Try the AI",
     "cta_secondary": "See how it works",
-    "trust_signals": "Single or Unlimited plan • CNBB theological base • Cancel anytime"
+    "trust_signals": "Single or Unlimited plan • CNBB theological base • Cancel anytime",
+    "visual_title": "Meeting outline",
+    "visual_item_1": "Enter topic and age group",
+    "visual_item_2": "Review Catholic references",
+    "visual_item_3": "Adapt and lead the meeting"
   },
   "features_title": "Assistance that understands catechesis",
   "features_subtitle": "Trained on the CNBB Bible, the Catechism and the Directory for Catechesis.",

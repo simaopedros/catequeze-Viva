@@ -548,5 +548,6 @@
   "view_cards": "Tarjetas",
   "leave_form_title": "Cambios no guardados",
   "leave_form_desc": "Tiene cambios que aún no se han guardado. ¿Salir de todos modos?",
-  "leave_anyway": "Salir sin guardar"
+  "leave_anyway": "Salir sin guardar",
+  "more_actions": "Más acciones"
 }

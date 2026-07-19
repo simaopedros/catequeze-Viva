@@ -128,5 +128,11 @@
   "registration_section": "Registro",
   "attention_now": "Qué necesita su atención ahora",
   "import_catechumens": "Importar catecúmenos",
-  "metrics_secondary": "Indicadores"
+  "metrics_secondary": "Indicadores",
+  "mobile": {
+    "none_registered": "Ninguno",
+    "no_attendance": "Sin registros",
+    "all_clear": "Todo al día",
+    "no_catechumens": "Sin catecúmenos"
+  }
 }

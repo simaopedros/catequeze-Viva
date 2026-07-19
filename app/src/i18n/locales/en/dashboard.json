@@ -128,5 +128,11 @@
   "registration_section": "Registration",
   "attention_now": "What needs your attention now",
   "import_catechumens": "Import catechumens",
-  "metrics_secondary": "Indicators"
+  "metrics_secondary": "Indicators",
+  "mobile": {
+    "none_registered": "None",
+    "no_attendance": "No records",
+    "all_clear": "All clear",
+    "no_catechumens": "No catechumens"
+  }
 }

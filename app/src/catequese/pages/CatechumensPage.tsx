@@ -58,7 +58,7 @@ function SurfaceSection({
   return (
     <AppPanel className={className}>
       <div className="mb-4 space-y-1.5">
-        <p className="text-[11px] font-medium tracking-wide text-muted-foreground">
+        <p className="text-xs font-medium tracking-wide text-muted-foreground">
           {title}
         </p>
         <div className="h-px w-8 bg-brand-gold" aria-hidden />
@@ -71,11 +71,13 @@ function SurfaceSection({
 function CatechumenMetric({
   label,
   value,
+  className,
 }: {
   label: string;
   value: string | number;
+  className?: string;
 }) {
-  return <AppMetric label={label} value={value} />;
+  return <AppMetric className={className} label={label} value={value} />;
 }
 
 export default function CatechumensPage() {
@@ -111,7 +113,11 @@ export default function CatechumensPage() {
     setCursor(null);
   }, [debouncedSearch, classFilter, activeParishId]);
 
-  const { data: pageData, isLoading, isFetching } = useQuery(
+  const {
+    data: pageData,
+    isLoading,
+    isFetching,
+  } = useQuery(
     listCatechumens,
     {
       take: PAGE_SIZE,
@@ -188,7 +194,7 @@ export default function CatechumensPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5 sm:space-y-8">
       <AppPageHeader
         eyebrow={t("catechumens.eyebrow", { defaultValue: "Pessoas" })}
         title={tn("catechumens")}
@@ -202,12 +208,9 @@ export default function CatechumensPage() {
         }
         secondaryActions={[
           {
-            label:
-              view === "cards"
-                ? t("view_table")
-                : t("view_cards"),
-            onClick: () =>
-              setView((v) => (v === "cards" ? "table" : "cards")),
+            label: view === "cards" ? t("view_table") : t("view_cards"),
+            onClick: () => setView((v) => (v === "cards" ? "table" : "cards")),
+            desktopOnly: true,
           },
           ...(canManageCatechumens
             ? [
@@ -220,18 +223,21 @@ export default function CatechumensPage() {
         ]}
       />
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="flex snap-x gap-2 overflow-x-auto pb-1 sm:grid sm:grid-cols-3 sm:gap-3 sm:overflow-visible">
         <CatechumenMetric
+          className="min-w-[8.5rem] snap-start sm:min-w-0"
           label={t("catechumens.metrics_visible", { defaultValue: "Visíveis" })}
           value={filtered.length}
         />
         <CatechumenMetric
+          className="min-w-[8.5rem] snap-start sm:min-w-0"
           label={t("catechumens.metrics_enrolled", {
             defaultValue: "Em turmas",
           })}
           value={enrolledCount}
         />
         <CatechumenMetric
+          className="min-w-[8.5rem] snap-start sm:min-w-0"
           label={t("catechumens.metrics_no_class", {
             defaultValue: "Sem turma",
           })}
@@ -351,6 +357,7 @@ export default function CatechumensPage() {
             </SurfaceSection>
 
             <SurfaceSection
+              className="hidden sm:block"
               title={t("catechumens.suggested_flow")}
               icon={School}
             >
@@ -392,7 +399,9 @@ export default function CatechumensPage() {
               </thead>
               <tbody>
                 {filtered.map((c: any) => {
-                  const fullName = `${c.firstName || ""} ${c.lastName || ""}`.trim();
+                  const fullName = `${c.firstName || ""} ${
+                    c.lastName || ""
+                  }`.trim();
                   return (
                     <tr
                       key={c.id}
@@ -421,7 +430,9 @@ export default function CatechumensPage() {
                                 alt=""
                               />
                             ) : (
-                              `${c.firstName?.[0] || ""}${c.lastName?.[0] || ""}`
+                              `${c.firstName?.[0] || ""}${
+                                c.lastName?.[0] || ""
+                              }`
                             )}
                           </div>
                           <div>
@@ -475,7 +486,7 @@ export default function CatechumensPage() {
               <Link
                 key={c.id}
                 to={`/app/catechumens/${c.id}`}
-                className="group overflow-hidden rounded-sm border border-border/70 bg-surface-elevated p-5 transition-colors hover:border-brand-ink/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="group overflow-hidden rounded-sm border border-border/70 bg-surface-elevated p-3.5 transition-colors hover:border-brand-ink/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:p-5"
               >
                 <div className="flex items-start gap-4">
                   <div
@@ -500,10 +511,7 @@ export default function CatechumensPage() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">
-                      <p
-                        className="truncate text-base font-semibold tracking-tight text-brand-ink group-hover:text-brand-ink-soft"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
+                      <p className="truncate text-base font-semibold tracking-tight text-brand-ink group-hover:text-brand-ink-soft">
                         {c.firstName} {c.lastName}
                       </p>
                       <Badge
@@ -524,7 +532,9 @@ export default function CatechumensPage() {
                           })
                         : ""}
                       {c.household?.name
-                        ? `${getAge(c.birthDate) ? " · " : ""}${c.household.name}`
+                        ? `${getAge(c.birthDate) ? " · " : ""}${
+                            c.household.name
+                          }`
                         : ""}
                     </p>
                     <p className="mt-2 text-sm font-medium text-brand-ink">

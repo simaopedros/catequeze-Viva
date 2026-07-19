@@ -30,6 +30,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "../../../client/utils";
+import { trackMarketingEvent } from "../../../client/analytics/marketingAnalytics";
 import { useAttendanceOfflineQueue } from "../../../client/offline/useAttendanceOfflineQueue";
 import {
   getCachedMeetingSheet,
@@ -38,19 +39,17 @@ import {
 
 const STATUS_CYCLE = ["PRESENT", "LATE", "ABSENT", "JUSTIFIED"] as const;
 
-type UndoEntry = {
+type UndoChange = {
   catechumenProfileId: string;
   previous: string | null;
   next: string;
 };
 
-type SyncState =
-  | "idle"
-  | "saving"
-  | "saved"
-  | "error"
-  | "pending"
-  | "conflict";
+type UndoEntry = {
+  changes: UndoChange[];
+};
+
+type SyncState = "idle" | "saving" | "saved" | "error" | "pending" | "conflict";
 
 interface MeetingAttendanceSheetProps {
   classId: string;
@@ -77,7 +76,6 @@ export function MeetingAttendanceSheet({
   const [filterOpen, setFilterOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [switcherOpen, setSwitcherOpen] = useState(false);
-  const [bulkOpen, setBulkOpen] = useState(false);
   const [bulkSaving, setBulkSaving] = useState(false);
   const [cachedPayload, setCachedPayload] = useState<any | null>(null);
   const [undoStack, setUndoStack] = useState<UndoEntry[]>([]);
@@ -177,8 +175,7 @@ export function MeetingAttendanceSheet({
     summary.total > 0
       ? Math.round((summary.registered / summary.total) * 100)
       : 0;
-  const isComplete =
-    summary.total > 0 && summary.registered >= summary.total;
+  const isComplete = summary.total > 0 && summary.registered >= summary.total;
 
   const hasUnsyncedWork =
     offline.pendingCount > 0 ||
@@ -194,7 +191,10 @@ export function MeetingAttendanceSheet({
     const previous = localStatus[catechumenProfileId] ?? null;
     if (!opts?.skipUndo && previous !== status) {
       setUndoStack((stack) =>
-        [...stack, { catechumenProfileId, previous, next: status }].slice(-20),
+        [
+          ...stack,
+          { changes: [{ catechumenProfileId, previous, next: status }] },
+        ].slice(-20),
       );
     }
     setLocalStatus((prev) => ({ ...prev, [catechumenProfileId]: status }));
@@ -264,27 +264,26 @@ export function MeetingAttendanceSheet({
   };
 
   const undoLast = () => {
-    setUndoStack((stack) => {
-      if (stack.length === 0) return stack;
-      const last = stack[stack.length - 1];
-      if (last.previous) {
-        void markOne(last.catechumenProfileId, last.previous, {
+    const last = undoStack.at(-1);
+    if (!last) return;
+    setUndoStack((stack) => stack.slice(0, -1));
+    for (const change of [...last.changes].reverse()) {
+      if (change.previous) {
+        void markOne(change.catechumenProfileId, change.previous, {
           skipUndo: true,
         });
       } else {
-        // No prior status — restore local empty state (server row may remain)
         setLocalStatus((prev) => ({
           ...prev,
-          [last.catechumenProfileId]: null,
+          [change.catechumenProfileId]: null,
         }));
         setRowSync((prev) => ({
           ...prev,
-          [last.catechumenProfileId]: "idle",
+          [change.catechumenProfileId]: "idle",
         }));
       }
-      toast({ title: t("sheet.undo_last") });
-      return stack.slice(0, -1);
-    });
+    }
+    toast({ title: t("sheet.undo_last") });
   };
 
   const markAllPresent = async () => {
@@ -309,6 +308,18 @@ export function MeetingAttendanceSheet({
             clientUpdatedAt,
           }));
 
+    setUndoStack((stack) =>
+      [
+        ...stack,
+        {
+          changes: payload.map((change: { catechumenProfileId: string }) => ({
+            catechumenProfileId: change.catechumenProfileId,
+            previous: localStatus[change.catechumenProfileId] ?? null,
+            next: "PRESENT",
+          })),
+        },
+      ].slice(-20),
+    );
     setLocalStatus((prev) => {
       const next = { ...prev };
       for (const c of payload) next[c.catechumenProfileId] = "PRESENT";
@@ -325,7 +336,6 @@ export function MeetingAttendanceSheet({
       }
       toast({ title: t("saved_locally") });
       setBulkSaving(false);
-      setBulkOpen(false);
       return;
     }
 
@@ -353,6 +363,11 @@ export function MeetingAttendanceSheet({
         refetch();
       } else {
         toast({ title: t("sheet.bulk_ok") });
+        trackMarketingEvent("first_attendance_saved", {
+          source: "mobile_sheet",
+          count: payload.length,
+          method: "mark_all_present",
+        });
       }
     } catch (e: any) {
       for (const c of payload) {
@@ -368,7 +383,6 @@ export function MeetingAttendanceSheet({
       });
     } finally {
       setBulkSaving(false);
-      setBulkOpen(false);
     }
   };
 
@@ -451,17 +465,21 @@ export function MeetingAttendanceSheet({
 
   return (
     <div className={cn("flex flex-col min-h-0", className)}>
+      <span className="sr-only" role="status" aria-live="polite">
+        {offline.flushing
+          ? t("sheet.sync_saving")
+          : offline.pendingCount > 0
+            ? t("sheet.pending_sync", { count: offline.pendingCount })
+            : t("sheet.sync_saved")}
+      </span>
       {/* Sticky header */}
       <div className="sticky top-0 z-20 -mx-1 space-y-3 border-b border-border/70 bg-background/95 px-1 pb-3 pt-1 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <p className="text-[11px] font-medium tracking-wide text-muted-foreground">
+            <p className="text-xs font-medium tracking-wide text-muted-foreground">
               {meeting.class?.name}
             </p>
-            <h2
-              className="truncate text-base font-semibold tracking-tight text-brand-ink"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <h2 className="truncate text-base font-semibold tracking-tight text-brand-ink">
               {meeting.title || meeting.theme || t("sheet.untitled")}
             </h2>
             <p className="text-xs text-muted-foreground">
@@ -606,7 +624,7 @@ export function MeetingAttendanceSheet({
             type="button"
             className="h-11 min-h-11 flex-1 rounded-sm shadow-none sm:flex-none"
             disabled={readOnly || bulkSaving || summary.total === 0}
-            onClick={() => setBulkOpen(true)}
+            onClick={() => void markAllPresent()}
           >
             <Users className="mr-2 h-4 w-4" />
             {t("sheet.mark_all_present")}
@@ -649,10 +667,7 @@ export function MeetingAttendanceSheet({
             >
               <div className="flex items-center gap-3">
                 <div className="min-w-0 flex-1">
-                  <p
-                    className="truncate text-sm font-semibold tracking-tight text-brand-ink"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <p className="truncate text-sm font-semibold tracking-tight text-brand-ink">
                     {p.firstName} {p.lastName}
                   </p>
                   <p className="text-overline text-muted-foreground">
@@ -696,10 +711,13 @@ export function MeetingAttendanceSheet({
                         defaultValue: pending.status,
                       }),
                       server: t(
-                        `sheet.status.${pending.conflictServerStatus || "none"}`,
+                        `sheet.status.${
+                          pending.conflictServerStatus || "none"
+                        }`,
                         {
                           defaultValue:
-                            pending.conflictServerStatus || t("sheet.status.none"),
+                            pending.conflictServerStatus ||
+                            t("sheet.status.none"),
                         },
                       ),
                     })}
@@ -763,21 +781,6 @@ export function MeetingAttendanceSheet({
           {t("sheet.refresh")}
         </Button>
       </div>
-
-      <ConfirmDialog
-        open={bulkOpen}
-        onOpenChange={setBulkOpen}
-        title={t("sheet.mark_all_present_title")}
-        description={t("sheet.mark_all_present_desc", {
-          count:
-            summary.registered < summary.total
-              ? summary.total - summary.registered
-              : summary.total,
-        })}
-        confirmLabel={tc("confirm") || "Confirmar"}
-        onConfirm={markAllPresent}
-        loading={bulkSaving}
-      />
 
       <ConfirmDialog
         open={leaveGuard.dialogOpen}

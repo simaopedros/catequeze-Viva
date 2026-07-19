@@ -6,10 +6,20 @@ import { Button } from "../client/components/ui/button";
 import { Input } from "../client/components/ui/input";
 import { Label } from "../client/components/ui/label";
 import { Checkbox } from "../client/components/ui/checkbox";
-import { Loader2, Eye, EyeOff, ArrowRight, CheckCircle2, Mail } from "lucide-react";
+import {
+  Loader2,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  CheckCircle2,
+  Mail,
+} from "lucide-react";
 import { isFamilyPortalHost } from "../shared/portal";
 import { rememberPendingInviteToken } from "./inviteTokenStorage";
-import { trackMarketingEvent } from "../client/analytics/marketingAnalytics";
+import {
+  trackFunnelEvent,
+  trackMarketingEvent,
+} from "../client/analytics/marketingAnalytics";
 import {
   trackCompleteRegistration,
   trackLead,
@@ -25,12 +35,16 @@ type CustomSignupFormProps = {
   defaultEmail?: string;
   /** Plan id from Meta Ads / landing CTAs (`?plan=`). */
   intendedPlanId?: string | null;
+  selectedPlanLabel?: string;
+  billingIntervalLabel?: string;
 };
 
 export default function CustomSignupForm({
   inviteToken,
   defaultEmail,
   intendedPlanId,
+  selectedPlanLabel,
+  billingIntervalLabel,
 }: CustomSignupFormProps = {}) {
   const { t } = useTranslation("auth");
   const [email, setEmail] = useState(defaultEmail || "");
@@ -44,14 +58,34 @@ export default function CustomSignupForm({
   const [hasTrackedStart, setHasTrackedStart] = useState(false);
   const [showEmailForm, setShowEmailForm] = useState(!!defaultEmail);
 
+  const reportSignupError = (message: string, reason: string) => {
+    setError(message);
+    trackFunnelEvent(
+      "signup_error",
+      { method: "email" },
+      { reason, invite: Boolean(inviteToken) },
+    );
+  };
+
   const trackSignupStart = () => {
     if (hasTrackedStart) return;
     setHasTrackedStart(true);
-    trackMarketingEvent("signup_started", {
-      method: "email",
-      invite: Boolean(inviteToken),
-      plan: intendedPlanId || undefined,
-    });
+    trackFunnelEvent(
+      "signup_method_selected",
+      { method: "email" },
+      {
+        invite: Boolean(inviteToken),
+        plan: intendedPlanId || undefined,
+      },
+    );
+    trackFunnelEvent(
+      "signup_started",
+      { method: "email" },
+      {
+        invite: Boolean(inviteToken),
+        plan: intendedPlanId || undefined,
+      },
+    );
   };
 
   useEffect(() => {
@@ -61,7 +95,9 @@ export default function CustomSignupForm({
   }, [inviteToken]);
 
   const loginHref = inviteToken
-    ? `${isFamilyPortalHost() ? "/entrar" : "/login"}?token=${encodeURIComponent(inviteToken)}`
+    ? `${
+        isFamilyPortalHost() ? "/entrar" : "/login"
+      }?token=${encodeURIComponent(inviteToken)}`
     : isFamilyPortalHost()
       ? "/entrar"
       : "/login";
@@ -71,19 +107,22 @@ export default function CustomSignupForm({
     setError("");
 
     if (!email || !password || !confirmPassword) {
-      setError(t("signup_error_fill_all"));
+      reportSignupError(t("signup_error_fill_all"), "missing_fields");
       return;
     }
     if (password.length < 8) {
-      setError(t("signup_error_password_length"));
+      reportSignupError(t("signup_error_password_length"), "password_length");
       return;
     }
     if (password !== confirmPassword) {
-      setError(t("signup_error_password_mismatch"));
+      reportSignupError(
+        t("signup_error_password_mismatch"),
+        "password_mismatch",
+      );
       return;
     }
     if (!acceptTerms) {
-      setError(t("signup_error_terms"));
+      reportSignupError(t("signup_error_terms"), "terms");
       return;
     }
 
@@ -123,7 +162,7 @@ export default function CustomSignupForm({
           });
         } catch {}
       }
-      setError(message);
+      reportSignupError(message, "create_failed");
     } finally {
       setIsLoading(false);
     }
@@ -133,7 +172,7 @@ export default function CustomSignupForm({
     return (
       <div className="space-y-6">
         <div className="space-y-3">
-          <div className="inline-flex h-11 w-11 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
+          <div className="inline-flex h-11 w-11 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-brand-ink">
             <Mail className="h-5 w-5" strokeWidth={1.75} />
           </div>
           <AppDisplayTitle className="text-2xl sm:text-[1.75rem]">
@@ -147,25 +186,40 @@ export default function CustomSignupForm({
           {inviteToken && (
             <p className="text-sm leading-relaxed text-muted-foreground">
               {t("signup_success_invite_hint")}{" "}
-              <a href={loginHref} className="font-medium text-[#071A2D] underline-offset-2 hover:underline">
+              <a
+                href={loginHref}
+                className="font-medium text-brand-ink underline-offset-2 hover:underline"
+              >
                 {t("signup_success_invite_link")}
               </a>
               .
             </p>
           )}
         </div>
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <Button variant="default" asChild className="rounded-sm shadow-none sm:flex-1">
-            <a href={loginHref}>{t("signup_login_link")}</a>
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => setSuccess(false)}
-            className="rounded-sm sm:flex-1"
-          >
-            {t("signup_back_button")}
-          </Button>
-        </div>
+        <ol
+          className="space-y-3 border-y border-border/70 py-4 text-sm text-muted-foreground"
+          aria-label={t("signup_success_next_steps")}
+        >
+          {[
+            "signup_success_step_1",
+            "signup_success_step_2",
+            "signup_success_step_3",
+          ].map((key, index) => (
+            <li key={key} className="flex gap-3">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-gold/20 text-xs font-semibold text-brand-ink">
+                {index + 1}
+              </span>
+              <span>{t(key)}</span>
+            </li>
+          ))}
+        </ol>
+        <Button
+          variant="outline"
+          onClick={() => setSuccess(false)}
+          className="h-11 w-full rounded-sm"
+        >
+          {t("signup_back_button")}
+        </Button>
       </div>
     );
   }
@@ -173,25 +227,59 @@ export default function CustomSignupForm({
   return (
     <div className="space-y-7">
       <div className="space-y-3">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground lg:hidden">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground lg:hidden">
           {t("signup_panel_eyebrow")}
         </p>
         <AppDisplayTitle className="text-2xl sm:text-[1.85rem]">
           {t("signup_title")}
         </AppDisplayTitle>
         <AppGoldRule />
-        <p className="text-sm leading-relaxed text-muted-foreground">{t("signup_subtitle")}</p>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          {t("signup_subtitle")}
+        </p>
       </div>
+
+      {(selectedPlanLabel || billingIntervalLabel) && (
+        <div className="flex items-start justify-between gap-4 rounded-sm border border-brand-gold/40 bg-brand-gold/10 px-4 py-3">
+          <div>
+            <p className="text-sm font-semibold text-brand-ink">
+              {selectedPlanLabel}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {[billingIntervalLabel, t("signup_context_no_card")]
+                .filter(Boolean)
+                .join(" · ")}
+            </p>
+          </div>
+          <a
+            href="/pricing"
+            className="min-h-11 shrink-0 py-3 text-xs font-medium text-brand-ink underline-offset-2 hover:underline"
+          >
+            {t("signup_context_change")}
+          </a>
+        </div>
+      )}
 
       <div className="space-y-3">
         <a
           href={googleSignInUrl}
           onClick={() => {
-            trackMarketingEvent("signup_started", {
-              method: "google",
-              invite: Boolean(inviteToken),
-              plan: intendedPlanId || undefined,
-            });
+            trackFunnelEvent(
+              "signup_method_selected",
+              { method: "google" },
+              {
+                invite: Boolean(inviteToken),
+                plan: intendedPlanId || undefined,
+              },
+            );
+            trackFunnelEvent(
+              "signup_started",
+              { method: "google" },
+              {
+                invite: Boolean(inviteToken),
+                plan: intendedPlanId || undefined,
+              },
+            );
             // Intent signal before OAuth redirect; CAPI CompleteRegistration fires onAfterSignup.
             trackLead({
               content_name: intendedPlanId
@@ -205,7 +293,7 @@ export default function CustomSignupForm({
             });
             if (inviteToken) rememberPendingInviteToken(inviteToken);
           }}
-          className="flex h-11 w-full items-center justify-center gap-3 rounded-sm border border-border bg-white px-4 text-sm font-medium text-[#071A2D] transition-colors hover:bg-muted/40"
+          className="flex h-11 w-full items-center justify-center gap-3 rounded-sm border border-border bg-white px-4 text-sm font-medium text-brand-ink transition-colors hover:bg-muted/40"
         >
           <GoogleLogo className="h-5 w-5" />
           {t("signup_google")}
@@ -215,30 +303,46 @@ export default function CustomSignupForm({
           <div className="absolute inset-0 flex items-center" aria-hidden>
             <div className="w-full border-t border-border/70" />
           </div>
-          <div className="relative flex justify-center text-[11px] uppercase tracking-[0.14em]">
-            <span className="bg-white px-3 text-muted-foreground">{t("signup_divider")}</span>
+          <div className="relative flex justify-center text-xs uppercase tracking-[0.14em]">
+            <span className="bg-white px-3 text-muted-foreground">
+              {t("signup_divider")}
+            </span>
           </div>
         </div>
 
         {!showEmailForm ? (
           <button
             type="button"
-            onClick={() => setShowEmailForm(true)}
-            className="flex h-11 w-full items-center justify-center gap-2 rounded-sm border border-border bg-white text-sm font-medium text-[#071A2D] transition-colors hover:bg-muted/40"
+            onClick={() => {
+              setShowEmailForm(true);
+              trackSignupStart();
+            }}
+            className="flex h-11 w-full items-center justify-center gap-2 rounded-sm border border-border bg-white text-sm font-medium text-brand-ink transition-colors hover:bg-muted/40"
           >
             {t("signup_continue_with_email")}
             <ArrowRight className="h-3.5 w-3.5" />
           </button>
         ) : (
-          <form onSubmit={handleSubmit} onFocusCapture={trackSignupStart} className="space-y-4">
+          <form
+            onSubmit={handleSubmit}
+            onFocusCapture={trackSignupStart}
+            className="space-y-4"
+          >
             {error && (
-              <div className="rounded-sm border border-destructive/20 bg-destructive/5 px-3 py-2.5 text-sm text-destructive">
+              <div
+                role="alert"
+                aria-live="assertive"
+                className="rounded-sm border border-destructive/20 bg-destructive/5 px-3 py-2.5 text-sm text-destructive"
+              >
                 {error}
               </div>
             )}
 
             <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-xs font-medium text-[#071A2D]">
+              <Label
+                htmlFor="email"
+                className="text-xs font-medium text-brand-ink"
+              >
                 {t("signup_email_label")}
               </Label>
               <Input
@@ -257,7 +361,10 @@ export default function CustomSignupForm({
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="password" className="text-xs font-medium text-[#071A2D]">
+              <Label
+                htmlFor="password"
+                className="text-xs font-medium text-brand-ink"
+              >
                 {t("signup_password_label")}
               </Label>
               <div className="relative">
@@ -275,18 +382,45 @@ export default function CustomSignupForm({
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-[#071A2D]"
+                  className="absolute right-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center text-muted-foreground hover:text-brand-ink"
                   tabIndex={-1}
-                  aria-label={showPassword ? t("aria_hide_password") : t("aria_show_password")}
+                  aria-label={
+                    showPassword
+                      ? t("aria_hide_password")
+                      : t("aria_show_password")
+                  }
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
                 </button>
               </div>
-              <p className="text-xs text-muted-foreground">{t("signup_password_help")}</p>
+              <ul
+                className="space-y-1 text-xs text-muted-foreground"
+                aria-live="polite"
+              >
+                <li className="flex items-center gap-1.5">
+                  <span aria-hidden>{password.length >= 8 ? "✓" : "○"}</span>
+                  {t("signup_password_rule_length")}
+                </li>
+                <li className="flex items-center gap-1.5">
+                  <span aria-hidden>
+                    {confirmPassword && password === confirmPassword
+                      ? "✓"
+                      : "○"}
+                  </span>
+                  {t("signup_password_rule_match")}
+                </li>
+              </ul>
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="confirmPassword" className="text-xs font-medium text-[#071A2D]">
+              <Label
+                htmlFor="confirmPassword"
+                className="text-xs font-medium text-brand-ink"
+              >
                 {t("signup_confirm_label")}
               </Label>
               <Input
@@ -310,13 +444,26 @@ export default function CustomSignupForm({
                 disabled={isLoading}
                 className="mt-0.5"
               />
-              <Label htmlFor="acceptTerms" className="text-xs cursor-pointer leading-relaxed font-normal text-muted-foreground">
+              <Label
+                htmlFor="acceptTerms"
+                className="text-xs cursor-pointer leading-relaxed font-normal text-muted-foreground"
+              >
                 {t("signup_terms_prefix")}{" "}
-                <a href="/terms" target="_blank" rel="noreferrer" className="font-medium text-[#071A2D] hover:underline">
+                <a
+                  href="/terms"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-medium text-brand-ink hover:underline"
+                >
                   {t("terms_of_use")}
                 </a>{" "}
                 {t("signup_terms_and")}{" "}
-                <a href="/privacy" target="_blank" rel="noreferrer" className="font-medium text-[#071A2D] hover:underline">
+                <a
+                  href="/privacy"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-medium text-brand-ink hover:underline"
+                >
                   {t("privacy_policy")}
                 </a>
               </Label>
@@ -345,7 +492,10 @@ export default function CustomSignupForm({
 
       <p className="text-center text-sm text-muted-foreground">
         {t("signup_has_account")}{" "}
-        <a href={loginHref} className="font-medium text-[#071A2D] hover:underline">
+        <a
+          href={loginHref}
+          className="font-medium text-brand-ink hover:underline"
+        >
           {t("signup_login_link")}
         </a>
       </p>
@@ -355,8 +505,11 @@ export default function CustomSignupForm({
           ? (t("signup_panel_points", { returnObjects: true }) as string[])
           : []
         ).map((point) => (
-          <li key={point} className="flex gap-2 text-xs leading-snug text-muted-foreground">
-            <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#071A2D]/70" />
+          <li
+            key={point}
+            className="flex gap-2 text-xs leading-snug text-muted-foreground"
+          >
+            <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand-ink/70" />
             <span>{point}</span>
           </li>
         ))}

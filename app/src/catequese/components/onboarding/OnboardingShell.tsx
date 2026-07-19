@@ -21,6 +21,7 @@ type OnboardingShellProps = {
   error?: string;
   saving?: boolean;
   savingLabel?: string;
+  resumedLabel?: string;
 };
 
 export function OnboardingShell({
@@ -32,6 +33,7 @@ export function OnboardingShell({
   error,
   saving,
   savingLabel,
+  resumedLabel,
 }: OnboardingShellProps) {
   const currentIdx = Math.max(
     0,
@@ -141,8 +143,21 @@ export function OnboardingShell({
         <div className="flex flex-1 flex-col">
           <main className="flex flex-1 flex-col px-4 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
             <div className="mx-auto w-full max-w-lg flex-1">
+              {resumedLabel && (
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className="mb-4 rounded-sm border border-brand-gold/40 bg-brand-gold/10 px-4 py-3 text-sm font-medium text-brand-ink"
+                >
+                  {resumedLabel}
+                </div>
+              )}
               {error && (
-                <div className="mb-6 rounded-sm border border-destructive/25 bg-destructive/5 px-3 py-2.5 text-sm text-destructive">
+                <div
+                  role="alert"
+                  aria-live="assertive"
+                  className="mb-6 rounded-sm border border-destructive/25 bg-destructive/5 px-3 py-2.5 text-sm text-destructive"
+                >
                   {error}
                 </div>
               )}
@@ -153,12 +168,14 @@ export function OnboardingShell({
       </div>
 
       {saving && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#071A2D]/40 backdrop-blur-[2px]">
+        <div
+          role="status"
+          aria-live="polite"
+          aria-label={savingLabel}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-brand-ink/40 backdrop-blur-[2px]"
+        >
           <div className="rounded-sm border border-border/70 bg-white px-8 py-6 text-center">
-            <p
-              className="text-sm font-semibold tracking-tight text-[#071A2D]"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <p className="text-sm font-semibold tracking-tight text-brand-ink">
               {savingLabel || "…"}
             </p>
           </div>

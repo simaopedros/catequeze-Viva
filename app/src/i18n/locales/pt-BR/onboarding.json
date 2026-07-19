@@ -343,6 +343,16 @@
     "added_count": "{{count}} na turma",
     "continue": "Concluir com {{count}} na turma",
     "skip": "Concluir sem adicionar agora",
-    "skip_hint": "A chamada ficará vazia até você incluir alguém."
-  }
+    "skip_hint": "A chamada ficará vazia até você incluir alguém.",
+    "preview_valid": "{{count}} válidas",
+    "preview_duplicate": "{{count}} duplicadas",
+    "preview_invalid": "{{count}} inválidas",
+    "row_valid": "Pronta",
+    "row_duplicate": "Duplicada",
+    "row_invalid": "Linha inválida",
+    "confirm_import": "Confirmar e adicionar",
+    "retry_failed": "Repetir {{count}} falhas",
+    "partial_error": "{{count}} linhas não foram adicionadas. As demais foram preservadas."
+  },
+  "resume_banner": "Continuando de onde você parou."
 }

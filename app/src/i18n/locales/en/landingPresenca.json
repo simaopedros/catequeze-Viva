@@ -6,7 +6,11 @@
     "badge": "Digital attendance control",
     "cta_primary": "Start now",
     "cta_secondary": "See demo",
-    "trust_signals": "Single or Unlimited plan • Works on mobile • Payment via Stripe"
+    "trust_signals": "Single or Unlimited plan • Works on mobile • Payment via Stripe",
+    "visual_title": "Mobile attendance",
+    "visual_item_1": "Mark the class quickly",
+    "visual_item_2": "Record justifications",
+    "visual_item_3": "Sync when internet returns"
   },
   "features_title": "Complete attendance control",
   "features_subtitle": "From recording to justification — all integrated and real-time.",

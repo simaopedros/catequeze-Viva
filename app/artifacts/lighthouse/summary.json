@@ -1,22 +1,55 @@
-[
-  {
-    "path": "/",
-    "error": "lighthouse failed",
-    "status": null
+{
+  "budgets": {
+    "performance": 85,
+    "lcpMs": 2500,
+    "fcpMs": 1800,
+    "tbtMs": 200,
+    "cls": 0.1
   },
-  {
-    "path": "/ia",
-    "error": "lighthouse failed",
-    "status": null
-  },
-  {
-    "path": "/presenca",
-    "error": "lighthouse failed",
-    "status": null
-  },
-  {
-    "path": "/sistema",
-    "error": "lighthouse failed",
-    "status": null
-  }
-]
+  "results": [
+    {
+      "path": "/",
+      "performance": 25,
+      "accessibility": 96,
+      "bestPractices": 77,
+      "seo": 100,
+      "lcpMs": 20460,
+      "fcpMs": 10110,
+      "tbtMs": 4665,
+      "cls": 0,
+      "runs": 1,
+      "report": "artifacts/lighthouse/home.report.json"
+    },
+    {
+      "path": "/ia",
+      "error": "lighthouse failed",
+      "status": 1
+    },
+    {
+      "path": "/presenca",
+      "performance": 25,
+      "accessibility": 91,
+      "bestPractices": 77,
+      "seo": 100,
+      "lcpMs": 27231,
+      "fcpMs": 11192,
+      "tbtMs": 18167,
+      "cls": 0.002,
+      "runs": 1,
+      "report": "artifacts/lighthouse/presenca.report.json"
+    },
+    {
+      "path": "/sistema",
+      "performance": 25,
+      "accessibility": 91,
+      "bestPractices": 77,
+      "seo": 100,
+      "lcpMs": 38737,
+      "fcpMs": 13970,
+      "tbtMs": 28717,
+      "cls": 0.003,
+      "runs": 1,
+      "report": "artifacts/lighthouse/sistema.report.json"
+    }
+  ]
+}

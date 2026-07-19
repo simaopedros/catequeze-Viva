@@ -32,6 +32,8 @@ interface EncounterFocusCardProps {
   enabled?: boolean;
   /** Force family surface even off familia host (e.g. pure guardian). */
   forceFamilySurface?: boolean;
+  /** Makes an empty focus card informational on mobile instead of showing a large CTA. */
+  hideEmptyActionOnMobile?: boolean;
 }
 
 const STATUS_VARIANT: Record<
@@ -48,6 +50,7 @@ export function EncounterFocusCard({
   workspaceId,
   enabled = true,
   forceFamilySurface = false,
+  hideEmptyActionOnMobile = false,
 }: EncounterFocusCardProps) {
   const { t } = useTranslation("meetings");
   const { currentLocale } = useLocale();
@@ -129,16 +132,25 @@ export function EncounterFocusCard({
   });
 
   return (
-    <AppPanel className="space-y-4">
+    <AppPanel
+      density="compact"
+      className={`space-y-3 sm:space-y-4 ${
+        hideEmptyActionOnMobile && !meeting
+          ? "border-border/60 bg-muted/15"
+          : ""
+      }`}
+    >
       <div className="flex items-start justify-between gap-2">
         <div className="space-y-1.5 min-w-0">
           <AppEyebrow className="flex items-center gap-1.5">
             <Calendar className="h-3.5 w-3.5" />
-            {t(`encounter.focus_kind.${data.focusKind}`, {
-              defaultValue: t("encounter.focus_kind.none"),
-            })}
+            {hideEmptyActionOnMobile && !meeting
+              ? t("encounter.next_label")
+              : t(`encounter.focus_kind.${data.focusKind}`, {
+                  defaultValue: t("encounter.focus_kind.none"),
+                })}
           </AppEyebrow>
-          <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          <div className="h-px w-8 bg-brand-gold" aria-hidden />
         </div>
         {secondaryActions.length > 0 && (
           <DropdownMenu>
@@ -168,8 +180,7 @@ export function EncounterFocusCard({
       {data.dependents && data.dependents.length > 1 && (
         <div className="flex flex-wrap gap-2" role="tablist">
           {data.dependents.map((d: any) => {
-            const selected =
-              (dependentId || data.dependent?.id) === d.id;
+            const selected = (dependentId || data.dependent?.id) === d.id;
             return (
               <button
                 key={d.id}
@@ -179,8 +190,8 @@ export function EncounterFocusCard({
                 onClick={() => setDependentId(d.id)}
                 className={`inline-flex h-11 min-h-11 items-center rounded-sm border px-3 text-sm font-medium transition-colors ${
                   selected
-                    ? "border-[#071A2D] bg-[#071A2D] text-white"
-                    : "border-border/70 bg-white text-[#071A2D] hover:bg-muted/40"
+                    ? "border-brand-ink bg-brand-ink text-white"
+                    : "border-border/70 bg-white text-brand-ink hover:bg-muted/40"
                 }`}
               >
                 <Users className="mr-1.5 h-3.5 w-3.5" />
@@ -192,18 +203,23 @@ export function EncounterFocusCard({
       )}
 
       {!meeting ? (
-        <div className="space-y-3">
-          <p
-            className="text-base font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+        <div className="space-y-2.5">
+          <p className="hidden text-base font-semibold tracking-tight text-brand-ink sm:block">
             {t("encounter.empty_title")}
           </p>
-          <p className="text-sm text-muted-foreground">
+          <p className="max-w-xl text-sm leading-relaxed text-muted-foreground sm:hidden">
+            {t("encounter.empty_mobile")}
+          </p>
+          <p className="hidden max-w-xl text-sm leading-relaxed text-muted-foreground sm:block">
             {t("encounter.empty_desc")}
           </p>
           {primaryCta.action !== "NONE" || primaryCta.href ? (
-            <Button asChild className="h-11 min-h-11 w-full rounded-sm sm:w-auto">
+            <Button
+              asChild
+              className={`h-11 min-h-11 w-full rounded-sm sm:w-auto ${
+                hideEmptyActionOnMobile ? "hidden sm:inline-flex" : ""
+              }`}
+            >
               <Link to={primaryCta.href}>
                 {ctaLabel}
                 <ChevronRight className="ml-1 h-4 w-4" />
@@ -322,4 +338,3 @@ export function EncounterFocusCard({
     </AppPanel>
   );
 }
-

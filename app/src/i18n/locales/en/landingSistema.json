@@ -6,7 +6,11 @@
     "badge": "Complete catechesis management",
     "cta_primary": "Get started",
     "cta_secondary": "See features",
-    "trust_signals": "Single or Unlimited plan • Start in 2 minutes • Cancel anytime"
+    "trust_signals": "Single or Unlimited plan • Start in 2 minutes • Cancel anytime",
+    "visual_title": "Coordination overview",
+    "visual_item_1": "Classes and teams in one dashboard",
+    "visual_item_2": "Attendance indicators",
+    "visual_item_3": "Next pastoral actions"
   },
   "features_title": "Everything to manage your catechesis",
   "features_order": [

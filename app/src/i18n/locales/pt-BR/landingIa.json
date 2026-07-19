@@ -3,10 +3,14 @@
     "headline_line1": "Prepare encontros incríveis",
     "headline_line2": "em minutos com assistência editorial",
     "subheadline": "Deixe a assistência editorial gerar o roteiro completo: objetivo, dinâmica, leitura bíblica, reflexão, atividade e oração. Baseado na doutrina católica.",
-    "badge": "Assistência teologicamente treinada",
+    "badge": "Assistência com referências católicas e revisão humana",
     "cta_primary": "Experimentar a assistência editorial",
     "cta_secondary": "Ver como funciona",
-    "trust_signals": "Plano Único ou Ilimitado • Base teológica CNBB • Cancele quando quiser"
+    "trust_signals": "Plano Único ou Ilimitado • Base teológica CNBB • Cancele quando quiser",
+    "visual_title": "Roteiro de encontro",
+    "visual_item_1": "Informe tema e faixa etária",
+    "visual_item_2": "Revise referências católicas",
+    "visual_item_3": "Adapte e conduza o encontro"
   },
   "features_title": "Assistência que entende de catequese",
   "features_subtitle": "Treinada com a Bíblia CNBB, o Catecismo e o Diretório para a Catequese.",
@@ -94,7 +98,7 @@
     "about": "Sobre",
     "privacy": "Privacidade",
     "terms": "Termos",
-    "contact": "Contacto"
+    "contact": "Contato"
   },
   "create_account": "Criar conta"
 }

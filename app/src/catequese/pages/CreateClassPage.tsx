@@ -27,6 +27,7 @@ import {
   AppPanel,
 } from "../../client/components/brand/AppChrome";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
+import { MobileActionBar } from "../../client/components/MobileActionBar";
 
 export default function CreateClassPage() {
   const { t } = useTranslation("classes");
@@ -71,11 +72,10 @@ export default function CreateClassPage() {
     }
   };
 
-  const goBack = () =>
-    leaveGuard.confirmLeave(() => navigate("/app/classes"));
+  const goBack = () => leaveGuard.confirmLeave(() => navigate("/app/classes"));
 
   return (
-    <div className="mx-auto max-w-lg space-y-8">
+    <div className="mobile-action-padding mx-auto max-w-lg space-y-5 sm:space-y-8">
       <AppPageHeader
         eyebrow={t("create")}
         title={t("create")}
@@ -94,7 +94,11 @@ export default function CreateClassPage() {
       />
 
       {form.formState.errors.root && (
-        <div className="rounded-sm bg-destructive/10 p-3 text-sm text-destructive">
+        <div
+          className="rounded-sm bg-destructive/10 p-3 text-sm text-destructive"
+          role="alert"
+          aria-live="assertive"
+        >
           {form.formState.errors.root.message}
         </div>
       )}
@@ -140,7 +144,7 @@ export default function CreateClassPage() {
                     <FormControl>
                       <select
                         {...field}
-                        className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm"
+                        className="flex h-12 min-h-12 w-full rounded-sm border border-input bg-background px-3 py-2 text-base md:h-11 md:min-h-11 md:text-sm"
                       >
                         <option value="">{tc("select_option")}</option>
                         {[0, 1, 2, 3, 4, 5, 6].map((i) => (
@@ -197,33 +201,17 @@ export default function CreateClassPage() {
                 </FormItem>
               )}
             />
-
-            <div className="h-20 md:h-4" aria-hidden />
           </form>
         </Form>
       </AppPanel>
 
-      <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-40 border-t border-border/70 bg-white/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-white/80 md:static md:inset-auto md:bottom-auto md:z-auto md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none">
-        <div className="mx-auto flex max-w-lg gap-3 md:pt-2">
-          <Button
-            type="button"
-            className="min-h-11 flex-1 rounded-sm shadow-none"
-            disabled={form.formState.isSubmitting}
-            onClick={form.handleSubmit(onSubmit)}
-          >
-            <Save className="mr-2 h-4 w-4" />
-            {form.formState.isSubmitting ? tc("loading") : t("create")}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="min-h-11 rounded-sm"
-            onClick={goBack}
-          >
-            {tc("cancel")}
-          </Button>
-        </div>
-      </div>
+      <MobileActionBar
+        label={form.formState.isSubmitting ? tc("loading") : t("create")}
+        loading={form.formState.isSubmitting}
+        disabled={form.formState.isSubmitting}
+        onClick={form.handleSubmit(onSubmit)}
+        icon={<Save className="mr-2 h-4 w-4" />}
+      />
 
       <ConfirmDialog
         open={leaveGuard.dialogOpen}

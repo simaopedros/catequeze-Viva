@@ -69,10 +69,7 @@ function ActionCard({
       className="group flex min-h-11 items-start justify-between gap-3 border-b border-border/70 py-3.5 last:border-0 transition-colors hover:bg-muted/20"
     >
       <span className="min-w-0 space-y-0.5">
-        <span
-          className="block text-sm font-semibold tracking-tight text-brand-ink group-hover:text-brand-ink-soft"
-          style={{ fontFamily: "var(--font-brand-display)" }}
-        >
+        <span className="block text-sm font-semibold tracking-tight text-brand-ink group-hover:text-brand-ink-soft">
           {title}
         </span>
         <span className="block text-xs leading-relaxed text-muted-foreground">
@@ -142,6 +139,12 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
           }
         : { label: t("create_class"), href: "/app/classes/new" };
 
+  const mobileDate = formatDate(new Date(), currentLocale, {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+
   const secondaryActions = hasClasses
     ? [
         {
@@ -161,7 +164,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
       ];
 
   return (
-    <div className="space-y-6 sm:space-y-8">
+    <div className="space-y-4 sm:space-y-8">
       {/* 1) Next step while activation incomplete */}
       {showActivationChrome && <ActivationChecklist stats={stats} />}
 
@@ -170,24 +173,105 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
         eyebrow={t("eyebrow")}
         title={t("title")}
         subtitle={t("subtitle")}
+        mobileSubtitle={mobileDate}
         primaryAction={primaryAction}
         secondaryActions={secondaryActions}
+        hideActionsOnMobile
+        hideEyebrowOnMobile
       />
 
       {/* 3) Encounter focus — “what needs attention now?” */}
       <div className="space-y-2">
-        <AppEyebrow>{t("attention_now")}</AppEyebrow>
-        <EncounterFocusCard workspaceId={activeParishId} />
+        <AppEyebrow className="hidden sm:block">
+          {t("attention_now")}
+        </AppEyebrow>
+        <EncounterFocusCard
+          workspaceId={activeParishId}
+          hideEmptyActionOnMobile
+        />
       </div>
 
+      {/* Mobile home is a calm status overview; actions live in their feature areas. */}
+      {hasClasses && (
+        <div className="space-y-3 sm:hidden">
+          <AppPanel density="compact" className="border-border/60 bg-muted/15">
+            <AppEyebrow>{t("metrics_secondary")}</AppEyebrow>
+            <dl className="mt-3 grid grid-cols-2">
+              <div className="border-b border-r border-border/60 pb-3 pr-3">
+                <dt className="text-xs leading-snug text-muted-foreground">
+                  {t("active_catechumens")}
+                </dt>
+                <dd className="mt-1 font-sans text-xl font-semibold tabular-nums text-brand-ink">
+                  {hasCatechumens
+                    ? stats?.activeCatechumens
+                    : t("mobile.none_registered")}
+                </dd>
+              </div>
+              <div className="border-b border-border/60 pb-3 pl-3">
+                <dt className="text-xs leading-snug text-muted-foreground">
+                  {t("active_classes")}
+                </dt>
+                <dd className="mt-1 font-sans text-xl font-semibold tabular-nums text-brand-ink">
+                  {stats?.activeClasses ?? 0}
+                </dd>
+              </div>
+              <div className="border-r border-border/60 pb-0 pr-3 pt-3">
+                <dt className="text-xs leading-snug text-muted-foreground">
+                  {t("avg_attendance")}
+                </dt>
+                <dd className="mt-1 font-sans text-xl font-semibold tabular-nums text-brand-ink">
+                  {stats?.hasAnyAttendance
+                    ? `${stats?.avgAttendance ?? 0}%`
+                    : t("mobile.no_attendance")}
+                </dd>
+              </div>
+              <div className="pb-0 pl-3 pt-3">
+                <dt className="text-xs leading-snug text-muted-foreground">
+                  {t("pending_sacraments")}
+                </dt>
+                <dd className="mt-1 font-sans text-xl font-semibold tabular-nums text-brand-ink">
+                  {(stats?.pendingSacraments ?? 0) > 0
+                    ? stats.pendingSacraments
+                    : t("mobile.all_clear")}
+                </dd>
+              </div>
+            </dl>
+          </AppPanel>
+
+          {stats?.myClasses?.length > 0 && (
+            <section className="px-1 py-1">
+              <AppEyebrow>{tc("my_classes")}</AppEyebrow>
+              <div className="mt-2 divide-y divide-border/60">
+                {stats.myClasses.slice(0, 2).map((c: any) => {
+                  const enrollmentCount =
+                    c.enrollmentCount ?? c._count?.enrollments ?? 0;
+                  return (
+                    <div key={c.id} className="py-2.5">
+                      <p className="truncate text-sm font-semibold text-brand-ink">
+                        {c.name}
+                      </p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {enrollmentCount > 0
+                          ? `${enrollmentCount} ${tc("enrolled")}`
+                          : t("mobile.no_catechumens")}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+        </div>
+      )}
+
       {/* 4) Metrics secondary + actionable */}
-      <div>
+      <div className={cn(hasClasses && "hidden sm:block")}>
         <p className="mb-2 text-body-xs text-muted-foreground">
           {t("metrics_secondary")}
         </p>
         <div
           data-tour="dashboard-stats"
-          className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
+          className="grid grid-cols-2 gap-2 sm:gap-3 xl:grid-cols-4"
         >
           <AppMetric
             label={t("active_catechumens")}
@@ -254,7 +338,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
         </div>
       )}
 
-      {!hasClasses ? (
+      {!hasClasses && !showActivationChrome ? (
         <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
           <SectionCard
             title={t("first_steps")}
@@ -326,36 +410,31 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
       ) : (
         <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-6">
-            <SectionCard title={tc("today")} icon={Clock} tone="soft">
-              {stats?.todayMeetings?.length > 0 ? (
-                <div className="space-y-2">
-                  {stats.todayMeetings.map((m: any) => (
-                    <Link
-                      key={m.id}
-                      to={`/app/classes/${m.class?.id}/attendance`}
-                      className="group flex min-h-11 items-center justify-between rounded-sm border border-border/70 bg-surface-elevated px-4 py-3 transition-colors hover:bg-muted/20"
-                    >
-                      <div className="min-w-0">
-                        <p
-                          className="text-sm font-semibold tracking-tight text-brand-ink group-hover:text-brand-ink-soft"
-                          style={{ fontFamily: "var(--font-brand-display)" }}
-                        >
-                          {m.class?.name}
-                        </p>
-                        <p className="mt-1 text-xs text-muted-foreground">
-                          {m._count?.attendance || 0} {tc("records")}
-                        </p>
-                      </div>
-                      <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-brand-ink" />
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <div className="rounded-sm border border-dashed border-border/80 bg-muted/20 px-4 py-5 text-sm text-muted-foreground">
-                  {t("no_meetings_today")}
-                </div>
-              )}
-            </SectionCard>
+            {stats?.todayMeetings?.length > 0 && (
+              <SectionCard title={tc("today")} icon={Clock} tone="soft">
+                {stats.todayMeetings.length > 0 ? (
+                  <div className="space-y-2">
+                    {stats.todayMeetings.map((m: any) => (
+                      <Link
+                        key={m.id}
+                        to={`/app/classes/${m.class?.id}/attendance`}
+                        className="group flex min-h-11 items-center justify-between rounded-sm border border-border/70 bg-surface-elevated px-4 py-3 transition-colors hover:bg-muted/20"
+                      >
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold tracking-tight text-brand-ink group-hover:text-brand-ink-soft">
+                            {m.class?.name}
+                          </p>
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            {m._count?.attendance || 0} {tc("records")}
+                          </p>
+                        </div>
+                        <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-brand-ink" />
+                      </Link>
+                    ))}
+                  </div>
+                ) : null}
+              </SectionCard>
+            )}
 
             {stats?.recentAlerts?.length > 0 && (
               <SectionCard title={t("pastoral_alerts")} icon={AlertCircle}>
@@ -516,10 +595,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                       to={`/app/classes/${m.class?.id}`}
                       className="flex min-h-11 items-center justify-between rounded-sm border border-border/70 bg-surface-elevated px-4 py-3 transition-colors hover:bg-muted/20"
                     >
-                      <span
-                        className="mr-3 truncate text-sm font-semibold tracking-tight text-brand-ink"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
+                      <span className="mr-3 truncate text-sm font-semibold tracking-tight text-brand-ink">
                         {m.class?.name}
                       </span>
                       <span className="shrink-0 text-xs font-medium text-muted-foreground">
@@ -532,7 +608,11 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
             )}
 
             {stats?.myClasses?.length > 0 && (
-              <SectionCard title={tc("my_classes")} icon={BookOpen}>
+              <SectionCard
+                title={tc("my_classes")}
+                icon={BookOpen}
+                className="hidden sm:block"
+              >
                 <div className="space-y-2">
                   {stats.myClasses.map((c: any) => (
                     <Link
@@ -540,10 +620,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                       to={`/app/classes/${c.id}`}
                       className="flex min-h-11 items-center justify-between rounded-sm border border-border/70 bg-surface-elevated px-4 py-3 transition-colors hover:bg-muted"
                     >
-                      <span
-                        className="mr-3 truncate text-sm font-semibold tracking-tight text-brand-ink"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
+                      <span className="mr-3 truncate text-sm font-semibold tracking-tight text-brand-ink">
                         {c.name}
                       </span>
                       <span className="shrink-0 text-xs font-medium text-muted-foreground">
@@ -563,10 +640,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                       key={c.id}
                       className="flex items-center gap-2 rounded-sm border border-border/70 bg-muted/30 px-3 py-1.5 text-xs text-brand-ink"
                     >
-                      <span
-                        className="font-semibold tabular-nums tracking-tight text-brand-ink"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
+                      <span className="font-semibold tabular-nums tracking-tight text-brand-ink">
                         {formatDateOnly(c.birthDate, currentLocale, {
                           day: "2-digit",
                           month: "2-digit",
@@ -580,7 +654,11 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
             )}
 
             {!hasCatechumens && hasClasses && (
-              <SectionCard title={t("registration_section")} icon={Users}>
+              <SectionCard
+                title={t("registration_section")}
+                icon={Users}
+                className="hidden sm:block"
+              >
                 <EmptyState
                   icon={Users}
                   title={t("no_catechumens_registered")}

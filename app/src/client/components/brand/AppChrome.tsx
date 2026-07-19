@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
 import { MoreHorizontal } from "lucide-react";
 import { cn } from "../../utils";
 import { Button } from "../ui/button";
@@ -31,7 +32,7 @@ export function AppEyebrow({
   return (
     <p
       className={cn(
-        "text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground",
+        "text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground",
         className,
       )}
     >
@@ -125,16 +126,21 @@ export function AppPageHeader({
   eyebrow,
   title,
   subtitle,
+  mobileSubtitle,
   actions,
   primaryAction,
   secondaryActions,
   density = "comfortable",
   count,
   className,
+  hideActionsOnMobile = false,
+  hideEyebrowOnMobile = false,
 }: {
   eyebrow?: string;
   title: string;
   subtitle?: string;
+  /** Optional time-sensitive subtitle shown only below the mobile breakpoint. */
+  mobileSubtitle?: string;
   /** Legacy free-form actions slot (still supported) */
   actions?: ReactNode;
   primaryAction?: PagePrimaryAction;
@@ -142,21 +148,30 @@ export function AppPageHeader({
   density?: UiDensity;
   count?: ReactNode;
   className?: string;
+  /** Keeps mobile page headers informational; actions remain available in their feature areas. */
+  hideActionsOnMobile?: boolean;
+  hideEyebrowOnMobile?: boolean;
 }) {
+  const { t } = useTranslation("common");
   const hasStructured =
     Boolean(primaryAction) || (secondaryActions && secondaryActions.length > 0);
   const secondaries = secondaryActions ?? [];
+  const mobileSecondaries = secondaries.filter((action) => !action.desktopOnly);
 
   return (
     <div
       className={cn(
-        "flex flex-col gap-4 border-b border-border/70 sm:flex-row sm:items-end sm:justify-between",
-        density === "compact" ? "pb-4" : "pb-6",
+        "flex flex-col gap-3 border-b border-border/70 sm:flex-row sm:items-end sm:justify-between sm:gap-4",
+        density === "compact" ? "pb-3 sm:pb-4" : "pb-4 sm:pb-6",
         className,
       )}
     >
-      <div className="min-w-0 space-y-2.5">
-        {eyebrow && <AppEyebrow>{eyebrow}</AppEyebrow>}
+      <div className="min-w-0 space-y-2 sm:space-y-2.5">
+        {eyebrow && eyebrow !== title && (
+          <AppEyebrow className={cn(hideEyebrowOnMobile && "hidden sm:block")}>
+            {eyebrow}
+          </AppEyebrow>
+        )}
         <div className="flex min-w-0 flex-wrap items-center gap-2">
           <AppDisplayTitle
             className={cn(
@@ -171,16 +186,31 @@ export function AppPageHeader({
             </span>
           )}
         </div>
-        <AppGoldRule />
+        <AppGoldRule className="hidden sm:block" />
+        {mobileSubtitle && (
+          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:hidden">
+            {mobileSubtitle}
+          </p>
+        )}
         {subtitle && (
-          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-[0.95rem]">
+          <p
+            className={cn(
+              "max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-[0.95rem]",
+              mobileSubtitle && "hidden sm:block",
+            )}
+          >
             {subtitle}
           </p>
         )}
       </div>
 
       {hasStructured ? (
-        <div className="flex shrink-0 items-center gap-2">
+        <div
+          className={cn(
+            "w-full shrink-0 items-center gap-2 sm:w-auto",
+            hideActionsOnMobile ? "hidden sm:flex" : "flex",
+          )}
+        >
           {/* Secondary: desktop row */}
           {secondaries.length > 0 && (
             <div className="hidden sm:flex flex-wrap gap-2">
@@ -188,15 +218,13 @@ export function AppPageHeader({
                 <ActionButton
                   key={action.label + (action.href ?? "")}
                   action={action}
-                  variant={
-                    action.destructive ? "destructive" : "outline"
-                  }
+                  variant={action.destructive ? "destructive" : "outline"}
                 />
               ))}
             </div>
           )}
           {/* Secondary: mobile overflow */}
-          {secondaries.length > 0 && (
+          {mobileSecondaries.length > 0 && (
             <div className="sm:hidden">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -205,13 +233,13 @@ export function AppPageHeader({
                     variant="outline"
                     size="icon"
                     className="h-11 w-11 min-h-11 min-w-11 rounded-sm"
-                    aria-label="More actions"
+                    aria-label={t("more_actions")}
                   >
                     <MoreHorizontal className="h-5 w-5" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="min-w-[12rem]">
-                  {secondaries.map((action) =>
+                  {mobileSecondaries.map((action) =>
                     action.href ? (
                       <DropdownMenuItem key={action.label} asChild>
                         <Link
@@ -228,9 +256,7 @@ export function AppPageHeader({
                       <DropdownMenuItem
                         key={action.label}
                         disabled={action.disabled}
-                        className={cn(
-                          action.destructive && "text-destructive",
-                        )}
+                        className={cn(action.destructive && "text-destructive")}
                         onClick={action.onClick}
                       >
                         {action.label}
@@ -242,12 +268,18 @@ export function AppPageHeader({
             </div>
           )}
           {primaryAction && (
-            <ActionButton action={primaryAction} variant="default" />
+            <ActionButton
+              action={primaryAction}
+              variant="default"
+              className="order-first flex-1 sm:order-none sm:flex-none"
+            />
           )}
         </div>
       ) : (
         actions && (
-          <div className="flex shrink-0 flex-wrap gap-2">{actions}</div>
+          <div className="flex w-full shrink-0 flex-wrap gap-2 sm:w-auto">
+            {actions}
+          </div>
         )
       )}
     </div>
@@ -269,7 +301,7 @@ export function AppPanel({
     <section
       className={cn(
         "rounded-sm border border-border/70 bg-surface-elevated",
-        padded && (density === "compact" ? "p-4" : "p-5 sm:p-6"),
+        padded && (density === "compact" ? "p-3.5 sm:p-4" : "p-4 sm:p-6"),
         className,
       )}
     >
@@ -292,7 +324,7 @@ export function AppMetric({
 }) {
   const body = (
     <>
-      <p className="text-[11px] font-medium tracking-wide text-muted-foreground">
+      <p className="text-xs font-medium tracking-wide text-muted-foreground">
         {label}
       </p>
       <p className="mt-1.5 font-sans text-2xl font-semibold tracking-tight tabular-nums text-brand-ink">
@@ -345,10 +377,7 @@ export function AppListLink({
       )}
     >
       <span className="min-w-0 space-y-0.5">
-        <span
-          className="block text-sm font-semibold tracking-tight text-brand-ink group-hover:text-brand-ink-soft"
-          style={{ fontFamily: "var(--font-brand-display)" }}
-        >
+        <span className="block text-sm font-semibold tracking-tight text-brand-ink group-hover:text-brand-ink-soft">
           {title}
         </span>
         {description && (

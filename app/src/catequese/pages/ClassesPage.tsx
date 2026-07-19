@@ -78,7 +78,11 @@ export default function ClassesPage() {
     setCursor(null);
   }, [debouncedSearch, filter, workspaceId]);
 
-  const { data: pageData, isLoading, isFetching } = useQuery(
+  const {
+    data: pageData,
+    isLoading,
+    isFetching,
+  } = useQuery(
     listClasses,
     {
       workspaceId,
@@ -201,7 +205,7 @@ export default function ClassesPage() {
   }
 
   return (
-    <div className="space-y-6 sm:space-y-8">
+    <div className="space-y-5 sm:space-y-8">
       <AppPageHeader
         eyebrow={t("eyebrow")}
         title={t("title")}
@@ -215,14 +219,27 @@ export default function ClassesPage() {
           {
             label: view === "grid" ? t("view_list") : t("view_grid"),
             onClick: () => setView((v) => (v === "grid" ? "list" : "grid")),
+            desktopOnly: true,
           },
         ]}
       />
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        <AppMetric label={t("metrics_visible")} value={filtered.length} />
-        <AppMetric label={activeLabel} value={activeCount} />
-        <AppMetric label={draftLabel} value={draftCount} />
+      <div className="flex snap-x gap-2 overflow-x-auto pb-1 sm:grid sm:grid-cols-3 sm:gap-3 sm:overflow-visible">
+        <AppMetric
+          className="min-w-[8.5rem] snap-start sm:min-w-0"
+          label={t("metrics_visible")}
+          value={filtered.length}
+        />
+        <AppMetric
+          className="min-w-[8.5rem] snap-start sm:min-w-0"
+          label={activeLabel}
+          value={activeCount}
+        />
+        <AppMetric
+          className="min-w-[8.5rem] snap-start sm:min-w-0"
+          label={draftLabel}
+          value={draftCount}
+        />
       </div>
 
       <AppPanel density="compact">
@@ -290,7 +307,7 @@ export default function ClassesPage() {
                 </p>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="hidden gap-3 sm:grid sm:grid-cols-3">
                 {[t("empty_step1"), t("empty_step2"), t("empty_step3")].map(
                   (step, i) => (
                     <div
@@ -328,7 +345,7 @@ export default function ClassesPage() {
             </div>
           </AppPanel>
 
-          <AppPanel>
+          <AppPanel className="hidden sm:block">
             <div className="mb-4 space-y-1.5">
               <AppEyebrow>{t("suggested_structure")}</AppEyebrow>
               <AppGoldRule className="w-8" />
@@ -579,9 +596,7 @@ export default function ClassesPage() {
             onClick={loadMore}
             disabled={isFetching}
           >
-            {isFetching && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            )}
+            {isFetching && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {tc("load_more", { defaultValue: "Carregar mais" })}
           </Button>
         </div>
@@ -612,12 +627,7 @@ function ClassMobileCard({
   return (
     <div className="space-y-2">
       <div className="flex items-start justify-between gap-2">
-        <p
-          className="text-base font-semibold text-brand-ink"
-          style={{ fontFamily: "var(--font-brand-display)" }}
-        >
-          {cls.name}
-        </p>
+        <p className="text-base font-semibold text-brand-ink">{cls.name}</p>
         <Badge variant={statusVariant} className="shrink-0 text-overline">
           {statusLabel}
         </Badge>
@@ -632,7 +642,7 @@ function ClassMobileCard({
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => e.stopPropagation()}
       >
-        <Button size="sm" className="h-10 min-h-10 flex-1 rounded-sm" asChild>
+        <Button size="sm" className="h-11 min-h-11 flex-1 rounded-sm" asChild>
           <Link to={`/app/classes/${cls.id}/attendance`}>
             {attendanceLabel}
           </Link>
@@ -640,7 +650,7 @@ function ClassMobileCard({
         <Button
           size="sm"
           variant="outline"
-          className="h-10 min-h-10 rounded-sm"
+          className="h-11 min-h-11 rounded-sm"
           asChild
         >
           <Link to={`/app/classes/${cls.id}`}>{detailsLabel}</Link>

@@ -17,6 +17,7 @@ import { useUnreadNotificationCount } from "../client/hooks/useUnreadNotificatio
 import { getVisibleNavigation } from "../shared/navigation";
 import { BottomSheetNav } from "./components/BottomSheetNav";
 import { Sheet, SheetTrigger } from "../client/components/ui/sheet";
+import { trackMobileEvent } from "../client/analytics/marketingAnalytics";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   dashboard: LayoutDashboard,
@@ -52,7 +53,18 @@ export function BottomNav() {
   >;
 
   return (
-    <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+    <Sheet
+      open={sheetOpen}
+      onOpenChange={(open) => {
+        setSheetOpen(open);
+        if (open) {
+          trackMobileEvent("mobile_more_opened", {
+            role: userRole,
+            workspace_type: workspaceType,
+          });
+        }
+      }}
+    >
       <nav
         className="lg:hidden fixed bottom-0 left-0 right-0 z-sticky border-t border-border/70 bg-surface-elevated"
         style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
@@ -62,7 +74,7 @@ export function BottomNav() {
           className="grid items-center"
           style={{
             gridTemplateColumns: `repeat(${visible.length + 1}, 1fr)`,
-            height: "calc(var(--height-bottom-nav, 3.5rem) + env(safe-area-inset-bottom, 0px))",
+            height: "var(--height-bottom-nav, 3.5rem)",
           }}
         >
           {visible.map((item) => {

@@ -3,8 +3,8 @@
     "headline_line1": "Sua catequese sem caderno, planilha e WhatsApp perdidos",
     "headline_line2": "",
     "subheadline": "Em 7 dias você coloca a turma, a chamada e o próximo encontro no mesmo lugar — e vê se a rotina fica mais clara.",
-    "badge": "Trial de 7 dias",
-    "cta_primary": "Começar trial de 7 dias",
+    "badge": "Teste gratuito de 7 dias",
+    "cta_primary": "Começar teste gratuito de 7 dias",
     "cta_secondary": "Como funciona",
     "trust_signals": "Sem cobrança agora • Sem cartão para começar • Funciona no celular",
     "cta_secondary_href": "/#como",
@@ -160,7 +160,7 @@
       "desc": "Nome, e-mail e senha. Rápido."
     },
     {
-      "title": "Ative o trial de 7 dias",
+      "title": "Ative o teste gratuito de 7 dias",
       "desc": "Entre e comece a usar na mesma hora."
     },
     {
@@ -168,9 +168,9 @@
       "desc": "Monte a turma, faça a chamada e prepare o encontro."
     }
   ],
-  "steps_cta": "Começar trial de 7 dias",
+  "steps_cta": "Começar teste gratuito de 7 dias",
   "pricing_title": "Depois de ver o valor, escolha o plano",
-  "pricing_subtitle": "R$ 29 para o catequista. R$ 99 para paróquia ou diocese. Comece com 7 dias de trial — sem cartão e sem cobrança agora.",
+  "pricing_subtitle": "R$ 29 para o catequista. R$ 99 para paróquia ou diocese. Comece com 7 dias de teste gratuito — sem cartão e sem cobrança agora.",
   "plans": {
     "single": {
       "name": "Plano Único",
@@ -202,7 +202,7 @@
   "price_monthly": "Mensal",
   "price_annual": "Anual",
   "price_cta_free": "Ver caminhos",
-  "price_cta_start": "Começar trial de 7 dias",
+  "price_cta_start": "Começar teste gratuito de 7 dias",
   "per_month": "/mês",
   "per_year": "/ano",
   "annual_discount": "2 meses grátis",
@@ -211,16 +211,16 @@
   "faq_subtitle": "Respostas objetivas para catequistas e coordenação.",
   "faqs": [
     {
-      "q": "O que eu posso fazer no trial de 7 dias?",
+      "q": "O que eu posso fazer no teste gratuito de 7 dias?",
       "a": "Organizar a turma, registrar presença no celular e preparar o próximo encontro — o fluxo real da catequese. Sem cartão e sem cobrança agora."
     },
     {
-      "q": "Preciso de cartão para o trial?",
-      "a": "Não. O product trial de 7 dias não pede cartão. Cartão só entra se você decidir assinar um plano depois."
+      "q": "Preciso de cartão para o teste gratuito?",
+      "a": "Não. O teste gratuito de 7 dias não pede cartão. Cartão só entra se você decidir assinar um plano depois."
     },
     {
       "q": "Posso começar sozinho, como catequista?",
-      "a": "Sim. O trial serve para quem cuida de uma turma e também para quem coordena várias."
+      "a": "Sim. O teste gratuito serve para quem cuida de uma turma e também para quem coordena várias."
     },
     {
       "q": "Funciona no celular?",
@@ -236,9 +236,9 @@
     }
   ],
   "cta_title": "Organize a catequese com clareza",
-  "cta_subtitle": "Pare de espalhar a rotina em caderno, planilha e mensagens. Comece o trial de 7 dias na sua turma — sem cobrança agora.",
-  "cta_button": "Começar trial de 7 dias",
-  "cta_badge": "Trial",
+  "cta_subtitle": "Pare de espalhar a rotina em caderno, planilha e mensagens. Comece o teste gratuito de 7 dias na sua turma — sem cobrança agora.",
+  "cta_button": "Começar teste gratuito de 7 dias",
+  "cta_badge": "Teste gratuito",
   "cta_see_plans": "Ver planos",
   "mock": {
     "ai_title": "Assistência para encontros",
@@ -353,9 +353,9 @@
   "testimonials": [],
   "cta_helper": "Sem cobrança agora · sem cartão para começar",
   "mobile_cta": {
-    "title": "Trial de 7 dias",
+    "title": "Teste gratuito de 7 dias",
     "subtitle": "Sem cobrança agora · sem cartão",
-    "button": "Começar trial de 7 dias"
+    "button": "Começar teste gratuito de 7 dias"
   },
   "proof": {
     "badge": "Comece com tranquilidade",
@@ -421,7 +421,7 @@
   "steps_endowed_title": "Você já está aqui",
   "steps_endowed_desc": "Conhecendo a plataforma",
   "price_trial_badge": "7 dias grátis · Sem cartão",
-  "price_trial_note": "7 dias de trial sem cartão e sem cobrança agora. Se assinar depois, o pagamento é no Stripe; cancele a tempo e não fica cobrado.",
+  "price_trial_note": "7 dias de teste gratuito sem cartão e sem cobrança agora. Se assinar depois, o pagamento é no Stripe; cancele a tempo e não fica cobrado.",
   "comparison": {
     "title": "Pare de espalhar a catequese em papel, planilha e WhatsApp",
     "subtitle": "Compare o jeito atual com a Catequese Viva em critérios que importam na rotina pastoral.",
@@ -463,7 +463,7 @@
       }
     ]
   },
-  "faq_cta": "Começar trial de 7 dias",
+  "faq_cta": "Começar teste gratuito de 7 dias",
   "faq_cta_helper": "Sem cobrança agora · use na sua turma esta semana",
   "price_cta_single": "Testar Plano Único",
   "price_cta_unlimited": "Testar Plano Ilimitado",

@@ -25,6 +25,7 @@ import {
   Circle,
   GraduationCap,
   Mail,
+  User,
 } from "lucide-react";
 import { getVisibleNavigation } from "../../shared/navigation";
 import { useUserContext } from "../../client/hooks/useUserContext";
@@ -74,6 +75,7 @@ interface BottomSheetNavProps {
  */
 export function BottomSheetNav({ onNavigate }: BottomSheetNavProps) {
   const { t } = useTranslation("navigation");
+  const { t: tc } = useTranslation("common");
   const { userRole, isAdmin } = useUserContext();
   const { workspaceType } = useActiveWorkspace();
 
@@ -128,6 +130,16 @@ export function BottomSheetNav({ onNavigate }: BottomSheetNavProps) {
             </div>
           </div>
         ))}
+        <div className="border-t border-border/70 pt-3">
+          <NavLink
+            to="/account"
+            onClick={onNavigate}
+            className="flex min-h-11 items-center gap-3 rounded-sm px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-brand-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <User className="h-5 w-5 shrink-0" aria-hidden />
+            <span>{tc("account", { defaultValue: "Conta" })}</span>
+          </NavLink>
+        </div>
       </div>
     </SheetContent>
   );

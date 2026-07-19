@@ -208,7 +208,7 @@ export function ActivationChecklist({
             type="button"
             variant="ghost"
             size="icon"
-            className="h-8 w-8 shrink-0 text-muted-foreground hover:text-[#071A2D]"
+            className="h-11 w-11 shrink-0 text-muted-foreground hover:text-brand-ink"
             onClick={dismissCelebrate}
             aria-label={t("activation.dismiss")}
           >
@@ -250,7 +250,7 @@ export function ActivationChecklist({
           type="button"
           variant="ghost"
           size="icon"
-          className="h-8 w-8 shrink-0 text-muted-foreground hover:text-[#071A2D]"
+          className="h-11 w-11 shrink-0 text-muted-foreground hover:text-brand-ink"
           onClick={dismiss}
           aria-label={t("activation.dismiss")}
         >
@@ -269,7 +269,9 @@ export function ActivationChecklist({
           >
             {next.title}
           </p>
-          <p className="mt-1 text-sm text-muted-foreground">{next.description}</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {next.description}
+          </p>
           <Button asChild className="mt-3 h-11 rounded-sm shadow-none">
             <Link to={next.to}>
               {t("activation.next_cta")}

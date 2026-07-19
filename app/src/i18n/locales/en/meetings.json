@@ -95,6 +95,8 @@
       "messages": "Message families",
       "attendance": "Attendance",
       "calendar": "Calendar"
-    }
+    },
+    "next_label": "Next meeting",
+    "empty_mobile": "No meeting scheduled."
   }
 }

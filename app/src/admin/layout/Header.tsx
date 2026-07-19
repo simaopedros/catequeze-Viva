@@ -1,5 +1,4 @@
 import { type AuthUser } from "wasp/auth";
-import DarkModeSwitcher from "../../client/components/DarkModeSwitcher";
 import { cn } from "../../client/utils";
 import { UserDropdown } from "../../user/UserDropdown";
 import MessageButton from "../dashboards/messages/MessageButton";
@@ -75,10 +74,6 @@ const Header = (props: {
         </div>
 
         <ul className="2xsm:gap-4 flex items-center gap-2">
-          {/* <!-- Dark Mode Toggler --> */}
-          <DarkModeSwitcher />
-          {/* <!-- Dark Mode Toggler --> */}
-
           {/* <!-- Chat Notification Area --> */}
           <MessageButton />
           {/* <!-- Chat Notification Area --> */}

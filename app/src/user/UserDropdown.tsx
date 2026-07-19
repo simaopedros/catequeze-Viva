@@ -1,38 +1,44 @@
-import { ChevronDown, LogOut, User } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
-import { signOut } from '../client/auth/signOut';
-import { Link as WaspRouterLink } from 'wasp/client/router';
-import { type User as UserEntity } from 'wasp/entities';
-import { userMenuItems } from './constants';
-import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
-import DarkModeSwitcher from '../client/components/DarkModeSwitcher';
-import { useTranslation } from 'react-i18next';
-import { isFamilyPortalHost } from '../shared/portal';
+import { ChevronDown, LogOut, User } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { signOut } from "../client/auth/signOut";
+import { Link as WaspRouterLink } from "wasp/client/router";
+import { type User as UserEntity } from "wasp/entities";
+import { userMenuItems } from "./constants";
+import { LanguageSwitcher } from "../i18n/LanguageSwitcher";
+import { useTranslation } from "react-i18next";
+import { isFamilyPortalHost } from "../shared/portal";
 
 export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
-  const { t } = useTranslation('topbar');
+  const { t } = useTranslation("topbar");
   const [open, setOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const displayName = user.firstName
-    ? `${user.firstName} ${user.lastName || ''}`.trim()
-    : (user.email || user.username || t('current_user'));
+    ? `${user.firstName} ${user.lastName || ""}`.trim()
+    : user.email || user.username || t("current_user");
 
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
       const target = e.target as Element | null;
-      if (target?.closest('[data-radix-popper-content-wrapper], [data-slot="dropdown-menu-content"]')) {
+      if (
+        target?.closest(
+          '[data-radix-popper-content-wrapper], [data-slot="dropdown-menu-content"]',
+        )
+      ) {
         return;
       }
 
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
         setOpen(false);
       }
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, [open]);
 
   const handleSignOut = async () => {
@@ -41,7 +47,7 @@ export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
     try {
       await signOut();
     } finally {
-      window.location.replace(isFamilyPortalHost() ? '/entrar' : '/login');
+      window.location.replace(isFamilyPortalHost() ? "/entrar" : "/login");
     }
   };
 
@@ -49,12 +55,11 @@ export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
     <div ref={containerRef} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="text-foreground hover:text-[#071A2D] flex items-center h-9 w-9 lg:w-auto justify-center lg:justify-start transition-colors duration-300 ease-in-out rounded-sm lg:rounded-none hover:bg-accent/50 lg:hover:bg-transparent"
+        aria-label={t("user_menu")}
+        aria-expanded={open}
+        className="text-foreground hover:text-brand-ink flex items-center h-11 w-11 lg:w-auto justify-center lg:justify-start transition-colors duration-300 ease-in-out rounded-sm lg:rounded-none hover:bg-accent/50 lg:hover:bg-transparent"
       >
-        <span
-          className="mr-2 hidden text-right text-sm font-semibold tracking-tight text-[#071A2D] lg:block"
-          style={{ fontFamily: "var(--font-brand-display)" }}
-        >
+        <span className="mr-2 hidden text-right text-sm font-semibold tracking-tight text-brand-ink lg:block">
           {displayName}
         </span>
         <User className="size-5 shrink-0" />
@@ -70,7 +75,7 @@ export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
                 key={item.labelKey}
                 to={item.to}
                 onClick={() => setOpen(false)}
-                className="flex w-full items-center gap-3 rounded-sm px-2 py-1.5 text-sm text-[#071A2D] hover:bg-muted/40 hover:text-[#0a2540]"
+                className="flex w-full items-center gap-3 rounded-sm px-2 py-1.5 text-sm text-brand-ink hover:bg-muted/40 hover:text-brand-ink-soft"
               >
                 <item.icon size="1.1rem" />
                 {t(item.labelKey)}
@@ -79,22 +84,20 @@ export function UserDropdown({ user }: { user: Partial<UserEntity> }) {
           })}
           <div className="border-t my-1" />
           <div className="flex items-center justify-between px-2 py-1.5">
-            <span className="text-xs text-muted-foreground">{t('language')}</span>
+            <span className="text-xs text-muted-foreground">
+              {t("language")}
+            </span>
             <LanguageSwitcher variant="inline" />
-          </div>
-          <div className="flex items-center justify-between px-2 py-1.5">
-            <span className="text-xs text-muted-foreground">{t('theme')}</span>
-            <DarkModeSwitcher />
           </div>
           <div className="border-t my-1" />
           <button
             type="button"
             onClick={handleSignOut}
             disabled={isSigningOut}
-            className="flex w-full items-center gap-3 rounded-sm px-2 py-1.5 text-sm text-[#071A2D] hover:bg-muted/40 hover:text-[#0a2540]"
+            className="flex w-full items-center gap-3 rounded-sm px-2 py-1.5 text-sm text-brand-ink hover:bg-muted/40 hover:text-brand-ink-soft"
           >
             <LogOut size="1.1rem" />
-            {t('sign_out')}
+            {t("sign_out")}
           </button>
         </div>
       )}

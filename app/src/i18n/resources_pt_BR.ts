@@ -444,7 +444,7 @@ export const attendance_pt_BR = {
       "switch_meeting": "Trocar encontro",
       "mark_all_present": "Marcar todos presentes",
       "mark_all_present_title": "Marcar todos presentes?",
-      "mark_all_present_desc": "Serão atualizados {{count}} catequizandos. Pode alterar excepções a seguir.",
+      "mark_all_present_desc": "Serão atualizados {{count}} catequizandos. Pode alterar exceções a seguir.",
       "filter": "Filtrar",
       "filter_placeholder": "Buscar catequizando...",
       "no_matches": "Nenhum resultado.",
@@ -452,15 +452,15 @@ export const attendance_pt_BR = {
       "open_history": "Ver histórico (matriz)",
       "back_to_sheet": "Voltar à chamada",
       "history_hint": "Matriz histórica — preferível no computador.",
-      "save_error": "Erro ao guardar: {{message}}",
-      "bulk_ok": "Presenças actualizadas.",
+      "save_error": "Erro ao salvar: {{message}}",
+      "bulk_ok": "Presenças atualizadas.",
       "bulk_partial": "{{count}} falhas no lote.",
-      "sync_saving": "A guardar…",
-      "sync_saved": "Guardado",
+      "sync_saving": "A salvar…",
+      "sync_saved": "Salvo",
       "sync_error": "Erro",
       "pending_sync": "{{count}} pendente(s) de sincronização",
       "pending_sync_row": "Pendente de sincronização",
-      "data_updated_at": "Dados actualizados em {{time}}",
+      "data_updated_at": "Dados atualizados em {{time}}",
       "conflict_use_mine": "Usar a minha marcação",
       "conflict_keep_server": "Manter servidor",
       "conflict_detail": "Local: {{mine}} · Servidor: {{server}}",
@@ -604,7 +604,19 @@ export const auth_pt_BR = {
       "Retome a organização da turma em segundos",
       "Registre presença no celular",
       "Prepare o próximo encontro com tranquilidade"
-    ]
+    ],
+    "signup_plan_single": "Plano Essencial",
+    "signup_plan_unlimited": "Plano Completo",
+    "signup_interval_monthly": "cobrança mensal",
+    "signup_interval_annual": "cobrança anual",
+    "signup_context_no_card": "7 dias grátis, sem cartão",
+    "signup_context_change": "Alterar",
+    "signup_success_next_steps": "Próximos passos",
+    "signup_success_step_1": "Verifique a caixa de entrada e também a pasta de spam.",
+    "signup_success_step_2": "Abra o link de confirmação enviado para o seu e-mail.",
+    "signup_success_step_3": "Continue a configuração da sua primeira turma.",
+    "signup_password_rule_length": "Pelo menos 8 caracteres",
+    "signup_password_rule_match": "As senhas coincidem"
   } as const;
 
 export const bible_pt_BR = {
@@ -682,7 +694,7 @@ export const billing_pt_BR = {
     "trial_banner_ends": "Termina em {{date}}.",
     "trial_banner_cta": "Ver assinatura",
     "trial_soft_title": "Você já usou o essencial — continue com calma",
-    "trial_soft_subtitle": "Ainda restam {{count}} dias de trial. Quando quiser, veja os planos para manter tudo no mesmo lugar.",
+    "trial_soft_subtitle": "Ainda restam {{count}} dias de teste gratuito. Quando quiser, veja os planos para manter tudo no mesmo lugar.",
     "trial_soft_cta": "Ver planos",
     "trial_soft_dismiss": "Dispensar sugestão de plano",
     "trial_topbar_one": "1 dia de teste",
@@ -1838,7 +1850,8 @@ export const common_pt_BR = {
     "view_cards": "Cartões",
     "leave_form_title": "Alterações não salvas",
     "leave_form_desc": "Você tem alterações que ainda não foram salvas. Sair mesmo assim?",
-    "leave_anyway": "Sair sem salvar"
+    "leave_anyway": "Sair sem salvar",
+    "more_actions": "Mais ações"
   } as const;
 
 export const components_pt_BR = {
@@ -2156,7 +2169,7 @@ export const dashboard_pt_BR = {
     "kpi_read_rate": "Taxa de leitura",
     "kpi_plan": "Plano",
     "kpi_status": "Status",
-    "kpi_trial_days_remaining": "Dias para fim do trial",
+    "kpi_trial_days_remaining": "Dias para fim do teste gratuito",
     "first_steps": "Primeiros passos",
     "how_to_start": "Como começar",
     "how_to_start_1": "Crie a turma com etapa, dias de encontro e responsáveis.",
@@ -2167,7 +2180,13 @@ export const dashboard_pt_BR = {
     "registration_section": "Cadastro",
     "attention_now": "O que precisa da sua atenção agora",
     "import_catechumens": "Importar catequizandos",
-    "metrics_secondary": "Indicadores"
+    "metrics_secondary": "Indicadores",
+    "mobile": {
+      "none_registered": "Nenhum",
+      "no_attendance": "Sem registros",
+      "all_clear": "Tudo em dia",
+      "no_catechumens": "Sem catequizandos"
+    }
   } as const;
 
 export const family_pt_BR = {
@@ -2278,8 +2297,8 @@ export const landing_pt_BR = {
       "headline_line1": "Sua catequese sem caderno, planilha e WhatsApp perdidos",
       "headline_line2": "",
       "subheadline": "Em 7 dias você coloca a turma, a chamada e o próximo encontro no mesmo lugar — e vê se a rotina fica mais clara.",
-      "badge": "Trial de 7 dias",
-      "cta_primary": "Começar trial de 7 dias",
+      "badge": "Teste gratuito de 7 dias",
+      "cta_primary": "Começar teste gratuito de 7 dias",
       "cta_secondary": "Como funciona",
       "trust_signals": "Sem cobrança agora • Sem cartão para começar • Funciona no celular",
       "cta_secondary_href": "/#como",
@@ -2435,7 +2454,7 @@ export const landing_pt_BR = {
         "desc": "Nome, e-mail e senha. Rápido."
       },
       {
-        "title": "Ative o trial de 7 dias",
+        "title": "Ative o teste gratuito de 7 dias",
         "desc": "Entre e comece a usar na mesma hora."
       },
       {
@@ -2443,9 +2462,9 @@ export const landing_pt_BR = {
         "desc": "Monte a turma, faça a chamada e prepare o encontro."
       }
     ],
-    "steps_cta": "Começar trial de 7 dias",
+    "steps_cta": "Começar teste gratuito de 7 dias",
     "pricing_title": "Depois de ver o valor, escolha o plano",
-    "pricing_subtitle": "R$ 29 para o catequista. R$ 99 para paróquia ou diocese. Comece com 7 dias de trial — sem cartão e sem cobrança agora.",
+    "pricing_subtitle": "R$ 29 para o catequista. R$ 99 para paróquia ou diocese. Comece com 7 dias de teste gratuito — sem cartão e sem cobrança agora.",
     "plans": {
       "single": {
         "name": "Plano Único",
@@ -2477,7 +2496,7 @@ export const landing_pt_BR = {
     "price_monthly": "Mensal",
     "price_annual": "Anual",
     "price_cta_free": "Ver caminhos",
-    "price_cta_start": "Começar trial de 7 dias",
+    "price_cta_start": "Começar teste gratuito de 7 dias",
     "per_month": "/mês",
     "per_year": "/ano",
     "annual_discount": "2 meses grátis",
@@ -2486,16 +2505,16 @@ export const landing_pt_BR = {
     "faq_subtitle": "Respostas objetivas para catequistas e coordenação.",
     "faqs": [
       {
-        "q": "O que eu posso fazer no trial de 7 dias?",
+        "q": "O que eu posso fazer no teste gratuito de 7 dias?",
         "a": "Organizar a turma, registrar presença no celular e preparar o próximo encontro — o fluxo real da catequese. Sem cartão e sem cobrança agora."
       },
       {
-        "q": "Preciso de cartão para o trial?",
-        "a": "Não. O product trial de 7 dias não pede cartão. Cartão só entra se você decidir assinar um plano depois."
+        "q": "Preciso de cartão para o teste gratuito?",
+        "a": "Não. O teste gratuito de 7 dias não pede cartão. Cartão só entra se você decidir assinar um plano depois."
       },
       {
         "q": "Posso começar sozinho, como catequista?",
-        "a": "Sim. O trial serve para quem cuida de uma turma e também para quem coordena várias."
+        "a": "Sim. O teste gratuito serve para quem cuida de uma turma e também para quem coordena várias."
       },
       {
         "q": "Funciona no celular?",
@@ -2511,9 +2530,9 @@ export const landing_pt_BR = {
       }
     ],
     "cta_title": "Organize a catequese com clareza",
-    "cta_subtitle": "Pare de espalhar a rotina em caderno, planilha e mensagens. Comece o trial de 7 dias na sua turma — sem cobrança agora.",
-    "cta_button": "Começar trial de 7 dias",
-    "cta_badge": "Trial",
+    "cta_subtitle": "Pare de espalhar a rotina em caderno, planilha e mensagens. Comece o teste gratuito de 7 dias na sua turma — sem cobrança agora.",
+    "cta_button": "Começar teste gratuito de 7 dias",
+    "cta_badge": "Teste gratuito",
     "cta_see_plans": "Ver planos",
     "mock": {
       "ai_title": "Assistência para encontros",
@@ -2628,9 +2647,9 @@ export const landing_pt_BR = {
     "testimonials": [],
     "cta_helper": "Sem cobrança agora · sem cartão para começar",
     "mobile_cta": {
-      "title": "Trial de 7 dias",
+      "title": "Teste gratuito de 7 dias",
       "subtitle": "Sem cobrança agora · sem cartão",
-      "button": "Começar trial de 7 dias"
+      "button": "Começar teste gratuito de 7 dias"
     },
     "proof": {
       "badge": "Comece com tranquilidade",
@@ -2696,7 +2715,7 @@ export const landing_pt_BR = {
     "steps_endowed_title": "Você já está aqui",
     "steps_endowed_desc": "Conhecendo a plataforma",
     "price_trial_badge": "7 dias grátis · Sem cartão",
-    "price_trial_note": "7 dias de trial sem cartão e sem cobrança agora. Se assinar depois, o pagamento é no Stripe; cancele a tempo e não fica cobrado.",
+    "price_trial_note": "7 dias de teste gratuito sem cartão e sem cobrança agora. Se assinar depois, o pagamento é no Stripe; cancele a tempo e não fica cobrado.",
     "comparison": {
       "title": "Pare de espalhar a catequese em papel, planilha e WhatsApp",
       "subtitle": "Compare o jeito atual com a Catequese Viva em critérios que importam na rotina pastoral.",
@@ -2738,7 +2757,7 @@ export const landing_pt_BR = {
         }
       ]
     },
-    "faq_cta": "Começar trial de 7 dias",
+    "faq_cta": "Começar teste gratuito de 7 dias",
     "faq_cta_helper": "Sem cobrança agora · use na sua turma esta semana",
     "price_cta_single": "Testar Plano Único",
     "price_cta_unlimited": "Testar Plano Ilimitado",
@@ -2830,10 +2849,14 @@ export const landingIa_pt_BR = {
       "headline_line1": "Prepare encontros incríveis",
       "headline_line2": "em minutos com assistência editorial",
       "subheadline": "Deixe a assistência editorial gerar o roteiro completo: objetivo, dinâmica, leitura bíblica, reflexão, atividade e oração. Baseado na doutrina católica.",
-      "badge": "Assistência teologicamente treinada",
+      "badge": "Assistência com referências católicas e revisão humana",
       "cta_primary": "Experimentar a assistência editorial",
       "cta_secondary": "Ver como funciona",
-      "trust_signals": "Plano Único ou Ilimitado • Base teológica CNBB • Cancele quando quiser"
+      "trust_signals": "Plano Único ou Ilimitado • Base teológica CNBB • Cancele quando quiser",
+      "visual_title": "Roteiro de encontro",
+      "visual_item_1": "Informe tema e faixa etária",
+      "visual_item_2": "Revise referências católicas",
+      "visual_item_3": "Adapte e conduza o encontro"
     },
     "features_title": "Assistência que entende de catequese",
     "features_subtitle": "Treinada com a Bíblia CNBB, o Catecismo e o Diretório para a Catequese.",
@@ -2921,7 +2944,7 @@ export const landingIa_pt_BR = {
       "about": "Sobre",
       "privacy": "Privacidade",
       "terms": "Termos",
-      "contact": "Contacto"
+      "contact": "Contato"
     },
     "create_account": "Criar conta"
   } as const;
@@ -2934,7 +2957,11 @@ export const landingPresenca_pt_BR = {
       "badge": "Controle de presença digital",
       "cta_primary": "Começar agora",
       "cta_secondary": "Ver demonstração",
-      "trust_signals": "7 dias sem cartão • Funciona no celular • Cancele quando quiser"
+      "trust_signals": "7 dias sem cartão • Funciona no celular • Cancele quando quiser",
+      "visual_title": "Chamada no celular",
+      "visual_item_1": "Marque a turma rapidamente",
+      "visual_item_2": "Registre justificativas",
+      "visual_item_3": "Sincronize quando a internet voltar"
     },
     "features_title": "Controle total de presenças",
     "features_subtitle": "Do registro à justificativa — tudo integrado e em tempo real.",
@@ -3019,7 +3046,7 @@ export const landingPresenca_pt_BR = {
       "about": "Sobre",
       "privacy": "Privacidade",
       "terms": "Termos",
-      "contact": "Contacto"
+      "contact": "Contato"
     },
     "create_account": "Criar conta"
   } as const;
@@ -3032,7 +3059,11 @@ export const landingSistema_pt_BR = {
       "badge": "Gestão completa para catequese",
       "cta_primary": "Começar agora",
       "cta_secondary": "Ver recursos",
-      "trust_signals": "7 dias sem cartão • Comece em 2 minutos • Cancele quando quiser"
+      "trust_signals": "7 dias sem cartão • Comece em 2 minutos • Cancele quando quiser",
+      "visual_title": "Visão da coordenação",
+      "visual_item_1": "Turmas e equipes em um painel",
+      "visual_item_2": "Indicadores de presença",
+      "visual_item_3": "Próximas ações pastorais"
     },
     "features_title": "Tudo para gerir sua catequese",
     "features_order": [
@@ -3116,7 +3147,7 @@ export const landingSistema_pt_BR = {
       "about": "Sobre",
       "privacy": "Privacidade",
       "terms": "Termos",
-      "contact": "Contacto"
+      "contact": "Contato"
     },
     "create_account": "Criar conta"
   } as const;
@@ -3297,7 +3328,9 @@ export const meetings_pt_BR = {
         "messages": "Avisar famílias",
         "attendance": "Chamada",
         "calendar": "Agenda"
-      }
+      },
+      "next_label": "Próximo encontro",
+      "empty_mobile": "Nenhum encontro agendado."
     }
   } as const;
 
@@ -3826,8 +3859,18 @@ export const onboarding_pt_BR = {
       "added_count": "{{count}} na turma",
       "continue": "Concluir com {{count}} na turma",
       "skip": "Concluir sem adicionar agora",
-      "skip_hint": "A chamada ficará vazia até você incluir alguém."
-    }
+      "skip_hint": "A chamada ficará vazia até você incluir alguém.",
+      "preview_valid": "{{count}} válidas",
+      "preview_duplicate": "{{count}} duplicadas",
+      "preview_invalid": "{{count}} inválidas",
+      "row_valid": "Pronta",
+      "row_duplicate": "Duplicada",
+      "row_invalid": "Linha inválida",
+      "confirm_import": "Confirmar e adicionar",
+      "retry_failed": "Repetir {{count}} falhas",
+      "partial_error": "{{count}} linhas não foram adicionadas. As demais foram preservadas."
+    },
+    "resume_banner": "Continuando de onde você parou."
   } as const;
 
 export const parishes_pt_BR = {
@@ -4123,7 +4166,7 @@ export const public_pt_BR = {
         },
         {
           "q": "Como funciona o pagamento?",
-          "a": "Você começa com 7 dias de trial sem cartão de crédito. Se decidir continuar, pode pagar no cartão no mensal ou no anual. Sem fidelidade — cancele quando quiser."
+          "a": "Você começa com 7 dias de teste gratuito sem cartão de crédito. Se decidir continuar, pode pagar no cartão no mensal ou no anual. Sem fidelidade — cancele quando quiser."
         },
         {
           "q": "E o reembolso do plano anual?",
@@ -4526,8 +4569,11 @@ export const topbar_pt_BR = {
     "sign_out": "Sair",
     "current_user": "Usuário",
     "language": "Idioma",
-    "theme": "Tema",
-    "context": "Espaço e perfil"
+    "context": "Espaço e perfil",
+    "search": "Abrir pesquisa",
+    "clearSearch": "Limpar pesquisa",
+    "closeSearch": "Fechar pesquisa",
+    "user_menu": "Abrir menu do usuário"
   } as const;
 
 export const tour_pt_BR = {

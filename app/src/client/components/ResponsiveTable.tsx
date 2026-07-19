@@ -13,6 +13,12 @@ export interface ResponsiveTableColumn<T> {
   cardLabel?: string;
   /** Hide this column from the default mobile field list */
   hideOnMobile?: boolean;
+  /** Essential first line on the mobile card */
+  mobileTitle?: boolean;
+  /** Secondary information; at most two are rendered by default */
+  mobileMetadata?: boolean;
+  /** Contextual next action, rendered after metadata */
+  mobileAction?: boolean;
 }
 
 interface ResponsiveTableProps<T> {
@@ -61,16 +67,26 @@ export function ResponsiveTable<T>({
 }: ResponsiveTableProps<T>) {
   if (data.length === 0 && emptyMessage) {
     return (
-      <div
-        className="py-12 text-center text-sm font-semibold tracking-tight text-brand-ink"
-        style={{ fontFamily: "var(--font-brand-display)" }}
-      >
+      <div className="py-10 text-center text-sm font-semibold tracking-tight text-brand-ink">
         {emptyMessage}
       </div>
     );
   }
 
-  const defaultMobileColumns = columns.filter((c) => !c.hideOnMobile);
+  const visibleMobileColumns = columns.filter((column) => !column.hideOnMobile);
+  const hasMobilePriority = visibleMobileColumns.some(
+    (column) =>
+      column.mobileTitle || column.mobileMetadata || column.mobileAction,
+  );
+  const defaultMobileColumns = hasMobilePriority
+    ? [
+        visibleMobileColumns.find((column) => column.mobileTitle),
+        ...visibleMobileColumns
+          .filter((column) => column.mobileMetadata)
+          .slice(0, 2),
+        visibleMobileColumns.find((column) => column.mobileAction),
+      ].filter((column): column is ResponsiveTableColumn<T> => Boolean(column))
+    : visibleMobileColumns.slice(0, 3);
 
   return (
     <>
@@ -130,7 +146,7 @@ export function ResponsiveTable<T>({
               key={getRowKey(item, idx)}
               role="listitem"
               className={cn(
-                "rounded-sm border border-border/70 bg-surface-elevated p-4",
+                "rounded-sm border border-border/70 bg-surface-elevated p-3.5",
                 interactive &&
                   "cursor-pointer active:scale-[0.99] transition-transform motion-reduce:transition-none motion-reduce:active:scale-100",
                 interactive &&
@@ -165,7 +181,8 @@ export function ResponsiveTable<T>({
                           key={field.key}
                           className={cn(
                             "flex justify-between gap-2",
-                            field.prominence === "title" && "flex-col items-start",
+                            field.prominence === "title" &&
+                              "flex-col items-start",
                           )}
                         >
                           {field.label && !compactMobile && (
@@ -197,7 +214,9 @@ export function ResponsiveTable<T>({
                               {col.cardLabel || col.header}
                             </dt>
                           )}
-                          <dd className="text-sm text-right">{col.render(item)}</dd>
+                          <dd className="text-sm text-right">
+                            {col.render(item)}
+                          </dd>
                         </div>
                       ))}
                     </dl>

@@ -343,6 +343,16 @@
     "added_count": "{{count}} in the class",
     "continue": "Finish with {{count}} in the class",
     "skip": "Finish without adding now",
-    "skip_hint": "Attendance will stay empty until you add someone."
-  }
+    "skip_hint": "Attendance will stay empty until you add someone.",
+    "preview_valid": "{{count}} valid",
+    "preview_duplicate": "{{count}} duplicates",
+    "preview_invalid": "{{count}} invalid",
+    "row_valid": "Ready",
+    "row_duplicate": "Duplicate",
+    "row_invalid": "Invalid row",
+    "confirm_import": "Confirm and add",
+    "retry_failed": "Retry {{count}} failures",
+    "partial_error": "{{count}} rows were not added. The others were preserved."
+  },
+  "resume_banner": "Continuing where you left off."
 }

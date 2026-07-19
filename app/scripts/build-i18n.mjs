@@ -113,7 +113,29 @@ if (errors.length > 0) {
 }
 
 if (checkOnly) {
-  console.log(`i18n check passed (${namespaces.length} namespaces, ${LANGS.length} languages)`);
+  const staleBundles = [];
+  for (const lang of LANGS) {
+    const suffix = LANG_SUFFIX[lang];
+    const filePath = path.join(OUT_DIR, `resources_${suffix}.ts`);
+    const expected = generateBundle(lang, namespaces);
+    const current = fs.existsSync(filePath)
+      ? fs.readFileSync(filePath, 'utf8')
+      : null;
+    if (current !== expected) {
+      staleBundles.push(path.relative(ROOT, filePath));
+    }
+  }
+
+  if (staleBundles.length > 0) {
+    console.error('Generated i18n bundles are missing or stale:');
+    staleBundles.forEach((file) => console.error('  -', file));
+    console.error('\nRun: npm run i18n:build');
+    process.exit(1);
+  }
+
+  console.log(
+    `i18n check passed (${namespaces.length} namespaces, ${LANGS.length} languages, generated bundles current)`,
+  );
   process.exit(0);
 }
 

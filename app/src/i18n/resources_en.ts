@@ -604,7 +604,19 @@ export const auth_en = {
       "Pick up class organization in seconds",
       "Take attendance on mobile",
       "Prepare the next meeting with ease"
-    ]
+    ],
+    "signup_plan_single": "Essential plan",
+    "signup_plan_unlimited": "Complete plan",
+    "signup_interval_monthly": "monthly billing",
+    "signup_interval_annual": "annual billing",
+    "signup_context_no_card": "7 days free, no card",
+    "signup_context_change": "Change",
+    "signup_success_next_steps": "Next steps",
+    "signup_success_step_1": "Check your inbox and spam folder.",
+    "signup_success_step_2": "Open the confirmation link sent to your email.",
+    "signup_success_step_3": "Continue setting up your first class.",
+    "signup_password_rule_length": "At least 8 characters",
+    "signup_password_rule_match": "Passwords match"
   } as const;
 
 export const bible_en = {
@@ -1838,7 +1850,8 @@ export const common_en = {
     "view_cards": "Cards",
     "leave_form_title": "Unsaved changes",
     "leave_form_desc": "You have changes that have not been saved yet. Leave anyway?",
-    "leave_anyway": "Leave without saving"
+    "leave_anyway": "Leave without saving",
+    "more_actions": "More actions"
   } as const;
 
 export const components_en = {
@@ -2167,7 +2180,13 @@ export const dashboard_en = {
     "registration_section": "Registration",
     "attention_now": "What needs your attention now",
     "import_catechumens": "Import catechumens",
-    "metrics_secondary": "Indicators"
+    "metrics_secondary": "Indicators",
+    "mobile": {
+      "none_registered": "None",
+      "no_attendance": "No records",
+      "all_clear": "All clear",
+      "no_catechumens": "No catechumens"
+    }
   } as const;
 
 export const family_en = {
@@ -2833,7 +2852,11 @@ export const landingIa_en = {
       "badge": "Theologically trained AI",
       "cta_primary": "Try the AI",
       "cta_secondary": "See how it works",
-      "trust_signals": "Single or Unlimited plan • CNBB theological base • Cancel anytime"
+      "trust_signals": "Single or Unlimited plan • CNBB theological base • Cancel anytime",
+      "visual_title": "Meeting outline",
+      "visual_item_1": "Enter topic and age group",
+      "visual_item_2": "Review Catholic references",
+      "visual_item_3": "Adapt and lead the meeting"
     },
     "features_title": "Assistance that understands catechesis",
     "features_subtitle": "Trained on the CNBB Bible, the Catechism and the Directory for Catechesis.",
@@ -2934,7 +2957,11 @@ export const landingPresenca_en = {
       "badge": "Digital attendance control",
       "cta_primary": "Start now",
       "cta_secondary": "See demo",
-      "trust_signals": "Single or Unlimited plan • Works on mobile • Payment via Stripe"
+      "trust_signals": "Single or Unlimited plan • Works on mobile • Payment via Stripe",
+      "visual_title": "Mobile attendance",
+      "visual_item_1": "Mark the class quickly",
+      "visual_item_2": "Record justifications",
+      "visual_item_3": "Sync when internet returns"
     },
     "features_title": "Complete attendance control",
     "features_subtitle": "From recording to justification — all integrated and real-time.",
@@ -3032,7 +3059,11 @@ export const landingSistema_en = {
       "badge": "Complete catechesis management",
       "cta_primary": "Get started",
       "cta_secondary": "See features",
-      "trust_signals": "Single or Unlimited plan • Start in 2 minutes • Cancel anytime"
+      "trust_signals": "Single or Unlimited plan • Start in 2 minutes • Cancel anytime",
+      "visual_title": "Coordination overview",
+      "visual_item_1": "Classes and teams in one dashboard",
+      "visual_item_2": "Attendance indicators",
+      "visual_item_3": "Next pastoral actions"
     },
     "features_title": "Everything to manage your catechesis",
     "features_order": [
@@ -3297,7 +3328,9 @@ export const meetings_en = {
         "messages": "Message families",
         "attendance": "Attendance",
         "calendar": "Calendar"
-      }
+      },
+      "next_label": "Next meeting",
+      "empty_mobile": "No meeting scheduled."
     }
   } as const;
 
@@ -3826,8 +3859,18 @@ export const onboarding_en = {
       "added_count": "{{count}} in the class",
       "continue": "Finish with {{count}} in the class",
       "skip": "Finish without adding now",
-      "skip_hint": "Attendance will stay empty until you add someone."
-    }
+      "skip_hint": "Attendance will stay empty until you add someone.",
+      "preview_valid": "{{count}} valid",
+      "preview_duplicate": "{{count}} duplicates",
+      "preview_invalid": "{{count}} invalid",
+      "row_valid": "Ready",
+      "row_duplicate": "Duplicate",
+      "row_invalid": "Invalid row",
+      "confirm_import": "Confirm and add",
+      "retry_failed": "Retry {{count}} failures",
+      "partial_error": "{{count}} rows were not added. The others were preserved."
+    },
+    "resume_banner": "Continuing where you left off."
   } as const;
 
 export const parishes_en = {
@@ -4526,8 +4569,11 @@ export const topbar_en = {
     "sign_out": "Sign out",
     "current_user": "User",
     "language": "Language",
-    "theme": "Theme",
-    "context": "Workspace & role"
+    "context": "Workspace & role",
+    "search": "Open search",
+    "clearSearch": "Clear search",
+    "closeSearch": "Close search",
+    "user_menu": "Open user menu"
   } as const;
 
 export const tour_en = {

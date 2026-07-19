@@ -6,7 +6,11 @@
     "badge": "Controle de presença digital",
     "cta_primary": "Começar agora",
     "cta_secondary": "Ver demonstração",
-    "trust_signals": "7 dias sem cartão • Funciona no celular • Cancele quando quiser"
+    "trust_signals": "7 dias sem cartão • Funciona no celular • Cancele quando quiser",
+    "visual_title": "Chamada no celular",
+    "visual_item_1": "Marque a turma rapidamente",
+    "visual_item_2": "Registre justificativas",
+    "visual_item_3": "Sincronize quando a internet voltar"
   },
   "features_title": "Controle total de presenças",
   "features_subtitle": "Do registro à justificativa — tudo integrado e em tempo real.",
@@ -91,7 +95,7 @@
     "about": "Sobre",
     "privacy": "Privacidade",
     "terms": "Termos",
-    "contact": "Contacto"
+    "contact": "Contato"
   },
   "create_account": "Criar conta"
 }

@@ -343,6 +343,16 @@
     "added_count": "{{count}} en el grupo",
     "continue": "Terminar con {{count}} en el grupo",
     "skip": "Terminar sin añadir ahora",
-    "skip_hint": "La asistencia quedará vacía hasta que incluyas a alguien."
-  }
+    "skip_hint": "La asistencia quedará vacía hasta que incluyas a alguien.",
+    "preview_valid": "{{count}} válidas",
+    "preview_duplicate": "{{count}} duplicadas",
+    "preview_invalid": "{{count}} inválidas",
+    "row_valid": "Lista",
+    "row_duplicate": "Duplicada",
+    "row_invalid": "Fila inválida",
+    "confirm_import": "Confirmar y añadir",
+    "retry_failed": "Reintentar {{count}} fallos",
+    "partial_error": "No se añadieron {{count}} filas. Las demás se conservaron."
+  },
+  "resume_banner": "Continuando desde donde lo dejaste."
 }

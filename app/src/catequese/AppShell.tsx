@@ -165,73 +165,74 @@ export function AppShell({ children }: AppShellProps) {
   // Prevent the stale shell from rendering while the hard redirect to the auth
   // entrypoint is in flight.
   if (authUser === null) {
-    return <div className="min-h-screen bg-background" />;
+    return <div className="mobile-screen-height bg-background" />;
   }
 
   if (isFamily) {
     return <FamilyAppShell>{children}</FamilyAppShell>;
   }
 
-  if (isMinimalPath) {
-    return (
-      <TwoFactorGate>
-        <div className="min-h-screen bg-background">{children}</div>
-      </TwoFactorGate>
-    );
-  }
-
+  // Keep a single TwoFactorGate instance across /app ↔ select-workspace so
+  // navigation does not remount the gate and re-run getTwoFactorStatus.
   return (
     <TwoFactorGate>
-      <ShellBase variant="app">
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-overlay focus:px-4 focus:py-2 focus:bg-[#071A2D] focus:text-white focus:rounded-sm"
-        >
-          {t("skip_to_content")}
-        </a>
-        <div className="no-print hidden flex-shrink-0 lg:block">
-          <Sidebar />
-        </div>
-
-        <div className="flex flex-1 flex-col overflow-hidden print:overflow-visible">
-          <div className="no-print">
-            <ErrorBoundary
-              fallback={
-                <div className="flex h-14 items-center border-b border-border/70 bg-white px-4" />
-              }
-            >
-              <TopBar />
-            </ErrorBoundary>
-            <ProductTrialBanner />
-          </div>
-          <main
-            id="main-content"
-            ref={mainRef}
-            className="no-overscroll scroll-touch flex-1 overflow-y-auto bg-background p-4 print:overflow-visible print:bg-white print:p-0 md:p-6"
-            style={{
-              paddingBottom:
-                "calc(var(--height-bottom-nav, 3.5rem) + env(safe-area-inset-bottom, 0px) + 0.5rem)",
-            }}
+      {isMinimalPath ? (
+        <div className="mobile-screen-height bg-background">{children}</div>
+      ) : (
+        <ShellBase variant="app">
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-overlay focus:rounded-sm focus:bg-brand-ink focus:px-4 focus:py-2 focus:text-white"
           >
-            <div key={location.pathname} className="content-transition print:contents">
-              <SubscriptionGate>{children}</SubscriptionGate>
+            {t("skip_to_content")}
+          </a>
+          <div className="no-print hidden flex-shrink-0 lg:block">
+            <Sidebar />
+          </div>
+
+          <div className="flex flex-1 flex-col overflow-hidden print:overflow-visible">
+            <div className="no-print">
+              <ErrorBoundary
+                fallback={
+                  <div className="flex h-14 items-center border-b border-border/70 bg-white px-4" />
+                }
+              >
+                <TopBar />
+              </ErrorBoundary>
+              <ProductTrialBanner />
             </div>
-          </main>
-        </div>
-        <div className="no-print">
-          <BottomNav />
-        </div>
-        <div className="no-print">
-          <Suspense fallback={null}>
-            <AIHelperWidget />
-          </Suspense>
-        </div>
-        {showTour && (
-          <Suspense fallback={null}>
-            <GuidedTour onComplete={completeTour} />
-          </Suspense>
-        )}
-      </ShellBase>
+            <main
+              id="main-content"
+              ref={mainRef}
+              className="no-overscroll scroll-touch flex-1 overflow-y-auto bg-background px-3 py-4 print:overflow-visible print:bg-white print:p-0 min-[360px]:px-4 md:p-6"
+              style={{
+                paddingBottom:
+                  "calc(var(--height-bottom-nav, 3.5rem) + env(safe-area-inset-bottom, 0px) + 0.5rem)",
+              }}
+            >
+              <div
+                key={location.pathname}
+                className="content-transition print:contents"
+              >
+                <SubscriptionGate>{children}</SubscriptionGate>
+              </div>
+            </main>
+          </div>
+          <div className="no-print">
+            <BottomNav />
+          </div>
+          <div className="no-print">
+            <Suspense fallback={null}>
+              <AIHelperWidget />
+            </Suspense>
+          </div>
+          {showTour && (
+            <Suspense fallback={null}>
+              <GuidedTour onComplete={completeTour} />
+            </Suspense>
+          )}
+        </ShellBase>
+      )}
     </TwoFactorGate>
   );
 }

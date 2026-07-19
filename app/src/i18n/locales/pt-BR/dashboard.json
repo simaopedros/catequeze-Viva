@@ -117,7 +117,7 @@
   "kpi_read_rate": "Taxa de leitura",
   "kpi_plan": "Plano",
   "kpi_status": "Status",
-  "kpi_trial_days_remaining": "Dias para fim do trial",
+  "kpi_trial_days_remaining": "Dias para fim do teste gratuito",
   "first_steps": "Primeiros passos",
   "how_to_start": "Como começar",
   "how_to_start_1": "Crie a turma com etapa, dias de encontro e responsáveis.",
@@ -128,5 +128,11 @@
   "registration_section": "Cadastro",
   "attention_now": "O que precisa da sua atenção agora",
   "import_catechumens": "Importar catequizandos",
-  "metrics_secondary": "Indicadores"
+  "metrics_secondary": "Indicadores",
+  "mobile": {
+    "none_registered": "Nenhum",
+    "no_attendance": "Sem registros",
+    "all_clear": "Tudo em dia",
+    "no_catechumens": "Sem catequizandos"
+  }
 }

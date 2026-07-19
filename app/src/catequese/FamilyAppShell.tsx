@@ -46,16 +46,16 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
 
   return (
     <TwoFactorGate>
-      <div className="flex min-h-screen flex-col bg-background">
+      <div className="mobile-screen-height flex flex-col bg-background">
         {/* Top bar */}
         <header
           className="sticky top-0 z-sticky border-b border-border/70 bg-white"
           style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
         >
-          <div className="flex h-14 items-center justify-between px-4">
-            <div className="flex items-center gap-3">
+          <div className="flex h-14 items-center justify-between gap-2 px-3 min-[360px]:px-4">
+            <div className="flex min-w-0 items-center gap-2 min-[360px]:gap-3">
               <BrandLockup compact hideBadge />
-              <span className="text-[11px] px-2 py-0.5 rounded-sm border border-border/70 bg-muted/30 text-muted-foreground font-semibold uppercase tracking-[0.12em]">
+              <span className="hidden rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground min-[360px]:inline-flex">
                 {t("family_label")}
               </span>
             </div>
@@ -67,7 +67,7 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
 
         {/* Content */}
         <main
-          className="no-overscroll scroll-touch flex-1 bg-background p-4 md:p-6"
+          className="no-overscroll scroll-touch flex-1 bg-background px-3 py-4 min-[360px]:px-4 md:p-6"
           style={{
             paddingBottom: "calc(5rem + env(safe-area-inset-bottom, 0px))",
           }}
@@ -82,7 +82,7 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
         >
           <div
             className="flex items-center justify-around"
-            style={{ height: "calc(4rem + env(safe-area-inset-bottom, 0px))" }}
+            style={{ height: "var(--height-bottom-nav, 3.5rem)" }}
           >
             {navItems.map((item) => {
               const isActive =
@@ -92,15 +92,18 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
                 <button
                   key={item.to}
                   onClick={() => navigate(item.to)}
-                  className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-sm transition-colors ${
+                  aria-current={isActive ? "page" : undefined}
+                  className={`flex h-full min-h-11 flex-1 flex-col items-center justify-center gap-0.5 rounded-sm px-1 transition-colors ${
                     isActive
-                      ? "text-[#071A2D]"
-                      : "text-muted-foreground hover:text-[#071A2D]"
+                      ? "text-brand-ink"
+                      : "text-muted-foreground hover:text-brand-ink"
                   }`}
                 >
                   <item.icon className="h-5 w-5" />
                   <span
-                    className={`text-overline font-medium ${isActive ? "text-[#071A2D]" : ""}`}
+                    className={`text-overline font-medium ${
+                      isActive ? "text-brand-ink" : ""
+                    }`}
                   >
                     {item.label}
                   </span>

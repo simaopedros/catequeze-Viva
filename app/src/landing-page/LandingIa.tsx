@@ -3,6 +3,7 @@ import { FaqSection } from "./components/FaqSection";
 import { HeroSection } from "./components/HeroSection";
 import { LandingShell } from "./components/LandingShell";
 import { LazySection } from "./components/LazySection";
+import { landingCampaigns } from "./landingCampaigns";
 
 const AiShowcaseSection = lazy(() =>
   import("./components/AiShowcaseSection").then((m) => ({
@@ -28,7 +29,9 @@ const PersonasSection = lazy(() =>
   })),
 );
 const ProofSection = lazy(() =>
-  import("./components/ProofSection").then((m) => ({ default: m.ProofSection })),
+  import("./components/ProofSection").then((m) => ({
+    default: m.ProofSection,
+  })),
 );
 const PricingPreviewSection = lazy(() =>
   import("./components/PricingPreviewSection").then((m) => ({
@@ -36,10 +39,12 @@ const PricingPreviewSection = lazy(() =>
   })),
 );
 const StepsSection = lazy(() =>
-  import("./components/StepsSection").then((m) => ({ default: m.StepsSection })),
+  import("./components/StepsSection").then((m) => ({
+    default: m.StepsSection,
+  })),
 );
 
-const NS = "landingIa";
+const campaign = landingCampaigns.ai;
 
 /**
  * Google Ads: IA / assistência editorial.
@@ -47,14 +52,20 @@ const NS = "landingIa";
  */
 export default function LandingIa() {
   return (
-    <LandingShell ns={NS}>
-      <HeroSection ns={NS} variant="centered" responsiveCtas />
+    <LandingShell ns={campaign.namespace}>
+      <HeroSection
+        ns={campaign.namespace}
+        campaign={campaign.campaign}
+        visual={campaign.heroVisual}
+        variant="centered"
+        responsiveCtas
+      />
       <LazySection>
-        <AiShowcaseSection ns={NS} />
+        <AiShowcaseSection ns={campaign.namespace} />
       </LazySection>
       <LazySection>
         <FeaturesSection
-          ns={NS}
+          ns={campaign.namespace}
           order={[
             "ai-planner",
             "library",
@@ -66,25 +77,25 @@ export default function LandingIa() {
         />
       </LazySection>
       <LazySection>
-        <ProofSection ns={NS} />
+        <ProofSection ns={campaign.namespace} />
       </LazySection>
       <LazySection>
-        <PricingPreviewSection ns={NS} />
+        <PricingPreviewSection ns={campaign.namespace} />
       </LazySection>
       <LazySection>
-        <MissionSection ns={NS} />
+        <MissionSection ns={campaign.namespace} />
       </LazySection>
       <LazySection>
-        <PersonasSection ns={NS} />
+        <PersonasSection ns={campaign.namespace} />
       </LazySection>
       <LazySection>
-        <StepsSection ns={NS} responsiveCtas />
+        <StepsSection ns={campaign.namespace} responsiveCtas />
       </LazySection>
       <LazySection>
-        <FaqSection ns={NS} />
+        <FaqSection ns={campaign.namespace} />
       </LazySection>
       <LazySection>
-        <CtaSection ns={NS} responsiveCtas />
+        <CtaSection ns={campaign.namespace} responsiveCtas />
       </LazySection>
     </LandingShell>
   );

@@ -240,7 +240,7 @@ export function AIHelperWidget() {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-6 max-lg:bottom-[calc(5.75rem+env(safe-area-inset-bottom,0px))] right-4 lg:right-6 z-50 flex h-12 w-12 items-center justify-center rounded-sm bg-[#071A2D] text-white transition-colors hover:bg-[#0a2540]"
+          className="fixed bottom-6 right-6 z-50 hidden h-12 w-12 items-center justify-center rounded-sm bg-brand-ink text-white transition-colors hover:bg-brand-ink-soft lg:flex"
           title={t("ai_helper_title")}
           aria-label={t("ai_helper_title")}
         >

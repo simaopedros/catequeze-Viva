@@ -95,6 +95,8 @@
       "messages": "Avisar a las familias",
       "attendance": "Lista",
       "calendar": "Agenda"
-    }
+    },
+    "next_label": "Próximo encuentro",
+    "empty_mobile": "No hay encuentros programados."
   }
 }
