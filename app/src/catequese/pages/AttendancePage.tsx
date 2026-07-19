@@ -149,13 +149,26 @@ export default function AttendancePage() {
   const meetingIdParam = searchParams.get("meetingId");
   const isMobileSheet = useIsMobileSheet();
   const [showHistory, setShowHistory] = useState(false);
+  /** History window: 30 / 90 / 180 days (server default is 90). */
+  const [rangeDays, setRangeDays] = useState<30 | 90 | 180>(90);
 
   // Never load full matrix on operational mobile path (unless history opened)
   const loadMatrix = !isMobileSheet || showHistory;
 
+  const matrixArgs = useMemo(() => {
+    const from = new Date();
+    from.setDate(from.getDate() - rangeDays);
+    const take = rangeDays <= 30 ? 20 : rangeDays <= 90 ? 40 : 80;
+    return {
+      classId: classId!,
+      fromDate: from.toISOString().slice(0, 10),
+      take,
+    };
+  }, [classId, rangeDays]);
+
   const { data: meetings = [], refetch: refetchMeetings } = useQuery(
     getClassAttendanceMatrix,
-    { classId: classId! },
+    matrixArgs as any,
     { enabled: Boolean(classId) && loadMatrix },
   );
   const { data: cls } = useQuery(getClassDetails, { id: classId! });
@@ -518,17 +531,43 @@ export default function AttendancePage() {
           </div>
         )}
 
-        <div className="flex gap-4 text-xs">
-          {statusOptions.map((s) => (
-            <span key={s.key} className="flex items-center gap-1">
-              <span
-                className={`inline-flex h-6 w-7 items-center justify-center rounded-sm border text-xs font-semibold ${s.color}`}
-              >
-                {s.label}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex gap-4 text-xs">
+            {statusOptions.map((s) => (
+              <span key={s.key} className="flex items-center gap-1">
+                <span
+                  className={`inline-flex h-6 w-7 items-center justify-center rounded-sm border text-xs font-semibold ${s.color}`}
+                >
+                  {s.label}
+                </span>
+                {s.fullLabel}
               </span>
-              {s.fullLabel}
+            ))}
+          </div>
+          <label className="flex items-center gap-2 text-xs text-muted-foreground">
+            <span>
+              {t("matrix.history_range", {
+                defaultValue: "Histórico",
+              })}
             </span>
-          ))}
+            <select
+              value={rangeDays}
+              onChange={(e) =>
+                setRangeDays(Number(e.target.value) as 30 | 90 | 180)
+              }
+              className="h-9 rounded-sm border border-input bg-background px-2 text-xs font-medium text-foreground"
+            >
+              <option value={30}>
+                {t("matrix.range_30", { defaultValue: "30 dias" })}
+              </option>
+              <option value={90}>
+                {t("matrix.range_90", { defaultValue: "90 dias" })}
+              </option>
+              <option value={180}>
+                {t("matrix.range_180", { defaultValue: "180 dias" })}
+              </option>
+            </select>
+          </label>
         </div>
 
         {/* Student filter */}

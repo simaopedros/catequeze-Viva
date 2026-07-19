@@ -96,7 +96,8 @@
     "test:e2e": "playwright test",
     "test:e2e:landing": "playwright test tests/e2e/landing-funnel.spec.ts tests/e2e/a11y-viewport.spec.ts --project=chromium",
     "test:e2e:nav": "playwright test tests/e2e/nav-parity.spec.ts --project=chromium",
-    "lighthouse:landings": "node scripts/lighthouse-landings.mjs"
+    "lighthouse:landings": "node scripts/lighthouse-landings.mjs",
+    "lighthouse:landings:strict": "LIGHTHOUSE_STRICT=1 LIGHTHOUSE_RUNS=3 node scripts/lighthouse-landings.mjs"
   },
   "overrides": {
     "@radix-ui/react-focus-scope": "^1.1.9",

@@ -1,0 +1,61 @@
+# Optional gate: mobile Lighthouse budgets on public landings.
+# Manual or scheduled against homolog. Does not block main CI until scores stabilize.
+name: Lighthouse landings
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "Origin to audit (e.g. https://homolog.catechis.app)"
+        required: true
+        default: "https://homolog.catechis.app"
+      strict:
+        description: "Fail on budget violations"
+        type: boolean
+        default: true
+      runs:
+        description: "Runs per path (median)"
+        default: "3"
+  schedule:
+    # Weekly Monday 06:00 UTC
+    - cron: "0 6 * * 1"
+
+jobs:
+  lighthouse:
+    name: Mobile landings budgets
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Lighthouse (mobile simulated)
+        env:
+          BASE_URL: ${{ github.event.inputs.base_url || 'https://homolog.catechis.app' }}
+          LIGHTHOUSE_STRICT: ${{ github.event.inputs.strict == false && '0' || '1' }}
+          LIGHTHOUSE_RUNS: ${{ github.event.inputs.runs || '3' }}
+          # Soft interim targets for weekly noise; tighten toward 85/2.5s as perf lands
+          LIGHTHOUSE_PERF_MIN: "50"
+          LIGHTHOUSE_LCP_MAX_MS: "8000"
+          LIGHTHOUSE_FCP_MAX_MS: "4000"
+          LIGHTHOUSE_TBT_MAX_MS: "800"
+          LIGHTHOUSE_CLS_MAX: "0.15"
+        run: npm run lighthouse:landings
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-landings
+          path: app/artifacts/lighthouse/
+          if-no-files-found: ignore
