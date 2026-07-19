@@ -255,20 +255,56 @@ export const getMeetingAttendance = async (
   });
 };
 
+/**
+ * Attendance history matrix for a class.
+ * Limited by date window (default last 90 days) and max meetings to avoid unbounded loads.
+ */
 export const getClassAttendanceMatrix = async (
-  args: { classId: string; surface?: string },
+  args: {
+    classId: string;
+    surface?: string;
+    /** ISO date — inclusive lower bound (default: 90 days ago) */
+    fromDate?: string;
+    /** ISO date — exclusive upper bound (default: now + 1 day) */
+    toDate?: string;
+    /** Cap number of meetings (default 40, max 80) */
+    take?: number;
+  },
   context: any,
 ) => {
   if (!context.user) throw new HttpError(401);
   await assertCanTakeAttendance(context, args.classId, args.surface);
 
+  const take = Math.min(Math.max(args.take || 40, 1), 80);
+  const now = new Date();
+  const defaultFrom = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+  const fromDate = args.fromDate ? new Date(args.fromDate) : defaultFrom;
+  const toDate = args.toDate
+    ? new Date(args.toDate)
+    : new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+  if (Number.isNaN(+fromDate) || Number.isNaN(+toDate)) {
+    throw new HttpError(400, 'fromDate/toDate inválidos.');
+  }
+
   return context.entities.Meeting.findMany({
-    where: { classId: args.classId },
+    where: {
+      classId: args.classId,
+      date: { gte: fromDate, lt: toDate },
+    },
     orderBy: { date: 'desc' },
+    take,
     include: {
       attendance: {
         include: {
-          catechumenProfile: { select: { id: true, firstName: true, lastName: true, photoUrl: true } },
+          catechumenProfile: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              photoUrl: true,
+            },
+          },
         },
       },
     },

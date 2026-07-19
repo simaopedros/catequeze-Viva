@@ -290,7 +290,7 @@ page AdminSystemPage {
 route AppDashboardRoute { path: "/app", to: AppDashboardPage }
 page AppDashboardPage {
   authRequired: true,
-  component: import DashboardPage from "@src/catequese/pages/DashboardPage"
+  component: import DashboardPage from "@src/catequese/lazy/DashboardPage"
 }
 route AppNewClassRoute { path: "/app/classes/new", to: AppNewClassPage }
 page AppNewClassPage {
@@ -309,7 +309,7 @@ page AppClassDetailPage {
 route AppClassPastoralReportRoute { path: "/app/classes/:id/reports", to: AppClassPastoralReportPage }
 page AppClassPastoralReportPage {
   authRequired: true,
-  component: import ClassPastoralReportPage from "@src/catequese/pages/ClassPastoralReportPage"
+  component: import ClassPastoralReportPage from "@src/catequese/lazy/ClassPastoralReportPage"
 }
 //#endregion
 
@@ -353,7 +353,7 @@ page AppFamiliesPage {
 route AppNewContentRoute { path: "/app/content-library/new", to: AppNewContentPage }
 page AppNewContentPage {
   authRequired: true,
-  component: import CreateContentPage from "@src/catequese/pages/CreateContentPage"
+  component: import CreateContentPage from "@src/catequese/lazy/CreateContentPage"
 }
 
 route AppContentDetailRoute { path: "/app/content-library/:id", to: AppContentDetailPage }
@@ -373,7 +373,7 @@ page AppContentLibraryPage {
 route AppAIHubRoute { path: "/app/ai-hub", to: AppAIHubPage }
 page AppAIHubPage {
   authRequired: true,
-  component: import AIHubPage from "@src/catequese/pages/AIHubPage"
+  component: import AIHubPage from "@src/catequese/lazy/AIHubPage"
 }
 
 // ── Legacy redirects ──
@@ -404,7 +404,7 @@ page WorkspaceSelectorPage {
 route AppActivitiesRoute { path: "/app/activities", to: AppActivitiesPage }
 page AppActivitiesPage {
   authRequired: true,
-  component: import ActivitiesPage from "@src/catequese/pages/ActivitiesPage"
+  component: import ActivitiesPage from "@src/catequese/lazy/ActivitiesPage"
 }
 
 route AppCalendarRoute { path: "/app/calendar", to: AppCalendarPage }
@@ -428,19 +428,19 @@ page AppSacramentalJourneyDetailPage {
 route AppJourneyTemplatesRoute { path: "/app/journey-templates", to: AppJourneyTemplatesPage }
 page AppJourneyTemplatesPage {
   authRequired: true,
-  component: import JourneyTemplatesPage from "@src/catequese/pages/JourneyTemplatesPage"
+  component: import JourneyTemplatesPage from "@src/catequese/lazy/JourneyTemplatesPage"
 }
 
 route AppMessagesRoute { path: "/app/messages", to: AppMessagesPage }
 page AppMessagesPage {
   authRequired: true,
-  component: import MessagesPage from "@src/catequese/pages/MessagesPage"
+  component: import MessagesPage from "@src/catequese/lazy/MessagesPage"
 }
 
 route AppReportsRoute { path: "/app/reports", to: AppReportsPage }
 page AppReportsPage {
   authRequired: true,
-  component: import ReportsPage from "@src/catequese/pages/ReportsPage"
+  component: import ReportsPage from "@src/catequese/lazy/ReportsPage"
 }
 
 route AppBirthdaysRoute { path: "/app/birthdays", to: AppBirthdaysPage }
@@ -458,7 +458,7 @@ page AppSettingsPage {
 route AppBillingRoute { path: "/app/billing", to: AppBillingPage }
 page AppBillingPage {
   authRequired: true,
-  component: import BillingPage from "@src/catequese/pages/BillingPage"
+  component: import BillingPage from "@src/catequese/lazy/BillingPage"
 }
 
 route AppOnboardingRoute { path: "/app/onboarding", to: AppOnboardingPage }
@@ -1377,7 +1377,7 @@ action uploadDocumentWithToken {
 route AppImportCatechumensRoute { path: "/app/catechumens/import", to: AppImportCatechumensPage }
 page AppImportCatechumensPage {
   authRequired: true,
-  component: import ImportCatechumensPage from "@src/catequese/pages/ImportCatechumensPage"
+  component: import ImportCatechumensPage from "@src/catequese/lazy/ImportCatechumensPage"
 }
 
 action importCatechumensCSV {
@@ -1405,13 +1405,13 @@ page AppCommunitiesPage { authRequired: true, component: import CommunitiesPage 
 route AppCommunityDetailRoute { path: "/app/communities/:id", to: AppCommunityDetailPage }
 page AppCommunityDetailPage { authRequired: true, component: import CommunityDetailPage from "@src/catequese/pages/CommunityDetailPage" }
 route AppBibleRoute { path: "/app/bible", to: AppBiblePage }
-page AppBiblePage { authRequired: true, component: import BiblePage from "@src/catequese/pages/BiblePage" }
+page AppBiblePage { authRequired: true, component: import BiblePage from "@src/catequese/lazy/BiblePage" }
 
 route AppDirectoryRoute { path: "/app/directory", to: AppDirectoryPage }
-page AppDirectoryPage { authRequired: true, component: import DirectoryPage from "@src/catequese/pages/DirectoryPage" }
+page AppDirectoryPage { authRequired: true, component: import DirectoryPage from "@src/catequese/lazy/DirectoryPage" }
 
 route AppCatechismRoute { path: "/app/catechism", to: AppCatechismPage }
-page AppCatechismPage { authRequired: true, component: import CatechismPage from "@src/catequese/pages/CatechismPage" }
+page AppCatechismPage { authRequired: true, component: import CatechismPage from "@src/catequese/lazy/CatechismPage" }
 
 
 route AppCatecheticalYearsRoute { path: "/app/catechetical-years", to: AppCatecheticalYearsPage }
@@ -2013,10 +2013,10 @@ page AppEditCatechumenPage { authRequired: true, component: import EditCatechume
 
 
 route AppEditContentRoute { path: "/app/content-library/:id/edit", to: AppEditContentPage }
-page AppEditContentPage { authRequired: true, component: import EditContentPage from "@src/catequese/pages/EditContentPage" }
+page AppEditContentPage { authRequired: true, component: import EditContentPage from "@src/catequese/lazy/EditContentPage" }
 
 route AppPrintContentRoute { path: "/app/content-library/:id/print", to: AppPrintContentPage }
-page AppPrintContentPage { authRequired: true, component: import ContentPrintPage from "@src/catequese/pages/ContentPrintPage" }
+page AppPrintContentPage { authRequired: true, component: import ContentPrintPage from "@src/catequese/lazy/ContentPrintPage" }
 
 route NotFoundRoute { path: "*", to: NotFoundPage }
 page NotFoundPage {
