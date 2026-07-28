@@ -9,6 +9,7 @@ import {
 import { Input } from "../../../client/components/ui/input";
 import { Label } from "../../../client/components/ui/label";
 import { ArrowRight, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+import { Alert } from "../../../client/components/ui/alert";
 
 export type ClassSetupDetails = {
   className: string;
@@ -71,11 +72,7 @@ export function ClassSetupStep({
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        {localError && (
-          <div className="rounded-sm border border-destructive/25 bg-destructive/5 px-3 py-2.5 text-sm text-destructive">
-            {localError}
-          </div>
-        )}
+        {localError && <Alert variant="destructive">{localError}</Alert>}
 
         <div className="space-y-1.5">
           <Label htmlFor="ob-class-name" className="text-xs font-medium">

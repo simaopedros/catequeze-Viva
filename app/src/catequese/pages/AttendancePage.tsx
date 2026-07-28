@@ -658,7 +658,7 @@ export default function AttendancePage() {
                         "ABSENT",
                       )
                     }
-                    className="px-1.5 py-0.5 rounded bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-950/40 dark:text-red-400"
+                    className="px-1.5 py-0.5 rounded bg-destructive/10 text-destructive hover:bg-destructive/20"
                     title={t("matrix.mark_all_absent")}
                   >
                     ✗{t("matrix.absent_letter")}
@@ -752,7 +752,7 @@ export default function AttendancePage() {
                           {stats[m.id]?.presentes || 0}
                           {t("matrix.present_letter")}
                         </span>{" "}
-                        <span className="text-red-600 dark:text-red-400">
+                        <span className="text-destructive">
                           {stats[m.id]?.faltas || 0}
                           {t("matrix.absent_letter")}
                         </span>{" "}

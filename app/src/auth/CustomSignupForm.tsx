@@ -29,6 +29,7 @@ import {
   AppDisplayTitle,
   AppGoldRule,
 } from "../client/components/brand/AppChrome";
+import { Alert } from "../client/components/ui/alert";
 
 type CustomSignupFormProps = {
   inviteToken?: string | null;
@@ -329,13 +330,9 @@ export default function CustomSignupForm({
             className="space-y-4"
           >
             {error && (
-              <div
-                role="alert"
-                aria-live="assertive"
-                className="rounded-sm border border-destructive/20 bg-destructive/5 px-3 py-2.5 text-sm text-destructive"
-              >
+              <Alert role="alert" aria-live="assertive" variant="destructive">
                 {error}
-              </div>
+              </Alert>
             )}
 
             <div className="space-y-1.5">

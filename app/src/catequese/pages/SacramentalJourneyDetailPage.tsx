@@ -51,7 +51,7 @@ const STATUS_COLORS: Record<string, string> = {
   IN_PROGRESS: "text-brand-ink",
   WAITING_APPROVAL: "text-brand-gold",
   APPROVED: "text-brand-ink",
-  REJECTED: "text-red-500",
+  REJECTED: "text-destructive",
   COMPLETED: "text-brand-ink",
 };
 
@@ -294,7 +294,7 @@ export default function SacramentalJourneyDetailPage() {
           <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
             {blocked > 0 && (
               <span className="flex items-center gap-1">
-                <XCircle className="h-3 w-3 text-red-500" />
+                <XCircle className="h-3 w-3 text-destructive" />
                 {blocked > 1
                   ? t("detail.rejected_count_plural", { count: blocked })
                   : t("detail.rejected_count", { count: blocked })}
@@ -549,7 +549,7 @@ export default function SacramentalJourneyDetailPage() {
                           m.status === "COMPLETED" || m.status === "APPROVED"
                             ? "border-brand-ink/25 text-brand-ink"
                             : m.status === "REJECTED"
-                              ? "border-red-300 text-red-700"
+                              ? "border-destructive/30 text-destructive"
                               : ""
                         }`}
                       >
@@ -612,7 +612,7 @@ export default function SacramentalJourneyDetailPage() {
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-7 text-overline text-red-500"
+                            className="h-7 text-overline text-destructive"
                             onClick={() => handleUpdateStatus(m.id, "REJECTED")}
                           >
                             ✗ {t("detail.reject")}

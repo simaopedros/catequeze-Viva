@@ -91,7 +91,7 @@ export function ContentSelector({
             )}
             {filtered.length === 0 ? (
               <p className="px-3 py-4 text-sm text-muted-foreground text-center">
-                Nenhum conteúdo encontrado.
+                {t("no_results")}
               </p>
             ) : (
               filtered.map((c) => (

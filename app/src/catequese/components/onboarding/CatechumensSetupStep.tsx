@@ -12,6 +12,7 @@ import {
   AppGoldRule,
 } from "../../../client/components/brand/AppChrome";
 import { trackMarketingEvent } from "../../../client/analytics/marketingAnalytics";
+import { Alert } from "../../../client/components/ui/alert";
 
 type AddedPerson = { id: string; firstName: string; lastName: string };
 type ParsedRow = {
@@ -204,13 +205,9 @@ export function CatechumensSetupStep({
       </div>
 
       {error && (
-        <div
-          role="alert"
-          aria-live="assertive"
-          className="rounded-sm border border-destructive/25 bg-destructive/5 px-3 py-2.5 text-sm text-destructive"
-        >
+        <Alert role="alert" aria-live="assertive" variant="destructive">
           {error}
-        </div>
+        </Alert>
       )}
 
       <div className="flex gap-1 rounded-sm border border-border/70 p-1">

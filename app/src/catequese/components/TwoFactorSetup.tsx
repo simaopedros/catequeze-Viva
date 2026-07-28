@@ -19,6 +19,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
+import { Alert } from "../../client/components/ui/alert";
 
 export default function TwoFactorSetup() {
   const { t } = useTranslation(["auth", "common"]);
@@ -154,11 +155,7 @@ export default function TwoFactorSetup() {
         </div>
       )}
 
-      {error && (
-        <div className="rounded-sm border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
-          {error}
-        </div>
-      )}
+      {error && <Alert variant="destructive">{error}</Alert>}
       {success && (
         <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-sm font-medium tracking-tight text-brand-ink">
           {success}

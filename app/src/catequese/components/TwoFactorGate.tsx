@@ -16,6 +16,7 @@ import {
   AppGoldRule,
 } from "../../client/components/brand/AppChrome";
 import { Loader2, ShieldCheck } from "lucide-react";
+import { Alert } from "../../client/components/ui/alert";
 
 /**
  * Blocks app access until 2FA is verified for the current login session.
@@ -99,11 +100,7 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
           </div>
 
           <form onSubmit={handleVerify} className="space-y-4">
-            {error && (
-              <div className="rounded-sm border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
-                {error}
-              </div>
-            )}
+            {error && <Alert variant="destructive">{error}</Alert>}
             <div className="space-y-2">
               <Label htmlFor="app-totp">{t("two_factor_gate_otp_label")}</Label>
               <Input

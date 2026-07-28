@@ -7,6 +7,12 @@ import { AppDisplayTitle, AppGoldRule } from "./brand/AppChrome";
 interface ErrorBoundaryProps {
   children: ReactNode;
   fallback?: ReactNode;
+  /**
+   * "screen" ocupa a viewport (erro que derruba o app inteiro).
+   * "page" fica contido na região de conteúdo, para o erro de uma rota não
+   * parecer que o app caiu — o shell segue navegável ao redor.
+   */
+  variant?: "screen" | "page";
 }
 
 interface ErrorBoundaryState {
@@ -43,8 +49,17 @@ export class ErrorBoundary extends Component<
 
       const t = (key: string) => i18n.t(key, { ns: "components" });
 
+      const isPage = this.props.variant === "page";
+
       return (
-        <div className="flex min-h-screen items-center justify-center bg-background p-4">
+        <div
+          className={
+            isPage
+              ? "flex min-h-[50vh] items-center justify-center p-4"
+              : "flex min-h-screen items-center justify-center bg-background p-4"
+          }
+          role="alert"
+        >
           <div className="w-full max-w-md space-y-6 text-center">
             <div className="inline-flex rounded-sm border border-destructive/20 bg-destructive/10 p-4">
               <AlertTriangle className="h-8 w-8 text-destructive" />

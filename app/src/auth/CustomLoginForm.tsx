@@ -28,6 +28,7 @@ import {
   AppDisplayTitle,
   AppGoldRule,
 } from "../client/components/brand/AppChrome";
+import { Alert } from "../client/components/ui/alert";
 
 type Step = "login" | "twofactor";
 
@@ -145,11 +146,7 @@ export default function CustomLoginForm({
         </div>
 
         <form onSubmit={handleTwoFactorSubmit} className="space-y-4">
-          {error && (
-            <div className="rounded-sm border border-destructive/20 bg-destructive/5 px-3 py-2.5 text-sm text-destructive">
-              {error}
-            </div>
-          )}
+          {error && <Alert variant="destructive">{error}</Alert>}
 
           <div className="space-y-1.5">
             <Label
@@ -251,11 +248,7 @@ export default function CustomLoginForm({
           </button>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <div className="rounded-sm border border-destructive/20 bg-destructive/5 px-3 py-2.5 text-sm text-destructive">
-                {error}
-              </div>
-            )}
+            {error && <Alert variant="destructive">{error}</Alert>}
 
             <div className="space-y-1.5">
               <Label

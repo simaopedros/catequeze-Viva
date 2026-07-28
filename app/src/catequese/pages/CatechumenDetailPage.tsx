@@ -900,7 +900,7 @@ function PastoralAnalysisInline({
                       <td className="p-2 text-center text-brand-gold-muted">
                         {row.late}
                       </td>
-                      <td className="p-2 text-center text-red-700">
+                      <td className="p-2 text-center text-destructive">
                         {row.absent + row.justified}
                       </td>
                       <td className="p-2 text-center">{row.totalMeetings}</td>
@@ -1755,7 +1755,7 @@ export default function CatechumenDetailPage() {
                     </div>
                     <div className="flex gap-2 mt-1">
                       {hasBlocked && (
-                        <span className="text-overline text-red-600 flex items-center gap-1">
+                        <span className="text-overline text-destructive flex items-center gap-1">
                           <XCircle className="h-3 w-3" />
                           {t("catechumens.detail_blocked")}
                         </span>

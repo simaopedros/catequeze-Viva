@@ -21,6 +21,7 @@ import {
   AppGoldRule,
   AppEyebrow,
 } from "../../../client/components/brand/AppChrome";
+import { Alert } from "../../../client/components/ui/alert";
 
 const getInvitationByToken = (ops as any).getInvitationByToken;
 const acceptInvitationByTokenAction = (ops as any).acceptInvitationByToken;
@@ -93,13 +94,16 @@ export default function InviteAcceptPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
         <div className="w-full max-w-md text-center space-y-6">
-          <div className="inline-flex h-16 w-16 items-center justify-center rounded-sm border border-destructive/20 bg-destructive/10">
+          <Alert
+            variant="destructive"
+            className="inline-flex h-16 w-16 items-center justify-center"
+          >
             {isExpired ? (
               <Clock className="h-8 w-8 text-destructive" />
             ) : (
               <AlertTriangle className="h-8 w-8 text-destructive" />
             )}
-          </div>
+          </Alert>
           <div className="space-y-2.5">
             <AppDisplayTitle className="text-center">
               {isExpired
@@ -205,11 +209,7 @@ export default function InviteAcceptPage() {
           </div>
         </div>
 
-        {error && (
-          <div className="rounded-sm border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
-            {error}
-          </div>
-        )}
+        {error && <Alert variant="destructive">{error}</Alert>}
 
         {authUser ? (
           <Button

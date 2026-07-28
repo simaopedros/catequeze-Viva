@@ -11,6 +11,7 @@ import { ArrowLeft, Save, Camera } from "lucide-react";
 import { getCatechumenProfile, updateCatechumen } from "wasp/client/operations";
 import { toast } from "../../client/hooks/use-toast";
 import { useUnsavedChangesGuard } from "../../client/hooks/useUnsavedChangesGuard";
+import { Alert } from "../../client/components/ui/alert";
 
 function compressImage(file: File): Promise<string> {
   return new Promise((resolve) => {
@@ -143,11 +144,7 @@ export default function EditCatechumenPage() {
           <div className="h-64 bg-muted rounded-sm" />
         </div>
       )}
-      {error && (
-        <div className="rounded-sm border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-          {error}
-        </div>
-      )}
+      {error && <Alert variant="destructive">{error}</Alert>}
       {!loading && !error && (
         <>
           <AppPageHeader

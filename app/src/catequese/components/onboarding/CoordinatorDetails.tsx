@@ -9,6 +9,7 @@ import {
 import { Input } from "../../../client/components/ui/input";
 import { Label } from "../../../client/components/ui/label";
 import { ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
+import { Alert } from "../../../client/components/ui/alert";
 
 const DAY_VALUES = ["0", "1", "2", "3", "4", "5", "6"];
 
@@ -296,11 +297,7 @@ export function CoordinatorDetails({
                 />
               </div>
             </div>
-            {dateError && (
-              <div className="rounded-sm border border-destructive/25 bg-destructive/5 px-3 py-2.5 text-sm text-destructive">
-                {dateError}
-              </div>
-            )}
+            {dateError && <Alert variant="destructive">{dateError}</Alert>}
           </div>
 
           <div className="flex flex-col gap-2.5">

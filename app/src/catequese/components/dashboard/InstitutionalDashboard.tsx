@@ -41,6 +41,7 @@ import {
   ArrowDown,
   Minus,
 } from "lucide-react";
+import { Alert } from "../../../client/components/ui/alert";
 
 const InstitutionalChartsPanel = lazy(() =>
   import("./InstitutionalChartsPanel").then((m) => ({
@@ -416,9 +417,9 @@ export function InstitutionalDashboard() {
 
   if (overviewError) {
     return (
-      <div className="rounded-sm border border-destructive/40 bg-destructive/5 p-6 text-destructive">
+      <Alert variant="destructive">
         {t("load_dashboard_error")}: {overviewError.message}
-      </div>
+      </Alert>
     );
   }
 

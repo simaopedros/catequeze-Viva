@@ -16,6 +16,7 @@ import { createHousehold } from "wasp/client/operations";
 import PhoneMaskInput from "../../client/components/PhoneMaskInput";
 import { useViaCep } from "../../client/hooks/useViaCep";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
+import { Alert } from "../../client/components/ui/alert";
 
 interface CreateHouseholdModalProps {
   isOpen: boolean;
@@ -110,12 +111,9 @@ export default function CreateHouseholdModal({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div
-              role="alert"
-              className="rounded-sm border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive"
-            >
+            <Alert role="alert" variant="destructive">
               {error}
-            </div>
+            </Alert>
           )}
 
           <div className="space-y-2">

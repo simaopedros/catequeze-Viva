@@ -16,6 +16,7 @@ import {
 import { useActiveParish } from "../../client/hooks/useActiveParish";
 import { useLocale } from "../../i18n/useLocale";
 import { formatDate } from "../../i18n/format";
+import { Alert } from "../../client/components/ui/alert";
 
 interface CatecheticalYear {
   id: string;
@@ -94,11 +95,7 @@ export default function CatecheticalYearsPage() {
         }
       />
 
-      {error && (
-        <div className="rounded-sm border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
-          {error}
-        </div>
-      )}
+      {error && <Alert variant="destructive">{error}</Alert>}
 
       {showForm && (
         <AppPanel className="space-y-4">

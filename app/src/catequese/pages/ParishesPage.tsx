@@ -28,6 +28,7 @@ import {
 } from "wasp/client/operations";
 import { handlePlanLimitError } from "../lib/planLimitToast";
 import CityStateSelect from "../../client/components/CityStateSelect";
+import { Alert } from "../../client/components/ui/alert";
 
 const PLAN_KEYS: Record<string, string> = {
   CATECHIST_FREE: "plan_free",
@@ -40,7 +41,7 @@ const STATUS_KEYS: Record<string, { key: string; color: string }> = {
   TRIAL: { key: "trial", color: "bg-brand-gold/15 text-brand-gold-muted" },
   PAST_DUE: {
     key: "past_due",
-    color: "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400",
+    color: "bg-destructive/10 text-destructive",
   },
   CANCELED: {
     key: "canceled",
@@ -191,11 +192,7 @@ export default function ParishesPage() {
         />
       </div>
 
-      {error && (
-        <div className="rounded-sm border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
-          {error}
-        </div>
-      )}
+      {error && <Alert variant="destructive">{error}</Alert>}
 
       {showCreate && (
         <div className="rounded-sm border border-border/70 bg-white p-4 space-y-3 animate-in fade-in slide-in-from-top-2">

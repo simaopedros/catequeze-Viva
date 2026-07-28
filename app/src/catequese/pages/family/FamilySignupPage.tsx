@@ -11,6 +11,7 @@ import {
   AppGoldRule,
   AppPanel,
 } from "../../../client/components/brand/AppChrome";
+import { Alert } from "../../../client/components/ui/alert";
 
 const getInvitationByToken = (ops as any).getInvitationByToken;
 
@@ -79,13 +80,16 @@ export default function FamilySignupPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <div className="w-full max-w-md text-center space-y-6">
-          <div className="inline-flex h-16 w-16 items-center justify-center rounded-sm border border-destructive/20 bg-destructive/10">
+          <Alert
+            variant="destructive"
+            className="inline-flex h-16 w-16 items-center justify-center"
+          >
             {isExpired ? (
               <Clock className="h-8 w-8 text-destructive" />
             ) : (
               <AlertTriangle className="h-8 w-8 text-destructive" />
             )}
-          </div>
+          </Alert>
           <AppDisplayTitle className="text-2xl text-brand-ink sm:text-2xl">
             {isExpired ? t("signup.expired_title") : t("signup.invalid_title")}
           </AppDisplayTitle>

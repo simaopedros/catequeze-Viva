@@ -730,7 +730,7 @@ export function ReferencePicker({
         !searching &&
         results.length === 0 && (
           <div className="rounded-sm border border-dashed px-3 py-4 text-center text-xs text-muted-foreground">
-            Nenhum resultado encontrado.
+            {t("no_results")}
           </div>
         )}
       {/* Selected references */}

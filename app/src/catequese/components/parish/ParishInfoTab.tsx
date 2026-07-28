@@ -14,7 +14,7 @@ const STATUS_KEYS: Record<string, { key: string; color: string }> = {
   TRIAL: { key: "trial", color: "bg-brand-gold/15 text-brand-gold-muted" },
   PAST_DUE: {
     key: "past_due",
-    color: "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400",
+    color: "bg-destructive/10 text-destructive",
   },
   CANCELED: {
     key: "canceled",

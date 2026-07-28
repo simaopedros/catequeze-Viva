@@ -6,6 +6,7 @@ import {
   AppDisplayTitle,
   AppGoldRule,
 } from "../../../client/components/brand/AppChrome";
+import { Alert } from "../../../client/components/ui/alert";
 
 export type ProgressStep = {
   id: string;
@@ -153,13 +154,14 @@ export function OnboardingShell({
                 </div>
               )}
               {error && (
-                <div
+                <Alert
                   role="alert"
                   aria-live="assertive"
-                  className="mb-6 rounded-sm border border-destructive/25 bg-destructive/5 px-3 py-2.5 text-sm text-destructive"
+                  variant="destructive"
+                  className="mb-6"
                 >
                   {error}
-                </div>
+                </Alert>
               )}
               {children}
             </div>

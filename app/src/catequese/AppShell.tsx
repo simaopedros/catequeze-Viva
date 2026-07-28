@@ -211,11 +211,16 @@ export function AppShell({ children }: AppShellProps) {
                   "calc(var(--height-bottom-nav, 3.5rem) + env(safe-area-inset-bottom, 0px) + 0.5rem)",
               }}
             >
+              {/* key={pathname} já remonta a subárvore a cada rota, então o
+                  boundary se recupera sozinho ao navegar — um erro fica contido
+                  na página em vez de derrubar o shell inteiro. */}
               <div
                 key={location.pathname}
                 className="content-transition print:contents"
               >
-                <SubscriptionGate>{children}</SubscriptionGate>
+                <ErrorBoundary variant="page">
+                  <SubscriptionGate>{children}</SubscriptionGate>
+                </ErrorBoundary>
               </div>
             </main>
           </div>

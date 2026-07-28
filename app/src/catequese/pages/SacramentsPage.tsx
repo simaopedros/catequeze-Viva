@@ -569,7 +569,7 @@ export default function SacramentsPage() {
                 {/* Quick status indicators */}
                 <div className="flex gap-2">
                   {hasBlocked && (
-                    <span className="text-overline text-red-600 flex items-center gap-1">
+                    <span className="text-overline text-destructive flex items-center gap-1">
                       <XCircle className="h-3 w-3" />
                       {t("page.status_blocked")}
                     </span>
@@ -602,7 +602,7 @@ export default function SacramentsPage() {
                         {m.status === "COMPLETED" || m.status === "APPROVED" ? (
                           <CheckCircle className="h-3 w-3 text-brand-ink flex-shrink-0" />
                         ) : m.status === "REJECTED" ? (
-                          <XCircle className="h-3 w-3 text-red-500 flex-shrink-0" />
+                          <XCircle className="h-3 w-3 text-destructive flex-shrink-0" />
                         ) : m.status === "WAITING_APPROVAL" ? (
                           <AlertTriangle className="h-3 w-3 text-brand-gold flex-shrink-0" />
                         ) : (

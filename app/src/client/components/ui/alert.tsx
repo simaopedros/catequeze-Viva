@@ -9,8 +9,13 @@ const alertVariants = cva(
     variants: {
       variant: {
         default: "bg-background text-brand-ink",
+        // Espelha o banner que as páginas já renderizavam à mão
+        // (border-destructive/20 bg-destructive/10), para a migração dos
+        // avulsos não mudar aparência.
         destructive:
-          "border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive",
+          "border-destructive/20 bg-destructive/10 text-destructive [&>svg]:text-destructive",
+        warning:
+          "border-brand-gold/30 bg-brand-gold/10 text-brand-gold-muted [&>svg]:text-brand-gold-muted",
       },
     },
     defaultVariants: {
