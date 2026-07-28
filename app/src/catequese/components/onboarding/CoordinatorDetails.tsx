@@ -83,10 +83,7 @@ export function CoordinatorDetails({
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {t("coordinator.parish_context")}
           </p>
-          <p
-            className="mt-0.5 text-sm font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <p className="font-brand-display mt-0.5 text-sm font-semibold tracking-tight text-brand-ink">
             {parishName}
           </p>
         </div>
@@ -126,7 +123,7 @@ export function CoordinatorDetails({
                 <button
                   type="button"
                   onClick={() => setShowOptionalDetails((current) => !current)}
-                  className="flex w-full items-center justify-between px-4 py-3 text-sm font-medium text-[#071A2D]"
+                  className="flex w-full items-center justify-between px-4 py-3 text-sm font-medium text-brand-ink"
                 >
                   <span>
                     {showOptionalDetails
@@ -319,7 +316,7 @@ export function CoordinatorDetails({
             <button
               type="button"
               onClick={() => setStep("class")}
-              className="py-2 text-center text-sm text-muted-foreground transition-colors hover:text-[#071A2D]"
+              className="py-2 text-center text-sm text-muted-foreground transition-colors hover:text-brand-ink"
             >
               {t("coordinator.back")}
             </button>

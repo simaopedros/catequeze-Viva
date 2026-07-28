@@ -100,7 +100,7 @@ export function ClassSetupStep({
           <button
             type="button"
             onClick={() => setShowOptional((v) => !v)}
-            className="flex w-full items-center justify-between px-4 py-3 text-sm font-medium text-[#071A2D]"
+            className="flex w-full items-center justify-between px-4 py-3 text-sm font-medium text-brand-ink"
           >
             <span>
               {showOptional

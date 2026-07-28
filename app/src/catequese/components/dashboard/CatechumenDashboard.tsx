@@ -59,7 +59,7 @@ export function CatechumenDashboard({ stats }: CatechumenDashboardProps) {
         <AppPanel>
           <div className="mb-3 space-y-1.5">
             <AppEyebrow>{t("upcoming_meetings")}</AppEyebrow>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            <div className="h-px w-8 bg-brand-gold" aria-hidden />
           </div>
           <div className="divide-y divide-border/70">
             {stats.upcomingMeetings.map((m: any) => (
@@ -68,10 +68,7 @@ export function CatechumenDashboard({ stats }: CatechumenDashboardProps) {
                 to={`/app/meetings/${m.id}`}
                 className="flex items-center justify-between py-2.5 text-sm transition-colors hover:bg-muted/30 -mx-1 px-1 rounded-sm"
               >
-                <span
-                  className="mr-2 truncate text-sm font-semibold tracking-tight text-[#071A2D]"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
+                <span className="font-brand-display mr-2 truncate text-sm font-semibold tracking-tight text-brand-ink">
                   {m.title || m.theme || m.class?.name || td("meeting_default")}
                 </span>
                 <span className="shrink-0 text-xs text-muted-foreground">

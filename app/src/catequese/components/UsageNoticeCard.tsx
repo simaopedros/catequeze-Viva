@@ -13,14 +13,14 @@ interface UsageNoticeCardProps {
 }
 
 const severityStyles: Record<Severity, string> = {
-  info: "border-border/50 bg-muted/30 text-[#071A2D]",
-  warning: "bg-[#D39A2B]/10 border-[#D39A2B]/30 text-[#8A6418]",
+  info: "border-border/50 bg-muted/30 text-brand-ink",
+  warning: "bg-brand-gold/10 border-brand-gold/30 text-brand-gold-muted",
   limit: "bg-muted/40 border-border/60 text-muted-foreground",
 };
 
 const severityIconStyles: Record<Severity, string> = {
-  info: "text-[#071A2D]",
-  warning: "text-[#D39A2B]",
+  info: "text-brand-ink",
+  warning: "text-brand-gold",
   limit: "text-muted-foreground/60",
 };
 
@@ -57,10 +57,7 @@ export function UsageNoticeCard({
         )}
         <div className="min-w-0 space-y-1">
           {title && (
-            <p
-              className="text-sm font-semibold tracking-tight text-[#071A2D]"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
               {title}
             </p>
           )}

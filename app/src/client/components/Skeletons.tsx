@@ -22,7 +22,7 @@ export function SkeletonCard({ className }: SkeletonProps) {
       role="status"
       aria-busy="true"
       className={cn(
-        "rounded-sm border border-border/70 bg-white p-5 space-y-3",
+        "rounded-sm border border-border/70 bg-surface-elevated p-5 space-y-3",
         className,
       )}
     >
@@ -42,7 +42,7 @@ export function SkeletonTable({
       role="status"
       aria-busy="true"
       className={cn(
-        "rounded-sm border border-border/70 bg-white overflow-hidden",
+        "rounded-sm border border-border/70 bg-surface-elevated overflow-hidden",
         className,
       )}
     >
@@ -75,7 +75,7 @@ export function SkeletonList({
       {Array.from({ length: items }).map((_, i) => (
         <div
           key={i}
-          className="flex items-center gap-3 rounded-sm border border-border/70 bg-white p-3"
+          className="flex items-center gap-3 rounded-sm border border-border/70 bg-surface-elevated p-3"
         >
           <Skeleton className="h-10 w-10 rounded-sm" />
           <div className="flex-1 space-y-1">
@@ -132,7 +132,7 @@ export function SkeletonChart({
       role="status"
       aria-busy="true"
       className={cn(
-        "rounded-sm border border-border/70 bg-white p-5",
+        "rounded-sm border border-border/70 bg-surface-elevated p-5",
         className,
       )}
     >
@@ -155,7 +155,7 @@ export function SkeletonStats({
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="rounded-sm border border-border/70 bg-white p-5 space-y-3"
+          className="rounded-sm border border-border/70 bg-surface-elevated p-5 space-y-3"
         >
           <Skeleton className="h-4 w-20" />
           <Skeleton className="h-8 w-16" />

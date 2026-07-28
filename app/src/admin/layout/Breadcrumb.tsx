@@ -5,10 +5,7 @@ interface BreadcrumbProps {
 const Breadcrumb = ({ pageName }: BreadcrumbProps) => {
   return (
     <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <h2
-        className="text-title-md2 font-semibold tracking-tight text-[#071A2D]"
-        style={{ fontFamily: "var(--font-brand-display)" }}
-      >
+      <h2 className="font-brand-display text-title-md2 font-semibold tracking-tight text-[#071A2D]">
         {pageName}
       </h2>
 
@@ -18,10 +15,7 @@ const Breadcrumb = ({ pageName }: BreadcrumbProps) => {
             <WaspRouterLink to={routes.AdminRoute.to}>Dashboard</WaspRouterLink>
           </li>
           <li>/</li>
-          <li
-            className="font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <li className="font-brand-display font-semibold tracking-tight text-[#071A2D]">
             {pageName}
           </li>
         </ul>

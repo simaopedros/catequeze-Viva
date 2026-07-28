@@ -365,10 +365,7 @@ export function ChatView({
             <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-sm border border-border/70 bg-muted/30">
               <Send className="h-7 w-7 text-brand-ink" />
             </div>
-            <h3
-              className="mb-1 text-sm font-semibold tracking-tight text-brand-ink"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <h3 className="font-brand-display mb-1 text-sm font-semibold tracking-tight text-brand-ink">
               {t("chat_start_title")}
             </h3>
             <div className="mx-auto mb-2 h-px w-8 bg-brand-gold" aria-hidden />

@@ -43,17 +43,14 @@ export default function AccountPage() {
 
       {ctxParishName && (
         <AppPanel className="flex items-center gap-3">
-          <div className="rounded-sm border border-border/70 bg-muted/30 p-2 text-[#071A2D]">
+          <div className="rounded-sm border border-border/70 bg-muted/30 p-2 text-brand-ink">
             <Church className="h-5 w-5" />
           </div>
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               {t("linked_parish")}
             </p>
-            <p
-              className="font-semibold tracking-tight text-[#071A2D]"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <p className="font-brand-display font-semibold tracking-tight text-brand-ink">
               {ctxParishName}
             </p>
           </div>
@@ -77,10 +74,7 @@ export default function AccountPage() {
                   <div className="text-muted-foreground text-sm font-medium">
                     {t("email")}
                   </div>
-                  <div
-                    className="mt-1 text-sm font-semibold tracking-tight text-[#071A2D] sm:col-span-2 sm:mt-0"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <div className="font-brand-display mt-1 text-sm font-semibold tracking-tight text-brand-ink sm:col-span-2 sm:mt-0">
                     {user.email}
                   </div>
                 </div>
@@ -94,10 +88,7 @@ export default function AccountPage() {
                     <div className="text-muted-foreground text-sm font-medium">
                       {t("username")}
                     </div>
-                    <div
-                      className="mt-1 text-sm font-semibold tracking-tight text-[#071A2D] sm:col-span-2 sm:mt-0"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
+                    <div className="font-brand-display mt-1 text-sm font-semibold tracking-tight text-brand-ink sm:col-span-2 sm:mt-0">
                       {user.username}
                     </div>
                   </div>
@@ -138,10 +129,7 @@ export default function AccountPage() {
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between">
-            <span
-              className="text-sm font-semibold tracking-tight text-[#071A2D]"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <span className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
               {t("credits_value", { count: user.credits })}
             </span>
             <BuyMoreButton subscriptionStatus={user.subscriptionStatus} />
@@ -197,16 +185,13 @@ function UserCurrentSubscriptionPlan({
 
   return (
     <div className="flex items-center justify-between gap-3">
-      <span
-        className="text-sm font-semibold tracking-tight text-[#071A2D]"
-        style={{ fontFamily: "var(--font-brand-display)" }}
-      >
+      <span className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
         {message}
       </span>
       {onTrial ? (
         <a
           href="/app/billing"
-          className="text-sm font-medium text-[#071A2D] hover:underline"
+          className="text-sm font-medium text-brand-ink hover:underline"
         >
           {tb("trial_banner_cta")}
         </a>
@@ -276,7 +261,7 @@ function BuyMoreButton({
   return (
     <WaspRouterLink
       to={routes.PricingPageRoute.to}
-      className="text-[#071A2D] hover:text-[#0a2540] text-sm font-medium transition-colors duration-200"
+      className="text-brand-ink hover:text-brand-ink-soft text-sm font-medium transition-colors duration-200"
     >
       <Button variant="link">{t("buy_credits")}</Button>
     </WaspRouterLink>

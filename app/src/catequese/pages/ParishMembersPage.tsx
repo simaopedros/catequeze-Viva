@@ -16,7 +16,7 @@ export default function ParishMembersPage() {
 
   return (
     <div className="flex justify-center py-20">
-      <Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" />
+      <Loader2 className="h-8 w-8 animate-spin text-brand-ink" />
     </div>
   );
 }

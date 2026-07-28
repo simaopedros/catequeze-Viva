@@ -145,7 +145,7 @@ export function ProductTrialBanner() {
       >
         <div className="mx-auto flex max-w-5xl items-start gap-3 rounded-sm border border-border/70 bg-white p-3 sm:p-4">
           <Sparkles
-            className="mt-0.5 h-5 w-5 shrink-0 text-[#D39A2B]"
+            className="mt-0.5 h-5 w-5 shrink-0 text-brand-gold"
             aria-hidden
           />
           <div className="min-w-0 flex-1 space-y-1">
@@ -189,25 +189,22 @@ export function ProductTrialBanner() {
   return (
     <div
       className={cn(
-        "flex flex-col gap-2 border-b border-[#D39A2B]/30 bg-[#FFF9F0] px-4 py-2.5 text-[#071A2D] sm:flex-row sm:items-center sm:justify-between",
+        "flex flex-col gap-2 border-b border-brand-gold/30 bg-[#FFF9F0] px-4 py-2.5 text-brand-ink sm:flex-row sm:items-center sm:justify-between",
       )}
       role="status"
     >
       <div className="flex min-w-0 items-start gap-2.5 sm:items-center">
         <Clock
-          className="mt-0.5 h-4 w-4 shrink-0 text-[#D39A2B] sm:mt-0"
+          className="mt-0.5 h-4 w-4 shrink-0 text-brand-gold sm:mt-0"
           aria-hidden
         />
         <div className="min-w-0 space-y-0.5 text-sm leading-snug">
-          <p
-            className="font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <p className="font-brand-display font-semibold tracking-tight text-brand-ink">
             {days === 1
               ? t("trial_banner_title_one")
               : t("trial_banner_title_other", { count: days })}
           </p>
-          <p className="text-xs text-[#8A6418]/90">
+          <p className="text-xs text-brand-gold-muted/90">
             {endsLabel
               ? t("trial_banner_ends", { date: endsLabel })
               : t("trial_banner_subtitle")}

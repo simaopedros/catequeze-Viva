@@ -71,7 +71,7 @@ export default function CatecheticalYearsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#071A2D]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-ink"></div>
       </div>
     );
   }
@@ -106,7 +106,7 @@ export default function CatecheticalYearsPage() {
             <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               {t("form_title")}
             </h3>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            <div className="h-px w-8 bg-brand-gold" aria-hidden />
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
             <div>
@@ -177,18 +177,15 @@ export default function CatecheticalYearsPage() {
           {filteredYears.map((year: any) => (
             <AppPanel
               key={year.id}
-              className="transition-colors hover:border-[#071A2D]/30"
+              className="transition-colors hover:border-brand-ink/30"
             >
               <div className="mb-3 flex items-start justify-between">
                 <div className="flex items-center gap-2">
                   <div className="rounded-sm border border-border/70 bg-muted/30 p-2">
-                    <CalendarDays className="h-5 w-5 text-[#071A2D]" />
+                    <CalendarDays className="h-5 w-5 text-brand-ink" />
                   </div>
                   <div>
-                    <h3
-                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
+                    <h3 className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                       {year.name}
                     </h3>
                     {year.parish?.name && (

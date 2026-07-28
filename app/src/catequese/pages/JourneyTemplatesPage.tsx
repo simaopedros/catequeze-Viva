@@ -235,7 +235,7 @@ export default function JourneyTemplatesPage() {
             <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               {t("templates.create_new")}
             </h3>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            <div className="h-px w-8 bg-brand-gold" aria-hidden />
           </div>
           <input
             placeholder={t("templates.name_placeholder")}
@@ -274,7 +274,7 @@ export default function JourneyTemplatesPage() {
 
       {templates.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
-          <ClipboardList className="mb-4 h-10 w-10 text-[#071A2D]" />
+          <ClipboardList className="mb-4 h-10 w-10 text-brand-ink" />
           <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
             {t("templates.empty_title")}
           </AppDisplayTitle>
@@ -338,10 +338,7 @@ export default function JourneyTemplatesPage() {
                     ) : (
                       <>
                         <div className="flex items-center gap-2">
-                          <h3
-                            className="font-semibold tracking-tight text-[#071A2D]"
-                            style={{ fontFamily: "var(--font-brand-display)" }}
-                          >
+                          <h3 className="font-brand-display font-semibold tracking-tight text-brand-ink">
                             {tmpl.name}
                           </h3>
                           <Badge variant="outline" className="text-overline">
@@ -396,7 +393,7 @@ export default function JourneyTemplatesPage() {
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="h-7 text-overline text-[#071A2D]"
+                              className="h-7 text-overline text-brand-ink"
                               onClick={() => handlePublish(tmpl.id)}
                               disabled={publishingId === tmpl.id}
                             >
@@ -538,12 +535,7 @@ export default function JourneyTemplatesPage() {
                               ) : (
                                 <div className="flex items-center justify-between gap-2">
                                   <div>
-                                    <p
-                                      className="flex flex-wrap items-center gap-1.5 text-sm font-semibold tracking-tight text-[#071A2D]"
-                                      style={{
-                                        fontFamily: "var(--font-brand-display)",
-                                      }}
-                                    >
+                                    <p className="font-brand-display flex flex-wrap items-center gap-1.5 text-sm font-semibold tracking-tight text-brand-ink">
                                       {m.name}
                                       {m.required && (
                                         <Badge

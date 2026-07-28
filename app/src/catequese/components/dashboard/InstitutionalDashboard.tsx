@@ -117,10 +117,7 @@ function KpiCard({ kpi }: { kpi: KpiBlock }) {
         {translateKpiLabel(kpi.label, t)}
       </p>
       <div className="mt-1.5 flex items-baseline gap-2">
-        <p
-          className="text-2xl font-semibold tracking-tight tabular-nums text-[#071A2D]"
-          style={{ fontFamily: "var(--font-brand-display)" }}
-        >
+        <p className="font-brand-display text-2xl font-semibold tracking-tight tabular-nums text-brand-ink">
           {formatted}
         </p>
         {kpi.delta !== null && kpi.delta !== undefined && (
@@ -167,7 +164,7 @@ function DomainSection({
           <Icon className="h-3.5 w-3.5" />
           {title}
         </h3>
-        <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+        <div className="h-px w-8 bg-brand-gold" aria-hidden />
       </div>
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {kpis.map((kpi) => (
@@ -185,8 +182,8 @@ function AlertBanner({ alerts }: { alerts?: any[] }) {
 
   const severityColors: Record<string, string> = {
     critical: "border-destructive/40 bg-destructive/5 text-destructive",
-    high: "border-border/70 bg-muted/30 text-[#071A2D]",
-    medium: "border-border/70 bg-muted/20 text-[#071A2D]",
+    high: "border-border/70 bg-muted/30 text-brand-ink",
+    medium: "border-border/70 bg-muted/20 text-brand-ink",
     low: "border-border/70 bg-white text-muted-foreground",
   };
 
@@ -201,7 +198,7 @@ function AlertBanner({ alerts }: { alerts?: any[] }) {
         >
           <AlertTriangle className="h-4 w-4 flex-shrink-0" />
           <div className="flex-1 min-w-0">
-            <span className="text-sm font-medium tracking-tight text-[#071A2D]">
+            <span className="text-sm font-medium tracking-tight text-brand-ink">
               {a.message}
             </span>
             {a.count > 0 && (
@@ -449,8 +446,8 @@ export function InstitutionalDashboard() {
                   }
                   className={`rounded-sm px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${
                     scope === opt.value
-                      ? "bg-background font-semibold tracking-tight text-[#071A2D]"
-                      : "text-muted-foreground hover:text-[#071A2D]"
+                      ? "bg-background font-semibold tracking-tight text-brand-ink"
+                      : "text-muted-foreground hover:text-brand-ink"
                   }`}
                 >
                   {opt.label}
@@ -499,31 +496,31 @@ export function InstitutionalDashboard() {
             title={t("domain_people")}
             icon={Users}
             kpis={overview.people}
-            colorClass="bg-muted/30 text-[#071A2D]"
+            colorClass="bg-muted/30 text-brand-ink"
           />
           <DomainSection
             title={t("domain_classes")}
             icon={BookOpen}
             kpis={overview.classes}
-            colorClass="text-[#071A2D] bg-[#071A2D]/08"
+            colorClass="text-brand-ink bg-brand-ink/8"
           />
           <DomainSection
             title={t("domain_attendance")}
             icon={TrendingUp}
             kpis={overview.attendance}
-            colorClass="text-[#8A6418] bg-[#D39A2B]/12"
+            colorClass="text-brand-gold-muted bg-brand-gold/12"
           />
           <DomainSection
             title={t("domain_sacraments")}
             icon={Cross}
             kpis={overview.sacraments}
-            colorClass="text-[#071A2D] bg-[#071A2D]/08"
+            colorClass="text-brand-ink bg-brand-ink/8"
           />
           <DomainSection
             title={t("domain_content")}
             icon={FileText}
             kpis={overview.content}
-            colorClass="text-[#071A2D] bg-muted/50"
+            colorClass="text-brand-ink bg-muted/50"
           />
           <DomainSection
             title={t("domain_compliance")}
@@ -535,14 +532,14 @@ export function InstitutionalDashboard() {
             title={t("domain_communication")}
             icon={MessageSquare}
             kpis={overview.communication}
-            colorClass="text-[#071A2D] bg-[#071A2D]/08"
+            colorClass="text-brand-ink bg-brand-ink/8"
           />
           {overview.license && overview.license.length > 0 && (
             <DomainSection
               title={t("domain_license")}
               icon={Building2}
               kpis={overview.license}
-              colorClass="text-[#071A2D] bg-[#071A2D]/08"
+              colorClass="text-brand-ink bg-brand-ink/8"
             />
           )}
         </div>
@@ -593,10 +590,7 @@ export function InstitutionalDashboard() {
                     key={c.id}
                     className="border-b last:border-0 hover:bg-muted/30 transition-colors"
                   >
-                    <td
-                      className="px-4 py-2.5 font-semibold tracking-tight text-[#071A2D]"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
+                    <td className="font-brand-display px-4 py-2.5 font-semibold tracking-tight text-brand-ink">
                       {c.name}
                     </td>
                     <td className="py-2.5 px-4 text-xs text-muted-foreground">

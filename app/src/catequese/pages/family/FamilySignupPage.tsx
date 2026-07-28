@@ -48,7 +48,7 @@ export default function FamilySignupPage() {
           </p>
           <Link
             to="/convite"
-            className="inline-block text-[#071A2D] underline underline-offset-2 text-sm font-medium"
+            className="inline-block text-brand-ink underline underline-offset-2 text-sm font-medium"
           >
             {t("signup.have_code")}
           </Link>
@@ -56,7 +56,7 @@ export default function FamilySignupPage() {
             {t("signup.already_have")}{" "}
             <Link
               to="/entrar"
-              className="text-[#071A2D] underline underline-offset-2 font-medium"
+              className="text-brand-ink underline underline-offset-2 font-medium"
             >
               {t("signup.login")}
             </Link>
@@ -69,7 +69,7 @@ export default function FamilySignupPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
-        <Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" />
+        <Loader2 className="h-8 w-8 animate-spin text-brand-ink" />
       </div>
     );
   }
@@ -86,7 +86,7 @@ export default function FamilySignupPage() {
               <AlertTriangle className="h-8 w-8 text-destructive" />
             )}
           </div>
-          <AppDisplayTitle className="text-2xl text-[#071A2D] sm:text-2xl">
+          <AppDisplayTitle className="text-2xl text-brand-ink sm:text-2xl">
             {isExpired ? t("signup.expired_title") : t("signup.invalid_title")}
           </AppDisplayTitle>
           <AppGoldRule className="mx-auto" />
@@ -127,7 +127,7 @@ export default function FamilySignupPage() {
             {t("signup.already_have")}{" "}
             <Link
               to={`/entrar?token=${token}`}
-              className="text-[#071A2D] underline underline-offset-2 font-medium"
+              className="text-brand-ink underline underline-offset-2 font-medium"
             >
               {t("signup.login")}
             </Link>

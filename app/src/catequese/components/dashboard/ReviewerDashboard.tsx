@@ -41,10 +41,7 @@ export function ReviewerDashboard({ stats }: ReviewerDashboardProps) {
               className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-muted/20 group"
             >
               <div className="min-w-0 flex-1 mr-3">
-                <p
-                  className="truncate font-semibold tracking-tight text-[#071A2D] transition-colors group-hover:text-[#0a2540]"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
+                <p className="font-brand-display truncate font-semibold tracking-tight text-brand-ink transition-colors group-hover:text-brand-ink-soft">
                   {c.title}
                 </p>
                 <p className="mt-0.5 text-xs text-muted-foreground">

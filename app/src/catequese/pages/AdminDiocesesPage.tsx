@@ -56,7 +56,7 @@ export default function AdminDiocesesPage({ user }: { user: AuthUser }) {
     return (
       <DefaultLayout user={user}>
         <div className="flex justify-center py-20">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#071A2D]" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-ink" />
         </div>
       </DefaultLayout>
     );
@@ -93,7 +93,7 @@ export default function AdminDiocesesPage({ user }: { user: AuthUser }) {
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 {t("new_diocese")}
               </p>
-              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+              <div className="h-px w-8 bg-brand-gold" aria-hidden />
             </div>
             <div className="flex gap-3">
               <Input
@@ -204,7 +204,7 @@ export default function AdminDiocesesPage({ user }: { user: AuthUser }) {
                             setEditingId(d.id);
                             setEditName(d.name);
                           }}
-                          className="p-1 text-muted-foreground hover:text-[#071A2D] rounded"
+                          className="p-1 text-muted-foreground hover:text-brand-ink rounded"
                         >
                           <Edit className="h-4 w-4" />
                         </button>

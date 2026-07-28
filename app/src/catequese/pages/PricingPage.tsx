@@ -134,12 +134,12 @@ export default function PricingPage() {
         key={plan.planId}
         className={`relative flex flex-col rounded-sm border border-border/70 bg-white p-6 transition-colors ${
           plan.highlight
-            ? "border-[#071A2D] ring-1 ring-[#071A2D]/15"
+            ? "border-brand-ink ring-1 ring-brand-ink/15"
             : "border-border"
         }`}
       >
         {plan.highlight && (
-          <div className="inline-flex items-center gap-1 rounded-sm bg-[#071A2D] text-white text-caption font-semibold px-3 py-1 mb-3 self-start">
+          <div className="inline-flex items-center gap-1 rounded-sm bg-brand-ink text-white text-caption font-semibold px-3 py-1 mb-3 self-start">
             <Star className="h-3 w-3" /> {tp("pricing.most_popular")}
           </div>
         )}
@@ -150,10 +150,7 @@ export default function PricingPage() {
         <div className="mt-4 mb-1">
           {showAnnual ? (
             <>
-              <span
-                className="text-4xl font-semibold tracking-tight text-[#071A2D]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <span className="font-brand-display text-4xl font-semibold tracking-tight text-brand-ink">
                 {equivalentMonthlyPrice(plan.priceCentsAnnual!)}
               </span>
               <span className="text-base font-normal text-muted-foreground">
@@ -162,10 +159,7 @@ export default function PricingPage() {
             </>
           ) : (
             <>
-              <span
-                className="text-4xl font-semibold tracking-tight text-[#071A2D]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <span className="font-brand-display text-4xl font-semibold tracking-tight text-brand-ink">
                 {formatPrice(plan.priceCents)}
               </span>
               <span className="text-base font-normal text-muted-foreground">
@@ -207,7 +201,7 @@ export default function PricingPage() {
         <ul className="mt-5 space-y-2.5 text-sm flex-1">
           {plan.features.map((f) => (
             <li key={f} className="flex items-start gap-2.5">
-              <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#071A2D]" />
+              <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-ink" />
               <span>{f}</span>
             </li>
           ))}
@@ -216,7 +210,7 @@ export default function PricingPage() {
           onClick={() => handleSelect(plan)}
           className={`mt-6 block w-full text-center rounded-sm px-4 py-3 text-sm font-semibold transition-all ${
             plan.highlight
-              ? "bg-[#071A2D] text-white hover:bg-[#0a2540]"
+              ? "bg-brand-ink text-white hover:bg-brand-ink-soft"
               : "bg-muted hover:bg-muted/80"
           }`}
         >
@@ -253,8 +247,8 @@ export default function PricingPage() {
               onClick={() => setBillingInterval("monthly")}
               className={`px-4 py-2 text-sm font-medium rounded-sm transition-all ${
                 billingInterval === "monthly"
-                  ? "bg-white font-semibold tracking-tight text-[#071A2D]"
-                  : "text-muted-foreground hover:text-[#071A2D]"
+                  ? "bg-white font-semibold tracking-tight text-brand-ink"
+                  : "text-muted-foreground hover:text-brand-ink"
               }`}
             >
               {tp("pricing.monthly_tab")}
@@ -264,12 +258,12 @@ export default function PricingPage() {
               onClick={() => setBillingInterval("annual")}
               className={`px-4 py-2 text-sm font-medium rounded-sm transition-all flex items-center gap-1.5 ${
                 billingInterval === "annual"
-                  ? "bg-white font-semibold tracking-tight text-[#071A2D]"
-                  : "text-muted-foreground hover:text-[#071A2D]"
+                  ? "bg-white font-semibold tracking-tight text-brand-ink"
+                  : "text-muted-foreground hover:text-brand-ink"
               }`}
             >
               {tp("pricing.annual_tab")}
-              <span className="rounded-sm bg-[#D39A2B]/15 px-1.5 py-0.5 text-caption font-semibold text-[#8A6418]">
+              <span className="rounded-sm bg-brand-gold/15 px-1.5 py-0.5 text-caption font-semibold text-brand-gold-muted">
                 {tp("pricing.annual_savings_badge")}
               </span>
             </button>
@@ -296,10 +290,7 @@ export default function PricingPage() {
                   key={i}
                   className="rounded-sm border border-border/70 bg-white p-5"
                 >
-                  <h3
-                    className="font-semibold tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <h3 className="font-brand-display font-semibold tracking-tight text-brand-ink">
                     {f.q}
                   </h3>
                   <p className="mt-2 text-sm text-muted-foreground">{f.a}</p>

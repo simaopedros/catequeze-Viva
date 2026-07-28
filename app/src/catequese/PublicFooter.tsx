@@ -28,11 +28,11 @@ export function PublicFooter({
             <p className="max-w-xs text-sm leading-relaxed text-[#A8B8C9]">
               {t("tagline")}
             </p>
-            <div className="h-px w-10 bg-[#D39A2B]/80" aria-hidden />
+            <div className="h-px w-10 bg-brand-gold/80" aria-hidden />
           </div>
 
           <div className="md:col-span-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#D39A2B]/90">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-gold/90">
               {t("footer_explore")}
             </p>
             <ul className="mt-4 space-y-2.5 text-sm text-[#C5D0DC]">
@@ -79,7 +79,7 @@ export function PublicFooter({
           </div>
 
           <div className="md:col-span-4 md:text-right">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#D39A2B]/90">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-gold/90">
               {t("footer_start")}
             </p>
             <p className="mt-4 text-sm leading-relaxed text-[#A8B8C9] md:ml-auto md:max-w-[16rem]">
@@ -87,7 +87,7 @@ export function PublicFooter({
             </p>
             <Link
               to="/signup"
-              className="mt-5 inline-flex h-10 items-center justify-center rounded-sm bg-[#FFF7E7] px-5 text-sm font-semibold text-[#071A2D] transition-colors hover:bg-white"
+              className="mt-5 inline-flex h-10 items-center justify-center rounded-sm bg-[#FFF7E7] px-5 text-sm font-semibold text-brand-ink transition-colors hover:bg-white"
               onClick={() =>
                 trackMarketingEvent("primary_cta_clicked", {
                   landing: "public_footer",

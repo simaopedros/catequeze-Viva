@@ -62,16 +62,13 @@ export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
         ref={headerRef}
         className={`text-center mb-8 space-y-2 ${headerClass}`}
       >
-        <h2
-          className="text-2xl font-semibold tracking-tight text-[#071A2D] sm:text-3xl"
-          style={{ fontFamily: "var(--font-brand-display)" }}
-        >
+        <h2 className="font-brand-display text-2xl font-semibold tracking-tight text-brand-ink sm:text-3xl">
           {tr("pricing_title")}
         </h2>
         <p className="text-muted-foreground max-w-xl mx-auto">
           {tr("pricing_subtitle")}
         </p>
-        <p className="text-sm font-medium text-[#071A2D]">
+        <p className="text-sm font-medium text-brand-ink">
           {tr("price_trial_note")}
         </p>
       </div>
@@ -122,7 +119,7 @@ export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
       <p className="text-center text-sm text-muted-foreground mt-6">
         <Link
           to="/pricing"
-          className="font-medium text-[#071A2D] underline underline-offset-2 hover:text-[#0a2540]"
+          className="font-medium text-brand-ink underline underline-offset-2 hover:text-brand-ink-soft"
           onClick={() =>
             trackMarketingEvent("primary_cta_clicked", {
               landing: ns,
@@ -172,27 +169,21 @@ function PlanCard({
       ref={ref as any}
       className={`rounded-sm border p-5 flex flex-col ${className} ${
         highlight
-          ? "border-[#071A2D]/40 bg-[#071A2D]/[0.03]"
+          ? "border-brand-ink/40 bg-brand-ink/[0.03]"
           : "border-border/70 bg-card"
       }`}
     >
       {highlight && (
-        <span className="mb-2 self-start text-[11px] font-semibold uppercase tracking-wide text-[#071A2D]">
+        <span className="mb-2 self-start text-[11px] font-semibold uppercase tracking-wide text-brand-ink">
           {popularLabel}
         </span>
       )}
       <p className="text-xs text-muted-foreground">{audience}</p>
-      <h3
-        className="mt-1 text-lg font-semibold tracking-tight text-[#071A2D]"
-        style={{ fontFamily: "var(--font-brand-display)" }}
-      >
+      <h3 className="font-brand-display mt-1 text-lg font-semibold tracking-tight text-brand-ink">
         {name}
       </h3>
       <div className="mt-2 flex items-baseline gap-1">
-        <span
-          className="text-3xl font-semibold tracking-tight text-[#071A2D]"
-          style={{ fontFamily: "var(--font-brand-display)" }}
-        >
+        <span className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink">
           {price}
         </span>
         <span className="text-sm text-muted-foreground">{period}</span>
@@ -200,7 +191,7 @@ function PlanCard({
       <ul className="mt-4 space-y-2 text-sm flex-1">
         {features.slice(0, 4).map((f) => (
           <li key={f} className="flex items-start gap-2">
-            <Check className="h-4 w-4 text-[#071A2D] shrink-0 mt-0.5" />
+            <Check className="h-4 w-4 text-brand-ink shrink-0 mt-0.5" />
             <span>{f}</span>
           </li>
         ))}

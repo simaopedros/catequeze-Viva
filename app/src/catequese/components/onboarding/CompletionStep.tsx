@@ -50,10 +50,7 @@ export function CompletionStep({
             <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               {item.label}
             </dt>
-            <dd
-              className="text-right text-sm font-semibold tracking-tight text-brand-ink"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <dd className="font-brand-display text-right text-sm font-semibold tracking-tight text-brand-ink">
               {item.value}
             </dd>
           </div>

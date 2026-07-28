@@ -136,7 +136,7 @@ export default function TwoFactorSetup() {
           {t("two_factor_setup_security_title")}
         </AppEyebrow>
         {status.enabled ? (
-          <span className="flex items-center gap-1 text-xs text-[#071A2D]">
+          <span className="flex items-center gap-1 text-xs text-brand-ink">
             <ShieldCheck className="h-3 w-3" />
             {t("two_factor_setup_active")}
           </span>
@@ -160,7 +160,7 @@ export default function TwoFactorSetup() {
         </div>
       )}
       {success && (
-        <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-sm font-medium tracking-tight text-[#071A2D]">
+        <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-sm font-medium tracking-tight text-brand-ink">
           {success}
         </div>
       )}

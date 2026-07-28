@@ -35,10 +35,7 @@ export function CtaSection({
             aria-hidden
           />
           <div className="relative max-w-xl space-y-5">
-            <h2
-              className="text-3xl font-semibold tracking-tight text-white sm:text-4xl"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <h2 className="font-brand-display text-3xl font-semibold tracking-tight text-white sm:text-4xl">
               {tr("cta_title")}
             </h2>
             <p className="text-base leading-relaxed text-white/80 sm:text-lg">

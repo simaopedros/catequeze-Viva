@@ -57,7 +57,7 @@ export default function ContactPage() {
       <PublicNavbar />
       <main className="mx-auto max-w-3xl flex-1 px-4 py-20">
         <div className="mb-10 space-y-2.5">
-          <AppDisplayTitle className="text-4xl text-[#071A2D] sm:text-4xl">
+          <AppDisplayTitle className="text-4xl text-brand-ink sm:text-4xl">
             {t("contact.title")}
           </AppDisplayTitle>
           <AppGoldRule />
@@ -67,15 +67,15 @@ export default function ContactPage() {
         <div className="grid gap-8 md:grid-cols-5">
           <div className="space-y-4 md:col-span-2">
             <div className="flex items-center gap-3 text-muted-foreground">
-              <Mail className="h-5 w-5 text-[#071A2D]" />
+              <Mail className="h-5 w-5 text-brand-ink" />
               <span>contato@catechis.app</span>
             </div>
             <div className="flex items-center gap-3 text-muted-foreground">
-              <Phone className="h-5 w-5 text-[#071A2D]" />
+              <Phone className="h-5 w-5 text-brand-ink" />
               <span>+55 11 93930-7494</span>
             </div>
             <div className="flex items-center gap-3 text-muted-foreground">
-              <MapPin className="h-5 w-5 text-[#071A2D]" />
+              <MapPin className="h-5 w-5 text-brand-ink" />
               <span>{t("contact.location")}</span>
             </div>
           </div>
@@ -143,7 +143,7 @@ export default function ContactPage() {
             <Button
               type="submit"
               disabled={sending || !name || !email || !message}
-              className="gap-2 rounded-sm bg-[#071A2D] text-white hover:bg-[#0a2540]"
+              className="gap-2 rounded-sm bg-brand-ink text-white hover:bg-brand-ink-soft"
             >
               <Send className="h-4 w-4" />
               {sending ? t("contact.sending") : t("contact.send")}

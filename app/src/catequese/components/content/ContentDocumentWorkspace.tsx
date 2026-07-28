@@ -83,7 +83,7 @@ function SelectedChip({
   onRemove: () => void;
 }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-sm border border-border/70 bg-white px-2.5 py-1 text-xs font-semibold tracking-tight text-[#071A2D]">
+    <span className="inline-flex items-center gap-1 rounded-sm border border-border/70 bg-white px-2.5 py-1 text-xs font-semibold tracking-tight text-brand-ink">
       {label}
       <button
         type="button"
@@ -180,15 +180,12 @@ function ReferencesSidebar({
         <div className="mb-4 flex items-start justify-between gap-3">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <BookMarked className="h-4 w-4 text-[#071A2D]" />
-              <h3
-                className="text-base font-semibold tracking-tight text-[#071A2D]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <BookMarked className="h-4 w-4 text-brand-ink" />
+              <h3 className="font-brand-display text-base font-semibold tracking-tight text-brand-ink">
                 Referências pastorais
               </h3>
             </div>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            <div className="h-px w-8 bg-brand-gold" aria-hidden />
             <p className="text-sm leading-6 text-muted-foreground">
               Anexe Bíblia, Catecismo e Diretório sem sair do editor. Também
               pode selecionar um trecho no texto.
@@ -196,7 +193,7 @@ function ReferencesSidebar({
           </div>
           <Badge
             variant="secondary"
-            className="rounded-sm border border-border/70 bg-muted/30 px-2.5 py-0.5 text-xs font-semibold tracking-tight text-[#071A2D]"
+            className="rounded-sm border border-border/70 bg-muted/30 px-2.5 py-0.5 text-xs font-semibold tracking-tight text-brand-ink"
           >
             {total}
           </Badge>
@@ -204,8 +201,8 @@ function ReferencesSidebar({
 
         {total === 0 ? (
           <div className="mb-4 rounded-sm border border-dashed border-border/70 bg-muted/20 px-4 py-6 text-center">
-            <FileText className="mx-auto mb-2 h-6 w-6 text-[#071A2D]/50" />
-            <p className="text-sm font-medium tracking-tight text-[#071A2D]">
+            <FileText className="mx-auto mb-2 h-6 w-6 text-brand-ink/50" />
+            <p className="text-sm font-medium tracking-tight text-brand-ink">
               Nenhuma referência ainda
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
@@ -804,7 +801,7 @@ export function ContentDocumentWorkspace({
     if (saveState === "saving") {
       return {
         label: "Salvando…",
-        className: "border-border/70 bg-muted/30 text-[#071A2D]",
+        className: "border-border/70 bg-muted/30 text-brand-ink",
       };
     }
     if (saveState === "error") {
@@ -817,7 +814,7 @@ export function ContentDocumentWorkspace({
       const time = formatSavedAt(lastSavedAt);
       return {
         label: time ? `Salvo às ${time}` : "Salvo",
-        className: "border-[#071A2D]/20 bg-[#071A2D]/05 text-[#071A2D]",
+        className: "border-brand-ink/20 bg-brand-ink/5 text-brand-ink",
       };
     }
     if (saveState === "dirty") {
@@ -836,7 +833,7 @@ export function ContentDocumentWorkspace({
     return (
       <div className="mx-auto max-w-5xl space-y-6 px-4 py-8">
         <Card className="rounded-sm border-border/70 p-8">
-          <div className="flex items-center gap-3 text-sm text-[#071A2D]">
+          <div className="flex items-center gap-3 text-sm text-brand-ink">
             <Loader2 className="h-4 w-4 animate-spin" />
             Abrindo o editor do encontro…
           </div>
@@ -858,17 +855,14 @@ export function ContentDocumentWorkspace({
         <div className="flex items-center gap-2 sm:gap-3">
           <Link
             to="/app/content-library"
-            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-sm px-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/40 hover:text-[#071A2D]"
+            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-sm px-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/40 hover:text-brand-ink"
             title="Voltar para a biblioteca"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">Biblioteca</span>
           </Link>
           <div className="hidden h-4 w-px shrink-0 bg-border/70 sm:block" />
-          <p
-            className="min-w-0 truncate text-sm font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <p className="font-brand-display min-w-0 truncate text-sm font-semibold tracking-tight text-brand-ink">
             Editor do encontro
           </p>
           <Badge
@@ -947,8 +941,7 @@ export function ContentDocumentWorkspace({
           <Input
             value={title}
             onChange={(event) => setTitle(event.target.value)}
-            className="h-8 rounded-sm border-border/60 bg-muted/20 px-2.5 text-sm font-semibold tracking-tight text-[#071A2D] shadow-none focus-visible:ring-1"
-            style={{ fontFamily: "var(--font-brand-display)" }}
+            className="font-brand-display h-8 rounded-sm border-border/60 bg-muted/20 px-2.5 text-sm font-semibold tracking-tight text-brand-ink shadow-none focus-visible:ring-1"
             placeholder="Título do encontro"
             aria-label="Título"
           />
@@ -1057,10 +1050,7 @@ export function ContentDocumentWorkspace({
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 Encontro
               </p>
-              <h1
-                className="mt-1 text-2xl font-semibold tracking-tight text-[#071A2D]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <h1 className="font-brand-display mt-1 text-2xl font-semibold tracking-tight text-brand-ink">
                 {title.trim() || DEFAULT_TITLE}
               </h1>
               {(theme.trim() || estimatedTime) && (
@@ -1073,7 +1063,7 @@ export function ContentDocumentWorkspace({
                     .join(" · ")}
                 </p>
               )}
-              <div className="mt-3 h-px w-10 bg-[#D39A2B]" aria-hidden />
+              <div className="mt-3 h-px w-10 bg-brand-gold" aria-hidden />
               <div className="mt-6">
                 <ContentDocumentRenderer
                   document={
@@ -1089,7 +1079,7 @@ export function ContentDocumentWorkspace({
                   <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     Referências pastorais
                   </p>
-                  <ul className="mt-3 space-y-1.5 text-sm text-[#071A2D]">
+                  <ul className="mt-3 space-y-1.5 text-sm text-brand-ink">
                     {bibleRefs.map((ref) => (
                       <li key={ref.id || ref.verseId}>· {ref.label}</li>
                     ))}

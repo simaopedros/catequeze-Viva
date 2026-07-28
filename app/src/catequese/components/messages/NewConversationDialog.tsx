@@ -195,18 +195,15 @@ export function NewConversationDialog({
                     setStep("contacts");
                   }}
                   className={cn(
-                    "w-full flex items-center gap-3 rounded-sm border border-border/70 p-3 text-left transition-colors hover:border-[#071A2D]/30 hover:bg-muted/20",
-                    type === ct.value && "border-[#071A2D] bg-muted/30",
+                    "w-full flex items-center gap-3 rounded-sm border border-border/70 p-3 text-left transition-colors hover:border-brand-ink/30 hover:bg-muted/20",
+                    type === ct.value && "border-brand-ink bg-muted/30",
                   )}
                 >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-brand-ink">
                     <Icon className="h-5 w-5" />
                   </div>
                   <div>
-                    <p
-                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
+                    <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                       {t(`new_dialog.types.${ct.key}.label`)}
                     </p>
                     <p className="text-xs text-muted-foreground">
@@ -253,7 +250,7 @@ export function NewConversationDialog({
                     return (
                       <span
                         key={id}
-                        className="flex items-center gap-1 rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5 text-xs font-semibold tracking-tight text-[#071A2D]"
+                        className="flex items-center gap-1 rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5 text-xs font-semibold tracking-tight text-brand-ink"
                       >
                         {contactLabel(c) || c.firstName}
                         <button
@@ -297,14 +294,11 @@ export function NewConversationDialog({
                         isSelected ? "bg-muted/30" : "hover:bg-muted/50",
                       )}
                     >
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-[#071A2D] text-overline font-semibold text-white">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-brand-ink text-overline font-semibold text-white">
                         {getInitials(c.firstName, c.lastName)}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p
-                          className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
-                          style={{ fontFamily: "var(--font-brand-display)" }}
-                        >
+                        <p className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
                           {name}
                         </p>
                         <p className="text-overline text-muted-foreground truncate">
@@ -315,7 +309,7 @@ export function NewConversationDialog({
                         className={cn(
                           "flex h-5 w-5 items-center justify-center rounded-sm border-2 transition-colors",
                           isSelected
-                            ? "bg-[#071A2D] border-[#071A2D] text-white"
+                            ? "bg-brand-ink border-brand-ink text-white"
                             : "border-muted-foreground/30",
                         )}
                       >
@@ -334,7 +328,7 @@ export function NewConversationDialog({
                   setSelected(new Set());
                   setError("");
                 }}
-                className="text-xs text-muted-foreground hover:text-[#071A2D]"
+                className="text-xs text-muted-foreground hover:text-brand-ink"
               >
                 {t("new_dialog.back")}
               </button>
@@ -344,7 +338,7 @@ export function NewConversationDialog({
                 className={cn(
                   "px-4 py-2 rounded-sm text-sm font-medium transition-all",
                   selected.size > 0
-                    ? "bg-[#071A2D] text-white hover:bg-[#0a2540]"
+                    ? "bg-brand-ink text-white hover:bg-brand-ink-soft"
                     : "bg-muted text-muted-foreground",
                 )}
               >

@@ -14,10 +14,7 @@ export function PainPointsSection({ ns = "landing" }: { ns?: string }) {
           ref={headerRef}
           className={`text-center mb-10 space-y-3 ${headerClass}`}
         >
-          <h2
-            className="text-3xl font-semibold tracking-tight text-[#071A2D] sm:text-4xl"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <h2 className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink sm:text-4xl">
             {t("pain_title")}
           </h2>
           <p className="text-lg text-muted-foreground">{t("pain_subtitle")}</p>

@@ -30,7 +30,7 @@ export function StepIndicator({
               onClick={() => onStepClick?.(s.id)}
               className={`flex items-center gap-2 rounded-sm px-3 py-1.5 text-sm font-medium transition-colors ${
                 isCurrent || isDone
-                  ? "bg-[#071A2D] text-white"
+                  ? "bg-brand-ink text-white"
                   : "bg-muted text-muted-foreground"
               } ${isDone && onStepClick ? "cursor-pointer" : ""}`}
             >

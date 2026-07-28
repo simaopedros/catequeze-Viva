@@ -19,22 +19,22 @@ const TYPE_CONFIG: Record<
   BIBLE_REF: {
     labelKey: "context.bible",
     icon: BookOpen,
-    color: "bg-[#D39A2B]/15 text-[#8A6418]",
+    color: "bg-brand-gold/15 text-brand-gold-muted",
   },
   CATECHISM_REF: {
     labelKey: "context.catechism",
     icon: Church,
-    color: "bg-[#071A2D]/08 text-[#071A2D]",
+    color: "bg-brand-ink/8 text-brand-ink",
   },
   DIRECTORY_REF: {
     labelKey: "context.directory",
     icon: ScrollText,
-    color: "bg-muted/40 text-[#071A2D]",
+    color: "bg-muted/40 text-brand-ink",
   },
   TEXT: {
     labelKey: "context.text",
     icon: ScrollText,
-    color: "bg-muted/40 text-[#071A2D]",
+    color: "bg-muted/40 text-brand-ink",
   },
 };
 
@@ -153,7 +153,7 @@ export function ContextShelf() {
             >
               {searchType === "bible" ? (
                 <>
-                  <span className="font-semibold tracking-tight text-[#071A2D]">
+                  <span className="font-semibold tracking-tight text-brand-ink">
                     {r.book?.name} {r.chapter?.number}:{r.number}
                   </span>{" "}
                   —{" "}
@@ -163,7 +163,7 @@ export function ContextShelf() {
                 </>
               ) : (
                 <>
-                  <span className="font-semibold tracking-tight text-[#071A2D]">
+                  <span className="font-semibold tracking-tight text-brand-ink">
                     CIC §{r.number}
                   </span>{" "}
                   —{" "}
@@ -201,10 +201,7 @@ export function ContextShelf() {
                       {t(config.labelKey)}
                     </Badge>
                   </div>
-                  <p
-                    className="truncate text-xs font-semibold tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <p className="font-brand-display truncate text-xs font-semibold tracking-tight text-brand-ink">
                     {att.title}
                   </p>
                   <p className="text-xs text-muted-foreground mt-0.5 line-clamp-3 whitespace-pre-wrap">

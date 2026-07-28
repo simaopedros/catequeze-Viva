@@ -48,15 +48,12 @@ export function GuardianDashboard({ stats }: GuardianDashboardProps) {
               className="rounded-sm border border-border/70 bg-white p-5"
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-sm font-semibold text-[#071A2D]">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-sm font-semibold text-brand-ink">
                   {d.firstName?.[0]}
                   {d.lastName?.[0]}
                 </div>
                 <div className="min-w-0">
-                  <p
-                    className="truncate font-semibold tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <p className="font-brand-display truncate font-semibold tracking-tight text-brand-ink">
                     {d.firstName} {d.lastName}
                   </p>
                   <p className="mt-0.5 truncate text-xs text-muted-foreground">
@@ -79,7 +76,7 @@ export function GuardianDashboard({ stats }: GuardianDashboardProps) {
               <Calendar className="h-3.5 w-3.5" />
               {t("upcoming_meetings")}
             </AppEyebrow>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            <div className="h-px w-8 bg-brand-gold" aria-hidden />
           </div>
           <div className="divide-y divide-border/70">
             {stats.upcomingMeetings.map((m: any) => (
@@ -88,10 +85,7 @@ export function GuardianDashboard({ stats }: GuardianDashboardProps) {
                 to={`/app/meetings/${m.id}`}
                 className="flex items-center justify-between py-2.5 text-sm transition-colors hover:bg-muted/30 -mx-1 px-1 rounded-sm"
               >
-                <span
-                  className="mr-2 truncate text-sm font-semibold tracking-tight text-[#071A2D]"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
+                <span className="font-brand-display mr-2 truncate text-sm font-semibold tracking-tight text-brand-ink">
                   {m.class?.name}
                   {m.title || m.theme ? ` — ${m.title || m.theme}` : ""}
                 </span>

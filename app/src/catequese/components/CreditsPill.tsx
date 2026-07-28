@@ -31,8 +31,8 @@ export function CreditsPill({
         : ("default" as const));
 
   const variantStyles = {
-    default: "border-border/70 bg-white text-[#071A2D]",
-    low: "border-[#D39A2B]/30 bg-[#D39A2B]/10 text-[#8A6418]",
+    default: "border-border/70 bg-white text-brand-ink",
+    low: "border-brand-gold/30 bg-brand-gold/10 text-brand-gold-muted",
     zero: "border-border/40 bg-muted/40 text-muted-foreground/60",
   };
 
@@ -51,15 +51,15 @@ export function CreditsPill({
       <Coins
         className={cn(
           "h-3 w-3",
-          resolvedVariant === "low" && "text-[#D39A2B]",
-          resolvedVariant === "default" && "text-[#071A2D]",
+          resolvedVariant === "low" && "text-brand-gold",
+          resolvedVariant === "default" && "text-brand-ink",
         )}
       />
-      <span style={{ fontFamily: "var(--font-brand-display)" }}>
+      <span className="font-brand-display">
         {creditsLeft} {creditsLeft === 1 ? "crédito" : "créditos"}
       </span>
       {monthlyAllowance && resolvedVariant === "low" && (
-        <span className="text-[#D39A2B]/80">/ {monthlyAllowance}</span>
+        <span className="text-brand-gold/80">/ {monthlyAllowance}</span>
       )}
     </button>
   );

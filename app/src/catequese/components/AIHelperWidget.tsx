@@ -258,14 +258,11 @@ export function AIHelperWidget() {
           >
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 bg-muted/30">
-                <Feather className="h-4 w-4 text-[#071A2D]" />
+                <Feather className="h-4 w-4 text-brand-ink" />
               </div>
               <div className="space-y-1">
                 <AppEyebrow>{ta("widget.catholic_ai")}</AppEyebrow>
-                <h3
-                  className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
+                <h3 className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                   {ta("widget.theological_assistant")}
                 </h3>
                 <AppGoldRule className="w-6" />
@@ -274,14 +271,14 @@ export function AIHelperWidget() {
             <div className="flex items-center gap-1">
               <Link
                 to="/app/ai-hub"
-                className="rounded-sm p-1.5 text-muted-foreground transition-colors hover:bg-muted/40 hover:text-[#071A2D]"
+                className="rounded-sm p-1.5 text-muted-foreground transition-colors hover:bg-muted/40 hover:text-brand-ink"
                 title={ta("widget.open_copilot")}
               >
                 <ExternalLink className="h-4 w-4" />
               </Link>
               <Link
                 to="/app/messages"
-                className="rounded-sm p-1.5 text-muted-foreground transition-colors hover:bg-muted/40 hover:text-[#071A2D]"
+                className="rounded-sm p-1.5 text-muted-foreground transition-colors hover:bg-muted/40 hover:text-brand-ink"
                 title={ta("widget.view_history")}
               >
                 <MessageSquareText className="h-4 w-4" />
@@ -307,13 +304,13 @@ export function AIHelperWidget() {
               >
                 {m.role === "assistant" && (
                   <div className="w-6 h-6 rounded-sm border border-border/70 bg-muted/30 flex items-center justify-center flex-shrink-0 mt-1">
-                    <Feather className="h-3 w-3 text-[#071A2D]" />
+                    <Feather className="h-3 w-3 text-brand-ink" />
                   </div>
                 )}
                 <div
                   className={`max-w-[80%] rounded-sm px-3 py-2 text-sm ${
                     m.role === "user"
-                      ? "bg-[#071A2D] text-white"
+                      ? "bg-brand-ink text-white"
                       : "border border-border/70 bg-muted/40"
                   }`}
                 >
@@ -357,7 +354,7 @@ export function AIHelperWidget() {
                               rating: "thumbs_up",
                             })
                           }
-                          className="rounded-sm p-0.5 text-muted-foreground transition-colors hover:bg-muted hover:text-[#071A2D]"
+                          className="rounded-sm p-0.5 text-muted-foreground transition-colors hover:bg-muted hover:text-brand-ink"
                           title={t("ai_helper_useful")}
                         >
                           <ThumbsUp className="h-3 w-3" />
@@ -379,7 +376,7 @@ export function AIHelperWidget() {
                     )}
                 </div>
                 {m.role === "user" && (
-                  <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
+                  <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-brand-ink">
                     <User className="h-3 w-3" />
                   </div>
                 )}
@@ -388,7 +385,7 @@ export function AIHelperWidget() {
             {loading && (
               <div className="flex gap-2">
                 <div className="w-6 h-6 rounded-sm border border-border/70 bg-muted/30 flex items-center justify-center flex-shrink-0 mt-1">
-                  <Bot className="h-3 w-3 text-[#071A2D]" />
+                  <Bot className="h-3 w-3 text-brand-ink" />
                 </div>
                 <div className="rounded-sm border border-border/70 bg-muted/40 px-3 py-2">
                   <Loader2 className="h-4 w-4 animate-spin" />

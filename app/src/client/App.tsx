@@ -269,7 +269,7 @@ export default function App() {
     <>
       {!isOnline && !offlineDismissed && (
         <div
-          className="fixed left-0 right-0 top-0 z-[100] flex items-center justify-center gap-3 bg-[#071A2D] py-1.5 text-center text-sm font-medium text-white"
+          className="fixed left-0 right-0 top-0 z-[100] flex items-center justify-center gap-3 bg-brand-ink py-1.5 text-center text-sm font-medium text-white"
           role="alert"
           aria-live="assertive"
         >
@@ -284,7 +284,7 @@ export default function App() {
         </div>
       )}
       {isFamilyPortal && location.pathname === "/" ? (
-        <div className="min-h-screen bg-background text-[#071A2D]">
+        <div className="min-h-screen bg-background text-brand-ink">
           <ErrorBoundary>
             <Suspense
               fallback={
@@ -301,7 +301,7 @@ export default function App() {
           </ErrorBoundary>
         </div>
       ) : (
-        <div className="min-h-screen bg-background text-[#071A2D]">
+        <div className="min-h-screen bg-background text-brand-ink">
           <ErrorBoundary>
             {isAppRoute ? (
               <Suspense

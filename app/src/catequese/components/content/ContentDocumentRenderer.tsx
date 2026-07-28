@@ -10,9 +10,9 @@ import type {
 function getReferenceMarkClass(refType?: string) {
   switch (refType) {
     case "bible":
-      return "rounded-sm bg-[#D39A2B]/15 px-0.5 underline decoration-dotted underline-offset-4 decoration-[#D39A2B]/80";
+      return "rounded-sm bg-brand-gold/15 px-0.5 underline decoration-dotted underline-offset-4 decoration-brand-gold/80";
     case "catechism":
-      return "rounded-sm bg-[#071A2D]/08 px-0.5 underline decoration-dotted underline-offset-4 decoration-[#071A2D]/60";
+      return "rounded-sm bg-brand-ink/8 px-0.5 underline decoration-dotted underline-offset-4 decoration-brand-ink/60";
     case "directory":
       return "rounded-sm bg-muted/70 px-0.5 underline decoration-dotted underline-offset-4 decoration-muted-foreground/70";
     default:
@@ -43,7 +43,7 @@ function renderMarkedText(text: string, marks?: ContentDocMark[]) {
             href={String(mark.attrs?.href || "#")}
             target="_blank"
             rel="noreferrer"
-            className="text-[#071A2D] underline underline-offset-2"
+            className="text-brand-ink underline underline-offset-2"
           >
             {output}
           </a>
@@ -147,7 +147,7 @@ function renderNode(node: ContentDocNode, index: number): ReactNode {
       return (
         <th
           key={index}
-          className="border-r bg-muted/40 px-3 py-2 text-left font-semibold tracking-tight text-[#071A2D] last:border-r-0"
+          className="border-r bg-muted/40 px-3 py-2 text-left font-semibold tracking-tight text-brand-ink last:border-r-0"
         >
           {renderChildren(node.content)}
         </th>
@@ -176,7 +176,7 @@ export function ContentDocumentRenderer({
   return (
     <div
       className={cn(
-        "prose prose-neutral max-w-none prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-[#071A2D] prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:leading-7 prose-blockquote:border-l-[#071A2D] prose-blockquote:text-[#071A2D]/90 prose-li:leading-7 prose-strong:text-[#071A2D]",
+        "prose prose-neutral max-w-none prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-brand-ink prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:leading-7 prose-blockquote:border-l-brand-ink prose-blockquote:text-brand-ink/90 prose-li:leading-7 prose-strong:text-brand-ink",
         className,
       )}
     >

@@ -16,19 +16,16 @@ export function FamilyPortalInviteBanner({
   return (
     <div
       className={
-        "flex flex-col gap-3 rounded-sm border border-[#D39A2B]/35 bg-[#D39A2B]/[0.08] p-4 sm:flex-row sm:items-center sm:justify-between " +
+        "flex flex-col gap-3 rounded-sm border border-brand-gold/35 bg-brand-gold/[0.08] p-4 sm:flex-row sm:items-center sm:justify-between " +
         (compact ? "p-3" : "")
       }
     >
       <div className="flex items-start gap-3 min-w-0">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-white">
-          <Mail className="h-5 w-5 text-[#071A2D]" />
+          <Mail className="h-5 w-5 text-brand-ink" />
         </div>
         <div className="min-w-0">
-          <p
-            className="text-sm font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
             {t("portal_invites.banner_title")}
           </p>
           <p className="mt-0.5 text-xs text-muted-foreground sm:text-sm">

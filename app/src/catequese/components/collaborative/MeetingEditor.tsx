@@ -206,7 +206,7 @@ function MeetingBlockComponent({
           <div className="pt-1 text-sm font-semibold text-muted-foreground">
             {index}.
           </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
+          <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-brand-ink">
             <Icon className="h-4 w-4" />
           </div>
         </div>
@@ -214,13 +214,10 @@ function MeetingBlockComponent({
         <div className="min-w-0 flex-1 space-y-3">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h3
-                className="text-[28px] leading-none font-semibold tracking-tight text-[#071A2D] sm:text-[30px]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <h3 className="font-brand-display text-[28px] leading-none font-semibold tracking-tight text-brand-ink sm:text-[30px]">
                 {label}
               </h3>
-              <div className="mt-2 h-px w-10 bg-[#D39A2B]" aria-hidden />
+              <div className="mt-2 h-px w-10 bg-brand-gold" aria-hidden />
               <p className="mt-2 text-sm text-muted-foreground">{helper}</p>
             </div>
             <div className="flex items-center gap-2">
@@ -471,10 +468,7 @@ function VersionHistoryPanel({ onClose }: { onClose: () => void }) {
   return (
     <div className="border-b bg-muted/10 p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3
-          className="flex items-center gap-1.5 text-sm font-semibold tracking-tight text-[#071A2D]"
-          style={{ fontFamily: "var(--font-brand-display)" }}
-        >
+        <h3 className="font-brand-display flex items-center gap-1.5 text-sm font-semibold tracking-tight text-brand-ink">
           <History className="h-4 w-4" /> {t("editor.history")}
         </h3>
         <div className="flex gap-2">
@@ -513,10 +507,7 @@ function VersionHistoryPanel({ onClose }: { onClose: () => void }) {
           <Card key={v.id} className="rounded-sm p-3">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <div
-                  className="text-xs font-semibold tracking-tight text-[#071A2D]"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
+                <div className="font-brand-display text-xs font-semibold tracking-tight text-brand-ink">
                   {t("editor.version")} {v.version}
                 </div>
                 <div className="text-caption text-muted-foreground">

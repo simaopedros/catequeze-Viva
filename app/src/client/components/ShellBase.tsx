@@ -25,7 +25,7 @@ export function ShellBase({
   };
 
   return (
-    <div className={cn(variantStyles[variant], "text-[#071A2D]", className)}>
+    <div className={cn(variantStyles[variant], "text-brand-ink", className)}>
       {children}
     </div>
   );
@@ -55,7 +55,7 @@ export function ShellHeader({ children, className }: ShellHeaderProps) {
   return (
     <header
       className={cn(
-        "flex h-14 items-center gap-3 border-b border-border/70 bg-white px-4",
+        "flex h-14 items-center gap-3 border-b border-border/70 bg-surface-elevated px-4",
         className,
       )}
     >

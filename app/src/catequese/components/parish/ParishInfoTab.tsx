@@ -10,8 +10,8 @@ const PLAN_KEYS: Record<string, string> = {
 };
 
 const STATUS_KEYS: Record<string, { key: string; color: string }> = {
-  ACTIVE: { key: "active", color: "bg-[#071A2D]/08 text-[#071A2D]" },
-  TRIAL: { key: "trial", color: "bg-[#D39A2B]/15 text-[#8A6418]" },
+  ACTIVE: { key: "active", color: "bg-brand-ink/8 text-brand-ink" },
+  TRIAL: { key: "trial", color: "bg-brand-gold/15 text-brand-gold-muted" },
   PAST_DUE: {
     key: "past_due",
     color: "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400",
@@ -76,7 +76,7 @@ export function ParishInfoTab({
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {tp("edit_parish_title")}
           </p>
-          <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          <div className="h-px w-8 bg-brand-gold" aria-hidden />
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
@@ -127,7 +127,7 @@ export function ParishInfoTab({
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {tp("parish_data")}
           </p>
-          <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          <div className="h-px w-8 bg-brand-gold" aria-hidden />
         </div>
         <Button
           variant="ghost"
@@ -157,7 +157,7 @@ export function ParishInfoTab({
             className={
               "inline-flex items-center rounded-sm border border-border/70 px-2 py-0.5 text-xs font-medium " +
               (parish?.active !== false
-                ? "bg-[#071A2D]/08 text-[#071A2D]"
+                ? "bg-brand-ink/8 text-brand-ink"
                 : "bg-muted text-muted-foreground")
             }
           >

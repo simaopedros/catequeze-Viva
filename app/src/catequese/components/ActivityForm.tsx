@@ -255,10 +255,7 @@ export function ActivityForm({
         return (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <p
-                className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                 {t("form.questions_count", { count: quizQuestions.length })}
               </p>
               <Button size="sm" variant="outline" onClick={addQuizQuestion}>
@@ -394,10 +391,7 @@ export function ActivityForm({
         return (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <p
-                className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                 {t("form.items_count", { count: checklistItems.length })}
               </p>
               <Button size="sm" variant="outline" onClick={addChecklistItem}>
@@ -451,10 +445,7 @@ export function ActivityForm({
               className="min-h-[100px]"
             />
             <div className="flex items-center justify-between">
-              <p
-                className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                 {t("form.reflection_questions", {
                   count: reflectionPrompts.length,
                 })}
@@ -503,10 +494,7 @@ export function ActivityForm({
         return (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <p
-                className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                 {t("form.steps_count", { count: dynamicSteps.length })}
               </p>
               <Button size="sm" variant="outline" onClick={addDynamicStep}>
@@ -610,10 +598,7 @@ export function ActivityForm({
               onChange={(e) => setBibleRef(e.target.value)}
             />
             <div className="flex items-center justify-between">
-              <p
-                className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                 {t("form.questions_count", { count: bibleQuestions.length })}
               </p>
               <Button size="sm" variant="outline" onClick={addBibleQuestion}>
@@ -660,10 +645,7 @@ export function ActivityForm({
         return (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <p
-                className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                 {t("form.pairs_count", { count: matchingPairs.length })}
               </p>
               <Button size="sm" variant="outline" onClick={addMatchingPair}>
@@ -733,7 +715,7 @@ export function ActivityForm({
                 onChange={(e) => setTaskRequiresUpload(e.target.checked)}
                 className="h-4 w-4"
               />
-              <span className="text-sm font-medium tracking-tight text-[#071A2D]">
+              <span className="text-sm font-medium tracking-tight text-brand-ink">
                 {t("form.require_upload")}
               </span>
             </label>
@@ -764,7 +746,7 @@ export function ActivityForm({
         <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
           {initialTitle ? t("form.edit_title") : t("form.new_title")}
         </h3>
-        <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+        <div className="h-px w-8 bg-brand-gold" aria-hidden />
       </div>
 
       <div>

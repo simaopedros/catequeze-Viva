@@ -6,18 +6,18 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-transparent bg-[#071A2D] text-white",
+        default: "border-transparent bg-brand-ink text-white",
         secondary:
-          "border-border/70 bg-muted/40 font-semibold tracking-tight text-[#071A2D]",
+          "border-border/70 bg-muted/40 font-semibold tracking-tight text-brand-ink",
         destructive:
           "border-transparent bg-destructive text-destructive-foreground",
-        outline: "border-border/70 font-semibold tracking-tight text-[#071A2D]",
-        brand: "border-transparent bg-[#071A2D]/08 text-[#071A2D]",
+        outline: "border-border/70 font-semibold tracking-tight text-brand-ink",
+        brand: "border-transparent bg-brand-ink/8 text-brand-ink",
         success:
-          "border-border/70 bg-[#071A2D]/08 font-semibold tracking-tight text-[#071A2D]",
+          "border-border/70 bg-brand-ink/8 font-semibold tracking-tight text-brand-ink",
         warning:
-          "border-[#D39A2B]/30 bg-[#D39A2B]/10 font-semibold tracking-tight text-[#8A6418]",
-        info: "border-border/70 bg-muted/40 font-semibold tracking-tight text-[#071A2D]",
+          "border-brand-gold/30 bg-brand-gold/10 font-semibold tracking-tight text-brand-gold-muted",
+        info: "border-border/70 bg-muted/40 font-semibold tracking-tight text-brand-ink",
         dot: "border-transparent gap-1.5",
       },
       size: {
@@ -33,7 +33,7 @@ const badgeVariants = cva(
 function dotColor(variant: string | null | undefined): string {
   switch (variant) {
     case "dot":
-      return "bg-[#071A2D]";
+      return "bg-brand-ink";
     case "success":
       return "bg-success";
     case "warning":
@@ -43,7 +43,7 @@ function dotColor(variant: string | null | undefined): string {
     case "info":
       return "bg-info";
     default:
-      return "bg-[#071A2D]";
+      return "bg-brand-ink";
   }
 }
 

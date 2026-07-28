@@ -115,7 +115,7 @@ export function SearchSheet({
       <div className="fixed inset-x-0 top-0 z-50 max-h-[85vh] overflow-y-auto rounded-b-sm border-b border-border/70 bg-white transition-transform duration-300 lg:hidden">
         {/* Search input */}
         <div className="sticky top-0 border-b border-border/70 bg-white pt-3 pb-2 px-4 border-b">
-          <div className="flex h-10 items-center gap-2 rounded-sm border border-input bg-background px-3 focus-within:border-[#071A2D]/50 focus-within:ring-1 focus-within:ring-[#071A2D]/20">
+          <div className="flex h-10 items-center gap-2 rounded-sm border border-input bg-background px-3 focus-within:border-brand-ink/50 focus-within:ring-1 focus-within:ring-brand-ink/20">
             <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
             <input
               ref={inputRef}
@@ -139,7 +139,7 @@ export function SearchSheet({
             {query && (
               <button
                 onClick={() => onQueryChange("")}
-                className="text-muted-foreground hover:text-[#071A2D] shrink-0"
+                className="text-muted-foreground hover:text-brand-ink shrink-0"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -147,7 +147,7 @@ export function SearchSheet({
           </div>
           <button
             onClick={onClose}
-            className="absolute right-4 top-3.5 text-muted-foreground hover:text-[#071A2D]"
+            className="absolute right-4 top-3.5 text-muted-foreground hover:text-brand-ink"
           >
             <X className="h-5 w-5" />
           </button>
@@ -158,7 +158,7 @@ export function SearchSheet({
           {query.length < 2 ? (
             <div className="py-12 text-center">
               <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-sm border border-border/70 bg-muted/30">
-                <Search className="h-6 w-6 text-[#071A2D]" />
+                <Search className="h-6 w-6 text-brand-ink" />
               </div>
               <p className="text-sm text-muted-foreground">
                 {t("searchFocusHint")}
@@ -167,7 +167,7 @@ export function SearchSheet({
           ) : flatResults.length === 0 ? (
             <div className="py-12 text-center">
               <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-sm border border-border/70 bg-muted/30">
-                <Search className="h-6 w-6 text-[#071A2D]" />
+                <Search className="h-6 w-6 text-brand-ink" />
               </div>
               <p className="text-sm text-muted-foreground">{t("noResults")}</p>
             </div>
@@ -195,12 +195,7 @@ export function SearchSheet({
                         >
                           <Icon className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
                           <div className="min-w-0 flex-1">
-                            <p
-                              className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
-                              style={{
-                                fontFamily: "var(--font-brand-display)",
-                              }}
-                            >
+                            <p className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
                               {item.label}
                             </p>
                             {item.description && (

@@ -52,7 +52,7 @@ export function ClassPastoralCharts({
             <BarChart3 className="h-4 w-4" />
             {t("presencesPerMeeting")}
           </h3>
-          <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          <div className="h-px w-8 bg-brand-gold" aria-hidden />
         </div>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart
@@ -99,7 +99,7 @@ export function ClassPastoralCharts({
             <BarChart3 className="h-4 w-4" />
             {t("meetingsPerMonth")}
           </h3>
-          <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          <div className="h-px w-8 bg-brand-gold" aria-hidden />
         </div>
         {monthlyData.length > 0 ? (
           <ResponsiveContainer width="100%" height={300}>
@@ -161,7 +161,7 @@ export function ClassPastoralCharts({
             <PieChart className="h-4 w-4" />
             {t("classStatus")}
           </h3>
-          <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          <div className="h-px w-8 bg-brand-gold" aria-hidden />
         </div>
         {statusPieData.length > 0 ? (
           <ResponsiveContainer width="100%" height={280}>

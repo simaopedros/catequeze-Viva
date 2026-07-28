@@ -17,7 +17,7 @@ export default function TermsPage() {
       <PublicNavbar />
       <main className="mx-auto max-w-3xl flex-1 space-y-8 px-4 py-20">
         <div className="space-y-2.5">
-          <AppDisplayTitle className="text-4xl text-[#071A2D] sm:text-4xl">
+          <AppDisplayTitle className="text-4xl text-brand-ink sm:text-4xl">
             {t("terms.title")}
           </AppDisplayTitle>
           <AppGoldRule />

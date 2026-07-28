@@ -28,13 +28,10 @@ export function StepsSection({
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               {tr("steps_eyebrow")}
             </p>
-            <h2
-              className="text-3xl font-semibold tracking-tight text-[#071A2D] sm:text-4xl"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <h2 className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink sm:text-4xl">
               {tr("steps_title")}
             </h2>
-            <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+            <div className="h-px w-10 bg-brand-gold" aria-hidden />
             <p className="text-muted-foreground leading-relaxed">
               {tr("steps_subtitle")}
             </p>
@@ -69,16 +66,12 @@ export function StepsSection({
           {list.map((step: any, index: number) => (
             <li key={step.title} className="relative space-y-3">
               <span
-                className="text-[2.5rem] font-semibold text-[#071A2D]/[0.12] tabular-nums leading-none"
-                style={{ fontFamily: "var(--font-brand-display)" }}
+                className="font-brand-display text-[2.5rem] font-semibold text-brand-ink/[0.12] tabular-nums leading-none"
                 aria-hidden
               >
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <h3
-                className="text-base font-semibold tracking-tight text-[#071A2D]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <h3 className="font-brand-display text-base font-semibold tracking-tight text-brand-ink">
                 {step.title}
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed max-w-[15rem]">

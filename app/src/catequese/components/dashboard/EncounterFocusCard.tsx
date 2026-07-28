@@ -243,10 +243,7 @@ export function EncounterFocusCard({
           </div>
 
           <div>
-            <h2
-              className="text-lg font-semibold tracking-tight text-[#071A2D] sm:text-xl"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <h2 className="font-brand-display text-lg font-semibold tracking-tight text-brand-ink sm:text-xl">
               {meeting.title || meeting.theme || t("no_title")}
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -260,7 +257,7 @@ export function EncounterFocusCard({
               <Calendar className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
               <div>
                 <dt className="sr-only">{t("date")}</dt>
-                <dd className="font-medium text-[#071A2D]">
+                <dd className="font-medium text-brand-ink">
                   {formatDate(meeting.date, currentLocale, {
                     weekday: "short",
                     day: "numeric",
@@ -274,7 +271,7 @@ export function EncounterFocusCard({
             {meeting.locationHint && (
               <div className="flex items-start gap-2">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-                <dd className="font-medium text-[#071A2D]">
+                <dd className="font-medium text-brand-ink">
                   {meeting.locationHint}
                 </dd>
               </div>

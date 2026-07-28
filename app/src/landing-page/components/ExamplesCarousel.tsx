@@ -150,7 +150,7 @@ const ExampleCard = forwardRef<HTMLDivElement, ExampleCardProps>(
       >
         <Card
           ref={ref}
-          className="w-[280px] overflow-hidden rounded-sm border border-border/70 transition-colors duration-200 hover:border-[#071A2D]/30 sm:w-[320px] md:w-[350px]"
+          className="w-[280px] overflow-hidden rounded-sm border border-border/70 transition-colors duration-200 hover:border-brand-ink/30 sm:w-[320px] md:w-[350px]"
           variant="default"
         >
           <CardContent className="h-full p-0">
@@ -160,10 +160,7 @@ const ExampleCard = forwardRef<HTMLDivElement, ExampleCardProps>(
               className="aspect-video h-auto w-full object-cover object-top"
             />
             <div className="p-4">
-              <p
-                className="font-semibold tracking-tight text-[#071A2D]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <p className="font-brand-display font-semibold tracking-tight text-brand-ink">
                 {example.name}
               </p>
               <p className="text-muted-foreground text-xs">

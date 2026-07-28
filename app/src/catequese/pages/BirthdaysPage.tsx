@@ -132,14 +132,11 @@ export default function BirthdaysPage() {
                 className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="flex min-w-0 items-center gap-3">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#D39A2B]">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-brand-gold">
                     <Cake className="h-4 w-4" />
                   </div>
                   <div className="min-w-0">
-                    <p
-                      className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
+                    <p className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
                       {b.name}
                     </p>
                     <p className="text-xs text-muted-foreground">

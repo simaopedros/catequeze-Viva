@@ -168,7 +168,7 @@ export default function CatechismPage() {
               className={
                 "px-3 py-1.5 text-sm rounded-sm transition-colors " +
                 (category === key
-                  ? "bg-[#071A2D] text-white"
+                  ? "bg-brand-ink text-white"
                   : "bg-muted hover:bg-muted/70")
               }
             >
@@ -194,7 +194,7 @@ export default function CatechismPage() {
 
       {!error && loading ? (
         <div className="flex justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" />
+          <Loader2 className="h-8 w-8 animate-spin text-brand-ink" />
         </div>
       ) : searchResults.length > 0 ? (
         <div className="space-y-2">
@@ -216,13 +216,10 @@ export default function CatechismPage() {
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-semibold tracking-tight text-[#071A2D]">
+                    <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-semibold tracking-tight text-brand-ink">
                       {entry.number}
                     </span>
-                    <p
-                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
+                    <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                       {entry.question}
                     </p>
                   </div>
@@ -260,13 +257,10 @@ export default function CatechismPage() {
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-semibold tracking-tight text-[#071A2D]">
+                    <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-semibold tracking-tight text-brand-ink">
                       {entry.number}
                     </span>
-                    <p
-                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
+                    <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                       {entry.question}
                     </p>
                   </div>
@@ -292,7 +286,7 @@ export default function CatechismPage() {
       ) : (
         <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
           <div className="mb-4 rounded-sm border border-border/70 bg-muted/30 p-3">
-            <BookOpen className="h-8 w-8 text-[#071A2D]" />
+            <BookOpen className="h-8 w-8 text-brand-ink" />
           </div>
           <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
             {t("emptyTitle")}

@@ -479,13 +479,10 @@ export default function SacramentsPage() {
                   <Link
                     to={`/app/sacramental-journeys/${j.id}`}
                     onClick={(e) => e.stopPropagation()}
-                    className="flex items-center gap-2 hover:text-[#071A2D] transition-colors"
+                    className="flex items-center gap-2 hover:text-brand-ink transition-colors"
                   >
-                    <User className="h-4 w-4 text-[#071A2D]" />
-                    <span
-                      className="font-semibold tracking-tight text-[#071A2D]"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
+                    <User className="h-4 w-4 text-brand-ink" />
+                    <span className="font-brand-display font-semibold tracking-tight text-brand-ink">
                       {j.catechumenProfile?.firstName}{" "}
                       {j.catechumenProfile?.lastName}
                     </span>
@@ -498,7 +495,7 @@ export default function SacramentsPage() {
                 <div className="mb-3">
                   <div className="mb-1 flex justify-between text-overline text-muted-foreground">
                     <span>{t("page.milestones_count", { done, total })}</span>
-                    <span className="font-semibold tabular-nums text-[#071A2D]">
+                    <span className="font-semibold tabular-nums text-brand-ink">
                       {pct}%
                     </span>
                   </div>
@@ -506,9 +503,9 @@ export default function SacramentsPage() {
                     <div
                       className={`h-2 rounded-sm transition-all ${
                         pct === 100
-                          ? "bg-[#071A2D]"
+                          ? "bg-brand-ink"
                           : pct >= 50
-                            ? "bg-[#D39A2B]"
+                            ? "bg-brand-gold"
                             : "bg-muted-foreground/40"
                       }`}
                       style={{ width: `${pct}%` }}
@@ -562,7 +559,7 @@ export default function SacramentsPage() {
                             }));
                           }}
                         >
-                          <Pencil className="h-3 w-3 hover:text-[#071A2D]" />
+                          <Pencil className="h-3 w-3 hover:text-brand-ink" />
                         </button>
                       )}
                     </div>
@@ -578,13 +575,13 @@ export default function SacramentsPage() {
                     </span>
                   )}
                   {hasWaiting && (
-                    <span className="text-overline text-[#8A6418] flex items-center gap-1">
+                    <span className="text-overline text-brand-gold-muted flex items-center gap-1">
                       <AlertTriangle className="h-3 w-3" />
                       {t("page.status_waiting")}
                     </span>
                   )}
                   {!hasBlocked && !hasWaiting && pct === 100 && (
-                    <span className="text-overline text-[#071A2D] flex items-center gap-1">
+                    <span className="text-overline text-brand-ink flex items-center gap-1">
                       <CheckCircle className="h-3 w-3" />
                       {t("page.status_ready")}
                     </span>
@@ -603,11 +600,11 @@ export default function SacramentsPage() {
                     >
                       <div className="flex items-center gap-1.5 min-w-0">
                         {m.status === "COMPLETED" || m.status === "APPROVED" ? (
-                          <CheckCircle className="h-3 w-3 text-[#071A2D] flex-shrink-0" />
+                          <CheckCircle className="h-3 w-3 text-brand-ink flex-shrink-0" />
                         ) : m.status === "REJECTED" ? (
                           <XCircle className="h-3 w-3 text-red-500 flex-shrink-0" />
                         ) : m.status === "WAITING_APPROVAL" ? (
-                          <AlertTriangle className="h-3 w-3 text-[#D39A2B] flex-shrink-0" />
+                          <AlertTriangle className="h-3 w-3 text-brand-gold flex-shrink-0" />
                         ) : (
                           <Clock className="h-3 w-3 text-muted-foreground flex-shrink-0" />
                         )}
@@ -631,7 +628,7 @@ export default function SacramentsPage() {
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-5 text-overline text-[#071A2D] px-1 flex-shrink-0"
+                            className="h-5 text-overline text-brand-ink px-1 flex-shrink-0"
                             onClick={() => handleUpdate(m.id)}
                           >
                             ✓
@@ -644,7 +641,7 @@ export default function SacramentsPage() {
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-5 text-overline text-[#071A2D] px-1 flex-shrink-0"
+                            className="h-5 text-overline text-brand-ink px-1 flex-shrink-0"
                             onClick={() => handleUpdate(m.id)}
                           >
                             ✓
@@ -655,7 +652,7 @@ export default function SacramentsPage() {
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-5 text-overline text-[#071A2D] px-1 flex-shrink-0"
+                            className="h-5 text-overline text-brand-ink px-1 flex-shrink-0"
                             onClick={() => handleUpdate(m.id)}
                           >
                             ✓

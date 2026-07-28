@@ -31,10 +31,7 @@ export function TestimonialsSection({ ns = "landing" }: { ns?: string }) {
           ref={headerRef}
           className={`text-center mb-10 space-y-3 ${headerClass}`}
         >
-          <h2
-            className="text-3xl font-semibold tracking-tight text-[#071A2D] sm:text-4xl"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <h2 className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink sm:text-4xl">
             {tr("testimonials_title")}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -89,15 +86,15 @@ function TestimonialCard({
           {[1, 2, 3, 4, 5].map((star) => (
             <Star
               key={star}
-              className="h-3.5 w-3.5 fill-[#D39A2B] text-[#D39A2B]"
+              className="h-3.5 w-3.5 fill-brand-gold text-brand-gold"
             />
           ))}
         </div>
-        <Quote className="h-4 w-4 text-[#071A2D]/30 shrink-0" aria-hidden />
+        <Quote className="h-4 w-4 text-brand-ink/30 shrink-0" aria-hidden />
       </div>
 
       {testimonial.highlight && (
-        <p className="text-xs font-semibold text-[#071A2D]">
+        <p className="text-xs font-semibold text-brand-ink">
           {testimonial.highlight}
         </p>
       )}
@@ -108,16 +105,13 @@ function TestimonialCard({
 
       <div className="flex items-center gap-3 pt-2 border-t border-border/60">
         <div
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm bg-[#071A2D]/08 text-sm font-semibold text-[#071A2D]"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm bg-brand-ink/8 text-sm font-semibold text-brand-ink"
           aria-hidden
         >
           {initials}
         </div>
         <div className="min-w-0">
-          <p
-            className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <p className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
             {testimonial.name}
           </p>
           <p className="text-xs text-muted-foreground truncate">

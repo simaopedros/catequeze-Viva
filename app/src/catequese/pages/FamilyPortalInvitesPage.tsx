@@ -214,7 +214,7 @@ export default function FamilyPortalInvitesPage() {
       <AppPanel className="space-y-3">
         <div className="space-y-1.5">
           <AppEyebrow>{tf("portal_invites.how_title")}</AppEyebrow>
-          <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          <div className="h-px w-8 bg-brand-gold" aria-hidden />
         </div>
         <ol className="list-decimal space-y-2 pl-5 text-sm text-muted-foreground">
           <li>{tf("portal_invites.how_1")}</li>
@@ -234,7 +234,7 @@ export default function FamilyPortalInvitesPage() {
             <UserPlus className="h-3.5 w-3.5" />
             {tf("portal_invites.create_title")}
           </AppEyebrow>
-          <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          <div className="h-px w-8 bg-brand-gold" aria-hidden />
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -307,8 +307,8 @@ export default function FamilyPortalInvitesPage() {
         </div>
 
         {lastInviteUrl && (
-          <div className="rounded-sm border border-[#D39A2B]/40 bg-[#D39A2B]/10 p-3 space-y-2">
-            <p className="text-sm font-medium text-[#071A2D]">
+          <div className="rounded-sm border border-brand-gold/40 bg-brand-gold/10 p-3 space-y-2">
+            <p className="text-sm font-medium text-brand-ink">
               {tf("portal_invites.link_ready")}
             </p>
             <p className="break-all text-xs text-muted-foreground font-mono">
@@ -354,7 +354,7 @@ export default function FamilyPortalInvitesPage() {
               <Clock className="h-3.5 w-3.5" />
               {tf("portal_invites.pending_title")}
             </AppEyebrow>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            <div className="h-px w-8 bg-brand-gold" aria-hidden />
           </div>
           <Badge variant="secondary">
             {tf("portal_invites.pending_count", { count: pendingCount })}
@@ -398,7 +398,7 @@ export default function FamilyPortalInvitesPage() {
                 {(invites as any[]).map((inv) => (
                   <tr key={`${inv.kind}-${inv.id}`} className="bg-white">
                     <td className="px-3 py-3">
-                      <div className="font-medium text-[#071A2D]">
+                      <div className="font-medium text-brand-ink">
                         {inv.displayName || inv.email}
                       </div>
                       <div className="text-xs text-muted-foreground">
@@ -505,7 +505,7 @@ export default function FamilyPortalInvitesPage() {
 
       <AppPanel className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-2 text-sm text-muted-foreground">
-          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#071A2D]" />
+          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-brand-ink" />
           <p>{tf("portal_invites.tip_context")}</p>
         </div>
         <div className="flex flex-wrap gap-2">

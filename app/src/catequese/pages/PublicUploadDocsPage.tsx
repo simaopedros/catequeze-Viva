@@ -62,7 +62,7 @@ export default function PublicUploadDocsPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background dark:bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" />
+        <Loader2 className="h-8 w-8 animate-spin text-brand-ink" />
       </div>
     );
   }
@@ -98,7 +98,7 @@ export default function PublicUploadDocsPage() {
           </AppEyebrow>
           <AppDisplayTitle className="text-2xl sm:text-2xl">
             {t("upload_docs.greeting")}{" "}
-            <span className="text-[#071A2D]">
+            <span className="text-brand-ink">
               {catechumen.firstName} {catechumen.lastName}
             </span>
           </AppDisplayTitle>
@@ -114,7 +114,7 @@ export default function PublicUploadDocsPage() {
               <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 {t("upload_docs.existing_title")}
               </h2>
-              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+              <div className="h-px w-8 bg-brand-gold" aria-hidden />
             </div>
             <div className="space-y-2">
               {catechumen.documents.map((d: any) => (
@@ -125,10 +125,7 @@ export default function PublicUploadDocsPage() {
                   <div className="flex items-center gap-2">
                     <FileText className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p
-                        className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
+                      <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                         {d.name}
                       </p>
                       <p className="text-overline text-muted-foreground">
@@ -164,11 +161,11 @@ export default function PublicUploadDocsPage() {
             <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               {t("upload_docs.new_title")}
             </h2>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            <div className="h-px w-8 bg-brand-gold" aria-hidden />
           </div>
 
           {sent && (
-            <div className="flex items-center gap-2 rounded-sm border border-border/70 bg-muted/30 p-3 text-sm font-medium tracking-tight text-[#071A2D]">
+            <div className="flex items-center gap-2 rounded-sm border border-border/70 bg-muted/30 p-3 text-sm font-medium tracking-tight text-brand-ink">
               <CheckCircle className="h-4 w-4" />
               {t("upload_docs.sent_success")}
             </div>
@@ -202,7 +199,7 @@ export default function PublicUploadDocsPage() {
               accept="image/*,.jpg,.jpeg,.png,.pdf,application/pdf"
               capture="environment"
               onChange={(e) => setDocFile(e.target.files?.[0] || null)}
-              className="mt-1 flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm file:mr-4 file:rounded-sm file:border-0 file:bg-muted file:px-3 file:py-1 file:text-sm file:font-semibold file:tracking-tight file:text-[#071A2D]"
+              className="mt-1 flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm file:mr-4 file:rounded-sm file:border-0 file:bg-muted file:px-3 file:py-1 file:text-sm file:font-semibold file:tracking-tight file:text-brand-ink"
             />
             <p className="text-overline text-muted-foreground mt-1">
               {t("upload_docs.file_hint")}

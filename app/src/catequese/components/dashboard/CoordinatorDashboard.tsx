@@ -464,18 +464,13 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                     data={comparison}
                     getRowKey={(c: any) => c.id}
                     onRowClick={(c: any) => navigate(`/app/classes/${c.id}`)}
-                    className="border-0"
+                    className="font-brand-display font-brand-display border-0"
                     columns={[
                       {
                         key: "name",
                         header: t("table_class"),
                         render: (c: any) => (
-                          <span
-                            className="font-semibold tracking-tight text-brand-ink"
-                            style={{
-                              fontFamily: "var(--font-brand-display)",
-                            }}
-                          >
+                          <span className="font-semibold tracking-tight text-brand-ink">
                             {c.name}
                           </span>
                         ),
@@ -544,12 +539,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                       return (
                         <div className="space-y-2">
                           <div className="flex items-start justify-between gap-2">
-                            <p
-                              className="text-base font-semibold text-brand-ink"
-                              style={{
-                                fontFamily: "var(--font-brand-display)",
-                              }}
-                            >
+                            <p className="text-base font-semibold text-brand-ink">
                               {c.name}
                             </p>
                             <Badge variant={badge.variant} size="sm">

@@ -8,10 +8,7 @@ export default function SectionTitle({
 }) {
   const titleElement =
     typeof title === "string" ? (
-      <h3
-        className="mt-2 text-title-xl font-semibold tracking-tight text-[#071A2D]"
-        style={{ fontFamily: "var(--font-brand-display)" }}
-      >
+      <h3 className="font-brand-display mt-2 text-title-xl font-semibold tracking-tight text-brand-ink">
         {title}
       </h3>
     ) : (

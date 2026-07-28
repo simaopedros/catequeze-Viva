@@ -67,13 +67,13 @@ export function ActivityResultPanel({
               <AppGoldRule />
               <Badge
                 variant="secondary"
-                className="gap-1 rounded-sm border border-border/70 bg-muted/30 font-semibold tracking-tight text-[#071A2D]"
+                className="gap-1 rounded-sm border border-border/70 bg-muted/30 font-semibold tracking-tight text-brand-ink"
               >
                 {typeLabel}
               </Badge>
             </div>
             {activity.points > 0 && (
-              <div className="flex items-center gap-1 text-sm font-medium text-[#8A6418] dark:text-[#D39A2B] shrink-0">
+              <div className="flex items-center gap-1 text-sm font-medium text-brand-gold-muted dark:text-brand-gold shrink-0">
                 <Star className="h-4 w-4 fill-current" />
                 {activity.points} {t("activity.points")}
               </div>
@@ -82,10 +82,7 @@ export function ActivityResultPanel({
 
           {activity.description && (
             <div className="space-y-2">
-              <h3
-                className="flex items-center gap-1.5 text-sm font-semibold tracking-tight text-[#071A2D]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <h3 className="font-brand-display flex items-center gap-1.5 text-sm font-semibold tracking-tight text-brand-ink">
                 <FileText className="h-4 w-4 text-muted-foreground" />
                 {t("activity.description")}
               </h3>
@@ -99,7 +96,7 @@ export function ActivityResultPanel({
             <div className="space-y-2">
               {parsedData.objective && (
                 <div className="flex items-start gap-2 text-sm">
-                  <Target className="mt-0.5 h-4 w-4 shrink-0 text-[#071A2D]" />
+                  <Target className="mt-0.5 h-4 w-4 shrink-0 text-brand-ink" />
                   <span className="text-muted-foreground">
                     {parsedData.objective}
                   </span>

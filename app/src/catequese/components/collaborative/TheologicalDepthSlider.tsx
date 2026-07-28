@@ -25,7 +25,7 @@ export function TheologicalDepthSlider() {
     <Card className="space-y-3 rounded-sm border-border/70 bg-white p-4">
       <div className="space-y-1.5">
         <AppEyebrow className="flex items-center gap-1.5">
-          <SlidersHorizontal className="h-3.5 w-3.5 text-[#071A2D]" />
+          <SlidersHorizontal className="h-3.5 w-3.5 text-brand-ink" />
           {t("tools.depth.title")}
         </AppEyebrow>
         <AppGoldRule className="w-6" />
@@ -43,8 +43,8 @@ export function TheologicalDepthSlider() {
               disabled={generating}
               className={`rounded-sm px-2 py-1 text-overline transition-colors ${
                 depth === i + 1
-                  ? "bg-[#071A2D] font-semibold text-white"
-                  : "text-muted-foreground hover:text-[#071A2D]"
+                  ? "bg-brand-ink font-semibold text-white"
+                  : "text-muted-foreground hover:text-brand-ink"
               }`}
             >
               {label}
@@ -59,7 +59,7 @@ export function TheologicalDepthSlider() {
           aria-valuemin={1}
           aria-valuemax={5}
           aria-label={t("tools.depth.title")}
-          className="relative h-2 cursor-pointer rounded-sm bg-muted focus:outline-none focus:ring-2 focus:ring-[#071A2D]/30"
+          className="relative h-2 cursor-pointer rounded-sm bg-muted focus:outline-none focus:ring-2 focus:ring-brand-ink/30"
           onClick={(e) => {
             if (generating) return;
             const rect = e.currentTarget.getBoundingClientRect();
@@ -80,17 +80,17 @@ export function TheologicalDepthSlider() {
           }}
         >
           <div
-            className="absolute left-0 top-0 h-full rounded-sm bg-[#071A2D] transition-all duration-200"
+            className="absolute left-0 top-0 h-full rounded-sm bg-brand-ink transition-all duration-200"
             style={{ width: `${((depth - 1) / 4) * 100}%` }}
           />
           <div
-            className="absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-sm border-2 border-white bg-[#071A2D] shadow-sm transition-all duration-200"
+            className="absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-sm border-2 border-white bg-brand-ink shadow-sm transition-all duration-200"
             style={{ left: `calc(${((depth - 1) / 4) * 100}% - 0.5rem)` }}
           />
         </div>
 
         <div className="flex items-center justify-between">
-          <Badge className="rounded-sm bg-[#071A2D]/08 text-overline text-[#071A2D]">
+          <Badge className="rounded-sm bg-brand-ink/8 text-overline text-brand-ink">
             {generating ? (
               <Loader2 className="mr-1 h-3 w-3 animate-spin" />
             ) : null}

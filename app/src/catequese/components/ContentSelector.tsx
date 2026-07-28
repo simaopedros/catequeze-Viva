@@ -51,7 +51,7 @@ export function ContentSelector({
         <span
           className={
             selected
-              ? "font-semibold tracking-tight text-[#071A2D]"
+              ? "font-semibold tracking-tight text-brand-ink"
               : "text-muted-foreground"
           }
           style={
@@ -105,7 +105,7 @@ export function ContentSelector({
                   }}
                   className={`w-full px-3 py-2 text-left text-sm hover:bg-muted ${
                     c.id === selectedId
-                      ? "bg-muted/40 font-semibold text-[#071A2D]"
+                      ? "bg-muted/40 font-semibold text-brand-ink"
                       : ""
                   }`}
                 >

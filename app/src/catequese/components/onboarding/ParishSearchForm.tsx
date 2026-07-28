@@ -40,7 +40,7 @@ export function ParishSearchForm({
     <div className="space-y-4 rounded-sm border border-border/70 bg-white p-6">
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <Search className="h-5 w-5 shrink-0 text-[#071A2D]" />
+          <Search className="h-5 w-5 shrink-0 text-brand-ink" />
           <AppDisplayTitle as="h2" className="text-lg sm:text-lg">
             {t("parish_search.title")}
           </AppDisplayTitle>
@@ -73,13 +73,13 @@ export function ParishSearchForm({
               onClick={() => setSelectedId(p.id)}
               className={`flex w-full items-center gap-2 rounded-sm border border-border/70 px-4 py-3 text-left text-sm transition-colors ${
                 selectedId === p.id
-                  ? "border-[#071A2D] bg-muted/30"
+                  ? "border-brand-ink bg-muted/30"
                   : "hover:bg-muted/30"
               }`}
             >
               <span className="flex-1">{p.name}</span>
               {selectedId === p.id && (
-                <Check className="h-4 w-4 text-[#071A2D]" />
+                <Check className="h-4 w-4 text-brand-ink" />
               )}
             </button>
           ))}

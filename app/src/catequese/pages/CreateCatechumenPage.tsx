@@ -323,7 +323,7 @@ export default function CreateCatechumenPage() {
                         <button
                           type="button"
                           onClick={() => setShowCreateHouseholdModal(true)}
-                          className="text-[#071A2D] underline"
+                          className="text-brand-ink underline"
                         >
                           {t("families.create_family")}
                         </button>
@@ -334,7 +334,7 @@ export default function CreateCatechumenPage() {
                         <button
                           type="button"
                           onClick={() => setShowCreateHouseholdModal(true)}
-                          className="text-[#071A2D] underline inline-flex items-center gap-1"
+                          className="text-brand-ink underline inline-flex items-center gap-1"
                         >
                           <Plus className="h-3 w-3" />
                           {t("families.create_new_family")}

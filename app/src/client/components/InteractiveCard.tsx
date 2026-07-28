@@ -67,10 +67,9 @@ export function InteractiveCard({
       <div className="min-w-0 flex-1">
         <h3
           className={cn(
-            "font-semibold tracking-tight text-[#071A2D]",
+            "font-brand-display font-semibold tracking-tight text-brand-ink",
             compact ? "text-sm" : "text-body",
           )}
-          style={{ fontFamily: "var(--font-brand-display)" }}
         >
           {title}
         </h3>

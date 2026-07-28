@@ -23,7 +23,7 @@ export default function AboutPage() {
       <PublicNavbar />
       <main className="mx-auto max-w-3xl flex-1 space-y-8 px-4 py-20">
         <div className="space-y-2.5">
-          <AppDisplayTitle className="text-4xl text-[#071A2D] sm:text-4xl">
+          <AppDisplayTitle className="text-4xl text-brand-ink sm:text-4xl">
             {t("about.title")}
           </AppDisplayTitle>
           <AppGoldRule />
@@ -33,7 +33,7 @@ export default function AboutPage() {
         <section className="space-y-2">
           <AppDisplayTitle
             as="h2"
-            className="text-2xl text-[#071A2D] sm:text-2xl"
+            className="text-2xl text-brand-ink sm:text-2xl"
           >
             {t("about.mission_title")}
           </AppDisplayTitle>
@@ -43,7 +43,7 @@ export default function AboutPage() {
         <section className="space-y-2">
           <AppDisplayTitle
             as="h2"
-            className="text-2xl text-[#071A2D] sm:text-2xl"
+            className="text-2xl text-brand-ink sm:text-2xl"
           >
             {t("about.offer_title")}
           </AppDisplayTitle>

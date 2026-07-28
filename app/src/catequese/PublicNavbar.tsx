@@ -23,14 +23,14 @@ export function PublicNavbar({
   }, [open]);
 
   const linkClass =
-    "text-[0.8125rem] font-medium tracking-wide text-muted-foreground transition-colors hover:text-[#071A2D]";
+    "text-[0.8125rem] font-medium tracking-wide text-muted-foreground transition-colors hover:text-brand-ink";
 
   return (
-    <header className="sticky top-0 z-sticky border-b border-[#071A2D]/08 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/90">
+    <header className="sticky top-0 z-sticky border-b border-brand-ink/8 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/90">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-6 px-4 sm:px-6">
         <Link
           to="/"
-          className="min-w-0 shrink-0 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-[#071A2D]/30 focus-visible:ring-offset-2"
+          className="min-w-0 shrink-0 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-brand-ink/30 focus-visible:ring-offset-2"
           onClick={() => setOpen(false)}
         >
           <BrandLockup compact hideBadge />
@@ -56,7 +56,7 @@ export function PublicNavbar({
         <div className="hidden items-center gap-5 md:flex">
           <Link
             to="/login"
-            className="text-[0.8125rem] font-medium text-muted-foreground transition-colors hover:text-[#071A2D]"
+            className="text-[0.8125rem] font-medium text-muted-foreground transition-colors hover:text-brand-ink"
           >
             {t("login")}
           </Link>
@@ -72,7 +72,7 @@ export function PublicNavbar({
 
         <button
           type="button"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-sm text-[#071A2D] md:hidden"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-sm text-brand-ink md:hidden"
           onClick={() => setOpen((v) => !v)}
           aria-label={open ? t("closeMenu") : t("openMenu")}
           aria-expanded={open}
@@ -86,19 +86,19 @@ export function PublicNavbar({
       </div>
 
       {open && (
-        <div className="border-t border-[#071A2D]/08 bg-white md:hidden">
+        <div className="border-t border-brand-ink/8 bg-white md:hidden">
           <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
             <nav className="flex flex-col">
               <a
                 href="/#recursos"
-                className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-[#071A2D]"
+                className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-brand-ink"
                 onClick={() => setOpen(false)}
               >
                 {t("resources")}
               </a>
               <a
                 href="/#como"
-                className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-[#071A2D]"
+                className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-brand-ink"
                 onClick={() => setOpen(false)}
               >
                 {t("how_it_works")}
@@ -106,7 +106,7 @@ export function PublicNavbar({
               {!hidePricing && (
                 <Link
                   to="/pricing"
-                  className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-[#071A2D]"
+                  className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-brand-ink"
                   onClick={() => setOpen(false)}
                 >
                   {t("pricing")}
@@ -114,7 +114,7 @@ export function PublicNavbar({
               )}
               <Link
                 to="/contact"
-                className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-[#071A2D]"
+                className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-brand-ink"
                 onClick={() => setOpen(false)}
               >
                 {t("contact")}
@@ -135,7 +135,7 @@ export function PublicNavbar({
               <Link
                 to="/login"
                 onClick={() => setOpen(false)}
-                className="py-2 text-center text-sm font-medium text-muted-foreground hover:text-[#071A2D]"
+                className="py-2 text-center text-sm font-medium text-muted-foreground hover:text-brand-ink"
               >
                 {t("login")}
               </Link>

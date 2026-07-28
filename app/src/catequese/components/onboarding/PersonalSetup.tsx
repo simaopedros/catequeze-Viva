@@ -54,12 +54,12 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
   return (
     <div className="animate-in fade-in duration-500 flex flex-col items-center space-y-5 py-4 text-center">
       <div className="rounded-sm border border-border/70 bg-muted/30 p-4">
-        <User className="h-10 w-10 text-[#071A2D]" />
+        <User className="h-10 w-10 text-brand-ink" />
       </div>
 
       <div className="max-w-md space-y-2.5">
         <AppDisplayTitle as="h2">{t("personal_setup.title")}</AppDisplayTitle>
-        <div className="mx-auto h-px w-10 bg-[#D39A2B]" aria-hidden />
+        <div className="mx-auto h-px w-10 bg-brand-gold" aria-hidden />
         <p className="text-sm text-muted-foreground">
           {t("personal_setup.subtitle")}
         </p>
@@ -72,10 +72,10 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
             <span>{t("personal_setup.progress_status")}</span>
           </div>
           <div className="h-1.5 rounded-sm bg-muted">
-            <div className="h-1.5 w-[38%] rounded-sm bg-[#D39A2B]" />
+            <div className="h-1.5 w-[38%] rounded-sm bg-brand-gold" />
           </div>
           <div className="flex items-start gap-2 text-sm text-muted-foreground">
-            <CheckCircle2 className="mt-0.5 h-4 w-4 text-[#071A2D]" />
+            <CheckCircle2 className="mt-0.5 h-4 w-4 text-brand-ink" />
             <span>{t("personal_setup.progress_copy")}</span>
           </div>
           <div className="space-y-2 rounded-sm border border-border/70 bg-muted/20 p-4">
@@ -108,7 +108,7 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
           <button
             type="button"
             onClick={() => setShowOptionalDetails((current) => !current)}
-            className="flex w-full items-center justify-between px-4 py-3 text-sm font-medium text-[#071A2D]"
+            className="flex w-full items-center justify-between px-4 py-3 text-sm font-medium text-brand-ink"
           >
             <span>
               {showOptionalDetails
@@ -131,7 +131,7 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
               <div>
                 <label
                   htmlFor="ps-day"
-                  className="flex items-center gap-1 text-sm font-medium text-[#071A2D]"
+                  className="flex items-center gap-1 text-sm font-medium text-brand-ink"
                 >
                   <Clock className="h-3 w-3" />{" "}
                   {t("personal_setup.schedule_label")}
@@ -168,7 +168,7 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
               <div>
                 <label
                   htmlFor="ps-location"
-                  className="flex items-center gap-1 text-sm font-medium text-[#071A2D]"
+                  className="flex items-center gap-1 text-sm font-medium text-brand-ink"
                 >
                   <MapPin className="h-3 w-3" />{" "}
                   {t("personal_setup.location_label")}

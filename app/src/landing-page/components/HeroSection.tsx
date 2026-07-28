@@ -138,12 +138,11 @@ export function HeroSection({
 
       <h1
         className={cn(
-          "font-semibold tracking-tight text-brand-ink text-balance",
+          "font-brand-display font-semibold tracking-tight text-brand-ink text-balance",
           isEditorial
             ? "text-[2.05rem] sm:text-[2.75rem] lg:text-[3.15rem] leading-[1.14]"
             : "text-3xl sm:text-5xl leading-[1.12]",
         )}
-        style={{ fontFamily: "var(--font-brand-display)" }}
       >
         {tr("hero.headline_line1")}
         {hasLine2 ? (

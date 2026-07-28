@@ -330,10 +330,7 @@ export default function DocumentsPage() {
             <div className="flex items-center justify-center gap-3 rounded-sm border border-dashed border-border/70 p-6 transition-colors hover:bg-muted/20">
               <label className="flex flex-col items-center gap-2 cursor-pointer">
                 <FileUp className="h-8 w-8 text-muted-foreground" />
-                <span
-                  className="text-sm font-semibold tracking-tight text-brand-ink"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
+                <span className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                   {tc("documents.select_file")}
                 </span>
                 <span className="text-xs text-muted-foreground">
@@ -411,10 +408,7 @@ export default function DocumentsPage() {
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
-                    <p
-                      className="truncate text-sm font-semibold tracking-tight text-brand-ink"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
+                    <p className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
                       {c.firstName} {c.lastName}
                     </p>
                     <div className="flex items-center gap-2 mt-0.5">
@@ -490,10 +484,7 @@ export default function DocumentsPage() {
                           <StatusIcon
                             className={`h-4 w-4 flex-shrink-0 ${statusVisual.color}`}
                           />
-                          <span
-                            className="truncate text-xs font-semibold tracking-tight text-brand-ink"
-                            style={{ fontFamily: "var(--font-brand-display)" }}
-                          >
+                          <span className="font-brand-display truncate text-xs font-semibold tracking-tight text-brand-ink">
                             {label}
                           </span>
                           {status !== "MISSING" && (

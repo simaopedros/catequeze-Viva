@@ -86,10 +86,7 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
                           ) : (
                             <Church className="h-4 w-4" />
                           )}
-                          <span
-                            className="font-semibold tracking-tight text-[#071A2D]"
-                            style={{ fontFamily: "var(--font-brand-display)" }}
-                          >
+                          <span className="font-brand-display font-semibold tracking-tight text-[#071A2D]">
                             {p.name}
                           </span>
                         </div>
@@ -97,10 +94,7 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
                       <td className="px-4 py-3 text-muted-foreground text-xs">
                         {p.type || "PARISH"}
                       </td>
-                      <td
-                        className="px-4 py-3 text-xs font-semibold tracking-tight text-[#071A2D]"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
+                      <td className="font-brand-display px-4 py-3 text-xs font-semibold tracking-tight text-[#071A2D]">
                         {p.billing?.plan}
                       </td>
                       <td className="px-4 py-3">

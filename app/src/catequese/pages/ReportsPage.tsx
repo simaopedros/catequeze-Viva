@@ -314,10 +314,7 @@ export default function ReportsPage() {
                     className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div className="min-w-0 flex-1">
-                      <p
-                        className="text-sm font-semibold tracking-tight text-brand-ink"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
+                      <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                         {r.name}
                       </p>
                       <p className="text-xs text-muted-foreground">
@@ -402,10 +399,7 @@ export default function ReportsPage() {
                         {i + 1}
                       </span>
                       <div>
-                        <p
-                          className="text-sm font-semibold tracking-tight text-brand-ink"
-                          style={{ fontFamily: "var(--font-brand-display)" }}
-                        >
+                        <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                           {r.name}
                         </p>
                         <p className="text-xs text-muted-foreground">

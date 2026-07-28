@@ -10,18 +10,18 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-[#071A2D] text-white hover:bg-[#0a2540] shadow-none",
+        default: "bg-brand-ink text-white hover:bg-brand-ink-soft shadow-none",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-none",
         outline:
-          "border border-input bg-background text-[#071A2D] shadow-none hover:border-[#071A2D]/30 hover:bg-muted/30 hover:text-[#0a2540]",
+          "border border-input bg-background text-brand-ink shadow-none hover:border-brand-ink/30 hover:bg-muted/30 hover:text-brand-ink-soft",
         secondary:
           "bg-secondary text-secondary-foreground shadow-none hover:bg-secondary/80",
-        ghost: "text-[#071A2D] hover:bg-accent hover:text-[#0a2540]",
-        link: "text-[#071A2D] underline-offset-4 hover:underline",
-        brand: "bg-[#071A2D] text-white shadow-none hover:bg-[#0a2540]",
+        ghost: "text-brand-ink hover:bg-accent hover:text-brand-ink-soft",
+        link: "text-brand-ink underline-offset-4 hover:underline",
+        brand: "bg-brand-ink text-white shadow-none hover:bg-brand-ink-soft",
         subtle:
-          "border border-border/70 bg-muted/30 font-medium tracking-tight text-[#071A2D] hover:bg-muted/50",
+          "border border-border/70 bg-muted/30 font-medium tracking-tight text-brand-ink hover:bg-muted/50",
       },
       size: {
         xs: "h-7 rounded-sm px-2.5 text-xs",

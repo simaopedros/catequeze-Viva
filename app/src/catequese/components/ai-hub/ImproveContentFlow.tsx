@@ -53,19 +53,16 @@ function ImproveWorkspace() {
             {contentId && (
               <Card className="space-y-2 rounded-sm border-border/70 p-4">
                 <div className="flex items-start gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-brand-ink">
                     <FileText className="h-4 w-4" />
                   </div>
                   <div className="min-w-0 space-y-1">
-                    <h3
-                      className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
+                    <h3 className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
                       {existingContentTitle
                         ? decodeURIComponent(existingContentTitle)
                         : t("planner.untitled")}
                     </h3>
-                    <div className="h-px w-6 bg-[#D39A2B]" aria-hidden />
+                    <div className="h-px w-6 bg-brand-gold" aria-hidden />
                   </div>
                 </div>
               </Card>
@@ -84,24 +81,21 @@ function ImproveWorkspace() {
                     return next;
                   })
                 }
-                className="group flex flex-col items-start gap-3 rounded-sm border border-border/70 bg-white p-5 text-left transition-colors hover:border-[#071A2D]/40"
+                className="group flex flex-col items-start gap-3 rounded-sm border border-border/70 bg-white p-5 text-left transition-colors hover:border-brand-ink/40"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-brand-ink">
                   <Copy className="h-5 w-5" />
                 </div>
                 <div className="space-y-1">
-                  <h3
-                    className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <h3 className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                     {t("improve.create_copy")}
                   </h3>
-                  <div className="h-px w-6 bg-[#D39A2B]" aria-hidden />
+                  <div className="h-px w-6 bg-brand-gold" aria-hidden />
                   <p className="text-xs text-muted-foreground">
                     {t("improve.create_copy_desc")}
                   </p>
                 </div>
-                <div className="mt-auto inline-flex items-center gap-1 text-xs font-medium text-[#071A2D]">
+                <div className="mt-auto inline-flex items-center gap-1 text-xs font-medium text-brand-ink">
                   <Check className="h-3 w-3" />
                   {t("improve.recommended")}
                 </div>
@@ -117,17 +111,14 @@ function ImproveWorkspace() {
                 }
                 className="group flex flex-col items-start gap-3 rounded-sm border border-border/70 bg-white p-5 text-left transition-colors hover:border-border"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-brand-ink">
                   <AlertTriangle className="h-5 w-5" />
                 </div>
                 <div className="space-y-1">
-                  <h3
-                    className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <h3 className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                     {t("improve.apply_original")}
                   </h3>
-                  <div className="h-px w-6 bg-[#D39A2B]" aria-hidden />
+                  <div className="h-px w-6 bg-brand-gold" aria-hidden />
                   <p className="text-xs text-muted-foreground">
                     {t("improve.apply_original_desc")}
                   </p>
@@ -168,12 +159,12 @@ function ImproveWorkspace() {
     >
       <div className="flex-1 flex flex-col min-h-0">
         <div className="flex items-center gap-2 border-b border-border/70 bg-white px-3 py-2 shrink-0 lg:px-4">
-          <div className="inline-flex items-center gap-2 rounded-sm border border-border/70 bg-muted/40 px-3 py-1.5 text-xs font-semibold tracking-tight text-[#071A2D]">
+          <div className="inline-flex items-center gap-2 rounded-sm border border-border/70 bg-muted/40 px-3 py-1.5 text-xs font-semibold tracking-tight text-brand-ink">
             <Circle className="h-2 w-2 fill-current" />
             {tc("workspace.live_status")}
           </div>
           {choice === "copy" && (
-            <div className="inline-flex items-center gap-1 rounded-sm border border-border/70 bg-muted/30 px-2 py-1 text-xs font-semibold tracking-tight text-[#071A2D]">
+            <div className="inline-flex items-center gap-1 rounded-sm border border-border/70 bg-muted/30 px-2 py-1 text-xs font-semibold tracking-tight text-brand-ink">
               <Copy className="h-3 w-3" />
               {t("improve.copy_badge")}
             </div>

@@ -78,7 +78,7 @@ export default function CityStateSelect({
               <button
                 key={c.id}
                 type="button"
-                className="w-full px-3 py-2 text-left text-sm text-[#071A2D] transition-colors hover:bg-muted/40 hover:text-[#0a2540]"
+                className="w-full px-3 py-2 text-left text-sm text-brand-ink transition-colors hover:bg-muted/40 hover:text-brand-ink-soft"
                 onMouseDown={(e) => {
                   e.preventDefault();
                   setCityInput(c.name);

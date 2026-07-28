@@ -117,15 +117,12 @@ export function ParishCommunitiesTab({
       {communities.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white px-6 py-12 text-center">
           <div className="mb-3 rounded-sm border border-border/70 bg-muted/30 p-3">
-            <Building2 className="h-8 w-8 text-[#071A2D]" />
+            <Building2 className="h-8 w-8 text-brand-ink" />
           </div>
-          <p
-            className="text-sm font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
             {tp("no_communities")}
           </p>
-          <div className="mx-auto mt-2 h-px w-8 bg-[#D39A2B]" aria-hidden />
+          <div className="mx-auto mt-2 h-px w-8 bg-brand-gold" aria-hidden />
         </div>
       ) : (
         <div className="grid gap-3 md:grid-cols-2">
@@ -140,7 +137,7 @@ export function ParishCommunitiesTab({
                     <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       {tp("edit_community")}
                     </h3>
-                    <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                    <div className="h-px w-8 bg-brand-gold" aria-hidden />
                   </div>
                   <div className="flex gap-3">
                     <input
@@ -252,15 +249,12 @@ export function ParishCommunitiesTab({
             return (
               <div
                 key={c.id}
-                className="rounded-sm border border-border/70 bg-white p-4 hover:border-[#071A2D]/30 transition-colors"
+                className="rounded-sm border border-border/70 bg-white p-4 hover:border-brand-ink/30 transition-colors"
               >
                 <div className="flex justify-between items-start">
                   <div>
                     <div className="flex items-center gap-2">
-                      <p
-                        className="font-semibold tracking-tight text-[#071A2D]"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
+                      <p className="font-brand-display font-semibold tracking-tight text-brand-ink">
                         {c.name}
                       </p>
                       {c.type && (
@@ -283,7 +277,7 @@ export function ParishCommunitiesTab({
                   </div>
                   <button
                     onClick={() => startEdit(c)}
-                    className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-[#071A2D] transition-colors"
+                    className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-brand-ink transition-colors"
                     title={tp("edit")}
                   >
                     <Pencil className="h-3.5 w-3.5" />

@@ -278,7 +278,7 @@ export const TopBar = memo(function TopBar() {
 
         {/* Expanded: full input (always on desktop, conditionally on mobile) */}
         <div
-          className={`flex h-9 items-center gap-2 rounded-sm border border-input bg-background px-3 transition-colors focus-within:border-[#071A2D]/50 focus-within:ring-1 focus-within:ring-[#071A2D]/20 ${
+          className={`flex h-9 items-center gap-2 rounded-sm border border-input bg-background px-3 transition-colors focus-within:border-brand-ink/50 focus-within:ring-1 focus-within:ring-brand-ink/20 ${
             searchExpanded ? "flex" : "hidden sm:flex"
           }`}
         >

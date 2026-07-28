@@ -15,10 +15,7 @@ export function SacramentsMock({ ns = "landing" }: { ns?: string }) {
   return (
     <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-overline sm:text-xs">
       <div>
-        <p
-          className="text-sm font-semibold tracking-tight text-[#071A2D]"
-          style={{ fontFamily: "var(--font-brand-display)" }}
-        >
+        <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
           {t("mockup_sacraments.title")}
         </p>
         <p className="text-muted-foreground">
@@ -29,13 +26,10 @@ export function SacramentsMock({ ns = "landing" }: { ns?: string }) {
       <div className="rounded-sm border border-border/70 bg-white p-3">
         <div className="mb-3 flex items-center gap-2">
           <div className="rounded-sm border border-border/70 bg-muted/30 p-1.5">
-            <Cross className="h-4 w-4 text-[#071A2D]" />
+            <Cross className="h-4 w-4 text-brand-ink" />
           </div>
           <div>
-            <p
-              className="font-semibold tracking-tight text-[#071A2D]"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <p className="font-brand-display font-semibold tracking-tight text-brand-ink">
               Maria Oliveira
             </p>
             <p className="text-muted-foreground">
@@ -52,14 +46,14 @@ export function SacramentsMock({ ns = "landing" }: { ns?: string }) {
               className="relative flex flex-col items-center gap-1 z-10"
             >
               {m.done ? (
-                <CheckCircle2 className="h-5 w-5 text-[#071A2D] bg-background" />
+                <CheckCircle2 className="h-5 w-5 text-brand-ink bg-background" />
               ) : (
                 <Circle className="h-5 w-5 text-muted-foreground bg-background" />
               )}
               <span
                 className={`text-overline text-center max-w-[48px] ${
                   m.done
-                    ? "text-[#071A2D] font-medium"
+                    ? "text-brand-ink font-medium"
                     : "text-muted-foreground"
                 }`}
               >
@@ -82,14 +76,14 @@ export function SacramentsMock({ ns = "landing" }: { ns?: string }) {
             className="rounded-sm border border-border/70 bg-white p-2"
           >
             <div className="flex justify-between mb-1">
-              <span className="font-semibold tracking-tight text-[#071A2D]">
+              <span className="font-semibold tracking-tight text-brand-ink">
                 {c.name}
               </span>
               <span className="text-muted-foreground">{c.progress}</span>
             </div>
             <div className="h-1.5 overflow-hidden rounded-sm bg-muted">
               <div
-                className="h-full rounded-sm bg-[#071A2D]"
+                className="h-full rounded-sm bg-brand-ink"
                 style={{ width: `${c.pct}%` }}
               />
             </div>

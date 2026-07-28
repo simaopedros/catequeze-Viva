@@ -47,7 +47,7 @@ export function CatechistDetails({
     <div className="space-y-4 rounded-sm border border-border/70 bg-white p-6">
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <GraduationCap className="h-5 w-5 shrink-0 text-[#071A2D]" />
+          <GraduationCap className="h-5 w-5 shrink-0 text-brand-ink" />
           <AppDisplayTitle as="h2" className="text-lg sm:text-lg">
             {t("catechist.class_title")}
           </AppDisplayTitle>

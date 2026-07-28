@@ -52,7 +52,7 @@ export function PedagogicalHooksPanel() {
     <Card className="space-y-3 rounded-sm border-border/70 p-4">
       <div className="space-y-1.5">
         <AppEyebrow className="flex items-center gap-1.5">
-          <Lightbulb className="h-3.5 w-3.5 text-[#D39A2B]" />
+          <Lightbulb className="h-3.5 w-3.5 text-brand-gold" />
           {t("tools.hooks.title")}
         </AppEyebrow>
         <AppGoldRule className="w-6" />
@@ -88,10 +88,7 @@ export function PedagogicalHooksPanel() {
               key={i}
               className="space-y-1.5 rounded-sm border-border/70 p-3"
             >
-              <h4
-                className="text-xs font-semibold tracking-tight text-[#071A2D]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <h4 className="font-brand-display text-xs font-semibold tracking-tight text-brand-ink">
                 {hook.title}
               </h4>
               <p className="text-xs text-muted-foreground">

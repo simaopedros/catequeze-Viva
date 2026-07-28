@@ -112,20 +112,17 @@ export function GenerateActivityFlow() {
           {contentTitle && (
             <Card className="rounded-sm border-border/70 p-4">
               <div className="flex items-start gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-brand-ink">
                   <FileText className="h-4 w-4" />
                 </div>
                 <div className="min-w-0 space-y-1">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     {t("activity.source_content")}
                   </p>
-                  <h3
-                    className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <h3 className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
                     {decodeURIComponent(contentTitle)}
                   </h3>
-                  <div className="h-px w-6 bg-[#D39A2B]" aria-hidden />
+                  <div className="h-px w-6 bg-brand-gold" aria-hidden />
                 </div>
               </div>
             </Card>
@@ -148,8 +145,8 @@ export function GenerateActivityFlow() {
                   onClick={() => setActivityType(at.value)}
                   className={`rounded-sm border px-3 py-2.5 text-sm font-medium transition-colors ${
                     activityType === at.value
-                      ? "border-[#071A2D] bg-muted/30 font-semibold tracking-tight text-[#071A2D]"
-                      : "border-border/70 hover:border-[#071A2D]/30"
+                      ? "border-brand-ink bg-muted/30 font-semibold tracking-tight text-brand-ink"
+                      : "border-border/70 hover:border-brand-ink/30"
                   }`}
                 >
                   {t(at.labelKey)}

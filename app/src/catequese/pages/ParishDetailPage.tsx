@@ -159,7 +159,7 @@ export default function ParishDetailPage() {
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" />
+        <Loader2 className="h-8 w-8 animate-spin text-brand-ink" />
       </div>
     );
   }
@@ -189,21 +189,18 @@ export default function ParishDetailPage() {
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <button
             onClick={() => navigate("/app/parishes")}
-            className="hover:text-[#071A2D] transition-colors"
+            className="hover:text-brand-ink transition-colors"
           >
             {tn("parishes")}
           </button>
           <span>/</span>
-          <span
-            className="truncate font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <span className="font-brand-display truncate font-semibold tracking-tight text-brand-ink">
             {parish?.name}
           </span>
         </div>
 
         <div className="flex items-start gap-3">
-          <div className="mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
+          <div className="mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-brand-ink">
             <Church className="h-5 w-5" />
           </div>
           <AppPageHeader
@@ -244,8 +241,8 @@ export default function ParishDetailPage() {
               className={
                 "flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors " +
                 (tab === tabItem.id
-                  ? "border-[#071A2D] text-[#071A2D]"
-                  : "border-transparent text-muted-foreground hover:text-[#071A2D]")
+                  ? "border-brand-ink text-brand-ink"
+                  : "border-transparent text-muted-foreground hover:text-brand-ink")
               }
             >
               <tabItem.icon className="h-4 w-4" />

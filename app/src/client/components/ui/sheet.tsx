@@ -123,17 +123,15 @@ function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
 
 function SheetTitle({
   className,
-  style,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Title>) {
   return (
     <SheetPrimitive.Title
       data-slot="sheet-title"
       className={cn(
-        "text-lg font-semibold tracking-tight text-brand-ink",
+        "font-brand-display text-lg font-semibold tracking-tight text-brand-ink",
         className,
       )}
-      style={{ fontFamily: "var(--font-brand-display)", ...style }}
       {...props}
     />
   );

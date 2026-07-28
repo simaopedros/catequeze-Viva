@@ -60,10 +60,9 @@ export function AppDisplayTitle({
   return (
     <Tag
       className={cn(
-        "font-semibold tracking-tight text-brand-ink text-title-sm sm:text-title-md",
+        "font-brand-display font-semibold tracking-tight text-brand-ink text-title-sm sm:text-title-md",
         className,
       )}
-      style={{ fontFamily: "var(--font-brand-display)" }}
     >
       {children}
     </Tag>

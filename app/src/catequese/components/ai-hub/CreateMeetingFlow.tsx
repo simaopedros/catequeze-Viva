@@ -34,8 +34,8 @@ function CreateMeetingWorkspace() {
     >
       <div className="flex-1 flex flex-col min-h-0">
         <div className="flex items-center gap-2 border-b border-border/70 bg-white px-3 py-2 shrink-0 lg:px-4">
-          <div className="inline-flex items-center gap-2 rounded-sm border border-border/70 bg-muted/40 px-3 py-1.5 text-xs font-semibold tracking-tight text-[#071A2D]">
-            <Circle className="h-2 w-2 fill-current text-[#D39A2B]" />
+          <div className="inline-flex items-center gap-2 rounded-sm border border-border/70 bg-muted/40 px-3 py-1.5 text-xs font-semibold tracking-tight text-brand-ink">
+            <Circle className="h-2 w-2 fill-current text-brand-gold" />
             {tc("workspace.live_status")}
           </div>
           <div className="inline-flex items-center gap-2 rounded-sm border border-border/70 bg-muted/40 px-3 py-1.5 text-xs text-muted-foreground">

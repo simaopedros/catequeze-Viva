@@ -66,7 +66,7 @@ function SurfaceSection({
         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
           {title}
         </p>
-        <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+        <div className="h-px w-8 bg-brand-gold" aria-hidden />
       </div>
       {children}
     </AppPanel>
@@ -409,7 +409,7 @@ export default function ContentLibraryPage() {
                   <AppDisplayTitle as="h2">
                     {t("library.empty_no_content")}
                   </AppDisplayTitle>
-                  <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+                  <div className="h-px w-10 bg-brand-gold" aria-hidden />
                   <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
                     {t("library.empty_create_desc")}
                   </p>
@@ -458,7 +458,7 @@ export default function ContentLibraryPage() {
               <h3 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                 {t("library.table_title")}
               </h3>
-              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+              <div className="h-px w-8 bg-brand-gold" aria-hidden />
             </div>
           </div>
           <div className="overflow-x-auto">
@@ -486,8 +486,7 @@ export default function ContentLibraryPage() {
                     <td className="p-4">
                       <Link
                         to={`/app/content-library/${i.id}`}
-                        className="text-sm font-semibold tracking-tight text-[#071A2D] hover:text-[#0a2540]"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
+                        className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink hover:text-brand-ink-soft"
                       >
                         {i.title}
                       </Link>
@@ -500,7 +499,7 @@ export default function ContentLibraryPage() {
                         {i.isAiGenerated && (
                           <Badge
                             variant="outline"
-                            className="border-[#071A2D]/20 bg-[#071A2D]/08 text-[#071A2D] text-overline"
+                            className="border-brand-ink/20 bg-brand-ink/8 text-brand-ink text-overline"
                           >
                             <Feather className="h-2.5 w-2.5" />
                             {t("library.badge_editorial", {
@@ -536,18 +535,15 @@ export default function ContentLibraryPage() {
             <Link
               key={item.id}
               to={`/app/content-library/${item.id}`}
-              className="group overflow-hidden rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-[#071A2D]/30"
+              className="group overflow-hidden rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-brand-ink/30"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-3">
-                    <h3
-                      className="line-clamp-2 text-lg font-semibold tracking-tight text-[#071A2D] group-hover:text-[#0a2540]"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
+                    <h3 className="font-brand-display line-clamp-2 text-lg font-semibold tracking-tight text-brand-ink group-hover:text-brand-ink-soft">
                       {item.title}
                     </h3>
-                    <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-[#071A2D]" />
+                    <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-brand-ink" />
                   </div>
                   {item.theme && (
                     <p className="mt-1 line-clamp-1 text-sm text-muted-foreground">
@@ -567,7 +563,7 @@ export default function ContentLibraryPage() {
                 {item.isAiGenerated && (
                   <Badge
                     variant="outline"
-                    className="gap-1 border-[#071A2D]/20 bg-[#071A2D]/08 text-[#071A2D] text-overline"
+                    className="gap-1 border-brand-ink/20 bg-brand-ink/8 text-brand-ink text-overline"
                   >
                     <Feather className="h-2.5 w-2.5" />
                     {t("library.badge_editorial", {
@@ -589,10 +585,7 @@ export default function ContentLibraryPage() {
                     <Clock className="h-3.5 w-3.5" />
                     Duracao
                   </div>
-                  <p
-                    className="mt-1 text-sm font-semibold tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <p className="font-brand-display mt-1 text-sm font-semibold tracking-tight text-brand-ink">
                     {item.estimatedTime
                       ? t("library.minutes", { count: item.estimatedTime })
                       : "—"}
@@ -603,10 +596,7 @@ export default function ContentLibraryPage() {
                     <Puzzle className="h-3.5 w-3.5" />
                     Atividades
                   </div>
-                  <p
-                    className="mt-1 text-sm font-semibold tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <p className="font-brand-display mt-1 text-sm font-semibold tracking-tight text-brand-ink">
                     {item._count?.activities || 0}
                   </p>
                 </div>

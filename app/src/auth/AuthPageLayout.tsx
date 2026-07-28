@@ -35,7 +35,7 @@ export function AuthPageLayout({ children, panel }: AuthPageLayoutProps) {
       <div className="flex flex-1">
         {/* Brand panel — desktop */}
         {panel && (
-          <aside className="relative hidden w-[min(42%,28rem)] shrink-0 flex-col justify-between bg-[#071A2D] px-10 py-10 text-[#E8EEF5] lg:flex xl:w-[28rem] xl:px-12">
+          <aside className="relative hidden w-[min(42%,28rem)] shrink-0 flex-col justify-between bg-brand-ink px-10 py-10 text-[#E8EEF5] lg:flex xl:w-[28rem] xl:px-12">
             <div
               className="pointer-events-none absolute inset-0 opacity-[0.08]"
               style={{
@@ -51,17 +51,14 @@ export function AuthPageLayout({ children, panel }: AuthPageLayoutProps) {
 
               <div className="space-y-4">
                 {panel.eyebrow && (
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#D39A2B]/90">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-gold/90">
                     {panel.eyebrow}
                   </p>
                 )}
-                <h1
-                  className="text-[2rem] font-semibold leading-[1.15] tracking-tight text-white xl:text-[2.25rem]"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
+                <h1 className="font-brand-display text-[2rem] font-semibold leading-[1.15] tracking-tight text-white xl:text-[2.25rem]">
                   {panel.title}
                 </h1>
-                <div className="h-px w-12 bg-[#D39A2B]" aria-hidden />
+                <div className="h-px w-12 bg-brand-gold" aria-hidden />
                 {panel.subtitle && (
                   <p className="text-sm leading-relaxed text-[#A8B8C9] max-w-[20rem]">
                     {panel.subtitle}
@@ -76,10 +73,7 @@ export function AuthPageLayout({ children, panel }: AuthPageLayoutProps) {
                       key={point}
                       className="flex gap-3 text-sm leading-snug text-[#C5D0DC]"
                     >
-                      <span
-                        className="mt-0.5 shrink-0 text-[0.7rem] font-semibold tabular-nums text-[#D39A2B]"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
+                      <span className="font-brand-display mt-0.5 shrink-0 text-[0.7rem] font-semibold tabular-nums text-brand-gold">
                         {String(i + 1).padStart(2, "0")}
                       </span>
                       <span>{point}</span>
@@ -108,7 +102,7 @@ export function AuthPageLayout({ children, panel }: AuthPageLayoutProps) {
             </div>
           </main>
 
-          <footer className="border-t border-[#071A2D]/08 px-4 py-4 sm:px-8">
+          <footer className="border-t border-brand-ink/8 px-4 py-4 sm:px-8">
             <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-xs text-muted-foreground">
                 {t("footer_copyright", {
@@ -131,8 +125,8 @@ export function AuthPageLayout({ children, panel }: AuthPageLayoutProps) {
                       className={cn(
                         "rounded-sm px-0.5 py-0.5 transition-colors",
                         currentLocale === locale
-                          ? "font-semibold text-[#071A2D]"
-                          : "hover:text-[#071A2D]",
+                          ? "font-semibold text-brand-ink"
+                          : "hover:text-brand-ink",
                       )}
                       aria-current={
                         currentLocale === locale ? "true" : undefined

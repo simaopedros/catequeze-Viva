@@ -10,18 +10,17 @@ export default function Hero() {
     <div className="relative w-full pt-14 overflow-hidden">
       <div className="absolute inset-0 bg-background/80" />
       <div
-        className="pointer-events-none absolute right-10 top-20 h-72 w-72 rounded-sm bg-[#071A2D]/[0.04]"
+        className="pointer-events-none absolute right-10 top-20 h-72 w-72 rounded-sm bg-brand-ink/[0.04]"
         aria-hidden
       />
       <div className="md:p-24 relative">
         <div className="max-w-8xl mx-auto px-6 lg:px-8">
           <div className="lg:mb-18 mx-auto max-w-3xl text-center">
-            <h1
-              className="text-balance text-5xl font-semibold tracking-tight text-[#071A2D] sm:text-6xl"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <h1 className="font-brand-display text-balance text-5xl font-semibold tracking-tight text-brand-ink sm:text-6xl">
               {t("hero.headline_line1")}{" "}
-              <span className="text-[#D39A2B]">{t("hero.headline_line2")}</span>
+              <span className="text-brand-gold">
+                {t("hero.headline_line2")}
+              </span>
             </h1>
             <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-lg leading-8">
               {t("hero.subheadline")}

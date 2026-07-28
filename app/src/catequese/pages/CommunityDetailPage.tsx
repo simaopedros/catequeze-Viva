@@ -24,7 +24,7 @@ import { useCommunityTypeLabels } from "../../i18n/useLabels";
 import { AppPageHeader } from "../../client/components/brand/AppChrome";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
 
-const AVATAR_COLORS = ["border border-border/70 bg-muted/30 text-[#071A2D]"];
+const AVATAR_COLORS = ["border border-border/70 bg-muted/30 text-brand-ink"];
 
 export default function CommunityDetailPage() {
   const { t } = useTranslation("common");
@@ -167,10 +167,7 @@ export default function CommunityDetailPage() {
               <MapPin className="h-3 w-3" />
               {t("address")}
             </h3>
-            <p
-              className="text-sm font-semibold tracking-tight text-[#071A2D]"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
               {community.street}
               {community.number ? `, ${community.number}` : ""}
             </p>
@@ -185,10 +182,7 @@ export default function CommunityDetailPage() {
               <Phone className="h-3 w-3" />
               {tp("contact")}
             </h3>
-            <p
-              className="text-sm font-semibold tracking-tight text-[#071A2D]"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
               {community.phone}
             </p>
             {community.email && (
@@ -201,10 +195,7 @@ export default function CommunityDetailPage() {
             <Building2 className="h-3 w-3" />
             {tp("summary")}
           </h3>
-          <p
-            className="text-sm font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
             {tp("summary_counts", {
               classes: classes.length,
               families: households.length,
@@ -229,15 +220,15 @@ export default function CommunityDetailPage() {
             onClick={() => setTab(tabItem.id)}
             className={`relative flex items-center gap-1 px-4 py-2.5 text-sm font-medium transition-colors ${
               tab === tabItem.id
-                ? "text-[#071A2D]"
-                : "text-muted-foreground hover:text-[#071A2D]"
+                ? "text-brand-ink"
+                : "text-muted-foreground hover:text-brand-ink"
             }`}
           >
             <tabItem.icon className="h-3.5 w-3.5" />
             {tabItem.label}
             {tab === tabItem.id && (
               <span
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#D39A2B]"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-gold"
                 aria-hidden
               />
             )}
@@ -262,10 +253,7 @@ export default function CommunityDetailPage() {
                   className="flex items-center justify-between rounded-sm border border-border/70 bg-white p-3 transition-colors hover:bg-muted/20"
                 >
                   <div>
-                    <p
-                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
+                    <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                       {cls.name}
                     </p>
                     <p className="text-xs text-muted-foreground">
@@ -300,10 +288,7 @@ export default function CommunityDetailPage() {
                   to={`/app/families/${h.id}`}
                   className="rounded-sm border border-border/70 bg-white p-3 transition-colors hover:bg-muted/20"
                 >
-                  <p
-                    className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                     {h.name}
                   </p>
                   <p className="text-xs text-muted-foreground">
@@ -353,10 +338,7 @@ export default function CommunityDetailPage() {
                     {c.lastName?.[0]}
                   </div>
                   <div className="flex-1">
-                    <p
-                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
+                    <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                       {c.firstName} {c.lastName}
                     </p>
                     <p className="text-xs text-muted-foreground">

@@ -20,9 +20,9 @@ export function FeaturesSection({
     <section id="recursos" className="scroll-mt-20">
       <div className="max-w-6xl mx-auto px-4 pt-20 pb-6">
         <div ref={headerRef} className={`text-center space-y-3 ${headerClass}`}>
-          <div className="mx-auto h-px w-10 bg-[#D39A2B]" aria-hidden />
+          <div className="mx-auto h-px w-10 bg-brand-gold" aria-hidden />
           <h2
-            className="text-title-xl font-semibold tracking-tight text-[#071A2D]"
+            className="text-title-xl font-semibold tracking-tight text-brand-ink"
             style={{ fontFamily: "var(--font-brand-display)" }}
           >
             {t("features_title")}
@@ -76,10 +76,7 @@ function FeatureGridSection({ ns = "landing" }: { ns?: string }) {
         ref={headerRef}
         className={`text-center mb-10 space-y-2 ${headerClass}`}
       >
-        <h3
-          className="text-xl font-semibold tracking-tight text-[#071A2D] sm:text-2xl"
-          style={{ fontFamily: "var(--font-brand-display)" }}
-        >
+        <h3 className="font-brand-display text-xl font-semibold tracking-tight text-brand-ink sm:text-2xl">
           {t("more_features")}
         </h3>
         <p className="text-muted-foreground">{t("more_features_sub")}</p>
@@ -115,10 +112,10 @@ function SecondaryFeatureCard({
       variant="interactive"
       className={`space-y-3 rounded-sm border-border/70 bg-white p-6 ${className}`}
     >
-      <div className="inline-flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
+      <div className="inline-flex h-10 w-10 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-brand-ink">
         <feature.icon className="h-5 w-5" />
       </div>
-      <h4 className="font-semibold text-[#071A2D]">{feature.title}</h4>
+      <h4 className="font-semibold text-brand-ink">{feature.title}</h4>
       <p className="text-body-sm leading-relaxed text-text-secondary">
         {feature.desc}
       </p>

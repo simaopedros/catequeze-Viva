@@ -229,10 +229,7 @@ export default function FamiliesPage() {
               className="group min-h-11 rounded-sm border border-border/70 bg-surface-elevated p-4 transition-colors hover:border-brand-ink/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               <div className="mb-2 flex items-start justify-between gap-2">
-                <h3
-                  className="text-sm font-semibold tracking-tight text-brand-ink group-hover:text-brand-ink-soft"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
+                <h3 className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink group-hover:text-brand-ink-soft">
                   {h.name}
                 </h3>
                 <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-opacity group-hover:opacity-100 sm:opacity-0" />
@@ -250,10 +247,7 @@ export default function FamiliesPage() {
                 </p>
               ) : null}
               <div className="flex items-center gap-4 border-t border-border/60 pt-2 text-overline">
-                <span
-                  className="flex items-center gap-1 font-semibold tracking-tight text-brand-ink"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
+                <span className="font-brand-display flex items-center gap-1 font-semibold tracking-tight text-brand-ink">
                   <Users className="h-3 w-3" />
                   {t("families.catechumens_count", {
                     count: h._count?.catechumens || 0,
@@ -265,10 +259,7 @@ export default function FamiliesPage() {
                     {t("families.no_guardians")}
                   </span>
                 ) : (
-                  <span
-                    className="flex items-center gap-1 font-semibold tracking-tight text-brand-ink"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <span className="font-brand-display flex items-center gap-1 font-semibold tracking-tight text-brand-ink">
                     <User className="h-3 w-3" />
                     {t("families.guardians_count", {
                       count: h.guardians?.length || 0,

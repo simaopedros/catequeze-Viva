@@ -42,10 +42,7 @@ export function CoPilotPanel() {
                 ? ta(`hub.${intent}` as any, t("workspace.copilot"))
                 : t("workspace.copilot")}
             </AppEyebrow>
-            <p
-              className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <p className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
               {contentItem?.theme || t("workspace.awaiting_theme")}
             </p>
             <AppGoldRule className="w-6" />
@@ -79,8 +76,8 @@ export function CoPilotPanel() {
               className={cn(
                 "flex min-w-0 items-center justify-center gap-1.5 px-2 py-2 text-caption font-medium transition-colors",
                 view === "briefing"
-                  ? "bg-[#071A2D] text-white"
-                  : "text-muted-foreground hover:text-[#071A2D]",
+                  ? "bg-brand-ink text-white"
+                  : "text-muted-foreground hover:text-brand-ink",
               )}
             >
               <FileText className="h-3.5 w-3.5" />
@@ -91,8 +88,8 @@ export function CoPilotPanel() {
               className={cn(
                 "flex min-w-0 items-center justify-center gap-1.5 px-2 py-2 text-caption font-medium transition-colors",
                 view === "refine"
-                  ? "bg-[#071A2D] text-white"
-                  : "text-muted-foreground hover:text-[#071A2D]",
+                  ? "bg-brand-ink text-white"
+                  : "text-muted-foreground hover:text-brand-ink",
               )}
             >
               <SlidersHorizontal className="h-3.5 w-3.5" />

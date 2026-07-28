@@ -17,10 +17,10 @@ export function NotFoundPage() {
       <main className="flex flex-1 items-center justify-center px-4">
         <div className="max-w-md space-y-6 text-center">
           <div className="inline-flex rounded-sm border border-border/70 bg-muted/30 p-4">
-            <FileQuestion className="h-10 w-10 text-[#071A2D]" />
+            <FileQuestion className="h-10 w-10 text-brand-ink" />
           </div>
           <div className="space-y-2.5">
-            <AppDisplayTitle className="text-6xl text-[#071A2D] sm:text-6xl">
+            <AppDisplayTitle className="text-6xl text-brand-ink sm:text-6xl">
               404
             </AppDisplayTitle>
             <AppGoldRule className="mx-auto" />

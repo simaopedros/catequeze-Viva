@@ -6,12 +6,12 @@ import { cn } from "../../utils";
 const cardVariants = cva("rounded-sm border", {
   variants: {
     variant: {
-      default: "border-border/70 bg-white text-[#071A2D]",
+      default: "border-border/70 bg-surface-elevated text-brand-ink",
       accent: "bg-card-accent text-card-accent-foreground",
       bento:
         "border-none bg-card-subtle text-card-subtle-foreground shadow-none",
       interactive:
-        "cursor-pointer border-border/70 bg-white text-[#071A2D] transition-colors hover:border-[#071A2D]/30",
+        "cursor-pointer border-border/70 bg-surface-elevated text-brand-ink transition-colors hover:border-brand-ink/30",
       flat: "border-0 bg-muted/50 shadow-none",
     },
   },
@@ -41,15 +41,14 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-function CardTitle({ className, style, ...props }: React.ComponentProps<"h3">) {
+function CardTitle({ className, ...props }: React.ComponentProps<"h3">) {
   return (
     <h3
       data-slot="card-title"
       className={cn(
-        "font-semibold leading-none tracking-tight text-[#071A2D]",
+        "font-brand-display font-semibold leading-none tracking-tight text-brand-ink",
         className,
       )}
-      style={{ fontFamily: "var(--font-brand-display)", ...style }}
       {...props}
     />
   );

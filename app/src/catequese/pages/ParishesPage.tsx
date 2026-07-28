@@ -36,8 +36,8 @@ const PLAN_KEYS: Record<string, string> = {
 };
 
 const STATUS_KEYS: Record<string, { key: string; color: string }> = {
-  ACTIVE: { key: "active", color: "bg-[#071A2D]/08 text-[#071A2D]" },
-  TRIAL: { key: "trial", color: "bg-[#D39A2B]/15 text-[#8A6418]" },
+  ACTIVE: { key: "active", color: "bg-brand-ink/8 text-brand-ink" },
+  TRIAL: { key: "trial", color: "bg-brand-gold/15 text-brand-gold-muted" },
   PAST_DUE: {
     key: "past_due",
     color: "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400",
@@ -203,7 +203,7 @@ export default function ParishesPage() {
             <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               {tp("new_parish")}
             </h3>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            <div className="h-px w-8 bg-brand-gold" aria-hidden />
           </div>
           <div className="flex flex-wrap gap-3 items-end">
             <Input
@@ -289,15 +289,12 @@ export default function ParishesPage() {
               <div
                 key={p.id}
                 onClick={() => navigate("/app/parishes/" + p.id)}
-                className="group cursor-pointer rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-[#071A2D]/30"
+                className="group cursor-pointer rounded-sm border border-border/70 bg-white p-5 transition-colors hover:border-brand-ink/30"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <h3
-                        className="truncate font-semibold tracking-tight text-[#071A2D] transition-colors group-hover:text-[#0a2540]"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
+                      <h3 className="font-brand-display truncate font-semibold tracking-tight text-brand-ink transition-colors group-hover:text-brand-ink-soft">
                         {p.name}
                       </h3>
                       {!isActive && (

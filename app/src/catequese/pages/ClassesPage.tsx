@@ -314,10 +314,7 @@ export default function ClassesPage() {
                       key={i}
                       className="rounded-sm border border-border/70 bg-surface-elevated px-4 py-4"
                     >
-                      <p
-                        className="text-sm font-semibold tracking-tight text-brand-ink"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
+                      <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                         {i + 1}. {step}
                       </p>
                     </div>
@@ -391,10 +388,7 @@ export default function ClassesPage() {
               key: "name",
               header: t("table_class"),
               render: (cls: any) => (
-                <span
-                  className="font-semibold tracking-tight text-brand-ink"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
+                <span className="font-brand-display font-semibold tracking-tight text-brand-ink">
                   {cls.name}
                 </span>
               ),
@@ -490,10 +484,7 @@ export default function ClassesPage() {
               <div className="relative z-[1] pointer-events-none">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
-                    <p
-                      className="truncate text-lg font-semibold tracking-tight text-brand-ink group-hover:text-brand-ink-soft"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
+                    <p className="font-brand-display truncate text-lg font-semibold tracking-tight text-brand-ink group-hover:text-brand-ink-soft">
                       {cls.name}
                     </p>
                     {cls.stage && (

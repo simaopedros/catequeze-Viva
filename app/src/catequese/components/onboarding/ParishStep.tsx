@@ -161,10 +161,7 @@ export function ParishStep({
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {t("parish.diocese_context_label")}
           </p>
-          <p
-            className="mt-0.5 text-sm font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <p className="font-brand-display mt-0.5 text-sm font-semibold tracking-tight text-brand-ink">
             {diocese.name}
             {diocese.state ? ` (${diocese.state})` : ""}
           </p>
@@ -207,10 +204,7 @@ export function ParishStep({
       <div className="max-h-64 space-y-3 overflow-y-auto">
         {!shouldShowResults && (
           <div className="border border-border/70 px-4 py-4 rounded-sm">
-            <p
-              className="text-sm font-semibold tracking-tight text-[#071A2D]"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
               {t("parish.start_hint_title")}
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -232,15 +226,12 @@ export function ParishStep({
                 className={cn(
                   "mb-1 flex w-full items-center gap-2 border px-3 py-2.5 text-left text-sm transition-colors rounded-sm",
                   selectedDbId === p.id
-                    ? "border-[#071A2D]/40 bg-muted/30"
+                    ? "border-brand-ink/40 bg-muted/30"
                     : "border-border/70 hover:bg-muted/30",
                 )}
               >
                 <div className="min-w-0 flex-1">
-                  <span
-                    className="font-semibold tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <span className="font-brand-display font-semibold tracking-tight text-brand-ink">
                     {p.name}
                   </span>
                   {p.city && (
@@ -251,7 +242,7 @@ export function ParishStep({
                   )}
                 </div>
                 {selectedDbId === p.id && (
-                  <Check className="h-4 w-4 shrink-0 text-[#071A2D]" />
+                  <Check className="h-4 w-4 shrink-0 text-brand-ink" />
                 )}
               </button>
             ))}
@@ -271,15 +262,12 @@ export function ParishStep({
                 className={cn(
                   "mb-1 flex w-full items-center gap-2 border px-3 py-2.5 text-left text-sm transition-colors rounded-sm",
                   selectedOsm?.osmId === op.osmId
-                    ? "border-[#071A2D]/40 bg-muted/30"
+                    ? "border-brand-ink/40 bg-muted/30"
                     : "border-border/70 hover:bg-muted/30",
                 )}
               >
                 <div className="min-w-0 flex-1">
-                  <span
-                    className="font-semibold tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <span className="font-brand-display font-semibold tracking-tight text-brand-ink">
                     {op.name}
                   </span>
                   {op.address && (
@@ -289,7 +277,7 @@ export function ParishStep({
                   )}
                 </div>
                 {selectedOsm?.osmId === op.osmId && (
-                  <Check className="h-4 w-4 shrink-0 text-[#071A2D]" />
+                  <Check className="h-4 w-4 shrink-0 text-brand-ink" />
                 )}
               </button>
             ))}
@@ -310,7 +298,7 @@ export function ParishStep({
             setShowCreate(true);
             setNewName(searchQuery);
           }}
-          className="w-full border border-dashed border-border/80 px-3 py-2.5 text-left text-sm text-muted-foreground transition-colors rounded-sm hover:border-[#071A2D]/40 hover:text-[#071A2D]"
+          className="w-full border border-dashed border-border/80 px-3 py-2.5 text-left text-sm text-muted-foreground transition-colors rounded-sm hover:border-brand-ink/40 hover:text-brand-ink"
         >
           {t("parish.create_link")}
         </button>
@@ -329,10 +317,7 @@ export function ParishStep({
           {duplicateParish && (
             <div className="border border-border/70 px-3 py-2 text-xs text-muted-foreground rounded-sm">
               {t("parish.duplicate_warning")}{" "}
-              <strong
-                className="font-semibold tracking-tight text-[#071A2D]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <strong className="font-brand-display font-semibold tracking-tight text-brand-ink">
                 {duplicateParish.name}
               </strong>
               {duplicateParish.city && (
@@ -355,7 +340,7 @@ export function ParishStep({
                   setShowCreate(false);
                   setNewName("");
                 }}
-                className="ml-2 font-medium text-[#071A2D] underline underline-offset-2"
+                className="ml-2 font-medium text-brand-ink underline underline-offset-2"
               >
                 {t("parish.use_this")}
               </button>

@@ -83,7 +83,7 @@ export default function InviteAcceptPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
-        <Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" />
+        <Loader2 className="h-8 w-8 animate-spin text-brand-ink" />
       </div>
     );
   }
@@ -115,7 +115,7 @@ export default function InviteAcceptPage() {
           </div>
           <Link
             to="/"
-            className="text-[#071A2D] underline underline-offset-2 text-sm"
+            className="text-brand-ink underline underline-offset-2 text-sm"
           >
             {t("invite.back_portal")}
           </Link>
@@ -175,7 +175,7 @@ export default function InviteAcceptPage() {
         <div className="space-y-4 rounded-sm border border-border/70 bg-white p-6">
           <div className="flex items-center gap-4">
             <div className="rounded-sm border border-border/70 bg-muted/30 p-3">
-              <Church className="h-6 w-6 text-[#071A2D]" />
+              <Church className="h-6 w-6 text-brand-ink" />
             </div>
             <div>
               <AppDisplayTitle as="h2" className="text-lg sm:text-lg">
@@ -237,13 +237,13 @@ export default function InviteAcceptPage() {
             </p>
             <Link
               to={`/entrar?token=${token}`}
-              className="block h-10 w-full rounded-sm bg-[#071A2D] px-4 py-2 text-center text-sm font-medium text-white transition-colors hover:bg-[#0a2540]"
+              className="block h-10 w-full rounded-sm bg-brand-ink px-4 py-2 text-center text-sm font-medium text-white transition-colors hover:bg-brand-ink-soft"
             >
               {t("invite.login")}
             </Link>
             <Link
               to={`/criar-conta?token=${token}`}
-              className="block h-10 w-full rounded-sm border border-input bg-background px-4 py-2 text-center text-sm font-medium text-[#071A2D] transition-colors hover:bg-muted/30"
+              className="block h-10 w-full rounded-sm border border-input bg-background px-4 py-2 text-center text-sm font-medium text-brand-ink transition-colors hover:bg-muted/30"
             >
               {t("invite.signup")}
             </Link>

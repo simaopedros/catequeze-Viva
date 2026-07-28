@@ -15,17 +15,14 @@ export function AttendanceMock({ ns = "landing" }: { ns?: string }) {
     <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-overline sm:text-xs">
       <div className="flex items-center justify-between">
         <div>
-          <p
-            className="text-sm font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
             {t("mockup_attendance.title")}
           </p>
           <p className="text-muted-foreground flex items-center gap-1">
             <Clock className="h-3 w-3" /> {t("mockup_attendance.meeting")}
           </p>
         </div>
-        <div className="rounded-sm bg-[#071A2D]/08 px-2 py-0.5 text-[#071A2D] font-medium flex items-center gap-1">
+        <div className="rounded-sm bg-brand-ink/8 px-2 py-0.5 text-brand-ink font-medium flex items-center gap-1">
           <Users className="h-3 w-3" /> 18
         </div>
       </div>
@@ -54,7 +51,7 @@ export function AttendanceMock({ ns = "landing" }: { ns?: string }) {
           },
         ].map((s) => (
           <div key={s.l} className={`rounded-sm p-2 text-center ${s.c}`}>
-            <p className="text-sm font-semibold tabular-nums tracking-tight text-[#071A2D]">
+            <p className="text-sm font-semibold tabular-nums tracking-tight text-brand-ink">
               {s.v}
             </p>
             <p className="text-overline">{s.l}</p>
@@ -68,7 +65,7 @@ export function AttendanceMock({ ns = "landing" }: { ns?: string }) {
             key={s.name}
             className="flex items-center justify-between px-3 py-2"
           >
-            <span className="font-semibold tracking-tight text-[#071A2D]">
+            <span className="font-semibold tracking-tight text-brand-ink">
               {s.name}
             </span>
             <div className="flex gap-1">

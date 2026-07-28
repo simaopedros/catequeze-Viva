@@ -735,10 +735,7 @@ function AgendaView({
               style={{ background: e.color || DEFAULT_COLOR }}
             />
             <div className="min-w-0 flex-1">
-              <p
-                className="truncate text-sm font-semibold tracking-tight text-brand-ink"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <p className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
                 {e.name}
                 {e.className && (
                   <span className="ml-1 text-overline font-medium text-muted-foreground">
@@ -874,10 +871,7 @@ function SidePanelContent({
                     style={{ background: e.color || DEFAULT_COLOR }}
                   />
                   <div className="min-w-0">
-                    <p
-                      className="truncate text-xs font-semibold tracking-tight text-brand-ink"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
+                    <p className="font-brand-display truncate text-xs font-semibold tracking-tight text-brand-ink">
                       {e.name}
                     </p>
                     <p className="text-overline text-muted-foreground">
@@ -963,10 +957,7 @@ function SidePanelContent({
                   style={{ background: e.color || DEFAULT_COLOR }}
                 />
                 <div className="min-w-0">
-                  <p
-                    className="truncate text-sm font-semibold tracking-tight text-brand-ink"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <p className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
                     {e.name}
                     {e.className && (
                       <span className="ml-1 text-overline font-medium text-muted-foreground">

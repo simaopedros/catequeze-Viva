@@ -72,10 +72,7 @@ export function EmptyState({
             <Icon className="h-5 w-5 text-brand-ink" />
           </div>
         )}
-        <p
-          className="text-body-sm font-semibold tracking-tight text-brand-ink"
-          style={{ fontFamily: "var(--font-brand-display)" }}
-        >
+        <p className="font-brand-display text-body-sm font-semibold tracking-tight text-brand-ink">
           {title}
         </p>
         {description && (
@@ -100,10 +97,7 @@ export function EmptyState({
           <Icon className="h-8 w-8 text-brand-ink" />
         </div>
       )}
-      <h3
-        className="text-lg font-semibold tracking-tight text-brand-ink"
-        style={{ fontFamily: "var(--font-brand-display)" }}
-      >
+      <h3 className="font-brand-display text-lg font-semibold tracking-tight text-brand-ink">
         {title}
       </h3>
       <div className="mx-auto mt-2 h-px w-8 bg-brand-gold" aria-hidden />

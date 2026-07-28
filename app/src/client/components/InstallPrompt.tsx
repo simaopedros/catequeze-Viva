@@ -25,8 +25,8 @@ export function InstallPrompt() {
           className="flex items-center gap-2 rounded-sm border border-border/70 bg-white px-3 py-2 text-xs font-medium transition-colors hover:bg-muted/40"
           aria-label={t("install_title")}
         >
-          <Download className="h-3.5 w-3.5 text-[#071A2D]" />
-          <span className="font-semibold tracking-tight text-[#071A2D]">
+          <Download className="h-3.5 w-3.5 text-brand-ink" />
+          <span className="font-semibold tracking-tight text-brand-ink">
             {t("install_button")}
           </span>
           <button
@@ -48,13 +48,10 @@ export function InstallPrompt() {
     <div className="fixed bottom-24 left-2 right-2 z-overlay sm:bottom-6 sm:left-auto sm:right-4 sm:max-w-xs animate-in slide-in-from-bottom-5 fade-in duration-300">
       <div className="flex items-center gap-3 rounded-sm border border-border/70 bg-white p-3 ">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30">
-          <Download className="h-5 w-5 text-[#071A2D]" />
+          <Download className="h-5 w-5 text-brand-ink" />
         </div>
         <div className="flex-1 min-w-0">
-          <p
-            className="text-sm font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
             {t("install_title")}
           </p>
           <p className="text-xs text-muted-foreground">
@@ -64,7 +61,7 @@ export function InstallPrompt() {
         <div className="flex items-center gap-1 shrink-0">
           <Button
             size="sm"
-            className="h-8 rounded-sm bg-[#071A2D] text-xs text-white hover:bg-[#0a2540]"
+            className="h-8 rounded-sm bg-brand-ink text-xs text-white hover:bg-brand-ink-soft"
             onClick={promptInstall}
           >
             {t("install_button")}

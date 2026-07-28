@@ -137,8 +137,8 @@ export function PlanLimitBanner({
           className,
         )}
       >
-        <Icon className="h-3.5 w-3.5 shrink-0 text-[#071A2D]" />
-        <span className="min-w-0 truncate text-xs font-medium tracking-tight text-[#071A2D]">
+        <Icon className="h-3.5 w-3.5 shrink-0 text-brand-ink" />
+        <span className="min-w-0 truncate text-xs font-medium tracking-tight text-brand-ink">
           {currentCount}/{maxAllowed === null ? "∞" : maxAllowed} {label}
           {plural} · {currentPlanName}
         </span>
@@ -162,21 +162,18 @@ export function PlanLimitBanner({
   return (
     <div
       className={cn(
-        "space-y-3 rounded-sm border-l-2 border-l-[#071A2D]/60 bg-muted/20 px-4 py-3.5",
+        "space-y-3 rounded-sm border-l-2 border-l-brand-ink/60 bg-muted/20 px-4 py-3.5",
         className,
       )}
     >
       <div className="flex items-start gap-3">
-        <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[#071A2D]/50" />
+        <Icon className="mt-0.5 h-4 w-4 shrink-0 text-brand-ink/50" />
         <div className="min-w-0 space-y-1.5">
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {t("limit_reached_title")}
           </p>
-          <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
-          <p
-            className="text-sm font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <div className="h-px w-8 bg-brand-gold" aria-hidden />
+          <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
             {variant === "managed_workspace_notice"
               ? t("limit_reached_label", { label })
               : contextualTitle}

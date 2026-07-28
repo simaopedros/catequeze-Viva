@@ -174,13 +174,13 @@ export function ActivationChecklist({
     };
 
     return (
-      <section className="rounded-sm border border-[#D39A2B]/40 bg-white p-5">
+      <section className="rounded-sm border border-brand-gold/40 bg-white p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-2">
             <AppEyebrow>{t("activation.celebrate_eyebrow")}</AppEyebrow>
             <AppDisplayTitle as="h2" className="text-lg sm:text-lg">
               <span className="inline-flex items-center gap-2">
-                <PartyPopper className="h-5 w-5 text-[#D39A2B]" aria-hidden />
+                <PartyPopper className="h-5 w-5 text-brand-gold" aria-hidden />
                 {t("activation.celebrate_title")}
               </span>
             </AppDisplayTitle>
@@ -259,14 +259,11 @@ export function ActivationChecklist({
       </div>
 
       {next && (
-        <div className="mb-4 rounded-sm border border-[#071A2D]/15 bg-muted/30 p-4">
+        <div className="mb-4 rounded-sm border border-brand-ink/15 bg-muted/30 p-4">
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {t("activation.next_label")}
           </p>
-          <p
-            className="mt-1 text-base font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <p className="font-brand-display mt-1 text-base font-semibold tracking-tight text-brand-ink">
             {next.title}
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -296,7 +293,7 @@ export function ActivationChecklist({
               )}
             >
               {step.done ? (
-                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[#071A2D]" />
+                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-brand-ink" />
               ) : (
                 <Circle className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground/40" />
               )}
@@ -306,7 +303,7 @@ export function ActivationChecklist({
                     "block text-sm font-semibold tracking-tight",
                     step.done
                       ? "text-muted-foreground line-through"
-                      : "text-[#071A2D]",
+                      : "text-brand-ink",
                   )}
                   style={
                     step.done

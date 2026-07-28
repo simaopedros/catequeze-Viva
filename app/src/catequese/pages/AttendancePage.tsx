@@ -635,7 +635,7 @@ export default function AttendancePage() {
                         "PRESENT",
                       )
                     }
-                    className="rounded-sm border border-[#071A2D]/25 bg-[#071A2D]/08 px-1.5 py-0.5 text-[#071A2D] hover:bg-[#071A2D]/12 dark:border-[#071A2D]/30 dark:bg-[#071A2D]/10 dark:text-[#071A2D]"
+                    className="rounded-sm border border-brand-ink/25 bg-brand-ink/8 px-1.5 py-0.5 text-brand-ink hover:bg-brand-ink/12 dark:border-brand-ink/30 dark:bg-brand-ink/10 dark:text-brand-ink"
                     title={t("matrix.mark_all_present")}
                   >
                     ✓{t("matrix.present_letter")}
@@ -698,10 +698,7 @@ export default function AttendancePage() {
                 <tbody>
                   {filteredCatechumens.map((cat: any) => (
                     <tr key={cat.id} className="border-t hover:bg-muted/30">
-                      <td
-                        className="sticky left-0 z-10 border-r border-border/70 bg-white p-2 font-semibold tracking-tight text-[#071A2D]"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
+                      <td className="font-brand-display sticky left-0 z-10 border-r border-border/70 bg-white p-2 font-semibold tracking-tight text-brand-ink">
                         {cat.firstName} {cat.lastName}
                       </td>
                       {meetings.map((m: any) => {
@@ -720,7 +717,7 @@ export default function AttendancePage() {
                         );
                       })}
                       <td className="bg-muted/20 p-1 text-center">
-                        <span className="text-sm font-semibold tabular-nums text-[#071A2D]">
+                        <span className="text-sm font-semibold tabular-nums text-brand-ink">
                           {meetings.length > 0
                             ? Math.round(
                                 (Object.values(matrix).filter(
@@ -745,7 +742,7 @@ export default function AttendancePage() {
                     </td>
                     {meetings.map((m: any) => (
                       <td key={m.id} className="p-2 text-center text-overline">
-                        <span className="text-[#071A2D] dark:text-[#071A2D]">
+                        <span className="text-brand-ink dark:text-brand-ink">
                           {stats[m.id]?.presentes || 0}
                           {t("matrix.present_letter")}
                         </span>{" "}
@@ -759,7 +756,7 @@ export default function AttendancePage() {
                         </span>
                       </td>
                     ))}
-                    <td className="bg-muted/30 p-2 text-center text-sm font-semibold tabular-nums text-[#071A2D]">
+                    <td className="bg-muted/30 p-2 text-center text-sm font-semibold tabular-nums text-brand-ink">
                       {getOverallPct()}%
                     </td>
                   </tr>

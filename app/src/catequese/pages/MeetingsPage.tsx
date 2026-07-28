@@ -305,10 +305,7 @@ export default function MeetingsPage() {
               />
               <div className="relative z-[1] flex items-start justify-between gap-3 pointer-events-none">
                 <div className="min-w-0 flex-1">
-                  <p
-                    className="text-sm font-semibold tracking-tight text-brand-ink"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                     {m.title || t("no_title")}
                   </p>
                   <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">

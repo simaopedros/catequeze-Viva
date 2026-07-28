@@ -29,7 +29,7 @@ export default function FamilyInviteCodePage() {
       <div className="w-full max-w-md space-y-8">
         <div className="space-y-2.5 text-center">
           <div className="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-sm border border-border/70 bg-muted/30">
-            <Mail className="h-6 w-6 text-[#071A2D]" />
+            <Mail className="h-6 w-6 text-brand-ink" />
           </div>
           <AppEyebrow className="text-center">{t("portal_badge")}</AppEyebrow>
           <AppDisplayTitle className="text-center">

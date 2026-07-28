@@ -48,11 +48,11 @@ const STATUS_ICONS: Record<string, typeof CheckCircle> = {
 
 const STATUS_COLORS: Record<string, string> = {
   PENDING: "text-muted-foreground",
-  IN_PROGRESS: "text-[#071A2D]",
-  WAITING_APPROVAL: "text-[#D39A2B]",
-  APPROVED: "text-[#071A2D]",
+  IN_PROGRESS: "text-brand-ink",
+  WAITING_APPROVAL: "text-brand-gold",
+  APPROVED: "text-brand-ink",
   REJECTED: "text-red-500",
-  COMPLETED: "text-[#071A2D]",
+  COMPLETED: "text-brand-ink",
 };
 
 export default function SacramentalJourneyDetailPage() {
@@ -244,10 +244,7 @@ export default function SacramentalJourneyDetailPage() {
             </div>
           ) : (
             <div className="flex items-center gap-2 flex-1">
-              <span
-                className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <span className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                 {targetDate
                   ? t("detail.sacrament_date", {
                       date: formatDate(targetDate, currentLocale),
@@ -278,7 +275,7 @@ export default function SacramentalJourneyDetailPage() {
             <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               {t("detail.progress")}
             </span>
-            <span className="text-sm font-semibold tabular-nums text-[#071A2D]">
+            <span className="text-sm font-semibold tabular-nums text-brand-ink">
               {t("detail.progress_count", { done, total, pct })}
             </span>
           </div>
@@ -286,9 +283,9 @@ export default function SacramentalJourneyDetailPage() {
             <div
               className={`h-3 rounded-sm transition-all ${
                 pct === 100
-                  ? "bg-[#071A2D]"
+                  ? "bg-brand-ink"
                   : pct >= 50
-                    ? "bg-[#D39A2B]"
+                    ? "bg-brand-gold"
                     : "bg-muted-foreground/40"
               }`}
               style={{ width: `${pct}%` }}
@@ -305,7 +302,7 @@ export default function SacramentalJourneyDetailPage() {
             )}
             {waitingApproval > 0 && (
               <span className="flex items-center gap-1">
-                <AlertTriangle className="h-3 w-3 text-[#D39A2B]" />
+                <AlertTriangle className="h-3 w-3 text-brand-gold" />
                 {t("detail.waiting_approval_count", { count: waitingApproval })}
               </span>
             )}
@@ -359,7 +356,7 @@ export default function SacramentalJourneyDetailPage() {
                       : m.status === "APPROVED" || m.status === "COMPLETED"
                         ? "border-border/70 bg-muted/20"
                         : isOverdue
-                          ? "border-[#D39A2B]/40 bg-muted/30"
+                          ? "border-brand-gold/40 bg-muted/30"
                           : "border-border/70 bg-white"
                   }`}
                 >
@@ -369,10 +366,7 @@ export default function SacramentalJourneyDetailPage() {
                         <Icon className="h-5 w-5" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p
-                          className="flex flex-wrap items-center gap-2 text-sm font-semibold tracking-tight text-[#071A2D]"
-                          style={{ fontFamily: "var(--font-brand-display)" }}
-                        >
+                        <p className="font-brand-display flex flex-wrap items-center gap-2 text-sm font-semibold tracking-tight text-brand-ink">
                           {tm?.name}
                           {tm?.required && (
                             <Badge variant="outline" className="text-overline">
@@ -387,7 +381,7 @@ export default function SacramentalJourneyDetailPage() {
                           {isOverdue && (
                             <Badge
                               variant="outline"
-                              className="text-overline border-[#D39A2B]/40 text-[#8A6418]"
+                              className="text-overline border-brand-gold/40 text-brand-gold-muted"
                             >
                               {t("detail.overdue")}
                             </Badge>
@@ -402,7 +396,7 @@ export default function SacramentalJourneyDetailPage() {
                           <p
                             className={`text-xs mt-0.5 flex items-center gap-1 ${
                               isOverdue
-                                ? "text-[#8A6418] font-medium"
+                                ? "text-brand-gold-muted font-medium"
                                 : "text-muted-foreground"
                             }`}
                           >
@@ -491,7 +485,7 @@ export default function SacramentalJourneyDetailPage() {
                               <div className="flex items-center gap-2">
                                 <a
                                   href={m.evidenceUrl}
-                                  className="text-xs text-[#071A2D] hover:underline flex items-center gap-1"
+                                  className="text-xs text-brand-ink hover:underline flex items-center gap-1"
                                   target="_blank"
                                   rel="noreferrer"
                                 >
@@ -499,7 +493,7 @@ export default function SacramentalJourneyDetailPage() {
                                   {t("detail.view_evidence")}
                                 </a>
                                 {canManage && (
-                                  <label className="cursor-pointer text-xs text-muted-foreground hover:text-[#071A2D]">
+                                  <label className="cursor-pointer text-xs text-muted-foreground hover:text-brand-ink">
                                     <Upload className="h-3 w-3 inline mr-0.5" />
                                     {t("detail.replace")}
                                     <input
@@ -518,7 +512,7 @@ export default function SacramentalJourneyDetailPage() {
                                 className={`cursor-pointer text-xs flex items-center gap-1 ${
                                   uploadingFor === m.id
                                     ? "text-muted-foreground"
-                                    : "text-[#071A2D] hover:underline"
+                                    : "text-brand-ink hover:underline"
                                 }`}
                               >
                                 {uploadingFor === m.id ? (
@@ -553,7 +547,7 @@ export default function SacramentalJourneyDetailPage() {
                         variant="outline"
                         className={`text-overline ${
                           m.status === "COMPLETED" || m.status === "APPROVED"
-                            ? "border-[#071A2D]/25 text-[#071A2D]"
+                            ? "border-brand-ink/25 text-brand-ink"
                             : m.status === "REJECTED"
                               ? "border-red-300 text-red-700"
                               : ""
@@ -570,7 +564,7 @@ export default function SacramentalJourneyDetailPage() {
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="h-7 text-overline text-[#071A2D]"
+                              className="h-7 text-overline text-brand-ink"
                               onClick={() =>
                                 handleUpdateStatus(m.id, "COMPLETED")
                               }
@@ -580,7 +574,7 @@ export default function SacramentalJourneyDetailPage() {
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="h-7 text-overline text-[#8A6418]"
+                              className="h-7 text-overline text-brand-gold-muted"
                               onClick={() =>
                                 handleUpdateStatus(m.id, "WAITING_APPROVAL")
                               }
@@ -596,7 +590,7 @@ export default function SacramentalJourneyDetailPage() {
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-7 text-overline text-[#071A2D]"
+                            className="h-7 text-overline text-brand-ink"
                             onClick={() =>
                               handleUpdateStatus(m.id, "COMPLETED")
                             }
@@ -610,7 +604,7 @@ export default function SacramentalJourneyDetailPage() {
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-7 text-overline text-[#071A2D]"
+                            className="h-7 text-overline text-brand-ink"
                             onClick={() => handleUpdateStatus(m.id, "APPROVED")}
                           >
                             ✓ {t("detail.status.approved")}
@@ -651,15 +645,12 @@ export default function SacramentalJourneyDetailPage() {
         <div className="rounded-sm border border-border/70 bg-white p-4">
           <div className="mb-2 space-y-1.5">
             <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              <BookOpen className="h-3.5 w-3.5 text-[#071A2D]" />
+              <BookOpen className="h-3.5 w-3.5 text-brand-ink" />
               {t("detail.template")}
             </h3>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            <div className="h-px w-8 bg-brand-gold" aria-hidden />
           </div>
-          <p
-            className="text-sm font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
             {journey.template.name}
           </p>
           <p className="text-xs text-muted-foreground">

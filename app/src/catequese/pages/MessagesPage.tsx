@@ -395,10 +395,7 @@ export default function MessagesPage() {
                 </button>
 
                 <div className="min-w-0 flex-1 space-y-0.5">
-                  <h2
-                    className="truncate text-sm font-semibold tracking-tight text-brand-ink"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <h2 className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
                     {conversationName || t("default_conversation")}
                   </h2>
                   <div className="h-px w-6 bg-brand-gold" aria-hidden />
@@ -470,10 +467,7 @@ export default function MessagesPage() {
                     <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-sm border border-destructive/20 bg-destructive/10">
                       <MessageSquareText className="h-7 w-7 text-destructive" />
                     </div>
-                    <h3
-                      className="mb-1 text-base font-semibold tracking-tight text-brand-ink"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
+                    <h3 className="font-brand-display mb-1 text-base font-semibold tracking-tight text-brand-ink">
                       {t("load_error_title")}
                     </h3>
                     <div
@@ -515,12 +509,7 @@ export default function MessagesPage() {
                               .toUpperCase() || "?"}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p
-                              className="truncate text-xs font-semibold tracking-tight text-brand-ink"
-                              style={{
-                                fontFamily: "var(--font-brand-display)",
-                              }}
-                            >
+                            <p className="font-brand-display truncate text-xs font-semibold tracking-tight text-brand-ink">
                               {[p.user.firstName, p.user.lastName]
                                 .filter(Boolean)
                                 .join(" ") || p.user.email}
@@ -566,10 +555,7 @@ export default function MessagesPage() {
 
               <div className="mb-5 grid w-full max-w-xs gap-2">
                 <div className="rounded-sm border border-border/70 bg-surface-elevated p-2.5 text-left text-xs">
-                  <span
-                    className="font-semibold tracking-tight text-brand-ink"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <span className="font-brand-display font-semibold tracking-tight text-brand-ink">
                     {t("use_case_class")}
                   </span>
                   <p className="mt-0.5 text-muted-foreground">
@@ -577,10 +563,7 @@ export default function MessagesPage() {
                   </p>
                 </div>
                 <div className="rounded-sm border border-border/70 bg-surface-elevated p-2.5 text-left text-xs">
-                  <span
-                    className="font-semibold tracking-tight text-brand-ink"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <span className="font-brand-display font-semibold tracking-tight text-brand-ink">
                     {t("use_case_notice")}
                   </span>
                   <p className="mt-0.5 text-muted-foreground">
@@ -588,10 +571,7 @@ export default function MessagesPage() {
                   </p>
                 </div>
                 <div className="rounded-sm border border-border/70 bg-surface-elevated p-2.5 text-left text-xs">
-                  <span
-                    className="font-semibold tracking-tight text-brand-ink"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <span className="font-brand-display font-semibold tracking-tight text-brand-ink">
                     {t("use_case_direct")}
                   </span>
                   <p className="mt-0.5 text-muted-foreground">

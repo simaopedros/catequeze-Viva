@@ -43,7 +43,7 @@ export function OnboardingShell({
   return (
     <div className="flex min-h-screen flex-col bg-surface-elevated">
       {/* Mobile top bar */}
-      <header className="border-b border-brand-ink/08 bg-surface-elevated lg:hidden">
+      <header className="border-b border-brand-ink/8 bg-surface-elevated lg:hidden">
         <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4">
           <Link to="/">
             <BrandLockup compact hideBadge />
@@ -100,8 +100,8 @@ export function OnboardingShell({
                       <span
                         className={cn(
                           "flex h-7 w-7 items-center justify-center rounded-sm border border-border/70 text-[11px] font-semibold tabular-nums",
-                          done && "bg-[#D39A2B] text-[#071A2D]",
-                          current && "bg-white text-[#071A2D]",
+                          done && "bg-brand-gold text-brand-ink",
+                          current && "bg-white text-brand-ink",
                           !done &&
                             !current &&
                             "border border-white/25 text-white/50",
@@ -113,7 +113,7 @@ export function OnboardingShell({
                         <span
                           className={cn(
                             "mt-1 w-px flex-1 min-h-[12px]",
-                            done ? "bg-[#D39A2B]/60" : "bg-white/15",
+                            done ? "bg-brand-gold/60" : "bg-white/15",
                           )}
                         />
                       )}

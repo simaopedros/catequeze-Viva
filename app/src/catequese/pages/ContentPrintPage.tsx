@@ -263,7 +263,7 @@ export default function ContentPrintPage() {
           </Badge>
           <Badge
             variant="outline"
-            className="rounded-sm border-[#D39A2B]/40 text-[10px] font-semibold uppercase tracking-wide text-[#8A6418]"
+            className="rounded-sm border-brand-gold/40 text-[10px] font-semibold uppercase tracking-wide text-brand-gold-muted"
           >
             {t("print_page.preview_badge", {
               defaultValue: "Pré-impressão A4",
@@ -271,7 +271,7 @@ export default function ContentPrintPage() {
           </Badge>
           <Button
             onClick={() => window.print()}
-            className="h-9 gap-2 rounded-sm bg-[#071A2D] shadow-none hover:bg-[#0a2540]"
+            className="h-9 gap-2 rounded-sm bg-brand-ink shadow-none hover:bg-brand-ink-soft"
           >
             <Printer className="h-4 w-4" />
             {t("print_page.print_pdf")}
@@ -287,23 +287,20 @@ export default function ContentPrintPage() {
         >
           <div
             id="print-content"
-            className="px-6 py-8 text-[#071A2D] sm:px-10 sm:py-10"
+            className="px-6 py-8 text-brand-ink sm:px-10 sm:py-10"
           >
             <header
-              className="print-doc-header print-keep mb-8 border-b border-[#071A2D]/15 pb-6 text-center"
+              className="print-doc-header print-keep mb-8 border-b border-brand-ink/15 pb-6 text-center"
               data-print-keep="true"
             >
               <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#6b7c8a]">
                 {t("print_page.header_badge")}
               </p>
-              <h1
-                className="mb-2 text-2xl font-semibold tracking-tight text-[#071A2D] sm:text-[1.75rem]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <h1 className="font-brand-display mb-2 text-2xl font-semibold tracking-tight text-brand-ink sm:text-[1.75rem]">
                 {item.title}
               </h1>
               <div
-                className="mx-auto mb-3 h-px w-10 bg-[#D39A2B]"
+                className="mx-auto mb-3 h-px w-10 bg-brand-gold"
                 aria-hidden
               />
               {item.theme && (
@@ -338,26 +335,23 @@ export default function ContentPrintPage() {
 
             {hasReferences && (
               <section className="mt-10 space-y-5">
-                <div className="print-section-title border-b border-[#071A2D]/12 pb-3">
+                <div className="print-section-title border-b border-brand-ink/12 pb-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8a96a0]">
                     {t("print_page.pastoral_support", {
                       defaultValue: "Apoio pastoral",
                     })}
                   </p>
-                  <h2
-                    className="mt-1 text-xl font-semibold tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <h2 className="font-brand-display mt-1 text-xl font-semibold tracking-tight text-brand-ink">
                     {t("print_page.linked_references", {
                       defaultValue: "Referências vinculadas",
                     })}
                   </h2>
-                  <div className="mt-2 h-px w-10 bg-[#D39A2B]" aria-hidden />
+                  <div className="mt-2 h-px w-10 bg-brand-gold" aria-hidden />
                 </div>
 
                 {bibleRefs.length > 0 && (
                   <div className="space-y-3">
-                    <div className="print-section-title flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-[#8A6418]">
+                    <div className="print-section-title flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-brand-gold-muted">
                       <BookOpen className="h-4 w-4" />
                       {referenceSectionTitle("Bíblia", bibleRefs.length)}
                     </div>
@@ -365,9 +359,9 @@ export default function ContentPrintPage() {
                       {bibleRefs.map((ref: any) => (
                         <div
                           key={ref.id}
-                          className="print-keep rounded-sm border border-[#D39A2B]/30 bg-[#D39A2B]/10 p-4"
+                          className="print-keep rounded-sm border border-brand-gold/30 bg-brand-gold/10 p-4"
                         >
-                          <div className="mb-2 text-sm font-semibold text-[#8A6418]">
+                          <div className="mb-2 text-sm font-semibold text-brand-gold-muted">
                             {ref.label}
                           </div>
                           {ref.text ? (
@@ -383,7 +377,7 @@ export default function ContentPrintPage() {
 
                 {catechismRefs.length > 0 && (
                   <div className="space-y-3">
-                    <div className="print-section-title flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-[#071A2D]">
+                    <div className="print-section-title flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-brand-ink">
                       <Church className="h-4 w-4" />
                       {referenceSectionTitle("Catecismo", catechismRefs.length)}
                     </div>
@@ -393,11 +387,11 @@ export default function ContentPrintPage() {
                           key={ref.id}
                           className="print-keep rounded-sm border border-border/70 bg-muted/30 p-4"
                         >
-                          <div className="mb-2 text-sm font-semibold text-[#071A2D]">
+                          <div className="mb-2 text-sm font-semibold text-brand-ink">
                             {ref.label}
                           </div>
                           {ref.title && (
-                            <p className="mb-2 text-sm font-semibold tracking-tight text-[#071A2D]">
+                            <p className="mb-2 text-sm font-semibold tracking-tight text-brand-ink">
                               {ref.title}
                             </p>
                           )}
@@ -414,7 +408,7 @@ export default function ContentPrintPage() {
 
                 {directoryRefs.length > 0 && (
                   <div className="space-y-3">
-                    <div className="print-section-title flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-[#071A2D]">
+                    <div className="print-section-title flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-brand-ink">
                       <FileText className="h-4 w-4" />
                       {referenceSectionTitle(
                         "Diretório para a Catequese",
@@ -425,13 +419,13 @@ export default function ContentPrintPage() {
                       {directoryRefs.map((ref: any) => (
                         <div
                           key={ref.id}
-                          className="print-keep rounded-sm border border-[#071A2D]/20 bg-[#071A2D]/05 p-4"
+                          className="print-keep rounded-sm border border-brand-ink/20 bg-brand-ink/5 p-4"
                         >
-                          <div className="mb-2 text-sm font-semibold text-[#071A2D]">
+                          <div className="mb-2 text-sm font-semibold text-brand-ink">
                             {ref.label}
                           </div>
                           {ref.title && (
-                            <p className="mb-2 text-sm font-semibold tracking-tight text-[#071A2D]">
+                            <p className="mb-2 text-sm font-semibold tracking-tight text-brand-ink">
                               {ref.title}
                             </p>
                           )}
@@ -450,7 +444,7 @@ export default function ContentPrintPage() {
 
             {activities.length > 0 && (
               <section className="mt-10">
-                <h2 className="print-section-title mb-3 border-b border-[#071A2D]/12 pb-2 text-sm font-semibold uppercase tracking-[0.12em] text-[#24394d]">
+                <h2 className="print-section-title mb-3 border-b border-brand-ink/12 pb-2 text-sm font-semibold uppercase tracking-[0.12em] text-[#24394d]">
                   {t("print_page.activities_title", {
                     count: activities.length,
                   })}
@@ -466,10 +460,7 @@ export default function ContentPrintPage() {
                         key={activity.id}
                         className="print-keep rounded-sm border border-border/70 bg-white p-4"
                       >
-                        <h3
-                          className="mb-1 font-semibold tracking-tight text-[#071A2D]"
-                          style={{ fontFamily: "var(--font-brand-display)" }}
-                        >
+                        <h3 className="font-brand-display mb-1 font-semibold tracking-tight text-brand-ink">
                           {index + 1}. {activity.title} — {typeLabel}
                         </h3>
                         {activity.description && (
@@ -484,7 +475,7 @@ export default function ContentPrintPage() {
                                 key={question.id || questionIndex}
                                 className="mb-3 rounded-sm border border-border/70 bg-background p-3"
                               >
-                                <p className="mb-2 text-sm font-semibold tracking-tight text-[#071A2D]">
+                                <p className="mb-2 text-sm font-semibold tracking-tight text-brand-ink">
                                   {questionIndex + 1}. {question.question}
                                 </p>
                                 <div className="ml-2 grid gap-1 sm:ml-4 sm:grid-cols-2">
@@ -494,7 +485,7 @@ export default function ContentPrintPage() {
                                         key={optionIndex}
                                         className="flex items-center gap-2 text-sm"
                                       >
-                                        <span className="flex h-5 w-5 items-center justify-center rounded-sm border border-border/70 text-xs font-semibold text-[#071A2D]">
+                                        <span className="flex h-5 w-5 items-center justify-center rounded-sm border border-border/70 text-xs font-semibold text-brand-ink">
                                           {["A", "B", "C", "D"][optionIndex]}
                                         </span>
                                         <span>{option}</span>
@@ -511,7 +502,7 @@ export default function ContentPrintPage() {
                               key={step.id || stepIndex}
                               className="mb-2 rounded-sm border border-border/70 bg-background p-3 text-sm"
                             >
-                              <p className="font-semibold tracking-tight text-[#071A2D]">
+                              <p className="font-semibold tracking-tight text-brand-ink">
                                 {t("print_page.step", { num: stepIndex + 1 })}{" "}
                                 {step.instruction}
                               </p>
@@ -529,7 +520,7 @@ export default function ContentPrintPage() {
               </section>
             )}
 
-            <footer className="print-keep mt-10 border-t border-[#071A2D]/10 pt-4 text-center text-xs text-[#8a96a0]">
+            <footer className="print-keep mt-10 border-t border-brand-ink/10 pt-4 text-center text-xs text-[#8a96a0]">
               {t("print_page.footer")}
             </footer>
           </div>

@@ -243,16 +243,16 @@ export default function MeetingDetailPage() {
             <Calendar className="h-3.5 w-3.5" />
             {t("detail_info")}
           </AppEyebrow>
-          <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          <div className="h-px w-8 bg-brand-gold" aria-hidden />
         </div>
         <dl className="grid gap-3 text-sm sm:grid-cols-2">
           <div>
             <dt className="text-muted-foreground">{t("date")}</dt>
-            <dd className="font-medium text-[#071A2D]">{dateLabel}</dd>
+            <dd className="font-medium text-brand-ink">{dateLabel}</dd>
           </div>
           <div>
             <dt className="text-muted-foreground">{t("detail_class")}</dt>
-            <dd className="font-medium text-[#071A2D]">
+            <dd className="font-medium text-brand-ink">
               {meeting.class?.name}
             </dd>
           </div>
@@ -262,7 +262,7 @@ export default function MeetingDetailPage() {
                 <MapPin className="h-3.5 w-3.5" />
                 {t("detail_location")}
               </dt>
-              <dd className="font-medium text-[#071A2D]">
+              <dd className="font-medium text-brand-ink">
                 {meeting.locationHint}
               </dd>
             </div>
@@ -272,7 +272,7 @@ export default function MeetingDetailPage() {
               <dt className="text-muted-foreground">
                 {t("detail_attendance")}
               </dt>
-              <dd className="font-medium text-[#071A2D]">
+              <dd className="font-medium text-brand-ink">
                 {t("attendance_progress", {
                   registered: meeting.attendanceSummary.registered,
                   total: meeting.attendanceSummary.totalActive,
@@ -341,12 +341,9 @@ export default function MeetingDetailPage() {
               <BookOpen className="h-3.5 w-3.5" />
               {t("detail_materials")}
             </AppEyebrow>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            <div className="h-px w-8 bg-brand-gold" aria-hidden />
           </div>
-          <h3
-            className="text-base font-semibold text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <h3 className="font-brand-display text-base font-semibold text-brand-ink">
             {meeting.content.title}
           </h3>
           {meeting.content.theme && (
@@ -418,7 +415,7 @@ export default function MeetingDetailPage() {
       {meeting.myAttendance && (
         <AppPanel className="space-y-2">
           <AppEyebrow>{t("detail_my_attendance")}</AppEyebrow>
-          <p className="text-sm font-medium text-[#071A2D]">
+          <p className="text-sm font-medium text-brand-ink">
             {meeting.myAttendance.status
               ? t(`attendance_status.${meeting.myAttendance.status}`, {
                   defaultValue: meeting.myAttendance.status,
@@ -438,7 +435,7 @@ export default function MeetingDetailPage() {
           <AppPanel className="space-y-3">
             <div className="space-y-1.5">
               <AppEyebrow>{t("detail_dependents")}</AppEyebrow>
-              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+              <div className="h-px w-8 bg-brand-gold" aria-hidden />
             </div>
             <ul className="divide-y divide-border/70">
               {meeting.dependentsOnMeeting.map((d: any) => {
@@ -453,7 +450,7 @@ export default function MeetingDetailPage() {
                     className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div>
-                      <p className="font-semibold text-[#071A2D]">
+                      <p className="font-semibold text-brand-ink">
                         {d.firstName} {d.lastName}
                       </p>
                       <p className="text-xs text-muted-foreground">

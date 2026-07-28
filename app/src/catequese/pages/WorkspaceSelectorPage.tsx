@@ -68,10 +68,10 @@ function roleLabel(role: string | undefined, t: any) {
 
 function workspaceIcon(type: Workspace["type"]) {
   if (type === "DIOCESE")
-    return <Building2 className="h-6 w-6 text-[#071A2D]" />;
+    return <Building2 className="h-6 w-6 text-brand-ink" />;
   if (type === "COMMUNITY")
-    return <Building2 className="h-6 w-6 text-[#071A2D]" />;
-  return <Church className="h-6 w-6 text-[#071A2D]" />;
+    return <Building2 className="h-6 w-6 text-brand-ink" />;
+  return <Church className="h-6 w-6 text-brand-ink" />;
 }
 
 export default function WorkspaceSelectorPage() {
@@ -222,21 +222,18 @@ export default function WorkspaceSelectorPage() {
           handleEnter(ws.id);
         }
       }}
-      className="group w-full cursor-pointer rounded-sm border border-border/70 bg-white p-5 text-left transition-colors hover:border-[#071A2D]/30"
+      className="group w-full cursor-pointer rounded-sm border border-border/70 bg-white p-5 text-left transition-colors hover:border-brand-ink/30"
     >
       <div className="flex items-start gap-4">
-        <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-[#071A2D] transition-colors">
+        <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-brand-ink transition-colors">
           {workspaceIcon(ws.type)}
         </div>
         <div className="min-w-0 flex-1">
-          <p
-            className="text-lg font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <p className="font-brand-display text-lg font-semibold tracking-tight text-brand-ink">
             {ws.name}
           </p>
           <div className="mt-1 flex flex-wrap items-center gap-2">
-            <span className="rounded-sm bg-[#071A2D]/08 px-2 py-0.5 text-xs font-medium text-[#071A2D]">
+            <span className="rounded-sm bg-brand-ink/8 px-2 py-0.5 text-xs font-medium text-brand-ink">
               {planLabel(ws.plan, t)}
             </span>
             {opts?.showRole && (
@@ -260,7 +257,7 @@ export default function WorkspaceSelectorPage() {
             }}
             title={t("workspace.settings_workspace")}
             aria-label={t("workspace.settings_workspace")}
-            className="rounded-sm p-2 text-muted-foreground hover:text-[#071A2D] hover:bg-muted transition-colors mt-1"
+            className="rounded-sm p-2 text-muted-foreground hover:text-brand-ink hover:bg-muted transition-colors mt-1"
           >
             <Settings className="h-5 w-5" />
           </button>
@@ -321,17 +318,14 @@ export default function WorkspaceSelectorPage() {
                   <div
                     key={ws.id}
                     data-testid={`pending-invite-${ws.id}`}
-                    className="rounded-sm border-2 border-[#D39A2B]/45 bg-[#D39A2B]/[0.08] p-5 flex flex-col gap-3 sm:flex-row sm:items-center"
+                    className="rounded-sm border-2 border-brand-gold/45 bg-brand-gold/[0.08] p-5 flex flex-col gap-3 sm:flex-row sm:items-center"
                   >
                     <div className="flex min-w-0 flex-1 items-start gap-4">
-                      <div className="rounded-sm border border-[#D39A2B]/35 bg-white p-3">
-                        <Church className="h-6 w-6 text-[#071A2D]" />
+                      <div className="rounded-sm border border-brand-gold/35 bg-white p-3">
+                        <Church className="h-6 w-6 text-brand-ink" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p
-                          className="text-lg font-semibold tracking-tight text-[#071A2D]"
-                          style={{ fontFamily: "var(--font-brand-display)" }}
-                        >
+                        <p className="font-brand-display text-lg font-semibold tracking-tight text-brand-ink">
                           {ws.name}
                         </p>
                         <p className="text-sm text-muted-foreground">
@@ -379,22 +373,19 @@ export default function WorkspaceSelectorPage() {
                         handleEnter(lastUsed.id);
                       }
                     }}
-                    className="group w-full cursor-pointer rounded-sm border border-[#071A2D]/30 bg-white p-5 text-left transition-colors hover:border-[#071A2D]/50"
+                    className="group w-full cursor-pointer rounded-sm border border-brand-ink/30 bg-white p-5 text-left transition-colors hover:border-brand-ink/50"
                   >
                     <div className="flex items-start gap-4">
-                      <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-[#071A2D]">
+                      <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-brand-ink">
                         {lastUsed.isPersonal ? (
-                          <User className="h-6 w-6 text-[#071A2D]" />
+                          <User className="h-6 w-6 text-brand-ink" />
                         ) : (
                           workspaceIcon(lastUsed.type)
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <p
-                            className="text-lg font-semibold tracking-tight text-[#071A2D]"
-                            style={{ fontFamily: "var(--font-brand-display)" }}
-                          >
+                          <p className="font-brand-display text-lg font-semibold tracking-tight text-brand-ink">
                             {lastUsed.name}
                           </p>
                           <span className="text-overline text-muted-foreground rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5">
@@ -435,24 +426,21 @@ export default function WorkspaceSelectorPage() {
                       handleEnter(personal.id);
                     }
                   }}
-                  className="group w-full cursor-pointer rounded-sm border border-border/70 bg-white p-5 text-left transition-colors hover:border-[#071A2D]/30"
+                  className="group w-full cursor-pointer rounded-sm border border-border/70 bg-white p-5 text-left transition-colors hover:border-brand-ink/30"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-[#071A2D]">
-                      <User className="h-6 w-6 text-[#071A2D]" />
+                    <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-brand-ink">
+                      <User className="h-6 w-6 text-brand-ink" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p
-                        className="text-lg font-semibold tracking-tight text-[#071A2D]"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
+                      <p className="font-brand-display text-lg font-semibold tracking-tight text-brand-ink">
                         {personal.name}
                       </p>
                       <p className="text-sm text-muted-foreground">
                         {personal.subtitle}
                       </p>
                       <div className="flex items-center gap-2 mt-2">
-                        <span className="rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5 text-xs font-semibold tracking-tight text-[#071A2D]">
+                        <span className="rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5 text-xs font-semibold tracking-tight text-brand-ink">
                           {planLabel(personal.plan, t)}
                         </span>
                         <span className="text-xs text-muted-foreground">
@@ -467,7 +455,7 @@ export default function WorkspaceSelectorPage() {
                       }}
                       title={t("workspace.settings_account")}
                       aria-label={t("workspace.settings_account")}
-                      className="mt-1 rounded-sm p-2 text-muted-foreground transition-colors hover:bg-muted/30 hover:text-[#071A2D]"
+                      className="mt-1 rounded-sm p-2 text-muted-foreground transition-colors hover:bg-muted/30 hover:text-brand-ink"
                     >
                       <Settings className="h-5 w-5" />
                     </button>
@@ -476,10 +464,7 @@ export default function WorkspaceSelectorPage() {
                 </div>
               ) : (
                 <div className="rounded-sm border-2 border-dashed border-border/70 bg-white p-6 text-center">
-                  <p
-                    className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                     {t("workspace.personal_pending")}
                   </p>
                 </div>
@@ -504,10 +489,10 @@ export default function WorkspaceSelectorPage() {
                   return (
                     <div
                       key={dioceseId}
-                      className="space-y-2 rounded-sm border border-[#071A2D]/25 bg-[#071A2D]/05 p-3"
+                      className="space-y-2 rounded-sm border border-brand-ink/25 bg-brand-ink/5 p-3"
                     >
                       <div className="flex items-center justify-between gap-2 px-1">
-                        <div className="flex items-center gap-1.5 text-sm font-semibold text-[#071A2D]">
+                        <div className="flex items-center gap-1.5 text-sm font-semibold text-brand-ink">
                           <Building2 className="h-4 w-4" />
                           {group.name}
                         </div>
@@ -519,7 +504,7 @@ export default function WorkspaceSelectorPage() {
                           <span
                             className={`text-overline px-2 py-0.5 rounded-sm font-medium ${
                               licensed
-                                ? "bg-[#071A2D]/10 text-[#071A2D]"
+                                ? "bg-brand-ink/10 text-brand-ink"
                                 : "bg-muted text-muted-foreground"
                             }`}
                           >
@@ -540,7 +525,7 @@ export default function WorkspaceSelectorPage() {
                         className="w-full rounded-sm border border-dashed border-border/70 hover:bg-muted/20 transition-colors p-3 text-center text-muted-foreground flex items-center justify-center gap-2"
                       >
                         <Plus className="h-4 w-4" />
-                        <span className="text-sm font-semibold tracking-tight text-[#071A2D]">
+                        <span className="text-sm font-semibold tracking-tight text-brand-ink">
                           {t("workspace.create_parish_in_diocese")}
                         </span>
                       </button>
@@ -554,17 +539,17 @@ export default function WorkspaceSelectorPage() {
                   .map((d) => (
                     <div
                       key={d.id}
-                      className="space-y-2 rounded-sm border border-[#071A2D]/25 bg-[#071A2D]/05 p-3"
+                      className="space-y-2 rounded-sm border border-brand-ink/25 bg-brand-ink/5 p-3"
                     >
                       <div className="flex items-center justify-between gap-2 px-1">
-                        <div className="flex items-center gap-1.5 text-sm font-semibold text-[#071A2D]">
+                        <div className="flex items-center gap-1.5 text-sm font-semibold text-brand-ink">
                           <Building2 className="h-4 w-4" />
                           {d.name}
                         </div>
                         <span
                           className={`text-overline px-2 py-0.5 rounded-sm font-medium ${
                             d.licensed
-                              ? "bg-[#071A2D]/10 text-[#071A2D]"
+                              ? "bg-brand-ink/10 text-brand-ink"
                               : "bg-muted text-muted-foreground"
                           }`}
                         >
@@ -578,7 +563,7 @@ export default function WorkspaceSelectorPage() {
                         className="w-full rounded-sm border border-dashed border-border/70 hover:bg-muted/20 transition-colors p-3 text-center text-muted-foreground flex items-center justify-center gap-2"
                       >
                         <Plus className="h-4 w-4" />
-                        <span className="text-sm font-semibold tracking-tight text-[#071A2D]">
+                        <span className="text-sm font-semibold tracking-tight text-brand-ink">
                           {t("workspace.create_parish_in_diocese")}
                         </span>
                       </button>
@@ -597,10 +582,10 @@ export default function WorkspaceSelectorPage() {
                 {canCreateUnderOwnerPlan && (
                   <button
                     onClick={() => navigate("/app/parishes?new=true")}
-                    className="w-full rounded-sm border border-dashed border-border/70 hover:border-[#071A2D]/30 hover:bg-muted/20 transition-colors p-4 text-center text-muted-foreground flex items-center justify-center gap-2"
+                    className="w-full rounded-sm border border-dashed border-border/70 hover:border-brand-ink/30 hover:bg-muted/20 transition-colors p-4 text-center text-muted-foreground flex items-center justify-center gap-2"
                   >
                     <Plus className="h-4 w-4" />
-                    <span className="text-sm font-semibold tracking-tight text-[#071A2D]">
+                    <span className="text-sm font-semibold tracking-tight text-brand-ink">
                       {t("workspace.create_under_license", {
                         plan: planLabel(ownerPlan || "parish", t),
                       })}
@@ -636,7 +621,7 @@ export default function WorkspaceSelectorPage() {
                   <div className="flex gap-2 justify-center">
                     <button
                       onClick={() => navigate("/app/onboarding")}
-                      className="inline-flex items-center justify-center h-9 rounded-sm bg-[#071A2D] px-4 text-sm font-medium text-white"
+                      className="inline-flex items-center justify-center h-9 rounded-sm bg-brand-ink px-4 text-sm font-medium text-white"
                     >
                       {t("workspace.go_onboarding")}
                     </button>
@@ -653,10 +638,10 @@ export default function WorkspaceSelectorPage() {
             {/* Create an independent parish (new institutional workspace) */}
             <button
               onClick={() => navigate("/app/parishes?new=true")}
-              className="w-full rounded-sm border border-dashed border-border/70 hover:border-[#071A2D]/30 hover:bg-muted/20 transition-colors p-4 text-center text-muted-foreground hover:text-[#071A2D] flex items-center justify-center gap-2"
+              className="w-full rounded-sm border border-dashed border-border/70 hover:border-brand-ink/30 hover:bg-muted/20 transition-colors p-4 text-center text-muted-foreground hover:text-brand-ink flex items-center justify-center gap-2"
             >
               <Plus className="h-4 w-4" />
-              <span className="text-sm font-semibold tracking-tight text-[#071A2D]">
+              <span className="text-sm font-semibold tracking-tight text-brand-ink">
                 {t("workspace.create_independent")}
               </span>
             </button>

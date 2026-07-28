@@ -98,7 +98,7 @@ export default function AddressAutocomplete({
             <button
               type="button"
               onClick={fillFromCep}
-              className="text-xs text-[#071A2D] hover:underline whitespace-nowrap"
+              className="text-xs text-brand-ink hover:underline whitespace-nowrap"
             >
               {t("address_fill")}
             </button>

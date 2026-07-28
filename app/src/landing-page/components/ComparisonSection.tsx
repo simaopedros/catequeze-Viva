@@ -29,10 +29,7 @@ export function ComparisonSection({ ns = "landing" }: { ns?: string }) {
           ref={headerRef}
           className={`text-center mb-10 space-y-3 ${headerClass}`}
         >
-          <h2
-            className="text-3xl font-semibold tracking-tight text-[#071A2D] sm:text-4xl"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <h2 className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink sm:text-4xl">
             {tr("comparison.title")}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -50,7 +47,7 @@ export function ComparisonSection({ ns = "landing" }: { ns?: string }) {
                 <th className="px-4 py-3 font-semibold text-muted-foreground w-[36%]">
                   {tr("comparison.col_old")}
                 </th>
-                <th className="px-4 py-3 font-semibold text-[#071A2D] w-[36%]">
+                <th className="px-4 py-3 font-semibold text-brand-ink w-[36%]">
                   {tr("comparison.col_next")}
                 </th>
               </tr>
@@ -115,7 +112,7 @@ function ComparisonRowItem({
       <td className="px-4 py-3.5 align-top">
         <span className="inline-flex items-start gap-2">
           <Check
-            className="h-4 w-4 text-[#071A2D] shrink-0 mt-0.5"
+            className="h-4 w-4 text-brand-ink shrink-0 mt-0.5"
             aria-hidden
           />
           <span>{row.next}</span>

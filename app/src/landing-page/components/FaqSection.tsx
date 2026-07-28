@@ -23,13 +23,10 @@ export function FaqSection({
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               {tr("faq_eyebrow")}
             </p>
-            <h2
-              className="text-3xl font-semibold tracking-tight text-[#071A2D] sm:text-4xl"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <h2 className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink sm:text-4xl">
               {tr("faq_title")}
             </h2>
-            <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
+            <div className="h-px w-10 bg-brand-gold" aria-hidden />
             <p className="text-muted-foreground leading-relaxed max-w-sm">
               {tr("faq_subtitle")}
             </p>
@@ -66,10 +63,7 @@ export function FaqSection({
           <div className="divide-y divide-border/70 border-y border-border/70">
             {list.map((item: any) => (
               <details key={item.q} className="group py-1">
-                <summary
-                  className="flex cursor-pointer list-none items-start justify-between gap-4 py-5 text-left font-semibold tracking-tight text-[#071A2D] marker:content-none [&::-webkit-details-marker]:hidden"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
+                <summary className="font-brand-display flex cursor-pointer list-none items-start justify-between gap-4 py-5 text-left font-semibold tracking-tight text-brand-ink marker:content-none [&::-webkit-details-marker]:hidden">
                   <span className="text-[15px] leading-snug pr-2">
                     {item.q}
                   </span>

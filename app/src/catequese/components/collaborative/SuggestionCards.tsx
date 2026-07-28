@@ -45,7 +45,7 @@ export function SuggestionCards() {
       <div className="flex items-start justify-between gap-2">
         <div className="space-y-1.5">
           <AppEyebrow className="flex items-center gap-1.5">
-            <Lightbulb className="h-3.5 w-3.5 text-[#D39A2B]" />
+            <Lightbulb className="h-3.5 w-3.5 text-brand-gold" />
             {t("suggestions.title")}
           </AppEyebrow>
           <AppGoldRule className="w-6" />
@@ -74,10 +74,10 @@ export function SuggestionCards() {
             onClick={() => handleClick(suggestion.action)}
             className="w-full text-left"
           >
-            <Card className="cursor-pointer rounded-sm border-border/70 p-3 transition-colors hover:border-[#071A2D]/40 hover:bg-muted/30">
+            <Card className="cursor-pointer rounded-sm border-border/70 p-3 transition-colors hover:border-brand-ink/40 hover:bg-muted/30">
               <div className="flex items-start gap-2">
-                <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[#071A2D]" />
-                <span className="text-xs font-medium leading-relaxed text-[#071A2D]">
+                <Icon className="mt-0.5 h-4 w-4 shrink-0 text-brand-ink" />
+                <span className="text-xs font-medium leading-relaxed text-brand-ink">
                   {suggestion.label}
                 </span>
               </div>

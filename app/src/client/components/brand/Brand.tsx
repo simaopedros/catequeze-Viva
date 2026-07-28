@@ -105,9 +105,9 @@ export function BrandLockup({
           subline: "text-[#f6d08a]",
         }
       : {
-          name: "text-[#071A2D]",
-          badge: "border-[#D39A2B]/30 bg-[#D39A2B]/12 text-[#8A6418]",
-          subline: "text-[#8A6418]",
+          name: "text-brand-ink",
+          badge: "border-brand-gold/30 bg-brand-gold/12 text-brand-gold-muted",
+          subline: "text-brand-gold-muted",
         };
 
   return (
@@ -118,11 +118,10 @@ export function BrandLockup({
       <span className="flex min-w-0 flex-col leading-none">
         <span
           className={cn(
-            "truncate font-semibold tracking-[0.01em]",
+            "font-brand-display truncate font-semibold tracking-[0.01em]",
             compact ? "text-[1.02rem]" : "text-[1.16rem]",
             toneClasses.name,
           )}
-          style={{ fontFamily: "var(--font-brand-display)" }}
         >
           Catequese
         </span>
@@ -154,7 +153,7 @@ export function BrandMedallion({ className }: BrandMedallionProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center justify-center rounded-sm border border-[#D39A2B]/40 bg-[#D39A2B]/10 p-3",
+        "inline-flex items-center justify-center rounded-sm border border-brand-gold/40 bg-brand-gold/10 p-3",
         className,
       )}
     >

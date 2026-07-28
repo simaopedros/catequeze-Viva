@@ -115,13 +115,13 @@ const AuditLogPage = ({ user }: { user: AuthUser }) => {
                           <span
                             className={`rounded-sm px-1.5 py-0.5 text-xs font-medium ${
                               log.action === "CREATE"
-                                ? "bg-[#071A2D]/08 text-[#071A2D]"
+                                ? "bg-[#071A2D]/8 text-[#071A2D]"
                                 : log.action === "UPDATE"
-                                  ? "bg-[#071A2D]/08 text-[#071A2D]"
+                                  ? "bg-[#071A2D]/8 text-[#071A2D]"
                                   : log.action === "DELETE"
                                     ? "bg-destructive/10 text-destructive"
                                     : log.action === "APPROVE"
-                                      ? "bg-[#071A2D]/08 text-[#071A2D]"
+                                      ? "bg-[#071A2D]/8 text-[#071A2D]"
                                       : log.action === "REJECT"
                                         ? "bg-orange-100 text-orange-800"
                                         : "bg-muted text-muted-foreground"

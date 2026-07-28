@@ -54,9 +54,9 @@ import {
 } from "../../../client/components/brand/AppChrome";
 
 const RECENT_THUMBNAIL_STYLES = [
-  "bg-[#071A2D]/08 text-[#071A2D]",
-  "bg-[#D39A2B]/15 text-[#8A6418]",
-  "bg-muted/40 text-[#071A2D]",
+  "bg-brand-ink/8 text-brand-ink",
+  "bg-brand-gold/15 text-brand-gold-muted",
+  "bg-muted/40 text-brand-ink",
   "bg-muted/70 text-muted-foreground",
 ];
 
@@ -70,7 +70,7 @@ function SelectedChip({
   onRemove: () => void;
 }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-sm border border-border/70 bg-muted/30 px-2.5 py-1 text-xs font-semibold tracking-tight text-[#071A2D]">
+    <span className="inline-flex items-center gap-1 rounded-sm border border-border/70 bg-muted/30 px-2.5 py-1 text-xs font-semibold tracking-tight text-brand-ink">
       {label}
       <button
         type="button"
@@ -102,14 +102,11 @@ function ReferenceSection({
     <div className="rounded-sm border border-border bg-background p-4">
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="flex items-start gap-2">
-          <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-sm bg-muted/40 text-[#071A2D]">
+          <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-sm bg-muted/40 text-brand-ink">
             <Icon className="h-4 w-4" />
           </div>
           <div>
-            <div
-              className="text-sm font-semibold tracking-tight text-[#071A2D]"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <div className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
               {title}
             </div>
             <div className="text-xs text-muted-foreground">
@@ -120,7 +117,7 @@ function ReferenceSection({
         <button
           type="button"
           onClick={onOpen}
-          className="text-xs font-medium text-[#071A2D]"
+          className="text-xs font-medium text-brand-ink"
         >
           Selecionar
         </button>
@@ -237,7 +234,7 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
           <div>
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <BookMarked className="h-4 w-4 shrink-0 text-[#071A2D]" />
+                <BookMarked className="h-4 w-4 shrink-0 text-brand-ink" />
                 <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
                   Referências para o encontro
                 </AppDisplayTitle>
@@ -339,10 +336,7 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
             </ReferenceSection>
 
             <div className="rounded-sm border border-border bg-muted/20 p-4">
-              <div
-                className="mb-2 text-sm font-semibold tracking-tight text-[#071A2D]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <div className="font-brand-display mb-2 text-sm font-semibold tracking-tight text-brand-ink">
                 Referências selecionadas
               </div>
               <div className="space-y-2 text-sm text-muted-foreground">
@@ -418,10 +412,7 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
         </div>
         <div className="space-y-3">
           <div>
-            <h3
-              className="text-sm font-semibold tracking-tight text-[#071A2D]"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <h3 className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
               Sugestões quando você quiser acelerar
             </h3>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -440,7 +431,7 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
                 key={label}
                 className="flex items-center justify-between rounded-sm border border-border bg-background px-3 py-2 text-sm"
               >
-                <span className="font-medium text-[#071A2D]">{label}</span>
+                <span className="font-medium text-brand-ink">{label}</span>
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </div>
             ))}
@@ -476,7 +467,7 @@ function ContentLibrarySidebar() {
       <Card className="rounded-sm border-border/70 p-4">
         <div className="mb-4 space-y-2">
           <div className="flex items-center gap-2">
-            <Library className="h-4 w-4 shrink-0 text-[#071A2D]" />
+            <Library className="h-4 w-4 shrink-0 text-brand-ink" />
             <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
               Biblioteca de conteúdos
             </AppDisplayTitle>
@@ -501,7 +492,7 @@ function ContentLibrarySidebar() {
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs font-medium uppercase tracking-wide text-muted-foreground">
             <span>Filtros</span>
-            <button type="button" className="text-[#071A2D]">
+            <button type="button" className="text-brand-ink">
               Limpar
             </button>
           </div>
@@ -515,7 +506,7 @@ function ContentLibrarySidebar() {
             <button
               key={label}
               type="button"
-              className="flex w-full items-center justify-between rounded-sm border border-border bg-background px-3 py-2.5 text-sm font-medium tracking-tight text-[#071A2D]"
+              className="flex w-full items-center justify-between rounded-sm border border-border bg-background px-3 py-2.5 text-sm font-medium tracking-tight text-brand-ink"
             >
               <span>{label}</span>
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
@@ -557,10 +548,7 @@ function ContentLibrarySidebar() {
                   <ScrollText className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
-                  <div
-                    className="line-clamp-2 text-sm font-semibold tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <div className="font-brand-display line-clamp-2 text-sm font-semibold tracking-tight text-brand-ink">
                     {item.title || "Rascunho sem título"}
                   </div>
                   <div className="mt-1 text-xs text-muted-foreground">
@@ -597,7 +585,7 @@ function HeaderSection({ backTo }: { backTo: string }) {
         <div className="space-y-3">
           <Link
             to={backTo}
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-[#071A2D]"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-brand-ink"
           >
             Voltar
           </Link>
@@ -613,7 +601,7 @@ function HeaderSection({ backTo }: { backTo: string }) {
         </div>
 
         <div className="flex flex-wrap items-start gap-3">
-          <Button className="h-auto rounded-sm bg-[#071A2D] px-6 py-4 text-left shadow-none hover:bg-[#0a2540]">
+          <Button className="h-auto rounded-sm bg-brand-ink px-6 py-4 text-left shadow-none hover:bg-brand-ink-soft">
             <div className="flex items-start gap-3">
               <Plus className="mt-1 h-4 w-4" />
               <div>
@@ -628,12 +616,12 @@ function HeaderSection({ backTo }: { backTo: string }) {
           </Button>
           <Button
             variant="outline"
-            className="h-auto rounded-sm border-[#D39A2B]/50 px-6 py-4 text-left"
+            className="h-auto rounded-sm border-brand-gold/50 px-6 py-4 text-left"
           >
             <div className="flex items-start gap-3">
-              <Feather className="mt-1 h-4 w-4 text-[#071A2D]" />
+              <Feather className="mt-1 h-4 w-4 text-brand-ink" />
               <div>
-                <div className="text-sm font-semibold text-[#071A2D]">
+                <div className="text-sm font-semibold text-brand-ink">
                   Assistência editorial
                 </div>
                 <div className="text-xs text-muted-foreground">

@@ -46,10 +46,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
             Utilizadores
           </NavLink>
           <span>/</span>
-          <span
-            className="font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <span className="font-brand-display font-semibold tracking-tight text-[#071A2D]">
             {u.email}
           </span>
         </div>
@@ -73,37 +70,25 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
                 <p className="text-xs text-muted-foreground">Username</p>
-                <p
-                  className="font-semibold tracking-tight text-[#071A2D]"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
+                <p className="font-brand-display font-semibold tracking-tight text-[#071A2D]">
                   {u.username || "—"}
                 </p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Telefone</p>
-                <p
-                  className="font-semibold tracking-tight text-[#071A2D]"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
+                <p className="font-brand-display font-semibold tracking-tight text-[#071A2D]">
                   {u.phone || "—"}
                 </p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Locale</p>
-                <p
-                  className="font-semibold tracking-tight text-[#071A2D]"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
+                <p className="font-brand-display font-semibold tracking-tight text-[#071A2D]">
                   {u.locale}
                 </p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Criado em</p>
-                <p
-                  className="font-semibold tracking-tight text-[#071A2D]"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
+                <p className="font-brand-display font-semibold tracking-tight text-[#071A2D]">
                   {new Date(u.createdAt).toLocaleDateString("pt-BR")}
                 </p>
               </div>
@@ -121,19 +106,13 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
                 <p className="text-xs text-muted-foreground">Plano</p>
-                <p
-                  className="font-semibold tracking-tight text-[#071A2D]"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
+                <p className="font-brand-display font-semibold tracking-tight text-[#071A2D]">
                   {u.subscriptionPlan || "—"}
                 </p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Status</p>
-                <p
-                  className="font-semibold tracking-tight text-[#071A2D]"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
+                <p className="font-brand-display font-semibold tracking-tight text-[#071A2D]">
                   {u.subscriptionStatus || "—"}
                 </p>
               </div>
@@ -141,10 +120,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                 <p className="text-xs text-muted-foreground">
                   Créditos editoriais
                 </p>
-                <p
-                  className="font-semibold tabular-nums tracking-tight text-[#071A2D]"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
+                <p className="font-brand-display font-semibold tabular-nums tracking-tight text-[#071A2D]">
                   {u.credits}
                 </p>
               </div>
@@ -177,10 +153,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                   className="px-5 py-3 flex items-center justify-between text-sm"
                 >
                   <div>
-                    <p
-                      className="font-semibold tracking-tight text-[#071A2D]"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
+                    <p className="font-brand-display font-semibold tracking-tight text-[#071A2D]">
                       {m.parish.name}
                     </p>
                     <p className="text-xs text-muted-foreground">
@@ -220,10 +193,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                   className="px-5 py-2.5 flex items-center justify-between text-xs"
                 >
                   <div>
-                    <span
-                      className="font-semibold tracking-tight text-[#071A2D]"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
+                    <span className="font-brand-display font-semibold tracking-tight text-[#071A2D]">
                       {log.action}
                     </span>
                     <span className="text-muted-foreground ml-2">
@@ -267,10 +237,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                   className="px-5 py-2 flex items-center justify-between text-xs"
                 >
                   <span>{new Date(d.date).toLocaleDateString("pt-BR")}</span>
-                  <span
-                    className="font-semibold tabular-nums tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <span className="font-brand-display font-semibold tabular-nums tracking-tight text-[#071A2D]">
                     {d.creditsUsed} créditos
                   </span>
                 </div>

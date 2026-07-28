@@ -36,7 +36,7 @@ export default function FamilyLoginPage() {
             {t("login.no_account")}{" "}
             <Link
               to={`/criar-conta${token ? `?token=${token}` : ""}`}
-              className="text-[#071A2D] underline underline-offset-2 font-medium"
+              className="text-brand-ink underline underline-offset-2 font-medium"
             >
               {t("login.create_account")}
             </Link>

@@ -46,18 +46,15 @@ export function RoleStep({ selected, onSelect }: RoleStepProps) {
             onClick={() => onSelect(role.id)}
             className={`flex items-start gap-4 rounded-sm border p-4 text-left transition-colors ${
               selected === role.id
-                ? "border-[#071A2D] bg-muted/30"
-                : "border-border/70 hover:border-[#071A2D]/30 hover:bg-muted/20"
+                ? "border-brand-ink bg-muted/30"
+                : "border-border/70 hover:border-brand-ink/30 hover:bg-muted/20"
             }`}
           >
-            <div className="shrink-0 rounded-sm border border-border/70 bg-muted/30 p-3 text-[#071A2D]">
+            <div className="shrink-0 rounded-sm border border-border/70 bg-muted/30 p-3 text-brand-ink">
               <role.icon className="h-5 w-5" />
             </div>
             <div className="min-w-0 flex-1">
-              <h3
-                className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <h3 className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                 {t(`roles.${role.id}.title`)}
               </h3>
               <p className="mt-0.5 text-xs text-muted-foreground">

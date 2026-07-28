@@ -51,15 +51,12 @@ export function CollaborativeChat() {
           <div className="rounded-sm border border-border/70 bg-white px-4 py-5 text-sm text-muted-foreground">
             <div className="mb-3 space-y-1.5">
               <div className="flex items-center gap-2">
-                <Feather className="h-4 w-4 text-[#071A2D]" />
-                <p
-                  className="font-semibold tracking-tight text-[#071A2D]"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
+                <Feather className="h-4 w-4 text-brand-ink" />
+                <p className="font-brand-display font-semibold tracking-tight text-brand-ink">
                   {t("title")}
                 </p>
               </div>
-              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+              <div className="h-px w-8 bg-brand-gold" aria-hidden />
             </div>
             <p className="leading-relaxed">{t("chat.empty")}</p>
             <div className="mt-4 grid gap-1.5 text-xs">
@@ -89,8 +86,8 @@ export function CollaborativeChat() {
             <div
               className={`max-w-[88%] rounded-sm px-3 py-2.5 text-sm whitespace-pre-wrap ${
                 msg.role === "user"
-                  ? "bg-[#071A2D] text-white"
-                  : "border border-border/70 bg-white text-[#071A2D]"
+                  ? "bg-brand-ink text-white"
+                  : "border border-border/70 bg-white text-brand-ink"
               }`}
             >
               <div className="mb-1 flex items-center gap-1.5 text-overline font-semibold uppercase tracking-wide opacity-70">

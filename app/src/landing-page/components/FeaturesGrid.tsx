@@ -113,20 +113,16 @@ function FeaturesGridItem({
             </div>
             <CardTitle
               className={cn(
-                "font-semibold tracking-tight text-[#071A2D]",
+                "font-brand-display font-semibold tracking-tight text-brand-ink",
                 align === "center" ? "text-center" : "text-left",
               )}
-              style={{ fontFamily: "var(--font-brand-display)" }}
             >
               {name}
             </CardTitle>
           </div>
         )}
         {fullWidthIcon && (icon || emoji) && (
-          <CardTitle
-            className="mb-2 text-center font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <CardTitle className="font-brand-display mb-2 text-center font-semibold tracking-tight text-brand-ink">
             {name}
           </CardTitle>
         )}

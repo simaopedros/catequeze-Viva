@@ -40,9 +40,9 @@ export function ParishMembersTab({ members, onRemove }: ParishMembersTabProps) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-sm border border-[#D39A2B]/35 bg-[#D39A2B]/[0.08] p-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="rounded-sm border border-brand-gold/35 bg-brand-gold/[0.08] p-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-2 text-sm">
-          <Users className="mt-0.5 h-4 w-4 shrink-0 text-[#071A2D]" />
+          <Users className="mt-0.5 h-4 w-4 shrink-0 text-brand-ink" />
           <p className="text-muted-foreground">
             {t("team.subtitle", { members: members.length, pending: 0 })}
           </p>
@@ -62,7 +62,7 @@ export function ParishMembersTab({ members, onRemove }: ParishMembersTabProps) {
 
       <div className="rounded-sm border border-border/70 bg-muted/20 p-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-2 text-sm">
-          <Heart className="mt-0.5 h-4 w-4 shrink-0 text-[#071A2D]" />
+          <Heart className="mt-0.5 h-4 w-4 shrink-0 text-brand-ink" />
           <p className="text-muted-foreground">
             {tf("portal_invites.banner_desc")}
           </p>
@@ -95,7 +95,7 @@ export function ParishMembersTab({ members, onRemove }: ParishMembersTabProps) {
       {members.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
           <div className="mb-4 rounded-sm border border-border/70 bg-muted/30 p-3">
-            <Users className="h-8 w-8 text-[#071A2D]" />
+            <Users className="h-8 w-8 text-brand-ink" />
           </div>
           <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
             {tp("no_members")}
@@ -139,10 +139,7 @@ export function ParishMembersTab({ members, onRemove }: ParishMembersTabProps) {
                     key={m.id}
                     className="border-b last:border-0 hover:bg-muted/30"
                   >
-                    <td
-                      className="px-4 py-3 font-semibold tracking-tight text-[#071A2D]"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
+                    <td className="font-brand-display px-4 py-3 font-semibold tracking-tight text-brand-ink">
                       {m.user?.firstName ||
                         m.user?.email?.split("@")[0] ||
                         "\u2014"}

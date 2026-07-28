@@ -152,7 +152,7 @@ export default function DirectoryPage() {
                   setSearchQuery(topic);
                   handleSearch();
                 }}
-                className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-[#071A2D]/30 hover:text-[#071A2D]"
+                className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-brand-ink/30 hover:text-brand-ink"
               >
                 {topic}
               </button>
@@ -170,7 +170,7 @@ export default function DirectoryPage() {
               className={
                 "px-3 py-1.5 text-sm rounded-sm transition-colors " +
                 (part === key
-                  ? "bg-[#071A2D] text-white"
+                  ? "bg-brand-ink text-white"
                   : "bg-muted hover:bg-muted/70")
               }
             >
@@ -196,7 +196,7 @@ export default function DirectoryPage() {
 
       {!error && loading ? (
         <div className="flex justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" />
+          <Loader2 className="h-8 w-8 animate-spin text-brand-ink" />
         </div>
       ) : displayEntries.length > 0 ? (
         <div className="space-y-2">
@@ -218,14 +218,11 @@ export default function DirectoryPage() {
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-semibold tracking-tight text-[#071A2D]">
+                    <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-semibold tracking-tight text-brand-ink">
                       §{entry.number}
                     </span>
                     {entry.title && (
-                      <span
-                        className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
+                      <span className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                         {entry.title}
                       </span>
                     )}
@@ -257,7 +254,7 @@ export default function DirectoryPage() {
       ) : (
         <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
           <div className="mb-4 rounded-sm border border-border/70 bg-muted/30 p-3">
-            <BookOpen className="h-8 w-8 text-[#071A2D]" />
+            <BookOpen className="h-8 w-8 text-brand-ink" />
           </div>
           <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
             {t("directory.emptyTitle")}

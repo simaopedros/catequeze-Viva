@@ -212,7 +212,7 @@ export default function CommunitiesPage() {
                     <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       {tp("edit_community")}
                     </h3>
-                    <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                    <div className="h-px w-8 bg-brand-gold" aria-hidden />
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div className="sm:col-span-2">

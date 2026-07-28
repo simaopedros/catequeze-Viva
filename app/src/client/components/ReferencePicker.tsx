@@ -337,7 +337,7 @@ export function ReferencePicker({
         <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
           {t("references.title")}
         </h3>
-        <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+        <div className="h-px w-8 bg-brand-gold" aria-hidden />
       </div>
 
       {/* Tabs */}
@@ -355,8 +355,8 @@ export function ReferencePicker({
           className={
             "flex flex-1 items-center justify-center gap-1.5 rounded-sm px-3 py-1.5 text-xs font-medium transition-colors " +
             (tab === "bible"
-              ? "bg-white font-semibold tracking-tight text-[#071A2D]"
-              : "text-muted-foreground hover:text-[#071A2D]")
+              ? "bg-white font-semibold tracking-tight text-brand-ink"
+              : "text-muted-foreground hover:text-brand-ink")
           }
         >
           <BookOpen className="h-3.5 w-3.5" />
@@ -373,8 +373,8 @@ export function ReferencePicker({
           className={
             "flex flex-1 items-center justify-center gap-1.5 rounded-sm px-3 py-1.5 text-xs font-medium transition-colors " +
             (tab === "catechism"
-              ? "bg-white font-semibold tracking-tight text-[#071A2D]"
-              : "text-muted-foreground hover:text-[#071A2D]")
+              ? "bg-white font-semibold tracking-tight text-brand-ink"
+              : "text-muted-foreground hover:text-brand-ink")
           }
         >
           <Church className="h-3.5 w-3.5" />
@@ -391,8 +391,8 @@ export function ReferencePicker({
           className={
             "flex flex-1 items-center justify-center gap-1.5 rounded-sm px-3 py-1.5 text-xs font-medium transition-colors " +
             (tab === "directory"
-              ? "bg-white font-semibold tracking-tight text-[#071A2D]"
-              : "text-muted-foreground hover:text-[#071A2D]")
+              ? "bg-white font-semibold tracking-tight text-brand-ink"
+              : "text-muted-foreground hover:text-brand-ink")
           }
         >
           <FileText className="h-3.5 w-3.5" />
@@ -428,7 +428,7 @@ export function ReferencePicker({
           />
           {searching && (
             <div className="absolute right-10 top-1.5">
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-brand-ink border-t-transparent" />
             </div>
           )}
         </div>
@@ -442,7 +442,7 @@ export function ReferencePicker({
                   <div className="flex items-center justify-between px-2 py-1 bg-muted/30 border-b">
                     <button
                       onClick={selectAllVerses}
-                      className="text-overline text-[#071A2D] hover:underline"
+                      className="text-overline text-brand-ink hover:underline"
                     >
                       {selectedVerses.size === chapterVerses.length
                         ? t("references.deselect_all")
@@ -474,7 +474,7 @@ export function ReferencePicker({
                         className={
                           "mt-0.5 w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center " +
                           (selectedVerses.has(v.id)
-                            ? "bg-[#071A2D] border-[#071A2D]"
+                            ? "bg-brand-ink border-brand-ink"
                             : "border-input")
                         }
                         onClick={(e) => {
@@ -488,7 +488,7 @@ export function ReferencePicker({
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <span className="font-semibold tracking-tight text-[#071A2D]">
+                      <span className="font-semibold tracking-tight text-brand-ink">
                         {v.chapter?.book?.abbreviation || v.chapter?.book?.name}{" "}
                         {v.chapter?.number}:{v.number}
                       </span>
@@ -497,10 +497,10 @@ export function ReferencePicker({
                       </span>
                     </div>
                     {chapterVerses.length === 0 && !isBibleAdded(v.id) && (
-                      <Plus className="h-3.5 w-3.5 text-[#071A2D] flex-shrink-0 mt-0.5" />
+                      <Plus className="h-3.5 w-3.5 text-brand-ink flex-shrink-0 mt-0.5" />
                     )}
                     {isBibleAdded(v.id) && (
-                      <span className="text-[#071A2D] text-overline flex-shrink-0 mt-0.5">
+                      <span className="text-brand-ink text-overline flex-shrink-0 mt-0.5">
                         ✓
                       </span>
                     )}
@@ -562,7 +562,7 @@ export function ReferencePicker({
         <div className="max-h-48 overflow-y-auto">
           <button
             onClick={() => setBrowseBook(null)}
-            className="text-xs text-[#071A2D] hover:underline mb-1"
+            className="text-xs text-brand-ink hover:underline mb-1"
           >
             {t("bible.back_to_books")}
           </button>
@@ -677,7 +677,7 @@ export function ReferencePicker({
                   className="flex w-full items-start justify-between gap-2 border-b px-3 py-2 text-left text-xs transition-colors last:border-b-0 hover:bg-muted/50"
                 >
                   <div className="min-w-0 flex-1">
-                    <div className="font-semibold tracking-tight text-[#071A2D]">
+                    <div className="font-semibold tracking-tight text-brand-ink">
                       §{entry.number}
                     </div>
                     <div className="mt-1 line-clamp-2 text-muted-foreground">
@@ -685,9 +685,9 @@ export function ReferencePicker({
                     </div>
                   </div>
                   {isCatechismAdded(entry.id) ? (
-                    <span className="flex-shrink-0 text-[#071A2D]">✓</span>
+                    <span className="flex-shrink-0 text-brand-ink">✓</span>
                   ) : (
-                    <Plus className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-[#071A2D]" />
+                    <Plus className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-brand-ink" />
                   )}
                 </button>
               ))}
@@ -708,7 +708,7 @@ export function ReferencePicker({
                   className="flex w-full items-start justify-between gap-2 border-b px-3 py-2 text-left text-xs transition-colors last:border-b-0 hover:bg-muted/50"
                 >
                   <div className="min-w-0 flex-1">
-                    <div className="font-semibold tracking-tight text-[#071A2D]">
+                    <div className="font-semibold tracking-tight text-brand-ink">
                       §{entry.number}
                     </div>
                     <div className="mt-1 line-clamp-2 text-muted-foreground">
@@ -716,9 +716,9 @@ export function ReferencePicker({
                     </div>
                   </div>
                   {directoryRefs.some((r) => r.entryId === entry.id) ? (
-                    <span className="flex-shrink-0 text-[#071A2D]">✓</span>
+                    <span className="flex-shrink-0 text-brand-ink">✓</span>
                   ) : (
-                    <Plus className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-[#071A2D]" />
+                    <Plus className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-brand-ink" />
                   )}
                 </button>
               ))}
@@ -743,7 +743,7 @@ export function ReferencePicker({
               key={i}
               onMouseEnter={(e) => showTooltip(e, g.text || g.label)}
               onMouseLeave={hideTooltip}
-              className="relative inline-flex cursor-default items-center gap-1 rounded-sm bg-[#071A2D]/08 py-1 pl-2 pr-1 text-caption text-[#071A2D] group"
+              className="relative inline-flex cursor-default items-center gap-1 rounded-sm bg-brand-ink/8 py-1 pl-2 pr-1 text-caption text-brand-ink group"
             >
               {g.label}
               <button
@@ -761,7 +761,7 @@ export function ReferencePicker({
                 showTooltip(e, (r.question || "") + "\n\n" + (r.answer || ""))
               }
               onMouseLeave={hideTooltip}
-              className="group relative inline-flex cursor-default items-center gap-1 rounded-sm border border-border/70 bg-muted/30 py-1 pl-2 pr-1 text-caption font-semibold tracking-tight text-[#071A2D]"
+              className="group relative inline-flex cursor-default items-center gap-1 rounded-sm border border-border/70 bg-muted/30 py-1 pl-2 pr-1 text-caption font-semibold tracking-tight text-brand-ink"
             >
               {r.label}
               <button
@@ -777,7 +777,7 @@ export function ReferencePicker({
               key={r.id || i}
               onMouseEnter={(e) => showTooltip(e, r.content || r.label)}
               onMouseLeave={hideTooltip}
-              className="group relative inline-flex cursor-default items-center gap-1 rounded-sm border border-border/70 bg-muted/30 py-1 pl-2 pr-1 text-caption font-semibold tracking-tight text-[#071A2D]"
+              className="group relative inline-flex cursor-default items-center gap-1 rounded-sm border border-border/70 bg-muted/30 py-1 pl-2 pr-1 text-caption font-semibold tracking-tight text-brand-ink"
             >
               {r.label}
               <button

@@ -207,7 +207,7 @@ export default function ImportCatechumensPage() {
           <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {t("catechumens.import_format_title")}
           </h3>
-          <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          <div className="h-px w-8 bg-brand-gold" aria-hidden />
           <p className="text-sm text-muted-foreground">
             {t("catechumens.import_format_desc")}
           </p>
@@ -252,13 +252,13 @@ Maria,Santos,2014-07-22,Silva Santos`}
             onClick={() => fileInputRef.current?.click()}
             className={`mt-1 flex cursor-pointer flex-col items-center justify-center rounded-sm border border-dashed border-border/70 p-6 transition-colors ${
               dragOver
-                ? "border-[#071A2D] bg-muted/30"
+                ? "border-brand-ink bg-muted/30"
                 : "border-muted-foreground/25 hover:border-muted-foreground/50 bg-muted/20"
             }`}
           >
             <FileUp
               className={`mb-2 h-8 w-8 ${
-                dragOver ? "text-[#071A2D]" : "text-muted-foreground"
+                dragOver ? "text-brand-ink" : "text-muted-foreground"
               }`}
             />
             <p className="text-sm text-muted-foreground text-center">
@@ -288,12 +288,12 @@ Maria,Santos,2014-07-22,Silva Santos`}
             <div className="flex items-center justify-between">
               <div className="space-y-1.5">
                 <h4 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                  <Eye className="h-3.5 w-3.5 text-[#071A2D]" />
+                  <Eye className="h-3.5 w-3.5 text-brand-ink" />
                   {t("catechumens.import_preview") ||
                     "Visualização dos Dados"}{" "}
                   ({previewRows.length} {t("catechumens.rows") || "linhas"})
                 </h4>
-                <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                <div className="h-px w-8 bg-brand-gold" aria-hidden />
               </div>
             </div>
             <div className="max-h-60 overflow-x-auto rounded-sm border border-border/70 bg-white">
@@ -317,17 +317,14 @@ Maria,Santos,2014-07-22,Silva Santos`}
                       <td className="px-3 py-2 text-muted-foreground">
                         {row.lineNumber}
                       </td>
-                      <td
-                        className="px-3 py-2 font-semibold tracking-tight text-[#071A2D]"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
+                      <td className="font-brand-display px-3 py-2 font-semibold tracking-tight text-brand-ink">
                         {row.firstName || (
                           <span className="font-normal text-destructive">
                             {t("catechumens.empty") || "Vazio"}
                           </span>
                         )}
                       </td>
-                      <td className="px-3 py-2 font-medium text-[#071A2D]/90">
+                      <td className="px-3 py-2 font-medium text-brand-ink/90">
                         {row.lastName}
                       </td>
                       <td className="px-3 py-2 text-muted-foreground">
@@ -371,20 +368,17 @@ Maria,Santos,2014-07-22,Silva Santos`}
         <div className="space-y-3 rounded-sm border border-border/70 bg-white p-6">
           <div className="space-y-1.5">
             <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              <CheckCircle className="h-4 w-4 text-[#071A2D]" />
+              <CheckCircle className="h-4 w-4 text-brand-ink" />
               {t("catechumens.import_result_title")}
             </h3>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            <div className="h-px w-8 bg-brand-gold" aria-hidden />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-sm border border-border/70 bg-muted/30 p-4 text-center">
-              <p
-                className="text-2xl font-semibold tracking-tight tabular-nums text-[#071A2D]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <p className="font-brand-display text-2xl font-semibold tracking-tight tabular-nums text-brand-ink">
                 {results.created}
               </p>
-              <p className="text-sm text-[#071A2D]">
+              <p className="text-sm text-brand-ink">
                 {t("catechumens.import_created")}
               </p>
             </div>

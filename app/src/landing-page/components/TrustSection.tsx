@@ -26,10 +26,7 @@ export function TrustSection({ ns = "landing" }: { ns?: string }) {
           ref={headerRef}
           className={`text-center mb-12 space-y-3 ${headerClass}`}
         >
-          <h2
-            className="text-title-xl font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <h2 className="font-brand-display text-title-xl font-semibold tracking-tight text-brand-ink">
             {t("trust_title")}
           </h2>
           <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">
@@ -73,13 +70,10 @@ function TrustCard({
       variant="flat"
       className={`p-6 space-y-3 text-center ${className}`}
     >
-      <div className="inline-flex rounded-sm bg-[#071A2D]/08 p-2.5">
-        <Icon className="h-5 w-5 text-[#071A2D]" />
+      <div className="inline-flex rounded-sm bg-brand-ink/8 p-2.5">
+        <Icon className="h-5 w-5 text-brand-ink" />
       </div>
-      <h3
-        className="text-body-sm font-semibold tracking-tight text-[#071A2D]"
-        style={{ fontFamily: "var(--font-brand-display)" }}
-      >
+      <h3 className="font-brand-display text-body-sm font-semibold tracking-tight text-brand-ink">
         {title}
       </h3>
       <p className="text-body-xs text-text-secondary leading-relaxed">{desc}</p>

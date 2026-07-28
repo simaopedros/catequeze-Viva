@@ -27,12 +27,9 @@ export default function FamilyLandingPage() {
         </div>
 
         <AppPanel className="space-y-6 p-8">
-          <Church className="mx-auto h-12 w-12 text-[#071A2D]" />
+          <Church className="mx-auto h-12 w-12 text-brand-ink" />
           <div className="space-y-2">
-            <h2
-              className="text-xl font-semibold tracking-tight text-[#071A2D]"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <h2 className="font-brand-display text-xl font-semibold tracking-tight text-brand-ink">
               {t("landing.invite_title")}
             </h2>
             <p className="text-sm text-muted-foreground">
@@ -43,7 +40,7 @@ export default function FamilyLandingPage() {
           <div className="space-y-3">
             <Link
               to="/entrar"
-              className="block w-full rounded-sm bg-[#071A2D] text-white h-10 px-4 py-2 text-sm font-medium text-center hover:bg-[#0a2540] transition-colors"
+              className="block w-full rounded-sm bg-brand-ink text-white h-10 px-4 py-2 text-sm font-medium text-center hover:bg-brand-ink-soft transition-colors"
             >
               {t("landing.enter")}
             </Link>
@@ -51,7 +48,7 @@ export default function FamilyLandingPage() {
               {t("landing.have_invite")}{" "}
               <Link
                 to="/convite"
-                className="text-[#071A2D] underline underline-offset-2"
+                className="text-brand-ink underline underline-offset-2"
               >
                 {t("landing.insert_code")}
               </Link>
@@ -63,7 +60,7 @@ export default function FamilyLandingPage() {
           {t("landing.staff_hint")}{" "}
           <a
             href={staffPortalUrl("/")}
-            className="font-medium text-[#071A2D] underline underline-offset-2"
+            className="font-medium text-brand-ink underline underline-offset-2"
           >
             {t("landing.main_portal")}
           </a>

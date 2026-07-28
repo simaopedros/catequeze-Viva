@@ -6,10 +6,7 @@ export function LibraryMock({ ns = "landing" }: { ns?: string }) {
   return (
     <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-overline sm:text-xs">
       <div>
-        <p
-          className="text-sm font-semibold tracking-tight text-[#071A2D]"
-          style={{ fontFamily: "var(--font-brand-display)" }}
-        >
+        <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
           {t("mockup_library.title")}
         </p>
         <p className="text-muted-foreground">{t("mockup_library.subtitle")}</p>
@@ -33,7 +30,7 @@ export function LibraryMock({ ns = "landing" }: { ns?: string }) {
             key={tab.label}
             type="button"
             className={`flex flex-1 items-center justify-center gap-1 rounded-sm py-1.5 text-overline font-medium ${
-              tab.active ? "bg-white text-[#071A2D]" : "text-muted-foreground"
+              tab.active ? "bg-white text-brand-ink" : "text-muted-foreground"
             }`}
           >
             <tab.icon className="h-3 w-3" />
@@ -50,10 +47,7 @@ export function LibraryMock({ ns = "landing" }: { ns?: string }) {
       </div>
 
       <div className="rounded-sm border border-border/70 bg-white p-3 space-y-2">
-        <p
-          className="font-semibold tracking-tight text-[#071A2D]"
-          style={{ fontFamily: "var(--font-brand-display)" }}
-        >
+        <p className="font-brand-display font-semibold tracking-tight text-brand-ink">
           João 3:16
         </p>
         <p className="leading-relaxed text-muted-foreground italic">
@@ -67,7 +61,7 @@ export function LibraryMock({ ns = "landing" }: { ns?: string }) {
           ].map((ref) => (
             <span
               key={ref}
-              className="rounded-sm bg-[#071A2D]/08 text-[#071A2D] px-2 py-0.5 text-overline"
+              className="rounded-sm bg-brand-ink/8 text-brand-ink px-2 py-0.5 text-overline"
             >
               {ref}
             </span>
@@ -76,11 +70,11 @@ export function LibraryMock({ ns = "landing" }: { ns?: string }) {
       </div>
 
       <div className="rounded-sm border border-border/70 bg-white p-2">
-        <p className="mb-1 font-semibold tracking-tight text-[#071A2D]">
+        <p className="mb-1 font-semibold tracking-tight text-brand-ink">
           {t("mockup_library.plan_title")}
         </p>
         <div className="flex items-center gap-2">
-          <span className="rounded-sm border border-border/70 bg-muted/40 px-2 py-0.5 text-overline font-semibold tracking-tight text-[#071A2D]">
+          <span className="rounded-sm border border-border/70 bg-muted/40 px-2 py-0.5 text-overline font-semibold tracking-tight text-brand-ink">
             {t("mockup_library.published")}
           </span>
           <span className="text-muted-foreground">

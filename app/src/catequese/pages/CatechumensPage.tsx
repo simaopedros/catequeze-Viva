@@ -381,7 +381,7 @@ export default function CatechumensPage() {
             <h3 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               {tn("catechumens")}
             </h3>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            <div className="h-px w-8 bg-brand-gold" aria-hidden />
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -411,7 +411,7 @@ export default function CatechumensPage() {
                         <Link
                           to={`/app/catechumens/${c.id}`}
                           aria-label={fullName}
-                          className="flex min-h-11 items-center gap-3 rounded-sm hover:text-[#071A2D] after:absolute after:inset-0 after:z-0 focus-visible:relative focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                          className="flex min-h-11 items-center gap-3 rounded-sm hover:text-brand-ink after:absolute after:inset-0 after:z-0 focus-visible:relative focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
                           <div
                             className={`flex h-10 w-10 items-center justify-center overflow-hidden rounded-sm text-sm font-semibold ${
@@ -436,12 +436,7 @@ export default function CatechumensPage() {
                             )}
                           </div>
                           <div>
-                            <p
-                              className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                              style={{
-                                fontFamily: "var(--font-brand-display)",
-                              }}
-                            >
+                            <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                               {fullName}
                             </p>
                             {c.birthDate && (

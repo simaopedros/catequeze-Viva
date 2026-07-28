@@ -60,7 +60,7 @@ export default function SendAnnouncementButton({ classId, className }: Props) {
             <Mail className="h-3.5 w-3.5" />
             {t("announcement.title", { className })}
           </p>
-          <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          <div className="h-px w-8 bg-brand-gold" aria-hidden />
           <p className="text-xs text-muted-foreground">
             {t("announcement.hint")}
           </p>
@@ -71,7 +71,7 @@ export default function SendAnnouncementButton({ classId, className }: Props) {
             setError("");
             setResult(null);
           }}
-          className="text-muted-foreground hover:text-[#071A2D]"
+          className="text-muted-foreground hover:text-brand-ink"
         >
           <X className="h-4 w-4" />
         </button>
@@ -105,7 +105,7 @@ export default function SendAnnouncementButton({ classId, className }: Props) {
       </div>
       {error && <p className="text-xs text-destructive">{error}</p>}
       {result && (
-        <div className="flex items-center gap-2 rounded-sm border border-border/70 bg-muted/30 p-3 text-sm font-medium tracking-tight text-[#071A2D]">
+        <div className="flex items-center gap-2 rounded-sm border border-border/70 bg-muted/30 p-3 text-sm font-medium tracking-tight text-brand-ink">
           <CheckCircle className="h-4 w-4" />
           {result.failed > 0
             ? t("announcement.success_with_failures", {

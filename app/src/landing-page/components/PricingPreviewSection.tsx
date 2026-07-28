@@ -80,17 +80,14 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
         ref={headerRef}
         className={`mb-10 space-y-3 text-center ${headerClass}`}
       >
-        <div className="mx-auto h-px w-10 bg-[#D39A2B]" aria-hidden />
-        <h2
-          className="text-3xl font-semibold tracking-tight text-[#071A2D] sm:text-4xl"
-          style={{ fontFamily: "var(--font-brand-display)" }}
-        >
+        <div className="mx-auto h-px w-10 bg-brand-gold" aria-hidden />
+        <h2 className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink sm:text-4xl">
           {tr("pricing_title")}
         </h2>
         <p className="mx-auto max-w-3xl text-lg text-muted-foreground">
           {tr("pricing_subtitle")}
         </p>
-        <p className="text-sm font-medium text-[#071A2D]">
+        <p className="text-sm font-medium text-brand-ink">
           {tr("price_trial_note")}
         </p>
 
@@ -101,8 +98,8 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
             className={cn(
               "rounded-sm px-4 py-1.5 text-sm font-medium transition-colors",
               interval === "monthly"
-                ? "bg-white font-semibold tracking-tight text-[#071A2D]"
-                : "text-muted-foreground hover:text-[#071A2D]",
+                ? "bg-white font-semibold tracking-tight text-brand-ink"
+                : "text-muted-foreground hover:text-brand-ink",
             )}
           >
             {tr("price_monthly")}
@@ -113,12 +110,12 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
             className={cn(
               "inline-flex items-center gap-1.5 rounded-sm px-4 py-1.5 text-sm font-medium transition-colors",
               interval === "annual"
-                ? "bg-white font-semibold tracking-tight text-[#071A2D]"
-                : "text-muted-foreground hover:text-[#071A2D]",
+                ? "bg-white font-semibold tracking-tight text-brand-ink"
+                : "text-muted-foreground hover:text-brand-ink",
             )}
           >
             {tr("price_annual")}
-            <span className="rounded-sm bg-[#071A2D]/08 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#071A2D]">
+            <span className="rounded-sm bg-brand-ink/8 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-ink">
               {tr("annual_discount")}
             </span>
           </button>
@@ -150,7 +147,7 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
               destination: "/pricing",
             })
           }
-          className="font-medium text-[#071A2D] underline underline-offset-2 transition-colors hover:text-[#0a2540]"
+          className="font-medium text-brand-ink underline underline-offset-2 transition-colors hover:text-brand-ink-soft"
         >
           {tr("compare_plans")}
         </Link>
@@ -212,23 +209,23 @@ function PricingPreviewCard({
       id={`planos-${plan.planId}`}
       className={`relative flex scroll-mt-24 flex-col rounded-sm border bg-white p-6 transition-colors ${className} ${
         plan.highlight
-          ? "border-[#071A2D]/30 ring-1 ring-[#071A2D]/10"
+          ? "border-brand-ink/30 ring-1 ring-brand-ink/10"
           : "border-border/70"
       }`}
     >
       {plan.highlight && (
-        <div className="mb-3 inline-flex items-center gap-1 self-start rounded-sm bg-[#071A2D] px-3 py-1 text-caption font-semibold text-white">
+        <div className="mb-3 inline-flex items-center gap-1 self-start rounded-sm bg-brand-ink px-3 py-1 text-caption font-semibold text-white">
           <Star className="h-3 w-3" /> {tr("price_popular")}
         </div>
       )}
       <div className="mb-3 inline-flex self-start rounded-sm bg-muted/70 px-3 py-1 text-[11px] font-medium text-muted-foreground">
         {audience}
       </div>
-      <h3 className="text-xl font-semibold tracking-tight text-[#071A2D]">
+      <h3 className="text-xl font-semibold tracking-tight text-brand-ink">
         {name}
       </h3>
       <div className="mt-3 flex flex-wrap items-baseline gap-1">
-        <span className="text-3xl font-semibold tracking-tight text-[#071A2D]">
+        <span className="text-3xl font-semibold tracking-tight text-brand-ink">
           {priced.display}
         </span>
         <span className="text-sm text-muted-foreground">
@@ -240,14 +237,14 @@ function PricingPreviewCard({
           {tr("price_annual_equivalent", { price: priced.monthlyEquivalent })}
         </p>
       )}
-      <p className="mt-1 text-xs font-medium text-[#071A2D]">
+      <p className="mt-1 text-xs font-medium text-brand-ink">
         {tr("price_trial_badge")}
       </p>
       <p className="mt-2 text-sm text-muted-foreground">{desc}</p>
       <ul className="mt-4 flex-1 space-y-2 text-sm">
         {features.map((f) => (
           <li key={f} className="flex items-start gap-2">
-            <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#071A2D]" />
+            <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-brand-ink" />
             <span>{f}</span>
           </li>
         ))}

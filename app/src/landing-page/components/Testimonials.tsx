@@ -49,7 +49,7 @@ export default function Testimonials({
                     src={testimonial.avatarSrc}
                     loading="lazy"
                     alt={`${testimonial.name}'s avatar`}
-                    className="h-10 w-10 shrink-0 rounded-full ring-2 ring-border/20 transition-all duration-200 group-hover:ring-[#071A2D]/30"
+                    className="h-10 w-10 shrink-0 rounded-full ring-2 ring-border/20 transition-all duration-200 group-hover:ring-brand-ink/30"
                   />
                   <div className="min-w-0 flex-1">
                     <CardTitle className="group-hover:text-card-foreground truncate text-sm font-semibold transition-colors duration-200">
@@ -70,7 +70,7 @@ export default function Testimonials({
         <div className="mt-8 flex justify-center md:hidden">
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-[#071A2D] bg-[#071A2D]/08 hover:bg-[#071A2D]/20 rounded-sm px-6 py-3 text-sm font-medium transition-colors duration-200"
+            className="text-brand-ink bg-brand-ink/8 hover:bg-brand-ink/20 rounded-sm px-6 py-3 text-sm font-medium transition-colors duration-200"
           >
             {isExpanded
               ? "Show Less"

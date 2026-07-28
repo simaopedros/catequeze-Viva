@@ -82,7 +82,7 @@ export function AutoStartPanel({ mode }: { mode: string }) {
           <div className="flex gap-2 justify-center">
             <button
               onClick={() => setStatus("fallback")}
-              className="rounded-sm bg-[#071A2D] px-4 py-2 text-sm text-white hover:bg-[#0a2540]"
+              className="rounded-sm bg-brand-ink px-4 py-2 text-sm text-white hover:bg-brand-ink-soft"
             >
               Configurar manualmente
             </button>
@@ -103,9 +103,9 @@ export function AutoStartPanel({ mode }: { mode: string }) {
       <div className="text-center space-y-4">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-sm border border-border/70 bg-muted/30">
           {status === "starting" ? (
-            <Feather className="h-8 w-8 animate-pulse text-[#D39A2B]" />
+            <Feather className="h-8 w-8 animate-pulse text-brand-gold" />
           ) : (
-            <Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" />
+            <Loader2 className="h-8 w-8 animate-spin text-brand-ink" />
           )}
         </div>
         <div className="space-y-2">

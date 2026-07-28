@@ -12,11 +12,8 @@ export default function Features({ features }: { features: Feature[] }) {
     <div id="features" className="mx-auto mt-48 max-w-7xl px-6 lg:px-8">
       <SectionTitle
         title={
-          <p
-            className="mt-2 text-4xl font-semibold tracking-tight text-[#071A2D] sm:text-5xl"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
-            The <span className="text-[#D39A2B]">Best</span> Features
+          <p className="font-brand-display mt-2 text-4xl font-semibold tracking-tight text-brand-ink sm:text-5xl">
+            The <span className="text-brand-gold">Best</span> Features
           </p>
         }
         description="Don't work harder. Work smarter."
@@ -25,10 +22,7 @@ export default function Features({ features }: { features: Feature[] }) {
         <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
           {features.map((feature) => (
             <div key={feature.name} className="relative pl-16">
-              <dt
-                className="text-base font-semibold leading-7 tracking-tight text-[#071A2D]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <dt className="font-brand-display text-base font-semibold leading-7 tracking-tight text-brand-ink">
                 <div className="border-accent bg-accent/30 absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-sm border">
                   <div className="text-2xl">{feature.icon}</div>
                 </div>

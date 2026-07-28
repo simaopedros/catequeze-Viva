@@ -53,7 +53,7 @@ export function SaintStoryInjector() {
     <Card className="space-y-3 rounded-sm border-border/70 p-4">
       <div className="space-y-1.5">
         <AppEyebrow className="flex items-center gap-1.5">
-          <Church className="h-3.5 w-3.5 text-[#071A2D]" />
+          <Church className="h-3.5 w-3.5 text-brand-ink" />
           {t("tools.saint.title")}
         </AppEyebrow>
         <AppGoldRule className="w-6" />
@@ -88,7 +88,7 @@ export function SaintStoryInjector() {
             <div className="flex items-center gap-2">
               <Badge
                 variant="secondary"
-                className="rounded-sm text-xs font-semibold tracking-tight text-[#071A2D]"
+                className="rounded-sm text-xs font-semibold tracking-tight text-brand-ink"
               >
                 {story.saintName}
               </Badge>
@@ -100,13 +100,13 @@ export function SaintStoryInjector() {
               {story.story}
             </p>
             <div className="text-xs">
-              <span className="font-semibold tracking-tight text-[#071A2D]">
+              <span className="font-semibold tracking-tight text-brand-ink">
                 {t("tools.saint.virtue")}:
               </span>{" "}
               {story.virtue}
             </div>
             <div className="text-xs">
-              <span className="font-semibold tracking-tight text-[#071A2D]">
+              <span className="font-semibold tracking-tight text-brand-ink">
                 {t("tools.saint.lesson")}:
               </span>{" "}
               {story.practicalLesson}

@@ -510,7 +510,7 @@ export default function BiblePage() {
                 }}
                 className="w-full text-left px-2 py-1 text-sm rounded hover:bg-muted transition-colors flex items-center gap-2"
               >
-                <BookOpenCheck className="h-3.5 w-3.5 text-[#071A2D] flex-shrink-0" />
+                <BookOpenCheck className="h-3.5 w-3.5 text-brand-ink flex-shrink-0" />
                 <span className="truncate">
                   {r.bookName} {r.chapter}
                 </span>
@@ -537,7 +537,7 @@ export default function BiblePage() {
                 }}
                 className="w-full text-left px-2 py-1 text-sm rounded hover:bg-muted transition-colors flex items-center gap-2"
               >
-                <Bookmark className="h-3.5 w-3.5 text-[#D39A2B] flex-shrink-0 fill-[#D39A2B]" />
+                <Bookmark className="h-3.5 w-3.5 text-brand-gold flex-shrink-0 fill-brand-gold" />
                 <span className="truncate">{f.label}</span>
               </button>
             ))}
@@ -596,7 +596,7 @@ export default function BiblePage() {
                     className="truncate rounded-sm px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted"
                     title={b.name}
                   >
-                    <span className="font-semibold tracking-tight text-[#071A2D]">
+                    <span className="font-semibold tracking-tight text-brand-ink">
                       {b.name}
                     </span>
                     {b.abbreviation && b.abbreviation !== b.name && (
@@ -623,7 +623,7 @@ export default function BiblePage() {
                     className="truncate rounded-sm px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted"
                     title={b.name}
                   >
-                    <span className="font-semibold tracking-tight text-[#071A2D]">
+                    <span className="font-semibold tracking-tight text-brand-ink">
                       {b.name}
                     </span>
                     {b.abbreviation && b.abbreviation !== b.name && (
@@ -652,10 +652,7 @@ export default function BiblePage() {
             <ChevronLeft className="h-4 w-4" />
             {t("books")}
           </Button>
-          <h2
-            className="text-sm font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <h2 className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
             {selectedBook.name}
           </h2>
           <div className="grid grid-cols-5 sm:grid-cols-6 gap-1.5">
@@ -663,7 +660,7 @@ export default function BiblePage() {
               <button
                 key={ch.id}
                 onClick={() => loadChapter(selectedBook.id, ch.number)}
-                className="rounded-sm border border-border/70 px-2 py-2 text-center text-sm transition-colors hover:border-[#071A2D]/30 hover:bg-muted/20"
+                className="rounded-sm border border-border/70 px-2 py-2 text-center text-sm transition-colors hover:border-brand-ink/30 hover:bg-muted/20"
               >
                 {ch.number}
               </button>
@@ -679,10 +676,7 @@ export default function BiblePage() {
             <ChevronLeft className="h-4 w-4" />
             {t("chapters")}
           </Button>
-          <h2
-            className="text-sm font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <h2 className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
             {chapterData?.book?.name || selectedBook.name}
           </h2>
           <div className="grid grid-cols-5 sm:grid-cols-6 gap-1.5">
@@ -692,8 +686,8 @@ export default function BiblePage() {
                 onClick={() => loadChapter(selectedBook.id, ch.number)}
                 className={`rounded-sm border px-2 py-2 text-center text-sm transition-colors ${
                   ch.number === selectedChapter
-                    ? "border-[#071A2D] bg-muted/30 font-semibold tracking-tight text-[#071A2D]"
-                    : "text-muted-foreground hover:border-[#071A2D]/30 hover:bg-muted/20 hover:text-[#071A2D]"
+                    ? "border-brand-ink bg-muted/30 font-semibold tracking-tight text-brand-ink"
+                    : "text-muted-foreground hover:border-brand-ink/30 hover:bg-muted/20 hover:text-brand-ink"
                 }`}
               >
                 {ch.number}
@@ -807,7 +801,7 @@ export default function BiblePage() {
                     setSearchQuery(s);
                     handleSearch(s);
                   }}
-                  className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-[#071A2D]/30 hover:text-[#071A2D]"
+                  className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-brand-ink/30 hover:text-brand-ink"
                 >
                   {s}
                 </button>
@@ -839,12 +833,9 @@ export default function BiblePage() {
                   key={v.id}
                   type="button"
                   onClick={() => openSearchResult(v)}
-                  className="group w-full rounded-sm border border-border/70 p-3 text-left text-sm transition-colors hover:border-[#071A2D]/30 hover:bg-muted/20"
+                  className="group w-full rounded-sm border border-border/70 p-3 text-left text-sm transition-colors hover:border-brand-ink/30 hover:bg-muted/20"
                 >
-                  <p
-                    className="mb-1 text-xs font-semibold tracking-tight text-[#071A2D] group-hover:underline"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <p className="font-brand-display mb-1 text-xs font-semibold tracking-tight text-brand-ink group-hover:underline">
                     {v.chapter?.book?.name} {v.chapter?.number}:{v.number}
                   </p>
                   <p className="line-clamp-3">{v.text}</p>
@@ -893,10 +884,7 @@ export default function BiblePage() {
             {!selectedBook && (
               <div className="flex flex-col items-center justify-center py-16 text-center text-muted-foreground gap-4">
                 <BookOpen className="h-12 w-12 opacity-20" />
-                <p
-                  className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
+                <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                   {t("choose_book")}
                 </p>
                 <p className="text-xs max-w-xs">{t("choose_book_hint")}</p>
@@ -934,7 +922,7 @@ export default function BiblePage() {
                                 ?.id || "",
                             )
                           }
-                          className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs transition-colors hover:border-[#071A2D]/30 hover:text-[#071A2D]"
+                          className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs transition-colors hover:border-brand-ink/30 hover:text-brand-ink"
                         >
                           {suggestion}
                         </button>
@@ -949,10 +937,7 @@ export default function BiblePage() {
             {selectedBook && selectedChapter === null && (
               <div className="flex flex-col items-center justify-center py-16 text-center text-muted-foreground">
                 <BookOpen className="h-12 w-12 mb-4 opacity-20" />
-                <p
-                  className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
+                <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                   {t("choose_chapter", { book: selectedBook.name })}
                 </p>
               </div>
@@ -961,7 +946,7 @@ export default function BiblePage() {
             {/* Chapter loading */}
             {selectedChapter !== null && loading && (
               <div className="flex justify-center py-16">
-                <Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" />
+                <Loader2 className="h-8 w-8 animate-spin text-brand-ink" />
               </div>
             )}
 
@@ -997,11 +982,11 @@ export default function BiblePage() {
                         }}
                         className={`group flex gap-3 py-1 px-2 -mx-2 rounded transition-colors ${
                           highlightedVerse === v.number
-                            ? "bg-[#D39A2B]/15 bg-[#D39A2B]/10 ring-1 ring-[#D39A2B]/40 dark:ring-[#D39A2B]/50"
+                            ? "bg-brand-gold/15 bg-brand-gold/10 ring-1 ring-brand-gold/40 dark:ring-brand-gold/50"
                             : ""
                         }`}
                       >
-                        <span className="text-[#071A2D] font-medium text-xs w-6 text-right flex-shrink-0 mt-0.5">
+                        <span className="text-brand-ink font-medium text-xs w-6 text-right flex-shrink-0 mt-0.5">
                           {v.number}
                         </span>
                         <p className={`flex-1 ${FONT_SIZE_CLASS[fontSize]}`}>
@@ -1020,8 +1005,8 @@ export default function BiblePage() {
                           <Bookmark
                             className={`h-4 w-4 ${
                               isFav
-                                ? "text-[#D39A2B] fill-[#D39A2B]"
-                                : "text-muted-foreground hover:text-[#D39A2B]"
+                                ? "text-brand-gold fill-brand-gold"
+                                : "text-muted-foreground hover:text-brand-gold"
                             }`}
                           />
                         </button>

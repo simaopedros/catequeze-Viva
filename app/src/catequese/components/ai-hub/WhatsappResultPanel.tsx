@@ -65,7 +65,7 @@ export function WhatsappResultPanel({
       <div className="w-full max-w-2xl space-y-6">
         <Card className="space-y-4 rounded-sm border-border/70 p-6">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-brand-ink">
               <Smartphone className="h-5 w-5" />
             </div>
             <div className="min-w-0 space-y-2">

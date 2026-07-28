@@ -109,7 +109,7 @@ type SelectionBubbleState = {
 };
 
 const referenceMarkClassName =
-  "rounded-sm bg-[#D39A2B]/15 px-0.5 underline decoration-dotted underline-offset-4 decoration-[#D39A2B]/80";
+  "rounded-sm bg-brand-gold/15 px-0.5 underline decoration-dotted underline-offset-4 decoration-brand-gold/80";
 
 const ReferenceAnchor = Mark.create({
   name: "referenceAnchor",
@@ -162,7 +162,7 @@ function ToolbarButton({
       className={cn(
         "h-8 shrink-0 rounded-sm border-border/60 px-2 shadow-none",
         !active &&
-          "bg-background/80 text-muted-foreground hover:bg-background hover:text-[#071A2D]",
+          "bg-background/80 text-muted-foreground hover:bg-background hover:text-brand-ink",
       )}
       onClick={onClick}
       title={title}
@@ -408,8 +408,8 @@ function SelectionActionBubble({
     cn(
       "inline-flex h-8 items-center gap-1.5 rounded-sm border px-3 text-xs font-medium transition-colors",
       active
-        ? "border-[#071A2D] bg-[#071A2D] text-white"
-        : "border-border/60 bg-background/90 text-muted-foreground hover:text-[#071A2D]",
+        ? "border-brand-ink bg-brand-ink text-white"
+        : "border-border/60 bg-background/90 text-muted-foreground hover:text-brand-ink",
     );
 
   const bubbleNode = (
@@ -426,14 +426,14 @@ function SelectionActionBubble({
         </div>
         <div className="flex items-center gap-2">
           {bubble.refLabel ? (
-            <span className="rounded-sm border border-border/70 bg-muted/30 px-2 py-1 text-[11px] font-semibold tracking-tight text-[#071A2D]">
+            <span className="rounded-sm border border-border/70 bg-muted/30 px-2 py-1 text-[11px] font-semibold tracking-tight text-brand-ink">
               {bubble.refLabel}
             </span>
           ) : null}
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-7 w-7 items-center justify-center rounded-sm border border-border/60 bg-background/90 text-muted-foreground transition-colors hover:text-[#071A2D]"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-sm border border-border/60 bg-background/90 text-muted-foreground transition-colors hover:text-brand-ink"
             aria-label="Fechar balão"
             title="Fechar"
           >
@@ -535,10 +535,7 @@ function SelectionActionBubble({
                     onClick={() => void result.onSelect()}
                   >
                     <div className="min-w-0 flex-1">
-                      <div
-                        className="font-semibold tracking-tight text-[#071A2D]"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
+                      <div className="font-brand-display font-semibold tracking-tight text-brand-ink">
                         {result.title}
                       </div>
                       <div className="mt-1 line-clamp-2 text-muted-foreground">
@@ -627,7 +624,7 @@ export function RichContentEditor({
     editorProps: {
       attributes: {
         class:
-          "min-h-[50vh] max-w-none px-5 py-8 outline-none prose prose-neutral sm:min-h-[60vh] sm:px-8 sm:py-10 prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-[#071A2D] prose-p:leading-7 prose-img:rounded-sm prose-blockquote:border-l-[#071A2D] prose-blockquote:text-[#071A2D]/90 prose-strong:text-[#071A2D]",
+          "min-h-[50vh] max-w-none px-5 py-8 outline-none prose prose-neutral sm:min-h-[60vh] sm:px-8 sm:py-10 prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-brand-ink prose-p:leading-7 prose-img:rounded-sm prose-blockquote:border-l-brand-ink prose-blockquote:text-brand-ink/90 prose-strong:text-brand-ink",
       },
       handlePaste: (_view, event) => {
         const items = event.clipboardData?.items;

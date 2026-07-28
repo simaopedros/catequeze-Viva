@@ -192,10 +192,7 @@ export function DioceseStep({
       <div className="max-h-64 space-y-3 overflow-y-auto">
         {!shouldShowResults && (
           <div className="border border-border/70 px-4 py-4 rounded-sm">
-            <p
-              className="text-sm font-semibold tracking-tight text-[#071A2D]"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
               {t("diocese.start_hint_title")}
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -217,15 +214,12 @@ export function DioceseStep({
                 className={cn(
                   "mb-1 flex w-full items-center gap-2 border px-3 py-2.5 text-left text-sm transition-colors rounded-sm",
                   selected?.wikidataId === d.wikidataId
-                    ? "border-[#071A2D]/40 bg-muted/30"
+                    ? "border-brand-ink/40 bg-muted/30"
                     : "border-border/70 hover:bg-muted/30",
                 )}
               >
                 <div className="min-w-0 flex-1">
-                  <span
-                    className="font-semibold tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <span className="font-brand-display font-semibold tracking-tight text-brand-ink">
                     {d.name}
                   </span>
                   {d.state && (
@@ -235,7 +229,7 @@ export function DioceseStep({
                   )}
                 </div>
                 {selected?.wikidataId === d.wikidataId && (
-                  <Check className="h-4 w-4 shrink-0 text-[#071A2D]" />
+                  <Check className="h-4 w-4 shrink-0 text-brand-ink" />
                 )}
               </button>
             ))}
@@ -255,15 +249,12 @@ export function DioceseStep({
                 className={cn(
                   "mb-1 flex w-full items-center gap-2 border px-3 py-2.5 text-left text-sm transition-colors rounded-sm",
                   selected?.id === d.id
-                    ? "border-[#071A2D]/40 bg-muted/30"
+                    ? "border-brand-ink/40 bg-muted/30"
                     : "border-border/70 hover:bg-muted/30",
                 )}
               >
                 <div className="min-w-0 flex-1">
-                  <span
-                    className="font-semibold tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <span className="font-brand-display font-semibold tracking-tight text-brand-ink">
                     {d.name}
                   </span>
                   {d.state && (
@@ -278,7 +269,7 @@ export function DioceseStep({
                   </span>
                 )}
                 {selected?.id === d.id && (
-                  <Check className="h-4 w-4 shrink-0 text-[#071A2D]" />
+                  <Check className="h-4 w-4 shrink-0 text-brand-ink" />
                 )}
               </button>
             ))}
@@ -304,7 +295,7 @@ export function DioceseStep({
             setShowCreate(true);
             setNewName(searchQuery);
           }}
-          className="w-full border border-dashed border-border/80 px-3 py-2.5 text-left text-sm text-muted-foreground transition-colors rounded-sm hover:border-[#071A2D]/40 hover:text-[#071A2D]"
+          className="w-full border border-dashed border-border/80 px-3 py-2.5 text-left text-sm text-muted-foreground transition-colors rounded-sm hover:border-brand-ink/40 hover:text-brand-ink"
         >
           {t("diocese.create_link")}
         </button>
@@ -323,10 +314,7 @@ export function DioceseStep({
           {duplicateDiocese && (
             <div className="border border-border/70 px-3 py-2 text-xs text-muted-foreground rounded-sm">
               {t("diocese.duplicate_warning")}{" "}
-              <strong
-                className="font-semibold tracking-tight text-[#071A2D]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <strong className="font-brand-display font-semibold tracking-tight text-brand-ink">
                 {duplicateDiocese.name}
               </strong>
               {duplicateDiocese.state && <> ({duplicateDiocese.state})</>}.
@@ -337,7 +325,7 @@ export function DioceseStep({
                   setShowCreate(false);
                   setNewName("");
                 }}
-                className="ml-2 font-medium text-[#071A2D] underline underline-offset-2"
+                className="ml-2 font-medium text-brand-ink underline underline-offset-2"
               >
                 {t("diocese.use_this")}
               </button>
@@ -387,7 +375,7 @@ export function DioceseStep({
         <button
           type="button"
           onClick={onSkip}
-          className="py-2 text-center text-sm text-muted-foreground transition-colors hover:text-[#071A2D]"
+          className="py-2 text-center text-sm text-muted-foreground transition-colors hover:text-brand-ink"
         >
           {t("diocese.skip")}
         </button>

@@ -107,7 +107,7 @@ const PLAN_STRUCTURE: Omit<
     priceCentsAnnual: PLANS.unlimited.prices.annualCents,
     maxClasses: PLANS.unlimited.limits.maxClasses,
     maxCatechumens: PLANS.unlimited.limits.maxCatechumens,
-    color: "border-[#071A2D]",
+    color: "border-brand-ink",
     highlight: true,
     isFree: false,
   },
@@ -182,7 +182,7 @@ function SurfaceSection({
           <Icon className="h-3.5 w-3.5" />
           <span>{title}</span>
         </div>
-        <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+        <div className="h-px w-8 bg-brand-gold" aria-hidden />
       </div>
       {children}
     </section>
@@ -207,13 +207,10 @@ function UsageRow({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between text-sm">
-        <span
-          className="font-semibold tracking-tight text-[#071A2D]"
-          style={{ fontFamily: "var(--font-brand-display)" }}
-        >
+        <span className="font-brand-display font-semibold tracking-tight text-brand-ink">
           {label}
         </span>
-        <span className="font-semibold tabular-nums text-[#071A2D]">
+        <span className="font-semibold tabular-nums text-brand-ink">
           {used}/{limit === Infinity ? "∞" : limit}
         </span>
       </div>
@@ -829,8 +826,8 @@ export default function BillingPage() {
   }
 
   const scopeBadgeClass = isPersonal
-    ? "border-[#071A2D]/20 bg-white/85 text-[#071A2D]"
-    : "border-border/70 bg-muted/30 text-[#071A2D]";
+    ? "border-brand-ink/20 bg-white/85 text-brand-ink"
+    : "border-border/70 bg-muted/30 text-brand-ink";
 
   return (
     <>
@@ -870,19 +867,19 @@ export default function BillingPage() {
                     )}
                     {!isConversionMode &&
                       (isTrialAccess ? (
-                        <Badge className="rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold tracking-tight text-[#071A2D]">
+                        <Badge className="rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold tracking-tight text-brand-ink">
                           {t("trial_status_badge")}
                         </Badge>
                       ) : isActive &&
                         user?.subscriptionStatus === "cancel_at_period_end" ? (
                         <Badge
                           variant="outline"
-                          className="rounded-sm border-[#D39A2B]/40 bg-[#D39A2B]/10 text-xs text-[#8A6418]"
+                          className="rounded-sm border-brand-gold/40 bg-brand-gold/10 text-xs text-brand-gold-muted"
                         >
                           {t("cancel_scheduled")}
                         </Badge>
                       ) : isPaidActive ? (
-                        <Badge className="rounded-sm border border-border/70 bg-[#071A2D]/08 text-xs text-[#071A2D]">
+                        <Badge className="rounded-sm border border-border/70 bg-brand-ink/8 text-xs text-brand-ink">
                           {t("active")}
                         </Badge>
                       ) : null)}
@@ -1010,7 +1007,7 @@ export default function BillingPage() {
               </div>
 
               {requestedPlanId && !requestedPlanLevelMatches && (
-                <div className="rounded-sm border border-border/70 bg-muted/30 px-4 py-3 text-sm font-medium tracking-tight text-[#071A2D]">
+                <div className="rounded-sm border border-border/70 bg-muted/30 px-4 py-3 text-sm font-medium tracking-tight text-brand-ink">
                   <p>
                     {requestedIsInstitutional
                       ? t("plan_mismatch_institutional")
@@ -1032,7 +1029,7 @@ export default function BillingPage() {
               )}
 
               {isParishManaged && (
-                <div className="rounded-sm border border-[#071A2D]/15 bg-white/85 p-5 ">
+                <div className="rounded-sm border border-brand-ink/15 bg-white/85 p-5 ">
                   <div className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                     <ShieldCheck className="h-4 w-4" />
                     <span>{t("corporate_plan")}</span>
@@ -1112,14 +1109,14 @@ export default function BillingPage() {
                       key={item}
                       className="flex items-start gap-3 text-sm text-muted-foreground"
                     >
-                      <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#071A2D]" />
+                      <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-brand-ink" />
                       <span>{item}</span>
                     </div>
                   ))}
                 </div>
               </div>
             ) : isUpgradeJourney ? (
-              <div className="rounded-sm border border-[#071A2D]/15 bg-white/88 p-5 ">
+              <div className="rounded-sm border border-brand-ink/15 bg-white/88 p-5 ">
                 <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                   <CheckCircle className="h-4 w-4" />
                   <span>{t("upgrade_checklist_title")}</span>
@@ -1130,7 +1127,7 @@ export default function BillingPage() {
                       key={item}
                       className="flex items-start gap-3 text-sm text-muted-foreground"
                     >
-                      <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#071A2D]" />
+                      <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-brand-ink" />
                       <span>{item}</span>
                     </div>
                   ))}
@@ -1148,14 +1145,14 @@ export default function BillingPage() {
                       label={t("classes")}
                       used={classesUsed}
                       limit={maxClasses}
-                      accent="bg-[#071A2D]"
+                      accent="bg-brand-ink"
                       ariaLabel={t("classes_quota_label")}
                     />
                     <UsageRow
                       label={t("catechumens")}
                       used={catechumensUsed}
                       limit={maxCatechumens}
-                      accent="bg-[#071A2D]"
+                      accent="bg-brand-ink"
                       ariaLabel={t("catechumens_quota_label")}
                     />
                   </div>
@@ -1167,19 +1164,16 @@ export default function BillingPage() {
                       className={cn(
                         "rounded-sm p-3",
                         isTrialAccess
-                          ? "border border-border/70 bg-muted/30 text-[#071A2D]"
+                          ? "border border-border/70 bg-muted/30 text-brand-ink"
                           : isPaidActive
-                            ? "border border-border/70 bg-muted/30 text-[#071A2D]"
+                            ? "border border-border/70 bg-muted/30 text-brand-ink"
                             : "border border-border/70 bg-muted/30 text-muted-foreground",
                       )}
                     >
                       <Clock className="h-6 w-6" />
                     </div>
                     <div className="space-y-1">
-                      <p
-                        className="text-2xl font-semibold tracking-tight text-[#071A2D]"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
+                      <p className="font-brand-display text-2xl font-semibold tracking-tight text-brand-ink">
                         {isTrialAccess
                           ? t("trial_status_title")
                           : isPaidActive
@@ -1202,7 +1196,7 @@ export default function BillingPage() {
                               : t("payment_desc")}
                       </p>
                       {isTrialAccess && trialEndsLabel && (
-                        <p className="text-xs font-medium text-[#8A6418]">
+                        <p className="text-xs font-medium text-brand-gold-muted">
                           {t("trial_ends_on", { date: trialEndsLabel })}
                         </p>
                       )}
@@ -1234,7 +1228,7 @@ export default function BillingPage() {
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
                     {aiCredits.hasAiAccess ? (
-                      <Badge className="rounded-sm border border-border/70 bg-muted/30 text-overline font-semibold tracking-tight text-[#071A2D]">
+                      <Badge className="rounded-sm border border-border/70 bg-muted/30 text-overline font-semibold tracking-tight text-brand-ink">
                         {t("monthly_badge")}
                       </Badge>
                     ) : (
@@ -1253,7 +1247,7 @@ export default function BillingPage() {
                     limit={aiCredits.monthlyAllowance}
                     accent={
                       aiCredits.hasAiAccess
-                        ? "bg-[#071A2D]"
+                        ? "bg-brand-ink"
                         : "bg-muted-foreground/30"
                     }
                     ariaLabel={t("ai_credits_quota_label")}
@@ -1262,10 +1256,7 @@ export default function BillingPage() {
                     <span className="text-sm text-muted-foreground">
                       {t("remaining")}
                     </span>
-                    <span
-                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
+                    <span className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                       {aiCredits.creditsLeft} {creditLabel}
                     </span>
                   </div>
@@ -1325,10 +1316,10 @@ export default function BillingPage() {
               <div className="flex flex-col gap-4 rounded-sm border border-border/70 bg-white p-5 sm:flex-row sm:items-center">
                 <div className="flex-1 space-y-1.5">
                   <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                    <PiggyBank className="h-3.5 w-3.5 text-[#071A2D]" />{" "}
+                    <PiggyBank className="h-3.5 w-3.5 text-brand-ink" />{" "}
                     {t("switch_annual_title")}
                   </p>
-                  <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                  <div className="h-px w-8 bg-brand-gold" aria-hidden />
                   <p className="text-sm text-muted-foreground">
                     {t("switch_annual_desc", {
                       savings: formatPriceFromCents(annualSavingsAmount),
@@ -1341,7 +1332,7 @@ export default function BillingPage() {
                 <Button
                   onClick={handleSwitchInterval}
                   disabled={switchingInterval}
-                  className="rounded-sm bg-[#071A2D] text-white hover:bg-[#0a2540]"
+                  className="rounded-sm bg-brand-ink text-white hover:bg-brand-ink-soft"
                 >
                   {switchingInterval ? (
                     <>
@@ -1380,8 +1371,8 @@ export default function BillingPage() {
                   className={cn(
                     "rounded-sm px-4 py-2 text-sm font-medium transition-all",
                     billingInterval === "monthly"
-                      ? "bg-[#071A2D] text-white"
-                      : "text-muted-foreground hover:text-[#071A2D]",
+                      ? "bg-brand-ink text-white"
+                      : "text-muted-foreground hover:text-brand-ink",
                   )}
                 >
                   {t("monthly")}
@@ -1392,8 +1383,8 @@ export default function BillingPage() {
                   className={cn(
                     "rounded-sm px-4 py-2 text-sm font-medium transition-all flex items-center gap-2",
                     billingInterval === "annual"
-                      ? "bg-[#071A2D] text-white"
-                      : "text-muted-foreground hover:text-[#071A2D]",
+                      ? "bg-brand-ink text-white"
+                      : "text-muted-foreground hover:text-brand-ink",
                   )}
                 >
                   {t("annual")}
@@ -1402,7 +1393,7 @@ export default function BillingPage() {
                       "rounded-sm px-2 py-0.5 text-[11px] font-semibold",
                       billingInterval === "annual"
                         ? "bg-white/15 text-[#F4CF7A]"
-                        : "border border-border/70 bg-muted/30 text-[#071A2D]",
+                        : "border border-border/70 bg-muted/30 text-brand-ink",
                     )}
                   >
                     {t("annual_savings")}
@@ -1432,15 +1423,15 @@ export default function BillingPage() {
                   <div
                     key={plan.planId}
                     className={cn(
-                      "flex flex-col rounded-sm border bg-white/90 p-5   transition-all duration-200 hover:border-[#071A2D]/30",
+                      "flex flex-col rounded-sm border bg-white/90 p-5   transition-all duration-200 hover:border-brand-ink/30",
                       isCurrent
-                        ? "border-[#071A2D] ring-1 ring-[#071A2D]/10"
+                        ? "border-brand-ink ring-1 ring-brand-ink/10"
                         : (
                               isConversionMode || isUpgradeJourney
                                 ? isRecommended
                                 : plan.highlight
                             )
-                          ? "border-[#071A2D] ring-1 ring-[#071A2D]/15"
+                          ? "border-brand-ink ring-1 ring-brand-ink/15"
                           : "border-border/70",
                       isRequested && "ring-2 ring-accent",
                     )}
@@ -1456,7 +1447,7 @@ export default function BillingPage() {
                             !isUpgradeJourney &&
                             plan.highlight)) &&
                           !isCurrent && (
-                            <p className="mt-1 text-sm text-[#071A2D]">
+                            <p className="mt-1 text-sm text-brand-ink">
                               {isUpgradeJourney
                                 ? t("upgrade_journey_badge")
                                 : isConversionMode
@@ -1468,7 +1459,7 @@ export default function BillingPage() {
                           )}
                       </div>
                       {isCurrent && isTrialAccess && (
-                        <Badge className="rounded-sm border border-border/70 bg-muted/30 font-semibold tracking-tight text-[#071A2D]">
+                        <Badge className="rounded-sm border border-border/70 bg-muted/30 font-semibold tracking-tight text-brand-ink">
                           {t("trial_plan_badge")}
                         </Badge>
                       )}
@@ -1484,10 +1475,7 @@ export default function BillingPage() {
 
                     {billingInterval === "monthly" || !hasAnnual ? (
                       <>
-                        <p
-                          className="text-3xl font-semibold tracking-tight text-[#071A2D]"
-                          style={{ fontFamily: "var(--font-brand-display)" }}
-                        >
+                        <p className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink">
                           {plan.price}
                         </p>
                         {plan.priceCentsAnnual && (
@@ -1512,10 +1500,7 @@ export default function BillingPage() {
                       </>
                     ) : (
                       <>
-                        <p
-                          className="text-3xl font-semibold tracking-tight text-[#071A2D]"
-                          style={{ fontFamily: "var(--font-brand-display)" }}
-                        >
+                        <p className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink">
                           {getEquivalentMonthlyPrice(plan.priceCentsAnnual!)}
                           <span className="text-base font-normal text-muted-foreground">
                             {tp("pricing.per_month")}
@@ -1544,7 +1529,7 @@ export default function BillingPage() {
                     <ul className="mt-5 space-y-2 text-sm text-muted-foreground flex-1">
                       {plan.features.map((f) => (
                         <li key={f} className="flex items-start gap-2">
-                          <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#071A2D]" />
+                          <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-brand-ink" />
                           <span>{f}</span>
                         </li>
                       ))}

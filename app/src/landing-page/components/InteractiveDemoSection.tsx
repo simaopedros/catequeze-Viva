@@ -89,14 +89,11 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
           )}
         >
           <div className="space-y-5 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 rounded-sm border border-[#071A2D]/20 bg-[#071A2D]/08 px-3 py-1 text-sm font-medium text-[#071A2D]">
+            <div className="inline-flex items-center gap-2 rounded-sm border border-brand-ink/20 bg-brand-ink/8 px-3 py-1 text-sm font-medium text-brand-ink">
               <Feather className="h-3.5 w-3.5" />
               {tr("demo.badge")}
             </div>
-            <h2
-              className="text-3xl font-semibold tracking-tight text-[#071A2D] sm:text-4xl"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
+            <h2 className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink sm:text-4xl">
               {tr("demo.title")}
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed max-w-xl mx-auto lg:mx-0">
@@ -117,8 +114,8 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                   className={cn(
                     "rounded-sm border px-3 py-1.5 text-sm font-medium transition-colors",
                     selectedId === topic.id
-                      ? "border-[#071A2D] bg-[#071A2D] text-white"
-                      : "border-border bg-card text-muted-foreground hover:border-[#071A2D]/40 hover:text-[#071A2D]",
+                      ? "border-brand-ink bg-brand-ink text-white"
+                      : "border-border bg-card text-muted-foreground hover:border-brand-ink/40 hover:text-brand-ink",
                   )}
                 >
                   {topic.label}
@@ -141,14 +138,11 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
 
             <div className="p-4 sm:p-5 space-y-4">
               <div className="flex items-center gap-2">
-                <div className="rounded-sm bg-[#071A2D]/08 p-2">
-                  <Feather className="h-4 w-4 text-[#071A2D]" />
+                <div className="rounded-sm bg-brand-ink/8 p-2">
+                  <Feather className="h-4 w-4 text-brand-ink" />
                 </div>
                 <div>
-                  <p
-                    className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                     {tr("demo.panel_title")}
                   </p>
                   <p className="text-xs text-muted-foreground">
@@ -191,7 +185,7 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                   "rounded-sm border p-3 min-h-[160px] transition-colors",
                   status === "idle"
                     ? "border-dashed bg-muted/10"
-                    : "border-[#071A2D]/20 bg-[#071A2D]/5",
+                    : "border-brand-ink/20 bg-brand-ink/5",
                 )}
               >
                 {status === "idle" && (
@@ -202,10 +196,10 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                 {(status === "generating" || status === "done") && (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between gap-2 mb-2">
-                      <p className="text-sm font-semibold text-[#071A2D]">
+                      <p className="text-sm font-semibold text-brand-ink">
                         {tr("demo.result_title")}
                       </p>
-                      <span className="rounded-sm bg-[#071A2D]/08 px-2 py-0.5 text-[11px] font-medium text-[#071A2D]">
+                      <span className="rounded-sm bg-brand-ink/8 px-2 py-0.5 text-[11px] font-medium text-brand-ink">
                         {tr("demo.result_badge")}
                       </span>
                     </div>
@@ -216,7 +210,7 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                           key={`${selected.id}-${index}`}
                           className="flex gap-2 text-sm animate-in fade-in slide-in-from-bottom-1 duration-300"
                         >
-                          <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-sm bg-[#071A2D]/15 text-[11px] font-semibold text-[#071A2D]">
+                          <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-sm bg-brand-ink/15 text-[11px] font-semibold text-brand-ink">
                             {index + 1}
                           </span>
                           <span className="leading-snug">{step}</span>

@@ -317,8 +317,8 @@ export default function ContentDetailPage() {
           onClick={() => handleTabChange("meeting")}
           className={`relative flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors ${
             tab === "meeting"
-              ? "border-[#D39A2B] text-[#071A2D]"
-              : "border-transparent text-muted-foreground hover:text-[#071A2D]"
+              ? "border-brand-gold text-brand-ink"
+              : "border-transparent text-muted-foreground hover:text-brand-ink"
           }`}
         >
           <FileText className="h-4 w-4" /> {t("script")}
@@ -327,8 +327,8 @@ export default function ContentDetailPage() {
           onClick={() => handleTabChange("activities")}
           className={`relative flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors ${
             tab === "activities"
-              ? "border-[#D39A2B] text-[#071A2D]"
-              : "border-transparent text-muted-foreground hover:text-[#071A2D]"
+              ? "border-brand-gold text-brand-ink"
+              : "border-transparent text-muted-foreground hover:text-brand-ink"
           }`}
         >
           <Puzzle className="h-4 w-4" /> {t("activities_tab")} (
@@ -343,10 +343,7 @@ export default function ContentDetailPage() {
               <h3 className="mb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 {t("theme")}
               </h3>
-              <p
-                className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                 {item.theme}
               </p>
             </div>
@@ -359,7 +356,7 @@ export default function ContentDetailPage() {
               {item.tags.split(",").map((tag: string) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5 text-xs font-semibold tracking-tight text-[#071A2D]"
+                  className="inline-flex items-center rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5 text-xs font-semibold tracking-tight text-brand-ink"
                 >
                   <Tag className="mr-1 h-3 w-3" />
                   {tag.trim()}
@@ -374,19 +371,16 @@ export default function ContentDetailPage() {
                   <Calendar className="h-3.5 w-3.5" />
                   {t("used_in_meetings", { count: item.meetings.length })}
                 </h3>
-                <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                <div className="h-px w-8 bg-brand-gold" aria-hidden />
               </div>
               <div className="space-y-1">
                 {item.meetings.map((meeting: any) => (
                   <Link
                     key={meeting.id}
                     to={`/app/classes/${meeting.classId}/attendance`}
-                    className="flex justify-between py-1 text-sm font-medium tracking-tight text-[#071A2D] hover:text-[#0a2540]"
+                    className="flex justify-between py-1 text-sm font-medium tracking-tight text-brand-ink hover:text-brand-ink-soft"
                   >
-                    <span
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                      className="font-semibold"
-                    >
+                    <span className="font-brand-display font-semibold">
                       {meeting.title || t("meeting_default")}
                     </span>
                     <span className="text-xs text-muted-foreground">
@@ -430,7 +424,7 @@ export default function ContentDetailPage() {
               <Button
                 variant="outline"
                 asChild
-                className="gap-2 rounded-sm border-dashed border-border/70 text-[#071A2D] hover:bg-muted/20"
+                className="gap-2 rounded-sm border-dashed border-border/70 text-brand-ink hover:bg-muted/20"
               >
                 <Link
                   to={`/app/ai-hub?mode=generate-activity&contentId=${id}&contentTitle=${encodeURIComponent(
@@ -472,10 +466,7 @@ export default function ContentDetailPage() {
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <p
-                          className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                          style={{ fontFamily: "var(--font-brand-display)" }}
-                        >
+                        <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                           {activity.title}
                         </p>
                         <Badge variant="outline" className="text-overline">

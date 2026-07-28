@@ -269,7 +269,7 @@ export function Sidebar() {
         collapsed ? "w-16" : "w-60",
       )}
     >
-      <div className="flex h-14 items-center border-b border-brand-ink/08 px-3">
+      <div className="flex h-14 items-center border-b border-brand-ink/8 px-3">
         {!collapsed && <BrandLockup compact hideBadge className="max-w-full" />}
         {collapsed && <BrandMark className="mx-auto h-8 w-8" />}
       </div>

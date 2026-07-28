@@ -55,12 +55,12 @@ export function ContextSelector() {
 
   const wsIcon = (type: string) => {
     if (type === "PERSONAL")
-      return <User className="h-4 w-4 shrink-0 text-[#071A2D]" />;
+      return <User className="h-4 w-4 shrink-0 text-brand-ink" />;
     if (type === "DIOCESE")
-      return <Building2 className="h-4 w-4 shrink-0 text-[#071A2D]" />;
+      return <Building2 className="h-4 w-4 shrink-0 text-brand-ink" />;
     if (type === "COMMUNITY")
-      return <Building2 className="h-4 w-4 shrink-0 text-[#071A2D]" />;
-    return <Church className="h-4 w-4 shrink-0 text-[#071A2D]" />;
+      return <Building2 className="h-4 w-4 shrink-0 text-brand-ink" />;
+    return <Church className="h-4 w-4 shrink-0 text-brand-ink" />;
   };
 
   const needsPaidPlanRole = (role: string) =>
@@ -134,7 +134,7 @@ export function ContextSelector() {
             {pendingCount > 0 && (
               <span
                 data-testid="workspace-pending-invite-badge"
-                className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-[#D39A2B] px-1.5 text-[11px] font-bold leading-none text-[#071A2D]"
+                className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-brand-gold px-1.5 text-[11px] font-bold leading-none text-brand-ink"
                 title={tc("pending_invite.view_cta")}
               >
                 {pendingCount > 9 ? "9+" : pendingCount}
@@ -166,10 +166,7 @@ export function ContextSelector() {
                   >
                     {wsIcon(ws.isPersonal ? "PERSONAL" : ws.type)}
                     <div className="flex-1 text-left min-w-0">
-                      <div
-                        className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
+                      <div className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
                         {ws.name}
                       </div>
                       <div className="text-overline text-muted-foreground truncate">
@@ -180,7 +177,7 @@ export function ContextSelector() {
                       </div>
                     </div>
                     {isActive && (
-                      <Check className="h-4 w-4 shrink-0 text-[#071A2D]" />
+                      <Check className="h-4 w-4 shrink-0 text-brand-ink" />
                     )}
                   </button>
                 );
@@ -188,7 +185,7 @@ export function ContextSelector() {
               {g.items.length > MAX_PER_GROUP && (
                 <button
                   onClick={() => navigate("/app/select-workspace")}
-                  className="w-full px-2 py-1 text-left text-caption font-medium text-[#071A2D] underline-offset-2 hover:underline"
+                  className="w-full px-2 py-1 text-left text-caption font-medium text-brand-ink underline-offset-2 hover:underline"
                 >
                   {t("viewAll", { count: g.items.length })}
                 </button>
@@ -218,10 +215,7 @@ export function ContextSelector() {
                   >
                     <Shield className="h-4 w-4 text-muted-foreground shrink-0" />
                     <div className="flex-1 text-left min-w-0">
-                      <span
-                        className="block truncate text-sm font-semibold tracking-tight text-[#071A2D]"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
+                      <span className="font-brand-display block truncate text-sm font-semibold tracking-tight text-brand-ink">
                         {roleLabels[m.role as keyof typeof roleLabels] ||
                           m.role}
                       </span>
@@ -238,7 +232,7 @@ export function ContextSelector() {
                       </Badge>
                     )}
                     {isActive && (
-                      <Check className="h-4 w-4 shrink-0 text-[#071A2D]" />
+                      <Check className="h-4 w-4 shrink-0 text-brand-ink" />
                     )}
                   </button>
                 );
@@ -250,7 +244,7 @@ export function ContextSelector() {
               <button
                 type="button"
                 onClick={() => navigate("/app/select-workspace")}
-                className="w-full flex items-center gap-2 text-xs font-semibold text-[#071A2D] px-2 py-2 rounded-sm bg-[#D39A2B]/12 hover:bg-[#D39A2B]/20 border border-[#D39A2B]/35 transition-colors text-left"
+                className="w-full flex items-center gap-2 text-xs font-semibold text-brand-ink px-2 py-2 rounded-sm bg-brand-gold/12 hover:bg-brand-gold/20 border border-brand-gold/35 transition-colors text-left"
                 data-testid="context-pending-invites"
               >
                 <Mail className="h-3.5 w-3.5 shrink-0" />
@@ -259,14 +253,14 @@ export function ContextSelector() {
                     ? tc("pending_invite.view_cta")
                     : tc("pending_invite.banner_many", { count: pendingCount })}
                 </span>
-                <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-[#D39A2B] px-1.5 text-[11px] font-bold text-[#071A2D]">
+                <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-brand-gold px-1.5 text-[11px] font-bold text-brand-ink">
                   {pendingCount > 9 ? "9+" : pendingCount}
                 </span>
               </button>
             )}
             <button
               onClick={() => navigate("/app/select-workspace")}
-              className="w-full text-xs text-muted-foreground hover:text-[#071A2D] px-2 py-1.5 rounded-sm hover:bg-accent transition-colors text-left"
+              className="w-full text-xs text-muted-foreground hover:text-brand-ink px-2 py-1.5 rounded-sm hover:bg-accent transition-colors text-left"
             >
               {t("viewAllWorkspaces")}
             </button>
@@ -296,7 +290,7 @@ export function ContextSelector() {
             <span className="text-xs text-muted-foreground hidden sm:inline">
               ·
             </span>
-            <span className="hidden text-xs font-semibold tracking-tight text-[#071A2D] sm:inline">
+            <span className="hidden text-xs font-semibold tracking-tight text-brand-ink sm:inline">
               {yearLabel}
             </span>
             <ChevronDown className="h-3.5 w-3.5 opacity-60 shrink-0" />
@@ -318,7 +312,7 @@ export function ContextSelector() {
             <span className="flex-1 truncate text-left">
               {activeParishName}
             </span>
-            <Check className="h-4 w-4 shrink-0 text-[#071A2D]" />
+            <Check className="h-4 w-4 shrink-0 text-brand-ink" />
           </button>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -312,7 +312,7 @@ export function QuickSetupPanel({
           {hasSelectedSource && (
             <div className="rounded-sm border border-border/70 bg-muted/20 p-4">
               <div className="flex items-start gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-brand-ink">
                   {contentId ? (
                     <FileText className="h-4 w-4" />
                   ) : (
@@ -325,10 +325,7 @@ export function QuickSetupPanel({
                       ? t("planner.selected_content")
                       : t("planner.selected_meeting")}
                   </p>
-                  <p
-                    className="truncate text-sm font-semibold tracking-tight text-[#071A2D]"
-                    style={{ fontFamily: "var(--font-brand-display)" }}
-                  >
+                  <p className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
                     {selectedSourceTitle || t("planner.untitled")}
                   </p>
                   {selectedSourceTheme && (
@@ -353,15 +350,12 @@ export function QuickSetupPanel({
                     onClick={() => setAgeGroup(g.value)}
                     className={`rounded-sm border p-4 text-center transition-colors ${
                       ageGroup === g.value
-                        ? "border-[#071A2D] bg-muted/30"
-                        : "border-border hover:border-[#071A2D]/40"
+                        ? "border-brand-ink bg-muted/30"
+                        : "border-border hover:border-brand-ink/40"
                     }`}
                   >
-                    <g.icon className="mx-auto mb-2 h-8 w-8 text-[#071A2D]" />
-                    <div
-                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
+                    <g.icon className="mx-auto mb-2 h-8 w-8 text-brand-ink" />
+                    <div className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                       {g.label}
                     </div>
                     <div className="text-xs text-muted-foreground">{g.age}</div>
@@ -417,7 +411,7 @@ export function QuickSetupPanel({
             <div className="grid gap-4 md:grid-cols-[0.8fr_1.2fr]">
               <div className="space-y-3">
                 <Label className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                  <Clock className="h-4 w-4 text-[#071A2D]" />
+                  <Clock className="h-4 w-4 text-brand-ink" />
                   {t("planner.step_duration")}
                 </Label>
                 <div className="grid grid-cols-4 gap-2">
@@ -428,8 +422,8 @@ export function QuickSetupPanel({
                       onClick={() => setDuration(value)}
                       className={`rounded-sm border px-2 py-2 text-sm font-medium transition-colors ${
                         duration === value
-                          ? "border-[#071A2D] bg-[#071A2D] text-white"
-                          : "border-border hover:border-[#071A2D]/40"
+                          ? "border-brand-ink bg-brand-ink text-white"
+                          : "border-border hover:border-brand-ink/40"
                       }`}
                     >
                       {value}
@@ -441,7 +435,7 @@ export function QuickSetupPanel({
 
               <div className="space-y-3">
                 <Label className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                  <HeartHandshake className="h-4 w-4 text-[#071A2D]" />
+                  <HeartHandshake className="h-4 w-4 text-brand-ink" />
                   {t("planner.step_approach")}
                 </Label>
                 <div className="grid gap-2 sm:grid-cols-3">
@@ -452,14 +446,11 @@ export function QuickSetupPanel({
                       onClick={() => setApproach(option.value)}
                       className={`rounded-sm border p-3 text-left transition-colors ${
                         approach === option.value
-                          ? "border-[#071A2D] bg-muted/30 text-[#071A2D]"
-                          : "border-border hover:border-[#071A2D]/40"
+                          ? "border-brand-ink bg-muted/30 text-brand-ink"
+                          : "border-border hover:border-brand-ink/40"
                       }`}
                     >
-                      <p
-                        className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
-                      >
+                      <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                         {t(option.labelKey)}
                       </p>
                       <p className="mt-1 text-xs leading-snug text-muted-foreground">

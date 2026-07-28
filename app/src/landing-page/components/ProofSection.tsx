@@ -49,10 +49,7 @@ export function ProofSection({ ns = "landing" }: { ns?: string }) {
                 <Rocket className="h-3.5 w-3.5" />
                 {tr("proof.badge")}
               </Badge>
-              <h2
-                className="text-2xl font-semibold tracking-tight text-[#071A2D] sm:text-3xl"
-                style={{ fontFamily: "var(--font-brand-display)" }}
-              >
+              <h2 className="font-brand-display text-2xl font-semibold tracking-tight text-brand-ink sm:text-3xl">
                 {tr("proof.title")}
               </h2>
               <p className="max-w-2xl text-sm leading-relaxed text-text-secondary sm:text-base">
@@ -68,13 +65,10 @@ export function ProofSection({ ns = "landing" }: { ns?: string }) {
                     key={stat.title}
                     className="space-y-2 rounded-sm border border-border/60 bg-background p-4"
                   >
-                    <div className="inline-flex rounded-sm bg-muted p-2 text-[#071A2D]">
+                    <div className="inline-flex rounded-sm bg-muted p-2 text-brand-ink">
                       <Icon className="h-4 w-4" />
                     </div>
-                    <p
-                      className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                      style={{ fontFamily: "var(--font-brand-display)" }}
-                    >
+                    <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                       {stat.title}
                     </p>
                     <p className="text-xs leading-relaxed text-text-secondary">
@@ -101,17 +95,14 @@ export function ProofSection({ ns = "landing" }: { ns?: string }) {
 
           <Card
             variant="flat"
-            className="rounded-sm border-[#071A2D]/20 bg-[#071A2D]/[0.03] p-6 shadow-none flex flex-col justify-between gap-5"
+            className="rounded-sm border-brand-ink/20 bg-brand-ink/[0.03] p-6 shadow-none flex flex-col justify-between gap-5"
           >
             <div className="space-y-4">
-              <div className="inline-flex rounded-sm bg-[#071A2D]/08 p-2.5 text-[#071A2D]">
+              <div className="inline-flex rounded-sm bg-brand-ink/8 p-2.5 text-brand-ink">
                 <ShieldCheck className="h-5 w-5" />
               </div>
               <div className="space-y-2">
-                <h3
-                  className="text-lg font-semibold tracking-tight text-[#071A2D]"
-                  style={{ fontFamily: "var(--font-brand-display)" }}
-                >
+                <h3 className="font-brand-display text-lg font-semibold tracking-tight text-brand-ink">
                   {tr("proof.launch_title")}
                 </h3>
                 <p className="text-sm leading-relaxed text-text-secondary">
@@ -123,9 +114,9 @@ export function ProofSection({ ns = "landing" }: { ns?: string }) {
                   {promiseList.map((item) => (
                     <li
                       key={item}
-                      className="flex items-start gap-2 text-sm text-[#071A2D]"
+                      className="flex items-start gap-2 text-sm text-brand-ink"
                     >
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-sm bg-[#071A2D]" />
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-sm bg-brand-ink" />
                       <span>{item}</span>
                     </li>
                   ))}
