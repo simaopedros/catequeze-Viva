@@ -653,8 +653,9 @@ function WorkspaceTopBar({
     <Card className="rounded-sm border-border/70 px-4 py-4">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div className="flex flex-1 flex-wrap items-center gap-4 text-sm">
-          <div className="text-muted-foreground">Rascunho salvo há 2 min</div>
-          <div className="hidden h-5 w-px bg-border xl:block" />
+          {/* Havia aqui um "Rascunho salvo há 2 min" fixo no código — não existe
+              autosave neste workspace, então o indicador afirmava algo falso.
+              Removido até haver estado de gravação real para reportar. */}
           <div className="flex items-center gap-2 text-muted-foreground">
             <span>Encontro para:</span>
             <Select defaultValue="criancas">

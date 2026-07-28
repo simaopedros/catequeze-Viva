@@ -1025,7 +1025,7 @@ export default function ClassDetailPage() {
                         onChange={(e) => setInviteEmail(e.target.value)}
                         placeholder={t("detail.invite_email_placeholder")}
                         aria-label={t("detail.invite_email_placeholder")}
-                        className="flex-1 min-w-[180px] h-9 rounded-sm border border-input bg-background px-3 text-sm"
+                        className="flex-1 min-w-0 sm:min-w-[180px] h-9 rounded-sm border border-input bg-background px-3 text-sm"
                       />
                       <select
                         value={inviteRole}

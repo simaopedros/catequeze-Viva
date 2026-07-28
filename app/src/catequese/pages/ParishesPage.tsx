@@ -206,11 +206,11 @@ export default function ParishesPage() {
             <Input
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
-              className="flex-1 min-w-[200px] h-9"
+              className="flex-1 min-w-0 sm:min-w-[200px] h-9"
               placeholder={`${tp("parish_name")} *`}
               autoFocus
             />
-            <div className="min-w-[280px]">
+            <div className="w-full min-w-0 sm:w-auto sm:min-w-[280px]">
               <CityStateSelect
                 city={newCity}
                 state={newState}
@@ -219,7 +219,7 @@ export default function ParishesPage() {
               />
             </div>
             {manageDioceses.length > 0 && (
-              <div className="flex flex-col gap-1 min-w-[200px]">
+              <div className="flex flex-col gap-1 min-w-0 sm:min-w-[200px]">
                 <label className="text-xs text-muted-foreground">
                   {tp("diocese_license")}
                 </label>

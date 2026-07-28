@@ -192,8 +192,7 @@ export default function SettingsPage() {
             {t("linked_parish")}
           </p>
           <p
-            className="mt-1 text-sm font-semibold tracking-tight text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}
+            className="font-brand-display mt-1 text-sm font-semibold tracking-tight text-brand-ink"
           >
             {ctxParishName}
           </p>
@@ -475,7 +474,7 @@ export default function SettingsPage() {
 
       {/* Privacy notice */}
       <AppPanel className="flex items-center gap-3" padded>
-        <div className="rounded-sm border border-border/70 bg-muted/30 p-2 text-[#071A2D]">
+        <div className="rounded-sm border border-border/70 bg-muted/30 p-2 text-brand-ink">
           <Shield className="h-5 w-5" />
         </div>
         <p className="text-xs text-muted-foreground">{t("privacy_notice")}</p>

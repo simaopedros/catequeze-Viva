@@ -32,6 +32,8 @@ import {
   SheetTitle,
 } from "../../../client/components/ui/sheet";
 import { ConfirmDialog } from "../../../client/components/ConfirmDialog";
+import { useUnsavedChangesGuard } from "../../../client/hooks/useUnsavedChangesGuard";
+import { useTranslation } from "react-i18next";
 import { ReferencePicker } from "../../../client/components/ReferencePicker";
 import { toast } from "../../../client/hooks/use-toast";
 import { cn } from "../../../client/utils";
@@ -384,6 +386,7 @@ export function ContentDocumentWorkspace({
   existingContentId?: string;
 }) {
   const navigate = useNavigate();
+  const { t: tc } = useTranslation("common");
   const [loading, setLoading] = useState(!!existingContentId);
   const [contentId, setContentId] = useState<string | null>(
     existingContentId || null,
@@ -647,21 +650,12 @@ export function ContentDocumentWorkspace({
     return () => clearTimeout(timer);
   }, [snapshot, loading, saveNow, isMeaningfullyEdited]);
 
-  // beforeunload when dirty/error
-  useEffect(() => {
-    const handler = (event: BeforeUnloadEvent) => {
-      if (
-        saveState === "dirty" ||
-        saveState === "error" ||
-        saveState === "saving"
-      ) {
-        event.preventDefault();
-        event.returnValue = "";
-      }
-    };
-    window.addEventListener("beforeunload", handler);
-    return () => window.removeEventListener("beforeunload", handler);
-  }, [saveState]);
+  // Havia aqui um beforeunload próprio, que só cobria fechar/recarregar a aba.
+  // O hook cobre isso e também bloqueia navegação dentro do SPA — sair para
+  // outra rota com autosave pendente perdia o texto sem aviso.
+  const leaveGuard = useUnsavedChangesGuard(
+    saveState === "dirty" || saveState === "error" || saveState === "saving",
+  );
 
   const handleDeleteContent = async () => {
     if (!contentId) return;
@@ -1154,6 +1148,15 @@ export function ContentDocumentWorkspace({
         variant="destructive"
         loading={deleting}
         onConfirm={() => void handleDeleteContent()}
+      />
+      <ConfirmDialog
+        open={leaveGuard.dialogOpen}
+        onOpenChange={leaveGuard.setDialogOpen}
+        title={tc("leave_form_title")}
+        description={tc("leave_form_desc")}
+        confirmLabel={tc("leave_anyway")}
+        variant="destructive"
+        onConfirm={leaveGuard.onConfirmLeave}
       />
     </div>
   );

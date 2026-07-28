@@ -26,11 +26,12 @@ export function Breadcrumbs() {
   const location = useLocation();
   const { t } = useTranslation("navigation");
 
-  if (location.pathname === "/app" || location.pathname === "/app/") {
-    return null;
-  }
-
   const segments = location.pathname.split("/").filter(Boolean);
+
+  // Só rotas profundas (/app/classes/:id em diante). Em /app e /app/classes o
+  // AppPageHeader já diz onde o usuário está — a trilha seria ruído duplicado.
+  if (segments.length < 3) return null;
+
   const items: BreadcrumbItem[] = segments.map((seg, i) => {
     const to = "/" + segments.slice(0, i + 1).join("/");
     const isId = /^[0-9a-f]{8,}|^\d+$/i.test(seg);
@@ -60,8 +61,6 @@ export function Breadcrumbs() {
       to: i < segments.length - 1 ? to : undefined,
     };
   });
-
-  if (items.length <= 1) return null;
 
   return (
     <nav

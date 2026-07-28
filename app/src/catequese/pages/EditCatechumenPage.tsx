@@ -109,7 +109,8 @@ export default function EditCatechumenPage() {
     setPhoto(compressed);
   };
 
-  const handleSave = async () => {
+  const handleSave = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     if (!firstName || !lastName) return;
     setSaving(true);
     try {
@@ -164,98 +165,101 @@ export default function EditCatechumenPage() {
             }
           />
 
-          <AppPanel className="space-y-6">
-            <div className="flex flex-col items-center gap-3">
-              <div
-                className="relative w-24 h-24 rounded-sm overflow-hidden bg-muted border border-dashed border-border/70 cursor-pointer"
-                onClick={() => fileRef.current?.click()}
-              >
-                {photo ? (
-                  <img
-                    src={photo}
-                    alt={t("catechumens.photo_alt")}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="flex items-center justify-center h-full text-muted-foreground">
-                    <Camera className="h-8 w-8" />
-                  </div>
-                )}
-              </div>
-              <input
-                ref={fileRef}
-                type="file"
-                accept="image/*"
-                capture="environment"
-                onChange={handlePhotoUpload}
-                className="hidden"
-              />
-              <span className="text-xs text-muted-foreground">
-                {t("catechumens.add_photo")}
-              </span>
-            </div>
-
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-medium">
-                    {t("first_name")}
-                  </label>
-                  <input
-                    aria-label={t("first_name")}
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
-                  />
+          {/* <form> para Enter enviar — a tela era um div com botão onClick */}
+          <form onSubmit={handleSave}>
+            <AppPanel className="space-y-6">
+              <div className="flex flex-col items-center gap-3">
+                <div
+                  className="relative w-24 h-24 rounded-sm overflow-hidden bg-muted border border-dashed border-border/70 cursor-pointer"
+                  onClick={() => fileRef.current?.click()}
+                >
+                  {photo ? (
+                    <img
+                      src={photo}
+                      alt={t("catechumens.photo_alt")}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-muted-foreground">
+                      <Camera className="h-8 w-8" />
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <label className="text-xs font-medium">
-                    {t("last_name")}
-                  </label>
-                  <input
-                    aria-label={t("last_name")}
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="text-xs font-medium">
-                  {t("catechumens.birth_short")}
-                </label>
                 <input
-                  aria-label={t("catechumens.birth_short")}
-                  type="date"
-                  value={birthDate}
-                  onChange={(e) => setBirthDate(e.target.value)}
-                  className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
+                  ref={fileRef}
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handlePhotoUpload}
+                  className="hidden"
                 />
+                <span className="text-xs text-muted-foreground">
+                  {t("catechumens.add_photo")}
+                </span>
               </div>
-              <div className="h-20 md:h-4" aria-hidden />
-            </div>
-          </AppPanel>
 
-          <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-40 border-t border-border/70 bg-white/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-white/80 md:static md:inset-auto md:bottom-auto md:z-auto md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none">
-            <div className="mx-auto flex max-w-lg gap-3 md:pt-2">
-              <Button
-                className="min-h-11 flex-1"
-                onClick={handleSave}
-                disabled={saving}
-              >
-                <Save className="mr-1 h-4 w-4" />
-                {saving ? t("saving") : t("save")}
-              </Button>
-              <Button
-                variant="outline"
-                className="min-h-11"
-                type="button"
-                onClick={goBack}
-              >
-                {t("cancel")}
-              </Button>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-medium">
+                      {t("first_name")}
+                    </label>
+                    <input
+                      aria-label={t("first_name")}
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium">
+                      {t("last_name")}
+                    </label>
+                    <input
+                      aria-label={t("last_name")}
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-medium">
+                    {t("catechumens.birth_short")}
+                  </label>
+                  <input
+                    aria-label={t("catechumens.birth_short")}
+                    type="date"
+                    value={birthDate}
+                    onChange={(e) => setBirthDate(e.target.value)}
+                    className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
+                  />
+                </div>
+                <div className="h-20 md:h-4" aria-hidden />
+              </div>
+            </AppPanel>
+
+            <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-40 border-t border-border/70 bg-white/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-white/80 md:static md:inset-auto md:bottom-auto md:z-auto md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none">
+              <div className="mx-auto flex max-w-lg gap-3 md:pt-2">
+                <Button
+                  className="min-h-11 flex-1"
+                  type="submit"
+                  disabled={saving}
+                >
+                  <Save className="mr-1 h-4 w-4" />
+                  {saving ? t("saving") : t("save")}
+                </Button>
+                <Button
+                  variant="outline"
+                  className="min-h-11"
+                  type="button"
+                  onClick={goBack}
+                >
+                  {t("cancel")}
+                </Button>
+              </div>
             </div>
-          </div>
+          </form>
         </>
       )}
 

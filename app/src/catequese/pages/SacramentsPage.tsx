@@ -411,7 +411,7 @@ export default function SacramentsPage() {
             </SelectContent>
           </Select>
           <Select value={templateName} onValueChange={setTemplateName}>
-            <SelectTrigger className="h-9 min-w-[200px]">
+            <SelectTrigger className="h-9 w-full min-w-0 sm:w-auto sm:min-w-[200px]">
               <SelectValue placeholder={t("page.select_template")} />
             </SelectTrigger>
             <SelectContent>

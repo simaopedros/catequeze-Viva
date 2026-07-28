@@ -142,78 +142,82 @@ export default function AdminDiocesesPage({ user }: { user: AuthUser }) {
               description={t("empty_desc")}
             />
           ) : (
-            <table className="w-full text-sm">
-              <thead className="border-b bg-muted/50">
-                <tr>
-                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                    {t("columns.name")}
-                  </th>
-                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                    {t("columns.country")}
-                  </th>
-                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                    {t("columns.parishes")}
-                  </th>
-                  <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                    {t("columns.actions")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {dioceses.map((d: any) => (
-                  <tr
-                    key={d.id}
-                    className="border-b last:border-0 hover:bg-muted/30"
-                  >
-                    <td className="px-4 py-3">
-                      {editingId === d.id ? (
-                        <Input
-                          value={editName}
-                          onChange={(e) => setEditName(e.target.value)}
-                          className="h-8 text-sm w-full"
-                        />
-                      ) : (
-                        d.name
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {t(`countries.${d.country}`, { defaultValue: d.country })}
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {d._count?.parishes || 0}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      {editingId === d.id ? (
-                        <div className="flex justify-end gap-1">
-                          <button
-                            onClick={() => handleUpdate(d.id)}
-                            className="p-1 text-success hover:bg-success/10 rounded"
-                          >
-                            <Save className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => setEditingId(null)}
-                            className="p-1 text-muted-foreground hover:bg-muted rounded"
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => {
-                            setEditingId(d.id);
-                            setEditName(d.name);
-                          }}
-                          className="p-1 text-muted-foreground hover:text-brand-ink rounded"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                      )}
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="border-b bg-muted/50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      {t("columns.name")}
+                    </th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      {t("columns.country")}
+                    </th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      {t("columns.parishes")}
+                    </th>
+                    <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      {t("columns.actions")}
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {dioceses.map((d: any) => (
+                    <tr
+                      key={d.id}
+                      className="border-b last:border-0 hover:bg-muted/30"
+                    >
+                      <td className="px-4 py-3">
+                        {editingId === d.id ? (
+                          <Input
+                            value={editName}
+                            onChange={(e) => setEditName(e.target.value)}
+                            className="h-8 text-sm w-full"
+                          />
+                        ) : (
+                          d.name
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {t(`countries.${d.country}`, {
+                          defaultValue: d.country,
+                        })}
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {d._count?.parishes || 0}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        {editingId === d.id ? (
+                          <div className="flex justify-end gap-1">
+                            <button
+                              onClick={() => handleUpdate(d.id)}
+                              className="p-1 text-success hover:bg-success/10 rounded"
+                            >
+                              <Save className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => setEditingId(null)}
+                              className="p-1 text-muted-foreground hover:bg-muted rounded"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              setEditingId(d.id);
+                              setEditName(d.name);
+                            }}
+                            className="p-1 text-muted-foreground hover:text-brand-ink rounded"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </div>

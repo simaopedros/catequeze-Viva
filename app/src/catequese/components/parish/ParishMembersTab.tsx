@@ -105,7 +105,9 @@ export function ParishMembersTab({ members, onRemove }: ParishMembersTabProps) {
           </p>
         </div>
       ) : (
-        <div className="rounded-sm border border-border/70 bg-white overflow-hidden">
+        // overflow-x-auto, não overflow-hidden: em telas estreitas a tabela
+        // precisa rolar, senão as últimas colunas ficam inalcançáveis.
+        <div className="rounded-sm border border-border/70 bg-white overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-muted/50 border-b">
               <tr>

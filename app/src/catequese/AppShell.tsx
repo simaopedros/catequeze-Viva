@@ -16,6 +16,7 @@ import { isFamilyPortalHost, familyPortalUrl } from "../shared/portal";
 import { useAction, acceptInvitation } from "wasp/client/operations";
 import { trackMarketingEvent } from "../client/analytics/marketingAnalytics";
 import { toast } from "../client/hooks/use-toast";
+import { Breadcrumbs } from "./components/Breadcrumbs";
 
 const AIHelperWidget = lazy(() =>
   import("./components/AIHelperWidget").then((m) => ({
@@ -219,6 +220,7 @@ export function AppShell({ children }: AppShellProps) {
                 className="content-transition print:contents"
               >
                 <ErrorBoundary variant="page">
+                  <Breadcrumbs />
                   <SubscriptionGate>{children}</SubscriptionGate>
                 </ErrorBoundary>
               </div>
