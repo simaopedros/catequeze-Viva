@@ -173,7 +173,12 @@ export function NewConversationDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="gap-0 p-0 sm:max-w-md sm:p-0">
+      <DialogContent
+        // sem texto descritivo neste diálogo; explicitar undefined evita que o
+        // Radix gere um aria-describedby apontando para um id inexistente
+        aria-describedby={undefined}
+        className="gap-0 p-0 sm:max-w-md sm:p-0"
+      >
         <DialogHeader className="space-y-1.5 border-b border-border/70 p-4 pr-14">
           <DialogTitle className="text-base">
             {step === "type"

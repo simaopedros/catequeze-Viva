@@ -981,7 +981,12 @@ export function RichContentEditor({
       </div>
 
       <Dialog open={linkOpen} onOpenChange={setLinkOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent
+          // sem texto descritivo neste diálogo; explicitar undefined evita que o
+          // Radix gere um aria-describedby apontando para um id inexistente
+          aria-describedby={undefined}
+          className="sm:max-w-md"
+        >
           <DialogHeader>
             <DialogTitle>Inserir link</DialogTitle>
           </DialogHeader>

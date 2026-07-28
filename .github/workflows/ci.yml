@@ -30,6 +30,11 @@ jobs:
       - name: Run unit tests
         run: npm run test:unit
 
+      # Testes de componente (jsdom). Não precisam de banco nem do SDK do Wasp,
+      # então rodam junto com os unitários e não na etapa de integração.
+      - name: Run UI component tests
+        run: npm run test:ui
+
   integration-tests:
     name: Integration tests
     runs-on: ubuntu-latest

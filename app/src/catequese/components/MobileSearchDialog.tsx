@@ -79,6 +79,9 @@ export function MobileSearchDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
+        // sem texto descritivo neste diálogo; explicitar undefined evita que o
+        // Radix gere um aria-describedby apontando para um id inexistente
+        aria-describedby={undefined}
         className="lg:hidden"
         onOpenAutoFocus={(event) => {
           event.preventDefault();

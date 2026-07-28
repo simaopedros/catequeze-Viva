@@ -57,7 +57,13 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "bg-white data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-modal grid h-[100dvh] w-full gap-4 overflow-y-auto border border-border/70 p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] pt-[calc(1rem+env(safe-area-inset-top,0px))] shadow-sm duration-200 sm:left-[50%] sm:top-[50%] sm:inset-auto sm:h-auto sm:max-h-[85dvh] sm:max-w-lg sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-sm sm:p-6 data-[state=closed]:sm:zoom-out-95 data-[state=open]:sm:zoom-in-95",
+          // ATENÇÃO à ordem: `sm:inset-auto` precisa vir ANTES de
+          // `sm:left-[50%] sm:top-[50%]`. O cn() usa tailwind-merge, que trata
+          // `inset` como atalho de top/right/bottom/left e descarta as
+          // posicionais anteriores — com a ordem invertida o diálogo perdia
+          // left/top no desktop e renderizava fora da tela (left:-224 top:-37
+          // num viewport de 1440x900).
+          "bg-white data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-modal grid h-[100dvh] w-full gap-4 overflow-y-auto border border-border/70 p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] pt-[calc(1rem+env(safe-area-inset-top,0px))] shadow-sm duration-200 sm:inset-auto sm:left-[50%] sm:top-[50%] sm:h-auto sm:max-h-[85dvh] sm:max-w-lg sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-sm sm:p-6 data-[state=closed]:sm:zoom-out-95 data-[state=open]:sm:zoom-in-95",
           className,
         )}
         {...props}

@@ -101,7 +101,12 @@ export default function CreateHouseholdModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent
+        // sem texto descritivo neste diálogo; explicitar undefined evita que o
+        // Radix gere um aria-describedby apontando para um id inexistente
+        aria-describedby={undefined}
+        className="sm:max-w-md"
+      >
         <DialogHeader className="space-y-1.5">
           <DialogTitle className="text-base">
             {t("families.create_title")}

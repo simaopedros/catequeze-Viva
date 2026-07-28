@@ -50,7 +50,14 @@ export function ConfirmDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] max-sm:bottom-0 max-sm:top-auto max-sm:translate-y-0 max-sm:rounded-b-none max-sm:max-w-full max-sm:data-[state=open]:animate-in max-sm:data-[state=open]:slide-in-from-bottom max-sm:data-[state=closed]:animate-out max-sm:data-[state=closed]:slide-out-to-bottom">
+      <DialogContent
+        // `description` é opcional. Quando não vem, o Radix ainda aponta
+        // aria-describedby para o id de um DialogDescription que não foi
+        // renderizado — referência pendente. A prop precisa estar AUSENTE
+        // (não `undefined`) quando há descrição, para o Radix ligar sozinho.
+        {...(description ? {} : { "aria-describedby": undefined })}
+        className="sm:max-w-[425px] max-sm:bottom-0 max-sm:top-auto max-sm:translate-y-0 max-sm:rounded-b-none max-sm:max-w-full max-sm:data-[state=open]:animate-in max-sm:data-[state=open]:slide-in-from-bottom max-sm:data-[state=closed]:animate-out max-sm:data-[state=closed]:slide-out-to-bottom"
+      >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}
