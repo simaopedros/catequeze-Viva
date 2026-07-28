@@ -96,5 +96,7 @@
   "online_again": "Back online",
   "load_error_title": "Could not load conversation",
   "back_to_list": "Back to conversations",
-  "network_error": "Network error"
+  "network_error": "Network error",
+  "confirm_leave": "Leave this conversation?",
+  "confirm_leave_desc": "You will stop receiving messages and cannot rejoin without a new invitation."
 }

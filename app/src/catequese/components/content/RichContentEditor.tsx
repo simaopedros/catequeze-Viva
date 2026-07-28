@@ -502,6 +502,13 @@ function SelectionActionBubble({
                   ? "Buscar no Catecismo"
                   : "Buscar no Diretório"
             }
+            aria-label={
+              mode === "bible"
+                ? "Buscar passagem"
+                : mode === "catechism"
+                  ? "Buscar no Catecismo"
+                  : "Buscar no Diretório"
+            }
           />
 
           {query.trim().length < 2 ? (
@@ -725,12 +732,7 @@ export function RichContentEditor({
     if (!href) {
       editor.chain().focus().extendMarkRange("link").unsetLink().run();
     } else {
-      editor
-        .chain()
-        .focus()
-        .extendMarkRange("link")
-        .setLink({ href })
-        .run();
+      editor.chain().focus().extendMarkRange("link").setLink({ href }).run();
     }
     setLinkOpen(false);
   };
@@ -994,6 +996,7 @@ export function RichContentEditor({
               value={linkHref}
               onChange={(e) => setLinkHref(e.target.value)}
               placeholder="https://"
+              aria-label="URL"
               autoFocus
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -1008,7 +1011,12 @@ export function RichContentEditor({
               type="button"
               variant="outline"
               onClick={() => {
-                editor?.chain().focus().extendMarkRange("link").unsetLink().run();
+                editor
+                  ?.chain()
+                  .focus()
+                  .extendMarkRange("link")
+                  .unsetLink()
+                  .run();
                 setLinkOpen(false);
               }}
             >

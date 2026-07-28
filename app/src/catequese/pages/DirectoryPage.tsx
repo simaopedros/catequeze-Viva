@@ -127,6 +127,7 @@ export default function DirectoryPage() {
           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
           className="flex-1 h-9 rounded-sm border border-input bg-background px-3 text-sm"
           placeholder={t("directory.searchPlaceholder")}
+          aria-label={t("directory.searchPlaceholder")}
         />
         <Button
           size="sm"

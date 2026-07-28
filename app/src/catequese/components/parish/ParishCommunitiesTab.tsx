@@ -98,6 +98,7 @@ export function ParishCommunitiesTab({
           </select>
           <input
             placeholder={tp("location_address")}
+            aria-label={tp("location_address")}
             value={newCommLoc}
             onChange={(e) => setNewCommLoc(e.target.value)}
             className="flex h-9 flex-1 rounded-sm border border-input bg-background px-3 py-1 text-sm"
@@ -184,6 +185,7 @@ export function ParishCommunitiesTab({
                       }
                       className="flex-1 h-9 rounded-sm border border-input bg-background px-3 text-sm"
                       placeholder={tp("location")}
+                      aria-label={tp("location")}
                     />
                   </div>
                   <div className="flex gap-3">
@@ -197,6 +199,7 @@ export function ParishCommunitiesTab({
                       }
                       className="flex-1 h-9 rounded-sm border border-input bg-background px-3 text-sm"
                       placeholder={t("phone")}
+                      aria-label={t("phone")}
                     />
                     <input
                       value={editCommFields.email}
@@ -208,6 +211,7 @@ export function ParishCommunitiesTab({
                       }
                       className="flex-1 h-9 rounded-sm border border-input bg-background px-3 text-sm"
                       placeholder={tp("email")}
+                      aria-label={tp("email")}
                     />
                     <input
                       value={editCommFields.coordinatorName}
@@ -219,6 +223,7 @@ export function ParishCommunitiesTab({
                       }
                       className="flex-1 h-9 rounded-sm border border-input bg-background px-3 text-sm"
                       placeholder={tp("responsible")}
+                      aria-label={tp("responsible")}
                     />
                   </div>
                   <div className="flex gap-2">

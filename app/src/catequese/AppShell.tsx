@@ -1,11 +1,4 @@
-import {
-  ReactNode,
-  useEffect,
-  useMemo,
-  useRef,
-  lazy,
-  Suspense,
-} from "react";
+import { ReactNode, useEffect, useMemo, useRef, lazy, Suspense } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Sidebar } from "./Sidebar";
@@ -22,6 +15,7 @@ import { ShellBase } from "../client/components/ShellBase";
 import { isFamilyPortalHost, familyPortalUrl } from "../shared/portal";
 import { useAction, acceptInvitation } from "wasp/client/operations";
 import { trackMarketingEvent } from "../client/analytics/marketingAnalytics";
+import { toast } from "../client/hooks/use-toast";
 
 const AIHelperWidget = lazy(() =>
   import("./components/AIHelperWidget").then((m) => ({
@@ -99,7 +93,13 @@ export function AppShell({ children }: AppShellProps) {
               source: "app_shell_auto_accept",
             });
           })
-          .catch(() => {}),
+          .catch((e: any) => {
+            toast({
+              title: t("error"),
+              description: e?.message || t("try_again"),
+              variant: "destructive",
+            });
+          }),
       ),
     );
   }, [
@@ -108,6 +108,7 @@ export function AppShell({ children }: AppShellProps) {
     isFamilyOnlyRole,
     memberships,
     acceptInvitationAction,
+    t,
   ]);
 
   const hasActiveMembership = useMemo(

@@ -84,6 +84,7 @@ export function ParishInfoTab({
               {tp("name")}
             </label>
             <input
+              aria-label={tp("name")}
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
               className="w-full h-9 rounded-sm border border-input bg-background px-3 text-sm mt-1"
@@ -128,7 +129,12 @@ export function ParishInfoTab({
           </p>
           <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
         </div>
-        <Button variant="ghost" size="sm" className="rounded-sm" onClick={onStartEdit}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="rounded-sm"
+          onClick={onStartEdit}
+        >
           {tp("edit")}
         </Button>
       </div>

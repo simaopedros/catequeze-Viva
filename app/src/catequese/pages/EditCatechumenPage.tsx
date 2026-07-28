@@ -205,6 +205,7 @@ export default function EditCatechumenPage() {
                     {t("first_name")}
                   </label>
                   <input
+                    aria-label={t("first_name")}
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
@@ -215,6 +216,7 @@ export default function EditCatechumenPage() {
                     {t("last_name")}
                   </label>
                   <input
+                    aria-label={t("last_name")}
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
@@ -226,6 +228,7 @@ export default function EditCatechumenPage() {
                   {t("catechumens.birth_short")}
                 </label>
                 <input
+                  aria-label={t("catechumens.birth_short")}
                   type="date"
                   value={birthDate}
                   onChange={(e) => setBirthDate(e.target.value)}

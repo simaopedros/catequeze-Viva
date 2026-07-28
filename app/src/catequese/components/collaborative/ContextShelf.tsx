@@ -87,7 +87,9 @@ export function ContextShelf() {
     <div className="flex h-full flex-col">
       <div className="space-y-2 border-b border-border/70 bg-muted/20 p-3">
         <div className="space-y-1.5">
-          <AppEyebrow>{t("context.title", { defaultValue: "Referências" })}</AppEyebrow>
+          <AppEyebrow>
+            {t("context.title", { defaultValue: "Referências" })}
+          </AppEyebrow>
           <AppGoldRule className="w-6" />
         </div>
         <div className="flex gap-1">
@@ -111,6 +113,11 @@ export function ContextShelf() {
         <div className="flex gap-1.5">
           <Input
             placeholder={
+              searchType === "bible"
+                ? t("context.search_bible")
+                : t("context.search_catechism")
+            }
+            aria-label={
               searchType === "bible"
                 ? t("context.search_bible")
                 : t("context.search_catechism")
@@ -180,7 +187,10 @@ export function ContextShelf() {
         {attachments.map((att) => {
           const config = TYPE_CONFIG[att.type] || TYPE_CONFIG.TEXT;
           return (
-            <Card key={att.id} className="rounded-sm border-border/70 p-3 text-sm">
+            <Card
+              key={att.id}
+              className="rounded-sm border-border/70 p-3 text-sm"
+            >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 mb-1">

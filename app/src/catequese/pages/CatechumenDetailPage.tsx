@@ -1368,7 +1368,11 @@ export default function CatechumenDetailPage() {
                     asChild
                   >
                     <Link
-                      to={`/app/family-invites?role=CATECHUMEN&email=${encodeURIComponent(profile.email || "")}&householdId=${encodeURIComponent(profile.householdId || "")}`}
+                      to={`/app/family-invites?role=CATECHUMEN&email=${encodeURIComponent(
+                        profile.email || "",
+                      )}&householdId=${encodeURIComponent(
+                        profile.householdId || "",
+                      )}`}
                     >
                       <Mail className="mr-1 h-3 w-3" />
                       {tf("portal_invites.context_catechumen")}
@@ -1441,7 +1445,8 @@ export default function CatechumenDetailPage() {
           }
         />
 
-        {tab === "overview" && attendance.length > 0 &&
+        {tab === "overview" &&
+          attendance.length > 0 &&
           (() => {
             const present = attendance.filter(
               (a: any) => a.status === "PRESENT" || a.status === "LATE",
@@ -1478,62 +1483,62 @@ export default function CatechumenDetailPage() {
           })()}
 
         {tab === "overview" && (
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-sm border border-border/70 bg-white p-4">
-            <div className="mb-2 space-y-1.5">
-              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                <Heart className="h-3.5 w-3.5" />
-                {t("catechumens.detail_family")}
-              </h3>
-              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
-            </div>
-            <p
-              className="font-semibold tracking-tight text-[#071A2D]"
-              style={{ fontFamily: "var(--font-brand-display)" }}
-            >
-              {profile.household?.name || t("catechumens.detail_not_linked")}
-            </p>
-            {profile.household?.guardians?.map((g: any) => (
-              <div key={g.id} className="flex items-center justify-between">
-                <p className="text-xs text-muted-foreground">
-                  {g.user?.firstName} {g.user?.lastName}{" "}
-                  {g.relationship && `(${g.relationship})`}
-                </p>
-                <button
-                  onClick={() => handleDmGuardian(g.user?.id)}
-                  className="text-[#071A2D] hover:text-[#0a2540] p-1"
-                  title={t("catechumens.detail_send_message")}
-                >
-                  <MessageCircle className="h-3.5 w-3.5" />
-                </button>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="rounded-sm border border-border/70 bg-white p-4">
+              <div className="mb-2 space-y-1.5">
+                <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  <Heart className="h-3.5 w-3.5" />
+                  {t("catechumens.detail_family")}
+                </h3>
+                <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
               </div>
-            ))}
-          </div>
-          <div className="rounded-sm border border-border/70 bg-white p-4">
-            <div className="mb-2 space-y-1.5">
-              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                <BookOpen className="h-3.5 w-3.5" />
-                {tp("classes")}
-              </h3>
-              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
-            </div>
-            {profile.enrollments?.map((e: any) => (
-              <Link
-                key={e.id}
-                to={`/app/classes/${e.class?.id}`}
-                className="block py-0.5 text-sm font-semibold tracking-tight text-[#071A2D] hover:underline"
+              <p
+                className="font-semibold tracking-tight text-[#071A2D]"
                 style={{ fontFamily: "var(--font-brand-display)" }}
               >
-                {e.class?.name}{" "}
-                {e.class?.stage?.name && `· ${e.class.stage.name}`}
-              </Link>
-            )) || (
-              <p className="text-sm text-muted-foreground">
-                {t("catechumens.detail_none")}
+                {profile.household?.name || t("catechumens.detail_not_linked")}
               </p>
-            )}
+              {profile.household?.guardians?.map((g: any) => (
+                <div key={g.id} className="flex items-center justify-between">
+                  <p className="text-xs text-muted-foreground">
+                    {g.user?.firstName} {g.user?.lastName}{" "}
+                    {g.relationship && `(${g.relationship})`}
+                  </p>
+                  <button
+                    onClick={() => handleDmGuardian(g.user?.id)}
+                    className="text-[#071A2D] hover:text-[#0a2540] p-1"
+                    title={t("catechumens.detail_send_message")}
+                  >
+                    <MessageCircle className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <div className="rounded-sm border border-border/70 bg-white p-4">
+              <div className="mb-2 space-y-1.5">
+                <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  <BookOpen className="h-3.5 w-3.5" />
+                  {tp("classes")}
+                </h3>
+                <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+              </div>
+              {profile.enrollments?.map((e: any) => (
+                <Link
+                  key={e.id}
+                  to={`/app/classes/${e.class?.id}`}
+                  className="block py-0.5 text-sm font-semibold tracking-tight text-[#071A2D] hover:underline"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
+                  {e.class?.name}{" "}
+                  {e.class?.stage?.name && `· ${e.class.stage.name}`}
+                </Link>
+              )) || (
+                <p className="text-sm text-muted-foreground">
+                  {t("catechumens.detail_none")}
+                </p>
+              )}
+            </div>
           </div>
-        </div>
         )}
 
         {tab === "attendance" && attendance.length > 0 && (
@@ -1594,6 +1599,7 @@ export default function CatechumenDetailPage() {
                             value={justifyNote}
                             onChange={(e) => setJustifyNote(e.target.value)}
                             placeholder={t("catechumens.detail_justify_reason")}
+                            aria-label={t("catechumens.detail_justify_reason")}
                             className="h-7 w-28 rounded border px-2 text-xs"
                             autoFocus
                           />
@@ -1889,76 +1895,76 @@ export default function CatechumenDetailPage() {
         )}
 
         {tab === "documents" && (
-        <div className="rounded-sm border border-border/70 bg-white p-4">
-          <div className="mb-3 space-y-1.5">
-            <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              <FilePlus className="h-4 w-4" />
-              {t("documents.title")}
-            </h3>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
-          </div>
-          {!showDocUpload ? (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setShowDocUpload(true)}
-            >
-              <FilePlus className="mr-1 h-3 w-3" />
-              {t("catechumens.detail_new_document")}
-            </Button>
-          ) : (
-            <div className="space-y-3">
-              <div className="flex gap-2">
-                <select
-                  value={docType}
-                  onChange={(e) => setDocType(e.target.value)}
-                  className="h-9 rounded-sm border border-input bg-background px-3 text-sm flex-1"
-                >
-                  {Object.entries(DOC_TYPE_SHORT_KEYS).map(
-                    ([value, i18nKey]) => (
-                      <option key={value} value={value}>
-                        {t(`catechumens.doc_types.${i18nKey}`)}
-                      </option>
-                    ),
-                  )}
-                </select>
-              </div>
-              <div className="flex gap-2 items-center">
-                <input
-                  type="file"
-                  accept=".jpg,.jpeg,.png,.pdf"
-                  onChange={(e) => setDocFile(e.target.files?.[0] || null)}
-                  className="flex-1 text-sm"
-                />
-                <Button
-                  size="sm"
-                  onClick={handleDocUpload}
-                  disabled={uploading || !docFile}
-                >
-                  <Upload className="mr-1 h-3 w-3" />
-                  {uploading
-                    ? t("catechumens.detail_sending")
-                    : t("catechumens.detail_send")}
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => {
-                    setShowDocUpload(false);
-                    setDocFile(null);
-                  }}
-                >
-                  {t("cancel")}
-                </Button>
-              </div>
+          <div className="rounded-sm border border-border/70 bg-white p-4">
+            <div className="mb-3 space-y-1.5">
+              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <FilePlus className="h-4 w-4" />
+                {t("documents.title")}
+              </h3>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
             </div>
-          )}
-          {profile.documents?.length === 0 && !showDocUpload && (
-            <p className="text-xs text-muted-foreground mt-2">
-              {t("catechumens.detail_no_documents_hint")}
-            </p>
-          )}
-        </div>
+            {!showDocUpload ? (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setShowDocUpload(true)}
+              >
+                <FilePlus className="mr-1 h-3 w-3" />
+                {t("catechumens.detail_new_document")}
+              </Button>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <select
+                    value={docType}
+                    onChange={(e) => setDocType(e.target.value)}
+                    className="h-9 rounded-sm border border-input bg-background px-3 text-sm flex-1"
+                  >
+                    {Object.entries(DOC_TYPE_SHORT_KEYS).map(
+                      ([value, i18nKey]) => (
+                        <option key={value} value={value}>
+                          {t(`catechumens.doc_types.${i18nKey}`)}
+                        </option>
+                      ),
+                    )}
+                  </select>
+                </div>
+                <div className="flex gap-2 items-center">
+                  <input
+                    type="file"
+                    accept=".jpg,.jpeg,.png,.pdf"
+                    onChange={(e) => setDocFile(e.target.files?.[0] || null)}
+                    className="flex-1 text-sm"
+                  />
+                  <Button
+                    size="sm"
+                    onClick={handleDocUpload}
+                    disabled={uploading || !docFile}
+                  >
+                    <Upload className="mr-1 h-3 w-3" />
+                    {uploading
+                      ? t("catechumens.detail_sending")
+                      : t("catechumens.detail_send")}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      setShowDocUpload(false);
+                      setDocFile(null);
+                    }}
+                  >
+                    {t("cancel")}
+                  </Button>
+                </div>
+              </div>
+            )}
+            {profile.documents?.length === 0 && !showDocUpload && (
+              <p className="text-xs text-muted-foreground mt-2">
+                {t("catechumens.detail_no_documents_hint")}
+              </p>
+            )}
+          </div>
         )}
 
         {tab === "documents" && canEdit && (

@@ -224,6 +224,7 @@ Maria,Santos,2014-07-22,Silva Santos`}
               {t("parish") || "Paróquia"}
             </label>
             <select
+              aria-label={t("parish") || "Paróquia"}
               value={selectedParishId}
               onChange={(e) => setSelectedParishId(e.target.value)}
               className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1"
@@ -278,6 +279,7 @@ Maria,Santos,2014-07-22,Silva Santos`}
             onChange={(e) => setCsvData(e.target.value)}
             className="flex min-h-[200px] w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-2 font-mono"
             placeholder={t("catechumens.import_csv_placeholder")}
+            aria-label={t("catechumens.import_csv_placeholder")}
           />
         </div>
 
@@ -287,7 +289,8 @@ Maria,Santos,2014-07-22,Silva Santos`}
               <div className="space-y-1.5">
                 <h4 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                   <Eye className="h-3.5 w-3.5 text-[#071A2D]" />
-                  {t("catechumens.import_preview") || "Visualização dos Dados"}{" "}
+                  {t("catechumens.import_preview") ||
+                    "Visualização dos Dados"}{" "}
                   ({previewRows.length} {t("catechumens.rows") || "linhas"})
                 </h4>
                 <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />

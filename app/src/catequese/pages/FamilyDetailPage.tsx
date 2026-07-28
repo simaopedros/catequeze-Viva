@@ -199,11 +199,7 @@ export default function FamilyDetailPage() {
       // Same parish on profile
       if (c.parishId === parishId || c.parish?.id === parishId) return true;
       // Enrolled in a class of this parish
-      if (
-        c.enrollments?.some(
-          (e: any) => e.class?.parishId === parishId,
-        )
-      ) {
+      if (c.enrollments?.some((e: any) => e.class?.parishId === parishId)) {
         return true;
       }
       // No parish set yet — eligible to attach to this family
@@ -548,7 +544,9 @@ export default function FamilyDetailPage() {
                     asChild
                   >
                     <Link
-                      to={`/app/family-invites?role=GUARDIAN&householdId=${id || ""}`}
+                      to={`/app/family-invites?role=GUARDIAN&householdId=${
+                        id || ""
+                      }`}
                     >
                       <Mail className="mr-1 h-3 w-3" />
                       {tf("portal_invites.context_family")}
@@ -573,7 +571,9 @@ export default function FamilyDetailPage() {
           tabs={[
             {
               id: "overview",
-              label: t("families.tab_overview", { defaultValue: "Visão geral" }),
+              label: t("families.tab_overview", {
+                defaultValue: "Visão geral",
+              }),
             },
             {
               id: "guardians",
@@ -614,6 +614,7 @@ export default function FamilyDetailPage() {
                   onChange={(e) => setEditCep(e.target.value)}
                   className="flex h-9 w-40 rounded-sm border border-input bg-background px-3 text-sm"
                   placeholder={t("cep_placeholder")}
+                  aria-label={t("cep_placeholder")}
                 />
                 {cepLoading && (
                   <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
@@ -639,6 +640,7 @@ export default function FamilyDetailPage() {
                 onChange={(e) => setEditAddress(e.target.value)}
                 className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
                 placeholder={t("families.address_placeholder")}
+                aria-label={t("address")}
               />
             </div>
             <div>
@@ -703,246 +705,252 @@ export default function FamilyDetailPage() {
 
         {/* Guardians */}
         {tab === "guardians" && (
-        <div className="rounded-sm border border-border/70 bg-white p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div className="space-y-1.5">
-              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                <User className="h-3.5 w-3.5" />
-                {t("families.guardians_title")}
-              </h3>
-              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          <div className="rounded-sm border border-border/70 bg-white p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="space-y-1.5">
+                <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  <User className="h-3.5 w-3.5" />
+                  {t("families.guardians_title")}
+                </h3>
+                <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={openAddGuardianDialog}
+              >
+                <Plus className="mr-1 h-3 w-3" />
+                {t("families.add")}
+              </Button>
             </div>
-            <Button size="sm" variant="outline" onClick={openAddGuardianDialog}>
-              <Plus className="mr-1 h-3 w-3" />
-              {t("families.add")}
-            </Button>
-          </div>
-          {household.guardians?.length > 0 ? (
-            <div className="space-y-2">
-              {household.guardians.map((g: any) => {
-                const displayName = getGuardianDisplayName(g);
-                const avatarLetter = getGuardianAvatarLetter(g);
-                const emailOrPlaceholder = g.user?.email || g.email;
-                return (
-                  <div key={g.id} className="flex items-center gap-3 group">
-                    <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 text-xs font-semibold ${getAvatarColorClass(
-                        avatarLetter,
-                      )}`}
-                    >
-                      {avatarLetter}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p
-                        className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
+            {household.guardians?.length > 0 ? (
+              <div className="space-y-2">
+                {household.guardians.map((g: any) => {
+                  const displayName = getGuardianDisplayName(g);
+                  const avatarLetter = getGuardianAvatarLetter(g);
+                  const emailOrPlaceholder = g.user?.email || g.email;
+                  return (
+                    <div key={g.id} className="flex items-center gap-3 group">
+                      <div
+                        className={`flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 text-xs font-semibold ${getAvatarColorClass(
+                          avatarLetter,
+                        )}`}
                       >
-                        {displayName}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {emailOrPlaceholder}
-                        {emailOrPlaceholder && (g.relationship || g.phone)
-                          ? " · "
-                          : ""}
-                        {translateRelationship(g.relationship)}
-                        {g.relationship && g.phone ? " · " : ""}
-                        {g.phone}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-7 w-7"
-                        asChild
-                        title={tf("portal_invites.context_guardian")}
-                      >
-                        <Link
-                          to={`/app/family-invites?role=GUARDIAN&email=${encodeURIComponent(g.email || "")}&householdId=${id || ""}`}
+                        {avatarLetter}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p
+                          className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                          style={{ fontFamily: "var(--font-brand-display)" }}
                         >
-                          <Mail className="h-3.5 w-3.5" />
-                        </Link>
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-7 w-7"
-                        onClick={handleCopyInviteLink}
-                        title={
-                          t("families.copy_invite_link") ||
-                          "Copiar link de convite"
-                        }
-                      >
-                        <Copy className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-7 w-7"
-                        onClick={() => openEditGuardianDialog(g)}
-                        title={t("families.edit_guardian")}
-                      >
-                        <Pencil className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-7 w-7 text-destructive hover:text-destructive"
-                        onClick={() => openRemoveGuardianConfirm(g)}
-                        title={t("families.remove_guardian")}
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
+                          {displayName}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {emailOrPlaceholder}
+                          {emailOrPlaceholder && (g.relationship || g.phone)
+                            ? " · "
+                            : ""}
+                          {translateRelationship(g.relationship)}
+                          {g.relationship && g.phone ? " · " : ""}
+                          {g.phone}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-7 w-7"
+                          asChild
+                          title={tf("portal_invites.context_guardian")}
+                        >
+                          <Link
+                            to={`/app/family-invites?role=GUARDIAN&email=${encodeURIComponent(
+                              g.email || "",
+                            )}&householdId=${id || ""}`}
+                          >
+                            <Mail className="h-3.5 w-3.5" />
+                          </Link>
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-7 w-7"
+                          onClick={handleCopyInviteLink}
+                          title={
+                            t("families.copy_invite_link") ||
+                            "Copiar link de convite"
+                          }
+                        >
+                          <Copy className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-7 w-7"
+                          onClick={() => openEditGuardianDialog(g)}
+                          title={t("families.edit_guardian")}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-7 w-7 text-destructive hover:text-destructive"
+                          onClick={() => openRemoveGuardianConfirm(g)}
+                          title={t("families.remove_guardian")}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              {t("families.no_guardians")}
-            </p>
-          )}
-        </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                {t("families.no_guardians")}
+              </p>
+            )}
+          </div>
         )}
 
         {/* Catechumens */}
         {tab === "catechumens" && (
-        <div className="rounded-sm border border-border/70 bg-white p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div className="space-y-1.5">
-              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                <GraduationCap className="h-3.5 w-3.5" />
-                {t("families.catechumens_title")}
-              </h3>
-              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+          <div className="rounded-sm border border-border/70 bg-white p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="space-y-1.5">
+                <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  <GraduationCap className="h-3.5 w-3.5" />
+                  {t("families.catechumens_title")}
+                </h3>
+                <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 gap-1"
+                onClick={openAddCatechumenDialog}
+              >
+                <Plus className="h-3.5 w-3.5" />
+                {t("families.add_catechumen") || "Adicionar"}
+              </Button>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-8 gap-1"
-              onClick={openAddCatechumenDialog}
-            >
-              <Plus className="h-3.5 w-3.5" />
-              {t("families.add_catechumen") || "Adicionar"}
-            </Button>
-          </div>
-          {household.catechumens?.length > 0 ? (
-            <div className="space-y-2">
-              {household.catechumens.map((c: any) => (
-                <div
-                  key={c.id}
-                  className="group flex items-center justify-between gap-3 rounded-sm border border-border/70 bg-white p-3 transition-colors hover:bg-muted/20"
-                >
-                  <Link
-                    to={`/app/catechumens/${c.id}`}
-                    className="flex flex-1 items-center gap-3"
+            {household.catechumens?.length > 0 ? (
+              <div className="space-y-2">
+                {household.catechumens.map((c: any) => (
+                  <div
+                    key={c.id}
+                    className="group flex items-center justify-between gap-3 rounded-sm border border-border/70 bg-white p-3 transition-colors hover:bg-muted/20"
                   >
-                    <div
-                      className={`flex h-9 w-9 items-center justify-center rounded-sm border border-border/70 text-sm font-semibold ${getAvatarColorClass(
-                        c.firstName,
-                      )}`}
+                    <Link
+                      to={`/app/catechumens/${c.id}`}
+                      className="flex flex-1 items-center gap-3"
                     >
-                      {c.firstName?.[0]}
-                      {c.lastName?.[0]}
-                    </div>
-                    <div className="flex-1">
-                      <p
-                        className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                        style={{ fontFamily: "var(--font-brand-display)" }}
+                      <div
+                        className={`flex h-9 w-9 items-center justify-center rounded-sm border border-border/70 text-sm font-semibold ${getAvatarColorClass(
+                          c.firstName,
+                        )}`}
                       >
-                        {c.firstName} {c.lastName}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {c.birthDate && formatDateOnly(c.birthDate, "pt-BR")}
-                      </p>
+                        {c.firstName?.[0]}
+                        {c.lastName?.[0]}
+                      </div>
+                      <div className="flex-1">
+                        <p
+                          className="text-sm font-semibold tracking-tight text-[#071A2D]"
+                          style={{ fontFamily: "var(--font-brand-display)" }}
+                        >
+                          {c.firstName} {c.lastName}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {c.birthDate && formatDateOnly(c.birthDate, "pt-BR")}
+                        </p>
+                      </div>
+                    </Link>
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4 text-muted-foreground sm:block hidden" />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="flex h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          openRemoveCatechumenConfirm(c.id);
+                        }}
+                        title={t("remove") || "Remover"}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
-                  </Link>
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-muted-foreground sm:block hidden" />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="flex h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        openRemoveCatechumenConfirm(c.id);
-                      }}
-                      title={t("remove") || "Remover"}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
                   </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              {t("families.no_catechumens")}
-            </p>
-          )}
-        </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                {t("families.no_catechumens")}
+              </p>
+            )}
+          </div>
         )}
 
         {/* Consents */}
         {tab === "consents" && (
-        <div className="rounded-sm border border-border/70 bg-white p-4">
-          <div className="mb-3 space-y-1.5">
-            <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              <Shield className="h-4 w-4" />
-              {t("families.consents_title")}
-            </h3>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
-          </div>
-          {household.consents?.length > 0 ? (
-            <div className="space-y-3">
-              {household.consents.map((c: any) => (
-                <div
-                  key={c.id}
-                  className="flex items-center justify-between py-1 text-sm"
-                >
-                  <span>
-                    {c.type === "IMAGE_USAGE"
-                      ? t("families.consent_image")
-                      : c.type === "COMMUNICATION"
-                        ? t("families.consent_communication")
-                        : c.type === "DOCUMENTS"
-                          ? t("families.consent_documents")
-                          : c.type}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <Badge
-                      variant={c.granted ? "default" : "secondary"}
-                      className="text-overline"
-                    >
-                      {c.granted
-                        ? t("families.authorized")
-                        : t("families.denied")}
-                    </Badge>
-                    <Button
-                      size="sm"
-                      variant={c.granted ? "outline" : "default"}
-                      className="text-overline h-7"
-                      onClick={() => handleToggleConsent(c.type, !c.granted)}
-                      disabled={savingConsent === c.type}
-                    >
-                      {savingConsent === c.type
-                        ? "..."
-                        : c.granted
-                          ? t("families.revoke")
-                          : t("families.authorize")}
-                    </Button>
-                  </div>
-                </div>
-              ))}
+          <div className="rounded-sm border border-border/70 bg-white p-4">
+            <div className="mb-3 space-y-1.5">
+              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <Shield className="h-4 w-4" />
+                {t("families.consents_title")}
+              </h3>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
             </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              {t("families.no_consents")}
-            </p>
-          )}
-        </div>
+            {household.consents?.length > 0 ? (
+              <div className="space-y-3">
+                {household.consents.map((c: any) => (
+                  <div
+                    key={c.id}
+                    className="flex items-center justify-between py-1 text-sm"
+                  >
+                    <span>
+                      {c.type === "IMAGE_USAGE"
+                        ? t("families.consent_image")
+                        : c.type === "COMMUNICATION"
+                          ? t("families.consent_communication")
+                          : c.type === "DOCUMENTS"
+                            ? t("families.consent_documents")
+                            : c.type}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        variant={c.granted ? "default" : "secondary"}
+                        className="text-overline"
+                      >
+                        {c.granted
+                          ? t("families.authorized")
+                          : t("families.denied")}
+                      </Badge>
+                      <Button
+                        size="sm"
+                        variant={c.granted ? "outline" : "default"}
+                        className="text-overline h-7"
+                        onClick={() => handleToggleConsent(c.type, !c.granted)}
+                        disabled={savingConsent === c.type}
+                      >
+                        {savingConsent === c.type
+                          ? "..."
+                          : c.granted
+                            ? t("families.revoke")
+                            : t("families.authorize")}
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                {t("families.no_consents")}
+              </p>
+            )}
+          </div>
         )}
       </div>
 
@@ -964,6 +972,7 @@ export default function FamilyDetailPage() {
                 onChange={(e) => setGuardianFirstName(e.target.value)}
                 className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm"
                 placeholder={t("first_name")}
+                aria-label={t("first_name")}
                 autoFocus
               />
             </div>
@@ -976,6 +985,7 @@ export default function FamilyDetailPage() {
                 onChange={(e) => setGuardianLastName(e.target.value)}
                 className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm"
                 placeholder={t("last_name")}
+                aria-label={t("last_name")}
               />
             </div>
 
@@ -988,6 +998,7 @@ export default function FamilyDetailPage() {
                 onChange={(e) => setGuardianEmail(e.target.value)}
                 className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm"
                 placeholder={t("families.email_placeholder")}
+                aria-label={t("email")}
               />
               <p className="text-xs text-muted-foreground">
                 {t("families.email_hint")}
@@ -1075,6 +1086,7 @@ export default function FamilyDetailPage() {
                     onChange={(e) => setEditGuardianFirstName(e.target.value)}
                     className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm"
                     placeholder={t("first_name")}
+                    aria-label={t("first_name")}
                   />
                 </div>
                 <div className="space-y-2">
@@ -1086,6 +1098,7 @@ export default function FamilyDetailPage() {
                     onChange={(e) => setEditGuardianLastName(e.target.value)}
                     className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm"
                     placeholder={t("last_name")}
+                    aria-label={t("last_name")}
                   />
                 </div>
               </>

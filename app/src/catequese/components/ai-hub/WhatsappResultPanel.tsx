@@ -82,6 +82,7 @@ export function WhatsappResultPanel({
             onChange={(e) => setEditedMessage(e.target.value)}
             className="min-h-[200px] text-sm leading-relaxed"
             placeholder={t("whatsapp.empty_message")}
+            aria-label={t("whatsapp.empty_message")}
           />
         </Card>
 

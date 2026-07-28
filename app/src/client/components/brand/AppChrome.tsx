@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { MoreHorizontal } from "lucide-react";
 import { cn } from "../../utils";
+import { usePageTitle } from "../../hooks/usePageTitle";
 import { Button } from "../ui/button";
 import {
   DropdownMenu,
@@ -135,6 +136,7 @@ export function AppPageHeader({
   className,
   hideActionsOnMobile = false,
   hideEyebrowOnMobile = false,
+  documentTitle,
 }: {
   eyebrow?: string;
   title: string;
@@ -151,8 +153,11 @@ export function AppPageHeader({
   /** Keeps mobile page headers informational; actions remain available in their feature areas. */
   hideActionsOnMobile?: boolean;
   hideEyebrowOnMobile?: boolean;
+  /** Overrides `title` for `document.title`; pass `null` to opt out entirely. */
+  documentTitle?: string | null;
 }) {
   const { t } = useTranslation("common");
+  usePageTitle(documentTitle === null ? undefined : documentTitle ?? title);
   const hasStructured =
     Boolean(primaryAction) || (secondaryActions && secondaryActions.length > 0);
   const secondaries = secondaryActions ?? [];

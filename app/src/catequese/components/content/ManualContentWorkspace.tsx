@@ -129,6 +129,7 @@ function ReferenceSection({
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           placeholder={placeholder}
+          aria-label={placeholder}
           className="pl-9"
           readOnly
           onFocus={onOpen}
@@ -411,10 +412,7 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
 
       <Card className="rounded-sm border-border/70 p-5">
         <div className="mb-3 flex items-center gap-2">
-          <Badge
-            variant="outline"
-            className="rounded-sm px-2.5 py-0.5 text-xs"
-          >
+          <Badge variant="outline" className="rounded-sm px-2.5 py-0.5 text-xs">
             Assistência opcional
           </Badge>
         </div>
@@ -495,6 +493,7 @@ function ContentLibrarySidebar() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar conteúdos..."
+            aria-label="Buscar conteúdos..."
             className="pl-9"
           />
         </div>

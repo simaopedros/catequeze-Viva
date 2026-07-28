@@ -220,6 +220,7 @@ export default function CommunitiesPage() {
                         {tp("name")} *
                       </label>
                       <input
+                        aria-label={tp("name")}
                         value={editFields.name}
                         onChange={(e) =>
                           updateEditField("name", e.target.value)
@@ -233,6 +234,7 @@ export default function CommunitiesPage() {
                         {tp("type")}
                       </label>
                       <select
+                        aria-label={tp("type")}
                         value={editFields.type}
                         onChange={(e) =>
                           updateEditField("type", e.target.value)
@@ -261,6 +263,7 @@ export default function CommunitiesPage() {
                         {tp("email")}
                       </label>
                       <input
+                        aria-label={tp("email")}
                         value={editFields.email}
                         onChange={(e) =>
                           updateEditField("email", e.target.value)
@@ -275,6 +278,7 @@ export default function CommunitiesPage() {
                         {tp("street")}
                       </label>
                       <input
+                        aria-label={tp("street")}
                         value={editFields.street}
                         onChange={(e) =>
                           updateEditField("street", e.target.value)
@@ -287,6 +291,7 @@ export default function CommunitiesPage() {
                         {tp("number")}
                       </label>
                       <input
+                        aria-label={tp("number")}
                         value={editFields.number}
                         onChange={(e) =>
                           updateEditField("number", e.target.value)
@@ -299,6 +304,7 @@ export default function CommunitiesPage() {
                         {tp("neighborhood")}
                       </label>
                       <input
+                        aria-label={tp("neighborhood")}
                         value={editFields.neighborhood}
                         onChange={(e) =>
                           updateEditField("neighborhood", e.target.value)
@@ -311,6 +317,7 @@ export default function CommunitiesPage() {
                         {tp("city")}
                       </label>
                       <input
+                        aria-label={tp("city")}
                         value={editFields.city}
                         onChange={(e) =>
                           updateEditField("city", e.target.value)
@@ -323,6 +330,7 @@ export default function CommunitiesPage() {
                         {tp("state_abbr")}
                       </label>
                       <input
+                        aria-label={tp("state_abbr")}
                         value={editFields.state}
                         onChange={(e) =>
                           updateEditField("state", e.target.value)
@@ -336,6 +344,7 @@ export default function CommunitiesPage() {
                         {tp("coordinator")}
                       </label>
                       <input
+                        aria-label={tp("coordinator")}
                         value={editFields.coordinatorName}
                         onChange={(e) =>
                           updateEditField("coordinatorName", e.target.value)
@@ -359,6 +368,7 @@ export default function CommunitiesPage() {
                       {tp("description")}
                     </label>
                     <Textarea
+                      aria-label={tp("description")}
                       value={editFields.description}
                       onChange={(e) =>
                         updateEditField("description", e.target.value)

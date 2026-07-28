@@ -32,6 +32,7 @@ import {
   deleteActivity,
 } from "wasp/client/operations";
 import { ActivityForm, type ActivityType } from "../components/ActivityForm";
+import { useConfirm } from "../../client/hooks/useConfirm";
 import { useContentStatusMap, useActivityTypes } from "../../i18n/useLabels";
 import { useLocale } from "../../i18n/useLocale";
 import { formatDate } from "../../i18n/format";
@@ -95,6 +96,7 @@ export default function ContentDetailPage() {
   const { t: ta } = useTranslation("activities");
   const { t: tai } = useTranslation("ai");
   const { t: tc } = useTranslation("common");
+  const { confirm, confirmDialog } = useConfirm();
   const STATUS_MAP = useContentStatusMap();
   const activityTypes = useActivityTypes();
   const { currentLocale } = useLocale();
@@ -155,7 +157,12 @@ export default function ContentDetailPage() {
   };
 
   const handleDelete = async (activityId: string) => {
-    if (!confirm(t("detail.confirm_remove_activity"))) return;
+    const ok = await confirm({
+      title: t("detail.confirm_remove_activity"),
+      confirmLabel: tc("remove"),
+      variant: "destructive",
+    });
+    if (!ok) return;
     await deleteActivity({ id: activityId });
   };
 
@@ -518,6 +525,7 @@ export default function ContentDetailPage() {
           )}
         </div>
       )}
+      {confirmDialog}
     </div>
   );
 }

@@ -74,5 +74,6 @@
     "document": "Documents",
     "parish": "Parishes",
     "community": "Communities"
-  }
+  },
+  "sidebarSection": "Sidebar navigation"
 }

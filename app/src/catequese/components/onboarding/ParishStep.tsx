@@ -199,6 +199,7 @@ export function ParishStep({
             onChange={(e) => setSearchQuery(e.target.value)}
             className="h-11 rounded-sm pl-9"
             placeholder={t("parish.filter_placeholder")}
+            aria-label={t("parish.filter_placeholder")}
           />
         </div>
       </div>
@@ -323,6 +324,7 @@ export function ParishStep({
             onChange={(e) => setNewName(e.target.value)}
             className="h-11 rounded-sm"
             placeholder={t("parish.new_name_placeholder")}
+            aria-label={t("parish.new_name_label")}
           />
           {duplicateParish && (
             <div className="border border-border/70 px-3 py-2 text-xs text-muted-foreground rounded-sm">

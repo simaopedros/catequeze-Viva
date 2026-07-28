@@ -84,6 +84,7 @@ export default function SendAnnouncementButton({ classId, className }: Props) {
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
           placeholder={t("announcement.subject_placeholder")}
+          aria-label={t("announcement.subject")}
           disabled={sending}
           className="mt-1"
         />
@@ -96,6 +97,7 @@ export default function SendAnnouncementButton({ classId, className }: Props) {
           value={body}
           onChange={(e) => setBody(e.target.value)}
           placeholder={t("announcement.message_placeholder")}
+          aria-label={t("announcement.message")}
           rows={4}
           disabled={sending}
           className="flex w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1 resize-y min-h-[80px]"

@@ -144,6 +144,7 @@ export default function CatechismPage() {
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               className="flex h-10 w-48 rounded-sm border border-input bg-background px-3 text-sm sm:w-64"
               placeholder={t("searchPlaceholder")}
+              aria-label={t("searchPlaceholder")}
             />
             <Button
               size="sm"

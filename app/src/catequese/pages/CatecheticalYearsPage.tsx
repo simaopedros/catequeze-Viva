@@ -116,11 +116,14 @@ export default function CatecheticalYearsPage() {
                 onChange={(e) => setName(e.target.value)}
                 className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1"
                 placeholder={t("name_placeholder")}
+                aria-label={t("name")}
+                required
               />
             </div>
             <div>
               <label className="text-sm font-medium">{t("start")} *</label>
               <input
+                aria-label={t("start")}
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
@@ -130,6 +133,7 @@ export default function CatecheticalYearsPage() {
             <div>
               <label className="text-sm font-medium">{t("end")} *</label>
               <input
+                aria-label={t("end")}
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}

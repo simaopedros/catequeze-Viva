@@ -652,6 +652,7 @@ export function ChatView({
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={t("message_placeholder")}
+              aria-label={t("message_placeholder")}
               rows={1}
               enterKeyHint="send"
               className="max-h-[120px] min-h-11 w-full resize-none rounded-sm border border-input bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"

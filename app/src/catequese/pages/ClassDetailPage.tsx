@@ -132,9 +132,9 @@ export default function ClassDetailPage() {
   const [addUserId, setAddUserId] = useState("");
   const [addingCatechist, setAddingCatechist] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState<"LEAD_CATECHIST" | "ASSISTANT_CATECHIST">(
-    "ASSISTANT_CATECHIST",
-  );
+  const [inviteRole, setInviteRole] = useState<
+    "LEAD_CATECHIST" | "ASSISTANT_CATECHIST"
+  >("ASSISTANT_CATECHIST");
   const [invitingByEmail, setInvitingByEmail] = useState(false);
   const [lastClassInviteUrl, setLastClassInviteUrl] = useState<string | null>(
     null,
@@ -572,6 +572,7 @@ export default function ClassDetailPage() {
               <div className="sm:col-span-2">
                 <label className="text-xs font-medium">{t("name")}</label>
                 <input
+                  aria-label={t("name")}
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
                   className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
@@ -582,6 +583,7 @@ export default function ClassDetailPage() {
                   {t("detail.day_of_week")}
                 </label>
                 <select
+                  aria-label={t("detail.day_of_week")}
                   value={editDay}
                   onChange={(e) => setEditDay(e.target.value)}
                   className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
@@ -598,6 +600,7 @@ export default function ClassDetailPage() {
                   {t("detail.slots")}
                 </label>
                 <input
+                  aria-label={t("detail.slots")}
                   type="number"
                   min={1}
                   max={200}
@@ -609,6 +612,7 @@ export default function ClassDetailPage() {
               <div>
                 <label className="text-xs font-medium">{t("start")}</label>
                 <input
+                  aria-label={t("start")}
                   type="time"
                   value={editStart}
                   onChange={(e) => setEditStart(e.target.value)}
@@ -620,6 +624,7 @@ export default function ClassDetailPage() {
                   {t("detail.end_time")}
                 </label>
                 <input
+                  aria-label={t("detail.end_time")}
                   type="time"
                   value={editEnd}
                   onChange={(e) => setEditEnd(e.target.value)}
@@ -633,6 +638,7 @@ export default function ClassDetailPage() {
                   onChange={(e) => setEditLocation(e.target.value)}
                   className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
                   placeholder={cls.location || t("location_placeholder")}
+                  aria-label={t("location")}
                 />
               </div>
             </div>
@@ -930,7 +936,11 @@ export default function ClassDetailPage() {
                           count: m._count?.attendance || 0,
                         })}
                       </Badge>
-                      <Button size="sm" className="h-11 min-h-11 rounded-sm" asChild>
+                      <Button
+                        size="sm"
+                        className="h-11 min-h-11 rounded-sm"
+                        asChild
+                      >
                         <Link
                           to={`/app/classes/${id}/attendance?meetingId=${m.id}`}
                         >
@@ -1022,6 +1032,7 @@ export default function ClassDetailPage() {
                         value={inviteEmail}
                         onChange={(e) => setInviteEmail(e.target.value)}
                         placeholder={t("detail.invite_email_placeholder")}
+                        aria-label={t("detail.invite_email_placeholder")}
                         className="flex-1 min-w-[180px] h-9 rounded-sm border border-input bg-background px-3 text-sm"
                       />
                       <select

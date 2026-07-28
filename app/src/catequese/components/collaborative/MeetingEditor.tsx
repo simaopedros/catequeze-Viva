@@ -250,6 +250,7 @@ function MeetingBlockComponent({
               <Input
                 ref={inputRef}
                 placeholder={t("editor.instruction_placeholder")}
+                aria-label={t("editor.instruction_placeholder")}
                 value={instruction}
                 onChange={(e) => setInstruction(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleRefine()}
@@ -275,6 +276,7 @@ function MeetingBlockComponent({
               onChange={(e) => setDraft(e.target.value)}
               onBlur={handleSave}
               placeholder={helper}
+              aria-label={helper}
               className="h-12 rounded-sm border-border/70"
             />
           ) : (
@@ -283,6 +285,7 @@ function MeetingBlockComponent({
               onChange={(e) => setDraft(e.target.value)}
               onBlur={handleSave}
               placeholder={helper}
+              aria-label={helper}
               className={`resize-none rounded-sm border-border/70 text-sm leading-relaxed ${
                 minHeight || "min-h-[110px]"
               }`}

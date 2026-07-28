@@ -197,7 +197,11 @@ export default function FamilyPortalInvitesPage() {
         title={tf("portal_invites.title")}
         subtitle={tf("portal_invites.subtitle")}
         actions={
-          <Button asChild variant="outline" className="h-11 min-h-11 rounded-sm">
+          <Button
+            asChild
+            variant="outline"
+            className="h-11 min-h-11 rounded-sm"
+          >
             <Link to="/app/families">
               <Heart className="mr-2 h-4 w-4" />
               {tn("families")}
@@ -244,6 +248,7 @@ export default function FamilyPortalInvitesPage() {
               onChange={(e) => setEmail(e.target.value)}
               className="h-11 w-full rounded-sm border border-input bg-background px-3 text-sm"
               placeholder={tf("portal_invites.email_placeholder")}
+              aria-label={tf("portal_invites.email_placeholder")}
             />
           </div>
           <div>
@@ -251,6 +256,7 @@ export default function FamilyPortalInvitesPage() {
               {tf("portal_invites.role_label")}
             </label>
             <select
+              aria-label={tf("portal_invites.role_label")}
               value={role}
               onChange={(e) =>
                 setRole(e.target.value as "GUARDIAN" | "CATECHUMEN")
@@ -270,6 +276,7 @@ export default function FamilyPortalInvitesPage() {
               {tf("portal_invites.family_label")}
             </label>
             <select
+              aria-label={tf("portal_invites.family_label")}
               value={householdId}
               onChange={(e) => setHouseholdId(e.target.value)}
               className="h-11 w-full rounded-sm border border-input bg-background px-3 text-sm"
@@ -319,7 +326,12 @@ export default function FamilyPortalInvitesPage() {
                 <Copy className="mr-1.5 h-3.5 w-3.5" />
                 {tf("portal_invites.copy_link")}
               </Button>
-              <Button size="sm" variant="outline" className="h-10 rounded-sm" asChild>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-10 rounded-sm"
+                asChild
+              >
                 <a
                   href={whatsappHref(lastInviteUrl)}
                   target="_blank"

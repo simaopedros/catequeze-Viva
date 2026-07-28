@@ -648,6 +648,7 @@ export function MeetingAttendanceSheet({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t("sheet.filter_placeholder")}
+            aria-label={t("sheet.filter_placeholder")}
             className="h-11"
             autoFocus
           />

@@ -98,6 +98,7 @@ export function CommunityCreateForm({
             onChange={(e) => setName(e.target.value)}
             className={inputClass}
             placeholder={t("community_name_placeholder")}
+            aria-label={t("community_name_required")}
             autoFocus
           />
         </div>
@@ -106,6 +107,7 @@ export function CommunityCreateForm({
             {t("type")}
           </label>
           <select
+            aria-label={t("type")}
             value={type}
             onChange={(e) => setType(e.target.value)}
             className={inputClass}
@@ -137,6 +139,7 @@ export function CommunityCreateForm({
             onChange={(e) => setEmail(e.target.value)}
             className={inputClass}
             placeholder={t("community_email_placeholder")}
+            aria-label={t("email")}
           />
         </div>
       </div>
@@ -159,6 +162,7 @@ export function CommunityCreateForm({
               onChange={(e) => setCoordinatorName(e.target.value)}
               className={inputClass}
               placeholder={t("coordinator_name_placeholder")}
+              aria-label={t("coordinator_name_placeholder")}
             />
           </div>
           <div>
@@ -182,6 +186,7 @@ export function CommunityCreateForm({
           className="w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1"
           rows={2}
           placeholder={t("desc_placeholder")}
+          aria-label={t("desc_placeholder")}
         />
       </div>
 

@@ -10,7 +10,6 @@ import {
 import {
   Search,
   Bell,
-  Menu,
   X,
   Loader2,
   Users,
@@ -74,11 +73,7 @@ const NOTIF_ICONS: Record<string, React.ComponentType<any>> = {
   SYSTEM: Bell,
 };
 
-interface TopBarProps {
-  onMenuToggle?: () => void;
-}
-
-export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
+export const TopBar = memo(function TopBar() {
   const { t } = useTranslation("common");
   const { t: tTop } = useTranslation("topbar");
   const { t: tNav } = useTranslation("navigation");
@@ -259,19 +254,6 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
         paddingTop: "env(safe-area-inset-top, 0px)",
       }}
     >
-      {/* Mobile menu toggle — hidden when search expanded */}
-      {onMenuToggle && !searchExpanded && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="lg:hidden shrink-0"
-          onClick={onMenuToggle}
-          aria-label={tTop("openMenu")}
-        >
-          <Menu className="h-5 w-5" />
-        </Button>
-      )}
-
       {/* Search — icon-only on mobile, expands on tap */}
       <div
         ref={containerRef}
@@ -324,6 +306,7 @@ export const TopBar = memo(function TopBar({ onMenuToggle }: TopBarProps) {
               handleKeyDown(e);
             }}
             placeholder={tTop("searchPlaceholder")}
+            aria-label={tTop("searchPlaceholder")}
             className="flex-1 bg-transparent border-none outline-none text-sm placeholder:text-text-tertiary"
             data-tour="ctrlk"
           />

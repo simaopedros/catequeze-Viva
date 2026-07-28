@@ -55,5 +55,8 @@
   "view_month": "Mes",
   "prev_period": "Periodo anterior",
   "next_period": "Periodo siguiente",
-  "create_primary": "Nuevo evento"
+  "create_primary": "Nuevo evento",
+  "confirm_delete_event": "¿Eliminar este evento?",
+  "confirm_delete_event_desc": "Esta acción no se puede deshacer.",
+  "delete_error": "Error al eliminar el evento"
 }

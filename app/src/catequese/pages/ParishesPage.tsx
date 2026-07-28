@@ -227,6 +227,7 @@ export default function ParishesPage() {
                   {tp("diocese_license")}
                 </label>
                 <select
+                  aria-label={tp("diocese_license")}
                   value={newDioceseId}
                   onChange={(e) => setNewDioceseId(e.target.value)}
                   className="h-9 rounded-sm border border-input bg-background px-3 text-sm"

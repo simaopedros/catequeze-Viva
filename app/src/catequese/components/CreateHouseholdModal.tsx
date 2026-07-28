@@ -1,13 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useId } from "react";
 import { useTranslation } from "react-i18next";
-import { X, Save, Loader2 } from "lucide-react";
+import { Save, Loader2 } from "lucide-react";
 import { Button } from "../../client/components/ui/button";
 import { Input } from "../../client/components/ui/input";
 import { Label } from "../../client/components/ui/label";
 import {
-  AppDisplayTitle,
-  AppGoldRule,
-} from "../../client/components/brand/AppChrome";
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../../client/components/ui/dialog";
+import { AppGoldRule } from "../../client/components/brand/AppChrome";
 import { createHousehold } from "wasp/client/operations";
 import PhoneMaskInput from "../../client/components/PhoneMaskInput";
 import { useViaCep } from "../../client/hooks/useViaCep";
@@ -26,6 +30,10 @@ export default function CreateHouseholdModal({
 }: CreateHouseholdModalProps) {
   const { t } = useTranslation("common");
   const { activeParishId } = useActiveParish();
+  const nameId = useId();
+  const cepId = useId();
+  const addressId = useId();
+  const phoneId = useId();
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [cep, setCep] = useState("");
@@ -66,7 +74,8 @@ export default function CreateHouseholdModal({
     }
   }, [isOpen]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     if (!name) {
       setError(t("families.name_required"));
       return;
@@ -89,43 +98,30 @@ export default function CreateHouseholdModal({
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader className="space-y-1.5">
+          <DialogTitle className="text-base">
+            {t("families.create_title")}
+          </DialogTitle>
+          <AppGoldRule className="w-8" />
+        </DialogHeader>
 
-      {/* Modal */}
-      <div className="relative mx-4 w-full max-w-md overflow-hidden rounded-sm border border-border/70 bg-white animate-in zoom-in-95 duration-200">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-3 border-b border-border/70 p-4">
-          <div className="min-w-0 space-y-1.5">
-            <AppDisplayTitle as="h3" className="text-base sm:text-base">
-              {t("families.create_title")}
-            </AppDisplayTitle>
-            <AppGoldRule className="w-8" />
-          </div>
-          <button
-            onClick={onClose}
-            className="flex h-7 w-7 items-center justify-center rounded-sm transition-colors hover:bg-muted"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-
-        {/* Body */}
-        <div className="p-4 space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="rounded-sm border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
+            <div
+              role="alert"
+              className="rounded-sm border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive"
+            >
               {error}
             </div>
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="modal-name">{t("families.name_label")}</Label>
+            <Label htmlFor={nameId}>{t("families.name_label")}</Label>
             <Input
-              id="modal-name"
+              id={nameId}
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={t("families.name_placeholder")}
@@ -133,10 +129,10 @@ export default function CreateHouseholdModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="modal-cep">{t("families.cep")}</Label>
+            <Label htmlFor={cepId}>{t("families.cep")}</Label>
             <div className="flex items-center gap-2">
               <Input
-                id="modal-cep"
+                id={cepId}
                 value={cep}
                 onChange={(e) => setCep(e.target.value)}
                 placeholder={t("cep_placeholder")}
@@ -149,9 +145,9 @@ export default function CreateHouseholdModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="modal-address">{t("address")}</Label>
+            <Label htmlFor={addressId}>{t("address")}</Label>
             <Input
-              id="modal-address"
+              id={addressId}
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               placeholder={t("families.address_placeholder")}
@@ -159,27 +155,27 @@ export default function CreateHouseholdModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="modal-phone">{t("phone")}</Label>
+            <Label htmlFor={phoneId}>{t("phone")}</Label>
             <PhoneMaskInput
+              id={phoneId}
               value={phone}
               onChange={setPhone}
               placeholder={t("phone_placeholder")}
               className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm"
             />
           </div>
-        </div>
 
-        {/* Footer */}
-        <div className="p-4 border-t flex items-center justify-end gap-3">
-          <Button type="button" variant="outline" onClick={onClose}>
-            {t("cancel")}
-          </Button>
-          <Button type="button" onClick={handleSubmit} disabled={saving}>
-            <Save className="mr-2 h-4 w-4" />
-            {saving ? t("saving") : t("register")}
-          </Button>
-        </div>
-      </div>
-    </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button type="button" variant="outline" onClick={onClose}>
+              {t("cancel")}
+            </Button>
+            <Button type="submit" disabled={saving}>
+              <Save className="mr-2 h-4 w-4" />
+              {saving ? t("saving") : t("register")}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

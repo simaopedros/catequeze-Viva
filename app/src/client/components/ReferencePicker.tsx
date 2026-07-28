@@ -418,6 +418,13 @@ export function ReferencePicker({
                   ? t("catechism.searchPlaceholder")
                   : t("directory.searchPlaceholder")
             }
+            aria-label={
+              tab === "bible"
+                ? t("bible.searchPlaceholder")
+                : tab === "catechism"
+                  ? t("catechism.searchPlaceholder")
+                  : t("directory.searchPlaceholder")
+            }
           />
           {searching && (
             <div className="absolute right-10 top-1.5">

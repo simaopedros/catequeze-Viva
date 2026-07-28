@@ -341,6 +341,7 @@ export default function SacramentsPage() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
                 placeholder={tc("search")}
+                aria-label={tc("search")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="flex h-9 w-40 rounded-sm border border-input bg-background pl-9 pr-3 text-sm"

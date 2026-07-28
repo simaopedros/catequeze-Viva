@@ -964,7 +964,10 @@ export const calendar_en = {
     "view_month": "Month",
     "prev_period": "Previous period",
     "next_period": "Next period",
-    "create_primary": "New event"
+    "create_primary": "New event",
+    "confirm_delete_event": "Delete this event?",
+    "confirm_delete_event_desc": "This action cannot be undone.",
+    "delete_error": "Could not delete the event"
   } as const;
 
 export const catecheticalYears_en = {
@@ -3432,7 +3435,9 @@ export const messages_en = {
     "online_again": "Back online",
     "load_error_title": "Could not load conversation",
     "back_to_list": "Back to conversations",
-    "network_error": "Network error"
+    "network_error": "Network error",
+    "confirm_leave": "Leave this conversation?",
+    "confirm_leave_desc": "You will stop receiving messages and cannot rejoin without a new invitation."
   } as const;
 
 export const navigation_en = {
@@ -3511,7 +3516,8 @@ export const navigation_en = {
       "document": "Documents",
       "parish": "Parishes",
       "community": "Communities"
-    }
+    },
+    "sidebarSection": "Sidebar navigation"
   } as const;
 
 export const onboarding_en = {

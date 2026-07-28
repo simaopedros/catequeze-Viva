@@ -77,8 +77,7 @@ export default function CreateHouseholdPage() {
     }
   };
 
-  const goBack = () =>
-    leaveGuard.confirmLeave(() => navigate("/app/families"));
+  const goBack = () => leaveGuard.confirmLeave(() => navigate("/app/families"));
 
   return (
     <div className="mx-auto max-w-lg space-y-8">
@@ -135,6 +134,7 @@ export default function CreateHouseholdPage() {
                     <div className="flex items-center gap-2">
                       <Input
                         placeholder={t("families.address_placeholder")}
+                        aria-label={t("families.address_placeholder")}
                         {...field}
                       />
                       {cepLoading && (

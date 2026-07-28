@@ -120,8 +120,8 @@ export function AIHelperWidget() {
       if (!precheck.ok) {
         throw new Error(
           precheck.kind === "html" ||
-            precheck.kind === "json" ||
-            precheck.kind === "content_type"
+          precheck.kind === "json" ||
+          precheck.kind === "content_type"
             ? ta("widget.infra_error")
             : precheck.message,
         );
@@ -406,6 +406,7 @@ export function AIHelperWidget() {
           >
             <Textarea
               placeholder={t("ai_helper_placeholder")}
+              aria-label={t("ai_helper_placeholder")}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {

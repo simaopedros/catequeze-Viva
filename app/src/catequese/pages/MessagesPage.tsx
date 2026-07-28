@@ -23,6 +23,7 @@ import { useQuery } from "wasp/client/operations";
 import { useAuth } from "wasp/client/auth";
 import { cn } from "../../client/utils";
 import { toast } from "../../client/hooks/use-toast";
+import { useConfirm } from "../../client/hooks/useConfirm";
 import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
 import { setActiveWorkspaceId } from "../../client/hooks/workspaceStore";
 import { usePageVisibility } from "../../client/hooks/usePageVisibility";
@@ -41,6 +42,7 @@ import {
 export default function MessagesPage() {
   const { t } = useTranslation("messages");
   const { t: tc } = useTranslation("common");
+  const { confirm, confirmDialog } = useConfirm();
   const { data: user } = useAuth();
   const { workspaceId } = useActiveWorkspace();
   const isVisible = usePageVisibility();
@@ -308,6 +310,13 @@ export default function MessagesPage() {
 
   const handleLeave = async () => {
     if (!activeConversationId || !user) return;
+    const ok = await confirm({
+      title: t("confirm_leave"),
+      description: t("confirm_leave_desc"),
+      confirmLabel: t("leave_group"),
+      variant: "destructive",
+    });
+    if (!ok) return;
     try {
       await removeConversationParticipant({
         conversationId: activeConversationId,
@@ -657,6 +666,7 @@ export default function MessagesPage() {
         onClose={() => setShowNewDialog(false)}
         onCreated={handleNewConversationCreated}
       />
+      {confirmDialog}
     </>
   );
 }

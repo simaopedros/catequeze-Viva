@@ -54,6 +54,7 @@ export function ParishCreateForm({
             onChange={(e) => setName(e.target.value)}
             className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1"
             placeholder={t("parish_create.name_placeholder")}
+            aria-label={t("parish_create.name_label")}
           />
         </div>
         <div>

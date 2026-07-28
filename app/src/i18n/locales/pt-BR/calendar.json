@@ -55,5 +55,8 @@
   ],
   "prev_period": "Período anterior",
   "next_period": "Período seguinte",
-  "create_primary": "Novo evento"
+  "create_primary": "Novo evento",
+  "confirm_delete_event": "Excluir este evento?",
+  "confirm_delete_event_desc": "Esta ação não pode ser desfeita.",
+  "delete_error": "Erro ao excluir o evento"
 }

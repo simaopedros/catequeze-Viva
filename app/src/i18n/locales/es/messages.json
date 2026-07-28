@@ -96,5 +96,7 @@
   "online_again": "Conexión restablecida",
   "load_error_title": "No se pudo cargar la conversación",
   "back_to_list": "Volver a conversaciones",
-  "network_error": "Error de red"
+  "network_error": "Error de red",
+  "confirm_leave": "¿Salir de esta conversación?",
+  "confirm_leave_desc": "Dejarás de recibir mensajes y no podrás volver sin una nueva invitación."
 }

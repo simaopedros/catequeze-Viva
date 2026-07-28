@@ -29,11 +29,13 @@ import {
 } from "wasp/client/operations";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { toast } from "../../client/hooks/use-toast";
+import { useConfirm } from "../../client/hooks/useConfirm";
 
 export default function JourneyTemplatesPage() {
   const { t } = useTranslation("sacraments");
   const { t: tc } = useTranslation("common");
   const { userRole } = useUserContext();
+  const { confirm, confirmDialog } = useConfirm();
   const isCoordinator = [
     "SUPER_ADMIN",
     "DIOCESE_ADMIN",
@@ -121,7 +123,12 @@ export default function JourneyTemplatesPage() {
   };
 
   const handleDeleteMilestone = async (milestoneId: string) => {
-    if (!confirm(t("templates.confirm_remove_milestone"))) return;
+    const ok = await confirm({
+      title: t("templates.confirm_remove_milestone"),
+      confirmLabel: tc("remove"),
+      variant: "destructive",
+    });
+    if (!ok) return;
     try {
       await deleteMilestoneTemplate({ id: milestoneId });
       toast({ title: t("templates.milestone_removed") });
@@ -232,12 +239,14 @@ export default function JourneyTemplatesPage() {
           </div>
           <input
             placeholder={t("templates.name_placeholder")}
+            aria-label={t("templates.name_placeholder")}
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm"
           />
           <textarea
             placeholder={t("templates.description_placeholder")}
+            aria-label={t("templates.description_placeholder")}
             value={newDescription}
             onChange={(e) => setNewDescription(e.target.value)}
             className="flex w-full rounded-sm border border-input bg-background px-3 py-2 text-sm min-h-[60px]"
@@ -445,6 +454,7 @@ export default function JourneyTemplatesPage() {
                                     }
                                     className="flex h-7 w-full rounded-sm border border-input bg-background px-2 text-xs"
                                     placeholder={t("templates.milestone_name")}
+                                    aria-label={t("templates.milestone_name")}
                                   />
                                   <textarea
                                     value={milestoneEdit.description}
@@ -457,6 +467,7 @@ export default function JourneyTemplatesPage() {
                                     className="flex w-full rounded-sm border border-input bg-background px-2 py-1 text-xs min-h-[32px]"
                                     rows={1}
                                     placeholder={t("templates.description")}
+                                    aria-label={t("templates.description")}
                                   />
                                   <div className="flex items-center gap-3 text-xs flex-wrap">
                                     <label className="flex items-center gap-1">
@@ -615,6 +626,7 @@ export default function JourneyTemplatesPage() {
           })}
         </div>
       )}
+      {confirmDialog}
     </div>
   );
 }

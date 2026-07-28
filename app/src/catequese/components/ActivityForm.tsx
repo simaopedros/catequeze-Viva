@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../client/components/ui/button";
 import { Input } from "../../client/components/ui/input";
@@ -108,6 +108,10 @@ export function ActivityForm({
   const { t } = useTranslation("activities");
   const { t: tc } = useTranslation("common");
   const activityTypes = useActivityTypes();
+  const typeId = useId();
+  const titleId = useId();
+  const descId = useId();
+  const pointsId = useId();
   const [type, setType] = useState<ActivityType>(initialType);
   const [title, setTitle] = useState(initialTitle);
   const [desc, setDesc] = useState(initialDescription);
@@ -272,6 +276,7 @@ export function ActivityForm({
                   </span>
                   <Input
                     placeholder={t("form.question_text")}
+                    aria-label={t("form.question_text")}
                     value={q.question}
                     onChange={(e) =>
                       setQuizQuestions((prev) =>
@@ -327,6 +332,9 @@ export function ActivityForm({
                         placeholder={t("form.option", {
                           letter: ["A", "B", "C", "D"][oi],
                         })}
+                        aria-label={t("form.option", {
+                          letter: ["A", "B", "C", "D"][oi],
+                        })}
                         value={opt}
                         onChange={(e) =>
                           setQuizQuestions((prev) =>
@@ -349,6 +357,7 @@ export function ActivityForm({
                 </div>
                 <Input
                   placeholder={t("form.explanation")}
+                  aria-label={t("form.explanation")}
                   value={q.explanation}
                   onChange={(e) =>
                     setQuizQuestions((prev) =>
@@ -372,6 +381,7 @@ export function ActivityForm({
           <div>
             <Textarea
               placeholder={t("form.open_question_placeholder")}
+              aria-label={t("form.open_question_placeholder")}
               value={openQuestionText}
               onChange={(e) => setOpenQuestionText(e.target.value)}
               className="min-h-[100px]"
@@ -401,6 +411,7 @@ export function ActivityForm({
                 </span>
                 <Input
                   placeholder={t("form.checklist_item")}
+                  aria-label={t("form.checklist_item")}
                   value={item.text}
                   onChange={(e) =>
                     setChecklistItems((prev) =>
@@ -434,6 +445,7 @@ export function ActivityForm({
           <div className="space-y-3">
             <Textarea
               placeholder={t("form.reflection_guide")}
+              aria-label={t("form.reflection_guide")}
               value={reflectionGuide}
               onChange={(e) => setReflectionGuide(e.target.value)}
               className="min-h-[100px]"
@@ -458,6 +470,7 @@ export function ActivityForm({
                 </span>
                 <Input
                   placeholder={t("form.reflection_question")}
+                  aria-label={t("form.reflection_question")}
                   value={p.question}
                   onChange={(e) =>
                     setReflectionPrompts((prev) =>
@@ -524,6 +537,7 @@ export function ActivityForm({
                 </div>
                 <Input
                   placeholder={t("form.step_instruction")}
+                  aria-label={t("form.step_instruction")}
                   value={step.instruction}
                   onChange={(e) =>
                     setDynamicSteps((prev) =>
@@ -538,6 +552,7 @@ export function ActivityForm({
                 <div className="flex gap-2">
                   <Input
                     placeholder={t("form.duration_min")}
+                    aria-label={t("form.duration_min")}
                     type="number"
                     value={step.duration || ""}
                     onChange={(e) =>
@@ -553,6 +568,7 @@ export function ActivityForm({
                   />
                   <Input
                     placeholder={t("form.materials")}
+                    aria-label={t("form.materials")}
                     value={step.materials || ""}
                     onChange={(e) =>
                       setDynamicSteps((prev) =>
@@ -576,6 +592,7 @@ export function ActivityForm({
         return (
           <Textarea
             placeholder={t("form.family_placeholder")}
+            aria-label={t("form.family_placeholder")}
             value={familyTaskText}
             onChange={(e) => setFamilyTaskText(e.target.value)}
             className="min-h-[120px]"
@@ -588,6 +605,7 @@ export function ActivityForm({
           <div className="space-y-3">
             <Input
               placeholder={t("form.bible_ref_placeholder")}
+              aria-label={t("form.bible_ref_placeholder")}
               value={bibleRef}
               onChange={(e) => setBibleRef(e.target.value)}
             />
@@ -609,6 +627,7 @@ export function ActivityForm({
                 </span>
                 <Input
                   placeholder={t("form.reading_question")}
+                  aria-label={t("form.reading_question")}
                   value={q.question}
                   onChange={(e) =>
                     setBibleQuestions((prev) =>
@@ -658,6 +677,7 @@ export function ActivityForm({
                 </span>
                 <Input
                   placeholder={t("form.left")}
+                  aria-label={t("form.left")}
                   value={pair.left}
                   onChange={(e) =>
                     setMatchingPairs((prev) =>
@@ -671,6 +691,7 @@ export function ActivityForm({
                 <span className="text-muted-foreground">↔</span>
                 <Input
                   placeholder={t("form.right")}
+                  aria-label={t("form.right")}
                   value={pair.right}
                   onChange={(e) =>
                     setMatchingPairs((prev) =>
@@ -724,6 +745,7 @@ export function ActivityForm({
         return (
           <Textarea
             placeholder={t("form.rite_placeholder")}
+            aria-label={t("form.rite_placeholder")}
             value={riteText}
             onChange={(e) => setRiteText(e.target.value)}
             className="min-h-[150px]"
@@ -746,8 +768,11 @@ export function ActivityForm({
       </div>
 
       <div>
-        <label className="text-xs font-medium">{t("form.type")}</label>
+        <label htmlFor={typeId} className="text-xs font-medium">
+          {t("form.type")}
+        </label>
         <select
+          id={typeId}
           value={type}
           onChange={(e) => setType(e.target.value as ActivityType)}
           className="flex h-9 w-full rounded-sm border border-input bg-background px-3 py-1 text-sm mt-1"
@@ -761,8 +786,11 @@ export function ActivityForm({
       </div>
 
       <div>
-        <label className="text-xs font-medium">{t("form.title")}</label>
+        <label htmlFor={titleId} className="text-xs font-medium">
+          {t("form.title")}
+        </label>
         <Input
+          id={titleId}
           placeholder={t("form.title_placeholder")}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -770,8 +798,11 @@ export function ActivityForm({
       </div>
 
       <div>
-        <label className="text-xs font-medium">{t("form.description")}</label>
+        <label htmlFor={descId} className="text-xs font-medium">
+          {t("form.description")}
+        </label>
         <Textarea
+          id={descId}
           placeholder={t("form.description_placeholder")}
           value={desc}
           onChange={(e) => setDesc(e.target.value)}
@@ -780,8 +811,11 @@ export function ActivityForm({
       </div>
 
       <div>
-        <label className="text-xs font-medium">{t("form.points")}</label>
+        <label htmlFor={pointsId} className="text-xs font-medium">
+          {t("form.points")}
+        </label>
         <Input
+          id={pointsId}
           type="number"
           value={points}
           onChange={(e) => setPoints(Number(e.target.value))}

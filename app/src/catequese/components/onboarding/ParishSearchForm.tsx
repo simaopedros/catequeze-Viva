@@ -54,6 +54,7 @@ export function ParishSearchForm({
           onChange={(e) => setSearchQuery(e.target.value)}
           className="flex h-10 w-full rounded-sm border border-input bg-background pl-9 pr-3 text-sm"
           placeholder={t("parish_search.search_placeholder")}
+          aria-label={t("parish_search.search_placeholder")}
         />
       </div>
       {loadingList ? (

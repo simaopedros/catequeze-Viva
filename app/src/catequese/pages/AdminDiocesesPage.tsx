@@ -101,6 +101,7 @@ export default function AdminDiocesesPage({ user }: { user: AuthUser }) {
                 onChange={(e) => setName(e.target.value)}
                 className="h-9 flex-1"
                 placeholder={t("name_placeholder")}
+                aria-label={t("name_placeholder")}
               />
               <select
                 value={country}

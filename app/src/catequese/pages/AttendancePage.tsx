@@ -509,6 +509,7 @@ export default function AttendancePage() {
           <div className="flex flex-col gap-3 rounded-sm border border-border/70 bg-white p-4 sm:flex-row">
             <input
               placeholder={t("matrix.title_placeholder")}
+              aria-label={t("matrix.title_placeholder")}
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               className="flex h-10 flex-1 rounded-sm border border-input bg-background px-3 py-1 text-sm"
@@ -576,6 +577,7 @@ export default function AttendancePage() {
             <input
               type="text"
               placeholder={t("matrix.filter_students") || "Filtrar alunos..."}
+              aria-label={t("matrix.filter_students") || "Filtrar alunos..."}
               value={studentFilter}
               onChange={(e) => setStudentFilter(e.target.value)}
               className="flex h-8 w-full sm:w-64 rounded-sm border border-input bg-background px-3 py-1 text-xs"

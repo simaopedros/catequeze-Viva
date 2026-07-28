@@ -964,7 +964,10 @@ export const calendar_es = {
     "view_month": "Mes",
     "prev_period": "Periodo anterior",
     "next_period": "Periodo siguiente",
-    "create_primary": "Nuevo evento"
+    "create_primary": "Nuevo evento",
+    "confirm_delete_event": "¿Eliminar este evento?",
+    "confirm_delete_event_desc": "Esta acción no se puede deshacer.",
+    "delete_error": "Error al eliminar el evento"
   } as const;
 
 export const catecheticalYears_es = {
@@ -3432,7 +3435,9 @@ export const messages_es = {
     "online_again": "Conexión restablecida",
     "load_error_title": "No se pudo cargar la conversación",
     "back_to_list": "Volver a conversaciones",
-    "network_error": "Error de red"
+    "network_error": "Error de red",
+    "confirm_leave": "¿Salir de esta conversación?",
+    "confirm_leave_desc": "Dejarás de recibir mensajes y no podrás volver sin una nueva invitación."
   } as const;
 
 export const navigation_es = {
@@ -3511,7 +3516,8 @@ export const navigation_es = {
       "document": "Documentos",
       "parish": "Parroquias",
       "community": "Comunidades"
-    }
+    },
+    "sidebarSection": "Navegación lateral"
   } as const;
 
 export const onboarding_es = {

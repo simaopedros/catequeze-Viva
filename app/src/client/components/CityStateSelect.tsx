@@ -64,6 +64,7 @@ export default function CityStateSelect({
           onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
           className={inputClass}
           placeholder={t("city_placeholder")}
+          aria-label={t("city_placeholder")}
           disabled={disabled}
         />
         {showDropdown && cities.length > 0 && (

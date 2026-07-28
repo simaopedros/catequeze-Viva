@@ -38,6 +38,7 @@ export function GuardianDetails({ onComplete }: GuardianDetailsProps) {
             onChange={(e) => setHouseholdName(e.target.value)}
             className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1"
             placeholder={t("guardian.household_placeholder")}
+            aria-label={t("guardian.household_name")}
           />
         </div>
         <div>

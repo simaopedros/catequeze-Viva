@@ -1,11 +1,13 @@
 import { useCallback } from "react";
 
-interface PhoneMaskInputProps {
+interface PhoneMaskInputProps
+  extends Omit<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    "value" | "onChange" | "type" | "maxLength"
+  > {
   value: string;
+  /** Receives the masked value, not the raw digits. */
   onChange: (value: string) => void;
-  placeholder?: string;
-  disabled?: boolean;
-  className?: string;
 }
 
 /**
@@ -20,6 +22,7 @@ export default function PhoneMaskInput({
   placeholder = "(00) 00000-0000",
   disabled = false,
   className,
+  ...props
 }: PhoneMaskInputProps) {
   const formatPhone = useCallback((raw: string): string => {
     const digits = raw.replace(/\D/g, "");
@@ -54,6 +57,7 @@ export default function PhoneMaskInput({
       placeholder={placeholder}
       className={className}
       maxLength={15}
+      {...props}
     />
   );
 }

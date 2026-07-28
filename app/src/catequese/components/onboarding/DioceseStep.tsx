@@ -175,6 +175,7 @@ export function DioceseStep({
             onChange={(e) => setSearchQuery(e.target.value)}
             className="h-11 rounded-sm pl-9 pr-10"
             placeholder={t("diocese.search_placeholder")}
+            aria-label={t("diocese.search_placeholder")}
           />
           {searchQuery && (
             <button
@@ -317,6 +318,7 @@ export function DioceseStep({
             onChange={(e) => setNewName(e.target.value)}
             className="h-11 rounded-sm"
             placeholder={t("diocese.new_name_placeholder")}
+            aria-label={t("diocese.new_name_label")}
           />
           {duplicateDiocese && (
             <div className="border border-border/70 px-3 py-2 text-xs text-muted-foreground rounded-sm">

@@ -88,6 +88,7 @@ export function DocumentUploadModal({
           </label>
           <input
             placeholder={t("documents.name_placeholder")}
+            aria-label={t("documents.name")}
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="mt-1 flex h-9 w-full rounded-sm border border-input bg-background px-3 py-1 text-sm"
@@ -100,6 +101,7 @@ export function DocumentUploadModal({
             {t("documents.doc_type_label")}
           </label>
           <select
+            aria-label={t("documents.doc_type_label")}
             value={type}
             onChange={(e) => setType(e.target.value)}
             className="mt-1 flex h-9 w-full rounded-sm border border-input bg-background px-3 py-1 text-sm"
@@ -117,6 +119,7 @@ export function DocumentUploadModal({
             {t("documents.doc_file_label")}
           </label>
           <input
+            aria-label={t("documents.doc_file_label")}
             type="file"
             accept=".jpg,.jpeg,.png,.webp,.pdf"
             onChange={(e) => setFile(e.target.files?.[0] || null)}

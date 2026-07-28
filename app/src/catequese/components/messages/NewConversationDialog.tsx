@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  X,
   Search,
   Users,
   MessageSquareText,
@@ -10,9 +9,12 @@ import {
 } from "lucide-react";
 import { cn } from "../../../client/utils";
 import {
-  AppDisplayTitle,
-  AppGoldRule,
-} from "../../../client/components/brand/AppChrome";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "../../../client/components/ui/dialog";
+import { AppGoldRule } from "../../../client/components/brand/AppChrome";
 import {
   getContactsForConversation,
   createConversation,
@@ -68,6 +70,7 @@ export function NewConversationDialog({
 }: NewConversationDialogProps) {
   const { t } = useTranslation("messages");
   const { t: tp } = useTranslation("public");
+  const { t: tc } = useTranslation("common");
   const { userRole } = useUserContext();
   const { workspaceId, isPersonal } = useActiveWorkspace();
   const isRestricted =
@@ -168,29 +171,17 @@ export function NewConversationDialog({
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-
-      <div className="relative mx-4 w-full max-w-md overflow-hidden rounded-sm border border-border/70 bg-white">
-        <div className="flex items-start justify-between gap-3 border-b border-border/70 p-4">
-          <div className="min-w-0 space-y-1.5">
-            <AppDisplayTitle as="h3" className="text-base sm:text-base">
-              {step === "type"
-                ? t("new_dialog.title_type")
-                : t("new_dialog.title_contacts")}
-            </AppDisplayTitle>
-            <AppGoldRule className="w-8" />
-          </div>
-          <button
-            onClick={onClose}
-            className="flex h-7 w-7 items-center justify-center rounded-sm transition-colors hover:bg-muted"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="gap-0 p-0 sm:max-w-md sm:p-0">
+        <DialogHeader className="space-y-1.5 border-b border-border/70 p-4 pr-14">
+          <DialogTitle className="text-base">
+            {step === "type"
+              ? t("new_dialog.title_type")
+              : t("new_dialog.title_contacts")}
+          </DialogTitle>
+          <AppGoldRule className="w-8" />
+        </DialogHeader>
 
         {step === "type" && (
           <div className="p-4 space-y-2">
@@ -236,6 +227,7 @@ export function NewConversationDialog({
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder={t("new_dialog.group_name_placeholder")}
+                  aria-label={t("new_dialog.group_name_placeholder")}
                   maxLength={200}
                   className="h-9 w-full rounded-sm border border-input bg-background px-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
                 />
@@ -244,9 +236,11 @@ export function NewConversationDialog({
               <div className="relative">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <input
+                  type="search"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder={t("new_dialog.search_contacts")}
+                  aria-label={t("new_dialog.search_contacts")}
                   className="h-9 w-full rounded-sm border border-input bg-background pl-8 pr-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
                 />
               </div>
@@ -263,7 +257,11 @@ export function NewConversationDialog({
                       >
                         {contactLabel(c) || c.firstName}
                         <button
+                          type="button"
                           onClick={() => toggleContact(id)}
+                          aria-label={`${tc("remove")}: ${
+                            contactLabel(c) || c.firstName
+                          }`}
                           className="hover:text-destructive"
                         >
                           ✕
@@ -310,9 +308,7 @@ export function NewConversationDialog({
                           {name}
                         </p>
                         <p className="text-overline text-muted-foreground truncate">
-                          {c.role
-                            ? roleLabel(c.role)
-                            : c.maskedEmail || null}
+                          {c.role ? roleLabel(c.role) : c.maskedEmail || null}
                         </p>
                       </div>
                       <div
@@ -361,7 +357,7 @@ export function NewConversationDialog({
             </div>
           </>
         )}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

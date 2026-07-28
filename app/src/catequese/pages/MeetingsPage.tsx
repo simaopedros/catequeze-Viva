@@ -236,6 +236,7 @@ export default function MeetingsPage() {
             <div className="min-w-0 flex-1 space-y-1.5">
               <Input
                 placeholder={t("search_content")}
+                aria-label={t("search_content")}
                 value={contentSearch}
                 onChange={(e) => setContentSearch(e.target.value)}
                 className="h-11 min-h-11"
@@ -456,9 +457,7 @@ export default function MeetingsPage() {
             onClick={loadMore}
             disabled={isFetching}
           >
-            {isFetching && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            )}
+            {isFetching && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {tc("load_more", { defaultValue: "Carregar mais" })}
           </Button>
         </div>

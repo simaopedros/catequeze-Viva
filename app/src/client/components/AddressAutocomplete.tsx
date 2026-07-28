@@ -87,6 +87,7 @@ export default function AddressAutocomplete({
             onChange={handleCepChange}
             disabled={disabled}
             placeholder={t("cep_placeholder")}
+            aria-label={t("cep_placeholder")}
             className={inputClass + " w-40"}
             maxLength={9}
           />
@@ -116,6 +117,7 @@ export default function AddressAutocomplete({
             onChange={(e) => update("street", e.target.value)}
             className={inputClass + " mt-1"}
             placeholder={t("street_placeholder")}
+            aria-label={t("street_label")}
             disabled={disabled}
           />
         </div>
@@ -128,6 +130,7 @@ export default function AddressAutocomplete({
             onChange={(e) => update("number", e.target.value)}
             className={inputClass + " mt-1"}
             placeholder={t("number_placeholder")}
+            aria-label={t("number_label")}
             disabled={disabled}
           />
         </div>
@@ -144,6 +147,7 @@ export default function AddressAutocomplete({
             onChange={(e) => update("neighborhood", e.target.value)}
             className={inputClass + " mt-1"}
             placeholder={t("neighborhood_placeholder")}
+            aria-label={t("neighborhood_label")}
             disabled={disabled}
           />
         </div>
@@ -156,6 +160,7 @@ export default function AddressAutocomplete({
             onChange={(e) => update("complement", e.target.value)}
             className={inputClass + " mt-1"}
             placeholder={t("complement_placeholder")}
+            aria-label={t("complement_label")}
             disabled={disabled}
           />
         </div>

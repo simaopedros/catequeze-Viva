@@ -64,6 +64,7 @@ export function CatechistDetails({
           onChange={(e) => setClassName(e.target.value)}
           className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1"
           placeholder={t("coordinator.class_name_placeholder")}
+          aria-label={t("coordinator.class_name")}
           disabled={skipClass}
         />
       </div>
@@ -75,6 +76,7 @@ export function CatechistDetails({
               {t("coordinator.day_of_week")}
             </label>
             <select
+              aria-label={t("coordinator.day_of_week")}
               value={dayOfWeek}
               onChange={(e) => setDayOfWeek(e.target.value)}
               className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1"
@@ -91,6 +93,7 @@ export function CatechistDetails({
               {t("coordinator.start_time")}
             </label>
             <input
+              aria-label={t("coordinator.start_time")}
               type="time"
               value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
@@ -102,6 +105,7 @@ export function CatechistDetails({
               {t("coordinator.end_time")}
             </label>
             <input
+              aria-label={t("coordinator.end_time")}
               type="time"
               value={endTime}
               onChange={(e) => setEndTime(e.target.value)}
@@ -121,6 +125,7 @@ export function CatechistDetails({
             onChange={(e) => setLocation(e.target.value)}
             className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1"
             placeholder={parishName}
+            aria-label={t("coordinator.location")}
           />
         </div>
       )}

@@ -130,6 +130,7 @@ export function SearchSheet({
                 handleKeyDown(e);
               }}
               placeholder={t("searchPlaceholder")}
+              aria-label={t("searchPlaceholder")}
               className="flex-1 bg-transparent border-none outline-none text-sm placeholder:text-text-tertiary"
             />
             {isLoading && (

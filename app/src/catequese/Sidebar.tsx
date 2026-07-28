@@ -196,10 +196,7 @@ function NavGroupBlock({
         <div
           className={cn(
             "space-y-0.5 overflow-hidden transition-all duration-200 motion-reduce:transition-none",
-            group.collapsible &&
-              !collapsed &&
-              !expanded &&
-              "max-h-0 opacity-0",
+            group.collapsible && !collapsed && !expanded && "max-h-0 opacity-0",
             group.collapsible &&
               !collapsed &&
               expanded &&
@@ -224,6 +221,7 @@ function NavGroupBlock({
 
 export function Sidebar() {
   const { t: tc } = useTranslation("common");
+  const { t: tn } = useTranslation("navigation");
   const [collapsed, setCollapsed] = useState(false);
   // Secondary groups start collapsed to reduce cognitive load; operation stays open.
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
@@ -276,15 +274,16 @@ export function Sidebar() {
         {collapsed && <BrandMark className="mx-auto h-8 w-8" />}
       </div>
 
-      <nav className="no-scrollbar flex-1 overflow-y-auto py-3">
+      <nav
+        className="no-scrollbar flex-1 overflow-y-auto py-3"
+        aria-label={tn("sidebarSection")}
+      >
         {groups.map((group) => (
           <NavGroupBlock
             key={group.id}
             group={group}
             collapsed={collapsed}
-            expanded={
-              !group.collapsible || expandedSections.has(group.id)
-            }
+            expanded={!group.collapsible || expandedSections.has(group.id)}
             onToggle={() => toggleSection(group.id)}
             unreadMessagesCount={unreadMessagesCount}
           />

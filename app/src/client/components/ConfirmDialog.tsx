@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Dialog,
@@ -38,6 +38,7 @@ export function ConfirmDialog({
   confirmPhrase,
 }: ConfirmDialogProps) {
   const { t } = useTranslation("common");
+  const phraseId = useId();
   const [typed, setTyped] = useState("");
 
   useEffect(() => {
@@ -56,10 +57,14 @@ export function ConfirmDialog({
         </DialogHeader>
         {phraseRequired && (
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-muted-foreground">
+            <label
+              htmlFor={phraseId}
+              className="text-xs font-medium text-muted-foreground"
+            >
               {t("confirm_phrase_hint", { phrase: confirmPhrase })}
             </label>
             <Input
+              id={phraseId}
               value={typed}
               onChange={(e) => setTyped(e.target.value)}
               placeholder={confirmPhrase}

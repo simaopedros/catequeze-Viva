@@ -53,6 +53,7 @@ export function ContentSourcePicker({
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder={t("hub.search_content_placeholder")}
+            aria-label={t("hub.search_content_placeholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="h-10 rounded-sm pl-10"

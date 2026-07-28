@@ -69,6 +69,7 @@ export function ContentSelector({
             <Search className="h-3.5 w-3.5 text-muted-foreground mr-2" />
             <input
               placeholder={t("search") || "Buscar..."}
+              aria-label={t("search") || "Buscar..."}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="flex-1 bg-transparent text-sm outline-none"
@@ -110,9 +111,7 @@ export function ContentSelector({
                 >
                   <span
                     className={
-                      c.id === selectedId
-                        ? "tracking-tight"
-                        : undefined
+                      c.id === selectedId ? "tracking-tight" : undefined
                     }
                     style={
                       c.id === selectedId

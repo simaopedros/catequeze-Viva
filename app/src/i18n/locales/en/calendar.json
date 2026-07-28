@@ -55,5 +55,8 @@
   "view_month": "Month",
   "prev_period": "Previous period",
   "next_period": "Next period",
-  "create_primary": "New event"
+  "create_primary": "New event",
+  "confirm_delete_event": "Delete this event?",
+  "confirm_delete_event_desc": "This action cannot be undone.",
+  "delete_error": "Could not delete the event"
 }

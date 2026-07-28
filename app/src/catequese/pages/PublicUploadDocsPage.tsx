@@ -179,6 +179,7 @@ export default function PublicUploadDocsPage() {
               {t("upload_docs.doc_type")}
             </label>
             <select
+              aria-label={t("upload_docs.doc_type")}
               value={docType}
               onChange={(e) => setDocType(e.target.value)}
               className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1"
@@ -196,6 +197,7 @@ export default function PublicUploadDocsPage() {
               {t("upload_docs.file")}
             </label>
             <input
+              aria-label={t("upload_docs.file")}
               type="file"
               accept="image/*,.jpg,.jpeg,.png,.pdf,application/pdf"
               capture="environment"

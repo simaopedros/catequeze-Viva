@@ -41,6 +41,8 @@ import {
   SheetTitle,
 } from "../../client/components/ui/sheet";
 import { useUserContext } from "../../client/hooks/useUserContext";
+import { useConfirm } from "../../client/hooks/useConfirm";
+import { toast } from "../../client/hooks/use-toast";
 
 const DEFAULT_COLOR = "#071A2D"; // brand ink — charts/ICS only
 
@@ -51,6 +53,7 @@ export default function CalendarPage() {
   const { t: tc } = useTranslation("common");
   const navigate = useNavigate();
   const { userRole } = useUserContext();
+  const { confirm, confirmDialog } = useConfirm();
   const isFamily = FAMILY_ROLES.has(userRole);
   const months = useMemo(() => {
     const result = t("months", { returnObjects: true });
@@ -228,7 +231,22 @@ export default function CalendarPage() {
     setShowForm(false);
   };
   const handleDelete = async (id: string) => {
-    await deleteLiturgicalEvent({ id });
+    const ok = await confirm({
+      title: t("confirm_delete_event"),
+      description: t("confirm_delete_event_desc"),
+      confirmLabel: tc("delete"),
+      variant: "destructive",
+    });
+    if (!ok) return;
+    try {
+      await deleteLiturgicalEvent({ id });
+    } catch (e: any) {
+      toast({
+        title: t("delete_error"),
+        description: e?.message || tc("try_again"),
+        variant: "destructive",
+      });
+    }
   };
 
   const handleDayClick = (day: number) => {
@@ -513,6 +531,7 @@ export default function CalendarPage() {
           </div>
         </SheetContent>
       </Sheet>
+      {confirmDialog}
     </div>
   );
 }
@@ -825,7 +844,8 @@ function SidePanelContent({
                   role={e.type === "class" ? "button" : undefined}
                   tabIndex={e.type === "class" ? 0 : undefined}
                   onClick={() => {
-                    if (e.type === "class" && onOpenMeeting) onOpenMeeting(e.id);
+                    if (e.type === "class" && onOpenMeeting)
+                      onOpenMeeting(e.id);
                   }}
                   onKeyDown={(ev) => {
                     if (
@@ -1027,6 +1047,7 @@ function SidePanelContent({
           <div className="space-y-2.5">
             <Input
               placeholder={t("event_name")}
+              aria-label={t("event_name")}
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
@@ -1037,6 +1058,7 @@ function SidePanelContent({
             />
             <Input
               placeholder={t("description_optional")}
+              aria-label={t("description_optional")}
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
             />

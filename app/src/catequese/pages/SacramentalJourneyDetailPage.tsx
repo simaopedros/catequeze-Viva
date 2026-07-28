@@ -177,9 +177,7 @@ export default function SacramentalJourneyDetailPage() {
   }
 
   if (!journey) {
-    return (
-      <div className="p-6 text-destructive">{t("detail.not_found")}</div>
-    );
+    return <div className="p-6 text-destructive">{t("detail.not_found")}</div>;
   }
 
   const milestones = journey.milestones || [];
@@ -428,6 +426,7 @@ export default function SacramentalJourneyDetailPage() {
                               }
                               className="w-full text-xs rounded-sm border border-input bg-background px-2 py-1 min-h-[40px]"
                               placeholder={t("detail.add_notes")}
+                              aria-label={t("detail.add_notes")}
                               rows={2}
                             />
                             <div className="flex gap-1">

@@ -8,10 +8,7 @@ import {
 } from "wasp/client/operations";
 import { Button } from "../../client/components/ui/button";
 import { Input } from "../../client/components/ui/input";
-import {
-  AppEyebrow,
-  AppPanel,
-} from "../../client/components/brand/AppChrome";
+import { AppEyebrow, AppPanel } from "../../client/components/brand/AppChrome";
 import {
   Shield,
   ShieldCheck,
@@ -220,6 +217,9 @@ export default function TwoFactorSetup() {
               placeholder={
                 t("two_factor_code_placeholder") || "Código de 6 dígitos"
               }
+              aria-label={
+                t("two_factor_code_placeholder") || "Código de 6 dígitos"
+              }
               maxLength={6}
               className="font-mono text-center tracking-widest"
               disabled={actionLoading}
@@ -260,6 +260,9 @@ export default function TwoFactorSetup() {
                 setDisableToken(e.target.value.replace(/\D/g, "").slice(0, 6))
               }
               placeholder={
+                t("two_factor_code_placeholder") || "Código de 6 dígitos"
+              }
+              aria-label={
                 t("two_factor_code_placeholder") || "Código de 6 dígitos"
               }
               maxLength={6}

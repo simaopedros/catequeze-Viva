@@ -202,6 +202,7 @@ export function ConversationList({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t("search_conversations")}
+            aria-label={t("search_conversations")}
             className="h-11 min-h-11 w-full rounded-sm border border-input bg-background pl-8 pr-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
           />
         </div>
