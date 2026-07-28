@@ -4,7 +4,11 @@ import { useScrollReveal } from "../hooks/useScrollReveal";
 import { FeatureShowcase } from "./FeatureShowcase";
 
 /** Three core product demos for the main landing (with mockups). */
-const HOME_FEATURE_ORDER = ["attendance", "ai-planner", "family-portal"] as const;
+const HOME_FEATURE_ORDER = [
+  "attendance",
+  "ai-planner",
+  "family-portal",
+] as const;
 
 /**
  * Compact features block: real UI mockups + benefits for the three
@@ -17,7 +21,9 @@ export function SimpleFeaturesSection({ ns = "landing" }: { ns?: string }) {
 
   const title = (() => {
     const v = t("simple_features.title");
-    return typeof v === "string" && v !== "simple_features.title" ? v : tLanding("simple_features.title");
+    return typeof v === "string" && v !== "simple_features.title"
+      ? v
+      : tLanding("simple_features.title");
   })();
   const subtitle = (() => {
     const v = t("simple_features.subtitle");
@@ -26,9 +32,9 @@ export function SimpleFeaturesSection({ ns = "landing" }: { ns?: string }) {
       : tLanding("simple_features.subtitle");
   })();
 
-  const showcases = HOME_FEATURE_ORDER.map((id) => SHOWCASES.find((s) => s.id === id)).filter(
-    Boolean
-  ) as typeof SHOWCASES;
+  const showcases = HOME_FEATURE_ORDER.map((id) =>
+    SHOWCASES.find((s) => s.id === id),
+  ).filter(Boolean) as typeof SHOWCASES;
 
   return (
     <section id="recursos" className="scroll-mt-20">
@@ -40,7 +46,9 @@ export function SimpleFeaturesSection({ ns = "landing" }: { ns?: string }) {
           >
             {title}
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{subtitle}</p>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            {subtitle}
+          </p>
         </div>
       </div>
 

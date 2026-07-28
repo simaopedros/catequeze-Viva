@@ -1,7 +1,18 @@
-import { LayoutDashboard, Sheet, X, Building2, Church, BarChart3, Bell, ShieldCheck, Settings, Activity } from "lucide-react";
+import {
+  LayoutDashboard,
+  Sheet,
+  X,
+  Building2,
+  Church,
+  BarChart3,
+  Bell,
+  ShieldCheck,
+  Settings,
+  Activity,
+} from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import Logo from "../../client/static/logo.webp";
 import { cn } from "../../client/utils";
 
@@ -13,7 +24,7 @@ interface SidebarProps {
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const location = useLocation();
   const { pathname } = location;
-  const { t } = useTranslation('admin');
+  const { t } = useTranslation("admin");
 
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
@@ -26,7 +37,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
       if (!sidebar.current || !trigger.current) return;
-      if (!sidebarOpen || sidebar.current.contains(target) || trigger.current.contains(target)) return;
+      if (
+        !sidebarOpen ||
+        sidebar.current.contains(target) ||
+        trigger.current.contains(target)
+      )
+        return;
       setSidebarOpen(false);
     };
     document.addEventListener("click", clickHandler);
@@ -54,7 +70,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     cn(
       "group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-muted-foreground transition-colors duration-200 hover:bg-muted/50 hover:text-[#071A2D]",
-      { "bg-[#071A2D]/08 font-semibold text-[#071A2D]": isActive }
+      { "bg-[#071A2D]/08 font-semibold text-[#071A2D]": isActive },
     );
 
   return (
@@ -69,26 +85,35 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         <NavLink to="/">
           <img src={Logo} alt="Logo" width={50} />
         </NavLink>
-        <button ref={trigger} onClick={() => setSidebarOpen(!sidebarOpen)} aria-controls="sidebar" aria-expanded={sidebarOpen} className="block lg:hidden">
+        <button
+          ref={trigger}
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          aria-controls="sidebar"
+          aria-expanded={sidebarOpen}
+          className="block lg:hidden"
+        >
           <X />
         </button>
       </div>
 
       <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
         <nav className="mt-5 px-4 py-4 lg:mt-9 lg:px-6">
-
           {/* VISÃO GERAL */}
           <div>
-            <h3 className="mb-4 ml-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{t('sidebar.overview')}</h3>
+            <h3 className="mb-4 ml-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              {t("sidebar.overview")}
+            </h3>
             <ul className="mb-6 flex flex-col gap-1.5">
               <li>
                 <NavLink to="/admin" end className={navLinkClass}>
-                  <LayoutDashboard />{t('sidebar.dashboard')}
+                  <LayoutDashboard />
+                  {t("sidebar.dashboard")}
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/admin/analytics" end className={navLinkClass}>
-                  <BarChart3 />{t('sidebar.analytics')}
+                  <BarChart3 />
+                  {t("sidebar.analytics")}
                 </NavLink>
               </li>
             </ul>
@@ -96,26 +121,32 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
           {/* GOVERNANÇA */}
           <div>
-            <h3 className="mb-4 ml-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{t('sidebar.governance')}</h3>
+            <h3 className="mb-4 ml-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              {t("sidebar.governance")}
+            </h3>
             <ul className="mb-6 flex flex-col gap-1.5">
               <li>
                 <NavLink to="/admin/parishes" end className={navLinkClass}>
-                  <Church />{t('sidebar.parishes')}
+                  <Church />
+                  {t("sidebar.parishes")}
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/admin/users" end className={navLinkClass}>
-                  <Sheet />{t('sidebar.users')}
+                  <Sheet />
+                  {t("sidebar.users")}
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/admin/dioceses" end className={navLinkClass}>
-                  <Building2 />{t('sidebar.dioceses')}
+                  <Building2 />
+                  {t("sidebar.dioceses")}
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/admin/billing" end className={navLinkClass}>
-                  <Activity />{t('sidebar.licenses')}
+                  <Activity />
+                  {t("sidebar.licenses")}
                 </NavLink>
               </li>
             </ul>
@@ -123,21 +154,26 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
           {/* OPERAÇÕES */}
           <div>
-            <h3 className="mb-4 ml-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{t('sidebar.operations')}</h3>
+            <h3 className="mb-4 ml-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              {t("sidebar.operations")}
+            </h3>
             <ul className="mb-6 flex flex-col gap-1.5">
               <li>
                 <NavLink to="/admin/support" end className={navLinkClass}>
-                  <Bell />{t('sidebar.support')}
+                  <Bell />
+                  {t("sidebar.support")}
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/admin/audit" end className={navLinkClass}>
-                  <ShieldCheck />{t('sidebar.audit')}
+                  <ShieldCheck />
+                  {t("sidebar.audit")}
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/admin/system" end className={navLinkClass}>
-                  <Settings />{t('sidebar.system')}
+                  <Settings />
+                  {t("sidebar.system")}
                 </NavLink>
               </li>
             </ul>
@@ -145,11 +181,14 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
           {/* OUTROS */}
           <div>
-            <h3 className="mb-4 ml-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{t('sidebar.other')}</h3>
+            <h3 className="mb-4 ml-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              {t("sidebar.other")}
+            </h3>
             <ul className="mb-6 flex flex-col gap-1.5">
               <li>
                 <NavLink to="/app" end className={navLinkClass}>
-                  <LayoutDashboard />{t('sidebar.back_to_app')}
+                  <LayoutDashboard />
+                  {t("sidebar.back_to_app")}
                 </NavLink>
               </li>
             </ul>

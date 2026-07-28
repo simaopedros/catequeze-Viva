@@ -47,7 +47,12 @@ export function ParishMembersTab({ members, onRemove }: ParishMembersTabProps) {
             {t("team.subtitle", { members: members.length, pending: 0 })}
           </p>
         </div>
-        <Button size="sm" variant="outline" className="h-9 rounded-sm shrink-0" asChild>
+        <Button
+          size="sm"
+          variant="outline"
+          className="h-9 rounded-sm shrink-0"
+          asChild
+        >
           <Link to="/app/team">
             <UserPlus className="mr-1 h-3.5 w-3.5" />
             {t("team.title")}
@@ -62,7 +67,12 @@ export function ParishMembersTab({ members, onRemove }: ParishMembersTabProps) {
             {tf("portal_invites.banner_desc")}
           </p>
         </div>
-        <Button size="sm" variant="outline" className="h-9 rounded-sm shrink-0" asChild>
+        <Button
+          size="sm"
+          variant="outline"
+          className="h-9 rounded-sm shrink-0"
+          asChild
+        >
           <Link to="/app/family-invites">
             <Mail className="mr-1 h-3.5 w-3.5" />
             {tf("portal_invites.banner_cta")}

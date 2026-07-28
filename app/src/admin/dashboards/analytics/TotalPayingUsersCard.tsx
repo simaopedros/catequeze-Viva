@@ -23,8 +23,10 @@ const TotalPayingUsersCard = ({ dailyStats, isLoading }: DailyStatsProps) => {
 
       <CardContent className="flex justify-between">
         <div>
-          <h4 className="text-title-md font-semibold tracking-tight tabular-nums text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}>
+          <h4
+            className="text-title-md font-semibold tracking-tight tabular-nums text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
             {dailyStats?.paidUserCount}
           </h4>
           <span className="text-sm font-medium text-muted-foreground">
@@ -40,7 +42,7 @@ const TotalPayingUsersCard = ({ dailyStats, isLoading }: DailyStatsProps) => {
             "text-muted-foreground": isLoading || !dailyStats?.paidUserDelta,
           })}
         >
-          {isLoading ? "..." : (dailyStats?.paidUserDelta ?? "-")}
+          {isLoading ? "..." : dailyStats?.paidUserDelta ?? "-"}
           {!isLoading &&
             (dailyStats?.paidUserDelta ?? 0) !== 0 &&
             (isDeltaPositive ? <ArrowUp /> : <ArrowDown />)}

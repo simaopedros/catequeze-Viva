@@ -304,10 +304,7 @@ export default function ParishDetailPage() {
         )}
 
         {tab === "members" && (
-          <ParishMembersTab
-            members={members}
-            onRemove={handleRemoveMember}
-          />
+          <ParishMembersTab members={members} onRemove={handleRemoveMember} />
         )}
       </div>
 

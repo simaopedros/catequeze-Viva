@@ -7,11 +7,11 @@ import {
   AppGoldRule,
   AppPageHeader,
 } from "../../../client/components/brand/AppChrome";
-import { ShieldCheck, FileText, Download } from 'lucide-react';
+import { ShieldCheck, FileText, Download } from "lucide-react";
 
 const AuditLogPage = ({ user }: { user: AuthUser }) => {
   const [page, setPage] = useState(0);
-  const [actionFilter, setActionFilter] = useState<string>('');
+  const [actionFilter, setActionFilter] = useState<string>("");
   const pageSize = 50;
 
   const { data, isLoading } = useQuery(getAuditLogs, {
@@ -36,7 +36,10 @@ const AuditLogPage = ({ user }: { user: AuthUser }) => {
           <select
             className="h-9 rounded-sm border border-input bg-background px-3 text-sm"
             value={actionFilter}
-            onChange={(e) => { setActionFilter(e.target.value); setPage(0); }}
+            onChange={(e) => {
+              setActionFilter(e.target.value);
+              setPage(0);
+            }}
           >
             <option value="">Todas as acções</option>
             <option value="CREATE">CREATE</option>
@@ -49,7 +52,9 @@ const AuditLogPage = ({ user }: { user: AuthUser }) => {
             <option value="REJECT">REJECT</option>
           </select>
           {data?.total != null && (
-            <span className="text-xs text-muted-foreground">{data.total} registo(s)</span>
+            <span className="text-xs text-muted-foreground">
+              {data.total} registo(s)
+            </span>
           )}
         </div>
 
@@ -57,7 +62,7 @@ const AuditLogPage = ({ user }: { user: AuthUser }) => {
           <div className="flex justify-center py-12">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
           </div>
-        ) : (!data?.logs || data.logs.length === 0) ? (
+        ) : !data?.logs || data.logs.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
             <ShieldCheck className="h-10 w-10 text-muted-foreground/40 mb-3" />
             <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
@@ -74,40 +79,65 @@ const AuditLogPage = ({ user }: { user: AuthUser }) => {
               <table className="w-full text-sm">
                 <thead className="bg-muted/50 border-b">
                   <tr>
-                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Data</th>
-                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Acção</th>
-                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Entidade</th>
-                    <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground md:table-cell">Operação</th>
-                    <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:table-cell">Utilizador</th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      Data
+                    </th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      Acção
+                    </th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      Entidade
+                    </th>
+                    <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground md:table-cell">
+                      Operação
+                    </th>
+                    <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:table-cell">
+                      Utilizador
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.logs.map((log: any) => {
-                    let operation = '';
-                    try { operation = JSON.parse(log.metadata || '{}').operation || ''; } catch {}
+                    let operation = "";
+                    try {
+                      operation =
+                        JSON.parse(log.metadata || "{}").operation || "";
+                    } catch {}
                     return (
-                      <tr key={log.id} className="border-b last:border-0 hover:bg-muted/30">
+                      <tr
+                        key={log.id}
+                        className="border-b last:border-0 hover:bg-muted/30"
+                      >
                         <td className="px-4 py-2.5 text-xs text-muted-foreground whitespace-nowrap">
-                          {new Date(log.createdAt).toLocaleString('pt-BR')}
+                          {new Date(log.createdAt).toLocaleString("pt-BR")}
                         </td>
                         <td className="px-4 py-2.5">
-                          <span className={`rounded-sm px-1.5 py-0.5 text-xs font-medium ${
- log.action === 'CREATE' ? 'bg-[#071A2D]/08 text-[#071A2D]' :
- log.action === 'UPDATE' ? 'bg-[#071A2D]/08 text-[#071A2D]' :
- log.action === 'DELETE' ? 'bg-destructive/10 text-destructive' :
- log.action === 'APPROVE' ? 'bg-[#071A2D]/08 text-[#071A2D]' :
- log.action === 'REJECT' ? 'bg-orange-100 text-orange-800' :
- 'bg-muted text-muted-foreground'
- }`}>
+                          <span
+                            className={`rounded-sm px-1.5 py-0.5 text-xs font-medium ${
+                              log.action === "CREATE"
+                                ? "bg-[#071A2D]/08 text-[#071A2D]"
+                                : log.action === "UPDATE"
+                                  ? "bg-[#071A2D]/08 text-[#071A2D]"
+                                  : log.action === "DELETE"
+                                    ? "bg-destructive/10 text-destructive"
+                                    : log.action === "APPROVE"
+                                      ? "bg-[#071A2D]/08 text-[#071A2D]"
+                                      : log.action === "REJECT"
+                                        ? "bg-orange-100 text-orange-800"
+                                        : "bg-muted text-muted-foreground"
+                            }`}
+                          >
                             {log.action}
                           </span>
                         </td>
-                        <td className="px-4 py-2.5 text-xs">{log.entityType}</td>
+                        <td className="px-4 py-2.5 text-xs">
+                          {log.entityType}
+                        </td>
                         <td className="px-4 py-2.5 text-xs text-muted-foreground hidden md:table-cell">
-                          {operation || '—'}
+                          {operation || "—"}
                         </td>
                         <td className="px-4 py-2.5 text-xs text-muted-foreground hidden lg:table-cell">
-                          {log.user?.email || '—'}
+                          {log.user?.email || "—"}
                         </td>
                       </tr>
                     );

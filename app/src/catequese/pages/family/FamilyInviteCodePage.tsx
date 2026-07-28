@@ -43,24 +43,24 @@ export default function FamilyInviteCodePage() {
 
         <form onSubmit={handleSubmit}>
           <AppPanel className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="invite-code">{t("landing.insert_code")}</Label>
-            <Input
-              id="invite-code"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              placeholder="abc123..."
-              autoFocus
-              required
-            />
-          </div>
-          <Button
-            type="submit"
-            className="h-10 w-full rounded-sm"
-            disabled={!code.trim()}
-          >
-            {t("invite.accept")}
-          </Button>
+            <div className="space-y-2">
+              <Label htmlFor="invite-code">{t("landing.insert_code")}</Label>
+              <Input
+                id="invite-code"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                placeholder="abc123..."
+                autoFocus
+                required
+              />
+            </div>
+            <Button
+              type="submit"
+              className="h-10 w-full rounded-sm"
+              disabled={!code.trim()}
+            >
+              {t("invite.accept")}
+            </Button>
           </AppPanel>
         </form>
       </div>

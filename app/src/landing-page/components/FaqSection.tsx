@@ -4,7 +4,13 @@ import { useLandingText } from "../hooks/useLandingText";
 import { Button } from "../../client/components/ui/button";
 import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
 
-export function FaqSection({ ns = "landing", showCta = true }: { ns?: string; showCta?: boolean }) {
+export function FaqSection({
+  ns = "landing",
+  showCta = true,
+}: {
+  ns?: string;
+  showCta?: boolean;
+}) {
   const tr = useLandingText(ns);
   const faqs = tr("faqs", { returnObjects: true }) as any[];
   const list = Array.isArray(faqs) ? faqs : [];
@@ -24,11 +30,18 @@ export function FaqSection({ ns = "landing", showCta = true }: { ns?: string; sh
               {tr("faq_title")}
             </h2>
             <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
-            <p className="text-muted-foreground leading-relaxed max-w-sm">{tr("faq_subtitle")}</p>
+            <p className="text-muted-foreground leading-relaxed max-w-sm">
+              {tr("faq_subtitle")}
+            </p>
 
             {showCta && (
               <div className="pt-4">
-                <Button size="lg" variant="default" asChild className="rounded-sm shadow-none">
+                <Button
+                  size="lg"
+                  variant="default"
+                  asChild
+                  className="rounded-sm shadow-none"
+                >
                   <Link
                     to="/signup"
                     onClick={() =>
@@ -43,7 +56,9 @@ export function FaqSection({ ns = "landing", showCta = true }: { ns?: string; sh
                     <ArrowRight className="h-4 w-4 shrink-0" />
                   </Link>
                 </Button>
-                <p className="mt-3 text-xs text-muted-foreground">{tr("faq_cta_helper")}</p>
+                <p className="mt-3 text-xs text-muted-foreground">
+                  {tr("faq_cta_helper")}
+                </p>
               </div>
             )}
           </div>
@@ -51,8 +66,13 @@ export function FaqSection({ ns = "landing", showCta = true }: { ns?: string; sh
           <div className="divide-y divide-border/70 border-y border-border/70">
             {list.map((item: any) => (
               <details key={item.q} className="group py-1">
-                <summary className="flex cursor-pointer list-none items-start justify-between gap-4 py-5 text-left font-semibold tracking-tight text-[#071A2D] marker:content-none [&::-webkit-details-marker]:hidden" style={{ fontFamily: "var(--font-brand-display)" }}>
-                  <span className="text-[15px] leading-snug pr-2">{item.q}</span>
+                <summary
+                  className="flex cursor-pointer list-none items-start justify-between gap-4 py-5 text-left font-semibold tracking-tight text-[#071A2D] marker:content-none [&::-webkit-details-marker]:hidden"
+                  style={{ fontFamily: "var(--font-brand-display)" }}
+                >
+                  <span className="text-[15px] leading-snug pr-2">
+                    {item.q}
+                  </span>
                   <Plus className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-45" />
                 </summary>
                 <p className="pb-5 pr-8 text-sm leading-relaxed text-muted-foreground">

@@ -72,7 +72,10 @@ export function AuthPageLayout({ children, panel }: AuthPageLayoutProps) {
               {panel.points && panel.points.length > 0 && (
                 <ul className="space-y-4">
                   {panel.points.map((point, i) => (
-                    <li key={point} className="flex gap-3 text-sm leading-snug text-[#C5D0DC]">
+                    <li
+                      key={point}
+                      className="flex gap-3 text-sm leading-snug text-[#C5D0DC]"
+                    >
                       <span
                         className="mt-0.5 shrink-0 text-[0.7rem] font-semibold tabular-nums text-[#D39A2B]"
                         style={{ fontFamily: "var(--font-brand-display)" }}
@@ -95,7 +98,12 @@ export function AuthPageLayout({ children, panel }: AuthPageLayoutProps) {
         {/* Form column */}
         <div className="flex flex-1 flex-col">
           <main className="flex flex-1 flex-col justify-center px-4 py-10 sm:px-8 lg:px-12 xl:px-16">
-            <div className={cn("mx-auto w-full", panel ? "max-w-[24rem]" : "max-w-[26rem]")}>
+            <div
+              className={cn(
+                "mx-auto w-full",
+                panel ? "max-w-[24rem]" : "max-w-[26rem]",
+              )}
+            >
               {children}
             </div>
           </main>
@@ -103,10 +111,9 @@ export function AuthPageLayout({ children, panel }: AuthPageLayoutProps) {
           <footer className="border-t border-[#071A2D]/08 px-4 py-4 sm:px-8">
             <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-xs text-muted-foreground">
-                {t("footer_copyright", { year: new Date().getFullYear() }).replace(
-                  /&copy;|©/g,
-                  "©"
-                )}
+                {t("footer_copyright", {
+                  year: new Date().getFullYear(),
+                }).replace(/&copy;|©/g, "©")}
               </p>
               <div
                 className="flex items-center gap-1 text-[11px] font-medium tracking-wide text-muted-foreground"
@@ -115,7 +122,9 @@ export function AuthPageLayout({ children, panel }: AuthPageLayoutProps) {
               >
                 {supportedLocales.map((locale, i) => (
                   <span key={locale} className="inline-flex items-center">
-                    {i > 0 && <span className="mx-1.5 text-border select-none">·</span>}
+                    {i > 0 && (
+                      <span className="mx-1.5 text-border select-none">·</span>
+                    )}
                     <button
                       type="button"
                       onClick={() => setLocale(locale)}
@@ -123,9 +132,11 @@ export function AuthPageLayout({ children, panel }: AuthPageLayoutProps) {
                         "rounded-sm px-0.5 py-0.5 transition-colors",
                         currentLocale === locale
                           ? "font-semibold text-[#071A2D]"
-                          : "hover:text-[#071A2D]"
+                          : "hover:text-[#071A2D]",
                       )}
-                      aria-current={currentLocale === locale ? "true" : undefined}
+                      aria-current={
+                        currentLocale === locale ? "true" : undefined
+                      }
                     >
                       {LOCALE_SHORT[locale]}
                     </button>

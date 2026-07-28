@@ -5,7 +5,15 @@ import {
   AppMetric,
   AppPageHeader,
 } from "../../../client/components/brand/AppChrome";
-import { Settings, Activity, AlertTriangle, Zap, BarChart3, Users, TrendingUp } from 'lucide-react';
+import {
+  Settings,
+  Activity,
+  AlertTriangle,
+  Zap,
+  BarChart3,
+  Users,
+  TrendingUp,
+} from "lucide-react";
 
 const SystemHealthPage = ({ user }: { user: AuthUser }) => {
   const { data: health, isLoading } = useQuery(getSystemHealth);
@@ -57,7 +65,9 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
                 <div className="divide-y -mx-5">
                   {health.recentErrors.map((err: any) => (
                     <div key={err.id} className="px-5 py-2.5 text-xs">
-                      <p className="text-muted-foreground">{new Date(err.createdAt).toLocaleString('pt-BR')}</p>
+                      <p className="text-muted-foreground">
+                        {new Date(err.createdAt).toLocaleString("pt-BR")}
+                      </p>
                       <p className="mt-0.5 break-all">{err.message}</p>
                     </div>
                   ))}
@@ -88,7 +98,9 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
                     <tbody>
                       {health.recentDailyStats.map((s: any) => (
                         <tr key={s.date} className="border-t">
-                          <td className="py-1.5 pr-4">{new Date(s.date).toLocaleDateString('pt-BR')}</td>
+                          <td className="py-1.5 pr-4">
+                            {new Date(s.date).toLocaleDateString("pt-BR")}
+                          </td>
                           <td className="py-1.5 pr-4">{s.userCount}</td>
                           <td className="py-1.5 pr-4">{s.paidUserCount}</td>
                           <td className="py-1.5 pr-4">{s.totalViews}</td>
@@ -111,13 +123,36 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                 {[
-                  { name: 'dailyStatsJob', schedule: '04:00', desc: 'Métricas diárias de tráfego e receita' },
-                  { name: 'aiCreditsResetJob', schedule: '03:00', desc: 'Reset de créditos de assistência editorial' },
-                  { name: 'aiCacheCleanupJob', schedule: '04:00', desc: 'Limpeza de cache editorial' },
-                  { name: 'subscriptionExpirationJob', schedule: '04:00', desc: 'Expiração de trials' },
-                  { name: 'remindersJob', schedule: '07:00', desc: 'Lembretes de encontros' },
+                  {
+                    name: "dailyStatsJob",
+                    schedule: "04:00",
+                    desc: "Métricas diárias de tráfego e receita",
+                  },
+                  {
+                    name: "aiCreditsResetJob",
+                    schedule: "03:00",
+                    desc: "Reset de créditos de assistência editorial",
+                  },
+                  {
+                    name: "aiCacheCleanupJob",
+                    schedule: "04:00",
+                    desc: "Limpeza de cache editorial",
+                  },
+                  {
+                    name: "subscriptionExpirationJob",
+                    schedule: "04:00",
+                    desc: "Expiração de trials",
+                  },
+                  {
+                    name: "remindersJob",
+                    schedule: "07:00",
+                    desc: "Lembretes de encontros",
+                  },
                 ].map((job) => (
-                  <div key={job.name} className="flex items-start gap-2 p-3 rounded-sm border border-border/70 bg-white">
+                  <div
+                    key={job.name}
+                    className="flex items-start gap-2 p-3 rounded-sm border border-border/70 bg-white"
+                  >
                     <Activity className="h-3.5 w-3.5 text-[#071A2D] mt-0.5 shrink-0" />
                     <div>
                       <p
@@ -126,7 +161,9 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
                       >
                         {job.name}
                       </p>
-                      <p className="text-xs text-muted-foreground">{job.schedule} — {job.desc}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {job.schedule} — {job.desc}
+                      </p>
                     </div>
                   </div>
                 ))}

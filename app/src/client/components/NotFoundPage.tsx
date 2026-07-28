@@ -5,10 +5,7 @@ import { PublicNavbar } from "../../catequese/PublicNavbar";
 import { PublicFooter } from "../../catequese/PublicFooter";
 import { FileQuestion, ArrowLeft } from "lucide-react";
 import { Button } from "./ui/button";
-import {
-  AppDisplayTitle,
-  AppGoldRule,
-} from "./brand/AppChrome";
+import { AppDisplayTitle, AppGoldRule } from "./brand/AppChrome";
 
 export function NotFoundPage() {
   const { data: user } = useAuth();

@@ -84,7 +84,10 @@ export function PedagogicalHooksPanel() {
       {hooks.length > 0 && (
         <div className="space-y-2">
           {hooks.map((hook, i) => (
-            <Card key={i} className="space-y-1.5 rounded-sm border-border/70 p-3">
+            <Card
+              key={i}
+              className="space-y-1.5 rounded-sm border-border/70 p-3"
+            >
               <h4
                 className="text-xs font-semibold tracking-tight text-[#071A2D]"
                 style={{ fontFamily: "var(--font-brand-display)" }}

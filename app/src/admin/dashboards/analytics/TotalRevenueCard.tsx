@@ -45,8 +45,10 @@ const TotalRevenueCard = ({
 
       <CardContent className="flex justify-between">
         <div>
-          <h4 className="text-title-md font-semibold tracking-tight tabular-nums text-[#071A2D]"
-            style={{ fontFamily: "var(--font-brand-display)" }}>
+          <h4
+            className="text-title-md font-semibold tracking-tight tabular-nums text-[#071A2D]"
+            style={{ fontFamily: "var(--font-brand-display)" }}
+          >
             ${dailyStats?.totalRevenue}
           </h4>
           <span className="text-sm font-medium text-muted-foreground">

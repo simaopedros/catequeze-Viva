@@ -64,9 +64,7 @@ export function CompletionStep({
         {t("completion.next_step_hint")}
       </p>
 
-      <div
-        className="flex flex-col gap-2.5 sticky-form-actions -mx-1 px-1 pt-3 sm:static sm:border-0 sm:bg-transparent sm:p-0"
-      >
+      <div className="flex flex-col gap-2.5 sticky-form-actions -mx-1 px-1 pt-3 sm:static sm:border-0 sm:bg-transparent sm:p-0">
         <Button
           onClick={onPrimaryAction}
           className="h-11 min-h-11 w-full rounded-sm shadow-none"

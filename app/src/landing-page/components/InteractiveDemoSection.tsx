@@ -75,10 +75,19 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
   if (topics.length === 0 || !selected) return null;
 
   return (
-    <section id="demo" className="scroll-mt-20 relative overflow-hidden border-y">
+    <section
+      id="demo"
+      className="scroll-mt-20 relative overflow-hidden border-y"
+    >
       <div className="absolute inset-0 bg-background/70" />
       <div className="relative mx-auto max-w-5xl px-4 py-16 md:py-20">
-        <div ref={ref} className={cn("grid gap-10 lg:grid-cols-2 lg:items-center", className)}>
+        <div
+          ref={ref}
+          className={cn(
+            "grid gap-10 lg:grid-cols-2 lg:items-center",
+            className,
+          )}
+        >
           <div className="space-y-5 text-center lg:text-left">
             <div className="inline-flex items-center gap-2 rounded-sm border border-[#071A2D]/20 bg-[#071A2D]/08 px-3 py-1 text-sm font-medium text-[#071A2D]">
               <Feather className="h-3.5 w-3.5" />
@@ -109,7 +118,7 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                     "rounded-sm border px-3 py-1.5 text-sm font-medium transition-colors",
                     selectedId === topic.id
                       ? "border-[#071A2D] bg-[#071A2D] text-white"
-                      : "border-border bg-card text-muted-foreground hover:border-[#071A2D]/40 hover:text-[#071A2D]"
+                      : "border-border bg-card text-muted-foreground hover:border-[#071A2D]/40 hover:text-[#071A2D]",
                   )}
                 >
                   {topic.label}
@@ -142,7 +151,9 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                   >
                     {tr("demo.panel_title")}
                   </p>
-                  <p className="text-xs text-muted-foreground">{tr("demo.panel_subtitle")}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {tr("demo.panel_subtitle")}
+                  </p>
                 </div>
               </div>
 
@@ -167,7 +178,9 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                   ) : (
                     <>
                       <RefreshCw className="h-3.5 w-3.5" />
-                      {status === "done" ? tr("demo.regenerate") : tr("demo.generate")}
+                      {status === "done"
+                        ? tr("demo.regenerate")
+                        : tr("demo.generate")}
                     </>
                   )}
                 </Button>
@@ -176,45 +189,61 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
               <div
                 className={cn(
                   "rounded-sm border p-3 min-h-[160px] transition-colors",
-                  status === "idle" ? "border-dashed bg-muted/10" : "border-[#071A2D]/20 bg-[#071A2D]/5"
+                  status === "idle"
+                    ? "border-dashed bg-muted/10"
+                    : "border-[#071A2D]/20 bg-[#071A2D]/5",
                 )}
               >
                 {status === "idle" && (
-                  <p className="text-sm text-muted-foreground text-center py-8">{tr("demo.empty")}</p>
+                  <p className="text-sm text-muted-foreground text-center py-8">
+                    {tr("demo.empty")}
+                  </p>
                 )}
                 {(status === "generating" || status === "done") && (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between gap-2 mb-2">
-                      <p className="text-sm font-semibold text-[#071A2D]">{tr("demo.result_title")}</p>
+                      <p className="text-sm font-semibold text-[#071A2D]">
+                        {tr("demo.result_title")}
+                      </p>
                       <span className="rounded-sm bg-[#071A2D]/08 px-2 py-0.5 text-[11px] font-medium text-[#071A2D]">
                         {tr("demo.result_badge")}
                       </span>
                     </div>
-                    {selected.steps.slice(0, visibleSteps).map((step, index) => (
-                      <div
-                        key={`${selected.id}-${index}`}
-                        className="flex gap-2 text-sm animate-in fade-in slide-in-from-bottom-1 duration-300"
-                      >
-                        <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-sm bg-[#071A2D]/15 text-[11px] font-semibold text-[#071A2D]">
-                          {index + 1}
-                        </span>
-                        <span className="leading-snug">{step}</span>
-                      </div>
-                    ))}
-                    {status === "generating" && visibleSteps < selected.steps.length && (
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
-                        <Loader2 className="h-3 w-3 animate-spin" />
-                        {tr("demo.generating")}
-                      </div>
-                    )}
+                    {selected.steps
+                      .slice(0, visibleSteps)
+                      .map((step, index) => (
+                        <div
+                          key={`${selected.id}-${index}`}
+                          className="flex gap-2 text-sm animate-in fade-in slide-in-from-bottom-1 duration-300"
+                        >
+                          <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-sm bg-[#071A2D]/15 text-[11px] font-semibold text-[#071A2D]">
+                            {index + 1}
+                          </span>
+                          <span className="leading-snug">{step}</span>
+                        </div>
+                      ))}
+                    {status === "generating" &&
+                      visibleSteps < selected.steps.length && (
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                          {tr("demo.generating")}
+                        </div>
+                      )}
                   </div>
                 )}
               </div>
 
               {status === "done" && (
                 <div className="flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between pt-1">
-                  <p className="text-xs text-muted-foreground">{tr("demo.done_note")}</p>
-                  <Button size="sm" variant="brand" asChild className="shrink-0">
+                  <p className="text-xs text-muted-foreground">
+                    {tr("demo.done_note")}
+                  </p>
+                  <Button
+                    size="sm"
+                    variant="brand"
+                    asChild
+                    className="shrink-0"
+                  >
                     <Link
                       to="/signup"
                       onClick={() =>

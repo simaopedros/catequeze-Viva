@@ -95,7 +95,11 @@ export function InteractiveCard({
   // Prefer a real link for SPA navigation (keyboard + focus + middle-click).
   if (href) {
     return (
-      <Link to={href} className={cn(cardClassName, "no-underline")} onClick={onClick}>
+      <Link
+        to={href}
+        className={cn(cardClassName, "no-underline")}
+        onClick={onClick}
+      >
         {body}
       </Link>
     );

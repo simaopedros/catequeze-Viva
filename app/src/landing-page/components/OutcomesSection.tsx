@@ -26,7 +26,9 @@ export function OutcomesSection({ ns = "landing" }: { ns?: string }) {
             {tr("outcomes.title")}
           </h2>
           <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
-          <p className="text-muted-foreground leading-relaxed">{tr("outcomes.subtitle")}</p>
+          <p className="text-muted-foreground leading-relaxed">
+            {tr("outcomes.subtitle")}
+          </p>
         </div>
 
         <ol className="mt-12 grid gap-0 border-t border-border/60 md:grid-cols-3 md:border-t-0 md:border-l md:border-border/60">

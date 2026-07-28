@@ -31,14 +31,20 @@ export default function AboutPage() {
         </div>
 
         <section className="space-y-2">
-          <AppDisplayTitle as="h2" className="text-2xl text-[#071A2D] sm:text-2xl">
+          <AppDisplayTitle
+            as="h2"
+            className="text-2xl text-[#071A2D] sm:text-2xl"
+          >
             {t("about.mission_title")}
           </AppDisplayTitle>
           <p className="text-muted-foreground">{t("about.mission_text")}</p>
         </section>
 
         <section className="space-y-2">
-          <AppDisplayTitle as="h2" className="text-2xl text-[#071A2D] sm:text-2xl">
+          <AppDisplayTitle
+            as="h2"
+            className="text-2xl text-[#071A2D] sm:text-2xl"
+          >
             {t("about.offer_title")}
           </AppDisplayTitle>
           <ul className="space-y-3 text-muted-foreground">

@@ -114,7 +114,11 @@ export default function ContentLibraryPage() {
     setCursor(null);
   }, [debouncedSearch, filter, activeParishId]);
 
-  const { data: pageData, isLoading: loading, isFetching } = useQuery(
+  const {
+    data: pageData,
+    isLoading: loading,
+    isFetching,
+  } = useQuery(
     listContentItems,
     {
       take: PAGE_SIZE,

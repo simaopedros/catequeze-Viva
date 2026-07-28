@@ -17,7 +17,14 @@ import { useLandingText } from "../hooks/useLandingText";
 
 type BillingInterval = "monthly" | "annual";
 
-function formatPlanPrice(planId: string, interval: BillingInterval): { display: string; periodKey: "per_month" | "per_year"; monthlyEquivalent?: string } {
+function formatPlanPrice(
+  planId: string,
+  interval: BillingInterval,
+): {
+  display: string;
+  periodKey: "per_month" | "per_year";
+  monthlyEquivalent?: string;
+} {
   const def = PLANS[planId as PlanId];
   if (!def) {
     return { display: "—", periodKey: "per_month" };
@@ -46,7 +53,11 @@ function formatPlanPrice(planId: string, interval: BillingInterval): { display: 
 export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
   const tr = useLandingText(ns);
   const { t: tb } = useTranslation("billing");
-  const { ref: headerRef, className: headerClass, isVisible } = useScrollReveal();
+  const {
+    ref: headerRef,
+    className: headerClass,
+    isVisible,
+  } = useScrollReveal();
   const hasTrackedViewRef = useRef(false);
   const [interval, setInterval] = useState<BillingInterval>("monthly");
 
@@ -65,11 +76,23 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
 
   return (
     <section id="planos" className="scroll-mt-20 max-w-5xl mx-auto px-4 py-20">
-      <div ref={headerRef} className={`mb-10 space-y-3 text-center ${headerClass}`}>
+      <div
+        ref={headerRef}
+        className={`mb-10 space-y-3 text-center ${headerClass}`}
+      >
         <div className="mx-auto h-px w-10 bg-[#D39A2B]" aria-hidden />
-        <h2 className="text-3xl font-semibold tracking-tight text-[#071A2D] sm:text-4xl" style={{ fontFamily: "var(--font-brand-display)" }}>{tr("pricing_title")}</h2>
-        <p className="mx-auto max-w-3xl text-lg text-muted-foreground">{tr("pricing_subtitle")}</p>
-        <p className="text-sm font-medium text-[#071A2D]">{tr("price_trial_note")}</p>
+        <h2
+          className="text-3xl font-semibold tracking-tight text-[#071A2D] sm:text-4xl"
+          style={{ fontFamily: "var(--font-brand-display)" }}
+        >
+          {tr("pricing_title")}
+        </h2>
+        <p className="mx-auto max-w-3xl text-lg text-muted-foreground">
+          {tr("pricing_subtitle")}
+        </p>
+        <p className="text-sm font-medium text-[#071A2D]">
+          {tr("price_trial_note")}
+        </p>
 
         <div className="mt-2 inline-flex items-center rounded-sm border border-border/70 bg-muted/40 p-1">
           <button
@@ -77,7 +100,9 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
             onClick={() => setInterval("monthly")}
             className={cn(
               "rounded-sm px-4 py-1.5 text-sm font-medium transition-colors",
-              interval === "monthly" ? "bg-white font-semibold tracking-tight text-[#071A2D]" : "text-muted-foreground hover:text-[#071A2D]"
+              interval === "monthly"
+                ? "bg-white font-semibold tracking-tight text-[#071A2D]"
+                : "text-muted-foreground hover:text-[#071A2D]",
             )}
           >
             {tr("price_monthly")}
@@ -87,7 +112,9 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
             onClick={() => setInterval("annual")}
             className={cn(
               "inline-flex items-center gap-1.5 rounded-sm px-4 py-1.5 text-sm font-medium transition-colors",
-              interval === "annual" ? "bg-white font-semibold tracking-tight text-[#071A2D]" : "text-muted-foreground hover:text-[#071A2D]"
+              interval === "annual"
+                ? "bg-white font-semibold tracking-tight text-[#071A2D]"
+                : "text-muted-foreground hover:text-[#071A2D]",
             )}
           >
             {tr("price_annual")}
@@ -150,16 +177,23 @@ function PricingPreviewCard({
   const { ref, className } = useScrollReveal({ delay });
   const name = (() => {
     const v = tb(`plans.${plan.planId}.name`);
-    return typeof v === "string" && v !== `plans.${plan.planId}.name` ? v : plan.name;
+    return typeof v === "string" && v !== `plans.${plan.planId}.name`
+      ? v
+      : plan.name;
   })();
   const audience = (() => {
     const v = tr(`plans.${plan.planId}.audience`);
-    if (typeof v === "string" && v !== `plans.${plan.planId}.audience`) return v;
-    return plan.planId === "single" ? "Para catequista individual" : "Para paroquia e diocese";
+    if (typeof v === "string" && v !== `plans.${plan.planId}.audience`)
+      return v;
+    return plan.planId === "single"
+      ? "Para catequista individual"
+      : "Para paroquia e diocese";
   })();
   const desc = (() => {
     const v = tr(`plans.${plan.planId}.desc`);
-    return typeof v === "string" && v !== `plans.${plan.planId}.desc` ? v : plan.desc;
+    return typeof v === "string" && v !== `plans.${plan.planId}.desc`
+      ? v
+      : plan.desc;
   })();
   const features = (() => {
     const v = tr(`plans.${plan.planId}.features`, { returnObjects: true });
@@ -168,15 +202,19 @@ function PricingPreviewCard({
   const priced = formatPlanPrice(plan.planId, interval);
   const signupHref = `/signup?plan=${plan.planId}&interval=${interval}`;
   const ctaLabel =
-    plan.planId === "unlimited" ? tr("price_cta_unlimited") : tr("price_cta_single");
+    plan.planId === "unlimited"
+      ? tr("price_cta_unlimited")
+      : tr("price_cta_single");
 
   return (
     <div
       ref={ref as any}
       id={`planos-${plan.planId}`}
       className={`relative flex scroll-mt-24 flex-col rounded-sm border bg-white p-6 transition-colors ${className} ${
- plan.highlight ? "border-[#071A2D]/30 ring-1 ring-[#071A2D]/10" : "border-border/70"
- }`}
+        plan.highlight
+          ? "border-[#071A2D]/30 ring-1 ring-[#071A2D]/10"
+          : "border-border/70"
+      }`}
     >
       {plan.highlight && (
         <div className="mb-3 inline-flex items-center gap-1 self-start rounded-sm bg-[#071A2D] px-3 py-1 text-caption font-semibold text-white">
@@ -186,17 +224,25 @@ function PricingPreviewCard({
       <div className="mb-3 inline-flex self-start rounded-sm bg-muted/70 px-3 py-1 text-[11px] font-medium text-muted-foreground">
         {audience}
       </div>
-      <h3 className="text-xl font-semibold tracking-tight text-[#071A2D]">{name}</h3>
+      <h3 className="text-xl font-semibold tracking-tight text-[#071A2D]">
+        {name}
+      </h3>
       <div className="mt-3 flex flex-wrap items-baseline gap-1">
-        <span className="text-3xl font-semibold tracking-tight text-[#071A2D]">{priced.display}</span>
-        <span className="text-sm text-muted-foreground">{tr(priced.periodKey)}</span>
+        <span className="text-3xl font-semibold tracking-tight text-[#071A2D]">
+          {priced.display}
+        </span>
+        <span className="text-sm text-muted-foreground">
+          {tr(priced.periodKey)}
+        </span>
       </div>
       {priced.monthlyEquivalent && (
         <p className="mt-1 text-xs text-muted-foreground">
           {tr("price_annual_equivalent", { price: priced.monthlyEquivalent })}
         </p>
       )}
-      <p className="mt-1 text-xs font-medium text-[#071A2D]">{tr("price_trial_badge")}</p>
+      <p className="mt-1 text-xs font-medium text-[#071A2D]">
+        {tr("price_trial_badge")}
+      </p>
       <p className="mt-2 text-sm text-muted-foreground">{desc}</p>
       <ul className="mt-4 flex-1 space-y-2 text-sm">
         {features.map((f) => (

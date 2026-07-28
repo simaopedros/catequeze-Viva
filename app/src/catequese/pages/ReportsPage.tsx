@@ -22,7 +22,9 @@ import { useQuery, getReportsOverview } from "wasp/client/operations";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
 
 const ReportsChartsPanel = lazy(() =>
-  import("./ReportsChartsPanel").then((m) => ({ default: m.ReportsChartsPanel })),
+  import("./ReportsChartsPanel").then((m) => ({
+    default: m.ReportsChartsPanel,
+  })),
 );
 
 export default function ReportsPage() {

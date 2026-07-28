@@ -19,7 +19,11 @@ import { PLANS } from "../../shared/pricing";
 export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
   const tr = useLandingText(ns);
   const { t: tb } = useTranslation("billing");
-  const { ref: headerRef, className: headerClass, isVisible } = useScrollReveal();
+  const {
+    ref: headerRef,
+    className: headerClass,
+    isVisible,
+  } = useScrollReveal();
   const tracked = useRef(false);
 
   useEffect(() => {
@@ -50,27 +54,43 @@ export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
   ];
 
   return (
-    <section id="planos" className="scroll-mt-20 max-w-4xl mx-auto px-4 py-14 md:py-16">
-      <div ref={headerRef} className={`text-center mb-8 space-y-2 ${headerClass}`}>
+    <section
+      id="planos"
+      className="scroll-mt-20 max-w-4xl mx-auto px-4 py-14 md:py-16"
+    >
+      <div
+        ref={headerRef}
+        className={`text-center mb-8 space-y-2 ${headerClass}`}
+      >
         <h2
           className="text-2xl font-semibold tracking-tight text-[#071A2D] sm:text-3xl"
           style={{ fontFamily: "var(--font-brand-display)" }}
         >
           {tr("pricing_title")}
         </h2>
-        <p className="text-muted-foreground max-w-xl mx-auto">{tr("pricing_subtitle")}</p>
-        <p className="text-sm font-medium text-[#071A2D]">{tr("price_trial_note")}</p>
+        <p className="text-muted-foreground max-w-xl mx-auto">
+          {tr("pricing_subtitle")}
+        </p>
+        <p className="text-sm font-medium text-[#071A2D]">
+          {tr("price_trial_note")}
+        </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         {plans.map((plan, index) => {
           const name = (() => {
             const v = tb(`plans.${plan.id}.name`);
-            return typeof v === "string" && !v.startsWith("plans.") ? v : tr(`plans.${plan.id}.name`);
+            return typeof v === "string" && !v.startsWith("plans.")
+              ? v
+              : tr(`plans.${plan.id}.name`);
           })();
           const audience = tr(`plans.${plan.id}.audience`);
-          const features = tr(`plans.${plan.id}.features`, { returnObjects: true });
-          const featureList = Array.isArray(features) ? (features as string[]) : [];
+          const features = tr(`plans.${plan.id}.features`, {
+            returnObjects: true,
+          });
+          const featureList = Array.isArray(features)
+            ? (features as string[])
+            : [];
           const href = `/signup?plan=${plan.id}`;
 
           return (
@@ -84,7 +104,13 @@ export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
               features={featureList}
               highlight={plan.highlight}
               popularLabel={String(tr("price_popular"))}
-              cta={String(tr(plan.id === "unlimited" ? "price_cta_unlimited" : "price_cta_single"))}
+              cta={String(
+                tr(
+                  plan.id === "unlimited"
+                    ? "price_cta_unlimited"
+                    : "price_cta_single",
+                ),
+              )}
               href={href}
               ns={ns}
               planId={plan.id}
@@ -145,8 +171,10 @@ function PlanCard({
     <div
       ref={ref as any}
       className={`rounded-sm border p-5 flex flex-col ${className} ${
- highlight ? "border-[#071A2D]/40 bg-[#071A2D]/[0.03]" : "border-border/70 bg-card"
- }`}
+        highlight
+          ? "border-[#071A2D]/40 bg-[#071A2D]/[0.03]"
+          : "border-border/70 bg-card"
+      }`}
     >
       {highlight && (
         <span className="mb-2 self-start text-[11px] font-semibold uppercase tracking-wide text-[#071A2D]">

@@ -395,7 +395,10 @@ export function QuickSetupPanel({
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="theme" className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            <Label
+              htmlFor="theme"
+              className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+            >
               {contentFieldLabel}
             </Label>
             <Input

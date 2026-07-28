@@ -26,12 +26,16 @@ export function RoleStep({ selected, onSelect }: RoleStepProps) {
   return (
     <div className="space-y-4 rounded-sm border border-border/70 bg-white p-6">
       <div className="space-y-2.5">
-        <AppEyebrow>{t("role_step.eyebrow", { defaultValue: "Função" })}</AppEyebrow>
+        <AppEyebrow>
+          {t("role_step.eyebrow", { defaultValue: "Função" })}
+        </AppEyebrow>
         <AppDisplayTitle as="h2" className="text-lg sm:text-lg">
           {t("role_step.title")}
         </AppDisplayTitle>
         <AppGoldRule />
-        <p className="text-sm text-muted-foreground">{t("role_step.subtitle")}</p>
+        <p className="text-sm text-muted-foreground">
+          {t("role_step.subtitle")}
+        </p>
       </div>
 
       <div className="grid gap-3">

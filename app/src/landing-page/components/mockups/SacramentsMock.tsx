@@ -1,15 +1,15 @@
-import { CheckCircle2, Circle, Cross } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { CheckCircle2, Circle, Cross } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
-export function SacramentsMock({ ns = 'landing' }: { ns?: string }) {
+export function SacramentsMock({ ns = "landing" }: { ns?: string }) {
   const { t } = useTranslation(ns);
 
   const MILESTONES = [
-    { label: t('mockup_sacraments.enrollment'), done: true },
-    { label: t('mockup_sacraments.documents'), done: true },
-    { label: t('mockup_sacraments.retreat'), done: true },
-    { label: t('mockup_sacraments.interview'), done: false },
-    { label: t('mockup_sacraments.celebration'), done: false },
+    { label: t("mockup_sacraments.enrollment"), done: true },
+    { label: t("mockup_sacraments.documents"), done: true },
+    { label: t("mockup_sacraments.retreat"), done: true },
+    { label: t("mockup_sacraments.interview"), done: false },
+    { label: t("mockup_sacraments.celebration"), done: false },
   ];
 
   return (
@@ -21,7 +21,9 @@ export function SacramentsMock({ ns = 'landing' }: { ns?: string }) {
         >
           {t("mockup_sacraments.title")}
         </p>
-        <p className="text-muted-foreground">{t("mockup_sacraments.subtitle")}</p>
+        <p className="text-muted-foreground">
+          {t("mockup_sacraments.subtitle")}
+        </p>
       </div>
 
       <div className="rounded-sm border border-border/70 bg-white p-3">
@@ -36,20 +38,31 @@ export function SacramentsMock({ ns = 'landing' }: { ns?: string }) {
             >
               Maria Oliveira
             </p>
-            <p className="text-muted-foreground">{t("mockup_sacraments.class")}</p>
+            <p className="text-muted-foreground">
+              {t("mockup_sacraments.class")}
+            </p>
           </div>
         </div>
 
         <div className="relative flex items-center justify-between px-1">
           <div className="absolute left-4 right-4 top-1/2 h-0.5 bg-border -translate-y-1/2" />
           {MILESTONES.map((m) => (
-            <div key={m.label} className="relative flex flex-col items-center gap-1 z-10">
+            <div
+              key={m.label}
+              className="relative flex flex-col items-center gap-1 z-10"
+            >
               {m.done ? (
                 <CheckCircle2 className="h-5 w-5 text-[#071A2D] bg-background" />
               ) : (
                 <Circle className="h-5 w-5 text-muted-foreground bg-background" />
               )}
-              <span className={`text-overline text-center max-w-[48px] ${m.done ? 'text-[#071A2D] font-medium' : 'text-muted-foreground'}`}>
+              <span
+                className={`text-overline text-center max-w-[48px] ${
+                  m.done
+                    ? "text-[#071A2D] font-medium"
+                    : "text-muted-foreground"
+                }`}
+              >
                 {m.label}
               </span>
             </div>
@@ -59,18 +72,26 @@ export function SacramentsMock({ ns = 'landing' }: { ns?: string }) {
 
       <div className="grid grid-cols-2 gap-2">
         {[
-          { name: 'João P.', progress: '4/5', pct: 80 },
-          { name: 'Sofia R.', progress: '5/5', pct: 100 },
-          { name: 'Lucas M.', progress: '2/5', pct: 40 },
-          { name: 'Beatriz L.', progress: '3/5', pct: 60 },
+          { name: "João P.", progress: "4/5", pct: 80 },
+          { name: "Sofia R.", progress: "5/5", pct: 100 },
+          { name: "Lucas M.", progress: "2/5", pct: 40 },
+          { name: "Beatriz L.", progress: "3/5", pct: 60 },
         ].map((c) => (
-          <div key={c.name} className="rounded-sm border border-border/70 bg-white p-2">
+          <div
+            key={c.name}
+            className="rounded-sm border border-border/70 bg-white p-2"
+          >
             <div className="flex justify-between mb-1">
-              <span className="font-semibold tracking-tight text-[#071A2D]">{c.name}</span>
+              <span className="font-semibold tracking-tight text-[#071A2D]">
+                {c.name}
+              </span>
               <span className="text-muted-foreground">{c.progress}</span>
             </div>
             <div className="h-1.5 overflow-hidden rounded-sm bg-muted">
-              <div className="h-full rounded-sm bg-[#071A2D]" style={{ width: `${c.pct}%` }} />
+              <div
+                className="h-full rounded-sm bg-[#071A2D]"
+                style={{ width: `${c.pct}%` }}
+              />
             </div>
           </div>
         ))}

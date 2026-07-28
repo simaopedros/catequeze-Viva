@@ -1,10 +1,7 @@
 import { WifiOff, RefreshCw } from "lucide-react";
 import { Button } from "./ui/button";
 import { useTranslation } from "react-i18next";
-import {
-  AppDisplayTitle,
-  AppGoldRule,
-} from "./brand/AppChrome";
+import { AppDisplayTitle, AppGoldRule } from "./brand/AppChrome";
 
 /**
  * Full-page offline fallback shown when there is no network

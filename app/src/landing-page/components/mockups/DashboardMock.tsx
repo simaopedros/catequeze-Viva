@@ -1,7 +1,16 @@
-import { AlertCircle, BookOpen, Calendar, Clock, Cross, Gift, TrendingUp, Users } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import {
+  AlertCircle,
+  BookOpen,
+  Calendar,
+  Clock,
+  Cross,
+  Gift,
+  TrendingUp,
+  Users,
+} from "lucide-react";
+import { useTranslation } from "react-i18next";
 
-export function DashboardMock({ ns = 'landing' }: { ns?: string }) {
+export function DashboardMock({ ns = "landing" }: { ns?: string }) {
   const { t } = useTranslation(ns);
   return (
     <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-overline sm:text-xs">
@@ -12,7 +21,9 @@ export function DashboardMock({ ns = 'landing' }: { ns?: string }) {
         >
           {t("mockup_dashboard.title")}
         </p>
-        <p className="text-muted-foreground">{t("mockup_dashboard.subtitle")}</p>
+        <p className="text-muted-foreground">
+          {t("mockup_dashboard.subtitle")}
+        </p>
       </div>
 
       <div className="grid grid-cols-2 gap-2">
@@ -42,13 +53,18 @@ export function DashboardMock({ ns = 'landing' }: { ns?: string }) {
             c: "text-[#071A2D] bg-muted/40",
           },
         ].map((k) => (
-          <div key={k.l} className="rounded-sm border border-border/70 bg-white p-2">
+          <div
+            key={k.l}
+            className="rounded-sm border border-border/70 bg-white p-2"
+          >
             <div className="flex items-center gap-2">
               <div className={`rounded-sm p-1 ${k.c}`}>
                 <k.i className="h-3 w-3" />
               </div>
               <div>
-                <p className="text-overline uppercase text-muted-foreground">{k.l}</p>
+                <p className="text-overline uppercase text-muted-foreground">
+                  {k.l}
+                </p>
                 <p
                   className="text-sm font-semibold tabular-nums tracking-tight text-[#071A2D]"
                   style={{ fontFamily: "var(--font-brand-display)" }}
@@ -64,33 +80,46 @@ export function DashboardMock({ ns = 'landing' }: { ns?: string }) {
       <div className="grid grid-cols-2 gap-2">
         <div className="rounded-sm border border-[#071A2D]/20 bg-muted/30 p-2">
           <p className="font-semibold text-[#071A2D] flex items-center gap-1 mb-1">
-            <Clock className="h-3 w-3" /> {t('mockup_dashboard.today')}
+            <Clock className="h-3 w-3" /> {t("mockup_dashboard.today")}
           </p>
-          <p className="font-semibold tracking-tight text-[#071A2D]">{t('mockup_dashboard.today_class')}</p>
-          <p className="text-muted-foreground">{t('mockup_dashboard.today_detail')}</p>
+          <p className="font-semibold tracking-tight text-[#071A2D]">
+            {t("mockup_dashboard.today_class")}
+          </p>
+          <p className="text-muted-foreground">
+            {t("mockup_dashboard.today_detail")}
+          </p>
         </div>
         <div className="rounded-sm border border-border/70 bg-white p-2">
           <p className="font-semibold text-[#071A2D] flex items-center gap-1 mb-1">
-            <Calendar className="h-3 w-3" /> {t('mockup_dashboard.upcoming')}
+            <Calendar className="h-3 w-3" /> {t("mockup_dashboard.upcoming")}
           </p>
-          <p className="font-semibold tracking-tight text-[#071A2D]">{t('mockup_dashboard.upcoming_class')}</p>
-          <p className="text-muted-foreground">{t('mockup_dashboard.upcoming_detail')}</p>
+          <p className="font-semibold tracking-tight text-[#071A2D]">
+            {t("mockup_dashboard.upcoming_class")}
+          </p>
+          <p className="text-muted-foreground">
+            {t("mockup_dashboard.upcoming_detail")}
+          </p>
         </div>
       </div>
 
       <div className="rounded-sm border border-destructive/30 bg-destructive/5 p-2 flex items-start gap-2">
         <AlertCircle className="h-3 w-3 text-destructive flex-shrink-0 mt-0.5" />
         <div>
-          <p className="font-medium text-destructive">{t('mockup_dashboard.alerts_title')}</p>
-          <p className="text-muted-foreground">{t('mockup_dashboard.alerts_subtitle')}</p>
+          <p className="font-medium text-destructive">
+            {t("mockup_dashboard.alerts_title")}
+          </p>
+          <p className="text-muted-foreground">
+            {t("mockup_dashboard.alerts_subtitle")}
+          </p>
         </div>
       </div>
 
       <div className="rounded-sm border border-border/70 bg-white p-2">
         <p className="font-semibold text-[#071A2D] flex items-center gap-1 mb-1">
-          <Gift className="h-3 w-3 text-[#D39A2B]" /> {t('mockup_dashboard.birthdays')}
+          <Gift className="h-3 w-3 text-[#D39A2B]" />{" "}
+          {t("mockup_dashboard.birthdays")}
         </p>
-        <p>{t('mockup_dashboard.birthdays_list')}</p>
+        <p>{t("mockup_dashboard.birthdays_list")}</p>
       </div>
     </div>
   );

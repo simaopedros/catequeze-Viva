@@ -236,7 +236,12 @@ export default function ContentPrintPage() {
       {/* On-screen toolbar */}
       <div className="no-print mx-auto mb-4 flex max-w-[210mm] flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
-          <Button variant="outline" size="sm" className="h-9 rounded-sm" asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 rounded-sm"
+            asChild
+          >
             <Link to={`/app/content-library/${id}`}>
               <ArrowLeft className="mr-1 h-4 w-4" />
               {t("print_page.back")}
@@ -380,10 +385,7 @@ export default function ContentPrintPage() {
                   <div className="space-y-3">
                     <div className="print-section-title flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-[#071A2D]">
                       <Church className="h-4 w-4" />
-                      {referenceSectionTitle(
-                        "Catecismo",
-                        catechismRefs.length,
-                      )}
+                      {referenceSectionTitle("Catecismo", catechismRefs.length)}
                     </div>
                     <div className="space-y-3">
                       {catechismRefs.map((ref: any) => (

@@ -18,7 +18,10 @@ export function StepsSection({
   const list = Array.isArray(steps) ? steps : [];
 
   return (
-    <section id="como" className="scroll-mt-20 border-y border-border/50 bg-background">
+    <section
+      id="como"
+      className="scroll-mt-20 border-y border-border/50 bg-background"
+    >
       <div className="mx-auto max-w-6xl px-4 py-16 sm:py-20">
         <div className="flex flex-col gap-8 sm:gap-10 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-md space-y-3">
@@ -32,7 +35,9 @@ export function StepsSection({
               {tr("steps_title")}
             </h2>
             <div className="h-px w-10 bg-[#D39A2B]" aria-hidden />
-            <p className="text-muted-foreground leading-relaxed">{tr("steps_subtitle")}</p>
+            <p className="text-muted-foreground leading-relaxed">
+              {tr("steps_subtitle")}
+            </p>
           </div>
 
           <Button
@@ -41,7 +46,7 @@ export function StepsSection({
             asChild
             className={cn(
               "rounded-sm shadow-none shrink-0",
-              responsiveCtas && "h-auto min-h-11 w-full max-w-sm lg:w-auto"
+              responsiveCtas && "h-auto min-h-11 w-full max-w-sm lg:w-auto",
             )}
           >
             <Link

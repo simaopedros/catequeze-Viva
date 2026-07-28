@@ -64,7 +64,7 @@ export default function MeetingDetailPage() {
       ...(isFamilyPortalHost() ? { surface: "PORTAL" as const } : {}),
     },
     { enabled: Boolean(id) },
-  );  // Role-shaped DTO has optional profile fields not expressible as a single Wasp type
+  ); // Role-shaped DTO has optional profile fields not expressible as a single Wasp type
   const meeting = meetingRaw as any;
 
   const [justifyFor, setJustifyFor] = useState<string | null>(null);
@@ -201,7 +201,10 @@ export default function MeetingDetailPage() {
             </Button>
             {primaryStaffAction &&
               ("href" in primaryStaffAction && primaryStaffAction.href ? (
-                <Button asChild className="h-11 min-h-11 rounded-sm shadow-none">
+                <Button
+                  asChild
+                  className="h-11 min-h-11 rounded-sm shadow-none"
+                >
                   <Link to={primaryStaffAction.href}>
                     <primaryStaffAction.icon className="mr-2 h-4 w-4" />
                     {primaryStaffAction.label}
@@ -249,7 +252,9 @@ export default function MeetingDetailPage() {
           </div>
           <div>
             <dt className="text-muted-foreground">{t("detail_class")}</dt>
-            <dd className="font-medium text-[#071A2D]">{meeting.class?.name}</dd>
+            <dd className="font-medium text-[#071A2D]">
+              {meeting.class?.name}
+            </dd>
           </div>
           {meeting.locationHint && (
             <div className="sm:col-span-2">
@@ -264,7 +269,9 @@ export default function MeetingDetailPage() {
           )}
           {meeting.attendanceSummary && (
             <div>
-              <dt className="text-muted-foreground">{t("detail_attendance")}</dt>
+              <dt className="text-muted-foreground">
+                {t("detail_attendance")}
+              </dt>
               <dd className="font-medium text-[#071A2D]">
                 {t("attendance_progress", {
                   registered: meeting.attendanceSummary.registered,
@@ -310,7 +317,11 @@ export default function MeetingDetailPage() {
               </Button>
             )}
             {canTakeAttendance && (
-              <Button asChild variant="outline" className="h-11 min-h-11 rounded-sm">
+              <Button
+                asChild
+                variant="outline"
+                className="h-11 min-h-11 rounded-sm"
+              >
                 <Link
                   to={`/app/classes/${meeting.class.id}/attendance?meetingId=${meeting.id}`}
                 >
@@ -384,7 +395,11 @@ export default function MeetingDetailPage() {
             </div>
           )}
           {perms.canEdit && meeting.content.id && (
-            <Button asChild variant="outline" className="h-11 min-h-11 rounded-sm">
+            <Button
+              asChild
+              variant="outline"
+              className="h-11 min-h-11 rounded-sm"
+            >
               <Link to={`/app/content/${meeting.content.id}`}>
                 {t("open_content")}
               </Link>
@@ -418,88 +433,89 @@ export default function MeetingDetailPage() {
         </AppPanel>
       )}
 
-      {meeting.dependentsOnMeeting && meeting.dependentsOnMeeting.length > 0 && (
-        <AppPanel className="space-y-3">
-          <div className="space-y-1.5">
-            <AppEyebrow>{t("detail_dependents")}</AppEyebrow>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
-          </div>
-          <ul className="divide-y divide-border/70">
-            {meeting.dependentsOnMeeting.map((d: any) => {
-              const canJustifyThis =
-                !d.status ||
-                d.status === "ABSENT" ||
-                d.status === "LATE" ||
-                d.status === "JUSTIFIED";
-              return (
-                <li
-                  key={d.catechumenProfileId}
-                  className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <div>
-                    <p className="font-semibold text-[#071A2D]">
-                      {d.firstName} {d.lastName}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {d.status
-                        ? t(`attendance_status.${d.status}`, {
-                            defaultValue: d.status,
-                          })
-                        : t("attendance_status.none")}
-                      {d.note ? ` — ${d.note}` : ""}
-                    </p>
-                  </div>
-                  {canJustifyThis && meeting.status !== "CANCELLED" && (
-                    <Button
-                      variant="outline"
-                      className="h-11 min-h-11 rounded-sm"
-                      onClick={() => {
-                        setJustifyFor(d.catechumenProfileId);
-                        setNote(d.note || "");
-                      }}
-                    >
-                      {t("action_justify")}
-                    </Button>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-
-          {justifyFor && (
-            <div className="space-y-3 rounded-sm border border-border/70 p-4">
-              <Label htmlFor="justify-note">{t("justify_note_label")}</Label>
-              <Textarea
-                id="justify-note"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                rows={3}
-                maxLength={500}
-                className="min-h-[88px]"
-              />
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  className="h-11 min-h-11 rounded-sm"
-                  disabled={saving || note.trim().length < 3}
-                  onClick={submitJustify}
-                >
-                  {t("justify_submit")}
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-11 min-h-11 rounded-sm"
-                  onClick={() => {
-                    setJustifyFor(null);
-                    setNote("");
-                  }}
-                >
-                  {tc("cancel")}
-                </Button>
-              </div>
+      {meeting.dependentsOnMeeting &&
+        meeting.dependentsOnMeeting.length > 0 && (
+          <AppPanel className="space-y-3">
+            <div className="space-y-1.5">
+              <AppEyebrow>{t("detail_dependents")}</AppEyebrow>
+              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
             </div>
-          )}
-        </AppPanel>
-      )}
+            <ul className="divide-y divide-border/70">
+              {meeting.dependentsOnMeeting.map((d: any) => {
+                const canJustifyThis =
+                  !d.status ||
+                  d.status === "ABSENT" ||
+                  d.status === "LATE" ||
+                  d.status === "JUSTIFIED";
+                return (
+                  <li
+                    key={d.catechumenProfileId}
+                    className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div>
+                      <p className="font-semibold text-[#071A2D]">
+                        {d.firstName} {d.lastName}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {d.status
+                          ? t(`attendance_status.${d.status}`, {
+                              defaultValue: d.status,
+                            })
+                          : t("attendance_status.none")}
+                        {d.note ? ` — ${d.note}` : ""}
+                      </p>
+                    </div>
+                    {canJustifyThis && meeting.status !== "CANCELLED" && (
+                      <Button
+                        variant="outline"
+                        className="h-11 min-h-11 rounded-sm"
+                        onClick={() => {
+                          setJustifyFor(d.catechumenProfileId);
+                          setNote(d.note || "");
+                        }}
+                      >
+                        {t("action_justify")}
+                      </Button>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+
+            {justifyFor && (
+              <div className="space-y-3 rounded-sm border border-border/70 p-4">
+                <Label htmlFor="justify-note">{t("justify_note_label")}</Label>
+                <Textarea
+                  id="justify-note"
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  rows={3}
+                  maxLength={500}
+                  className="min-h-[88px]"
+                />
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    className="h-11 min-h-11 rounded-sm"
+                    disabled={saving || note.trim().length < 3}
+                    onClick={submitJustify}
+                  >
+                    {t("justify_submit")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="h-11 min-h-11 rounded-sm"
+                    onClick={() => {
+                      setJustifyFor(null);
+                      setNote("");
+                    }}
+                  >
+                    {tc("cancel")}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </AppPanel>
+        )}
 
       <div className="flex flex-wrap gap-2">
         <Button asChild variant="outline" className="h-11 min-h-11 rounded-sm">

@@ -1,4 +1,10 @@
-import { Building2, GraduationCap, Rocket, ShieldCheck, Smartphone } from "lucide-react";
+import {
+  Building2,
+  GraduationCap,
+  Rocket,
+  ShieldCheck,
+  Smartphone,
+} from "lucide-react";
 import { Link } from "react-router";
 import { Badge } from "../../client/components/ui/badge";
 import { Button } from "../../client/components/ui/button";
@@ -19,7 +25,9 @@ export function ProofSection({ ns = "landing" }: { ns?: string }) {
   const { ref, className } = useScrollReveal();
 
   const stats = tr("proof.stats", { returnObjects: true });
-  const statList = Array.isArray(stats) ? (stats as Array<{ title: string; desc: string }>) : [];
+  const statList = Array.isArray(stats)
+    ? (stats as Array<{ title: string; desc: string }>)
+    : [];
   const chips = tr("proof.chips", { returnObjects: true });
   const chipList = Array.isArray(chips) ? (chips as string[]) : [];
   const promises = tr("proof.promises", { returnObjects: true });
@@ -27,7 +35,10 @@ export function ProofSection({ ns = "landing" }: { ns?: string }) {
 
   return (
     <section className="border-y bg-background">
-      <div ref={ref} className={`mx-auto max-w-6xl px-4 py-12 md:py-16 ${className}`}>
+      <div
+        ref={ref}
+        className={`mx-auto max-w-6xl px-4 py-12 md:py-16 ${className}`}
+      >
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-stretch">
           <div className="space-y-5">
             <div className="space-y-2">
@@ -66,7 +77,9 @@ export function ProofSection({ ns = "landing" }: { ns?: string }) {
                     >
                       {stat.title}
                     </p>
-                    <p className="text-xs leading-relaxed text-text-secondary">{stat.desc}</p>
+                    <p className="text-xs leading-relaxed text-text-secondary">
+                      {stat.desc}
+                    </p>
                   </div>
                 );
               })}
@@ -101,12 +114,17 @@ export function ProofSection({ ns = "landing" }: { ns?: string }) {
                 >
                   {tr("proof.launch_title")}
                 </h3>
-                <p className="text-sm leading-relaxed text-text-secondary">{tr("proof.launch_text")}</p>
+                <p className="text-sm leading-relaxed text-text-secondary">
+                  {tr("proof.launch_text")}
+                </p>
               </div>
               {promiseList.length > 0 && (
                 <ul className="space-y-2">
                   {promiseList.map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-sm text-[#071A2D]">
+                    <li
+                      key={item}
+                      className="flex items-start gap-2 text-sm text-[#071A2D]"
+                    >
                       <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-sm bg-[#071A2D]" />
                       <span>{item}</span>
                     </li>
@@ -131,7 +149,9 @@ export function ProofSection({ ns = "landing" }: { ns?: string }) {
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
-              <p className="text-xs text-center text-muted-foreground">{tr("proof.launch_helper")}</p>
+              <p className="text-xs text-center text-muted-foreground">
+                {tr("proof.launch_helper")}
+              </p>
             </div>
           </Card>
         </div>

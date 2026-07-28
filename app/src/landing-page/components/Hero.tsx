@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { ArrowRight, Feather } from "lucide-react";
 
 export default function Hero() {
-  const { t } = useTranslation('landing');
+  const { t } = useTranslation("landing");
 
   return (
     <div className="relative w-full pt-14 overflow-hidden">
@@ -24,24 +24,24 @@ export default function Hero() {
               <span className="text-[#D39A2B]">{t("hero.headline_line2")}</span>
             </h1>
             <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-lg leading-8">
-              {t('hero.subheadline')}
+              {t("hero.subheadline")}
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Button size="lg" variant="outline" asChild>
                 <WaspRouterLink to={routes.PricingPageRoute.to}>
-                  {t('hero.cta_secondary')}
+                  {t("hero.cta_secondary")}
                 </WaspRouterLink>
               </Button>
               <Button size="lg" variant="brand" asChild>
                 <WaspRouterLink to={routes.SignupRoute.to}>
-                  {t('hero.cta_primary')}
+                  {t("hero.cta_primary")}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </WaspRouterLink>
               </Button>
             </div>
             <p className="mt-4 text-sm text-muted-foreground">
               <Feather className="inline h-3.5 w-3.5 mr-1" />
-              {t('hero.trust_signals')}
+              {t("hero.trust_signals")}
             </p>
           </div>
         </div>

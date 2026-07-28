@@ -13,7 +13,7 @@ import {
   Rocket,
   Share2,
   Users,
-} from 'lucide-react';
+} from "lucide-react";
 
 type Counts = {
   landing_viewed: number;
@@ -53,12 +53,12 @@ type FunnelData = {
 };
 
 function percent(value: number | null): string {
-  return value == null ? '—' : `${value.toFixed(1)}%`;
+  return value == null ? "—" : `${value.toFixed(1)}%`;
 }
 
 function pretty(value: string | null | undefined): string {
-  if (!value) return '—';
-  return value.replaceAll('_', ' ');
+  if (!value) return "—";
+  return value.replaceAll("_", " ");
 }
 
 const AnalyticsPage = ({ user }: { user: AuthUser }) => {
@@ -70,31 +70,31 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
   const counts = data?.counts30d;
   const topCards = [
     {
-      label: 'Landing views (30d)',
+      label: "Landing views (30d)",
       value: counts?.landing_viewed ?? 0,
       subtitle: `${data?.counts7d.landing_viewed ?? 0} nos últimos 7 dias`,
       icon: BarChart3,
     },
     {
-      label: 'Pricing views (30d)',
+      label: "Pricing views (30d)",
       value: counts?.pricing_viewed ?? 0,
       subtitle: percent(data?.conversion30d.landingToPricing ?? null),
       icon: MousePointerClick,
     },
     {
-      label: 'Checkout started (30d)',
+      label: "Checkout started (30d)",
       value: counts?.checkout_started ?? 0,
       subtitle: percent(data?.conversion30d.signupToCheckout ?? null),
       icon: CreditCard,
     },
     {
-      label: 'Purchases (30d)',
+      label: "Purchases (30d)",
       value: counts?.purchase_completed ?? 0,
       subtitle: percent(data?.conversion30d.checkoutToPurchase ?? null),
       icon: ShoppingCart,
     },
     {
-      label: 'Activations (30d)',
+      label: "Activations (30d)",
       value: counts?.activation_completed ?? 0,
       subtitle: percent(data?.conversion30d.purchaseToActivation ?? null),
       icon: Rocket,
@@ -102,14 +102,42 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
   ];
 
   const funnelSteps = [
-    { label: 'Landing viewed', count: counts?.landing_viewed ?? 0, rate: null },
-    { label: 'Pricing viewed', count: counts?.pricing_viewed ?? 0, rate: data?.conversion30d.landingToPricing ?? null },
-    { label: 'Plan selected', count: counts?.plan_selected ?? 0, rate: data?.conversion30d.pricingToPlan ?? null },
-    { label: 'Signup started', count: counts?.signup_started ?? 0, rate: data?.conversion30d.planToSignup ?? null },
-    { label: 'Signup completed', count: counts?.signup_completed ?? 0, rate: null },
-    { label: 'Checkout started', count: counts?.checkout_started ?? 0, rate: data?.conversion30d.signupToCheckout ?? null },
-    { label: 'Purchase completed', count: counts?.purchase_completed ?? 0, rate: data?.conversion30d.checkoutToPurchase ?? null },
-    { label: 'Activation completed', count: counts?.activation_completed ?? 0, rate: data?.conversion30d.purchaseToActivation ?? null },
+    { label: "Landing viewed", count: counts?.landing_viewed ?? 0, rate: null },
+    {
+      label: "Pricing viewed",
+      count: counts?.pricing_viewed ?? 0,
+      rate: data?.conversion30d.landingToPricing ?? null,
+    },
+    {
+      label: "Plan selected",
+      count: counts?.plan_selected ?? 0,
+      rate: data?.conversion30d.pricingToPlan ?? null,
+    },
+    {
+      label: "Signup started",
+      count: counts?.signup_started ?? 0,
+      rate: data?.conversion30d.planToSignup ?? null,
+    },
+    {
+      label: "Signup completed",
+      count: counts?.signup_completed ?? 0,
+      rate: null,
+    },
+    {
+      label: "Checkout started",
+      count: counts?.checkout_started ?? 0,
+      rate: data?.conversion30d.signupToCheckout ?? null,
+    },
+    {
+      label: "Purchase completed",
+      count: counts?.purchase_completed ?? 0,
+      rate: data?.conversion30d.checkoutToPurchase ?? null,
+    },
+    {
+      label: "Activation completed",
+      count: counts?.activation_completed ?? 0,
+      rate: data?.conversion30d.purchaseToActivation ?? null,
+    },
   ];
 
   return (
@@ -118,7 +146,9 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
         <AppPageHeader
           eyebrow="Admin"
           title="Pricing Funnel"
-          subtitle={`Conversão comercial baseada em PricingEvent dos últimos ${data?.windowDays ?? 30} dias.`}
+          subtitle={`Conversão comercial baseada em PricingEvent dos últimos ${
+            data?.windowDays ?? 30
+          } dias.`}
         />
 
         {isLoading ? (
@@ -155,7 +185,10 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                 </p>
                 <div className="mt-4 grid gap-3 md:grid-cols-2">
                   {funnelSteps.map((step) => (
-                    <div key={step.label} className="rounded-sm border border-border/70 bg-white p-4">
+                    <div
+                      key={step.label}
+                      className="rounded-sm border border-border/70 bg-white p-4"
+                    >
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <p
@@ -197,7 +230,9 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                     </div>
                     <div className="flex items-center justify-between">
                       <span>Invite acceptance</span>
-                      <strong>{percent(data?.conversion30d.inviteAcceptance ?? null)}</strong>
+                      <strong>
+                        {percent(data?.conversion30d.inviteAcceptance ?? null)}
+                      </strong>
                     </div>
                     <div className="flex items-center justify-between">
                       <span>Share clicked</span>
@@ -215,12 +250,23 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                     <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
                   </div>
                   <div className="mt-4 space-y-3 text-sm">
-                    {data?.topPlans.length ? data.topPlans.map((item) => (
-                      <div key={item.plan} className="flex items-center justify-between">
-                        <span className="uppercase text-muted-foreground">{pretty(item.plan)}</span>
-                        <strong>{item.count}</strong>
-                      </div>
-                    )) : <p className="text-muted-foreground">Sem compras no período.</p>}
+                    {data?.topPlans.length ? (
+                      data.topPlans.map((item) => (
+                        <div
+                          key={item.plan}
+                          className="flex items-center justify-between"
+                        >
+                          <span className="uppercase text-muted-foreground">
+                            {pretty(item.plan)}
+                          </span>
+                          <strong>{item.count}</strong>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-muted-foreground">
+                        Sem compras no período.
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -232,12 +278,23 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                     <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
                   </div>
                   <div className="mt-4 space-y-3 text-sm">
-                    {data?.topProcessors.length ? data.topProcessors.map((item) => (
-                      <div key={item.processor} className="flex items-center justify-between">
-                        <span className="uppercase text-muted-foreground">{pretty(item.processor)}</span>
-                        <strong>{item.count}</strong>
-                      </div>
-                    )) : <p className="text-muted-foreground">Sem processadores registados.</p>}
+                    {data?.topProcessors.length ? (
+                      data.topProcessors.map((item) => (
+                        <div
+                          key={item.processor}
+                          className="flex items-center justify-between"
+                        >
+                          <span className="uppercase text-muted-foreground">
+                            {pretty(item.processor)}
+                          </span>
+                          <strong>{item.count}</strong>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-muted-foreground">
+                        Sem processadores registados.
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -272,16 +329,34 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {data?.recentPurchases.length ? data.recentPurchases.map((item, index) => (
-                      <tr key={`${item.createdAt}-${index}`} className="border-b last:border-0">
-                        <td className="py-3 pr-4">{new Date(item.createdAt).toLocaleString('pt-BR')}</td>
-                        <td className="py-3 pr-4 uppercase">{pretty(item.toPlan)}</td>
-                        <td className="py-3 pr-4 uppercase">{pretty(item.processor)}</td>
-                        <td className="py-3 pr-4 font-mono text-xs text-muted-foreground">{item.userId || '—'}</td>
-                      </tr>
-                    )) : (
+                    {data?.recentPurchases.length ? (
+                      data.recentPurchases.map((item, index) => (
+                        <tr
+                          key={`${item.createdAt}-${index}`}
+                          className="border-b last:border-0"
+                        >
+                          <td className="py-3 pr-4">
+                            {new Date(item.createdAt).toLocaleString("pt-BR")}
+                          </td>
+                          <td className="py-3 pr-4 uppercase">
+                            {pretty(item.toPlan)}
+                          </td>
+                          <td className="py-3 pr-4 uppercase">
+                            {pretty(item.processor)}
+                          </td>
+                          <td className="py-3 pr-4 font-mono text-xs text-muted-foreground">
+                            {item.userId || "—"}
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
                       <tr>
-                        <td colSpan={4} className="py-6 text-center text-muted-foreground">Nenhuma compra confirmada ainda.</td>
+                        <td
+                          colSpan={4}
+                          className="py-6 text-center text-muted-foreground"
+                        >
+                          Nenhuma compra confirmada ainda.
+                        </td>
                       </tr>
                     )}
                   </tbody>

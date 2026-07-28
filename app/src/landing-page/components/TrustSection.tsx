@@ -22,19 +22,32 @@ export function TrustSection({ ns = "landing" }: { ns?: string }) {
   return (
     <section className="bg-muted/30 border-y">
       <div className="max-w-5xl mx-auto px-4 py-20">
-        <div ref={headerRef} className={`text-center mb-12 space-y-3 ${headerClass}`}>
+        <div
+          ref={headerRef}
+          className={`text-center mb-12 space-y-3 ${headerClass}`}
+        >
           <h2
             className="text-title-xl font-semibold tracking-tight text-[#071A2D]"
             style={{ fontFamily: "var(--font-brand-display)" }}
           >
             {t("trust_title")}
           </h2>
-          <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">{t("trust_subtitle")}</p>
+          <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">
+            {t("trust_subtitle")}
+          </p>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {TRUST_ITEMS.map((item, index) => {
             const data = items[index] ?? {};
-            return <TrustCard key={item.key} icon={item.icon} title={data.title} desc={data.desc} delay={index * 60} />;
+            return (
+              <TrustCard
+                key={item.key}
+                icon={item.icon}
+                title={data.title}
+                desc={data.desc}
+                delay={index * 60}
+              />
+            );
           })}
         </div>
       </div>
@@ -42,10 +55,24 @@ export function TrustSection({ ns = "landing" }: { ns?: string }) {
   );
 }
 
-function TrustCard({ icon: Icon, title, desc, delay }: { icon: typeof ShieldCheck; title: string; desc: string; delay: number }) {
+function TrustCard({
+  icon: Icon,
+  title,
+  desc,
+  delay,
+}: {
+  icon: typeof ShieldCheck;
+  title: string;
+  desc: string;
+  delay: number;
+}) {
   const { ref, className } = useScrollReveal({ delay });
   return (
-    <Card ref={ref} variant="flat" className={`p-6 space-y-3 text-center ${className}`}>
+    <Card
+      ref={ref}
+      variant="flat"
+      className={`p-6 space-y-3 text-center ${className}`}
+    >
       <div className="inline-flex rounded-sm bg-[#071A2D]/08 p-2.5">
         <Icon className="h-5 w-5 text-[#071A2D]" />
       </div>

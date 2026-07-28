@@ -3,7 +3,14 @@ import { useQuery, getUserAdminDetail } from "wasp/client/operations";
 import { useParams } from "react-router";
 import DefaultLayout from "../../layout/DefaultLayout";
 import { AppPageHeader } from "../../../client/components/brand/AppChrome";
-import { Users, Shield, CreditCard, History, BarChart3, Building2 } from 'lucide-react';
+import {
+  Users,
+  Shield,
+  CreditCard,
+  History,
+  BarChart3,
+  Building2,
+} from "lucide-react";
 import { NavLink } from "react-router";
 
 const UserDetailPage = ({ user }: { user: AuthUser }) => {
@@ -23,7 +30,9 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
   if (!u) {
     return (
       <DefaultLayout user={user}>
-        <div className="text-center py-12 text-muted-foreground">Utilizador não encontrado.</div>
+        <div className="text-center py-12 text-muted-foreground">
+          Utilizador não encontrado.
+        </div>
       </DefaultLayout>
     );
   }
@@ -33,7 +42,9 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
       <div className="space-y-6">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <NavLink to="/admin/users" className="hover:text-[#071A2D]">Utilizadores</NavLink>
+          <NavLink to="/admin/users" className="hover:text-[#071A2D]">
+            Utilizadores
+          </NavLink>
           <span>/</span>
           <span
             className="font-semibold tracking-tight text-[#071A2D]"
@@ -46,9 +57,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
         <AppPageHeader
           eyebrow="Admin · Utilizadores"
           title={u.firstName ? `${u.firstName} ${u.lastName || ""}` : u.email}
-          subtitle={
-            u.isAdmin ? `${u.email} · Admin` : u.email
-          }
+          subtitle={u.isAdmin ? `${u.email} · Admin` : u.email}
         />
 
         {/* Profile + Billing */}
@@ -129,7 +138,9 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                 </p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Créditos editoriais</p>
+                <p className="text-xs text-muted-foreground">
+                  Créditos editoriais
+                </p>
                 <p
                   className="font-semibold tabular-nums tracking-tight text-[#071A2D]"
                   style={{ fontFamily: "var(--font-brand-display)" }}
@@ -137,7 +148,10 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                   {u.credits}
                 </p>
               </div>
-              <div><p className="text-xs text-muted-foreground">Stripe ID</p><p className="text-xs">{u.paymentProcessorUserId || '—'}</p></div>
+              <div>
+                <p className="text-xs text-muted-foreground">Stripe ID</p>
+                <p className="text-xs">{u.paymentProcessorUserId || "—"}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -152,11 +166,16 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
             <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
           </div>
           <div className="divide-y -mx-5">
-            {(!u.memberships || u.memberships.length === 0) ? (
-              <div className="px-5 py-6 text-center text-sm text-muted-foreground">Nenhuma paróquia.</div>
+            {!u.memberships || u.memberships.length === 0 ? (
+              <div className="px-5 py-6 text-center text-sm text-muted-foreground">
+                Nenhuma paróquia.
+              </div>
             ) : (
               u.memberships.map((m: any) => (
-                <div key={m.id} className="px-5 py-3 flex items-center justify-between text-sm">
+                <div
+                  key={m.id}
+                  className="px-5 py-3 flex items-center justify-between text-sm"
+                >
                   <div>
                     <p
                       className="font-semibold tracking-tight text-[#071A2D]"
@@ -165,12 +184,14 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                       {m.parish.name}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {m.community?.name ? `Comunidade: ${m.community.name} · ` : ''}
+                      {m.community?.name
+                        ? `Comunidade: ${m.community.name} · `
+                        : ""}
                       {m.role} · {m.status}
                     </p>
                   </div>
                   <span className="text-xs text-muted-foreground">
-                    desde {new Date(m.createdAt).toLocaleDateString('pt-BR')}
+                    desde {new Date(m.createdAt).toLocaleDateString("pt-BR")}
                   </span>
                 </div>
               ))
@@ -188,11 +209,16 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
             <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
           </div>
           <div className="divide-y -mx-5">
-            {(!u.auditLog || u.auditLog.length === 0) ? (
-              <div className="px-5 py-6 text-center text-sm text-muted-foreground">Nenhuma acção registada.</div>
+            {!u.auditLog || u.auditLog.length === 0 ? (
+              <div className="px-5 py-6 text-center text-sm text-muted-foreground">
+                Nenhuma acção registada.
+              </div>
             ) : (
               u.auditLog.map((log: any) => (
-                <div key={log.id} className="px-5 py-2.5 flex items-center justify-between text-xs">
+                <div
+                  key={log.id}
+                  className="px-5 py-2.5 flex items-center justify-between text-xs"
+                >
                   <div>
                     <span
                       className="font-semibold tracking-tight text-[#071A2D]"
@@ -200,15 +226,23 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                     >
                       {log.action}
                     </span>
-                    <span className="text-muted-foreground ml-2">{log.entityType}</span>
+                    <span className="text-muted-foreground ml-2">
+                      {log.entityType}
+                    </span>
                     {log.metadata && (
                       <span className="text-muted-foreground ml-2">
-                        {(() => { try { return JSON.parse(log.metadata).operation || ''; } catch { return ''; } })()}
+                        {(() => {
+                          try {
+                            return JSON.parse(log.metadata).operation || "";
+                          } catch {
+                            return "";
+                          }
+                        })()}
                       </span>
                     )}
                   </div>
                   <span className="text-muted-foreground">
-                    {new Date(log.createdAt).toLocaleDateString('pt-BR')}
+                    {new Date(log.createdAt).toLocaleDateString("pt-BR")}
                   </span>
                 </div>
               ))
@@ -228,8 +262,11 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
             </div>
             <div className="divide-y -mx-5">
               {u.aiUsage.map((d: any) => (
-                <div key={d.id} className="px-5 py-2 flex items-center justify-between text-xs">
-                  <span>{new Date(d.date).toLocaleDateString('pt-BR')}</span>
+                <div
+                  key={d.id}
+                  className="px-5 py-2 flex items-center justify-between text-xs"
+                >
+                  <span>{new Date(d.date).toLocaleDateString("pt-BR")}</span>
                   <span
                     className="font-semibold tabular-nums tracking-tight text-[#071A2D]"
                     style={{ fontFamily: "var(--font-brand-display)" }}

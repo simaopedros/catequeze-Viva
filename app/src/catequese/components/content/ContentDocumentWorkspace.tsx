@@ -124,8 +124,7 @@ function ReferencesSidebar({
   setDirectoryRefs: React.Dispatch<React.SetStateAction<any[]>>;
 }) {
   const [pickerOpen, setPickerOpen] = useState(false);
-  const total =
-    bibleRefs.length + catechismRefs.length + directoryRefs.length;
+  const total = bibleRefs.length + catechismRefs.length + directoryRefs.length;
 
   const onError = (message: string) =>
     toast({ title: "Erro", description: message, variant: "destructive" });
@@ -323,10 +322,7 @@ function ReferencesSidebar({
                     ) {
                       return prev;
                     }
-                    return [
-                      ...prev,
-                      { id: result.id, verseId, label, text },
-                    ];
+                    return [...prev, { id: result.id, verseId, label, text }];
                   });
                 } catch (error: any) {
                   onError(error.message);
@@ -438,9 +434,7 @@ export function ContentDocumentWorkspace({
     const doc = parseContentDocument(documentJson);
     if (!doc) return false;
     if (isUnmodifiedMeetingSkeleton(doc)) return false;
-    if (
-      JSON.stringify(doc) === JSON.stringify(createEmptyContentDocument())
-    ) {
+    if (JSON.stringify(doc) === JSON.stringify(createEmptyContentDocument())) {
       return false;
     }
     return true;
@@ -659,7 +653,11 @@ export function ContentDocumentWorkspace({
   // beforeunload when dirty/error
   useEffect(() => {
     const handler = (event: BeforeUnloadEvent) => {
-      if (saveState === "dirty" || saveState === "error" || saveState === "saving") {
+      if (
+        saveState === "dirty" ||
+        saveState === "error" ||
+        saveState === "saving"
+      ) {
         event.preventDefault();
         event.returnValue = "";
       }
@@ -706,7 +704,9 @@ export function ContentDocumentWorkspace({
     try {
       const result = await addBibleRef({ contentId: id, verseId });
       setBibleRefs((prev) => {
-        if (prev.some((ref) => ref.id === result.id || ref.verseId === verseId)) {
+        if (
+          prev.some((ref) => ref.id === result.id || ref.verseId === verseId)
+        ) {
           return prev;
         }
         return [...prev, { id: result.id, verseId, label, text }];
@@ -738,7 +738,9 @@ export function ContentDocumentWorkspace({
     try {
       const result = await addCatechismRef({ contentId: id, entryId });
       setCatechismRefs((prev) => {
-        if (prev.some((ref) => ref.id === result.id || ref.entryId === entryId)) {
+        if (
+          prev.some((ref) => ref.id === result.id || ref.entryId === entryId)
+        ) {
           return prev;
         }
         return [...prev, { id: result.id, entryId, label, question }];
@@ -771,7 +773,9 @@ export function ContentDocumentWorkspace({
     try {
       const result = await addDirectoryRef({ contentId: id, entryId });
       setDirectoryRefs((prev) => {
-        if (prev.some((ref) => ref.id === result.id || ref.entryId === entryId)) {
+        if (
+          prev.some((ref) => ref.id === result.id || ref.entryId === entryId)
+        ) {
           return prev;
         }
         return [...prev, { id: result.id, entryId, label, content }];
@@ -990,35 +994,35 @@ export function ContentDocumentWorkspace({
               />
             }
           >
-          <RichContentEditor
-            value={documentJson}
-            onChange={setDocumentJson}
-            onImageUpload={async (file) => {
-              const id = await ensurePersisted();
-              if (!id) {
-                toast({
-                  title: "Salve o rascunho",
-                  description: "Edite o encontro antes de enviar imagens.",
-                });
-                throw new Error("Draft not persisted");
+            <RichContentEditor
+              value={documentJson}
+              onChange={setDocumentJson}
+              onImageUpload={async (file) => {
+                const id = await ensurePersisted();
+                if (!id) {
+                  toast({
+                    title: "Salve o rascunho",
+                    description: "Edite o encontro antes de enviar imagens.",
+                  });
+                  throw new Error("Draft not persisted");
+                }
+                return uploadContentImage(file, id);
+              }}
+              onAddBibleReference={attachBibleReference}
+              onAddCatechismReference={attachCatechismReference}
+              onAddDirectoryReference={attachDirectoryReference}
+              placeholder="Escreva o roteiro do encontro nesta seção…"
+              onSave={() => void saveNow()}
+              saveLabel={
+                saveState === "saving"
+                  ? "Salvando…"
+                  : saveState === "error"
+                    ? "Tentar de novo"
+                    : "Salvar"
               }
-              return uploadContentImage(file, id);
-            }}
-            onAddBibleReference={attachBibleReference}
-            onAddCatechismReference={attachCatechismReference}
-            onAddDirectoryReference={attachDirectoryReference}
-            placeholder="Escreva o roteiro do encontro nesta seção…"
-            onSave={() => void saveNow()}
-            saveLabel={
-              saveState === "saving"
-                ? "Salvando…"
-                : saveState === "error"
-                  ? "Tentar de novo"
-                  : "Salvar"
-            }
-            saveDisabled={saveState === "saving"}
-            onPreview={() => setPreviewOpen(true)}
-          />
+              saveDisabled={saveState === "saving"}
+              onPreview={() => setPreviewOpen(true)}
+            />
           </Suspense>
         </div>
 
@@ -1044,8 +1048,8 @@ export function ContentDocumentWorkspace({
           <SheetHeader className="shrink-0 border-b border-border/60 px-5 py-4 text-left">
             <SheetTitle>Pré-visualização</SheetTitle>
             <SheetDescription>
-              Como o encontro aparece para leitura — edições atuais, mesmo
-              antes de salvar.
+              Como o encontro aparece para leitura — edições atuais, mesmo antes
+              de salvar.
             </SheetDescription>
           </SheetHeader>
           <div className="min-h-0 flex-1 overflow-y-auto bg-muted/30 px-5 py-5">
@@ -1063,9 +1067,7 @@ export function ContentDocumentWorkspace({
                 <p className="mt-2 text-sm text-muted-foreground">
                   {[
                     theme.trim() || null,
-                    estimatedTime
-                      ? `${estimatedTime} min`
-                      : null,
+                    estimatedTime ? `${estimatedTime} min` : null,
                   ]
                     .filter(Boolean)
                     .join(" · ")}

@@ -61,7 +61,11 @@ export default function FamiliesPage() {
     setCursor(null);
   }, [debouncedSearch, communityFilter, activeParishId]);
 
-  const { data: pageData, isLoading, isFetching } = useQuery(
+  const {
+    data: pageData,
+    isLoading,
+    isFetching,
+  } = useQuery(
     listHouseholds,
     {
       take: PAGE_SIZE,

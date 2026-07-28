@@ -120,7 +120,7 @@ function buildPlanCards(t: any): PlanCard[] {
     });
     const features: string[] = Array.isArray(featuresRaw)
       ? (featuresRaw as string[])
-      : (PLANS[meta.planKey].features ?? []);
+      : PLANS[meta.planKey].features ?? [];
     return {
       ...meta,
       name: t(`plans.${meta.planKey}.name`),
@@ -152,7 +152,7 @@ function getPlanCheckoutValue(
   const cents =
     interval === "annual" && plan.priceCentsAnnual
       ? plan.priceCentsAnnual
-      : (plan.priceCents ?? 0);
+      : plan.priceCents ?? 0;
 
   return Number((cents / 100).toFixed(2));
 }
@@ -705,7 +705,7 @@ export default function BillingPage() {
   const recommendedPlanCard =
     requestedPlanCard && requestedPlanLevelMatches
       ? requestedPlanCard
-      : (visiblePlans[0] ?? null);
+      : visiblePlans[0] ?? null;
   const upgradePlanCard =
     !isConversionMode && journeyReason
       ? requestedPlanCard && requestedPlanLevelMatches

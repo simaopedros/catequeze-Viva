@@ -2,10 +2,7 @@ import { Component, ReactNode } from "react";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import i18n from "../../i18n/config";
 import { Button } from "./ui/button";
-import {
-  AppDisplayTitle,
-  AppGoldRule,
-} from "./brand/AppChrome";
+import { AppDisplayTitle, AppGoldRule } from "./brand/AppChrome";
 
 interface ErrorBoundaryProps {
   children: ReactNode;

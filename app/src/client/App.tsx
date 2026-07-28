@@ -43,7 +43,9 @@ import i18n, {
   normalizeLocale,
 } from "../i18n/config";
 
-const CookieConsentBanner = lazy(() => import("./components/cookie-consent/Banner"));
+const CookieConsentBanner = lazy(
+  () => import("./components/cookie-consent/Banner"),
+);
 
 function isLocalDevHost() {
   if (typeof window === "undefined") return false;

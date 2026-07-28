@@ -74,7 +74,11 @@ export function ClassPastoralCharts({
               stackId="a"
               fill={ATTENDANCE_COLORS.present}
             />
-            <Bar dataKey={t("late")} stackId="a" fill={ATTENDANCE_COLORS.late} />
+            <Bar
+              dataKey={t("late")}
+              stackId="a"
+              fill={ATTENDANCE_COLORS.late}
+            />
             <Bar
               dataKey={t("justified")}
               stackId="a"

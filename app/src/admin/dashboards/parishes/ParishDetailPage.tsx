@@ -6,20 +6,39 @@ import {
   AppMetric,
   AppPageHeader,
 } from "../../../client/components/brand/AppChrome";
-import { Church, Building2, Users, GraduationCap, MapPin, BadgeCheck, CircleDot, AlertTriangle, History, ArrowLeft, Crown } from 'lucide-react';
+import {
+  Church,
+  Building2,
+  Users,
+  GraduationCap,
+  MapPin,
+  BadgeCheck,
+  CircleDot,
+  AlertTriangle,
+  History,
+  ArrowLeft,
+  Crown,
+} from "lucide-react";
 import { NavLink } from "react-router";
 
 const ParishDetailPage = ({ user }: { user: AuthUser }) => {
   const { id } = useParams<{ id: string }>();
-  const { data: parish, isLoading } = useQuery(getParishAdminDetail, { id: id! });
+  const { data: parish, isLoading } = useQuery(getParishAdminDetail, {
+    id: id!,
+  });
 
   const statusIcon = (status: string) => {
     switch (status) {
-      case 'ACTIVE': return <BadgeCheck className="h-3.5 w-3.5 text-[#071A2D]" />;
-      case 'TRIAL': return <CircleDot className="h-3.5 w-3.5 text-[#071A2D]" />;
-      case 'PAST_DUE': return <AlertTriangle className="h-3.5 w-3.5 text-[#8A6418]" />;
-      case 'CANCELED': return <AlertTriangle className="h-3.5 w-3.5 text-destructive" />;
-      default: return null;
+      case "ACTIVE":
+        return <BadgeCheck className="h-3.5 w-3.5 text-[#071A2D]" />;
+      case "TRIAL":
+        return <CircleDot className="h-3.5 w-3.5 text-[#071A2D]" />;
+      case "PAST_DUE":
+        return <AlertTriangle className="h-3.5 w-3.5 text-[#8A6418]" />;
+      case "CANCELED":
+        return <AlertTriangle className="h-3.5 w-3.5 text-destructive" />;
+      default:
+        return null;
     }
   };
 
@@ -36,7 +55,9 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
   if (!parish) {
     return (
       <DefaultLayout user={user}>
-        <div className="text-center py-12 text-muted-foreground">Paróquia não encontrada.</div>
+        <div className="text-center py-12 text-muted-foreground">
+          Paróquia não encontrada.
+        </div>
       </DefaultLayout>
     );
   }
@@ -46,7 +67,9 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
       <div className="space-y-6">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <NavLink to="/admin/parishes" className="hover:text-[#071A2D]">Paróquias</NavLink>
+          <NavLink to="/admin/parishes" className="hover:text-[#071A2D]">
+            Paróquias
+          </NavLink>
           <span>/</span>
           <span
             className="font-semibold tracking-tight text-[#071A2D]"
@@ -79,11 +102,31 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-          <AppMetric label="Turmas" value={parish._count?.classes || 0} className="bg-white" />
-          <AppMetric label="Catequizandos" value={parish._count?.catechumens || 0} className="bg-white" />
-          <AppMetric label="Membros" value={parish._count?.memberships || 0} className="bg-white" />
-          <AppMetric label="Comunidades" value={parish._count?.communities || 0} className="bg-white" />
-          <AppMetric label="Campanhas" value={parish._count?.messageCampaigns || 0} className="bg-white" />
+          <AppMetric
+            label="Turmas"
+            value={parish._count?.classes || 0}
+            className="bg-white"
+          />
+          <AppMetric
+            label="Catequizandos"
+            value={parish._count?.catechumens || 0}
+            className="bg-white"
+          />
+          <AppMetric
+            label="Membros"
+            value={parish._count?.memberships || 0}
+            className="bg-white"
+          />
+          <AppMetric
+            label="Comunidades"
+            value={parish._count?.communities || 0}
+            className="bg-white"
+          />
+          <AppMetric
+            label="Campanhas"
+            value={parish._count?.messageCampaigns || 0}
+            className="bg-white"
+          />
         </div>
 
         {/* Billing */}
@@ -123,7 +166,9 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
                   style={{ fontFamily: "var(--font-brand-display)" }}
                 >
                   {parish.billing.trialEndsAt
-                    ? new Date(parish.billing.trialEndsAt).toLocaleDateString("pt-BR")
+                    ? new Date(parish.billing.trialEndsAt).toLocaleDateString(
+                        "pt-BR",
+                      )
                     : "—"}
                 </p>
               </div>
@@ -139,7 +184,9 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
               </div>
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">Sem licença registada.</p>
+            <p className="text-sm text-muted-foreground">
+              Sem licença registada.
+            </p>
           )}
         </div>
 
@@ -153,11 +200,16 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
             <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
           </div>
           <div className="divide-y -mx-5">
-            {(!parish.members || parish.members.length === 0) ? (
-              <div className="px-5 py-6 text-center text-sm text-muted-foreground">Nenhum membro ativo.</div>
+            {!parish.members || parish.members.length === 0 ? (
+              <div className="px-5 py-6 text-center text-sm text-muted-foreground">
+                Nenhum membro ativo.
+              </div>
             ) : (
               parish.members.map((m: any) => (
-                <div key={m.id} className="px-5 py-3 flex items-center justify-between">
+                <div
+                  key={m.id}
+                  className="px-5 py-3 flex items-center justify-between"
+                >
                   <div>
                     <p
                       className="text-sm font-semibold tracking-tight text-[#071A2D]"
@@ -165,9 +217,15 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
                     >
                       {m.user.email}
                     </p>
-                    <p className="text-xs text-muted-foreground">{m.user.firstName ? `${m.user.firstName} ${m.user.lastName || ''}` : '—'}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {m.user.firstName
+                        ? `${m.user.firstName} ${m.user.lastName || ""}`
+                        : "—"}
+                    </p>
                   </div>
-                  <span className="rounded-sm bg-muted px-2 py-0.5 text-xs">{m.role}</span>
+                  <span className="rounded-sm bg-muted px-2 py-0.5 text-xs">
+                    {m.role}
+                  </span>
                 </div>
               ))
             )}
@@ -184,11 +242,16 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
             <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
           </div>
           <div className="divide-y -mx-5">
-            {(!parish.recentAudit || parish.recentAudit.length === 0) ? (
-              <div className="px-5 py-6 text-center text-sm text-muted-foreground">Nenhuma actividade registada.</div>
+            {!parish.recentAudit || parish.recentAudit.length === 0 ? (
+              <div className="px-5 py-6 text-center text-sm text-muted-foreground">
+                Nenhuma actividade registada.
+              </div>
             ) : (
               parish.recentAudit.map((log: any) => (
-                <div key={log.id} className="px-5 py-2.5 flex items-center justify-between text-xs">
+                <div
+                  key={log.id}
+                  className="px-5 py-2.5 flex items-center justify-between text-xs"
+                >
                   <div>
                     <span
                       className="font-semibold tracking-tight text-[#071A2D]"
@@ -196,16 +259,26 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
                     >
                       {log.action}
                     </span>
-                    <span className="text-muted-foreground ml-2">{log.entityType}</span>
+                    <span className="text-muted-foreground ml-2">
+                      {log.entityType}
+                    </span>
                     {log.metadata && (
                       <span className="text-muted-foreground ml-2">
-                        {(() => { try { return JSON.parse(log.metadata).operation || ''; } catch { return ''; } })()}
+                        {(() => {
+                          try {
+                            return JSON.parse(log.metadata).operation || "";
+                          } catch {
+                            return "";
+                          }
+                        })()}
                       </span>
                     )}
                   </div>
                   <div className="flex items-center gap-3 text-muted-foreground">
-                    <span>{log.user?.email || '—'}</span>
-                    <span>{new Date(log.createdAt).toLocaleDateString('pt-BR')}</span>
+                    <span>{log.user?.email || "—"}</span>
+                    <span>
+                      {new Date(log.createdAt).toLocaleDateString("pt-BR")}
+                    </span>
                   </div>
                 </div>
               ))

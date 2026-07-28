@@ -336,8 +336,6 @@ export function InstitutionalDashboard() {
     },
   );
 
-
-
   const enrollmentsKey = t("chart_enrollments");
   const dropoutsKey = t("chart_dropouts");
   const attendanceKey = t("chart_attendance");

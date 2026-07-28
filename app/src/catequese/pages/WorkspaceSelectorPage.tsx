@@ -363,60 +363,60 @@ export default function WorkspaceSelectorPage() {
             {lastUsed &&
               lastUsed.membershipStatus !== "INVITED" &&
               workspaces.length > 1 && (
-              <div className="space-y-3">
-                <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground px-1 flex items-center gap-1.5">
-                  <History className="h-3.5 w-3.5" />
-                  {t("workspace.continue_title")}
-                </h3>
-                <div
-                  role="button"
-                  tabIndex={0}
-                  data-testid="workspace-card-last-used"
-                  onClick={() => handleEnter(lastUsed.id)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      handleEnter(lastUsed.id);
-                    }
-                  }}
-                  className="group w-full cursor-pointer rounded-sm border border-[#071A2D]/30 bg-white p-5 text-left transition-colors hover:border-[#071A2D]/50"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-[#071A2D]">
-                      {lastUsed.isPersonal ? (
-                        <User className="h-6 w-6 text-[#071A2D]" />
-                      ) : (
-                        workspaceIcon(lastUsed.type)
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p
-                          className="text-lg font-semibold tracking-tight text-[#071A2D]"
-                          style={{ fontFamily: "var(--font-brand-display)" }}
-                        >
-                          {lastUsed.name}
-                        </p>
-                        <span className="text-overline text-muted-foreground rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5">
-                          {t("workspace.last_used")}
-                        </span>
+                <div className="space-y-3">
+                  <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground px-1 flex items-center gap-1.5">
+                    <History className="h-3.5 w-3.5" />
+                    {t("workspace.continue_title")}
+                  </h3>
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    data-testid="workspace-card-last-used"
+                    onClick={() => handleEnter(lastUsed.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleEnter(lastUsed.id);
+                      }
+                    }}
+                    className="group w-full cursor-pointer rounded-sm border border-[#071A2D]/30 bg-white p-5 text-left transition-colors hover:border-[#071A2D]/50"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="rounded-sm border border-border/70 bg-muted/30 p-3 text-[#071A2D]">
+                        {lastUsed.isPersonal ? (
+                          <User className="h-6 w-6 text-[#071A2D]" />
+                        ) : (
+                          workspaceIcon(lastUsed.type)
+                        )}
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        {lastUsed.isPersonal
-                          ? lastUsed.subtitle
-                          : roleLabel(lastUsed.role, t)}
-                      </p>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p
+                            className="text-lg font-semibold tracking-tight text-[#071A2D]"
+                            style={{ fontFamily: "var(--font-brand-display)" }}
+                          >
+                            {lastUsed.name}
+                          </p>
+                          <span className="text-overline text-muted-foreground rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5">
+                            {t("workspace.last_used")}
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {lastUsed.isPersonal
+                            ? lastUsed.subtitle
+                            : roleLabel(lastUsed.role, t)}
+                        </p>
+                      </div>
+                      <ArrowRight className="h-5 w-5 mt-2 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
                     </div>
-                    <ArrowRight className="h-5 w-5 mt-2 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                  </div>
+                  <div className="border-t pt-3">
+                    <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground px-1 mb-2">
+                      {t("workspace.switch_workspace")}
+                    </h3>
                   </div>
                 </div>
-                <div className="border-t pt-3">
-                  <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground px-1 mb-2">
-                    {t("workspace.switch_workspace")}
-                  </h3>
-                </div>
-              </div>
-            )}
+              )}
 
             {/* Personal Workspace */}
             <div>
