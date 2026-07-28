@@ -119,9 +119,14 @@ jobs:
             # Mesma poda aplicada ao homolog: lá o disco encheu, o pull falhou
             # com "no space left on device", o SPA não foi extraído e o site
             # ficou em 404. Produção corria o mesmo risco.
-            docker image prune -af --filter "until=24h" || true
-            docker builder prune -af --filter "until=24h" || true
-            docker container prune -f || true
+            # Com teto de tempo: poda num disco cheio pode demorar demais e
+            # travar o passo de SSH inteiro. `-a` remove só imagens sem
+            # container associado; as dos serviços no ar ficam. Nunca usar
+            # --volumes: apagaria o volume do Postgres.
+            df -h / | tail -1
+            timeout 120 docker container prune -f || echo "⚠️ container prune excedeu o tempo"
+            timeout 600 docker image prune -af || echo "⚠️ image prune excedeu o tempo"
+            timeout 300 docker builder prune -af || echo "⚠️ builder prune excedeu o tempo"
             df -h / | tail -1
 
             docker compose -f docker-compose.yml pull

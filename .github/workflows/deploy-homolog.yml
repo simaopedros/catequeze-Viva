@@ -83,11 +83,25 @@ jobs:
             # falha com "no space left on device". Quando isso aconteceu, a
             # extração do SPA não rodou e o site passou a servir 404 — com o
             # deploy ainda reportando sucesso.
-            echo "── disco antes da limpeza ──"; df -h /var/lib/containerd /var/lib/docker 2>/dev/null | tail -n +1 || df -h /
-            docker image prune -af --filter "until=24h" || true
-            docker builder prune -af --filter "until=24h" || true
-            docker container prune -f || true
+            # Cada prune tem teto de tempo: num disco cheio, com muitas camadas
+            # acumuladas, a poda pode levar dezenas de minutos e travar o passo
+            # inteiro (o ssh-action só corta em 30m). Melhor podar o que der no
+            # tempo e seguir do que pendurar o deploy.
+            echo "── disco antes da limpeza ──"; df -h / | tail -1
+            # Sem `--filter until=24h`: foram as imagens das últimas horas que
+            # encheram o disco, e o filtro justamente as preservava. `-a` remove
+            # só imagens SEM container associado — as dos serviços no ar ficam.
+            # Nunca usar --volumes aqui: apagaria o volume do Postgres.
+            timeout 120 docker container prune -f || echo "⚠️ container prune excedeu o tempo"
+            timeout 600 docker image prune -af || echo "⚠️ image prune excedeu o tempo"
+            timeout 300 docker builder prune -af || echo "⚠️ builder prune excedeu o tempo"
             echo "── disco após a limpeza ──"; df -h / | tail -1
+            AVAIL_KB=$(df -k --output=avail / | tail -1 | tr -d ' ')
+            if [ "${AVAIL_KB:-0}" -lt 3145728 ]; then
+              echo "ERROR: menos de 3 GB livres após a poda ($((AVAIL_KB/1024)) MB)."
+              echo "O pull da imagem não caberia. Limpe o disco do VPS à mão antes de reimplantar."
+              exit 1
+            fi
 
             docker compose -f docker-compose.homolog.yml pull
 
