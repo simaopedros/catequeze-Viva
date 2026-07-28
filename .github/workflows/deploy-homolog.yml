@@ -78,17 +78,38 @@ jobs:
             fi
             echo "$GHCR_TOKEN" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
             export IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:homolog-${{ github.sha }}"
+
+            # Cada deploy traz uma imagem nova; sem poda o disco enche e o pull
+            # falha com "no space left on device". Quando isso aconteceu, a
+            # extração do SPA não rodou e o site passou a servir 404 — com o
+            # deploy ainda reportando sucesso.
+            echo "── disco antes da limpeza ──"; df -h /var/lib/containerd /var/lib/docker 2>/dev/null | tail -n +1 || df -h /
+            docker image prune -af --filter "until=24h" || true
+            docker builder prune -af --filter "until=24h" || true
+            docker container prune -f || true
+            echo "── disco após a limpeza ──"; df -h / | tail -1
+
             docker compose -f docker-compose.homolog.yml pull
 
-            # Extract web-app from Docker image directly on VPS
+            # Extract web-app from Docker image directly on VPS.
+            # Só apaga o SPA atual depois que o container de origem existe: se o
+            # pull/create falhar, é melhor manter a versão anterior no ar do que
+            # deixar o diretório vazio servindo 404.
             CID=$(docker create "${IMAGE}")
             rm -rf /opt/catechis/web-app/*
             docker cp "${CID}:/app/web-app/." /opt/catechis/web-app/
             docker rm "${CID}"
 
-            # Verify SPA was extracted (must contain index.html)
-            test -f /opt/catechis/web-app/index.html || (echo "ERROR: web-app/index.html missing — Docker build failed" && exit 1)
-            
+            # Verify SPA was extracted (must contain index.html).
+            # Chaves, não parênteses: `|| ( ... exit 1 )` sai só do subshell, e o
+            # script seguia adiante — foi assim que um deploy sem SPA terminou
+            # marcado como sucesso, com o site em 404.
+            if [ ! -f /opt/catechis/web-app/index.html ]; then
+              echo "ERROR: web-app/index.html ausente — extração do SPA falhou"
+              df -h /
+              exit 1
+            fi
+
             docker compose -f docker-compose.homolog.yml up -d --force-recreate --remove-orphans
             sleep 10
             docker compose -f docker-compose.homolog.yml run --rm --entrypoint "npx" server prisma migrate deploy --schema=../db/schema.prisma || \

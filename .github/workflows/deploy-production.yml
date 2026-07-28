@@ -115,12 +115,25 @@ jobs:
             cd /opt/catechis
             echo "$GHCR_TOKEN" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
             export IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:prod-${{ github.sha }}"
+
+            # Mesma poda aplicada ao homolog: lá o disco encheu, o pull falhou
+            # com "no space left on device", o SPA não foi extraído e o site
+            # ficou em 404. Produção corria o mesmo risco.
+            docker image prune -af --filter "until=24h" || true
+            docker builder prune -af --filter "until=24h" || true
+            docker container prune -f || true
+            df -h / | tail -1
+
             docker compose -f docker-compose.yml pull
             CID=$(docker create "${IMAGE}")
             rm -rf /opt/catechis/web-app/*
             docker cp "${CID}:/app/web-app/." /opt/catechis/web-app/
             docker rm "${CID}"
-            test -f /opt/catechis/web-app/index.html
+            if [ ! -f /opt/catechis/web-app/index.html ]; then
+              echo "ERROR: web-app/index.html ausente — extração do SPA falhou"
+              df -h /
+              exit 1
+            fi
             docker compose -f docker-compose.yml up -d
             sleep 5
             docker compose -f docker-compose.yml run --rm --entrypoint "npx" server prisma migrate deploy --schema=../db/schema.prisma
