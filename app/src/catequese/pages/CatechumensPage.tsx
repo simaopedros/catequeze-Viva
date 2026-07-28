@@ -362,15 +362,15 @@ export default function CatechumensPage() {
               icon={School}
             >
               <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
-                <div className="rounded-sm border border-border/70 bg-surface-elevated px-4 py-3">
+                <AppPanel className="px-4 py-3" padded={false}>
                   {t("catechumens.flow_1")}
-                </div>
-                <div className="rounded-sm border border-border/70 bg-surface-elevated px-4 py-3">
+                </AppPanel>
+                <AppPanel className="px-4 py-3" padded={false}>
                   {t("catechumens.flow_2")}
-                </div>
-                <div className="rounded-sm border border-border/70 bg-surface-elevated px-4 py-3">
+                </AppPanel>
+                <AppPanel className="px-4 py-3" padded={false}>
                   {t("catechumens.flow_3")}
-                </div>
+                </AppPanel>
               </div>
             </SurfaceSection>
           </div>

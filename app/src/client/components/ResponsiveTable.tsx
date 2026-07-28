@@ -1,6 +1,7 @@
 import { type ReactNode } from "react";
 import { cn } from "../utils";
 import type { MobileCardField } from "../../shared/uiPresentation";
+import { AppPanel } from "./brand/AppChrome";
 
 export interface ResponsiveTableColumn<T> {
   key: string;
@@ -91,11 +92,9 @@ export function ResponsiveTable<T>({
   return (
     <>
       {/* Desktop: standard table */}
-      <div
-        className={cn(
-          "hidden md:block overflow-x-auto rounded-sm border border-border/70 bg-surface-elevated",
-          className,
-        )}
+      <AppPanel
+        className={cn("hidden md:block overflow-x-auto", className)}
+        padded={false}
       >
         <table className={cn("w-full text-sm", tableClassName)}>
           <thead>
@@ -135,18 +134,18 @@ export function ResponsiveTable<T>({
             ))}
           </tbody>
         </table>
-      </div>
+      </AppPanel>
 
       {/* Mobile: designed cards / expandable rows */}
       <div className={cn("md:hidden space-y-3", className)} role="list">
         {data.map((item, idx) => {
           const interactive = Boolean(onRowClick);
           return (
-            <div
+            <AppPanel
               key={getRowKey(item, idx)}
               role="listitem"
               className={cn(
-                "rounded-sm border border-border/70 bg-surface-elevated p-3.5",
+                "p-3.5",
                 interactive &&
                   "cursor-pointer active:scale-[0.99] transition-transform motion-reduce:transition-none motion-reduce:active:scale-100",
                 interactive &&
@@ -164,6 +163,7 @@ export function ResponsiveTable<T>({
                   : undefined
               }
               tabIndex={interactive ? 0 : undefined}
+              padded={false}
             >
               {renderMobileCard ? (
                 renderMobileCard(item)
@@ -223,7 +223,7 @@ export function ResponsiveTable<T>({
                   )}
                 </>
               )}
-            </div>
+            </AppPanel>
           );
         })}
       </div>

@@ -6,6 +6,7 @@ import { Badge } from "../../client/components/ui/badge";
 import {
   AppPageHeader,
   AppMetric,
+  AppPanel,
 } from "../../client/components/brand/AppChrome";
 import { EmptyState } from "../../client/components/EmptyState";
 import { FilterPills } from "../../client/components/FilterPills";
@@ -172,7 +173,7 @@ export default function ClassPastoralReportPage() {
       </div>
 
       {/* Upcoming Birthdays */}
-      <div className="rounded-sm border border-border/70 bg-surface-elevated p-4 sm:p-5">
+      <AppPanel className="p-4 sm:p-5" padded={false}>
         <div className="mb-3 space-y-1.5">
           <h3 className="flex items-center gap-1.5 text-[11px] font-medium tracking-wide text-muted-foreground">
             <Gift className="h-4 w-4 text-warning" />
@@ -202,7 +203,7 @@ export default function ClassPastoralReportPage() {
             ))}
           </div>
         )}
-      </div>
+      </AppPanel>
 
       <Suspense fallback={<ChartSuspenseFallback height={320} />}>
         <ClassPastoralCharts
@@ -214,7 +215,7 @@ export default function ClassPastoralReportPage() {
       </Suspense>
 
       {Boolean(data.meetingsWithAttendance?.length) && (
-        <div className="rounded-sm border border-border/70 bg-surface-elevated">
+        <AppPanel padded={false}>
           <div className="flex flex-col gap-3 border-b border-border/70 p-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
             <span className="font-brand-display flex items-center gap-2 font-semibold tracking-tight text-brand-ink">
               <Trophy className="h-4 w-4 text-brand-gold" />
@@ -376,7 +377,7 @@ export default function ClassPastoralReportPage() {
                             </span>
                             <Badge
                               variant="outline"
-                              className="px-1.5 py-0 text-[10px]"
+                              className="px-1.5 py-0 text-micro"
                               style={{
                                 color:
                                   RISK_COLORS[
@@ -416,7 +417,7 @@ export default function ClassPastoralReportPage() {
               </div>
             </>
           )}
-        </div>
+        </AppPanel>
       )}
     </div>
   );

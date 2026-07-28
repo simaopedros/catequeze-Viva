@@ -15,6 +15,7 @@ import { FilterPills } from "../../client/components/FilterPills";
 import {
   AppPageHeader,
   AppMetric,
+  AppPanel,
 } from "../../client/components/brand/AppChrome";
 import { EmptyState } from "../../client/components/EmptyState";
 import { ChartSuspenseFallback } from "../../client/components/ChartSuspenseFallback";
@@ -294,7 +295,7 @@ export default function ReportsPage() {
             </div>
           )}
 
-          <div className="rounded-sm border border-border/70 bg-surface-elevated">
+          <AppPanel padded={false}>
             <div className="flex items-center gap-2 border-b border-border/70 p-4 text-[11px] font-medium tracking-wide text-muted-foreground">
               <BarChart3 className="h-4 w-4" />
               {t("attendance_by_class")}
@@ -355,12 +356,12 @@ export default function ReportsPage() {
                 ))}
               </div>
             )}
-          </div>
+          </AppPanel>
         </>
       )}
 
       {tab === "ranking" && (
-        <div className="rounded-sm border border-border/70 bg-surface-elevated">
+        <AppPanel padded={false}>
           <div className="flex items-center gap-2 border-b border-border/70 bg-muted/20 p-4 text-[11px] font-medium tracking-wide text-muted-foreground">
             <Trophy className="h-4 w-4 text-warning" />
             {t("ranking_title")}
@@ -428,7 +429,7 @@ export default function ReportsPage() {
                 ))}
             </div>
           )}
-        </div>
+        </AppPanel>
       )}
 
       {tab === "grafico" && (

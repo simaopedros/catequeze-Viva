@@ -36,6 +36,7 @@ import {
   getCachedMeetingSheet,
   type AttendanceQueueItem,
 } from "../../../client/offline/db";
+import { AppPanel } from "../../../client/components/brand/AppChrome";
 
 const STATUS_CYCLE = ["PRESENT", "LATE", "ABSENT", "JUSTIFIED"] as const;
 
@@ -492,7 +493,7 @@ export function MeetingAttendanceSheet({
               })}
             </p>
             {dataUpdatedAt && (
-              <p className="mt-0.5 text-[10px] text-muted-foreground">
+              <p className="mt-0.5 text-micro text-muted-foreground">
                 {t("sheet.data_updated_at", { time: dataUpdatedAt })}
               </p>
             )}
@@ -584,7 +585,7 @@ export function MeetingAttendanceSheet({
         </div>
 
         {switcherOpen && (
-          <div className="max-h-48 overflow-y-auto rounded-sm border border-border/70 bg-surface-elevated p-1">
+          <AppPanel className="max-h-48 overflow-y-auto p-1" padded={false}>
             {(sheet.siblingMeetings || []).map((s: any) => (
               <button
                 key={s.id}
@@ -616,7 +617,7 @@ export function MeetingAttendanceSheet({
                 </span>
               </button>
             ))}
-          </div>
+          </AppPanel>
         )}
 
         <div className="flex flex-wrap gap-2">

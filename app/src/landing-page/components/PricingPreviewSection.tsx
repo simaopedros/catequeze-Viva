@@ -115,7 +115,7 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
             )}
           >
             {tr("price_annual")}
-            <span className="rounded-sm bg-brand-ink/8 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-ink">
+            <span className="rounded-sm bg-brand-ink/8 px-1.5 py-0.5 text-micro font-semibold uppercase tracking-wide text-brand-ink">
               {tr("annual_discount")}
             </span>
           </button>

@@ -70,7 +70,7 @@ function PathOption({
       )}
     >
       <span className="min-w-0 space-y-1.5">
-        <span className="font-brand-display block text-[0.95rem] font-semibold tracking-tight text-brand-ink group-hover:text-brand-ink-soft">
+        <span className="font-brand-display block text-body font-semibold tracking-tight text-brand-ink group-hover:text-brand-ink-soft">
           {label}
         </span>
         <span className="block text-sm leading-relaxed text-muted-foreground">

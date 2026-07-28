@@ -929,7 +929,7 @@ function PastoralAnalysisInline({
                       {formatDate(item.date)}
                     </span>
                     <span>{displayTheme(item)}</span>
-                    <span className="text-[10px] text-muted-foreground">
+                    <span className="text-micro text-muted-foreground">
                       {statusLabels[item.status] || item.status}
                     </span>
                   </div>

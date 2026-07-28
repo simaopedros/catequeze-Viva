@@ -378,12 +378,13 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
               <SectionCard title={t("pastoral_alerts")} icon={AlertCircle}>
                 <div className="space-y-2">
                   {stats.recentAlerts.map((a: any, i: number) => (
-                    <div
+                    <AppPanel
                       key={i}
-                      className="rounded-sm border border-border/70 bg-surface-elevated px-4 py-3 text-sm font-medium tracking-tight text-brand-ink"
+                      className="px-4 py-3 text-sm font-medium tracking-tight text-brand-ink"
+                      padded={false}
                     >
                       {a.message}
-                    </div>
+                    </AppPanel>
                   ))}
                 </div>
               </SectionCard>
@@ -393,15 +394,15 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
             {!showActivationChrome && (
               <SectionCard title={t("how_to_start")} icon={ArrowRight}>
                 <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
-                  <div className="rounded-sm border border-border/70 bg-surface-elevated px-4 py-3">
+                  <AppPanel className="px-4 py-3" padded={false}>
                     1. {t("how_to_start_1")}
-                  </div>
-                  <div className="rounded-sm border border-border/70 bg-surface-elevated px-4 py-3">
+                  </AppPanel>
+                  <AppPanel className="px-4 py-3" padded={false}>
                     2. {t("how_to_start_2")}
-                  </div>
-                  <div className="rounded-sm border border-border/70 bg-surface-elevated px-4 py-3">
+                  </AppPanel>
+                  <AppPanel className="px-4 py-3" padded={false}>
                     3. {t("how_to_start_3")}
-                  </div>
+                  </AppPanel>
                 </div>
               </SectionCard>
             )}
@@ -440,15 +441,16 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
               <SectionCard title={t("pastoral_alerts")} icon={AlertCircle}>
                 <div className="space-y-2">
                   {stats.recentAlerts.map((a: any, i: number) => (
-                    <div
+                    <AppPanel
                       key={i}
-                      className="flex items-start gap-3 rounded-sm border border-border/70 bg-surface-elevated px-4 py-3"
+                      className="flex items-start gap-3 px-4 py-3"
+                      padded={false}
                     >
                       <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                       <p className="text-sm font-medium leading-relaxed tracking-tight text-brand-ink">
                         {a.message}
                       </p>
-                    </div>
+                    </AppPanel>
                   ))}
                 </div>
               </SectionCard>

@@ -1,4 +1,5 @@
 import { cn } from "../utils";
+import { AppPanel } from "./brand/AppChrome";
 
 interface SkeletonProps {
   className?: string;
@@ -18,18 +19,16 @@ function Skeleton({ className }: SkeletonProps) {
 
 export function SkeletonCard({ className }: SkeletonProps) {
   return (
-    <div
+    <AppPanel
       role="status"
       aria-busy="true"
-      className={cn(
-        "rounded-sm border border-border/70 bg-surface-elevated p-5 space-y-3",
-        className,
-      )}
+      className={cn("p-5 space-y-3", className)}
+      padded={false}
     >
       <Skeleton className="h-4 w-3/4" />
       <Skeleton className="h-3 w-1/2" />
       <Skeleton className="h-8 w-full mt-4" />
-    </div>
+    </AppPanel>
   );
 }
 
@@ -38,13 +37,11 @@ export function SkeletonTable({
   className,
 }: SkeletonProps & { rows?: number }) {
   return (
-    <div
+    <AppPanel
       role="status"
       aria-busy="true"
-      className={cn(
-        "rounded-sm border border-border/70 bg-surface-elevated overflow-hidden",
-        className,
-      )}
+      className={cn("overflow-hidden", className)}
+      padded={false}
     >
       <div className="border-b p-3">
         <Skeleton className="h-4 w-1/3" />
@@ -62,7 +59,7 @@ export function SkeletonTable({
           <Skeleton className="h-6 w-16 rounded-sm" />
         </div>
       ))}
-    </div>
+    </AppPanel>
   );
 }
 
@@ -73,9 +70,10 @@ export function SkeletonList({
   return (
     <div role="status" aria-busy="true" className={cn("space-y-3", className)}>
       {Array.from({ length: items }).map((_, i) => (
-        <div
+        <AppPanel
           key={i}
-          className="flex items-center gap-3 rounded-sm border border-border/70 bg-surface-elevated p-3"
+          className="flex items-center gap-3 p-3"
+          padded={false}
         >
           <Skeleton className="h-10 w-10 rounded-sm" />
           <div className="flex-1 space-y-1">
@@ -83,7 +81,7 @@ export function SkeletonList({
             <Skeleton className="h-3 w-1/3" />
           </div>
           <Skeleton className="h-8 w-8 rounded-sm" />
-        </div>
+        </AppPanel>
       ))}
     </div>
   );
@@ -128,17 +126,15 @@ export function SkeletonChart({
   className,
 }: SkeletonProps & { height?: string }) {
   return (
-    <div
+    <AppPanel
       role="status"
       aria-busy="true"
-      className={cn(
-        "rounded-sm border border-border/70 bg-surface-elevated p-5",
-        className,
-      )}
+      className={cn("p-5", className)}
+      padded={false}
     >
       <Skeleton className="h-4 w-1/3 mb-4" />
       <Skeleton className={cn("w-full rounded-sm", height)} />
-    </div>
+    </AppPanel>
   );
 }
 
@@ -153,14 +149,11 @@ export function SkeletonStats({
       className={cn("grid gap-4 grid-cols-2 lg:grid-cols-4", className)}
     >
       {Array.from({ length: count }).map((_, i) => (
-        <div
-          key={i}
-          className="rounded-sm border border-border/70 bg-surface-elevated p-5 space-y-3"
-        >
+        <AppPanel key={i} className="p-5 space-y-3" padded={false}>
           <Skeleton className="h-4 w-20" />
           <Skeleton className="h-8 w-16" />
           <Skeleton className="h-3 w-24" />
-        </div>
+        </AppPanel>
       ))}
     </div>
   );

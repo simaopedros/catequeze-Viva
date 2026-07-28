@@ -30,6 +30,7 @@ import { Avatar, AvatarFallback } from "../../client/components/ui/avatar";
 import {
   AppPageHeader,
   AppMetric,
+  AppPanel,
 } from "../../client/components/brand/AppChrome";
 import { EmptyState } from "../../client/components/EmptyState";
 import { SkeletonTable } from "../../client/components/Skeletons";
@@ -397,10 +398,7 @@ export default function DocumentsPage() {
             }`.toUpperCase();
 
             return (
-              <div
-                key={c.id}
-                className="rounded-sm border border-border/70 bg-surface-elevated p-4 space-y-3"
-              >
+              <AppPanel key={c.id} className="p-4 space-y-3" padded={false}>
                 <div className="flex items-center gap-3">
                   <Avatar className="h-9 w-9">
                     <AvatarFallback className="rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-brand-ink">
@@ -499,7 +497,7 @@ export default function DocumentsPage() {
                             </Badge>
                           )}
                           {status === "MISSING" && (
-                            <span className="text-[10px] text-muted-foreground italic flex-shrink-0">
+                            <span className="text-micro text-muted-foreground italic flex-shrink-0">
                               {tc("documents.status_missing")}
                             </span>
                           )}
@@ -623,7 +621,7 @@ export default function DocumentsPage() {
                     );
                   })}
                 </div>
-              </div>
+              </AppPanel>
             );
           })}
         </div>

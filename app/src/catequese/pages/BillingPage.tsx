@@ -886,7 +886,7 @@ export default function BillingPage() {
                   </div>
 
                   <AppGoldRule />
-                  <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-[0.95rem]">
+                  <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-body">
                     {isTrialAccess
                       ? trialDaysLeft === 1
                         ? t("trial_hero_subtitle_one")

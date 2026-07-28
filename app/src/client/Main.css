@@ -133,6 +133,10 @@
   --text-body-sm--line-height: 1.25rem;
   --text-body-xs: 0.75rem;
   --text-body-xs--line-height: 1rem;
+  /* Menor grau do sistema: selos, badges size="sm" e metadados densos.
+     Substitui os text-[10px] avulsos — mesmo valor, agora tokenizado. */
+  --text-micro: 0.625rem;
+  --text-micro--line-height: 0.875rem;
 
   /* Caption / overline */
   --text-caption: 0.75rem;

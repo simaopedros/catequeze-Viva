@@ -25,7 +25,10 @@ import { toast } from "../../client/hooks/use-toast";
 import { useLocale } from "../../i18n/useLocale";
 import { formatDate } from "../../i18n/format";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
-import { AppPageHeader } from "../../client/components/brand/AppChrome";
+import {
+  AppPageHeader,
+  AppPanel,
+} from "../../client/components/brand/AppChrome";
 import { MeetingAttendanceSheet } from "../components/attendance/MeetingAttendanceSheet";
 
 /** Match Tailwind `md` — mobile sheet below this width. */
@@ -117,7 +120,10 @@ function StatusCell({
         {st ? st.label : <Minus className="h-3 w-3" />}
       </button>
       {open && (
-        <div className="absolute z-50 left-1/2 -translate-x-1/2 mt-1 rounded-sm border border-border/70 bg-surface-elevated p-1 shadow-sm flex flex-col gap-0.5 min-w-[100px]">
+        <AppPanel
+          className="absolute z-50 left-1/2 -translate-x-1/2 mt-1 p-1 shadow-sm flex flex-col gap-0.5 min-w-[100px]"
+          padded={false}
+        >
           {statusOptions.map((opt) => (
             <button
               key={opt.key}
@@ -133,7 +139,7 @@ function StatusCell({
               <span className="tabular-nums">{opt.fullLabel}</span>
             </button>
           ))}
-        </div>
+        </AppPanel>
       )}
     </div>
   );

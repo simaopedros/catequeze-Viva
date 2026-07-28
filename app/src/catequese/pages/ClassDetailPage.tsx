@@ -6,6 +6,7 @@ import { Badge } from "../../client/components/ui/badge";
 import {
   AppMetric,
   AppPageHeader,
+  AppPanel,
 } from "../../client/components/brand/AppChrome";
 import {
   ArrowLeft,
@@ -525,15 +526,15 @@ export default function ClassDetailPage() {
         )}
 
         <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
-          <div className="rounded-sm border border-border/70 bg-surface-elevated px-4 py-3">
+          <AppPanel className="px-4 py-3" padded={false}>
             <p className="text-[11px] font-medium tracking-wide text-muted-foreground">
               {t("location")}
             </p>
             <p className="font-brand-display mt-1.5 text-sm font-semibold tracking-tight text-brand-ink">
               {cls.location || "—"}
             </p>
-          </div>
-          <div className="rounded-sm border border-border/70 bg-surface-elevated px-4 py-3">
+          </AppPanel>
+          <AppPanel className="px-4 py-3" padded={false}>
             <p className="text-[11px] font-medium tracking-wide text-muted-foreground">
               {t("schedule")}
             </p>
@@ -541,7 +542,7 @@ export default function ClassDetailPage() {
               {t(`days_long.${cls.dayOfWeek}`) || cls.dayOfWeek} {cls.startTime}
               {cls.endTime && `-${cls.endTime}`}
             </p>
-          </div>
+          </AppPanel>
           <AppMetric
             label={t("enrolled")}
             value={`${enrolledIds.length}/${cls.maxCapacity}`}
@@ -554,7 +555,7 @@ export default function ClassDetailPage() {
         </div>
 
         {editing ? (
-          <div className="rounded-sm border border-border/70 bg-surface-elevated p-4 space-y-3">
+          <AppPanel className="p-4 space-y-3" padded={false}>
             <div className="space-y-1.5">
               <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 <Pencil className="h-3.5 w-3.5" />
@@ -654,7 +655,7 @@ export default function ClassDetailPage() {
                 {savingEdit ? tc("saving") : t("detail.save")}
               </Button>
             </div>
-          </div>
+          </AppPanel>
         ) : (
           canManageClass && (
             <div className="flex justify-end">
@@ -758,9 +759,10 @@ export default function ClassDetailPage() {
                   ) : null;
 
                   return (
-                    <div
+                    <AppPanel
                       key={e.id}
-                      className="flex min-h-14 items-center justify-between gap-2 rounded-sm border border-border/70 bg-surface-elevated p-3"
+                      className="flex min-h-14 items-center justify-between gap-2 p-3"
+                      padded={false}
                     >
                       <div className="flex min-w-0 flex-1 items-center gap-3">
                         <Link
@@ -799,7 +801,7 @@ export default function ClassDetailPage() {
                           <XCircle className="h-4 w-4" />
                         </button>
                       )}
-                    </div>
+                    </AppPanel>
                   );
                 })}
               </div>
@@ -829,9 +831,10 @@ export default function ClassDetailPage() {
                   </div>
                   <div className="grid gap-2">
                     {available.map((c: any) => (
-                      <div
+                      <AppPanel
                         key={c.id}
-                        className="flex items-center justify-between rounded-sm border border-border/70 bg-surface-elevated p-3"
+                        className="flex items-center justify-between p-3"
+                        padded={false}
                       >
                         <div className="flex items-center gap-3">
                           <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-brand-ink">
@@ -851,7 +854,7 @@ export default function ClassDetailPage() {
                           <UserPlus className="mr-1 h-3 w-3" />
                           {t("detail.enroll_btn")}
                         </Button>
-                      </div>
+                      </AppPanel>
                     ))}
                   </div>
                 </div>
@@ -887,9 +890,10 @@ export default function ClassDetailPage() {
             ) : (
               <div className="grid gap-2">
                 {cls.meetings.map((m: any) => (
-                  <div
+                  <AppPanel
                     key={m.id}
-                    className="flex flex-col gap-3 rounded-sm border border-border/70 bg-surface-elevated p-3 sm:flex-row sm:items-center sm:justify-between"
+                    className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between"
+                    padded={false}
                   >
                     <div className="min-w-0">
                       <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
@@ -934,7 +938,7 @@ export default function ClassDetailPage() {
                         </Link>
                       </Button>
                     </div>
-                  </div>
+                  </AppPanel>
                 ))}
               </div>
             )}
@@ -968,7 +972,10 @@ export default function ClassDetailPage() {
                     {t("detail.add_catechist")}
                   </Button>
                 ) : (
-                  <div className="flex items-center gap-2 rounded-sm border border-border/70 bg-surface-elevated p-3">
+                  <AppPanel
+                    className="flex items-center gap-2 p-3"
+                    padded={false}
+                  >
                     <select
                       value={addUserId}
                       onChange={(e) => setAddUserId(e.target.value)}
@@ -999,7 +1006,7 @@ export default function ClassDetailPage() {
                     >
                       <X className="h-4 w-4" />
                     </Button>
-                  </div>
+                  </AppPanel>
                 )}
                 {availableCatechists.length === 0 && showAddCatechist && (
                   <p className="text-xs text-muted-foreground mt-1">
@@ -1092,9 +1099,10 @@ export default function ClassDetailPage() {
                     (isLeadCatechist && cc.role === "ASSISTANT") ||
                     (cc.userId === user?.id && cc.role === "ASSISTANT");
                   return (
-                    <div
+                    <AppPanel
                       key={cc.id}
-                      className="flex items-center justify-between rounded-sm border border-border/70 bg-surface-elevated p-3"
+                      className="flex items-center justify-between p-3"
+                      padded={false}
                     >
                       <div className="flex items-center gap-2 min-w-0">
                         <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-brand-ink flex-shrink-0">
@@ -1130,7 +1138,7 @@ export default function ClassDetailPage() {
                           </Button>
                         )}
                       </div>
-                    </div>
+                    </AppPanel>
                   );
                 })}
               </div>
@@ -1174,10 +1182,7 @@ export default function ClassDetailPage() {
                 ) : (
                   <div className="space-y-3">
                     {monthlyPlan.weeks?.map((week: any, wi: number) => (
-                      <div
-                        key={wi}
-                        className="rounded-sm border border-border/70 bg-surface-elevated p-3"
-                      >
+                      <AppPanel key={wi} className="p-3" padded={false}>
                         <p className="text-xs font-medium text-muted-foreground mb-2">
                           {t("detail.week_of", {
                             date: formatDate(week.weekStart, currentLocale, {
@@ -1214,13 +1219,13 @@ export default function ClassDetailPage() {
                             </div>
                           ))}
                         </div>
-                      </div>
+                      </AppPanel>
                     ))}
                   </div>
                 )}
 
                 {monthlyPlan.availableContent?.length > 0 && (
-                  <div className="rounded-sm border border-border/70 bg-surface-elevated p-3">
+                  <AppPanel className="p-3" padded={false}>
                     <h4 className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1">
                       <BookOpen className="h-3 w-3" />
                       {t("detail.available_content")}
@@ -1238,7 +1243,7 @@ export default function ClassDetailPage() {
                           </Link>
                         ))}
                     </div>
-                  </div>
+                  </AppPanel>
                 )}
               </div>
             ) : (

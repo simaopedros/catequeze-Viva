@@ -400,9 +400,10 @@ export default function TeamPage() {
             <>
               <div className="space-y-3 md:hidden">
                 {invitations.map((inv: any) => (
-                  <div
+                  <AppPanel
                     key={`${inv.kind}-${inv.id}`}
-                    className="space-y-2 rounded-sm border border-border/70 bg-surface-elevated p-4"
+                    className="space-y-2 p-4"
+                    padded={false}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <p className="font-semibold text-brand-ink">
@@ -457,10 +458,13 @@ export default function TeamPage() {
                         </Button>
                       )}
                     </div>
-                  </div>
+                  </AppPanel>
                 ))}
               </div>
-              <div className="hidden overflow-hidden rounded-sm border border-border/70 bg-surface-elevated md:block">
+              <AppPanel
+                className="hidden overflow-hidden md:block"
+                padded={false}
+              >
                 <table className="w-full text-sm">
                   <thead className="border-b bg-muted/50">
                     <tr>
@@ -574,7 +578,7 @@ export default function TeamPage() {
                     ))}
                   </tbody>
                 </table>
-              </div>
+              </AppPanel>
             </>
           )}
         </section>
@@ -609,9 +613,10 @@ export default function TeamPage() {
                     m.user?.email?.split("@")[0] ||
                     "—";
                   return (
-                    <div
+                    <AppPanel
                       key={m.id}
-                      className="space-y-3 rounded-sm border border-border/70 bg-surface-elevated p-4"
+                      className="space-y-3 p-4"
+                      padded={false}
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
@@ -684,13 +689,16 @@ export default function TeamPage() {
                           </Button>
                         )}
                       </div>
-                    </div>
+                    </AppPanel>
                   );
                 })}
               </div>
 
               {/* Desktop table */}
-              <div className="hidden overflow-hidden rounded-sm border border-border/70 bg-surface-elevated md:block">
+              <AppPanel
+                className="hidden overflow-hidden md:block"
+                padded={false}
+              >
                 <table className="w-full text-sm">
                   <thead className="border-b bg-muted/50">
                     <tr>
@@ -808,7 +816,7 @@ export default function TeamPage() {
                     })}
                   </tbody>
                 </table>
-              </div>
+              </AppPanel>
             </>
           )}
         </section>

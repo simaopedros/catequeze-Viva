@@ -263,7 +263,7 @@ export default function ContentPrintPage() {
           </Badge>
           <Badge
             variant="outline"
-            className="rounded-sm border-brand-gold/40 text-[10px] font-semibold uppercase tracking-wide text-brand-gold-muted"
+            className="rounded-sm border-brand-gold/40 text-micro font-semibold uppercase tracking-wide text-brand-gold-muted"
           >
             {t("print_page.preview_badge", {
               defaultValue: "Pré-impressão A4",

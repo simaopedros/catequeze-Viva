@@ -4,7 +4,10 @@ import { useNavigate } from "react-router";
 import { Button } from "../../client/components/ui/button";
 import { Badge } from "../../client/components/ui/badge";
 import { Input } from "../../client/components/ui/input";
-import { AppPageHeader } from "../../client/components/brand/AppChrome";
+import {
+  AppPageHeader,
+  AppPanel,
+} from "../../client/components/brand/AppChrome";
 import { FilterPills } from "../../client/components/FilterPills";
 import {
   Select,
@@ -564,7 +567,7 @@ function MonthGrid({
   const isWeekend = (dow: number) => dow >= 5;
 
   return (
-    <div className="lg:col-span-2 overflow-hidden rounded-sm border border-border/70 bg-surface-elevated">
+    <AppPanel className="lg:col-span-2 overflow-hidden" padded={false}>
       {/* Weekday headers */}
       <div className="grid grid-cols-7 border-b bg-muted/40">
         {weekdays.map((d, i) => (
@@ -664,7 +667,7 @@ function MonthGrid({
           );
         })}
       </div>
-    </div>
+    </AppPanel>
   );
 }
 
@@ -722,14 +725,17 @@ function AgendaView({
             onClick={() => onOpenEvent(e)}
             className="flex min-h-14 w-full items-center gap-3 rounded-sm border border-border/70 bg-surface-elevated p-3.5 text-left transition-colors hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <div className="flex h-11 w-11 flex-shrink-0 flex-col items-center justify-center rounded-sm border border-border/70 bg-surface-elevated">
+            <AppPanel
+              className="flex h-11 w-11 flex-shrink-0 flex-col items-center justify-center"
+              padded={false}
+            >
               <span className="text-sm font-semibold leading-none tabular-nums text-brand-ink">
                 {day}
               </span>
               <span className="mt-0.5 text-overline text-muted-foreground">
                 {months[month].slice(0, 3)}
               </span>
-            </div>
+            </AppPanel>
             <div
               className="h-9 w-1.5 flex-shrink-0 rounded-full"
               style={{ background: e.color || DEFAULT_COLOR }}
@@ -817,7 +823,7 @@ function SidePanelContent({
   /* ── No day selected ── show upcoming events ──────────────────────── */
   if (!selectedDay) {
     return (
-      <div className="space-y-3 rounded-sm border border-border/70 bg-surface-elevated p-4">
+      <AppPanel className="space-y-3 p-4" padded={false}>
         <div className="space-y-1.5">
           <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             <Calendar className="h-3.5 w-3.5 text-brand-ink" />
@@ -888,7 +894,7 @@ function SidePanelContent({
             )}
           </div>
         )}
-      </div>
+      </AppPanel>
     );
   }
 
@@ -896,7 +902,7 @@ function SidePanelContent({
   return (
     <>
       {/* Day header card */}
-      <div className="rounded-sm border border-border/70 bg-surface-elevated p-4">
+      <AppPanel className="p-4" padded={false}>
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-1.5">
             <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
@@ -909,11 +915,11 @@ function SidePanelContent({
             {dayEvents.length === 0 ? "0" : String(dayEvents.length)}
           </Badge>
         </div>
-      </div>
+      </AppPanel>
 
       {/* Event list */}
       {dayEvents.length === 0 ? (
-        <div className="rounded-sm border border-border/70 bg-surface-elevated p-6 text-center ">
+        <AppPanel className="p-6 text-center" padded={false}>
           <p className="text-sm text-muted-foreground">{t("no_events")}</p>
           {allowCreate && (
             <Button
@@ -926,7 +932,7 @@ function SidePanelContent({
               {t("add")}
             </Button>
           )}
-        </div>
+        </AppPanel>
       ) : (
         <div className="space-y-2">
           {dayEvents.map((e) => (
@@ -1015,7 +1021,7 @@ function SidePanelContent({
 
       {/* ── Create event form ───────────────────────────────────────────── */}
       {showForm && allowCreate && (
-        <div className="space-y-3 rounded-sm border border-border/70 bg-surface-elevated p-4">
+        <AppPanel className="space-y-3 p-4" padded={false}>
           <div className="flex items-start justify-between gap-3">
             <div className="space-y-1.5">
               <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
@@ -1108,7 +1114,7 @@ function SidePanelContent({
               {tc("cancel")}
             </Button>
           </div>
-        </div>
+        </AppPanel>
       )}
     </>
   );

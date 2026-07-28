@@ -17,6 +17,7 @@ import {
   Cell,
   Legend,
 } from "recharts";
+import { AppPanel } from "../../client/components/brand/AppChrome";
 
 type ChartRow = Record<string, string | number | undefined>;
 
@@ -35,7 +36,7 @@ export function ReportsChartsPanel({
 
   return (
     <div className="space-y-6">
-      <div className="rounded-sm border border-border/70 bg-surface-elevated p-4 sm:p-6">
+      <AppPanel className="p-4 sm:p-6" padded={false}>
         <div className="mb-4 space-y-1.5">
           <h3 className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-muted-foreground">
             <BarChart3 className="h-3.5 w-3.5 text-brand-ink" />
@@ -61,10 +62,7 @@ export function ReportsChartsPanel({
               />
               <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} />
               <Tooltip
-                formatter={(value: any) => [
-                  `${value}%`,
-                  t("attendance_label"),
-                ]}
+                formatter={(value: any) => [`${value}%`, t("attendance_label")]}
                 labelFormatter={(label: any) => {
                   const item = chartData.find((d) => d.name === label);
                   return (item?.fullName as string) || label;
@@ -75,9 +73,9 @@ export function ReportsChartsPanel({
             </BarChart>
           </ResponsiveContainer>
         )}
-      </div>
+      </AppPanel>
 
-      <div className="rounded-sm border border-border/70 bg-surface-elevated p-4 sm:p-6">
+      <AppPanel className="p-4 sm:p-6" padded={false}>
         <div className="mb-4 space-y-1.5">
           <h3 className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-muted-foreground">
             <PieChart className="h-3.5 w-3.5 text-brand-ink" />
@@ -116,7 +114,7 @@ export function ReportsChartsPanel({
             </RPieChart>
           </ResponsiveContainer>
         )}
-      </div>
+      </AppPanel>
     </div>
   );
 }

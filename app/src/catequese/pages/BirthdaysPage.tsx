@@ -146,7 +146,7 @@ export default function BirthdaysPage() {
                     {b.className ? (
                       <Badge
                         variant="outline"
-                        className="mt-1 rounded-sm px-1.5 text-[10px]"
+                        className="mt-1 rounded-sm px-1.5 text-micro"
                       >
                         {b.className}
                       </Badge>

@@ -31,6 +31,7 @@ import {
   AppDisplayTitle,
   AppEyebrow,
   AppGoldRule,
+  AppPanel,
 } from "../../client/components/brand/AppChrome";
 import {
   Sheet,
@@ -353,7 +354,10 @@ export default function MessagesPage() {
   return (
     <>
       {/* Mobile: list OR chat as distinct full screens; desktop: split pane */}
-      <div className="chat-height mx-auto flex max-w-7xl overflow-hidden rounded-sm border border-border/70 bg-surface-elevated">
+      <AppPanel
+        className="chat-height mx-auto flex max-w-7xl overflow-hidden"
+        padded={false}
+      >
         {/* Conversation list - hidden on mobile when chat is open */}
         <div
           className={cn(
@@ -554,30 +558,30 @@ export default function MessagesPage() {
               </p>
 
               <div className="mb-5 grid w-full max-w-xs gap-2">
-                <div className="rounded-sm border border-border/70 bg-surface-elevated p-2.5 text-left text-xs">
+                <AppPanel className="p-2.5 text-left text-xs" padded={false}>
                   <span className="font-brand-display font-semibold tracking-tight text-brand-ink">
                     {t("use_case_class")}
                   </span>
                   <p className="mt-0.5 text-muted-foreground">
                     {t("use_case_class_desc")}
                   </p>
-                </div>
-                <div className="rounded-sm border border-border/70 bg-surface-elevated p-2.5 text-left text-xs">
+                </AppPanel>
+                <AppPanel className="p-2.5 text-left text-xs" padded={false}>
                   <span className="font-brand-display font-semibold tracking-tight text-brand-ink">
                     {t("use_case_notice")}
                   </span>
                   <p className="mt-0.5 text-muted-foreground">
                     {t("use_case_notice_desc")}
                   </p>
-                </div>
-                <div className="rounded-sm border border-border/70 bg-surface-elevated p-2.5 text-left text-xs">
+                </AppPanel>
+                <AppPanel className="p-2.5 text-left text-xs" padded={false}>
                   <span className="font-brand-display font-semibold tracking-tight text-brand-ink">
                     {t("use_case_direct")}
                   </span>
                   <p className="mt-0.5 text-muted-foreground">
                     {t("use_case_direct_desc")}
                   </p>
-                </div>
+                </AppPanel>
               </div>
 
               <button
@@ -590,7 +594,7 @@ export default function MessagesPage() {
             </div>
           )}
         </div>
-      </div>
+      </AppPanel>
       <Sheet open={showDetails} onOpenChange={setShowDetails}>
         <SheetContent
           side="bottom"

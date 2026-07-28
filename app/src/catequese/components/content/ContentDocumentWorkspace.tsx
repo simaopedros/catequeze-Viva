@@ -868,7 +868,7 @@ export function ContentDocumentWorkspace({
           <Badge
             variant="secondary"
             className={cn(
-              "ml-auto shrink-0 rounded-sm border px-2 py-0.5 text-[10px] font-medium",
+              "ml-auto shrink-0 rounded-sm border px-2 py-0.5 text-micro font-medium",
               saveBadge.className,
             )}
           >

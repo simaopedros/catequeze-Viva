@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { cn } from "../utils";
+import { AppPanel } from "./brand/AppChrome";
 
 interface EmptyStateProps {
   icon?: LucideIcon;
@@ -86,11 +87,12 @@ export function EmptyState({
   }
 
   return (
-    <div
+    <AppPanel
       className={cn(
-        "flex flex-col items-center justify-center rounded-sm border border-border/70 bg-surface-elevated p-12 text-center",
+        "flex flex-col items-center justify-center p-12 text-center",
         className,
       )}
+      padded={false}
     >
       {Icon && (
         <div className="mb-4 rounded-sm border border-border/70 bg-muted/30 p-4">
@@ -107,6 +109,6 @@ export function EmptyState({
         </p>
       )}
       {children}
-    </div>
+    </AppPanel>
   );
 }

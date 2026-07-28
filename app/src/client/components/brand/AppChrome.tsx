@@ -1,3 +1,4 @@
+import type * as React from "react";
 import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
@@ -199,7 +200,7 @@ export function AppPageHeader({
         {subtitle && (
           <p
             className={cn(
-              "max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-[0.95rem]",
+              "max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-body",
               mobileSubtitle && "hidden sm:block",
             )}
           >
@@ -290,14 +291,20 @@ export function AppPageHeader({
   );
 }
 
+/**
+ * Superfície de card canônica do app.
+ *
+ * `padded={false}` desliga a escala de densidade para quem precisa do próprio
+ * padding — é o caminho usado pelos painéis migrados dos `<div>` crus, que
+ * mantiveram o espaçamento que já tinham.
+ */
 export function AppPanel({
   children,
   className,
   padded = true,
   density = "comfortable",
-}: {
-  children: ReactNode;
-  className?: string;
+  ...props
+}: React.ComponentProps<"section"> & {
   padded?: boolean;
   density?: UiDensity;
 }) {
@@ -308,6 +315,7 @@ export function AppPanel({
         padded && (density === "compact" ? "p-3.5 sm:p-4" : "p-4 sm:p-6"),
         className,
       )}
+      {...props}
     >
       {children}
     </section>

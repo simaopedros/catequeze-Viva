@@ -593,7 +593,7 @@ function HeaderSection({ backTo }: { backTo: string }) {
             <AppEyebrow>Encontros</AppEyebrow>
             <AppDisplayTitle>Conteúdo</AppDisplayTitle>
             <AppGoldRule />
-            <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-[0.95rem]">
+            <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-body">
               Crie encontros manualmente e use assistência só quando fizer
               sentido
             </p>

@@ -310,14 +310,11 @@ export default function ClassesPage() {
               <div className="hidden gap-3 sm:grid sm:grid-cols-3">
                 {[t("empty_step1"), t("empty_step2"), t("empty_step3")].map(
                   (step, i) => (
-                    <div
-                      key={i}
-                      className="rounded-sm border border-border/70 bg-surface-elevated px-4 py-4"
-                    >
+                    <AppPanel key={i} className="px-4 py-4" padded={false}>
                       <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
                         {i + 1}. {step}
                       </p>
-                    </div>
+                    </AppPanel>
                   ),
                 )}
               </div>
@@ -348,15 +345,15 @@ export default function ClassesPage() {
               <AppGoldRule className="w-8" />
             </div>
             <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
-              <div className="rounded-sm border border-border/70 bg-surface-elevated px-4 py-3">
+              <AppPanel className="px-4 py-3" padded={false}>
                 {t("suggested_1")}
-              </div>
-              <div className="rounded-sm border border-border/70 bg-surface-elevated px-4 py-3">
+              </AppPanel>
+              <AppPanel className="px-4 py-3" padded={false}>
                 {t("suggested_2")}
-              </div>
-              <div className="rounded-sm border border-border/70 bg-surface-elevated px-4 py-3">
+              </AppPanel>
+              <AppPanel className="px-4 py-3" padded={false}>
                 {t("suggested_3")}
-              </div>
+              </AppPanel>
             </div>
           </AppPanel>
         </div>
