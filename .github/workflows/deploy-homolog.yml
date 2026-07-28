@@ -145,12 +145,15 @@ jobs:
             local origin="$1" path="${2:-/}"
             local url="${origin}${path}"
             local html asset
-            html=$(curl -fsS --max-time 12 "${CF_HDRS[@]}" "$url")
+            html=$(curl -fsS --compressed --max-time 12 "${CF_HDRS[@]}" "$url")
             echo "$html" | grep -q 'id="root"' || { echo "❌ ${url}: #root missing"; exit 1; }
             echo "$html" | grep -qiE 'catequese|catechis' || { echo "❌ ${url}: brand missing"; exit 1; }
             asset=$(echo "$html" | grep -oE '/assets/index-[^"]+\.js' | head -1 || true)
             [[ -n "$asset" ]] || { echo "❌ ${url}: module asset missing"; exit 1; }
-            curl -fsS --max-time 15 -o /dev/null "${CF_HDRS[@]}" "${origin}${asset}"
+            # --compressed: sem Accept-Encoding o entry chunk vem cru (~950 KB em vez
+            # de ~310 KB gzip), o que já estourou o timeout numa rede lenta.
+            curl -fsS --compressed --max-time 20 --retry 2 --retry-delay 3 \
+              -o /dev/null "${CF_HDRS[@]}" "${origin}${asset}"
             echo "✅ ${url} + ${asset}"
           }
 
@@ -159,7 +162,7 @@ jobs:
           check_spa "$FAMILY" /convite
 
           # OG tags are in static HTML (no JS)
-          staff_html=$(curl -fsS --max-time 12 "${CF_HDRS[@]}" "${STAFF}/")
+          staff_html=$(curl -fsS --compressed --max-time 12 "${CF_HDRS[@]}" "${STAFF}/")
           echo "$staff_html" | grep -q 'property="og:title"' || echo "$staff_html" | grep -q "property='og:title'" || {
             echo "❌ staff landing missing og:title"; exit 1;
           }
