@@ -73,7 +73,13 @@ export function BottomNav() {
         <div
           className="grid items-center"
           style={{
-            gridTemplateColumns: `repeat(${visible.length + 1}, 1fr)`,
+            // minmax(0, 1fr) e não 1fr: com `1fr` a coluna nunca encolhe abaixo
+            // do conteúdo, então um rótulo longo ("Catequizandos") rouba largura
+            // dos vizinhos e o truncate nunca dispara. Em 320px os itens ficavam
+            // colados, sem folga.
+            gridTemplateColumns: `repeat(${
+              visible.length + 1
+            }, minmax(0, 1fr))`,
             height: "var(--height-bottom-nav, 3.5rem)",
           }}
         >
@@ -89,7 +95,9 @@ export function BottomNav() {
                 aria-label={label}
                 className={({ isActive }) =>
                   cn(
-                    "flex h-full min-h-11 flex-col items-center justify-center gap-0.5 px-0.5 text-overline font-medium transition-colors",
+                    // text-micro abaixo de 360px: em 320px a coluna tem ~56px
+                    // úteis e "Calendário" a 12px não cabe.
+                    "flex h-full min-h-11 min-w-0 flex-col items-center justify-center gap-0.5 px-0.5 text-micro font-medium transition-colors min-[360px]:text-overline",
                     isActive
                       ? "text-brand-ink"
                       : "text-muted-foreground hover:text-brand-ink",
@@ -97,7 +105,14 @@ export function BottomNav() {
                 }
               >
                 <item.Icon className="h-5 w-5 shrink-0" />
-                <span className="max-w-full truncate">{label}</span>
+                {/* Abaixo de 360px sobram ~56px por coluna e rótulos longos
+                    viravam "Cate…", pior que ícone puro. O nome continua no
+                    aria-label, então nada se perde para leitor de tela.
+                    hidden/block e não sr-only/not-sr-only: not-sr-only reseta
+                    overflow e white-space, anulando o truncate. */}
+                <span className="hidden max-w-full truncate min-[360px]:block">
+                  {label}
+                </span>
               </NavLink>
             );
           })}
@@ -107,10 +122,15 @@ export function BottomNav() {
               aria-haspopup="dialog"
               aria-expanded={sheetOpen}
               aria-controls="bottom-sheet-nav"
-              className="relative flex h-full min-h-11 flex-col items-center justify-center gap-0.5 text-overline font-medium text-muted-foreground transition-colors hover:text-brand-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              // o rótulo visível some abaixo de 360px; sem isto o botão ficaria
+              // sem nome acessível nessa faixa
+              aria-label={t("more", { ns: "common" })}
+              className="relative flex h-full min-h-11 min-w-0 flex-col items-center justify-center gap-0.5 px-0.5 text-micro font-medium text-muted-foreground transition-colors hover:text-brand-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-[360px]:text-overline"
             >
               <Menu className="h-5 w-5" />
-              <span>{t("more", { ns: "common" })}</span>
+              <span className="hidden max-w-full truncate min-[360px]:block">
+                {t("more", { ns: "common" })}
+              </span>
               {unreadCount > 0 && (
                 <span className="absolute -top-0.5 right-1/4 flex h-[18px] min-w-[18px] items-center justify-center rounded-sm bg-destructive px-1 text-overline font-semibold text-destructive-foreground ">
                   {unreadCount > 99 ? "99+" : unreadCount}

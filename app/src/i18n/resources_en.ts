@@ -1854,7 +1854,8 @@ export const common_en = {
     "leave_form_title": "Unsaved changes",
     "leave_form_desc": "You have changes that have not been saved yet. Leave anyway?",
     "leave_anyway": "Leave without saving",
-    "more_actions": "More actions"
+    "more_actions": "More actions",
+    "clear": "Clear"
   } as const;
 
 export const components_en = {

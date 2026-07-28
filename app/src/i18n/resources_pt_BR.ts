@@ -1854,7 +1854,8 @@ export const common_pt_BR = {
     "leave_form_title": "Alterações não salvas",
     "leave_form_desc": "Você tem alterações que ainda não foram salvas. Sair mesmo assim?",
     "leave_anyway": "Sair sem salvar",
-    "more_actions": "Mais ações"
+    "more_actions": "Mais ações",
+    "clear": "Limpar"
   } as const;
 
 export const components_pt_BR = {

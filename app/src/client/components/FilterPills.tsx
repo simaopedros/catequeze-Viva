@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { cn } from "../utils";
 import { X } from "lucide-react";
 
@@ -27,6 +28,7 @@ export function FilterPills({
   onClear,
   clearValue,
 }: FilterPillsProps) {
+  const { t } = useTranslation("common");
   const showClear = onClear && value !== clearValue;
 
   return (
@@ -43,7 +45,9 @@ export function FilterPills({
           onClick={() => onChange(opt.value)}
           aria-pressed={value === opt.value}
           className={cn(
-            "shrink-0 snap-start whitespace-nowrap rounded-sm px-3 py-1.5 text-xs font-medium transition-colors",
+            // min-h-11 no mobile: com py-1.5 a pílula ficava em 28px, bem abaixo
+            // dos 44px de alvo de toque. No desktop volta ao tamanho compacto.
+            "inline-flex shrink-0 snap-start items-center whitespace-nowrap rounded-sm px-3 py-1.5 text-xs font-medium transition-colors min-h-11 sm:min-h-0",
             "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
             value === opt.value
               ? "bg-brand-ink text-white"
@@ -69,10 +73,10 @@ export function FilterPills({
         <button
           type="button"
           onClick={onClear}
-          className="flex shrink-0 snap-start items-center gap-1 whitespace-nowrap rounded-sm bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/80 hover:text-brand-ink"
+          className="flex min-h-11 shrink-0 snap-start items-center gap-1 whitespace-nowrap rounded-sm bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/80 hover:text-brand-ink sm:min-h-0"
         >
           <X className="h-3 w-3" />
-          Limpar
+          {t("clear")}
         </button>
       )}
     </div>

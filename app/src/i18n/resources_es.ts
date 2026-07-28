@@ -1854,7 +1854,8 @@ export const common_es = {
     "leave_form_title": "Cambios no guardados",
     "leave_form_desc": "Tiene cambios que aún no se han guardado. ¿Salir de todos modos?",
     "leave_anyway": "Salir sin guardar",
-    "more_actions": "Más acciones"
+    "more_actions": "Más acciones",
+    "clear": "Limpiar"
   } as const;
 
 export const components_es = {
