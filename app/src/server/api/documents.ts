@@ -7,6 +7,43 @@ import { makeAuthUserIfPossible } from 'wasp/auth/user';
 import { assertCanAccessCatechumenProfile } from '../auth/helpers';
 import { resolveWorkspaceAccess } from '../operations/sharedScope';
 
+/**
+ * Uploader-only docs have no parishId. Do not grant on any intersecting
+ * membership — only self, the uploader's personal workspace, or their sole parish.
+ */
+async function canAccessUploaderOnlyDocument(
+  context: any,
+  entities: any,
+  uploadedById: string,
+): Promise<boolean> {
+  if (context.user?.id === uploadedById) return true;
+
+  const uploaderPersonal = await entities.Parish.findFirst({
+    where: { ownerId: uploadedById, type: 'PERSONAL' },
+    select: { id: true },
+  });
+  if (uploaderPersonal) {
+    const access = await resolveWorkspaceAccess(context, uploaderPersonal.id, {
+      required: false,
+    });
+    if (access?.isCoordinatorOrAbove || access?.isPlatformAdmin) return true;
+  }
+
+  const uploaderMemberships = await entities.Membership.findMany({
+    where: { userId: uploadedById, status: 'ACTIVE' },
+    select: { parishId: true },
+  });
+  const parishIds = [
+    ...new Set(uploaderMemberships.map((m: { parishId: string }) => m.parishId)),
+  ];
+  if (parishIds.length !== 1) return false;
+
+  const access = await resolveWorkspaceAccess(context, parishIds[0], {
+    required: false,
+  });
+  return Boolean(access?.isCoordinatorOrAbove || access?.isPlatformAdmin);
+}
+
 /** Prevent header injection via quotes / CRLF in the stored filename. */
 export function contentDispositionInline(filename: string): string {
   const cleaned = String(filename || 'document')
@@ -85,31 +122,11 @@ export async function serveDocument(req: Request, res: Response, context: any) {
           if (status !== 403 && status !== 404) throw err;
         }
       } else if (doc.uploadedById) {
-        const uploaderMemberships = await entities.Membership.findMany({
-          where: { userId: doc.uploadedById, status: 'ACTIVE' },
-          select: { parishId: true },
-        });
-        const uploaderPersonal = await entities.Parish.findFirst({
-          where: { ownerId: doc.uploadedById, type: 'PERSONAL' },
-          select: { id: true },
-        });
-        const candidateParishIds = [
-          ...new Set(
-            [
-              ...uploaderMemberships.map((m: { parishId: string }) => m.parishId),
-              uploaderPersonal?.id,
-            ].filter(Boolean) as string[],
-          ),
-        ];
-        for (const parishId of candidateParishIds) {
-          const access = await resolveWorkspaceAccess(context, parishId, {
-            required: false,
-          });
-          if (access?.isCoordinatorOrAbove || access?.isPlatformAdmin) {
-            authorized = true;
-            break;
-          }
-        }
+        authorized = await canAccessUploaderOnlyDocument(
+          context,
+          entities,
+          doc.uploadedById,
+        );
       }
     }
 

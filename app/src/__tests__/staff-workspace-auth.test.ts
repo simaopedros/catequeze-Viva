@@ -24,7 +24,11 @@ vi.mock('../server/storage/documentStorage', () => ({
   }),
 }));
 
-import { createMeeting, saveAttendance } from '../server/operations/meetingOperations';
+import {
+  createMeeting,
+  saveAttendance,
+  saveAttendanceBatch,
+} from '../server/operations/meetingOperations';
 import { contentDispositionInline, serveDocument } from '../server/api/documents';
 import { joinParish } from '../server/operations/joinParish';
 
@@ -41,6 +45,12 @@ function makeCrossTenantEntities(opts?: {
   householdId?: string | null;
   catechumenHouseholdId?: string;
   allowAttendanceWrite?: boolean;
+  document?: Partial<{
+    catechumenProfileId: string | null;
+    uploadedById: string;
+    uploadToken: string;
+  }>;
+  uploadTokenExpires?: Date | null;
 }) {
   const memberships: MembershipRow[] = [
     { parishId: PARISH_A, role: 'PARISH_COORDINATOR' },
@@ -75,6 +85,12 @@ function makeCrossTenantEntities(opts?: {
       }),
       findMany: vi.fn(async ({ where }: any) => {
         const userId = where.userId;
+        if (userId === 'uploader-ab') {
+          return [
+            { parishId: PARISH_A, role: 'LEAD_CATECHIST' },
+            { parishId: PARISH_B, role: 'LEAD_CATECHIST' },
+          ];
+        }
         if (userId && userId !== USER_ID && userId !== 'uploader-b') return [];
         const rows =
           userId === 'uploader-b'
@@ -121,6 +137,10 @@ function makeCrossTenantEntities(opts?: {
         householdId: opts?.catechumenHouseholdId ?? 'hh-other-b',
         enrollments: [{ class: { parishId: PARISH_B, id: CLASS_B } }],
         household: { parishId: PARISH_B },
+        uploadTokenExpires:
+          opts?.uploadTokenExpires === undefined
+            ? new Date(Date.now() + 60_000)
+            : opts.uploadTokenExpires,
       })),
       findFirst: vi.fn(async () => null),
     },
@@ -130,9 +150,14 @@ function makeCrossTenantEntities(opts?: {
         s3Key: 'docs/b.pdf',
         mimeType: 'application/pdf',
         name: 'boletim.pdf',
-        catechumenProfileId: CATECHUMEN_B,
-        uploadedById: 'uploader-b',
-        catechumenProfile: { uploadToken: 'tok' },
+        catechumenProfileId:
+          opts?.document?.catechumenProfileId === undefined
+            ? CATECHUMEN_B
+            : opts.document.catechumenProfileId,
+        uploadedById: opts?.document?.uploadedById ?? 'uploader-b',
+        catechumenProfile: {
+          uploadToken: opts?.document?.uploadToken ?? 'tok',
+        },
       })),
     },
   };
@@ -196,6 +221,68 @@ describe('staff workspace scoping', () => {
     const { context } = makeCrossTenantEntities({
       householdId: 'hh-guardian-b',
       catechumenHouseholdId: 'hh-other-b',
+    });
+    const res = makeRes();
+    await serveDocument(
+      { params: { id: 'doc-b' }, query: {} } as any,
+      res,
+      context,
+    );
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.send).not.toHaveBeenCalled();
+  });
+
+  it('household guardian can read a dependent document in B', async () => {
+    const { context } = makeCrossTenantEntities({
+      householdId: 'hh-shared',
+      catechumenHouseholdId: 'hh-shared',
+    });
+    const res = makeRes();
+    await serveDocument(
+      { params: { id: 'doc-b' }, query: {} } as any,
+      res,
+      context,
+    );
+    expect(res.send).toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalledWith(403);
+  });
+
+  it('valid unexpired upload token serves the file', async () => {
+    const { entities } = makeCrossTenantEntities({
+      uploadTokenExpires: new Date(Date.now() + 60_000),
+    });
+    const res = makeRes();
+    await serveDocument(
+      { params: { id: 'doc-b' }, query: { token: 'tok' } } as any,
+      res,
+      { user: null, entities },
+    );
+    expect(res.send).toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalledWith(403);
+  });
+
+  it('saveAttendanceBatch is 403 for coordinator-in-A + guardian-in-B', async () => {
+    const { context, attendanceCreate } = makeCrossTenantEntities();
+    await expect(
+      saveAttendanceBatch(
+        {
+          meetingId: MEETING_B,
+          changes: [
+            {
+              catechumenProfileId: CATECHUMEN_B,
+              status: 'PRESENT',
+            },
+          ],
+        },
+        context,
+      ),
+    ).rejects.toMatchObject({ statusCode: 403 });
+    expect(attendanceCreate).not.toHaveBeenCalled();
+  });
+
+  it('uploader-only doc is denied when the uploader belongs to multiple parishes', async () => {
+    const { context } = makeCrossTenantEntities({
+      document: { catechumenProfileId: null, uploadedById: 'uploader-ab' },
     });
     const res = makeRes();
     await serveDocument(
