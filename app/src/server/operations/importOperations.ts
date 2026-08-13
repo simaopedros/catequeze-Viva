@@ -4,6 +4,7 @@ import {
   MAX_CSV_IMPORT_CHARS,
   MAX_CSV_IMPORT_ROWS,
 } from '../security/csvSafety';
+import { assertCanEnrollCatechumens } from './billingEnforcement';
 
 const IMPORT_ROLES = [...COORDINATOR_ROLES, 'LEAD_CATECHIST'];
 
@@ -65,6 +66,15 @@ async function resolveImportParish(context: any, args: { csvData: string; parish
   throw new HttpError(400, 'Especifique parishId — você pertence a mais de uma paróquia ou comunidade com permissão de importação.');
 }
 
+/** YYYY-MM-DD → UTC noon, or invalid if the cell cannot produce a real Date. */
+function parseImportBirthDate(raw: string): Date | null | 'invalid' {
+  if (!raw) return null;
+  const [y, m, d] = raw.slice(0, 10).split('-').map(Number);
+  const date = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
+  if (Number.isNaN(date.getTime())) return 'invalid';
+  return date;
+}
+
 export const importCatechumensCSV = async (
   args: { csvData: string; parishId?: string },
   context: any,
@@ -113,13 +123,22 @@ export const importCatechumensCSV = async (
       continue;
     }
 
+    const parsedBirthDate = parseImportBirthDate(birthDate);
+    if (parsedBirthDate === 'invalid') {
+      results.errors++;
+      results.details.push(`Linha ${i + 2}: data de nascimento inválida`);
+      continue;
+    }
+
     toCreate.push({
       firstName,
       lastName,
-      birthDate: birthDate ? (() => { const [y, m, d] = birthDate.slice(0, 10).split('-').map(Number); return new Date(Date.UTC(y, m - 1, d, 12, 0, 0)); })() : null,
+      birthDate: parsedBirthDate,
       parishId,
     });
   }
+
+  await assertCanEnrollCatechumens(context, parishId, toCreate.length);
 
   // Bulk insert for performance
   try {

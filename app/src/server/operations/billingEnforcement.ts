@@ -542,10 +542,14 @@ export async function assertCanCreateClass(
 
 // ─── Catechumen enrollment ──────────────────────────────────────────────────
 
-export async function assertCanEnrollCatechumen(
+type CatechumenCapacity =
+  | { unlimited: true }
+  | { unlimited: false; current: number; max: number; plan: string | null; personal: boolean };
+
+async function resolveCatechumenCapacity(
   context: any,
   parishId: string,
-): Promise<void> {
+): Promise<CatechumenCapacity> {
   const parish = await context.entities.Parish.findUnique({
     where: { id: parishId },
     select: { type: true },
@@ -556,19 +560,19 @@ export async function assertCanEnrollCatechumen(
     const freshUser = await ensureProductTrial(context, context.user.id);
     const plan = getPersonalPlanId(freshUser);
     const limits = getPlanLimits(plan);
-    if (limits.maxCatechumens === null) return;
+    if (limits.maxCatechumens === null) return { unlimited: true };
 
     const enrolledCount = await context.entities.ClassEnrollment.count({
       where: { status: 'ENROLLED', class: { parishId } },
     });
 
-    if (enrolledCount >= limits.maxCatechumens!) {
-      throw new HttpError(
-        403,
-        `LIMIT: Limite de catequizandos do plano ${planName(plan)} atingido (${enrolledCount}/${limits.maxCatechumens}).`,
-      );
-    }
-    return;
+    return {
+      unlimited: false,
+      current: enrolledCount,
+      max: limits.maxCatechumens,
+      plan,
+      personal: true,
+    };
   }
 
   const billing = await resolveEffectiveBilling(context, parishId);
@@ -576,7 +580,7 @@ export async function assertCanEnrollCatechumen(
   const planLimits = getPlanLimits(effectivePlan);
 
   const maxCatechumens = billing?.maxCatechumens != null ? billing.maxCatechumens : planLimits.maxCatechumens;
-  if (maxCatechumens === null) return;
+  if (maxCatechumens === null) return { unlimited: true };
 
   let enrolledCount: number;
   if (!billing && (effectivePlan === 'CATECHIST_FREE' || effectivePlan === 'SINGLE')) {
@@ -594,10 +598,45 @@ export async function assertCanEnrollCatechumen(
     });
   }
 
-  if (enrolledCount >= maxCatechumens) {
+  return {
+    unlimited: false,
+    current: enrolledCount,
+    max: maxCatechumens,
+    plan: effectivePlan,
+    personal: false,
+  };
+}
+
+function throwCatechumenLimit(cap: Extract<CatechumenCapacity, { unlimited: false }>): never {
+  if (cap.personal) {
     throw new HttpError(
       403,
-      buildLimitMessage('catechumen_limit', effectivePlan, enrolledCount, maxCatechumens),
+      `LIMIT: Limite de catequizandos do plano ${planName(cap.plan)} atingido (${cap.current}/${cap.max}).`,
     );
+  }
+  throw new HttpError(
+    403,
+    buildLimitMessage('catechumen_limit', cap.plan, cap.current, cap.max),
+  );
+}
+
+export async function assertCanEnrollCatechumen(
+  context: any,
+  parishId: string,
+): Promise<void> {
+  await assertCanEnrollCatechumens(context, parishId, 1);
+}
+
+/** Fail if current enrolled count + additionalCount would exceed the plan max. */
+export async function assertCanEnrollCatechumens(
+  context: any,
+  parishId: string,
+  additionalCount: number,
+): Promise<void> {
+  if (additionalCount <= 0) return;
+  const cap = await resolveCatechumenCapacity(context, parishId);
+  if (cap.unlimited) return;
+  if (cap.current + additionalCount > cap.max) {
+    throwCatechumenLimit(cap);
   }
 }
