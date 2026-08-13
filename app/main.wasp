@@ -758,7 +758,7 @@ query listMeetings {
 
 action createMeeting {
   fn: import { createMeeting } from "@src/server/operations/meetingOperations",
-  entities: [Meeting, Membership, CatechesisClass]
+  entities: [Meeting, Membership, CatechesisClass, Parish, ClassCatechist]
 }
 
 action updateMeeting {
@@ -820,7 +820,7 @@ query listMeetingsForClasses {
 
 action saveAttendance {
   fn: import { saveAttendance } from "@src/server/operations/meetingOperations",
-  entities: [AttendanceRecord, Membership, Meeting, CatechesisClass, ClassEnrollment]
+  entities: [AttendanceRecord, Membership, Meeting, CatechesisClass, ClassEnrollment, Parish, ClassCatechist]
 }
 
 action saveAttendanceBatch {
@@ -1382,7 +1382,7 @@ page AppImportCatechumensPage {
 
 action importCatechumensCSV {
   fn: import { importCatechumensCSV } from "@src/server/operations/importOperations",
-  entities: [CatechumenProfile, Membership, Parish]
+  entities: [CatechumenProfile, Membership, Parish, TenantBilling, User, ClassEnrollment, ClassCatechist]
 }
 //#endregion
 

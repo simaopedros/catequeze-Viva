@@ -13,6 +13,10 @@ import {
   pageParams,
   wrapDateIdPage,
 } from './listCursor';
+import {
+  isCatechistOrAboveRole,
+  resolveWorkspaceAccess,
+} from './sharedScope';
 
 function isCoordinatorOrAbove(role: string | null): boolean {
   if (!role) return false;
@@ -142,6 +146,34 @@ async function assertUserBelongsToClass(context: any, classId: string): Promise<
   throw new HttpError(403, 'Você não tem acesso a esta turma.');
 }
 
+/**
+ * Staff writes (create meeting / attendance) use the class parish role only.
+ * Coordinator-in-A + guardian-in-B must not write in B.
+ */
+async function assertCanWriteClassStaff(
+  context: any,
+  classId: string,
+  message: string,
+): Promise<void> {
+  if (!context.entities?.CatechesisClass) {
+    throw new HttpError(500, 'Entidade de turma indisponível nesta operação.');
+  }
+
+  const classData = await context.entities.CatechesisClass.findUnique({
+    where: { id: classId },
+    select: { parishId: true },
+  });
+  if (!classData) throw new HttpError(404, 'Turma não encontrada.');
+
+  const access = await resolveWorkspaceAccess(context, classData.parishId);
+  if (!access || (!access.isPlatformAdmin && !isCatechistOrAboveRole(access.role))) {
+    throw new HttpError(403, message);
+  }
+  if (access.allowedClassIds !== 'ALL' && !access.allowedClassIds.includes(classId)) {
+    throw new HttpError(403, message);
+  }
+}
+
 /** Staff-only ops: class roster / attendance sheet / matrix */
 async function assertCanTakeAttendance(
   context: any,
@@ -214,11 +246,11 @@ export const listMeetings = async (
 
 export const createMeeting = async (args: any, context: any) => {
   if (!context.user) throw new HttpError(401);
-  const role = await getUserRole(context);
-  if (!isCatechistOrAbove(role)) throw new HttpError(403, 'Apenas catequistas e coordenadores podem criar encontros.');
-
-  // Verificar pertencimento à turma
-  await assertUserBelongsToClass(context, args.classId);
+  await assertCanWriteClassStaff(
+    context,
+    args.classId,
+    'Apenas catequistas e coordenadores podem criar encontros.',
+  );
 
   try {
     return await context.entities.Meeting.create({
@@ -479,9 +511,19 @@ export const saveAttendanceBatch = async (
   context: any,
 ): Promise<any> => {
   if (!context.user) throw new HttpError(401);
-  const role = await getUserRole(context);
-  if (!isCatechistOrAbove(role)) {
-    throw new HttpError(403, 'Apenas catequistas e coordenadores podem registrar presença.');
+
+  const meeting = await context.entities.Meeting.findUnique({
+    where: { id: args.meetingId },
+    select: { classId: true, status: true },
+  });
+  if (!meeting) throw new HttpError(404, 'Encontro não encontrado.');
+  await assertCanWriteClassStaff(
+    context,
+    meeting.classId,
+    'Apenas catequistas e coordenadores podem registrar presença.',
+  );
+  if (meeting.status === 'CANCELLED') {
+    throw new HttpError(400, 'Não é possível registar presença em encontro cancelado.');
   }
 
   const changes = args.changes || [];
@@ -491,16 +533,6 @@ export const saveAttendanceBatch = async (
   if (changes.length > MAX_BATCH_CHANGES) {
     throw new HttpError(400, `Máximo de ${MAX_BATCH_CHANGES} alterações por lote.`);
   }
-
-  const meeting = await context.entities.Meeting.findUnique({
-    where: { id: args.meetingId },
-    select: { classId: true, status: true },
-  });
-  if (!meeting) throw new HttpError(404, 'Encontro não encontrado.');
-  if (meeting.status === 'CANCELLED') {
-    throw new HttpError(400, 'Não é possível registar presença em encontro cancelado.');
-  }
-  await assertUserBelongsToClass(context, meeting.classId);
 
   const serverTime = new Date();
   const results: any[] = [];
@@ -620,16 +652,17 @@ export const listMeetingsForClasses = async (args: { classIds: string[] }, conte
 
 export const saveAttendance = async (args: any, context: any) => {
   if (!context.user) throw new HttpError(401);
-  const role = await getUserRole(context);
-  if (!isCatechistOrAbove(role)) throw new HttpError(403, 'Apenas catequistas e coordenadores podem registrar presença.');
 
-  // Verificar pertencimento à turma através do meeting
   const meeting = await context.entities.Meeting.findUnique({
     where: { id: args.meetingId },
     select: { classId: true },
   });
   if (!meeting) throw new HttpError(404, 'Encontro não encontrado.');
-  await assertUserBelongsToClass(context, meeting.classId);
+  await assertCanWriteClassStaff(
+    context,
+    meeting.classId,
+    'Apenas catequistas e coordenadores podem registrar presença.',
+  );
 
   // Validate catechumen is enrolled in this class
   const isEnrolled = await context.entities.ClassEnrollment.findFirst({

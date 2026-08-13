@@ -10,10 +10,8 @@ const ALLOWED_SELF_JOIN_ROLES = [
   'PASTORAL_VIEWER',
 ];
 
-/** Privileged roles that must be assigned by an existing parish admin. */
+/** Privileged roles a personal-workspace owner may self-assign. Platform/diocese roles are never self-granted. */
 const PRIVILEGED_ROLES = [
-  'SUPER_ADMIN',
-  'DIOCESE_ADMIN',
   'PARISH_COORDINATOR',
   'COMMUNITY_COORDINATOR',
 ];
