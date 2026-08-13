@@ -157,9 +157,6 @@ export const listCatechumens = async (
           { enrollments: { some: { class: { parishId } } } },
           { household: { parishId } },
           { parishId },
-          {
-            AND: [{ parishId: null }, { householdId: null }],
-          },
         ],
       }),
       orderBy,
