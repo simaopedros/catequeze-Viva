@@ -166,6 +166,13 @@ async function assertAndDeductDioceseCredits(
       where: { userId },
       data: { creditsLeft: DIOCESE_PER_PARISH_ALLOWANCE, lastReset: now },
     });
+  } else {
+    credits = await grantLeftoverTrialWalletIfNeeded(
+      context.entities.UserAiCredits,
+      userId,
+      'diocese',
+      credits,
+    );
   }
 
   if (credits.creditsLeft < cost) {
@@ -261,6 +268,13 @@ export async function assertAndDeductCredits(
       where: { userId: context.user.id },
       data: { creditsLeft: allowance, lastReset: now },
     });
+  } else if (!isFreePlan && planHasAiAccess(effectivePlan)) {
+    credits = await grantLeftoverTrialWalletIfNeeded(
+      context.entities.UserAiCredits,
+      context.user.id,
+      effectivePlan ?? plan,
+      credits,
+    );
   }
 
   if (isFreePlan) {
@@ -315,6 +329,43 @@ export async function assertAndDeductCredits(
 
 type AiCreditsDelegate = CreditContext['entities']['UserAiCredits'];
 
+const LEFTOVER_TRIAL_TS_SLACK_MS = 2000;
+
+/** Unused free-trial row: still 0 and never written after create (lastReset ≈ createdAt ≈ updatedAt). */
+function isLeftoverUnusedTrialWallet(credits: {
+  creditsLeft: number;
+  lastReset: Date;
+  createdAt?: Date | null;
+  updatedAt?: Date | null;
+}): boolean {
+  if (credits.creditsLeft !== 0 || !credits.createdAt || !credits.updatedAt) {
+    return false;
+  }
+  const created = new Date(credits.createdAt).getTime();
+  const lastReset = new Date(credits.lastReset).getTime();
+  const updated = new Date(credits.updatedAt).getTime();
+  if (Number.isNaN(created) || Number.isNaN(lastReset) || Number.isNaN(updated)) {
+    return false;
+  }
+  return (
+    Math.abs(lastReset - created) < LEFTOVER_TRIAL_TS_SLACK_MS &&
+    Math.abs(updated - created) < LEFTOVER_TRIAL_TS_SLACK_MS
+  );
+}
+
+async function grantLeftoverTrialWalletIfNeeded(
+  userAiCreditsDelegate: AiCreditsDelegate,
+  userId: string,
+  subscriptionPlan: string | null,
+  credits: { creditsLeft: number; lastReset: Date; createdAt?: Date | null; updatedAt?: Date | null },
+) {
+  if (!subscriptionPlan || !isLeftoverUnusedTrialWallet(credits)) {
+    return credits;
+  }
+  await grantSubscriptionAiCredits(userAiCreditsDelegate, userId, subscriptionPlan);
+  return (await userAiCreditsDelegate.findUnique({ where: { userId } })) ?? credits;
+}
+
 /** `updateMany` with `creditsLeft >= cost` so concurrent deducts cannot go negative. */
 async function deductCreditsAtomically(
   userAiCreditsDelegate: AiCreditsDelegate,
@@ -334,8 +385,8 @@ async function deductCreditsAtomically(
 }
 
 /**
- * Grants the plan's monthly AI allowance when a subscription activates or renews.
- * Fixes stale free-trial UserAiCredits rows (e.g. 0/3 left) after upgrade.
+ * Upserts the plan monthly allowance on subscription activate/renew.
+ * Required after upgrade because deduct no longer heals a 0 wallet mid-cycle.
  */
 export async function grantSubscriptionAiCredits(
   userAiCreditsDelegate: AiCreditsDelegate,
