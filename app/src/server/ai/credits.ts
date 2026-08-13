@@ -5,7 +5,6 @@
  * Parish billing tracks aiCreditsUsed / aiCreditsReset for diocese umbrella.
  */
 import { HttpError } from 'wasp/server';
-import type { User, UserAiCredits } from '@prisma/client';
 import {
   AI_CREDITS,
   planHasAiAccess,
@@ -188,13 +187,15 @@ async function assertAndDeductDioceseCredits(
     }
   }
 
-  const updated = await context.entities.UserAiCredits.update({
-    where: { userId },
-    data: { creditsLeft: { decrement: cost } },
-  });
+  const updated = await deductCreditsAtomically(
+    context.entities.UserAiCredits,
+    userId,
+    cost,
+    `CREDITS_INSUFFICIENT: ${credits.creditsLeft} restantes (paróquia), ${cost} necessários. Compre créditos avulsos ou aguarde a renovação.`,
+  );
 
   await incrementDailyUsage(context.entities, userId, cost);
-  return { creditsLeft: updated.creditsLeft };
+  return updated;
 }
 
 export async function assertAndDeductCredits(
@@ -243,16 +244,6 @@ export async function assertAndDeductCredits(
         lastReset: new Date(),
       },
     });
-  }
-
-  if (credits && !isFreePlan && planHasAiAccess(effectivePlan)) {
-    const allowance = resolveUserAiAllowance(plan, effectivePlan);
-    credits = await healStaleFreeTrialCredits(
-      context.entities.UserAiCredits,
-      context.user.id,
-      credits,
-      allowance,
-    );
   }
 
   if (!credits) {
@@ -306,19 +297,41 @@ export async function assertAndDeductCredits(
     }
   }
 
-  const updated = await context.entities.UserAiCredits.update({
-    where: { userId: context.user.id },
-    data: { creditsLeft: { decrement: cost } },
-  });
+  const updated = await deductCreditsAtomically(
+    context.entities.UserAiCredits,
+    context.user.id,
+    cost,
+    isFreePlan
+      ? 'CREDITS_EXHAUSTED: Créditos de teste esgotados. Compre créditos avulsos ou faça upgrade para continuar usando a assistência editorial.'
+      : `CREDITS_INSUFFICIENT: ${credits.creditsLeft} restantes, ${cost} necessários. Compre créditos avulsos ou aguarde a renovação mensal.`,
+  );
 
   await incrementDailyUsage(context.entities, context.user.id, cost);
 
-  return { creditsLeft: updated.creditsLeft };
+  return updated;
 }
 
 // ─── Subscription activation ───────────────────────────────────────────────
 
 type AiCreditsDelegate = CreditContext['entities']['UserAiCredits'];
+
+/** `updateMany` with `creditsLeft >= cost` so concurrent deducts cannot go negative. */
+async function deductCreditsAtomically(
+  userAiCreditsDelegate: AiCreditsDelegate,
+  userId: string,
+  cost: number,
+  insufficientMessage: string,
+): Promise<{ creditsLeft: number }> {
+  const result = await userAiCreditsDelegate.updateMany({
+    where: { userId, creditsLeft: { gte: cost } },
+    data: { creditsLeft: { decrement: cost } },
+  });
+  if (result.count === 0) {
+    throw new HttpError(402, insufficientMessage);
+  }
+  const updated = await userAiCreditsDelegate.findUnique({ where: { userId } });
+  return { creditsLeft: updated?.creditsLeft ?? 0 };
+}
 
 /**
  * Grants the plan's monthly AI allowance when a subscription activates or renews.
@@ -351,25 +364,6 @@ export async function grantSubscriptionAiCredits(
       lastReset: now,
     },
   });
-}
-
-/** Heal rows left over from the free trial after a paid upgrade (no webhook re-run). */
-async function healStaleFreeTrialCredits(
-  userAiCreditsDelegate: AiCreditsDelegate,
-  userId: string,
-  credits: UserAiCredits,
-  monthlyAllowance: number,
-): Promise<UserAiCredits> {
-  if (
-    monthlyAllowance > AI_CREDITS.FREE_TRIAL_CREDITS &&
-    credits.creditsLeft <= AI_CREDITS.FREE_TRIAL_CREDITS
-  ) {
-    return userAiCreditsDelegate.update({
-      where: { userId },
-      data: { creditsLeft: monthlyAllowance, lastReset: new Date() },
-    });
-  }
-  return credits;
 }
 
 // ─── Reset logic ───────────────────────────────────────────────────────────
@@ -495,11 +489,6 @@ export async function getCreditsStatus(
   if (credits) {
     const lastReset = new Date(credits.lastReset);
     if (shouldReset(lastReset, new Date())) {
-      creditsLeft = monthlyAllowance;
-    } else if (
-      monthlyAllowance > AI_CREDITS.FREE_TRIAL_CREDITS &&
-      credits.creditsLeft <= AI_CREDITS.FREE_TRIAL_CREDITS
-    ) {
       creditsLeft = monthlyAllowance;
     }
   }
