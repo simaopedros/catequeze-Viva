@@ -50,7 +50,7 @@ export function CompletionStep({
             <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               {item.label}
             </dt>
-            <dd className="font-brand-display text-right text-sm font-semibold tracking-tight text-brand-ink">
+            <dd className="text-right text-sm font-semibold tracking-tight text-brand-ink">
               {item.value}
             </dd>
           </div>
@@ -64,7 +64,7 @@ export function CompletionStep({
       <div className="flex flex-col gap-2.5 sticky-form-actions -mx-1 px-1 pt-3 sm:static sm:border-0 sm:bg-transparent sm:p-0">
         <Button
           onClick={onPrimaryAction}
-          className="h-11 min-h-11 w-full rounded-sm shadow-none"
+          className="h-11 min-h-11 w-full rounded-md"
         >
           {summary.primaryActionLabel}
           <ArrowRight className="ml-1 h-4 w-4" />

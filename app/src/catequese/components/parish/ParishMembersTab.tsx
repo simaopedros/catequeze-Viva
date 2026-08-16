@@ -141,7 +141,7 @@ export function ParishMembersTab({ members, onRemove }: ParishMembersTabProps) {
                     key={m.id}
                     className="border-b last:border-0 hover:bg-muted/30"
                   >
-                    <td className="font-brand-display px-4 py-3 font-semibold tracking-tight text-brand-ink">
+                    <td className="px-4 py-3 font-semibold tracking-tight text-brand-ink">
                       {m.user?.firstName ||
                         m.user?.email?.split("@")[0] ||
                         "\u2014"}

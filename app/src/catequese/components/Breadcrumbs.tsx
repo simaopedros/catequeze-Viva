@@ -98,7 +98,7 @@ export function Breadcrumbs() {
               {item.label}
             </Link>
           ) : (
-            <span className="font-brand-display max-w-[160px] truncate font-semibold tracking-tight text-brand-ink">
+            <span className="max-w-[160px] truncate font-semibold tracking-tight text-brand-ink">
               {item.label}
             </span>
           )}

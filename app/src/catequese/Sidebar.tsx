@@ -105,10 +105,13 @@ function NavItemLink({
       data-tour={tourMap[item.iconKey] || undefined}
       className={({ isActive }) =>
         cn(
-          "relative flex w-full items-center justify-between rounded-sm px-2.5 py-2 text-sm font-medium transition-colors duration-150",
+          "relative flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition-colors duration-150",
+          // O indicador ativo era `border-l-2` sólida: numa pílula arredondada
+          // a borda reta corta o canto e lê como falha de render. Vira um
+          // traço dourado arredondado, sobreposto e centrado verticalmente.
           isActive
-            ? "bg-brand-ink/[0.06] text-brand-ink border-l-2 border-brand-gold"
-            : "border-l-2 border-transparent text-muted-foreground hover:bg-muted/50 hover:text-brand-ink",
+            ? "bg-brand-ink/[0.07] text-brand-ink before:absolute before:left-0 before:top-1/2 before:h-5 before:w-[3px] before:-translate-y-1/2 before:rounded-full before:bg-brand-gold"
+            : "text-muted-foreground hover:bg-muted/60 hover:text-brand-ink",
           collapsed && "justify-center px-2",
           "motion-reduce:transition-none",
         )
@@ -119,12 +122,12 @@ function NavItemLink({
         {!collapsed && <span>{t(item.labelKey)}</span>}
       </div>
       {!collapsed && badge !== undefined && badge > 0 && (
-        <span className="h-4.5 min-w-[18px] flex items-center justify-center rounded-sm bg-brand-ink text-white text-overline font-semibold px-1">
+        <span className="h-4.5 min-w-[18px] flex items-center justify-center rounded-full bg-brand-ink text-white text-overline font-semibold tabular-nums px-1.5">
           {badge > 99 ? "99+" : badge}
         </span>
       )}
       {collapsed && badge !== undefined && badge > 0 && (
-        <span className="absolute right-1 top-1 h-2 w-2 rounded-sm bg-brand-gold ring-2 ring-background" />
+        <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-brand-gold ring-2 ring-surface-elevated" />
       )}
     </NavLink>
   );
@@ -265,11 +268,11 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "flex h-full flex-col border-r border-brand-ink/10 bg-surface-elevated transition-all duration-200",
+        "flex h-full flex-col border-r border-border bg-surface-elevated transition-all duration-200",
         collapsed ? "w-16" : "w-60",
       )}
     >
-      <div className="flex h-14 items-center border-b border-brand-ink/8 px-3">
+      <div className="flex h-14 items-center border-b border-border px-3">
         {!collapsed && <BrandLockup compact hideBadge className="max-w-full" />}
         {collapsed && <BrandMark className="mx-auto h-8 w-8" />}
       </div>

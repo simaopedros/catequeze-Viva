@@ -39,7 +39,7 @@ interface ShellContentProps {
 /** Standard content area with responsive padding */
 export function ShellContent({ children, className }: ShellContentProps) {
   return (
-    <main className={cn("flex-1 overflow-y-auto p-4 md:p-6", className)}>
+    <main className={cn("flex-1 overflow-y-auto p-4 md:p-6 lg:p-8", className)}>
       {children}
     </main>
   );
@@ -55,7 +55,7 @@ export function ShellHeader({ children, className }: ShellHeaderProps) {
   return (
     <header
       className={cn(
-        "flex h-14 items-center gap-3 border-b border-border/70 bg-surface-elevated px-4",
+        "flex h-14 items-center gap-3 border-b border-border bg-surface-elevated/85 px-4 backdrop-blur-md supports-[backdrop-filter]:bg-surface-elevated/70",
         className,
       )}
     >

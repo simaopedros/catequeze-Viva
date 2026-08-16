@@ -136,7 +136,7 @@ export default function BirthdaysPage() {
                     <Cake className="h-4 w-4" />
                   </div>
                   <div className="min-w-0">
-                    <p className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
+                    <p className="truncate text-sm font-semibold tracking-tight text-brand-ink">
                       {b.name}
                     </p>
                     <p className="text-xs text-muted-foreground">

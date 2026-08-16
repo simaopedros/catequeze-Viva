@@ -195,7 +195,7 @@ export function SearchSheet({
                         >
                           <Icon className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
                           <div className="min-w-0 flex-1">
-                            <p className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
+                            <p className="truncate text-sm font-semibold tracking-tight text-brand-ink">
                               {item.label}
                             </p>
                             {item.description && (

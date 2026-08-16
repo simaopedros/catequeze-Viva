@@ -194,7 +194,7 @@ export default function ParishDetailPage() {
             {tn("parishes")}
           </button>
           <span>/</span>
-          <span className="font-brand-display truncate font-semibold tracking-tight text-brand-ink">
+          <span className="truncate font-semibold tracking-tight text-brand-ink">
             {parish?.name}
           </span>
         </div>

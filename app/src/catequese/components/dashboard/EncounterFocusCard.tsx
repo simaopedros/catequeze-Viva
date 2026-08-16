@@ -243,7 +243,7 @@ export function EncounterFocusCard({
           </div>
 
           <div>
-            <h2 className="font-brand-display text-lg font-semibold tracking-tight text-brand-ink sm:text-xl">
+            <h2 className="text-lg font-semibold tracking-tight text-brand-ink sm:text-xl">
               {meeting.title || meeting.theme || t("no_title")}
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -322,7 +322,7 @@ export function EncounterFocusCard({
           <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:items-center">
             <Button
               asChild
-              className="h-11 min-h-11 w-full rounded-sm shadow-none sm:w-auto sm:min-w-[12rem]"
+              className="h-11 min-h-11 w-full rounded-md sm:w-auto sm:min-w-[12rem]"
             >
               <Link to={primaryCta.href}>
                 {ctaLabel}

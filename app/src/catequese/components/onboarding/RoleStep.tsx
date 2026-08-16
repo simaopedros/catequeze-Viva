@@ -54,7 +54,7 @@ export function RoleStep({ selected, onSelect }: RoleStepProps) {
               <role.icon className="h-5 w-5" />
             </div>
             <div className="min-w-0 flex-1">
-              <h3 className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+              <h3 className="text-sm font-semibold tracking-tight text-brand-ink">
                 {t(`roles.${role.id}.title`)}
               </h3>
               <p className="mt-0.5 text-xs text-muted-foreground">

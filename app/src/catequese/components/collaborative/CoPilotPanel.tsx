@@ -42,7 +42,7 @@ export function CoPilotPanel() {
                 ? ta(`hub.${intent}` as any, t("workspace.copilot"))
                 : t("workspace.copilot")}
             </AppEyebrow>
-            <p className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
+            <p className="truncate text-sm font-semibold tracking-tight text-brand-ink">
               {contentItem?.theme || t("workspace.awaiting_theme")}
             </p>
             <AppGoldRule className="w-6" />

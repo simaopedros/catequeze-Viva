@@ -50,7 +50,7 @@ export default function AccountPage() {
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               {t("linked_parish")}
             </p>
-            <p className="font-brand-display font-semibold tracking-tight text-brand-ink">
+            <p className="font-semibold tracking-tight text-brand-ink">
               {ctxParishName}
             </p>
           </div>
@@ -74,7 +74,7 @@ export default function AccountPage() {
                   <div className="text-muted-foreground text-sm font-medium">
                     {t("email")}
                   </div>
-                  <div className="font-brand-display mt-1 text-sm font-semibold tracking-tight text-brand-ink sm:col-span-2 sm:mt-0">
+                  <div className="mt-1 text-sm font-semibold tracking-tight text-brand-ink sm:col-span-2 sm:mt-0">
                     {user.email}
                   </div>
                 </div>
@@ -88,7 +88,7 @@ export default function AccountPage() {
                     <div className="text-muted-foreground text-sm font-medium">
                       {t("username")}
                     </div>
-                    <div className="font-brand-display mt-1 text-sm font-semibold tracking-tight text-brand-ink sm:col-span-2 sm:mt-0">
+                    <div className="mt-1 text-sm font-semibold tracking-tight text-brand-ink sm:col-span-2 sm:mt-0">
                       {user.username}
                     </div>
                   </div>
@@ -129,7 +129,7 @@ export default function AccountPage() {
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between">
-            <span className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+            <span className="text-sm font-semibold tracking-tight text-brand-ink">
               {t("credits_value", { count: user.credits })}
             </span>
             <BuyMoreButton subscriptionStatus={user.subscriptionStatus} />
@@ -185,7 +185,7 @@ function UserCurrentSubscriptionPlan({
 
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+      <span className="text-sm font-semibold tracking-tight text-brand-ink">
         {message}
       </span>
       {onTrial ? (

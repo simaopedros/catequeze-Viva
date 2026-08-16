@@ -71,7 +71,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
             Paróquias
           </NavLink>
           <span>/</span>
-          <span className="font-brand-display font-semibold tracking-tight text-[#071A2D]">
+          <span className="font-semibold tracking-tight text-[#071A2D]">
             {parish.name}
           </span>
         </div>
@@ -139,20 +139,20 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
               <div>
                 <p className="text-xs text-muted-foreground">Plano</p>
-                <p className="font-brand-display font-semibold tracking-tight text-[#071A2D]">
+                <p className="font-semibold tracking-tight text-[#071A2D]">
                   {parish.billing.plan}
                 </p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Status</p>
-                <p className="font-brand-display flex items-center gap-1 font-semibold tracking-tight text-[#071A2D]">
+                <p className="flex items-center gap-1 font-semibold tracking-tight text-[#071A2D]">
                   {statusIcon(parish.billing.status)}
                   {parish.billing.status}
                 </p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Trial até</p>
-                <p className="font-brand-display font-semibold tracking-tight text-[#071A2D]">
+                <p className="font-semibold tracking-tight text-[#071A2D]">
                   {parish.billing.trialEndsAt
                     ? new Date(parish.billing.trialEndsAt).toLocaleDateString(
                         "pt-BR",
@@ -162,7 +162,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Limites</p>
-                <p className="font-brand-display font-semibold tracking-tight text-[#071A2D]">
+                <p className="font-semibold tracking-tight text-[#071A2D]">
                   {parish.billing.maxClasses || "default"} turmas /{" "}
                   {parish.billing.maxCatechumens || "default"} catequizandos
                 </p>
@@ -196,7 +196,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
                   className="px-5 py-3 flex items-center justify-between"
                 >
                   <div>
-                    <p className="font-brand-display text-sm font-semibold tracking-tight text-[#071A2D]">
+                    <p className="text-sm font-semibold tracking-tight text-[#071A2D]">
                       {m.user.email}
                     </p>
                     <p className="text-xs text-muted-foreground">
@@ -235,7 +235,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
                   className="px-5 py-2.5 flex items-center justify-between text-xs"
                 >
                   <div>
-                    <span className="font-brand-display font-semibold tracking-tight text-[#071A2D]">
+                    <span className="font-semibold tracking-tight text-[#071A2D]">
                       {log.action}
                     </span>
                     <span className="text-muted-foreground ml-2">

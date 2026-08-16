@@ -3,15 +3,17 @@ import { cva, VariantProps } from "class-variance-authority";
 
 import { cn } from "../../utils";
 
-const cardVariants = cva("rounded-sm border", {
+const cardVariants = cva("rounded-lg border", {
   variants: {
     variant: {
-      default: "border-border/70 bg-surface-elevated text-brand-ink",
-      accent: "bg-card-accent text-card-accent-foreground",
+      default:
+        "border-border bg-surface-elevated text-brand-ink shadow-elevation-sm",
+      accent:
+        "border-border bg-card-accent text-card-accent-foreground shadow-elevation-sm",
       bento:
         "border-none bg-card-subtle text-card-subtle-foreground shadow-none",
       interactive:
-        "cursor-pointer border-border/70 bg-surface-elevated text-brand-ink transition-colors hover:border-brand-ink/30",
+        "cursor-pointer border-border bg-surface-elevated text-brand-ink shadow-elevation-sm transition-[box-shadow,transform,border-color] duration-150 ease-out hover:-translate-y-0.5 hover:border-input hover:shadow-elevation-md motion-reduce:hover:translate-y-0",
       flat: "border-0 bg-muted/50 shadow-none",
     },
   },
@@ -35,7 +37,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-header"
-      className={cn("flex flex-col space-y-1.5 p-5", className)}
+      className={cn("flex flex-col space-y-1.5 p-5 sm:p-6", className)}
       {...props}
     />
   );
@@ -46,7 +48,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<"h3">) {
     <h3
       data-slot="card-title"
       className={cn(
-        "font-brand-display font-semibold leading-none tracking-tight text-brand-ink",
+        "font-sans text-title-xsm font-semibold leading-tight tracking-tight text-brand-ink",
         className,
       )}
       {...props}
@@ -68,7 +70,7 @@ function CardContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-content"
-      className={cn("p-5 pt-0", className)}
+      className={cn("p-5 pt-0 sm:p-6 sm:pt-0", className)}
       {...props}
     />
   );
@@ -78,7 +80,7 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-footer"
-      className={cn("flex items-center p-5 pt-0", className)}
+      className={cn("flex items-center p-5 pt-0 sm:p-6 sm:pt-0", className)}
       {...props}
     />
   );
@@ -88,7 +90,10 @@ function CardMedia({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-media"
-      className={cn("-mx-5 -mt-5 mb-4 overflow-hidden rounded-t-sm", className)}
+      className={cn(
+        "-mx-5 -mt-5 mb-4 overflow-hidden rounded-t-lg sm:-mx-6 sm:-mt-6",
+        className,
+      )}
       {...props}
     />
   );

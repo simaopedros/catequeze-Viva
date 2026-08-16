@@ -175,7 +175,7 @@ export function GuidedTour({ onComplete }: GuidedTourProps) {
         </div>
         <h3
           id="guided-tour-title"
-          className="font-brand-display mb-1 text-lg font-semibold tracking-tight text-brand-ink"
+          className="mb-1 text-lg font-semibold tracking-tight text-brand-ink"
         >
           {step.title}
         </h3>

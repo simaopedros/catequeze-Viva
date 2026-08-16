@@ -217,7 +217,7 @@ export default function ClassPastoralReportPage() {
       {Boolean(data.meetingsWithAttendance?.length) && (
         <AppPanel padded={false}>
           <div className="flex flex-col gap-3 border-b border-border/70 p-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-            <span className="font-brand-display flex items-center gap-2 font-semibold tracking-tight text-brand-ink">
+            <span className="flex items-center gap-2 font-semibold tracking-tight text-brand-ink">
               <Trophy className="h-4 w-4 text-brand-gold" />
               {t("ranking")}
             </span>
@@ -262,7 +262,7 @@ export default function ClassPastoralReportPage() {
                           {i + 1}
                         </span>
                         <div className="min-w-0">
-                          <p className="font-brand-display truncate font-semibold tracking-tight text-brand-ink">
+                          <p className="truncate font-semibold tracking-tight text-brand-ink">
                             {r.name}
                           </p>
                           <p className="text-xs text-muted-foreground">
@@ -361,18 +361,13 @@ export default function ClassPastoralReportPage() {
                                 ? "border-brand-gold/40 bg-brand-gold/10 text-brand-ink"
                                 : "border-border/70 bg-muted/30 text-muted-foreground"
                             }`}
-                            style={
-                              i < 3
-                                ? { fontFamily: "var(--font-brand-display)" }
-                                : undefined
-                            }
                           >
                             {i + 1}
                           </span>
                         </td>
                         <td className="p-3">
                           <div className="flex items-center gap-2">
-                            <span className="font-brand-display font-semibold tracking-tight text-brand-ink">
+                            <span className="font-semibold tracking-tight text-brand-ink">
                               {r.name}
                             </span>
                             <Badge
@@ -404,7 +399,7 @@ export default function ClassPastoralReportPage() {
                         <td className="p-3 text-center">
                           {r.totalValidMeetings}
                         </td>
-                        <td className="font-brand-display p-3 text-center font-semibold tabular-nums tracking-tight text-brand-ink">
+                        <td className="p-3 text-center font-semibold tabular-nums tracking-tight text-brand-ink">
                           {r.attendanceRate}%
                         </td>
                         <td className="p-3 text-center">

@@ -620,7 +620,7 @@ export default function TeamPage() {
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
-                          <p className="font-brand-display truncate font-semibold tracking-tight text-brand-ink">
+                          <p className="truncate font-semibold tracking-tight text-brand-ink">
                             {displayName}
                           </p>
                           <p className="mt-0.5 truncate text-xs text-muted-foreground">
@@ -735,7 +735,7 @@ export default function TeamPage() {
                           key={m.id}
                           className="border-b last:border-0 hover:bg-muted/30"
                         >
-                          <td className="font-brand-display px-4 py-3 font-semibold tracking-tight text-brand-ink">
+                          <td className="px-4 py-3 font-semibold tracking-tight text-brand-ink">
                             {[m.user?.firstName, m.user?.lastName]
                               .filter(Boolean)
                               .join(" ") ||

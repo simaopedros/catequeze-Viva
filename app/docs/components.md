@@ -1,5 +1,39 @@
 # Componentes — Catequese Viva
 
+## Linguagem visual: "soft modern"
+
+A marca institucional (ink `#071A2D` + gold `#D39A2B`) e a serifa `Cormorant
+Garamond` continuam sendo a identidade. O que mudou foi a **linguagem de
+superfície**:
+
+- **Hierarquia por elevação, não por borda dura.** O canvas do app é off-white
+  (`--background: 210 25% 98%`) e os cards são branco puro, então a separação
+  vem do contraste de superfície + sombra. A borda virou hairline de apoio.
+- **Sombras tingidas de ink**, nunca preto puro — em superfície clara o preto
+  suja, o ink lê como profundidade.
+- **Raio suave**: todo o app usa `rounded-sm`, e a escala inteira é derivada de
+  `--radius`. Trocar essa variável move os ~1200 usos de uma vez.
+- **Serifa reservada** a hero, landings e estados vazios. Títulos de página,
+  de card e de diálogo são Inter semibold com tracking negativo.
+- **Gold como acento**, não como moldura editorial. `AppGoldRule` é um fio em
+  degradê, não mais um traço sólido de 40px.
+
+Tema **claro apenas**. Os tokens `.dark` permanecem no `Main.css` como legado —
+não expandir UX escura sem antes verificar tela a tela.
+
+## Escala de raio
+
+Derivada de `--radius: 0.75rem`. Não introduza valores avulsos.
+
+| Utility | Valor | Uso |
+|---|---|---|
+| `rounded-xs` | 4px | Marcadores mínimos |
+| `rounded-sm` | 8px | Padrão do app; chips, itens de lista, campos densos |
+| `rounded-md` | 10px | Botões, inputs, selects, itens de menu |
+| `rounded-lg` | 12px | Cards, painéis, popovers, alertas |
+| `rounded-2xl` | 20px | Diálogos e sheets |
+| `rounded-full` | — | Selos de status, avatares, indicadores |
+
 ## Biblioteca base (shadcn/ui — `src/client/components/ui/`)
 
 | Componente | Variantes | Tamanhos | Ficheiro |
@@ -38,31 +72,73 @@
 
 ## Escala tipográfica
 
+Os graus de título carregam `letter-spacing` negativo progressivo (−0.025em no
+`xxl` até −0.01em no `xsm`): em Inter, quanto maior o corpo, mais fechado o
+espacejamento precisa ser para o título parecer desenhado e não esticado.
+
 | Utility | Font-size | Uso |
 |---|---|---|
 | `text-title-xxl` | 44px | Hero headline |
 | `text-title-xl` | 36px | Page titles |
+| `text-title-xl2` | 32px | Hero secundário |
 | `text-title-lg` | 28px | Section headers |
-| `text-title-md` | 24px | Card titles |
-| `text-title-sm` | 20px | Subsection |
-| `text-title-xsm` | 18px | Compact titles |
+| `text-title-md2` | 26px | Section headers alternativo |
+| `text-title-md` | 24px | Métricas, títulos de seção |
+| `text-title-sm` | 20px | Títulos de página no app |
+| `text-title-xsm` | 18px | Títulos de card e de diálogo |
 | `text-body-lg` | 17px | Lead paragraphs |
 | `text-body` | 15px | Body |
-| `text-body-sm` | 13px | Descriptions |
+| `text-body-sm` | 14px | Descriptions |
 | `text-body-xs` | 12px | Captions |
-| `text-caption` | 11px | Small labels |
-| `text-overline` | 10px | Overline / micro text |
+| `text-caption` | 12px | Small labels |
+| `text-overline` | 12px | Overline (com tracking 0.05em) |
+| `text-micro` | 10px | Selos `size="sm"`, metadados densos |
 
 ## Elevação
 
+Cada degrau combina uma sombra de contato curta com uma de ambiente longa, em
+ink translúcido. Os alfas foram calibrados contra o canvas off-white — numa
+primeira passada com alfas de 0.05–0.08 o degrau baixo sumia e card elevado
+ficava idêntico a card plano.
+
 | Utility | Uso |
 |---|---|
-| `shadow-elevation-xs` | Cards subtis, inputs |
-| `shadow-elevation-sm` | Cards padrão |
-| `shadow-elevation-md` | Cards interactivos |
-| `shadow-elevation-lg` | Dropdowns |
-| `shadow-elevation-xl` | Modals |
+| `shadow-elevation-xs` | Inputs, selects, botões em repouso |
+| `shadow-elevation-sm` | Cards e painéis padrão |
+| `shadow-elevation-md` | Card interativo em hover, tooltip |
+| `shadow-elevation-lg` | Toasts |
+| `shadow-elevation-dropdown` | Menus e conteúdo de select |
+| `shadow-elevation-xl` | Reservado a sobreposições altas |
+| `shadow-elevation-modal` | Diálogos e sheets |
 | `shadow-elevation-sticky` | Headers fixos |
+
+## Selos de status (`Badge`)
+
+Antes `success`, `info` e `secondary` renderizavam todas em ink — visualmente
+indistinguíveis, o que anulava o propósito de variantes semânticas. Agora cada
+uma carrega cor tonal própria: fundo na cor a 10%, borda a 20%, texto na cor
+cheia. `default` continua sendo o único preenchimento sólido.
+
+## Banco de prova
+
+`.design-preview/` roda os componentes reais contra o `Main.css` real, sem
+banco, sem auth e sem Wasp — útil para verificar tokens e variantes isolados:
+
+```bash
+npx vite --config .design-preview/vite.config.ts
+```
+
+Para conferir as telas do app logado (exige `wasp start` e o banco no ar):
+
+```bash
+node .design-preview/screens.mjs /tmp/telas
+```
+
+Ele navega **clicando na navegação**, não com `page.goto`. Com recarga completa
+a app às vezes devolve o Painel na rota pedida — um guard de workspace/permissão
+ganha a corrida do boot — e a captura registrava a tela errada em silêncio. Cada
+captura só acontece depois que o `<h1>` confere, e o script reporta overflow
+horizontal, que é o sintoma clássico de mudança de densidade que apertou layout.
 
 ## Z-index
 

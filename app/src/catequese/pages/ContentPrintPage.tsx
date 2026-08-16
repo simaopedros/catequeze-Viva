@@ -271,7 +271,7 @@ export default function ContentPrintPage() {
           </Badge>
           <Button
             onClick={() => window.print()}
-            className="h-9 gap-2 rounded-sm bg-brand-ink shadow-none hover:bg-brand-ink-soft"
+            className="h-9 gap-2 rounded-md bg-brand-ink hover:bg-brand-ink-soft"
           >
             <Printer className="h-4 w-4" />
             {t("print_page.print_pdf")}
@@ -296,11 +296,11 @@ export default function ContentPrintPage() {
               <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#6b7c8a]">
                 {t("print_page.header_badge")}
               </p>
-              <h1 className="font-brand-display mb-2 text-2xl font-semibold tracking-tight text-brand-ink sm:text-[1.75rem]">
+              <h1 className="mb-2 text-2xl font-semibold tracking-tight text-brand-ink sm:text-[1.75rem]">
                 {item.title}
               </h1>
               <div
-                className="mx-auto mb-3 h-px w-10 bg-brand-gold"
+                className="mx-auto mb-3 h-px w-16 bg-gradient-to-r from-brand-gold to-transparent"
                 aria-hidden
               />
               {item.theme && (
@@ -341,12 +341,12 @@ export default function ContentPrintPage() {
                       defaultValue: "Apoio pastoral",
                     })}
                   </p>
-                  <h2 className="font-brand-display mt-1 text-xl font-semibold tracking-tight text-brand-ink">
+                  <h2 className="mt-1 text-xl font-semibold tracking-tight text-brand-ink">
                     {t("print_page.linked_references", {
                       defaultValue: "Referências vinculadas",
                     })}
                   </h2>
-                  <div className="mt-2 h-px w-10 bg-brand-gold" aria-hidden />
+                  <div className="mt-2 h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
                 </div>
 
                 {bibleRefs.length > 0 && (
@@ -460,7 +460,7 @@ export default function ContentPrintPage() {
                         key={activity.id}
                         className="print-keep rounded-sm border border-border/70 bg-white p-4"
                       >
-                        <h3 className="font-brand-display mb-1 font-semibold tracking-tight text-brand-ink">
+                        <h3 className="mb-1 font-semibold tracking-tight text-brand-ink">
                           {index + 1}. {activity.title} — {typeLabel}
                         </h3>
                         {activity.description && (

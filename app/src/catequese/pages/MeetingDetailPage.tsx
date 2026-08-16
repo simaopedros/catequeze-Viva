@@ -203,7 +203,7 @@ export default function MeetingDetailPage() {
               ("href" in primaryStaffAction && primaryStaffAction.href ? (
                 <Button
                   asChild
-                  className="h-11 min-h-11 rounded-sm shadow-none"
+                  className="h-11 min-h-11 rounded-md"
                 >
                   <Link to={primaryStaffAction.href}>
                     <primaryStaffAction.icon className="mr-2 h-4 w-4" />
@@ -212,7 +212,7 @@ export default function MeetingDetailPage() {
                 </Button>
               ) : (
                 <Button
-                  className="h-11 min-h-11 rounded-sm shadow-none"
+                  className="h-11 min-h-11 rounded-md"
                   disabled={saving}
                   onClick={
                     "onClick" in primaryStaffAction
@@ -343,7 +343,7 @@ export default function MeetingDetailPage() {
             </AppEyebrow>
             <div className="h-px w-8 bg-brand-gold" aria-hidden />
           </div>
-          <h3 className="font-brand-display text-base font-semibold text-brand-ink">
+          <h3 className="text-base font-semibold text-brand-ink">
             {meeting.content.title}
           </h3>
           {meeting.content.theme && (

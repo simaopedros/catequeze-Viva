@@ -173,7 +173,7 @@ export function PlanLimitBanner({
             {t("limit_reached_title")}
           </p>
           <div className="h-px w-8 bg-brand-gold" aria-hidden />
-          <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+          <p className="text-sm font-semibold tracking-tight text-brand-ink">
             {variant === "managed_workspace_notice"
               ? t("limit_reached_label", { label })
               : contextualTitle}

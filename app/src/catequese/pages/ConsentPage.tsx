@@ -78,7 +78,7 @@ export default function ConsentPage() {
             className="flex items-center justify-between gap-4"
           >
             <div>
-              <h3 className="font-brand-display font-semibold tracking-tight text-brand-ink">
+              <h3 className="font-semibold tracking-tight text-brand-ink">
                 {ct.label}
               </h3>
               <p className="text-sm text-muted-foreground">{ct.desc}</p>

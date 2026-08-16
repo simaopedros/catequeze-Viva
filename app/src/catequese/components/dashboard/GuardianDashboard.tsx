@@ -53,7 +53,7 @@ export function GuardianDashboard({ stats }: GuardianDashboardProps) {
                   {d.lastName?.[0]}
                 </div>
                 <div className="min-w-0">
-                  <p className="font-brand-display truncate font-semibold tracking-tight text-brand-ink">
+                  <p className="truncate font-semibold tracking-tight text-brand-ink">
                     {d.firstName} {d.lastName}
                   </p>
                   <p className="mt-0.5 truncate text-xs text-muted-foreground">
@@ -85,7 +85,7 @@ export function GuardianDashboard({ stats }: GuardianDashboardProps) {
                 to={`/app/meetings/${m.id}`}
                 className="flex items-center justify-between py-2.5 text-sm transition-colors hover:bg-muted/30 -mx-1 px-1 rounded-sm"
               >
-                <span className="font-brand-display mr-2 truncate text-sm font-semibold tracking-tight text-brand-ink">
+                <span className="mr-2 truncate text-sm font-semibold tracking-tight text-brand-ink">
                   {m.class?.name}
                   {m.title || m.theme ? ` — ${m.title || m.theme}` : ""}
                 </span>

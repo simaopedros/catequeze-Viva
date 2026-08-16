@@ -638,7 +638,7 @@ export default function OnboardingPage() {
                     <p className="text-[11px] font-medium tracking-wide text-muted-foreground">
                       {t("diocese_selected")}
                     </p>
-                    <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                    <p className="text-sm font-semibold tracking-tight text-brand-ink">
                       {diocese.name}
                     </p>
                   </div>

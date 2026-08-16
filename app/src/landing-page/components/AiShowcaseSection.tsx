@@ -23,7 +23,7 @@ export function AiShowcaseSection({
             <Feather className="h-4 w-4 text-brand-gold" />
             {t("ai_showcase_badge")}
           </div>
-          <div className="mx-auto mb-4 h-px w-10 bg-brand-gold" aria-hidden />
+          <div className="mx-auto mb-4 h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
           <h2
             className="text-3xl font-semibold tracking-tight text-brand-ink sm:text-5xl"
             style={{ fontFamily: "var(--font-brand-display)" }}

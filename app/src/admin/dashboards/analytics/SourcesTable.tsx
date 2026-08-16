@@ -37,13 +37,13 @@ const SourcesTable = ({
           sources.map((source) => (
             <div className="border-border grid grid-cols-3 border-b">
               <div className="flex items-center gap-3 p-2.5 xl:p-5">
-                <p className="font-brand-display font-semibold tracking-tight text-[#071A2D]">
+                <p className="font-semibold tracking-tight text-[#071A2D]">
                   {source.name}
                 </p>
               </div>
 
               <div className="flex items-center justify-center p-2.5 xl:p-5">
-                <p className="font-brand-display font-semibold tabular-nums tracking-tight text-[#071A2D]">
+                <p className="font-semibold tabular-nums tracking-tight text-[#071A2D]">
                   {source.visitors}
                 </p>
               </div>

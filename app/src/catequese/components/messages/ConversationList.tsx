@@ -235,7 +235,7 @@ export function ConversationList({
         ) : filtered.length === 0 ? (
           <div className="flex h-48 flex-col items-center justify-center px-6 text-center">
             <MessageSquareText className="mb-2 h-8 w-8 text-brand-ink/40" />
-            <p className="font-brand-display text-xs font-semibold tracking-tight text-brand-ink">
+            <p className="text-xs font-semibold tracking-tight text-brand-ink">
               {search ? t("no_conversation_found") : t("no_conversations_yet")}
             </p>
             {!search && (
@@ -285,7 +285,7 @@ export function ConversationList({
                   <div className="flex items-center justify-between gap-1">
                     <span
                       className={cn(
-                        "font-brand-display truncate text-sm tracking-tight text-brand-ink",
+                        "truncate text-sm tracking-tight text-brand-ink",
                         conv.unreadCount > 0 ? "font-semibold" : "font-medium",
                       )}
                     >

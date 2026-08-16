@@ -229,7 +229,7 @@ export default function WorkspaceSelectorPage() {
           {workspaceIcon(ws.type)}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="font-brand-display text-lg font-semibold tracking-tight text-brand-ink">
+          <p className="text-lg font-semibold tracking-tight text-brand-ink">
             {ws.name}
           </p>
           <div className="mt-1 flex flex-wrap items-center gap-2">
@@ -325,7 +325,7 @@ export default function WorkspaceSelectorPage() {
                         <Church className="h-6 w-6 text-brand-ink" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-brand-display text-lg font-semibold tracking-tight text-brand-ink">
+                        <p className="text-lg font-semibold tracking-tight text-brand-ink">
                           {ws.name}
                         </p>
                         <p className="text-sm text-muted-foreground">
@@ -341,7 +341,7 @@ export default function WorkspaceSelectorPage() {
                       disabled={
                         !ws.membershipId || accepting === ws.membershipId
                       }
-                      className="h-10 gap-1.5 rounded-sm shadow-none shrink-0"
+                      className="h-10 gap-1.5 rounded-md shrink-0"
                     >
                       <Check className="h-4 w-4" />
                       {accepting === ws.membershipId
@@ -385,7 +385,7 @@ export default function WorkspaceSelectorPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <p className="font-brand-display text-lg font-semibold tracking-tight text-brand-ink">
+                          <p className="text-lg font-semibold tracking-tight text-brand-ink">
                             {lastUsed.name}
                           </p>
                           <span className="text-overline text-muted-foreground rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5">
@@ -433,7 +433,7 @@ export default function WorkspaceSelectorPage() {
                       <User className="h-6 w-6 text-brand-ink" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-brand-display text-lg font-semibold tracking-tight text-brand-ink">
+                      <p className="text-lg font-semibold tracking-tight text-brand-ink">
                         {personal.name}
                       </p>
                       <p className="text-sm text-muted-foreground">
@@ -464,7 +464,7 @@ export default function WorkspaceSelectorPage() {
                 </div>
               ) : (
                 <div className="rounded-sm border-2 border-dashed border-border/70 bg-white p-6 text-center">
-                  <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                  <p className="text-sm font-semibold tracking-tight text-brand-ink">
                     {t("workspace.personal_pending")}
                   </p>
                 </div>

@@ -66,7 +66,7 @@ export function BottomNav() {
       }}
     >
       <nav
-        className="lg:hidden fixed bottom-0 left-0 right-0 z-sticky border-t border-border/70 bg-surface-elevated"
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-sticky border-t border-border bg-surface-elevated/90 shadow-[0_-1px_3px_rgba(7,26,45,0.05)] backdrop-blur-md supports-[backdrop-filter]:bg-surface-elevated/80"
         style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
         aria-label={t("primarySection", { defaultValue: "Primary" })}
       >
@@ -104,15 +104,30 @@ export function BottomNav() {
                   )
                 }
               >
-                <item.Icon className="h-5 w-5 shrink-0" />
-                {/* Abaixo de 360px sobram ~56px por coluna e rótulos longos
-                    viravam "Cate…", pior que ícone puro. O nome continua no
-                    aria-label, então nada se perde para leitor de tela.
-                    hidden/block e não sr-only/not-sr-only: not-sr-only reseta
-                    overflow e white-space, anulando o truncate. */}
-                <span className="hidden max-w-full truncate min-[360px]:block">
-                  {label}
-                </span>
+                {({ isActive }) => (
+                  <>
+                    {/* Pílula atrás do ícone: antes o estado ativo era só uma
+                        troca de cor, difícil de perceber de relance numa barra
+                        de 5 colunas. A pílula é o alvo visual, o rótulo segue
+                        como reforço. */}
+                    <span
+                      className={cn(
+                        "flex h-6 w-11 items-center justify-center rounded-full transition-colors duration-150",
+                        isActive && "bg-brand-ink/8",
+                      )}
+                    >
+                      <item.Icon className="h-5 w-5 shrink-0" />
+                    </span>
+                    {/* Abaixo de 360px sobram ~56px por coluna e rótulos longos
+                        viravam "Cate…", pior que ícone puro. O nome continua no
+                        aria-label, então nada se perde para leitor de tela.
+                        hidden/block e não sr-only/not-sr-only: not-sr-only reseta
+                        overflow e white-space, anulando o truncate. */}
+                    <span className="hidden max-w-full truncate min-[360px]:block">
+                      {label}
+                    </span>
+                  </>
+                )}
               </NavLink>
             );
           })}
@@ -127,12 +142,16 @@ export function BottomNav() {
               aria-label={t("more", { ns: "common" })}
               className="relative flex h-full min-h-11 min-w-0 flex-col items-center justify-center gap-0.5 px-0.5 text-micro font-medium text-muted-foreground transition-colors hover:text-brand-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-[360px]:text-overline"
             >
-              <Menu className="h-5 w-5" />
+              {/* Mesma caixa h-6 w-11 dos itens de navegação: sem ela o ícone
+                  do "Mais" desalinha verticalmente das outras colunas. */}
+              <span className="flex h-6 w-11 items-center justify-center">
+                <Menu className="h-5 w-5" />
+              </span>
               <span className="hidden max-w-full truncate min-[360px]:block">
                 {t("more", { ns: "common" })}
               </span>
               {unreadCount > 0 && (
-                <span className="absolute -top-0.5 right-1/4 flex h-[18px] min-w-[18px] items-center justify-center rounded-sm bg-destructive px-1 text-overline font-semibold text-destructive-foreground ">
+                <span className="absolute -top-0.5 right-1/4 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-destructive px-1 text-overline font-semibold tabular-nums text-destructive-foreground ring-2 ring-surface-elevated">
                   {unreadCount > 99 ? "99+" : unreadCount}
                 </span>
               )}

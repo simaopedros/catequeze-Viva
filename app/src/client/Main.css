@@ -106,23 +106,33 @@
   --color-feedback-info: hsl(var(--info));
 
   /* ── Typography scale ────────────────────────────────────────────── */
-  /* Title scale */
-  --text-title-xxl: 44px;
-  --text-title-xxl--line-height: 55px;
-  --text-title-xl: 36px;
-  --text-title-xl--line-height: 45px;
-  --text-title-xl2: 33px;
-  --text-title-xl2--line-height: 45px;
-  --text-title-lg: 28px;
-  --text-title-lg--line-height: 35px;
-  --text-title-md: 24px;
-  --text-title-md--line-height: 30px;
-  --text-title-md2: 26px;
-  --text-title-md2--line-height: 30px;
-  --text-title-sm: 20px;
-  --text-title-sm--line-height: 26px;
-  --text-title-xsm: 18px;
-  --text-title-xsm--line-height: 24px;
+  /* Title scale — mesmos tamanhos de antes, agora em rem e com tracking
+     negativo progressivo: quanto maior o grau, mais fechado o espacejamento.
+     É o que faz um título grande em Inter parecer desenhado e não esticado. */
+  --text-title-xxl: 2.75rem;
+  --text-title-xxl--line-height: 1.1;
+  --text-title-xxl--letter-spacing: -0.025em;
+  --text-title-xl: 2.25rem;
+  --text-title-xl--line-height: 1.15;
+  --text-title-xl--letter-spacing: -0.022em;
+  --text-title-xl2: 2rem;
+  --text-title-xl2--line-height: 1.2;
+  --text-title-xl2--letter-spacing: -0.02em;
+  --text-title-lg: 1.75rem;
+  --text-title-lg--line-height: 1.22;
+  --text-title-lg--letter-spacing: -0.018em;
+  --text-title-md2: 1.625rem;
+  --text-title-md2--line-height: 1.25;
+  --text-title-md2--letter-spacing: -0.016em;
+  --text-title-md: 1.5rem;
+  --text-title-md--line-height: 1.28;
+  --text-title-md--letter-spacing: -0.015em;
+  --text-title-sm: 1.25rem;
+  --text-title-sm--line-height: 1.35;
+  --text-title-sm--letter-spacing: -0.012em;
+  --text-title-xsm: 1.125rem;
+  --text-title-xsm--line-height: 1.4;
+  --text-title-xsm--letter-spacing: -0.01em;
 
   /* Body scale */
   --text-body-lg: 1.0625rem;
@@ -146,22 +156,32 @@
   --text-overline--letter-spacing: 0.05em;
 
   /* ── Radius scale ────────────────────────────────────────────────── */
+  /* Soft modern: o app inteiro usa `rounded-sm` (1223 ocorrências) e nenhum
+     rounded-md/lg/xl — então a suavização propaga por `--radius` abaixo.
+     sm 8px · md 10px · lg 12px. */
   --radius-none: 0px;
-  --radius-xs: 0.125rem;
+  --radius-xs: 0.25rem;
   /* --radius-sm, --radius-md, --radius-lg are shadcn-compatible aliases defined below */
   --radius-xl: 1rem;
-  --radius-2xl: 1.5rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.75rem;
   --radius-full: 9999px;
 
   /* ── Elevation scale ─────────────────────────────────────────────── */
-  --shadow-elevation-xs: 0px 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-elevation-sm: 0px 1px 3px rgba(0, 0, 0, 0.08);
-  --shadow-elevation-md: 0px 4px 10px rgba(0, 0, 0, 0.10);
-  --shadow-elevation-lg: 0px 8px 20px rgba(0, 0, 0, 0.10);
-  --shadow-elevation-xl: 0px 12px 32px rgba(0, 0, 0, 0.12);
-  --shadow-elevation-modal: 0px 16px 48px rgba(0, 0, 0, 0.18);
-  --shadow-elevation-dropdown: 0px 4px 16px rgba(0, 0, 0, 0.12);
-  --shadow-elevation-sticky: 0px 1px 3px rgba(0, 0, 0, 0.06);
+  /* Sombras tingidas com o ink institucional (7,26,45) em vez de preto puro:
+     em superfícies claras o preto puro suja, o ink lê como profundidade. */
+  /* Alfas calibrados contra o canvas off-white: na primeira passada o degrau
+     baixo (xs/sm/md) usava 0.05–0.08 e sumia — card elevado ficava idêntico a
+     card plano, anulando a hierarquia por elevação. Cada degrau agora combina
+     uma sombra de contato curta com uma de ambiente longa. */
+  --shadow-elevation-xs: 0 1px 2px rgba(7, 26, 45, 0.07);
+  --shadow-elevation-sm: 0 1px 2px rgba(7, 26, 45, 0.06), 0 2px 6px -1px rgba(7, 26, 45, 0.08);
+  --shadow-elevation-md: 0 2px 4px -1px rgba(7, 26, 45, 0.06), 0 8px 16px -4px rgba(7, 26, 45, 0.10);
+  --shadow-elevation-lg: 0 4px 8px -2px rgba(7, 26, 45, 0.06), 0 16px 32px -8px rgba(7, 26, 45, 0.13);
+  --shadow-elevation-xl: 0 8px 16px -4px rgba(7, 26, 45, 0.07), 0 28px 48px -12px rgba(7, 26, 45, 0.16);
+  --shadow-elevation-modal: 0 12px 24px -8px rgba(7, 26, 45, 0.10), 0 40px 72px -16px rgba(7, 26, 45, 0.24);
+  --shadow-elevation-dropdown: 0 4px 8px -2px rgba(7, 26, 45, 0.06), 0 12px 28px -6px rgba(7, 26, 45, 0.14);
+  --shadow-elevation-sticky: 0 1px 3px rgba(7, 26, 45, 0.07);
 
   /* Legacy shadow aliases (keep for existing code) */
   --shadow-1: var(--shadow-elevation-sm);
@@ -338,47 +358,52 @@
 
 @layer base {
   :root {
-    /* Institutional brand: ink #071A2D · gold #D39A2B · white surfaces */
-    /* Surface — pure white base for uniform app chrome */
-    --background: 0 0% 100%;
+    /* Institutional brand: ink #071A2D · gold #D39A2B */
+    /* Surface — canvas levemente frio, cards em branco puro.
+       A separação canvas/card é o que substitui a borda dura como
+       mecanismo primário de hierarquia. */
+    --background: 210 25% 98%;
     --foreground: 210 73% 10%;
     --card: 0 0% 100%;
     --card-foreground: 210 73% 10%;
     --card-accent: 0 0% 100%;
     --card-accent-foreground: 210 73% 10%;
-    --card-subtle: 210 20% 98%;
+    --card-subtle: 210 25% 97.5%;
     --card-subtle-foreground: 210 73% 10%;
     --popover: 0 0% 100%;
     --popover-foreground: 210 73% 10%;
-    --muted: 210 16% 96%;
-    --muted-foreground: 210 12% 40%;
+    --muted: 210 22% 96%;
+    /* Contraste elevado de 40% → 38% de luminosidade: passa 4.5:1 sobre o card. */
+    --muted-foreground: 211 14% 38%;
 
     /* Brand */
     --primary: 210 73% 10%;
     --primary-foreground: 0 0% 100%;
     /* Neutral soft surfaces; pure gold remains via explicit #D39A2B */
-    --secondary: 210 16% 96%;
+    --secondary: 210 22% 96%;
     --secondary-foreground: 210 73% 10%;
-    --secondary-muted: 210 14% 90%;
+    --secondary-muted: 210 18% 91%;
     --secondary-muted-foreground: 210 73% 10%;
-    --accent: 210 16% 96%;
+    --accent: 210 22% 95%;
     --accent-foreground: 210 73% 10%;
 
-    /* Feedback */
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --success: 141 71% 48%;
-    --success-foreground: 0 0% 98%;
-    --warning: 40 66% 50%;
+    /* Feedback — luminosidades escolhidas para o texto de contraste passar 4.5:1
+       quando a cor é usada como preenchimento sólido. Âmbar mantém texto ink:
+       branco sobre âmbar nunca atinge contraste em nenhuma luminosidade usável. */
+    --destructive: 0 74% 46%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 152 62% 30%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
     --warning-foreground: 210 73% 10%;
 
-    /* Borders & inputs */
-    --border: 210 14% 90%;
-    --input: 210 14% 90%;
+    /* Borders & inputs — hairline mais suave, já que a elevação divide o trabalho */
+    --border: 213 22% 92%;
+    --input: 213 20% 88%;
     --ring: 210 73% 10%;
 
-    /* Radius — institutional rounded-sm */
-    --radius: 0.25rem;
+    /* Radius — soft modern: sm 8px · md 10px · lg 12px */
+    --radius: 0.75rem;
 
     /* ── Motion ──────────────────────────────────────────────────────── */
     --motion-duration-fast: 150ms;
@@ -433,8 +458,9 @@
     --input: 0 0% 14.9%;
     --ring: 0 0% 83.1%;
 
-    /* Radius stays same */
-    --radius: 0.5rem;
+    /* Mesmo raio do tema claro — divergir aqui só produz surpresa se o dark
+       algum dia for ligado. */
+    --radius: 0.75rem;
 
     /* Info */
     --info: 200 80% 55%;

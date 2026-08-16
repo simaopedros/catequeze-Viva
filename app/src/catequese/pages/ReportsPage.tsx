@@ -315,7 +315,7 @@ export default function ReportsPage() {
                     className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                      <p className="text-sm font-semibold tracking-tight text-brand-ink">
                         {r.name}
                       </p>
                       <p className="text-xs text-muted-foreground">
@@ -391,16 +391,11 @@ export default function ReportsPage() {
                             ? "border-brand-gold/40 bg-brand-gold/10 text-brand-ink"
                             : "border-border/70 bg-muted/30 text-muted-foreground"
                         }`}
-                        style={
-                          i < 3
-                            ? { fontFamily: "var(--font-brand-display)" }
-                            : undefined
-                        }
                       >
                         {i + 1}
                       </span>
                       <div>
-                        <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                        <p className="text-sm font-semibold tracking-tight text-brand-ink">
                           {r.name}
                         </p>
                         <p className="text-xs text-muted-foreground">

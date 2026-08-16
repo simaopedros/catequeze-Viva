@@ -84,7 +84,7 @@ export function CoordinatorDetails({
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {t("coordinator.parish_context")}
           </p>
-          <p className="font-brand-display mt-0.5 text-sm font-semibold tracking-tight text-brand-ink">
+          <p className="mt-0.5 text-sm font-semibold tracking-tight text-brand-ink">
             {parishName}
           </p>
         </div>
@@ -236,7 +236,7 @@ export function CoordinatorDetails({
             type="button"
             onClick={() => setStep("year")}
             disabled={!skipClass && !className.trim()}
-            className="h-11 w-full rounded-sm shadow-none"
+            className="h-11 w-full rounded-md"
           >
             {t("coordinator.next")}
             <ArrowRight className="ml-1 h-4 w-4" />
@@ -305,7 +305,7 @@ export function CoordinatorDetails({
               type="button"
               onClick={handleYearFinish}
               disabled={!yearName.trim() || !yearStart || !yearEnd}
-              className="h-11 w-full rounded-sm shadow-none"
+              className="h-11 w-full rounded-md"
             >
               {t("coordinator.finish")}
               <ArrowRight className="ml-1 h-4 w-4" />

@@ -501,7 +501,7 @@ export default function AttendancePage() {
             })}
             actions={
               <Button
-                className="h-10 rounded-sm shadow-none"
+                className="h-10 rounded-md"
                 onClick={() => setShowNew(!showNew)}
               >
                 <Plus className="mr-2 h-4 w-4" />
@@ -704,7 +704,7 @@ export default function AttendancePage() {
                 <tbody>
                   {filteredCatechumens.map((cat: any) => (
                     <tr key={cat.id} className="border-t hover:bg-muted/30">
-                      <td className="font-brand-display sticky left-0 z-10 border-r border-border/70 bg-white p-2 font-semibold tracking-tight text-brand-ink">
+                      <td className="sticky left-0 z-10 border-r border-border/70 bg-white p-2 font-semibold tracking-tight text-brand-ink">
                         {cat.firstName} {cat.lastName}
                       </td>
                       {meetings.map((m: any) => {

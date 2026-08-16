@@ -297,7 +297,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
 
       {/* Quick actions only after first value — avoid duplicating checklist */}
       {showQuickActions && (
-        <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+        <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
           <AppPanel padded={false} className="px-5">
             <div className="border-b border-border/70 py-3">
               <AppEyebrow>{t("quick_actions")}</AppEyebrow>
@@ -409,7 +409,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
           </div>
         </div>
       ) : (
-        <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+        <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
           <div className="space-y-6">
             {stats?.todayMeetings?.length > 0 && (
               <SectionCard title={tc("today")} icon={Clock} tone="soft">
@@ -466,7 +466,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                     data={comparison}
                     getRowKey={(c: any) => c.id}
                     onRowClick={(c: any) => navigate(`/app/classes/${c.id}`)}
-                    className="font-brand-display font-brand-display border-0"
+                    className="border-0"
                     columns={[
                       {
                         key: "name",

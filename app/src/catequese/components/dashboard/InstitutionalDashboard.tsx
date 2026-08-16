@@ -118,7 +118,7 @@ function KpiCard({ kpi }: { kpi: KpiBlock }) {
         {translateKpiLabel(kpi.label, t)}
       </p>
       <div className="mt-1.5 flex items-baseline gap-2">
-        <p className="font-brand-display text-2xl font-semibold tracking-tight tabular-nums text-brand-ink">
+        <p className="text-2xl font-semibold tracking-tight tabular-nums text-brand-ink">
           {formatted}
         </p>
         {kpi.delta !== null && kpi.delta !== undefined && (
@@ -591,7 +591,7 @@ export function InstitutionalDashboard() {
                     key={c.id}
                     className="border-b last:border-0 hover:bg-muted/30 transition-colors"
                   >
-                    <td className="font-brand-display px-4 py-2.5 font-semibold tracking-tight text-brand-ink">
+                    <td className="px-4 py-2.5 font-semibold tracking-tight text-brand-ink">
                       {c.name}
                     </td>
                     <td className="py-2.5 px-4 text-xs text-muted-foreground">

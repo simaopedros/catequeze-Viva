@@ -64,7 +64,7 @@ export function PublicNavbar({
             size="sm"
             variant="default"
             asChild
-            className="h-9 rounded-sm px-4 text-[0.8125rem] font-medium shadow-none"
+            className="h-9 rounded-md px-4 text-[0.8125rem] font-medium"
           >
             <Link to="/signup">{t("cta")}</Link>
           </Button>
@@ -126,7 +126,7 @@ export function PublicNavbar({
                 size="lg"
                 variant="default"
                 asChild
-                className="h-11 w-full rounded-sm shadow-none"
+                className="h-11 w-full rounded-md"
               >
                 <Link to="/signup" onClick={() => setOpen(false)}>
                   {t("cta")}

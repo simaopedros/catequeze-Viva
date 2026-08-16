@@ -305,7 +305,7 @@ export default function MeetingsPage() {
               />
               <div className="relative z-[1] flex items-start justify-between gap-3 pointer-events-none">
                 <div className="min-w-0 flex-1">
-                  <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                  <p className="text-sm font-semibold tracking-tight text-brand-ink">
                     {m.title || t("no_title")}
                   </p>
                   <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
@@ -368,7 +368,7 @@ export default function MeetingsPage() {
               <div className="relative z-[1] flex flex-wrap gap-2 border-t border-border/60 pt-3 pointer-events-auto">
                 <Button
                   size="sm"
-                  className="h-11 min-h-11 flex-1 rounded-sm shadow-none sm:flex-none"
+                  className="h-11 min-h-11 flex-1 rounded-md sm:flex-none"
                   asChild
                 >
                   <Link

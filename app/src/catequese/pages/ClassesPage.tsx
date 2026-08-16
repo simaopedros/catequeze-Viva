@@ -311,7 +311,7 @@ export default function ClassesPage() {
                 {[t("empty_step1"), t("empty_step2"), t("empty_step3")].map(
                   (step, i) => (
                     <AppPanel key={i} className="px-4 py-4" padded={false}>
-                      <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                      <p className="text-sm font-semibold tracking-tight text-brand-ink">
                         {i + 1}. {step}
                       </p>
                     </AppPanel>
@@ -385,7 +385,7 @@ export default function ClassesPage() {
               key: "name",
               header: t("table_class"),
               render: (cls: any) => (
-                <span className="font-brand-display font-semibold tracking-tight text-brand-ink">
+                <span className="font-semibold tracking-tight text-brand-ink">
                   {cls.name}
                 </span>
               ),
@@ -481,7 +481,7 @@ export default function ClassesPage() {
               <div className="relative z-[1] pointer-events-none">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
-                    <p className="font-brand-display truncate text-lg font-semibold tracking-tight text-brand-ink group-hover:text-brand-ink-soft">
+                    <p className="truncate text-lg font-semibold tracking-tight text-brand-ink group-hover:text-brand-ink-soft">
                       {cls.name}
                     </p>
                     {cls.stage && (
@@ -539,7 +539,7 @@ export default function ClassesPage() {
               <div className="relative z-[1] mt-4 flex gap-2 border-t border-border/60 pt-4 pointer-events-auto">
                 <Button
                   size="sm"
-                  className="h-11 min-h-11 flex-1 rounded-sm shadow-none"
+                  className="h-11 min-h-11 flex-1 rounded-md"
                   asChild
                 >
                   <Link to={`/app/classes/${cls.id}/attendance`}>

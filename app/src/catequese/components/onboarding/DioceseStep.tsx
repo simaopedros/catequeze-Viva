@@ -192,7 +192,7 @@ export function DioceseStep({
       <div className="max-h-64 space-y-3 overflow-y-auto">
         {!shouldShowResults && (
           <div className="border border-border/70 px-4 py-4 rounded-sm">
-            <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+            <p className="text-sm font-semibold tracking-tight text-brand-ink">
               {t("diocese.start_hint_title")}
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -219,7 +219,7 @@ export function DioceseStep({
                 )}
               >
                 <div className="min-w-0 flex-1">
-                  <span className="font-brand-display font-semibold tracking-tight text-brand-ink">
+                  <span className="font-semibold tracking-tight text-brand-ink">
                     {d.name}
                   </span>
                   {d.state && (
@@ -254,7 +254,7 @@ export function DioceseStep({
                 )}
               >
                 <div className="min-w-0 flex-1">
-                  <span className="font-brand-display font-semibold tracking-tight text-brand-ink">
+                  <span className="font-semibold tracking-tight text-brand-ink">
                     {d.name}
                   </span>
                   {d.state && (
@@ -314,7 +314,7 @@ export function DioceseStep({
           {duplicateDiocese && (
             <div className="border border-border/70 px-3 py-2 text-xs text-muted-foreground rounded-sm">
               {t("diocese.duplicate_warning")}{" "}
-              <strong className="font-brand-display font-semibold tracking-tight text-brand-ink">
+              <strong className="font-semibold tracking-tight text-brand-ink">
                 {duplicateDiocese.name}
               </strong>
               {duplicateDiocese.state && <> ({duplicateDiocese.state})</>}.
@@ -343,7 +343,7 @@ export function DioceseStep({
             </Button>
             <Button
               size="sm"
-              className="rounded-sm shadow-none"
+              className="rounded-md"
               onClick={handleCreate}
               disabled={creating || !newName.trim()}
             >
@@ -361,7 +361,7 @@ export function DioceseStep({
             </p>
             <Button
               onClick={onContinue}
-              className="h-11 w-full rounded-sm shadow-none"
+              className="h-11 w-full rounded-md"
             >
               {t("diocese.continue_with_selection")}
               <ArrowRight className="ml-1 h-4 w-4" />

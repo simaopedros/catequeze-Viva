@@ -82,7 +82,7 @@ export function ActivityResultPanel({
 
           {activity.description && (
             <div className="space-y-2">
-              <h3 className="font-brand-display flex items-center gap-1.5 text-sm font-semibold tracking-tight text-brand-ink">
+              <h3 className="flex items-center gap-1.5 text-sm font-semibold tracking-tight text-brand-ink">
                 <FileText className="h-4 w-4 text-muted-foreground" />
                 {t("activity.description")}
               </h3>

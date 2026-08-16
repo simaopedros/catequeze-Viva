@@ -623,7 +623,7 @@ export function MeetingAttendanceSheet({
         <div className="flex flex-wrap gap-2">
           <Button
             type="button"
-            className="h-11 min-h-11 flex-1 rounded-sm shadow-none sm:flex-none"
+            className="h-11 min-h-11 flex-1 rounded-md sm:flex-none"
             disabled={readOnly || bulkSaving || summary.total === 0}
             onClick={() => void markAllPresent()}
           >

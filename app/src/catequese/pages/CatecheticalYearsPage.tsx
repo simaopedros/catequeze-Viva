@@ -86,7 +86,7 @@ export default function CatecheticalYearsPage() {
         actions={
           <Button
             size="sm"
-            className="h-10 rounded-sm shadow-none"
+            className="h-10 rounded-md"
             onClick={() => setShowForm(!showForm)}
           >
             <Plus className="mr-1 h-4 w-4" />
@@ -182,7 +182,7 @@ export default function CatecheticalYearsPage() {
                     <CalendarDays className="h-5 w-5 text-brand-ink" />
                   </div>
                   <div>
-                    <h3 className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                    <h3 className="text-sm font-semibold tracking-tight text-brand-ink">
                       {year.name}
                     </h3>
                     {year.parish?.name && (

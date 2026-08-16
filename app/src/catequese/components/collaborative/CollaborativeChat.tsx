@@ -52,7 +52,7 @@ export function CollaborativeChat() {
             <div className="mb-3 space-y-1.5">
               <div className="flex items-center gap-2">
                 <Feather className="h-4 w-4 text-brand-ink" />
-                <p className="font-brand-display font-semibold tracking-tight text-brand-ink">
+                <p className="font-semibold tracking-tight text-brand-ink">
                   {t("title")}
                 </p>
               </div>

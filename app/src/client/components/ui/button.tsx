@@ -6,30 +6,32 @@ import { Loader2 } from "lucide-react";
 import { cn } from "../../utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm text-sm font-medium transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] motion-reduce:transition-none motion-reduce:active:scale-100",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium tracking-tight transition-[background-color,border-color,box-shadow,transform] duration-150 ease-out cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] motion-reduce:transition-none motion-reduce:active:scale-100",
   {
     variants: {
       variant: {
-        default: "bg-brand-ink text-white hover:bg-brand-ink-soft shadow-none",
+        default:
+          "bg-brand-ink text-white shadow-elevation-xs hover:bg-brand-ink-soft hover:shadow-elevation-sm active:shadow-none",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-none",
+          "bg-destructive text-destructive-foreground shadow-elevation-xs hover:bg-destructive/90 hover:shadow-elevation-sm active:shadow-none",
         outline:
-          "border border-input bg-background text-brand-ink shadow-none hover:border-brand-ink/30 hover:bg-muted/30 hover:text-brand-ink-soft",
+          "border border-border bg-card text-brand-ink shadow-elevation-xs hover:border-input hover:bg-muted/60 hover:text-brand-ink-soft active:shadow-none",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-none hover:bg-secondary/80",
+          "bg-secondary text-secondary-foreground hover:bg-secondary-muted",
         ghost: "text-brand-ink hover:bg-accent hover:text-brand-ink-soft",
         link: "text-brand-ink underline-offset-4 hover:underline",
-        brand: "bg-brand-ink text-white shadow-none hover:bg-brand-ink-soft",
+        brand:
+          "bg-brand-ink text-white shadow-elevation-xs hover:bg-brand-ink-soft hover:shadow-elevation-sm active:shadow-none",
         subtle:
-          "border border-border/70 bg-muted/30 font-medium tracking-tight text-brand-ink hover:bg-muted/50",
+          "bg-muted/70 font-medium text-brand-ink hover:bg-muted",
       },
       size: {
         xs: "h-7 rounded-sm px-2.5 text-xs",
-        sm: "h-8 rounded-sm px-3 text-xs",
-        default: "h-9 rounded-sm px-4 py-2",
-        lg: "h-11 rounded-sm px-8",
-        xl: "h-12 rounded-sm px-10 text-base",
-        icon: "h-9 w-9 rounded-sm",
+        sm: "h-9 rounded-md px-3.5 text-xs",
+        default: "h-10 rounded-md px-4 py-2",
+        lg: "h-11 rounded-md px-8",
+        xl: "h-12 rounded-lg px-10 text-base",
+        icon: "h-10 w-10 rounded-md",
       },
     },
     defaultVariants: {
@@ -68,7 +70,11 @@ function Button({
       {asChild ? (
         children
       ) : (
-        <span className="relative inline-flex items-center gap-2">
+        // min-w-0/max-w-full: sem isto o wrapper não encolhe, filhos com
+        // `truncate` nunca truncam e — como a base é `justify-center` — o
+        // conteúdo transborda dos DOIS lados da caixa. Era o que fazia o ícone
+        // do seletor de paróquia escapar pela esquerda da borda no topo.
+        <span className="relative inline-flex min-w-0 max-w-full items-center gap-2">
           {loading && (
             <Loader2 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-4 w-4 animate-spin" />
           )}

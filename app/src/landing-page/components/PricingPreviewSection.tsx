@@ -80,7 +80,7 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
         ref={headerRef}
         className={`mb-10 space-y-3 text-center ${headerClass}`}
       >
-        <div className="mx-auto h-px w-10 bg-brand-gold" aria-hidden />
+        <div className="mx-auto h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
         <h2 className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink sm:text-4xl">
           {tr("pricing_title")}
         </h2>
@@ -207,18 +207,23 @@ function PricingPreviewCard({
     <div
       ref={ref as any}
       id={`planos-${plan.planId}`}
-      className={`relative flex scroll-mt-24 flex-col rounded-sm border bg-white p-6 transition-colors ${className} ${
+      className={`relative flex scroll-mt-24 flex-col rounded-lg border bg-card p-6 transition-shadow ${className} ${
         plan.highlight
-          ? "border-brand-ink/30 ring-1 ring-brand-ink/10"
-          : "border-border/70"
+          ? "border-brand-ink/30 shadow-elevation-md ring-1 ring-brand-ink/10"
+          : "border-border shadow-elevation-sm"
       }`}
     >
-      {plan.highlight && (
-        <div className="mb-3 inline-flex items-center gap-1 self-start rounded-sm bg-brand-ink px-3 py-1 text-caption font-semibold text-white">
-          <Star className="h-3 w-3" /> {tr("price_popular")}
-        </div>
-      )}
-      <div className="mb-3 inline-flex self-start rounded-sm bg-muted/70 px-3 py-1 text-[11px] font-medium text-muted-foreground">
+      {/* Slot de altura fixa: a tarja "mais popular" só existe num dos planos e,
+          quando entrava e saía do fluxo, empurrava título, preço e lista de
+          benefícios para alturas diferentes entre os dois cards lado a lado. */}
+      <div className="mb-3 flex min-h-7 items-start">
+        {plan.highlight && (
+          <div className="inline-flex items-center gap-1 rounded-full bg-brand-ink px-3 py-1 text-caption font-semibold text-white">
+            <Star className="h-3 w-3" /> {tr("price_popular")}
+          </div>
+        )}
+      </div>
+      <div className="mb-3 inline-flex self-start rounded-full bg-muted px-3 py-1 text-[11px] font-medium text-muted-foreground">
         {audience}
       </div>
       <h3 className="text-xl font-semibold tracking-tight text-brand-ink">

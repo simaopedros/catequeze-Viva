@@ -131,7 +131,7 @@ const UsersTable = () => {
             key={user.id}
             className="py-3 grid grid-cols-7 gap-4 px-4 md:px-6 border-t"
           >
-            <div className="font-brand-display col-span-2 flex items-center truncate text-sm font-semibold tracking-tight text-[#071A2D]">
+            <div className="col-span-2 flex items-center truncate text-sm font-semibold tracking-tight text-[#071A2D]">
               {user.email || "—"}
             </div>
             <div className="col-span-2 flex items-center text-sm text-muted-foreground truncate">

@@ -26,7 +26,7 @@ export function FaqSection({
             <h2 className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink sm:text-4xl">
               {tr("faq_title")}
             </h2>
-            <div className="h-px w-10 bg-brand-gold" aria-hidden />
+            <div className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
             <p className="text-muted-foreground leading-relaxed max-w-sm">
               {tr("faq_subtitle")}
             </p>

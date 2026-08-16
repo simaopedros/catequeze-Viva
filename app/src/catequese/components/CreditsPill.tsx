@@ -55,7 +55,7 @@ export function CreditsPill({
           resolvedVariant === "default" && "text-brand-ink",
         )}
       />
-      <span className="font-brand-display">
+      <span className="font-semibold tracking-tight">
         {creditsLeft} {creditsLeft === 1 ? "crédito" : "créditos"}
       </span>
       {monthlyAllowance && resolvedVariant === "low" && (

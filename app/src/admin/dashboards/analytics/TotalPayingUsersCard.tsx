@@ -23,7 +23,7 @@ const TotalPayingUsersCard = ({ dailyStats, isLoading }: DailyStatsProps) => {
 
       <CardContent className="flex justify-between">
         <div>
-          <h4 className="font-brand-display text-title-md font-semibold tracking-tight tabular-nums text-[#071A2D]">
+          <h4 className="text-title-md font-semibold tracking-tight tabular-nums text-[#071A2D]">
             {dailyStats?.paidUserCount}
           </h4>
           <span className="text-sm font-medium text-muted-foreground">

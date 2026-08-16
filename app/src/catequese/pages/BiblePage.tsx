@@ -652,7 +652,7 @@ export default function BiblePage() {
             <ChevronLeft className="h-4 w-4" />
             {t("books")}
           </Button>
-          <h2 className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+          <h2 className="text-sm font-semibold tracking-tight text-brand-ink">
             {selectedBook.name}
           </h2>
           <div className="grid grid-cols-5 sm:grid-cols-6 gap-1.5">
@@ -676,7 +676,7 @@ export default function BiblePage() {
             <ChevronLeft className="h-4 w-4" />
             {t("chapters")}
           </Button>
-          <h2 className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+          <h2 className="text-sm font-semibold tracking-tight text-brand-ink">
             {chapterData?.book?.name || selectedBook.name}
           </h2>
           <div className="grid grid-cols-5 sm:grid-cols-6 gap-1.5">
@@ -835,7 +835,7 @@ export default function BiblePage() {
                   onClick={() => openSearchResult(v)}
                   className="group w-full rounded-sm border border-border/70 p-3 text-left text-sm transition-colors hover:border-brand-ink/30 hover:bg-muted/20"
                 >
-                  <p className="font-brand-display mb-1 text-xs font-semibold tracking-tight text-brand-ink group-hover:underline">
+                  <p className="mb-1 text-xs font-semibold tracking-tight text-brand-ink group-hover:underline">
                     {v.chapter?.book?.name} {v.chapter?.number}:{v.number}
                   </p>
                   <p className="line-clamp-3">{v.text}</p>
@@ -884,7 +884,7 @@ export default function BiblePage() {
             {!selectedBook && (
               <div className="flex flex-col items-center justify-center py-16 text-center text-muted-foreground gap-4">
                 <BookOpen className="h-12 w-12 opacity-20" />
-                <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                <p className="text-sm font-semibold tracking-tight text-brand-ink">
                   {t("choose_book")}
                 </p>
                 <p className="text-xs max-w-xs">{t("choose_book_hint")}</p>
@@ -937,7 +937,7 @@ export default function BiblePage() {
             {selectedBook && selectedChapter === null && (
               <div className="flex flex-col items-center justify-center py-16 text-center text-muted-foreground">
                 <BookOpen className="h-12 w-12 mb-4 opacity-20" />
-                <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                <p className="text-sm font-semibold tracking-tight text-brand-ink">
                   {t("choose_chapter", { book: selectedBook.name })}
                 </p>
               </div>

@@ -59,7 +59,7 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
 
       <div className="max-w-md space-y-2.5">
         <AppDisplayTitle as="h2">{t("personal_setup.title")}</AppDisplayTitle>
-        <div className="mx-auto h-px w-10 bg-brand-gold" aria-hidden />
+        <div className="mx-auto h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
         <p className="text-sm text-muted-foreground">
           {t("personal_setup.subtitle")}
         </p>

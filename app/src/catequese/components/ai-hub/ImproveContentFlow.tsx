@@ -57,7 +57,7 @@ function ImproveWorkspace() {
                     <FileText className="h-4 w-4" />
                   </div>
                   <div className="min-w-0 space-y-1">
-                    <h3 className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
+                    <h3 className="truncate text-sm font-semibold tracking-tight text-brand-ink">
                       {existingContentTitle
                         ? decodeURIComponent(existingContentTitle)
                         : t("planner.untitled")}
@@ -87,7 +87,7 @@ function ImproveWorkspace() {
                   <Copy className="h-5 w-5" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                  <h3 className="text-sm font-semibold tracking-tight text-brand-ink">
                     {t("improve.create_copy")}
                   </h3>
                   <div className="h-px w-6 bg-brand-gold" aria-hidden />
@@ -115,7 +115,7 @@ function ImproveWorkspace() {
                   <AlertTriangle className="h-5 w-5" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                  <h3 className="text-sm font-semibold tracking-tight text-brand-ink">
                     {t("improve.apply_original")}
                   </h3>
                   <div className="h-px w-6 bg-brand-gold" aria-hidden />

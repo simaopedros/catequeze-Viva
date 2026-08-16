@@ -54,9 +54,6 @@ export function ContentSelector({
               ? "font-semibold tracking-tight text-brand-ink"
               : "text-muted-foreground"
           }
-          style={
-            selected ? { fontFamily: "var(--font-brand-display)" } : undefined
-          }
         >
           {selected ? selected.title : placeholder}
         </span>
@@ -112,11 +109,6 @@ export function ContentSelector({
                   <span
                     className={
                       c.id === selectedId ? "tracking-tight" : undefined
-                    }
-                    style={
-                      c.id === selectedId
-                        ? { fontFamily: "var(--font-brand-display)" }
-                        : undefined
                     }
                   >
                     {c.title}

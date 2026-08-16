@@ -276,7 +276,7 @@ export default function ContentLibraryPage() {
         })}
         actions={
           <>
-            <Button asChild className="h-10 rounded-sm shadow-none">
+            <Button asChild className="h-10 rounded-md">
               <Link to="/app/content-library/new">
                 <Plus className="mr-2 h-4 w-4" />
                 Criar manualmente
@@ -409,7 +409,7 @@ export default function ContentLibraryPage() {
                   <AppDisplayTitle as="h2">
                     {t("library.empty_no_content")}
                   </AppDisplayTitle>
-                  <div className="h-px w-10 bg-brand-gold" aria-hidden />
+                  <div className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
                   <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
                     {t("library.empty_create_desc")}
                   </p>
@@ -486,7 +486,7 @@ export default function ContentLibraryPage() {
                     <td className="p-4">
                       <Link
                         to={`/app/content-library/${i.id}`}
-                        className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink hover:text-brand-ink-soft"
+                        className="text-sm font-semibold tracking-tight text-brand-ink hover:text-brand-ink-soft"
                       >
                         {i.title}
                       </Link>
@@ -540,7 +540,7 @@ export default function ContentLibraryPage() {
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="font-brand-display line-clamp-2 text-lg font-semibold tracking-tight text-brand-ink group-hover:text-brand-ink-soft">
+                    <h3 className="line-clamp-2 text-lg font-semibold tracking-tight text-brand-ink group-hover:text-brand-ink-soft">
                       {item.title}
                     </h3>
                     <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-brand-ink" />
@@ -585,7 +585,7 @@ export default function ContentLibraryPage() {
                     <Clock className="h-3.5 w-3.5" />
                     Duracao
                   </div>
-                  <p className="font-brand-display mt-1 text-sm font-semibold tracking-tight text-brand-ink">
+                  <p className="mt-1 text-sm font-semibold tracking-tight text-brand-ink">
                     {item.estimatedTime
                       ? t("library.minutes", { count: item.estimatedTime })
                       : "—"}
@@ -596,7 +596,7 @@ export default function ContentLibraryPage() {
                     <Puzzle className="h-3.5 w-3.5" />
                     Atividades
                   </div>
-                  <p className="font-brand-display mt-1 text-sm font-semibold tracking-tight text-brand-ink">
+                  <p className="mt-1 text-sm font-semibold tracking-tight text-brand-ink">
                     {item._count?.activities || 0}
                   </p>
                 </div>

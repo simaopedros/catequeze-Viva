@@ -317,7 +317,7 @@ Maria,Santos,2014-07-22,Silva Santos`}
                       <td className="px-3 py-2 text-muted-foreground">
                         {row.lineNumber}
                       </td>
-                      <td className="font-brand-display px-3 py-2 font-semibold tracking-tight text-brand-ink">
+                      <td className="px-3 py-2 font-semibold tracking-tight text-brand-ink">
                         {row.firstName || (
                           <span className="font-normal text-destructive">
                             {t("catechumens.empty") || "Vazio"}
@@ -355,7 +355,7 @@ Maria,Santos,2014-07-22,Silva Santos`}
         )}
 
         <Button
-          className="h-10 rounded-sm shadow-none"
+          className="h-10 rounded-md"
           onClick={handleImport}
           disabled={!csvData.trim() || importing}
         >
@@ -375,7 +375,7 @@ Maria,Santos,2014-07-22,Silva Santos`}
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-sm border border-border/70 bg-muted/30 p-4 text-center">
-              <p className="font-brand-display text-2xl font-semibold tracking-tight tabular-nums text-brand-ink">
+              <p className="text-2xl font-semibold tracking-tight tabular-nums text-brand-ink">
                 {results.created}
               </p>
               <p className="text-sm text-brand-ink">

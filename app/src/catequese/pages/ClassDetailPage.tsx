@@ -530,7 +530,7 @@ export default function ClassDetailPage() {
             <p className="text-[11px] font-medium tracking-wide text-muted-foreground">
               {t("location")}
             </p>
-            <p className="font-brand-display mt-1.5 text-sm font-semibold tracking-tight text-brand-ink">
+            <p className="mt-1.5 text-sm font-semibold tracking-tight text-brand-ink">
               {cls.location || "—"}
             </p>
           </AppPanel>
@@ -538,7 +538,7 @@ export default function ClassDetailPage() {
             <p className="text-[11px] font-medium tracking-wide text-muted-foreground">
               {t("schedule")}
             </p>
-            <p className="font-brand-display mt-1.5 text-sm font-semibold tracking-tight text-brand-ink">
+            <p className="mt-1.5 text-sm font-semibold tracking-tight text-brand-ink">
               {t(`days_long.${cls.dayOfWeek}`) || cls.dayOfWeek} {cls.startTime}
               {cls.endTime && `-${cls.endTime}`}
             </p>
@@ -773,7 +773,7 @@ export default function ClassDetailPage() {
                             {e.catechumenProfile?.firstName?.[0]}
                             {e.catechumenProfile?.lastName?.[0]}
                           </div>
-                          <span className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
+                          <span className="truncate text-sm font-semibold tracking-tight text-brand-ink">
                             {e.catechumenProfile?.firstName}{" "}
                             {e.catechumenProfile?.lastName}
                           </span>
@@ -841,7 +841,7 @@ export default function ClassDetailPage() {
                             {c.firstName?.[0]}
                             {c.lastName?.[0]}
                           </div>
-                          <span className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                          <span className="text-sm font-semibold tracking-tight text-brand-ink">
                             {c.firstName} {c.lastName}
                           </span>
                         </div>
@@ -896,7 +896,7 @@ export default function ClassDetailPage() {
                     padded={false}
                   >
                     <div className="min-w-0">
-                      <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                      <p className="text-sm font-semibold tracking-tight text-brand-ink">
                         {m.title || t("detail.no_title")}
                       </p>
                       <div className="mt-1 flex flex-wrap items-center gap-2">
@@ -1110,7 +1110,7 @@ export default function ClassDetailPage() {
                           {cc.user?.lastName?.[0]}
                         </div>
                         <div className="min-w-0">
-                          <p className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
+                          <p className="truncate text-sm font-semibold tracking-tight text-brand-ink">
                             {cc.user?.firstName} {cc.user?.lastName}
                           </p>
                           <p className="text-xs text-muted-foreground truncate">
@@ -1160,7 +1160,7 @@ export default function ClassDetailPage() {
                     <Calendar className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                    <h3 className="text-sm font-semibold tracking-tight text-brand-ink">
                       {formatDate(
                         new Date(monthlyPlan.year, monthlyPlan.month),
                         currentLocale,
@@ -1207,7 +1207,7 @@ export default function ClassDetailPage() {
                                     day: "numeric",
                                   })}
                                 </Badge>
-                                <span className="font-brand-display font-semibold tracking-tight text-brand-ink">
+                                <span className="font-semibold tracking-tight text-brand-ink">
                                   {m.title || t("detail.no_title")}
                                 </span>
                               </div>

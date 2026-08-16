@@ -192,7 +192,7 @@ export default function SettingsPage() {
             {t("linked_parish")}
           </p>
           <p
-            className="font-brand-display mt-1 text-sm font-semibold tracking-tight text-brand-ink"
+            className="mt-1 text-sm font-semibold tracking-tight text-brand-ink"
           >
             {ctxParishName}
           </p>
@@ -247,7 +247,7 @@ export default function SettingsPage() {
         <div className="flex gap-2">
           <Button
             size="sm"
-            className="rounded-sm shadow-none"
+            className="rounded-md"
             onClick={handleSaveProfile}
             disabled={saving}
           >

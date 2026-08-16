@@ -200,7 +200,7 @@ function MeetingBlockComponent({
   };
 
   return (
-    <Card className="overflow-hidden rounded-sm border-border/70 shadow-none">
+    <Card className="overflow-hidden">
       <div className="flex gap-4 p-4">
         <div className="flex shrink-0 items-start gap-3">
           <div className="pt-1 text-sm font-semibold text-muted-foreground">
@@ -214,10 +214,10 @@ function MeetingBlockComponent({
         <div className="min-w-0 flex-1 space-y-3">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h3 className="font-brand-display text-[28px] leading-none font-semibold tracking-tight text-brand-ink sm:text-[30px]">
+              <h3 className="text-[28px] leading-none font-semibold tracking-tight text-brand-ink sm:text-[30px]">
                 {label}
               </h3>
-              <div className="mt-2 h-px w-10 bg-brand-gold" aria-hidden />
+              <div className="mt-2 h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
               <p className="mt-2 text-sm text-muted-foreground">{helper}</p>
             </div>
             <div className="flex items-center gap-2">
@@ -468,7 +468,7 @@ function VersionHistoryPanel({ onClose }: { onClose: () => void }) {
   return (
     <div className="border-b bg-muted/10 p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="font-brand-display flex items-center gap-1.5 text-sm font-semibold tracking-tight text-brand-ink">
+        <h3 className="flex items-center gap-1.5 text-sm font-semibold tracking-tight text-brand-ink">
           <History className="h-4 w-4" /> {t("editor.history")}
         </h3>
         <div className="flex gap-2">
@@ -507,7 +507,7 @@ function VersionHistoryPanel({ onClose }: { onClose: () => void }) {
           <Card key={v.id} className="rounded-sm p-3">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <div className="font-brand-display text-xs font-semibold tracking-tight text-brand-ink">
+                <div className="text-xs font-semibold tracking-tight text-brand-ink">
                   {t("editor.version")} {v.version}
                 </div>
                 <div className="text-caption text-muted-foreground">

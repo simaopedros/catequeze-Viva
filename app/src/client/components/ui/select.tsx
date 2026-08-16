@@ -49,7 +49,10 @@ function SelectTrigger({
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
       className={cn(
-        "border-input ring-offset-background data-[placeholder]:text-muted-foreground focus:ring-brand-ink/25 flex h-9 w-full items-center justify-between whitespace-nowrap rounded-sm border border-border/70 bg-white px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+        // Altura alinhada ao Input (h-12 mobile / h-11 desktop): antes era h-9,
+        // o que deixava selects abaixo do alvo de toque mínimo e desalinhados
+        // ao lado de campos de texto no mesmo formulário.
+        "ring-offset-background data-[placeholder]:text-muted-foreground focus:ring-ring/35 flex h-12 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-card px-3.5 py-2 text-base shadow-elevation-xs transition-[border-color,box-shadow] duration-150 ease-out focus:border-brand-ink/40 focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:cursor-not-allowed disabled:border-dashed disabled:text-muted-foreground disabled:opacity-70 disabled:shadow-none md:h-11 md:text-sm [&>span]:line-clamp-1",
         variantStyles[variant],
         stateStyles[state],
         className,
@@ -104,14 +107,18 @@ function SelectContent({
   className,
   children,
   position = "popper",
+  // Sem folga o menu encostava no gatilho e as duas superfícies elevadas
+  // liam como um bloco só; 6px separa sem soltar.
+  sideOffset = 6,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Content>) {
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
         data-slot="select-content"
+        sideOffset={sideOffset}
         className={cn(
-          "relative z-50 max-h-[--radix-select-content-available-height] min-w-[8rem] origin-[--radix-select-content-transform-origin] overflow-y-auto overflow-x-hidden rounded-sm border border-border/70 bg-white text-brand-ink shadow-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+          "relative z-50 max-h-[--radix-select-content-available-height] min-w-[8rem] origin-[--radix-select-content-transform-origin] overflow-y-auto overflow-x-hidden rounded-lg border border-border bg-popover text-brand-ink shadow-elevation-dropdown data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
           position === "popper" &&
             "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
           className,

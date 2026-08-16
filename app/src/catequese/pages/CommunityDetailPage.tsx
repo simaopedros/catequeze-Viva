@@ -167,7 +167,7 @@ export default function CommunityDetailPage() {
               <MapPin className="h-3 w-3" />
               {t("address")}
             </h3>
-            <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+            <p className="text-sm font-semibold tracking-tight text-brand-ink">
               {community.street}
               {community.number ? `, ${community.number}` : ""}
             </p>
@@ -182,7 +182,7 @@ export default function CommunityDetailPage() {
               <Phone className="h-3 w-3" />
               {tp("contact")}
             </h3>
-            <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+            <p className="text-sm font-semibold tracking-tight text-brand-ink">
               {community.phone}
             </p>
             {community.email && (
@@ -195,7 +195,7 @@ export default function CommunityDetailPage() {
             <Building2 className="h-3 w-3" />
             {tp("summary")}
           </h3>
-          <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+          <p className="text-sm font-semibold tracking-tight text-brand-ink">
             {tp("summary_counts", {
               classes: classes.length,
               families: households.length,
@@ -253,7 +253,7 @@ export default function CommunityDetailPage() {
                   className="flex items-center justify-between rounded-sm border border-border/70 bg-white p-3 transition-colors hover:bg-muted/20"
                 >
                   <div>
-                    <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                    <p className="text-sm font-semibold tracking-tight text-brand-ink">
                       {cls.name}
                     </p>
                     <p className="text-xs text-muted-foreground">
@@ -288,7 +288,7 @@ export default function CommunityDetailPage() {
                   to={`/app/families/${h.id}`}
                   className="rounded-sm border border-border/70 bg-white p-3 transition-colors hover:bg-muted/20"
                 >
-                  <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                  <p className="text-sm font-semibold tracking-tight text-brand-ink">
                     {h.name}
                   </p>
                   <p className="text-xs text-muted-foreground">
@@ -338,7 +338,7 @@ export default function CommunityDetailPage() {
                     {c.lastName?.[0]}
                   </div>
                   <div className="flex-1">
-                    <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                    <p className="text-sm font-semibold tracking-tight text-brand-ink">
                       {c.firstName} {c.lastName}
                     </p>
                     <p className="text-xs text-muted-foreground">

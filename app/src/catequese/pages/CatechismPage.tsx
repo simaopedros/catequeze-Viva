@@ -219,7 +219,7 @@ export default function CatechismPage() {
                     <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-semibold tracking-tight text-brand-ink">
                       {entry.number}
                     </span>
-                    <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                    <p className="text-sm font-semibold tracking-tight text-brand-ink">
                       {entry.question}
                     </p>
                   </div>
@@ -260,7 +260,7 @@ export default function CatechismPage() {
                     <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-semibold tracking-tight text-brand-ink">
                       {entry.number}
                     </span>
-                    <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                    <p className="text-sm font-semibold tracking-tight text-brand-ink">
                       {entry.question}
                     </p>
                   </div>

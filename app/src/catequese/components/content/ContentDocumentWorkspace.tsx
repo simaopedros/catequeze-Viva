@@ -183,7 +183,7 @@ function ReferencesSidebar({
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
               <BookMarked className="h-4 w-4 text-brand-ink" />
-              <h3 className="font-brand-display text-base font-semibold tracking-tight text-brand-ink">
+              <h3 className="text-base font-semibold tracking-tight text-brand-ink">
                 Referências pastorais
               </h3>
             </div>
@@ -856,7 +856,7 @@ export function ContentDocumentWorkspace({
             <span className="hidden sm:inline">Biblioteca</span>
           </Link>
           <div className="hidden h-4 w-px shrink-0 bg-border/70 sm:block" />
-          <p className="font-brand-display min-w-0 truncate text-sm font-semibold tracking-tight text-brand-ink">
+          <p className="min-w-0 truncate text-sm font-semibold tracking-tight text-brand-ink">
             Editor do encontro
           </p>
           <Badge
@@ -935,7 +935,7 @@ export function ContentDocumentWorkspace({
           <Input
             value={title}
             onChange={(event) => setTitle(event.target.value)}
-            className="font-brand-display h-8 rounded-sm border-border/60 bg-muted/20 px-2.5 text-sm font-semibold tracking-tight text-brand-ink shadow-none focus-visible:ring-1"
+            className="h-8 rounded-sm border-border/60 bg-muted/20 px-2.5 text-sm font-semibold tracking-tight text-brand-ink shadow-none focus-visible:ring-1"
             placeholder="Título do encontro"
             aria-label="Título"
           />
@@ -1044,7 +1044,7 @@ export function ContentDocumentWorkspace({
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 Encontro
               </p>
-              <h1 className="font-brand-display mt-1 text-2xl font-semibold tracking-tight text-brand-ink">
+              <h1 className="mt-1 text-2xl font-semibold tracking-tight text-brand-ink">
                 {title.trim() || DEFAULT_TITLE}
               </h1>
               {(theme.trim() || estimatedTime) && (
@@ -1057,7 +1057,7 @@ export function ContentDocumentWorkspace({
                     .join(" · ")}
                 </p>
               )}
-              <div className="mt-3 h-px w-10 bg-brand-gold" aria-hidden />
+              <div className="mt-3 h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
               <div className="mt-6">
                 <ContentDocumentRenderer
                   document={
@@ -1113,7 +1113,7 @@ export function ContentDocumentWorkspace({
                   </Button>
                   <Button
                     size="sm"
-                    className="h-9 gap-1.5 rounded-sm shadow-none"
+                    className="h-9 gap-1.5 rounded-md"
                     asChild
                   >
                     <Link to={`/app/content-library/${contentId}`}>
@@ -1124,7 +1124,7 @@ export function ContentDocumentWorkspace({
               ) : (
                 <Button
                   size="sm"
-                  className="h-9 gap-1.5 rounded-sm shadow-none"
+                  className="h-9 gap-1.5 rounded-md"
                   onClick={() => {
                     setPreviewOpen(false);
                     void saveNow();

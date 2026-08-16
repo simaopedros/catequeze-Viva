@@ -535,7 +535,7 @@ function SelectionActionBubble({
                     onClick={() => void result.onSelect()}
                   >
                     <div className="min-w-0 flex-1">
-                      <div className="font-brand-display font-semibold tracking-tight text-brand-ink">
+                      <div className="font-semibold tracking-tight text-brand-ink">
                         {result.title}
                       </div>
                       <div className="mt-1 line-clamp-2 text-muted-foreground">

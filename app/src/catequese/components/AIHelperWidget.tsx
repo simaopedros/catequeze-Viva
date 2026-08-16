@@ -262,7 +262,7 @@ export function AIHelperWidget() {
               </div>
               <div className="space-y-1">
                 <AppEyebrow>{ta("widget.catholic_ai")}</AppEyebrow>
-                <h3 className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                <h3 className="text-sm font-semibold tracking-tight text-brand-ink">
                   {ta("widget.theological_assistant")}
                 </h3>
                 <AppGoldRule className="w-6" />

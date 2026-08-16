@@ -61,7 +61,6 @@ const SupportInboxPage = ({ user }: { user: AuthUser }) => {
                       <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
                       <span
                         className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                        style={{ fontFamily: 'var(--font-brand-display)' }}
                       >
                         {msg.name}
                       </span>

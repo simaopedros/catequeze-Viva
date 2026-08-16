@@ -63,9 +63,12 @@ export function ProofSection({ ns = "landing" }: { ns?: string }) {
                 return (
                   <div
                     key={stat.title}
-                    className="space-y-2 rounded-sm border border-border/60 bg-background p-4"
+                    // bg-card + elevação: sobre o canvas off-white, um card em
+                    // bg-background com borda não se destaca de nada — é a
+                    // doutrina plana antiga, que o app já não usa.
+                    className="space-y-2 rounded-lg border border-border bg-card p-4 shadow-elevation-sm"
                   >
-                    <div className="inline-flex rounded-sm bg-muted p-2 text-brand-ink">
+                    <div className="inline-flex rounded-md bg-muted p-2 text-brand-ink">
                       <Icon className="h-4 w-4" />
                     </div>
                     <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
@@ -95,10 +98,10 @@ export function ProofSection({ ns = "landing" }: { ns?: string }) {
 
           <Card
             variant="flat"
-            className="rounded-sm border-brand-ink/20 bg-brand-ink/[0.03] p-6 shadow-none flex flex-col justify-between gap-5"
+            className="rounded-lg border border-brand-ink/15 bg-brand-ink/[0.03] p-6 shadow-elevation-sm flex flex-col justify-between gap-5"
           >
             <div className="space-y-4">
-              <div className="inline-flex rounded-sm bg-brand-ink/8 p-2.5 text-brand-ink">
+              <div className="inline-flex rounded-md bg-brand-ink/8 p-2.5 text-brand-ink">
                 <ShieldCheck className="h-5 w-5" />
               </div>
               <div className="space-y-2">

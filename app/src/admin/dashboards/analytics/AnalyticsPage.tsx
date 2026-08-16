@@ -191,7 +191,7 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <p className="font-brand-display text-sm font-semibold tracking-tight text-[#071A2D]">
+                          <p className="text-sm font-semibold tracking-tight text-[#071A2D]">
                             {step.label}
                           </p>
                           <p className="mt-1 text-2xl font-semibold tracking-tight tabular-nums text-[#071A2D]">

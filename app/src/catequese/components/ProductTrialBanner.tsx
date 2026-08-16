@@ -199,7 +199,7 @@ export function ProductTrialBanner() {
           aria-hidden
         />
         <div className="min-w-0 space-y-0.5 text-sm leading-snug">
-          <p className="font-brand-display font-semibold tracking-tight text-brand-ink">
+          <p className="font-semibold tracking-tight text-brand-ink">
             {days === 1
               ? t("trial_banner_title_one")
               : t("trial_banner_title_other", { count: days })}

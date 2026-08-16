@@ -28,7 +28,7 @@ export function PublicFooter({
             <p className="max-w-xs text-sm leading-relaxed text-[#A8B8C9]">
               {t("tagline")}
             </p>
-            <div className="h-px w-10 bg-brand-gold/80" aria-hidden />
+            <div className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent/80" aria-hidden />
           </div>
 
           <div className="md:col-span-3">

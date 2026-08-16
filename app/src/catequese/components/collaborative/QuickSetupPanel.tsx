@@ -325,7 +325,7 @@ export function QuickSetupPanel({
                       ? t("planner.selected_content")
                       : t("planner.selected_meeting")}
                   </p>
-                  <p className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
+                  <p className="truncate text-sm font-semibold tracking-tight text-brand-ink">
                     {selectedSourceTitle || t("planner.untitled")}
                   </p>
                   {selectedSourceTheme && (
@@ -355,7 +355,7 @@ export function QuickSetupPanel({
                     }`}
                   >
                     <g.icon className="mx-auto mb-2 h-8 w-8 text-brand-ink" />
-                    <div className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                    <div className="text-sm font-semibold tracking-tight text-brand-ink">
                       {g.label}
                     </div>
                     <div className="text-xs text-muted-foreground">{g.age}</div>
@@ -450,7 +450,7 @@ export function QuickSetupPanel({
                           : "border-border hover:border-brand-ink/40"
                       }`}
                     >
-                      <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                      <p className="text-sm font-semibold tracking-tight text-brand-ink">
                         {t(option.labelKey)}
                       </p>
                       <p className="mt-1 text-xs leading-snug text-muted-foreground">

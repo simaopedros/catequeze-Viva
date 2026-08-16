@@ -469,7 +469,7 @@ export default function CustomSignupForm({
             <Button
               type="submit"
               disabled={isLoading}
-              className="h-11 w-full rounded-sm shadow-none"
+              className="h-11 w-full rounded-md"
             >
               {isLoading ? (
                 <>

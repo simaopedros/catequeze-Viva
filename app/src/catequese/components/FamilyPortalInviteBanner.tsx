@@ -25,7 +25,7 @@ export function FamilyPortalInviteBanner({
           <Mail className="h-5 w-5 text-brand-ink" />
         </div>
         <div className="min-w-0">
-          <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+          <p className="text-sm font-semibold tracking-tight text-brand-ink">
             {t("portal_invites.banner_title")}
           </p>
           <p className="mt-0.5 text-xs text-muted-foreground sm:text-sm">
@@ -33,7 +33,7 @@ export function FamilyPortalInviteBanner({
           </p>
         </div>
       </div>
-      <Button asChild className="h-11 min-h-11 shrink-0 rounded-sm shadow-none">
+      <Button asChild className="h-11 min-h-11 shrink-0 rounded-md">
         <Link to="/app/family-invites">
           {t("portal_invites.banner_cta")}
           <ArrowRight className="ml-1.5 h-4 w-4" />

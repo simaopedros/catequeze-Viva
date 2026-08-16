@@ -255,7 +255,7 @@ export function ActivityForm({
         return (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+              <p className="text-sm font-semibold tracking-tight text-brand-ink">
                 {t("form.questions_count", { count: quizQuestions.length })}
               </p>
               <Button size="sm" variant="outline" onClick={addQuizQuestion}>
@@ -391,7 +391,7 @@ export function ActivityForm({
         return (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+              <p className="text-sm font-semibold tracking-tight text-brand-ink">
                 {t("form.items_count", { count: checklistItems.length })}
               </p>
               <Button size="sm" variant="outline" onClick={addChecklistItem}>
@@ -445,7 +445,7 @@ export function ActivityForm({
               className="min-h-[100px]"
             />
             <div className="flex items-center justify-between">
-              <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+              <p className="text-sm font-semibold tracking-tight text-brand-ink">
                 {t("form.reflection_questions", {
                   count: reflectionPrompts.length,
                 })}
@@ -494,7 +494,7 @@ export function ActivityForm({
         return (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+              <p className="text-sm font-semibold tracking-tight text-brand-ink">
                 {t("form.steps_count", { count: dynamicSteps.length })}
               </p>
               <Button size="sm" variant="outline" onClick={addDynamicStep}>
@@ -598,7 +598,7 @@ export function ActivityForm({
               onChange={(e) => setBibleRef(e.target.value)}
             />
             <div className="flex items-center justify-between">
-              <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+              <p className="text-sm font-semibold tracking-tight text-brand-ink">
                 {t("form.questions_count", { count: bibleQuestions.length })}
               </p>
               <Button size="sm" variant="outline" onClick={addBibleQuestion}>
@@ -645,7 +645,7 @@ export function ActivityForm({
         return (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+              <p className="text-sm font-semibold tracking-tight text-brand-ink">
                 {t("form.pairs_count", { count: matchingPairs.length })}
               </p>
               <Button size="sm" variant="outline" onClick={addMatchingPair}>

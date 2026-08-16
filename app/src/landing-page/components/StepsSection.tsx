@@ -31,7 +31,7 @@ export function StepsSection({
             <h2 className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink sm:text-4xl">
               {tr("steps_title")}
             </h2>
-            <div className="h-px w-10 bg-brand-gold" aria-hidden />
+            <div className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
             <p className="text-muted-foreground leading-relaxed">
               {tr("steps_subtitle")}
             </p>
@@ -65,13 +65,17 @@ export function StepsSection({
         <ol className="mt-12 grid gap-8 sm:mt-14 sm:grid-cols-3 sm:gap-10">
           {list.map((step: any, index: number) => (
             <li key={step.title} className="relative space-y-3">
+              {/* Mesmo tratamento da OutcomesSection: as duas seções mostram
+                  o mesmo padrão de passos numerados e antes divergiam — aqui o
+                  número era ink a 12% de opacidade, praticamente invisível
+                  sobre o canvas, enquanto lá era dourado. */}
               <span
-                className="font-brand-display text-[2.5rem] font-semibold text-brand-ink/[0.12] tabular-nums leading-none"
+                className="font-brand-display block text-[2rem] font-semibold tabular-nums leading-none text-brand-gold/80"
                 aria-hidden
               >
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <h3 className="font-brand-display text-base font-semibold tracking-tight text-brand-ink">
+              <h3 className="font-brand-display text-[1.05rem] font-semibold tracking-tight text-brand-ink">
                 {step.title}
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed max-w-[15rem]">

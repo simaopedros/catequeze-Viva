@@ -57,7 +57,7 @@ export function UsageNoticeCard({
         )}
         <div className="min-w-0 space-y-1">
           {title && (
-            <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+            <p className="text-sm font-semibold tracking-tight text-brand-ink">
               {title}
             </p>
           )}

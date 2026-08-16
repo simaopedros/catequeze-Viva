@@ -31,7 +31,7 @@ export function PersonasSection({ ns = "landing" }: { ns?: string }) {
           ref={headerRef}
           className={`text-center mb-10 space-y-3 ${headerClass}`}
         >
-          <div className="mx-auto h-px w-10 bg-brand-gold" aria-hidden />
+          <div className="mx-auto h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
           <h2
             className="text-3xl font-semibold tracking-tight text-brand-ink sm:text-4xl"
             style={{ fontFamily: "var(--font-brand-display)" }}

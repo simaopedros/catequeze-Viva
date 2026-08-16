@@ -45,7 +45,7 @@ function SheetOverlay({
 }
 
 const sheetVariants = cva(
-  "fixed z-50 gap-4 border-border/70 bg-white p-6 shadow-sm transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 data-[state=open]:animate-in data-[state=closed]:animate-out",
+  "fixed z-50 gap-4 border-border bg-popover p-6 shadow-elevation-modal transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 data-[state=open]:animate-in data-[state=closed]:animate-out",
   {
     variants: {
       side: {
@@ -79,7 +79,7 @@ function SheetContent({
         className={cn(
           sheetVariants({ side }),
           side === "bottom" &&
-            "max-h-[min(85dvh,46rem)] rounded-t-sm pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))]",
+            "max-h-[min(85dvh,46rem)] rounded-t-2xl pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))]",
           className,
         )}
         aria-describedby={undefined}
@@ -129,7 +129,7 @@ function SheetTitle({
     <SheetPrimitive.Title
       data-slot="sheet-title"
       className={cn(
-        "font-brand-display text-lg font-semibold tracking-tight text-brand-ink",
+        "font-sans text-title-xsm font-semibold tracking-tight text-brand-ink",
         className,
       )}
       {...props}

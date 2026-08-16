@@ -434,7 +434,7 @@ export function CatechumensSetupStep({
           type="button"
           onClick={handleContinue}
           disabled={loading || totalCount === 0}
-          className="h-11 w-full rounded-sm shadow-none"
+          className="h-11 w-full rounded-md"
         >
           {t("catechumens_setup.continue", { count: totalCount })}
           <ArrowRight className="ml-1 h-4 w-4" />

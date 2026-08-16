@@ -88,7 +88,7 @@ export function PedagogicalHooksPanel() {
               key={i}
               className="space-y-1.5 rounded-sm border-border/70 p-3"
             >
-              <h4 className="font-brand-display text-xs font-semibold tracking-tight text-brand-ink">
+              <h4 className="text-xs font-semibold tracking-tight text-brand-ink">
                 {hook.title}
               </h4>
               <p className="text-xs text-muted-foreground">

@@ -67,7 +67,7 @@ export function InteractiveCard({
       <div className="min-w-0 flex-1">
         <h3
           className={cn(
-            "font-brand-display font-semibold tracking-tight text-brand-ink",
+            "font-semibold tracking-tight text-brand-ink",
             compact ? "text-sm" : "text-body",
           )}
         >

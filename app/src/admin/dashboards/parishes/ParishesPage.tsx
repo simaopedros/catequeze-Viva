@@ -100,7 +100,7 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
                       <div className="flex items-center gap-2">
                         <Church className="h-4 w-4 text-[#071A2D] shrink-0" />
                         <div>
-                          <span className="font-brand-display font-semibold tracking-tight text-[#071A2D] hover:underline">
+                          <span className="font-semibold tracking-tight text-[#071A2D] hover:underline">
                             {p.name}
                           </span>
                           {!p.active && (
@@ -127,7 +127,7 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
                       {p.billing?.plan ? (
                         <span className="flex items-center gap-1">
                           {statusIcon(p.billing.status)}
-                          <span className="font-brand-display text-xs font-semibold tracking-tight text-[#071A2D]">
+                          <span className="text-xs font-semibold tracking-tight text-[#071A2D]">
                             {p.billing.plan}
                           </span>
                         </span>

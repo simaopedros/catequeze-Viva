@@ -349,7 +349,7 @@ export default function SacramentsPage() {
             </div>
             {canManage && (
               <Button
-                className="h-10 rounded-sm shadow-none"
+                className="h-10 rounded-md"
                 onClick={openForm}
               >
                 <Plus className="mr-1 h-4 w-4" />
@@ -482,7 +482,7 @@ export default function SacramentsPage() {
                     className="flex items-center gap-2 hover:text-brand-ink transition-colors"
                   >
                     <User className="h-4 w-4 text-brand-ink" />
-                    <span className="font-brand-display font-semibold tracking-tight text-brand-ink">
+                    <span className="font-semibold tracking-tight text-brand-ink">
                       {j.catechumenProfile?.firstName}{" "}
                       {j.catechumenProfile?.lastName}
                     </span>

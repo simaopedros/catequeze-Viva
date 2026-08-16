@@ -50,7 +50,7 @@ export function FeatureShowcase({
           <div className="inline-flex h-11 w-11 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-brand-ink">
             <Icon className="h-5 w-5" />
           </div>
-          <div className="h-px w-10 bg-brand-gold" aria-hidden />
+          <div className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
           <h3
             className="text-2xl font-semibold tracking-tight text-brand-ink sm:text-3xl"
             style={{ fontFamily: "var(--font-brand-display)" }}

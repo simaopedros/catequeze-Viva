@@ -155,7 +155,7 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
                   >
                     <Activity className="h-3.5 w-3.5 text-[#071A2D] mt-0.5 shrink-0" />
                     <div>
-                      <p className="font-brand-display text-xs font-semibold tracking-tight text-[#071A2D]">
+                      <p className="text-xs font-semibold tracking-tight text-[#071A2D]">
                         {job.name}
                       </p>
                       <p className="text-xs text-muted-foreground">

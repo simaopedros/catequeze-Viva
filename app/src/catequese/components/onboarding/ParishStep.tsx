@@ -161,7 +161,7 @@ export function ParishStep({
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {t("parish.diocese_context_label")}
           </p>
-          <p className="font-brand-display mt-0.5 text-sm font-semibold tracking-tight text-brand-ink">
+          <p className="mt-0.5 text-sm font-semibold tracking-tight text-brand-ink">
             {diocese.name}
             {diocese.state ? ` (${diocese.state})` : ""}
           </p>
@@ -204,7 +204,7 @@ export function ParishStep({
       <div className="max-h-64 space-y-3 overflow-y-auto">
         {!shouldShowResults && (
           <div className="border border-border/70 px-4 py-4 rounded-sm">
-            <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+            <p className="text-sm font-semibold tracking-tight text-brand-ink">
               {t("parish.start_hint_title")}
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -231,7 +231,7 @@ export function ParishStep({
                 )}
               >
                 <div className="min-w-0 flex-1">
-                  <span className="font-brand-display font-semibold tracking-tight text-brand-ink">
+                  <span className="font-semibold tracking-tight text-brand-ink">
                     {p.name}
                   </span>
                   {p.city && (
@@ -267,7 +267,7 @@ export function ParishStep({
                 )}
               >
                 <div className="min-w-0 flex-1">
-                  <span className="font-brand-display font-semibold tracking-tight text-brand-ink">
+                  <span className="font-semibold tracking-tight text-brand-ink">
                     {op.name}
                   </span>
                   {op.address && (
@@ -317,7 +317,7 @@ export function ParishStep({
           {duplicateParish && (
             <div className="border border-border/70 px-3 py-2 text-xs text-muted-foreground rounded-sm">
               {t("parish.duplicate_warning")}{" "}
-              <strong className="font-brand-display font-semibold tracking-tight text-brand-ink">
+              <strong className="font-semibold tracking-tight text-brand-ink">
                 {duplicateParish.name}
               </strong>
               {duplicateParish.city && (
@@ -358,7 +358,7 @@ export function ParishStep({
             </Button>
             <Button
               size="sm"
-              className="rounded-sm shadow-none"
+              className="rounded-md"
               onClick={handleCreate}
               disabled={creating || !newName.trim()}
             >
@@ -376,7 +376,7 @@ export function ParishStep({
             </p>
             <Button
               onClick={onContinue}
-              className="h-11 w-full rounded-sm shadow-none"
+              className="h-11 w-full rounded-md"
             >
               {t("parish.continue_with_selection")}
               <ArrowRight className="ml-1 h-4 w-4" />

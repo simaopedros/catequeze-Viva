@@ -201,7 +201,7 @@ export function ContextShelf() {
                       {t(config.labelKey)}
                     </Badge>
                   </div>
-                  <p className="font-brand-display truncate text-xs font-semibold tracking-tight text-brand-ink">
+                  <p className="truncate text-xs font-semibold tracking-tight text-brand-ink">
                     {att.title}
                   </p>
                   <p className="text-xs text-muted-foreground mt-0.5 line-clamp-3 whitespace-pre-wrap">

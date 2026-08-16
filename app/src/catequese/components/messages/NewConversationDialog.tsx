@@ -208,7 +208,7 @@ export function NewConversationDialog({
                     <Icon className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                    <p className="text-sm font-semibold tracking-tight text-brand-ink">
                       {t(`new_dialog.types.${ct.key}.label`)}
                     </p>
                     <p className="text-xs text-muted-foreground">
@@ -303,7 +303,7 @@ export function NewConversationDialog({
                         {getInitials(c.firstName, c.lastName)}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
+                        <p className="truncate text-sm font-semibold tracking-tight text-brand-ink">
                           {name}
                         </p>
                         <p className="text-overline text-muted-foreground truncate">

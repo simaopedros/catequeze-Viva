@@ -166,7 +166,7 @@ export function ContextSelector() {
                   >
                     {wsIcon(ws.isPersonal ? "PERSONAL" : ws.type)}
                     <div className="flex-1 text-left min-w-0">
-                      <div className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
+                      <div className="truncate text-sm font-semibold tracking-tight text-brand-ink">
                         {ws.name}
                       </div>
                       <div className="text-overline text-muted-foreground truncate">
@@ -215,7 +215,7 @@ export function ContextSelector() {
                   >
                     <Shield className="h-4 w-4 text-muted-foreground shrink-0" />
                     <div className="flex-1 text-left min-w-0">
-                      <span className="font-brand-display block truncate text-sm font-semibold tracking-tight text-brand-ink">
+                      <span className="block truncate text-sm font-semibold tracking-tight text-brand-ink">
                         {roleLabels[m.role as keyof typeof roleLabels] ||
                           m.role}
                       </span>

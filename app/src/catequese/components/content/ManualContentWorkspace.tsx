@@ -106,7 +106,7 @@ function ReferenceSection({
             <Icon className="h-4 w-4" />
           </div>
           <div>
-            <div className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+            <div className="text-sm font-semibold tracking-tight text-brand-ink">
               {title}
             </div>
             <div className="text-xs text-muted-foreground">
@@ -336,7 +336,7 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
             </ReferenceSection>
 
             <div className="rounded-sm border border-border bg-muted/20 p-4">
-              <div className="font-brand-display mb-2 text-sm font-semibold tracking-tight text-brand-ink">
+              <div className="mb-2 text-sm font-semibold tracking-tight text-brand-ink">
                 Referências selecionadas
               </div>
               <div className="space-y-2 text-sm text-muted-foreground">
@@ -412,7 +412,7 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
         </div>
         <div className="space-y-3">
           <div>
-            <h3 className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+            <h3 className="text-sm font-semibold tracking-tight text-brand-ink">
               Sugestões quando você quiser acelerar
             </h3>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -548,7 +548,7 @@ function ContentLibrarySidebar() {
                   <ScrollText className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
-                  <div className="font-brand-display line-clamp-2 text-sm font-semibold tracking-tight text-brand-ink">
+                  <div className="line-clamp-2 text-sm font-semibold tracking-tight text-brand-ink">
                     {item.title || "Rascunho sem título"}
                   </div>
                   <div className="mt-1 text-xs text-muted-foreground">
@@ -601,7 +601,7 @@ function HeaderSection({ backTo }: { backTo: string }) {
         </div>
 
         <div className="flex flex-wrap items-start gap-3">
-          <Button className="h-auto rounded-sm bg-brand-ink px-6 py-4 text-left shadow-none hover:bg-brand-ink-soft">
+          <Button className="h-auto rounded-lg bg-brand-ink px-6 py-4 text-left hover:bg-brand-ink-soft">
             <div className="flex items-start gap-3">
               <Plus className="mt-1 h-4 w-4" />
               <div>

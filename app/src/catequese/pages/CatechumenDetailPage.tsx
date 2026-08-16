@@ -757,7 +757,7 @@ function PastoralAnalysisInline({
                 <p className="text-overline text-muted-foreground">
                   {t("reportTitle")}
                 </p>
-                <h4 className="font-brand-display text-lg font-semibold leading-tight tracking-tight text-brand-ink">
+                <h4 className="text-lg font-semibold leading-tight tracking-tight text-brand-ink">
                   {catechumen.name}
                 </h4>
                 <p className="text-xs text-muted-foreground">
@@ -826,21 +826,21 @@ function PastoralAnalysisInline({
 
         <div className="grid grid-cols-2 gap-2 text-center text-xs sm:grid-cols-4">
           <div className="pastoral-print-card rounded-sm border border-border/70 bg-white p-3">
-            <p className="font-brand-display text-2xl font-semibold tracking-tight tabular-nums text-brand-ink">
+            <p className="text-2xl font-semibold tracking-tight tabular-nums text-brand-ink">
               {data.overallFrequency}%
             </p>
             <p className="text-muted-foreground">{t("overallFrequency")}</p>
           </div>
           {canSeeSensitiveSignals && (
             <div className="pastoral-print-card rounded-sm border border-border/70 bg-white p-3">
-              <p className="font-brand-display text-2xl font-semibold tracking-tight tabular-nums text-brand-ink">
+              <p className="text-2xl font-semibold tracking-tight tabular-nums text-brand-ink">
                 {data.rankingPosition}/{data.totalCatechumensInClass}
               </p>
               <p className="text-muted-foreground">{t("rankingPosition")}</p>
             </div>
           )}
           <div className="pastoral-print-card rounded-sm border border-border/70 bg-white p-3">
-            <p className="font-brand-display text-2xl font-semibold tracking-tight tabular-nums text-brand-ink">
+            <p className="text-2xl font-semibold tracking-tight tabular-nums text-brand-ink">
               {data.presentCount + data.lateCount}
             </p>
             <p className="text-muted-foreground">{t("present")}</p>
@@ -891,7 +891,7 @@ function PastoralAnalysisInline({
                 <tbody>
                   {data.monthlyPresence.map((row: any) => (
                     <tr key={row.month} className="border-t">
-                      <td className="font-brand-display p-2 font-semibold tracking-tight text-brand-ink">
+                      <td className="p-2 font-semibold tracking-tight text-brand-ink">
                         {row.month}
                       </td>
                       <td className="p-2 text-center text-brand-ink">
@@ -1448,7 +1448,7 @@ export default function CatechumenDetailPage() {
                   {t("catechumens.detail_progress")}
                 </p>
                 <div className="mb-3 flex items-center gap-2">
-                  <span className="font-brand-display text-2xl font-semibold tracking-tight tabular-nums text-brand-ink">
+                  <span className="text-2xl font-semibold tracking-tight tabular-nums text-brand-ink">
                     {points}
                   </span>
                   <span className="text-xs text-muted-foreground">
@@ -1474,7 +1474,7 @@ export default function CatechumenDetailPage() {
                 </h3>
                 <div className="h-px w-8 bg-brand-gold" aria-hidden />
               </div>
-              <p className="font-brand-display font-semibold tracking-tight text-brand-ink">
+              <p className="font-semibold tracking-tight text-brand-ink">
                 {profile.household?.name || t("catechumens.detail_not_linked")}
               </p>
               {profile.household?.guardians?.map((g: any) => (
@@ -1505,7 +1505,7 @@ export default function CatechumenDetailPage() {
                 <Link
                   key={e.id}
                   to={`/app/classes/${e.class?.id}`}
-                  className="font-brand-display block py-0.5 text-sm font-semibold tracking-tight text-brand-ink hover:underline"
+                  className="block py-0.5 text-sm font-semibold tracking-tight text-brand-ink hover:underline"
                 >
                   {e.class?.name}{" "}
                   {e.class?.stage?.name && `· ${e.class.stage.name}`}
@@ -1537,7 +1537,7 @@ export default function CatechumenDetailPage() {
                     <span className="text-xs text-muted-foreground">
                       {new Date(a.meetingDate).toLocaleDateString()}
                     </span>{" "}
-                    <span className="font-brand-display font-semibold tracking-tight text-brand-ink">
+                    <span className="font-semibold tracking-tight text-brand-ink">
                       {a.meetingTitle || t("catechumens.detail_meeting")}
                     </span>
                     <span className="text-overline text-muted-foreground ml-1">
@@ -1628,7 +1628,7 @@ export default function CatechumenDetailPage() {
               ) : (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                    <h4 className="text-sm font-semibold tracking-tight text-brand-ink">
                       {t("catechumens.detail_attendance_report")}
                     </h4>
                     {report.canSeeSensitiveSignals ? (
@@ -1654,7 +1654,7 @@ export default function CatechumenDetailPage() {
                   </div>
                   <div className="grid grid-cols-3 gap-2 text-center text-xs">
                     <div className="rounded-sm border border-border/70 bg-muted/30 p-2">
-                      <p className="font-brand-display text-lg font-semibold tracking-tight tabular-nums text-brand-ink">
+                      <p className="text-lg font-semibold tracking-tight tabular-nums text-brand-ink">
                         {report.totalPresent}
                       </p>
                       <p className="text-muted-foreground">
@@ -1662,7 +1662,7 @@ export default function CatechumenDetailPage() {
                       </p>
                     </div>
                     <div className="rounded-sm border border-border/70 bg-muted/30 p-2">
-                      <p className="font-brand-display text-lg font-semibold tracking-tight tabular-nums text-brand-ink">
+                      <p className="text-lg font-semibold tracking-tight tabular-nums text-brand-ink">
                         {report.totalAbsent}
                       </p>
                       <p className="text-muted-foreground">
@@ -1670,7 +1670,7 @@ export default function CatechumenDetailPage() {
                       </p>
                     </div>
                     <div className="rounded-sm border border-border/70 bg-muted/30 p-2">
-                      <p className="font-brand-display text-lg font-semibold tracking-tight tabular-nums text-brand-ink">
+                      <p className="text-lg font-semibold tracking-tight tabular-nums text-brand-ink">
                         {report.totalJustified}
                       </p>
                       <p className="text-muted-foreground">
@@ -1731,7 +1731,7 @@ export default function CatechumenDetailPage() {
                     className="block rounded-sm border border-border/70 bg-white p-3 transition-colors hover:bg-muted/20"
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                      <span className="text-sm font-semibold tracking-tight text-brand-ink">
                         {j.template?.name}
                       </span>
                       <Badge

@@ -175,7 +175,7 @@ export default function ParishesPage() {
         actions={
           <Button
             size="sm"
-            className="h-10 rounded-sm shadow-none"
+            className="h-10 rounded-md"
             onClick={() => setShowCreate(!showCreate)}
           >
             <Plus className="mr-1 h-4 w-4" />
@@ -291,7 +291,7 @@ export default function ParishesPage() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <h3 className="font-brand-display truncate font-semibold tracking-tight text-brand-ink transition-colors group-hover:text-brand-ink-soft">
+                      <h3 className="truncate font-semibold tracking-tight text-brand-ink transition-colors group-hover:text-brand-ink-soft">
                         {p.name}
                       </h3>
                       {!isActive && (

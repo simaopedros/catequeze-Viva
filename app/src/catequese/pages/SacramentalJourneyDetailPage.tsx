@@ -244,7 +244,7 @@ export default function SacramentalJourneyDetailPage() {
             </div>
           ) : (
             <div className="flex items-center gap-2 flex-1">
-              <span className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+              <span className="text-sm font-semibold tracking-tight text-brand-ink">
                 {targetDate
                   ? t("detail.sacrament_date", {
                       date: formatDate(targetDate, currentLocale),
@@ -366,7 +366,7 @@ export default function SacramentalJourneyDetailPage() {
                         <Icon className="h-5 w-5" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="font-brand-display flex flex-wrap items-center gap-2 text-sm font-semibold tracking-tight text-brand-ink">
+                        <p className="flex flex-wrap items-center gap-2 text-sm font-semibold tracking-tight text-brand-ink">
                           {tm?.name}
                           {tm?.required && (
                             <Badge variant="outline" className="text-overline">
@@ -650,7 +650,7 @@ export default function SacramentalJourneyDetailPage() {
             </h3>
             <div className="h-px w-8 bg-brand-gold" aria-hidden />
           </div>
-          <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+          <p className="text-sm font-semibold tracking-tight text-brand-ink">
             {journey.template.name}
           </p>
           <p className="text-xs text-muted-foreground">

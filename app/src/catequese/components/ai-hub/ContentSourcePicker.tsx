@@ -68,7 +68,7 @@ export function ContentSourcePicker({
         ) : filtered.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             <FileText className="h-12 w-12 mx-auto mb-3 opacity-30" />
-            <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+            <p className="text-sm font-semibold tracking-tight text-brand-ink">
               {t("hub.no_content_found")}
             </p>
             <Button variant="outline" size="sm" asChild className="mt-3 gap-2">
@@ -94,7 +94,7 @@ export function ContentSourcePicker({
                       <FileText className="h-4 w-4" />
                     </div>
                     <div className="min-w-0 flex-1 space-y-0.5">
-                      <h3 className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
+                      <h3 className="truncate text-sm font-semibold tracking-tight text-brand-ink">
                         {item.title || t("planner.untitled")}
                       </h3>
                       {item.theme && (

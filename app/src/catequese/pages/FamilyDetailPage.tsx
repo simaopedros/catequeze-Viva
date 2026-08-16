@@ -495,10 +495,10 @@ export default function FamilyDetailPage() {
                 <input
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="font-brand-display w-full border-b border-input bg-transparent text-2xl font-semibold tracking-tight text-brand-ink outline-none sm:text-[1.75rem]"
+                  className="w-full border-b border-input bg-transparent text-2xl font-semibold tracking-tight text-brand-ink outline-none sm:text-[1.75rem]"
                   autoFocus
                 />
-                <div className="h-px w-10 bg-brand-gold" aria-hidden />
+                <div className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
               </div>
               <div className="flex gap-2">
                 <Button
@@ -662,7 +662,7 @@ export default function FamilyDetailPage() {
                   <MapPin className="h-3 w-3" />
                   {t("address")}
                 </h3>
-                <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                <p className="text-sm font-semibold tracking-tight text-brand-ink">
                   {household.address}
                 </p>
               </AppPanel>
@@ -673,7 +673,7 @@ export default function FamilyDetailPage() {
                   <Phone className="h-3 w-3" />
                   {t("phone")}
                 </h3>
-                <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                <p className="text-sm font-semibold tracking-tight text-brand-ink">
                   {household.phone}
                 </p>
               </AppPanel>
@@ -686,7 +686,7 @@ export default function FamilyDetailPage() {
                 </h3>
                 <Link
                   to={`/app/communities/${household.community.id}`}
-                  className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink hover:underline"
+                  className="text-sm font-semibold tracking-tight text-brand-ink hover:underline"
                 >
                   {household.community.name}
                 </Link>
@@ -731,7 +731,7 @@ export default function FamilyDetailPage() {
                         {avatarLetter}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                        <p className="text-sm font-semibold tracking-tight text-brand-ink">
                           {displayName}
                         </p>
                         <p className="text-xs text-muted-foreground truncate">
@@ -844,7 +844,7 @@ export default function FamilyDetailPage() {
                         {c.lastName?.[0]}
                       </div>
                       <div className="flex-1">
-                        <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                        <p className="text-sm font-semibold tracking-tight text-brand-ink">
                           {c.firstName} {c.lastName}
                         </p>
                         <p className="text-xs text-muted-foreground">

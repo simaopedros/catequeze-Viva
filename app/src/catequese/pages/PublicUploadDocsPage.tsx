@@ -125,7 +125,7 @@ export default function PublicUploadDocsPage() {
                   <div className="flex items-center gap-2">
                     <FileText className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                      <p className="text-sm font-semibold tracking-tight text-brand-ink">
                         {d.name}
                       </p>
                       <p className="text-overline text-muted-foreground">

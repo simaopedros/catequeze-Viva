@@ -175,7 +175,7 @@ export default function CustomLoginForm({
 
           <Button
             type="submit"
-            className="h-11 w-full rounded-sm shadow-none"
+            className="h-11 w-full rounded-md"
             disabled={isLoading || twoFactorToken.length !== 6}
           >
             {isLoading ? (
@@ -320,7 +320,7 @@ export default function CustomLoginForm({
 
             <Button
               type="submit"
-              className="h-11 w-full rounded-sm shadow-none"
+              className="h-11 w-full rounded-md"
               disabled={isLoading}
             >
               {isLoading ? (

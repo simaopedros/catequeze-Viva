@@ -68,7 +68,7 @@ export function CatechumenDashboard({ stats }: CatechumenDashboardProps) {
                 to={`/app/meetings/${m.id}`}
                 className="flex items-center justify-between py-2.5 text-sm transition-colors hover:bg-muted/30 -mx-1 px-1 rounded-sm"
               >
-                <span className="font-brand-display mr-2 truncate text-sm font-semibold tracking-tight text-brand-ink">
+                <span className="mr-2 truncate text-sm font-semibold tracking-tight text-brand-ink">
                   {m.title || m.theme || m.class?.name || td("meeting_default")}
                 </span>
                 <span className="shrink-0 text-xs text-muted-foreground">

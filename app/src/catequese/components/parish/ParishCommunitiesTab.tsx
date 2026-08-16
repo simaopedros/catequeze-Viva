@@ -119,7 +119,7 @@ export function ParishCommunitiesTab({
           <div className="mb-3 rounded-sm border border-border/70 bg-muted/30 p-3">
             <Building2 className="h-8 w-8 text-brand-ink" />
           </div>
-          <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+          <p className="text-sm font-semibold tracking-tight text-brand-ink">
             {tp("no_communities")}
           </p>
           <div className="mx-auto mt-2 h-px w-8 bg-brand-gold" aria-hidden />
@@ -254,7 +254,7 @@ export function ParishCommunitiesTab({
                 <div className="flex justify-between items-start">
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="font-brand-display font-semibold tracking-tight text-brand-ink">
+                      <p className="font-semibold tracking-tight text-brand-ink">
                         {c.name}
                       </p>
                       {c.type && (

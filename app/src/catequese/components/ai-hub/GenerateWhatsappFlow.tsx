@@ -132,7 +132,7 @@ export function GenerateWhatsappFlow() {
                   <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     {t("whatsapp.source_content")}
                   </p>
-                  <h3 className="font-brand-display truncate text-sm font-semibold tracking-tight text-brand-ink">
+                  <h3 className="truncate text-sm font-semibold tracking-tight text-brand-ink">
                     {displayTitle}
                   </h3>
                   <div className="h-px w-6 bg-brand-gold" aria-hidden />

@@ -343,7 +343,7 @@ export default function ContentDetailPage() {
               <h3 className="mb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 {t("theme")}
               </h3>
-              <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+              <p className="text-sm font-semibold tracking-tight text-brand-ink">
                 {item.theme}
               </p>
             </div>
@@ -380,7 +380,7 @@ export default function ContentDetailPage() {
                     to={`/app/classes/${meeting.classId}/attendance`}
                     className="flex justify-between py-1 text-sm font-medium tracking-tight text-brand-ink hover:text-brand-ink-soft"
                   >
-                    <span className="font-brand-display font-semibold">
+                    <span className="font-semibold">
                       {meeting.title || t("meeting_default")}
                     </span>
                     <span className="text-xs text-muted-foreground">
@@ -466,7 +466,7 @@ export default function ContentDetailPage() {
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                        <p className="text-sm font-semibold tracking-tight text-brand-ink">
                           {activity.title}
                         </p>
                         <Badge variant="outline" className="text-overline">

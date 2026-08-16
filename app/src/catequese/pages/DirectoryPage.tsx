@@ -222,7 +222,7 @@ export default function DirectoryPage() {
                       §{entry.number}
                     </span>
                     {entry.title && (
-                      <span className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                      <span className="text-sm font-semibold tracking-tight text-brand-ink">
                         {entry.title}
                       </span>
                     )}

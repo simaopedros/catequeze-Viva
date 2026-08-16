@@ -1,27 +1,32 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../../utils";
 
+/**
+ * Pílulas de status. Antes `success`, `info` e `secondary` renderizavam todas
+ * em ink — visualmente indistinguíveis, o que anulava o propósito de ter
+ * variantes semânticas. Agora cada uma carrega sua própria cor tonal
+ * (fundo /10, texto na cor cheia), que lê como status sem gritar como o
+ * preenchimento sólido antigo.
+ */
 const badgeVariants = cva(
-  "inline-flex items-center rounded-sm border font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+  "inline-flex items-center rounded-full border font-semibold tracking-tight transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-2",
   {
     variants: {
       variant: {
         default: "border-transparent bg-brand-ink text-white",
-        secondary:
-          "border-border/70 bg-muted/40 font-semibold tracking-tight text-brand-ink",
+        secondary: "border-transparent bg-muted text-brand-ink",
         destructive:
-          "border-transparent bg-destructive text-destructive-foreground",
-        outline: "border-border/70 font-semibold tracking-tight text-brand-ink",
+          "border-destructive/20 bg-destructive/10 text-destructive",
+        outline: "border-border text-brand-ink",
         brand: "border-transparent bg-brand-ink/8 text-brand-ink",
-        success:
-          "border-border/70 bg-brand-ink/8 font-semibold tracking-tight text-brand-ink",
+        success: "border-success/20 bg-success/10 text-success",
         warning:
-          "border-brand-gold/30 bg-brand-gold/10 font-semibold tracking-tight text-brand-gold-muted",
-        info: "border-border/70 bg-muted/40 font-semibold tracking-tight text-brand-ink",
-        dot: "border-transparent gap-1.5",
+          "border-brand-gold/30 bg-brand-gold/12 text-brand-gold-muted",
+        info: "border-info/20 bg-info/10 text-info",
+        dot: "border-transparent bg-muted text-brand-ink gap-1.5",
       },
       size: {
-        sm: "px-2 py-0 text-micro leading-none",
+        sm: "px-2 py-0.5 text-micro leading-none",
         md: "px-2.5 py-0.5 text-xs",
         lg: "px-3 py-1 text-sm",
       },

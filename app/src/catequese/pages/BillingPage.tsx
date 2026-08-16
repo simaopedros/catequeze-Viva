@@ -207,7 +207,7 @@ function UsageRow({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between text-sm">
-        <span className="font-brand-display font-semibold tracking-tight text-brand-ink">
+        <span className="font-semibold tracking-tight text-brand-ink">
           {label}
         </span>
         <span className="font-semibold tabular-nums text-brand-ink">
@@ -1173,7 +1173,7 @@ export default function BillingPage() {
                       <Clock className="h-6 w-6" />
                     </div>
                     <div className="space-y-1">
-                      <p className="font-brand-display text-2xl font-semibold tracking-tight text-brand-ink">
+                      <p className="text-2xl font-semibold tracking-tight text-brand-ink">
                         {isTrialAccess
                           ? t("trial_status_title")
                           : isPaidActive
@@ -1222,7 +1222,7 @@ export default function BillingPage() {
         )}
 
         {!isConversionMode && (
-          <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
             {aiCredits && aiCredits.monthlyAllowance > 0 ? (
               <SurfaceSection title={t("ai_credits")} icon={Coins}>
                 <div className="space-y-4">
@@ -1256,7 +1256,7 @@ export default function BillingPage() {
                     <span className="text-sm text-muted-foreground">
                       {t("remaining")}
                     </span>
-                    <span className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                    <span className="text-sm font-semibold tracking-tight text-brand-ink">
                       {aiCredits.creditsLeft} {creditLabel}
                     </span>
                   </div>
@@ -1475,7 +1475,7 @@ export default function BillingPage() {
 
                     {billingInterval === "monthly" || !hasAnnual ? (
                       <>
-                        <p className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink">
+                        <p className="text-3xl font-semibold tracking-tight text-brand-ink">
                           {plan.price}
                         </p>
                         {plan.priceCentsAnnual && (
@@ -1500,7 +1500,7 @@ export default function BillingPage() {
                       </>
                     ) : (
                       <>
-                        <p className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink">
+                        <p className="text-3xl font-semibold tracking-tight text-brand-ink">
                           {getEquivalentMonthlyPrice(plan.priceCentsAnnual!)}
                           <span className="text-base font-normal text-muted-foreground">
                             {tp("pricing.per_month")}

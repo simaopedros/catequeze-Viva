@@ -19,9 +19,9 @@ import type {
 } from "../../../shared/uiPresentation";
 
 /**
- * Shared editorial chrome for the logged-in app.
- * Matches home/auth/onboarding: ink, gold rule, tight radius.
- * Light theme only for this product stage.
+ * Shared chrome for the logged-in app — linguagem "soft modern":
+ * superfícies elevadas em vez de bordas duras, raio suave, ink e gold
+ * preservados como marca. Light theme only for this product stage.
  */
 
 export function AppEyebrow({
@@ -34,7 +34,7 @@ export function AppEyebrow({
   return (
     <p
       className={cn(
-        "text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground",
+        "text-overline font-semibold uppercase text-muted-foreground",
         className,
       )}
     >
@@ -43,9 +43,21 @@ export function AppEyebrow({
   );
 }
 
+/**
+ * Fio da marca. Usado em 144 lugares, então continua existindo com a mesma
+ * API — mas deixou de ser o tique editorial de 40px sólidos: agora é um fio
+ * em degradê que se dissolve, mantendo o dourado como assinatura sem impor
+ * a moldura de jornal sobre telas densas de gestão.
+ */
 export function AppGoldRule({ className }: { className?: string }) {
   return (
-    <div className={cn("h-px w-10 bg-brand-gold", className)} aria-hidden />
+    <div
+      className={cn(
+        "h-px w-16 bg-gradient-to-r from-brand-gold to-transparent",
+        className,
+      )}
+      aria-hidden
+    />
   );
 }
 
@@ -61,7 +73,7 @@ export function AppDisplayTitle({
   return (
     <Tag
       className={cn(
-        "font-brand-display font-semibold tracking-tight text-brand-ink text-title-sm sm:text-title-md",
+        "font-sans font-semibold tracking-tight text-brand-ink text-title-sm sm:text-title-md",
         className,
       )}
     >
@@ -81,7 +93,7 @@ function ActionButton({
 }) {
   const content = action.label;
   const common = {
-    className: cn("h-11 min-h-11 rounded-sm touch-target", className),
+    className: cn("h-11 min-h-11 rounded-md touch-target", className),
     "aria-label": action.ariaLabel ?? action.label,
     "data-testid": action.testId,
     disabled: action.disabled,
@@ -166,7 +178,7 @@ export function AppPageHeader({
   return (
     <div
       className={cn(
-        "flex flex-col gap-3 border-b border-border/70 sm:flex-row sm:items-end sm:justify-between sm:gap-4",
+        "flex flex-col gap-3 border-b border-border sm:flex-row sm:items-end sm:justify-between sm:gap-4",
         density === "compact" ? "pb-3 sm:pb-4" : "pb-4 sm:pb-6",
         className,
       )}
@@ -186,7 +198,7 @@ export function AppPageHeader({
             {title}
           </AppDisplayTitle>
           {count !== undefined && (
-            <span className="rounded-sm border border-border/70 px-2 py-0.5 text-body-sm font-normal text-text-secondary">
+            <span className="rounded-full bg-muted px-2.5 py-0.5 text-body-sm font-medium tabular-nums text-text-secondary">
               {count}
             </span>
           )}
@@ -237,7 +249,7 @@ export function AppPageHeader({
                     type="button"
                     variant="outline"
                     size="icon"
-                    className="h-11 w-11 min-h-11 min-w-11 rounded-sm"
+                    className="h-11 w-11 min-h-11 min-w-11 rounded-md"
                     aria-label={t("more_actions")}
                   >
                     <MoreHorizontal className="h-5 w-5" />
@@ -311,8 +323,8 @@ export function AppPanel({
   return (
     <section
       className={cn(
-        "rounded-sm border border-border/70 bg-surface-elevated",
-        padded && (density === "compact" ? "p-3.5 sm:p-4" : "p-4 sm:p-6"),
+        "rounded-lg border border-border bg-surface-elevated shadow-elevation-sm",
+        padded && (density === "compact" ? "p-4 sm:p-5" : "p-5 sm:p-6"),
         className,
       )}
       {...props}
@@ -339,7 +351,7 @@ export function AppMetric({
       <p className="text-xs font-medium tracking-wide text-muted-foreground">
         {label}
       </p>
-      <p className="mt-1.5 font-sans text-2xl font-semibold tracking-tight tabular-nums text-brand-ink">
+      <p className="mt-1.5 font-sans text-title-md font-semibold tabular-nums text-brand-ink">
         {value}
       </p>
     </>
@@ -350,7 +362,7 @@ export function AppMetric({
       <Link
         to={href}
         className={cn(
-          "block rounded-sm border border-border/70 px-4 py-3 transition-colors hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          "block rounded-lg border border-border bg-surface-elevated px-4 py-3.5 shadow-elevation-xs transition-[box-shadow,transform,border-color] duration-150 ease-out hover:-translate-y-0.5 hover:border-input hover:shadow-elevation-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 motion-reduce:hover:translate-y-0",
           className,
         )}
       >
@@ -361,7 +373,7 @@ export function AppMetric({
 
   return (
     <div
-      className={cn("rounded-sm border border-border/70 px-4 py-3", className)}
+      className={cn("rounded-lg border border-border bg-surface-elevated px-4 py-3.5 shadow-elevation-xs", className)}
     >
       {body}
     </div>

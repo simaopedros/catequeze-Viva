@@ -148,7 +148,7 @@ export default function CommunitiesPage() {
         actions={
           <Button
             size="sm"
-            className="h-10 rounded-sm shadow-none"
+            className="h-10 rounded-md"
             onClick={() => setShowCreate(!showCreate)}
           >
             <Plus className="mr-1 h-4 w-4" />

@@ -219,7 +219,7 @@ export default function JourneyTemplatesPage() {
         actions={
           canManage ? (
             <Button
-              className="h-10 rounded-sm shadow-none"
+              className="h-10 rounded-md"
               onClick={() => setShowCreate(true)}
             >
               <Plus className="mr-1 h-4 w-4" />
@@ -338,7 +338,7 @@ export default function JourneyTemplatesPage() {
                     ) : (
                       <>
                         <div className="flex items-center gap-2">
-                          <h3 className="font-brand-display font-semibold tracking-tight text-brand-ink">
+                          <h3 className="font-semibold tracking-tight text-brand-ink">
                             {tmpl.name}
                           </h3>
                           <Badge variant="outline" className="text-overline">
@@ -535,7 +535,7 @@ export default function JourneyTemplatesPage() {
                               ) : (
                                 <div className="flex items-center justify-between gap-2">
                                   <div>
-                                    <p className="font-brand-display flex flex-wrap items-center gap-1.5 text-sm font-semibold tracking-tight text-brand-ink">
+                                    <p className="flex flex-wrap items-center gap-1.5 text-sm font-semibold tracking-tight text-brand-ink">
                                       {m.name}
                                       {m.required && (
                                         <Badge

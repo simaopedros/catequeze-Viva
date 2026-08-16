@@ -189,7 +189,7 @@ export function ActivationChecklist({
               {t("activation.celebrate_desc")}
             </p>
             {flags.bonusStep && (
-              <Button asChild className="mt-3 h-11 rounded-sm shadow-none">
+              <Button asChild className="mt-3 h-11 rounded-md">
                 <Link
                   to={
                     steps.find((s) => s.id === flags.bonusStep?.id)?.to ||
@@ -263,13 +263,13 @@ export function ActivationChecklist({
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {t("activation.next_label")}
           </p>
-          <p className="font-brand-display mt-1 text-base font-semibold tracking-tight text-brand-ink">
+          <p className="mt-1 text-base font-semibold tracking-tight text-brand-ink">
             {next.title}
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
             {next.description}
           </p>
-          <Button asChild className="mt-3 h-11 rounded-sm shadow-none">
+          <Button asChild className="mt-3 h-11 rounded-md">
             <Link to={next.to}>
               {t("activation.next_cta")}
               <ArrowRight className="ml-1 h-4 w-4" />
@@ -305,11 +305,6 @@ export function ActivationChecklist({
                       ? "text-muted-foreground line-through"
                       : "text-brand-ink",
                   )}
-                  style={
-                    step.done
-                      ? undefined
-                      : { fontFamily: "var(--font-brand-display)" }
-                  }
                 >
                   {step.title}
                 </span>

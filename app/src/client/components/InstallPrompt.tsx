@@ -51,7 +51,7 @@ export function InstallPrompt() {
           <Download className="h-5 w-5 text-brand-ink" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+          <p className="text-sm font-semibold tracking-tight text-brand-ink">
             {t("install_title")}
           </p>
           <p className="text-xs text-muted-foreground">

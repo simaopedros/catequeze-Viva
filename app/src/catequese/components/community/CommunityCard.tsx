@@ -47,7 +47,7 @@ export function CommunityCard({
       >
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <p className="font-brand-display truncate font-semibold tracking-tight text-brand-ink">
+            <p className="truncate font-semibold tracking-tight text-brand-ink">
               {c.name}
             </p>
             {c.type && (
@@ -63,7 +63,7 @@ export function CommunityCard({
             </p>
           )}
           <div className="mt-2 flex items-center gap-3 text-xs">
-            <span className="font-brand-display flex items-center gap-1 font-semibold tracking-tight text-brand-ink">
+            <span className="flex items-center gap-1 font-semibold tracking-tight text-brand-ink">
               <Users className="h-3 w-3" />
               {c._count?.memberships || 0} membros
             </span>
@@ -113,7 +113,7 @@ export function CommunityCard({
             {c.coordinatorName && (
               <div className="flex items-center gap-1 text-brand-ink">
                 <User className="h-3 w-3 shrink-0" />
-                <span className="font-brand-display font-semibold tracking-tight">
+                <span className="font-semibold tracking-tight">
                   Resp.: {c.coordinatorName}
                   {c.coordinatorPhone ? ` (${c.coordinatorPhone})` : ""}
                 </span>

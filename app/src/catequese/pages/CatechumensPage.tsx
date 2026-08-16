@@ -331,7 +331,7 @@ export default function CatechumensPage() {
                   <AppDisplayTitle as="h2">
                     {t("no_catechumens")}
                   </AppDisplayTitle>
-                  <div className="h-px w-10 bg-brand-gold" aria-hidden />
+                  <div className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
                   <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
                     {t("catechumens.empty_desc")}
                   </p>
@@ -436,7 +436,7 @@ export default function CatechumensPage() {
                             )}
                           </div>
                           <div>
-                            <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                            <p className="text-sm font-semibold tracking-tight text-brand-ink">
                               {fullName}
                             </p>
                             {c.birthDate && (
