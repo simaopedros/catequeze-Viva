@@ -2322,11 +2322,11 @@ export const family_pt_BR = {
 
 export const landing_pt_BR = {
     "hero": {
-      "headline_line1": "Sua catequese sem caderno, planilha e WhatsApp perdidos",
-      "headline_line2": "",
-      "subheadline": "Em 7 dias você coloca a sua turma, a chamada e o próximo encontro no mesmo lugar — e vê se a sua rotina fica mais clara.",
-      "badge": "Teste gratuito de 7 dias",
-      "cta_primary": "Começar teste gratuito de 7 dias",
+      "headline_line1": "Você semeia a fé.",
+      "headline_line2": "A gente cuida do caderno.",
+      "subheadline": "A Catequese Viva organiza a turma, a chamada e o preparo do encontro para você chegar a cada semana com o coração livre para o essencial: apresentar Jesus aos seus catequizandos.",
+      "badge": "Para quem diz sim à missão de catequizar",
+      "cta_primary": "Começar minha caminhada — 7 dias grátis",
       "cta_secondary": "Como funciona",
       "trust_signals": "Sem cobrança agora • Sem cartão para começar • Funciona no celular",
       "cta_secondary_href": "/#como",
@@ -2336,7 +2336,7 @@ export const landing_pt_BR = {
         "Calendário litúrgico e próximos encontros",
         "As famílias da sua turma acompanham pelo portal"
       ],
-      "cta_helper": "Sem cobrança agora · sem cartão para começar · organize a turma na primeira semana",
+      "cta_helper": "Sem cobrança agora · sem cartão para começar · mais tempo para a sua turma",
       "audience_label": "Qual é a sua realidade hoje?",
       "audiences": [
         {
@@ -2361,8 +2361,8 @@ export const landing_pt_BR = {
       "click_trigger": "Funciona no celular · Feito para a rotina da catequese",
       "image_alt": "Catequese Viva no celular — chamada e turma organizadas"
     },
-    "pain_title": "A catequese não precisa ficar espalhada em caderno, planilha e mensagens",
-    "pain_subtitle": "A Catequese Viva junta preparação, turma, presença e família no mesmo fluxo.",
+    "pain_title": "A missão já pede muito de você. A papelada não precisa pedir mais.",
+    "pain_subtitle": "A Catequese Viva reúne preparação, turma, presença e famílias — para a burocracia não roubar o tempo da evangelização.",
     "pains": [
       {
         "text": "Preparar o encontro toda semana exige tempo, referências e criatividade"
@@ -2432,10 +2432,10 @@ export const landing_pt_BR = {
         "b3": "Progresso visível para coordenação e responsáveis"
       }
     },
-    "mission_title": "Encontro preparado. Turma organizada. Família acompanhando.",
-    "mission_text": "A Catequese Viva foi feita para dar previsibilidade à sua semana: menos improviso na preparação, menos retrabalho no acompanhamento e mais clareza sobre a sua turma.",
+    "mission_title": "Encontro preparado. Turma acolhida. Fé partilhada com as famílias.",
+    "mission_text": "A Catequese Viva existe para servir a sua missão — não o contrário. Menos improviso e papelada, mais presença de verdade com cada catequizando que Deus confiou a você.",
     "personas_title": "Feito para o catequista — e pronto para as famílias da sua turma",
-    "personas_subtitle": "Nesta fase, a experiência é sua: você organiza a turma e as famílias acompanham pelo portal.",
+    "personas_subtitle": "Nesta fase, a caminhada é sua: você cuida da turma e as famílias acompanham pelo portal.",
     "personas": [
       {
         "title": "Catequista",
@@ -2474,30 +2474,30 @@ export const landing_pt_BR = {
     ],
     "more_features": "Mais recursos para quando sua catequese crescer",
     "more_features_sub": "Ferramentas que continuam úteis depois da primeira turma.",
-    "steps_title": "Simples de entrar",
-    "steps_subtitle": "Três passos até usar na sua turma.",
+    "steps_title": "Comece hoje, no tempo que você tem",
+    "steps_subtitle": "Três passos e o próximo encontro já nasce mais leve.",
     "steps": [
       {
         "title": "Crie sua conta",
         "desc": "Só e-mail e senha. Rápido."
       },
       {
-        "title": "Ative o teste gratuito de 7 dias",
-        "desc": "Entre e comece a usar na mesma hora."
+        "title": "Ative os 7 dias gratuitos",
+        "desc": "Entre e comece a usar na mesma hora, sem cartão."
       },
       {
-        "title": "Use na sua turma",
-        "desc": "Monte a turma, faça a chamada e prepare o encontro."
+        "title": "Viva com a sua turma",
+        "desc": "Monte a turma, faça a chamada e prepare um encontro que toca o coração."
       }
     ],
-    "steps_cta": "Começar teste gratuito de 7 dias",
-    "pricing_title": "Um plano simples, feito para o catequista",
+    "steps_cta": "Começar minha caminhada — 7 dias grátis",
+    "pricing_title": "Um plano simples, a serviço da sua missão",
     "pricing_subtitle": "R$ 9,90/mês para até 3 turmas. Comece com 7 dias de teste gratuito — sem cartão e sem cobrança agora.",
     "plans": {
       "single": {
         "name": "Plano Catequista",
         "audience": "Para você e sua turma · até 3 turmas",
-        "desc": "Sua turma, a chamada e os encontros organizados no mesmo lugar.",
+        "desc": "Sua turma, a chamada e os encontros cuidados no mesmo lugar.",
         "price": "R$ 9,90",
         "features": [
           "Até 3 turmas com 150 catequizandos no total",
@@ -2518,11 +2518,11 @@ export const landing_pt_BR = {
     "annual_discount": "2 meses grátis",
     "compare_plans": "Ver detalhes do plano",
     "faq_title": "Antes de começar",
-    "faq_subtitle": "Respostas objetivas para você decidir com calma.",
+    "faq_subtitle": "Respostas objetivas, para você decidir com paz.",
     "faqs": [
       {
         "q": "O que eu posso fazer no teste gratuito de 7 dias?",
-        "a": "Organizar a sua turma, registrar presença no celular e preparar o próximo encontro — o fluxo real da sua semana. Sem cartão e sem cobrança agora."
+        "a": "Acolher a sua turma, registrar presença no celular e preparar o próximo encontro — a sua caminhada real de catequista. Sem cartão e sem cobrança agora."
       },
       {
         "q": "Preciso de cartão para o teste gratuito?",
@@ -2549,9 +2549,9 @@ export const landing_pt_BR = {
         "a": "Sim. Há controle de acesso, consentimentos e recursos alinhados à LGPD."
       }
     ],
-    "cta_title": "Organize a sua catequese com clareza",
-    "cta_subtitle": "Pare de espalhar a rotina em caderno, planilha e mensagens. Comece o teste gratuito de 7 dias na sua turma — sem cobrança agora.",
-    "cta_button": "Começar teste gratuito de 7 dias",
+    "cta_title": "Volte a ter tempo para o que chamou você à catequese",
+    "cta_subtitle": "Deixe o caderno, a planilha e as mensagens espalhadas para trás. Comece os 7 dias grátis na sua turma — e chegue ao próximo encontro com o coração mais leve.",
+    "cta_button": "Começar minha caminhada — 7 dias grátis",
     "cta_badge": "Teste gratuito",
     "cta_see_plans": "Ver o plano",
     "mock": {
@@ -2667,22 +2667,22 @@ export const landing_pt_BR = {
     "testimonials": [],
     "cta_helper": "Sem cobrança agora · sem cartão para começar",
     "mobile_cta": {
-      "title": "Teste gratuito de 7 dias",
+      "title": "7 dias para sentir a diferença na sua turma",
       "subtitle": "Sem cobrança agora · sem cartão",
-      "button": "Começar teste gratuito de 7 dias"
+      "button": "Começar minha caminhada"
     },
     "proof": {
       "badge": "Comece com tranquilidade",
-      "title": "Feito para a sua rotina real com a turma",
-      "subtitle": "Você prepara o encontro, faz a chamada e fala com as famílias da sua turma no mesmo lugar — do primeiro encontro ao último.",
+      "title": "Feito para quem vive a catequese de verdade",
+      "subtitle": "Você prepara o encontro, acompanha cada catequizando e caminha junto com as famílias — tudo a serviço da sua missão, do primeiro encontro ao último.",
       "stats": [
         {
-          "title": "Para você",
-          "desc": "Sua turma, a chamada no celular e a preparação dos encontros no mesmo fluxo."
+          "title": "Para a sua missão",
+          "desc": "Sua turma, a chamada no celular e o preparo dos encontros no mesmo lugar — para sobrar tempo para as pessoas."
         },
         {
           "title": "Para as famílias da sua turma",
-          "desc": "Avisos, presenças e justificativas de faltas pelo portal, sem recado perdido."
+          "desc": "Avisos, presenças e justificativas pelo portal — as famílias caminham junto com você."
         },
         {
           "title": "No celular",
@@ -2696,8 +2696,8 @@ export const landing_pt_BR = {
         "LGPD",
         "Cancelamento simples"
       ],
-      "launch_title": "Teste na sua realidade",
-      "launch_text": "Crie a conta, monte a turma e prepare o próximo encontro. Você tem 7 dias para ver se faz sentido — sem cartão de crédito.",
+      "launch_title": "Experimente na sua turma",
+      "launch_text": "Crie a conta, monte a turma e prepare o próximo encontro com calma. Você tem 7 dias para sentir se ajuda a sua missão — sem cartão de crédito.",
       "promises": [
         "7 dias grátis, sem cartão de crédito",
         "Biblioteca com Bíblia e Catecismo no mesmo lugar",
@@ -2777,8 +2777,8 @@ export const landing_pt_BR = {
         }
       ]
     },
-    "faq_cta": "Começar teste gratuito de 7 dias",
-    "faq_cta_helper": "Sem cobrança agora · use na sua turma esta semana",
+    "faq_cta": "Começar minha caminhada — 7 dias grátis",
+    "faq_cta_helper": "Sem cobrança agora · use no seu próximo encontro",
     "price_cta_single": "Começar os 7 dias na minha turma",
     "price_cta_unlimited": "Começar teste gratuito de 7 dias",
     "price_annual_equivalent": "Equivale a {{price}}/mês",
@@ -2842,20 +2842,20 @@ export const landing_pt_BR = {
     },
     "testimonials_note": "Produto em lançamento: não publicamos depoimentos sem autorização.",
     "outcomes": {
-      "title": "O essencial da catequese, reunido",
-      "subtitle": "Três mudanças que você sente já na primeira semana.",
+      "title": "Mais coração no encontro, menos peso na semana",
+      "subtitle": "Três mudanças que você sente já na primeira semana de caminhada.",
       "items": [
         {
-          "title": "Turma organizada",
-          "desc": "Catequizandos, horários e histórico em um só lugar — sem planilha desatualizada."
+          "title": "Turma acolhida",
+          "desc": "Cada catequizando com nome, história e presença acompanhada — ninguém fica para trás."
         },
         {
           "title": "Chamada no celular",
-          "desc": "Presença no encontro, sem papel que some e com faltas fáceis de acompanhar."
+          "desc": "Registre presença em segundos e perceba quem anda faltando — para ir atrás de quem se afastou."
         },
         {
-          "title": "Próximo encontro pronto",
-          "desc": "Prepare o roteiro com a biblioteca pastoral e revise antes de usar."
+          "title": "Encontro preparado com calma",
+          "desc": "Prepare o roteiro com a Bíblia e o Catecismo ao lado e chegue tranquilo para anunciar a Palavra."
         }
       ],
       "eyebrow": "Na prática"
@@ -4172,7 +4172,7 @@ export const public_pt_BR = {
       "error": "Erro ao enviar. Tente novamente."
     },
     "pricing": {
-      "title": "Um plano simples para você e a sua turma",
+      "title": "Um plano simples, a serviço da sua missão",
       "subtitle": "Plano Catequista: R$ 9,90/mês (ou R$ 99/ano) para até 3 turmas. Comece com 7 dias de teste gratuito, sem cartão.",
       "payment_card": "Cartão",
       "annual_savings": "Economize 17% no anual",
@@ -4185,7 +4185,7 @@ export const public_pt_BR = {
       "cta_paid": "Começar os 7 dias",
       "most_popular": "Feito para o catequista",
       "plan_desc": {
-        "single": "Para você organizar a sua turma — chamada, histórico e calendário no mesmo fluxo. Cobre até 3 turmas, se você cuidar de mais de uma."
+        "single": "Para você cuidar da sua turma — chamada, histórico e calendário no mesmo lugar, com mais tempo para as pessoas. Cobre até 3 turmas, se você acompanhar mais de uma."
       },
       "faq": [
         {
@@ -4309,7 +4309,7 @@ export const publicNav_pt_BR = {
     "signup": "Começar os 7 dias",
     "openMenu": "Abrir menu",
     "closeMenu": "Fechar menu",
-    "tagline": "Plataforma para o catequista organizar sua turma: encontros, presença e famílias no mesmo lugar.",
+    "tagline": "Feita para servir a missão do catequista: sua turma, seus encontros e as famílias no mesmo lugar.",
     "audience": "feito para catequistas",
     "cta": "Começar os 7 dias",
     "share": "Compartilhar",
@@ -4322,7 +4322,7 @@ export const publicNav_pt_BR = {
     "how_it_works": "Como funciona",
     "footer_explore": "Explorar",
     "footer_start": "Experimentar",
-    "footer_start_desc": "Organize turma, chamada e encontros no mesmo lugar. Comece os 7 dias.",
+    "footer_start_desc": "Mais tempo para a sua turma, menos papelada. Comece os 7 dias.",
     "language": "Idioma"
   } as const;
 

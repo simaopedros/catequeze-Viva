@@ -28,7 +28,7 @@
     "error": "Error al enviar. Intente nuevamente."
   },
   "pricing": {
-    "title": "Un plan simple para ti y tu grupo",
+    "title": "Un plan simple, al servicio de tu misión",
     "subtitle": "Plan Catequista: R$ 9,90/mes (o R$ 99/año) para hasta 3 grupos. Empieza con 7 días de prueba gratis, sin tarjeta.",
     "payment_card": "Tarjeta",
     "annual_savings": "Ahorre 17% en anual",
@@ -41,7 +41,7 @@
     "cta_paid": "Empezar los 7 días",
     "most_popular": "Hecho para el catequista",
     "plan_desc": {
-      "single": "Para que organices tu grupo — asistencia, historial y calendario en un solo flujo. Cubre hasta 3 grupos si cuidas más de uno."
+      "single": "Para que cuides de tu grupo — asistencia, historial y calendario en el mismo lugar, con más tiempo para las personas. Cubre hasta 3 grupos si acompañas más de uno."
     },
     "faq": [
       {

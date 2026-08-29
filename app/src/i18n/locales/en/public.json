@@ -28,7 +28,7 @@
     "error": "Error sending. Please try again."
   },
   "pricing": {
-    "title": "One simple plan for you and your class",
+    "title": "One simple plan, at the service of your mission",
     "subtitle": "Catechist Plan: R$ 9.90/month (or R$ 99/year) for up to 3 classes. Start with a 7-day free trial, no card.",
     "payment_card": "Card",
     "annual_savings": "Save 17% on annual",
@@ -41,7 +41,7 @@
     "cta_paid": "Start the 7 days",
     "most_popular": "Built for the catechist",
     "plan_desc": {
-      "single": "For you to run your class — attendance, history, and calendar in one flow. Covers up to 3 classes if you care for more than one."
+      "single": "For you to care for your class — attendance, history, and calendar in one place, with more time left for people. Covers up to 3 classes if you walk with more than one."
     },
     "faq": [
       {

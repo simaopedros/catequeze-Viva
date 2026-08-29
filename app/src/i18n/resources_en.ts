@@ -2324,11 +2324,11 @@ export const family_en = {
 
 export const landing_en = {
     "hero": {
-      "headline_line1": "Catechesis without lost notebooks, spreadsheets, and WhatsApp threads",
-      "headline_line2": "",
-      "subheadline": "In 7 days put your class, attendance, and next meeting in one place — and see if the week feels clearer.",
-      "badge": "7-day trial",
-      "cta_primary": "Start 7-day trial",
+      "headline_line1": "You sow the faith.",
+      "headline_line2": "We carry the notebook.",
+      "subheadline": "Catequese Viva takes care of your class, attendance, and meeting prep so you arrive each week with your heart free for what matters most: bringing Jesus to your catechumens.",
+      "badge": "For those who say yes to the mission of catechesis",
+      "cta_primary": "Begin my journey — 7 days free",
       "cta_secondary": "How it works",
       "trust_signals": "No charge now • No card to start • Works on mobile",
       "cta_secondary_href": "/#como",
@@ -2338,7 +2338,7 @@ export const landing_en = {
         "Editorial assistance for meetings and family messages",
         "Families in your class follow along in the portal"
       ],
-      "cta_helper": "No charge now · no card to start · organize your class in week one",
+      "cta_helper": "No charge now · no card to start · more time for your class",
       "audience_label": "What is your situation today?",
       "audiences": [
         {
@@ -2363,8 +2363,8 @@ export const landing_en = {
       "click_trigger": "Works on mobile · Built for catechesis routines",
       "image_alt": "Catequese Viva on mobile — attendance and class organized"
     },
-    "pain_title": "Catechesis should not be scattered across notebooks, spreadsheets, and messages",
-    "pain_subtitle": "Catequese Viva brings preparation, class management, attendance, and families into one flow.",
+    "pain_title": "The mission already asks a lot of you. Paperwork shouldn't ask for more.",
+    "pain_subtitle": "Catequese Viva gathers preparation, your class, attendance, and families — so bureaucracy stops stealing time from evangelization.",
     "pains": [
       {
         "text": "Preparing every weekly meeting takes time, references, and creativity"
@@ -2434,10 +2434,10 @@ export const landing_en = {
         "b3": "Progress visible to coordination and guardians"
       }
     },
-    "mission_title": "Meeting prepared. Class organized. Family informed.",
-    "mission_text": "Catequese Viva is built to bring predictability to your week: less improvisation in preparation, less rework in follow-up, and more clarity about your class.",
+    "mission_title": "Meeting prepared. Class embraced. Faith shared with the families.",
+    "mission_text": "Catequese Viva exists to serve your mission — not the other way around. Less improvisation and paperwork, more real presence with each catechumen God entrusted to you.",
     "personas_title": "Built for the catechist — and ready for the families in your class",
-    "personas_subtitle": "In this phase, the experience is yours: you organize the class and families follow along in the portal.",
+    "personas_subtitle": "In this phase, the journey is yours: you care for the class and families follow along in the portal.",
     "personas": [
       {
         "title": "Catechist",
@@ -2476,30 +2476,30 @@ export const landing_en = {
     ],
     "more_features": "More tools for when your catechesis grows",
     "more_features_sub": "Features that remain useful after the first class.",
-    "steps_title": "Simple to begin",
-    "steps_subtitle": "Three steps until you use it with your class.",
+    "steps_title": "Start today, in the time you have",
+    "steps_subtitle": "Three steps and your next meeting is already lighter.",
     "steps": [
       {
         "title": "Create your account",
         "desc": "Just email and password. Quick."
       },
       {
-        "title": "Start the 7-day trial",
-        "desc": "Sign in and start using it right away."
+        "title": "Start your 7 free days",
+        "desc": "Sign in and start using it right away, no card."
       },
       {
-        "title": "Use it with your class",
-        "desc": "Set up the class, take attendance, prepare the meeting."
+        "title": "Live it with your class",
+        "desc": "Set up the class, take attendance, and prepare a meeting that touches hearts."
       }
     ],
-    "steps_cta": "Start 7-day trial",
-    "pricing_title": "One simple plan, built for the catechist",
+    "steps_cta": "Begin my journey — 7 days free",
+    "pricing_title": "One simple plan, at the service of your mission",
     "pricing_subtitle": "R$ 9.90/month for up to 3 classes. Start with a 7-day trial — no card and no charge now.",
     "plans": {
       "single": {
         "name": "Catechist Plan",
         "audience": "For you and your class · up to 3 classes",
-        "desc": "Your class, attendance, and meetings organized in one place.",
+        "desc": "Your class, attendance, and meetings cared for in one place.",
         "price": "R$ 9.90",
         "features": [
           "Up to 3 classes, 150 catechumens in total",
@@ -2520,11 +2520,11 @@ export const landing_en = {
     "annual_discount": "2 months free",
     "compare_plans": "See plan details",
     "faq_title": "Before you begin",
-    "faq_subtitle": "Clear answers so you can decide calmly.",
+    "faq_subtitle": "Clear answers, so you can decide in peace.",
     "faqs": [
       {
         "q": "What can I do in the 7-day trial?",
-        "a": "Organize your class, take attendance on mobile, and prepare the next meeting — your real weekly workflow. No card and no charge now."
+        "a": "Welcome your class, take attendance on mobile, and prepare the next meeting — your real journey as a catechist. No card and no charge now."
       },
       {
         "q": "Do I need a card for the trial?",
@@ -2551,9 +2551,9 @@ export const landing_en = {
         "a": "Yes. Access control, consent flows, and LGPD-oriented features are built in."
       }
     ],
-    "cta_title": "Organize your catechesis with clarity",
-    "cta_subtitle": "Stop scattering the week across notebooks, spreadsheets, and chats. Start the 7-day trial with your class — no charge now.",
-    "cta_button": "Start 7-day trial",
+    "cta_title": "Get back the time for what called you to catechesis",
+    "cta_subtitle": "Leave the notebook, the spreadsheet, and the scattered messages behind. Start your 7 free days with your class — and arrive at the next meeting with a lighter heart.",
+    "cta_button": "Begin my journey — 7 days free",
     "cta_badge": "Trial",
     "cta_see_plans": "See the plan",
     "mock": {
@@ -2669,22 +2669,22 @@ export const landing_en = {
     "testimonials": [],
     "cta_helper": "No charge now · no card to start",
     "mobile_cta": {
-      "title": "7-day trial",
+      "title": "7 days to feel the difference with your class",
       "subtitle": "No charge now · no card",
-      "button": "Start 7-day trial"
+      "button": "Begin my journey"
     },
     "proof": {
       "badge": "Start with confidence",
-      "title": "Built for your real routine with the class",
-      "subtitle": "You prepare the meeting, take attendance, and reach the families in your class in one place — from the first meeting to the last.",
+      "title": "Built for those who truly live catechesis",
+      "subtitle": "You prepare the meeting, walk with each catechumen, and journey together with the families — all at the service of your mission, from the first meeting to the last.",
       "stats": [
         {
-          "title": "For you",
-          "desc": "Your class, mobile attendance, and meeting prep in the same flow."
+          "title": "For your mission",
+          "desc": "Your class, mobile attendance, and meeting prep in one place — so there is time left for people."
         },
         {
           "title": "For the families in your class",
-          "desc": "Notices, attendance, and absence justifications in the portal — no lost messages."
+          "desc": "Notices, attendance, and absence justifications in the portal — families walk with you."
         },
         {
           "title": "On mobile",
@@ -2698,8 +2698,8 @@ export const landing_en = {
         "LGPD-oriented",
         "Easy cancel"
       ],
-      "launch_title": "Try it in your context",
-      "launch_text": "Create an account, set up your class, and prepare the next meeting. You have 7 days to see if it fits — no credit card.",
+      "launch_title": "Try it with your class",
+      "launch_text": "Create an account, set up your class, and prepare the next meeting in peace. You have 7 days to feel whether it serves your mission — no credit card.",
       "promises": [
         "7 free days, no credit card",
         "Bible and Catechism library in the same place",
@@ -2779,8 +2779,8 @@ export const landing_en = {
         }
       ]
     },
-    "faq_cta": "Start 7-day trial",
-    "faq_cta_helper": "No charge now · use it with your class this week",
+    "faq_cta": "Begin my journey — 7 days free",
+    "faq_cta_helper": "No charge now · use it at your next meeting",
     "price_cta_single": "Start my 7 days with my class",
     "price_cta_unlimited": "Start 7-day trial",
     "price_annual_equivalent": "Equals {{price}}/month",
@@ -2844,20 +2844,20 @@ export const landing_en = {
     },
     "testimonials_note": "Launch phase: we do not publish testimonials without authorization.",
     "outcomes": {
-      "title": "Catechesis essentials, together",
-      "subtitle": "Three changes you feel in the first week.",
+      "title": "More heart in the meeting, less weight in the week",
+      "subtitle": "Three changes you feel in your first week of the journey.",
       "items": [
         {
-          "title": "Class organized",
-          "desc": "Catechumens, schedule, and history in one place — no outdated spreadsheet."
+          "title": "Class embraced",
+          "desc": "Every catechumen with a name, a story, and attendance followed — no one is left behind."
         },
         {
           "title": "Attendance on mobile",
-          "desc": "Mark presence during the meeting without paper that gets lost."
+          "desc": "Record presence in seconds and notice who has been missing — so you can reach out to those drifting away."
         },
         {
-          "title": "Next meeting ready",
-          "desc": "Prep the outline with the pastoral library and review before using it."
+          "title": "Meeting prepared in peace",
+          "desc": "Prepare the outline with the Bible and the Catechism at hand, and arrive calm to announce the Word."
         }
       ],
       "eyebrow": "In practice"
@@ -4174,7 +4174,7 @@ export const public_en = {
       "error": "Error sending. Please try again."
     },
     "pricing": {
-      "title": "One simple plan for you and your class",
+      "title": "One simple plan, at the service of your mission",
       "subtitle": "Catechist Plan: R$ 9.90/month (or R$ 99/year) for up to 3 classes. Start with a 7-day free trial, no card.",
       "payment_card": "Card",
       "annual_savings": "Save 17% on annual",
@@ -4187,7 +4187,7 @@ export const public_en = {
       "cta_paid": "Start the 7 days",
       "most_popular": "Built for the catechist",
       "plan_desc": {
-        "single": "For you to run your class — attendance, history, and calendar in one flow. Covers up to 3 classes if you care for more than one."
+        "single": "For you to care for your class — attendance, history, and calendar in one place, with more time left for people. Covers up to 3 classes if you walk with more than one."
       },
       "faq": [
         {
@@ -4311,7 +4311,7 @@ export const publicNav_en = {
     "signup": "Start your 7 days",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
-    "tagline": "A platform for catechists to organize their class: meetings, attendance, and families in one place.",
+    "tagline": "Made to serve the catechist's mission: your class, your meetings, and the families in one place.",
     "audience": "built for catechists",
     "cta": "Start your 7 days",
     "share": "Share",
@@ -4324,7 +4324,7 @@ export const publicNav_en = {
     "how_it_works": "How it works",
     "footer_explore": "Explore",
     "footer_start": "Try it",
-    "footer_start_desc": "Organize class, attendance, and meetings in one place. Start your 7 days.",
+    "footer_start_desc": "More time for your class, less paperwork. Start your 7 days.",
     "language": "Language"
   } as const;
 

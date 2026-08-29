@@ -28,7 +28,7 @@
     "error": "Erro ao enviar. Tente novamente."
   },
   "pricing": {
-    "title": "Um plano simples para você e a sua turma",
+    "title": "Um plano simples, a serviço da sua missão",
     "subtitle": "Plano Catequista: R$ 9,90/mês (ou R$ 99/ano) para até 3 turmas. Comece com 7 dias de teste gratuito, sem cartão.",
     "payment_card": "Cartão",
     "annual_savings": "Economize 17% no anual",
@@ -41,7 +41,7 @@
     "cta_paid": "Começar os 7 dias",
     "most_popular": "Feito para o catequista",
     "plan_desc": {
-      "single": "Para você organizar a sua turma — chamada, histórico e calendário no mesmo fluxo. Cobre até 3 turmas, se você cuidar de mais de uma."
+      "single": "Para você cuidar da sua turma — chamada, histórico e calendário no mesmo lugar, com mais tempo para as pessoas. Cobre até 3 turmas, se você acompanhar mais de uma."
     },
     "faq": [
       {

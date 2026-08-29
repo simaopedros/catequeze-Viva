@@ -1,10 +1,10 @@
 {
   "hero": {
-    "headline_line1": "Tu catequesis sin cuaderno, planilla y WhatsApp perdidos",
-    "headline_line2": "",
-    "subheadline": "En 7 días dejas el grupo, la asistencia y el próximo encuentro en el mismo lugar — y ves si la semana queda más clara.",
-    "badge": "Trial de 7 días",
-    "cta_primary": "Empezar trial de 7 días",
+    "headline_line1": "Tú siembras la fe.",
+    "headline_line2": "Nosotros cuidamos el cuaderno.",
+    "subheadline": "Catequese Viva cuida del grupo, la asistencia y la preparación del encuentro para que llegues cada semana con el corazón libre para lo esencial: presentar a Jesús a tus catequizandos.",
+    "badge": "Para quien dice sí a la misión de catequizar",
+    "cta_primary": "Comenzar mi camino — 7 días gratis",
     "cta_secondary": "Cómo funciona",
     "trust_signals": "Sin cobro ahora • Sin tarjeta para empezar • Funciona en el celular",
     "cta_secondary_href": "/#como",
@@ -14,7 +14,7 @@
       "Asistencia editorial para encuentros y mensajes a familias",
       "Las familias de tu grupo siguen todo por el portal"
     ],
-    "cta_helper": "Sin cobro ahora · sin tarjeta para empezar · organiza el grupo en la primera semana",
+    "cta_helper": "Sin cobro ahora · sin tarjeta para empezar · más tiempo para tu grupo",
     "audience_label": "¿Cuál es tu realidad hoy?",
     "audiences": [
       {
@@ -39,8 +39,8 @@
     "click_trigger": "Funciona en el celular · Hecho para la rutina de catequesis",
     "image_alt": "Catequese Viva en el celular — asistencia y grupo organizados"
   },
-  "pain_title": "La catequesis no tiene que estar dispersa en cuadernos, planillas y mensajes",
-  "pain_subtitle": "Catequese Viva reúne preparación, grupo, asistencia y familias en un mismo flujo.",
+  "pain_title": "La misión ya te pide mucho. El papeleo no tiene que pedir más.",
+  "pain_subtitle": "Catequese Viva reúne preparación, grupo, asistencia y familias — para que la burocracia no robe tiempo a la evangelización.",
   "pains": [
     {
       "text": "Preparar el encuentro cada semana exige tiempo, referencias y creatividad"
@@ -110,8 +110,8 @@
       "b3": "Progreso visible para coordinación y responsables"
     }
   },
-  "mission_title": "Encuentro preparado. Grupo organizado. Familia acompañando.",
-  "mission_text": "Catequese Viva fue creada para dar previsibilidad a tu semana: menos improvisación en la preparación, menos retrabajo en el seguimiento y más claridad sobre tu grupo.",
+  "mission_title": "Encuentro preparado. Grupo acogido. Fe compartida con las familias.",
+  "mission_text": "Catequese Viva existe para servir tu misión — no al revés. Menos improvisación y papeleo, más presencia verdadera con cada catequizando que Dios te confió.",
   "personas_title": "Hecho para el catequista — y listo para las familias de tu grupo",
   "personas_subtitle": "En esta fase, la experiencia es tuya: tú organizas el grupo y las familias siguen todo por el portal.",
   "personas": [
@@ -152,30 +152,30 @@
   ],
   "more_features": "Más recursos para cuando tu catequesis crezca",
   "more_features_sub": "Herramientas que siguen siendo útiles después del primer grupo.",
-  "steps_title": "Simple para entrar",
-  "steps_subtitle": "Tres pasos hasta usarlo con tu grupo.",
+  "steps_title": "Empieza hoy, en el tiempo que tienes",
+  "steps_subtitle": "Tres pasos y el próximo encuentro ya nace más ligero.",
   "steps": [
     {
       "title": "Crea tu cuenta",
       "desc": "Solo correo y contraseña. Rápido."
     },
     {
-      "title": "Activa el trial de 7 días",
-      "desc": "Entra y empieza a usarlo enseguida."
+      "title": "Activa tus 7 días gratis",
+      "desc": "Entra y empieza a usarlo enseguida, sin tarjeta."
     },
     {
-      "title": "Úsalo con tu grupo",
-      "desc": "Arma el grupo, pasa lista y prepara el encuentro."
+      "title": "Vívelo con tu grupo",
+      "desc": "Arma el grupo, pasa lista y prepara un encuentro que toque el corazón."
     }
   ],
-  "steps_cta": "Empezar trial de 7 días",
-  "pricing_title": "Un plan simple, hecho para el catequista",
+  "steps_cta": "Comenzar mi camino — 7 días gratis",
+  "pricing_title": "Un plan simple, al servicio de tu misión",
   "pricing_subtitle": "R$ 9,90/mes para hasta 3 grupos. Empieza con 7 días de trial — sin tarjeta y sin cobro ahora.",
   "plans": {
     "single": {
       "name": "Plan Catequista",
       "audience": "Para ti y tu grupo · hasta 3 grupos",
-      "desc": "Tu grupo, la asistencia y los encuentros organizados en el mismo lugar.",
+      "desc": "Tu grupo, la asistencia y los encuentros cuidados en el mismo lugar.",
       "price": "R$ 9,90",
       "features": [
         "Hasta 3 grupos con 150 catequizandos en total",
@@ -227,9 +227,9 @@
       "a": "Sí. Hay control de acceso, consentimientos y recursos alineados a la LGPD."
     }
   ],
-  "cta_title": "Organiza tu catequesis con claridad",
-  "cta_subtitle": "Deja de dispersar la semana en cuaderno, planilla y mensajes. Empieza el trial de 7 días con tu grupo — sin cobro ahora.",
-  "cta_button": "Empezar trial de 7 días",
+  "cta_title": "Recupera el tiempo para lo que te llamó a la catequesis",
+  "cta_subtitle": "Deja atrás el cuaderno, la planilla y los mensajes dispersos. Empieza los 7 días gratis con tu grupo — y llega al próximo encuentro con el corazón más ligero.",
+  "cta_button": "Comenzar mi camino — 7 días gratis",
   "cta_badge": "Trial",
   "cta_see_plans": "Ver el plan",
   "mock": {
@@ -345,22 +345,22 @@
   "testimonials": [],
   "cta_helper": "Sin cobro ahora · sin tarjeta para empezar",
   "mobile_cta": {
-    "title": "Trial de 7 días",
+    "title": "7 días para sentir la diferencia con tu grupo",
     "subtitle": "Sin cobro ahora · sin tarjeta",
-    "button": "Empezar trial de 7 días"
+    "button": "Comenzar mi camino"
   },
   "proof": {
     "badge": "Empieza con tranquilidad",
-    "title": "Hecho para tu rutina real con el grupo",
-    "subtitle": "Tú preparas el encuentro, pasas lista y hablas con las familias de tu grupo en un solo lugar — del primer encuentro al último.",
+    "title": "Hecho para quien vive la catequesis de verdad",
+    "subtitle": "Tú preparas el encuentro, acompañas a cada catequizando y caminas junto a las familias — todo al servicio de tu misión, del primer encuentro al último.",
     "stats": [
       {
-        "title": "Para ti",
-        "desc": "Tu grupo, la asistencia en el celular y la preparación de encuentros en el mismo flujo."
+        "title": "Para tu misión",
+        "desc": "Tu grupo, la asistencia en el celular y la preparación de encuentros en el mismo lugar — para que sobre tiempo para las personas."
       },
       {
         "title": "Para las familias de tu grupo",
-        "desc": "Avisos, asistencia y justificación de faltas por el portal, sin mensajes perdidos."
+        "desc": "Avisos, asistencia y justificación de faltas por el portal — las familias caminan contigo."
       },
       {
         "title": "En el celular",
@@ -374,8 +374,8 @@
       "LGPD",
       "Cancelación simple"
     ],
-    "launch_title": "Pruébalo en tu realidad",
-    "launch_text": "Crea la cuenta, arma el grupo y prepara el próximo encuentro. Tienes 7 días para ver si encaja — sin tarjeta de crédito.",
+    "launch_title": "Pruébalo con tu grupo",
+    "launch_text": "Crea la cuenta, arma el grupo y prepara el próximo encuentro con calma. Tienes 7 días para sentir si sirve a tu misión — sin tarjeta de crédito.",
     "promises": [
       "7 días gratis, sin tarjeta de crédito",
       "Biblioteca con Biblia y Catecismo en el mismo lugar",
@@ -455,8 +455,8 @@
       }
     ]
   },
-  "faq_cta": "Empezar trial de 7 días",
-  "faq_cta_helper": "Sin cobro ahora · úsalo con tu grupo esta semana",
+  "faq_cta": "Comenzar mi camino — 7 días gratis",
+  "faq_cta_helper": "Sin cobro ahora · úsalo en tu próximo encuentro",
   "price_cta_single": "Empezar mis 7 días con mi grupo",
   "price_cta_unlimited": "Empezar trial de 7 días",
   "price_annual_equivalent": "Equivale a {{price}}/mes",
@@ -520,20 +520,20 @@
   },
   "testimonials_note": "Fase de lanzamiento: no publicamos testimonios sin autorización.",
   "outcomes": {
-    "title": "Lo esencial de la catequesis, reunido",
-    "subtitle": "Tres cambios que sientes en la primera semana.",
+    "title": "Más corazón en el encuentro, menos peso en la semana",
+    "subtitle": "Tres cambios que sientes en tu primera semana de camino.",
     "items": [
       {
-        "title": "Grupo organizado",
-        "desc": "Catequizandos, horarios e historial en un solo lugar — sin planilla desactualizada."
+        "title": "Grupo acogido",
+        "desc": "Cada catequizando con nombre, historia y asistencia acompañada — nadie se queda atrás."
       },
       {
         "title": "Asistencia en el celular",
-        "desc": "Presencia en el encuentro, sin papel que se pierde."
+        "desc": "Registra la presencia en segundos y nota quién está faltando — para ir a buscar a quien se alejó."
       },
       {
-        "title": "Próximo encuentro listo",
-        "desc": "Prepara el guion con la biblioteca pastoral y revísalo antes de usarlo."
+        "title": "Encuentro preparado con calma",
+        "desc": "Prepara el guion con la Biblia y el Catecismo al lado y llega tranquilo para anunciar la Palabra."
       }
     ],
     "eyebrow": "En la práctica"
