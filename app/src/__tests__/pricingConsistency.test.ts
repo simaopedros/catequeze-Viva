@@ -79,9 +79,9 @@ describe('Plan IDs ↔ PaymentPlanId consistency', () => {
     }
   });
 
-  it('single is R$ 29 monthly / R$ 290 annual', () => {
-    expect(getPlanPriceCents('single', 'monthly')).toBe(2900);
-    expect(getPlanPriceCents('single', 'annual')).toBe(29000);
+  it('single is R$ 9.90 monthly / R$ 99 annual (launch phase)', () => {
+    expect(getPlanPriceCents('single', 'monthly')).toBe(990);
+    expect(getPlanPriceCents('single', 'annual')).toBe(9900);
   });
 
   it('unlimited is R$ 99 monthly / R$ 990 annual', () => {
@@ -89,9 +89,9 @@ describe('Plan IDs ↔ PaymentPlanId consistency', () => {
     expect(getPlanPriceCents('unlimited', 'annual')).toBe(99000);
   });
 
-  it('highlight plan is unlimited', () => {
+  it('highlight plan is single (launch phase)', () => {
     const highlighted = PLAN_IDS.filter((id) => PLANS[id].highlight);
-    expect(highlighted).toEqual(['unlimited']);
+    expect(highlighted).toEqual(['single']);
   });
 });
 

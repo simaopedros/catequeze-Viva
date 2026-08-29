@@ -11,7 +11,7 @@
     "highlights": [
       "Chamada e acompanhamento pelo celular",
       "Importação de catequizandos por planilha",
-      "Assistência editorial para preparar encontros e avisos",
+      "Calendário litúrgico e próximos encontros",
       "Famílias acompanham pelo portal"
     ],
     "cta_helper": "Sem cobrança agora · sem cartão para começar · organize a turma na primeira semana",
@@ -170,30 +170,18 @@
   ],
   "steps_cta": "Começar teste gratuito de 7 dias",
   "pricing_title": "Depois de ver o valor, escolha o plano",
-  "pricing_subtitle": "R$ 29 para o catequista. R$ 99 para paróquia ou diocese. Comece com 7 dias de teste gratuito — sem cartão e sem cobrança agora.",
+  "pricing_subtitle": "R$ 9,90/mês para até 3 turmas. Comece com 7 dias de teste gratuito — sem cartão e sem cobrança agora.",
   "plans": {
     "single": {
       "name": "Plano Único",
       "audience": "Catequista · até 3 turmas",
-      "desc": "Organize sua turma e prepare encontros.",
-      "price": "R$ 29",
+      "desc": "Organize sua turma e acompanhe encontros.",
+      "price": "R$ 9,90",
       "features": [
         "Até 3 turmas com 150 catequizandos no total",
         "Chamada e histórico no celular",
         "Calendário da turma",
-        "15 créditos editoriais por mês"
-      ]
-    },
-    "unlimited": {
-      "name": "Plano Ilimitado",
-      "audience": "Paróquia ou diocese",
-      "desc": "Várias turmas e equipe no mesmo sistema.",
-      "price": "R$ 99",
-      "features": [
-        "Turmas e catequistas ilimitados",
-        "Famílias e comunicação no sistema",
-        "Assistência editorial para preparar encontros",
-        "Operação institucional sem teto"
+        "Portal da família"
       ]
     }
   },

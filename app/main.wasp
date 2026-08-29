@@ -370,30 +370,32 @@ page AppContentLibraryPage {
 }
 
 // ── AI Hub (unified entry point) ──
-route AppAIHubRoute { path: "/app/ai-hub", to: AppAIHubPage }
-page AppAIHubPage {
-  authRequired: true,
-  component: import AIHubPage from "@src/catequese/lazy/AIHubPage"
-}
+// LAUNCH PHASE: AI features disabled. Uncomment when ready to enable.
+// route AppAIHubRoute { path: "/app/ai-hub", to: AppAIHubPage }
+// page AppAIHubPage {
+//   authRequired: true,
+//   component: import AIHubPage from "@src/catequese/lazy/AIHubPage"
+// }
 
 // ── Legacy redirects ──
-route AppAIPlannerRedirect { path: "/app/ai-planner", to: AppAIPlannerRedirectPage }
-page AppAIPlannerRedirectPage {
-  authRequired: true,
-  component: import RedirectToAiHub from "@src/catequese/pages/RedirectToAIHub"
-}
+// LAUNCH PHASE: AI redirects disabled.
+// route AppAIPlannerRedirect { path: "/app/ai-planner", to: AppAIPlannerRedirectPage }
+// page AppAIPlannerRedirectPage {
+//   authRequired: true,
+//   component: import RedirectToAiHub from "@src/catequese/pages/RedirectToAIHub"
+// }
 
-route AppCollaborativePlannerRedirect { path: "/app/collaborative-planner", to: AppCollaborativePlannerRedirectPage }
-page AppCollaborativePlannerRedirectPage {
-  authRequired: true,
-  component: import RedirectToAiHub from "@src/catequese/pages/RedirectToAIHub"
-}
+// route AppCollaborativePlannerRedirect { path: "/app/collaborative-planner", to: AppCollaborativePlannerRedirectPage }
+// page AppCollaborativePlannerRedirectPage {
+//   authRequired: true,
+//   component: import RedirectToAiHub from "@src/catequese/pages/RedirectToAIHub"
+// }
 
-route AppMyAiGenerationsRedirect { path: "/app/my-ai-generations", to: AppMyAiGenerationsRedirectPage }
-page AppMyAiGenerationsRedirectPage {
-  authRequired: true,
-  component: import RedirectToContentLibraryAI from "@src/catequese/pages/RedirectToContentLibraryAI"
-}
+// route AppMyAiGenerationsRedirect { path: "/app/my-ai-generations", to: AppMyAiGenerationsRedirectPage }
+// page AppMyAiGenerationsRedirectPage {
+//   authRequired: true,
+//   component: import RedirectToContentLibraryAI from "@src/catequese/pages/RedirectToContentLibraryAI"
+// }
 
 route WorkspaceSelectorRoute { path: "/app/select-workspace", to: WorkspaceSelectorPage }
 page WorkspaceSelectorPage {
@@ -1689,26 +1691,27 @@ query searchCatechism {
 }
 
 // ── AI Operations ─────────────────────────────────────────────────────────
+// LAUNCH PHASE: AI actions disabled. Uncomment when AI features are enabled.
 
-action generateMeetingWithAi {
-  fn: import { generateMeetingWithAi } from "@src/server/operations/aiOperations",
-  entities: [ContentItem, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
-}
+// action generateMeetingWithAi {
+//   fn: import { generateMeetingWithAi } from "@src/server/operations/aiOperations",
+//   entities: [ContentItem, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
+// }
 
-action generateAnnualPlanning {
-  fn: import { generateAnnualPlanning } from "@src/server/operations/aiOperations",
-  entities: [Meeting, CatechesisClass, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
-}
+// action generateAnnualPlanning {
+//   fn: import { generateAnnualPlanning } from "@src/server/operations/aiOperations",
+//   entities: [Meeting, CatechesisClass, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
+// }
 
-action chatWithAi {
-  fn: import { chatWithAi } from "@src/server/operations/aiOperations",
-  entities: [Message, Conversation, ConversationParticipant, UserAiCredits, User, Membership, Parish, TenantBilling, AiResponseCache, DailyAiUsage]
-}
+// action chatWithAi {
+//   fn: import { chatWithAi } from "@src/server/operations/aiOperations",
+//   entities: [Message, Conversation, ConversationParticipant, UserAiCredits, User, Membership, Parish, TenantBilling, AiResponseCache, DailyAiUsage]
+// }
 
-action submitAiFeedback {
-  fn: import { submitAiFeedback } from "@src/server/operations/aiFeedbackOperations",
-  entities: [AiFeedback]
-}
+// action submitAiFeedback {
+//   fn: import { submitAiFeedback } from "@src/server/operations/aiFeedbackOperations",
+//   entities: [AiFeedback]
+// }
 
 action startTwoFactorSetup {
   fn: import { startTwoFactorSetup } from "@src/server/operations/twoFactorOperations",
@@ -1780,63 +1783,65 @@ query getClassComparison {
   entities: [CatechesisClass, ClassEnrollment, Meeting, AttendanceRecord, Membership, UserTwoFactor, Parish]
 }
 
-action generateActivityForMeeting {
-  fn: import { generateActivityForMeeting } from "@src/server/operations/aiOperations",
-  entities: [Activity, ContentItem, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
-}
+// LAUNCH PHASE: AI actions disabled.
+// action generateActivityForMeeting {
+//   fn: import { generateActivityForMeeting } from "@src/server/operations/aiOperations",
+//   entities: [Activity, ContentItem, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
+// }
 
-action generateWhatsAppMessage {
-  fn: import { generateWhatsAppMessage } from "@src/server/operations/aiOperations",
-  entities: [ContentItem, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
-}
+// action generateWhatsAppMessage {
+//   fn: import { generateWhatsAppMessage } from "@src/server/operations/aiOperations",
+//   entities: [ContentItem, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
+// }
 
-action enhanceContentWithAi {
-  fn: import { enhanceContentWithAi } from "@src/server/operations/aiOperations",
-  entities: [UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
-}
+// action enhanceContentWithAi {
+//   fn: import { enhanceContentWithAi } from "@src/server/operations/aiOperations",
+//   entities: [UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
+// }
 
-query getAiCreditsStatus {
-  fn: import { getAiCreditsStatus } from "@src/server/operations/aiOperations",
-  entities: [UserAiCredits, User, Membership, Parish, TenantBilling]
-}
+// query getAiCreditsStatus {
+//   fn: import { getAiCreditsStatus } from "@src/server/operations/aiOperations",
+//   entities: [UserAiCredits, User, Membership, Parish, TenantBilling]
+// }
 
-query listMyAiGenerations {
-  fn: import { listMyAiGenerations } from "@src/server/operations/myAiGenerations",
-  entities: [ContentItem]
-}
+// query listMyAiGenerations {
+//   fn: import { listMyAiGenerations } from "@src/server/operations/myAiGenerations",
+//   entities: [ContentItem]
+// }
 
 // ── Collaborative Co-Creation Operations ───────────────────────────────────
+// LAUNCH PHASE: Collaborative AI disabled.
 
-action startCollaborativeSession {
-  fn: import { startCollaborativeSession } from "@src/server/operations/collaborativeOperations",
-  entities: [CollaborativeSession, ContentItem, SessionMessage, ContextAttachment, ContentVersion, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
-}
+// action startCollaborativeSession {
+//   fn: import { startCollaborativeSession } from "@src/server/operations/collaborativeOperations",
+//   entities: [CollaborativeSession, ContentItem, SessionMessage, ContextAttachment, ContentVersion, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
+// }
 
-api collaborativeChatApi {
-  fn: import { collaborativeChatHandler } from "@src/server/api/collaborativeChatStream",
-  auth: true,
-  httpRoute: (POST, "/api/collaborative-chat-stream"),
-  entities: [CollaborativeSession, SessionMessage, ContentItem, ContextAttachment, ContentVersion, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
-}
+// api collaborativeChatApi {
+//   fn: import { collaborativeChatHandler } from "@src/server/api/collaborativeChatStream",
+//   auth: true,
+//   httpRoute: (POST, "/api/collaborative-chat-stream"),
+//   entities: [CollaborativeSession, SessionMessage, ContentItem, ContextAttachment, ContentVersion, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
+// }
 
-api generateBlockApi {
-  fn: import { generateBlockHandler } from "@src/server/api/generateBlockStream",
-  auth: true,
-  httpRoute: (POST, "/api/generate-block-stream"),
-  entities: [CollaborativeSession, ContentItem, SessionMessage, ContextAttachment, ContentVersion, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
-}
+// api generateBlockApi {
+//   fn: import { generateBlockHandler } from "@src/server/api/generateBlockStream",
+//   auth: true,
+//   httpRoute: (POST, "/api/generate-block-stream"),
+//   entities: [CollaborativeSession, ContentItem, SessionMessage, ContextAttachment, ContentVersion, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
+// }
 
-api adjustDepthApi {
-  fn: import { adjustDepthHandler } from "@src/server/api/adjustDepthStream",
-  auth: true,
-  httpRoute: (POST, "/api/adjust-depth-stream"),
-  entities: [CollaborativeSession, ContentItem, SessionMessage, ContextAttachment, ContentVersion, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
-}
+// api adjustDepthApi {
+//   fn: import { adjustDepthHandler } from "@src/server/api/adjustDepthStream",
+//   auth: true,
+//   httpRoute: (POST, "/api/adjust-depth-stream"),
+//   entities: [CollaborativeSession, ContentItem, SessionMessage, ContextAttachment, ContentVersion, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
+// }
 
-query getSessionHistory {
-  fn: import { getSessionHistory } from "@src/server/operations/collaborativeOperations",
-  entities: [SessionMessage, CollaborativeSession, ContentItem, Membership, Parish]
-}
+// query getSessionHistory {
+//   fn: import { getSessionHistory } from "@src/server/operations/collaborativeOperations",
+//   entities: [SessionMessage, CollaborativeSession, ContentItem, Membership, Parish]
+// }
 
 query getSessionContentItem {
   fn: import { getSessionContentItem } from "@src/server/operations/collaborativeOperations",
@@ -1868,15 +1873,15 @@ action restoreContentVersion {
   entities: [ContentVersion, ContentItem, Membership, Parish]
 }
 
-query getAiSuggestions {
-  fn: import { getAiSuggestions } from "@src/server/operations/collaborativeOperations",
-  entities: [CollaborativeSession, ContentItem, Membership, Parish]
-}
+// query getAiSuggestions {
+//   fn: import { getAiSuggestions } from "@src/server/operations/collaborativeOperations",
+//   entities: [CollaborativeSession, ContentItem, Membership, Parish]
+// }
 
-query getSaintStory {
-  fn: import { getSaintStory } from "@src/server/operations/collaborativeOperations",
-  entities: []
-}
+// query getSaintStory {
+//   fn: import { getSaintStory } from "@src/server/operations/collaborativeOperations",
+//   entities: []
+// }
 
 query getPedagogicalHooks {
   fn: import { getPedagogicalHooks } from "@src/server/operations/collaborativeOperations",

@@ -16,8 +16,8 @@ import {
   ExternalLink,
   Coins,
 } from "lucide-react";
-import { getAiCreditsStatus, submitAiFeedback } from "wasp/client/operations";
 import { getSessionId } from "wasp/client/api";
+import { getAiCreditsStatus, submitAiFeedback } from "../lib/aiOperations";
 import { BuyCreditsButton } from "./BuyCreditsButton";
 import {
   AppEyebrow,

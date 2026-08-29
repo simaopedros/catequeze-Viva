@@ -750,14 +750,14 @@ export const billing_pt_BR = {
       },
       "single": {
         "name": "Plano Único",
-        "price": "R$ 29/mês",
-        "annual_price": "R$ 290/ano (~R$ 24/mês)",
+        "price": "R$ 9,90/mês",
+        "annual_price": "R$ 99/ano (~R$ 8,25/mês)",
         "features": [
           "1 paróquia",
           "Até 3 turmas",
           "150 catequizandos no total",
           "Presença e calendário litúrgico",
-          "15 créditos editoriais/mês"
+          "Portal da família"
         ]
       },
       "unlimited": {
@@ -767,10 +767,8 @@ export const billing_pt_BR = {
         "features": [
           "Paróquias e turmas ilimitadas",
           "Catequizandos e catequistas ilimitados",
-          "Gerador de encontros e atividades com assistência editorial",
           "Comunicação integrada",
-          "Documentos e certidões",
-          "50 créditos editoriais/mês"
+          "Documentos e certidões"
         ]
       }
     },
@@ -2309,7 +2307,7 @@ export const landing_pt_BR = {
       "highlights": [
         "Chamada e acompanhamento pelo celular",
         "Importação de catequizandos por planilha",
-        "Assistência editorial para preparar encontros e avisos",
+        "Calendário litúrgico e próximos encontros",
         "Famílias acompanham pelo portal"
       ],
       "cta_helper": "Sem cobrança agora · sem cartão para começar · organize a turma na primeira semana",
@@ -2468,30 +2466,18 @@ export const landing_pt_BR = {
     ],
     "steps_cta": "Começar teste gratuito de 7 dias",
     "pricing_title": "Depois de ver o valor, escolha o plano",
-    "pricing_subtitle": "R$ 29 para o catequista. R$ 99 para paróquia ou diocese. Comece com 7 dias de teste gratuito — sem cartão e sem cobrança agora.",
+    "pricing_subtitle": "R$ 9,90/mês para até 3 turmas. Comece com 7 dias de teste gratuito — sem cartão e sem cobrança agora.",
     "plans": {
       "single": {
         "name": "Plano Único",
         "audience": "Catequista · até 3 turmas",
-        "desc": "Organize sua turma e prepare encontros.",
-        "price": "R$ 29",
+        "desc": "Organize sua turma e acompanhe encontros.",
+        "price": "R$ 9,90",
         "features": [
           "Até 3 turmas com 150 catequizandos no total",
           "Chamada e histórico no celular",
           "Calendário da turma",
-          "15 créditos editoriais por mês"
-        ]
-      },
-      "unlimited": {
-        "name": "Plano Ilimitado",
-        "audience": "Paróquia ou diocese",
-        "desc": "Várias turmas e equipe no mesmo sistema.",
-        "price": "R$ 99",
-        "features": [
-          "Turmas e catequistas ilimitados",
-          "Famílias e comunicação no sistema",
-          "Assistência editorial para preparar encontros",
-          "Operação institucional sem teto"
+          "Portal da família"
         ]
       }
     },
@@ -4143,7 +4129,7 @@ export const public_pt_BR = {
     },
     "pricing": {
       "title": "Escolha o plano certo para a sua rotina pastoral",
-      "subtitle": "Dois planos claros. O Plano Único cobre o catequista; o Plano Ilimitado cobre a operação paroquial ou diocesana.",
+      "subtitle": "Plano Único para catequista: até 3 turmas, R$ 9,90/mês. Comece com 7 dias de teste gratuito.",
       "payment_card": "Cartão",
       "annual_savings": "Economize 17% no anual",
       "monthly_tab": "Mensal",
@@ -4155,8 +4141,7 @@ export const public_pt_BR = {
       "cta_paid": "Escolher este plano",
       "most_popular": "Mais Popular",
       "plan_desc": {
-        "single": "Para um catequista organizar uma turma com clareza, histórico e preparação em um só fluxo.",
-        "unlimited": "Para paróquias e dioceses centralizarem equipes, turmas, famílias e assistência editorial no mesmo sistema."
+        "single": "Para um catequista organizar até 3 turmas com presença, histórico e calendário em um só fluxo."
       },
       "faq": [
         {
@@ -4164,12 +4149,8 @@ export const public_pt_BR = {
           "a": "Você pode testar a plataforma por 7 dias sem cartão de crédito, conhecer a rotina completa e só decidir pelo plano quando fizer sentido continuar."
         },
         {
-          "q": "Como funcionam os créditos editoriais?",
-          "a": "No Plano Único, você recebe 15 créditos editoriais por mês. No Plano Ilimitado, recebe 50 créditos editoriais por mês. Encontro e atividade consomem 1 crédito; planejamento anual consome 3 créditos."
-        },
-        {
-          "q": "Qual a diferença entre o Plano Único e o Plano Ilimitado?",
-          "a": "O Plano Único cobre 1 paróquia, até 3 turmas e até 150 catequizandos no total para um catequista. O Plano Ilimitado remove os limites operacionais e foi pensado para a rotina de paróquias e dioceses."
+          "q": "Qual o preço do plano para catequista?",
+          "a": "O Plano Único custa R$ 9,90/mês (ou R$ 99/ano) e cobre 1 paróquia, até 3 turmas e até 150 catequizandos no total para um catequista."
         },
         {
           "q": "Como funciona o pagamento?",
@@ -4186,10 +4167,6 @@ export const public_pt_BR = {
         {
           "q": "Os dados ficam seguros?",
           "a": "Sim. Seguimos a LGPD, com criptografia em trânsito e em repouso. Dados de crianças recebem proteção especial."
-        },
-        {
-          "q": "A assistência editorial é teologicamente confiável?",
-          "a": "Sim. A assistência editorial é instruída a se basear estritamente na Bíblia (CNBB), Catecismo da Igreja Católica, Compêndio e Diretório Geral para a Catequese. Todo conteúdo gerado inclui referências para você auditar."
         }
       ],
       "annual_compare": "no anual, sai por {{price}}/mês",

@@ -70,14 +70,14 @@ export default function PricingPage() {
   useEffect(() => {
     trackMarketingEvent("pricing_viewed", { placement: "pricing_page" });
     trackViewPricing({
-      plan_ids: ["single", "unlimited"],
+      plan_ids: ["single"],
       content_name: "Planos Catechis",
     });
   }, []);
 
   const pricingPlans = useMemo((): PricingPlan[] => {
     return (PLAN_IDS as readonly PlanId[])
-      .filter((id) => id !== "catechist_free")
+      .filter((id) => id !== "catechist_free" && id !== "unlimited")
       .map((id) => {
         const def = PLANS[id];
         return {
@@ -271,7 +271,7 @@ export default function PricingPage() {
         </section>
 
         <section className="max-w-4xl mx-auto px-4 pb-20">
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="max-w-lg mx-auto">
             {pricingPlans.map(renderCard)}
           </div>
         </section>

@@ -28,7 +28,6 @@ import { getIntendedInterval } from "../lib/intendedPlan";
 import {
   useQuery,
   getDashboardStats,
-  getAiCreditsStatus,
   generateCheckoutSession,
   cancelSubscription,
   changeSubscriptionPlan,
@@ -36,6 +35,8 @@ import {
   getCustomerPortalUrl,
   getSubscriptionDetails,
 } from "wasp/client/operations";
+import { getAiCreditsStatus } from "../lib/aiOperations";
+import { MOCK_AI_STATUS } from "../lib/aiFeatureFlag";
 import { useAuth } from "wasp/client/auth";
 import { PaymentPlanId } from "../../payment/plans";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
@@ -266,8 +267,18 @@ export default function BillingPage() {
     { parishId: usageParishId },
     { enabled: Boolean(usageParishId) },
   );
-  const { data: aiCredits, refetch: refetchCredits } =
-    useQuery(getAiCreditsStatus);
+  
+  // AI credits: mock when AI disabled
+  const [aiCredits, setAiCredits] = useState(MOCK_AI_STATUS);
+  const refetchCredits = useCallback(async () => {
+    const status = await getAiCreditsStatus();
+    setAiCredits(status);
+  }, []);
+  
+  useEffect(() => {
+    refetchCredits();
+  }, [refetchCredits]);
+  
   const { data: subscriptionDetails, refetch: refetchSubscription } = useQuery(
     getSubscriptionDetails,
   );

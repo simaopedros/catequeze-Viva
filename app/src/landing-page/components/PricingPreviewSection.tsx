@@ -69,7 +69,7 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
       placement: "landing_pricing_preview",
     });
     trackViewPricing({
-      plan_ids: ["single", "unlimited"],
+      plan_ids: ["single"],
       content_name: "Planos Catechis Landing Preview",
     });
   }, [isVisible, ns]);
@@ -122,13 +122,13 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* RCD Anchor: show premium plan first so cheaper plan feels like a deal */}
-        {[...PRICING_PREVIEW].reverse().map((plan, index) => (
+      <div className="max-w-lg mx-auto">
+        {/* Show only single plan during launch phase */}
+        {[...PRICING_PREVIEW].map((plan, index) => (
           <PricingPreviewCard
             key={plan.planId}
             plan={plan}
-            delay={index * 60}
+            delay={0}
             ns={ns}
             tr={tr}
             tb={tb}

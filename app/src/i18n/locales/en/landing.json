@@ -170,30 +170,18 @@
   ],
   "steps_cta": "Start 7-day trial",
   "pricing_title": "After you see the value, pick a plan",
-  "pricing_subtitle": "R$ 29 for a catechist. R$ 99 for parish or diocese. Start with a 7-day trial — no card and no charge now.",
+  "pricing_subtitle": "R$ 9.90/month for catechists. Start with a 7-day trial — no card and no charge now.",
   "plans": {
     "single": {
-      "name": "Single Plan",
+      "name": "Catechist Plan",
       "audience": "Catechist · up to 3 classes",
       "desc": "Run your class and prepare meetings.",
-      "price": "R$ 29",
+      "price": "R$ 9.90",
       "features": [
         "Up to 3 classes, 150 catechumens in total",
         "Attendance history on mobile",
         "Class calendar",
-        "15 editorial credits per month"
-      ]
-    },
-    "unlimited": {
-      "name": "Unlimited Plan",
-      "audience": "Parish or diocese",
-      "desc": "Multiple classes and team in one system.",
-      "price": "R$ 99",
-      "features": [
-        "Unlimited classes and catechists",
-        "Families and messaging in-app",
-        "Editorial meeting prep",
-        "Institutional operation, no caps"
+        "Family portal"
       ]
     }
   },

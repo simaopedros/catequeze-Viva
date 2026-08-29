@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
-import { generateWhatsAppMessage } from "wasp/client/operations";
+import { generateWhatsAppMessage } from "../../lib/aiOperations";
 import { AiHubLayout } from "./AiHubLayout";
 import { ContentSourcePicker } from "./ContentSourcePicker";
 import { WhatsappResultPanel } from "./WhatsappResultPanel";

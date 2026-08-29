@@ -7,16 +7,16 @@ import { PLAN_LIMITS, getPlanLimits, planName, isBillingActive, getEffectiveBill
 
 describe('AI Credits (simplified plans)', () => {
   describe('planHasAiAccess', () => {
-    it('returns true for paid plans and their legacy aliases', () => {
-      expect(planHasAiAccess('single')).toBe(true);
-      expect(planHasAiAccess('unlimited')).toBe(true);
-      // Legacy aliases resolve to paid plans.
-      expect(planHasAiAccess('catechist_pro')).toBe(true);
-      expect(planHasAiAccess('catechist_ai')).toBe(true);
-      expect(planHasAiAccess('parish_essential')).toBe(true);
-      expect(planHasAiAccess('parish_complete')).toBe(true);
-      expect(planHasAiAccess('diocese')).toBe(true);
-      expect(planHasAiAccess('PARISH')).toBe(true);
+    it('returns false for all plans during launch phase (AI disabled)', () => {
+      // During launch phase, AI is disabled for all plans
+      expect(planHasAiAccess('single')).toBe(false);
+      expect(planHasAiAccess('unlimited')).toBe(false);
+      expect(planHasAiAccess('catechist_pro')).toBe(false);
+      expect(planHasAiAccess('catechist_ai')).toBe(false);
+      expect(planHasAiAccess('parish_essential')).toBe(false);
+      expect(planHasAiAccess('parish_complete')).toBe(false);
+      expect(planHasAiAccess('diocese')).toBe(false);
+      expect(planHasAiAccess('PARISH')).toBe(false);
     });
 
     it('returns false for the free sentinel and empty values', () => {
@@ -27,19 +27,18 @@ describe('AI Credits (simplified plans)', () => {
   });
 
   describe('getMonthlyAllowance', () => {
-    it('returns correct allowances for current plans', () => {
-      expect(getMonthlyAllowance('single')).toBe(15);
-      expect(getMonthlyAllowance('unlimited')).toBe(50);
+    it('returns 0 for all plans during launch phase (AI disabled)', () => {
+      // During launch phase, AI credits are set to 0 for all plans
+      expect(getMonthlyAllowance('single')).toBe(0);
+      expect(getMonthlyAllowance('unlimited')).toBe(0);
     });
 
-    it('resolves legacy aliases to their canonical plan allowance', () => {
-      // pro/ai/essential → single (15)
-      expect(getMonthlyAllowance('catechist_pro')).toBe(15);
-      expect(getMonthlyAllowance('catechist_ai')).toBe(15);
-      expect(getMonthlyAllowance('parish_essential')).toBe(15);
-      // parish/complete/diocese → unlimited (50)
-      expect(getMonthlyAllowance('parish_complete')).toBe(50);
-      expect(getMonthlyAllowance('diocese')).toBe(50);
+    it('resolves legacy aliases to 0 (AI disabled)', () => {
+      expect(getMonthlyAllowance('catechist_pro')).toBe(0);
+      expect(getMonthlyAllowance('catechist_ai')).toBe(0);
+      expect(getMonthlyAllowance('parish_essential')).toBe(0);
+      expect(getMonthlyAllowance('parish_complete')).toBe(0);
+      expect(getMonthlyAllowance('diocese')).toBe(0);
     });
 
     it('returns 0 for unknown/null/sentinel plans', () => {
@@ -50,15 +49,16 @@ describe('AI Credits (simplified plans)', () => {
   });
 
   describe('getDailyLimit', () => {
-    it('returns correct daily limits for current plans', () => {
-      expect(getDailyLimit('single')).toBe(5);
-      expect(getDailyLimit('unlimited')).toBe(20);
+    it('returns 0 for all plans during launch phase (AI disabled)', () => {
+      // During launch phase, daily limits are set to 0
+      expect(getDailyLimit('single')).toBe(0);
+      expect(getDailyLimit('unlimited')).toBe(0);
     });
 
-    it('resolves legacy aliases', () => {
-      expect(getDailyLimit('catechist_pro')).toBe(5);
-      expect(getDailyLimit('parish_complete')).toBe(20);
-      expect(getDailyLimit('diocese')).toBe(20);
+    it('resolves legacy aliases to 0 (AI disabled)', () => {
+      expect(getDailyLimit('catechist_pro')).toBe(0);
+      expect(getDailyLimit('parish_complete')).toBe(0);
+      expect(getDailyLimit('diocese')).toBe(0);
     });
 
     it('returns 0 for the sentinel', () => {

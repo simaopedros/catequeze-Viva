@@ -9,7 +9,7 @@ import {
   AppGoldRule,
 } from "../../../client/components/brand/AppChrome";
 import { Church, Loader2, Feather } from "lucide-react";
-import { getSaintStory } from "wasp/client/operations";
+import { getSaintStory } from "../../lib/aiOperations";
 
 export function SaintStoryInjector() {
   const { t } = useTranslation("collaborative");

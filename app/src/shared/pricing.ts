@@ -24,6 +24,12 @@
 export const PRICING_VERSION = 3;
 export const SUBSCRIPTION_TRIAL_DAYS = 7;
 
+/**
+ * Launch phase control: hide Unlimited from checkout/pricing pages.
+ * Set to false before opening Unlimited for institutional launch.
+ */
+export const LAUNCH_CATEQUISTA_ONLY = true;
+
 // ─── Plan IDs (vendable) ───────────────────────────────────────────────
 
 export const PLAN_IDS = [
@@ -37,6 +43,17 @@ export type PlanId = (typeof PLAN_IDS)[number];
 /** Returns only vendable plan IDs (excludes legacy aliases). */
 export function getAllPlanIds(): readonly PlanId[] {
   return PLAN_IDS;
+}
+
+/**
+ * Returns vendable plan IDs for the current launch phase.
+ * During LAUNCH_CATEQUISTA_ONLY, filters out 'unlimited'.
+ */
+export function getAvailablePlanIds(): readonly PlanId[] {
+  if (LAUNCH_CATEQUISTA_ONLY) {
+    return PLAN_IDS.filter((id) => id !== 'unlimited' && id !== 'catechist_free');
+  }
+  return PLAN_IDS.filter((id) => id !== 'catechist_free');
 }
 
 // ─── Legacy aliases (NOT vendable, NOT in PLANS) ─────────────────────────
@@ -144,7 +161,7 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
   single: {
     name: 'Plano Único',
     level: 'personal',
-    prices: { monthlyCents: 2900, annualCents: 29000 },
+    prices: { monthlyCents: 990, annualCents: 9900 },
     limits: {
       maxClasses: 3,
       maxCatechumens: 150,
@@ -152,8 +169,8 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
       maxParishes: 1,
     },
     ai: {
-      monthlyCredits: 15,
-      dailyLimit: 5,
+      monthlyCredits: 0,
+      dailyLimit: 0,
       scope: 'user',
     },
     features: [
@@ -161,9 +178,8 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
       'Até 3 turmas',
       '150 catequizandos no total',
       'Presença e calendário litúrgico',
-      '15 créditos editoriais/mês',
     ],
-    highlight: false,
+    highlight: true,
   },
 
   unlimited: {
@@ -177,19 +193,17 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
       maxParishes: null,
     },
     ai: {
-      monthlyCredits: 50,
-      dailyLimit: 20,
+      monthlyCredits: 0,
+      dailyLimit: 0,
       scope: 'user',
     },
     features: [
       'Paróquias e turmas ilimitadas',
       'Catequizandos e catequistas ilimitados',
-      'Gerador de encontros e atividades com assistência editorial',
       'Comunicação integrada (pais/catequizandos)',
       'Documentos e certidões',
-      '50 créditos editoriais/mês',
     ],
-    highlight: true,
+    highlight: false,
   },
 };
 
