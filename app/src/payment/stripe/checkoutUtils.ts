@@ -94,13 +94,13 @@ export function buildStripeCheckoutSessionCreateParams({
   userId,
   mode,
   tracking,
-  trialPeriodDays = 0,
+  trialPeriodDays: _ignoredTrialPeriodDays = 0,
   frontendUrl,
 }: CreateStripeCheckoutSessionParams & {
   frontendUrl?: string | null;
 }): Stripe.Checkout.SessionCreateParams {
-  const resolvedTrialDays =
-    mode === "subscription" ? Math.max(0, Math.floor(trialPeriodDays)) : 0;
+  // Assinar never starts a Stripe trial — ignore leftover caller days.
+  const resolvedTrialDays = 0;
   const trackingMetadata = toStripeMetadata({
     ...tracking,
     priceId: tracking?.priceId ?? priceId,
