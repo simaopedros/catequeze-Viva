@@ -2,6 +2,7 @@
   "title": "Encuentros",
   "subtitle": "Gestionar encuentros del grupo",
   "new": "Nuevo",
+  "create": "Crear encuentro",
   "meeting_title": "Título del encuentro",
   "date": "Fecha",
   "no_content": "Sin contenido asociado",

@@ -11,10 +11,11 @@ import {
 } from "../../client/analytics/metaTracking";
 import { Button } from "../../client/components/ui/button";
 import { formatPrice } from "../../shared/currency";
-import { PLANS } from "../../shared/pricing";
+import { LAUNCH_CATEQUISTA_ONLY, PLANS } from "../../shared/pricing";
 
 /**
- * Minimal two-plan pricing for the main landing: trial-first, no annual toggle noise.
+ * Minimal pricing for the main landing: trial-first, no annual toggle noise.
+ * Launch phase shows only the Single plan.
  */
 export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
   const tr = useLandingText(ns);
@@ -35,7 +36,7 @@ export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
     });
     // Meta ViewContent when pricing enters viewport (main Meta Ads landing surface).
     trackViewPricing({
-      plan_ids: ["single", "unlimited"],
+      plan_ids: LAUNCH_CATEQUISTA_ONLY ? ["single"] : ["single", "unlimited"],
       content_name: "Planos Catechis Landing",
     });
   }, [isVisible, ns]);
@@ -44,13 +45,17 @@ export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
     {
       id: "single" as const,
       price: formatPrice(PLANS.single.prices.monthlyCents),
-      highlight: false,
-    },
-    {
-      id: "unlimited" as const,
-      price: formatPrice(PLANS.unlimited.prices.monthlyCents),
       highlight: true,
     },
+    ...(!LAUNCH_CATEQUISTA_ONLY
+      ? [
+          {
+            id: "unlimited" as const,
+            price: formatPrice(PLANS.unlimited.prices.monthlyCents),
+            highlight: false,
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -73,7 +78,13 @@ export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div
+        className={
+          LAUNCH_CATEQUISTA_ONLY
+            ? "max-w-lg mx-auto"
+            : "grid gap-4 sm:grid-cols-2"
+        }
+      >
         {plans.map((plan, index) => {
           const name = (() => {
             const v = tb(`plans.${plan.id}.name`);

@@ -2,6 +2,7 @@
   "title": "Meetings",
   "subtitle": "Manage class meetings",
   "new": "New",
+  "create": "Create meeting",
   "meeting_title": "Meeting title",
   "date": "Date",
   "no_content": "No linked content",

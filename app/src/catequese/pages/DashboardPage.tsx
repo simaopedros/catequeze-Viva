@@ -10,10 +10,7 @@ import { PastoralDashboard } from "../components/dashboard/PastoralDashboard";
 import { CoordinatorDashboard } from "../components/dashboard/CoordinatorDashboard";
 import { InstitutionalDashboard } from "../components/dashboard/InstitutionalDashboard";
 import { SkeletonPage } from "../../client/components/Skeletons";
-import {
-  FAMILY_PORTAL_ROLES,
-  isFamilyPortalHost,
-} from "../../shared/portal";
+import { FAMILY_PORTAL_ROLES, isFamilyPortalHost } from "../../shared/portal";
 
 const INSTITUTIONAL_PLANS = [
   "unlimited",
@@ -89,7 +86,8 @@ export default function DashboardPage() {
     },
     {
       enabled: !loadingCtx && !isInstitutional,
-      staleTime: 60000,
+      staleTime: 0,
+      refetchOnMount: "always",
       refetchOnWindowFocus: false,
     },
   );

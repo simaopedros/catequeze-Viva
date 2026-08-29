@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "wasp/client/auth";
 import { ArrowRight } from "lucide-react";
 import { cn } from "../../../client/utils";
+import { LAUNCH_CATEQUISTA_ONLY } from "../../../shared/pricing";
 import {
   AppEyebrow,
   AppDisplayTitle,
@@ -29,7 +30,9 @@ export function WelcomeStep({ onPersonal, onManager }: WelcomeStepProps) {
         </AppDisplayTitle>
         <AppGoldRule />
         <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-          {t("welcome.question")}
+          {LAUNCH_CATEQUISTA_ONLY
+            ? t("welcome.launch_question")
+            : t("welcome.question")}
         </p>
       </div>
 
@@ -39,14 +42,20 @@ export function WelcomeStep({ onPersonal, onManager }: WelcomeStepProps) {
           description={t("welcome.personal_desc")}
           onClick={onPersonal}
         />
-        <PathOption
-          label={t("welcome.manager_title")}
-          description={t("welcome.manager_desc")}
-          onClick={onManager}
-        />
+        {!LAUNCH_CATEQUISTA_ONLY && (
+          <PathOption
+            label={t("welcome.manager_title")}
+            description={t("welcome.manager_desc")}
+            onClick={onManager}
+          />
+        )}
       </div>
 
-      <p className="text-xs text-muted-foreground">{t("welcome.helper")}</p>
+      <p className="text-xs text-muted-foreground">
+        {LAUNCH_CATEQUISTA_ONLY
+          ? t("welcome.launch_helper")
+          : t("welcome.helper")}
+      </p>
     </div>
   );
 }

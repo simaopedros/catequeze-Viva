@@ -540,7 +540,10 @@ export default function ClassDetailPage() {
               {t("schedule")}
             </p>
             <p className="mt-1.5 text-sm font-semibold tracking-tight text-brand-ink">
-              {t(`days_long.${cls.dayOfWeek}`) || cls.dayOfWeek} {cls.startTime}
+              {cls.dayOfWeek != null && cls.dayOfWeek !== ""
+                ? t(`days_long.${cls.dayOfWeek}`)
+                : "—"}{" "}
+              {cls.startTime}
               {cls.endTime && `-${cls.endTime}`}
             </p>
           </AppPanel>

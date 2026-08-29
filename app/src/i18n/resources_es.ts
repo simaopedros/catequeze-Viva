@@ -543,7 +543,13 @@ export const auth_es = {
     "signup_error_terms": "Debe aceptar los Términos de Uso y la Política de Privacidad.",
     "signup_error_create": "Error al crear cuenta. Intente nuevamente.",
     "footer_copyright": "© {{year}} Catequese Viva",
-    "email_verified": "¿Email verificado con éxito?",
+    "email_verified": "Email verificado con éxito.",
+    "email_verify_pending": "Confirmando tu email…",
+    "email_verify_success_title": "Email verificado",
+    "email_verify_success_body": "Tu cuenta está lista. Entra para continuar la configuración del grupo.",
+    "email_verify_error_title": "No se pudo verificar",
+    "email_verify_error_body": "El enlace no es válido o ya fue usado. Pide un nuevo email de confirmación.",
+    "email_verify_missing_token": "Falta el enlace de confirmación. Abre el email que enviamos y toca el botón.",
     "password_reset_success": "¿Contraseña restablecida con éxito?",
     "remember_password": "¿Recordaste tu contraseña?",
     "login_link": "Iniciar sesión",
@@ -2492,7 +2498,7 @@ export const landing_es = {
     "per_month": "/mes",
     "per_year": "/año",
     "annual_discount": "2 meses gratis",
-    "compare_plans": "Ver detalles completos de los planes",
+    "compare_plans": "Ver detalles del plan",
     "faq_title": "Antes de empezar",
     "faq_subtitle": "Respuestas claras para catequistas y coordinación.",
     "faqs": [
@@ -2525,7 +2531,7 @@ export const landing_es = {
     "cta_subtitle": "Deja de dispersar la semana en cuaderno, planilla y mensajes. Empieza el trial de 7 días con tu grupo — sin cobro ahora.",
     "cta_button": "Empezar trial de 7 días",
     "cta_badge": "Trial",
-    "cta_see_plans": "Ver planes",
+    "cta_see_plans": "Ver el plan",
     "mock": {
       "ai_title": "Asistencia para encuentros",
       "ai_subtitle": "Base teológica CNBB · Catecismo · Directorio",
@@ -2844,7 +2850,7 @@ export const landingIa_es = {
       "badge": "Asistencia teológicamente entrenada",
       "cta_primary": "Probar la asistencia editorial",
       "cta_secondary": "Ver cómo funciona",
-      "trust_signals": "Plan Único o Ilimitado • Base teológica CNBB • Cancela cuando quieras",
+      "trust_signals": "R$ 9,90/mes • Base teológica CNBB • Cancela cuando quieras",
       "visual_title": "Guion del encuentro",
       "visual_item_1": "Indica tema y grupo de edad",
       "visual_item_2": "Revisa referencias católicas",
@@ -2949,7 +2955,7 @@ export const landingPresenca_es = {
       "badge": "Control de asistencia digital",
       "cta_primary": "Comenzar ahora",
       "cta_secondary": "Ver demo",
-      "trust_signals": "Plan Único o Ilimitado • Funciona en el celular • Pago con Stripe",
+      "trust_signals": "R$ 9,90/mes • Funciona en el celular • Pago con Stripe",
       "visual_title": "Asistencia en el móvil",
       "visual_item_1": "Marca el grupo rápidamente",
       "visual_item_2": "Registra justificaciones",
@@ -3051,7 +3057,7 @@ export const landingSistema_es = {
       "badge": "Gestión completa para catequesis",
       "cta_primary": "Empezar ahora",
       "cta_secondary": "Ver recursos",
-      "trust_signals": "Plan Único o Ilimitado • Empieza en 2 minutos • Cancela cuando quieras",
+      "trust_signals": "R$ 9,90/mes • Empieza en 2 minutos • Cancela cuando quieras",
       "visual_title": "Visión de coordinación",
       "visual_item_1": "Grupos y equipos en un panel",
       "visual_item_2": "Indicadores de asistencia",
@@ -3227,6 +3233,7 @@ export const meetings_es = {
     "title": "Encuentros",
     "subtitle": "Gestionar encuentros del grupo",
     "new": "Nuevo",
+    "create": "Crear encuentro",
     "meeting_title": "Título del encuentro",
     "date": "Fecha",
     "no_content": "Sin contenido asociado",
@@ -3555,6 +3562,8 @@ export const onboarding_es = {
       "manager_desc": "Parroquia, año catequético y grupos del equipo.",
       "manager_features": [],
       "helper": "Puedes cambiar de camino después si lo necesitas.",
+      "launch_question": "Vamos a preparar el espacio de tu grupo.",
+      "launch_helper": "En esta fase el acceso es para catequistas. Parroquia y diócesis vienen después.",
       "eyebrow": "Primeros pasos"
     },
     "personal_setup": {
@@ -4131,7 +4140,7 @@ export const public_es = {
     },
     "pricing": {
       "title": "Elige el plan correcto para tu rutina pastoral",
-      "subtitle": "Dos planes claros. El Plan Único cubre al catequista; el Plan Ilimitado cubre la operación parroquial o diocesana.",
+      "subtitle": "Plan Único para catequista: hasta 3 grupos, R$ 9,90/mes. Empieza con 7 días de prueba gratis.",
       "payment_card": "Tarjeta",
       "annual_savings": "Ahorre 17% en anual",
       "monthly_tab": "Mensual",
@@ -4148,35 +4157,27 @@ export const public_es = {
       "faq": [
         {
           "q": "¿Cómo conozco la plataforma antes de suscribirme?",
-          "a": "Puede comenzar por el camino de catequista, conocer la estructura de la plataforma y avanzar al plan más adecuado cuando decida preparar encuentros con más frecuencia."
+          "a": "Puedes probar la plataforma 7 días sin tarjeta, conocer la rutina completa y solo elegir el plan cuando tenga sentido continuar."
         },
         {
-          "q": "¿Cómo funcionan los créditos editoriales?",
-          "a": "El Plan Único incluye 15 créditos editoriales por mes. El Plan Ilimitado incluye 50 créditos editoriales por mes. Un encuentro o actividad consume 1 crédito; la planificación anual consume 3 créditos."
-        },
-        {
-          "q": "¿Cuál es la diferencia entre el Plan Único y el Plan Ilimitado?",
-          "a": "El Plan Único cubre 1 parroquia, hasta 3 grupos y hasta 150 catecúmenos en total para un catequista. El Plan Ilimitado elimina los límites operativos y fue pensado para la rutina parroquial o diocesana."
+          "q": "¿Cuál es el precio del plan para catequista?",
+          "a": "El Plan Único cuesta R$ 9,90/mes (o R$ 99/año) y cubre 1 parroquia, hasta 3 grupos y hasta 150 catecúmenos en total para un catequista."
         },
         {
           "q": "¿Cómo funciona el pago?",
-          "a": "Aceptamos PIX (al contado o mensual) y tarjeta de crédito. En el plan anual vía PIX, el pago es único por 12 meses. Sin permanencia — cancele cuando quiera."
+          "a": "Empiezas con 7 días de prueba gratis sin tarjeta. Si decides continuar, puedes pagar con tarjeta en mensual o anual. Sin permanencia — cancela cuando quieras."
         },
         {
           "q": "¿Y el reembolso del plan anual?",
-          "a": "Los planes anuales pagados vía PIX no tienen reembolso automático. La cancelación detiene la renovación, pero el acceso continúa hasta el fin del período pagado. El reembolso proporcional se evalúa caso a caso vía contato@catequeseviva.com.br. Los planes vía tarjeta siguen la política de Stripe."
+          "a": "Los planes anuales no tienen reembolso automático. La cancelación detiene la renovación, pero el acceso continúa hasta el fin del período pagado. El reembolso proporcional se evalúa caso a caso vía contato@catequeseviva.com.br."
         },
         {
-          "q": "¿Puedo cambiar de plan?",
-          "a": "Sí, en cualquier momento. Al hacer upgrade, sus datos se preservan automáticamente."
+          "q": "¿Puedo cambiar de plan después?",
+          "a": "Sí, en cualquier momento. Al cambiar de plan, tus datos se preservan automáticamente."
         },
         {
           "q": "¿Los datos están seguros?",
           "a": "Sí. Seguimos la LGPD, con cifrado en tránsito y en reposo. Los datos de menores reciben protección especial."
-        },
-        {
-          "q": "¿La asistencia editorial es teológicamente confiable?",
-          "a": "Sí. La asistencia editorial está instruida para basarse estrictamente en la Biblia (CNBB), Catecismo de la Iglesia Católica, Compendio y Directorio General para la Catequesis. Todo contenido generado incluye referencias para auditar."
         }
       ],
       "annual_compare": "en anual, queda en {{price}}/mes",

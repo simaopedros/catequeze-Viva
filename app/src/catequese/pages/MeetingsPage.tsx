@@ -41,7 +41,7 @@ import { useUserContext } from "../../client/hooks/useUserContext";
 import { AI_FEATURES_ENABLED } from "../../shared/aiFeatures";
 import { toast } from "../../client/hooks/use-toast";
 import { useLocale } from "../../i18n/useLocale";
-import { formatDate } from "../../i18n/format";
+import { formatDate, todayInAppTimezone } from "../../i18n/format";
 
 export default function MeetingsPage() {
   const { t } = useTranslation("meetings");
@@ -118,7 +118,7 @@ export default function MeetingsPage() {
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [contentSearch, setContentSearch] = useState("");
   const [title, setTitle] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+  const [date, setDate] = useState(todayInAppTimezone);
   const [selectedContentId, setSelectedContentId] = useState("");
 
   const handleCreate = async () => {

@@ -543,7 +543,13 @@ export const auth_en = {
     "signup_error_terms": "You must accept the Terms of Use and Privacy Policy.",
     "signup_error_create": "Error creating account. Please try again.",
     "footer_copyright": "© {{year}} Catequese Viva",
-    "email_verified": "Email verified successfully?",
+    "email_verified": "Email verified successfully.",
+    "email_verify_pending": "Confirming your email…",
+    "email_verify_success_title": "Email verified",
+    "email_verify_success_body": "Your account is ready. Sign in to continue setting up your class.",
+    "email_verify_error_title": "Could not verify",
+    "email_verify_error_body": "This link is invalid or was already used. Request a new confirmation email.",
+    "email_verify_missing_token": "The confirmation link is missing. Open the email we sent and tap the button.",
     "password_reset_success": "Password reset successfully?",
     "remember_password": "Remembered your password?",
     "login_link": "Sign in",
@@ -2492,7 +2498,7 @@ export const landing_en = {
     "per_month": "/month",
     "per_year": "/year",
     "annual_discount": "2 months free",
-    "compare_plans": "See full plan details",
+    "compare_plans": "See plan details",
     "faq_title": "Before you begin",
     "faq_subtitle": "Clear answers for catechists and coordinators.",
     "faqs": [
@@ -2525,7 +2531,7 @@ export const landing_en = {
     "cta_subtitle": "Stop scattering the week across notebooks, spreadsheets, and chats. Start the 7-day trial with your class — no charge now.",
     "cta_button": "Start 7-day trial",
     "cta_badge": "Trial",
-    "cta_see_plans": "See plans",
+    "cta_see_plans": "See the plan",
     "mock": {
       "ai_title": "Editorial meeting assistance",
       "ai_subtitle": "CNBB theological base · Catechism · Directory",
@@ -2844,7 +2850,7 @@ export const landingIa_en = {
       "badge": "Theologically trained AI",
       "cta_primary": "Try the AI",
       "cta_secondary": "See how it works",
-      "trust_signals": "Single or Unlimited plan • CNBB theological base • Cancel anytime",
+      "trust_signals": "R$ 9.90/month • CNBB theological base • Cancel anytime",
       "visual_title": "Meeting outline",
       "visual_item_1": "Enter topic and age group",
       "visual_item_2": "Review Catholic references",
@@ -2949,7 +2955,7 @@ export const landingPresenca_en = {
       "badge": "Digital attendance control",
       "cta_primary": "Start now",
       "cta_secondary": "See demo",
-      "trust_signals": "Single or Unlimited plan • Works on mobile • Payment via Stripe",
+      "trust_signals": "R$ 9.90/month • Works on mobile • Payment via Stripe",
       "visual_title": "Mobile attendance",
       "visual_item_1": "Mark the class quickly",
       "visual_item_2": "Record justifications",
@@ -3051,7 +3057,7 @@ export const landingSistema_en = {
       "badge": "Complete catechesis management",
       "cta_primary": "Get started",
       "cta_secondary": "See features",
-      "trust_signals": "Single or Unlimited plan • Start in 2 minutes • Cancel anytime",
+      "trust_signals": "R$ 9.90/month • Start in 2 minutes • Cancel anytime",
       "visual_title": "Coordination overview",
       "visual_item_1": "Classes and teams in one dashboard",
       "visual_item_2": "Attendance indicators",
@@ -3227,6 +3233,7 @@ export const meetings_en = {
     "title": "Meetings",
     "subtitle": "Manage class meetings",
     "new": "New",
+    "create": "Create meeting",
     "meeting_title": "Meeting title",
     "date": "Date",
     "no_content": "No linked content",
@@ -3555,6 +3562,8 @@ export const onboarding_en = {
       "manager_desc": "Parish, catechetical year, and team classes.",
       "manager_features": [],
       "helper": "You can change path later if needed.",
+      "launch_question": "Let's set up your class workspace.",
+      "launch_helper": "This launch is for catechists. Parish and diocese paths come later.",
       "eyebrow": "First steps"
     },
     "personal_setup": {
@@ -4131,7 +4140,7 @@ export const public_en = {
     },
     "pricing": {
       "title": "Choose the right plan for your pastoral routine",
-      "subtitle": "Two clear plans. Single covers one catechist; Unlimited covers the parish or diocesan operation.",
+      "subtitle": "Single plan for catechists: up to 3 classes, R$ 9.90/month. Start with a 7-day free trial.",
       "payment_card": "Card",
       "annual_savings": "Save 17% on annual",
       "monthly_tab": "Monthly",
@@ -4147,36 +4156,28 @@ export const public_en = {
       },
       "faq": [
         {
-          "q": "How can I evaluate the platform before subscribing?",
-          "a": "You can start on the catechist path, understand the platform structure, and move to the plan that fits you when you decide to prepare meetings more consistently."
+          "q": "How can I try the platform before subscribing?",
+          "a": "You can try the platform for 7 days with no credit card, see the full routine, and only choose the plan when it makes sense to continue."
         },
         {
-          "q": "How do editorial credits work?",
-          "a": "Single includes 15 editorial credits per month. Unlimited includes 50 editorial credits per month. A meeting or activity uses 1 credit; annual planning uses 3 credits."
-        },
-        {
-          "q": "What is the difference between Single and Unlimited?",
-          "a": "Single covers 1 parish, up to 3 classes, and up to 150 catechumens in total for one catechist. Unlimited removes the operational limits and is designed for parish and diocesan routines."
+          "q": "What is the catechist plan price?",
+          "a": "The Single plan costs R$ 9.90/month (or R$ 99/year) and covers 1 parish, up to 3 classes, and up to 150 catechumens in total for one catechist."
         },
         {
           "q": "How does payment work?",
-          "a": "We accept credit card (one-time or monthly). On the annual plan, payment is a single charge for 12 months. No commitment — cancel anytime."
+          "a": "You start with a 7-day free trial and no credit card. If you continue, you can pay by card monthly or annually. No lock-in — cancel anytime."
         },
         {
           "q": "What about annual plan refunds?",
           "a": "Annual plans have no automatic refund. Cancellation stops renewal, but access continues until the paid period ends. Proportional refunds are evaluated case by case via contato@catequeseviva.com.br."
         },
         {
-          "q": "Can I switch plans?",
-          "a": "Yes, anytime. When upgrading, your data is preserved automatically."
+          "q": "Can I switch plans later?",
+          "a": "Yes, anytime. When you change plan, your data is preserved automatically."
         },
         {
           "q": "Is my data secure?",
           "a": "Yes. We follow LGPD with encryption in transit and at rest. Children's data receives special protection."
-        },
-        {
-          "q": "Is editorial assistance theologically reliable?",
-          "a": "Yes. Editorial assistance is instructed to strictly base itself on the Bible (CNBB), Catechism of the Catholic Church, Compendium, and General Directory for Catechesis. All generated content includes references for you to audit."
         }
       ],
       "annual_compare": "on annual, it comes to {{price}}/month",
