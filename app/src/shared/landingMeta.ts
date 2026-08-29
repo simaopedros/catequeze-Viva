@@ -23,9 +23,9 @@ export const SITE_ORIGIN =
 export const LANDING_ROUTE_META: Record<string, LandingRouteMeta> = {
   "/": {
     title:
-      "Catequese Viva — Trial de 7 dias sem cartão | Turma, presença e encontros",
+      "Catequese Viva — Teste grátis de 7 dias sem cartão | Sua turma, presença e encontros",
     description:
-      "Organize turma, presença e o próximo encontro no mesmo fluxo. Trial de 7 dias sem cartão e sem cobrança agora. Feito para catequistas e paróquias.",
+      "Organize sua turma, a chamada e o próximo encontro no mesmo lugar. Teste grátis de 7 dias, sem cartão e sem cobrança agora. Feito para o catequista.",
     canonicalPath: "/",
     campaign: "main",
   },

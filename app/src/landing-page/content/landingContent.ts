@@ -211,15 +211,15 @@ export const PRICING_PREVIEW: PricingPlan[] = [
   {
     planId: 'single',
     level: 'personal',
-    name: 'Plano Único',
+    name: 'Plano Catequista',
     price: 'R$ 9,90',
     period: '/mês',
-    desc: 'Para catequista organizar até 3 turmas com presença e calendário',
+    desc: 'Para você organizar sua turma com presença e calendário',
     features: [
-      '1 paróquia',
       'Até 3 turmas e 150 catequizandos no total',
       'Chamada pelo celular e histórico',
       'Calendário litúrgico',
+      'Portal para as famílias da sua turma',
     ],
     priceCents: PLANS.single.prices.monthlyCents,
     priceCentsAnnual: PLANS.single.prices.annualCents,
@@ -264,7 +264,7 @@ export const FAQ: FaqItem[] = [
   },
   {
     q: 'Posso ter várias turmas na mesma conta?',
-    a: 'Sim. O Plano Único cobre até 3 turmas e 150 catequizandos no total para um catequista.',
+    a: 'Sim. O Plano Catequista cobre até 3 turmas e 150 catequizandos no total.',
   },
   {
     q: 'Que tipo de suporte vocês oferecem?',

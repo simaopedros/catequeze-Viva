@@ -28,8 +28,8 @@
     "error": "Erro ao enviar. Tente novamente."
   },
   "pricing": {
-    "title": "Escolha o plano certo para a sua rotina pastoral",
-    "subtitle": "Plano Único para catequista: até 3 turmas, R$ 9,90/mês. Comece com 7 dias de teste gratuito.",
+    "title": "Um plano simples para você e a sua turma",
+    "subtitle": "Plano Catequista: R$ 9,90/mês (ou R$ 99/ano) para até 3 turmas. Comece com 7 dias de teste gratuito, sem cartão.",
     "payment_card": "Cartão",
     "annual_savings": "Economize 17% no anual",
     "monthly_tab": "Mensal",
@@ -38,31 +38,31 @@
     "faq_title": "Perguntas frequentes",
     "per_month": "/mês",
     "per_year": "/ano",
-    "cta_paid": "Escolher este plano",
-    "most_popular": "Mais Popular",
+    "cta_paid": "Começar os 7 dias",
+    "most_popular": "Feito para o catequista",
     "plan_desc": {
-      "single": "Para um catequista organizar até 3 turmas com presença, histórico e calendário em um só fluxo."
+      "single": "Para você organizar a sua turma — chamada, histórico e calendário no mesmo fluxo. Cobre até 3 turmas, se você cuidar de mais de uma."
     },
     "faq": [
       {
         "q": "Como conheço a plataforma antes de assinar?",
-        "a": "Você pode testar a plataforma por 7 dias sem cartão de crédito, conhecer a rotina completa e só decidir pelo plano quando fizer sentido continuar."
+        "a": "Você testa por 7 dias sem cartão de crédito, usa na sua turma de verdade e só decide se fizer sentido continuar. Quando os 7 dias terminam, nada é cobrado."
       },
       {
-        "q": "Qual o preço do plano para catequista?",
-        "a": "O Plano Único custa R$ 9,90/mês (ou R$ 99/ano) e cobre 1 paróquia, até 3 turmas e até 150 catequizandos no total para um catequista."
+        "q": "Qual é o preço?",
+        "a": "O Plano Catequista custa R$ 9,90/mês (ou R$ 99/ano) e cobre até 3 turmas e 150 catequizandos no total — mais do que suficiente para a sua realidade."
       },
       {
         "q": "Como funciona o pagamento?",
-        "a": "Você começa com 7 dias de teste gratuito sem cartão de crédito. Se decidir continuar, pode pagar no cartão no mensal ou no anual. Sem fidelidade — cancele quando quiser."
+        "a": "Você começa com 7 dias de teste gratuito sem cartão de crédito. Se decidir continuar, paga no cartão, no mensal ou no anual. Sem fidelidade — cancele quando quiser."
       },
       {
         "q": "E o reembolso do plano anual?",
         "a": "Planos anuais não têm reembolso automático. O cancelamento encerra a renovação, mas o acesso continua até o fim do período pago. Reembolso proporcional é avaliado caso a caso via contato@catequeseviva.com.br."
       },
       {
-        "q": "Posso migrar entre planos?",
-        "a": "Sim, a qualquer momento. Ao fazer upgrade, seus dados são preservados automaticamente."
+        "q": "E se a minha catequese crescer?",
+        "a": "O plano cobre até 3 turmas e 150 catequizandos. Se um dia você precisar de mais, fale com a gente — seus dados e o histórico da turma são preservados em qualquer mudança."
       },
       {
         "q": "Os dados ficam seguros?",

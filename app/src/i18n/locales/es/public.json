@@ -28,8 +28,8 @@
     "error": "Error al enviar. Intente nuevamente."
   },
   "pricing": {
-    "title": "Elige el plan correcto para tu rutina pastoral",
-    "subtitle": "Plan Único para catequista: hasta 3 grupos, R$ 9,90/mes. Empieza con 7 días de prueba gratis.",
+    "title": "Un plan simple para ti y tu grupo",
+    "subtitle": "Plan Catequista: R$ 9,90/mes (o R$ 99/año) para hasta 3 grupos. Empieza con 7 días de prueba gratis, sin tarjeta.",
     "payment_card": "Tarjeta",
     "annual_savings": "Ahorre 17% en anual",
     "monthly_tab": "Mensual",
@@ -38,31 +38,31 @@
     "faq_title": "Preguntas frecuentes",
     "per_month": "/mes",
     "per_year": "/año",
-    "cta_paid": "Elegir este plan",
-    "most_popular": "Más Popular",
+    "cta_paid": "Empezar los 7 días",
+    "most_popular": "Hecho para el catequista",
     "plan_desc": {
-      "single": "Para que un catequista organice un grupo con claridad, historial y preparación en un solo flujo."
+      "single": "Para que organices tu grupo — asistencia, historial y calendario en un solo flujo. Cubre hasta 3 grupos si cuidas más de uno."
     },
     "faq": [
       {
         "q": "¿Cómo conozco la plataforma antes de suscribirme?",
-        "a": "Puedes probar la plataforma 7 días sin tarjeta, conocer la rutina completa y solo elegir el plan cuando tenga sentido continuar."
+        "a": "La pruebas 7 días sin tarjeta, la usas con tu grupo de verdad y solo decides si tiene sentido continuar. Cuando terminan los 7 días, no se cobra nada."
       },
       {
-        "q": "¿Cuál es el precio del plan para catequista?",
-        "a": "El Plan Único cuesta R$ 9,90/mes (o R$ 99/año) y cubre 1 parroquia, hasta 3 grupos y hasta 150 catecúmenos en total para un catequista."
+        "q": "¿Cuál es el precio?",
+        "a": "El Plan Catequista cuesta R$ 9,90/mes (o R$ 99/año) y cubre hasta 3 grupos y 150 catecúmenos en total — más que suficiente para tu realidad."
       },
       {
         "q": "¿Cómo funciona el pago?",
-        "a": "Empiezas con 7 días de prueba gratis sin tarjeta. Si decides continuar, puedes pagar con tarjeta en mensual o anual. Sin permanencia — cancela cuando quieras."
+        "a": "Empiezas con 7 días de prueba gratis sin tarjeta. Si decides continuar, pagas con tarjeta, en mensual o anual. Sin permanencia — cancela cuando quieras."
       },
       {
         "q": "¿Y el reembolso del plan anual?",
         "a": "Los planes anuales no tienen reembolso automático. La cancelación detiene la renovación, pero el acceso continúa hasta el fin del período pagado. El reembolso proporcional se evalúa caso a caso vía contato@catequeseviva.com.br."
       },
       {
-        "q": "¿Puedo cambiar de plan después?",
-        "a": "Sí, en cualquier momento. Al cambiar de plan, tus datos se preservan automáticamente."
+        "q": "¿Y si mi catequesis crece?",
+        "a": "El plan cubre hasta 3 grupos y 150 catecúmenos. Si algún día necesitas más, habla con nosotros — tus datos y el historial del grupo se preservan en cualquier cambio."
       },
       {
         "q": "¿Los datos están seguros?",

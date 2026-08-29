@@ -28,7 +28,7 @@
   "trial_plan_badge": "Em teste",
   "trial_status_title": "Período de teste",
   "trial_status_desc_one": "Resta 1 dia do seu teste gratuito. Assine para manter o acesso sem interrupção.",
-  "trial_status_desc_other": "Restam {{count}} dias do seu teste gratuito. Você já usa o Plano Único com limites liberados.",
+  "trial_status_desc_other": "Restam {{count}} dias do seu teste gratuito. Você já usa o Plano Catequista com limites liberados.",
   "trial_hero_subtitle_one": "Último dia do período de teste. Assine quando quiser manter tudo funcionando.",
   "trial_hero_subtitle_other": "Você está no período de teste ({{count}} dias restantes). Explore a plataforma sem cobrança por enquanto.",
   "trial_ends_on": "O teste termina em {{date}}.",
@@ -95,15 +95,14 @@
       "features": []
     },
     "single": {
-      "name": "Plano Único",
+      "name": "Plano Catequista",
       "price": "R$ 9,90/mês",
       "annual_price": "R$ 99/ano (~R$ 8,25/mês)",
       "features": [
-        "1 paróquia",
         "Até 3 turmas",
         "150 catequizandos no total",
         "Presença e calendário litúrgico",
-        "Portal da família"
+        "Portal para as famílias da sua turma"
       ]
     },
     "unlimited": {

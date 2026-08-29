@@ -28,7 +28,7 @@
   "trial_plan_badge": "On trial",
   "trial_status_title": "Trial period",
   "trial_status_desc_one": "1 day left on your free trial. Subscribe to keep access without interruption.",
-  "trial_status_desc_other": "{{count}} days left on your free trial. You already use Single plan limits.",
+  "trial_status_desc_other": "{{count}} days left on your free trial. You already use Catechist Plan limits.",
   "trial_hero_subtitle_one": "Last day of your trial. Subscribe when you want to keep everything running.",
   "trial_hero_subtitle_other": "You are on a trial ({{count}} days left). Explore the product with no charge for now.",
   "trial_ends_on": "Trial ends on {{date}}.",
@@ -95,15 +95,14 @@
       "features": []
     },
     "single": {
-      "name": "Single Plan",
-      "price": "R$ 29/month",
-      "annual_price": "R$ 290/year (~R$ 24/month)",
+      "name": "Catechist Plan",
+      "price": "R$ 9.90/month",
+      "annual_price": "R$ 99/year (~R$ 8.25/month)",
       "features": [
-        "1 parish",
         "Up to 3 classes",
         "150 catechumens in total",
         "Attendance and liturgical calendar",
-        "15 Editorial credits/month"
+        "Portal for the families in your class"
       ]
     },
     "unlimited": {

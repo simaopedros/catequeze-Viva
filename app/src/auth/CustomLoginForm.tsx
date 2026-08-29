@@ -80,7 +80,14 @@ export default function CustomLoginForm({
     try {
       await login({ email, password });
     } catch (err: any) {
-      setError(err?.message || t("login_error_invalid"));
+      // Wasp's login() throws English messages (e.g. "Invalid credentials");
+      // show the localized copy instead of the raw error.
+      const status = err?.statusCode ?? err?.response?.status;
+      setError(
+        typeof status === "number" && status >= 500
+          ? t("login_error_generic")
+          : t("login_error_invalid"),
+      );
       setIsLoading(false);
       return;
     }
