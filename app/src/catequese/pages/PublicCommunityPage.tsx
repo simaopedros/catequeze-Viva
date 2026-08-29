@@ -9,6 +9,10 @@ import {
   SocialAccessNotice,
   type SocialAccessReason,
 } from "../components/social/SocialAccessNotice";
+import {
+  SocialFeedTabs,
+  type SocialFeedMode,
+} from "../components/social/SocialFeedTabs";
 
 /**
  * Public Comunidade feed — no authentication required. Visitors read, open and
@@ -21,6 +25,7 @@ export default function PublicCommunityPage() {
   const { data: user } = useAuth();
 
   const [topicSlug, setTopicSlug] = useState<string | null>(params.topic ?? null);
+  const [mode, setMode] = useState<SocialFeedMode>("recent");
   const [showNotice, setShowNotice] = useState(false);
 
   const { data: topics } = useQuery(getSocialTopics);
@@ -66,7 +71,12 @@ export default function PublicCommunityPage() {
         </div>
       )}
 
-      <div className="mb-5">
+      <div className="mb-5 space-y-3">
+        <SocialFeedTabs
+          mode={mode}
+          onChange={setMode}
+          showFollowing={Boolean(user)}
+        />
         <SocialTopicPills
           topics={topics ?? []}
           activeSlug={topicSlug}
@@ -78,6 +88,13 @@ export default function PublicCommunityPage() {
         topicSlug={topicSlug}
         canInteract={canInteract}
         onRequireAccess={() => setShowNotice(true)}
+        sort={mode === "trending" ? "trending" : "recent"}
+        following={mode === "following"}
+        showFollow={Boolean(user)}
+        emptyTitle={mode === "following" ? t("discovery.emptyFollowing") : undefined}
+        emptyDescription={
+          mode === "following" ? t("discovery.emptyFollowingDescription") : undefined
+        }
       />
     </main>
   );

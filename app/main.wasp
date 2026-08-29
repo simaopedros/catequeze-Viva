@@ -1280,7 +1280,7 @@ action discardSocialMedia {
 // anonymous visitors get the same published feed as members.
 query getSocialFeed {
   fn: import { getSocialFeed } from "@src/server/operations/socialOperations",
-  entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, SocialReaction, User, Parish]
+  entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, SocialReaction, SocialFollow, User, Parish]
 }
 
 query getSocialPost {
@@ -1315,12 +1315,12 @@ action deleteSocialPost {
 
 action toggleSocialReaction {
   fn: import { toggleSocialReaction } from "@src/server/operations/socialOperations",
-  entities: [SocialPost, SocialReaction, User, Membership, Parish, TenantBilling, Diocese]
+  entities: [SocialPost, SocialReaction, Notification, User, Membership, Parish, TenantBilling, Diocese]
 }
 
 action createSocialComment {
   fn: import { createSocialComment } from "@src/server/operations/socialOperations",
-  entities: [SocialPost, SocialComment, User, Membership, Parish, TenantBilling, Diocese]
+  entities: [SocialPost, SocialComment, Notification, User, Membership, Parish, TenantBilling, Diocese]
 }
 
 action deleteSocialComment {
@@ -1332,6 +1332,19 @@ action deleteSocialComment {
 action registerSocialShare {
   fn: import { registerSocialShare } from "@src/server/operations/socialOperations",
   entities: [SocialPost]
+}
+//#endregion
+
+//#region Comunidade (social) - discovery
+// Following is consumption, so any signed-in user may follow an author.
+action toggleSocialFollow {
+  fn: import { toggleSocialFollow } from "@src/server/operations/socialDiscoveryOperations",
+  entities: [SocialFollow, Notification, User]
+}
+
+query getSocialFollowState {
+  fn: import { getSocialFollowState } from "@src/server/operations/socialDiscoveryOperations",
+  entities: [SocialFollow]
 }
 //#endregion
 

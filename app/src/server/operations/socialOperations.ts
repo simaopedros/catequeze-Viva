@@ -16,6 +16,7 @@ import {
   resolveSocialEntitlement,
   startOfDayUtc,
 } from '../social/publishGate';
+import { notifySocialActivity } from '../social/notifications';
 import { detachSocialMediaAsset } from './socialMediaOperations';
 import {
   buildSocialSlug,
@@ -28,6 +29,8 @@ import {
 
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 50;
+/** How far back the "trending" ranking looks. */
+const TRENDING_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 
 // ─── Serialization ─────────────────────────────────────────────────────────
 
@@ -59,6 +62,15 @@ export function buildAuthorDisplayName(author: {
 }): string {
   const name = [author.firstName, author.lastName].filter(Boolean).join(' ').trim();
   return name || 'Membro da Comunidade';
+}
+
+/** Display name of the acting user, for notification bodies. */
+async function resolveActorName(context: any): Promise<string> {
+  const actor = await context.entities.User.findUnique({
+    where: { id: context.user.id },
+    select: { firstName: true, lastName: true },
+  });
+  return buildAuthorDisplayName(actor ?? {});
 }
 
 function serializeMedia(media: any) {
@@ -133,22 +145,56 @@ function postInclude(viewerId?: string | null) {
  * only adds the viewer's own reaction to each item.
  */
 export const getSocialFeed = async (
-  args: { cursor?: string | null; limit?: number; topicSlug?: string | null; authorId?: string | null },
+  args: {
+    cursor?: string | null;
+    limit?: number;
+    topicSlug?: string | null;
+    authorId?: string | null;
+    /** `trending` ranks by engagement inside the trending window. */
+    sort?: 'recent' | 'trending';
+    /** Restrict to authors the viewer follows (ignored when anonymous). */
+    following?: boolean;
+  },
   context: any,
 ) => {
   const limit = Math.min(Math.max(args?.limit ?? DEFAULT_PAGE_SIZE, 1), MAX_PAGE_SIZE);
   const viewerId = context.user?.id ?? null;
+  const trending = args?.sort === 'trending';
+
+  let followedAuthorIds: string[] | null = null;
+  if (args?.following && viewerId) {
+    const follows = await context.entities.SocialFollow.findMany({
+      where: { followerId: viewerId },
+      select: { authorId: true },
+    });
+    followedAuthorIds = follows.map((follow: any) => follow.authorId);
+  }
 
   const where: any = {
     status: 'PUBLISHED',
     ...(args?.topicSlug ? { topics: { some: { topic: { slug: args.topicSlug } } } } : {}),
     ...(args?.authorId ? { authorId: args.authorId } : {}),
+    ...(followedAuthorIds ? { authorId: { in: followedAuthorIds } } : {}),
+    ...(trending
+      ? { publishedAt: { gte: new Date(Date.now() - TRENDING_WINDOW_MS) } }
+      : {}),
   };
+
+  if (followedAuthorIds && followedAuthorIds.length === 0) {
+    return { items: [], nextCursor: null };
+  }
 
   const posts = await context.entities.SocialPost.findMany({
     where,
     include: postInclude(viewerId),
-    orderBy: [{ publishedAt: 'desc' }, { id: 'desc' }],
+    orderBy: trending
+      ? [
+          { reactionCount: 'desc' },
+          { commentCount: 'desc' },
+          { shareCount: 'desc' },
+          { id: 'desc' },
+        ]
+      : [{ publishedAt: 'desc' }, { id: 'desc' }],
     take: limit + 1,
     ...(args?.cursor ? { cursor: { id: args.cursor }, skip: 1 } : {}),
   });
@@ -418,7 +464,7 @@ export const toggleSocialReaction = async (
 
   const post = await context.entities.SocialPost.findUnique({
     where: { id: String(args?.postId || '') },
-    select: { id: true, status: true },
+    select: { id: true, status: true, slug: true, authorId: true },
   });
   if (!post || post.status !== 'PUBLISHED') {
     throw new HttpError(404, 'Publicação não encontrada.');
@@ -461,6 +507,14 @@ export const toggleSocialReaction = async (
     select: { reactionCount: true },
   });
 
+  await notifySocialActivity(context, {
+    recipientId: post.authorId,
+    actorName: await resolveActorName(context),
+    event: 'REACTION',
+    postId: post.id,
+    postSlug: post.slug,
+  });
+
   return { reaction: type, reactionCount: updated.reactionCount };
 };
 
@@ -472,7 +526,7 @@ export const createSocialComment = async (
 
   const post = await context.entities.SocialPost.findUnique({
     where: { id: String(args?.postId || '') },
-    select: { id: true, status: true },
+    select: { id: true, status: true, slug: true, authorId: true },
   });
   if (!post || post.status !== 'PUBLISHED') {
     throw new HttpError(404, 'Publicação não encontrada.');
@@ -515,6 +569,15 @@ export const createSocialComment = async (
     await context.entities.SocialPost.update({
       where: { id: post.id },
       data: { commentCount: { increment: 1 } },
+    });
+
+    await notifySocialActivity(context, {
+      recipientId: post.authorId,
+      actorName: await resolveActorName(context),
+      event: 'COMMENT',
+      postId: post.id,
+      postSlug: post.slug,
+      excerpt: body,
     });
   }
 

@@ -9,11 +9,16 @@ import {
   SocialAccessNotice,
   type SocialAccessReason,
 } from "../components/social/SocialAccessNotice";
+import {
+  SocialFeedTabs,
+  type SocialFeedMode,
+} from "../components/social/SocialFeedTabs";
 
 /** Authenticated Comunidade feed: read for everyone, publish for subscribers. */
 export default function CommunityPage() {
   const { t } = useTranslation("social");
   const [topicSlug, setTopicSlug] = useState<string | null>(null);
+  const [mode, setMode] = useState<SocialFeedMode>("recent");
   const [reloadToken, setReloadToken] = useState(0);
 
   const { data: topics } = useQuery(getSocialTopics);
@@ -45,16 +50,26 @@ export default function CommunityPage() {
         <SocialAccessNotice reason={(access?.reason ?? null) as SocialAccessReason} />
       )}
 
-      <SocialTopicPills
-        topics={topics ?? []}
-        activeSlug={topicSlug}
-        onSelect={setTopicSlug}
-      />
+      <div className="space-y-3">
+        <SocialFeedTabs mode={mode} onChange={setMode} showFollowing />
+        <SocialTopicPills
+          topics={topics ?? []}
+          activeSlug={topicSlug}
+          onSelect={setTopicSlug}
+        />
+      </div>
 
       <SocialFeed
         topicSlug={topicSlug}
         canInteract={canInteract}
         reloadToken={reloadToken}
+        sort={mode === "trending" ? "trending" : "recent"}
+        following={mode === "following"}
+        showFollow
+        emptyTitle={mode === "following" ? t("discovery.emptyFollowing") : undefined}
+        emptyDescription={
+          mode === "following" ? t("discovery.emptyFollowingDescription") : undefined
+        }
       />
     </div>
   );

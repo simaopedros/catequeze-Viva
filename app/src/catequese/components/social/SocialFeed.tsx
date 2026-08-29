@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Loader2, Sparkles } from "lucide-react";
-import { useQuery, getSocialFeed } from "wasp/client/operations";
+import { useQuery, getSocialFeed, getSocialFollowState } from "wasp/client/operations";
 import { Button } from "../../../client/components/ui/button";
 import { EmptyState } from "../../../client/components/EmptyState";
 import { SocialPostCard, type SocialPostItem } from "./SocialPostCard";
@@ -16,6 +16,11 @@ export function SocialFeed({
   canInteract,
   onRequireAccess,
   reloadToken = 0,
+  sort = "recent",
+  following = false,
+  showFollow = false,
+  emptyTitle,
+  emptyDescription,
 }: {
   topicSlug?: string | null;
   authorId?: string | null;
@@ -23,6 +28,11 @@ export function SocialFeed({
   onRequireAccess?: () => void;
   /** Bump to reload the feed from the first page (e.g. after publishing). */
   reloadToken?: number;
+  sort?: "recent" | "trending";
+  following?: boolean;
+  showFollow?: boolean;
+  emptyTitle?: string;
+  emptyDescription?: string;
 }) {
   const { t } = useTranslation("social");
   const [pages, setPages] = useState<SocialPostItem[][]>([]);
@@ -34,6 +44,8 @@ export function SocialFeed({
     cursor,
     topicSlug: topicSlug ?? null,
     authorId: authorId ?? null,
+    sort,
+    following,
   });
 
   useEffect(() => {
@@ -41,7 +53,7 @@ export function SocialFeed({
     setCursor(null);
     setNextCursor(null);
     setRemoved([]);
-  }, [topicSlug, authorId, reloadToken]);
+  }, [topicSlug, authorId, reloadToken, sort, following]);
 
   useEffect(() => {
     if (!data) return;
@@ -58,6 +70,14 @@ export function SocialFeed({
     .filter((post, index, all) => all.findIndex((item) => item.id === post.id) === index)
     .filter((post) => !removed.includes(post.id));
 
+  const authorIds = [...new Set(posts.map((post) => post.author.id))];
+  const { data: followState } = useQuery(
+    getSocialFollowState,
+    { authorIds },
+    { enabled: showFollow && authorIds.length > 0 },
+  );
+  const followedAuthors: string[] = followState?.following ?? [];
+
   if (isLoading && posts.length === 0) {
     return (
       <p className="flex items-center justify-center gap-2 py-10 text-sm text-muted-foreground">
@@ -71,8 +91,8 @@ export function SocialFeed({
     return (
       <EmptyState
         icon={Sparkles}
-        title={topicSlug ? t("feed.emptyTopic") : t("feed.empty")}
-        description={t("feed.emptyDescription")}
+        title={emptyTitle ?? (topicSlug ? t("feed.emptyTopic") : t("feed.empty"))}
+        description={emptyDescription ?? t("feed.emptyDescription")}
       />
     );
   }
@@ -86,6 +106,8 @@ export function SocialFeed({
           canInteract={canInteract}
           onRequireAccess={onRequireAccess}
           onDeleted={(postId) => setRemoved((current) => [...current, postId])}
+          showFollow={showFollow}
+          isFollowing={followedAuthors.includes(post.author.id)}
         />
       ))}
 

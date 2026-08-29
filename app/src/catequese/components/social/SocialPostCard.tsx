@@ -19,6 +19,7 @@ import { SocialMediaGallery, type SocialMediaItem } from "./SocialMediaGallery";
 import { SocialShareButton } from "./SocialShareButton";
 import { SocialCommentThread } from "./SocialCommentThread";
 import { SocialReportDialog } from "./SocialReportDialog";
+import { SocialFollowButton } from "./SocialFollowButton";
 
 export interface SocialPostItem {
   id: string;
@@ -67,6 +68,8 @@ export function SocialPostCard({
   onDeleted,
   expandComments = false,
   linkToDetail = true,
+  showFollow = false,
+  isFollowing = false,
 }: {
   post: SocialPostItem;
   /** Viewer may react and comment (active subscription). */
@@ -75,6 +78,9 @@ export function SocialPostCard({
   onDeleted?: (postId: string) => void;
   expandComments?: boolean;
   linkToDetail?: boolean;
+  /** Following only shows for signed-in visitors on other people's posts. */
+  showFollow?: boolean;
+  isFollowing?: boolean;
 }) {
   const { t } = useTranslation("social");
   const { currentLocale } = useLocale();
@@ -129,6 +135,14 @@ export function SocialPostCard({
             {post.parish ? ` · ${t("feed.postedIn", { parish: post.parish.name })}` : ""}
           </p>
         </div>
+
+        {showFollow && !post.isOwn && (
+          <SocialFollowButton
+            authorId={post.author.id}
+            authorName={post.author.displayName}
+            initiallyFollowing={isFollowing}
+          />
+        )}
 
         {post.status === "PENDING_REVIEW" && (
           <Badge variant="outline" className="shrink-0">
