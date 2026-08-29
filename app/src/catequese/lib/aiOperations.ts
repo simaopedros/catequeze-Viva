@@ -51,6 +51,7 @@ export const generateWhatsAppMessage = AI_FEATURES_ENABLED
       tone: string;
       length: string;
       includeLink?: boolean;
+      meetingId?: string;
     }) => {
       throw new Error("AI features are currently disabled");
     }
@@ -59,6 +60,7 @@ export const generateWhatsAppMessage = AI_FEATURES_ENABLED
       tone: string;
       length: string;
       includeLink?: boolean;
+      meetingId?: string;
     }) => {
       throw new Error("AI features are currently disabled");
     };
