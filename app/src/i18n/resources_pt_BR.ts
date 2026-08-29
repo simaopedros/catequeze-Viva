@@ -2479,7 +2479,7 @@ export const landing_pt_BR = {
     "steps": [
       {
         "title": "Crie sua conta",
-        "desc": "Nome, e-mail e senha. Rápido."
+        "desc": "Só e-mail e senha. Rápido."
       },
       {
         "title": "Ative o teste gratuito de 7 dias",
@@ -2530,7 +2530,7 @@ export const landing_pt_BR = {
       },
       {
         "q": "O que acontece quando os 7 dias terminam?",
-        "a": "Nada é cobrado — você não cadastrou cartão. Se quiser continuar, assina o Plano Catequista por R$ 9,90/mês (ou R$ 99/ano). Se não, sua conta simplesmente para por aí."
+        "a": "Nada é cobrado — você não cadastrou cartão. Se quiser continuar, você assina o Plano Catequista na página Planos. Se não, sua conta simplesmente para por aí."
       },
       {
         "q": "Preciso da paróquia para começar?",
@@ -2692,7 +2692,7 @@ export const landing_pt_BR = {
       "chips": [
         "7 dias grátis",
         "Sem cartão para começar",
-        "Depois, R$ 9,90/mês",
+        "Sem cobrança automática",
         "LGPD",
         "Cancelamento simples"
       ],

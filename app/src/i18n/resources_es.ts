@@ -2481,7 +2481,7 @@ export const landing_es = {
     "steps": [
       {
         "title": "Crea tu cuenta",
-        "desc": "Nombre, correo y contraseña. Rápido."
+        "desc": "Solo correo y contraseña. Rápido."
       },
       {
         "title": "Activa el trial de 7 días",
@@ -2532,7 +2532,7 @@ export const landing_es = {
       },
       {
         "q": "¿Qué pasa cuando terminan los 7 días?",
-        "a": "No se cobra nada — nunca registraste una tarjeta. Si quieres continuar, te suscribes al Plan Catequista por R$ 9,90/mes (o R$ 99/año). Si no, tu cuenta simplemente se detiene ahí."
+        "a": "No se cobra nada — nunca registraste una tarjeta. Si quieres continuar, te suscribes al Plan Catequista en la página Planes. Si no, tu cuenta simplemente se detiene ahí."
       },
       {
         "q": "¿Necesito a la parroquia para empezar?",
@@ -2694,7 +2694,7 @@ export const landing_es = {
       "chips": [
         "7 días gratis",
         "Sin tarjeta para empezar",
-        "Después, R$ 9,90/mes",
+        "Sin cobro automático",
         "LGPD",
         "Cancelación simple"
       ],

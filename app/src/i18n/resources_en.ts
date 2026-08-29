@@ -2481,7 +2481,7 @@ export const landing_en = {
     "steps": [
       {
         "title": "Create your account",
-        "desc": "Name, email, and password. Quick."
+        "desc": "Just email and password. Quick."
       },
       {
         "title": "Start the 7-day trial",
@@ -2532,7 +2532,7 @@ export const landing_en = {
       },
       {
         "q": "What happens when the 7 days end?",
-        "a": "Nothing is charged — you never entered a card. If you want to continue, subscribe to the Catechist Plan for R$ 9.90/month (or R$ 99/year). If not, your account simply stops there."
+        "a": "Nothing is charged — you never entered a card. If you want to continue, you subscribe to the Catechist Plan on the Pricing page. If not, your account simply stops there."
       },
       {
         "q": "Do I need my parish to get started?",
@@ -2694,7 +2694,7 @@ export const landing_en = {
       "chips": [
         "7 free days",
         "No card to start",
-        "Then R$ 9.90/month",
+        "No automatic charge",
         "LGPD-oriented",
         "Easy cancel"
       ],
