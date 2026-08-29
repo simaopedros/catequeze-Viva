@@ -2,6 +2,7 @@
   "title": "Encontros",
   "subtitle": "Gerenciar encontros da turma",
   "new": "Novo",
+  "create": "Criar encontro",
   "meeting_title": "Título do encontro",
   "date": "Data",
   "no_content": "Sem conteúdo associado",

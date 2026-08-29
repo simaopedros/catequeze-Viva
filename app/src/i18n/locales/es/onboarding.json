@@ -44,6 +44,8 @@
     "manager_desc": "Parroquia, año catequético y grupos del equipo.",
     "manager_features": [],
     "helper": "Puedes cambiar de camino después si lo necesitas.",
+    "launch_question": "Vamos a preparar el espacio de tu grupo.",
+    "launch_helper": "En esta fase el acceso es para catequistas. Parroquia y diócesis vienen después.",
     "eyebrow": "Primeros pasos"
   },
   "personal_setup": {

@@ -82,7 +82,8 @@ export function ProductTrialBanner() {
     { parishId: activeParishId || undefined },
     {
       enabled: onTrial && !onBillingOrOnboarding && Boolean(user),
-      staleTime: 60_000,
+      staleTime: 0,
+      refetchOnMount: "always",
       refetchOnWindowFocus: false,
     },
   );

@@ -10,7 +10,10 @@ import {
 } from "../../client/analytics/metaTracking";
 import { PRICING_PREVIEW } from "../content/landingContent";
 import { Button } from "../../client/components/ui/button";
-import { formatPrice } from "../../shared/currency";
+import {
+  formatEquivalentMonthlyPrice,
+  formatPrice,
+} from "../../shared/currency";
 import { PLANS, type PlanId } from "../../shared/pricing";
 import { cn } from "../../client/utils";
 import { useLandingText } from "../hooks/useLandingText";
@@ -32,11 +35,10 @@ function formatPlanPrice(
 
   if (interval === "annual" && def.prices.annualCents != null) {
     const annual = def.prices.annualCents;
-    const monthlyEq = Math.round(annual / 12);
     return {
       display: formatPrice(annual),
       periodKey: "per_year",
-      monthlyEquivalent: formatPrice(monthlyEq),
+      monthlyEquivalent: formatEquivalentMonthlyPrice(annual),
     };
   }
 
@@ -47,8 +49,7 @@ function formatPlanPrice(
 }
 
 /**
- * Pricing preview shown on landing pages. Renders the 2 simplified plans
- * (Single + Unlimited) with trial CTA and monthly/annual toggle.
+ * Pricing preview shown on landing pages. Launch phase: Single plan only.
  */
 export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
   const tr = useLandingText(ns);
@@ -80,7 +81,10 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
         ref={headerRef}
         className={`mb-10 space-y-3 text-center ${headerClass}`}
       >
-        <div className="mx-auto h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
+        <div
+          className="mx-auto h-px w-16 bg-gradient-to-r from-brand-gold to-transparent"
+          aria-hidden
+        />
         <h2 className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink sm:text-4xl">
           {tr("pricing_title")}
         </h2>

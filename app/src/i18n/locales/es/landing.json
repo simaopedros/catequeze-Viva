@@ -194,7 +194,7 @@
   "per_month": "/mes",
   "per_year": "/año",
   "annual_discount": "2 meses gratis",
-  "compare_plans": "Ver detalles completos de los planes",
+  "compare_plans": "Ver detalles del plan",
   "faq_title": "Antes de empezar",
   "faq_subtitle": "Respuestas claras para catequistas y coordinación.",
   "faqs": [
@@ -227,7 +227,7 @@
   "cta_subtitle": "Deja de dispersar la semana en cuaderno, planilla y mensajes. Empieza el trial de 7 días con tu grupo — sin cobro ahora.",
   "cta_button": "Empezar trial de 7 días",
   "cta_badge": "Trial",
-  "cta_see_plans": "Ver planes",
+  "cta_see_plans": "Ver el plan",
   "mock": {
     "ai_title": "Asistencia para encuentros",
     "ai_subtitle": "Base teológica CNBB · Catecismo · Directorio",

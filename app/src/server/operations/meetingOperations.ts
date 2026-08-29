@@ -1,36 +1,46 @@
-import { HttpError } from 'wasp/server';
-import { MembershipStatus } from '@prisma/client';
-import { logger } from '../logger';
+import { HttpError } from "wasp/server";
+import { MembershipStatus } from "@prisma/client";
+import { logger } from "../logger";
 import {
   isFamilyPortalRole,
   isFamilySurface,
   loadActiveRoles,
   rolesAreFamilyOnly,
-} from '../auth/familySurface';
+} from "../auth/familySurface";
 import {
   dateIdCursorWhere,
   mergeWhere,
   pageParams,
   wrapDateIdPage,
-} from './listCursor';
+} from "./listCursor";
+import { meetingDateFromInput } from "../../shared/calendarDate";
 
 function isCoordinatorOrAbove(role: string | null): boolean {
   if (!role) return false;
-  return ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(role);
+  return [
+    "SUPER_ADMIN",
+    "DIOCESE_ADMIN",
+    "PARISH_COORDINATOR",
+    "COMMUNITY_COORDINATOR",
+    "PERSONAL_OWNER",
+  ].includes(role);
 }
 
 function isCatechistOrAbove(role: string): boolean {
-  return isCoordinatorOrAbove(role) || ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST'].includes(role);
+  return (
+    isCoordinatorOrAbove(role) ||
+    ["LEAD_CATECHIST", "ASSISTANT_CATECHIST"].includes(role)
+  );
 }
 
 const STAFF_ROLE_RANK = [
-  'SUPER_ADMIN',
-  'DIOCESE_ADMIN',
-  'PARISH_COORDINATOR',
-  'COMMUNITY_COORDINATOR',
-  'PERSONAL_OWNER',
-  'LEAD_CATECHIST',
-  'ASSISTANT_CATECHIST',
+  "SUPER_ADMIN",
+  "DIOCESE_ADMIN",
+  "PARISH_COORDINATOR",
+  "COMMUNITY_COORDINATOR",
+  "PERSONAL_OWNER",
+  "LEAD_CATECHIST",
+  "ASSISTANT_CATECHIST",
 ];
 
 async function getUserRole(
@@ -38,17 +48,17 @@ async function getUserRole(
   parishId?: string | null,
   surface?: string | null,
 ): Promise<string> {
-  if (context.user?.isAdmin && surface !== 'PORTAL') return 'SUPER_ADMIN';
+  if (context.user?.isAdmin && surface !== "PORTAL") return "SUPER_ADMIN";
   const roles = await loadActiveRoles(context, parishId);
   if (
     isFamilySurface({ context, roles, surface }) ||
     rolesAreFamilyOnly(roles)
   ) {
-    if (roles.includes('GUARDIAN')) return 'GUARDIAN';
-    if (roles.includes('CATECHUMEN')) return 'CATECHUMEN';
-    return roles.find(isFamilyPortalRole) || 'GUARDIAN';
+    if (roles.includes("GUARDIAN")) return "GUARDIAN";
+    if (roles.includes("CATECHUMEN")) return "CATECHUMEN";
+    return roles.find(isFamilyPortalRole) || "GUARDIAN";
   }
-  if (!roles.length) return '';
+  if (!roles.length) return "";
   let best = roles[0];
   let bestRank = STAFF_ROLE_RANK.indexOf(best);
   if (bestRank < 0) bestRank = 999;
@@ -59,15 +69,18 @@ async function getUserRole(
       bestRank = r;
     }
   }
-  return best || '';
+  return best || "";
 }
 
 /** Verifica se o usuário pertence à turma (por parish ou como catequista) */
-async function assertUserBelongsToClass(context: any, classId: string): Promise<void> {
+async function assertUserBelongsToClass(
+  context: any,
+  classId: string,
+): Promise<void> {
   if (context.user?.isAdmin) return;
 
   if (!context.entities?.CatechesisClass) {
-    throw new HttpError(500, 'Entidade de turma indisponível nesta operação.');
+    throw new HttpError(500, "Entidade de turma indisponível nesta operação.");
   }
 
   const classData = await context.entities.CatechesisClass.findUnique({
@@ -75,7 +88,7 @@ async function assertUserBelongsToClass(context: any, classId: string): Promise<
     select: { parishId: true, catechists: { select: { userId: true } } },
   });
 
-  if (!classData) throw new HttpError(404, 'Turma não encontrada.');
+  if (!classData) throw new HttpError(404, "Turma não encontrada.");
 
   // All ACTIVE memberships on this parish (multi-role safe)
   const memberships = await context.entities.Membership.findMany({
@@ -89,11 +102,15 @@ async function assertUserBelongsToClass(context: any, classId: string): Promise<
 
   if (!memberships.length) {
     const isPersonalOwner = await context.entities.Parish.findFirst({
-      where: { id: classData.parishId, ownerId: context.user.id, type: 'PERSONAL' },
+      where: {
+        id: classData.parishId,
+        ownerId: context.user.id,
+        type: "PERSONAL",
+      },
       select: { id: true },
     });
     if (isPersonalOwner) return;
-    throw new HttpError(403, 'Você não pertence a esta paróquia.');
+    throw new HttpError(403, "Você não pertence a esta paróquia.");
   }
 
   const roles = memberships.map((m: { role: string }) => m.role);
@@ -108,7 +125,7 @@ async function assertUserBelongsToClass(context: any, classId: string): Promise<
     // Fall through: may also be guardian of enrolled dependents
   }
 
-  if (roles.includes('GUARDIAN')) {
+  if (roles.includes("GUARDIAN")) {
     const guardians = await context.entities.GuardianProfile.findMany({
       where: { userId: context.user.id },
       select: { householdId: true },
@@ -120,7 +137,7 @@ async function assertUserBelongsToClass(context: any, classId: string): Promise<
       const enrollment = await context.entities.ClassEnrollment.findFirst({
         where: {
           classId,
-          status: 'ENROLLED',
+          status: "ENROLLED",
           catechumenProfile: { householdId: { in: householdIds } },
         },
       });
@@ -128,18 +145,18 @@ async function assertUserBelongsToClass(context: any, classId: string): Promise<
     }
   }
 
-  if (roles.includes('CATECHUMEN')) {
+  if (roles.includes("CATECHUMEN")) {
     const enrollment = await context.entities.ClassEnrollment.findFirst({
       where: {
         classId,
-        status: 'ENROLLED',
+        status: "ENROLLED",
         catechumenProfile: { userId: context.user.id },
       },
     });
     if (enrollment) return;
   }
 
-  throw new HttpError(403, 'Você não tem acesso a esta turma.');
+  throw new HttpError(403, "Você não tem acesso a esta turma.");
 }
 
 /** Staff-only ops: class roster / attendance sheet / matrix */
@@ -153,7 +170,7 @@ async function assertCanTakeAttendance(
     where: { id: classId },
     select: { parishId: true, catechists: { select: { userId: true } } },
   });
-  if (!classData) throw new HttpError(404, 'Turma não encontrada.');
+  if (!classData) throw new HttpError(404, "Turma não encontrada.");
 
   const roles = await loadActiveRoles(context, classData.parishId);
   if (
@@ -162,7 +179,7 @@ async function assertCanTakeAttendance(
   ) {
     throw new HttpError(
       403,
-      'Lista de presença completa é exclusiva da equipe pastoral.',
+      "Lista de presença completa é exclusiva da equipe pastoral.",
     );
   }
 
@@ -174,7 +191,10 @@ async function assertCanTakeAttendance(
     );
     if (ok) return;
   }
-  throw new HttpError(403, 'Apenas catequistas da turma podem gerir a chamada.');
+  throw new HttpError(
+    403,
+    "Apenas catequistas da turma podem gerir a chamada.",
+  );
 }
 
 /** Returns array (legacy) or { items, nextCursor } when paginated/cursor. */
@@ -189,18 +209,18 @@ export const listMeetings = async (
   context: any,
 ): Promise<any> => {
   if (!context.user) throw new HttpError(401);
-  if (!args.classId) throw new HttpError(400, 'classId é obrigatório.');
+  if (!args.classId) throw new HttpError(400, "classId é obrigatório.");
   await assertUserBelongsToClass(context, args.classId);
 
   const { useCursorPage, pageSize, take, skip } = pageParams(args);
   const where = mergeWhere(
     { classId: args.classId },
-    dateIdCursorWhere(args.cursor, 'date'),
+    dateIdCursorWhere(args.cursor, "date"),
   );
 
   const rows = await context.entities.Meeting.findMany({
     where,
-    orderBy: [{ date: 'desc' }, { id: 'desc' }],
+    orderBy: [{ date: "desc" }, { id: "desc" }],
     take: useCursorPage ? pageSize + 1 : take,
     skip: useCursorPage ? 0 : skip,
     include: {
@@ -209,13 +229,17 @@ export const listMeetings = async (
     },
   });
 
-  return wrapDateIdPage(rows, pageSize, useCursorPage, 'date');
+  return wrapDateIdPage(rows, pageSize, useCursorPage, "date");
 };
 
 export const createMeeting = async (args: any, context: any) => {
   if (!context.user) throw new HttpError(401);
   const role = await getUserRole(context);
-  if (!isCatechistOrAbove(role)) throw new HttpError(403, 'Apenas catequistas e coordenadores podem criar encontros.');
+  if (!isCatechistOrAbove(role))
+    throw new HttpError(
+      403,
+      "Apenas catequistas e coordenadores podem criar encontros.",
+    );
 
   // Verificar pertencimento à turma
   await assertUserBelongsToClass(context, args.classId);
@@ -223,14 +247,18 @@ export const createMeeting = async (args: any, context: any) => {
   try {
     return await context.entities.Meeting.create({
       data: {
-        classId: args.classId, title: args.title, theme: args.theme,
-        date: new Date(args.date), notes: args.notes,
-        contentId: args.contentId || null, status: 'NOT_STARTED',
+        classId: args.classId,
+        title: args.title,
+        theme: args.theme,
+        date: meetingDateFromInput(args.date),
+        notes: args.notes,
+        contentId: args.contentId || null,
+        status: "NOT_STARTED",
       },
     });
   } catch (e: any) {
-    logger.warn('[meetingOps] createMeeting error', { error: e.message });
-    throw new HttpError(500, 'Erro ao criar encontro: ' + e.message);
+    logger.warn("[meetingOps] createMeeting error", { error: e.message });
+    throw new HttpError(500, "Erro ao criar encontro: " + e.message);
   }
 };
 
@@ -244,13 +272,15 @@ export const getMeetingAttendance = async (
     where: { id: args.meetingId },
     select: { classId: true },
   });
-  if (!meeting) throw new HttpError(404, 'Encontro não encontrado.');
+  if (!meeting) throw new HttpError(404, "Encontro não encontrado.");
   await assertCanTakeAttendance(context, meeting.classId, args.surface);
 
   return context.entities.AttendanceRecord.findMany({
     where: { meetingId: args.meetingId },
     include: {
-      catechumenProfile: { select: { id: true, firstName: true, lastName: true, photoUrl: true } },
+      catechumenProfile: {
+        select: { id: true, firstName: true, lastName: true, photoUrl: true },
+      },
     },
   });
 };
@@ -284,7 +314,7 @@ export const getClassAttendanceMatrix = async (
     : new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
   if (Number.isNaN(+fromDate) || Number.isNaN(+toDate)) {
-    throw new HttpError(400, 'fromDate/toDate inválidos.');
+    throw new HttpError(400, "fromDate/toDate inválidos.");
   }
 
   return context.entities.Meeting.findMany({
@@ -292,7 +322,7 @@ export const getClassAttendanceMatrix = async (
       classId: args.classId,
       date: { gte: fromDate, lt: toDate },
     },
-    orderBy: { date: 'desc' },
+    orderBy: { date: "desc" },
     take,
     include: {
       attendance: {
@@ -311,7 +341,7 @@ export const getClassAttendanceMatrix = async (
   });
 };
 
-const ATTENDANCE_STATUSES = new Set(['PRESENT', 'ABSENT', 'LATE', 'JUSTIFIED']);
+const ATTENDANCE_STATUSES = new Set(["PRESENT", "ABSENT", "LATE", "JUSTIFIED"]);
 const MAX_BATCH_CHANGES = 100;
 
 /**
@@ -323,12 +353,12 @@ export const getMeetingAttendanceSheet = async (
   context: any,
 ): Promise<any> => {
   if (!context.user) throw new HttpError(401);
-  if (!args.classId) throw new HttpError(400, 'classId é obrigatório.');
+  if (!args.classId) throw new HttpError(400, "classId é obrigatório.");
   await assertCanTakeAttendance(context, args.classId, args.surface);
 
   const siblingMeetings = await context.entities.Meeting.findMany({
     where: { classId: args.classId },
-    orderBy: { date: 'desc' },
+    orderBy: { date: "desc" },
     take: 40,
     select: { id: true, date: true, title: true, status: true, theme: true },
   });
@@ -337,7 +367,14 @@ export const getMeetingAttendanceSheet = async (
     return {
       meeting: null,
       participants: [],
-      summary: { registered: 0, total: 0, present: 0, absent: 0, late: 0, justified: 0 },
+      summary: {
+        registered: 0,
+        total: 0,
+        present: 0,
+        absent: 0,
+        late: 0,
+        justified: 0,
+      },
       siblingMeetings: [],
       fetchedAt: new Date().toISOString(),
     };
@@ -346,9 +383,9 @@ export const getMeetingAttendanceSheet = async (
   let meetingId = args.meetingId;
   if (meetingId) {
     const ok = siblingMeetings.some((m: any) => m.id === meetingId);
-    if (!ok) throw new HttpError(404, 'Encontro não encontrado nesta turma.');
+    if (!ok) throw new HttpError(404, "Encontro não encontrado nesta turma.");
   } else {
-    const { pickFocusMeeting } = await import('../../shared/encounter');
+    const { pickFocusMeeting } = await import("../../shared/encounter");
     const picked = pickFocusMeeting(siblingMeetings as any[], new Date());
     meetingId = picked?.meeting.id || siblingMeetings[0].id;
   }
@@ -365,15 +402,15 @@ export const getMeetingAttendanceSheet = async (
       class: { select: { id: true, name: true } },
     },
   });
-  if (!meeting) throw new HttpError(404, 'Encontro não encontrado.');
-  if (meeting.status === 'CANCELLED') {
+  if (!meeting) throw new HttpError(404, "Encontro não encontrado.");
+  if (meeting.status === "CANCELLED") {
     // Still return sheet (read-only UX on client)
   }
 
   const enrollments = await context.entities.ClassEnrollment.findMany({
     where: {
       classId: args.classId,
-      status: 'ENROLLED',
+      status: "ENROLLED",
       catechumenProfileId: { not: null },
     },
     include: {
@@ -386,7 +423,7 @@ export const getMeetingAttendanceSheet = async (
         },
       },
     },
-    orderBy: { catechumenProfile: { firstName: 'asc' } },
+    orderBy: { catechumenProfile: { firstName: "asc" } },
   });
 
   const attendance = await context.entities.AttendanceRecord.findMany({
@@ -401,7 +438,12 @@ export const getMeetingAttendanceSheet = async (
   });
   const byProfile = new Map<
     string,
-    { id: string; status: string; note: string | null; updatedAt: Date | string }
+    {
+      id: string;
+      status: string;
+      note: string | null;
+      updatedAt: Date | string;
+    }
   >(
     attendance.map((a: any) => [
       a.catechumenProfileId as string,
@@ -435,10 +477,10 @@ export const getMeetingAttendanceSheet = async (
   const summary = {
     registered: participants.filter((p: any) => p.status).length,
     total: participants.length,
-    present: participants.filter((p: any) => p.status === 'PRESENT').length,
-    absent: participants.filter((p: any) => p.status === 'ABSENT').length,
-    late: participants.filter((p: any) => p.status === 'LATE').length,
-    justified: participants.filter((p: any) => p.status === 'JUSTIFIED').length,
+    present: participants.filter((p: any) => p.status === "PRESENT").length,
+    absent: participants.filter((p: any) => p.status === "ABSENT").length,
+    late: participants.filter((p: any) => p.status === "LATE").length,
+    justified: participants.filter((p: any) => p.status === "JUSTIFIED").length,
   };
 
   return {
@@ -481,7 +523,10 @@ export const saveAttendanceBatch = async (
   if (!context.user) throw new HttpError(401);
   const role = await getUserRole(context);
   if (!isCatechistOrAbove(role)) {
-    throw new HttpError(403, 'Apenas catequistas e coordenadores podem registrar presença.');
+    throw new HttpError(
+      403,
+      "Apenas catequistas e coordenadores podem registrar presença.",
+    );
   }
 
   const changes = args.changes || [];
@@ -489,16 +534,22 @@ export const saveAttendanceBatch = async (
     return { serverTime: new Date().toISOString(), results: [] };
   }
   if (changes.length > MAX_BATCH_CHANGES) {
-    throw new HttpError(400, `Máximo de ${MAX_BATCH_CHANGES} alterações por lote.`);
+    throw new HttpError(
+      400,
+      `Máximo de ${MAX_BATCH_CHANGES} alterações por lote.`,
+    );
   }
 
   const meeting = await context.entities.Meeting.findUnique({
     where: { id: args.meetingId },
     select: { classId: true, status: true },
   });
-  if (!meeting) throw new HttpError(404, 'Encontro não encontrado.');
-  if (meeting.status === 'CANCELLED') {
-    throw new HttpError(400, 'Não é possível registar presença em encontro cancelado.');
+  if (!meeting) throw new HttpError(404, "Encontro não encontrado.");
+  if (meeting.status === "CANCELLED") {
+    throw new HttpError(
+      400,
+      "Não é possível registar presença em encontro cancelado.",
+    );
   }
   await assertUserBelongsToClass(context, meeting.classId);
 
@@ -511,9 +562,9 @@ export const saveAttendanceBatch = async (
 
     if (!profileId || !ATTENDANCE_STATUSES.has(status)) {
       results.push({
-        catechumenProfileId: profileId || '',
-        outcome: 'skipped',
-        reason: 'invalid_status',
+        catechumenProfileId: profileId || "",
+        outcome: "skipped",
+        reason: "invalid_status",
         status: null,
         updatedAt: null,
       });
@@ -523,8 +574,8 @@ export const saveAttendanceBatch = async (
     if (change.note != null && String(change.note).length > 500) {
       results.push({
         catechumenProfileId: profileId,
-        outcome: 'skipped',
-        reason: 'invalid_note',
+        outcome: "skipped",
+        reason: "invalid_note",
         status: null,
         updatedAt: null,
       });
@@ -535,15 +586,15 @@ export const saveAttendanceBatch = async (
       where: {
         classId: meeting.classId,
         catechumenProfileId: profileId,
-        status: 'ENROLLED',
+        status: "ENROLLED",
       },
       select: { id: true },
     });
     if (!enrolled) {
       results.push({
         catechumenProfileId: profileId,
-        outcome: 'skipped',
-        reason: 'unenrolled',
+        outcome: "skipped",
+        reason: "unenrolled",
         status: null,
         updatedAt: null,
       });
@@ -565,8 +616,8 @@ export const saveAttendanceBatch = async (
       if (+clientAt < +new Date(existing.updatedAt)) {
         results.push({
           catechumenProfileId: profileId,
-          outcome: 'conflict',
-          reason: 'stale_client',
+          outcome: "conflict",
+          reason: "stale_client",
           status: existing.status,
           updatedAt: existing.updatedAt,
           serverStatus: existing.status,
@@ -597,7 +648,7 @@ export const saveAttendanceBatch = async (
 
     results.push({
       catechumenProfileId: profileId,
-      outcome: 'applied',
+      outcome: "applied",
       status: saved.status,
       updatedAt: saved.updatedAt,
     });
@@ -606,57 +657,84 @@ export const saveAttendanceBatch = async (
   return { serverTime: serverTime.toISOString(), results };
 };
 
-export const listMeetingsForClasses = async (args: { classIds: string[] }, context: any) => {
+export const listMeetingsForClasses = async (
+  args: { classIds: string[] },
+  context: any,
+) => {
   if (!context.user) throw new HttpError(401);
 
   // Verify access for all requested classes in parallel
-  await Promise.all(args.classIds.map(classId => assertUserBelongsToClass(context, classId)));
+  await Promise.all(
+    args.classIds.map((classId) => assertUserBelongsToClass(context, classId)),
+  );
 
   return context.entities.Meeting.findMany({
     where: { classId: { in: args.classIds } },
-    orderBy: { date: 'desc' },
+    orderBy: { date: "desc" },
   });
 };
 
 export const saveAttendance = async (args: any, context: any) => {
   if (!context.user) throw new HttpError(401);
   const role = await getUserRole(context);
-  if (!isCatechistOrAbove(role)) throw new HttpError(403, 'Apenas catequistas e coordenadores podem registrar presença.');
+  if (!isCatechistOrAbove(role))
+    throw new HttpError(
+      403,
+      "Apenas catequistas e coordenadores podem registrar presença.",
+    );
 
   // Verificar pertencimento à turma através do meeting
   const meeting = await context.entities.Meeting.findUnique({
     where: { id: args.meetingId },
     select: { classId: true },
   });
-  if (!meeting) throw new HttpError(404, 'Encontro não encontrado.');
+  if (!meeting) throw new HttpError(404, "Encontro não encontrado.");
   await assertUserBelongsToClass(context, meeting.classId);
 
   // Validate catechumen is enrolled in this class
   const isEnrolled = await context.entities.ClassEnrollment.findFirst({
-    where: { classId: meeting.classId, catechumenProfileId: args.catechumenProfileId, status: 'ENROLLED' },
+    where: {
+      classId: meeting.classId,
+      catechumenProfileId: args.catechumenProfileId,
+      status: "ENROLLED",
+    },
     select: { id: true },
   });
-  if (!isEnrolled) throw new HttpError(400, 'Catequizando não está inscrito nesta turma.');
+  if (!isEnrolled)
+    throw new HttpError(400, "Catequizando não está inscrito nesta turma.");
 
   const existing = await context.entities.AttendanceRecord.findFirst({
-    where: { meetingId: args.meetingId, catechumenProfileId: args.catechumenProfileId },
+    where: {
+      meetingId: args.meetingId,
+      catechumenProfileId: args.catechumenProfileId,
+    },
   });
 
   if (existing) {
     return context.entities.AttendanceRecord.update({
       where: { id: existing.id },
-      data: { status: args.status, note: args.note, recordedById: context.user.id },
+      data: {
+        status: args.status,
+        note: args.note,
+        recordedById: context.user.id,
+      },
     });
   }
   return context.entities.AttendanceRecord.create({
     data: {
-      meetingId: args.meetingId, catechumenProfileId: args.catechumenProfileId,
-      status: args.status, note: args.note, recordedById: context.user.id,
+      meetingId: args.meetingId,
+      catechumenProfileId: args.catechumenProfileId,
+      status: args.status,
+      note: args.note,
+      recordedById: context.user.id,
     },
   });
 };
 
-export const justifyAbsence = async (args: { attendanceId: string; note: string }, context: any) => {
+export const justifyAbsence = async (
+  args: { attendanceId: string; note: string },
+  context: any,
+) => {
   if (!context.user) throw new HttpError(401);
 
   // Verificar se o attendance record existe e o usuário é guardian do catequizando
@@ -664,24 +742,27 @@ export const justifyAbsence = async (args: { attendanceId: string; note: string 
     where: { id: args.attendanceId },
     select: { catechumenProfileId: true },
   });
-  if (!attendance) throw new HttpError(404, 'Registro de presença não encontrado.');
+  if (!attendance)
+    throw new HttpError(404, "Registro de presença não encontrado.");
 
   if (!context.user.isAdmin) {
-    const guardian = await context.entities.GuardianProfile.findUnique({ where: { userId: context.user.id } });
-    if (!guardian?.householdId) throw new HttpError(403, 'Acesso negado.');
+    const guardian = await context.entities.GuardianProfile.findUnique({
+      where: { userId: context.user.id },
+    });
+    if (!guardian?.householdId) throw new HttpError(403, "Acesso negado.");
 
     const catechumen = await context.entities.CatechumenProfile.findUnique({
       where: { id: attendance.catechumenProfileId },
       select: { householdId: true },
     });
     if (catechumen?.householdId !== guardian.householdId) {
-      throw new HttpError(403, 'Você não é responsável por este catequizando.');
+      throw new HttpError(403, "Você não é responsável por este catequizando.");
     }
   }
 
   return context.entities.AttendanceRecord.update({
     where: { id: args.attendanceId },
-    data: { status: 'JUSTIFIED', note: args.note },
+    data: { status: "JUSTIFIED", note: args.note },
   });
 };
 
@@ -695,18 +776,24 @@ export const justifyAbsenceByMeeting = async (
 ) => {
   if (!context.user) throw new HttpError(401);
 
-  const note = (args.note || '').trim();
+  const note = (args.note || "").trim();
   if (note.length < 3 || note.length > 500) {
-    throw new HttpError(400, 'Justificativa deve ter entre 3 e 500 caracteres.');
+    throw new HttpError(
+      400,
+      "Justificativa deve ter entre 3 e 500 caracteres.",
+    );
   }
 
   const meeting = await context.entities.Meeting.findUnique({
     where: { id: args.meetingId },
     select: { id: true, classId: true, status: true },
   });
-  if (!meeting) throw new HttpError(404, 'Encontro não encontrado.');
-  if (meeting.status === 'CANCELLED') {
-    throw new HttpError(400, 'Não é possível justificar falta em encontro cancelado.');
+  if (!meeting) throw new HttpError(404, "Encontro não encontrado.");
+  if (meeting.status === "CANCELLED") {
+    throw new HttpError(
+      400,
+      "Não é possível justificar falta em encontro cancelado.",
+    );
   }
 
   await assertUserBelongsToClass(context, meeting.classId);
@@ -716,14 +803,14 @@ export const justifyAbsenceByMeeting = async (
       where: { userId: context.user.id },
       select: { householdId: true },
     });
-    if (!guardian?.householdId) throw new HttpError(403, 'Acesso negado.');
+    if (!guardian?.householdId) throw new HttpError(403, "Acesso negado.");
 
     const catechumen = await context.entities.CatechumenProfile.findUnique({
       where: { id: args.catechumenProfileId },
       select: { householdId: true },
     });
     if (!catechumen || catechumen.householdId !== guardian.householdId) {
-      throw new HttpError(403, 'Você não é responsável por este catequizando.');
+      throw new HttpError(403, "Você não é responsável por este catequizando.");
     }
   }
 
@@ -731,12 +818,12 @@ export const justifyAbsenceByMeeting = async (
     where: {
       classId: meeting.classId,
       catechumenProfileId: args.catechumenProfileId,
-      status: 'ENROLLED',
+      status: "ENROLLED",
     },
     select: { id: true },
   });
   if (!enrolled) {
-    throw new HttpError(400, 'Catequizando não está inscrito nesta turma.');
+    throw new HttpError(400, "Catequizando não está inscrito nesta turma.");
   }
 
   const existing = await context.entities.AttendanceRecord.findFirst({
@@ -749,7 +836,7 @@ export const justifyAbsenceByMeeting = async (
   if (existing) {
     return context.entities.AttendanceRecord.update({
       where: { id: existing.id },
-      data: { status: 'JUSTIFIED', note, recordedById: context.user.id },
+      data: { status: "JUSTIFIED", note, recordedById: context.user.id },
     });
   }
 
@@ -757,7 +844,7 @@ export const justifyAbsenceByMeeting = async (
     data: {
       meetingId: args.meetingId,
       catechumenProfileId: args.catechumenProfileId,
-      status: 'JUSTIFIED',
+      status: "JUSTIFIED",
       note,
       recordedById: context.user.id,
     },
@@ -771,8 +858,8 @@ export function isAllowedMeetingStatusTransition(
 ): boolean {
   if (from === to) return true;
   const allowed: Record<string, string[]> = {
-    NOT_STARTED: ['IN_PROGRESS', 'CANCELLED'],
-    IN_PROGRESS: ['COMPLETED', 'CANCELLED'],
+    NOT_STARTED: ["IN_PROGRESS", "CANCELLED"],
+    IN_PROGRESS: ["COMPLETED", "CANCELLED"],
     COMPLETED: [],
     CANCELLED: [],
   };
@@ -784,14 +871,17 @@ export const updateMeeting = async (args: any, context: any) => {
 
   const role = await getUserRole(context);
   if (!isCatechistOrAbove(role)) {
-    throw new HttpError(403, 'Apenas catequistas e coordenadores podem editar encontros.');
+    throw new HttpError(
+      403,
+      "Apenas catequistas e coordenadores podem editar encontros.",
+    );
   }
 
   const meeting = await context.entities.Meeting.findUnique({
     where: { id: args.id },
     select: { classId: true, status: true },
   });
-  if (!meeting) throw new HttpError(404, 'Encontro não encontrado.');
+  if (!meeting) throw new HttpError(404, "Encontro não encontrado.");
 
   // Check access: must belong to the class (catechist or coordinator)
   await assertUserBelongsToClass(context, meeting.classId);
@@ -816,7 +906,10 @@ export const updateMeeting = async (args: any, context: any) => {
       select: { parishId: true },
     });
     if (!content || content.parishId !== classData?.parishId) {
-      throw new HttpError(400, 'O conteúdo não pertence à mesma paróquia da turma.');
+      throw new HttpError(
+        400,
+        "O conteúdo não pertence à mesma paróquia da turma.",
+      );
     }
   }
 
@@ -826,7 +919,7 @@ export const updateMeeting = async (args: any, context: any) => {
 
   // Convert date string to Date object if present
   if (data.date) {
-    data.date = new Date(data.date);
+    data.date = meetingDateFromInput(data.date);
   }
 
   return context.entities.Meeting.update({
@@ -860,7 +953,7 @@ function shapeContentForRole(content: any, isStaff: boolean) {
     };
   }
   // Learners: only published materials
-  if (content.status !== 'PUBLISHED') return null;
+  if (content.status !== "PUBLISHED") return null;
   return {
     id: content.id,
     title: content.title,
@@ -895,9 +988,9 @@ export const getMeeting = async (
     },
   });
 
-  if (!meeting) throw new HttpError(404, 'Encontro não encontrado.');
+  if (!meeting) throw new HttpError(404, "Encontro não encontrado.");
   if (!meeting.class) {
-    throw new HttpError(404, 'Turma do encontro não encontrada.');
+    throw new HttpError(404, "Turma do encontro não encontrada.");
   }
 
   await assertUserBelongsToClass(context, meeting.classId);
@@ -945,7 +1038,7 @@ export const getMeeting = async (
   if (isStaff) {
     const [totalActive, registered] = await Promise.all([
       context.entities.ClassEnrollment.count({
-        where: { classId: meeting.classId, status: 'ENROLLED' },
+        where: { classId: meeting.classId, status: "ENROLLED" },
       }),
       context.entities.AttendanceRecord.count({
         where: { meetingId: meeting.id },
@@ -958,7 +1051,7 @@ export const getMeeting = async (
   }
 
   // Catechumen: own attendance only — never roster
-  if (role === 'CATECHUMEN' || (!isStaff && !isAdmin)) {
+  if (role === "CATECHUMEN" || (!isStaff && !isAdmin)) {
     const ownProfile = await context.entities.CatechumenProfile.findFirst({
       where: { userId: context.user.id },
       select: { id: true },
@@ -1003,11 +1096,11 @@ export const getMeeting = async (
         where: {
           householdId: guardian.householdId,
           enrollments: {
-            some: { classId: meeting.classId, status: 'ENROLLED' },
+            some: { classId: meeting.classId, status: "ENROLLED" },
           },
         },
         select: { id: true, firstName: true, lastName: true },
-        orderBy: { firstName: 'asc' },
+        orderBy: { firstName: "asc" },
       });
       const depIds = dependents.map((d: { id: string }) => d.id);
       const records =
@@ -1049,7 +1142,11 @@ export const getMeeting = async (
 
     const canJustify = Boolean(
       dependentsOnMeeting?.some(
-        (d) => !d.status || d.status === 'ABSENT' || d.status === 'LATE' || d.status === 'JUSTIFIED',
+        (d) =>
+          !d.status ||
+          d.status === "ABSENT" ||
+          d.status === "LATE" ||
+          d.status === "JUSTIFIED",
       ),
     );
 
@@ -1074,11 +1171,13 @@ export const deleteMeeting = async (args: { id: string }, context: any) => {
     where: { id: args.id },
     select: { classId: true },
   });
-  if (!meeting) throw new HttpError(404, 'Encontro não encontrado.');
+  if (!meeting) throw new HttpError(404, "Encontro não encontrado.");
 
   await assertUserBelongsToClass(context, meeting.classId);
 
-  await context.entities.AttendanceRecord.deleteMany({ where: { meetingId: args.id } });
+  await context.entities.AttendanceRecord.deleteMany({
+    where: { meetingId: args.id },
+  });
   await context.entities.Meeting.delete({ where: { id: args.id } });
 
   return { success: true };

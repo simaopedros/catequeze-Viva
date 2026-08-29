@@ -41,6 +41,7 @@ import {
 import { invalidateShellContext } from "../../client/hooks/shellQueryCache";
 import { Button } from "../../client/components/ui/button";
 import { ChevronLeft } from "lucide-react";
+import { LAUNCH_CATEQUISTA_ONLY } from "../../shared/pricing";
 
 type AccountType = "personal" | "manager" | null;
 type Step =
@@ -101,7 +102,18 @@ export default function OnboardingPage() {
   const { t } = useTranslation("onboarding");
   const navigate = useNavigate();
 
-  const persisted = useMemo(() => loadPersisted(), []);
+  const persisted = useMemo(() => {
+    const raw = loadPersisted();
+    if (
+      LAUNCH_CATEQUISTA_ONLY &&
+      (raw.accountType === "manager" ||
+        raw.step === "parish" ||
+        raw.step === "details")
+    ) {
+      return {};
+    }
+    return raw;
+  }, []);
   const resumed = Boolean(persisted.step && persisted.step !== "welcome");
   const [step, setStep] = useState<Step>(persisted.step || "welcome");
   const [accountType, setAccountType] = useState<AccountType>(

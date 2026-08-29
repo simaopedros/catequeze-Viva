@@ -12,7 +12,10 @@ import {
   type BillingInterval,
 } from "../lib/intendedPlan";
 import { PLANS, PLAN_IDS, type PlanId } from "../../shared/pricing";
-import { formatPrice } from "../../shared/currency";
+import {
+  formatEquivalentMonthlyPrice,
+  formatPrice,
+} from "../../shared/currency";
 import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
 import {
   trackLead,
@@ -51,7 +54,7 @@ function translatedArray<T>(value: unknown, fallback: T[]): T[] {
 }
 
 function equivalentMonthlyPrice(annualCents: number): string {
-  return formatPrice(Math.round(annualCents / 12));
+  return formatEquivalentMonthlyPrice(annualCents);
 }
 
 function annualSavings(monthlyCents: number, annualCents: number): string {
@@ -271,9 +274,7 @@ export default function PricingPage() {
         </section>
 
         <section className="max-w-4xl mx-auto px-4 pb-20">
-          <div className="max-w-lg mx-auto">
-            {pricingPlans.map(renderCard)}
-          </div>
+          <div className="max-w-lg mx-auto">{pricingPlans.map(renderCard)}</div>
         </section>
 
         <section className="bg-muted/30 border-t">

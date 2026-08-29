@@ -7,6 +7,7 @@ import {
   getAppBootstrap,
   getCurrentUserContext,
   listWorkspaces,
+  getDashboardStats,
 } from "wasp/client/operations";
 
 /** Shared stale window for shell context (user memberships + workspaces). */
@@ -37,6 +38,7 @@ export async function invalidateShellContext(): Promise<void> {
       queryKeyOf(getAppBootstrap as { queryCacheKey?: string[] }),
       queryKeyOf(getCurrentUserContext as { queryCacheKey?: string[] }),
       queryKeyOf(listWorkspaces as { queryCacheKey?: string[] }),
+      queryKeyOf(getDashboardStats as { queryCacheKey?: string[] }),
     ].filter((k) => k.length > 0);
 
     await Promise.all(

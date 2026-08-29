@@ -44,6 +44,8 @@
     "manager_desc": "Parish, catechetical year, and team classes.",
     "manager_features": [],
     "helper": "You can change path later if needed.",
+    "launch_question": "Let's set up your class workspace.",
+    "launch_helper": "This launch is for catechists. Parish and diocese paths come later.",
     "eyebrow": "First steps"
   },
   "personal_setup": {

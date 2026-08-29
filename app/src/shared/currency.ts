@@ -6,24 +6,34 @@
  * call sites that pass it around, but it always resolves to 'BRL'.
  */
 
-export type Currency = 'BRL';
+export type Currency = "BRL";
 
 export const CURRENCY_SYMBOLS: Record<Currency, string> = {
-  BRL: 'R$',
+  BRL: "R$",
 };
 
 /** Always BRL — the platform is Brazil-only. */
 export function detectCurrency(): Currency {
-  return 'BRL';
+  return "BRL";
 }
 
 /**
- * Format an amount (given in cents) as a BRL price string, e.g.
- * `formatPrice(2900)` → `R$ 29`.
+ * Format an amount (given in cents) as a BRL price string.
+ * Whole reais omit decimals (`9900` → `R$ 99`); cents keep two places
+ * with a Brazilian comma (`990` → `R$ 9,90`). Never rounds 990 to R$ 10.
  *
  * The `currency` argument is accepted for backward compatibility but
  * ignored — output is always BRL.
  */
 export function formatPrice(cents: number, _currency?: Currency): string {
-  return `R$ ${(cents / 100).toFixed(0)}`;
+  const reais = cents / 100;
+  if (Number.isInteger(reais)) {
+    return `R$ ${reais}`;
+  }
+  return `R$ ${reais.toFixed(2).replace(".", ",")}`;
+}
+
+/** Annual equivalent per month, rounded to the nearest real (`9900` → `R$ 8`). */
+export function formatEquivalentMonthlyPrice(annualCents: number): string {
+  return formatPrice(Math.round(annualCents / 12 / 100) * 100);
 }

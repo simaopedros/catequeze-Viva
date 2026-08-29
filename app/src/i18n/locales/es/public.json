@@ -29,7 +29,7 @@
   },
   "pricing": {
     "title": "Elige el plan correcto para tu rutina pastoral",
-    "subtitle": "Dos planes claros. El Plan Único cubre al catequista; el Plan Ilimitado cubre la operación parroquial o diocesana.",
+    "subtitle": "Plan Único para catequista: hasta 3 grupos, R$ 9,90/mes. Empieza con 7 días de prueba gratis.",
     "payment_card": "Tarjeta",
     "annual_savings": "Ahorre 17% en anual",
     "monthly_tab": "Mensual",
@@ -46,35 +46,27 @@
     "faq": [
       {
         "q": "¿Cómo conozco la plataforma antes de suscribirme?",
-        "a": "Puede comenzar por el camino de catequista, conocer la estructura de la plataforma y avanzar al plan más adecuado cuando decida preparar encuentros con más frecuencia."
+        "a": "Puedes probar la plataforma 7 días sin tarjeta, conocer la rutina completa y solo elegir el plan cuando tenga sentido continuar."
       },
       {
-        "q": "¿Cómo funcionan los créditos editoriales?",
-        "a": "El Plan Único incluye 15 créditos editoriales por mes. El Plan Ilimitado incluye 50 créditos editoriales por mes. Un encuentro o actividad consume 1 crédito; la planificación anual consume 3 créditos."
-      },
-      {
-        "q": "¿Cuál es la diferencia entre el Plan Único y el Plan Ilimitado?",
-        "a": "El Plan Único cubre 1 parroquia, hasta 3 grupos y hasta 150 catecúmenos en total para un catequista. El Plan Ilimitado elimina los límites operativos y fue pensado para la rutina parroquial o diocesana."
+        "q": "¿Cuál es el precio del plan para catequista?",
+        "a": "El Plan Único cuesta R$ 9,90/mes (o R$ 99/año) y cubre 1 parroquia, hasta 3 grupos y hasta 150 catecúmenos en total para un catequista."
       },
       {
         "q": "¿Cómo funciona el pago?",
-        "a": "Aceptamos PIX (al contado o mensual) y tarjeta de crédito. En el plan anual vía PIX, el pago es único por 12 meses. Sin permanencia — cancele cuando quiera."
+        "a": "Empiezas con 7 días de prueba gratis sin tarjeta. Si decides continuar, puedes pagar con tarjeta en mensual o anual. Sin permanencia — cancela cuando quieras."
       },
       {
         "q": "¿Y el reembolso del plan anual?",
-        "a": "Los planes anuales pagados vía PIX no tienen reembolso automático. La cancelación detiene la renovación, pero el acceso continúa hasta el fin del período pagado. El reembolso proporcional se evalúa caso a caso vía contato@catequeseviva.com.br. Los planes vía tarjeta siguen la política de Stripe."
+        "a": "Los planes anuales no tienen reembolso automático. La cancelación detiene la renovación, pero el acceso continúa hasta el fin del período pagado. El reembolso proporcional se evalúa caso a caso vía contato@catequeseviva.com.br."
       },
       {
-        "q": "¿Puedo cambiar de plan?",
-        "a": "Sí, en cualquier momento. Al hacer upgrade, sus datos se preservan automáticamente."
+        "q": "¿Puedo cambiar de plan después?",
+        "a": "Sí, en cualquier momento. Al cambiar de plan, tus datos se preservan automáticamente."
       },
       {
         "q": "¿Los datos están seguros?",
         "a": "Sí. Seguimos la LGPD, con cifrado en tránsito y en reposo. Los datos de menores reciben protección especial."
-      },
-      {
-        "q": "¿La asistencia editorial es teológicamente confiable?",
-        "a": "Sí. La asistencia editorial está instruida para basarse estrictamente en la Biblia (CNBB), Catecismo de la Iglesia Católica, Compendio y Directorio General para la Catequesis. Todo contenido generado incluye referencias para auditar."
       }
     ],
     "annual_compare": "en anual, queda en {{price}}/mes",

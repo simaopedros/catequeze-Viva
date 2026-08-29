@@ -263,8 +263,8 @@ export const FAQ: FaqItem[] = [
     a: 'Funciona perfeitamente no navegador do celular, sem precisar instalar nada. A interface é adaptada para dispositivos móveis, incluindo menu inferior para acesso rápido.',
   },
   {
-    q: 'Posso ter várias paróquias na mesma conta?',
-    a: 'Sim. O Plano Ilimitado permite gerir múltiplas paróquias, turmas e catequistas sem teto. É feito para a operação institucional.',
+    q: 'Posso ter várias turmas na mesma conta?',
+    a: 'Sim. O Plano Único cobre até 3 turmas e 150 catequizandos no total para um catequista.',
   },
   {
     q: 'Que tipo de suporte vocês oferecem?',
