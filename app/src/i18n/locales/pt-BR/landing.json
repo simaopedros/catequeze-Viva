@@ -1,8 +1,8 @@
 {
   "hero": {
     "headline_line1": "Você semeia a fé.",
-    "headline_line2": "A gente cuida do caderno.",
-    "subheadline": "A Catequese Viva organiza a turma, a chamada e o preparo do encontro para você chegar a cada semana com o coração livre para o essencial: apresentar Jesus aos seus catequizandos.",
+    "headline_line2": "A gente organiza a turma.",
+    "subheadline": "A Catequese Viva cuida da chamada, do preparo do encontro e do acompanhamento de cada catequizando, para você chegar a cada semana com o coração livre para o essencial: apresentar Jesus à sua turma.",
     "badge": "Para quem diz sim à missão de catequizar",
     "cta_primary": "Começar minha caminhada — 7 dias grátis",
     "cta_secondary": "Como funciona",
@@ -228,7 +228,7 @@
     }
   ],
   "cta_title": "Volte a ter tempo para o que chamou você à catequese",
-  "cta_subtitle": "Deixe o caderno, a planilha e as mensagens espalhadas para trás. Comece os 7 dias grátis na sua turma — e chegue ao próximo encontro com o coração mais leve.",
+  "cta_subtitle": "Deixe a papelada e as mensagens espalhadas para trás. Comece os 7 dias grátis na sua turma — e chegue ao próximo encontro com o coração mais leve.",
   "cta_button": "Começar minha caminhada — 7 dias grátis",
   "cta_badge": "Teste gratuito",
   "cta_see_plans": "Ver o plano",

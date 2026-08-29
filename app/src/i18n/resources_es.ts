@@ -2325,8 +2325,8 @@ export const family_es = {
 export const landing_es = {
     "hero": {
       "headline_line1": "Tú siembras la fe.",
-      "headline_line2": "Nosotros cuidamos el cuaderno.",
-      "subheadline": "Catequese Viva cuida del grupo, la asistencia y la preparación del encuentro para que llegues cada semana con el corazón libre para lo esencial: presentar a Jesús a tus catequizandos.",
+      "headline_line2": "Nosotros organizamos el grupo.",
+      "subheadline": "Catequese Viva cuida de la asistencia, la preparación del encuentro y el acompañamiento de cada catequizando, para que llegues cada semana con el corazón libre para lo esencial: presentar a Jesús a tu grupo.",
       "badge": "Para quien dice sí a la misión de catequizar",
       "cta_primary": "Comenzar mi camino — 7 días gratis",
       "cta_secondary": "Cómo funciona",
@@ -2552,7 +2552,7 @@ export const landing_es = {
       }
     ],
     "cta_title": "Recupera el tiempo para lo que te llamó a la catequesis",
-    "cta_subtitle": "Deja atrás el cuaderno, la planilla y los mensajes dispersos. Empieza los 7 días gratis con tu grupo — y llega al próximo encuentro con el corazón más ligero.",
+    "cta_subtitle": "Deja atrás el papeleo y los mensajes dispersos. Empieza los 7 días gratis con tu grupo — y llega al próximo encuentro con el corazón más ligero.",
     "cta_button": "Comenzar mi camino — 7 días gratis",
     "cta_badge": "Trial",
     "cta_see_plans": "Ver el plan",
