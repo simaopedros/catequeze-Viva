@@ -2468,30 +2468,18 @@ export const landing_es = {
     ],
     "steps_cta": "Empezar trial de 7 días",
     "pricing_title": "Después de ver el valor, elige el plan",
-    "pricing_subtitle": "R$ 29 para el catequista. R$ 99 para parroquia o diócesis. Empieza con 7 días de trial — sin tarjeta y sin cobro ahora.",
+    "pricing_subtitle": "R$ 9,90/mes para catequistas. Empieza con 7 días de trial — sin tarjeta y sin cobro ahora.",
     "plans": {
       "single": {
-        "name": "Plan Único",
+        "name": "Plan Catequista",
         "audience": "Catequista · hasta 3 grupos",
         "desc": "Organiza tu grupo y prepara encuentros.",
-        "price": "R$ 29",
+        "price": "R$ 9,90",
         "features": [
           "Hasta 3 grupos con 150 catequizandos en total",
           "Asistencia e historial en el celular",
           "Calendario del grupo",
-          "15 créditos editoriales al mes"
-        ]
-      },
-      "unlimited": {
-        "name": "Plan Ilimitado",
-        "audience": "Parroquia o diócesis",
-        "desc": "Varios grupos y equipo en el mismo sistema.",
-        "price": "R$ 99",
-        "features": [
-          "Grupos y catequistas ilimitados",
-          "Familias y comunicación en el sistema",
-          "Asistencia editorial para preparar encuentros",
-          "Operación institucional sin techo"
+          "Portal familiar"
         ]
       }
     },
@@ -4155,8 +4143,7 @@ export const public_es = {
       "cta_paid": "Elegir este plan",
       "most_popular": "Más Popular",
       "plan_desc": {
-        "single": "Para que un catequista organice un grupo con claridad, historial y preparación en un solo flujo.",
-        "unlimited": "Para que parroquias y diócesis centralicen equipos, grupos, familias y asistencia editorial en el mismo sistema."
+        "single": "Para que un catequista organice un grupo con claridad, historial y preparación en un solo flujo."
       },
       "faq": [
         {
