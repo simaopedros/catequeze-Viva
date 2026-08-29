@@ -896,6 +896,9 @@ export const getMeeting = async (
   });
 
   if (!meeting) throw new HttpError(404, 'Encontro não encontrado.');
+  if (!meeting.class) {
+    throw new HttpError(404, 'Turma do encontro não encontrada.');
+  }
 
   await assertUserBelongsToClass(context, meeting.classId);
 

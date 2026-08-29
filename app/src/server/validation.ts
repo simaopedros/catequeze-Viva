@@ -36,6 +36,19 @@ export const updateParishSchema = createParishSchema.partial().extend({
 
 // ─── Classes ──────────────────────────────────────────────────────────────
 
+const emptyToUndefined = (value: unknown) =>
+  typeof value === 'string' && value.trim() === '' ? undefined : value;
+
+const optionalHhMm = z.preprocess(
+  emptyToUndefined,
+  z.string().regex(/^\d{2}:\d{2}$/, 'Formato inválido (HH:mm)').optional(),
+);
+
+const optionalBlankString = z.preprocess(
+  emptyToUndefined,
+  z.string().optional(),
+);
+
 export const createClassSchema = z.object({
   name: z.string().min(3, 'Nome deve ter pelo menos 3 caracteres').max(100),
   parishId: z.string().uuid().optional(),
@@ -43,10 +56,10 @@ export const createClassSchema = z.object({
   stageId: z.string().uuid().optional(),
   sacramentId: z.string().uuid().optional(),
   yearId: z.string().uuid().optional(),
-  dayOfWeek: z.string().optional(),
-  startTime: z.string().regex(/^\d{2}:\d{2}$/, "Formato inválido (HH:mm)").optional(),
-  endTime: z.string().regex(/^\d{2}:\d{2}$/, "Formato inválido (HH:mm)").optional(),
-  location: z.string().max(200).optional(),
+  dayOfWeek: optionalBlankString,
+  startTime: optionalHhMm,
+  endTime: optionalHhMm,
+  location: z.preprocess(emptyToUndefined, z.string().max(200).optional()),
   maxCapacity: z.number().int().min(1).max(200).default(30),
 });
 

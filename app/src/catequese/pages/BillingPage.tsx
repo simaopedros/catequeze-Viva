@@ -58,6 +58,7 @@ import {
   isOnInstitutionalTrial,
   getInstitutionalTrialDaysLeft,
   SUBSCRIPTION_TRIAL_DAYS,
+  LAUNCH_CATEQUISTA_ONLY,
 } from "../../shared/pricing";
 import { BuyCreditsButton } from "../components/BuyCreditsButton";
 import { formatPrice } from "../../shared/currency";
@@ -435,6 +436,9 @@ export default function BillingPage() {
       : null;
 
   const visiblePlans = allPlans.filter((plan) => {
+    if (LAUNCH_CATEQUISTA_ONLY) {
+      return plan.planId === PaymentPlanId.Single;
+    }
     if (isPersonal || (!parishId && !parish)) {
       return plan.planId === PaymentPlanId.Single;
     }

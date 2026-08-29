@@ -26,12 +26,19 @@ describe("aiFeatures launch-phase contract", () => {
     expect(isAiAppPath("/app")).toBe(false);
   });
 
-  it("hides the sidebar AI item while the flag is off", () => {
+  it("omits the sidebar AI item from NAV_GROUPS while the flag is off", () => {
     const item = NAV_GROUPS.flatMap((g) => g.items).find(
       (i) => i.iconKey === "ai_hub",
     );
-    expect(item).toBeDefined();
-    expect(shouldShowAiNavItem(item!)).toBe(AI_FEATURES_ENABLED);
+    if (AI_FEATURES_ENABLED) {
+      expect(item).toBeDefined();
+      expect(shouldShowAiNavItem(item!)).toBe(true);
+    } else {
+      expect(item).toBeUndefined();
+      expect(
+        shouldShowAiNavItem({ to: "/app/ai-hub", iconKey: "ai_hub" }),
+      ).toBe(false);
+    }
   });
 
   it("catequista nav never lists AI Hub, credits, or editorial assistance when off", () => {

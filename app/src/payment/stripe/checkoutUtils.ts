@@ -72,14 +72,33 @@ function toStripeMetadata(tracking?: CreateCheckoutSessionTrackingArgs): Stripe.
   return entries.length > 0 ? Object.fromEntries(entries) : undefined;
 }
 
-export function createStripeCheckoutSession({
+export function resolveCheckoutReturnUrls(frontendUrl?: string | null): {
+  success_url: string;
+  cancel_url: string;
+} {
+  const base = (frontendUrl || "").trim().replace(/\/$/, "");
+  if (!/^https?:\/\/.+/i.test(base)) {
+    throw new Error(
+      "URL de retorno do checkout não configurada. Defina WASP_WEB_CLIENT_URL com a origem do app (ex.: https://homolog.catechis.app).",
+    );
+  }
+  return {
+    success_url: `${base}/obrigado?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${base}/app/billing?status=canceled`,
+  };
+}
+
+export function buildStripeCheckoutSessionCreateParams({
   priceId,
   customerId,
   userId,
   mode,
   tracking,
   trialPeriodDays = 0,
-}: CreateStripeCheckoutSessionParams): Promise<Stripe.Checkout.Session> {
+  frontendUrl,
+}: CreateStripeCheckoutSessionParams & {
+  frontendUrl?: string | null;
+}): Stripe.Checkout.SessionCreateParams {
   const resolvedTrialDays =
     mode === "subscription" ? Math.max(0, Math.floor(trialPeriodDays)) : 0;
   const trackingMetadata = toStripeMetadata({
@@ -91,8 +110,11 @@ export function createStripeCheckoutSession({
     ...trackingMetadata,
     user_id: userId,
   };
+  const urls = resolveCheckoutReturnUrls(
+    frontendUrl ?? config.frontendUrl,
+  );
 
-  return stripeClient.checkout.sessions.create({
+  return {
     customer: customerId,
     client_reference_id: userId,
     line_items: [
@@ -102,13 +124,21 @@ export function createStripeCheckoutSession({
       },
     ],
     mode,
-    success_url: `${config.frontendUrl}/obrigado?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${config.frontendUrl}/app/billing?status=canceled`,
+    success_url: urls.success_url,
+    cancel_url: urls.cancel_url,
     metadata,
     ...getCheckoutTrialConfig(mode, metadata, resolvedTrialDays),
     allow_promotion_codes: true,
     invoice_creation: getInvoiceCreationConfig(mode),
-  });
+  };
+}
+
+export function createStripeCheckoutSession(
+  params: CreateStripeCheckoutSessionParams,
+): Promise<Stripe.Checkout.Session> {
+  return stripeClient.checkout.sessions.create(
+    buildStripeCheckoutSessionCreateParams(params),
+  );
 }
 
 /**

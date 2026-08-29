@@ -237,8 +237,8 @@ export const createClass = async (args: any, context: any) => {
       name: args.name, parishId: effectiveParishId,
       communityId: args.communityId || null,
       stageId: args.stageId || null, sacramentId: args.sacramentId || null,
-      yearId: args.yearId || null, dayOfWeek: args.dayOfWeek,
-      startTime: args.startTime, endTime: args.endTime,
+      yearId: args.yearId || null, dayOfWeek: args.dayOfWeek || null,
+      startTime: args.startTime || null, endTime: args.endTime || null,
       location: args.location, maxCapacity: args.maxCapacity || 30,
       // New classes start usable (onboarding and day-to-day); pause/archive later if needed.
       status: ClassStatus.ACTIVE,

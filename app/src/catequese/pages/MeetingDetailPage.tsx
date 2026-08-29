@@ -176,7 +176,9 @@ export default function MeetingDetailPage() {
         : canTakeAttendance
           ? {
               label: t("action_attendance"),
-              href: `/app/classes/${meeting.class.id}/attendance?meetingId=${meeting.id}`,
+              href: meeting.class?.id
+                ? `/app/classes/${meeting.class.id}/attendance?meetingId=${meeting.id}`
+                : "/app/classes",
               icon: ClipboardList,
             }
           : null;
@@ -323,7 +325,11 @@ export default function MeetingDetailPage() {
                 className="h-11 min-h-11 rounded-sm"
               >
                 <Link
-                  to={`/app/classes/${meeting.class.id}/attendance?meetingId=${meeting.id}`}
+                  to={
+                    meeting.class?.id
+                      ? `/app/classes/${meeting.class.id}/attendance?meetingId=${meeting.id}`
+                      : "/app/classes"
+                  }
                 >
                   <ClipboardList className="mr-2 h-4 w-4" />
                   {t("action_attendance")}
