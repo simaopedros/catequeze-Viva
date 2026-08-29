@@ -113,14 +113,14 @@ export type AiCreditScope = 'user' | 'per_parish' | 'diocese_pool';
  * Reading and sharing the feed is always open — these limits only gate
  * authoring. `null` means unlimited.
  */
-export interface SocialLimits {
+export type SocialLimits = {
   /** Posts an author may publish per calendar day. 0 blocks publishing. */
   maxPostsPerDay: number | null;
   /** Images or videos attached to a single post. */
   maxMediaPerPost: number;
   /** Longest video an author may upload, in seconds. */
   maxVideoSeconds: number;
-}
+};
 
 export interface PlanDefinition {
   name: string;

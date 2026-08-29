@@ -39,9 +39,6 @@ e2e-tests/prisma/
 # Python virtual environment for migration
 .venv-migration/
 
-# Migration scripts (contains sensitive .env files)
-scripts/
-
 # SQL backup files
 *.sql
 !app/migrations/**/*.sql
