@@ -27,6 +27,7 @@ import { resolveStripeCheckoutTrialDays } from "./stripe/trialConfig";
 import { trackPricingEvent } from "./pricingEvents";
 import { detectCurrency } from "../shared/currency";
 import { sendInitiateCheckoutToMeta } from "./meta/sendInitiateCheckout";
+import { getCheckoutPlanRejection } from "./checkoutPlanPolicy";
 
 export type CheckoutSession = {
   sessionUrl: string | null;
@@ -113,8 +114,9 @@ export const generateCheckoutSession: GenerateCheckoutSession<
 
   const paymentPlan = paymentPlans[paymentPlanId];
 
-  if (paymentPlanId === PaymentPlanId.CatechistFree) {
-    throw new HttpError(400, 'O plano "Sem assinatura" não requer pagamento. Escolha um plano pago.');
+  const planRejection = getCheckoutPlanRejection(paymentPlanId);
+  if (planRejection) {
+    throw new HttpError(400, planRejection);
   }
 
   if (INSTITUTIONAL_PLAN_IDS.includes(paymentPlanId) && !context.user.isAdmin) {
@@ -195,7 +197,8 @@ export const generateCheckoutSession: GenerateCheckoutSession<
       prismaUserDelegate: context.entities.User,
       trialPeriodDays,
       tracking: {
-        priceId: input.priceId,
+        // Never trust a client-supplied leftover live/unlimited/credits Price ID.
+        priceId: undefined,
         planId: paymentPlanId,
         planName,
         value: checkoutValue,
@@ -219,10 +222,15 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     session = result.session;
   } catch (err: any) {
     const message = err?.message || "";
-    if (message.includes("Stripe Price ID não configurado")) {
+    if (
+      message.includes("Stripe Price ID não configurado") ||
+      message.includes("URL de retorno do checkout") ||
+      message.includes("No such price") ||
+      message.includes("parameter_invalid")
+    ) {
       throw new HttpError(503, message);
     }
-    const status = err?.response?.status ?? err?.statusCode;
+    const status = err?.response?.status ?? err?.statusCode ?? err?.status;
     if (status === 401 || status === 403) {
       throw new HttpError(
         503,

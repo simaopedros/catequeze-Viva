@@ -318,9 +318,9 @@ export default function OnboardingPage() {
       const created = await createClass({
         name: details.className.trim(),
         parishId: personalParish.id,
-        dayOfWeek: details.dayOfWeek || "",
-        startTime: details.startTime || "",
-        endTime: details.endTime || "",
+        dayOfWeek: details.dayOfWeek || undefined,
+        startTime: details.startTime || undefined,
+        endTime: details.endTime || undefined,
         location: details.location || personalParish.name,
       });
 

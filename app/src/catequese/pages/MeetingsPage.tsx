@@ -175,6 +175,17 @@ export default function MeetingsPage() {
     }
   };
 
+  if (!classId) {
+    return (
+      <EmptyState
+        icon={Calendar}
+        title={t("empty_title")}
+        description={t("empty_desc")}
+        compact
+      />
+    );
+  }
+
   if (loading) return <SkeletonPage />;
 
   return (

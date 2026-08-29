@@ -1,5 +1,5 @@
 // ---- Navigation Item Config (without icon component — icons mapped per component) ----
-import { shouldShowAiNavItem } from "./aiFeatures";
+import { AI_FEATURES_ENABLED, shouldShowAiNavItem } from "./aiFeatures";
 import {
   NAV_GROUP_LABEL_KEYS,
   type NavGroupId,
@@ -205,13 +205,17 @@ export const NAV_GROUPS: NavGroupConfig[] = [
         roles: [...CATECHIST_ROLES, "CONTENT_REVIEWER"],
         groupId: "content",
       }),
-      item({
-        to: "/app/ai-hub",
-        labelKey: "ai_hub",
-        iconKey: "ai_hub",
-        roles: [...CATECHIST_ROLES, "CONTENT_REVIEWER"],
-        groupId: "content",
-      }),
+      ...(AI_FEATURES_ENABLED
+        ? [
+            item({
+              to: "/app/ai-hub",
+              labelKey: "ai_hub",
+              iconKey: "ai_hub",
+              roles: [...CATECHIST_ROLES, "CONTENT_REVIEWER"],
+              groupId: "content",
+            }),
+          ]
+        : []),
       item({
         to: "/app/bible",
         labelKey: "bible",

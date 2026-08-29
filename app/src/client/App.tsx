@@ -1,7 +1,7 @@
 import "./instrument";
 import "./setupApiUrlProxy";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
-import { Outlet, useLocation } from "react-router";
+import { Navigate, Outlet, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import { routes } from "wasp/client/router";
 import { configureQueryClient } from "wasp/client/operations";
@@ -36,6 +36,11 @@ import {
   trackPageView,
 } from "./analytics/metaTracking";
 import { applyLandingRouteMeta } from "../landing-page/routeMeta";
+import {
+  AI_APP_HOME,
+  AI_FEATURES_ENABLED,
+  isAiAppPath,
+} from "../shared/aiFeatures";
 import i18n, {
   enableDocumentLanguageSync,
   ensureLocaleLoaded,
@@ -252,6 +257,10 @@ export default function App() {
 
   // Plausible intentionally not loaded — CORS / missing site noise in prod console.
   // Marketing events still go to dataLayer / GTM when configured.
+
+  if (!AI_FEATURES_ENABLED && isAiAppPath(location.pathname)) {
+    return <Navigate to={AI_APP_HOME} replace />;
+  }
 
   if (!i18nReady) {
     return (

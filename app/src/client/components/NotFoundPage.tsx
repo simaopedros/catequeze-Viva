@@ -1,6 +1,12 @@
 import { useTranslation } from "react-i18next";
+import { Navigate, useLocation } from "react-router";
 import { useAuth } from "wasp/client/auth";
 import { Link as WaspRouterLink, routes } from "wasp/client/router";
+import {
+  AI_APP_HOME,
+  AI_FEATURES_ENABLED,
+  isAiAppPath,
+} from "../../shared/aiFeatures";
 import { PublicNavbar } from "../../catequese/PublicNavbar";
 import { PublicFooter } from "../../catequese/PublicFooter";
 import { FileQuestion, ArrowLeft } from "lucide-react";
@@ -10,6 +16,11 @@ import { AppDisplayTitle, AppGoldRule } from "./brand/AppChrome";
 export function NotFoundPage() {
   const { data: user } = useAuth();
   const { t } = useTranslation("common");
+  const location = useLocation();
+
+  if (!AI_FEATURES_ENABLED && isAiAppPath(location.pathname)) {
+    return <Navigate to={AI_APP_HOME} replace />;
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
