@@ -1187,6 +1187,45 @@ api serveContentImage {
   entities: [ContentItem, Membership, Parish]
 }
 
+//#region Comunidade (social) - media
+api uploadSocialImage {
+  fn: import { uploadSocialImage } from "@src/server/api/socialMedia",
+  middlewareConfigFn: import { socialImageUploadMiddleware } from "@src/server/api/socialMedia",
+  auth: true,
+  httpRoute: (POST, "/api/social/images"),
+  entities: [SocialMedia, User, Membership, Parish, TenantBilling, Diocese]
+}
+
+api serveSocialMedia {
+  fn: import { serveSocialMedia } from "@src/server/api/socialMedia",
+  middlewareConfigFn: import { serveSocialMediaMiddleware } from "@src/server/api/socialMedia",
+  httpRoute: (GET, "/api/social/media/:mediaId"),
+  entities: [SocialMedia, SocialPost]
+}
+
+api bunnyStreamWebhook {
+  fn: import { bunnyStreamWebhook } from "@src/server/api/socialMedia",
+  middlewareConfigFn: import { bunnyStreamWebhookMiddleware } from "@src/server/api/socialMedia",
+  httpRoute: (POST, "/api/social/bunny-webhook"),
+  entities: [SocialMedia]
+}
+
+action createSocialVideoUpload {
+  fn: import { createSocialVideoUpload } from "@src/server/operations/socialMediaOperations",
+  entities: [SocialMedia, User, Membership, Parish, TenantBilling, Diocese, SocialPost]
+}
+
+query getSocialMediaStatus {
+  fn: import { getSocialMediaStatus } from "@src/server/operations/socialMediaOperations",
+  entities: [SocialMedia]
+}
+
+action discardSocialMedia {
+  fn: import { discardSocialMedia } from "@src/server/operations/socialMediaOperations",
+  entities: [SocialMedia]
+}
+//#endregion
+
 //#region Catequese Viva - Mobile API
 api mobileAuthLogin {
   fn: import { mobileAuthLogin } from "@src/server/api/mobile",
@@ -1365,7 +1404,7 @@ api readinessCheckApi {
 api maintenanceApi {
   fn: import { maintenanceHandler } from "@src/server/api/maintenance",
   httpRoute: (POST, "/api/internal/maintenance"),
-  entities: [User, DailyStats, Logs, PageViewSource, UserAiCredits, AiResponseCache, Meeting, Notification, CatechesisClass, TenantBilling, Parish]
+  entities: [User, DailyStats, Logs, PageViewSource, UserAiCredits, AiResponseCache, Meeting, Notification, CatechesisClass, TenantBilling, Parish, SocialMedia]
 }
 
 action generateCatechumenUploadToken {
