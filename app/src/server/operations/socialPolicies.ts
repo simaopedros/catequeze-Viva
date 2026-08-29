@@ -3,9 +3,12 @@
  * can be unit tested in isolation (same split as conversationPolicies.ts).
  */
 import { screenSocialText } from '../../shared/socialModeration';
+import {
+  MAX_COMMENT_BODY_LENGTH,
+  MAX_POST_BODY_LENGTH,
+} from '../../shared/socialConstants';
 
-export const MAX_POST_BODY_LENGTH = 3000;
-export const MAX_COMMENT_BODY_LENGTH = 1000;
+export { MAX_COMMENT_BODY_LENGTH, MAX_POST_BODY_LENGTH };
 
 export type SocialMediaKind = 'IMAGE' | 'VIDEO';
 export type SocialPostKind = 'TEXT' | 'IMAGE' | 'VIDEO';

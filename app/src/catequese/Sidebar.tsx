@@ -30,6 +30,7 @@ import {
   BookOpen,
   ClipboardList,
   Mail,
+  Sparkles,
 } from "lucide-react";
 import { useUserContext } from "../client/hooks/useUserContext";
 import {
@@ -59,6 +60,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   team: Users,
   family_portal_invites: Mail,
   content_library: Library,
+  community: Sparkles,
   ai_hub: BookOpen,
   activities: Puzzle,
   calendar: Calendar,

@@ -205,6 +205,15 @@ export const NAV_GROUPS: NavGroupConfig[] = [
         roles: [...CATECHIST_ROLES, "CONTENT_REVIEWER"],
         groupId: "content",
       }),
+      // The Comunidade feed is open to every role: anyone may read and share,
+      // only subscribers may publish (enforced server-side).
+      item({
+        to: "/app/comunidade",
+        labelKey: "community",
+        iconKey: "community",
+        roles: ALL_ROLES,
+        groupId: "content",
+      }),
       ...(AI_FEATURES_ENABLED
         ? [
             item({

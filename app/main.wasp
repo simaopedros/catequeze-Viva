@@ -304,6 +304,14 @@ page AppNewClassPage {
 }
 
 
+//#region Comunidade (social) - pages
+route AppCommunityRoute { path: "/app/comunidade", to: AppCommunityPage }
+page AppCommunityPage {
+  authRequired: true,
+  component: import CommunityPage from "@src/catequese/pages/CommunityPage"
+}
+//#endregion
+
 //#region Catequese Viva - Class Detail
 route AppClassDetailRoute { path: "/app/classes/:id", to: AppClassDetailPage }
 page AppClassDetailPage {
@@ -1223,6 +1231,89 @@ query getSocialMediaStatus {
 action discardSocialMedia {
   fn: import { discardSocialMedia } from "@src/server/operations/socialMediaOperations",
   entities: [SocialMedia]
+}
+//#endregion
+
+//#region Comunidade (social) - feed
+// Feed reads are public on purpose: the handlers never require context.user, so
+// anonymous visitors get the same published feed as members.
+query getSocialFeed {
+  fn: import { getSocialFeed } from "@src/server/operations/socialOperations",
+  entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, SocialReaction, User, Parish]
+}
+
+query getSocialPost {
+  fn: import { getSocialPost } from "@src/server/operations/socialOperations",
+  entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, SocialReaction, User, Parish]
+}
+
+query getSocialTopics {
+  fn: import { getSocialTopics } from "@src/server/operations/socialOperations",
+  entities: [SocialTopic]
+}
+
+query getSocialComments {
+  fn: import { getSocialComments } from "@src/server/operations/socialOperations",
+  entities: [SocialPost, SocialComment, User]
+}
+
+query getSocialPublishAccess {
+  fn: import { getSocialPublishAccess } from "@src/server/operations/socialOperations",
+  entities: [User, Membership, Parish, TenantBilling, Diocese, SocialPost]
+}
+
+action createSocialPost {
+  fn: import { createSocialPost } from "@src/server/operations/socialOperations",
+  entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, User, Membership, Parish, TenantBilling, Diocese]
+}
+
+action deleteSocialPost {
+  fn: import { deleteSocialPost } from "@src/server/operations/socialOperations",
+  entities: [SocialPost, SocialMedia]
+}
+
+action toggleSocialReaction {
+  fn: import { toggleSocialReaction } from "@src/server/operations/socialOperations",
+  entities: [SocialPost, SocialReaction, User, Membership, Parish, TenantBilling, Diocese]
+}
+
+action createSocialComment {
+  fn: import { createSocialComment } from "@src/server/operations/socialOperations",
+  entities: [SocialPost, SocialComment, User, Membership, Parish, TenantBilling, Diocese]
+}
+
+action deleteSocialComment {
+  fn: import { deleteSocialComment } from "@src/server/operations/socialOperations",
+  entities: [SocialPost, SocialComment]
+}
+
+// Public on purpose — sharing never requires an account.
+action registerSocialShare {
+  fn: import { registerSocialShare } from "@src/server/operations/socialOperations",
+  entities: [SocialPost]
+}
+//#endregion
+
+//#region Comunidade (social) - moderation
+// Reporting is public: any visitor may flag content, signed in or not.
+action reportSocialContent {
+  fn: import { reportSocialContent } from "@src/server/operations/socialModerationOperations",
+  entities: [SocialReport, SocialPost, SocialComment]
+}
+
+query getSocialModerationQueue {
+  fn: import { getSocialModerationQueue } from "@src/server/operations/socialModerationOperations",
+  entities: [SocialReport, SocialPost, SocialComment, User]
+}
+
+action moderateSocialContent {
+  fn: import { moderateSocialContent } from "@src/server/operations/socialModerationOperations",
+  entities: [SocialReport, SocialPost, SocialComment, AuditLog, User]
+}
+
+action setSocialAuthorBan {
+  fn: import { setSocialAuthorBan } from "@src/server/operations/socialModerationOperations",
+  entities: [User, AuditLog]
 }
 //#endregion
 

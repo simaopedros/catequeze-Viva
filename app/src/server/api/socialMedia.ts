@@ -93,7 +93,9 @@ export async function uploadSocialImage(req: Request, res: Response, context: an
     if (error?.statusCode) {
       return res.status(error.statusCode).json({ error: error.message });
     }
-    logger.error('[social] image upload failed', error);
+    logger.error('[social] image upload failed', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return res.status(500).json({ error: 'Erro interno.' });
   }
 }
@@ -150,7 +152,9 @@ export async function serveSocialMedia(req: Request, res: Response, context: any
     );
     return res.send(stored.buffer);
   } catch (error: any) {
-    logger.error('[social] media delivery failed', error);
+    logger.error('[social] media delivery failed', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return res.status(500).json({ error: 'Erro interno.' });
   }
 }

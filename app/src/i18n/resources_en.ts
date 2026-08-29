@@ -3548,7 +3548,8 @@ export const navigation_en = {
       "parish": "Parishes",
       "community": "Communities"
     },
-    "sidebarSection": "Sidebar navigation"
+    "sidebarSection": "Sidebar navigation",
+    "community": "Community"
   } as const;
 
 export const onboarding_en = {
@@ -4571,6 +4572,148 @@ export const settings_en = {
     "privacy_notice": "Your data is protected under LGPD. No data is shared without consent."
   } as const;
 
+export const social_en = {
+    "title": "Community",
+    "eyebrow": "Pastoral network",
+    "subtitle": "Share the life of your catechesis with images and videos.",
+    "publicSubtitle": "Testimonies, catechesis and parish life shared by catechists across Brazil.",
+    "feed": {
+      "empty": "No posts yet",
+      "emptyDescription": "Be the first to share a moment from your catechesis.",
+      "emptyTopic": "No posts in this topic yet",
+      "loadMore": "Load more",
+      "loading": "Loading posts...",
+      "allTopics": "All topics",
+      "openPost": "Open post",
+      "processingVideo": "This video is still processing. Check back shortly.",
+      "videoFailed": "This video could not be processed.",
+      "postedIn": "at {{parish}}",
+      "viewComments": "View comments"
+    },
+    "composer": {
+      "title": "New post",
+      "placeholder": "Share a moment, a reflection or a testimony...",
+      "addImage": "Image",
+      "addVideo": "Video",
+      "topics": "Topics",
+      "topicsHint": "Pick up to 3 topics",
+      "consent": "I confirm I have image-use authorization for the people shown, including guardians of children and teenagers.",
+      "consentRequired": "Confirm the image-use authorization to publish with media.",
+      "publish": "Publish",
+      "publishing": "Publishing...",
+      "published": "Post created",
+      "heldForReview": "Your post was sent for review before it reaches the feed.",
+      "remove": "Remove",
+      "uploading": "Uploading {{percent}}%",
+      "videoProcessing": "Processing video...",
+      "quotaLeft": "{{count}} post left today",
+      "quotaLeft_plural": "{{count}} posts left today",
+      "videoTooLong": "Your plan allows videos up to {{minutes}} minutes.",
+      "tooManyMedia": "Your plan allows {{count}} media items per post.",
+      "uploadFailed": "Failed to upload the media."
+    },
+    "upsell": {
+      "title": "Subscribe to publish",
+      "description": "Reading and sharing the Community is free. Publishing images and videos requires an active subscription.",
+      "cta": "See plans",
+      "quotaTitle": "Daily limit reached",
+      "quotaDescription": "You have published everything your plan allows today. Try again tomorrow.",
+      "bannedTitle": "Account suspended in the Community",
+      "bannedDescription": "Contact support to review the suspension.",
+      "anonymousTitle": "Sign in to take part",
+      "anonymousDescription": "Create your account to react, comment and publish.",
+      "login": "Sign in"
+    },
+    "reactions": {
+      "AMEM": "Amen",
+      "REZO": "Praying for this",
+      "ALELUIA": "Alleluia",
+      "react": "React",
+      "count": "{{count}} reaction",
+      "count_plural": "{{count}} reactions"
+    },
+    "comments": {
+      "title": "Comments",
+      "placeholder": "Write a comment...",
+      "send": "Comment",
+      "empty": "No comments yet",
+      "count": "{{count}} comment",
+      "count_plural": "{{count}} comments",
+      "held": "Your comment was sent for review.",
+      "delete": "Delete comment",
+      "deleted": "Comment deleted",
+      "loginToComment": "Sign in and subscribe to comment"
+    },
+    "share": {
+      "action": "Share",
+      "copyLink": "Copy link",
+      "copied": "Link copied",
+      "whatsapp": "WhatsApp",
+      "count": "{{count}} share",
+      "count_plural": "{{count}} shares"
+    },
+    "post": {
+      "delete": "Delete post",
+      "deleteConfirm": "Delete this post and its media?",
+      "deleted": "Post deleted",
+      "report": "Report",
+      "notFound": "Post not found",
+      "notFoundDescription": "It may have been removed by the author or by moderation.",
+      "backToFeed": "Back to the Community",
+      "pendingReview": "Under moderation review"
+    },
+    "report": {
+      "title": "Report content",
+      "description": "Our team reviews every report. Pick a reason:",
+      "reason": {
+        "DOCTRINE": "Contrary to Catholic doctrine",
+        "HATE": "Hate speech or harassment",
+        "SEXUAL": "Sexual content",
+        "VIOLENCE": "Violence",
+        "SPAM": "Spam or scam",
+        "MINOR_PRIVACY": "Improper exposure of a minor",
+        "OTHER": "Other reason"
+      },
+      "details": "Details (optional)",
+      "submit": "Send report",
+      "sent": "Report sent. Thank you for helping care for the Community.",
+      "failed": "The report could not be sent."
+    },
+    "moderation": {
+      "title": "Community moderation",
+      "subtitle": "Reports and posts under review.",
+      "queue": "Report queue",
+      "pending": "Under review",
+      "empty": "Nothing to review",
+      "emptyDescription": "No open reports right now.",
+      "reportedBy": "Reported by",
+      "anonymous": "Anonymous",
+      "approve": "Keep published",
+      "removeContent": "Remove content",
+      "dismiss": "Dismiss report",
+      "banAuthor": "Suspend author",
+      "unbanAuthor": "Reinstate author",
+      "banReason": "Suspension reason",
+      "removalReason": "Removal reason",
+      "actioned": "Action recorded",
+      "openTarget": "View content",
+      "authorSuspended": "Author suspended"
+    },
+    "discovery": {
+      "follow": "Follow",
+      "unfollow": "Unfollow",
+      "following": "Following",
+      "followers": "Followers",
+      "trending": "Trending",
+      "recent": "Recent",
+      "followingFeed": "From people I follow",
+      "followSuccess": "You now follow {{name}}",
+      "unfollowSuccess": "You unfollowed {{name}}",
+      "emptyFollowing": "You are not following anyone yet",
+      "emptyFollowingDescription": "Follow catechists to build your feed."
+    }
+  } as const;
+
 export const topbar_en = {
     "openMenu": "Open menu",
     "searchPlaceholder": "Search catechumens, classes, content, Bible...",
@@ -4673,6 +4816,7 @@ export const resources_en = {
   reports: reports_en,
   sacraments: sacraments_en,
   settings: settings_en,
+  social: social_en,
   topbar: topbar_en,
   tour: tour_en,
 } as const;

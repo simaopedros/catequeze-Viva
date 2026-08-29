@@ -48,6 +48,7 @@ const ALL_NS = [
   "pastoralReport",
   "pastoralAnalysis",
   "birthdays",
+  "social",
 ] as const;
 
 const loadedLocales = new Set<string>(["pt-BR"]);

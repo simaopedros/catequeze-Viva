@@ -108,7 +108,9 @@ export const getSocialMediaStatus = async (args: { mediaIds: string[] }, context
         });
         return { ...item, status: status === 'UNKNOWN' ? item.status : status };
       } catch (error) {
-        logger.error('[social] bunny status refresh failed', error);
+        logger.error('[social] bunny status refresh failed', {
+          error: error instanceof Error ? error.message : String(error),
+        });
         return item;
       }
     }),
@@ -167,6 +169,8 @@ export async function detachSocialMediaAsset(media: {
       await deleteSocialImage(media.storageKey);
     }
   } catch (error) {
-    logger.error('[social] failed to delete media asset', error);
+    logger.error('[social] failed to delete media asset', {
+      error: error instanceof Error ? error.message : String(error),
+    });
   }
 }
