@@ -13,17 +13,7 @@ import {
   pageParams,
   wrapDateIdPage,
 } from "./listCursor";
-import { dateStringToNoonUTC } from "../../i18n/format";
-
-function meetingDateFromInput(value: string | Date): Date {
-  if (value instanceof Date) {
-    return value;
-  }
-  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}/.test(value)) {
-    return dateStringToNoonUTC(value);
-  }
-  return new Date(value);
-}
+import { meetingDateFromInput } from "../../shared/calendarDate";
 
 function isCoordinatorOrAbove(role: string | null): boolean {
   if (!role) return false;
