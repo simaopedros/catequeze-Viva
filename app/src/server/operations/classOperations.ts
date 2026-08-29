@@ -391,6 +391,7 @@ export const getClassDetails = async (args: { id: string }, context: any) => {
         },
       },
       enrollments: {
+        where: { status: EnrollmentStatus.ENROLLED },
         include: {
           catechumenProfile: {
             select: {
@@ -741,6 +742,126 @@ export const enrollCatechumen = async (
   }
 
   return enrollment;
+};
+
+export const bulkEnrollCatechumens = async (
+  args: { classId: string; catechumenProfileIds: string[] },
+  context: any,
+) => {
+  if (!context.user) throw new HttpError(401);
+  const ids = [...new Set((args.catechumenProfileIds || []).filter(Boolean))];
+  if (ids.length === 0) {
+    return { enrolled: 0, failed: [] as { id: string; name: string; reason: string }[] };
+  }
+
+  const classData = await context.entities.CatechesisClass.findUnique({
+    where: { id: args.classId },
+    select: { parishId: true, maxCapacity: true, sacramentId: true },
+  });
+  if (!classData) throw new HttpError(404, "Turma não encontrada.");
+
+  if (!context.user.isAdmin) {
+    const role = await getEffectiveParishRole(context, classData.parishId);
+    if (!role) {
+      throw new HttpError(403, "Sem permissão para matricular catequizandos.");
+    }
+    if (isCoordinatorOrAbove(role)) {
+      // ok
+    } else if (isCatechist(role)) {
+      const assignment = await context.entities.ClassCatechist.findFirst({
+        where: { classId: args.classId, userId: context.user.id },
+      });
+      if (!assignment) {
+        throw new HttpError(
+          403,
+          "Apenas catequistas vinculados a esta turma podem matricular catequizandos.",
+        );
+      }
+    } else {
+      throw new HttpError(
+        403,
+        "Apenas coordenadores e catequistas podem matricular catequizandos.",
+      );
+    }
+  }
+
+  const profiles = await context.entities.CatechumenProfile.findMany({
+    where: { id: { in: ids } },
+    select: { id: true, firstName: true, lastName: true },
+  });
+  const nameById = new Map(
+    profiles.map((p: any) => [
+      p.id,
+      `${p.firstName || ""} ${p.lastName || ""}`.trim() || p.id,
+    ]),
+  );
+
+  const existing = await context.entities.ClassEnrollment.findMany({
+    where: { classId: args.classId, catechumenProfileId: { in: ids } },
+    select: { catechumenProfileId: true },
+  });
+  const already = new Set(existing.map((e: any) => e.catechumenProfileId));
+
+  let enrolledCount = await context.entities.ClassEnrollment.count({
+    where: { classId: args.classId, status: EnrollmentStatus.ENROLLED },
+  });
+
+  const failed: { id: string; name: string; reason: string }[] = [];
+  const toEnroll: string[] = [];
+  for (const id of ids) {
+    const name = nameById.get(id) || id;
+    if (already.has(id)) {
+      failed.push({ id, name, reason: "Já está inscrito." });
+      continue;
+    }
+    if (classData.maxCapacity && enrolledCount + toEnroll.length >= classData.maxCapacity) {
+      failed.push({ id, name, reason: "Turma lotada." });
+      continue;
+    }
+    toEnroll.push(id);
+  }
+
+  let enrolled = 0;
+  for (const catechumenProfileId of toEnroll) {
+    const name = nameById.get(catechumenProfileId) || catechumenProfileId;
+    try {
+      if (!context.user.isAdmin) {
+        await assertCanEnrollCatechumen(context, classData.parishId);
+      }
+      await context.entities.ClassEnrollment.create({
+        data: {
+          classId: args.classId,
+          catechumenProfileId,
+          status: EnrollmentStatus.ENROLLED,
+        },
+      });
+      enrolled++;
+      enrolledCount++;
+      if (classData.sacramentId) {
+        try {
+          await ensureSacramentalJourneyForCatechumen(
+            catechumenProfileId,
+            classData.sacramentId,
+            classData.parishId,
+            context,
+          );
+        } catch (e: any) {
+          logger.warn("Failed to auto-create sacramental journey on bulk enrollment", {
+            catechumenProfileId,
+            error: e instanceof Error ? e.message : String(e),
+          });
+        }
+      }
+    } catch (e: any) {
+      failed.push({
+        id: catechumenProfileId,
+        name,
+        reason: e.message || "Falha ao matricular.",
+      });
+    }
+  }
+
+  return { enrolled, failed };
 };
 
 export const archiveClass = async (args: { id: string }, context: any) => {

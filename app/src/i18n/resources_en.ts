@@ -431,7 +431,12 @@ export const attendance_en = {
       "mark_all_present_confirm_desc": "Do you really want to mark all {{count}} catechumens as PRESENT in the meeting \"{{meetingTitle}}\"? This will overwrite individual records.",
       "mark_all_absent_confirm_desc": "Do you really want to mark all {{count}} catechumens as ABSENT in the meeting \"{{meetingTitle}}\"? This will overwrite individual records.",
       "bulk_success": "Attendance updated successfully!",
-      "bulk_partial_error": "Failed to register attendance for {{failedCount}} out of {{total}} catechumens."
+      "bulk_partial_error": "Failed to register attendance for {{failedCount}} out of {{total}} catechumens.",
+      "bulk_failed_named": "Failed for: {{names}}.",
+      "bulk_retry": "Retry failed students",
+      "bulk_retry_hint": "{{count}} student(s) were not saved. Retry?",
+      "create_meeting_success": "Meeting created.",
+      "date_placeholder": "MM/DD/YYYY"
     },
     "sheet": {
       "eyebrow": "Roll call",
@@ -859,7 +864,7 @@ export const billing_en = {
       },
       "class_limit": {
         "title": "Your next class needs more room",
-        "description": "You already use {{currentCount}} of {{maxAllowed}} class on {{currentPlanName}}. Upgrade to {{plan}} and open the next class without losing attendance, meetings, or history.",
+        "description": "You used {{currentCount}} of {{maxAllowed}} classes on {{currentPlanName}}. Upgrade to {{plan}} and open the next class without losing attendance, meetings, or history.",
         "cta": "Unlock next class",
         "checklist": "You unlock the next class without splitting attendance, planning, or follow-up.",
         "toast_description": "Your current class is already active. Unlock the next one without interrupting follow-up."
@@ -998,13 +1003,13 @@ export const catecheticalYears_en = {
 
 export const catechism_en = {
     "title": "Catechism",
-    "heading": "Catechism of Saint Pius X",
+    "heading": "Catechism of the Catholic Church",
     "searchPlaceholder": "Ex: sacrament, prayer, baptism, commandment, creed...",
     "searchButton": "Search",
     "resultsCount": "{{count}} result(s)",
     "entriesInCategory": "{{count}} entries in {{category}}",
     "noCategory": "No entries in this category.",
-    "emptyTitle": "Catechism of Saint Pius X",
+    "emptyTitle": "Catechism of the Catholic Church",
     "emptyDesc": "Select a category above or search by keywords to explore the catechism.",
     "loadError": "Could not load the category.",
     "categories": {
@@ -1151,6 +1156,11 @@ export const classes_en = {
       "no_journey": "No journey",
       "available_to_enroll": "Available to enroll ({{count}})",
       "enroll_btn": "Enroll",
+      "import_into_class": "Import into this class",
+      "enroll_all": "Enroll all ({{count}})",
+      "enroll_selected": "Enroll selected ({{count}})",
+      "enrolled_bulk_success": "{{count}} catechumens enrolled.",
+      "enrolled_bulk_partial": "{{enrolled}} enrolled, {{failed}} failed.",
       "no_meetings_registered": "No meetings registered",
       "schedule_meetings_desc": "Schedule meetings on the class meetings page.",
       "no_title": "No title",
@@ -1191,7 +1201,8 @@ export const classes_en = {
     "suggested_structure": "Suggested structure",
     "suggested_1": "Set stage, schedule, and lead catechist for each class.",
     "suggested_2": "Register catechumens to track attendance, meetings, and progress.",
-    "suggested_3": "Use editorial assistance to prepare meetings with more consistency."
+    "suggested_3": "Use editorial assistance to prepare meetings with more consistency.",
+    "limit_used_of_plan": "You used {{currentCount}} of {{maxAllowed}} classes on the Single Plan"
   } as const;
 
 export const collaborative_en = {
@@ -1621,6 +1632,9 @@ export const common_en = {
       "removed_success": "Document removed",
       "upload_dialog_title": "Upload document",
       "upload_dialog_desc": "Select the {{type}} file for {{name}}",
+      "select_student": "Catechumen",
+      "select_doc_type": "Document type",
+      "pick_student_and_type": "Choose the catechumen and document type before uploading.",
       "select_file": "Select file",
       "no_file_selected": "No file selected",
       "tooltip_upload": "Upload document",
@@ -1684,7 +1698,13 @@ export const common_en = {
       "import_format_title": "Expected format",
       "import_format_desc": "Paste data in CSV format with header. Example:",
       "import_csv_label": "CSV data",
-      "import_csv_placeholder": "first_name,last_name,birth_date\nJohn,Smith,2015-03-15",
+      "import_csv_placeholder": "first_name,last_name,birth_date,class\nJohn,Smith,2015-03-15,Eucharist 2026",
+      "import_class_column": "Class",
+      "import_class_label": "Import into class",
+      "import_for_class_banner": "Importing into class {{name}}",
+      "import_unassigned": "No class (available)",
+      "import_enrolled": "{{count}} enrolled in the class",
+      "import_view_class": "View class",
       "import_drag_over": "Drop file here",
       "import_drag_hint": "Drag a CSV file here or click to select",
       "import_invalid_csv": "Please drop a valid CSV file.",
@@ -3408,8 +3428,19 @@ export const messages_en = {
         "announcement": {
           "label": "Announcement Channel",
           "desc": "Only coordinators can post"
+        },
+        "class_chat": {
+          "label": "Class message",
+          "desc": "Open the class chat with enrolled students and families"
+        },
+        "class_notice": {
+          "label": "Notice for guardians",
+          "desc": "Reach the class and families in the same channel"
         }
       },
+      "pick_class": "Choose a class",
+      "no_classes": "No classes found.",
+      "enrolled_no_account": "No portal account — use the class message",
       "group_name_placeholder": "Group name...",
       "search_contacts": "Search contacts...",
       "loading_contacts": "Loading contacts...",

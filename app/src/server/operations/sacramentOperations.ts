@@ -483,8 +483,12 @@ export const updateJourney = async (
 
 // ─── List Journey Templates ───────────────────────────────────────────────────
 
-export const listJourneyTemplates = async (_args: void, context: any) => {
+export const listJourneyTemplates = async (
+  args: { locale?: string } | void,
+  context: any,
+) => {
   requireAuth(context.user);
+  const locale = args && typeof args === 'object' ? args.locale : undefined;
 
   const include = {
     milestones: { orderBy: { order: 'asc' } as const },
@@ -492,8 +496,18 @@ export const listJourneyTemplates = async (_args: void, context: any) => {
     sacrament: { select: { id: true, name: true } },
   };
 
+  const localeWhere = locale
+    ? { OR: [{ locale }, { locale: null }, { locale: '' }] }
+    : {};
+
   if (context.user.isAdmin) {
-    return context.entities.SacramentalJourneyTemplate.findMany({ include });
+    const templates = await context.entities.SacramentalJourneyTemplate.findMany({
+      where: localeWhere,
+      include,
+    });
+    return locale
+      ? templates.filter((t: any) => !t.locale || t.locale === locale || t.parishId)
+      : templates;
   }
 
   const { parishIds } = await getEffectiveParishScope(context);
@@ -529,7 +543,10 @@ export const listJourneyTemplates = async (_args: void, context: any) => {
     return score(a) - score(b);
   });
 
-  return templates;
+  if (!locale) return templates;
+  return templates.filter(
+    (t: any) => !t.locale || t.locale === locale || Boolean(t.parishId),
+  );
 };
 
 // ─── Template CRUD ────────────────────────────────────────────────────────────

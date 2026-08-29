@@ -197,7 +197,7 @@
     },
     "class_limit": {
       "title": "Sua próxima turma precisa de espaço",
-      "description": "Você já ocupou {{currentCount}} de {{maxAllowed}} turma no {{currentPlanName}}. Faça upgrade para o {{plan}} e abra a próxima turma sem perder presença, encontros e histórico.",
+      "description": "Você usou {{currentCount}} de {{maxAllowed}} turmas do {{currentPlanName}}. Faça upgrade para o {{plan}} e abra a próxima turma sem perder presença, encontros e histórico.",
       "cta": "Liberar próxima turma",
       "checklist": "Você libera a próxima turma sem separar acompanhamento, presença e planejamento.",
       "toast_description": "Sua turma atual já está ativa. Libere a próxima sem interromper o acompanhamento."

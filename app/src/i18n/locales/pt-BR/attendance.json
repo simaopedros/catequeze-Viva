@@ -52,7 +52,12 @@
     "mark_all_present_confirm_desc": "Deseja realmente marcar todos os {{count}} catequizandos como PRESENTES no encontro \"{{meetingTitle}}\"? Isso sobrescreverá registros individuais.",
     "mark_all_absent_confirm_desc": "Deseja realmente marcar todos os {{count}} catequizandos como FALTAS no encontro \"{{meetingTitle}}\"? Isso sobrescreverá registros individuais.",
     "bulk_success": "Presenças atualizadas com sucesso!",
-    "bulk_partial_error": "Falha ao registrar para {{failedCount}} de {{total}} catequizandos."
+    "bulk_partial_error": "Falha ao registrar para {{failedCount}} de {{total}} catequizandos.",
+    "bulk_failed_named": "Falha para: {{names}}.",
+    "bulk_retry": "Tentar novamente os que falharam",
+    "bulk_retry_hint": "{{count}} catequizando(s) sem registro. Tentar de novo?",
+    "create_meeting_success": "Encontro criado.",
+    "date_placeholder": "DD/MM/AAAA"
   },
   "sheet": {
     "eyebrow": "Chamada",

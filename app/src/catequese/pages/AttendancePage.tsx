@@ -19,12 +19,15 @@ import {
   getClassDetails,
   getClassAttendanceMatrix,
   saveAttendance,
+  saveAttendanceBatch,
   createMeeting as createMeetingAction,
 } from "wasp/client/operations";
 import { toast } from "../../client/hooks/use-toast";
 import { useLocale } from "../../i18n/useLocale";
 import { formatDate } from "../../i18n/format";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
+import { LocalizedDateInput } from "../../client/components/LocalizedDateInput";
+import { defaultMeetingDateIso } from "../../shared/displayDate";
 import {
   AppPageHeader,
   AppPanel,
@@ -192,7 +195,7 @@ export default function AttendancePage() {
   const lastProcessedRef = useRef("");
   const [showNew, setShowNew] = useState(false);
   const [newTitle, setNewTitle] = useState("");
-  const [newDate, setNewDate] = useState(new Date().toISOString().slice(0, 10));
+  const [newDate, setNewDate] = useState(defaultMeetingDateIso);
   const [saving, setSaving] = useState<string | null>(null);
   const [studentFilter, setStudentFilter] = useState("");
   const [enrollmentStatusFilter, setEnrollmentStatusFilter] = useState("all");
@@ -322,6 +325,7 @@ export default function AttendancePage() {
     status: "PRESENT" | "ABSENT";
   } | null>(null);
   const [bulkSaving, setBulkSaving] = useState(false);
+  const [failedBulkIds, setFailedBulkIds] = useState<string[]>([]);
 
   const triggerBulkAction = (
     meetingId: string,
@@ -332,46 +336,67 @@ export default function AttendancePage() {
     setConfirmBulkOpen(true);
   };
 
+  const applyBulkAttendance = async (
+    meetingId: string,
+    status: "PRESENT" | "ABSENT",
+    targetIds: string[],
+  ) => {
+    const nameById = new Map(
+      catechumens.map((cat: any) => [
+        cat.id,
+        `${cat.firstName || ""} ${cat.lastName || ""}`.trim() || cat.id,
+      ]),
+    );
+    const res = await saveAttendanceBatch({
+      meetingId,
+      changes: targetIds.map((id) => ({
+        catechumenProfileId: id,
+        status,
+      })),
+    });
+    const failed = (res.results || []).filter(
+      (r: any) => r.outcome !== "applied",
+    );
+    const applied = (res.results || []).filter(
+      (r: any) => r.outcome === "applied",
+    );
+    setMatrix((prev) => {
+      const updated = { ...(prev[meetingId] || {}) };
+      for (const row of applied) {
+        updated[row.catechumenProfileId] = status;
+      }
+      return { ...prev, [meetingId]: updated };
+    });
+    const failedIds = failed.map((r: any) => r.catechumenProfileId);
+    setFailedBulkIds(failedIds);
+    if (failed.length > 0) {
+      const names = failed
+        .map((r: any) => r.name || nameById.get(r.catechumenProfileId))
+        .filter(Boolean);
+      toast({
+        title: tc("error"),
+        description: t("matrix.bulk_failed_named", {
+          names: names.join(", "),
+          count: failed.length,
+        }),
+        variant: "destructive",
+      });
+    } else {
+      toast({ title: t("matrix.bulk_success") });
+    }
+    return failedIds;
+  };
+
   const handleBulkAction = async () => {
     if (!bulkTarget) return;
     setBulkSaving(true);
     const { meetingId, status } = bulkTarget;
     try {
-      const results = await Promise.allSettled(
-        catechumens.map((cat: { id: string }) =>
-          saveAttendance({ meetingId, catechumenProfileId: cat.id, status }),
-        ),
+      await applyBulkAttendance(
+        meetingId,
+        status,
+        catechumens.map((cat: { id: string }) => cat.id),
       );
-
-      const failedCount = results.filter((r) => r.status === "rejected").length;
-
-      // Update local state for those that succeeded
-      setMatrix((prev) => {
-        const updated = { ...(prev[meetingId] || {}) };
-        results.forEach((r, idx) => {
-          if (r.status === "fulfilled") {
-            const cat = catechumens[idx];
-            updated[cat.id] = status;
-          }
-        });
-        return { ...prev, [meetingId]: updated };
-      });
-
-      if (failedCount > 0) {
-        toast({
-          title: tc("error"),
-          description: t("matrix.bulk_partial_error", {
-            failedCount,
-            total: catechumens.length,
-          }),
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title:
-            t("matrix.bulk_success") || "Presenças atualizadas com sucesso!",
-        });
-      }
     } catch (e: any) {
       toast({
         title: tc("error"),
@@ -381,7 +406,26 @@ export default function AttendancePage() {
     } finally {
       setBulkSaving(false);
       setConfirmBulkOpen(false);
-      setBulkTarget(null);
+    }
+  };
+
+  const handleRetryFailedBulk = async () => {
+    if (!bulkTarget || failedBulkIds.length === 0) return;
+    setBulkSaving(true);
+    try {
+      await applyBulkAttendance(
+        bulkTarget.meetingId,
+        bulkTarget.status,
+        failedBulkIds,
+      );
+    } catch (e: any) {
+      toast({
+        title: tc("error"),
+        description: e.message || tc("error_generic"),
+        variant: "destructive",
+      });
+    } finally {
+      setBulkSaving(false);
     }
   };
 
@@ -395,7 +439,8 @@ export default function AttendancePage() {
       });
       setNewTitle("");
       setShowNew(false);
-      refetchMeetings();
+      await refetchMeetings();
+      toast({ title: t("matrix.create_meeting_success") });
     } catch (e: any) {
       toast({
         title: t("matrix.create_meeting_error", {
@@ -521,11 +566,11 @@ export default function AttendancePage() {
               className="flex h-10 flex-1 rounded-sm border border-input bg-background px-3 py-1 text-sm"
               autoFocus
             />
-            <input
-              type="date"
+            <LocalizedDateInput
               value={newDate}
-              onChange={(e) => setNewDate(e.target.value)}
-              className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-1 text-sm sm:w-36"
+              onChange={setNewDate}
+              aria-label={t("matrix.date_placeholder")}
+              className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-1 text-sm sm:w-40"
             />
             <Button
               size="sm"
@@ -801,11 +846,26 @@ export default function AttendancePage() {
                 meetingTitle: bulkTarget?.meetingTitle,
               })
         }
-        confirmLabel={t("confirm") || "Confirmar"}
+        confirmLabel={tc("confirm")}
         variant={bulkTarget?.status === "ABSENT" ? "destructive" : "default"}
         onConfirm={handleBulkAction}
         loading={bulkSaving}
       />
+      {failedBulkIds.length > 0 && bulkTarget && (
+        <div className="fixed bottom-4 right-4 z-40 max-w-sm rounded-sm border border-destructive/30 bg-white p-3 shadow-lg">
+          <p className="text-sm text-destructive">
+            {t("matrix.bulk_retry_hint", { count: failedBulkIds.length })}
+          </p>
+          <Button
+            size="sm"
+            className="mt-2"
+            disabled={bulkSaving}
+            onClick={handleRetryFailedBulk}
+          >
+            {t("matrix.bulk_retry")}
+          </Button>
+        </div>
+      )}
     </>
   );
 }

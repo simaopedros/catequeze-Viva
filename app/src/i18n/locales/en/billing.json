@@ -199,7 +199,7 @@
     },
     "class_limit": {
       "title": "Your next class needs more room",
-      "description": "You already use {{currentCount}} of {{maxAllowed}} class on {{currentPlanName}}. Upgrade to {{plan}} and open the next class without losing attendance, meetings, or history.",
+      "description": "You used {{currentCount}} of {{maxAllowed}} classes on {{currentPlanName}}. Upgrade to {{plan}} and open the next class without losing attendance, meetings, or history.",
       "cta": "Unlock next class",
       "checklist": "You unlock the next class without splitting attendance, planning, or follow-up.",
       "toast_description": "Your current class is already active. Unlock the next one without interrupting follow-up."

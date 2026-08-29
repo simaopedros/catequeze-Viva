@@ -1,4 +1,4 @@
-import { HttpError } from "wasp/server";
+import { HttpError, prisma } from "wasp/server";
 import { MembershipStatus } from "@prisma/client";
 import { logger } from "../logger";
 import {
@@ -554,15 +554,60 @@ export const saveAttendanceBatch = async (
   await assertUserBelongsToClass(context, meeting.classId);
 
   const serverTime = new Date();
+  const profileIds = [
+    ...new Set(changes.map((c) => c.catechumenProfileId).filter(Boolean)),
+  ];
+  const [profiles, enrollments, existingRecords] = await Promise.all([
+    context.entities.CatechumenProfile.findMany({
+      where: { id: { in: profileIds } },
+      select: { id: true, firstName: true, lastName: true },
+    }),
+    context.entities.ClassEnrollment.findMany({
+      where: {
+        classId: meeting.classId,
+        catechumenProfileId: { in: profileIds },
+        status: "ENROLLED",
+      },
+      select: { catechumenProfileId: true },
+    }),
+    context.entities.AttendanceRecord.findMany({
+      where: {
+        meetingId: args.meetingId,
+        catechumenProfileId: { in: profileIds },
+      },
+    }),
+  ]);
+  const nameById = new Map(
+    profiles.map((p: any) => [
+      p.id,
+      `${p.firstName || ""} ${p.lastName || ""}`.trim() || p.id,
+    ]),
+  );
+  const enrolledIds = new Set(
+    enrollments.map((e: any) => e.catechumenProfileId),
+  );
+  const existingByProfile = new Map(
+    existingRecords.map((r: any) => [r.catechumenProfileId, r]),
+  );
+
   const results: any[] = [];
+  const writes: Array<{
+    profileId: string;
+    name: string;
+    status: string;
+    note: string | null;
+    existingId?: string;
+  }> = [];
 
   for (const change of changes) {
     const profileId = change.catechumenProfileId;
     const status = change.status;
+    const name = nameById.get(profileId) || profileId || "";
 
     if (!profileId || !ATTENDANCE_STATUSES.has(status)) {
       results.push({
         catechumenProfileId: profileId || "",
+        name,
         outcome: "skipped",
         reason: "invalid_status",
         status: null,
@@ -574,6 +619,7 @@ export const saveAttendanceBatch = async (
     if (change.note != null && String(change.note).length > 500) {
       results.push({
         catechumenProfileId: profileId,
+        name,
         outcome: "skipped",
         reason: "invalid_note",
         status: null,
@@ -582,17 +628,10 @@ export const saveAttendanceBatch = async (
       continue;
     }
 
-    const enrolled = await context.entities.ClassEnrollment.findFirst({
-      where: {
-        classId: meeting.classId,
-        catechumenProfileId: profileId,
-        status: "ENROLLED",
-      },
-      select: { id: true },
-    });
-    if (!enrolled) {
+    if (!enrolledIds.has(profileId)) {
       results.push({
         catechumenProfileId: profileId,
+        name,
         outcome: "skipped",
         reason: "unenrolled",
         status: null,
@@ -601,21 +640,18 @@ export const saveAttendanceBatch = async (
       continue;
     }
 
-    const existing = await context.entities.AttendanceRecord.findFirst({
-      where: { meetingId: args.meetingId, catechumenProfileId: profileId },
-    });
-
+    const existing = existingByProfile.get(profileId);
     let clientAt = change.clientUpdatedAt
       ? new Date(change.clientUpdatedAt)
       : serverTime;
     if (Number.isNaN(+clientAt)) clientAt = serverTime;
-    // Clamp future skew > 5 min
     if (+clientAt > +serverTime + 5 * 60 * 1000) clientAt = serverTime;
 
     if (existing && change.clientUpdatedAt) {
       if (+clientAt < +new Date(existing.updatedAt)) {
         results.push({
           catechumenProfileId: profileId,
+          name,
           outcome: "conflict",
           reason: "stale_client",
           status: existing.status,
@@ -627,31 +663,60 @@ export const saveAttendanceBatch = async (
       }
     }
 
-    const data = {
+    writes.push({
+      profileId,
+      name,
       status,
       note: change.note ?? existing?.note ?? null,
-      recordedById: context.user.id,
-    };
-
-    const saved = existing
-      ? await context.entities.AttendanceRecord.update({
-          where: { id: existing.id },
-          data,
-        })
-      : await context.entities.AttendanceRecord.create({
-          data: {
-            meetingId: args.meetingId,
-            catechumenProfileId: profileId,
-            ...data,
-          },
-        });
-
-    results.push({
-      catechumenProfileId: profileId,
-      outcome: "applied",
-      status: saved.status,
-      updatedAt: saved.updatedAt,
+      existingId: existing?.id,
     });
+  }
+
+  try {
+    if (writes.length > 0) {
+      const savedRows = await prisma.$transaction(
+        writes.map((write) => {
+          const data = {
+            status: write.status,
+            note: write.note,
+            recordedById: context.user.id,
+          };
+          return write.existingId
+            ? prisma.attendanceRecord.update({
+                where: { id: write.existingId },
+                data,
+              })
+            : prisma.attendanceRecord.create({
+                data: {
+                  meetingId: args.meetingId,
+                  catechumenProfileId: write.profileId,
+                  ...data,
+                },
+              });
+        }),
+      );
+      writes.forEach((write, idx) => {
+        const saved = savedRows[idx];
+        results.push({
+          catechumenProfileId: write.profileId,
+          name: write.name,
+          outcome: "applied",
+          status: saved.status,
+          updatedAt: saved.updatedAt,
+        });
+      });
+    }
+  } catch (e: any) {
+    for (const write of writes) {
+      results.push({
+        catechumenProfileId: write.profileId,
+        name: write.name,
+        outcome: "failed",
+        reason: e.message || "transaction_failed",
+        status: null,
+        updatedAt: null,
+      });
+    }
   }
 
   return { serverTime: serverTime.toISOString(), results };

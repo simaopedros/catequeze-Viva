@@ -429,7 +429,8 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                             {m.class?.name}
                           </p>
                           <p className="mt-1 text-xs text-muted-foreground">
-                            {m._count?.attendance || 0} {tc("records")}
+                            {m.attendanceCount ?? m._count?.attendance ?? 0}{" "}
+                            {tc("records")}
                           </p>
                         </div>
                         <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-brand-ink" />
@@ -619,7 +620,8 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
                         {c.name}
                       </span>
                       <span className="shrink-0 text-xs font-medium text-muted-foreground">
-                        {c._count?.enrollments || 0} {tc("enrolled")}
+                        {c.enrollmentCount ?? c._count?.enrollments ?? 0}{" "}
+                        {tc("enrolled")}
                       </span>
                     </Link>
                   ))}

@@ -526,7 +526,10 @@ export const getDashboardStats = async (
   });
 
   const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-  const meetingInclude = { class: { select: { id: true, name: true } } };
+  const meetingInclude = {
+    class: { select: { id: true, name: true } },
+    _count: { select: { attendance: true } },
+  };
 
   const upcomingMeetingsPromise = context.entities.Meeting.findMany({
     where: meetingWhere(

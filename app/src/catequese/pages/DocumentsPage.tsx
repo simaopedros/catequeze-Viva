@@ -275,13 +275,10 @@ export default function DocumentsPage() {
             ? {
                 label: tc("upload"),
                 onClick: () => {
-                  const first = catechumens[0];
-                  if (first) {
-                    setUploadDialog({
-                      catechumenId: first.id,
-                      docType: DOC_TYPE_KEYS[0],
-                    });
-                  }
+                  setUploadDialog({
+                    catechumenId: "",
+                    docType: "",
+                  });
                 },
               }
             : undefined
@@ -316,18 +313,67 @@ export default function DocumentsPage() {
           <DialogHeader>
             <DialogTitle>{tc("documents.upload_dialog_title")}</DialogTitle>
             <DialogDescription>
-              {uploadingCatechumen &&
-                tc("documents.upload_dialog_desc", {
-                  name: `${uploadingCatechumen.firstName || ""} ${
-                    uploadingCatechumen.lastName || ""
-                  }`.trim(),
-                  type:
-                    docTypes[uploadDialog?.docType as keyof typeof docTypes] ??
-                    uploadDialog?.docType,
-                })}
+              {uploadingCatechumen && uploadDialog?.docType
+                ? tc("documents.upload_dialog_desc", {
+                    name: `${uploadingCatechumen.firstName || ""} ${
+                      uploadingCatechumen.lastName || ""
+                    }`.trim(),
+                    type:
+                      docTypes[uploadDialog.docType as keyof typeof docTypes] ??
+                      uploadDialog.docType,
+                  })
+                : tc("documents.pick_student_and_type")}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">
+                {tc("documents.select_student")}
+              </label>
+              <select
+                aria-label={tc("documents.select_student")}
+                value={uploadDialog?.catechumenId || ""}
+                onChange={(e) =>
+                  setUploadDialog((prev) =>
+                    prev
+                      ? { ...prev, catechumenId: e.target.value }
+                      : { catechumenId: e.target.value, docType: "" },
+                  )
+                }
+                className="flex h-10 w-full rounded-sm border border-input bg-background px-3 text-sm"
+              >
+                <option value="">{tc("select_option")}</option>
+                {catechumens.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {`${c.firstName || ""} ${c.lastName || ""}`.trim()}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">
+                {tc("documents.select_doc_type")}
+              </label>
+              <select
+                aria-label={tc("documents.select_doc_type")}
+                value={uploadDialog?.docType || ""}
+                onChange={(e) =>
+                  setUploadDialog((prev) =>
+                    prev
+                      ? { ...prev, docType: e.target.value }
+                      : { catechumenId: "", docType: e.target.value },
+                  )
+                }
+                className="flex h-10 w-full rounded-sm border border-input bg-background px-3 text-sm"
+              >
+                <option value="">{tc("select_option")}</option>
+                {DOC_TYPE_KEYS.map((key) => (
+                  <option key={key} value={key}>
+                    {docTypes[key]}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="flex items-center justify-center gap-3 rounded-sm border border-dashed border-border/70 p-6 transition-colors hover:bg-muted/20">
               <label className="flex flex-col items-center gap-2 cursor-pointer">
                 <FileUp className="h-8 w-8 text-muted-foreground" />
@@ -356,7 +402,14 @@ export default function DocumentsPage() {
             <Button variant="outline" onClick={closeUploadDialog}>
               {tc("cancel")}
             </Button>
-            <Button onClick={handleUpload} disabled={!selectedFile}>
+            <Button
+              onClick={handleUpload}
+              disabled={
+                !selectedFile ||
+                !uploadDialog?.catechumenId ||
+                !uploadDialog?.docType
+              }
+            >
               <Upload className="mr-1.5 h-4 w-4" />
               {tc("upload")}
             </Button>

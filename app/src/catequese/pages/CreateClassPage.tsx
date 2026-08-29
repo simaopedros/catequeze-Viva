@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../../client/components/ui/button";
 import { Input } from "../../client/components/ui/input";
 import { ArrowLeft, Save } from "lucide-react";
-import { createClass } from "wasp/client/operations";
+import { createClass, listClasses, useQuery } from "wasp/client/operations";
 import { handlePlanLimitError } from "../lib/planLimitToast";
 import { toast } from "../../client/hooks/use-toast";
 import { useUnsavedChangesGuard } from "../../client/hooks/useUnsavedChangesGuard";
@@ -28,12 +28,35 @@ import {
 } from "../../client/components/brand/AppChrome";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
 import { MobileActionBar } from "../../client/components/MobileActionBar";
+import { PlanLimitBanner } from "../components/PlanLimitBanner";
+import { getPlanLimits } from "../../shared/planLimits";
+import { canManageWorkspaceBilling } from "../../shared/billingAccess";
+import { useUserContext } from "../../client/hooks/useUserContext";
 
 export default function CreateClassPage() {
   const { t } = useTranslation("classes");
   const { t: tc } = useTranslation("common");
   const navigate = useNavigate();
   const { workspaceId, workspacePlan, isPersonal } = useActiveWorkspace();
+  const { userRole, isAdmin } = useUserContext();
+  const canManageBilling = canManageWorkspaceBilling(userRole, {
+    isPersonalOwner: isPersonal,
+    isAdmin,
+  });
+  const { data: classPage } = useQuery(
+    listClasses,
+    { workspaceId, take: 100, paginated: true } as any,
+    { enabled: Boolean(workspaceId) },
+  );
+  const existingClasses = Array.isArray(classPage)
+    ? classPage
+    : (classPage as any)?.items || [];
+  const limits = getPlanLimits(workspacePlan || "catechist_free");
+  const activeClassesCount = existingClasses.filter(
+    (c: any) => c.status !== "ARCHIVED",
+  ).length;
+  const isClassLimitReached =
+    limits.maxClasses !== null && activeClassesCount >= limits.maxClasses;
 
   const form = useForm<CreateClassValues>({
     resolver: zodResolver(createClassSchema) as any,
@@ -93,6 +116,17 @@ export default function CreateClassPage() {
         }
       />
 
+      {isClassLimitReached && (
+        <PlanLimitBanner
+          type="class_limit"
+          currentCount={activeClassesCount}
+          maxAllowed={limits.maxClasses}
+          userPlan={workspacePlan}
+          isPersonalWorkspace={isPersonal}
+          canManageBilling={canManageBilling}
+        />
+      )}
+
       {form.formState.errors.root && (
         <div
           className="rounded-sm bg-destructive/10 p-3 text-sm text-destructive"
@@ -104,6 +138,15 @@ export default function CreateClassPage() {
       )}
 
       <AppPanel>
+        {isClassLimitReached ? (
+          <p className="text-sm text-muted-foreground">
+            {t("limit_used_of_plan", {
+              currentCount: activeClassesCount,
+              maxAllowed: limits.maxClasses,
+              planName: workspacePlan || "single",
+            })}
+          </p>
+        ) : (
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -203,8 +246,10 @@ export default function CreateClassPage() {
             />
           </form>
         </Form>
+        )}
       </AppPanel>
 
+      {!isClassLimitReached && (
       <MobileActionBar
         label={form.formState.isSubmitting ? tc("loading") : t("create")}
         loading={form.formState.isSubmitting}
@@ -212,6 +257,7 @@ export default function CreateClassPage() {
         onClick={form.handleSubmit(onSubmit)}
         icon={<Save className="mr-2 h-4 w-4" />}
       />
+      )}
 
       <ConfirmDialog
         open={leaveGuard.dialogOpen}

@@ -431,7 +431,12 @@ export const attendance_es = {
       "mark_all_present_confirm_desc": "¿Realmente desea marcar a todos los {{count}} catecúmenos como PRESENTES en el encuentro \"{{meetingTitle}}\"? Esto sobrescribirá los registros individuales.",
       "mark_all_absent_confirm_desc": "¿Realmente desea marcar a todos los {{count}} catecúmenos como AUSENTES en el encuentro \"{{meetingTitle}}\"? Esto sobrescribirá los registros individuales.",
       "bulk_success": "¡Asistencias registradas con éxito!",
-      "bulk_partial_error": "Error al registrar la asistencia para {{failedCount}} de {{total}} catecúmenos."
+      "bulk_partial_error": "Error al registrar la asistencia para {{failedCount}} de {{total}} catecúmenos.",
+      "bulk_failed_named": "Falló para: {{names}}.",
+      "bulk_retry": "Reintentar los que fallaron",
+      "bulk_retry_hint": "{{count}} catecúmeno(s) sin registro. ¿Reintentar?",
+      "create_meeting_success": "Encuentro creado.",
+      "date_placeholder": "DD/MM/AAAA"
     },
     "sheet": {
       "eyebrow": "Lista",
@@ -859,7 +864,7 @@ export const billing_es = {
       },
       "class_limit": {
         "title": "Tu próxima turma necesita más espacio",
-        "description": "Ya usas {{currentCount}} de {{maxAllowed}} turma en {{currentPlanName}}. Haz upgrade a {{plan}} y abre la próxima turma sin perder asistencia, encuentros ni historial.",
+        "description": "Usaste {{currentCount}} de {{maxAllowed}} turmas del {{currentPlanName}}. Haz upgrade a {{plan}} y abre la próxima turma sin perder asistencia, encuentros ni historial.",
         "cta": "Liberar próxima turma",
         "checklist": "Liberas la próxima turma sin separar asistencia, planificación ni seguimiento.",
         "toast_description": "Tu turma actual ya está activa. Libera la próxima sin interrumpir el seguimiento."
@@ -998,13 +1003,13 @@ export const catecheticalYears_es = {
 
 export const catechism_es = {
     "title": "Catecismo",
-    "heading": "Catecismo de San Pío X",
+    "heading": "Catecismo de la Iglesia Católica",
     "searchPlaceholder": "Ej: sacramento, oración, bautismo, mandamiento, credo...",
     "searchButton": "Buscar",
     "resultsCount": "{{count}} resultado(s)",
     "entriesInCategory": "{{count}} entradas en {{category}}",
     "noCategory": "Ninguna entrada en esta categoría.",
-    "emptyTitle": "Catecismo de San Pío X",
+    "emptyTitle": "Catecismo de la Iglesia Católica",
     "emptyDesc": "Seleccione una categoría arriba o busque por palabras clave para explorar el catecismo.",
     "loadError": "No se pudo cargar la categoría.",
     "categories": {
@@ -1151,6 +1156,11 @@ export const classes_es = {
       "no_journey": "Sin jornada",
       "available_to_enroll": "Disponibles para inscribir ({{count}})",
       "enroll_btn": "Inscribir",
+      "import_into_class": "Importar a esta turma",
+      "enroll_all": "Inscribir a todos ({{count}})",
+      "enroll_selected": "Inscribir seleccionados ({{count}})",
+      "enrolled_bulk_success": "{{count}} catecúmenos inscritos.",
+      "enrolled_bulk_partial": "{{enrolled}} inscritos, {{failed}} fallaron.",
       "no_meetings_registered": "Ningún encuentro registrado",
       "schedule_meetings_desc": "Programe encuentros en la página de encuentros del grupo.",
       "no_title": "Sin título",
@@ -1191,7 +1201,8 @@ export const classes_es = {
     "suggested_structure": "Estructura sugerida",
     "suggested_1": "Defina etapa, horario y catequista principal para cada grupo.",
     "suggested_2": "Registre catecúmenos para seguir asistencia, encuentros y progreso.",
-    "suggested_3": "Use la asistencia editorial para preparar encuentros con más consistencia."
+    "suggested_3": "Use la asistencia editorial para preparar encuentros con más consistencia.",
+    "limit_used_of_plan": "Usaste {{currentCount}} de {{maxAllowed}} turmas del Plan Único"
   } as const;
 
 export const collaborative_es = {
@@ -1542,6 +1553,9 @@ export const common_es = {
       "removed_success": "Documento eliminado",
       "upload_dialog_title": "Enviar documento",
       "upload_dialog_desc": "Seleccione el archivo {{type}} de {{name}}",
+      "select_student": "Catecúmeno",
+      "select_doc_type": "Tipo de documento",
+      "pick_student_and_type": "Elija el catecúmeno y el tipo de documento antes de enviar.",
       "select_file": "Seleccionar archivo",
       "no_file_selected": "Ningún archivo seleccionado",
       "tooltip_upload": "Enviar documento",
@@ -1605,7 +1619,13 @@ export const common_es = {
       "import_format_title": "Formato esperado",
       "import_format_desc": "Pegue los datos en formato CSV con encabezado. Ejemplo:",
       "import_csv_label": "Datos CSV",
-      "import_csv_placeholder": "nombre,apellido,nacimiento\nJuan,García,2015-03-15",
+      "import_csv_placeholder": "nombre,apellido,nacimiento,turma\nJuan,García,2015-03-15,Eucaristía 2026",
+      "import_class_column": "Turma",
+      "import_class_label": "Importar a la turma",
+      "import_for_class_banner": "Importando a la turma {{name}}",
+      "import_unassigned": "Sin turma (disponibles)",
+      "import_enrolled": "{{count}} inscritos en la turma",
+      "import_view_class": "Ver turma",
       "import_drag_over": "Suelte el archivo aquí",
       "import_drag_hint": "Arrastre un archivo CSV aquí o haga clic para seleccionar",
       "import_invalid_csv": "Por favor, suelte un archivo CSV válido.",
@@ -3408,8 +3428,19 @@ export const messages_es = {
         "announcement": {
           "label": "Canal de Avisos",
           "desc": "Solo coordinadores publican"
+        },
+        "class_chat": {
+          "label": "Mensaje para la turma",
+          "desc": "Abre el chat de la turma con inscritos y familias"
+        },
+        "class_notice": {
+          "label": "Aviso para responsables",
+          "desc": "Comunique a la turma y a las familias en el mismo canal"
         }
       },
+      "pick_class": "Elija la turma",
+      "no_classes": "Ninguna turma encontrada.",
+      "enrolled_no_account": "Sin cuenta en el portal — use el mensaje de la turma",
       "group_name_placeholder": "Nombre del grupo...",
       "search_contacts": "Buscar contactos...",
       "loading_contacts": "Cargando contactos...",

@@ -132,6 +132,11 @@
     "no_journey": "No journey",
     "available_to_enroll": "Available to enroll ({{count}})",
     "enroll_btn": "Enroll",
+    "import_into_class": "Import into this class",
+    "enroll_all": "Enroll all ({{count}})",
+    "enroll_selected": "Enroll selected ({{count}})",
+    "enrolled_bulk_success": "{{count}} catechumens enrolled.",
+    "enrolled_bulk_partial": "{{enrolled}} enrolled, {{failed}} failed.",
     "no_meetings_registered": "No meetings registered",
     "schedule_meetings_desc": "Schedule meetings on the class meetings page.",
     "no_title": "No title",
@@ -172,5 +177,6 @@
   "suggested_structure": "Suggested structure",
   "suggested_1": "Set stage, schedule, and lead catechist for each class.",
   "suggested_2": "Register catechumens to track attendance, meetings, and progress.",
-  "suggested_3": "Use editorial assistance to prepare meetings with more consistency."
+  "suggested_3": "Use editorial assistance to prepare meetings with more consistency.",
+  "limit_used_of_plan": "You used {{currentCount}} of {{maxAllowed}} classes on the Single Plan"
 }

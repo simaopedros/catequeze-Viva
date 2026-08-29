@@ -52,6 +52,9 @@ export default function MessagesPage() {
     string | null
   >(searchParams.get("c") || null);
   const [showNewDialog, setShowNewDialog] = useState(false);
+  const [newDialogType, setNewDialogType] = useState<
+    "DIRECT" | "CLASS_CHAT" | "ANNOUNCEMENT" | null
+  >(null);
   const [showDetails, setShowDetails] = useState(false);
   const [isMobileChat, setIsMobileChat] = useState(false);
 
@@ -371,7 +374,10 @@ export default function MessagesPage() {
             conversations={conversations || []}
             activeId={activeConversationId}
             onSelect={handleSelectConversation}
-            onNewConversation={() => setShowNewDialog(true)}
+            onNewConversation={() => {
+              setNewDialogType(null);
+              setShowNewDialog(true);
+            }}
             currentUserId={user?.id || ""}
             isLoading={loadingConvs}
           />
@@ -558,35 +564,65 @@ export default function MessagesPage() {
               </p>
 
               <div className="mb-5 grid w-full max-w-xs gap-2">
-                <AppPanel className="p-2.5 text-left text-xs" padded={false}>
-                  <span className="font-semibold tracking-tight text-brand-ink">
-                    {t("use_case_class")}
-                  </span>
-                  <p className="mt-0.5 text-muted-foreground">
-                    {t("use_case_class_desc")}
-                  </p>
-                </AppPanel>
-                <AppPanel className="p-2.5 text-left text-xs" padded={false}>
-                  <span className="font-semibold tracking-tight text-brand-ink">
-                    {t("use_case_notice")}
-                  </span>
-                  <p className="mt-0.5 text-muted-foreground">
-                    {t("use_case_notice_desc")}
-                  </p>
-                </AppPanel>
-                <AppPanel className="p-2.5 text-left text-xs" padded={false}>
-                  <span className="font-semibold tracking-tight text-brand-ink">
-                    {t("use_case_direct")}
-                  </span>
-                  <p className="mt-0.5 text-muted-foreground">
-                    {t("use_case_direct_desc")}
-                  </p>
-                </AppPanel>
+                <button
+                  type="button"
+                  className="text-left"
+                  onClick={() => {
+                    setNewDialogType("CLASS_CHAT");
+                    setShowNewDialog(true);
+                  }}
+                >
+                  <AppPanel className="p-2.5 text-left text-xs" padded={false}>
+                    <span className="font-semibold tracking-tight text-brand-ink">
+                      {t("use_case_class")}
+                    </span>
+                    <p className="mt-0.5 text-muted-foreground">
+                      {t("use_case_class_desc")}
+                    </p>
+                  </AppPanel>
+                </button>
+                <button
+                  type="button"
+                  className="text-left"
+                  onClick={() => {
+                    setNewDialogType("ANNOUNCEMENT");
+                    setShowNewDialog(true);
+                  }}
+                >
+                  <AppPanel className="p-2.5 text-left text-xs" padded={false}>
+                    <span className="font-semibold tracking-tight text-brand-ink">
+                      {t("use_case_notice")}
+                    </span>
+                    <p className="mt-0.5 text-muted-foreground">
+                      {t("use_case_notice_desc")}
+                    </p>
+                  </AppPanel>
+                </button>
+                <button
+                  type="button"
+                  className="text-left"
+                  onClick={() => {
+                    setNewDialogType("DIRECT");
+                    setShowNewDialog(true);
+                  }}
+                >
+                  <AppPanel className="p-2.5 text-left text-xs" padded={false}>
+                    <span className="font-semibold tracking-tight text-brand-ink">
+                      {t("use_case_direct")}
+                    </span>
+                    <p className="mt-0.5 text-muted-foreground">
+                      {t("use_case_direct_desc")}
+                    </p>
+                  </AppPanel>
+                </button>
               </div>
 
               <button
                 type="button"
-                onClick={() => setShowNewDialog(true)}
+                onClick={() => {
+                  setNewDialogType(null);
+                  setShowNewDialog(true);
+                }}
                 className="h-11 min-h-11 rounded-sm bg-brand-ink px-5 text-sm font-medium text-white transition-colors hover:bg-brand-ink-soft"
               >
                 {t("start_conversation")}
@@ -647,7 +683,11 @@ export default function MessagesPage() {
       {/* New conversation dialog */}
       <NewConversationDialog
         isOpen={showNewDialog}
-        onClose={() => setShowNewDialog(false)}
+        initialType={newDialogType}
+        onClose={() => {
+          setShowNewDialog(false);
+          setNewDialogType(null);
+        }}
         onCreated={handleNewConversationCreated}
       />
       {confirmDialog}

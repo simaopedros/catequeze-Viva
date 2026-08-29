@@ -73,8 +73,19 @@
       "announcement": {
         "label": "Canal de Avisos",
         "desc": "Somente coordenadores postam"
+      },
+      "class_chat": {
+        "label": "Mensagem para turma",
+        "desc": "Abre o chat da turma com inscritos e responsáveis"
+      },
+      "class_notice": {
+        "label": "Aviso para responsáveis",
+        "desc": "Comunique a turma e as famílias no mesmo canal"
       }
     },
+    "pick_class": "Escolha a turma",
+    "no_classes": "Nenhuma turma encontrada.",
+    "enrolled_no_account": "Sem conta no portal — use a mensagem da turma",
     "group_name_placeholder": "Nome do grupo...",
     "search_contacts": "Buscar contatos...",
     "loading_contacts": "Carregando contatos...",

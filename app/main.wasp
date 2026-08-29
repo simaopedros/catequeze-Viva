@@ -292,6 +292,11 @@ page AppDashboardPage {
   authRequired: true,
   component: import DashboardPage from "@src/catequese/lazy/DashboardPage"
 }
+route AppDashboardAliasRoute { path: "/app/dashboard", to: AppDashboardAliasPage }
+page AppDashboardAliasPage {
+  authRequired: true,
+  component: import RedirectDashboardToApp from "@src/catequese/pages/RedirectDashboardToApp"
+}
 route AppNewClassRoute { path: "/app/classes/new", to: AppNewClassPage }
 page AppNewClassPage {
   authRequired: true,
@@ -673,6 +678,11 @@ action removeCatechistFromClass {
 action enrollCatechumen {
   fn: import { enrollCatechumen } from "@src/server/operations/classOperations",
   entities: [ClassEnrollment, CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User]
+}
+
+action bulkEnrollCatechumens {
+  fn: import { bulkEnrollCatechumens } from "@src/server/operations/classOperations",
+  entities: [ClassEnrollment, CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User, CatechumenProfile]
 }
 
 action archiveClass {
@@ -1384,7 +1394,7 @@ page AppImportCatechumensPage {
 
 action importCatechumensCSV {
   fn: import { importCatechumensCSV } from "@src/server/operations/importOperations",
-  entities: [CatechumenProfile, Membership, Parish]
+  entities: [CatechumenProfile, Membership, Parish, CatechesisClass, ClassEnrollment, TenantBilling, Diocese, User]
 }
 //#endregion
 

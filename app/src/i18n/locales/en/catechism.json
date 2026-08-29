@@ -1,12 +1,12 @@
 {
   "title": "Catechism",
-  "heading": "Catechism of Saint Pius X",
+  "heading": "Catechism of the Catholic Church",
   "searchPlaceholder": "Ex: sacrament, prayer, baptism, commandment, creed...",
   "searchButton": "Search",
   "resultsCount": "{{count}} result(s)",
   "entriesInCategory": "{{count}} entries in {{category}}",
   "noCategory": "No entries in this category.",
-  "emptyTitle": "Catechism of Saint Pius X",
+  "emptyTitle": "Catechism of the Catholic Church",
   "emptyDesc": "Select a category above or search by keywords to explore the catechism.",
   "loadError": "Could not load the category.",
   "categories": {

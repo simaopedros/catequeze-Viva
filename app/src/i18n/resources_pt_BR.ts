@@ -431,7 +431,12 @@ export const attendance_pt_BR = {
       "mark_all_present_confirm_desc": "Deseja realmente marcar todos os {{count}} catequizandos como PRESENTES no encontro \"{{meetingTitle}}\"? Isso sobrescreverá registros individuais.",
       "mark_all_absent_confirm_desc": "Deseja realmente marcar todos os {{count}} catequizandos como FALTAS no encontro \"{{meetingTitle}}\"? Isso sobrescreverá registros individuais.",
       "bulk_success": "Presenças atualizadas com sucesso!",
-      "bulk_partial_error": "Falha ao registrar para {{failedCount}} de {{total}} catequizandos."
+      "bulk_partial_error": "Falha ao registrar para {{failedCount}} de {{total}} catequizandos.",
+      "bulk_failed_named": "Falha para: {{names}}.",
+      "bulk_retry": "Tentar novamente os que falharam",
+      "bulk_retry_hint": "{{count}} catequizando(s) sem registro. Tentar de novo?",
+      "create_meeting_success": "Encontro criado.",
+      "date_placeholder": "DD/MM/AAAA"
     },
     "sheet": {
       "eyebrow": "Chamada",
@@ -857,7 +862,7 @@ export const billing_pt_BR = {
       },
       "class_limit": {
         "title": "Sua próxima turma precisa de espaço",
-        "description": "Você já ocupou {{currentCount}} de {{maxAllowed}} turma no {{currentPlanName}}. Faça upgrade para o {{plan}} e abra a próxima turma sem perder presença, encontros e histórico.",
+        "description": "Você usou {{currentCount}} de {{maxAllowed}} turmas do {{currentPlanName}}. Faça upgrade para o {{plan}} e abra a próxima turma sem perder presença, encontros e histórico.",
         "cta": "Liberar próxima turma",
         "checklist": "Você libera a próxima turma sem separar acompanhamento, presença e planejamento.",
         "toast_description": "Sua turma atual já está ativa. Libere a próxima sem interromper o acompanhamento."
@@ -996,13 +1001,13 @@ export const catecheticalYears_pt_BR = {
 
 export const catechism_pt_BR = {
     "title": "Catecismo",
-    "heading": "Catecismo de São Pio X",
+    "heading": "Catecismo da Igreja Católica",
     "searchPlaceholder": "Ex: sacramento, oração, batismo, mandamento, credo...",
     "searchButton": "Buscar",
     "resultsCount": "{{count}} resultado(s)",
     "entriesInCategory": "{{count}} entradas em {{category}}",
     "noCategory": "Nenhuma entrada nesta categoria.",
-    "emptyTitle": "Catecismo de São Pio X",
+    "emptyTitle": "Catecismo da Igreja Católica",
     "emptyDesc": "Selecione uma categoria acima ou busque por palavras-chave para explorar o catecismo.",
     "loadError": "Não foi possível carregar a categoria.",
     "categories": {
@@ -1149,6 +1154,11 @@ export const classes_pt_BR = {
       "no_journey": "Sem jornada",
       "available_to_enroll": "Disponíveis para matricular ({{count}})",
       "enroll_btn": "Matricular",
+      "import_into_class": "Importar para esta turma",
+      "enroll_all": "Matricular todos ({{count}})",
+      "enroll_selected": "Matricular selecionados ({{count}})",
+      "enrolled_bulk_success": "{{count}} catequizandos matriculados.",
+      "enrolled_bulk_partial": "{{enrolled}} matriculados, {{failed}} falharam.",
       "no_meetings_registered": "Nenhum encontro registrado",
       "schedule_meetings_desc": "Agende encontros na página de encontros da turma.",
       "no_title": "Sem título",
@@ -1184,12 +1194,13 @@ export const classes_pt_BR = {
       "confirm_remove_catechist_desc": "Tem certeza que deseja remover este catequista da turma?",
       "error": "Erro"
     },
-    "no_schedule": "Sin horario",
-    "first_classes": "Primeros grupos",
-    "suggested_structure": "Estructura sugerida",
-    "suggested_1": "Defina etapa, horario y catequista principal para cada grupo.",
-    "suggested_2": "Registre catecúmenos para seguir asistencia, encuentros y progreso.",
-    "suggested_3": "Use la asistencia editorial para preparar encuentros con más consistencia."
+    "no_schedule": "Sem horário",
+    "first_classes": "Primeiras turmas",
+    "suggested_structure": "Estrutura sugerida",
+    "suggested_1": "Defina etapa, horário e catequista responsável para cada turma.",
+    "suggested_2": "Cadastre catequizandos para acompanhar presença, encontros e progresso.",
+    "suggested_3": "Use a presença editorial para preparar encontros com mais consistência.",
+    "limit_used_of_plan": "Você usou {{currentCount}} de {{maxAllowed}} turmas do Plano Único"
   } as const;
 
 export const collaborative_pt_BR = {
@@ -1540,6 +1551,9 @@ export const common_pt_BR = {
       "removed_success": "Documento removido",
       "upload_dialog_title": "Enviar documento",
       "upload_dialog_desc": "Selecione o arquivo {{type}} de {{name}}",
+      "select_student": "Catequizando",
+      "select_doc_type": "Tipo de documento",
+      "pick_student_and_type": "Escolha o catequizando e o tipo de documento antes de enviar.",
       "select_file": "Selecionar arquivo",
       "no_file_selected": "Nenhum arquivo selecionado",
       "tooltip_upload": "Enviar documento",
@@ -1603,7 +1617,13 @@ export const common_pt_BR = {
       "import_format_title": "Formato esperado",
       "import_format_desc": "Cole os dados no formato CSV com cabeçalho. Exemplo:",
       "import_csv_label": "Dados CSV",
-      "import_csv_placeholder": "nome,sobrenome,nascimento\nJoão,Silva,2015-03-15",
+      "import_csv_placeholder": "nome,sobrenome,nascimento,turma\nJoão,Silva,2015-03-15,Eucaristia 2026",
+      "import_class_column": "Turma",
+      "import_class_label": "Importar para a turma",
+      "import_for_class_banner": "Importando para a turma {{name}}",
+      "import_unassigned": "Sem turma (disponíveis)",
+      "import_enrolled": "{{count}} matriculados na turma",
+      "import_view_class": "Ver turma",
       "import_drag_over": "Solte o arquivo aqui",
       "import_drag_hint": "Arraste um arquivo CSV aqui ou clique para selecionar",
       "import_invalid_csv": "Por favor, solte um arquivo CSV válido.",
@@ -3406,8 +3426,19 @@ export const messages_pt_BR = {
         "announcement": {
           "label": "Canal de Avisos",
           "desc": "Somente coordenadores postam"
+        },
+        "class_chat": {
+          "label": "Mensagem para turma",
+          "desc": "Abre o chat da turma com inscritos e responsáveis"
+        },
+        "class_notice": {
+          "label": "Aviso para responsáveis",
+          "desc": "Comunique a turma e as famílias no mesmo canal"
         }
       },
+      "pick_class": "Escolha a turma",
+      "no_classes": "Nenhuma turma encontrada.",
+      "enrolled_no_account": "Sem conta no portal — use a mensagem da turma",
       "group_name_placeholder": "Nome do grupo...",
       "search_contacts": "Buscar contatos...",
       "loading_contacts": "Carregando contatos...",

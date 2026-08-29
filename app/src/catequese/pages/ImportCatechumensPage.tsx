@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../client/components/ui/button";
 import { Textarea } from "../../client/components/ui/textarea";
@@ -15,6 +15,7 @@ import {
   useQuery,
   importCatechumensCSV,
   listParishes,
+  listClasses,
 } from "wasp/client/operations";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
@@ -22,80 +23,7 @@ import {
   AppPageHeader,
   AppPanel,
 } from "../../client/components/brand/AppChrome";
-
-function parseCSVLine(line: string): string[] {
-  const result: string[] = [];
-  let current = "";
-  let inQuotes = false;
-  for (let i = 0; i < line.length; i++) {
-    const char = line[i];
-    if (char === '"') {
-      if (inQuotes && line[i + 1] === '"') {
-        current += '"';
-        i++;
-      } else {
-        inQuotes = !inQuotes;
-      }
-    } else if (char === "," && !inQuotes) {
-      result.push(current.trim());
-      current = "";
-    } else {
-      current += char;
-    }
-  }
-  result.push(current.trim());
-  return result;
-}
-
-function parseCSV(csvText: string) {
-  const lines = csvText.trim().split("\n");
-  if (lines.length < 1) return [];
-
-  const headerLine = lines[0];
-  const headerCols = parseCSVLine(headerLine).map((h) =>
-    h
-      .toLowerCase()
-      .replace(/\s/g, "")
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, ""),
-  );
-  const dataLines = lines.slice(1);
-  const parsedRows: any[] = [];
-
-  for (let i = 0; i < dataLines.length; i++) {
-    const line = dataLines[i].trim();
-    if (!line) continue;
-
-    const cols = parseCSVLine(line);
-    const row: Record<string, string> = {};
-    headerCols.forEach((h, idx) => {
-      row[h] = cols[idx] || "";
-    });
-
-    const firstName =
-      row["nome"] || row["firstname"] || row["firstName"] || cols[0] || "";
-    const lastName =
-      row["sobrenome"] || row["lastname"] || row["lastName"] || cols[1] || "";
-    const birthDateStr =
-      row["nascimento"] ||
-      row["birthdate"] ||
-      row["birthDate"] ||
-      row["datanascimento"] ||
-      cols[2] ||
-      "";
-    const familyName =
-      row["familia"] || row["family"] || row["household"] || "";
-
-    parsedRows.push({
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      birthDate: birthDateStr.trim(),
-      familyName: familyName.trim(),
-      lineNumber: i + 2,
-    });
-  }
-  return parsedRows;
-}
+import { parseCatechumenCsv } from "../../shared/csvCatechumenImport";
 
 export default function ImportCatechumensPage() {
   const { t } = useTranslation("common");
@@ -108,8 +36,20 @@ export default function ImportCatechumensPage() {
 
   const { userRole } = useUserContext();
   const { activeParishId } = useActiveParish();
+  const [searchParams] = useSearchParams();
+  const scopedClassId = searchParams.get("classId") || "";
   const { data: parishes = [] } = useQuery(listParishes);
+  const { data: classPage } = useQuery(
+    listClasses,
+    { workspaceId: activeParishId || undefined, take: 100 } as any,
+    { enabled: Boolean(activeParishId) },
+  );
+  const classes = Array.isArray(classPage)
+    ? classPage
+    : (classPage as any)?.items || [];
+  const scopedClass = classes.find((c: any) => c.id === scopedClassId);
   const [selectedParishId, setSelectedParishId] = useState("");
+  const [selectedClassId, setSelectedClassId] = useState(scopedClassId);
 
   const showParishSelector = useMemo(() => {
     return (
@@ -124,6 +64,10 @@ export default function ImportCatechumensPage() {
       setSelectedParishId(parishes[0].id);
     }
   }, [activeParishId, parishes]);
+
+  useEffect(() => {
+    if (scopedClassId) setSelectedClassId(scopedClassId);
+  }, [scopedClassId]);
 
   const handleFile = useCallback((file: File) => {
     const reader = new FileReader();
@@ -158,7 +102,7 @@ export default function ImportCatechumensPage() {
   const previewRows = useMemo(() => {
     if (!csvData.trim()) return [];
     try {
-      return parseCSV(csvData);
+      return parseCatechumenCsv(csvData);
     } catch {
       return [];
     }
@@ -172,6 +116,7 @@ export default function ImportCatechumensPage() {
       const result = await importCatechumensCSV({
         csvData,
         parishId: showParishSelector ? selectedParishId : undefined,
+        classId: selectedClassId || undefined,
       });
       setResults(result);
     } catch (e: any) {
@@ -212,11 +157,19 @@ export default function ImportCatechumensPage() {
             {t("catechumens.import_format_desc")}
           </p>
           <pre className="mt-2 rounded-sm bg-muted p-3 text-xs">
-            {`nome,sobrenome,nascimento,familia
-João,Silva,2015-03-15,Silva Santos
-Maria,Santos,2014-07-22,Silva Santos`}
+            {`nome,sobrenome,nascimento,familia,turma
+João,Silva,2015-03-15,Silva Santos,Eucaristia 2026
+Maria,Santos,2014-07-22,Silva Santos,Eucaristia 2026`}
           </pre>
         </div>
+
+        {scopedClass && (
+          <div className="rounded-sm border border-brand-ink/20 bg-muted/30 p-3 text-sm text-brand-ink">
+            {t("catechumens.import_for_class_banner", {
+              name: scopedClass.name,
+            })}
+          </div>
+        )}
 
         {showParishSelector && (
           <div className="space-y-2">
@@ -232,6 +185,27 @@ Maria,Santos,2014-07-22,Silva Santos`}
               {parishes.map((p: any) => (
                 <option key={p.id} value={p.id}>
                   {p.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {!scopedClassId && classes.length > 0 && (
+          <div className="space-y-2">
+            <label className="text-sm font-medium">
+              {t("catechumens.import_class_label")}
+            </label>
+            <select
+              aria-label={t("catechumens.import_class_label")}
+              value={selectedClassId}
+              onChange={(e) => setSelectedClassId(e.target.value)}
+              className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1"
+            >
+              <option value="">{t("catechumens.import_unassigned")}</option>
+              {classes.map((c: any) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
                 </option>
               ))}
             </select>
@@ -309,6 +283,9 @@ Maria,Santos,2014-07-22,Silva Santos`}
                       {t("catechumens.birth_short")}
                     </th>
                     <th className="px-3 py-2">{t("catechumens.family")}</th>
+                    <th className="px-3 py-2">
+                      {t("catechumens.import_class_column")}
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -332,6 +309,11 @@ Maria,Santos,2014-07-22,Silva Santos`}
                       </td>
                       <td className="px-3 py-2 text-muted-foreground">
                         {row.familyName || "-"}
+                      </td>
+                      <td className="px-3 py-2 text-muted-foreground">
+                        {row.className ||
+                          scopedClass?.name ||
+                          t("catechumens.import_unassigned")}
                       </td>
                     </tr>
                   ))}
@@ -381,6 +363,13 @@ Maria,Santos,2014-07-22,Silva Santos`}
               <p className="text-sm text-brand-ink">
                 {t("catechumens.import_created")}
               </p>
+              {typeof results.enrolled === "number" && (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {t("catechumens.import_enrolled", {
+                    count: results.enrolled,
+                  })}
+                </p>
+              )}
             </div>
             <div className="rounded-sm border border-destructive/20 bg-destructive/10 p-4 text-center">
               <p className="text-2xl font-semibold tracking-tight tabular-nums text-destructive">
@@ -404,11 +393,19 @@ Maria,Santos,2014-07-22,Silva Santos`}
                 {t("families.view_families_cta") || "Vincular a Famílias"}
               </Link>
             </Button>
-            <Button asChild variant="outline" className="flex-1">
-              <Link to="/app/catechumens">
-                {t("catechumens.import_view_list")}
-              </Link>
-            </Button>
+            {selectedClassId ? (
+              <Button asChild variant="outline" className="flex-1">
+                <Link to={`/app/classes/${selectedClassId}`}>
+                  {t("catechumens.import_view_class")}
+                </Link>
+              </Button>
+            ) : (
+              <Button asChild variant="outline" className="flex-1">
+                <Link to="/app/catechumens">
+                  {t("catechumens.import_view_list")}
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
       )}

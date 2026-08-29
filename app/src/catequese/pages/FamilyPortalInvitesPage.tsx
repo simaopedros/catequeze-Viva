@@ -36,6 +36,7 @@ import { toast } from "../../client/hooks/use-toast";
 import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
 import { formatDate } from "../../i18n/format";
 import { useLocale } from "../../i18n/useLocale";
+import { familyPortalUrl } from "../../shared/portal";
 
 /**
  * Central place for pastoral staff to invite families to the family portal
@@ -523,7 +524,7 @@ export default function FamilyPortalInvitesPage() {
           </Button>
           <Button asChild variant="ghost" className="h-10 rounded-sm" size="sm">
             <a
-              href="https://familia.catechis.app"
+              href={familyPortalUrl("/")}
               target="_blank"
               rel="noreferrer"
             >
