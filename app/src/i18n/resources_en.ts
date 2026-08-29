@@ -122,7 +122,8 @@ export const admin_en = {
       "audit": "Audit",
       "system": "System",
       "other": "Other",
-      "back_to_app": "Back to App"
+      "back_to_app": "Back to App",
+      "socialModeration": "Community"
     },
     "title": "Dioceses",
     "subtitle": "Diocese management (Super Admin)",

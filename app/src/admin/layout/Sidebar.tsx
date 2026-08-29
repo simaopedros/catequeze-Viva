@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   Settings,
   Activity,
+  Flag,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router";
@@ -162,6 +163,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 <NavLink to="/admin/support" end className={navLinkClass}>
                   <Bell />
                   {t("sidebar.support")}
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/comunidade" end className={navLinkClass}>
+                  <Flag />
+                  {t("sidebar.socialModeration")}
                 </NavLink>
               </li>
               <li>

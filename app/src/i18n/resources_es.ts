@@ -122,7 +122,8 @@ export const admin_es = {
       "audit": "Auditoría",
       "system": "Sistema",
       "other": "Otros",
-      "back_to_app": "Volver a la App"
+      "back_to_app": "Volver a la App",
+      "socialModeration": "Comunidad"
     },
     "title": "Diócesis",
     "subtitle": "Gestión de diócesis (Super Admin)",

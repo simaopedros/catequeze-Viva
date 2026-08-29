@@ -280,6 +280,12 @@ page AdminAuditPage {
   component: import AdminAudit from "@src/admin/lazy/AdminAudit"
 }
 
+route AdminSocialModerationRoute { path: "/admin/comunidade", to: AdminSocialModerationPage }
+page AdminSocialModerationPage {
+  authRequired: true,
+  component: import AdminSocialModeration from "@src/admin/lazy/AdminSocialModeration"
+}
+
 route AdminSystemRoute { path: "/admin/system", to: AdminSystemPage }
 page AdminSystemPage {
   authRequired: true,
