@@ -327,13 +327,21 @@ page PublicCommunityPage {
 route PublicCommunityTopicRoute { path: "/comunidade/t/:topic", to: PublicCommunityTopicPage }
 page PublicCommunityTopicPage {
   authRequired: false,
-  component: import PublicCommunityPage from "@src/catequese/pages/PublicCommunityPage"
+  component: import PublicCommunityTopicPage from "@src/catequese/pages/PublicCommunityPage"
 }
 
 route PublicSocialPostRoute { path: "/comunidade/p/:slug", to: PublicSocialPostPage }
 page PublicSocialPostPage {
   authRequired: false,
   component: import PublicSocialPostPage from "@src/catequese/pages/PublicSocialPostPage"
+}
+
+// Client fallback for the /c/:slug share link. In production Caddy proxies
+// /c/* to the server API so crawlers get Open Graph tags instead.
+route SocialShortLinkRoute { path: "/c/:slug", to: SocialShortLinkPage }
+page SocialShortLinkPage {
+  authRequired: false,
+  component: import SocialShortLinkPage from "@src/catequese/pages/SocialShortLinkPage"
 }
 //#endregion
 

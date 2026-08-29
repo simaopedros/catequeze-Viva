@@ -38,6 +38,16 @@ catechis.app, www.catechis.app {
     import prod_api
   }
 
+  # Comunidade share links: the server renders Open Graph tags for crawlers and
+  # redirects browsers to the SPA route. Must be proxied, not served by the SPA.
+  handle /c/* {
+    import prod_api
+  }
+
+  handle /comunidade/sitemap.xml {
+    import prod_api
+  }
+
   handle /health {
     import prod_api
   }

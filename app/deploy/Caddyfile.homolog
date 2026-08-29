@@ -31,6 +31,13 @@ homolog.catechis.app {
   handle /api/* {
     import homolog_api
   }
+  # Comunidade share links: server renders Open Graph tags for crawlers.
+  handle /c/* {
+    import homolog_api
+  }
+  handle /comunidade/sitemap.xml {
+    import homolog_api
+  }
   handle /health {
     import homolog_api
   }
@@ -75,6 +82,13 @@ familia-homolog.catechis.app {
     import homolog_api
   }
   handle /api/* {
+    import homolog_api
+  }
+  # Comunidade share links: server renders Open Graph tags for crawlers.
+  handle /c/* {
+    import homolog_api
+  }
+  handle /comunidade/sitemap.xml {
     import homolog_api
   }
   handle /health {
