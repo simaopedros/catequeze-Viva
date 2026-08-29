@@ -162,7 +162,10 @@ export default function App() {
     if (isFamilyPortal) return false;
     return (
       marketingLandingFromPath(location.pathname) !== null ||
-      location.pathname.startsWith("/pricing")
+      location.pathname.startsWith("/pricing") ||
+      // Public Comunidade feed: visitors arrive from shared links and need the
+      // marketing nav (sign in, pricing), not the app nav.
+      location.pathname.startsWith("/comunidade")
     );
   }, [location.pathname, isFamilyPortal]);
 

@@ -310,6 +310,25 @@ page AppCommunityPage {
   authRequired: true,
   component: import CommunityPage from "@src/catequese/pages/CommunityPage"
 }
+
+// Public feed — anyone may read, open and share, signed in or not.
+route PublicCommunityRoute { path: "/comunidade", to: PublicCommunityPage }
+page PublicCommunityPage {
+  authRequired: false,
+  component: import PublicCommunityPage from "@src/catequese/pages/PublicCommunityPage"
+}
+
+route PublicCommunityTopicRoute { path: "/comunidade/t/:topic", to: PublicCommunityTopicPage }
+page PublicCommunityTopicPage {
+  authRequired: false,
+  component: import PublicCommunityPage from "@src/catequese/pages/PublicCommunityPage"
+}
+
+route PublicSocialPostRoute { path: "/comunidade/p/:slug", to: PublicSocialPostPage }
+page PublicSocialPostPage {
+  authRequired: false,
+  component: import PublicSocialPostPage from "@src/catequese/pages/PublicSocialPostPage"
+}
 //#endregion
 
 //#region Catequese Viva - Class Detail
@@ -1209,6 +1228,22 @@ api serveSocialMedia {
   middlewareConfigFn: import { serveSocialMediaMiddleware } from "@src/server/api/socialMedia",
   httpRoute: (GET, "/api/social/media/:mediaId"),
   entities: [SocialMedia, SocialPost]
+}
+
+// Canonical share link. Serves Open Graph tags to crawlers, redirects humans
+// to the SPA route.
+api socialShareRedirect {
+  fn: import { socialShareRedirect } from "@src/server/api/socialShare",
+  middlewareConfigFn: import { socialShareMiddleware } from "@src/server/api/socialShare",
+  httpRoute: (GET, "/c/:slug"),
+  entities: [SocialPost, SocialMedia, User]
+}
+
+api socialSitemap {
+  fn: import { socialSitemap } from "@src/server/api/socialShare",
+  middlewareConfigFn: import { socialSitemapMiddleware } from "@src/server/api/socialShare",
+  httpRoute: (GET, "/comunidade/sitemap.xml"),
+  entities: [SocialPost]
 }
 
 api bunnyStreamWebhook {
